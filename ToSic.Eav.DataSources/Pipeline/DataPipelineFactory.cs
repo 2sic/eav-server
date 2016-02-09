@@ -197,7 +197,7 @@ namespace ToSic.Eav.DataSources
             if (testParameters == null)
                 return null;
             // todo: dangerous: seems like another token-replace mechanism!
-            var paramMatches = Regex.Matches(testParameters, @"(?:\[(?<Token>\w+):(?<Property>\w+)\])=(?<Value>[^\r]*)");
+            var paramMatches = Regex.Matches(testParameters, @"(?:\[(?<Token>\w+):(?<Property>\w+)\])=(?<Value>[^\r\n]*)");
 
             // Create a list of static Property Accessors
             var result = new List<IValueProvider>();
