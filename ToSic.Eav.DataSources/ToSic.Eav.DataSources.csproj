@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{DAAE8E21-CA5F-400B-9F5A-5E4E1196B21B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ToSic.Eav.DataSources</RootNamespace>
+    <AssemblyName>ToSic.Eav.DataSources</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="CsvHelper">
+      <HintPath>..\packages\CsvHelper.2.13.1.0\lib\net35-client\CsvHelper.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity">
+      <HintPath>..\packages\Unity.2.1.505.2\lib\NET35\Microsoft.Practices.Unity.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.Configuration">
+      <HintPath>..\packages\Unity.2.1.505.2\lib\NET35\Microsoft.Practices.Unity.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App.cs" />
+    <Compile Include="AttributeFilter.cs" />
+    <Compile Include="BaseDataSource.cs" />
+    <Compile Include="Caches\BaseCache.cs" />
+    <Compile Include="Caches\CacheAllStreams.cs" />
+    <Compile Include="Caches\ICache.cs" />
+    <Compile Include="Caches\ListCacheItem.cs" />
+    <Compile Include="Caches\QuickCache.cs" />
+    <Compile Include="CsvDataSource.cs" />
+    <Compile Include="DataSource.cs" />
+    <Compile Include="DataStream.cs" />
+    <Compile Include="DataTableDataSource.cs" />
+    <Compile Include="Debug\DataSourceInfo.cs" />
+    <Compile Include="Debug\PipelineInfo.cs" />
+    <Compile Include="Debug\StreamInfo.cs" />
+    <Compile Include="DeferredPipelineQuery.cs" />
+    <Compile Include="EntityIdFilter.cs" />
+    <Compile Include="EntityTypeFilter.cs" />
+    <Compile Include="Exceptions\DataSourceException.cs" />
+    <Compile Include="ExternalDataDataSource.cs" />
+    <Compile Include="IDataSource.cs" />
+    <Compile Include="IDataStream.cs" />
+    <Compile Include="IDataTarget.cs" />
+    <Compile Include="IMetaDataSource.cs" />
+    <Compile Include="Paging.cs" />
+    <Compile Include="PassThrough.cs" />
+    <Compile Include="Pipeline\DataPipeline.cs" />
+    <Compile Include="Pipeline\DataPipelineFactory.cs" />
+    <Compile Include="Pipeline\DataPipelineWiring.cs" />
+    <Compile Include="Pipeline\PipelineDesignerAttribute.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PublishingFilter.cs" />
+    <Compile Include="RelationshipFilter.cs" />
+    <Compile Include="RootSources\IRootSource.cs" />
+    <Compile Include="SqlDataSource.cs" />
+    <Compile Include="StreamFallback.cs" />
+    <Compile Include="ValueFilter.cs" />
+    <Compile Include="ValueProvider\AssignedEntityValueProvider.cs" />
+    <Compile Include="ValueProvider\DataTargetValueProvider.cs" />
+    <Compile Include="ValueProvider\EntityValueProvider.cs" />
+    <Compile Include="ValueSort.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj">
+      <Project>{82f94588-269b-4cdd-98d1-d5cb14c39090}</Project>
+      <Name>ToSic.Eav.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ToSic.Eav.Tokens\ToSic.Eav.TokenEngine.csproj">
+      <Project>{2a81f269-8cca-4afd-a85f-82b1c2343965}</Project>
+      <Name>ToSic.Eav.TokenEngine</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,137 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{CF3B9349-8C66-4901-8EDB-A4EC1D75326B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ToSic.Eav</RootNamespace>
+    <AssemblyName>ToSic.Eav</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\ToSic.Eav.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Practices.Unity, Version=2.1.505.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Unity.2.1.505.2\lib\NET35\Microsoft.Practices.Unity.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Api\Api01\SimpleDataController.cs" />
+    <Compile Include="Api\BetaFullApi.cs" />
+    <Compile Include="BLL\BllCommandBase.cs" />
+    <Compile Include="BLL\EavDataController.cs" />
+    <Compile Include="BLL\Parts\DbContentType.cs" />
+    <Compile Include="BLL\Parts\DbApp.cs" />
+    <Compile Include="BLL\Parts\DbZone.cs" />
+    <Compile Include="Configuration.cs" />
+    <Compile Include="BLL\Parts\DbPipeline.cs" />
+    <Compile Include="DataSources\SqlSources\EavSqlStore.cs" />
+    <Compile Include="ImportExport\ImportLogItem.cs" />
+    <Compile Include="ImportExport\Refactoring\Extensions\AttributeSetExtension.cs" />
+    <Compile Include="ImportExport\Refactoring\Extensions\EavValueExtension.cs" />
+    <Compile Include="ImportExport\Refactoring\Extensions\EntityExtension.cs" />
+    <Compile Include="ImportExport\Refactoring\Extensions\EntityImportExtension.cs" />
+    <Compile Include="ImportExport\Refactoring\Extensions\XElementExtension2.cs" />
+    <Compile Include="ImportExport\Refactoring\XmlExport.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ImportExport\Refactoring\XmlImport.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ImportExport\XmlExport.cs" />
+    <Compile Include="ImportExport\XmlImport.cs" />
+    <Compile Include="BLL\Parts\DbAttributeSet.cs" />
+    <Compile Include="BLL\Parts\DbAttribute.cs" />
+    <Compile Include="BLL\Parts\DbPublishing.cs" />
+    <Compile Include="BLL\Parts\DbRelationship.cs" />
+    <Compile Include="BLL\Parts\DbValue.cs" />
+    <Compile Include="BLL\Parts\DbEntity.cs" />
+    <Compile Include="BLL\DbLoadIntoEavDataStructure.cs" />
+    <Compile Include="BLL\Parts\DbShortcuts.cs" />
+    <Compile Include="BLL\Parts\DbVersioning.cs" />
+    <Compile Include="ImportExport\Import.cs" />
+    <Compile Include="BLL\Parts\DbDimensions.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VersionUpgrade.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj">
+      <Project>{82f94588-269b-4cdd-98d1-d5cb14c39090}</Project>
+      <Name>ToSic.Eav.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ToSic.Eav.DataSources\ToSic.Eav.DataSources.csproj">
+      <Project>{daae8e21-ca5f-400b-9f5a-5e4e1196b21b}</Project>
+      <Name>ToSic.Eav.DataSources</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ToSic.Eav.ImportExport\ToSic.Eav.ImportExport.csproj">
+      <Project>{5a75cd35-99f4-4cf0-944a-dc0f5d68b430}</Project>
+      <Name>ToSic.Eav.ImportExport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ToSic.Eav.Persistence.EF4\ToSic.Eav.Persistence.EF4.csproj">
+      <Project>{4a899869-ac44-44a4-8733-395d549f6297}</Project>
+      <Name>ToSic.Eav.Persistence.EF4</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ToSic.Eav.Tokens\ToSic.Eav.TokenEngine.csproj">
+      <Project>{2A81F269-8CCA-4AFD-A85F-82B1C2343965}</Project>
+      <Name>ToSic.Eav.TokenEngine</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy "$(TargetPath)" "$(SolutionDir)..\2SexyContent\Web\bin"</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

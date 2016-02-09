@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{82F94588-269B-4CDD-98D1-D5CB14C39090}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ToSic.Eav</RootNamespace>
+    <AssemblyName>ToSic.Eav.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Practices.Unity">
+      <HintPath>..\packages\Unity.2.1.505.2\lib\NET35\Microsoft.Practices.Unity.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.Configuration">
+      <HintPath>..\packages\Unity.2.1.505.2\lib\NET35\Microsoft.Practices.Unity.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Constants.cs" />
+    <Compile Include="Data\AppDataPackage.cs" />
+    <Compile Include="Data\AttributeBase.cs" />
+    <Compile Include="Data\AttributeHelperTools.cs" />
+    <Compile Include="Data\Attribute_ofT.cs" />
+    <Compile Include="Data\ContentType.cs" />
+    <Compile Include="Data\Metadata.cs" />
+    <Compile Include="Data\Dimension.cs" />
+    <Compile Include="Data\EntityRelationship.cs" />
+    <Compile Include="Data\EntityRelationshipItem.cs" />
+    <Compile Include="Data\RelatedEntities.cs" />
+    <Compile Include="Data\RelationshipManager.cs" />
+    <Compile Include="Data\TypedValue_ofT.cs" />
+    <Compile Include="Data\Value.cs" />
+    <Compile Include="Data\Value_ofT.cs" />
+    <Compile Include="Data\Zone.cs" />
+    <Compile Include="Entity.cs" />
+    <Compile Include="Enums\AttributeMoveDirection.cs" />
+    <Compile Include="Enums\AttributeScope.cs" />
+    <Compile Include="Enums\AttributeTypeEnum.cs" />
+    <Compile Include="Factory.cs" />
+    <Compile Include="HelpersToRefactor.cs" />
+    <Compile Include="Implementations\ValueConverter\ConversionScenario.cs" />
+    <Compile Include="Implementations\ValueConverter\IEavValueConverter.cs" />
+    <Compile Include="Implementations\ValueConverter\NeutralValueConverter.cs" />
+    <Compile Include="Interfaces\IAttribute.cs" />
+    <Compile Include="Interfaces\IContentType.cs" />
+    <Compile Include="Interfaces\IDeferredEntitiesList.cs" />
+    <Compile Include="Interfaces\IMetadata.cs" />
+    <Compile Include="Interfaces\IDimension.cs" />
+    <Compile Include="Interfaces\IEntity.cs" />
+    <Compile Include="Interfaces\IIoC.cs" />
+    <Compile Include="Interfaces\IRelatedEntities.cs" />
+    <Compile Include="Interfaces\IRelationshipManager.cs" />
+    <Compile Include="Interfaces\IValue.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="DataSources\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{5A75CD35-99F4-4CF0-944A-DC0F5D68B430}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ToSic.Eav.ImportExport</RootNamespace>
+    <AssemblyName>ToSic.Eav.ImportExport</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Practices.Unity">
+      <HintPath>..\ToSic.Eav\bin\Debug\Microsoft.Practices.Unity.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.Configuration">
+      <HintPath>..\ToSic.Eav\bin\Debug\Microsoft.Practices.Unity.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ImportAttribute.cs" />
+    <Compile Include="ImportEntity.cs" />
+    <Compile Include="ImportAttributeSet.cs" />
+    <Compile Include="IValueImportModel.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Refactoring\Extensions\EnumExtension.cs" />
+    <Compile Include="Refactoring\Extensions\IEnumerableExtension.cs" />
+    <Compile Include="Refactoring\Extensions\StringExtension.cs" />
+    <Compile Include="Refactoring\Options\DocumentNodeNames.cs" />
+    <Compile Include="Refactoring\EntityGuidManager.cs" />
+    <Compile Include="Refactoring\Extensions\FileInfoExtension.cs" />
+    <Compile Include="Refactoring\Extensions\XElementExtension1.cs" />
+    <Compile Include="Refactoring\ImportError.cs" />
+    <Compile Include="Refactoring\ImportErrorCode.cs" />
+    <Compile Include="Refactoring\ImportErrorProtocol.cs" />
+    <Compile Include="Refactoring\LocalizedDescriptionAttribute.cs" />
+    <Compile Include="Refactoring\Options\EntityClearImport.cs" />
+    <Compile Include="Refactoring\Options\EntityClearImportExtension.cs" />
+    <Compile Include="Refactoring\Options\LanguageMissingExport.cs" />
+    <Compile Include="Refactoring\Options\LanguageMissingExportExtension.cs" />
+    <Compile Include="Refactoring\Options\LanguageReferenceExport.cs" />
+    <Compile Include="Refactoring\Options\LanguageReferenceExportExtension.cs" />
+    <Compile Include="Refactoring\Options\LanguageReferenceImport.cs" />
+    <Compile Include="Refactoring\Options\LanguageReferenceImportExtension.cs" />
+    <Compile Include="Refactoring\Options\RecordExport.cs" />
+    <Compile Include="Refactoring\Options\RecordExportExtension.cs" />
+    <Compile Include="Refactoring\Options\ResourceReferenceExport.cs" />
+    <Compile Include="Refactoring\Options\ResourceReferenceExportExtension.cs" />
+    <Compile Include="Refactoring\Options\ResourceReferenceImport.cs" />
+    <Compile Include="Refactoring\Options\ResourceReferenceImportExtension.cs" />
+    <Compile Include="ValueDimension.cs" />
+    <Compile Include="ValueImportModel.cs" />
+    <Compile Include="ValueToImport.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Refactoring\ImportErrorCode.de-DE.resx">
+      <DependentUpon>ImportErrorCode.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Refactoring\ImportErrorCode.resx">
+      <DependentUpon>ImportErrorCode.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj">
+      <Project>{82f94588-269b-4cdd-98d1-d5cb14c39090}</Project>
+      <Name>ToSic.Eav.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
