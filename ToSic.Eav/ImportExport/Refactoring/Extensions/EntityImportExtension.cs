@@ -178,7 +178,7 @@ namespace ToSic.Eav.ImportExport.Refactoring.Extensions
                 case AttributeTypeEnum.Custom:
                 default:
                     {   // String
-                        valueModel = new ValueImportModel<string>(importEntity) { Value = HttpUtility.HtmlDecode(valueString) };
+                        valueModel = new ValueImportModel<string>(importEntity) { Value = valueString };
                     }
                     break;
             }
