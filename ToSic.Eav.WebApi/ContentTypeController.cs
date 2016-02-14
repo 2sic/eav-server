@@ -27,29 +27,48 @@ namespace ToSic.Eav.WebApi
             var cache = DataSource.GetCache(null, appId) as BaseCache;
             var allTypes = cache.GetContentTypes().Select(t => t.Value);
 
-            var filteredType = allTypes.Where(t => t.Scope == scope).OrderBy(t => t.Name).Select(t => new {
-                Id = t.AttributeSetId,
-                t.Name,
-                t.StaticName,
-                t.Scope,
-                t.Description,
-                UsesSharedDef = t.UsesConfigurationOfAttributeSet != null,
-                SharedDefId = t.UsesConfigurationOfAttributeSet,
-                Items = cache.LightList.Count(i => i.Type == t),
-                Fields = (t as ContentType).AttributeDefinitions.Count 
-            });
+            var filteredType = allTypes.Where(t => t.Scope == scope).OrderBy(t => t.Name).Select(t => ContentTypeForJson(t, cache)
+            //new {
+            //    Id = t.AttributeSetId,
+            //    t.Name,
+            //    t.StaticName,
+            //    t.Scope,
+            //    t.Description,
+            //    UsesSharedDef = t.UsesConfigurationOfAttributeSet != null,
+            //    SharedDefId = t.UsesConfigurationOfAttributeSet,
+            //    Items = cache.LightList.Count(i => i.Type == t),
+            //    Fields = (t as ContentType).AttributeDefinitions.Count 
+            //}
+            );
 
             return filteredType;
 	    }
 
+	    private dynamic ContentTypeForJson(IContentType t, ICache cache)
+	    {
+	        return new
+	        {
+	            Id = t.AttributeSetId,
+	            t.Name,
+	            t.StaticName,
+	            t.Scope,
+	            t.Description,
+	            UsesSharedDef = t.UsesConfigurationOfAttributeSet != null,
+	            SharedDefId = t.UsesConfigurationOfAttributeSet,
+	            Items = cache.LightList.Count(i => i.Type == t),
+	            Fields = (t as ContentType).AttributeDefinitions.Count
+	        };
+	    }
+
         [HttpGet]
-	    public IContentType GetSingle(int appId, string contentTypeStaticName, string scope = null)
+	    public dynamic GetSingle(int appId, string contentTypeStaticName, string scope = null)
 	    {
             SetAppIdAndUser(appId);
             // var source = InitialDS;
             var cache = DataSource.GetCache(null, appId);
-            return cache.GetContentType(contentTypeStaticName);
-        }
+            var ct = cache.GetContentType(contentTypeStaticName);
+            return ContentTypeForJson(ct, cache);
+	    }
 
         [HttpGet]
 	    [HttpDelete]
