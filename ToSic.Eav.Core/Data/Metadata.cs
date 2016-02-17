@@ -1,6 +1,4 @@
 using System;
-using System.Net;
-using System.Web.Http;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data
