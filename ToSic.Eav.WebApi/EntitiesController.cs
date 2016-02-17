@@ -316,8 +316,8 @@ namespace ToSic.Eav.WebApi
             var deleteControl = CurrentContext.Entities.CanDeleteEntity(id);
             if (!(deleteControl.Item1))
             {
-                throw new InvalidOperationException("The entity " + id +
-                                                    " cannot be deleted because of it is referenced by another object. Details are: " + deleteControl.Item2);
+                throw new InvalidOperationException("Item " + id +
+                                                    " cannot be deleted. It is used by other items: " + deleteControl.Item2);
             }
             CurrentContext.Entities.DeleteEntity(id);
         }
