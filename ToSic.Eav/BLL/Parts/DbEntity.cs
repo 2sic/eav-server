@@ -514,15 +514,15 @@ namespace ToSic.Eav.BLL.Parts
 
             var entityChild = Context.SqlDb.EntityRelationships.Where(r => r.ChildEntityID == entityId).Select(r => r.ParentEntityID).ToList();
             if (entityChild.Any())
-                messages.Add(string.Format("Entity has {0} Child-Relationships to Entities: {1}.", entityChild.Count, string.Join(", ", entityChild)));
+                messages.Add(string.Format("found {0} child relationships: {1}.", entityChild.Count, string.Join(", ", entityChild)));
 
             var assignedEntitiesFieldProperties = GetEntitiesInternal(Constants.AssignmentObjectTypeIdFieldProperties, entityId).Select(e => e.EntityID).ToList();
             if (assignedEntitiesFieldProperties.Any())
-                messages.Add(string.Format("Entity has {0} assigned Field-Property-Entities: {1}.", assignedEntitiesFieldProperties.Count, string.Join(", ", assignedEntitiesFieldProperties)));
+                messages.Add(string.Format("found {0} assigned field property entities: {1}.", assignedEntitiesFieldProperties.Count, string.Join(", ", assignedEntitiesFieldProperties)));
 
             var assignedEntitiesDataPipeline = GetEntitiesInternal(Constants.AssignmentObjectTypeEntity, entityId).Select(e => e.EntityID).ToList();
             if (assignedEntitiesDataPipeline.Any())
-                messages.Add(string.Format("Entity has {0} assigned Data-Pipeline Entities: {1}.", assignedEntitiesDataPipeline.Count, string.Join(", ", assignedEntitiesDataPipeline)));
+                messages.Add(string.Format("found {0} assigned data-pipeline entities: {1}.", assignedEntitiesDataPipeline.Count, string.Join(", ", assignedEntitiesDataPipeline)));
 
             return Tuple.Create(!messages.Any(), string.Join(" ", messages));
         }
