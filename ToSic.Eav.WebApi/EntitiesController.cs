@@ -311,8 +311,14 @@ namespace ToSic.Eav.WebApi
             var found = DataSource.GetCache(null, finalAppId).List[id];// InitialDS.List[id];
             if (found.Type.Name != contentType && found.Type.StaticName != contentType)
                 throw new KeyNotFoundException("Can't find " + id + "of type '" + contentType + "'");
-            if (!(CurrentContext.Entities.CanDeleteEntity(id).Item1)) // (!CurrentContext.EntCommands.CanDeleteEntity(id).Item1)
-                throw new InvalidOperationException("The entity " + id  + " cannot be deleted because of it is referenced by another object.");
+
+            // check if it has related items or another reason to prevent deleting
+            var deleteControl = CurrentContext.Entities.CanDeleteEntity(id);
+            if (!(deleteControl.Item1))
+            {
+                throw new InvalidOperationException("The entity " + id +
+                                                    " cannot be deleted because of it is referenced by another object. Details are: " + deleteControl.Item2);
+            }
             CurrentContext.Entities.DeleteEntity(id);
         }
 
