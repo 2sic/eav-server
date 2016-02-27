@@ -102,10 +102,25 @@ namespace ToSic.Eav.BLL.Parts
 			ClearDimensionsCache();
 		}
 
-		/// <summary>
-		/// Add a new Dimension
-		/// </summary>
-		internal void AddDimension(string systemKey, string name, Zone zone, Dimension parent = null, bool autoSave = false)
+        public void AddOrUpdateLanguage(string cultureCode, string cultureText, bool Active, int PortalID)
+        {
+            var EAVLanguage = GetLanguages().Where(l => l.ExternalKey == cultureCode).FirstOrDefault();
+            // If the language exists in EAV, set the active state, else add it
+            if (EAVLanguage != null)
+                UpdateDimension(EAVLanguage.DimensionID, Active);
+            else
+            {
+                AddLanguage(cultureText, cultureCode);
+            }
+        }
+
+
+
+
+        /// <summary>
+        /// Add a new Dimension
+        /// </summary>
+        internal void AddDimension(string systemKey, string name, Zone zone, Dimension parent = null, bool autoSave = false)
 		{
 			var newDimension = new Dimension
 			{
