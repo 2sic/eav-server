@@ -234,7 +234,10 @@ namespace ToSic.Eav.BLL.Parts
 
             var metaDataSetName = isAllProperty ? "@All" : "@" + Context.SqlDb.Attributes.Single(a => a.AttributeID == attributeId).Type;
             var systemScope = AttributeScope.System.ToString();
-            var attributeSetId = Context.SqlDb.AttributeSets.First(s => s.StaticName == metaDataSetName && s.Scope == systemScope && s.AppID == Context.AppId /* _appId*/).AttributeSetID;
+            var attSetFirst = Context.SqlDb.AttributeSets.FirstOrDefault(s => s.StaticName == metaDataSetName && s.Scope == systemScope && s.AppID == Context.AppId /* _appId*/);
+            if(attSetFirst == null)
+                throw new Exception("Can't continue, couldn't find attrib-set with: " + systemScope + ":" + metaDataSetName + " in app " + Context.AppId);
+            var attributeSetId = attSetFirst.AttributeSetID;
 
             return Context.Entities.AddEntity(attributeSetId, fieldProperties, null, attributeId, Constants.AssignmentObjectTypeIdFieldProperties);
         }
