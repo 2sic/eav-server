@@ -555,7 +555,7 @@ namespace ToSic.Eav
         /// No Metadata Documentation available.
         /// </summary>
         /// <param name="appId">No Metadata Documentation available.</param>
-        public int DeleteAppInternal(Nullable<global::System.Int32> appId)
+        internal int DeleteAppInternal(Nullable<global::System.Int32> appId)
         {
             ObjectParameter appIdParameter;
             if (appId.HasValue)
@@ -4428,6 +4428,30 @@ namespace ToSic.Eav
         private global::System.Int32 _ChangeLogIDModified;
         partial void OnChangeLogIDModifiedChanging(global::System.Int32 value);
         partial void OnChangeLogIDModifiedChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public global::System.String Owner
+        {
+            get
+            {
+                return _Owner;
+            }
+            set
+            {
+                OnOwnerChanging(value);
+                ReportPropertyChanging("Owner");
+                _Owner = StructuralObject.SetValidValue(value, true);
+                ReportPropertyChanged("Owner");
+                OnOwnerChanged();
+            }
+        }
+        private global::System.String _Owner;
+        partial void OnOwnerChanging(global::System.String value);
+        partial void OnOwnerChanged();
 
         #endregion
 

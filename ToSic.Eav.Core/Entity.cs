@@ -102,7 +102,7 @@ namespace ToSic.Eav.Data
 		/// <summary>
 		/// Create a new Entity
 		/// </summary>
-		public Entity(Guid entityGuid, int entityId, int repositoryId, IMetadata metadata /* int assignmentObjectTypeId */, IContentType type, bool isPublished, IEnumerable<EntityRelationshipItem> allRelationships, DateTime modified)
+		public Entity(Guid entityGuid, int entityId, int repositoryId, IMetadata metadata /* int assignmentObjectTypeId */, IContentType type, bool isPublished, IEnumerable<EntityRelationshipItem> allRelationships, DateTime modified, string owner)
 		{
 			EntityId = entityId;
 			EntityGuid = entityGuid;
@@ -117,12 +117,14 @@ namespace ToSic.Eav.Data
 			if (allRelationships == null)
 				allRelationships = new List<EntityRelationshipItem>();
 			Relationships = new RelationshipManager(this, allRelationships);
+
+		    Owner = owner;
 		}
 
 		/// <summary>
 		/// Create a new Entity based on an Entity and Attributes
 		/// </summary>
-		public Entity(IEntity entity, Dictionary<string, IAttribute> attributes, IEnumerable<EntityRelationshipItem> allRelationships)
+		public Entity(IEntity entity, Dictionary<string, IAttribute> attributes, IEnumerable<EntityRelationshipItem> allRelationships, string owner)
 		{
 			EntityId = entity.EntityId;
 			EntityGuid = entity.EntityGuid;
@@ -133,7 +135,9 @@ namespace ToSic.Eav.Data
 			Attributes = attributes;
 			RepositoryId = entity.RepositoryId;
 			Relationships = new RelationshipManager(this, allRelationships);
-		}
+
+            Owner = owner;
+        }
 
         /// <summary>
         /// The draft entity fitting this published entity
@@ -220,5 +224,7 @@ namespace ToSic.Eav.Data
 
             return result;
         }
-	}
+
+	    public string Owner { get; internal set; }
+    }
 }

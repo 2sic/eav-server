@@ -284,7 +284,8 @@
           <Property Name="IsPublished" Type="bit" Nullable="false" />
           <Property Name="PublishedEntityId" Type="int" />
           <Property Name="ChangeLogModified" Type="int" Nullable="false" />
-        </EntityType>
+           <Property Name="Owner" Type="nvarchar" MaxLength="250" />
+       </EntityType>
         <EntityType Name="ToSIC_EAV_EntityRelationships">
           <Key>
             <PropertyRef Name="AttributeID" />
@@ -996,6 +997,7 @@
           <NavigationProperty Name="ChangeLogModified" Relationship="ToSic.Eav.FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLog_Modified" FromRole="Entity" ToRole="ChangeLog" />
           <NavigationProperty Name="EntityChildRelationships" Relationship="ToSic.Eav.FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_ChildEntities" FromRole="Entity" ToRole="ToSIC_EAV_EntityRelationships" />
           <NavigationProperty Name="EntityParentRelationships" Relationship="ToSic.Eav.FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_ParentEntities" FromRole="Entity" ToRole="ToSIC_EAV_EntityRelationships" />
+          <Property Name="Owner" Type="String" MaxLength="250" Unicode="true" FixedLength="false" />
         </EntityType>
         <EntityType Name="EavValue">
           <Key>
@@ -1583,14 +1585,15 @@
           <EntitySetMapping Name="Entities">
             <EntityTypeMapping TypeName="ToSic.Eav.Entity">
               <MappingFragment StoreEntitySet="ToSIC_EAV_Entities">
+                <ScalarProperty Name="Owner" ColumnName="Owner" />
                 <ScalarProperty Name="ChangeLogIDModified" ColumnName="ChangeLogModified" />
                 <ScalarProperty Name="PublishedEntityId" ColumnName="PublishedEntityId" />
                 <ScalarProperty Name="IsPublished" ColumnName="IsPublished" />
                 <ScalarProperty Name="ChangeLogIDDeleted" ColumnName="ChangeLogDeleted" />
                 <ScalarProperty Name="ChangeLogIDCreated" ColumnName="ChangeLogCreated" />
+                <ScalarProperty Name="KeyString" ColumnName="KeyString" />
                 <ScalarProperty Name="EntityGUID" ColumnName="EntityGUID" />
                 <ScalarProperty Name="SortOrder" ColumnName="SortOrder" />
-                <ScalarProperty Name="KeyString" ColumnName="KeyString" />
                 <ScalarProperty Name="KeyGuid" ColumnName="KeyGuid" />
                 <ScalarProperty Name="KeyNumber" ColumnName="KeyNumber" />
                 <ScalarProperty Name="AssignmentObjectTypeID" ColumnName="AssignmentObjectTypeID" />

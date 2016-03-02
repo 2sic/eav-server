@@ -138,6 +138,7 @@ namespace ToSic.Eav.BLL
                                      },
                                      e.IsPublished,
                                      e.PublishedEntityId,
+                                     e.Owner, // new 2016-03-01
                                      Modified = e.ChangeLogModified.Timestamp,
                                      RelatedEntities = from r in e.EntityParentRelationships
                                                        group r by r.AttributeID
@@ -180,7 +181,7 @@ namespace ToSic.Eav.BLL
             foreach (var e in entitiesWithAandVfromDb)
             {
                 var contentType = (ContentType)contentTypes[e.AttributeSetID];
-                var newEntity = new Data.Entity(e.EntityGUID, e.EntityID, e.EntityID, e.Metadata /* e.AssignmentObjectTypeID */, contentType, e.IsPublished, relationships, e.Modified);
+                var newEntity = new Data.Entity(e.EntityGUID, e.EntityID, e.EntityID, e.Metadata /* e.AssignmentObjectTypeID */, contentType, e.IsPublished, relationships, e.Modified, e.Owner);
 
                 var allAttribsOfThisType = new Dictionary<int, IAttributeManagement>();	// temporary Dictionary to set values later more performant by Dictionary-Key (AttributeId)
                 IAttributeManagement titleAttrib = null;

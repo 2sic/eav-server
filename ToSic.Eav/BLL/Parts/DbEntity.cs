@@ -164,7 +164,8 @@ namespace ToSic.Eav.BLL.Parts
                     EntityGUID =
                         (entityGuid.HasValue && entityGuid.Value != new Guid()) ? entityGuid.Value : Guid.NewGuid(),
                     IsPublished = isPublished,
-                    PublishedEntityId = isPublished ? null : publishedEntityId
+                    PublishedEntityId = isPublished ? null : publishedEntityId,
+                    Owner = Context.UserName
                 };
 
                 if (attributeSet != null)

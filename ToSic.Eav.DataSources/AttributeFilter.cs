@@ -53,7 +53,7 @@ namespace ToSic.Eav.DataSources
 		    return In[Constants.DefaultStreamName].LightList
                 .Select(entity => new Data.Entity(entity, 
                     entity.Attributes.Where(a => attributeNames.Contains(a.Key)).ToDictionary(k => k.Key, v => v.Value),
-                    (entity.Relationships as RelationshipManager).AllRelationships)).Cast<IEntity>().ToList();
+                    (entity.Relationships as RelationshipManager).AllRelationships, entity.Owner)).Cast<IEntity>().ToList();
 		}
 
         /// <summary>
