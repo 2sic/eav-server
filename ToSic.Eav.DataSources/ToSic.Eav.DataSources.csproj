@@ -82,6 +82,7 @@
     <Compile Include="Pipeline\DataPipelineWiring.cs" />
     <Compile Include="Pipeline\PipelineDesignerAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="OwnerFilter.cs" />
     <Compile Include="PublishingFilter.cs" />
     <Compile Include="RelationshipFilter.cs" />
     <Compile Include="RootSources\IRootSource.cs" />
