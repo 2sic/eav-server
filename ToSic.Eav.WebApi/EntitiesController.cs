@@ -24,7 +24,7 @@ namespace ToSic.Eav.WebApi
         public EntitiesController() : base() { }
 
         #region GetOne GetAll calls
-        internal IEntity GetEntityOrThrowError(string contentType, int id, int? appId = null)
+        public IEntity GetEntityOrThrowError(string contentType, int id, int? appId = null)
         {
             if (appId.HasValue)
                 AppId = appId.Value;
@@ -201,7 +201,7 @@ namespace ToSic.Eav.WebApi
                     entitiesToImport.Add(CreateImportEntity(entity, appId));
 
             // Create Import-controller & run import
-            var importController = new Import.Import(null, appId, User.Identity.Name, 
+            var importController = new Import.Import(null, appId, UserIdentityToken, 
                 dontUpdateExistingAttributeValues: false, 
                 keepAttributesMissingInImport: false,
                 preventUpdateOnDraftEntities: false,
