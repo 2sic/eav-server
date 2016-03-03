@@ -10,17 +10,15 @@ namespace ToSic.Eav.DataSources
 	public class OwnerFilter : BaseDataSource
 	{
 		#region Configuration-properties
-		private const string UserIdKey = "UserId";
-
-	    // private const string DefaultUnlikelyUserId = "TW6O0YAjPgA8DYt9GjfB"; // use a very random sequence
+		private const string _identityCode = "IdentityCode";
 
         /// <summary>
         /// Indicates whether to show drafts or only Published Entities
         /// </summary>
-        public string UserId
+        public string Identity
 		{
-			get { return Configuration[UserIdKey]; }
-			set { Configuration[UserIdKey] = value; }
+			get { return Configuration[_identityCode]; }
+			set { Configuration[_identityCode] = value; }
 		}
 		#endregion
 
@@ -30,24 +28,19 @@ namespace ToSic.Eav.DataSources
 		public OwnerFilter()
 		{
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, null, GetList));
-			Configuration.Add(UserIdKey, "[Settings:UserId]"); 
+			Configuration.Add(_identityCode, "[Settings:" + _identityCode + "]"); 
 
-            CacheRelevantConfigurations = new[] { UserIdKey };
+            CacheRelevantConfigurations = new[] { _identityCode };
         }
-
-        //private IDictionary<int, IEntity> GetEntities()
-        //{
-        //    return DataStream().List;
-        //}
 
         private IEnumerable<IEntity> GetList()
         {
             EnsureConfigurationIsLoaded();
 
-            if (string.IsNullOrWhiteSpace(UserId))
+            if (string.IsNullOrWhiteSpace(Identity))
                 return new List<IEntity>();
 
-            return In["Default"].LightList.Where(e => e.Owner == UserId);
+            return In["Default"].LightList.Where(e => e.Owner == Identity);
         }
 
 	}
