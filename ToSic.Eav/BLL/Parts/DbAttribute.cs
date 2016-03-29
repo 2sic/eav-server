@@ -245,6 +245,16 @@ namespace ToSic.Eav.BLL.Parts
 
         public bool RemoveAttribute(int attributeId)
         {
+            // Remove values and valueDimensions of this attribute
+            var values = Context.SqlDb.Values.Where(a => a.AttributeID == attributeId).ToList();
+            values.ForEach(v => {
+                v.ValuesDimensions.ToList().ForEach(vd => {
+                    Context.SqlDb.ValuesDimensions.DeleteObject(vd);
+                });
+                Context.SqlDb.Values.DeleteObject(v);
+            });
+            Context.SqlDb.SaveChanges();
+
             var attr = Context.SqlDb.Attributes.Where(a => a.AttributeID == attributeId).FirstOrDefault();
 
             if (attr != null)
