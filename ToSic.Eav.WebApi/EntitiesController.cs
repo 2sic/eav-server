@@ -30,7 +30,7 @@ namespace ToSic.Eav.WebApi
                 AppId = appId.Value;
 
             // must use cache, because it shows both published  unpublished
-            var found = DataSource.GetCache(null, appId).List[id];
+            var found = DataSource.GetCache(null, AppId).List[id];
             if (contentType != null && !(found.Type.Name == contentType || found.Type.StaticName == contentType))
                 throw new KeyNotFoundException("Can't find " + id + "of type '" + contentType + "'");
             return found;

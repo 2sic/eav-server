@@ -52,7 +52,7 @@ namespace ToSic.Eav.Api.Api01
         ///     entity ids. 
         /// </param>
         /// <exception cref="ArgumentException">Content-type does not exist, or an attribute in values</exception>
-        public void Create(string contentTypeName, Dictionary<string, object> values)
+        public void Create(string contentTypeName, Dictionary<string, object> values, bool filterUnknownFields = true)
         {
             var attributeSet = Context.AttribSet.GetAllAttributeSets().FirstOrDefault(item => item.Name == contentTypeName);
             if (attributeSet == null)
@@ -60,11 +60,22 @@ namespace ToSic.Eav.Api.Api01
                 throw new ArgumentException("Content type '" + contentTypeName + "' does not exist.");
             }
 
+            if (filterUnknownFields)
+                values = RemoveUnknownFields(values, attributeSet);
+
             var importEntity = CreateImportEntity(attributeSet.StaticName);
             importEntity.AppendAttributeValues(attributeSet, ConvertEntityRelations(values), _defaultLanguageCode, false, true);
             importEntity.Import(_zoneId, _appId, _userName);
         }
 
+        private static Dictionary<string, object> RemoveUnknownFields(Dictionary<string, object> values, AttributeSet attributeSet)
+        {
+            var listAllowed = attributeSet.GetAttributes();
+            values =
+                values.Where(x => listAllowed.Any(y => y.StaticName == x.Key))
+                    .ToDictionary(x => x.Key, y => y.Value);
+            return values;
+        }
 
 
         /// <summary>
@@ -78,7 +89,7 @@ namespace ToSic.Eav.Api.Api01
         /// </param>
         /// <exception cref="ArgumentException">Attribute in values does not exit</exception>
         /// <exception cref="ArgumentNullException">Entity does not exist</exception>
-        public void Update(int entityId, Dictionary<string, object> values)
+        public void Update(int entityId, Dictionary<string, object> values, bool filterUnknownFields = true)
         {
             var entity = Context.Entities.GetEntity(entityId);
             Update(entity, values);
@@ -95,16 +106,20 @@ namespace ToSic.Eav.Api.Api01
         /// </param>
         /// <exception cref="ArgumentException">Attribute in values does not exit</exception>
         /// <exception cref="ArgumentNullException">Entity does not exist</exception>
-        public void Update(Guid entityGuid, Dictionary<string, object> values)
+        public void Update(Guid entityGuid, Dictionary<string, object> values, bool filterUnknownFields = true)
         {
             var entity = Context.Entities.GetEntity(entityGuid);
             Update(entity, values);
         }
 
-        private void Update(Entity entity, Dictionary<string, object> values)
+        private void Update(Entity entity, Dictionary<string, object> values, bool filterUnknownFields = true)
         {
             var attributeSet = Context.AttribSet.GetAttributeSet(entity.AttributeSetID);
             var importEntity = CreateImportEntity(entity.EntityGUID, attributeSet.StaticName);
+
+            if (filterUnknownFields)
+                values = RemoveUnknownFields(values, attributeSet);
+
             importEntity.AppendAttributeValues(attributeSet, ConvertEntityRelations(values), _defaultLanguageCode, false, true);
             importEntity.Import(_zoneId, _appId, _userName);
         }
