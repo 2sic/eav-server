@@ -62,6 +62,10 @@ namespace ToSic.Eav.WebApi.Formats
         /// It may even mean that the slot must be blanked now
         /// </summary>
         public bool SlotIsEmpty { get; set; }
+
+        public bool ContentBlockIsEntity { get; set; }
+        public int ContentBlockId { get; set; }
+        public int ContentBlockAppId { get; set; }
     }
 
 }
