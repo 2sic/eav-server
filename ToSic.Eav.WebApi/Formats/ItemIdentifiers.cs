@@ -63,8 +63,8 @@ namespace ToSic.Eav.WebApi.Formats
         /// </summary>
         public bool SlotIsEmpty { get; set; }
 
-        public bool ContentBlockIsEntity { get; set; }
-        public int ContentBlockId { get; set; }
+        //public bool ContentBlockIsEntity { get; set; }
+        //public int ContentBlockId { get; set; }
         public int ContentBlockAppId { get; set; }
     }
 
