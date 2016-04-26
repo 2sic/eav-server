@@ -295,15 +295,17 @@ namespace ToSic.Eav.WebApi
 
 
         #region Delete calls
-        /// <summary>
-        /// Delete the entity specified by ID.
-        /// </summary>
-        /// <param name="contentType"></param>
-        /// <param name="id">Entity ID</param>
-        /// <param name="appId"></param>
-        /// <exception cref="InvalidOperationException">Entity cannot be deleted for example when it is referenced by another object</exception>
-        [HttpGet]
-        public void Delete(string contentType, int id, int? appId = null)
+
+	    /// <summary>
+	    /// Delete the entity specified by ID.
+	    /// </summary>
+	    /// <param name="contentType"></param>
+	    /// <param name="id">Entity ID</param>
+	    /// <param name="appId"></param>
+	    /// <param name="force">try to force-delete</param>
+	    /// <exception cref="InvalidOperationException">Entity cannot be deleted for example when it is referenced by another object</exception>
+	    [HttpGet]
+        public void Delete(string contentType, int id, int? appId = null, bool force = false)
 	    {
 	        if (appId.HasValue)
 	            AppId = appId.Value;
@@ -314,29 +316,29 @@ namespace ToSic.Eav.WebApi
 
             // check if it has related items or another reason to prevent deleting
             var deleteControl = CurrentContext.Entities.CanDeleteEntity(id);
-            if (!(deleteControl.Item1))
-            {
+            if(deleteControl.Item1 || force)
+                CurrentContext.Entities.DeleteEntity(id, force);
+            else
                 throw new InvalidOperationException("Item " + id +
                                                     " cannot be deleted. It is used by other items: " + deleteControl.Item2);
-            }
-            CurrentContext.Entities.DeleteEntity(id);
         }
 
-        /// <summary>
-        /// Delete the entity specified by GUID.
-        /// </summary>
-        /// <param name="contentType"></param>
-        /// <param name="entityGuid">Entity GUID</param>
-        /// <param name="appId"></param>
-        /// <exception cref="ArgumentNullException">Entity does not exist</exception>
-        /// <exception cref="InvalidOperationException">Entity cannot be deleted for example when it is referenced by another object</exception>
-        [HttpGet]
-        public void Delete(string contentType, Guid entityGuid, int? appId = null)
+	    /// <summary>
+	    /// Delete the entity specified by GUID.
+	    /// </summary>
+	    /// <param name="contentType"></param>
+	    /// <param name="entityGuid">Entity GUID</param>
+	    /// <param name="appId"></param>
+	    /// <param name="force"></param>
+	    /// <exception cref="ArgumentNullException">Entity does not exist</exception>
+	    /// <exception cref="InvalidOperationException">Entity cannot be deleted for example when it is referenced by another object</exception>
+	    [HttpGet]
+        public void Delete(string contentType, Guid entityGuid, int? appId = null, bool force = false)
         {
             if (appId.HasValue)
                 AppId = appId.Value;
             var entity = CurrentContext.Entities.GetEntity(entityGuid);
-            Delete(contentType, entity.EntityID);
+            Delete(contentType, entity.EntityID, force: force);
         }
 
 

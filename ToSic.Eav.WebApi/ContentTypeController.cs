@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Web;
 using System.Web.Http;
-using Microsoft.Practices.ObjectBuilder2;
 using ToSic.Eav.Api;
-using ToSic.Eav.BLL;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Caches;
-using ToSic.Eav.Persistence;
 using ToSic.Eav.Serializers;
 
 namespace ToSic.Eav.WebApi
@@ -120,25 +116,37 @@ namespace ToSic.Eav.WebApi
 
             var appDef = new BetaFullApi(null, appId, CurrentContext);
             var appInputTypes = appDef.GetInputTypes(true).ToList();
-            var inputTypesDic = appInputTypes.ToDictionary(a => a.GetBestValue("EntityTitle")??"error-no-title", a => a);
-
+            var noTitleCount = 0;
+            string fldName = "";
+            Dictionary<string, IEntity> inputTypesDic;
+            try
+            {
+                inputTypesDic =
+                    appInputTypes.ToDictionary(
+                        a => (fldName = a.GetBestValue("EntityTitle")?.ToString() ?? "error-no-title" + noTitleCount++),
+                        a => a);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error on " + fldName + "; note: noTitleCount " + noTitleCount, ex);
+            }
             var ser = new Serializer();
-            
             return fields.Select(a =>
             {
                 var inputtype = findInputType(a.Item2);
-                return new
-                {
-                    Id = a.Item1.AttributeId,
-                    (a.Item1 as AttributeBase).SortOrder,
-                    a.Item1.Type,
-                    InputType = inputtype,
-                    StaticName = a.Item1.Name,
-                    a.Item1.IsTitle,
-                    a.Item1.AttributeId,
-                    Metadata = a.Item2.ToDictionary(e => e.Key, e => ser.Prepare(e.Value)),
-                    InputTypeConfig = inputTypesDic.ContainsKey(inputtype) ? ser.Prepare(inputTypesDic[inputtype]) : null
-                };
+                    return new
+                    {
+                        Id = a.Item1.AttributeId,
+                        (a.Item1 as AttributeBase).SortOrder,
+                        a.Item1.Type,
+                        InputType = inputtype,
+                        StaticName = a.Item1.Name,
+                        a.Item1.IsTitle,
+                        a.Item1.AttributeId,
+                        Metadata = a.Item2.ToDictionary(e => e.Key, e => ser.Prepare(e.Value)),
+                        InputTypeConfig =
+                            inputTypesDic.ContainsKey(inputtype) ? ser.Prepare(inputTypesDic[inputtype]) : null
+                    };
             });
         }
 
@@ -215,6 +223,15 @@ namespace ToSic.Eav.WebApi
             SetAppIdAndUser(appId);
             CurrentContext.Attributes.SetTitleAttribute(attributeId, contentTypeId);
 	    }
+
+        [HttpGet]
+        public bool Rename(int appId, int contentTypeId, int attributeId, string newName)
+        {
+            SetAppIdAndUser(appId);
+            CurrentContext.Attributes.RenameStaticName(attributeId, contentTypeId, newName);
+            return true;
+        }
+
 
         #endregion
 

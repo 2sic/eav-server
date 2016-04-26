@@ -91,6 +91,20 @@ namespace ToSic.Eav.BLL.Parts
         }
 
         /// <summary>
+        /// Set an Attribute as Title on an AttributeSet
+        /// </summary>
+        public void RenameStaticName(int attributeId, int attributeSetId, string newName)
+        {
+            if(string.IsNullOrWhiteSpace(newName))
+                throw new Exception("can't rename to something empty");
+
+            // ensure that it's in the set
+            var attr = Context.SqlDb.AttributesInSets.Single(a => a.AttributeID == attributeId && a.AttributeSetID == attributeSetId).Attribute;
+            attr.StaticName = newName;
+            Context.SqlDb.SaveChanges();
+        }
+
+        /// <summary>
         /// Update an Attribute
         /// </summary>
         public Attribute UpdateAttribute(int attributeId, string staticName)

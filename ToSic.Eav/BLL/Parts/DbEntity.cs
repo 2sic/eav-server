@@ -450,9 +450,9 @@ namespace ToSic.Eav.BLL.Parts
         /// <summary>
         /// Delete an Entity
         /// </summary>
-        public bool DeleteEntity(int repositoryId)
+        public bool DeleteEntity(int repositoryId, bool removeFromParents = false)
         {
-            return DeleteEntity(GetEntity(repositoryId));
+            return DeleteEntity(GetEntity(repositoryId), removeFromParents: removeFromParents);
         }
 
         /// <summary>
@@ -466,7 +466,7 @@ namespace ToSic.Eav.BLL.Parts
         /// <summary>
         /// Delete an Entity
         /// </summary>
-        internal bool DeleteEntity(Entity entity, bool autoSave = true)
+        internal bool DeleteEntity(Entity entity, bool autoSave = true, bool removeFromParents = false)
         {
             if (entity == null)
                 return false;
@@ -479,6 +479,8 @@ namespace ToSic.Eav.BLL.Parts
             entity.Values.ToList().ForEach(Context.SqlDb.DeleteObject);
             // Delete all Parent-Relationships
             entity.EntityParentRelationships.ToList().ForEach(Context.SqlDb.DeleteObject);
+            if(removeFromParents)
+                entity.EntityChildRelationships.ToList().ForEach(Context.SqlDb.DeleteObject);
             #endregion
 
             // If entity was Published, set Deleted-Flag
@@ -510,22 +512,61 @@ namespace ToSic.Eav.BLL.Parts
             var messages = new List<string>();
             var entityModel = new DbLoadIntoEavDataStructure(Context).GetEavEntity(entityId);
 
-            if (!entityModel.IsPublished && entityModel.GetPublished() == null)	// allow Deleting Draft-Only Entity always
+            if (!entityModel.IsPublished && entityModel.GetPublished() == null)	// always allow Deleting Draft-Only Entity 
                 return new Tuple<bool, string>(true, null);
 
-            var entityChild = Context.SqlDb.EntityRelationships.Where(r => r.ChildEntityID == entityId).Select(r => r.ParentEntityID).ToList();
-            if (entityChild.Any())
-                messages.Add(string.Format("found {0} child relationships: {1}.", entityChild.Count, string.Join(", ", entityChild)));
+            #region check if there are relationships where this is a child
+            var parents = Context.SqlDb.EntityRelationships.Where(r => r.ChildEntityID == entityId).Select(r => new TempEntityAndTypeInfos { EntityId = r.ParentEntityID, TypeId = r.ParentEntity.AttributeSetID} ).ToList();
+            if (parents.Any())
+            {
+                TryToGetMoreInfosAboutDependencies(parents, messages);
+                messages.Add(
+                    $"found {parents.Count} relationships where this is a child - the parents are: {string.Join(", ", parents)}.");
+            }
+            #endregion
 
-            var assignedEntitiesFieldProperties = GetEntitiesInternal(Constants.AssignmentObjectTypeIdFieldProperties, entityId).Select(e => e.EntityID).ToList();
-            if (assignedEntitiesFieldProperties.Any())
-                messages.Add(string.Format("found {0} assigned field property entities: {1}.", assignedEntitiesFieldProperties.Count, string.Join(", ", assignedEntitiesFieldProperties)));
-
-            var assignedEntitiesDataPipeline = GetEntitiesInternal(Constants.AssignmentObjectTypeEntity, entityId).Select(e => e.EntityID).ToList();
-            if (assignedEntitiesDataPipeline.Any())
-                messages.Add(string.Format("found {0} assigned data-pipeline entities: {1}.", assignedEntitiesDataPipeline.Count, string.Join(", ", assignedEntitiesDataPipeline)));
+            var entitiesAssignedToThis = GetEntitiesInternal(Constants.AssignmentObjectTypeEntity /*.AssignmentObjectTypeIdFieldProperties 2016-04-23 was checking for this, but was a mistake I believe */, entityId).Select(e => new TempEntityAndTypeInfos() { EntityId = e.EntityID, TypeId = e.AttributeSetID}).ToList();
+            if (entitiesAssignedToThis.Any())
+            {
+                TryToGetMoreInfosAboutDependencies(entitiesAssignedToThis, messages);
+                messages.Add(
+                    $"found {entitiesAssignedToThis.Count} entities which are metadata for this, assigned children (like in a pieline) or assigned for other reasons: {string.Join(", ", entitiesAssignedToThis)}.");
+            }
+            //var assignedEntitiesDataPipeline = GetEntitiesInternal(Constants.AssignmentObjectTypeEntity, entityId).Select(e => new TempEntityAndTypeInfos() { EntityId = e.EntityID, TypeId = e.AttributeSetID} ).ToList();
+            //if (assignedEntitiesDataPipeline.Any())
+            //{
+            //    TryToGetMoreInfosAboutDependencies(assignedEntitiesDataPipeline, messages);
+            //    messages.Add(
+            //        $"found {assignedEntitiesDataPipeline.Count} assigned data-pipeline entities: {string.Join(", ", assignedEntitiesDataPipeline)}.");
+            //}
 
             return Tuple.Create(!messages.Any(), string.Join(" ", messages));
+        }
+
+        private void TryToGetMoreInfosAboutDependencies(IEnumerable<TempEntityAndTypeInfos> dependencies, List<string> messages)
+        {
+            try
+            {
+                // try to get more infos about the parents
+                foreach (var dependency in dependencies)
+                    dependency.TypeName = Context.AttribSet.GetAttributeSet(dependency.TypeId).Name;
+            }
+            catch
+            {
+                messages.Add("Relationships but was not able to look up more details to show a nicer error.");
+            }
+            
+
+        }
+
+        internal class TempEntityAndTypeInfos
+        {
+            internal int EntityId;
+            internal int TypeId;
+            internal string TypeName = "";
+
+            public override string ToString() =>  EntityId + " (" + TypeName + ")";
+            
         }
 
         #endregion
