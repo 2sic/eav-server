@@ -11,7 +11,6 @@ using ToSic.Eav.BLL;
 using ToSic.Eav.BLL.Parts;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
-using ToSic.Eav.Persistence;
 using ToSic.Eav.Serializers;
 using ToSic.Eav.ValueProvider;
 
@@ -25,20 +24,10 @@ namespace ToSic.Eav.WebApi
         #region Helpers
         // I must keep the serializer so it can be configured from outside if necessary
         private Serializer _serializer;
-        public Serializer Serializer
-        {
-            get
-            {
-                if (_serializer == null)
-                {
-                    _serializer = Factory.Container.Resolve<Serializer>();
-                }
-                return _serializer;
-            }
-        }
+        public Serializer Serializer => _serializer ?? (_serializer = Factory.Container.Resolve<Serializer>());
 
-        #endregion
-        private EavDataController Context;
+	    #endregion
+        //private EavDataController _context;
 		private readonly string _userName;
 		public List<IValueProvider> ValueProviders { get; set; }
 
@@ -167,8 +156,8 @@ namespace ToSic.Eav.WebApi
 		/// <param name="id">PipelineEntityId</param>
 		public Dictionary<string, object> SavePipeline([FromBody] dynamic data, int appId, int? id = null)
 		{
-			Context = EavDataController.Instance(appId: appId);
-			Context.UserName = _userName;
+			var _context = EavDataController.Instance(appId: appId);
+			_context.UserName = _userName;
 			var source = DataSource.GetInitialDataSource(appId: appId);
 
 			// Get/Save Pipeline EntityGuid. Its required to assign Pipeline Parts to it.
@@ -189,12 +178,12 @@ namespace ToSic.Eav.WebApi
 				//id = entity.EntityID;
 			}
 
-			var pipelinePartAttributeSetId = Context.AttribSet.GetAttributeSet(Constants.DataPipelinePartStaticName).AttributeSetID;
-			var newDataSources = SavePipelineParts(data.dataSources, pipelineEntityGuid, pipelinePartAttributeSetId);
-			DeletedRemovedPipelineParts(data.dataSources, newDataSources, pipelineEntityGuid, source.ZoneId, source.AppId);
+			var pipelinePartAttributeSetId = _context.AttribSet.GetAttributeSet(Constants.DataPipelinePartStaticName).AttributeSetID;
+			var newDataSources = SavePipelineParts(data.dataSources, pipelineEntityGuid, pipelinePartAttributeSetId, _context);
+			DeletedRemovedPipelineParts(data.dataSources, newDataSources, pipelineEntityGuid, source.ZoneId, source.AppId, _context);
 
 			// Update Pipeline Entity with new Wirings etc.
-			SavePipelineEntity(id.Value, appId, data.pipeline, newDataSources);
+			SavePipelineEntity(id.Value, appId, data.pipeline, newDataSources, _context);
 
 			return GetPipeline(appId, id.Value);
 		}
@@ -205,7 +194,7 @@ namespace ToSic.Eav.WebApi
 		/// <param name="dataSources">JSON describing the DataSources</param>
 		/// <param name="pipelineEntityGuid">EngityGuid of the Pipeline-Entity</param>
 		/// <param name="pipelinePartAttributeSetId">AttributeSetId of PipelineParts</param>
-		private Dictionary<string, Guid> SavePipelineParts(dynamic dataSources, Guid pipelineEntityGuid, int pipelinePartAttributeSetId)
+		private Dictionary<string, Guid> SavePipelineParts(dynamic dataSources, Guid pipelineEntityGuid, int pipelinePartAttributeSetId, EavDataController _context)
 		{
 			var newDataSources = new Dictionary<string, Guid>();
 
@@ -217,11 +206,11 @@ namespace ToSic.Eav.WebApi
 				// Update existing DataSource
 				var newValues = GetEntityValues(dataSource);
 				if (dataSource.EntityId != null)
-					Context.Entities.UpdateEntity((int)dataSource.EntityId, newValues);
+					_context.Entities.UpdateEntity((int)dataSource.EntityId, newValues);
 				// Add new DataSource
 				else
 				{
-					var entitiy = Context.Entities.AddEntity(pipelinePartAttributeSetId, newValues, null, pipelineEntityGuid, Constants.AssignmentObjectTypeEntity);
+					var entitiy = _context.Entities.AddEntity(pipelinePartAttributeSetId, newValues, null, pipelineEntityGuid, Constants.AssignmentObjectTypeEntity);
 					newDataSources.Add((string)dataSource.EntityGuid, entitiy.EntityGUID);
 				}
 			}
@@ -232,7 +221,7 @@ namespace ToSic.Eav.WebApi
 		/// <summary>
 		/// Delete Pipeline Parts (DataSources) that are not present
 		/// </summary>
-		private void DeletedRemovedPipelineParts(IEnumerable<JToken> dataSources, Dictionary<string, Guid> newDataSources, Guid pipelineEntityGuid, int zoneId, int appId)
+		private void DeletedRemovedPipelineParts(IEnumerable<JToken> dataSources, Dictionary<string, Guid> newDataSources, Guid pipelineEntityGuid, int zoneId, int appId, EavDataController _context)
 		{
 			// Get EntityGuids currently stored in EAV
 			var existingEntityGuids = DataPipeline.GetPipelineParts(zoneId, appId, pipelineEntityGuid).Select(e => e.EntityGuid);
@@ -242,17 +231,17 @@ namespace ToSic.Eav.WebApi
 			newEntityGuids.AddRange(newDataSources.Values);
 
 			foreach (var entityToDelet in existingEntityGuids.Where(existingGuid => !newEntityGuids.Contains(existingGuid)))
-				Context.Entities.DeleteEntity(entityToDelet);
+				_context.Entities.DeleteEntity(entityToDelet);
 		}
 
-		/// <summary>
-		/// Save a Pipeline Entity to EAV
-		/// </summary>
-		/// <param name="id">EntityId of the Entity describing the Pipeline</param>
-		/// <param name="appId"></param>
-		/// <param name="pipeline">JSON with the new Entity-Values</param>
-		/// <param name="newDataSources">Array with new DataSources and the unsavedName and final EntityGuid</param>
-		private Entity SavePipelineEntity(int? id, int appId, dynamic pipeline, IDictionary<string, Guid> newDataSources = null)
+	    /// <summary>
+	    /// Save a Pipeline Entity to EAV
+	    /// </summary>
+	    /// <param name="id">EntityId of the Entity describing the Pipeline</param>
+	    /// <param name="appId"></param>
+	    /// <param name="pipeline">JSON with the new Entity-Values</param>
+	    /// <param name="newDataSources">Array with new DataSources and the unsavedName and final EntityGuid</param>
+	    private void SavePipelineEntity(int? id, int appId, dynamic pipeline, IDictionary<string, Guid> newDataSources, EavDataController _context)
 		{
 			// Create a clone so it can be modifie before saving but doesn't affect the underlaying JObject.
 			// A new Pipeline Entity must be saved twice, but some Field-Values are changed before saving it
@@ -279,7 +268,8 @@ namespace ToSic.Eav.WebApi
 
 			// Validate Stream Wirings
 			foreach (var wireInfo in wirings.Where(wireInfo => wirings.Count(w => w.To == wireInfo.To && w.In == wireInfo.In) > 1))
-				throw new Exception(string.Format("DataSource \"{0}\" has multiple In-Streams with Name \"{1}\". Each In-Stream must have an unique Name and can have only one connection.", wireInfo.To, wireInfo.In));
+				throw new Exception(
+				    $"DataSource \"{wireInfo.To}\" has multiple In-Streams with Name \"{wireInfo.In}\". Each In-Stream must have an unique Name and can have only one connection.");
 
 			// Add/Update Entity
 			IDictionary newValues = GetEntityValues(pipelineClone);
@@ -299,7 +289,7 @@ namespace ToSic.Eav.WebApi
 			if (pipelineEntity.Title.Values.Any())
 				dimensionIds = pipelineEntity.Title.Values.First().Languages.Select(l => l.DimensionId).ToArray();
 
-			return Context.Entities.UpdateEntity(id.Value, newValues, dimensionIds: dimensionIds);
+	        _context.Entities.UpdateEntity(id.Value, newValues, dimensionIds: dimensionIds);
 		}
 
 		/// <summary>
@@ -354,9 +344,8 @@ namespace ToSic.Eav.WebApi
 
 		[HttpGet]
 		public dynamic PipelineDebugInfo(int appId, int id)
-		{
-			return new Eav.DataSources.Debug.PipelineInfo(ConstructPipeline(appId, id));
-		}
+		=> new DataSources.Debug.PipelineInfo(ConstructPipeline(appId, id));
+		
 
 
 
@@ -368,7 +357,8 @@ namespace ToSic.Eav.WebApi
 		[HttpGet]
 		public object ClonePipeline(int appId, int id)
 		{
-			var clonePipelineEntity = new DbPipeline(Context).CopyDataPipeline(appId, id, _userName);
+            var eavCt = EavDataController.Instance(appId: appId);
+            var clonePipelineEntity = new DbPipeline(eavCt).CopyDataPipeline(appId, id, _userName);
 			return new { EntityId = clonePipelineEntity.EntityID };
 		}
 
@@ -378,10 +368,10 @@ namespace ToSic.Eav.WebApi
 		[HttpGet]
 		public object DeletePipeline(int appId, int id)
 		{
-			if (Context == null)
-				Context = EavDataController.Instance(appId: appId);
+			//if (_context == null)
+				var _context = EavDataController.Instance(appId: appId);
 
-		    var canDeleteResult = (Context.Entities.CanDeleteEntity(id));// _context.EntCommands.CanDeleteEntity(id);
+		    var canDeleteResult = (_context.Entities.CanDeleteEntity(id));// _context.EntCommands.CanDeleteEntity(id);
 			if (!canDeleteResult.Item1)
 				throw new Exception(canDeleteResult.Item2);
 
@@ -398,13 +388,13 @@ namespace ToSic.Eav.WebApi
 				// Delete Configuration Entities (if any)
 				var dataSourceConfig = metaDataSource.GetAssignedEntities(Constants.AssignmentObjectTypeEntity, dataSource.EntityGuid).FirstOrDefault();
 				if (dataSourceConfig != null)
-					Context.Entities.DeleteEntity(dataSourceConfig.EntityId);
+					_context.Entities.DeleteEntity(dataSourceConfig.EntityId);
 
-				Context.Entities.DeleteEntity(dataSource.EntityId);
+				_context.Entities.DeleteEntity(dataSource.EntityId);
 			}
 
 			// Delete Pipeline
-			Context.Entities.DeleteEntity(id);
+			_context.Entities.DeleteEntity(id);
 
 			return new { Result = "Success" };
 		}
