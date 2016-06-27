@@ -53,6 +53,7 @@
   <ItemGroup>
     <Compile Include="App.cs" />
     <Compile Include="AttributeFilter.cs" />
+    <Compile Include="AttributeRename.cs" />
     <Compile Include="BaseDataSource.cs" />
     <Compile Include="Caches\BaseCache.cs" />
     <Compile Include="Caches\CacheAllStreams.cs" />

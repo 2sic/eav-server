@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSources
 		private const string AttributeNamesKey = "AttributeNames";
 
 		/// <summary>
-		/// A string containing one or more entity-ids. like "27" or "27,40,3063,30306"
+		/// A string containing one or more AttributeNames. like "FirstName" or "FirstName,Street,City"
 		/// </summary>
 		public string AttributeNames
 		{
