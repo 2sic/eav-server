@@ -237,15 +237,16 @@ namespace ToSic.Eav.BLL.Parts
         /// <param name="updateLog">Update/Import Log List</param>
         /// <param name="preserveUndefinedValues">Preserve Values if Attribute is not specifeied in NewValues</param>
         /// <param name="isPublished">Is this Entity Published or a draft</param>
+        /// <param name="forceNoBranch">this forces the published-state to be applied to the original, without creating a draft-branhc</param>
         /// <returns>the updated Entity</returns>
-        public Entity UpdateEntity(int repositoryId, IDictionary newValues, bool autoSave = true, ICollection<int> dimensionIds = null, bool masterRecord = true, List<ImportLogItem> updateLog = null, bool preserveUndefinedValues = true, bool isPublished = true)
+        public Entity UpdateEntity(int repositoryId, IDictionary newValues, bool autoSave = true, ICollection<int> dimensionIds = null, bool masterRecord = true, List<ImportLogItem> updateLog = null, bool preserveUndefinedValues = true, bool isPublished = true, bool forceNoBranch = false)
         {
             var entity = Context.SqlDb.Entities.Single(e => e.EntityID == repositoryId);
             var draftEntityId = Context.Publishing.GetDraftEntityId(repositoryId);
 
             #region Unpublished Save (Draft-Saves)
             // Current Entity is published but Update as a draft
-            if (entity.IsPublished && !isPublished)
+            if (entity.IsPublished && !isPublished && !forceNoBranch)
             {
                 // Prevent duplicate Draft
                 if (draftEntityId.HasValue)
@@ -271,11 +272,13 @@ namespace ToSic.Eav.BLL.Parts
 
             #region If draft but should be published, correct what's necessary
             // Update as Published but Current Entity is a Draft-Entity
-            if (!entity.IsPublished && isPublished)
+            // case 1: saved entity is a draft and save wants to publish
+            // case 2: new data is set to not publish, but we don't want a branch
+            if (!entity.IsPublished && isPublished || !isPublished && forceNoBranch)
             {
                 if (entity.PublishedEntityId.HasValue)	// if Entity has a published Version, add an additional DateTimeline Item for the Update of this Draft-Entity
                     Context.Versioning.SaveEntityToDataTimeline(entity);
-                entity = Context.Publishing.ClearDraftAndSetPublished(repositoryId); // must save intermediate because otherwise we get duplicate IDs
+                entity = Context.Publishing.ClearDraftBranchAndSetPublishedState(repositoryId, isPublished); // must save intermediate because otherwise we get duplicate IDs
             }
             #endregion
 

@@ -12,11 +12,14 @@ namespace ToSic.Eav.Import
         public int AssignmentObjectTypeId { get; set; }
         public Guid? EntityGuid { get; set; }
         public bool IsPublished { get; set; }
+
+        public bool ForceNoBranch { get; set; }
         public Dictionary<string, List<IValueImportModel>> Values { get; set; }
 
         public ImportEntity()
         {
             IsPublished = true;
+            ForceNoBranch = false;
         }
     }
 }

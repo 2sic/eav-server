@@ -126,6 +126,7 @@ namespace ToSic.Eav.WebApi
                         Guid = duplicateFrom.HasValue ? Guid.Empty : found.EntityGuid,
                         Type = new Formats.Type { Name = found.Type.Name, StaticName = found.Type.StaticName },
                         IsPublished = found.IsPublished,
+                        IsBranch = (!found.IsPublished && found.GetPublished() != null),
                         TitleAttributeName = found.Title?.Name,
                         Attributes = found.Attributes.ToDictionary(a => a.Key, a => new Formats.Attribute()
                             {
@@ -243,6 +244,8 @@ namespace ToSic.Eav.WebApi
             #region Guids, Ids, Published, Content-Types
             importEntity.EntityGuid = newEntity.Guid;
             importEntity.IsPublished = newEntity.IsPublished;
+            // 2dm 2016-06-29
+            importEntity.ForceNoBranch = !newEntity.IsBranch; // if it's not a branch, it should also force no branch...
             importEntity.AttributeSetStaticName = newEntity.Type.StaticName;
             #endregion
 
