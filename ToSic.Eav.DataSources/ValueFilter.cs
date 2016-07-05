@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.Configuration;
 using ToSic.Eav.DataSources.Exceptions;
 
 namespace ToSic.Eav.DataSources
@@ -118,6 +119,9 @@ namespace ToSic.Eav.DataSources
                 case "Number":
                     compare = GetNumberComparison(Value);
                     break;
+                case "DateTime":
+                    compare = GetDateTimeComparison(Value);
+                    break;
                 case "String":
                 default:
                     compare = GetStringComparison();
@@ -189,9 +193,12 @@ namespace ToSic.Eav.DataSources
         {
             _boolFilter = bool.Parse(Value);
 
-            string operation = Operator;
+            string operation = Operator.ToLower();
             if (operation == "==" || operation == "===")
                 return BoolIsEqual;
+            if (operation == "!=")
+                return BoolIsNotEqual;
+
             throw new Exception("Wrong operator for boolean compare, can't find comparison for '" + operation + "'");
         }
         private bool BoolIsEqual(IEntity e)
@@ -200,41 +207,160 @@ namespace ToSic.Eav.DataSources
             return value as bool? == _boolFilter;
         }
 
+        private bool BoolIsNotEqual(IEntity e)
+        {
+            var value = e.GetBestValue(_initializedAttrName, _initializedLangs);
+            return value as bool? != _boolFilter;
+        }
+
         #endregion
+
+        #region "between" helper
+        private Tuple<bool, string, string> BetweenParts(string original)
+        {
+            original = original.ToLower();
+            var hasAnd = original.IndexOf(" and ", StringComparison.Ordinal);
+            string low = "", high = "";
+            if (hasAnd > -1)
+            {
+                low = original.Substring(0, hasAnd).Trim();
+                high = original.Substring(hasAnd + 4).Trim();
+            }
+            return new Tuple<bool, string, string>(hasAnd > -1, low, high);
+        }
+        #endregion 
+
+        #region date-time comparisons
+
+
+        private Func<IEntity, bool> GetDateTimeComparison(string original)
+        {
+            var operation = Operator.ToLower();
+            DateTime maxDateTime = DateTime.MaxValue,
+                referenceDateTime = DateTime.MinValue;
+            if (operation == "between" || operation == "!between")
+            {
+                var parts = BetweenParts(original);
+                if (parts.Item1)
+                {
+                    DateTime.TryParse(parts.Item2, out referenceDateTime);
+                    DateTime.TryParse(parts.Item3, out maxDateTime);
+                }
+                else
+                    operation = "==";
+            }
+
+            if (referenceDateTime == DateTime.MinValue)
+                DateTime.TryParse(original, out referenceDateTime);
+
+            var dateComparisons = new Dictionary<string, Func<DateTime, bool>>()
+            {
+                {"==", value => value == referenceDateTime},
+                {"===", value => value == referenceDateTime},
+                {"!=", value => value != referenceDateTime},
+                {">", value => value > referenceDateTime},
+                {"<", value => value < referenceDateTime},
+                {">=", value => value >= referenceDateTime},
+                {"<=", value => value <= referenceDateTime},
+                {"between", value => value >= referenceDateTime && value <= maxDateTime },
+                {"!between", value => !(value >= referenceDateTime && value <= maxDateTime) },
+            };
+
+            if(!dateComparisons.ContainsKey(operation))
+                throw new Exception("Wrong operator for datetime compare, can't find comparison for '" + operation + "'");
+
+            DateTimeCompare = dateComparisons[operation];
+            return DateTimeGetAndCompare;
+        }
+
+        private Func<DateTime, bool> DateTimeCompare;
+
+        private bool DateTimeGetAndCompare(IEntity e)
+        {
+            var value = e.GetBestValue(_initializedAttrName, _initializedLangs);
+            if (value == null)
+                return false;
+            try
+            {
+                var valAsDec = Convert.ToDateTime(value);
+                return DateTimeCompare(valAsDec);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        #endregion
+
 
         #region number comparison
 
         private decimal _numberFilter;
-        private Func<IEntity, bool> GetNumberComparison(string value)
+        private Func<IEntity, bool> GetNumberComparison(string original)
         {
-            _numberFilter = decimal.Parse(value);
-
             var operation = Operator.ToLower();
-            if (operation == "===")
-                NumberCompare = NumberIsEqual;
 
-            if (operation == "==")
-                NumberCompare = NumberIsEqual;
+            decimal max = decimal.MaxValue;
+            _numberFilter = decimal.MinValue;
+            if (operation == "between" || operation == "!between")
+            {
+                var parts = BetweenParts(original);
+                if (parts.Item1)
+                {
+                    decimal.TryParse(parts.Item2, out _numberFilter);
+                    decimal.TryParse(parts.Item3, out max);
+                }
+                else
+                    operation = "==";
+            }
 
-            if (operation == "!=")
-                NumberCompare = NumberIsNotEqual;
+            if (_numberFilter == decimal.MinValue)
+                decimal.TryParse(original, out _numberFilter);
 
-            if (operation == ">")
-                NumberCompare = NumberIsGreater;
+            var numComparisons = new Dictionary<string, Func<decimal, bool>>()
+            {
+                {"==", value => value == _numberFilter},
+                {"===", value => value == _numberFilter},
+                {"!=", value => value != _numberFilter},
+                {">", value => value > _numberFilter},
+                {"<", value => value < _numberFilter},
+                {">=", value => value >= _numberFilter},
+                {"<=", value => value <= _numberFilter},
+                {"between", value => value >= _numberFilter && value <= max },
+                {"!between", value => !(value >= _numberFilter && value <= max) },
+            };
 
-            if (operation == "<")
-                NumberCompare = NumberIsSmaller;
+            if(!numComparisons.ContainsKey(operation))
+                throw new Exception("Wrong operator for number compare, can't find comparison for '" + operation + "'");
 
-            if (operation == ">=")
-                NumberCompare = NumberIsGreaterOrEq;
+            NumberCompare = numComparisons[operation];
+            return NumberGetAndCompare;
+            //if (operation == "===")
+            //    NumberCompare = NumberIsEqual;
 
-            if (operation == "<=")
-                NumberCompare = NumberIsSmallerOrEq;
+            //if (operation == "==")
+            //    NumberCompare = NumberIsEqual;
 
-            if (NumberCompare != null)
-                return NumberGetAndCompare;
+            //if (operation == "!=")
+            //    NumberCompare = NumberIsNotEqual;
 
-            throw new Exception("Wrong operator for number compare, can't find comparison for '" + operation + "'");
+            //if (operation == ">")
+            //    NumberCompare = NumberIsGreater;
+
+            //if (operation == "<")
+            //    NumberCompare = NumberIsSmaller;
+
+            //if (operation == ">=")
+            //    NumberCompare = NumberIsGreaterOrEq;
+
+            //if (operation == "<=")
+            //    NumberCompare = NumberIsSmallerOrEq;
+
+            // if (NumberCompare != null)
+            //    return NumberGetAndCompare;
+
+            //throw new Exception("Wrong operator for number compare, can't find comparison for '" + operation + "'");
         }
 
         private Func<decimal, bool> NumberCompare;
@@ -255,22 +381,22 @@ namespace ToSic.Eav.DataSources
             }
         }
 
-        private bool NumberIsEqual(decimal value)
-            => value == _numberFilter;
-        private bool NumberIsNotEqual(decimal value)
-            => value != _numberFilter;
+        //private bool NumberIsEqual(decimal value)
+        //    => value == _numberFilter;
+        //private bool NumberIsNotEqual(decimal value)
+        //    => value != _numberFilter;
 
-        private bool NumberIsGreater(decimal value)
-            => value > _numberFilter;
+        //private bool NumberIsGreater(decimal value)
+        //    => value > _numberFilter;
 
-        private bool NumberIsSmaller(decimal value)
-            => value < _numberFilter;
+        //private bool NumberIsSmaller(decimal value)
+        //    => value < _numberFilter;
 
-        private bool NumberIsGreaterOrEq(decimal value)
-            => value >= _numberFilter;
+        //private bool NumberIsGreaterOrEq(decimal value)
+        //    => value >= _numberFilter;
 
-        private bool NumberIsSmallerOrEq(decimal value)
-            => value <= _numberFilter;
+        //private bool NumberIsSmallerOrEq(decimal value)
+        //    => value <= _numberFilter;
 
         #endregion
 

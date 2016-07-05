@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.UnitTests.DataSources;
 
 namespace ToSic.Eav.DataSources.Tests
 {
@@ -7,63 +6,65 @@ namespace ToSic.Eav.DataSources.Tests
     // Create tests with language-parameters as well, as these tests ignore the language and always use default
 
     [TestClass]
-    public class ValueFilterNumbers
+    public class ValueFilterDateTime
     {
         private const int TestVolume = 10000;
         private readonly ValueFilter _testDataGeneratedOutsideTimer;
-        public ValueFilterNumbers()
+        public ValueFilterDateTime()
         {
             _testDataGeneratedOutsideTimer = ValueFilterString.CreateValueFilterForTesting(TestVolume);
         }
 
 
 
-        #region Number Filters
+        #region DateTime Filters
 
         [TestMethod]
-        public void ValueFilter_FilterNumber()
-         =>NumberFilter("Height", (DataTableDataSource_Test.MinHeight + 7).ToString(), 181);
+        public void EqIso()
+            => DateTimeFilter("Birthdate", "1990-01-01", 2);
         
+        [TestMethod]
+        public void EqUsa()
+            => DateTimeFilter("Birthdate", "4/4/1903", 2);
 
         [TestMethod]
-        public void ValueFilter_FilterNumberNone()
-        =>NumberFilter("Height", "72", 0);
-        
+        public void EqEurope()
+            => DateTimeFilter("Birthdate", "6.6.1905", 2);
 
         [TestMethod]
-        public void ValueFilter_FilterNumberEq()
-        =>NumberFilter("Height", "182", 182, "==");
-
-
-        [TestMethod]
-        public void ValueFilter_FilterNumberEq2()
-            =>NumberFilter("Height", "182", 182, "===");
-        
+        public void Gt()
+            => DateTimeFilter("Birthdate", "24.8.1997", 1124, ">");// this is one of the generated dates
 
         [TestMethod]
-        public void ValueFilter_FilterNumberGt()
-            => NumberFilter("Height", "180", 4368, ">");
-        
+        public void Lt()
+            => DateTimeFilter("Birthdate", "24.8.1997", 10000-1127, "<");// this is one of the generated dates
 
         [TestMethod]
-        public void ValueFilter_FilterNumberGtEq()
-            => NumberFilter("Height", "180", 4550, ">=");
-        
+        public void GtEq()
+            => DateTimeFilter("Birthdate", "24.8.1997", 1127, ">="); // this is one of the generated dates
 
         [TestMethod]
-        public void ValueFilter_FilterNumberLt()
-            => NumberFilter("Height", "180", 5450, "<");
-        
+        public void LtEq()
+            => DateTimeFilter("Birthdate", "24.8.1997", 10000-1124, "<="); // this is one of the generated dates
 
         [TestMethod]
-        public void ValueFilter_FilterNumberLtEq()
-            => NumberFilter("Height", "180", 5632, "<=");
+        public void Eq1997()
+            => DateTimeFilter("Birthdate", "24.8.1997", 3, "==="); // this is one of the generated dates
 
-            [TestMethod]
-        public void ValueFilter_FilterNumberNotEq()
-            => NumberFilter("Height", "180", 9818, "!=");
+        [TestMethod]
+        public void NotEq1997()
+            => DateTimeFilter("Birthdate", "24.8.1997", 10000-3, "!="); // this is one of the generated dates
+
+        [TestMethod]
+        public void Between()
+            => DateTimeFilter("Birthdate", "1.1.1995 and 31.12.2000", 546, "between"); // this is one of the generated dates
+
+        [TestMethod]
+        public void BetweenNot()
+            => DateTimeFilter("Birthdate", "1.1.1995 and 31.12.2000", 10000- 546, "!between"); // this is one of the generated dates
+
        
-        public void NumberFilter(string attr, string value, int expected, string operation = null)
+        public void DateTimeFilter(string attr, string value, int expected, string operation = null)
         {
             var vf = _testDataGeneratedOutsideTimer;
             vf.Attribute = attr;
@@ -80,7 +81,7 @@ namespace ToSic.Eav.DataSources.Tests
         [TestMethod]
         [ExpectedException(typeof (System.Exception))]
         public void NumberFilterInvalidOperator()
-            => NumberFilter("Height", "180", 5632, "!!");
+            => DateTimeFilter("Birthdate", "180", 5632, "!!");
 
 
     }

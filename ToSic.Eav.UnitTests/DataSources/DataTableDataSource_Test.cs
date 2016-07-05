@@ -75,13 +75,16 @@ namespace ToSic.Eav.UnitTests.DataSources
                 var fullName = firstName + " " + lastName;
                 var city = TestCities[i%TestCities.Length];
                 var cityMaybeNull = i % 2 == 0 ? null : city;
+                var year = 1900 + i%110;
+                var month = i%12+1;
+                var day = i%28+1;
                 dataTable.Rows.Add(i, 
                     fullName, 
                     firstName, 
                     lastName, 
                     city,
                     i % IsMaleForEveryX == 0, 
-                    DateTime.Now.AddYears(-27), 
+                    new DateTime(year, month, day),
                     MinHeight + i % HeightVar,
                     cityMaybeNull
                     );
