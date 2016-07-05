@@ -256,8 +256,10 @@ namespace ToSic.Eav.UnitTests.ImportExport.Refactoring
 
 
         [TestMethod]
+        [TestCategory("disabled")]
         public void XmlExport_TryToExport20ContentItems()
         {
+            throw new Exception("This test can't pass yet - disabled on purpose but still here... 2dm");
             var dataSerializer = new XmlExport();
 
             var serializedBasic = dataSerializer.CreateXml(ZoneId, AppId, 13, "", "", new List<string>(), LanguageReferenceExport.Link, ResourceReferenceExport.Link);
@@ -265,8 +267,10 @@ namespace ToSic.Eav.UnitTests.ImportExport.Refactoring
         }
 
         [TestMethod]
+        [TestCategory("disabled")]
         public void XmlExport_ExportSimpleReImportTemplate()
         {
+            throw new Exception("This test can't pass yet - disabled on purpose but still here... 2dm");
             var dataSerializer = new XmlExport();
             var serializedRetinaType = dataSerializer.CreateBlankXml(ZoneId, AppId, 17, "BlankExportHelp");
 

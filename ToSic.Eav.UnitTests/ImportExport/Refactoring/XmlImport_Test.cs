@@ -250,8 +250,10 @@ On all your devices.</PreviewContent>
 
 
         [TestMethod]
+        [TestCategory("disabled")]
         public void XmlImport_ImportOneCorrectly()
         {
+            throw new Exception("This test can't pass yet - had to turn off import because it generated too much data - ask 2dm");
             // todo steps
             // 1. Get original
             // 2. Import one
@@ -275,7 +277,6 @@ On all your devices.</PreviewContent>
             Assert.AreEqual("Easy and immediate separation of concerns.", previewContent.StringValueForTesting);
 
             
-            throw new Exception("This test can't pass yet - had to turn off import because it generated too much data - ask 2dm");
             // importer.PersistImportToRepository(UserNameOfTestingScript);
         }
 

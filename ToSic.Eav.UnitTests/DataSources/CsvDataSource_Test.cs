@@ -1,14 +1,13 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.UnitTests.ValueProvider;
 
 namespace ToSic.Eav.UnitTests.DataSources
 {
     [TestClass]
+    // ReSharper disable once InconsistentNaming
     public class CsvDataSource_Test
     {
         private const int TestFileRowCount = 40;
@@ -64,6 +63,7 @@ namespace ToSic.Eav.UnitTests.DataSources
             try
             {
                 var source = CreateDataSource("Files/CsvDataSource - Test Semicolon Delimited.csv", ";", "Anonymous", TestFileTitleColumnName /* String cannot be parsed to Int */, TestFileTitleColumnName);
+                // ReSharper disable once UnusedVariable
                 var sourceList = source.LightList;
             }
             catch (Exception ex)
@@ -114,18 +114,17 @@ namespace ToSic.Eav.UnitTests.DataSources
             return entity.GetBestValue(entity.Attributes[name].Name);
         }
 
-        public static CsvDataSource CreateDataSource(string filePath, string delimiter = ";", string contentType = "Anonymous", string IdColumnName = null, string TitleColumnName = null)
+        public static CsvDataSource CreateDataSource(string filePath, string delimiter = ";", string contentType = "Anonymous", string idColumnName = null, string titleColumnName = null)
         {
-            var source = new CsvDataSource() 
+            var source = new CsvDataSource
             {
                 FilePath = filePath,
                 Delimiter = delimiter,
                 ContentType = contentType,
-                IdColumnName = IdColumnName,
-                TitleColumnName = TitleColumnName
-
+                IdColumnName = idColumnName,
+                TitleColumnName = titleColumnName,
+                ConfigurationProvider = new ValueCollectionProvider_Test().ValueCollection()
             };
-            source.ConfigurationProvider = new ValueCollectionProvider_Test().ValueCollection();
             return source;
         }
     }
