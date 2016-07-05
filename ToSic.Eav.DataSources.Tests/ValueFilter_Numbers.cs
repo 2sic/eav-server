@@ -22,7 +22,7 @@ namespace ToSic.Eav.DataSources.Tests
 
         [TestMethod]
         public void ValueFilter_FilterNumber()
-         =>NumberFilter("Height", (DataTableDataSource_Test.MinHeight + 7).ToString(), 181);
+         =>NumberFilter("Height", (DataTableDataSourceTest.MinHeight + 7).ToString(), 181);
         
 
         [TestMethod]
@@ -63,6 +63,14 @@ namespace ToSic.Eav.DataSources.Tests
         public void ValueFilter_FilterNumberNotEq()
             => NumberFilter("Height", "180", 9818, "!=");
        
+        [TestMethod]
+        public void Between()
+            => NumberFilter("Height", "175 and 185", 2002, "between");
+
+        [TestMethod]
+        public void BetweenNot()
+            => NumberFilter("Height", "175 and 185", 10000-2002, "!between");
+
         public void NumberFilter(string attr, string value, int expected, string operation = null)
         {
             var vf = _testDataGeneratedOutsideTimer;

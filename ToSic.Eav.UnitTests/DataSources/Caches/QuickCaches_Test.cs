@@ -76,7 +76,7 @@ namespace ToSic.Eav.UnitTests.DataSources.Caches
 
         public static EntityIdFilter CreateFilterForTesting(int testItemsInRootSource, string entityIdsValue)
         {
-            var ds = DataTableDataSource_Test.GeneratePersonSourceWithDemoData(testItemsInRootSource, 1001);
+            var ds = DataTableDataSourceTest.GeneratePersonSourceWithDemoData(testItemsInRootSource, 1001);
             var filtered = new EntityIdFilter();
             filtered.ConfigurationProvider = ds.ConfigurationProvider;
             filtered.Attach(ds);

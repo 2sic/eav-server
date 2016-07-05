@@ -6,9 +6,9 @@ using ToSic.Eav.DataSources;
 namespace ToSic.Eav.UnitTests.DataSources
 {
     [TestClass]
-    public class DataTableDataSource_Test
+    public class DataTableDataSourceTest
     {
-        public static string[] TestCities = new string[] { "Buchs", "Grabs", "Sevelen", "Zürich" };
+        public static string[] TestCities = { "Buchs", "Grabs", "Sevelen", "Zürich" };
         public static int MinHeight = 150;
         public static int HeightVar = 55;
         public static int IsMaleForEveryX = 3;
@@ -16,26 +16,27 @@ namespace ToSic.Eav.UnitTests.DataSources
         [TestMethod]
         public void DataSource_Create_GeneralTest()
         {
-            const int ItemsToGenerate = 499;
-            var ds = DataTableDataSource_Test.GeneratePersonSourceWithDemoData(ItemsToGenerate);
+            const int itemsToGenerate = 499;
+            var ds = GeneratePersonSourceWithDemoData(itemsToGenerate);
             Assert.IsTrue(ds.In.Count == 0, "In count should be 0");
             Assert.IsTrue(ds.Out.Count == 1, "Out cound should be 1");
             var defaultOut = ds["Default"];
             Assert.IsTrue(defaultOut != null);
             try
             {
+                // ReSharper disable once UnusedVariable
                 var x = ds["Something"];
                 Assert.Fail("Access to another out should fail");
             }
             catch { }
-            Assert.IsTrue(defaultOut.List.Count == ItemsToGenerate);
+            Assert.IsTrue(defaultOut.List.Count == itemsToGenerate);
         }
 
         [TestMethod]
         public void DataTable_CacheKey()
         {
-            const int ItemsToGenerate = 499;
-            var ds = DataTableDataSource_Test.GeneratePersonSourceWithDemoData(ItemsToGenerate);
+            const int itemsToGenerate = 499;
+            var ds = GeneratePersonSourceWithDemoData(itemsToGenerate);
 
             Assert.AreEqual("DataTableDataSource-NoGuid&ContentType=Person", ds.CachePartialKey);
             Assert.AreEqual("DataTableDataSource-NoGuid&ContentType=Person", ds.CacheFullKey);

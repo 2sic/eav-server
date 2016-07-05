@@ -21,7 +21,7 @@ namespace ToSic.Eav.DataSources.Tests
         {
             var vf = _testDataGeneratedOutsideTimer;// CreateValueFilterForTesting(testVolume);
             vf.Attribute = "City";
-            vf.Value = DataTableDataSource_Test.TestCities[0]; // test for the first value
+            vf.Value = DataTableDataSourceTest.TestCities[0]; // test for the first value
             Assert.AreEqual(2500, vf.List.Count, "Should find exactly 2500 people with this city");
         }
         [TestMethod]
@@ -29,7 +29,7 @@ namespace ToSic.Eav.DataSources.Tests
         {
             var vf = _testDataGeneratedOutsideTimer;// CreateValueFilterForTesting(testVolume);
             vf.Attribute = "City";
-            vf.Value = DataTableDataSource_Test.TestCities[0].ToLower(); // test for the first value
+            vf.Value = DataTableDataSourceTest.TestCities[0].ToLower(); // test for the first value
             Assert.AreEqual(2500, vf.List.Count, "Should find exactly 2500 people with this city");
         }
 
@@ -40,7 +40,7 @@ namespace ToSic.Eav.DataSources.Tests
             var vf = _testDataGeneratedOutsideTimer;// CreateValueFilterForTesting(testVolume);
             vf.Attribute = "City";
             vf.Operator = "===";
-            vf.Value = DataTableDataSource_Test.TestCities[0]; // test for the first value
+            vf.Value = DataTableDataSourceTest.TestCities[0]; // test for the first value
             Assert.AreEqual(2500, vf.List.Count, "Should find exactly 2500 people with this city");
         }       
 
@@ -50,7 +50,7 @@ namespace ToSic.Eav.DataSources.Tests
             var vf = _testDataGeneratedOutsideTimer;// CreateValueFilterForTesting(testVolume);
             vf.Attribute = "City";
             vf.Operator = "===";
-            vf.Value = DataTableDataSource_Test.TestCities[0].ToLower(); // test for the first value
+            vf.Value = DataTableDataSourceTest.TestCities[0].ToLower(); // test for the first value
             Assert.AreEqual(0, vf.List.Count, "Should find exactly 0 people with this city");
         }
 
@@ -147,14 +147,14 @@ namespace ToSic.Eav.DataSources.Tests
         {
             var vf = _testDataGeneratedOutsideTimer;// CreateValueFilterForTesting(testVolume);
             vf.Attribute = "CityMaybeNull";
-            vf.Value = DataTableDataSource_Test.TestCities[1]; // test for the second value
+            vf.Value = DataTableDataSourceTest.TestCities[1]; // test for the second value
             Assert.AreEqual(2500, vf.List.Count, "Should find exactly 250 people with this city");
         }
         
 
-        public static ValueFilter CreateValueFilterForTesting(int testItemsInRootSource)
+        public static  ValueFilter CreateValueFilterForTesting(int testItemsInRootSource)
         {
-            var ds = DataTableDataSource_Test.GeneratePersonSourceWithDemoData(testItemsInRootSource, 1001);
+            var ds = DataTableDataSourceTest.GeneratePersonSourceWithDemoData(testItemsInRootSource, 1001);
             var filtered = DataSource.GetDataSource<ValueFilter>(1, 1, ds);
             return filtered;
         }
