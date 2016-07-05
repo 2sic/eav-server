@@ -66,7 +66,7 @@ namespace ToSic.Eav.DataSources
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, null, GetEntities));
 			Configuration.Add(AttrKey, "[Settings:Attribute]");
 			Configuration.Add(FilterKey, "[Settings:Value]");
-            Configuration.Add(OperatorKey, "[Settings:Operator||=]");
+            Configuration.Add(OperatorKey, "[Settings:Operator||==]");
 			Configuration.Add(LangKey, "Default"); // "[Settings:Language|Any]"); // use setting, but by default, expect "any"
 
             CacheRelevantConfigurations = new[] { AttrKey, FilterKey, LangKey };
@@ -113,11 +113,11 @@ namespace ToSic.Eav.DataSources
             switch (typeName)
             {
                 case "Boolean": // todo: find some constant for this
-                    _boolFilter = bool.Parse(Value);
-                    compare = GetBoolComparison();
+                    compare = GetBoolComparison(Value);
                     break;
                 case "Number":
-                    //break;
+                    compare = GetNumberComparison(Value);
+                    break;
                 case "String":
                 default:
                     compare = GetStringComparison();
@@ -128,23 +128,29 @@ namespace ToSic.Eav.DataSources
 
             // do type checks
 
-		    return GetFilteredWithLinq(originals, compare); //, attr, lang);//, filter);
-		    //_results = GetFilteredWithLoop(originals, attr, lang, filter);
+		    return GetFilteredWithLinq(originals, compare);
+		    //_results = GetFilteredWithLoop(originals, compare);
 		}
 
         #region String Comparison
 
         private Func<IEntity, bool> GetStringComparison()
         {
-            var operation = Operator;
+            var operation = Operator.ToLower();
             if (operation == "===") // case sensitive, full equal
                 StringCompare = StringIsIdentical;
 
-            if (operation == "=")
+            if (operation == "==")
                 StringCompare = StringIsComparable;
+
+            if (operation == "!=")
+                StringCompare = StringIsNotComparable;
 
             if (operation == "contains")
                 StringCompare = StringContains;
+
+            if (operation == "!contains")
+                StringCompare = StringDoesntContain;
 
             if (operation == "begins")
                 StringCompare = StringBegins;
@@ -154,49 +160,37 @@ namespace ToSic.Eav.DataSources
             throw new Exception("Wrong operator for string compare, can't find comparison for '" + operation + "'");
         }
 
-        private Func<object, bool> StringCompare = null; 
+        private Func<object, bool> StringCompare; 
         private bool StringGetAndCompare(IEntity e)
             => StringCompare(e.GetBestValue(_initializedAttrName, _initializedLangs));
 
         private bool StringIsIdentical(object value) 
             => value != null && value.ToString() == _initializedFilter;
+
         private bool StringIsComparable(object value) 
             => value != null && string.Equals(value.ToString(), _initializedFilter, StringComparison.InvariantCultureIgnoreCase);
+
+        private bool StringIsNotComparable(object value) 
+            => value != null && !string.Equals(value.ToString(), _initializedFilter, StringComparison.InvariantCultureIgnoreCase);
 
         private bool StringContains(object value)
             => value?.ToString().IndexOf(_initializedFilter, StringComparison.OrdinalIgnoreCase) > -1;
 
         private bool StringBegins(object value)
             => value?.ToString().IndexOf(_initializedFilter, StringComparison.OrdinalIgnoreCase) == 0;
-     //   private bool StringIsIdentical(IEntity e)
-	    //{
-     //       var value = e.GetBestValue(_initializedAttrName, _initializedLangs);
-	    //    return value != null && value.ToString() == _initializedFilter;
-	    //}
-     //   private bool StringIsComparable(IEntity e)
-	    //{
-     //       var value = e.GetBestValue(_initializedAttrName, _initializedLangs);
-     //       return value != null && string.Equals(value.ToString(), _initializedFilter, StringComparison.InvariantCultureIgnoreCase);
-	    //}
 
-        //private bool StringContains(IEntity e)
-        //{
-        //    var value = e.GetBestValue(_initializedAttrName, _initializedLangs);
-        //    return value?.ToString().IndexOf(_initializedFilter, StringComparison.OrdinalIgnoreCase) > -1;
-        //}
-
-        //private bool StringBegins(IEntity e)
-        //{
-        //    var value = e.GetBestValue(_initializedAttrName, _initializedLangs);
-        //    return value?.ToString().IndexOf(_initializedFilter, StringComparison.OrdinalIgnoreCase) == 0;
-        //}
+        private bool StringDoesntContain(object value)
+            => value?.ToString().IndexOf(_initializedFilter, StringComparison.OrdinalIgnoreCase) == -1;
         #endregion
 
         #region boolean comparisons
-        private Func<IEntity, bool> GetBoolComparison()
+        private bool _boolFilter;
+        private Func<IEntity, bool> GetBoolComparison(string original)
         {
+            _boolFilter = bool.Parse(Value);
+
             string operation = Operator;
-            if (operation == "=" || operation == "===")
+            if (operation == "==" || operation == "===")
                 return BoolIsEqual;
             throw new Exception("Wrong operator for boolean compare, can't find comparison for '" + operation + "'");
         }
@@ -208,9 +202,80 @@ namespace ToSic.Eav.DataSources
 
         #endregion
 
+        #region number comparison
+
+        private decimal _numberFilter;
+        private Func<IEntity, bool> GetNumberComparison(string value)
+        {
+            _numberFilter = decimal.Parse(value);
+
+            var operation = Operator.ToLower();
+            if (operation == "===")
+                NumberCompare = NumberIsEqual;
+
+            if (operation == "==")
+                NumberCompare = NumberIsEqual;
+
+            if (operation == "!=")
+                NumberCompare = NumberIsNotEqual;
+
+            if (operation == ">")
+                NumberCompare = NumberIsGreater;
+
+            if (operation == "<")
+                NumberCompare = NumberIsSmaller;
+
+            if (operation == ">=")
+                NumberCompare = NumberIsGreaterOrEq;
+
+            if (operation == "<=")
+                NumberCompare = NumberIsSmallerOrEq;
+
+            if (NumberCompare != null)
+                return NumberGetAndCompare;
+
+            throw new Exception("Wrong operator for number compare, can't find comparison for '" + operation + "'");
+        }
+
+        private Func<decimal, bool> NumberCompare;
+
+        private bool NumberGetAndCompare(IEntity e)
+        {
+            var value = e.GetBestValue(_initializedAttrName, _initializedLangs);
+            if (value == null)
+                return false;
+            try
+            {
+                var valAsDec = Convert.ToDecimal(value);
+                return NumberCompare(valAsDec);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private bool NumberIsEqual(decimal value)
+            => value == _numberFilter;
+        private bool NumberIsNotEqual(decimal value)
+            => value != _numberFilter;
+
+        private bool NumberIsGreater(decimal value)
+            => value > _numberFilter;
+
+        private bool NumberIsSmaller(decimal value)
+            => value < _numberFilter;
+
+        private bool NumberIsGreaterOrEq(decimal value)
+            => value >= _numberFilter;
+
+        private bool NumberIsSmallerOrEq(decimal value)
+            => value <= _numberFilter;
+
+        #endregion
+
         //private const string NullError = "{error: not found}";
         private string _initializedFilter;
-	    private bool _boolFilter;
 	    private string[] _initializedLangs;
 	    private string _initializedAttrName;
 

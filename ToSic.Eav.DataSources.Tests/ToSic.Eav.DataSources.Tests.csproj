@@ -51,7 +51,9 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ValueFilter_Test.cs" />
+    <Compile Include="ValueFilter_Numbers.cs" />
+    <Compile Include="ValueFilter_Boolean.cs" />
+    <Compile Include="ValueFilter_String.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj">
