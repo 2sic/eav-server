@@ -83,7 +83,7 @@ namespace ToSic.Eav.DataSources
 			// todo: maybe do something about languages?
 			EnsureConfigurationIsLoaded();
 
-			var attr = Attribute;
+			_initializedAttrName = Attribute;
 
             #region do language checks and finish initialization
 			var lang = Languages.ToLower();
@@ -103,39 +103,48 @@ namespace ToSic.Eav.DataSources
 		        return originals;
             #endregion; 
 
-            var firstEntity = originals.FirstOrDefault(x => x.Attributes.ContainsKey(attr));
-            
-            // if I can't find any, return empty list
-		    if (firstEntity == null)
-		        return new List<IEntity>();
+ 		    Func<IEntity, bool> compare; // the real comparison method which will be used
 
-            var attribute = firstEntity[attr];
-		    var typeName = attribute.Type;  // must get from the property, as not all content-types have a real type object
+            #region if it's a real filter - optimize
 
-		    Func<IEntity, bool> compare;
-            switch (typeName)
+		    var op = Operator.ToLower();
+            if (op == "none" || op == "all")
+                compare = e => true; // dummy comparison
+            else
             {
-                case "Boolean": // todo: find some constant for this
-                    compare = GetBoolComparison(Value);
-                    break;
-                case "Number":
-                    compare = GetNumberComparison(Value);
-                    break;
-                case "DateTime":
-                    compare = GetDateTimeComparison(Value);
-                    break;
-                case "Entity":
-                    throw new Exception();
-                    break;
-                case "String":
-                default:
-                    compare = GetStringComparison(Value);
-                    break;
+
+                var firstEntity = originals.FirstOrDefault(x => x.Attributes.ContainsKey(_initializedAttrName));
+
+                // if I can't find any, return empty list
+                if (firstEntity == null)
+                    return new List<IEntity>();
+
+                var attribute = firstEntity[_initializedAttrName];
+                var typeName = attribute.Type; // must get from the property, as not all content-types have a real type object
+
+                switch (typeName)
+                {
+                    case "Boolean": // todo: find some constant for this
+                        compare = GetBoolComparison(Value);
+                        break;
+                    case "Number":
+                        compare = GetNumberComparison(Value);
+                        break;
+                    case "DateTime":
+                        compare = GetDateTimeComparison(Value);
+                        break;
+                    case "Entity":
+                        throw new Exception();
+                        break;
+                    case "String":
+                    default:
+                        compare = GetStringComparison(Value);
+                        break;
+                }
             }
+            #endregion
 
-            _initializedAttrName = attr;
-
-		    return GetFilteredWithLinq(originals, compare);
+            return GetFilteredWithLinq(originals, compare);
 		    //_results = GetFilteredWithLoop(originals, compare);
 		}
 
