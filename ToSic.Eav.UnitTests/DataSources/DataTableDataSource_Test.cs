@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Data;
+using System.Linq;
 using ToSic.Eav.DataSources;
 
 namespace ToSic.Eav.UnitTests.DataSources
@@ -12,6 +14,8 @@ namespace ToSic.Eav.UnitTests.DataSources
         public static int MinHeight = 150;
         public static int HeightVar = 55;
         public static int IsMaleForEveryX = 3;
+
+        private static Dictionary<int, DataTableDataSource> _cachedDs = new Dictionary<int, DataTableDataSource>();
 
         [TestMethod]
         public void DataSource_Create_GeneralTest()
@@ -44,8 +48,11 @@ namespace ToSic.Eav.UnitTests.DataSources
             Assert.IsTrue(DateTime.Now >= lastRefresh, "Date-check of cache refresh");
         }
 
-        public static DataTableDataSource GeneratePersonSourceWithDemoData(int itemsToGenerate = 10, int firstId = 1001)
+        public static DataTableDataSource GeneratePersonSourceWithDemoData(int itemsToGenerate = 10, int firstId = 1001, bool useCacheForSpeed = true)
         {
+            if(useCacheForSpeed && _cachedDs.ContainsKey(itemsToGenerate))
+                return _cachedDs[itemsToGenerate];
+            
             var dataTable = new DataTable();
             dataTable.Columns.AddRange(new[]
             {
@@ -64,6 +71,11 @@ namespace ToSic.Eav.UnitTests.DataSources
             var source = new DataTableDataSource(dataTable, "Person", titleField: "FullName");
             source.ConfigurationProvider = new ValueProvider.ValueCollectionProvider_Test().ValueCollection();
 
+            // now enumerate all, to be sure that the time counted for DS creation isn't part of the tracked test-time
+            var temp = source.LightList.LastOrDefault();
+
+            if (useCacheForSpeed)
+                _cachedDs.Add(itemsToGenerate, source);
             return source;
         }
 

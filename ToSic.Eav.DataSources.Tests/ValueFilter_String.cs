@@ -66,10 +66,22 @@ namespace ToSic.Eav.DataSources.Tests
 
         #endregion
 
+        #region "all"
+        [TestMethod]
+        public void ValueFilter_All()
+        {
+            var vf = _testDataGeneratedOutsideTimer;
+            vf.Attribute = "City";
+            vf.Operator = "all";
+            vf.Value = "uCHs";
+            Assert.AreEqual(10000, vf.List.Count, "Should find exactly 10000 people with this city");
+        }
+        #endregion
+
         #region String contains
 
         [TestMethod]
-        public void ValueFilter_SimpleTextFilterContainsWithResults()
+        public void ValueFilter_TextContainsWithResults()
         {
             var vf = _testDataGeneratedOutsideTimer;// CreateValueFilterForTesting(testVolume);
             vf.Attribute = "City";
@@ -77,6 +89,52 @@ namespace ToSic.Eav.DataSources.Tests
             vf.Value = "uCHs";
             Assert.AreEqual(2500, vf.List.Count, "Should find exactly 2500 people with this city");
         }
+
+        #endregion
+
+        #region Take-tests and "all"
+
+        [TestMethod]
+       public void ValueFilter_TextContainsOneOnly()
+        {
+            var vf = _testDataGeneratedOutsideTimer;// CreateValueFilterForTesting(testVolume);
+            vf.Attribute = "City";
+            vf.Operator = "contains";
+            vf.Value = "uCHs";
+            vf.Take = "5";
+            Assert.AreEqual(5, vf.List.Count, "Should find exactly 5 people with this city");
+        }
+        [TestMethod]
+       public void ValueFilter_TakeContainsCH1000()
+        {
+            var vf = _testDataGeneratedOutsideTimer;// CreateValueFilterForTesting(testVolume);
+            vf.Attribute = "City";
+            vf.Operator = "contains";
+            vf.Value = "CH";
+            vf.Take = "1000";
+            Assert.AreEqual(1000, vf.List.Count, "Should find exactly 5 people with this city");
+        }
+        [TestMethod]
+       public void ValueFilter_TakeAll10000()
+        {
+            var vf = _testDataGeneratedOutsideTimer;// CreateValueFilterForTesting(testVolume);
+            vf.Attribute = "City";
+            vf.Operator = "all";
+            vf.Value = "uCHs";
+            vf.Take = "10000";
+            Assert.AreEqual(10000, vf.List.Count, "Should find exactly 5 people with this city");
+        }        
+
+        [TestMethod]
+       public void ValueFilter_TakeAll90000()
+        {
+            var vf = _testDataGeneratedOutsideTimer;// CreateValueFilterForTesting(testVolume);
+            vf.Attribute = "City";
+            vf.Operator = "all";
+            vf.Value = "uCHs";
+            vf.Take = "90000";
+            Assert.AreEqual(10000, vf.List.Count, "Should find exactly 5 people with this city");
+        }        
         #endregion
 
         #region String begins

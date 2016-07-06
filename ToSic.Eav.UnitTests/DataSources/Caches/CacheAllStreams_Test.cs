@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Runtime.InteropServices;
+﻿using System.Linq;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources;
@@ -92,7 +90,7 @@ namespace ToSic.Eav.UnitTests.DataSources
         public void CacheAllStreams_CheckSourceExpiry()
         {
             string uniqueIdsForThisTest = "1001,1005,1043";
-            var filtered = CreateFilterForTesting(100, uniqueIdsForThisTest);
+            var filtered = CreateFilterForTesting(100, uniqueIdsForThisTest, false);
             var cacher = CreateCacheDS(filtered);
 
             // shouldn't be in cache et...
@@ -107,7 +105,7 @@ namespace ToSic.Eav.UnitTests.DataSources
             // Now wait 100 milliseconds, then repeat the process. Since the new source has another date-time, it should rebuild the cache
             Thread.Sleep(100);
 
-            var laterTimeIdenticalData = CreateFilterForTesting(100, uniqueIdsForThisTest);
+            var laterTimeIdenticalData = CreateFilterForTesting(100, uniqueIdsForThisTest, false);
             var cache2 = CreateCacheDS(laterTimeIdenticalData);
             var listFromCache2 = cache2[Constants.DefaultStreamName].LightList;
             Assert.AreNotEqual(listFromCache2, originalList, "Second list sohuldn't be same because 100ms time difference in source");
@@ -167,11 +165,10 @@ namespace ToSic.Eav.UnitTests.DataSources
             Assert.AreNotEqual(listFromCacheAfter1Second, originalList, "Second list MUST be Different because 1 second passed");
         }
 
-        public static EntityIdFilter CreateFilterForTesting(int testItemsInRootSource, string entityIdsValue)
+        public static EntityIdFilter CreateFilterForTesting(int testItemsInRootSource, string entityIdsValue, bool useCacheForSpeed = true)
         {
-            var ds = DataTableDataSourceTest.GeneratePersonSourceWithDemoData(testItemsInRootSource, 1001);
-            var filtered = new EntityIdFilter();
-            filtered.ConfigurationProvider = ds.ConfigurationProvider;
+            var ds = DataTableDataSourceTest.GeneratePersonSourceWithDemoData(testItemsInRootSource, 1001, useCacheForSpeed);
+            var filtered = new EntityIdFilter {ConfigurationProvider = ds.ConfigurationProvider};
             filtered.Attach(ds);
             filtered.EntityIds = entityIdsValue;
             return filtered;

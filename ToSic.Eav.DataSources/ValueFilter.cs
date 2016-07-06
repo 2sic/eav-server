@@ -17,6 +17,8 @@ namespace ToSic.Eav.DataSources
         private const string FilterKey = "Value";
         private const string LangKey = "Language";
         private const string OperatorKey = "Operator";
+        private const string TakeKey = "Take";
+        private int count;
 
 		/// <summary>
 		/// The attribute whoose value will be filtered
@@ -54,7 +56,12 @@ namespace ToSic.Eav.DataSources
 			get { return Configuration[OperatorKey]; }
 			set { Configuration[OperatorKey] = value; }
 		}
-		#endregion
+		public string Take
+		{
+			get { return Configuration[TakeKey]; }
+			set { Configuration[TakeKey] = value; }
+		}		
+        #endregion
 
 		/// <summary>
 		/// Constructs a new ValueFilter
@@ -65,6 +72,7 @@ namespace ToSic.Eav.DataSources
 			Configuration.Add(AttrKey, "[Settings:Attribute]");
 			Configuration.Add(FilterKey, "[Settings:Value]");
             Configuration.Add(OperatorKey, "[Settings:Operator||==]");
+            Configuration.Add(TakeKey, "[Settings:Take]");
 			Configuration.Add(LangKey, "Default"); // "[Settings:Language|Any]"); // use setting, but by default, expect "any"
 
             CacheRelevantConfigurations = new[] { AttrKey, FilterKey, LangKey };
@@ -179,7 +187,8 @@ namespace ToSic.Eav.DataSources
                 {"!=", value => value != null && !string.Equals(value.ToString(), original, StringComparison.InvariantCultureIgnoreCase)},
                 {"contains", value => value?.ToString().IndexOf(original, StringComparison.OrdinalIgnoreCase) > -1 },
                 {"!contains", value => value?.ToString().IndexOf(original, StringComparison.OrdinalIgnoreCase) == -1},
-                {"begins", value => value?.ToString().IndexOf(original, StringComparison.OrdinalIgnoreCase) == 0 }
+                {"begins", value => value?.ToString().IndexOf(original, StringComparison.OrdinalIgnoreCase) == 0 },
+                {"all", value => true }
             };
 
             if (!stringComparison.ContainsKey(operation))
@@ -376,10 +385,26 @@ namespace ToSic.Eav.DataSources
 	    private IEnumerable<IEntity> GetFilteredWithLinq(IEnumerable<IEntity> originals, Func<IEntity, bool> compare)//, string attr, string lang)//, string filter)
 	    {
             try
-	        {
-	            var results = (from e in originals
-	                where (compare(e)) //) e.GetBestValue(_initializedAttrName, langArr) ?? NullError).ToString() == _initializedFilter
-                               select e);
+            {
+                var op = Operator.ToLower();
+                IEnumerable<IEntity> results;
+                switch (op)
+                {
+                    case "all":
+                        results = from e in originals select e;
+                        break;
+                    case "none":
+                        results = new List<IEntity>();
+                        break;
+                    default:
+                        results = (from e in originals
+                            where compare(e)
+                            select e);
+                        break;
+                }
+	            int tk;
+	            if (int.TryParse(Take, out tk))
+	                results = results.Take(tk);
 	            return results;
 	        }
 	        catch (Exception ex)
