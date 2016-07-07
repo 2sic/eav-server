@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.DataSources.Caches;
+using static System.Int32;
 
 namespace ToSic.Eav.DataSources
 {
@@ -19,7 +20,7 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public int AppSwitch
 		{
-			get { return Int32.Parse(Configuration[AppSwitchKey]); }
+			get { return Parse(Configuration[AppSwitchKey]); }
 			set
 			{
 				Configuration[AppSwitchKey] = value.ToString();
@@ -33,7 +34,7 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public int ZoneSwitch
 		{
-			get { return Int32.Parse(Configuration[ZoneSwitchKey]); }
+			get { return Parse(Configuration[ZoneSwitchKey]); }
 			set
 			{
 				Configuration[ZoneSwitchKey] = value.ToString();
@@ -42,22 +43,23 @@ namespace ToSic.Eav.DataSources
 			}
 		}
 
-		private IDictionary<string, IDataStream> _Out = new Dictionary<string, IDataStream>(StringComparer.OrdinalIgnoreCase);
+		private readonly IDictionary<string, IDataStream> _out = new Dictionary<string, IDataStream>(StringComparer.OrdinalIgnoreCase);
 		private bool _requiresRebuildOfOut = true;
 		public override IDictionary<string, IDataStream> Out
 		{
 			get
 			{
+                EnsureConfigurationIsLoaded();
 				if (_requiresRebuildOfOut)
 				{
 					// if the rebuilt is required because the app or zone are not default, then attach it first
-					if (AppSwitch != 0 && ZoneSwitch != 0)
+					if (AppSwitch != 0 || ZoneSwitch != 0)
 						AttachOtherDataSource();
 					// now create all streams
 					CreateOutWithAllStreams();
 					_requiresRebuildOfOut = false;
 				}
-				return _Out;
+				return _out;
 			}
 		}
 		#endregion
@@ -71,8 +73,8 @@ namespace ToSic.Eav.DataSources
 			//Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntities));
 
 			// Set default switch-keys to 0 = no switch
-			Configuration.Add(AppSwitchKey, "0");
-			Configuration.Add(ZoneSwitchKey, "0");
+			Configuration.Add(AppSwitchKey, "[Settings:" + AppSwitchKey + "||0]");
+			Configuration.Add(ZoneSwitchKey, "[Settings:" + ZoneSwitchKey + "||0]");
 
             CacheRelevantConfigurations = new[] { AppSwitchKey, ZoneSwitchKey };
         }
@@ -90,7 +92,8 @@ namespace ToSic.Eav.DataSources
 				AppId = AppSwitch; // In[Constants.DefaultStreamName].Source.ZoneId;
 
 			var newDs = DataSource.GetInitialDataSource(ZoneId, AppId);
-			In.Remove(Constants.DefaultStreamName);
+		    if (In.ContainsKey(Constants.DefaultStreamName))
+		        In.Remove(Constants.DefaultStreamName);
 			In.Add(Constants.DefaultStreamName, newDs[Constants.DefaultStreamName]);
 		}
 
@@ -102,18 +105,19 @@ namespace ToSic.Eav.DataSources
 			IDataStream upstream;
 			try
 			{
+                // auto-attach to cache of current system?
+                if(!In.ContainsKey(Constants.DefaultStreamName))
+                    AttachOtherDataSource();
 				upstream = In[Constants.DefaultStreamName];
 			}
 			catch (KeyNotFoundException)
 			{
-                // todo: maybe auto-attach to cache of current system?
-
-				throw new Exception("App DataSource must have a Default In-Stream with name " + Constants.DefaultStreamName + ". It has " + In.Count + " In-Streams.");
+                throw new Exception("Trouble with the App DataSource - must have a Default In-Stream with name " + Constants.DefaultStreamName + ". It has " + In.Count + " In-Streams.");
 			}
 
 			var upstreamDataSource = upstream.Source;
-			_Out.Clear();
-			_Out.Add(Constants.DefaultStreamName, upstreamDataSource.Out[Constants.DefaultStreamName]);
+			_out.Clear();
+			_out.Add(Constants.DefaultStreamName, upstreamDataSource.Out[Constants.DefaultStreamName]);
 
 			// now provide all data streams for all data types; only need the cache for the content-types list, don't use it as the source...
 			// because the "real" source already applies filters like published
@@ -122,14 +126,14 @@ namespace ToSic.Eav.DataSources
 		    foreach (var contentType in listOfTypes)
 		    {
 		        var typeName = contentType.Value.Name;
-		        if (typeName != Constants.DefaultStreamName && !typeName.StartsWith("@") && !_Out.ContainsKey(typeName))
+		        if (typeName != Constants.DefaultStreamName && !typeName.StartsWith("@") && !_out.ContainsKey(typeName))
 		        {
 		            var ds = DataSource.GetDataSource<EntityTypeFilter>(ZoneId, AppId, upstreamDataSource, ConfigurationProvider);
 		            ds.TypeName = contentType.Value.Name;
 
 		            ds.Out[Constants.DefaultStreamName].AutoCaching = true; // enable auto-caching 
 
-		            _Out.Add(contentType.Value.Name, ds.Out[Constants.DefaultStreamName]);
+		            _out.Add(contentType.Value.Name, ds.Out[Constants.DefaultStreamName]);
 		        }
 		    }
 		}
