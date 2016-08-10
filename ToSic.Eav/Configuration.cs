@@ -87,9 +87,11 @@ namespace ToSic.Eav
         /// <remarks>If Unity is not configured in App/Web.config this can be used</remarks>
         public IUnityContainer ConfigureDefaultMappings(IUnityContainer cont)
         {
-            cont.RegisterType<ICache, QuickCache>();
-            cont.RegisterType<IRootSource, EavSqlStore>();
-
+            if (!cont.IsRegistered<ICache>())
+                cont.RegisterType<ICache, QuickCache>();
+            if (!cont.IsRegistered<IRootSource>())
+                cont.RegisterType<IRootSource, EavSqlStore>();
+            
             // register some Default Constructors
             cont.RegisterType<SqlDataSource>(new InjectionConstructor());
             cont.RegisterType<DataTableDataSource>(new InjectionConstructor());
