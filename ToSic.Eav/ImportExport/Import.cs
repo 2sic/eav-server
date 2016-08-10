@@ -283,9 +283,10 @@ namespace ToSic.Eav.Import
 
             #endregion
 
+            // todo: 2dm 2016-06-29 check this
             #region Another simple case - we have published entities, but are saving unpublished - so we create a new one
 
-            if (!importEntity.IsPublished && existingEntities.Count(e => e.IsPublished == false) == 0)
+            if (!importEntity.IsPublished && existingEntities.Count(e => e.IsPublished == false) == 0 && !importEntity.ForceNoBranch)
             {
                 var publishedId = existingEntities.First().EntityId;
                 Context.Entities.AddEntity(attributeSet.AttributeSetId, importEntity, _importLog, importEntity.IsPublished, publishedId);
@@ -293,7 +294,7 @@ namespace ToSic.Eav.Import
             }
 
             #endregion 
-
+             
             #region Update-Scenario - much more complex to decide what to change/update etc.
 
             #region Do Various Error checking like: Does it really exist, is it not draft, ensure we have the correct Content-Type
@@ -332,7 +333,7 @@ namespace ToSic.Eav.Import
                     .ToDictionary(v => v.Key, v => v.Value);
 
             Context.Entities.UpdateEntity(editableVersionOfTheEntity.RepositoryId, newValues, updateLog: _importLog,
-                preserveUndefinedValues: _keepAttributesMissingInImport, isPublished: importEntity.IsPublished);
+                preserveUndefinedValues: _keepAttributesMissingInImport, isPublished: importEntity.IsPublished, forceNoBranch: importEntity.ForceNoBranch);
 
             #endregion
         }

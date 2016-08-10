@@ -1,0 +1,88 @@
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace ToSic.Eav.DataSources.Tests
+{
+    // Todo
+    // Create tests with language-parameters as well, as these tests ignore the language and always use default
+
+    [TestClass]
+    public class ValueFilterDateTime
+    {
+        private const int TestVolume = 10000;
+        private readonly ValueFilter _testDataGeneratedOutsideTimer;
+        public ValueFilterDateTime()
+        {
+            _testDataGeneratedOutsideTimer = ValueFilterString.CreateValueFilterForTesting(TestVolume);
+        }
+
+
+
+        #region DateTime Filters
+
+        [TestMethod]
+        public void EqIso()
+            => DateTimeFilter("Birthdate", "1990-01-01", 2);
+        
+        [TestMethod]
+        public void EqUsa()
+            => DateTimeFilter("Birthdate", "4/4/1903", 2);
+
+        [TestMethod]
+        public void EqEurope()
+            => DateTimeFilter("Birthdate", "6.6.1905", 2);
+
+        [TestMethod]
+        public void Gt()
+            => DateTimeFilter("Birthdate", "24.8.1997", 1124, ">");// this is one of the generated dates
+
+        [TestMethod]
+        public void Lt()
+            => DateTimeFilter("Birthdate", "24.8.1997", 10000-1127, "<");// this is one of the generated dates
+
+        [TestMethod]
+        public void GtEq()
+            => DateTimeFilter("Birthdate", "24.8.1997", 1127, ">="); // this is one of the generated dates
+
+        [TestMethod]
+        public void LtEq()
+            => DateTimeFilter("Birthdate", "24.8.1997", 10000-1124, "<="); // this is one of the generated dates
+
+        [TestMethod]
+        public void Eq1997()
+            => DateTimeFilter("Birthdate", "24.8.1997", 3, "==="); // this is one of the generated dates
+
+        [TestMethod]
+        public void NotEq1997()
+            => DateTimeFilter("Birthdate", "24.8.1997", 10000-3, "!="); // this is one of the generated dates
+
+        [TestMethod]
+        public void Between()
+            => DateTimeFilter("Birthdate", "1.1.1995 and 31.12.2000", 546, "between"); // this is one of the generated dates
+
+        [TestMethod]
+        public void BetweenNot()
+            => DateTimeFilter("Birthdate", "1.1.1995 and 31.12.2000", 10000- 546, "!between"); // this is one of the generated dates
+
+       
+        public void DateTimeFilter(string attr, string value, int expected, string operation = null)
+        {
+            var vf = _testDataGeneratedOutsideTimer;
+            vf.Attribute = attr;
+            vf.Value = value;
+            if (operation != null)
+                vf.Operator = operation;
+            Assert.AreEqual(expected, vf.List.Count, "Should find exactly " + expected + " amount people");
+        }
+
+        #endregion
+
+
+        // test invalid operator
+        [TestMethod]
+        [ExpectedException(typeof (System.Exception))]
+        public void NumberFilterInvalidOperator()
+            => DateTimeFilter("Birthdate", "180", 5632, "!!");
+
+
+    }
+}

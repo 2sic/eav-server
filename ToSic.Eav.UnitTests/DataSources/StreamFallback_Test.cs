@@ -66,11 +66,11 @@ namespace ToSic.Eav.UnitTests.DataSources
 
         public StreamFallback AssembleTestFallbackStream()
         {
-            var emptyDs = DataTableDataSource_Test.GeneratePersonSourceWithDemoData(0, 1001);
+            var emptyDs = DataTableDataSourceTest.GeneratePersonSourceWithDemoData(0, 1001);
             var streams = DataSource.GetDataSource<StreamFallback>(1, 1, emptyDs);
 
-            var dsWith1 = DataTableDataSource_Test.GeneratePersonSourceWithDemoData(1, 2000);
-            var dsWithmany = DataTableDataSource_Test.GeneratePersonSourceWithDemoData(45, 4000);
+            var dsWith1 = DataTableDataSourceTest.GeneratePersonSourceWithDemoData(1, 2000);
+            var dsWithmany = DataTableDataSourceTest.GeneratePersonSourceWithDemoData(45, 4000);
             streams.Attach("1", dsWith1);
             streams.Attach("ZMany", dsWithmany);
             return streams;

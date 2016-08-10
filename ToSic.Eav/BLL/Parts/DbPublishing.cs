@@ -53,25 +53,26 @@ namespace ToSic.Eav.BLL.Parts
             return publishedEntity;
         }
 
-        public Entity ClearDraftAndSetPublished(int unpublishedEntityId)
+        public Entity ClearDraftBranchAndSetPublishedState(int unpublishedEntityId, bool newPublishedState = true)
         {
             var unpublishedEntity = Context.Entities.GetEntity(unpublishedEntityId);
-            if (unpublishedEntity.IsPublished)
-                throw new InvalidOperationException(string.Format("EntityId {0} is already published", unpublishedEntityId));
+            // 2dm 2016-06-29 this should now be allowed, so we turn off the test
+            //if (unpublishedEntity.IsPublished)
+            //    throw new InvalidOperationException(string.Format("EntityId {0} is already published", unpublishedEntityId));
 
             Entity publishedEntity;
 
             // Publish Draft-Entity
             if (!unpublishedEntity.PublishedEntityId.HasValue)
             {
-                unpublishedEntity.IsPublished = true;
+                unpublishedEntity.IsPublished = newPublishedState;
                 publishedEntity = unpublishedEntity;
             }
             // Replace currently published Entity with draft Entity and delete the draft
             else
             {
                 publishedEntity = Context.Entities.GetEntity(unpublishedEntity.PublishedEntityId.Value);
-                publishedEntity.IsPublished = true;
+                publishedEntity.IsPublished = newPublishedState;
 
                 // delete the Draft Entity
                 Context.Entities.DeleteEntity(unpublishedEntity, false);

@@ -1,41 +1,46 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Data;
+using System.Linq;
 using ToSic.Eav.DataSources;
 
 namespace ToSic.Eav.UnitTests.DataSources
 {
     [TestClass]
-    public class DataTableDataSource_Test
+    public class DataTableDataSourceTest
     {
-        public static string[] TestCities = new string[] { "Buchs", "Grabs", "Sevelen", "Zürich" };
+        public static string[] TestCities = { "Buchs", "Grabs", "Sevelen", "Zürich" };
         public static int MinHeight = 150;
         public static int HeightVar = 55;
         public static int IsMaleForEveryX = 3;
 
+        private static Dictionary<int, DataTableDataSource> _cachedDs = new Dictionary<int, DataTableDataSource>();
+
         [TestMethod]
         public void DataSource_Create_GeneralTest()
         {
-            const int ItemsToGenerate = 499;
-            var ds = DataTableDataSource_Test.GeneratePersonSourceWithDemoData(ItemsToGenerate);
+            const int itemsToGenerate = 499;
+            var ds = GeneratePersonSourceWithDemoData(itemsToGenerate);
             Assert.IsTrue(ds.In.Count == 0, "In count should be 0");
             Assert.IsTrue(ds.Out.Count == 1, "Out cound should be 1");
             var defaultOut = ds["Default"];
             Assert.IsTrue(defaultOut != null);
             try
             {
+                // ReSharper disable once UnusedVariable
                 var x = ds["Something"];
                 Assert.Fail("Access to another out should fail");
             }
             catch { }
-            Assert.IsTrue(defaultOut.List.Count == ItemsToGenerate);
+            Assert.IsTrue(defaultOut.List.Count == itemsToGenerate);
         }
 
         [TestMethod]
         public void DataTable_CacheKey()
         {
-            const int ItemsToGenerate = 499;
-            var ds = DataTableDataSource_Test.GeneratePersonSourceWithDemoData(ItemsToGenerate);
+            const int itemsToGenerate = 499;
+            var ds = GeneratePersonSourceWithDemoData(itemsToGenerate);
 
             Assert.AreEqual("DataTableDataSource-NoGuid&ContentType=Person", ds.CachePartialKey);
             Assert.AreEqual("DataTableDataSource-NoGuid&ContentType=Person", ds.CacheFullKey);
@@ -43,8 +48,11 @@ namespace ToSic.Eav.UnitTests.DataSources
             Assert.IsTrue(DateTime.Now >= lastRefresh, "Date-check of cache refresh");
         }
 
-        public static DataTableDataSource GeneratePersonSourceWithDemoData(int itemsToGenerate = 10, int firstId = 1001)
+        public static DataTableDataSource GeneratePersonSourceWithDemoData(int itemsToGenerate = 10, int firstId = 1001, bool useCacheForSpeed = true)
         {
+            if(useCacheForSpeed && _cachedDs.ContainsKey(itemsToGenerate))
+                return _cachedDs[itemsToGenerate];
+            
             var dataTable = new DataTable();
             dataTable.Columns.AddRange(new[]
             {
@@ -63,6 +71,11 @@ namespace ToSic.Eav.UnitTests.DataSources
             var source = new DataTableDataSource(dataTable, "Person", titleField: "FullName");
             source.ConfigurationProvider = new ValueProvider.ValueCollectionProvider_Test().ValueCollection();
 
+            // now enumerate all, to be sure that the time counted for DS creation isn't part of the tracked test-time
+            var temp = source.LightList.LastOrDefault();
+
+            if (useCacheForSpeed)
+                _cachedDs.Add(itemsToGenerate, source);
             return source;
         }
 
@@ -75,13 +88,16 @@ namespace ToSic.Eav.UnitTests.DataSources
                 var fullName = firstName + " " + lastName;
                 var city = TestCities[i%TestCities.Length];
                 var cityMaybeNull = i % 2 == 0 ? null : city;
+                var year = 1900 + i%110;
+                var month = i%12+1;
+                var day = i%28+1;
                 dataTable.Rows.Add(i, 
                     fullName, 
                     firstName, 
                     lastName, 
                     city,
                     i % IsMaleForEveryX == 0, 
-                    DateTime.Now.AddYears(-27), 
+                    new DateTime(year, month, day),
                     MinHeight + i % HeightVar,
                     cityMaybeNull
                     );

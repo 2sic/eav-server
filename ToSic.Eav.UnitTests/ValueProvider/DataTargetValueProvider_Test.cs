@@ -17,7 +17,7 @@ namespace ToSic.Eav.UnitTests.ValueProvider
             // Assemble a simple source-stream with demo data
             const int ItemsToGenerate = 499;
             const string ItemToFilter = "1023";
-            var ds = DataTableDataSource_Test.GeneratePersonSourceWithDemoData(ItemsToGenerate, 1001);
+            var ds = DataTableDataSourceTest.GeneratePersonSourceWithDemoData(ItemsToGenerate, 1001);
             var myConfDs = new EntityIdFilter();
             myConfDs.ConfigurationProvider = ds.ConfigurationProvider;
             myConfDs.Attach(ds);

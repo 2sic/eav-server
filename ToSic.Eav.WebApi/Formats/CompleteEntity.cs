@@ -16,6 +16,7 @@ namespace ToSic.Eav.WebApi.Formats
 
         public Type Type;
         public bool IsPublished;
+        public bool IsBranch;
         public string TitleAttributeName;
         public Dictionary<string, Attribute> Attributes;
         public int AppId;
