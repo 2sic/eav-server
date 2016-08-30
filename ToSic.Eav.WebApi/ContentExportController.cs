@@ -54,23 +54,12 @@ namespace ToSic.Eav.WebApi
             var fileName = string.Format("2sxc {0} {1} {2} {3}.xml", contentTypeName.Replace(" ", "-"), language, recordExport.IsBlank() ? "Template" : "Data", DateTime.Now.ToString("yyyyMMddHHmmss"));
 
             var response = new HttpResponseMessage(HttpStatusCode.OK);
-            response.Content = new StreamContent(GetStreamFromString(fileContent));
+            response.Content = new StringContent(fileContent);
             response.Content.Headers.ContentType = new MediaTypeHeaderValue("text/xml");
             response.Content.Headers.ContentLength = fileContent.Length;
             response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
             response.Content.Headers.ContentDisposition.FileName = fileName;
             return response;
-        }
-
-
-        private Stream GetStreamFromString(string str)
-        {
-            var stream = new MemoryStream();
-            var writer = new StreamWriter(stream);
-            writer.Write(str);
-            writer.Flush();
-            stream.Position = 0;
-            return stream;
         }
 
         private int GetContentTypeId(string staticName)
