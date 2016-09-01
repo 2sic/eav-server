@@ -138,18 +138,23 @@ namespace ToSic.Eav.BLL.Parts
         //    var metaDataSource = DataSource.GetMetaDataSource(Zonei, metaDataAppId);
         //}
 
-        public void Reorder(int contentTypeId, int attributeId, string direction)
+        //public void Reorder(int contentTypeId, int attributeId, string direction)
+        //{
+        //    if (direction == "up")
+        //    {
+        //        Context.Attributes.ChangeAttributeOrder(attributeId, contentTypeId, AttributeMoveDirection.Up);
+        //        return;
+        //    }
+        //    else if (direction == "down")
+        //    {
+        //        Context.Attributes.ChangeAttributeOrder(attributeId, contentTypeId, AttributeMoveDirection.Down);
+        //        return;
+        //    }
+        //}
+
+        public void Reorder(int contentTypeId, List<int> newSortOrder)
         {
-            if (direction == "up")
-            {
-                Context.Attributes.ChangeAttributeOrder(attributeId, contentTypeId, AttributeMoveDirection.Up);
-                return;
-            }
-            else if (direction == "down")
-            {
-                Context.Attributes.ChangeAttributeOrder(attributeId, contentTypeId, AttributeMoveDirection.Down);
-                return;
-            }
+            Context.Attributes.UpdateAttributeOrder(contentTypeId, newSortOrder);
         }
     }
 }

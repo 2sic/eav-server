@@ -66,7 +66,6 @@
     <Compile Include="Data\Value_ofT.cs" />
     <Compile Include="Data\Zone.cs" />
     <Compile Include="Entity.cs" />
-    <Compile Include="Enums\AttributeMoveDirection.cs" />
     <Compile Include="Enums\AttributeScope.cs" />
     <Compile Include="Enums\AttributeTypeEnum.cs" />
     <Compile Include="Factory.cs" />

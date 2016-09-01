@@ -165,10 +165,12 @@ namespace ToSic.Eav.WebApi
 	    }
 
         [HttpGet]
-        public bool Reorder(int appId, int contentTypeId, int attributeId, string direction)
+        public bool Reorder(int appId, int contentTypeId, string newSortOrder)
         {
             SetAppIdAndUser(appId);
-            CurrentContext.ContentType.Reorder(contentTypeId, attributeId, direction);
+
+            var sortOrderList = newSortOrder.Trim('[', ']').Split(',').Select(a => int.Parse(a)).ToList();
+            CurrentContext.ContentType.Reorder(contentTypeId, sortOrderList);
             return true;
         }
 

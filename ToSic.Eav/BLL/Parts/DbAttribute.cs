@@ -55,23 +55,42 @@ namespace ToSic.Eav.BLL.Parts
             return Context.SqlDb.AttributesInSets.Where(a => a.AttributeSetID == attributeSetId).OrderBy(a => a.SortOrder).ToList();
         }
 
+        ///// <summary>
+        ///// Change the sort order of an attribute - move up or down
+        ///// </summary>
+        ///// <remarks>Does an interchange with the Sort Order below/above the current attribute</remarks>
+        //public void ChangeAttributeOrder(int attributeId, int setId, AttributeMoveDirection direction)
+        //{
+        //    // todo 2dm: refactoring, causes some errors...
+        //    var attributeList = Context.SqlDb.AttributesInSets.Where(a => a.AttributeSetID == setId).ToList();
+
+        //    var attributeToMove = attributeList.Single(a => a.AttributeID == attributeId);
+        //    var attributeToInterchange = direction == AttributeMoveDirection.Up ?
+        //        attributeList.OrderByDescending(a => a.SortOrder).First(a => a.SortOrder < attributeToMove.SortOrder) :
+        //        attributeList.OrderBy(a => a.SortOrder).First(a => a.SortOrder > attributeToMove.SortOrder);
+
+        //    var newSortOrder = attributeToInterchange.SortOrder;
+        //    attributeToInterchange.SortOrder = attributeToMove.SortOrder;
+        //    attributeToMove.SortOrder = newSortOrder;
+        //    Context.SqlDb.SaveChanges();
+        //}
+
         /// <summary>
-        /// Change the sort order of an attribute - move up or down
+        /// Update the order of the attributes in the set.
         /// </summary>
-        /// <remarks>Does an interchange with the Sort Order below/above the current attribute</remarks>
-        public void ChangeAttributeOrder(int attributeId, int setId, AttributeMoveDirection direction)
+        /// <param name="setId"></param>
+        /// <param name="newSortOrder">Array of attribute ids which defines the new sort order</param>
+        public void UpdateAttributeOrder(int setId, List<int> newSortOrder)
         {
-            // todo 2dm: refactoring, causes some errors...
             var attributeList = Context.SqlDb.AttributesInSets.Where(a => a.AttributeSetID == setId).ToList();
+            attributeList = attributeList.OrderBy(a => newSortOrder.IndexOf(a.AttributeID)).ToList();
 
-            var attributeToMove = attributeList.Single(a => a.AttributeID == attributeId);
-            var attributeToInterchange = direction == AttributeMoveDirection.Up ?
-                attributeList.OrderByDescending(a => a.SortOrder).First(a => a.SortOrder < attributeToMove.SortOrder) :
-                attributeList.OrderBy(a => a.SortOrder).First(a => a.SortOrder > attributeToMove.SortOrder);
+            var index = 0;
+            attributeList.ForEach(a => {
+                a.SortOrder = index;
+                index++;
+            });
 
-            var newSortOrder = attributeToInterchange.SortOrder;
-            attributeToInterchange.SortOrder = attributeToMove.SortOrder;
-            attributeToMove.SortOrder = newSortOrder;
             Context.SqlDb.SaveChanges();
         }
 
