@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-// using ToSic.Eav.DataSources;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data
@@ -26,9 +25,9 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Creates a Typed Value Model
         /// </summary>
-        public static IValue GetValueModel(string attributeType, string value, IEnumerable<ILanguage> languages, int valueID, int changeLogIDCreated)
+        public static IValue GetValueModel(string attributeType, string value, IEnumerable<ILanguage> languages, int valueId, int changeLogIdCreated)
         {
-            return GetValueModel(attributeType, (object)value, languages, valueID, changeLogIDCreated);
+            return GetValueModel(attributeType, (object)value, languages, valueId, changeLogIdCreated);
         }
 
         /// <summary>
@@ -42,7 +41,7 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Creates a Typed Value Model
         /// </summary>
-        private static IValue GetValueModel(string attributeType, object value, IEnumerable<ILanguage> languages, int valueID, int changeLogIDCreated, IDeferredEntitiesList fullEntityListForLookup = null)
+        private static IValue GetValueModel(string attributeType, object value, IEnumerable<ILanguage> languages, int valueId, int changeLogIdCreated, IDeferredEntitiesList fullEntityListForLookup = null)
         {
             IValueManagement typedModel;
             var stringValue = value as string;
@@ -64,10 +63,12 @@ namespace ToSic.Eav.Data
                         var entityIds = value as IEnumerable<int?>;
                         typedModel = new Value<EntityRelationship>(new EntityRelationship(fullEntityListForLookup, entityIds));
                         break;
+                    // ReSharper disable RedundantCaseLabel
                     case AttributeTypeEnum.String:  // most common case
                     case AttributeTypeEnum.Empty:   // empty - should actually not contain anything!
                     case AttributeTypeEnum.Custom:  // custom value, currently just parsed as string for manual processing as needed
                     case AttributeTypeEnum.Hyperlink:// special case, handled as string
+                    // ReSharper restore RedundantCaseLabel
                     default:
                         typedModel = new Value<string>(stringValue);
                         break;
@@ -79,8 +80,8 @@ namespace ToSic.Eav.Data
             }
 
             typedModel.Languages = languages;
-            typedModel.ValueId = valueID;
-            typedModel.ChangeLogIdCreated = changeLogIDCreated;
+            typedModel.ValueId = valueId;
+            typedModel.ChangeLogIdCreated = changeLogIdCreated;
 
             return (IValue)typedModel;
         }
