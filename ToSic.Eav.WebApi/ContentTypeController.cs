@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Web;
 using System.Web.Http;
 using ToSic.Eav.Api;
 using ToSic.Eav.Data;
+using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.Serializers;
 
@@ -20,40 +21,46 @@ namespace ToSic.Eav.WebApi
 	    public IEnumerable<dynamic> Get(int appId, string scope = null, bool withStatistics = false)
         {
             // scope can be null (eav) or alternatives would be "System", "2SexyContent-System", "2SexyContent-App", "2SexyContent"
-            var cache = DataSource.GetCache(null, appId) as BaseCache;
+            var cache = (BaseCache)DataSource.GetCache(null, appId);
             var allTypes = cache.GetContentTypes().Select(t => t.Value);
 
-            var filteredType = allTypes.Where(t => t.Scope == scope).OrderBy(t => t.Name).Select(t => ContentTypeForJson(t, cache)
-            //new {
-            //    Id = t.AttributeSetId,
-            //    t.Name,
-            //    t.StaticName,
-            //    t.Scope,
-            //    t.Description,
-            //    UsesSharedDef = t.UsesConfigurationOfAttributeSet != null,
-            //    SharedDefId = t.UsesConfigurationOfAttributeSet,
-            //    Items = cache.LightList.Count(i => i.Type == t),
-            //    Fields = (t as ContentType).AttributeDefinitions.Count 
-            //}
-            );
+            var filteredType = allTypes.Where(t => t.Scope == scope)
+                .OrderBy(t => t.Name)
+                .Select(t => ContentTypeForJson(t, cache));
 
             return filteredType;
 	    }
 
 	    private dynamic ContentTypeForJson(IContentType t, ICache cache)
 	    {
-	        return new
+            // find metadata, if provided
+            // get all content-type metadata
+            var metaDataSource = (IMetaDataSource)cache;
+
+	        var metadata = metaDataSource.GetAssignedEntities(
+                Constants.AssignmentObjectTypeContentType, t.AttributeSetId)
+                .FirstOrDefault();
+
+	        var nameOverride = metadata?.GetBestValue("Name").ToString();
+	        if (string.IsNullOrEmpty(nameOverride))
+	            nameOverride = t.Name;
+            var ser = new Serializer();
+
+            var jsonReady = new
 	        {
 	            Id = t.AttributeSetId,
-	            t.Name,
+                t.Name,
+                Label = nameOverride,
 	            t.StaticName,
 	            t.Scope,
 	            t.Description,
 	            UsesSharedDef = t.UsesConfigurationOfAttributeSet != null,
 	            SharedDefId = t.UsesConfigurationOfAttributeSet,
 	            Items = cache.LightList.Count(i => i.Type == t),
-	            Fields = (t as ContentType).AttributeDefinitions.Count
+	            Fields = ((ContentType)t).AttributeDefinitions.Count,
+                Metadata = metadata != null ? ser.Prepare(metadata) : null
 	        };
+	        return jsonReady;
 	    }
 
         [HttpGet]
@@ -79,7 +86,7 @@ namespace ToSic.Eav.WebApi
 	    public bool Save(int appId, Dictionary<string, string> item)
 	    {
             SetAppIdAndUser(appId);
-	        var changeStaticName = false;
+	        bool changeStaticName;
             bool.TryParse(item["ChangeStaticName"], out changeStaticName);
             CurrentContext.ContentType.AddOrUpdate(
                 item["StaticName"], 
@@ -112,12 +119,14 @@ namespace ToSic.Eav.WebApi
 
             var fields =
                 CurrentContext.ContentType.GetContentTypeConfiguration(staticName)
-                    .OrderBy(ct => (ct.Item1 as AttributeBase).SortOrder);
+                    .OrderBy(ct => ((AttributeBase)ct.Item1).SortOrder);
 
             var appDef = new BetaFullApi(null, appId, CurrentContext);
             var appInputTypes = appDef.GetInputTypes(true).ToList();
             var noTitleCount = 0;
             string fldName = "";
+
+            // assemble a list of all input-types (like "string-default", "string-wysiwyg..."
             Dictionary<string, IEntity> inputTypesDic;
             try
             {
@@ -130,23 +139,24 @@ namespace ToSic.Eav.WebApi
             {
                 throw new Exception("Error on " + fldName + "; note: noTitleCount " + noTitleCount, ex);
             }
+
             var ser = new Serializer();
             return fields.Select(a =>
             {
                 var inputtype = findInputType(a.Item2);
-                    return new
-                    {
-                        Id = a.Item1.AttributeId,
-                        (a.Item1 as AttributeBase).SortOrder,
-                        a.Item1.Type,
-                        InputType = inputtype,
-                        StaticName = a.Item1.Name,
-                        a.Item1.IsTitle,
-                        a.Item1.AttributeId,
-                        Metadata = a.Item2.ToDictionary(e => e.Key, e => ser.Prepare(e.Value)),
-                        InputTypeConfig =
-                            inputTypesDic.ContainsKey(inputtype) ? ser.Prepare(inputTypesDic[inputtype]) : null
-                    };
+                return new
+                {
+                    Id = a.Item1.AttributeId,
+                    ((AttributeBase)a.Item1).SortOrder,
+                    a.Item1.Type,
+                    InputType = inputtype,
+                    StaticName = a.Item1.Name,
+                    a.Item1.IsTitle,
+                    a.Item1.AttributeId,
+                    Metadata = a.Item2.ToDictionary(e => e.Key, e => ser.Prepare(e.Value)),
+                    InputTypeConfig =
+                        inputTypesDic.ContainsKey(inputtype) ? ser.Prepare(inputTypesDic[inputtype]) : null
+                };
             });
         }
 
@@ -157,7 +167,7 @@ namespace ToSic.Eav.WebApi
 
 	        var inputType = definitions["All"]?.GetBestValue("InputType");
 
-	        if (!(inputType is string) || String.IsNullOrEmpty((string)inputType))
+	        if (string.IsNullOrEmpty(inputType as string))
 	            return "unknown";
 	        return inputType.ToString();
 
@@ -169,7 +179,7 @@ namespace ToSic.Eav.WebApi
         {
             SetAppIdAndUser(appId);
 
-            var sortOrderList = newSortOrder.Trim('[', ']').Split(',').Select(a => int.Parse(a)).ToList();
+            var sortOrderList = newSortOrder.Trim('[', ']').Split(',').Select(int.Parse).ToList();
             CurrentContext.ContentType.Reorder(contentTypeId, sortOrderList);
             return true;
         }
@@ -196,11 +206,11 @@ namespace ToSic.Eav.WebApi
            
             
         [HttpGet]
-	    public int AddField(int appId, int contentTypeId, string staticName, string type, string inputType, int sortOrder)
+        [SuppressMessage("ReSharper", "RedundantArgumentDefaultValue")]
+        public int AddField(int appId, int contentTypeId, string staticName, string type, string inputType, int sortOrder)
 	    {
             SetAppIdAndUser(appId);
 	        return CurrentContext.Attributes.AddAttribute(contentTypeId, staticName, type, inputType, sortOrder, 1, false, true).AttributeID;
-	        throw new HttpUnhandledException();
 	    }
 
         [HttpGet]
@@ -215,7 +225,6 @@ namespace ToSic.Eav.WebApi
 	    public bool DeleteField(int appId, int contentTypeId, int attributeId)
 	    {
             SetAppIdAndUser(appId);
-            // todo: add security check if it really is in this app and content-type
             return CurrentContext.Attributes.RemoveAttribute(attributeId);
 	    }
 

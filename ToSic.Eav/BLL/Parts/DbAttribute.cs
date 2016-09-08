@@ -276,6 +276,7 @@ namespace ToSic.Eav.BLL.Parts
         }
 
 
+        // todo: add security check if it really is in this app and content-type
         public bool RemoveAttribute(int attributeId)
         {
             // Remove values and valueDimensions of this attribute
@@ -288,7 +289,7 @@ namespace ToSic.Eav.BLL.Parts
             });
             Context.SqlDb.SaveChanges();
 
-            var attr = Context.SqlDb.Attributes.Where(a => a.AttributeID == attributeId).FirstOrDefault();
+            var attr = Context.SqlDb.Attributes.FirstOrDefault(a => a.AttributeID == attributeId);
 
             if (attr != null)
                 Context.SqlDb.Attributes.DeleteObject(attr);
