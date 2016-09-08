@@ -38,10 +38,10 @@ namespace ToSic.Eav.WebApi
             var metaDataSource = (IMetaDataSource)cache;
 
 	        var metadata = metaDataSource.GetAssignedEntities(
-                Constants.AssignmentObjectTypeContentType, t.AttributeSetId)
+                Constants.MetadataForContentType, t.AttributeSetId)
                 .FirstOrDefault();
 
-	        var nameOverride = metadata?.GetBestValue("Name").ToString();
+	        var nameOverride = metadata?.GetBestValue(Constants.ContentTypeMetadataLabel).ToString();
 	        if (string.IsNullOrEmpty(nameOverride))
 	            nameOverride = t.Name;
             var ser = new Serializer();

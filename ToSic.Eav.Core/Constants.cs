@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace ToSic.Eav
 {
@@ -48,17 +45,26 @@ namespace ToSic.Eav
         /// <summary>
         /// AssignmentObjectTypeId for FieldProperties (Field MetaData)
         /// </summary>
+        [Obsolete("Use MetadataForField instead")]
         public readonly static int AssignmentObjectTypeIdFieldProperties = 2;
+        public readonly static int MetadataForField = 2;
 
         /// <summary>
         /// AssignmentObjectTypeId for DataPipelines
         /// </summary>
+        [Obsolete("Use MetadataForEntity instead")]
         public readonly static int AssignmentObjectTypeEntity = 4;
+        public readonly static int MetadataForEntity = 4;
 
-        public static readonly int AssignmentObjectTypeContentType = 5;
+        public static readonly int MetadataForContentType = 5;
 
+        [Obsolete("Use MetadataForCmsObject instead")]
         public static readonly int AssignmentObjectTypeCmsObject = 10; 
+        public static readonly int MetadataForCmsObject = 10;
 
+        #region Metadata-Properties which have system use
+        public static readonly string ContentTypeMetadataLabel = "Label";
+        #endregion
 
         /// <summary>
         /// StaticName of the DataPipeline AttributeSet
