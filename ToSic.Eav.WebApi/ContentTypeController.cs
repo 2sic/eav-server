@@ -33,13 +33,7 @@ namespace ToSic.Eav.WebApi
 
 	    private dynamic ContentTypeForJson(IContentType t, ICache cache)
 	    {
-            // find metadata, if provided
-            // get all content-type metadata
-            var metaDataSource = (IMetaDataSource)cache;
-
-	        var metadata = metaDataSource.GetAssignedEntities(
-                Constants.MetadataForContentType, t.AttributeSetId)
-                .FirstOrDefault();
+	        var metadata = GetMetadata(t, cache);
 
 	        var nameOverride = metadata?.GetBestValue(Constants.ContentTypeMetadataLabel).ToString();
 	        if (string.IsNullOrEmpty(nameOverride))
@@ -58,9 +52,20 @@ namespace ToSic.Eav.WebApi
 	            SharedDefId = t.UsesConfigurationOfAttributeSet,
 	            Items = cache.LightList.Count(i => i.Type == t),
 	            Fields = ((ContentType)t).AttributeDefinitions.Count,
-                Metadata = metadata != null ? ser.Prepare(metadata) : null
+                Metadata = ser.Prepare(metadata)
 	        };
 	        return jsonReady;
+	    }
+
+	    public IEntity GetMetadata(IContentType t, ICache cache = null)
+	    {
+	        if (cache == null) throw new NotImplementedException("cache-null not implemented");
+            // find metadata, if provided
+            // get all content-type metadata
+            var metaDataSource = (IMetaDataSource)cache;
+	        return metaDataSource.GetAssignedEntities(
+	            Constants.MetadataForContentType, t.AttributeSetId)
+	            .FirstOrDefault();
 	    }
 
         [HttpGet]

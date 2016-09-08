@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.Data;
 
+// ReSharper disable once CheckNamespace
 namespace ToSic.Eav
 {
 	/// <summary>
@@ -48,11 +48,6 @@ namespace ToSic.Eav
         int ConfigurationZoneId { get; }
 
         bool ConfigurationIsOmnipresent { get; }
-
-        ///// <summary>
-        ///// Dictionary with all AttributeHelperTools Definitions
-        ///// </summary>
-        //IDictionary<int, AttributeBase> AttributeDefinitions { get; set; }
 
     }
 }

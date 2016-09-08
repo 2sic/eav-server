@@ -77,5 +77,6 @@ namespace ToSic.Eav.Data
         {
             Name = name;
         }
+
     }
 }

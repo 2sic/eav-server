@@ -105,7 +105,8 @@ namespace ToSic.Eav.Serializers
         /// </summary>
         public Dictionary<string, object> Prepare(IEntity entity)
         {
-            return GetDictionaryFromEntity(entity, Language);
+            return 
+                (entity == null) ? null : GetDictionaryFromEntity(entity, Language);
         }
 
         #endregion
