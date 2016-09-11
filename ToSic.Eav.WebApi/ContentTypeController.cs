@@ -57,14 +57,15 @@ namespace ToSic.Eav.WebApi
 	        return jsonReady;
 	    }
 
-	    public IEntity GetMetadata(IContentType t, ICache cache = null)
+	    public IEntity GetMetadata(IContentType ct, ICache cache = null)
 	    {
-	        if (cache == null) throw new NotImplementedException("cache-null not implemented");
-            // find metadata, if provided
-            // get all content-type metadata
-            var metaDataSource = (IMetaDataSource)cache;
+	        var metaCache = (cache != null && ct.ConfigurationAppId == cache.AppId)
+	            ? cache
+	            : DataSource.GetCache(ct.ConfigurationZoneId, ct.ConfigurationAppId);
+
+            var metaDataSource = (IMetaDataSource)metaCache;
 	        return metaDataSource.GetAssignedEntities(
-	            Constants.MetadataForContentType, t.AttributeSetId)
+	            Constants.MetadataForContentType, ct.UsesConfigurationOfAttributeSet ?? ct.AttributeSetId)
 	            .FirstOrDefault();
 	    }
 
