@@ -65,7 +65,7 @@ namespace ToSic.Eav.WebApi
 
             var metaDataSource = (IMetaDataSource)metaCache;
 	        return metaDataSource.GetAssignedEntities(
-	            Constants.MetadataForContentType, ct.UsesConfigurationOfAttributeSet ?? ct.AttributeSetId)
+	            Constants.MetadataForContentType, ct.StaticName)
 	            .FirstOrDefault();
 	    }
 
