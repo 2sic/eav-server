@@ -85,12 +85,13 @@ namespace ToSic.Eav.BLL.Parts
             var attributeList = Context.SqlDb.AttributesInSets.Where(a => a.AttributeSetID == setId).ToList();
             attributeList = attributeList.OrderBy(a => newSortOrder.IndexOf(a.AttributeID)).ToList();
 
-            var index = 0;
-            attributeList.ForEach(a => {
-                a.SortOrder = index;
-                index++;
-            });
+            PersistAttributeSorting(attributeList);
+        }
 
+        public void PersistAttributeSorting(List<AttributeInSet> attributeList)
+        {
+            var index = 0;
+            attributeList.ForEach(a => a.SortOrder = index++);
             Context.SqlDb.SaveChanges();
         }
 
@@ -181,6 +182,15 @@ namespace ToSic.Eav.BLL.Parts
             return AddAttribute(null, attributeSetId, staticName, type, inputType, sortOrder, attributeGroupId, isTitle, autoSave);
         }
 
+
+        internal bool Exists(int attributeSetId, string staticName)
+        {
+            return Context.SqlDb.AttributesInSets.Any(
+                s =>
+                    s.Attribute.StaticName == staticName && !s.Attribute.ChangeLogIDDeleted.HasValue &&
+                    s.AttributeSetID == attributeSetId && s.Set.AppID == Context.AppId);
+        }
+
         /// <summary>
         /// Append a new Attribute to an AttributeSet
         /// </summary>
@@ -195,8 +205,8 @@ namespace ToSic.Eav.BLL.Parts
                 throw new Exception("Attribute static name \"" + staticName + "\" is invalid. " + Constants.AttributeStaticNameRegExNotes);
 
             // Prevent Duplicate Name
-            if (Context.SqlDb.AttributesInSets.Any(s => s.Attribute.StaticName == staticName && !s.Attribute.ChangeLogIDDeleted.HasValue && s.AttributeSetID == attributeSet.AttributeSetID && s.Set.AppID == Context.AppId /* _appId*/ ))
-                throw new ArgumentException("An Attribute with static name " + staticName + " already exists", "staticName");
+            if (Exists(attributeSet.AttributeSetID, staticName))// Context.SqlDb.AttributesInSets.Any(s => s.Attribute.StaticName == staticName && !s.Attribute.ChangeLogIDDeleted.HasValue && s.AttributeSetID == attributeSet.AttributeSetID && s.Set.AppID == Context.AppId ))
+                throw new ArgumentException("An Attribute with static name " + staticName + " already exists", nameof(staticName));
 
             var newAttribute = new Attribute
             {

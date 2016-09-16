@@ -12,7 +12,9 @@ namespace ToSic.Eav.Import
 		public ImportAttribute TitleAttribute { get; set; }
 		public bool AlwaysShareConfiguration { get; set; }
 
-        public string UsesConfigurationOfAttributeSet { get; set; }
+	    public string UsesConfigurationOfAttributeSet { get; set; }
+
+	    public bool SortAttributes { get; set; } = false;
 
         public ImportAttributeSet() { }
 

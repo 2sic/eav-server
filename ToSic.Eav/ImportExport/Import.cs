@@ -5,8 +5,8 @@ using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
 using ToSic.Eav.BLL;
-using ToSic.Eav.DataSources.Caches;
 
+// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Import
 {
     /// <summary>
@@ -15,11 +15,11 @@ namespace ToSic.Eav.Import
     public class Import
     {
         #region Private Fields
-        private readonly EavDataController Context;
+        private readonly EavDataController _context;
         private readonly bool _dontUpdateExistingAttributeValues;
         private readonly bool _keepAttributesMissingInImport;
         private readonly List<ImportLogItem> _importLog = new List<ImportLogItem>();
-        private readonly bool LargeImport;
+        private readonly bool _largeImport;
         #endregion
 
         #region Properties
@@ -39,13 +39,13 @@ namespace ToSic.Eav.Import
         /// </summary>
         public Import(int? zoneId, int? appId, string userName, bool dontUpdateExistingAttributeValues = true, bool keepAttributesMissingInImport = true, bool preventUpdateOnDraftEntities = true, bool largeImport = true)
         {
-            Context = EavDataController.Instance(zoneId, appId);
+            _context = EavDataController.Instance(zoneId, appId);
 
-            Context.UserName = userName;
+            _context.UserName = userName;
             _dontUpdateExistingAttributeValues = dontUpdateExistingAttributeValues;
             _keepAttributesMissingInImport = keepAttributesMissingInImport;
             PreventUpdateOnDraftEntities = preventUpdateOnDraftEntities;
-            LargeImport = largeImport;
+            _largeImport = largeImport;
         }
 
         /// <summary>
@@ -53,29 +53,26 @@ namespace ToSic.Eav.Import
         /// </summary>
         public DbTransaction RunImport(IEnumerable<ImportAttributeSet> newAttributeSets, IEnumerable<ImportEntity> newEntities)
         {
-            // 2dm 2015-06-21: this doesn't seem to be used anywhere else in the entire code!
-            Context.PurgeAppCacheOnSave = false;
-            var commitTransaction = true;
-            bool purgeCache = true;
+            _context.PurgeAppCacheOnSave = false;
 
             // Enhance the SQL timeout for imports
             // todo 2dm/2tk - discuss, this shouldn't be this high on a normal save, only on a real import
             // todo: on any error, cancel/rollback the transaction
-            if (LargeImport)
-                Context.SqlDb.CommandTimeout = 3600;
+            if (_largeImport)
+                _context.SqlDb.CommandTimeout = 3600;
 
             // Ensure cache is created
             var y = DataSource.GetCache(Constants.DefaultZoneId, Constants.MetaDataAppId).LightList.Any();
-            var cache = DataSource.GetCache(Context.ZoneId, Context.AppId);
-            cache.PurgeCache(Context.ZoneId, Context.AppId);
+            var cache = DataSource.GetCache(_context.ZoneId, _context.AppId);
+            cache.PurgeCache(_context.ZoneId, _context.AppId);
             var x = cache.LightList.Any(); // re-read something
 
             #region initialize DB connection / transaction
             // Make sure the connection is open - because on multiple calls it's not clear if it was already opened or not
-            if (Context.SqlDb.Connection.State != ConnectionState.Open)
-                Context.SqlDb.Connection.Open();
+            if (_context.SqlDb.Connection.State != ConnectionState.Open)
+                _context.SqlDb.Connection.Open();
 
-            var transaction = Context.SqlDb.Connection.BeginTransaction();
+            var transaction = _context.SqlDb.Connection.BeginTransaction();
 
             #endregion
 
@@ -106,23 +103,22 @@ namespace ToSic.Eav.Import
                     foreach (var entity in newEntities)
                         PersistOneImportEntity(entity);
 
-                    Context.Relationships.ImportEntityRelationshipsQueue();
+                    _context.Relationships.ImportEntityRelationshipsQueue();
 
-                    Context.SqlDb.SaveChanges();
+                    _context.SqlDb.SaveChanges();
                 }
                 #endregion
 
                 // Commit DB Transaction
                 transaction.Commit();
-                Context.SqlDb.Connection.Close();
+                _context.SqlDb.Connection.Close();
 
-                // Purge Cache
-                if (purgeCache)
-                    DataSource.GetCache(Context.ZoneId, Context.AppId).PurgeCache(Context.ZoneId, Context.AppId);
+                // always Purge Cache
+                DataSource.GetCache(_context.ZoneId, _context.AppId).PurgeCache(_context.ZoneId, _context.AppId);
 
                 return transaction;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 transaction.Rollback();
                 throw;
@@ -131,27 +127,26 @@ namespace ToSic.Eav.Import
 
         private DbTransaction ImportSomeAttributeSets(IEnumerable<ImportAttributeSet> newAttributeSets, DbTransaction transaction)
         {
-            bool y;
-            ICache cache;
-            bool x;
             foreach (var attributeSet in newAttributeSets)
                 ImportAttributeSet(attributeSet);
 
-            Context.Relationships.ImportEntityRelationshipsQueue();
+            _context.Relationships.ImportEntityRelationshipsQueue();
 
-            Context.AttribSet.EnsureSharedAttributeSets();
+            _context.AttribSet.EnsureSharedAttributeSets();
 
-            Context.SqlDb.SaveChanges();
+            _context.SqlDb.SaveChanges();
 
             // Commit DB Transaction and refresh cache
             transaction.Commit();
-            y = DataSource.GetCache(Constants.DefaultZoneId, Constants.MetaDataAppId).LightList.Any();
-            cache = DataSource.GetCache(Context.ZoneId, Context.AppId);
-            cache.PurgeCache(Context.ZoneId, Context.AppId);
-            x = cache.LightList.Any(); // re-read something
+            // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
+            DataSource.GetCache(Constants.DefaultZoneId, Constants.MetaDataAppId).LightList.Any();
+            var cache = DataSource.GetCache(_context.ZoneId, _context.AppId);
+            cache.PurgeCache(_context.ZoneId, _context.AppId);
+            // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
+            cache.LightList.Any(); // re-read something
 
             // re-start transaction
-            transaction = Context.SqlDb.Connection.BeginTransaction();
+            transaction = _context.SqlDb.Connection.BeginTransaction();
             return transaction;
         }
 
@@ -160,10 +155,10 @@ namespace ToSic.Eav.Import
         /// </summary>
         private void ImportAttributeSet(ImportAttributeSet importAttributeSet)
         {
-            var destinationSet = Context.AttribSet.GetAttributeSet(importAttributeSet.StaticName);
+            var destinationSet = _context.AttribSet.GetAttributeSet(importAttributeSet.StaticName);
             // add new AttributeSet
             if (destinationSet == null)
-                destinationSet = Context.AttribSet.AddAttributeSet(importAttributeSet.Name, importAttributeSet.Description, importAttributeSet.StaticName, importAttributeSet.Scope, false);
+                destinationSet = _context.AttribSet.AddAttributeSet(importAttributeSet.Name, importAttributeSet.Description, importAttributeSet.StaticName, importAttributeSet.Scope, false);
             else	// use/update existing attribute Set
             {
                 if (destinationSet.UsesConfigurationOfAttributeSet.HasValue)
@@ -181,7 +176,7 @@ namespace ToSic.Eav.Import
             if (!string.IsNullOrEmpty(importAttributeSet.UsesConfigurationOfAttributeSet))
             {
                 // Look for a content type with the StaticName, which has no "UsesConfigurationOf..." set (is a master)
-                var ghostAttributeSets = Context.SqlDb.AttributeSets.Where(a => a.StaticName == importAttributeSet.UsesConfigurationOfAttributeSet && a.ChangeLogDeleted == null && a.UsesConfigurationOfAttributeSet == null).
+                var ghostAttributeSets = _context.SqlDb.AttributeSets.Where(a => a.StaticName == importAttributeSet.UsesConfigurationOfAttributeSet && a.ChangeLogDeleted == null && a.UsesConfigurationOfAttributeSet == null).
                     OrderBy(a => a.AttributeSetID).ToList();
 
                 if (ghostAttributeSets.Count == 0)
@@ -199,42 +194,41 @@ namespace ToSic.Eav.Import
 
             if (destinationSet.AlwaysShareConfiguration)
 	        {
-		        Context.AttribSet.EnsureSharedAttributeSets();
+		        _context.AttribSet.EnsureSharedAttributeSets();
 	        }
-	        Context.SqlDb.SaveChanges();
+	        _context.SqlDb.SaveChanges();
 
             // append all Attributes
             foreach (var importAttribute in importAttributeSet.Attributes)
             {
-                Eav.Attribute destinationAttribute;
-                var isNewAttribute = false;
-                try	// try to add new Attribute
+                Attribute destinationAttribute;
+                if(!_context.Attributes.Exists(destinationSet.AttributeSetID, importAttribute.StaticName))
                 {
-                    var isTitle = importAttribute == importAttributeSet.TitleAttribute;
-                    destinationAttribute = Context.Attributes.AppendAttribute(destinationSet, importAttribute.StaticName, importAttribute.Type, importAttribute.InputType, isTitle, false);
-                    isNewAttribute = true;
+                        // try to add new Attribute
+                        var isTitle = importAttribute == importAttributeSet.TitleAttribute;
+                    destinationAttribute = _context.Attributes.AppendAttribute(destinationSet, importAttribute.StaticName, importAttribute.Type, importAttribute.InputType, isTitle, false);
                 }
-				catch (ArgumentException ex)	// Attribute already exists
+				else
                 {
-					_importLog.Add(new ImportLogItem(EventLogEntryType.Warning, "Attribute already exists") { ImportAttribute = importAttribute, Exception = ex });
+					_importLog.Add(new ImportLogItem(EventLogEntryType.Warning, "Attribute already exists") { ImportAttribute = importAttribute });
                     destinationAttribute = destinationSet.AttributesInSets.Single(a => a.Attribute.StaticName == importAttribute.StaticName).Attribute;
                 }
 
-                var mds = DataSource.GetMetaDataSource(Context.ZoneId, Context.AppId);
+                var mds = DataSource.GetMetaDataSource(_context.ZoneId, _context.AppId);
                 // Insert AttributeMetaData
                 if (/* isNewAttribute && */ importAttribute.AttributeMetaData != null)
                 {
                     foreach (var entity in importAttribute.AttributeMetaData)
                     {
                         // Validate Entity
-                        entity.AssignmentObjectTypeId = Constants.AssignmentObjectTypeIdFieldProperties;
+                        entity.AssignmentObjectTypeId = Constants.MetadataForField;//.AssignmentObjectTypeIdFieldProperties;
 
                         // Set KeyNumber
                         if (destinationAttribute.AttributeID == 0)
-                            Context.SqlDb.SaveChanges();
+                            _context.SqlDb.SaveChanges();
                         entity.KeyNumber = destinationAttribute.AttributeID;
 
-                        var existingEntity = mds.GetAssignedEntities(Constants.AssignmentObjectTypeIdFieldProperties,
+                        var existingEntity = mds.GetAssignedEntities(Constants.MetadataForField, //.AssignmentObjectTypeIdFieldProperties,
                             destinationAttribute.AttributeID, entity.AttributeSetStaticName).FirstOrDefault();
 
                         if (existingEntity != null)
@@ -244,6 +238,19 @@ namespace ToSic.Eav.Import
                     }
                 }
             }
+
+            // todo: optionally re-order the attributes
+            if (importAttributeSet.SortAttributes)
+            {
+                var attributeList = _context.SqlDb.AttributesInSets
+                    .Where(a => a.AttributeSetID == destinationSet.AttributeSetID).ToList();
+                attributeList = attributeList
+                    .OrderBy(a => importAttributeSet.Attributes
+                        .IndexOf(importAttributeSet.Attributes
+                            .First(ia => ia.StaticName == a.Attribute.StaticName)))
+                    .ToList();
+                _context.Attributes.PersistAttributeSorting(attributeList);
+            }
         }
 
         /// <summary>
@@ -251,7 +258,7 @@ namespace ToSic.Eav.Import
         /// </summary>
         private void PersistOneImportEntity(ImportEntity importEntity)
         {
-            var cache = DataSource.GetCache(null, Context.AppId);
+            var cache = DataSource.GetCache(null, _context.AppId);
 
             #region try to get AttributeSet or otherwise cancel & log error
 
@@ -277,7 +284,7 @@ namespace ToSic.Eav.Import
             #region Simplest case - add (nothing existing to update)
             if (existingEntities == null || !existingEntities.Any())
             {
-                Context.Entities.AddEntity(attributeSet.AttributeSetId, importEntity, _importLog, importEntity.IsPublished, null);
+                _context.Entities.AddEntity(attributeSet.AttributeSetId, importEntity, _importLog, importEntity.IsPublished, null);
                 return;
             }
 
@@ -289,7 +296,7 @@ namespace ToSic.Eav.Import
             if (!importEntity.IsPublished && existingEntities.Count(e => e.IsPublished == false) == 0 && !importEntity.ForceNoBranch)
             {
                 var publishedId = existingEntities.First().EntityId;
-                Context.Entities.AddEntity(attributeSet.AttributeSetId, importEntity, _importLog, importEntity.IsPublished, publishedId);
+                _context.Entities.AddEntity(attributeSet.AttributeSetId, importEntity, _importLog, importEntity.IsPublished, publishedId);
                 return;
             }
 
@@ -332,7 +339,7 @@ namespace ToSic.Eav.Import
                 newValues = newValues.Where(v => editableVersionOfTheEntity.Attributes.All(ev => ev.Value.Name != v.Key))
                     .ToDictionary(v => v.Key, v => v.Value);
 
-            Context.Entities.UpdateEntity(editableVersionOfTheEntity.RepositoryId, newValues, updateLog: _importLog,
+            _context.Entities.UpdateEntity(editableVersionOfTheEntity.RepositoryId, newValues, updateLog: _importLog,
                 preserveUndefinedValues: _keepAttributesMissingInImport, isPublished: importEntity.IsPublished, forceNoBranch: importEntity.ForceNoBranch);
 
             #endregion
