@@ -62,7 +62,10 @@ namespace ToSic.Eav.DataSources.Tests
             [TestMethod]
         public void ValueFilter_FilterNumberNotEq()
             => NumberFilter("Height", "180", 9818, "!=");
-       
+
+        public void ValueFilter_EntityId()
+            => NumberFilter("EntityId", "9818", 9818, "==");
+
         [TestMethod]
         public void Between()
             => NumberFilter("Height", "175 and 185", 2002, "between");

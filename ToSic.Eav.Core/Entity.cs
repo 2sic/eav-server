@@ -12,7 +12,7 @@ namespace ToSic.Eav.Data
 	/// </summary>
 	public class Entity : IEntity
     {
-        #region Basic properties like EntityId, Guid, IsPublished etc.
+	    #region Basic properties like EntityId, Guid, IsPublished etc.
         /// <summary>
         /// Id as an int
         /// </summary>
@@ -169,6 +169,8 @@ namespace ToSic.Eav.Data
 	        return GetBestValue(attributeName, new string[0], resolveHyperlinks);
 	    }
 
+
+
 		/// <summary>
 		/// Retrieves the best possible value for an attribute or virtual attribute (like EntityTitle)
 		/// Automatically resolves the language-variations as well based on the list of preferred languages
@@ -189,25 +191,25 @@ namespace ToSic.Eav.Data
             }
             else
             {
-                switch (attributeName)
+                switch (attributeName.ToLower())
                 {
-                    case "EntityTitle":
+                    case Constants.EntityFieldTitle:
                         result = Title?[dimensions];
 		                attribute = Title;
                         break;
-                    case "EntityId":
+                    case Constants.EntityFieldId:
                         result = EntityId;
                         break;
-                    case "EntityGuid":
+                    case Constants.EntityFieldGuid:
                         result = EntityGuid;
                         break;
-                    case "EntityType":
+                    case Constants.EntityFieldType:
                         result = Type.Name;
                         break;
-                    case "IsPublished":
+                    case Constants.EntityFieldIsPublished:
                         result = IsPublished;
                         break;
-                    case "Modified":
+                    case Constants.EntityFieldModified:
                         result = Modified;
                         break;
                     default:

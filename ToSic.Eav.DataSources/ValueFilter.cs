@@ -18,9 +18,8 @@ namespace ToSic.Eav.DataSources
         private const string LangKey = "Language";
         private const string OperatorKey = "Operator";
         private const string TakeKey = "Take";
-        private int count;
 
-		/// <summary>
+        /// <summary>
 		/// The attribute whoose value will be filtered
 		/// </summary>
 		public string Attribute
@@ -96,7 +95,7 @@ namespace ToSic.Eav.DataSources
 		    _initializedLangs = new[] { lang };
             #endregion
 
-            var originals = In[Constants.DefaultStreamName].LightList;
+            var originals = In[Constants.DefaultStreamName].LightList.ToList();
 
             #region stop if the list is empty
             if (!originals.Any()) 
@@ -113,34 +112,61 @@ namespace ToSic.Eav.DataSources
             else
             {
 
-                var firstEntity = originals.FirstOrDefault(x => x.Attributes.ContainsKey(_initializedAttrName));
+                var firstEntity = Constants.InternalOnlyIsSpecialEntityProperty(_initializedAttrName)
+                    ? originals.FirstOrDefault()
+                    : originals.FirstOrDefault(x => x.Attributes.ContainsKey(_initializedAttrName));
 
                 // if I can't find any, return empty list
                 if (firstEntity == null)
                     return new List<IEntity>();
 
-                var attribute = firstEntity[_initializedAttrName];
-                var typeName = attribute.Type; // must get from the property, as not all content-types have a real type object
+                //var attribute = firstEntity[_initializedAttrName];
+                //var typeName = attribute.Type; // must get from the property, as not all content-types have a real type object
 
-                switch (typeName)
+                //switch (typeName)
+                //{
+                //    case "Boolean": // todo: find some constant for this
+                //        compare = GetBoolComparison(Value);
+                //        break;
+                //    case "Number":
+                //        compare = GetNumberComparison(Value);
+                //        break;
+                //    case "DateTime":
+                //        compare = GetDateTimeComparison(Value);
+                //        break;
+                //    case "Entity":
+                //        throw new Exception("can't compare values which are related entities - use the RelationshipFilter instead");
+                //    // ReSharper disable once RedundantCaseLabel
+                //    case "String":
+                //    default:
+                //        compare = GetStringComparison(Value);
+                //        break;
+                //}
+
+                // New mechanism because the filter ignores internal properties like Modified, EntityId etc.
+                var firstAtt = firstEntity.GetBestValue(_initializedAttrName);  // this should get everything, incl. modified, EntityId, EntityGuid etc.
+                var netTypeName = firstAtt.GetType().Name;
+                switch (netTypeName)
                 {
                     case "Boolean": // todo: find some constant for this
                         compare = GetBoolComparison(Value);
                         break;
-                    case "Number":
+                    case "Decimal":
                         compare = GetNumberComparison(Value);
                         break;
                     case "DateTime":
                         compare = GetDateTimeComparison(Value);
                         break;
                     case "Entity":
-                        throw new Exception();
-                        break;
+                        throw new Exception("can't compare values which are related entities - use the RelationshipFilter instead");
+                    // ReSharper disable once RedundantCaseLabel
                     case "String":
                     default:
                         compare = GetStringComparison(Value);
                         break;
                 }
+
+
             }
             #endregion
 
@@ -203,9 +229,9 @@ namespace ToSic.Eav.DataSources
             if (!stringComparison.ContainsKey(operation))
                 throw new Exception("Wrong operator for string compare, can't find comparison for '" + operation + "'");
 
-            var StringCompare = stringComparison[operation];
+            var stringCompare = stringComparison[operation];
             return e 
-                => StringCompare(e.GetBestValue(_initializedAttrName, _initializedLangs)); 
+                => stringCompare(e.GetBestValue(_initializedAttrName, _initializedLangs)); 
 
         }
 

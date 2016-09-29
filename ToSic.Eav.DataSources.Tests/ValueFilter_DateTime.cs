@@ -32,6 +32,17 @@ namespace ToSic.Eav.DataSources.Tests
             => DateTimeFilter("Birthdate", "6.6.1905", 2);
 
         [TestMethod]
+        public void ValueFilter_DateModifiedZero()
+            => DateTimeFilter("Modified", "6.6.1905", 0);
+
+        [TestMethod]
+        public void ValueFilter_DateModifiedOlder()
+            => DateTimeFilter("Modified", "2100-01-01", 10000, "<");
+        [TestMethod]
+        public void ValueFilter_DateModifiedBetween()
+            => DateTimeFilter("Modified", "0000-01-01 and 2100-01-01", 10000, "Between");
+
+        [TestMethod]
         public void Gt()
             => DateTimeFilter("Birthdate", "24.8.1997", 1124, ">");// this is one of the generated dates
 

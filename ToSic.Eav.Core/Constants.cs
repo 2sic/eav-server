@@ -104,5 +104,32 @@ namespace ToSic.Eav
         public const string ScopeSystem = "System";
 
         #endregion
+
+        #region Special Properties of Entities
+
+        public const string EntityFieldTitle = "entitytitle";
+        public const string EntityFieldId = "entityid";
+        public const string EntityFieldGuid = "entityguid";
+        public const string EntityFieldType = "entitytype";
+        public const string EntityFieldIsPublished = "ispublished";
+        public const string EntityFieldModified = "modified";
+
+        public static bool InternalOnlyIsSpecialEntityProperty(string name)
+        {
+            switch (name.ToLower())
+            {
+                case EntityFieldTitle:
+                case EntityFieldId:
+                case EntityFieldGuid:
+                case EntityFieldType:
+                case EntityFieldIsPublished:
+                case EntityFieldModified:
+                    return true;
+            }
+            return false;
+
+        }
+
+        #endregion
     }
 }
