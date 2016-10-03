@@ -5,6 +5,7 @@ using System.Threading;
 using System.Web.Http;
 using ToSic.Eav.DataSources;
 
+// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Serializers
 {
     /// <summary>
@@ -40,15 +41,15 @@ namespace ToSic.Eav.Serializers
 
         #region Language
 
-        private string _Language = "";
+        private string _language = "";
 
         private string Language
         {
             get
             {
-                if(_Language == "")
-                    _Language = Thread.CurrentThread.CurrentCulture.Name;
-                return _Language;
+                if(_language == "")
+                    _language = Thread.CurrentThread.CurrentCulture.Name;
+                return _language;
             }
         }
 
@@ -120,16 +121,17 @@ namespace ToSic.Eav.Serializers
         /// <returns></returns>
         public virtual Dictionary<string, object> GetDictionaryFromEntity(IEntity entity, string language)
         {
+            var lngs = new[] {language};
             // Convert Entity to dictionary
             // If the value is a relationship, then give those too, but only Title and Id
             var entityValues = (from d in entity.Attributes select d.Value).ToDictionary(k => k.Name, v =>
             {
-				var value = entity.GetBestValue(v.Name, new[] { language }, true);
+				var value = entity.GetBestValue(v.Name, lngs, true);
                 if (v.Type == "Entity" && value is Data.EntityRelationship)
                     return ((Data.EntityRelationship) value).Select(p => new
                     {
                         Id = p?.EntityId,
-                        Title = p?.GetBestValue("EntityTitle")?.ToString()
+                        Title = p?.GetBestValue("EntityTitle", lngs)?.ToString()
                     }).ToList();
 				return value;
 				
@@ -171,7 +173,7 @@ namespace ToSic.Eav.Serializers
             if (!entityValues.ContainsKey("Title"))
                 try // there are strange cases where the title is missing, then just ignore this
                 {
-                    entityValues.Add("Title", entity.GetBestValue("EntityTitle", new []{language}, true));
+                    entityValues.Add("Title", entity.GetBestValue("EntityTitle", lngs, true));
                 }
                 catch
                 {
