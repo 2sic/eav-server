@@ -152,16 +152,26 @@ namespace ToSic.Eav.Serializers
             {
                 entityValues.Add("RepositoryId", entity.RepositoryId);
                 entityValues.Add("IsPublished", entity.IsPublished);
-                if(entity.IsPublished && entity.GetDraft() != null)
-                    entityValues.Add("Draft", new
+                if (entity.IsPublished && entity.GetDraft() != null)
+                {
+                    // do a check if there was a field called Published, which we must remove for this to work
+                    if (entityValues.ContainsKey(Constants.DraftEntityField))
+                        entityValues.Remove(Constants.DraftEntityField);
+                    entityValues.Add(Constants.DraftEntityField, new
                     {
                         entity.GetDraft().RepositoryId,
                     });
-                if(!entity.IsPublished & entity.GetPublished() != null)
-                    entityValues.Add("Published", new
+                }
+                if (!entity.IsPublished & entity.GetPublished() != null)
+                {
+                    // do a check if there was a field called Published, which we must remove for this to work
+                    if (entityValues.ContainsKey(Constants.PublishedEntityField))
+                        entityValues.Remove(Constants.PublishedEntityField);
+                    entityValues.Add(Constants.PublishedEntityField, new
                     {
-                        entity.GetPublished().RepositoryId, 
+                        entity.GetPublished().RepositoryId,
                     });
+                }
             }
 
             if (IncludeMetadata)
@@ -175,6 +185,7 @@ namespace ToSic.Eav.Serializers
                 {
                     entityValues.Add("Title", entity.GetBestValue("EntityTitle", lngs, true));
                 }
+                // ReSharper disable once EmptyGeneralCatchClause
                 catch
                 {
                 }

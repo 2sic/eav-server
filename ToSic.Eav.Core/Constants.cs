@@ -90,6 +90,9 @@ namespace ToSic.Eav
         /// <summary>Draft-Entities Stream Name</summary>
         public const string DraftsStreamName = "Drafts";
 
+        public const string PublishedEntityField = "PublishedEntity";
+        public const string DraftEntityField = "DraftEntity";
+
         public const string TypeForInputTypeDefinition = "ContentType-InputType";
         #endregion
 
