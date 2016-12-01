@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
-using ToSic.Eav.Data;
 
+// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.ValueProvider
 {
 	/// <summary>
@@ -9,23 +9,22 @@ namespace ToSic.Eav.ValueProvider
 	/// </summary>
 	public class EntityValueProvider : BaseValueProvider
     {
-        protected IEntity _entity;
-	    private string[] dimensions = new string[] {""};
+        protected IEntity Entity;
+	    private readonly string[] _dimensions = new string[] {""};
 
 	    public EntityValueProvider()
 	    {
 	        
 	    }
 
-		/// <summary>
-		/// Constructs a new AssignedEntity AttributePropertyAccess
-		/// </summary>
-		/// <param name="name">Name of the PropertyAccess, e.g. pipelinesettings</param>
-		/// <param name="objectId">EntityGuid of the Entity to get assigned Entities of</param>
-		/// <param name="metaDataSource">DataSource that provides MetaData</param>
-        public EntityValueProvider(IEntity source, string name = "entity source without name")
+	    /// <summary>
+	    /// Constructs a new AssignedEntity AttributePropertyAccess
+	    /// </summary>
+	    /// <param name="source"></param>
+	    /// <param name="name">Name of the PropertyAccess, e.g. pipelinesettings</param>
+	    public EntityValueProvider(IEntity source, string name = "entity source without name")
 		{
-            _entity = source;
+            Entity = source;
 		    Name = name;
 		}
 
@@ -33,13 +32,16 @@ namespace ToSic.Eav.ValueProvider
         public string Get(string property, string format, System.Globalization.CultureInfo formatProvider, ref bool propertyNotFound)
         {
             // Return empty string if Entity is null
-            if (_entity == null)
+            if (Entity == null)
+            {
+                propertyNotFound = true;
                 return string.Empty;
+            }
 
             string outputFormat = format == string.Empty ? "g" : format;
 
             // bool propertyNotFound;
-            object valueObject = _entity.GetBestValue(property, dimensions);//, out propertyNotFound);
+            object valueObject = Entity.GetBestValue(property, _dimensions);//, out propertyNotFound);
             propertyNotFound = (valueObject == null);
 
             if (!propertyNotFound && valueObject != null)
@@ -69,7 +71,7 @@ namespace ToSic.Eav.ValueProvider
                 var subTokens = CheckAndGetSubToken(property);
                 if (subTokens.HasSubtoken)
                 {
-                    valueObject = _entity.GetBestValue(subTokens.Source, dimensions);
+                    valueObject = Entity.GetBestValue(subTokens.Source, _dimensions);
 
                     if (valueObject != null)
                     {
@@ -95,14 +97,13 @@ namespace ToSic.Eav.ValueProvider
         }
 
 
-        public override string Get(string property, string format, ref bool PropertyNotFound)
-        {
-            return Get(property, format, System.Threading.Thread.CurrentThread.CurrentCulture, ref PropertyNotFound);
-        }
+	    public override string Get(string property, string format, ref bool propertyNotFound)
+	        => Get(property, format, System.Threading.Thread.CurrentThread.CurrentCulture, ref propertyNotFound);
+        
 
 	    public override bool Has(string property)
 	    {
-	        var notFound = !_entity.Attributes.ContainsKey(property);
+	        var notFound = !Entity?.Attributes.ContainsKey(property) ?? false; // always false if no entity attached
             // if it's not a standard attribute, check for dynamically provided values like EntityId
             if (notFound)
 	            Get(property, "", ref notFound);
