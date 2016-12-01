@@ -44,6 +44,7 @@
     <Compile Include="ValueProvider\BaseValueProvider.cs" />
     <Compile Include="ValueProvider\IValueCollectionProvider.cs" />
     <Compile Include="ValueProvider\IValueProvider.cs" />
+    <Compile Include="ValueProvider\OverrideValueProvider.cs" />
     <Compile Include="ValueProvider\StaticValueProvider.cs" />
     <Compile Include="ValueProvider\ValueCollectionProvider.cs" />
   </ItemGroup>

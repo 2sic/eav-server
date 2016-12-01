@@ -310,10 +310,10 @@ namespace ToSic.Eav.WebApi
 		/// Query the Result of a Pipline using Test-Parameters
 		/// </summary>
 		[HttpGet]
-		public dynamic /* Dictionary<string, IEnumerable<IEntity>> */ QueryPipeline(int appId, int id)
+		public dynamic QueryPipeline(int appId, int id)
 		{
             // Get the query, run it and track how much time this took
-			var outStreams = ConstructPipeline(appId, id);
+			var outStreams = ConstructPipeline(appId, id, true);
 		    var timer = new Stopwatch();
             timer.Start();
 		    var query = Serializer.Prepare(outStreams);
@@ -336,15 +336,15 @@ namespace ToSic.Eav.WebApi
 		}
 
 
-		private static IDataSource ConstructPipeline(int appId, int id)
+		private static IDataSource ConstructPipeline(int appId, int id, bool showDrafts)
 		{
 			var testValueProviders = DataPipelineFactory.GetTestValueProviders(appId, id);
-			return DataPipelineFactory.GetDataSource(appId, id, testValueProviders);
+			return DataPipelineFactory.GetDataSource(appId, id, testValueProviders, showDrafts:showDrafts);
 		}
 
 		[HttpGet]
 		public dynamic PipelineDebugInfo(int appId, int id)
-		=> new DataSources.Debug.PipelineInfo(ConstructPipeline(appId, id));
+		=> new DataSources.Debug.PipelineInfo(ConstructPipeline(appId, id, true));
 		
 
 
@@ -386,7 +386,7 @@ namespace ToSic.Eav.WebApi
 			foreach (var dataSource in dataSources)
 			{
 				// Delete Configuration Entities (if any)
-				var dataSourceConfig = metaDataSource.GetAssignedEntities(Constants.AssignmentObjectTypeEntity, dataSource.EntityGuid).FirstOrDefault();
+				var dataSourceConfig = metaDataSource.GetAssignedEntities(Constants.MetadataForEntity /* .AssignmentObjectTypeEntity*/, dataSource.EntityGuid).FirstOrDefault();
 				if (dataSourceConfig != null)
 					_context.Entities.DeleteEntity(dataSourceConfig.EntityId);
 

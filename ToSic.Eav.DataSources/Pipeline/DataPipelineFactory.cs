@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using ToSic.Eav.ValueProvider;
 
+// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataSources
 {
 	/// <summary>
@@ -11,28 +12,30 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
 	public class DataPipelineFactory
 	{
-		/// <summary>
-		/// Creates a DataSource from a PipelineEntity for specified Zone and App
-		/// </summary>
-		/// <param name="appId">AppId to use</param>
-		/// <param name="pipelineEntityId">EntityId of the Entity describing the Pipeline</param>
-		/// <param name="valueCollection">ConfigurationProvider Provider for configurable DataSources</param>
-		/// <param name="outSource">DataSource to attach the Out-Streams</param>
-		/// <returns>A single DataSource Out with wirings and configurations loaded, ready to use</returns>
-		public static IDataSource GetDataSource(int appId, int pipelineEntityId, ValueCollectionProvider valueCollection, IDataSource outSource = null)
+	    /// <summary>
+	    /// Creates a DataSource from a PipelineEntity for specified Zone and App
+	    /// </summary>
+	    /// <param name="appId">AppId to use</param>
+	    /// <param name="pipelineEntityId">EntityId of the Entity describing the Pipeline</param>
+	    /// <param name="valueCollection">ConfigurationProvider Provider for configurable DataSources</param>
+	    /// <param name="outSource">DataSource to attach the Out-Streams</param>
+	    /// <param name="showDrafts"></param>
+	    /// <returns>A single DataSource Out with wirings and configurations loaded, ready to use</returns>
+	    public static IDataSource GetDataSource(int appId, int pipelineEntityId, ValueCollectionProvider valueCollection, IDataSource outSource = null, bool showDrafts = false)
 		{
-			return GetDataSource(appId, pipelineEntityId, valueCollection.Sources.Select(s => s.Value), outSource);
+			return GetDataSource(appId, pipelineEntityId, valueCollection.Sources.Select(s => s.Value), outSource, showDrafts);
 		}
 
-		/// <summary>
-		/// Creates a DataSource from a PipelineEntity for specified Zone and App
-		/// </summary>
-		/// <param name="appId">AppId to use</param>
-		/// <param name="pipelineEntityId">EntityId of the Entity describing the Pipeline</param>
-		/// <param name="configurationPropertyAccesses">Property Providers for configurable DataSources</param>
-		/// <param name="outSource">DataSource to attach the Out-Streams</param>
-		/// <returns>A single DataSource Out with wirings and configurations loaded, ready to use</returns>
-		public static IDataSource GetDataSource(int appId, int pipelineEntityId, IEnumerable<IValueProvider> configurationPropertyAccesses, IDataSource outSource = null)
+	    /// <summary>
+	    /// Creates a DataSource from a PipelineEntity for specified Zone and App
+	    /// </summary>
+	    /// <param name="appId">AppId to use</param>
+	    /// <param name="pipelineEntityId">EntityId of the Entity describing the Pipeline</param>
+	    /// <param name="configurationPropertyAccesses">Property Providers for configurable DataSources</param>
+	    /// <param name="outSource">DataSource to attach the Out-Streams</param>
+	    /// <param name="showDrafts"></param>
+	    /// <returns>A single DataSource Out with wirings and configurations loaded, ready to use</returns>
+	    public static IDataSource GetDataSource(int appId, int pipelineEntityId, IEnumerable<IValueProvider> configurationPropertyAccesses, IDataSource outSource = null, bool showDrafts = false)
 		{
             if(outSource == null)
                 outSource = new PassThrough();
@@ -50,36 +53,65 @@ namespace ToSic.Eav.DataSources
 			{
 				throw new Exception("PipelineEntity not found with ID " + pipelineEntityId + " on AppId " + appId);
 			}
-			var dataPipelineParts = metaDataSource.GetAssignedEntities(Constants.AssignmentObjectTypeEntity, dataPipeline.EntityGuid, Constants.DataPipelinePartStaticName);
-			#endregion
+			var dataPipelineParts = metaDataSource.GetAssignedEntities(Constants.MetadataForEntity, dataPipeline.EntityGuid, Constants.DataPipelinePartStaticName);
+            #endregion
 
-			var pipelineSettingsProvider = new AssignedEntityValueProvider("pipelinesettings", dataPipeline.EntityGuid, metaDataSource);
-			#region init all DataPipelineParts
-			var dataSources = new Dictionary<string, IDataSource>();
+            #region prepare shared / global value providers
+            // the pipeline settings which apply to the whole pipeline
+            var pipelineSettingsProvider = new AssignedEntityValueProvider("pipelinesettings", dataPipeline.EntityGuid, metaDataSource);
+
+            // global settings, ATM just if showdrafts are to be used
+            const string itemSettings = "settings";
+            #endregion
+
+
+            #region init all DataPipelineParts
+            var dataSources = new Dictionary<string, IDataSource>();
 		    foreach (var dataPipelinePart in dataPipelineParts)
 		    {
 		        #region Init Configuration Provider
 
 		        var configurationProvider = new ValueCollectionProvider();
-		        var settingsPropertySource = new AssignedEntityValueProvider("settings", dataPipelinePart.EntityGuid,
-		            metaDataSource);
-		        configurationProvider.Sources.Add(settingsPropertySource.Name, settingsPropertySource);
+                configurationProvider.Sources.Add(itemSettings, new AssignedEntityValueProvider(itemSettings, dataPipelinePart.EntityGuid,
+                    metaDataSource));
+
+                // if show-draft in overridden, add that to the settings
+                if (showDrafts)
+                    configurationProvider.Sources[itemSettings] = new OverrideValueProvider(itemSettings,
+		                new StaticValueProvider(itemSettings, new Dictionary<string, string>()
+		                {
+		                    {"ShowDrafts", true.ToString()}
+		                }), configurationProvider.Sources[itemSettings]);
+
 		        configurationProvider.Sources.Add(pipelineSettingsProvider.Name, pipelineSettingsProvider);
 
 		        // attach all propertyProviders
 		        if (configurationPropertyAccesses != null)
-		            foreach (var propertyProvider in configurationPropertyAccesses)
+		        {
+		            // ReSharper disable once PossibleMultipleEnumeration
+		            var injectConfs = configurationPropertyAccesses.ToList();
+
+		            foreach (var propertyProvider in injectConfs)
 		            {
 		                if (propertyProvider.Name == null)
 		                    throw new NullReferenceException("PropertyProvider must have a Name");
-		                configurationProvider.Sources.Add(propertyProvider.Name, propertyProvider);
+
+		                // check if it already has this provider. 
+		                // ensure that there is an "override property provider" which would pre-catch certain keys
+		                if (configurationProvider.Sources.ContainsKey(propertyProvider.Name))
+		                    configurationProvider.Sources[propertyProvider.Name] =
+		                        new OverrideValueProvider(propertyProvider.Name, propertyProvider,
+		                            configurationProvider.Sources[propertyProvider.Name]);
+		                else
+		                    configurationProvider.Sources.Add(propertyProvider.Name, propertyProvider);
 		            }
+		        }
 
 		        #endregion
 
 
-		        // This is new in 2015-10-38 - check type because we renamed the DLL with the parts, and sometimes the old dll-name had been saved
-		        var assemblyAndType = dataPipelinePart["PartAssemblyAndType"][0].ToString();
+                // This is new in 2015-10-38 - check type because we renamed the DLL with the parts, and sometimes the old dll-name had been saved
+                var assemblyAndType = dataPipelinePart["PartAssemblyAndType"][0].ToString();
 		        if (assemblyAndType.EndsWith(Constants.V3To4DataSourceDllOld))
 		            assemblyAndType = assemblyAndType.Replace(Constants.V3To4DataSourceDllOld, Constants.V3To4DataSourceDllNew);
 
@@ -105,7 +137,7 @@ namespace ToSic.Eav.DataSources
 		private static void InitWirings(IEntity dataPipeline, IDictionary<string, IDataSource> dataSources)
 		{
 			// Init
-			var wirings = DataPipelineWiring.Deserialize((string)dataPipeline[Constants.DataPipelineStreamWiringStaticName][0]);
+			var wirings = DataPipelineWiring.Deserialize((string)dataPipeline[Constants.DataPipelineStreamWiringStaticName][0]).ToList();
 			var initializedWirings = new List<WireInfo>();
 
 			// 1. wire Out-Streams of DataSources with no In-Streams
@@ -135,7 +167,7 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// Wire all Out-Wirings on specified DataSources
 		/// </summary>
-		private static bool ConnectOutStreams(IEnumerable<KeyValuePair<string, IDataSource>> dataSourcesToInit, IDictionary<string, IDataSource> allDataSources, IEnumerable<WireInfo> allWirings, List<WireInfo> initializedWirings)
+		private static bool ConnectOutStreams(IEnumerable<KeyValuePair<string, IDataSource>> dataSourcesToInit, IDictionary<string, IDataSource> allDataSources, List<WireInfo> allWirings, List<WireInfo> initializedWirings)
 		{
 			var wiringsCreated = false;
 

@@ -2,6 +2,7 @@
 using System.Linq;
 using ToSic.Eav.DataSources;
 
+// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.ValueProvider
 {
 	/// <summary>
@@ -9,15 +10,14 @@ namespace ToSic.Eav.ValueProvider
 	/// </summary>
 	public class AssignedEntityValueProvider : EntityValueProvider // IValueProvider
 	{
-		private readonly string _name;
-		private readonly IMetaDataSource _metaDataSource;
+	    private readonly IMetaDataSource _metaDataSource;
 		private readonly Guid _objectToProvideSettingsTo;
-		private IEntity _assignedEntity;
+		//private IEntity _assignedEntity;
 		private bool _entityLoaded;
 
-		public string Name { get { return _name; } }
+		public new string Name { get; }
 
-		/// <summary>
+	    /// <summary>
 		/// Constructs the object with prefilled parameters. It won't access the entity yet, because 
 		/// it's possible that the data-source wouldn't be ready yet. The access to the entity will 
 		/// only occur if it's really needed. 
@@ -27,7 +27,7 @@ namespace ToSic.Eav.ValueProvider
 		/// <param name="metaDataSource">DataSource that provides MetaData</param>
 		public AssignedEntityValueProvider(string name, Guid objectId, IMetaDataSource metaDataSource)
 		{
-			_name = name;
+			Name = name;
 			_objectToProvideSettingsTo = objectId;
 			_metaDataSource = metaDataSource;
 		}
@@ -37,8 +37,8 @@ namespace ToSic.Eav.ValueProvider
         /// </summary>
 		protected void LoadEntity()
 		{
-			var assignedEntities = _metaDataSource.GetAssignedEntities(Constants.AssignmentObjectTypeEntity, _objectToProvideSettingsTo);
-			_entity = assignedEntities.FirstOrDefault(e => e.Type.StaticName != Constants.DataPipelinePartStaticName);
+			var assignedEntities = _metaDataSource.GetAssignedEntities(Constants.MetadataForEntity /*.AssignmentObjectTypeEntity*/, _objectToProvideSettingsTo);
+			Entity = assignedEntities.FirstOrDefault(e => e.Type.StaticName != Constants.DataPipelinePartStaticName);
 			_entityLoaded = true;
 		}
 
