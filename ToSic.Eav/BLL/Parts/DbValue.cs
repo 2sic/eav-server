@@ -40,9 +40,8 @@ namespace ToSic.Eav.BLL.Parts
             }
 
             #region copy relationships
-            // todo 1028 - decide which relationship must be cleared correctly
+            // note the related Entities are managed in the EntityParentRelationships. not sure why though
             target.EntityParentRelationships.Clear();
-            //target.EntityChildRelationships.Clear();
 
             // Add all Related Entities
             foreach (var entityParentRelationship in source.EntityParentRelationships)
@@ -152,7 +151,7 @@ namespace ToSic.Eav.BLL.Parts
                 typedValue = EntityGuidsToString(entityGuids, multiValuesSeparator);
             }
             else
-                throw new NotSupportedException(string.Format("GetTypedValue() for Attribute {0} (Type: {1}) with newValue of type {2} not supported.", attributeStaticName, attributeType, value.GetType()));
+                throw new NotSupportedException($"GetTypedValue() for Attribute {attributeStaticName} (Type: {attributeType}) with newValue of type {value.GetType()} not supported.");
             return typedValue;
         }
 
@@ -192,7 +191,7 @@ namespace ToSic.Eav.BLL.Parts
         /// </summary>
         private EavValue UpdateSimpleValue(Attribute attribute, Entity entity, ICollection<int> dimensionIds, bool masterRecord, object newValue, int? valueId, bool readOnly, List<EavValue> currentValues, IEntity entityModel, IEnumerable<Import.ValueDimension> valueDimensions = null)
         {
-            var newValueSerialized = Eav.HelpersToRefactor.SerializeValue(newValue);
+            var newValueSerialized = HelpersToRefactor.SerializeValue(newValue);
             var changeId = Context.Versioning.GetChangeLogId();
 
             // Get Value or create new one
