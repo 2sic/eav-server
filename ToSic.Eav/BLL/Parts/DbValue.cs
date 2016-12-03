@@ -39,14 +39,20 @@ namespace ToSic.Eav.BLL.Parts
                 target.Values.Add(value);
             }
 
+            #region copy relationships
+            // todo 1028 - decide which relationship must be cleared correctly
             target.EntityParentRelationships.Clear();
+            //target.EntityChildRelationships.Clear();
+
             // Add all Related Entities
             foreach (var entityParentRelationship in source.EntityParentRelationships)
                 target.EntityParentRelationships.Add(new EntityRelationship
                 {
                     AttributeID = entityParentRelationship.AttributeID,
-                    ChildEntityID = entityParentRelationship.ChildEntityID
+                    ChildEntityID = entityParentRelationship.ChildEntityID,
+                    SortOrder = entityParentRelationship.SortOrder
                 });
+            #endregion
         }
 
         /// <summary>

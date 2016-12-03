@@ -20,15 +20,20 @@ namespace ToSic.Eav.BLL.Parts
         /// <summary>
         /// Publish a Draft-Entity
         /// </summary>
-        /// <param name="unpublishedEntityId">ID of the Draft-Entity</param>
+        /// <param name="entityId"></param>
         /// <param name="autoSave">Call SaveChanges() automatically? Set to false if you want to do further DB changes</param>
         /// <returns>The published Entity</returns>
         public Entity PublishDraftInDbEntity(int entityId, bool autoSave)
         {
             var unpublishedEntity = Context.Entities.GetEntity(entityId);
             if (unpublishedEntity.IsPublished)
-                throw new InvalidOperationException(string.Format("EntityId {0} is already published", entityId));
-
+            {
+                // try to get the draft if it exists
+                var draftId = GetDraftEntityId(entityId);
+                if (!draftId.HasValue)
+                    throw new InvalidOperationException($"EntityId {entityId} is already published");
+                unpublishedEntity = Context.Entities.GetEntity(draftId.Value);
+            }
             Entity publishedEntity;
 
             // Publish Draft-Entity
@@ -53,6 +58,12 @@ namespace ToSic.Eav.BLL.Parts
             return publishedEntity;
         }
 
+        /// <summary>
+        /// Should clean up branches of this item, and set the one and only as published
+        /// </summary>
+        /// <param name="unpublishedEntityId"></param>
+        /// <param name="newPublishedState"></param>
+        /// <returns></returns>
         public Entity ClearDraftBranchAndSetPublishedState(int unpublishedEntityId, bool newPublishedState = true)
         {
             var unpublishedEntity = Context.Entities.GetEntity(unpublishedEntityId);
