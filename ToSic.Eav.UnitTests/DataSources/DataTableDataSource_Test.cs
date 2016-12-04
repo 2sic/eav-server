@@ -68,8 +68,10 @@ namespace ToSic.Eav.UnitTests.DataSources
             });
             AddSemirandomPersons(dataTable, itemsToGenerate, firstId);
 
-            var source = new DataTableDataSource(dataTable, "Person", titleField: "FullName");
-            source.ConfigurationProvider = new ValueProvider.ValueCollectionProvider_Test().ValueCollection();
+            var source = new DataTableDataSource(dataTable, "Person", titleField: "FullName")
+            {
+                ConfigurationProvider = new ValueProvider.ValueCollectionProvider_Test().ValueCollection()
+            };
 
             // now enumerate all, to be sure that the time counted for DS creation isn't part of the tracked test-time
             var temp = source.LightList.LastOrDefault();

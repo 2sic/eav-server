@@ -36,6 +36,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -54,6 +56,8 @@
     <Compile Include="ValueFilter_DateTime.cs" />
     <Compile Include="ValueFilter_Numbers.cs" />
     <Compile Include="ValueFilter_Boolean.cs" />
+    <Compile Include="ValueSort_Shared.cs" />
+    <Compile Include="ValueSort_String.cs" />
     <Compile Include="ValueFilter_String.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -74,9 +78,7 @@
       <Name>ToSic.Eav.UnitTests</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ValueFilterTests\" />
-  </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

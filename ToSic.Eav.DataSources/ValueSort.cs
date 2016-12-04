@@ -83,8 +83,12 @@ namespace ToSic.Eav.DataSources
 
             var list = In[Constants.DefaultStreamName].LightList;
 
-			// only get the entities, that have these attributes (but don't test for id/title, as all have these)
-			var attrWithoutIdAndTitle = attr.Where(v => v.ToLower() != "entityid" && v.ToLower() != "entitytitle").ToArray();
+            // check if no list parameters specified
+		    if (attr.Length == 1 && string.IsNullOrWhiteSpace(attr[0]))
+		        return list;
+
+            // only get the entities, that have these attributes (but don't test for id/title, as all have these)
+            var attrWithoutIdAndTitle = attr.Where(v => v.ToLower() != "entityid" && v.ToLower() != "entitytitle").ToArray();
 			var results = (from e in list
 						   where e.Attributes.Keys.Where(attrWithoutIdAndTitle.Contains).Count() == attrWithoutIdAndTitle.Length
 						   select e);

@@ -53,7 +53,7 @@ namespace ToSic.Eav.WebApi
             }
 
             var fileContent = recordExport == RecordExport.Blank
-                ? new XmlExport().CreateBlankXml(CurrentContext.ZoneId, appId, contentTypeId, "") 
+                ? new XmlExport().CreateBlankXml(CurrentContext.ZoneId, appId, contentTypeId) 
                 : new XmlExport().CreateXml(CurrentContext.ZoneId, appId, contentTypeId, language ?? "", defaultLanguage, contextLanguages, languageReferences, resourcesReferences, ids);
 
             var fileName = $"2sxc {contentTypeName.Replace(" ", "-")} {language} {(recordExport == RecordExport.Blank ? "Template" : "Data")} {DateTime.Now.ToString("yyyyMMddHHmmss")}.xml";
