@@ -71,7 +71,6 @@
     <Compile Include="Refactoring\Options\LanguageReferenceImport.cs" />
     <Compile Include="Refactoring\Options\LanguageReferenceImportExtension.cs" />
     <Compile Include="Refactoring\Options\RecordExport.cs" />
-    <Compile Include="Refactoring\Options\RecordExportExtension.cs" />
     <Compile Include="Refactoring\Options\ResourceReferenceExport.cs" />
     <Compile Include="Refactoring\Options\ResourceReferenceExportExtension.cs" />
     <Compile Include="Refactoring\Options\ResourceReferenceImport.cs" />

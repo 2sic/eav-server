@@ -3,6 +3,7 @@
     public enum RecordExport
     {
         Blank,
-        All
+        All,
+        Selection
     }
 }

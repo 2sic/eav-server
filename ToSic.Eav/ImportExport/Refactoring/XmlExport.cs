@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using ToSic.Eav.BLL;
@@ -58,8 +57,9 @@ namespace ToSic.Eav.ImportExport.Refactoring
         /// <param name="languageScope">Languages supported of the system</param>
         /// <param name="languageReference">How value references to other languages are handled</param>
         /// <param name="resourceReference">How value references to files and pages are handled</param>
+        /// <param name="selectedIds">array of IDs to export only these</param>
         /// <returns>A string containing the xml data</returns>
-        public string CreateXml(int zoneId, int applicationId, int contentTypeId, string languageSelected, string languageFallback, IEnumerable<string> languageScope, LanguageReferenceExport languageReference, ResourceReferenceExport resourceReference)
+        public string CreateXml(int zoneId, int applicationId, int contentTypeId, string languageSelected, string languageFallback, IEnumerable<string> languageScope, LanguageReferenceExport languageReference, ResourceReferenceExport resourceReference, int[] selectedIds)
         {
             var contentType = GetContentType(zoneId, applicationId, contentTypeId);
             if (contentType == null)
@@ -83,13 +83,11 @@ namespace ToSic.Eav.ImportExport.Refactoring
             var document = GetDocument(documentRoot);
 
             var entities = contentType.Entities.Where(entity => entity.ChangeLogIDDeleted == null);
+            if (selectedIds != null && selectedIds.Length > 0)
+                entities = entities.Where(e => selectedIds.Contains(e.EntityID));
+
             foreach (var entity in entities)
             {
-                Entity x;
-                // 2dm Test code to debug - temporary only
-                if (entity.EntityGUID == new Guid("31d93b03-cfb3-483b-8134-e08bbee9cd2c"))
-                    x = entity;
-
 
                 foreach (var language in languages)
                 {
