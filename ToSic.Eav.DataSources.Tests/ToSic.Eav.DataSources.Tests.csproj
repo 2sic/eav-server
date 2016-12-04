@@ -57,6 +57,7 @@
     <Compile Include="ValueFilter_Numbers.cs" />
     <Compile Include="ValueFilter_Boolean.cs" />
     <Compile Include="ValueSort_Shared.cs" />
+    <Compile Include="ValueSort_DateTime.cs" />
     <Compile Include="ValueSort_String.cs" />
     <Compile Include="ValueFilter_String.cs" />
   </ItemGroup>
