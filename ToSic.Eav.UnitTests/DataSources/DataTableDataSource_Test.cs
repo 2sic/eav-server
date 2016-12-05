@@ -65,10 +65,11 @@ namespace ToSic.Eav.UnitTests.DataSources
                 new DataColumn("Birthdate", typeof (DateTime)),
                 new DataColumn("Height", typeof (int)),
                 new DataColumn("CityMaybeNull", typeof(string)), 
+                new DataColumn("InternalModified", typeof(DateTime)), 
             });
             AddSemirandomPersons(dataTable, itemsToGenerate, firstId);
 
-            var source = new DataTableDataSource(dataTable, "Person", titleField: "FullName")
+            var source = new DataTableDataSource(dataTable, "Person", titleField: "FullName", modifiedField: "InternalModified")
             {
                 ConfigurationProvider = new ValueProvider.ValueCollectionProvider_Test().ValueCollection()
             };
@@ -93,6 +94,7 @@ namespace ToSic.Eav.UnitTests.DataSources
                 var year = 1900 + i%110;
                 var month = i%12+1;
                 var day = i%28+1;
+                var sysModified = RandomDate();// new DateTime(i % 7 + 1990 - i%11, i%11 + 1, (i + 20) % 28);
                 dataTable.Rows.Add(i, 
                     fullName, 
                     firstName, 
@@ -101,9 +103,18 @@ namespace ToSic.Eav.UnitTests.DataSources
                     i % IsMaleForEveryX == 0, 
                     new DateTime(year, month, day),
                     MinHeight + i % HeightVar,
-                    cityMaybeNull
+                    cityMaybeNull,
+                    sysModified
                     );
             }
+        }
+
+        private static readonly Random Gen = new Random();
+        private static DateTime RandomDate()
+        {
+            DateTime start = new DateTime(1995, 1, 1);
+            int range = (DateTime.Today - start).Days;
+            return start.AddDays(Gen.Next(range));
         }
 
 

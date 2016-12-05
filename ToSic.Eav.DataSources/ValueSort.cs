@@ -15,6 +15,7 @@ namespace ToSic.Eav.DataSources
 		private const string AttrKey = "Attributes";
 		private const string DirectionKey = "Value";
 		private const string LangKey = "Language";
+        
 		/// <summary>
 		/// The attribute whoose value will be filtered
 		/// </summary>
@@ -88,10 +89,12 @@ namespace ToSic.Eav.DataSources
 		        return list;
 
             // only get the entities, that have these attributes (but don't test for id/title, as all have these)
-            var attrWithoutIdAndTitle = attr.Where(v => v.ToLower() != "entityid" && v.ToLower() != "entitytitle").ToArray();
-			var results = (from e in list
-						   where e.Attributes.Keys.Where(attrWithoutIdAndTitle.Contains).Count() == attrWithoutIdAndTitle.Length
-						   select e);
+            var valueAttrs = attr.Where(v => !Constants.InternalOnlyIsSpecialEntityProperty(v)).ToArray();
+		    var results = valueAttrs.Length == 0
+		        ? list
+		        : (from e in list
+		            where e.Attributes.Keys.Where(valueAttrs.Contains).Count() == valueAttrs.Length
+		            select e);
 
 			// if list is blank, stop here and return blank list
 			if (!results.Any())
@@ -103,7 +106,11 @@ namespace ToSic.Eav.DataSources
 			{
 				// get attribute-name and type; set type=id|title for special cases
 				var a = attr[i];
-				var specAttr = a.ToLower() == "entityid" ? 'i' : a.ToLower() == "entitytitle" ? 't' : 'x';
+			    var aLow = a.ToLower();
+				var specAttr = aLow == Constants.EntityFieldId ? 'i' 
+                    : aLow == Constants.EntityFieldTitle ? 't' 
+                    : aLow == Constants.EntityFieldModified ? 'm'
+                    : 'x';
 				bool isAscending = true;			// default
 				if (directions.Count() - 1 >= i)	// if this value has a direction specified, use that...
 					isAscending = !descendingCodes.Any(directions[i].ToLower().Trim().Contains);
@@ -130,7 +137,9 @@ namespace ToSic.Eav.DataSources
 		private object getObjToSort(IEntity e, string a, char special)
 		{
 			// get either the special id or title, if title or normal field, then use language [0] = default
-			return special == 'i' ? e.EntityId : (special == 't' ? e.Title : e[a])[0];
+			return special == 'i' ? e.EntityId 
+                : special == 'm' ? e.Modified
+                : (special == 't' ? e.Title : e[a])[0];
 		}
 	}
 }

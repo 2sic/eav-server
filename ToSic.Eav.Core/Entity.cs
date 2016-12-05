@@ -81,7 +81,7 @@ namespace ToSic.Eav.Data
         /// <summary>
 		/// Create a new Entity. Used to create InMemory Entities that are not persisted to the EAV SqlStore.
 		/// </summary>
-		public Entity(int entityId, string contentTypeName, IDictionary<string, object> values, string titleAttribute)
+		public Entity(int entityId, string contentTypeName, IDictionary<string, object> values, string titleAttribute, DateTime? modified = null)
 		{
 			EntityId = entityId;
 			Type = new ContentType(contentTypeName);
@@ -96,6 +96,8 @@ namespace ToSic.Eav.Data
 			}
 			AssignmentObjectTypeId = Constants.DefaultAssignmentObjectTypeId;
 			IsPublished = true;
+            if (modified.HasValue)
+                Modified = modified.Value;
 			Relationships = new RelationshipManager(this, new EntityRelationshipItem[0]);
 		}
 

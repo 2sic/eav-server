@@ -15,7 +15,9 @@ namespace ToSic.Eav.DataSources.Tests
     public class ValueSort_DateTime
     {
         private const int TestVolume = 30, InitialId = 1001;
-        private const string City = "City";
+        private const string Birthdate = "Birthdate";
+        private const string ModifiedTest = "InternalModified";
+        private const string ModifiedReal = "Modified";
         private readonly ValueSort _testDataGeneratedOutsideTimer;
         public ValueSort_DateTime()
         {
@@ -23,16 +25,37 @@ namespace ToSic.Eav.DataSources.Tests
         }
 
 
-        //[TestMethod]
-        //public void ValueSort_SortFieldOnly_City()
-        //{
-        //    var vf = _testDataGeneratedOutsideTimer;
-        //    vf.Attributes = City;
-        //    var result = vf.LightList.ToList();
-        //    // check that each following city is same or larger...
-        //    ValidateFieldIsSorted(result, City, true);
-        //}
+        [TestMethod]
+        public void ValueSort_SortFieldDesc_Birthday()
+        {
+            var vf = _testDataGeneratedOutsideTimer;
+            vf.Attributes = Birthdate;
+            vf.Directions = "d";
+            var result = vf.LightList.ToList();
+            // check that each following city is same or larger...
+            ValidateDateFieldIsSorted(result, Birthdate, false);
+        }
 
+        [TestMethod]
+        public void ValueSort_Sort_Modified()
+        {
+            var vf = _testDataGeneratedOutsideTimer;
+            vf.Attributes = ModifiedReal;
+            var result = vf.LightList.ToList();
+            // check that each following city is same or larger...
+            ValidateDateFieldIsSorted(result, ModifiedReal, true);
+        }
+
+        [TestMethod]
+        public void ValueSort_Sort_Modified_Desc()
+        {
+            var vf = _testDataGeneratedOutsideTimer;
+            vf.Attributes = ModifiedReal;
+            vf.Directions = "d";
+            var result = vf.LightList.ToList();
+            // check that each following city is same or larger...
+            ValidateDateFieldIsSorted(result, ModifiedReal, false);
+        }
         //[TestMethod]
         //public void ValueSort_SortFieldAndAsc_City()
         //{
@@ -88,20 +111,22 @@ namespace ToSic.Eav.DataSources.Tests
         //    TestSortFieldAndDirection(City, ">", false);
         //}
 
-        //private void ValidateFieldIsSorted(List<IEntity> list, string field, bool asc)
-        //{
-        //    var previous = list.First().GetBestValue(field).ToString();
-        //    foreach (var entity in list)
-        //    {
-        //        var next = entity.GetBestValue(field).ToString();
-        //        var comp = string.Compare(previous, next, StringComparison.Ordinal);
-        //        if (asc)
-        //            Assert.IsTrue(comp < 1, "new " + field + " " + next + " should be = or larger than prev " + previous);
-        //        else
-        //            Assert.IsTrue(comp > -1, "new " + field + " " + next + " should be = or smaller than prev " + previous);
-        //        previous = next;
-        //    }            
-        //}
-        
+        private void ValidateDateFieldIsSorted(List<IEntity> list, string field, bool asc)
+        {
+            var previous = list.First().GetBestValue(field) as DateTime?;
+            foreach (var entity in list)
+            {
+                var next = entity.GetBestValue(field) as DateTime?;
+                if(!next.HasValue || !previous.HasValue) 
+                    throw new Exception("try to compare prev/next dates, but one or both are null");
+                var comp = (next.Value - previous.Value).TotalMilliseconds;// string.Compare(previous, next, StringComparison.Ordinal);
+                if (asc)
+                    Assert.IsTrue(comp >= 0, "new " + field + " " + next + " should be = or larger than prev " + previous);
+                else
+                    Assert.IsTrue(comp <=0, "new " + field + " " + next + " should be = or smaller than prev " + previous);
+                previous = next;
+            }
+        }
+
     }
 }

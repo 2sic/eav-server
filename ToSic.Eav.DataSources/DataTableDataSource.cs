@@ -16,6 +16,7 @@ namespace ToSic.Eav.DataSources
 		private const string TitleFieldKey = "TitleField";
 		private const string EntityIdFieldKey = "EntityIdField";
 		private const string ContentTypeKey = "ContentType";
+	    private const string ModifiedFieldKey = "ModifiedField";
 
 		/// <summary>
 		/// Default Name of the EntityId Column
@@ -59,6 +60,16 @@ namespace ToSic.Eav.DataSources
 			set { Configuration[EntityIdFieldKey] = value; }
 		}
 
+	    private bool HasModifiedField = false;
+		public string ModifiedField
+		{
+			get { return Configuration[ModifiedFieldKey]; }
+		    set
+		    {
+		        Configuration[ModifiedFieldKey] = value;
+		        HasModifiedField = !string.IsNullOrWhiteSpace(value);
+		    }
+		}
 		#endregion
 
 		/// <summary>
@@ -69,6 +80,7 @@ namespace ToSic.Eav.DataSources
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntities));
 			Configuration.Add(TitleFieldKey, EntityTitleDefaultColumnName);
 			Configuration.Add(EntityIdFieldKey, EntityIdDefaultColumnName);
+			Configuration.Add(ModifiedFieldKey, "");
 			Configuration.Add(ContentTypeKey, "[Settings:ContentType]");
 
             CacheRelevantConfigurations = new[] { ContentTypeKey };
@@ -77,7 +89,7 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// Initializes a new instance of the DataTableDataSource class
 		/// </summary>
-		public DataTableDataSource(DataTable source, string contentType, string entityIdField = null, string titleField = null)
+		public DataTableDataSource(DataTable source, string contentType, string entityIdField = null, string titleField = null, string modifiedField = null)
 			: this()
 		{
 			Source = source;
@@ -85,25 +97,26 @@ namespace ToSic.Eav.DataSources
 			TitleField = titleField;
 			EntityIdField = entityIdField ?? EntityIdDefaultColumnName;
 			TitleField = titleField ?? EntityTitleDefaultColumnName;
+		    ModifiedField = modifiedField ?? "";
 		}
 
 		private IDictionary<int, IEntity> GetEntities()
 		{
 			EnsureConfigurationIsLoaded();
 
-			return ConvertToEntityDictionary(Source, ContentType, EntityIdField, TitleField);
+            return ConvertToEntityDictionary(Source, ContentType, EntityIdField, TitleField, ModifiedField);
 		}
 
 		/// <summary>
 		/// Convert a DataTable to a Dictionary of EntityModels
 		/// </summary>
-		private static Dictionary<int, IEntity> ConvertToEntityDictionary(DataTable source, string contentType, string entityIdField, string titleField)
+		private static Dictionary<int, IEntity> ConvertToEntityDictionary(DataTable source, string contentType, string entityIdField, string titleField, string modifiedField = null)
 		{
 			// Validate Columns
 			if (!source.Columns.Contains(entityIdField))
-				throw new Exception(string.Format("DataTable doesn't contain an EntityId Column with Name \"{0}\"", entityIdField));
+				throw new Exception($"DataTable doesn't contain an EntityId Column with Name \"{entityIdField}\"");
 			if (!source.Columns.Contains(titleField))
-				throw new Exception(string.Format("DataTable doesn't contain an EntityTitle Column with Name \"{0}\"", titleField));
+				throw new Exception($"DataTable doesn't contain an EntityTitle Column with Name \"{titleField}\"");
 
 			// Pupulate a new Dictionary with EntityModels
 			var result = new Dictionary<int, IEntity>();
@@ -111,7 +124,8 @@ namespace ToSic.Eav.DataSources
 			{
 				var entityId = Convert.ToInt32(row[entityIdField]);
 				var values = row.Table.Columns.Cast<DataColumn>().Where(c => c.ColumnName != entityIdField).ToDictionary(c => c.ColumnName, c => row.Field<object>(c.ColumnName));
-				var entity = new Data.Entity(entityId, contentType, values, titleField);
+			    DateTime? mod = string.IsNullOrEmpty(modifiedField) ? null : values[modifiedField] as DateTime?;
+				var entity = new Entity(entityId, contentType, values, titleField, mod);
 				result.Add(entity.EntityId, entity);
 			}
 			return result;
