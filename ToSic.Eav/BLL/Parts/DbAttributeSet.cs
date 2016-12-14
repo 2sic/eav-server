@@ -34,48 +34,81 @@ namespace ToSic.Eav.Persistence
         public AttributeSet GetAttributeSet(string staticName)
             => Context.SqlDb.AttributeSets.SingleOrDefault(
                     a => a.StaticName == staticName && a.AppID == Context.AppId && !a.ChangeLogIDDeleted.HasValue);
-        
 
-
-
-        /// <summary>
-        /// Get AttributeSetId by StaticName and Scope
-        /// </summary>
-        /// <param name="staticName">StaticName of the AttributeSet</param>
-        /// <param name="scope">Optional Filter by Scope</param>
-        /// <returns>AttributeSetId or Exception</returns>
-        public int GetAttributeSetId(string staticName, AttributeScope? scope)
+        public AttributeSet GetAttributeSetWithEitherName(string name)
         {
-            var scopeFilter = scope?.ToString();
+            //var scopeFilter = scope?.ToString();
             var appId = Context.AppId /*_appId*/;
 
             try
             {
-                var test = Context.SqlDb.AttributeSets.Where(s =>
-                             s.StaticName == staticName && !s.ChangeLogIDDeleted.HasValue).ToList();
+                //var test = Context.SqlDb.AttributeSets.Where(s =>
+                //             s.StaticName == name && !s.ChangeLogIDDeleted.HasValue).ToList();
                 var found = Context.SqlDb.AttributeSets.Where(s =>
-                            s.AppID == appId 
-                            && s.StaticName == staticName
+                            s.AppID == appId
+                            && s.StaticName == name
                             && !s.ChangeLogIDDeleted.HasValue
-                            && (s.Scope == scopeFilter || scopeFilter == null)).ToList();
+                            //&& (s.Scope == scopeFilter || scopeFilter == null)
+                            ).ToList();
                 // if not found, try the non-static name as fallback
                 if (found.Count == 0)
                     found = Context.SqlDb.AttributeSets.Where(s =>
-                            s.AppID == appId 
-                            && s.Name == staticName
+                            s.AppID == appId
+                            && s.Name == name
                             && !s.ChangeLogIDDeleted.HasValue
-                            && (s.Scope == scopeFilter || scopeFilter == null)).ToList();
+                            //&& (s.Scope == scopeFilter || scopeFilter == null)
+                            ).ToList();
 
-                if (found.Count > 1)
-                    throw new Exception("too many content types found");
-                
-                return found.First().AttributeSetID;
+                if (found.Count != 1)
+                    throw new Exception("too many or to fewe content types found");
+
+                return found.First();
             }
             catch (InvalidOperationException ex)
             {
-                throw new Exception("Unable to get AttributeSet with StaticName \"" + staticName + "\" in app " + appId + " and Scope \"" + scopeFilter + "\".", ex);
+                throw new Exception("Unable to get AttributeSet with StaticName \"" + name + "\" in app " + appId /* + " and Scope \"" + scopeFilter + "\"."*/, ex);
             }
-       }
+        }
+
+        //2016-12-14 deprecated, not used any more
+       // /// <summary>
+       // /// Get AttributeSetId by StaticName and Scope
+       // /// </summary>
+       // /// <param name="staticName">StaticName of the AttributeSet</param>
+       // /// <param name="scope">Optional Filter by Scope</param>
+       // /// <returns>AttributeSetId or Exception</returns>
+       // public int GetAttributeSetId(string staticName, AttributeScope? scope)
+       // {
+       //     var scopeFilter = scope?.ToString();
+       //     var appId = Context.AppId /*_appId*/;
+
+       //     try
+       //     {
+       //         var test = Context.SqlDb.AttributeSets.Where(s =>
+       //                      s.StaticName == staticName && !s.ChangeLogIDDeleted.HasValue).ToList();
+       //         var found = Context.SqlDb.AttributeSets.Where(s =>
+       //                     s.AppID == appId 
+       //                     && s.StaticName == staticName
+       //                     && !s.ChangeLogIDDeleted.HasValue
+       //                     && (s.Scope == scopeFilter || scopeFilter == null)).ToList();
+       //         // if not found, try the non-static name as fallback
+       //         if (found.Count == 0)
+       //             found = Context.SqlDb.AttributeSets.Where(s =>
+       //                     s.AppID == appId 
+       //                     && s.Name == staticName
+       //                     && !s.ChangeLogIDDeleted.HasValue
+       //                     && (s.Scope == scopeFilter || scopeFilter == null)).ToList();
+
+       //         if (found.Count > 1)
+       //             throw new Exception("too many content types found");
+                
+       //         return found.First().AttributeSetID;
+       //     }
+       //     catch (InvalidOperationException ex)
+       //     {
+       //         throw new Exception("Unable to get AttributeSet with StaticName \"" + staticName + "\" in app " + appId + " and Scope \"" + scopeFilter + "\".", ex);
+       //     }
+       //}
 
         /// <summary>
         /// if AttributeSet refers another AttributeSet, get ID of the refered AttributeSet. Otherwise returns passed AttributeSetId.

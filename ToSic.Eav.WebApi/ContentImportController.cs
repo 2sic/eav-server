@@ -71,7 +71,7 @@ namespace ToSic.Eav.WebApi
 
         private XmlImport GetXmlImport(ContentImportArgs args)
         {
-            var contentTypeId = GetContentTypeId(args.ContentType);
+            var contentTypeId = CurrentContext.AttribSet.GetAttributeSetWithEitherName(args.ContentType).AttributeSetID;// GetContentTypeId(args.ContentType);
             var contextLanguages = GetContextLanguages();
 
             using (var contentSteam = new MemoryStream(Convert.FromBase64String(args.ContentBase64)))
@@ -85,9 +85,9 @@ namespace ToSic.Eav.WebApi
             return CurrentContext.Dimensions.GetLanguages().Select(language => language.ExternalKey).ToArray();
         }
 
-        private int GetContentTypeId(string name)
-        {
-            return CurrentContext.AttribSet.GetAttributeSetId(name, null);
-        }
+        //private int GetContentTypeId(string name)
+        //{
+        //    return CurrentContext.AttribSet.GetAttributeSetId(name, null);
+        //}
     }
 }

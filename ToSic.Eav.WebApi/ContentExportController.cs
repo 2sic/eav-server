@@ -36,12 +36,14 @@ namespace ToSic.Eav.WebApi
         {
             AppId = appId;
 
-            var contentTypeId = GetContentTypeId(contentType);
-            var contentTypeName = GetContentTypeName(contentType);
+            // todo: continue here!
+            var ct = CurrentContext.AttribSet.GetAttributeSetWithEitherName(contentType);
+            var contentTypeId = ct.AttributeSetID;// GetContentTypeId(contentType);
+            var contentTypeName = ct.Name;// GetContentTypeName(contentType);
             var contextLanguages = GetContextLanguages();
 
             // check if we have an array of ids
-            int[] ids = null;// new int[0];
+            int[] ids = null;
             try
             {
                 if (recordExport == RecordExport.Selection && !string.IsNullOrWhiteSpace(selectedIds))
@@ -69,12 +71,12 @@ namespace ToSic.Eav.WebApi
             return response;
         }
 
-        private int GetContentTypeId(string staticName)
-            => CurrentContext.AttribSet.GetAttributeSetId(staticName, null);
+        //private int GetContentTypeId(string staticName)
+        //    => CurrentContext.AttribSet.GetAttributeSetId(staticName, null);
 
 
-        private string GetContentTypeName(string staticName)
-            => CurrentContext.AttribSet.GetAttributeSet(staticName).Name;
+        //private string GetContentTypeName(string staticName)
+        //    => CurrentContext.AttribSet.GetAttributeSet(staticName).Name;
 
         private string[] GetContextLanguages()
             => CurrentContext.Dimensions.GetLanguages().Select(language => language.ExternalKey).ToArray();
