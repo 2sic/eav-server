@@ -13,29 +13,28 @@ namespace ToSic.Eav.Persistence
         internal readonly Dictionary<int, Dictionary<int, IContentType>> ContentTypes = new Dictionary<int, Dictionary<int, IContentType>>();
 
 
-        
+
         /// <summary>
         /// Get a List of all AttributeSets
         /// </summary>
         public List<AttributeSet> GetAllAttributeSets()
-        {
-            return Context.SqlDb.AttributeSets.Where(a => a.AppID == Context.AppId).ToList();
-        }
+            => Context.SqlDb.AttributeSets.Where(a => a.AppID == Context.AppId && !a.ChangeLogIDDeleted.HasValue).ToList();
+
 
         /// <summary>
         /// Get a single AttributeSet
         /// </summary>
         public AttributeSet GetAttributeSet(int attributeSetId)
-        {
-            return Context.SqlDb.AttributeSets.SingleOrDefault(a => a.AttributeSetID == attributeSetId && a.AppID == Context.AppId && !a.ChangeLogIDDeleted.HasValue);
-        }
+            => Context.SqlDb.AttributeSets.SingleOrDefault(
+                    a => a.AttributeSetID == attributeSetId && a.AppID == Context.AppId && !a.ChangeLogIDDeleted.HasValue);
+
         /// <summary>
         /// Get a single AttributeSet
         /// </summary>
         public AttributeSet GetAttributeSet(string staticName)
-        {
-            return Context.SqlDb.AttributeSets.SingleOrDefault(a => a.StaticName == staticName && a.AppID == Context.AppId && !a.ChangeLogIDDeleted.HasValue);
-        }
+            => Context.SqlDb.AttributeSets.SingleOrDefault(
+                    a => a.StaticName == staticName && a.AppID == Context.AppId && !a.ChangeLogIDDeleted.HasValue);
+        
 
 
 
@@ -47,17 +46,36 @@ namespace ToSic.Eav.Persistence
         /// <returns>AttributeSetId or Exception</returns>
         public int GetAttributeSetId(string staticName, AttributeScope? scope)
         {
-            var scopeFilter = scope.HasValue ? scope.ToString() : null;
+            var scopeFilter = scope?.ToString();
+            var appId = Context.AppId /*_appId*/;
 
             try
             {
-                return Context.SqlDb.AttributeSets.Single(s => s.AppID == Context.AppId /*_appId*/  && s.StaticName == staticName && (s.Scope == scopeFilter || scopeFilter == null)).AttributeSetID;
+                var test = Context.SqlDb.AttributeSets.Where(s =>
+                             s.StaticName == staticName && !s.ChangeLogIDDeleted.HasValue).ToList();
+                var found = Context.SqlDb.AttributeSets.Where(s =>
+                            s.AppID == appId 
+                            && s.StaticName == staticName
+                            && !s.ChangeLogIDDeleted.HasValue
+                            && (s.Scope == scopeFilter || scopeFilter == null)).ToList();
+                // if not found, try the non-static name as fallback
+                if (found.Count == 0)
+                    found = Context.SqlDb.AttributeSets.Where(s =>
+                            s.AppID == appId 
+                            && s.Name == staticName
+                            && !s.ChangeLogIDDeleted.HasValue
+                            && (s.Scope == scopeFilter || scopeFilter == null)).ToList();
+
+                if (found.Count > 1)
+                    throw new Exception("too many content types found");
+                
+                return found.First().AttributeSetID;
             }
             catch (InvalidOperationException ex)
             {
-                throw new Exception("Unable to get AttributeSet with StaticName \"" + staticName + "\" in Scope \"" + scopeFilter + "\".", ex);
+                throw new Exception("Unable to get AttributeSet with StaticName \"" + staticName + "\" in app " + appId + " and Scope \"" + scopeFilter + "\".", ex);
             }
-        }
+       }
 
         /// <summary>
         /// if AttributeSet refers another AttributeSet, get ID of the refered AttributeSet. Otherwise returns passed AttributeSetId.
@@ -66,7 +84,7 @@ namespace ToSic.Eav.Persistence
         internal int ResolveAttributeSetId(int attributeSetId)
         {
             var usesConfigurationOfAttributeSet = Context.SqlDb.AttributeSets.Where(a => a.AttributeSetID == attributeSetId).Select(a => a.UsesConfigurationOfAttributeSet).Single();
-            return usesConfigurationOfAttributeSet.HasValue ? usesConfigurationOfAttributeSet.Value : attributeSetId;
+            return usesConfigurationOfAttributeSet ?? attributeSetId;
         }
 
         /// <summary>
@@ -138,16 +156,15 @@ namespace ToSic.Eav.Persistence
         /// Add a new AttributeSet
         /// </summary>
         public AttributeSet AddAttributeSet(string name, string description, string staticName, string scope, bool autoSave = true)
-        {
-            return AddAttributeSet(name, description, staticName, scope, autoSave, null);
-        }
+            => AddAttributeSet(name, description, staticName, scope, autoSave, null);
+        
 
         internal AttributeSet AddAttributeSet(string name, string description, string staticName, string scope, bool autoSave, int? appId)
         {
             if (string.IsNullOrEmpty(staticName))
                 staticName = Guid.NewGuid().ToString();
 
-            var targetAppId = appId.HasValue ? appId.Value : Context.AppId /* _appId*/;
+            var targetAppId = appId ?? Context.AppId;
 
             // ensure AttributeSet with StaticName doesn't exist on App
             if (Context.AttribSet.AttributeSetExists(staticName, targetAppId))
@@ -173,29 +190,6 @@ namespace ToSic.Eav.Persistence
 
             return newSet;
         }
-
-        // 2015-09-09 seems like this is never used
-        ///// <summary>
-        ///// Remove an Attribute from an AttributeSet and delete values
-        ///// </summary>
-        //public void RemoveAttributeInSet(int attributeId, int attributeSetId)
-        //{
-        //    // Delete the AttributeInSet
-        //    Context.SqlDb.DeleteObject(Context.SqlDb.AttributesInSets.Single(a => a.AttributeID == attributeId && a.AttributeSetID == attributeSetId));
-
-        //    // Delete all Values an their ValueDimensions
-        //    var valuesToDelete = Context.SqlDb.Values.Where(v => v.AttributeID == attributeId && v.Entity.AttributeSetID == attributeSetId).ToList();
-        //    foreach (var valueToDelete in valuesToDelete)
-        //    {
-        //        valueToDelete.ValuesDimensions.ToList().ForEach(Context.SqlDb.DeleteObject);
-        //        Context.SqlDb.DeleteObject(valueToDelete);
-        //    }
-
-        //    // Delete all Entity-Relationships
-        //    var relationshipsToDelete = Context.SqlDb.EntityRelationships.Where(r => r.AttributeID == attributeId).ToList(); // No Filter by AttributeSetID is needed here at the moment because attribute can't be in multiple sets currently
-        //    relationshipsToDelete.ForEach(Context.SqlDb.DeleteObject);
-
-        //    Context.SqlDb.SaveChanges();
-        //}
+        
     }
 }
