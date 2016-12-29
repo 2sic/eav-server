@@ -40,20 +40,15 @@ namespace ToSic.Eav.Serializers
         }
 
         #region Language
+        private string _language;
 
-        private string _language = "";
-
-        private string Language
+        public string Language
         {
-            get
-            {
-                if(_language == "")
-                    _language = Thread.CurrentThread.CurrentCulture.Name;
-                return _language;
-            }
+            get { return _language ?? (_language = Thread.CurrentThread.CurrentCulture.Name); }
+            set { _language = value; }
         }
-
         #endregion
+
         #region Many variations of the Prepare-Statement expecting various kinds of input
         /// <summary>
         /// Returns an object that represents an IDataSource, but is serializable. If streamsToPublish is null, it will return all streams.
@@ -64,7 +59,7 @@ namespace ToSic.Eav.Serializers
                 streamsToPublish = source.Out.Select(p => p.Key);
 
             var y = streamsToPublish.Where(k => source.Out.ContainsKey(k))
-                .ToDictionary(k => k, s => source.Out[s].LightList.Select(c => GetDictionaryFromEntity(c, Language))
+                .ToDictionary(k => k, s => source.Out[s].LightList.Select(c => GetDictionaryFromEntity(c))
             );
 
             return y;
@@ -74,41 +69,32 @@ namespace ToSic.Eav.Serializers
         /// Returns an object that represents an IDataSource, but is serializable. If streamsToPublish is null, it will return all streams.
         /// </summary>
         public Dictionary<string, IEnumerable<Dictionary<string, object>>> Prepare(IDataSource source, string streamsToPublish)
-        {
-            return Prepare(source, streamsToPublish.Split(','));
-        }
+            => Prepare(source, streamsToPublish.Split(','));
 
         /// <summary>
         /// Return an object that represents an IDataStream, but is serializable
         /// </summary>
         public IEnumerable<Dictionary<string, object>> Prepare(IDataStream stream)
-        {
-            return Prepare(stream.LightList);  
-        }
+            => Prepare(stream.LightList);
+        
 
         /// <summary>
         /// Return an object that represents an IDataStream, but is serializable
         /// </summary>
-        [Obsolete ("Try to use the List-overload instead of the dictionary overload")]
+        [Obsolete("Try to use the List-overload instead of the dictionary overload")]
         public IEnumerable<Dictionary<string, object>> Prepare(IDictionary<int, IEntity> list)
-        {
-            return list.Select(c => GetDictionaryFromEntity(c.Value, Language));
-        }
-
+            => list.Select(c => GetDictionaryFromEntity(c.Value));
 
         public IEnumerable<Dictionary<string, object>> Prepare(IEnumerable<IEntity> entities)
-        {
-            return entities.Select(c => GetDictionaryFromEntity(c, Language));
-        }
+            => entities.Select(GetDictionaryFromEntity);
+
 
         /// <summary>
         /// Return an object that represents an IDataStream, but is serializable
         /// </summary>
         public Dictionary<string, object> Prepare(IEntity entity)
-        {
-            return 
-                (entity == null) ? null : GetDictionaryFromEntity(entity, Language);
-        }
+            => (entity == null) ? null : GetDictionaryFromEntity(entity);
+        
 
         #endregion
 
@@ -117,11 +103,10 @@ namespace ToSic.Eav.Serializers
         /// Convert an entity into a lightweight dictionary, ready to serialize
         /// </summary>
         /// <param name="entity"></param>
-        /// <param name="language"></param>
         /// <returns></returns>
-        public virtual Dictionary<string, object> GetDictionaryFromEntity(IEntity entity, string language)
+        public virtual Dictionary<string, object> GetDictionaryFromEntity(IEntity entity)
         {
-            var lngs = new[] {language};
+            var lngs = new[] {Language};
             // Convert Entity to dictionary
             // If the value is a relationship, then give those too, but only Title and Id
             var entityValues = (from d in entity.Attributes select d.Value).ToDictionary(k => k.Name, v =>
