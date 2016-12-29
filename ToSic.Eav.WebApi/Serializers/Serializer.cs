@@ -40,12 +40,12 @@ namespace ToSic.Eav.Serializers
         }
 
         #region Language
-        private string _language;
+        private string[] _langs;
 
-        public string Language
+        public string[] Languages
         {
-            get { return _language ?? (_language = Thread.CurrentThread.CurrentCulture.Name); }
-            set { _language = value; }
+            get { return _langs ?? (_langs = new[] { Thread.CurrentThread.CurrentCulture.Name }); }
+            set { _langs = value; }
         }
         #endregion
 
@@ -106,17 +106,17 @@ namespace ToSic.Eav.Serializers
         /// <returns></returns>
         public virtual Dictionary<string, object> GetDictionaryFromEntity(IEntity entity)
         {
-            var lngs = new[] {Language};
+            // var lngs = Languages;// new[] {Languages};
             // Convert Entity to dictionary
             // If the value is a relationship, then give those too, but only Title and Id
             var entityValues = (from d in entity.Attributes select d.Value).ToDictionary(k => k.Name, v =>
             {
-				var value = entity.GetBestValue(v.Name, lngs, true);
+				var value = entity.GetBestValue(v.Name, Languages, true);
                 if (v.Type == "Entity" && value is Data.EntityRelationship)
                     return ((Data.EntityRelationship) value).Select(p => new
                     {
                         Id = p?.EntityId,
-                        Title = p?.GetBestValue("EntityTitle", lngs)?.ToString()
+                        Title = p?.GetBestValue("EntityTitle", Languages)?.ToString()
                     }).ToList();
 				return value;
 				
@@ -168,7 +168,7 @@ namespace ToSic.Eav.Serializers
             if (!entityValues.ContainsKey("Title"))
                 try // there are strange cases where the title is missing, then just ignore this
                 {
-                    entityValues.Add("Title", entity.GetBestValue("EntityTitle", lngs, true));
+                    entityValues.Add("Title", entity.GetBestValue("EntityTitle", Languages, true));
                 }
                 // ReSharper disable once EmptyGeneralCatchClause
                 catch
