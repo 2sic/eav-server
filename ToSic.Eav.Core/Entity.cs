@@ -5,6 +5,7 @@ using ToSic.Eav.Implementations.ValueConverter;
 using Microsoft.Practices.Unity;
 using ToSic.Eav.Interfaces;
 
+// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Data
 {
 	/// <summary>
@@ -72,11 +73,9 @@ namespace ToSic.Eav.Data
         /// </summary>
         /// <param name="attributeName"></param>
         /// <returns></returns>
-		public IAttribute this[string attributeName]
-		{
-			get { return (Attributes.ContainsKey(attributeName)) ? Attributes[attributeName] : null; }
-		}
-        #endregion
+		public IAttribute this[string attributeName] => (Attributes.ContainsKey(attributeName)) ? Attributes[attributeName] : null;
+
+	    #endregion
 
         /// <summary>
 		/// Create a new Entity. Used to create InMemory Entities that are not persisted to the EAV SqlStore.
@@ -145,31 +144,24 @@ namespace ToSic.Eav.Data
         /// The draft entity fitting this published entity
         /// </summary>
         /// <returns></returns>
-        public IEntity GetDraft()
-		{
-			return DraftEntity;
-		}
+        public IEntity GetDraft() => DraftEntity;
 
-        /// <summary>
-        /// The published entity of this draft entity
-        /// </summary>
-        /// <returns></returns>
-        public IEntity GetPublished()
-		{
-			return PublishedEntity;
-		}
+	    /// <summary>
+	    /// The published entity of this draft entity
+	    /// </summary>
+	    /// <returns></returns>
+	    public IEntity GetPublished() => PublishedEntity;
 
-		/// <summary>
-		/// Retrieves the best possible value for an attribute or virtual attribute (like EntityTitle)
-		/// Assumes default preferred language
-		/// </summary>
-		/// <param name="attributeName">Name of the attribute or virtual attribute</param>
-		/// <param name="resolveHyperlinks"></param>
-		/// <returns></returns>
-		public object GetBestValue(string attributeName, bool resolveHyperlinks = false)
-	    {
-	        return GetBestValue(attributeName, new string[0], resolveHyperlinks);
-	    }
+	    /// <summary>
+	    /// Retrieves the best possible value for an attribute or virtual attribute (like EntityTitle)
+	    /// Assumes default preferred language
+	    /// </summary>
+	    /// <param name="attributeName">Name of the attribute or virtual attribute</param>
+	    /// <param name="resolveHyperlinks"></param>
+	    /// <returns></returns>
+	    public object GetBestValue(string attributeName, bool resolveHyperlinks = false)
+	        => GetBestValue(attributeName, new string[0], resolveHyperlinks);
+	    
 
 
 
@@ -229,10 +221,15 @@ namespace ToSic.Eav.Data
             return result;
         }
 
-	    public string GetBestTitle()
-	        => GetBestValue(Constants.EntityFieldTitle).ToString();
-	    
+        /// <summary>
+        /// Best way to get the current entities title
+        /// </summary>
+        /// <returns>The entity title as a string</returns>
+	    public string GetBestTitle() => GetBestValue(Constants.EntityFieldTitle).ToString();
 
+        /// <summary>
+        /// Owner of this entity
+        /// </summary>
 	    public string Owner { get; internal set; }
     }
 }

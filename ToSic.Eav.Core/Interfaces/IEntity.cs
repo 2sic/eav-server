@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ToSic.Eav.Interfaces;
 
+// ReSharper disable once CheckNamespace
 namespace ToSic.Eav
 {
 	/// <summary>
@@ -17,10 +18,12 @@ namespace ToSic.Eav
 		/// Gets the RepositoryId
 		/// </summary>
 		int RepositoryId { get; }
+
 		/// <summary>
 		/// Gets the EntityGuid
 		/// </summary>
 		Guid EntityGuid { get; }
+
 		/// <summary>
 		/// Gets the AssignmentObjectTypeId
 		/// </summary>
@@ -69,15 +72,20 @@ namespace ToSic.Eav
 		/// Helper method to retrieve the most applicable value based on criteria like current language etc.
 		/// </summary>
 		/// <param name="attributeName"></param>
-		/// <param name="propertyNotFound"></param>
 		/// <param name="resolveHyperlinks"></param>
 		/// <returns>A string, int or even a EntityRelationship</returns>
 		object GetBestValue(string attributeName, bool resolveHyperlinks = false);
 		object GetBestValue(string attributeName, string[] dimensions, bool resolveHyperlinks = false);
-	    //object GetBestValue(string attributeName, string[] dimensions, out bool propertyNotFound);
 
-	    string GetBestTitle();
+        /// <summary>
+        /// Best way to get the current entities title
+        /// </summary>
+        /// <returns>The entity title as a string</returns>
+        string GetBestTitle();
 
+        /// <summary>
+        /// Owner of this entity
+        /// </summary>
         string Owner { get; }
 	}
 }
