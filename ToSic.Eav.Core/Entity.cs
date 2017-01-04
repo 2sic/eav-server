@@ -229,6 +229,10 @@ namespace ToSic.Eav.Data
             return result;
         }
 
+	    public string GetBestTitle()
+	        => GetBestValue(Constants.EntityFieldTitle).ToString();
+	    
+
 	    public string Owner { get; internal set; }
     }
 }

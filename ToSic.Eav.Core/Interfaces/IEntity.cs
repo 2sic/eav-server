@@ -76,6 +76,8 @@ namespace ToSic.Eav
 		object GetBestValue(string attributeName, string[] dimensions, bool resolveHyperlinks = false);
 	    //object GetBestValue(string attributeName, string[] dimensions, out bool propertyNotFound);
 
+	    string GetBestTitle();
+
         string Owner { get; }
 	}
 }
