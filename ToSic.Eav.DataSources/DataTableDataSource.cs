@@ -23,10 +23,10 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public static readonly string EntityIdDefaultColumnName = "EntityId";
 
-		/// <summary>
-		/// Default Name of the EntityTitle Column
-		/// </summary>
-		public static readonly string EntityTitleDefaultColumnName = "EntityTitle";
+	    /// <summary>
+	    /// Default Name of the EntityTitle Column
+	    /// </summary>
+	    public static readonly string EntityTitleDefaultColumnName = Constants.EntityFieldTitle;
 
 		/// <summary>
 		/// Source DataTable

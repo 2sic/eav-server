@@ -116,7 +116,7 @@ namespace ToSic.Eav.Serializers
                     return ((Data.EntityRelationship) value).Select(p => new SerializableRelationship
                     {
                         Id = p?.EntityId,
-                        Title = p?.GetBestValue("EntityTitle", Languages)?.ToString()
+                        Title = p?.GetBestValue(Constants.EntityFieldTitle, Languages)?.ToString()
                     }).ToList();
 				return value;
 				
@@ -168,7 +168,7 @@ namespace ToSic.Eav.Serializers
             if (!entityValues.ContainsKey("Title"))
                 try // there are strange cases where the title is missing, then just ignore this
                 {
-                    entityValues.Add("Title", entity.GetBestValue("EntityTitle", Languages, true));
+                    entityValues.Add("Title", entity.GetBestValue(Constants.EntityFieldTitle, Languages, true));
                 }
                 // ReSharper disable once EmptyGeneralCatchClause
                 catch

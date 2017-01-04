@@ -225,7 +225,7 @@ namespace ToSic.Eav.Data
         /// Best way to get the current entities title
         /// </summary>
         /// <returns>The entity title as a string</returns>
-	    public string GetBestTitle() => GetBestValue(Constants.EntityFieldTitle).ToString();
+	    public string GetBestTitle() => GetBestValue(Constants.EntityFieldTitle)?.ToString();
 
         /// <summary>
         /// Owner of this entity

@@ -138,7 +138,7 @@ namespace ToSic.Eav.WebApi
             {
                 inputTypesDic =
                     appInputTypes.ToDictionary(
-                        a => (fldName = a.GetBestValue("EntityTitle")?.ToString() ?? "error-no-title" + noTitleCount++),
+                        a => (fldName = a.GetBestTitle() ?? "error-no-title" + noTitleCount++),
                         a => a);
             }
             catch (Exception ex)

@@ -111,7 +111,7 @@ namespace ToSic.Eav.DataSources
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, null, GetList));
 			Configuration.Add(RelationshipKey, "[Settings:Relationship]");
 			Configuration.Add(FilterKey, "[Settings:Filter]");
-			Configuration.Add(CompareAttributeKey, "EntityTitle");
+		    Configuration.Add(CompareAttributeKey, Constants.EntityFieldTitle);
 			Configuration.Add(CompareModeKey, "default");
 			Configuration.Add(ChildOrParentKey, "child");
 			//Configuration.Add(ParentTypeKey, "");
@@ -145,7 +145,7 @@ namespace ToSic.Eav.DataSources
 			//	throw new Exception("Can't filter for languages other than 'default'");
 			//if (lang == "default") lang = ""; // no language is automatically the default language
 
-			var specAttr = compAttr.ToLower() == "entityid" ? 'i' : compAttr.ToLower() == "entitytitle" ? 't' : 'x';
+			var specAttr = compAttr.ToLower() == "entityid" ? 'i' : compAttr.ToLower() == Constants.EntityFieldTitle ? 't' : 'x';
 
 			var originals = In[Constants.DefaultStreamName].LightList;
 

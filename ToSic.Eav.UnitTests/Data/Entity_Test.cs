@@ -18,7 +18,7 @@ namespace ToSic.Eav.UnitTests
             Assert.AreEqual(1, entDaniel.EntityId);
             Assert.AreEqual(Guid.Empty, entDaniel.EntityGuid);
             Assert.AreEqual("Daniel", entDaniel.Title[0].ToString());
-            Assert.AreEqual("Daniel", entDaniel.GetBestValue("EntityTitle"));
+            Assert.AreEqual("Daniel", entDaniel.GetBestTitle());
             Assert.AreEqual("Daniel", entDaniel.GetBestValue("FirstName"));
             Assert.AreEqual("Mettler", entDaniel.GetBestValue("LastName", new string[] {"EN"}));
         }

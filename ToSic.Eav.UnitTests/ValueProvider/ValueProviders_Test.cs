@@ -39,11 +39,11 @@ namespace ToSic.Eav.UnitTests
 
             Assert.IsTrue(valProv.Has("FirstName"), "Has first name");
             Assert.IsTrue(valProv.Has("EntityId"), "Has entity id");
-            Assert.IsTrue(valProv.Has("EntityTitle"), "Has entity title");
+            Assert.IsTrue(valProv.Has(Constants.EntityFieldTitle), "Has entity title");
             Assert.AreEqual("Mettler", valProv.Get("LastName", "", ref found));
             Assert.AreEqual("Mettler", valProv.Get("LastName"));
             Assert.AreEqual(1.ToString(), valProv.Get("EntityId"));
-            Assert.AreEqual("Daniel", valProv.Get("EntityTitle"));
+            Assert.AreEqual("Daniel", valProv.Get(Constants.EntityFieldTitle));
             Assert.IsTrue(Convert.ToBoolean(valProv.Get("IsPublished")));
             Assert.AreEqual(Guid.Empty, Guid.Parse(valProv.Get("EntityGuid")));
             Assert.AreEqual("TestType", valProv.Get("EntityType"));
