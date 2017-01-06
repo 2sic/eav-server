@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
 	public static class DataPipelineWiring
 	{
-		private static readonly Regex WireRegex = new Regex("(?<From>.+):(?<Out>.+)>(?<To>.+):(?<In>.+)");
+		private static readonly Regex WireRegex = new Regex("(?<From>.+):(?<Out>.+)>(?<To>.+):(?<In>.+)", RegexOptions.Compiled);
 
 		/// <summary>
 		/// Deserialize a string of Wiring Infos to WireInfo Objects

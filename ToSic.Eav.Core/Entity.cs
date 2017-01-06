@@ -4,6 +4,7 @@ using System.Web.Script.Serialization;
 using ToSic.Eav.Implementations.ValueConverter;
 using Microsoft.Practices.Unity;
 using ToSic.Eav.Interfaces;
+#pragma warning disable 618
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Data
@@ -17,7 +18,7 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Id as an int
         /// </summary>
-		public int EntityId { get; set; } // todo: set shouldn't be pbulic
+		public int EntityId { get; internal set; } 
         /// <summary>
         /// Id of this item inside the repository. Can be different than the real Id, because it may be a temporary version of this content-item
         /// </summary>
@@ -29,7 +30,7 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Offical title of this content-item
         /// </summary>
-		public IAttribute Title { get;  set; } // todo: title shouldn' have a public set, had to open this while refactoring
+		public IAttribute Title { get;  internal set; }
         /// <summary>
         /// List of all attributes
         /// </summary>
@@ -175,7 +176,7 @@ namespace ToSic.Eav.Data
 		/// <returns>An object OR a null - for example when retrieving the title and no title exists</returns>
 		public object GetBestValue(string attributeName, string[] dimensions, bool resolveHyperlinks = false) 
         {
-            object result = null;
+            object result;
 			IAttribute attribute = null;
 
             if (Attributes.ContainsKey(attributeName))
@@ -212,10 +213,10 @@ namespace ToSic.Eav.Data
                 }
             }
 
-			if (resolveHyperlinks && attribute != null && result is string && attribute.Type == "Hyperlink")
+			if (resolveHyperlinks && attribute != null && result is string && attribute.Type == Constants.Hyperlink)
 			{
 				var vc = Factory.Container.Resolve<IEavValueConverter>();
-				result = vc.Convert(ConversionScenario.GetFriendlyValue, "Hyperlink", (string)result);
+				result = vc.Convert(ConversionScenario.GetFriendlyValue, Constants.Hyperlink, (string)result);
 			}
 
             return result;

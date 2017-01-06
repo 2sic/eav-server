@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 
 namespace ToSic.Eav
 {
@@ -23,7 +24,8 @@ namespace ToSic.Eav
         /// <summary>
         /// AttributeSet StaticName must match this Regex. Accept Alphanumeric, except the first char must be alphabetic or underscore.
         /// </summary>
-        public static string AttributeStaticNameRegEx = "^[_a-zA-Z]{1}[_a-zA-Z0-9]*";
+        //public static string AttributeStaticNameRegEx = "^[_a-zA-Z]{1}[_a-zA-Z0-9]*"; // todo now: create static regex...
+        public static Regex AttributeStaticName = new Regex("^[_a-zA-Z]{1}[_a-zA-Z0-9]*", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         /// <summary>
         /// If AttributeSet StaticName doesn't match, users see this message.
@@ -132,6 +134,12 @@ namespace ToSic.Eav
             return false;
 
         }
+
+        #endregion
+
+        #region Special Field Types
+
+        public const string Hyperlink = "Hyperlink";
 
         #endregion
     }

@@ -201,7 +201,8 @@ namespace ToSic.Eav.BLL.Parts
             else if (attributeSetId != 0)
                 throw new Exception("Can only set attributeSet or attributeSetId");
 
-            if (!System.Text.RegularExpressions.Regex.IsMatch(staticName, Constants.AttributeStaticNameRegEx, System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+//            if (!System.Text.RegularExpressions.Regex.IsMatch(staticName, Constants.AttributeStaticNameRegEx, System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+            if (!Constants.AttributeStaticName.IsMatch(staticName))
                 throw new Exception("Attribute static name \"" + staticName + "\" is invalid. " + Constants.AttributeStaticNameRegExNotes);
 
             // Prevent Duplicate Name

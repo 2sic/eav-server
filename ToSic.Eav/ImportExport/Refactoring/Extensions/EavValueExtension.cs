@@ -14,10 +14,10 @@ namespace ToSic.Eav.ImportExport.Refactoring.Extensions
         /// </summary>
         public static string ResolveValueReference(this EavValue value)
         {
-            if (value.Attribute.Type == "Hyperlink")
+            if (value.Attribute.Type == Constants.Hyperlink)
             {
                 var vc = Factory.Container.Resolve<IEavValueConverter>();
-                return vc.Convert(ConversionScenario.GetFriendlyValue, "Hyperlink", value.Value);
+                return vc.Convert(ConversionScenario.GetFriendlyValue, Constants.Hyperlink, value.Value);
                 //return ResolveHyperlink(value);
             }
             return value.Value;
