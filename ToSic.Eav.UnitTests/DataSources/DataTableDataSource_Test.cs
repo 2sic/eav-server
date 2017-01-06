@@ -48,6 +48,17 @@ namespace ToSic.Eav.UnitTests.DataSources
             Assert.IsTrue(DateTime.Now >= lastRefresh, "Date-check of cache refresh");
         }
 
+        [TestMethod]
+        public void DataTable_DefaultTitleField()
+        {
+            const int itemsToGenerate = 25;
+            var ds = GenerateTrivial(itemsToGenerate);
+
+            Assert.AreEqual(25, ds.LightList.Count());
+            var first = ds.LightList.FirstOrDefault();
+            Assert.AreEqual("Daniel Mettler", first.GetBestTitle());
+        }
+
         public static DataTableDataSource GeneratePersonSourceWithDemoData(int itemsToGenerate = 10, int firstId = 1001, bool useCacheForSpeed = true)
         {
             if(useCacheForSpeed && _cachedDs.ContainsKey(itemsToGenerate))
@@ -75,7 +86,8 @@ namespace ToSic.Eav.UnitTests.DataSources
             };
 
             // now enumerate all, to be sure that the time counted for DS creation isn't part of the tracked test-time
-            var temp = source.LightList.LastOrDefault();
+            // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
+            source.LightList.LastOrDefault();
 
             if (useCacheForSpeed)
                 _cachedDs.Add(itemsToGenerate, source);
@@ -115,6 +127,54 @@ namespace ToSic.Eav.UnitTests.DataSources
             DateTime start = new DateTime(1995, 1, 1);
             int range = (DateTime.Today - start).Days;
             return start.AddDays(Gen.Next(range));
+        }
+
+
+        public static DataTableDataSource GenerateTrivial(int itemsToGenerate = 10, int firstId = 1001, bool useCacheForSpeed = true)
+        {
+            var dataTable = new DataTable();
+            dataTable.Columns.AddRange(new[]
+            {
+                new DataColumn(DataTableDataSource.EntityIdDefaultColumnName, typeof (int)),
+                new DataColumn("EntityTitle"),
+                new DataColumn("FirstName"),
+                new DataColumn("LastName"),
+                new DataColumn("City"),
+                new DataColumn("InternalModified", typeof(DateTime)),
+            });
+            AddSemirandomTrivial(dataTable, itemsToGenerate, firstId);
+
+            var source = new DataTableDataSource(dataTable, "Person", modifiedField: "InternalModified")
+            {
+                ConfigurationProvider = new ValueProvider.ValueCollectionProvider_Test().ValueCollection()
+            };
+
+            // now enumerate all, to be sure that the time counted for DS creation isn't part of the tracked test-time
+            // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
+            source.LightList.LastOrDefault();
+
+            if (useCacheForSpeed)
+                _cachedDs.Add(itemsToGenerate, source);
+            return source;
+        }
+
+        private static void AddSemirandomTrivial(DataTable dataTable, int itemsToGenerate = 10, int firstId = 1000)
+        {
+            for (var i = firstId; i < firstId + itemsToGenerate; i++)
+            {
+                var firstName = "Daniel";
+                var lastName = "Mettler";
+                var fullName = firstName + " " + lastName;
+                var city = TestCities[i % TestCities.Length];
+                var sysModified = RandomDate();
+                dataTable.Rows.Add(i,
+                    fullName,
+                    firstName,
+                    lastName,
+                    city,
+                    sysModified
+                    );
+            }
         }
 
 

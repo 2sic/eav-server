@@ -9,7 +9,7 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// Provide Entities from a System.Data.DataTable
 	/// </summary>
-	public class DataTableDataSource : ExternalDataDataSource// BaseDataSource
+	public sealed class DataTableDataSource : ExternalDataDataSource// BaseDataSource
 	{
 		#region Configuration-properties
 
@@ -26,7 +26,7 @@ namespace ToSic.Eav.DataSources
 	    /// <summary>
 	    /// Default Name of the EntityTitle Column
 	    /// </summary>
-	    public static readonly string EntityTitleDefaultColumnName = Constants.EntityFieldTitle;
+	    public static readonly string EntityTitleDefaultColumnName = Constants.EntityFieldTitle; 
 
 		/// <summary>
 		/// Source DataTable
@@ -60,14 +60,14 @@ namespace ToSic.Eav.DataSources
 			set { Configuration[EntityIdFieldKey] = value; }
 		}
 
-	    private bool HasModifiedField = false;
+	    // private bool _hasModifiedField;
 		public string ModifiedField
 		{
 			get { return Configuration[ModifiedFieldKey]; }
 		    set
 		    {
 		        Configuration[ModifiedFieldKey] = value;
-		        HasModifiedField = !string.IsNullOrWhiteSpace(value);
+		        // _hasModifiedField = !string.IsNullOrWhiteSpace(value);
 		    }
 		}
 		#endregion

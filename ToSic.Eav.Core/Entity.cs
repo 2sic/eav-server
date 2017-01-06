@@ -91,7 +91,7 @@ namespace ToSic.Eav.Data
 			}
 			catch (KeyNotFoundException)
 			{
-				throw new KeyNotFoundException(string.Format("The Title Attribute with Name \"{0}\" doesn't exist in the Entity-Attributes.", titleAttribute));
+				throw new KeyNotFoundException($"The Title Attribute with Name \"{titleAttribute}\" doesn't exist in the Entity-Attributes.");
 			}
 			AssignmentObjectTypeId = Constants.DefaultAssignmentObjectTypeId;
 			IsPublished = true;

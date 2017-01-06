@@ -8,7 +8,7 @@ namespace ToSic.Eav.DataSources
 	/// Sort Entity by values in specified Attributes
 	/// </summary>
 	[PipelineDesigner]
-	public class ValueSort : BaseDataSource
+	public sealed class ValueSort : BaseDataSource
 	{
 		#region Configuration-properties
 
@@ -102,7 +102,7 @@ namespace ToSic.Eav.DataSources
 
             IOrderedEnumerable<IEntity> ordered = null;
 
-			for (var i = 0; i < attr.Count(); i++)
+			for (var i = 0; i < attr.Length; i++)
 			{
 				// get attribute-name and type; set type=id|title for special cases
 				var a = attr[i];
@@ -112,7 +112,7 @@ namespace ToSic.Eav.DataSources
                     : aLow == Constants.EntityFieldModified ? 'm'
                     : 'x';
 				bool isAscending = true;			// default
-				if (directions.Count() - 1 >= i)	// if this value has a direction specified, use that...
+				if (directions.Length - 1 >= i)	// if this value has a direction specified, use that...
 					isAscending = !descendingCodes.Any(directions[i].ToLower().Trim().Contains);
 
 				if (ordered == null)

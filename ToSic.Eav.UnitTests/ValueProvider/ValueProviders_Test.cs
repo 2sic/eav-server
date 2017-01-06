@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav;
+using ToSic.Eav.UnitTests.Data;
 using ToSic.Eav.ValueProvider;
 
-namespace ToSic.Eav.UnitTests
+namespace ToSic.Eav.UnitTests.ValueProvider
 {
     [TestClass]
-    public class ValueProviders_Test
+    public class ValueProvidersTest
     {
         [TestMethod]
         public void ValueProvider_StaticValueProvider()
@@ -34,7 +31,7 @@ namespace ToSic.Eav.UnitTests
         [TestMethod]
         public void ValueProvider_EntityValueProvider()
         {
-            IValueProvider valProv = new EntityValueProvider(new Entity_Test().TestEntityDaniel());
+            IValueProvider valProv = new EntityValueProvider(new EntityTest().TestEntityDaniel());
             bool found = false;
 
             Assert.IsTrue(valProv.Has("FirstName"), "Has first name");

@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Runtime.Remoting;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav;
 using System.Collections.Generic;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
 
-namespace ToSic.Eav.UnitTests
+namespace ToSic.Eav.UnitTests.Data
 {
     [TestClass]
-    public class Entity_Test
+    public class EntityTest
     {
         [TestMethod]
         public void Entity_CreateSimpleUnpersistedEntity()
@@ -20,7 +18,7 @@ namespace ToSic.Eav.UnitTests
             Assert.AreEqual("Daniel", entDaniel.Title[0].ToString());
             Assert.AreEqual("Daniel", entDaniel.GetBestTitle());
             Assert.AreEqual("Daniel", entDaniel.GetBestValue("FirstName"));
-            Assert.AreEqual("Mettler", entDaniel.GetBestValue("LastName", new string[] {"EN"}));
+            Assert.AreEqual("Mettler", entDaniel.GetBestValue("LastName", new[] {"EN"}));
         }
 
         [TestMethod]
@@ -36,6 +34,7 @@ namespace ToSic.Eav.UnitTests
                 relationshipList.Add(relPet);
             }
 
+            // ReSharper disable once UnusedVariable
             var relMan = new RelationshipManager(dan, relationshipList);
 
             // note: can't test more, because the other properties are internal
@@ -52,7 +51,7 @@ namespace ToSic.Eav.UnitTests
                 {"Phone", "+41 81 750 67 70"},
                 {"Age", 37}
             };
-            var entDaniel = new Data.Entity(1, "TestType", valDaniel, "FirstName");
+            var entDaniel = new Eav.Data.Entity(1, "TestType", valDaniel, "FirstName");
             return entDaniel;
         }
 
@@ -66,7 +65,7 @@ namespace ToSic.Eav.UnitTests
                 {"Age", 6}
             };
 
-            var entLeonie = new Data.Entity(2, "TestType", valLeonie, "FirstName");
+            var entLeonie = new Eav.Data.Entity(2, "TestType", valLeonie, "FirstName");
             return entLeonie;
         }
         public IEntity TestEntityPet(int petNumber)
@@ -79,7 +78,7 @@ namespace ToSic.Eav.UnitTests
                 {"Age", petNumber}
             };
 
-            var entPet = new Data.Entity(1000+petNumber, "Pet", valsPet, "FirstName");
+            var entPet = new Eav.Data.Entity(1000+petNumber, "Pet", valsPet, "FirstName");
             return entPet;
         }
         #endregion

@@ -27,7 +27,7 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// Default Name of the EntityId Column
 		/// </summary>
-		public static readonly string EntityIdDefaultColumnName = "EntityId";
+		public static readonly string EntityIdDefaultColumnName = "EntityId"; // note: if I ever use a constant, remember to check case-sensitivity
 
 	    /// <summary>
 	    /// Default Name of the EntityTitle Column
@@ -92,7 +92,7 @@ namespace ToSic.Eav.DataSources
 
         #region Special SQL specific properties to prevent SQL Injection
 
-	    private string originalUnsafeSql;
+	    // private string originalUnsafeSql;
         //private Dictionary<string, string> sqlParams = new Dictionary<string, string>();
 	    public const string ExtractedParamPrefix = "AutoExtractedParam";
 
@@ -103,6 +103,7 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public SqlDataSource()
 		{
+            // ReSharper disable once DoNotCallOverridableMethodsInConstructor
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, null, GetList));
 			Configuration.Add(TitleFieldKey, EntityTitleDefaultColumnName);
 			Configuration.Add(EntityIdFieldKey, EntityIdDefaultColumnName);
@@ -136,33 +137,32 @@ namespace ToSic.Eav.DataSources
             // Protect ourselves against SQL injection:
             // this is almost the same code as in the tokenizer, just replacing all tokens with an @param# syntax
             // and adding these @params to the collection of configurations
-            var Tokenizer = Tokens.TokenReplace.Tokenizer;
+            var tokenizer = Tokens.TokenReplace.Tokenizer;
 	        
             // Before we process the Select-Command, we must get it (by default it's just a token!)
 	        if (SelectCommand.StartsWith("[Settings"))
 	        {
-                var tempList = new Dictionary<string, string>();
-                tempList.Add("one", SelectCommand);
-                ConfigurationProvider.LoadConfiguration(tempList, null, 0); // load, but make sure no recursions to prevent pre-filling parameters
+	            var tempList = new Dictionary<string, string> {{"one", SelectCommand}};
+	            ConfigurationProvider.LoadConfiguration(tempList, null, 0); // load, but make sure no recursions to prevent pre-filling parameters
 	            SelectCommand = tempList["one"];
 	        }
             var sourceText = SelectCommand;
-            var ParamNumber = 1;
+            var paramNumber = 1;
 	        var additionalParams = new List<string>();
-            var Result = new StringBuilder();
+            var result = new StringBuilder();
             var charProgress = 0;
-            var matches = Tokenizer.Matches(sourceText);
+            var matches = tokenizer.Matches(sourceText);
             if (matches.Count > 0)
             {
                 foreach (Match curMatch in matches)
                 {
                     // Get characters before the first match
                     if (curMatch.Index > charProgress)
-                        Result.Append(sourceText.Substring(charProgress, curMatch.Index - charProgress));
+                        result.Append(sourceText.Substring(charProgress, curMatch.Index - charProgress));
                     charProgress = curMatch.Index + curMatch.Length;
 
-                    var paramName = "@" + ExtractedParamPrefix + (ParamNumber++);
-                    Result.Append(paramName);
+                    var paramName = "@" + ExtractedParamPrefix + (paramNumber++);
+                    result.Append(paramName);
                     Configuration.Add(paramName, curMatch.ToString());
 
                     // add name to list for caching-key
@@ -170,10 +170,10 @@ namespace ToSic.Eav.DataSources
                 }
 
                 // attach the rest of the text (after the last match)
-                Result.Append(sourceText.Substring(charProgress));
+                result.Append(sourceText.Substring(charProgress));
 
                 // Ready to finish, but first, ensure repeating if desired
-                SelectCommand = Result.ToString();
+                SelectCommand = result.ToString();
             }
 	        CacheRelevantConfigurations = CacheRelevantConfigurations.Concat(additionalParams).ToArray();
 
@@ -191,7 +191,7 @@ namespace ToSic.Eav.DataSources
 
             // Check if SQL contains forbidden terms
             if(ForbiddenTermsInSelect.IsMatch(SelectCommand))
-                throw new System.InvalidOperationException("Found forbidden words in the select-command. Cannot continue.");
+                throw new InvalidOperationException("Found forbidden words in the select-command. Cannot continue.");
 
 	        var list = new List<IEntity>(); // Dictionary<int, IEntity>();
 
@@ -210,6 +210,7 @@ namespace ToSic.Eav.DataSources
 				connection.Open();
 				var reader = command.ExecuteReader();
 
+			    var casedTitle = TitleField;
 				try
 				{
 					#region Get the SQL Column List and validate it
@@ -218,17 +219,25 @@ namespace ToSic.Eav.DataSources
 						columNames[i] = reader.GetName(i);
 
 					if (!columNames.Contains(EntityIdField))
-						throw new Exception(string.Format("SQL Result doesn't contain an EntityId Column with Name \"{0}\". Ideally use something like Select ID As EntityId...", EntityIdField));
-					if (!columNames.Contains(TitleField))
-                        throw new Exception(string.Format("SQL Result doesn't contain an EntityTitle Column with Name \"{0}\". Ideally use something like Select FullName As EntityTitle...", TitleField));
-					#endregion
+						throw new Exception(
+						    $"SQL Result doesn't contain an EntityId Column with Name \"{EntityIdField}\". Ideally use something like Select ID As EntityId...");
+				    if (!columNames.Contains(casedTitle))
+				    {
+                        // try alternate casing
+				        casedTitle = columNames.FirstOrDefault(c => c.ToLower() == casedTitle);
+				        if (casedTitle == null)
+				            throw new Exception(
+				                $"SQL Result doesn't contain an EntityTitle Column with Name \"{TitleField}\". Ideally use something like Select FullName As EntityTitle...");
+				    }
+
+				    #endregion
 
 					#region Read all Rows from SQL Server
 					while (reader.Read())
 					{
 						var entityId = Convert.ToInt32(reader[EntityIdField]);
 						var values = columNames.Where(c => c != EntityIdField).ToDictionary(c => c, c => reader[c]);
-						var entity = new Data.Entity(entityId, ContentType, values, TitleField);
+						var entity = new Data.Entity(entityId, ContentType, values, casedTitle);
 					    list.Add(entity);
 					    //_entities.Add(entityId, entity);
 					}
