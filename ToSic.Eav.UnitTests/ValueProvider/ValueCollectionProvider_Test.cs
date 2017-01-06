@@ -73,7 +73,7 @@ namespace ToSic.Eav.UnitTests.ValueProvider
                 {"PicsPerRow", "3"}
             };
 
-            var ent = new Data.Entity(305200, "AppSettings", vals, "Title");
+            var ent = new ToSic.Eav.Data.Entity(305200, "AppSettings", vals, "Title");
             return ent;
         }
 
@@ -85,7 +85,7 @@ namespace ToSic.Eav.UnitTests.ValueProvider
                 {"Greeting", "Hello there!"},
                 {"Introduction", "Welcome to this"}
             };
-            var ent = new Data.Entity(305200, "AppResources", vals, "Title");
+            var ent = new Eav.Data.Entity(305200, "AppResources", vals, "Title");
             return ent;
         }
     }
