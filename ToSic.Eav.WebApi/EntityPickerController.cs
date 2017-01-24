@@ -40,10 +40,30 @@ namespace ToSic.Eav.WebApi
                            {
                                Id = l.EntityId,
                                Value = l.EntityGuid,
-                               Text = l.Title?[dimensionIds] == null || IsNullOrWhiteSpace(l.Title[dimensionIds].ToString()) ? "(no Title, " + l.EntityId + ")" : l.Title[dimensionIds]
+                               Text = GetTitle(l, dimensionIds) // l.Title?[dimensionIds] == null || IsNullOrWhiteSpace(l.Title[dimensionIds].ToString()) ? "(no Title, " + l.EntityId + ")" : l.Title[dimensionIds]
                            }).OrderBy(l => l.Text.ToString()).ToList();
 
             return entities;
+        }
+
+        private string GetTitle(IEntity l, int dimensionIds)
+        {
+            string title;
+
+            // if the title is an entity-picker, try to find the inner-title 
+            // of the chosen title-item
+            if (l.Title.Type == "Entity")
+            {
+                var val = l.GetBestValue(Constants.EntityFieldTitle) as Data.EntityRelationship;
+                title = val?.FirstOrDefault()?.GetBestTitle();
+            }
+            else
+                // default: just get the preferred title
+                title = l.Title?[dimensionIds]?.ToString();
+
+            return IsNullOrWhiteSpace(title)
+                ? "(no Title, " + l.EntityId + ")"
+                : title;
         }
 
     }

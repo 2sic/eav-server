@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Caches;
@@ -287,9 +286,11 @@ namespace ToSic.Eav.BLL
                     attributeModel.DefaultValue = (IValueManagement)valuesModelList.FirstOrDefault();
                 }
 
-                // Special treatment in case there is no title - sometimes happens if the title-field is re-defined and ol data might no have this
-                //if(newEntity.Title == null)
-                //    newEntity.Title = titleAttrib;
+                // Special treatment in case there is no title 
+                // sometimes happens if the title-field is re-defined and ol data might no have this
+                // also happens in rare cases, where the title-attrib is an entity-picker
+                if (newEntity.Title == null)
+                    newEntity.Title = titleAttrib;
                 #endregion
 
                 entities.Add(e.EntityID, newEntity);
@@ -321,8 +322,8 @@ namespace ToSic.Eav.BLL
         /// </summary>
         /// <returns>A single IEntity or throws InvalidOperationException</returns>
         public IEntity GetEavEntity(int entityId, BaseCache source = null)
-        {
-            return GetAppDataPackage(new[] { entityId }, Context.AppId /*_appId*/, source, true).Entities.Single(e => e.Key == entityId).Value; // must filter by EntityId again because of Drafts
-        }
+            => GetAppDataPackage(new[] {entityId}, Context.AppId, source, true)
+                .Entities.Single(e => e.Key == entityId).Value; // must filter by EntityId again because of Drafts
+
     }
 }
