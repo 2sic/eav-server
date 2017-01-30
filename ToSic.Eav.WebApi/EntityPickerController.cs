@@ -52,7 +52,7 @@ namespace ToSic.Eav.WebApi
 
             // if the title is an entity-picker, try to find the inner-title 
             // of the chosen title-item
-            if (l.Title.Type == "Entity")
+            if (l.Title != null && l.Title.Type == "Entity")
             {
                 var val = l.GetBestValue(Constants.EntityFieldTitle) as Data.EntityRelationship;
                 title = val?.FirstOrDefault()?.GetBestTitle();
