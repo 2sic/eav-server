@@ -30,7 +30,7 @@ namespace ToSic.Eav.DataSources.Tests
 
 
         [TestMethod]
-        public void CountShuffle100()
+        public void Shuffle_CountShuffle100()
         {
             var desiredFinds = 100;
             var sf = GenerateShuffleDS(desiredFinds);
@@ -42,15 +42,15 @@ namespace ToSic.Eav.DataSources.Tests
         [TestMethod]
         public void Shuffle5_ValidateNotOrdered()
         {
-            var items = 2;
+            var items = 5;
             var sf = GenerateShuffleDS(items);
 
             var origSeqSorted = AreAllItemsSorted(sf.In["Default"]);
             var seqConsistent = AreAllItemsSorted(sf.Out["Default"]);
 
             // after checking all, it should NOT be consistent
-            Assert.IsTrue(origSeqSorted, "original sequence SHOULD be consistent");
-            Assert.IsFalse(seqConsistent, "sequence should NOT be consistent");
+            Assert.IsTrue(origSeqSorted, "original sequence SHOULD be sorted");
+            Assert.IsFalse(seqConsistent, "sequence should NOT be not-sorted");
 
         }
 

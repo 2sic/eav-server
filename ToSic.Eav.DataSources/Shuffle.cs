@@ -7,14 +7,14 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// A DataSource that filters Entities by Ids
 	/// </summary>
-	// [PipelineDesigner]
+	[PipelineDesigner]
 	public sealed class Shuffle: BaseDataSource
 	{
         #region Configuration-properties (no config)
         private const string TakeKey = "Take";
 
         /// <summary>
-        /// Amount of items to take - NOT IMPLEMENTED YET
+        /// Amount of items to take 
         /// </summary>
 		public int Take
         {
@@ -74,20 +74,5 @@ namespace ToSic.Eav.DataSources
         }
         #endregion
 
-        #region Experiment based on https://gist.github.com/mikedugan/8249637
-        public static void ShuffleMethod<T>(T[] array)
-        {
-            var random = new Random();
-            for (int i = array.Length; i > 1; i--)
-            {
-                // Pick random element to swap.
-                int j = random.Next(i); // 0 <= j <= i-1
-                                        // Swap.
-                T tmp = array[j];
-                array[j] = array[i - 1];
-                array[i - 1] = tmp;
-            }
-        }
-        #endregion
     }
 }
