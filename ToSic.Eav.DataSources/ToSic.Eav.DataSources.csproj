@@ -75,6 +75,7 @@
     <Compile Include="IDataStream.cs" />
     <Compile Include="IDataTarget.cs" />
     <Compile Include="IMetaDataSource.cs" />
+    <Compile Include="Shuffle.cs" />
     <Compile Include="Paging.cs" />
     <Compile Include="PassThrough.cs" />
     <Compile Include="Pipeline\DataPipeline.cs" />
