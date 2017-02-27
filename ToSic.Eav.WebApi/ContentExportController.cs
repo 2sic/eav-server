@@ -63,7 +63,8 @@ namespace ToSic.Eav.WebApi
             var response = new HttpResponseMessage(HttpStatusCode.OK);
             response.Content = new StringContent(fileContent);
             response.Content.Headers.ContentType = new MediaTypeHeaderValue("text/xml");
-            response.Content.Headers.ContentLength = fileContent.Length;
+            // 2rm 2016-02-27 removed, probably caused truncating issues
+            //response.Content.Headers.ContentLength = fileContent.Length;
             response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
             {
                 FileName = fileName
