@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Metadata.Edm;
 using System.Linq;
 using System.Web.Http;
-using System.Web.UI;
-using Microsoft.Practices.ObjectBuilder2;
 using ToSic.Eav.Api;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.WebApi.Formats;
 using ToSic.Eav.Import;
-using ToSic.Eav.BLL;
 using ToSic.Eav.ImportExport.Refactoring.Extensions;
 
 namespace ToSic.Eav.WebApi
@@ -21,7 +17,8 @@ namespace ToSic.Eav.WebApi
 	public class EntitiesController : Eav3WebApiBase
     {
         public EntitiesController(int appId) : base(appId) { }
-        public EntitiesController() : base() { }
+        public EntitiesController()
+        { }
 
         #region GetOne GetAll calls
         public IEntity GetEntityOrThrowError(string contentType, int id, int? appId = null)
@@ -36,11 +33,26 @@ namespace ToSic.Eav.WebApi
             return found;
         }
 
-        public Dictionary<string, object> GetOne(string contentType, int id, int? appId = null, string cultureCode = null)
-	    {
-            var found = GetEntityOrThrowError(contentType, id, appId);
-            return Serializer.Prepare(found);
-	    }
+        public IEntity GetEntityOrThrowError(string contentType, Guid guid, int? appId = null)
+        {
+            if (appId.HasValue)
+                AppId = appId.Value;
+
+            // must use cache, because it shows both published  unpublished
+            var list = DataSource.GetCache(null, AppId).LightList;
+            var itm = list // pre-fetch for security and content-type check
+                .FirstOrDefault(e => e.EntityGuid == guid);
+
+            if (itm == null || (contentType != null && !(itm.Type.Name == contentType || itm.Type.StaticName == contentType)))
+                throw new KeyNotFoundException("Can't find " + guid + "of type '" + contentType + "'");
+            return itm;
+        }
+
+     //   public Dictionary<string, object> GetOne(string contentType, int id, int? appId = null, string cultureCode = null)
+	    //{
+     //       var found = GetEntityOrThrowError(contentType, id, appId);
+     //       return Serializer.Prepare(found);
+	    //}
 
         /// <summary>
 		/// Get all Entities of specified Type
