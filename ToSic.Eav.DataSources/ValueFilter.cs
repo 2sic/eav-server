@@ -67,7 +67,7 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public ValueFilter()
 		{
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, null, GetEntities));
+			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, null, GetEntitiesOrFallback));
 			Configuration.Add(AttrKey, "[Settings:Attribute]");
 			Configuration.Add(FilterKey, "[Settings:Value]");
             Configuration.Add(OperatorKey, "[Settings:Operator||==]");
@@ -77,7 +77,20 @@ namespace ToSic.Eav.DataSources
             CacheRelevantConfigurations = new[] { AttrKey, FilterKey, LangKey };
         }
 
-		private IEnumerable<IEntity> GetEntities()
+        private IEnumerable<IEntity> GetEntitiesOrFallback()
+        {
+            var res = GetEntities();
+            // ReSharper disable PossibleMultipleEnumeration
+            if (!res.Any())
+                if (In.ContainsKey(Constants.FallbackStreamName) && In[Constants.FallbackStreamName] != null && In[Constants.FallbackStreamName].LightList.Any())
+                    res = In[Constants.FallbackStreamName].LightList;
+            
+            return res;
+            // ReSharper restore PossibleMultipleEnumeration
+        }
+
+
+        private IEnumerable<IEntity> GetEntities()
 		{
 			// todo: maybe do something about languages?
 			EnsureConfigurationIsLoaded();
@@ -119,29 +132,6 @@ namespace ToSic.Eav.DataSources
                 // if I can't find any, return empty list
                 if (firstEntity == null)
                     return new List<IEntity>();
-
-                //var attribute = firstEntity[_initializedAttrName];
-                //var typeName = attribute.Type; // must get from the property, as not all content-types have a real type object
-
-                //switch (typeName)
-                //{
-                //    case "Boolean": // todo: find some constant for this
-                //        compare = GetBoolComparison(Value);
-                //        break;
-                //    case "Number":
-                //        compare = GetNumberComparison(Value);
-                //        break;
-                //    case "DateTime":
-                //        compare = GetDateTimeComparison(Value);
-                //        break;
-                //    case "Entity":
-                //        throw new Exception("can't compare values which are related entities - use the RelationshipFilter instead");
-                //    // ReSharper disable once RedundantCaseLabel
-                //    case "String":
-                //    default:
-                //        compare = GetStringComparison(Value);
-                //        break;
-                //}
 
                 // New mechanism because the filter ignores internal properties like Modified, EntityId etc.
                 var firstAtt = firstEntity.GetBestValue(_initializedAttrName);  // this should get everything, incl. modified, EntityId, EntityGuid etc.

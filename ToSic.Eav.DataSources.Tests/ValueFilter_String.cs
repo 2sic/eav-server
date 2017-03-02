@@ -208,7 +208,32 @@ namespace ToSic.Eav.DataSources.Tests
             vf.Value = DataTableDataSourceTest.TestCities[1]; // test for the second value
             Assert.AreEqual(2500, vf.List.Count, "Should find exactly 250 people with this city");
         }
-        
+
+
+        #region Fallback Tests
+        [TestMethod]
+        public void ValueFilter_WithoutFallback()
+        {
+            var vf = _testDataGeneratedOutsideTimer;
+            vf.Attribute = "City";
+            // vf.Operator = "==";
+            vf.Value = "inexisting city";
+            Assert.AreEqual(0, vf.List.Count, "Should find exactly 0 people with this city");
+        }
+
+        [TestMethod]
+        public void ValueFilter_WithFallback()
+        {
+            var vf = _testDataGeneratedOutsideTimer;
+            vf.Attribute = "City";
+            // vf.Operator = "==";
+            vf.Value = "inexisting city";
+            
+            // attach fallback to give all if no match
+            vf.In.Add(Constants.FallbackStreamName, vf.In[Constants.DefaultStreamName]);
+            Assert.AreEqual(TestVolume, vf.List.Count, "Should find exactly 0 people with this city");
+        }
+        #endregion
 
         public static  ValueFilter CreateValueFilterForTesting(int testItemsInRootSource)
         {

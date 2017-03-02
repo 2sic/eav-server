@@ -87,6 +87,8 @@ namespace ToSic.Eav
         /// </summary>
         public const string DefaultStreamName = "Default";
 
+        public const string FallbackStreamName = "Fallback";
+
         /// <summary>PublishedEntities Stream Name</summary>
         public const string PublishedStreamName = "Published";
         /// <summary>Draft-Entities Stream Name</summary>

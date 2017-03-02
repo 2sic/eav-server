@@ -108,7 +108,7 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public RelationshipFilter()
 		{
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, null, GetList));
+			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, null, GetEntitiesOrFallback));
 			Configuration.Add(RelationshipKey, "[Settings:Relationship]");
 			Configuration.Add(FilterKey, "[Settings:Filter]");
 		    Configuration.Add(CompareAttributeKey, Constants.EntityFieldTitle);
@@ -120,12 +120,19 @@ namespace ToSic.Eav.DataSources
             CacheRelevantConfigurations = new[] { RelationshipKey, FilterKey, CompareAttributeKey, CompareModeKey, ChildOrParentKey};
         }
 
-        //private IDictionary<int, IEntity> GetEntities()
-        //{
-        //    return GetList().ToDictionary(e => e.EntityId, e => e);
-        //}
+        private IEnumerable<IEntity> GetEntitiesOrFallback()
+        {
+            var res = GetEntities();
+            // ReSharper disable PossibleMultipleEnumeration
+            if (!res.Any())
+                if (In.ContainsKey(Constants.FallbackStreamName) && In[Constants.FallbackStreamName] != null && In[Constants.FallbackStreamName].LightList.Any())
+                    res = In[Constants.FallbackStreamName].LightList;
 
-		private IEnumerable<IEntity> GetList()
+            return res;
+            // ReSharper restore PossibleMultipleEnumeration
+        }
+
+        private IEnumerable<IEntity> GetEntities()
 		{
 			// todo: maybe do something about languages?
 
