@@ -48,11 +48,19 @@ namespace ToSic.Eav.WebApi
             return itm;
         }
 
-     //   public Dictionary<string, object> GetOne(string contentType, int id, int? appId = null, string cultureCode = null)
-	    //{
-     //       var found = GetEntityOrThrowError(contentType, id, appId);
-     //       return Serializer.Prepare(found);
-	    //}
+        /// <summary>
+        /// this is needed by 2sxc
+        /// </summary>
+        /// <param name="contentType"></param>
+        /// <param name="id"></param>
+        /// <param name="appId"></param>
+        /// <param name="cultureCode"></param>
+        /// <returns></returns>
+        public Dictionary<string, object> GetOne(string contentType, int id, int? appId = null, string cultureCode = null)
+        {
+            var found = GetEntityOrThrowError(contentType, id, appId);
+            return Serializer.Prepare(found);
+        }
 
         /// <summary>
 		/// Get all Entities of specified Type
@@ -118,7 +126,7 @@ namespace ToSic.Eav.WebApi
 	    //    return typeFilter.LightList.Count();
 	    //}
 
-        public EntityWithLanguages GetOne(int appId, string contentType, int id, int? duplicateFrom, string format = "multi-language")
+        public EntityWithLanguages GetOne(int appId, string contentType, int id, int? duplicateFrom = null, string format = "multi-language")
         {
             switch (format)
             {
