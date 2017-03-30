@@ -1,0 +1,11 @@
+﻿Auto-generate data model with PowerShell
+
+Based on instructions from:
+- https://docs.microsoft.com/en-us/ef/core/get-started/aspnetcore/existing-db
+- 
+
+Note: I had to manually copy some DLLs to the eav/bin folder
+
+Here's the PS:
+
+Scaffold-DbContext 'Data Source=NBK-DEV-04\SQLEXPRESS;Initial Catalog="2flex 2Sexy Content";Integrated Security=True;' Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -tables ('dbo.ToSIC_EAV_Apps', 'dbo.ToSIC_EAV_AssignmentObjectTypes', 'dbo.ToSIC_EAV_AttributeGroups', 'dbo.ToSIC_EAV_Attributes', 'dbo.ToSIC_EAV_AttributeSets', 'dbo.ToSIC_EAV_AttributesInSets', 'dbo.ToSIC_EAV_AttributeTypes', 'dbo.ToSIC_EAV_ChangeLog', 'dbo.ToSIC_EAV_DataTimeline', 'dbo.ToSIC_EAV_Dimensions', 'dbo.ToSIC_EAV_Entities', 'dbo.ToSIC_EAV_EntityRelationships', 'dbo.ToSIC_EAV_Values', 'dbo.ToSIC_EAV_ValuesDimensions', 'dbo.ToSIC_EAV_Zones')
