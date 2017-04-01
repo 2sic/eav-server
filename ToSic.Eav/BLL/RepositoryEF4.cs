@@ -30,5 +30,14 @@ namespace ToSic.Eav.BLL
             return new { Id = a.AppID, Name = a.Name, Zone = a.ZoneID };
         }
 
+        //public int AppCreate(string name, Guid? guid = null)
+        //{
+        //    if(guid == null)
+        //        guid = Guid.NewGuid();
+        //    var app = Context.App.AddApp(guid.Value.ToString(), name );
+        //    Context.SqlDb.SaveChanges();
+        //    return app.AppID;
+        //}
+
     }
 }

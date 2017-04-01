@@ -14,6 +14,9 @@ namespace ToSic.Eav.BLL.Parts
         /// </summary>
         public App AddApp(Zone zone, string name = Constants.DefaultAppName)
         {
+            if (zone == null)
+                zone = Context.Zone.GetZone(Context.ZoneId);
+
             var newApp = new App
             {
                 Name = name,
@@ -25,24 +28,26 @@ namespace ToSic.Eav.BLL.Parts
 
             Context.AttribSet.EnsureSharedAttributeSets(newApp);
 
-            PurgeGlobalCache(Context.ZoneId, Context.AppId);
+            // 2017-04-01 removed, shouldn't be necessary any more at this level
+            // PurgeGlobalCache(Context.ZoneId, Context.AppId);
 
             return newApp;
         }
 
-        private void PurgeGlobalCache(int zoneId, int appId)
-        {
-            // todo: bad - don't want any data-source in here!
-            DataSource.GetCache(zoneId, appId).PurgeGlobalCache();
-        }
+        // 2017-04-01 2dm remove from this layer...
+        //private void PurgeGlobalCache(int zoneId, int appId)
+        //{
+        //    // todo: bad - don't want any data-source in here!
+        //    DataSource.GetCache(zoneId, appId).PurgeGlobalCache();
+        //}
 
-        /// <summary>
-        /// Add a new App to the current Zone
-        /// </summary>
-        /// <param name="name">The name of the new App</param>
-        /// <returns></returns>
-        public App AddApp(string name)
-            => AddApp(Context.Zone.GetZone(Context.ZoneId), name);
+        ///// <summary>
+        ///// Add a new App to the current Zone
+        ///// </summary>
+        ///// <param name="name">The name of the new App</param>
+        ///// <returns></returns>
+        //public App AddApp(string name)
+        //    => AddApp(Context.Zone.GetZone(Context.ZoneId), name);
 
 
         /// <summary>
@@ -61,8 +66,9 @@ namespace ToSic.Eav.BLL.Parts
             // Delete app using StoredProcedure
             Context.SqlDb.DeleteAppInternal(appId);
 
+            // 2017-04-01 2dm removed from here, must happen at "outer" layer
             // Remove App from Global Cache
-            PurgeGlobalCache(Context.ZoneId, Context.AppId);
+            // PurgeGlobalCache(Context.ZoneId, Context.AppId);
         }
 
         /// <summary>

@@ -125,7 +125,7 @@ namespace ToSic.Eav.Persistence
                     continue;
 
                 // create new AttributeSet
-                var newAttributeSet = AddAttributeSet(sharedSet.Name, sharedSet.Description, sharedSet.StaticName, sharedSet.Scope, false, app.AppID);
+                var newAttributeSet = AddContentTypeAndSave(sharedSet.Name, sharedSet.Description, sharedSet.StaticName, sharedSet.Scope, false, app.AppID);
                 newAttributeSet.UsesConfigurationOfAttributeSet = sharedSet.AttributeSetID;
             }
 
@@ -148,11 +148,11 @@ namespace ToSic.Eav.Persistence
         /// <summary>
         /// Add a new AttributeSet
         /// </summary>
-        public AttributeSet AddAttributeSet(string name, string description, string staticName, string scope, bool autoSave = true)
-            => AddAttributeSet(name, description, staticName, scope, autoSave, null);
+        public AttributeSet AddContentTypeAndSave(string name, string description, string staticName, string scope, bool autoSave = true)
+            => AddContentTypeAndSave(name, description, staticName, scope, autoSave, null);
         
 
-        internal AttributeSet AddAttributeSet(string name, string description, string staticName, string scope, bool autoSave, int? appId)
+        internal AttributeSet AddContentTypeAndSave(string name, string description, string staticName, string scope, bool autoSave, int? appId)
         {
             if (string.IsNullOrEmpty(staticName))
                 staticName = Guid.NewGuid().ToString();

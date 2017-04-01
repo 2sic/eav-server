@@ -157,7 +157,7 @@ namespace ToSic.Eav.Import
             var destinationSet = _context.AttribSet.GetAttributeSet(importAttributeSet.StaticName);
             // add new AttributeSet
             if (destinationSet == null)
-                destinationSet = _context.AttribSet.AddAttributeSet(importAttributeSet.Name, importAttributeSet.Description, importAttributeSet.StaticName, importAttributeSet.Scope, false);
+                destinationSet = _context.AttribSet.AddContentTypeAndSave(importAttributeSet.Name, importAttributeSet.Description, importAttributeSet.StaticName, importAttributeSet.Scope, false);
             else	// use/update existing attribute Set
             {
                 if (destinationSet.UsesConfigurationOfAttributeSet.HasValue)
