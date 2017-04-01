@@ -5,7 +5,6 @@ namespace ToSic.Eav.Data
     /// <summary>
     /// Represents an Attribute with Values of a Generic Type
     /// </summary>
-    /// <typeparam name="ValueType">Type of the Value</typeparam>
     public class AttributeBase : IAttributeBase
     {
         public string Name { get; set; }

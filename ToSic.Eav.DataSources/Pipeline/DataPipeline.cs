@@ -23,11 +23,11 @@ namespace ToSic.Eav.DataSources
 			{
 				pipelineEntity = entities[entityId];
                 if (pipelineEntity.Type.StaticName != Constants.DataPipelineStaticName)//PipelineAttributeSetStaticName)
-					throw new ArgumentException("Entity is not an DataPipeline Entity", "entityId");
+					throw new ArgumentException("Entity is not an DataPipeline Entity", nameof(entityId));
 			}
 			catch (Exception)
 			{
-				throw new ArgumentException(string.Format("Could not load Pipeline-Entity with ID {0}.", entityId), "entityId");
+				throw new ArgumentException($"Could not load Pipeline-Entity with ID {entityId}.", nameof(entityId));
 			}
 
 			return pipelineEntity;

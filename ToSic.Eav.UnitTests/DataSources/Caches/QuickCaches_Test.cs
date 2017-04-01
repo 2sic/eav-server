@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSources.Caches;
 
 namespace ToSic.Eav.UnitTests.DataSources.Caches
 {
@@ -33,7 +30,7 @@ namespace ToSic.Eav.UnitTests.DataSources.Caches
             
 
             // Try to auto-retrieve 
-            IEnumerable<IEntity> cached = listCache.ListGet(ds.CacheFullKey + "|Default").LightList;
+            var cached = listCache.ListGet(ds.CacheFullKey + "|Default").LightList;
 
             Assert.AreEqual(1, cached.Count());
 

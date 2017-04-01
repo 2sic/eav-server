@@ -111,7 +111,7 @@ namespace ToSic.Eav.DataSources
                     : aLow == Constants.EntityFieldTitle ? 't' 
                     : aLow == Constants.EntityFieldModified ? 'm'
                     : 'x';
-				bool isAscending = true;			// default
+				var isAscending = true;			// default
 				if (directions.Length - 1 >= i)	// if this value has a direction specified, use that...
 					isAscending = !descendingCodes.Any(directions[i].ToLower().Trim().Contains);
 

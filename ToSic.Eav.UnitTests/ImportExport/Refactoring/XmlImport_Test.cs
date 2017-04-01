@@ -2,17 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using Microsoft.Practices.Unity;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.BLL;
-using ToSic.Eav.BLL.Parts;
 using ToSic.Eav.Implementations.ValueConverter;
 using ToSic.Eav.Import;
 using ToSic.Eav.ImportExport.Refactoring;
 using ToSic.Eav.ImportExport.Refactoring.Options;
 using ToSic.Eav.ImportExport.Refactoring.ValueConverter;
-using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.UnitTests.ImportExport.Refactoring
 {
@@ -21,9 +17,9 @@ namespace ToSic.Eav.UnitTests.ImportExport.Refactoring
     {
         #region Settings
 
-        private int ZoneId = 1;
-        private int AppId = 1;
-        private int ContentTypeSimpleContent = 13;
+        private readonly int ZoneId = 1;
+        private readonly int AppId = 1;
+        private readonly int ContentTypeSimpleContent = 13;
         private Guid SingleItemGuid = new Guid("31d93b03-cfb3-483b-8134-e08bbee9cd2c");
         private string UserNameOfTestingScript = "TestUser";
         #endregion
@@ -313,8 +309,8 @@ On all your devices.</PreviewContent>
 
         public Stream GenerateStreamFromString(string s)
         {
-            MemoryStream stream = new MemoryStream();
-            StreamWriter writer = new StreamWriter(stream);
+            var stream = new MemoryStream();
+            var writer = new StreamWriter(stream);
             writer.Write(s);
             writer.Flush();
             stream.Position = 0;

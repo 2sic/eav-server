@@ -83,7 +83,7 @@ namespace ToSic.Eav.UnitTests.DataSources
         public void EntityIdFilter_CacheKeyMulti()
         {
             // Multi-value scenario, no special spaces etc.
-            string ItemToFilter = "1011,1023,1050,1003";
+            var ItemToFilter = "1011,1023,1050,1003";
             var ds = CreateFilterForTesting(100, ItemToFilter);
 
             Assert.AreEqual("EntityIdFilter-NoGuid&EntityIds=1011,1023,1050,1003", ds.CachePartialKey);

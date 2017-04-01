@@ -15,7 +15,7 @@ namespace ToSic.Eav.UnitTests.DataSources
         public static int HeightVar = 55;
         public static int IsMaleForEveryX = 3;
 
-        private static Dictionary<int, DataTableDataSource> _cachedDs = new Dictionary<int, DataTableDataSource>();
+        private static readonly Dictionary<int, DataTableDataSource> _cachedDs = new Dictionary<int, DataTableDataSource>();
 
         [TestMethod]
         public void DataSource_Create_GeneralTest()
@@ -124,8 +124,8 @@ namespace ToSic.Eav.UnitTests.DataSources
         private static readonly Random Gen = new Random();
         private static DateTime RandomDate()
         {
-            DateTime start = new DateTime(1995, 1, 1);
-            int range = (DateTime.Today - start).Days;
+            var start = new DateTime(1995, 1, 1);
+            var range = (DateTime.Today - start).Days;
             return start.AddDays(Gen.Next(range));
         }
 

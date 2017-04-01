@@ -36,11 +36,11 @@ namespace ToSic.Eav.Data
 
                 var dateTimeValue = value as Value<DateTime?>;
                 if (dateTimeValue != null)
-                    return dateTimeValue.TypedContents.HasValue ? dateTimeValue.TypedContents.Value.ToString("s") : "";
+                    return dateTimeValue.TypedContents?.ToString("s") ?? "";
 
                 var decimalValue = value as Value<decimal?>;
                 if (decimalValue != null)
-                    return decimalValue.TypedContents.HasValue ? decimalValue.TypedContents.Value.ToString(System.Globalization.CultureInfo.InvariantCulture) : "";
+                    return decimalValue.TypedContents?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "";
 
                 throw new NotSupportedException("Can't serialize Value");
             }

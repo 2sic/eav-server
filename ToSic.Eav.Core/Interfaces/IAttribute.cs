@@ -98,10 +98,11 @@ namespace ToSic.Eav
 	/// </summary>
 	public interface IAttributeManagement : IAttribute
 	{
-		/// <summary>
-		/// Gets or sets whether the Attribute is the Title Attribute in the Attribute Set
-		/// </summary>
-		bool IsTitle { get; set; }
+		///// <summary>
+		///// Gets or sets whether the Attribute is the Title Attribute in the Attribute Set
+		///// </summary>
+		//bool IsTitle { get; set; }
+
 		/// <summary>
 		/// Sets the Name of the Attribute
 		/// </summary>

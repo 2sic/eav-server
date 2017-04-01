@@ -15,7 +15,7 @@ namespace ToSic.Eav.WebApi
         [HttpPost]
         public IEnumerable<dynamic> GetAvailableEntities([FromUri]int appId, [FromBody] string[] items, [FromUri] string contentTypeName = null, [FromUri] int? dimensionId = null)
         {
-            var dimensionIds = (dimensionId.HasValue ? dimensionId : 0).Value;
+            var dimensionIds = dimensionId ?? 0;
 
             IContentType contentType = null;
             if (!IsNullOrEmpty(contentTypeName))

@@ -5,7 +5,6 @@ using System.Runtime.Caching;
 using Microsoft.Practices.Unity;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.RootSources;
-//using ToSic.Eav.DataSources.SqlSources;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources.Caches
@@ -20,7 +19,7 @@ namespace ToSic.Eav.DataSources.Caches
         ///// <summary>Draft-Entities Stream Name</summary>
         //public const string DraftsStreamName = "Drafts";
 
-		protected BaseCache Cache { get; set; }
+		protected new BaseCache Cache { get; set; }
 
 		protected BaseCache()
 		{
@@ -82,9 +81,9 @@ namespace ToSic.Eav.DataSources.Caches
 		/// <summary>
 		/// Gets the DateTime when this Cache was populated
 		/// </summary>
-		public DateTime LastRefresh { get { return EnsureCache().LastRefresh; } }
+		public DateTime LastRefresh => EnsureCache().LastRefresh;
 
-        #region Definition of the abstract Has-Item, Set, Get, Remove
+	    #region Definition of the abstract Has-Item, Set, Get, Remove
         /// <summary>
 		/// Test whether CacheKey exists in Cache
 		/// </summary>
@@ -152,10 +151,7 @@ namespace ToSic.Eav.DataSources.Caches
 
         #region Cache-Chain
 
-	    public override DateTime CacheLastRefresh
-	    {
-	        get { return EnsureCache().LastRefresh; }
-	    }
+	    public override DateTime CacheLastRefresh => EnsureCache().LastRefresh;
 
 	    private string _cachePartialKey;
 	    public override string CachePartialKey
@@ -168,7 +164,7 @@ namespace ToSic.Eav.DataSources.Caches
             }
 	    }
 
-	    public override string CacheFullKey { get { return CachePartialKey; } }
+	    public override string CacheFullKey => CachePartialKey;
 
 	    #endregion
 
@@ -186,10 +182,7 @@ namespace ToSic.Eav.DataSources.Caches
 
 			// Lookup Name afterward
 			var matchByName = cache.ContentTypes.FirstOrDefault(c => c.Value.Name.Equals(name));
-			if (matchByName.Value != null)
-				return matchByName.Value;
-
-			return null;
+		    return matchByName.Value;
 		}
 
 		/// <summary>
@@ -222,11 +215,9 @@ namespace ToSic.Eav.DataSources.Caches
 
 		private Tuple<int, int> GetZoneAppInternal(int? zoneId, int? appId)
 		{
-			var resultZoneId = zoneId.HasValue
-								   ? zoneId.Value
-								   : (appId.HasValue
-										  ? ZoneApps.Single(z => z.Value.Apps.Any(a => a.Key == appId.Value)).Key
-                                          : Constants.DefaultZoneId);
+			var resultZoneId = zoneId ?? (appId.HasValue
+			                       ? ZoneApps.Single(z => z.Value.Apps.Any(a => a.Key == appId.Value)).Key
+			                       : Constants.DefaultZoneId);
 
 			var resultAppId = appId.HasValue
 								  ? ZoneApps[resultZoneId].Apps.Single(a => a.Key == appId.Value).Key
@@ -305,12 +296,9 @@ namespace ToSic.Eav.DataSources.Caches
         #region Additional Stream Caching
 
         // todo: check what happens with this in a DNN environment; I guess it works, but there are risks...
-        private ObjectCache ListCache
-        {
-            get { return MemoryCache.Default; }
-        }
+        private ObjectCache ListCache => MemoryCache.Default;
 
-        #region Has List
+	    #region Has List
         public bool ListHas(string key)
         {
             return ListCache.Contains(key);
@@ -380,14 +368,8 @@ namespace ToSic.Eav.DataSources.Caches
 
         #endregion
 
-        IDictionary<int, IEntity> IDeferredEntitiesList.List
-        {
-            get { return Out[Constants.DefaultStreamName].List; }
-        }
+        IDictionary<int, IEntity> IDeferredEntitiesList.List => Out[Constants.DefaultStreamName].List;
 
-        IEnumerable<IEntity> IDeferredEntitiesList.LightList
-        {
-            get { return Out[Constants.DefaultStreamName].LightList; }
-        }
-    }
+	    IEnumerable<IEntity> IDeferredEntitiesList.LightList => Out[Constants.DefaultStreamName].LightList;
+	}
 }

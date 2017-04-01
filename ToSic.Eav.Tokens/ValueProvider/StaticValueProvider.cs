@@ -11,7 +11,7 @@ namespace ToSic.Eav.ValueProvider
 		/// <summary>
 		/// List with static properties and Test-Values
 		/// </summary>
-		public Dictionary<string, string> Properties { get; private set; }
+		public Dictionary<string, string> Properties { get; }
 
 		/// <summary>
 		/// The class constructor, can optionally take a dictionary to reference with, otherwise creates a new one

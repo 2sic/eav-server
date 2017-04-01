@@ -12,7 +12,7 @@ namespace ToSic.Eav.UnitTests
     {
         #region Test Values
 
-        private string[] ValidPureTokens = new[]
+        private readonly string[] ValidPureTokens = new[]
         {
             "[Source:Key]",
             "[Source:Key|format]",
@@ -21,14 +21,14 @@ namespace ToSic.Eav.UnitTests
             "[QueryString:Something||[Module:ModuleId]]",
         };
 
-        private string[] ValidTokensWithSubTokens = new[]
+        private readonly string[] ValidTokensWithSubTokens = new[]
         {
             "[AppSettings:Owner:Name]",
             "[AppSettings:Owner:Name||Nobody]",
             "[AppSettings:Owner:Name||[AppSettings:DefaultOwner:Name||Nobody]]"
         };
 
-        private string[] ValidMixedSingleTokens = new[]
+        private readonly string[] ValidMixedSingleTokens = new[]
         {
             "The param was [QueryString:Id]",
             "[QueryString:Id] was the Param",
@@ -41,7 +41,7 @@ example with multiline [But:OnlyASingle] Token
 or not"
         };
 
-        private string[] ValidMixedMultiTokens = new[]
+        private readonly string[] ValidMixedMultiTokens = new[]
         {
             "The param was [QueryString:Id] or it is [QueryString:Something]",
             "[QueryString:Id] was the Param or this [Source:Key] or this [Kiss:This||[Or:This]]",
@@ -62,7 +62,7 @@ and a [bad token without property] and a [Source::SubkeyWithoutKey]
 but this should [token:key] again"
         };
 
-        private string[] InvalidTokens = new[]
+        private readonly string[] InvalidTokens = new[]
         {
             "not a token",
             "[]",
@@ -82,26 +82,26 @@ but this should [token:key] again"
             "[Source:Key||[Invalid:Fallback|]"
         };
 
-        private Dictionary<string, string> qsValues = new Dictionary<string,string>()
+        private readonly Dictionary<string, string> qsValues = new Dictionary<string,string>()
         {
             {"Id", "27"},
             {"View", "Details"}
         };
-        private Dictionary<string, string> srcValues = new Dictionary<string, string>()
+        private readonly Dictionary<string, string> srcValues = new Dictionary<string, string>()
         {
             {"Key", "Kabcd"},
             {"Value", "Whatever"},
             {"View", "Details"}
         };
-        private StaticValueProvider QueryString = new StaticValueProvider("QueryString");
-        private StaticValueProvider Source = new StaticValueProvider("Source");
-        private Dictionary<string, IValueProvider> AllSources = new Dictionary<string, IValueProvider>(); 
+        private readonly StaticValueProvider QueryString = new StaticValueProvider("QueryString");
+        private readonly StaticValueProvider Source = new StaticValueProvider("Source");
+        private readonly Dictionary<string, IValueProvider> AllSources = new Dictionary<string, IValueProvider>(); 
 
         #endregion
 
         #region General test objects and initializer/constructor
 
-        private Regex tokenRegEx = TokenReplace.Tokenizer;
+        private readonly Regex tokenRegEx = TokenReplace.Tokenizer;
          
 
         public TokenReplace_Test()
@@ -166,7 +166,7 @@ but this should [token:key] again"
         {
             foreach (var testToken in ValidMixedSingleTokens)
             {
-                MatchCollection results = tokenRegEx.Matches(testToken);
+                var results = tokenRegEx.Matches(testToken);
                 Assert.IsTrue(results.Count == 1, "Should have found 1 placeholders: " + testToken);
 
                 // Check that it only has 1 token match
@@ -181,7 +181,7 @@ but this should [token:key] again"
         {
             foreach (var testToken in ValidMixedMultiTokens)
             {
-                MatchCollection results = tokenRegEx.Matches(testToken);
+                var results = tokenRegEx.Matches(testToken);
                 Assert.IsTrue(results.Count > 1, "Should have found more than 1 placeholders: " + testToken);
 
                 // Check that it only has 1 token match
@@ -196,7 +196,7 @@ but this should [token:key] again"
         {
             foreach (var testToken in InvalidTokens)
             {
-                MatchCollection results = tokenRegEx.Matches(testToken);
+                var results = tokenRegEx.Matches(testToken);
 
                 var count = CountSpecificResultTypes(results, "${object}");
                 Assert.IsTrue(count == 0, "Shouldn't find object - but did: " + testToken);
@@ -268,7 +268,7 @@ Now try a token which returns a token: Daniel";
             sources.Add(appS.Name.ToLower(), appS);
             sources.Add(tok.Name.ToLower(), tok);
 
-            TokenReplace tr = new TokenReplace(sources);
+            var tr = new TokenReplace(sources);
             var resultNoRecurrance = tr.ReplaceTokens(original);
             Assert.AreEqual(expectedNoRecurrance, resultNoRecurrance, "No Recurrance");
             var resultRecurrance = tr.ReplaceTokens(original, 2);

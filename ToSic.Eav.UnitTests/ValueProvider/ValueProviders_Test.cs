@@ -16,7 +16,7 @@ namespace ToSic.Eav.UnitTests.ValueProvider
             sv.Properties.Add("Bravo", "found it too");
             sv.Properties.Add("Child:Grandchild", "found");
 
-            bool found = false;
+            var found = false;
 
             Assert.IsTrue(sv.Has("Alpha"));
             Assert.IsTrue(sv.Has("alpha")); // true now that caps don't matter
@@ -32,7 +32,7 @@ namespace ToSic.Eav.UnitTests.ValueProvider
         public void ValueProvider_EntityValueProvider()
         {
             IValueProvider valProv = new EntityValueProvider(new EntityTest().TestEntityDaniel());
-            bool found = false;
+            var found = false;
 
             Assert.IsTrue(valProv.Has("FirstName"), "Has first name");
             Assert.IsTrue(valProv.Has("EntityId"), "Has entity id");

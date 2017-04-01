@@ -20,6 +20,7 @@ namespace ToSic.Eav.DataSources.Debug
         /// <param name="statsList"></param>
         public static void GetStreamInfosRecursive(IDataTarget source, ref List<StreamInfo> statsList, ref Dictionary<Guid, DataSourceInfo> dsStats)
         {
+            // ReSharper disable EmptyGeneralCatchClause
             foreach (var strm in source.In)
             {
                 // First get all the stats (do this first so they stay together)
@@ -57,6 +58,8 @@ namespace ToSic.Eav.DataSources.Debug
                 }
                 catch { }
             }
+            // ReSharper restore EmptyGeneralCatchClause
+
         }
     }
 }

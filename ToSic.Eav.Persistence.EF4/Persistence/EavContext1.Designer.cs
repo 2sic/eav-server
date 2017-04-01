@@ -596,7 +596,7 @@ namespace ToSic.Eav
         /// <param name="name">Initial value of the Name property.</param>
         public static App CreateApp(global::System.Int32 appID, global::System.Int32 zoneID, global::System.String name)
         {
-            App app = new App();
+            var app = new App();
             app.AppID = appID;
             app.ZoneID = zoneID;
             app.Name = name;
@@ -769,7 +769,7 @@ namespace ToSic.Eav
         /// <param name="description">Initial value of the Description property.</param>
         public static AssignmentObjectType CreateAssignmentObjectType(global::System.Int32 assignmentObjectTypeID, global::System.String name, global::System.String description)
         {
-            AssignmentObjectType assignmentObjectType = new AssignmentObjectType();
+            var assignmentObjectType = new AssignmentObjectType();
             assignmentObjectType.AssignmentObjectTypeID = assignmentObjectTypeID;
             assignmentObjectType.Name = name;
             assignmentObjectType.Description = description;
@@ -909,7 +909,7 @@ namespace ToSic.Eav
         /// <param name="changeLogIDCreated">Initial value of the ChangeLogIDCreated property.</param>
         public static Attachment CreateAttachment(global::System.Int32 attachmentID, global::System.Guid fileID, global::System.Byte[] fileContents, global::System.String originalFileName, global::System.String originalFileExtension, global::System.String mimeType, global::System.Boolean isCurrent, global::System.Int32 changeLogIDCreated)
         {
-            Attachment attachment = new Attachment();
+            var attachment = new Attachment();
             attachment.AttachmentID = attachmentID;
             attachment.FileID = fileID;
             attachment.FileContents = fileContents;
@@ -1248,7 +1248,7 @@ namespace ToSic.Eav
         /// <param name="changeLogIDCreated">Initial value of the ChangeLogIDCreated property.</param>
         public static Attribute CreateAttribute(global::System.Int32 attributeID, global::System.String type, global::System.String staticName, global::System.Int32 changeLogIDCreated)
         {
-            Attribute attribute = new Attribute();
+            var attribute = new Attribute();
             attribute.AttributeID = attributeID;
             attribute.Type = type;
             attribute.StaticName = staticName;
@@ -1591,7 +1591,7 @@ namespace ToSic.Eav
         /// <param name="attributeSetID">Initial value of the AttributeSetID property.</param>
         public static AttributeGroup CreateAttributeGroup(global::System.Int32 attributeGroupID, global::System.String name, global::System.Int32 sortOrder, global::System.Int32 attributeSetID)
         {
-            AttributeGroup attributeGroup = new AttributeGroup();
+            var attributeGroup = new AttributeGroup();
             attributeGroup.AttributeGroupID = attributeGroupID;
             attributeGroup.Name = name;
             attributeGroup.SortOrder = sortOrder;
@@ -1791,7 +1791,7 @@ namespace ToSic.Eav
         /// <param name="isTitle">Initial value of the IsTitle property.</param>
         public static AttributeInSet CreateAttributeInSet(global::System.Int32 attributeID, global::System.Int32 attributeSetID, global::System.Int32 attributeGroupID, global::System.Int32 sortOrder, global::System.Boolean isTitle)
         {
-            AttributeInSet attributeInSet = new AttributeInSet();
+            var attributeInSet = new AttributeInSet();
             attributeInSet.AttributeID = attributeID;
             attributeInSet.AttributeSetID = attributeSetID;
             attributeInSet.AttributeGroupID = attributeGroupID;
@@ -2075,7 +2075,7 @@ namespace ToSic.Eav
         /// <param name="alwaysShareConfiguration">Initial value of the AlwaysShareConfiguration property.</param>
         public static AttributeSet CreateAttributeSet(global::System.Int32 attributeSetID, global::System.String name, global::System.String description, global::System.String staticName, global::System.Int32 changeLogIDCreated, global::System.Int32 appID, global::System.Boolean alwaysShareConfiguration)
         {
-            AttributeSet attributeSet = new AttributeSet();
+            var attributeSet = new AttributeSet();
             attributeSet.AttributeSetID = attributeSetID;
             attributeSet.Name = name;
             attributeSet.Description = description;
@@ -2598,7 +2598,7 @@ namespace ToSic.Eav
         /// <param name="type">Initial value of the Type property.</param>
         public static AttributeType CreateAttributeType(global::System.String type)
         {
-            AttributeType attributeType = new AttributeType();
+            var attributeType = new AttributeType();
             attributeType.Type = type;
             return attributeType;
         }
@@ -2682,7 +2682,7 @@ namespace ToSic.Eav
         /// <param name="timestamp">Initial value of the Timestamp property.</param>
         public static ChangeLog CreateChangeLog(global::System.Int32 changeID, global::System.DateTime timestamp)
         {
-            ChangeLog changeLog = new ChangeLog();
+            var changeLog = new ChangeLog();
             changeLog.ChangeID = changeID;
             changeLog.Timestamp = timestamp;
             return changeLog;
@@ -3060,7 +3060,7 @@ namespace ToSic.Eav
         /// <param name="newData">Initial value of the NewData property.</param>
         public static DataTimelineItem CreateDataTimelineItem(global::System.Int32 id, global::System.String sourceTable, global::System.String operation, global::System.DateTime sysCreatedDate, global::System.String newData)
         {
-            DataTimelineItem dataTimelineItem = new DataTimelineItem();
+            var dataTimelineItem = new DataTimelineItem();
             dataTimelineItem.ID = id;
             dataTimelineItem.SourceTable = sourceTable;
             dataTimelineItem.Operation = operation;
@@ -3315,7 +3315,7 @@ namespace ToSic.Eav
         /// <param name="zoneID">Initial value of the ZoneID property.</param>
         public static Dimension CreateDimension(global::System.Int32 dimensionID, global::System.String name, global::System.Int32 zoneID)
         {
-            Dimension dimension = new Dimension();
+            var dimension = new Dimension();
             dimension.DimensionID = dimensionID;
             dimension.Name = name;
             dimension.ZoneID = zoneID;
@@ -3646,7 +3646,7 @@ namespace ToSic.Eav
         /// <param name="attributeID">Initial value of the AttributeID property.</param>
         public static EavValue CreateEavValue(global::System.Int32 valueID, global::System.String value, global::System.Int32 changeLogIDCreated, global::System.Int32 entityID, global::System.Int32 attributeID)
         {
-            EavValue eavValue = new EavValue();
+            var eavValue = new EavValue();
             eavValue.ValueID = valueID;
             eavValue.Value = value;
             eavValue.ChangeLogIDCreated = changeLogIDCreated;
@@ -4074,7 +4074,7 @@ namespace ToSic.Eav
         /// <param name="changeLogIDModified">Initial value of the ChangeLogIDModified property.</param>
         public static Entity CreateEntity(global::System.Int32 entityID, global::System.Int32 attributeSetID, global::System.Int32 assignmentObjectTypeID, global::System.Int32 sortOrder, global::System.Guid entityGUID, global::System.Int32 changeLogIDCreated, global::System.Boolean isPublished, global::System.Int32 changeLogIDModified)
         {
-            Entity entity = new Entity();
+            var entity = new Entity();
             entity.EntityID = entityID;
             entity.AttributeSetID = attributeSetID;
             entity.AssignmentObjectTypeID = assignmentObjectTypeID;
@@ -4758,7 +4758,7 @@ namespace ToSic.Eav
         /// <param name="sortOrder">Initial value of the SortOrder property.</param>
         public static EntityRelationship CreateEntityRelationship(global::System.Int32 attributeID, global::System.Int32 parentEntityID, global::System.Int32 sortOrder)
         {
-            EntityRelationship entityRelationship = new EntityRelationship();
+            var entityRelationship = new EntityRelationship();
             entityRelationship.AttributeID = attributeID;
             entityRelationship.ParentEntityID = parentEntityID;
             entityRelationship.SortOrder = sortOrder;
@@ -5014,7 +5014,7 @@ namespace ToSic.Eav
         /// <param name="dimensionID">Initial value of the DimensionID property.</param>
         public static ValueDimension CreateValueDimension(global::System.Int32 valueID, global::System.Int32 dimensionID)
         {
-            ValueDimension valueDimension = new ValueDimension();
+            var valueDimension = new ValueDimension();
             valueDimension.ValueID = valueID;
             valueDimension.DimensionID = dimensionID;
             return valueDimension;
@@ -5204,7 +5204,7 @@ namespace ToSic.Eav
         /// <param name="name">Initial value of the Name property.</param>
         public static Zone CreateZone(global::System.Int32 zoneID, global::System.String name)
         {
-            Zone zone = new Zone();
+            var zone = new Zone();
             zone.ZoneID = zoneID;
             zone.Name = name;
             return zone;

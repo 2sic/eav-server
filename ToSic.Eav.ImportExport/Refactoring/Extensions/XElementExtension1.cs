@@ -1,16 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Xml.Linq;
-using ToSic.Eav.ImportExport.Refactoring.Options;
 
 namespace ToSic.Eav.ImportExport.Refactoring.Extensions
 {
     public static class XElementExtension1
     {
-        public static bool HasChildren(this XElement element)
-        {
-            return element.Elements().Count() > 0;
-        }
+        public static bool HasChildren(this XElement element) => element.Elements().Any();
 
         /// <summary>
         /// Apend an element to this.
@@ -23,10 +18,8 @@ namespace ToSic.Eav.ImportExport.Refactoring.Extensions
         public static string GetChildElementValue(this XElement element, string childElementName)
         {
             var childElement = element.Element(childElementName);
-            if (childElement == null)
-                return null;
 
-            return childElement.Value;
+            return childElement?.Value;
         }
     }
 }

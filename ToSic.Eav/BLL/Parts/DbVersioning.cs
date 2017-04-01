@@ -10,20 +10,20 @@ using ToSic.Eav.ImportExport;
 
 namespace ToSic.Eav.Persistence
 {
-    public class DbVersioning: BllCommandBase
+    internal class DbVersioning: BllCommandBase
     {
-        public DbVersioning(EavDataController cntx) : base(cntx)
+        internal DbVersioning(EavDataController cntx) : base(cntx)
         {
         }
 
-        public int MainChangeLogId;
+        internal int MainChangeLogId;
 
 
         /// <summary>
         /// Creates a ChangeLog immediately
         /// </summary>
         /// <remarks>Also opens the SQL Connection to ensure this ChangeLog is used for Auditing on this SQL Connection</remarks>
-        public int GetChangeLogId(string userName)
+        internal int GetChangeLogId(string userName)
         {
             if (MainChangeLogId == 0)
             {

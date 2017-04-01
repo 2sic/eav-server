@@ -19,7 +19,7 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// List of Child EntityIds
         /// </summary>
-        public IEnumerable<int?> EntityIds { get; private set; }
+        public IEnumerable<int?> EntityIds { get; }
 
         private readonly IDeferredEntitiesList _fullEntityList;
         private List<IEntity> _entities;

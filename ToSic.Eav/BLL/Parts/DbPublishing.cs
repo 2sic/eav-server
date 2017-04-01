@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace ToSic.Eav.BLL.Parts
 {
-    public class DbPublishing: BllCommandBase
+    internal class DbPublishing: BllCommandBase
     {
         public DbPublishing(EavDataController c) : base(c) { }
 

@@ -1,6 +1,4 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
 
 namespace ToSic.Eav.UnitTests

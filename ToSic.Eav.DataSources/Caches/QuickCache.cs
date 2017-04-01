@@ -31,10 +31,9 @@ namespace ToSic.Eav.DataSources.Caches
 		}
 
 		private const string _cacheKeySchema = "Z{0}A{1}";
-		public override string CacheKeySchema { get { return _cacheKeySchema; } }
+		public override string CacheKeySchema => _cacheKeySchema;
 
-
-        #region The cache-variable + HasCacheItem, SetCacheItem, Get, Remove
+	    #region The cache-variable + HasCacheItem, SetCacheItem, Get, Remove
         private static readonly IDictionary<string, AppDataPackage> Caches = new Dictionary<string, AppDataPackage>();
 
 

@@ -91,11 +91,11 @@ namespace ToSic.Eav.DataSources
 			    catch (InvalidOperationException ex)
 			    {
 			        // this is a special exeption - for example when using SQL. Pass it on to enable proper testing
-			        throw ex;
+			        throw;
 			    }
 				catch (Exception ex)
 				{
-					throw new Exception(string.Format("Error getting List of Stream.\nStream Name: {0}\nDataSource Name: {1}", Name, Source.Name), ex);
+					throw new Exception($"Error getting List of Stream.\nStream Name: {Name}\nDataSource Name: {Source.Name}", ex);
 				}
 			}
 		}
@@ -136,11 +136,12 @@ namespace ToSic.Eav.DataSources
                     }
                     catch (InvalidOperationException ex) // this is a special exeption - for example when using SQL. Pass it on to enable proper testing
                     {
-                        throw ex;
+                        throw;
                     }
                     catch (Exception ex)
                     {
-                        throw new Exception(string.Format("Error getting List of Stream.\nStream Name: {0}\nDataSource Name: {1}", Name, Source.Name), ex);
+                        throw new Exception(
+                            $"Error getting List of Stream.\nStream Name: {Name}\nDataSource Name: {Source.Name}", ex);
                     }
                 }
                 #endregion
@@ -183,7 +184,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Name - usually the name within the Out-dictionary of the source. For identification and for use in caching-IDs and similar
         /// </summary>
-		public string Name { get; private set; }
+		public string Name { get; }
 
 
 

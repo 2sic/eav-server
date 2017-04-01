@@ -124,7 +124,7 @@ namespace ToSic.Eav.DataSources
 			{
 				var entityId = Convert.ToInt32(row[entityIdField]);
 				var values = row.Table.Columns.Cast<DataColumn>().Where(c => c.ColumnName != entityIdField).ToDictionary(c => c.ColumnName, c => row.Field<object>(c.ColumnName));
-			    DateTime? mod = string.IsNullOrEmpty(modifiedField) ? null : values[modifiedField] as DateTime?;
+			    var mod = string.IsNullOrEmpty(modifiedField) ? null : values[modifiedField] as DateTime?;
 				var entity = new Entity(entityId, contentType, values, titleField, mod);
 				result.Add(entity.EntityId, entity);
 			}

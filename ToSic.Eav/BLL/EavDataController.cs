@@ -12,17 +12,19 @@ namespace ToSic.Eav.BLL
 
         public DbShortcuts DbS { get; private set; }
 
-        public DbVersioning Versioning { get; private set; }
+        internal DbVersioning Versioning { get; private set; }
         public DbEntity Entities { get; private set; }
         public DbValue Values { get; private set; }
         public DbAttribute Attributes { get; private set; }
         public DbRelationship Relationships { get; private set; }
         public DbAttributeSet AttribSet { get; private set; }
-        public DbPublishing Publishing { get; private set; }
+        internal DbPublishing Publishing { get; private set; }
         public DbDimensions Dimensions { get; private set; }
         public DbZone Zone { get; private set; }
-        public DbApp App { get; private set; }
+        internal DbApp App { get; private set; }
         public DbContentType ContentType { get; private set; }
+
+        public RepositoryEF4 Repository { get; private set; }
 
         public int _appId;
         internal int _zoneId;
@@ -91,6 +93,8 @@ namespace ToSic.Eav.BLL
             dc.Zone = new DbZone(dc);
             dc.App = new DbApp(dc);
             dc.ContentType = new DbContentType(dc);
+
+            dc.Repository = new RepositoryEF4(dc);
 
             dc.SqlDb.AlternateSaveHandler += dc.SaveChanges;
 

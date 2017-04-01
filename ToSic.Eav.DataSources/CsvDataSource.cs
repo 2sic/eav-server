@@ -20,10 +20,7 @@ namespace ToSic.Eav.DataSources
         }
 
 
-        public string ServerFilePath
-        {
-            get { return HttpContext.Current != null ? HttpContext.Current.Server.MapPath(FilePath) : FilePath; }
-        }
+        public string ServerFilePath => HttpContext.Current != null ? HttpContext.Current.Server.MapPath(FilePath) : FilePath;
 
 
         private const string DelimiterKey = "Delimiter";
@@ -103,6 +100,7 @@ namespace ToSic.Eav.DataSources
                     {
                         var idColumnIndex = Array.FindIndex(parser.FieldHeaders, columnName => columnName == IdColumnName);
                         if(idColumnIndex == -1)
+                            // ReSharper disable once NotResolvedInText
                             throw new ArgumentException("ID column specified cannot be found in the file.", "IdColumnName");
 
                         if (!int.TryParse(fields[idColumnIndex], out entityId))
@@ -118,6 +116,7 @@ namespace ToSic.Eav.DataSources
                     {   // The following is a little bit complicated, but it checks that the title specified exists
                         entityTitleName = parser.FieldHeaders.FirstOrDefault(columnName => columnName == TitleColumnName);
                         if (entityTitleName == null)
+                            // ReSharper disable once NotResolvedInText
                             throw new ArgumentException("Title column specified cannot be found in the file.", "TitleColumnName");
                     }
                     

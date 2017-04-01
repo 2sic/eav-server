@@ -133,7 +133,7 @@ namespace ToSic.Eav.WebApi
                 case "multi-language":
                     Serializer.IncludeAllEditingInfos = true;
 
-                    var found = GetEntityOrThrowError(contentType, duplicateFrom.HasValue ? duplicateFrom.Value : id, appId);
+                    var found = GetEntityOrThrowError(contentType, duplicateFrom ?? id, appId);
                     var maybeDraft = found.GetDraft();
                     if (maybeDraft != null)
                         found = maybeDraft;                    
@@ -183,7 +183,7 @@ namespace ToSic.Eav.WebApi
                 }
                 if (ct.StaticName != itm.ContentTypeName) // not using the static name...fix
                     itm.ContentTypeName = ct.StaticName;
-            };
+            }
 
             var list = items.Select(p => new EntityWithHeader
             {
@@ -370,31 +370,31 @@ namespace ToSic.Eav.WebApi
 
         #region History
 
-	    [HttpGet]
-	    public List<DbVersioning.EntityHistoryItem> History(int appId, int entityId)
-	    {
-            SetAppIdAndUser(appId);
-            var versions = CurrentContext.Versioning.GetEntityHistory(entityId);
-	        return versions;
-	    }
+	    //[HttpGet]
+	    //public List<DbVersioning.EntityHistoryItem> History(int appId, int entityId)
+	    //{
+     //       SetAppIdAndUser(appId);
+     //       var versions = CurrentContext.Versioning.GetEntityHistory(entityId);
+	    //    return versions;
+	    //}
 
-	    [HttpGet]
-	    public dynamic HistoryDetails(int appId, int entityId, int changeId)
-	    {
-            SetAppIdAndUser(appId);
-            var result = CurrentContext.Versioning.GetEntityVersionValues(entityId, changeId, null, null);
-	        return result;
-	    }
+	    //[HttpGet]
+	    //public dynamic HistoryDetails(int appId, int entityId, int changeId)
+	    //{
+     //       SetAppIdAndUser(appId);
+     //       var result = CurrentContext.Versioning.GetEntityVersionValues(entityId, changeId, null, null);
+	    //    return result;
+	    //}
 
-	    [HttpGet]
-	    public bool HistoryRestore(int appId, int entityId, int changeId)
-	    {
-	        var DefaultCultureDimension = 0;
-            throw  new Exception("this is not tested yet!");
-            SetAppIdAndUser(appId);
-            CurrentContext.Versioning.RestoreEntityVersion(entityId, changeId, DefaultCultureDimension);
-	        return true;
-        }
+	    //[HttpGet]
+	    //public bool HistoryRestore(int appId, int entityId, int changeId)
+	    //{
+	    //    var DefaultCultureDimension = 0;
+     //       throw  new Exception("this is not tested yet!");
+     //       SetAppIdAndUser(appId);
+     //       CurrentContext.Versioning.RestoreEntityVersion(entityId, changeId, DefaultCultureDimension);
+	    //    return true;
+     //   }
         #endregion
     }
 }

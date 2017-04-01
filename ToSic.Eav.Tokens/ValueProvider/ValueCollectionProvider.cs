@@ -11,7 +11,7 @@ namespace ToSic.Eav.ValueProvider
 	public class ValueCollectionProvider : IValueCollectionProvider
 	{
 		//public string DataSourceType { get; internal set; }
-		public Dictionary<string, IValueProvider> Sources { get; private set; }
+		public Dictionary<string, IValueProvider> Sources { get; }
 		/// <summary>
 		/// List of all Configurations for this DataSource
 		/// </summary>

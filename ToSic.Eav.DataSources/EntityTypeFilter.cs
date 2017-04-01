@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ToSic.Eav.DataSources
@@ -42,16 +43,14 @@ namespace ToSic.Eav.DataSources
 	        try
 	        {
 	            var cache = DataSource.GetCache(ZoneId, AppId);
-	            if (cache != null)
-	            {
-	                var foundType = cache.GetContentType(TypeName);
-	                if (foundType != null) // maybe it doesn't find it!
-	                    return (from e in In[Constants.DefaultStreamName].LightList
-	                        where e.Type == foundType
-	                        select e);
-	            }
+	            var foundType = cache?.GetContentType(TypeName);
+	            if (foundType != null) // maybe it doesn't find it!
+	                return (from e in In[Constants.DefaultStreamName].LightList
+	                    where e.Type == foundType
+	                    select e);
 	        }
-	        catch 
+	        // ReSharper disable once EmptyGeneralCatchClause
+	        catch
 	        {
 	        }
 

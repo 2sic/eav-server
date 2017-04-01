@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web.Configuration;
 
 namespace ToSic.Eav.DataSources
 {
@@ -9,7 +8,7 @@ namespace ToSic.Eav.DataSources
 	/// A DataSource that filters Entities by Ids
 	/// </summary>
 	[PipelineDesigner]
-	public class Paging: BaseDataSource
+	public sealed class Paging: BaseDataSource
 	{
 		#region Configuration-properties (no config)
         private const string PageSizeKey = "PageSize";

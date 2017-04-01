@@ -38,10 +38,10 @@ namespace ToSic.Eav.ValueProvider
                 return string.Empty;
             }
 
-            string outputFormat = format == string.Empty ? "g" : format;
+            var outputFormat = format == string.Empty ? "g" : format;
 
             // bool propertyNotFound;
-            object valueObject = Entity.GetBestValue(property, _dimensions);//, out propertyNotFound);
+            var valueObject = Entity.GetBestValue(property, _dimensions);//, out propertyNotFound);
             propertyNotFound = (valueObject == null);
 
             if (!propertyNotFound && valueObject != null)

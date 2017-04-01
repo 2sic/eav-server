@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Net.Sockets;
-using System.Security.Cryptography;
 using ToSic.Eav.Data;
 
 namespace ToSic.Eav.DataSources

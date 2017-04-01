@@ -76,13 +76,11 @@ namespace ToSic.Eav.Tokens
 \])
 
 ";
-            
-        private static readonly Regex _tokenizer = new Regex(RegExFindAllTokens, RegexOptions.Compiled | RegexOptions.IgnorePatternWhitespace);
 
         #endregion
 
         #region constructor
-        public Dictionary<string, IValueProvider> ValueSources { get; private set; }
+        public Dictionary<string, IValueProvider> ValueSources { get; }
 	    public TokenReplace(Dictionary<string, IValueProvider> valueSources = null)
 	    {
             if(valueSources == null)
@@ -97,13 +95,7 @@ namespace ToSic.Eav.Tokens
 		/// Gets the Regular expression for the token to be replaced
 		/// </summary>
 		/// <value>A regular Expression</value>   
-		public static Regex Tokenizer
-		{
-			get
-			{
-				return _tokenizer;
-			}
-		}
+		public static Regex Tokenizer { get; } = new Regex(RegExFindAllTokens, RegexOptions.Compiled | RegexOptions.IgnorePatternWhitespace);
 
         /// <summary>
         /// Checks for present [Object:Property] tokens
@@ -145,13 +137,13 @@ namespace ToSic.Eav.Tokens
                     charProgress = curMatch.Index + curMatch.Length;
 
                     // get the infos we need to retrieve the value, get it. 
-                    string strObjectName = curMatch.Result("${object}");
+                    var strObjectName = curMatch.Result("${object}");
                     if (!String.IsNullOrEmpty(strObjectName))
                     {
-                        string strPropertyName = curMatch.Result("${property}");
-                        string strFormat = curMatch.Result("${format}");
-                        string strIfEmptyReplacment = curMatch.Result("${ifEmpty}");
-                        string strConversion = RetrieveTokenValue(strObjectName, strPropertyName, strFormat);
+                        var strPropertyName = curMatch.Result("${property}");
+                        var strFormat = curMatch.Result("${format}");
+                        var strIfEmptyReplacment = curMatch.Result("${ifEmpty}");
+                        var strConversion = RetrieveTokenValue(strObjectName, strPropertyName, strFormat);
 
                         var useFallback = string.IsNullOrEmpty(strConversion);
                         if (useFallback)
@@ -168,7 +160,7 @@ namespace ToSic.Eav.Tokens
                 Result.Append(sourceText.Substring(charProgress));
                 
                 // Ready to finish, but first, ensure repeating if desired
-                string finalResult = Result.ToString();
+                var finalResult = Result.ToString();
                 //if (!repeatFallbackOnly && repeat > 0)
                 //    finalResult = ReplaceTokens(finalResult, repeat - 1, repeatFallbackOnly);
                 return finalResult;

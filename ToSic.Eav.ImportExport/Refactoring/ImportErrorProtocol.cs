@@ -7,35 +7,23 @@ namespace ToSic.Eav.ImportExport.Refactoring
 {
     public class ImportErrorProtocol : IEnumerable<ImportError>
     {
-        public ImportError this[int index]
-        {
-            get { return errors[index]; }
-        }
+        public ImportError this[int index] => _errors[index];
 
-        public List<ImportError> Errors
-        {
-            get { return errors; }
-        }
-        private readonly List<ImportError> errors = new List<ImportError>();
+        public List<ImportError> Errors => _errors;
+        private readonly List<ImportError> _errors = new List<ImportError>();
 
-        public int ErrorCount
-        {
-            get { return errors.Count; }
-        }
+        public int ErrorCount => _errors.Count;
 
-        public bool HasErrors
-        {
-            get { return Errors.Any(); }
-        }
+        public bool HasErrors => Errors.Any();
 
         public void AppendError(ImportErrorCode errorCode, string errorDetail = null, int? lineNumber = null, string lineDetail = null)
         {
-            errors.Add(new ImportError(errorCode, errorDetail, lineNumber, lineDetail));
+            _errors.Add(new ImportError(errorCode, errorDetail, lineNumber, lineDetail));
         }
 
         public IEnumerator<ImportError> GetEnumerator()
         {
-            return errors.GetEnumerator();
+            return _errors.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

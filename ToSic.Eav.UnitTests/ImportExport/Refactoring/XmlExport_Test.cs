@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.ImportExport.Refactoring;
-using ToSic.Eav.ImportExport.Refactoring.Options;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ToSic.Eav.UnitTests.ImportExport.Refactoring
 {

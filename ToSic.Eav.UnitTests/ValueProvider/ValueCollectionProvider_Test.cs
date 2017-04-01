@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
+﻿using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.ValueProvider;
 
@@ -11,8 +9,8 @@ namespace ToSic.Eav.UnitTests.ValueProvider
     {
         #region Important Values which will be checked when resolved
         public string OriginalSettingDefaultCat = "[AppSettings:DefaultCategoryName]";
-        private string ResolvedSettingDefaultCat = "All";
-        private string OriginalSettingMaxItems = "[AppSettings:MaxItems||100]";
+        private readonly string ResolvedSettingDefaultCat = "All";
+        private readonly string OriginalSettingMaxItems = "[AppSettings:MaxItems||100]";
         public static string ResolvedSettingMaxItems = "100";
         public static string MaxPictures = "21";
         public static string DefaultCategory = "All";

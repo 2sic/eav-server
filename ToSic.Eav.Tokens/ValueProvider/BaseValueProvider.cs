@@ -58,7 +58,7 @@ namespace ToSic.Eav.ValueProvider
         /// <returns></returns>
 	    public virtual string Get(string property)
 	    {
-	        bool temp = false;
+	        var temp = false;
 	        return Get(property, "", ref temp);
 	    }
 

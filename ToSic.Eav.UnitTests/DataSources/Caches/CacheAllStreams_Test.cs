@@ -9,8 +9,8 @@ namespace ToSic.Eav.UnitTests.DataSources
     [TestClass]
     public class CacheAllStreams_Test
     {
-        private string FilterIdForManyTests = "1067";
-        private string AlternateIdForAlternateTests = "1069";
+        private readonly string FilterIdForManyTests = "1067";
+        private readonly string AlternateIdForAlternateTests = "1069";
 
         [TestMethod]
         public void CacheAllStreams_CheckNotInBeforeAndInAfterwards()
@@ -89,7 +89,7 @@ namespace ToSic.Eav.UnitTests.DataSources
         [TestMethod]
         public void CacheAllStreams_CheckSourceExpiry()
         {
-            string uniqueIdsForThisTest = "1001,1005,1043";
+            var uniqueIdsForThisTest = "1001,1005,1043";
             var filtered = CreateFilterForTesting(100, uniqueIdsForThisTest, false);
             var cacher = CreateCacheDS(filtered);
 
@@ -114,7 +114,7 @@ namespace ToSic.Eav.UnitTests.DataSources
         [TestMethod]
         public void CacheAllStreams_IgnoreSourceExpiry()
         {
-            string uniqueIdsForThisTest = "1001,1005,1043,1099";
+            var uniqueIdsForThisTest = "1001,1005,1043,1099";
             var filtered = CreateFilterForTesting(100, uniqueIdsForThisTest);
             var cacher = CreateCacheDS(filtered);
 
@@ -143,7 +143,7 @@ namespace ToSic.Eav.UnitTests.DataSources
         [TestMethod]
         public void CacheAllStreams_ExpireBecauseOfTime()
         {
-            string uniqueIdsForThisTest = "1001,1043,1099";
+            var uniqueIdsForThisTest = "1001,1043,1099";
             var filtered = CreateFilterForTesting(100, uniqueIdsForThisTest);
             var cacher = CreateCacheDS(filtered);
             cacher.CacheDurationInSeconds = 1;

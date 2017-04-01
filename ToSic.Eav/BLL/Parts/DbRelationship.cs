@@ -31,7 +31,7 @@ namespace ToSic.Eav.BLL.Parts
                 Context.SqlDb.EntityRelationships.DeleteObject(relationToDelete);
 
             // Create new relationships
-            for (int i = 0; i < newEntityIds.Count; i++)
+            for (var i = 0; i < newEntityIds.Count; i++)
             {
                 var newEntityId = newEntityIds[i];
                 currentEntity.EntityParentRelationships.Add(new EntityRelationship

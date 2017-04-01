@@ -59,7 +59,7 @@ namespace ToSic.Eav.Serializers
                 streamsToPublish = source.Out.Select(p => p.Key);
 
             var y = streamsToPublish.Where(k => source.Out.ContainsKey(k))
-                .ToDictionary(k => k, s => source.Out[s].LightList.Select(c => GetDictionaryFromEntity(c))
+                .ToDictionary(k => k, s => source.Out[s].LightList.Select(GetDictionaryFromEntity)
             );
 
             return y;

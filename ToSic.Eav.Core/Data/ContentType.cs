@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 
 namespace ToSic.Eav.Data
@@ -24,19 +23,19 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Internal Id of the attribute-set of this content-type. Don't worry about this one, you probably won't understand it and that's ok. 
         /// </summary>
-        public int AttributeSetId { get; private set; }
+        public int AttributeSetId { get; }
         /// <summary>
         /// What this content-types if for, if it's a system type or something
         /// </summary>
-        public string Scope { get; private set; }
+        public string Scope { get; }
         /// <summary>
         /// todo
         /// </summary>
-        public int? UsesConfigurationOfAttributeSet { get; private set; }
-        public int ConfigurationAppId { get; private set; }
-        public int ConfigurationZoneId { get; private set; }
+        public int? UsesConfigurationOfAttributeSet { get; }
+        public int ConfigurationAppId { get; }
+        public int ConfigurationZoneId { get; }
 
-        public bool ConfigurationIsOmnipresent { get; private set; }
+        public bool ConfigurationIsOmnipresent { get; }
 
         /// <summary>
 		/// Dictionary with all Attribute Definitions

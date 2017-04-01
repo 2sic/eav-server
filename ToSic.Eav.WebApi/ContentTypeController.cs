@@ -130,7 +130,7 @@ namespace ToSic.Eav.WebApi
             var appDef = new BetaFullApi(null, appId, CurrentContext);
             var appInputTypes = appDef.GetInputTypes(true).ToList();
             var noTitleCount = 0;
-            string fldName = "";
+            var fldName = "";
 
             // assemble a list of all input-types (like "string-default", "string-wysiwyg..."
             Dictionary<string, IEntity> inputTypesDic;

@@ -25,7 +25,7 @@ namespace ToSic.Eav
 					_container = new UnityContainer();
 
 					var section = (UnityConfigurationSection)ConfigurationManager.GetSection("unity");
-					if (section != null && section.Containers["ToSic.Eav"] != null)
+					if (section?.Containers["ToSic.Eav"] != null)
 						_container.LoadConfiguration("ToSic.Eav");
 				}
 				return _container;

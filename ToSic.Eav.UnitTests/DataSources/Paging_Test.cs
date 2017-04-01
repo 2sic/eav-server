@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Security.Cryptography;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.UnitTests.DataSources;
@@ -13,7 +12,7 @@ namespace ToSic.Eav.UnitTests
     [TestClass]
     public class Paging_Test
     {
-        private int seedId = 1001;
+        private readonly int seedId = 1001;
 
         [TestMethod]
         public void Paging_BasicPagingPg1On1000Items()

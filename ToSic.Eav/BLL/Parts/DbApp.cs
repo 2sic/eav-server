@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ToSic.Eav.BLL.Parts
 {
-    public class DbApp: BllCommandBase
+    internal class DbApp: BllCommandBase
     {
         public DbApp(EavDataController cntx) : base(cntx) {}
 
@@ -42,7 +43,7 @@ namespace ToSic.Eav.BLL.Parts
         /// <returns></returns>
         public App AddApp(string name)
             => AddApp(Context.Zone.GetZone(Context.ZoneId), name);
-        
+
 
         /// <summary>
         /// Delete an existing App with any Values and Attributes
@@ -50,6 +51,9 @@ namespace ToSic.Eav.BLL.Parts
         /// <param name="appId">AppId to delete</param>
         public void DeleteApp(int appId)
         {
+            if (appId != Context.AppId)  // this only happens if there is some kind of id-fallback
+                throw new Exception("An app can only be removed inside of it's own context.");
+
             // enure changelog exists and is set to SQL CONTEXT_INFO variable
             if (Context.Versioning.MainChangeLogId == 0)
                 Context.Versioning.GetChangeLogId(Context.UserName);

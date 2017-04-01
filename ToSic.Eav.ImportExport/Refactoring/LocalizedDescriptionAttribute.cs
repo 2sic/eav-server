@@ -39,7 +39,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
                 var displayName = resourceManager.GetString(resourceKey);
                 if (string.IsNullOrEmpty(displayName))
                 {
-                    return string.Format("[{0}]", resourceKey);
+                    return $"[{resourceKey}]";
                 }
                 return displayName;
             }

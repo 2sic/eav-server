@@ -39,24 +39,24 @@ namespace ToSic.Eav
         /// <summary>
         /// Default ZoneId. Used if none is specified on the Context.
         /// </summary>
-        public readonly static int DefaultZoneId = 1;
+        public static readonly int DefaultZoneId = 1;
         /// <summary>
         /// AppId where MetaData (Entities) are stored.
         /// </summary>
-        public readonly static int MetaDataAppId = 1;
+        public static readonly int MetaDataAppId = 1;
         /// <summary>
         /// AssignmentObjectTypeId for FieldProperties (Field MetaData)
         /// </summary>
         [Obsolete("Use MetadataForField instead")]
-        public readonly static int AssignmentObjectTypeIdFieldProperties = 2;
-        public readonly static int MetadataForField = 2;
+        public static readonly int AssignmentObjectTypeIdFieldProperties = 2;
+        public static readonly int MetadataForField = 2;
 
         /// <summary>
         /// AssignmentObjectTypeId for DataPipelines
         /// </summary>
         [Obsolete("Use MetadataForEntity instead")]
-        public readonly static int AssignmentObjectTypeEntity = 4;
-        public readonly static int MetadataForEntity = 4;
+        public static readonly int AssignmentObjectTypeEntity = 4;
+        public static readonly int MetadataForEntity = 4;
 
         public static readonly int MetadataForContentType = 5;
 
@@ -71,11 +71,11 @@ namespace ToSic.Eav
         /// <summary>
         /// StaticName of the DataPipeline AttributeSet
         /// </summary>
-        public readonly static string DataPipelineStaticName = "DataPipeline";
+        public static readonly string DataPipelineStaticName = "DataPipeline";
         /// <summary>
         /// StaticName of the DataPipelinePart AttributeSet
         /// </summary>
-        public readonly static string DataPipelinePartStaticName = "DataPipelinePart";
+        public static readonly string DataPipelinePartStaticName = "DataPipelinePart";
 
         /// <summary>
         /// Attribute Name on the Pipeline-Entity describing the Stream-Wiring

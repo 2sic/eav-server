@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections;
-using System.Data;
-using System.Runtime.Remoting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 
 namespace ToSic.Eav.UnitTests
@@ -14,8 +10,7 @@ namespace ToSic.Eav.UnitTests
         private const string Connection = "";
         private const string ContentTypeName = "SqlData";
 
-        private string[] IllegalSql = new[]
-        {
+        private readonly string[] _illegalSql = {
             "Insert something into something",
             "Select * from table; Insert something",
             " Insert something into something",
@@ -28,10 +23,10 @@ namespace ToSic.Eav.UnitTests
         {
             var initQuery = "Select * From Products";
             var sql = GenerateSqlDataSource(Connection, initQuery, ContentTypeName);
-            var ConfigCountBefore = sql.Configuration.Count;
+            var configCountBefore = sql.Configuration.Count;
             sql.EnsureConfigurationIsLoaded();
 
-            Assert.AreEqual(ConfigCountBefore, sql.Configuration.Count);
+            Assert.AreEqual(configCountBefore, sql.Configuration.Count);
             Assert.AreEqual(initQuery, sql.SelectCommand);
         }
 
@@ -41,10 +36,10 @@ namespace ToSic.Eav.UnitTests
             var initQuery = "Select * From Products Where ProductId = [QueryString:Id]";
             var expectedQuery = "Select * From Products Where ProductId = @" + SqlDataSource.ExtractedParamPrefix + "1";
             var sql = GenerateSqlDataSource(Connection, initQuery, ContentTypeName);
-            var ConfigCountBefore = sql.Configuration.Count;
+            var configCountBefore = sql.Configuration.Count;
             sql.EnsureConfigurationIsLoaded();
 
-            Assert.AreEqual(ConfigCountBefore + 1, sql.Configuration.Count);
+            Assert.AreEqual(configCountBefore + 1, sql.Configuration.Count);
             Assert.AreEqual(expectedQuery, sql.SelectCommand);
             Assert.AreEqual("", sql.Configuration["@" + SqlDataSource.ExtractedParamPrefix + "1"]);
         }
@@ -62,10 +57,10 @@ Where CatName = @" + SqlDataSource.ExtractedParamPrefix + @"2
 And ProductSort = @" + SqlDataSource.ExtractedParamPrefix + @"3";
 
             var sql = GenerateSqlDataSource(Connection, initQuery, ContentTypeName);
-            var ConfigCountBefore = sql.Configuration.Count;
+            var configCountBefore = sql.Configuration.Count;
             sql.EnsureConfigurationIsLoaded();
 
-            Assert.AreEqual(ConfigCountBefore + 3, sql.Configuration.Count);
+            Assert.AreEqual(configCountBefore + 3, sql.Configuration.Count);
             Assert.AreEqual(expectedQuery, sql.SelectCommand);
             Assert.AreEqual(ValueProvider.ValueCollectionProvider_Test.MaxPictures, sql.Configuration["@" + SqlDataSource.ExtractedParamPrefix + "1"]);
             Assert.AreEqual(ValueProvider.ValueCollectionProvider_Test.DefaultCategory, sql.Configuration["@" + SqlDataSource.ExtractedParamPrefix + "2"]);
@@ -75,14 +70,14 @@ And ProductSort = @" + SqlDataSource.ExtractedParamPrefix + @"3";
         [TestMethod]
         public void TestInvalidSqls()
         {
-            for (var c = 0; c < IllegalSql.Length; c++)
+            for (var c = 0; c < _illegalSql.Length; c++)
 
                 try
                 {
-                    var sql = GenerateSqlDataSource(Connection, IllegalSql[c], ContentTypeName);
+                    var sql = GenerateSqlDataSource(Connection, _illegalSql[c], ContentTypeName);
                     var x = sql.List; // try to access list, should raise error      
                     // If it doesn't raise an error, raise one
-                    Assert.Fail("Invalid SQL not detected, should have raised an error: '" + IllegalSql[c] + "'");
+                    Assert.Fail("Invalid SQL not detected, should have raised an error: '" + _illegalSql[c] + "'");
                 }
                 catch (InvalidOperationException)
                 {

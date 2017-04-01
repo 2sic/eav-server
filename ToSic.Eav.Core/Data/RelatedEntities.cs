@@ -37,7 +37,7 @@ namespace ToSic.Eav.Data
                     return new List<IEntity>();
                 }
 
-                return relationship != null ? relationship.TypedContents : null;
+                return relationship?.TypedContents;
             }
         }
     }

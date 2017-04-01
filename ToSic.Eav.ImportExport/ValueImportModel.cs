@@ -10,17 +10,14 @@ namespace ToSic.Eav.Import
     {
         public T Value { get; set; }
         public IEnumerable<ValueDimension> ValueDimensions { get; set; }
-        public ImportEntity ParentEntity { get; private set; }
+        public ImportEntity ParentEntity { get; }
 
         public ValueImportModel(ImportEntity parentEntity)
         {
             ParentEntity = parentEntity;
         }
 
-        public string StringValueForTesting 
-        {
-            get { return Value.ToString(); }
-        }
+        public string StringValueForTesting => Value.ToString();
 
         #region previously external stuff
         public List<IValueImportModel> ToList()
@@ -35,11 +32,11 @@ namespace ToSic.Eav.Import
         /// </summary>
         public void AppendLanguageReference(string language, bool readOnly)
         {
-            var valueDimesnions = this.ValueDimensions as List<Import.ValueDimension>;
+            var valueDimesnions = ValueDimensions as List<Import.ValueDimension>;
             if (valueDimesnions == null)
             {
                 valueDimesnions = new List<Import.ValueDimension>();
-                this.ValueDimensions = valueDimesnions;
+                ValueDimensions = valueDimesnions;
             }
 
             if (!string.IsNullOrEmpty(language))

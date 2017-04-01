@@ -43,7 +43,7 @@ namespace ToSic.Eav.DataSources.Caches
         }
 
 
-		private IDictionary<string, IDataStream> _Out = new Dictionary<string, IDataStream>(StringComparer.OrdinalIgnoreCase);
+		private readonly IDictionary<string, IDataStream> _Out = new Dictionary<string, IDataStream>(StringComparer.OrdinalIgnoreCase);
 		private bool _requiresRebuildOfOut = true;
 		public override IDictionary<string, IDataStream> Out
 		{

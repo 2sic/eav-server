@@ -66,6 +66,7 @@
     <Compile Include="BLL\Parts\DbContentType.cs" />
     <Compile Include="BLL\Parts\DbApp.cs" />
     <Compile Include="BLL\Parts\DbZone.cs" />
+    <Compile Include="BLL\RepositoryEF4.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="BLL\Parts\DbPipeline.cs" />
     <Compile Include="DataSources\SqlSources\EavSqlStore.cs" />

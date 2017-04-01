@@ -173,7 +173,7 @@ namespace ToSic.Eav.DataSources
         {
             var boolFilter = bool.Parse(original);
 
-            string operation = Operator.ToLower();
+            var operation = Operator.ToLower();
             switch (operation)
             {
                 case "==":
@@ -234,7 +234,7 @@ namespace ToSic.Eav.DataSources
         {
             var boolFilter = bool.Parse(original);
 
-            string operation = Operator.ToLower();
+            var operation = Operator.ToLower();
             switch (operation)
             {
                 case "==":
@@ -347,8 +347,8 @@ namespace ToSic.Eav.DataSources
         {
             var operation = Operator.ToLower();
         
-            decimal max = decimal.MaxValue;
-            decimal numberFilter = decimal.MinValue;
+            var max = decimal.MaxValue;
+            var numberFilter = decimal.MinValue;
 
             #region check for special case "between" with two values to compare
             if (operation == "between" || operation == "!between")

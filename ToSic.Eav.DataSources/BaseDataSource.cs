@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Web.Caching;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.ValueProvider;
 
@@ -18,36 +17,29 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		protected BaseDataSource()
 		{
-			In = new Dictionary<string, IDataStream>();
-			Out = new Dictionary<string, IDataStream>();
-			Configuration = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-		    CacheRelevantConfigurations = new string[0];
+		    // CacheRelevantConfigurations = new string[0];
 		}
 
 		/// <summary>
 		/// Name of this data source - mainly to aid debugging
 		/// </summary>
-		public string Name { get { return GetType().Name; } }
+		public string Name => GetType().Name;
 
-        #region Caching stuff
-        private string[] _cacheRelevantConfigurations = new string[0];
-        /// <summary>
+	    #region Caching stuff
+
+	    /// <summary>
         /// List of items from the configuration which should be used for creating the cache-key
         /// </summary>
-        public string[] CacheRelevantConfigurations
-        {
-            get { return _cacheRelevantConfigurations; }
-            set { _cacheRelevantConfigurations = value; } 
-        }
+        public string[] CacheRelevantConfigurations { get; set; } = new string[0];
 
-        /// <summary>
+	    /// <summary>
         /// Unique key-id for this specific part - without the full chain to the parents
         /// </summary>
         public virtual string CachePartialKey
 	    {
 	        get
 	        {
-	            string key = "";
+	            var key = "";
 	            // Assemble the partial key
                 // If this item has a guid thet it's a configured part which always has this unique guid; then use that
 	            if (DataSourceGuid != Guid.Empty)
@@ -59,17 +51,14 @@ namespace ToSic.Eav.DataSources
                 EnsureConfigurationIsLoaded();
 
                 // note: whenever a item has filter-parameters, these should be part of the key as well...
-                foreach (string configName in CacheRelevantConfigurations)
+                foreach (var configName in CacheRelevantConfigurations)
 	                key += "&" + configName + "=" + Configuration[configName];
 
 	            return key;
 	        } 
 	    }
 
-	    public ICache Cache
-	    {
-	        get { return DataSource.GetCache(ZoneId, AppId); }
-	    }
+	    public ICache Cache => DataSource.GetCache(ZoneId, AppId);
 
 	    public virtual string CacheFullKey
 	    {
@@ -114,26 +103,17 @@ namespace ToSic.Eav.DataSources
 
         public Guid DataSourceGuid { get; set; }
 
-		public IDictionary<string, IDataStream> In { get; internal set; }
-		public virtual IDictionary<string, IDataStream> Out { get; protected internal set; }
+		public IDictionary<string, IDataStream> In { get; internal set; } = new Dictionary<string, IDataStream>();
+	    public virtual IDictionary<string, IDataStream> Out { get; protected internal set; } = new Dictionary<string, IDataStream>();
 
-		public IDataStream this[string outName]
-		{
-			get { return Out[outName]; }
-		}
+	    public IDataStream this[string outName] => Out[outName];
 
-		public IDictionary<int, IEntity> List
-		{
-			get { return Out[Constants.DefaultStreamName].List; }
-		}
+	    public IDictionary<int, IEntity> List => Out[Constants.DefaultStreamName].List;
 
-        public IEnumerable<IEntity> LightList
-        {
-            get { return Out[Constants.DefaultStreamName].LightList; }
-        }
+	    public IEnumerable<IEntity> LightList => Out[Constants.DefaultStreamName].LightList;
 
-		public IValueCollectionProvider ConfigurationProvider { get; protected internal set; }
-		public IDictionary<string, string> Configuration { get; internal set; }
+	    public IValueCollectionProvider ConfigurationProvider { get; protected internal set; }
+		public IDictionary<string, string> Configuration { get; internal set; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 	    protected internal bool _configurationIsLoaded;
 
 
@@ -213,12 +193,9 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// Indicates whether the DataSource is ready for use (initialized/configured)
 		/// </summary>
-		public virtual bool Ready
-		{
-			get { return (In[Constants.DefaultStreamName].Source != null && In[Constants.DefaultStreamName].Source.Ready); }
-		}
+		public virtual bool Ready => (In[Constants.DefaultStreamName].Source != null && In[Constants.DefaultStreamName].Source.Ready);
 
-		#endregion
+	    #endregion
 
 
 	}

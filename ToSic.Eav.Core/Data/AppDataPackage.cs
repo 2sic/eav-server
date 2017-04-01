@@ -18,7 +18,7 @@ namespace ToSic.Eav.Data
 		/// <summary>
 		/// Gets all Entities in this App
 		/// </summary>
-		public IDictionary<int, IEntity> Entities { get; private set; }
+		public IDictionary<int, IEntity> Entities { get; }
 
         /// <summary>
         /// The simple list of entities, used in many pipeline parts

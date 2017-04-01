@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace ToSic.Eav.DataSources
@@ -8,7 +7,7 @@ namespace ToSic.Eav.DataSources
 	/// A DataSource that filters Entities by Ids
 	/// </summary>
 	[PipelineDesigner]
-	public class StreamFallback : BaseDataSource
+	public sealed class StreamFallback : BaseDataSource
 	{
 		#region Configuration-properties (no config)
 

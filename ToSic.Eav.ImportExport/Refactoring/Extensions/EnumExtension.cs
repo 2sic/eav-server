@@ -1,7 +1,4 @@
-﻿using System;
-using System.ComponentModel;
-
-namespace ToSic.Eav.ImportExport.Refactoring.Extensions
+﻿namespace ToSic.Eav.ImportExport.Refactoring.Extensions
 {
     // TODO2tk: This class can be used in the user interface to convert an enumeration value to a readable string... 
     // it can be moved to the 2sxc project along with the ImportErrorCode.xx.resx files
