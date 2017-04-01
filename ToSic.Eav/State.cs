@@ -16,5 +16,8 @@ namespace ToSic.Eav
         /// <returns></returns>
         public static int GetAssignmentTypeId(string typeName)
             => DataSource.GetCache(null).GetAssignmentObjectTypeId(typeName);
+
+        public static void Purge(int zoneId, int appId)
+            => DataSource.GetCache(null).PurgeCache(zoneId, appId);
     }
 }
