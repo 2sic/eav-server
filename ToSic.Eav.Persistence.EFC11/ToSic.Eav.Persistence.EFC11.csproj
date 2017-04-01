@@ -12,4 +12,8 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="1.1.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ToSic.Eav.Repository\ToSic.Eav.Repository.csproj" />
+  </ItemGroup>
+
 </Project>

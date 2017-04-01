@@ -108,6 +108,10 @@
       <Project>{bb55dea4-0869-4c59-836e-d654f4416121}</Project>
       <Name>ToSic.Eav.Persistence.EFC11</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ToSic.Eav.Repository\ToSic.Eav.Repository.csproj">
+      <Project>{d6592ef1-b8af-4b81-b544-792f92038b9e}</Project>
+      <Name>ToSic.Eav.Repository</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

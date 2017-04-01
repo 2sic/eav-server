@@ -62,6 +62,7 @@
     <Compile Include="Api\Api01\SimpleDataController.cs" />
     <Compile Include="Api\BetaFullApi.cs" />
     <Compile Include="BLL\BllCommandBase.cs" />
+    <Compile Include="BLL\DbLoadIntoEavDataStructure.cs" />
     <Compile Include="BLL\EavDataController.cs" />
     <Compile Include="BLL\Parts\DbContentType.cs" />
     <Compile Include="BLL\Parts\DbApp.cs" />
@@ -89,7 +90,6 @@
     <Compile Include="BLL\Parts\DbRelationship.cs" />
     <Compile Include="BLL\Parts\DbValue.cs" />
     <Compile Include="BLL\Parts\DbEntity.cs" />
-    <Compile Include="BLL\DbLoadIntoEavDataStructure.cs" />
     <Compile Include="BLL\Parts\DbShortcuts.cs" />
     <Compile Include="BLL\Parts\DbVersioning.cs" />
     <Compile Include="ImportExport\Import.cs" />
@@ -119,10 +119,6 @@
     <ProjectReference Include="..\ToSic.Eav.Persistence.EF4\ToSic.Eav.Persistence.EF4.csproj">
       <Project>{4a899869-ac44-44a4-8733-395d549f6297}</Project>
       <Name>ToSic.Eav.Persistence.EF4</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ToSic.Eav.Persistence.EFC11\ToSic.Eav.Persistence.EFC11.csproj">
-      <Project>{bb55dea4-0869-4c59-836e-d654f4416121}</Project>
-      <Name>ToSic.Eav.Persistence.EFC11</Name>
     </ProjectReference>
     <ProjectReference Include="..\ToSic.Eav.Tokens\ToSic.Eav.TokenEngine.csproj">
       <Project>{2A81F269-8CCA-4AFD-A85F-82B1C2343965}</Project>

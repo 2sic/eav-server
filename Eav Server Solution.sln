@@ -27,6 +27,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToSic.Eav.Persistence.EFC11
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.Persistence.EFC11.Tests", "ToSic.Eav.Persistence.EFC11.Tests\ToSic.Eav.Persistence.EFC11.Tests.csproj", "{EB8491A7-4147-4A18-AC74-CD1BE957FF48}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.Repository", "ToSic.Eav.Repository\ToSic.Eav.Repository.csproj", "{D6592EF1-B8AF-4B81-B544-792F92038B9E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,6 +79,10 @@ Global
 		{EB8491A7-4147-4A18-AC74-CD1BE957FF48}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB8491A7-4147-4A18-AC74-CD1BE957FF48}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB8491A7-4147-4A18-AC74-CD1BE957FF48}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6592EF1-B8AF-4B81-B544-792F92038B9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6592EF1-B8AF-4B81-B544-792F92038B9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6592EF1-B8AF-4B81-B544-792F92038B9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6592EF1-B8AF-4B81-B544-792F92038B9E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

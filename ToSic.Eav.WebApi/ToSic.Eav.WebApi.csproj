@@ -98,6 +98,10 @@
       <Project>{4a899869-ac44-44a4-8733-395d549f6297}</Project>
       <Name>ToSic.Eav.Persistence.EF4</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ToSic.Eav.Persistence.EFC11\ToSic.Eav.Persistence.EFC11.csproj">
+      <Project>{bb55dea4-0869-4c59-836e-d654f4416121}</Project>
+      <Name>ToSic.Eav.Persistence.EFC11</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ToSic.Eav.Tokens\ToSic.Eav.TokenEngine.csproj">
       <Project>{2a81f269-8cca-4afd-a85f-82b1c2343965}</Project>
       <Name>ToSic.Eav.TokenEngine</Name>
@@ -115,9 +119,13 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>
-      copy "$(TargetDir)ToSic.Eav.*" "$(ProjectDir)..\..\2SexyContent\Web\bin"
-    </PostBuildEvent>
+    <PostBuildEvent>copy "$(TargetDir)ToSic.Eav.*" "$(ProjectDir)..\..\2SexyContent\Web\bin"
+copy "$(TargetDir)Microsoft.EntityF*" "$(ProjectDir)..\..\2SexyContent\Web\bin"
+copy "$(TargetDir)Microsoft.Extensions.*" "$(ProjectDir)..\..\2SexyContent\Web\bin"
+copy "$(TargetDir)Remotion.*" "$(ProjectDir)..\..\2SexyContent\Web\bin"
+copy "$(TargetDir)System.Interactive.Async.*" "$(ProjectDir)..\..\2SexyContent\Web\bin"
+copy "$(TargetDir)System.Diagnostics.DiagnosticSource.*" "$(ProjectDir)..\..\2SexyContent\Web\bin"
+copy "$(TargetDir)System.Collections.Immutable.*" "$(ProjectDir)..\..\2SexyContent\Web\bin"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
