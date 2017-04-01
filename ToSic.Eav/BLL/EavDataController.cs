@@ -21,7 +21,7 @@ namespace ToSic.Eav.BLL
         internal DbPublishing Publishing { get; private set; }
         public DbDimensions Dimensions { get; private set; }
         public DbZone Zone { get; private set; }
-        internal DbApp App { get; private set; }
+        public DbApp App { get; private set; }
         public DbContentType ContentType { get; private set; }
 
         public RepositoryEF4 Repository { get; private set; }
@@ -150,52 +150,8 @@ namespace ToSic.Eav.BLL
                 _appId = appId.Value;
             }
             else
-                //_appId = zone.Apps.Where(a => a.Value == Constants.DefaultAppName).Select(a => a.Key).Single();
                 _appId = SqlDb.Apps.First(a => a.Name == Constants.DefaultAppName).AppID;
 
-            #region code before refactoring 2015-08-12 - 2dm wanted to get rid of depenedncy on the the DataSource - Cache
-
-            //// If nothing is supplied, use defaults
-            //if (!zoneId.HasValue && !appId.HasValue)
-            //{
-            //    _zoneId = Constants.DefaultZoneId;
-            //    _appId = Constants.MetaDataAppId;
-            //    return;
-            //}
-
-            //// If only AppId is supplied, look up it's zone and use that
-            //if (!zoneId.HasValue && appId.HasValue)
-            //{
-            //    var zoneIdOfApp = Apps.Where(a => a.AppID == appId.Value).Select(a => (int?)a.ZoneID).SingleOrDefault();
-            //    if (!zoneIdOfApp.HasValue)
-            //        throw new ArgumentException("App with id " + appId.Value + " doesn't exist.", "appId");
-            //    _appId = appId.Value;
-            //    _zoneId = zoneIdOfApp.Value;
-            //    return;
-            //}
-
-            //// if only ZoneId was supplied, use that...
-            //_zoneId = zoneId.Value;
-
-            //// ...and try to find the best match for App-ID
-            //var zone = ((DataSources.Caches.BaseCache)DataSource.GetCache(_zoneId, null)).ZoneApps[_zoneId];
-
-            //if (appId.HasValue)
-            //{
-            //    // Set AppId and validate AppId exists with specified ZoneId
-            //    //var foundAppId = zone.Apps.Where(a => a.Key == appId.Value).Select(a => (int?)a.Key).SingleOrDefault();
-            //    //if (!foundAppId.HasValue)
-            //    //    throw new ArgumentException("App with id " + appId.Value + " doesn't exist.", "appId");
-            //    //_appId = foundAppId.Value;
-            //    var foundApp = Apps.FirstOrDefault(a => a.ZoneID == _zoneId && a.AppID == appId.Value);
-            //    if (foundApp == null)
-            //        throw new ArgumentException("App with id " + appId.Value + " doesn't exist.", "appId");
-            //    _appId = foundApp.AppID;
-            //}
-            //else
-            //    _appId = zone.Apps.Where(a => a.Value == Constants.DefaultAppName).Select(a => a.Key).Single();
-
-            #endregion
         }
 
         #endregion

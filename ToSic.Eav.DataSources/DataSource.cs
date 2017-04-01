@@ -45,13 +45,6 @@ namespace ToSic.Eav
 		/// <returns>A single DataSource</returns>
 		public static IDataSource GetDataSource(string sourceName, int? zoneId = null, int? appId = null, IDataSource upstream = null, IValueCollectionProvider valueCollectionProvider = null)
 		{
-			// 2014-03-23 2dm new - didn't work, fails when using the iCache from the specific DLL
-			//var ds = typeof(DataSource)
-			//	.GetMethod("GetDataSource", new[] { typeof(int?), typeof(int?), typeof(IDataSource), typeof(IValueCollectionProvider) })
-			//	.MakeGenericMethod(Type.GetType(sourceName))
-			//	.Invoke(null, new object[] { zoneId, appId, upstream, ConfigurationProvider });
-			//return (IDataSource) ds;
-
 			var type = Type.GetType(sourceName);
 			if (type == null)
 			{
@@ -136,18 +129,17 @@ namespace ToSic.Eav
 			return Tuple.Create(zoneId.Value, appId.Value);
 		}
 
-		/// <summary>
-		/// Get a new ICache DataSource
-		/// </summary>
-		/// <param name="zoneId">ZoneId for this DataSource</param>
-		/// <param name="appId">AppId for this DataSource</param>
-		/// <returns>A new ICache</returns>
-		public static ICache GetCache(int? zoneId, int? appId = null)
-		{
-			return (ICache)GetDataSource("ToSic.Eav.DataSources.Caches.ICache, ToSic.Eav.DataSources", zoneId, appId);
-		}
+	    private static string _ICacheId = "ToSic.Eav.DataSources.Caches.ICache, ToSic.Eav.DataSources";
+        /// <summary>
+        /// Get a new ICache DataSource
+        /// </summary>
+        /// <param name="zoneId">ZoneId for this DataSource</param>
+        /// <param name="appId">AppId for this DataSource</param>
+        /// <returns>A new ICache</returns>
+        public static ICache GetCache(int? zoneId, int? appId = null) 
+            => (ICache)GetDataSource(_ICacheId, zoneId, appId);
 
-		/// <summary>
+	    /// <summary>
 		/// Get DataSource having common MetaData, like Field MetaData
 		/// </summary>
 		/// <returns>IMetaDataSource (from ICache)</returns>

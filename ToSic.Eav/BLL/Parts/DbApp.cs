@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace ToSic.Eav.BLL.Parts
 {
-    internal class DbApp: BllCommandBase
+    public class DbApp: BllCommandBase
     {
         public DbApp(EavDataController cntx) : base(cntx) {}
 
@@ -12,7 +12,7 @@ namespace ToSic.Eav.BLL.Parts
         /// <summary>
         /// Add a new App
         /// </summary>
-        internal App AddApp(Zone zone, string name = Constants.DefaultAppName)
+        public App AddApp(Zone zone, string name = Constants.DefaultAppName)
         {
             var newApp = new App
             {
