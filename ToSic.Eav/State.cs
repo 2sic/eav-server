@@ -21,24 +21,29 @@ namespace ToSic.Eav
         public static int GetAssignmentTypeId(string typeName)
             => DataSource.GetCache(null).GetAssignmentObjectTypeId(typeName);
 
-        public static void Purge(int zoneId, int appId)
-            => DataSource.GetCache(null).PurgeCache(zoneId, appId);
+        public static void Purge(int zoneId, int appId, bool global = false)
+        {
+            if (global)
+                DataSource.GetCache(null).PurgeGlobalCache();
+            else
+                DataSource.GetCache(null).PurgeCache(zoneId, appId);
+        }
 
-        public static void DoAndPurge(int zoneId, int appId, Action action)
+        public static void DoAndPurge(int zoneId, int appId, Action action, bool global=false)
         {
             action.Invoke();
-            Purge(zoneId, appId);
+            Purge(zoneId, appId, global);
         }
 
         public static void AppDelete(int zoneId, int appId)
-            => DoAndPurge(zoneId, appId, () => EavDataController.Instance(zoneId, appId).App.DeleteApp(appId));
+            => DoAndPurge(zoneId, appId, () => EavDataController.Instance(zoneId, appId).App.DeleteApp(appId), true);
 
         public static int AppCreate(int zoneId)
         {
             var eavContext = EavDataController.Instance(zoneId);
             var app = eavContext.App.AddApp(null, Guid.NewGuid().ToString());
 
-            Purge(zoneId, app.AppID);
+            Purge(zoneId, app.AppID, true);
             return app.AppID;
         }
 
@@ -50,7 +55,7 @@ namespace ToSic.Eav
 
 
         public static void MetadataEnsureTypeAndSingleEntity(int zoneId, int appId, string scope, string setName,
-    string label, int appAssignment, OrderedDictionary values)
+            string label, int appAssignment, OrderedDictionary values)
         {
             var eavContext = EavDataController.Instance(zoneId, appId);
 
@@ -65,6 +70,9 @@ namespace ToSic.Eav
 
             Purge(eavContext.ZoneId, eavContext.ZoneId); 
        }
+
+
+
 
     }
 }

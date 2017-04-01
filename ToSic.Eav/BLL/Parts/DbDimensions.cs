@@ -95,16 +95,15 @@ namespace ToSic.Eav.BLL.Parts
 			ClearDimensionsCache();
 		}
 
-        public void AddOrUpdateLanguage(string cultureCode, string cultureText, bool active, int portalId)
+        public void AddOrUpdateLanguage(string cultureCode, string cultureText, bool active)
         {
             var eavLanguage = GetLanguages().FirstOrDefault(l => l.ExternalKey == cultureCode);
             // If the language exists in EAV, set the active state, else add it
             if (eavLanguage != null)
                 UpdateDimension(eavLanguage.DimensionID, active);
             else
-            {
                 AddLanguage(cultureText, cultureCode);
-            }
+
         }
 
 
