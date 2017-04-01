@@ -16,16 +16,11 @@ namespace ToSic.Eav.ImportExport.Refactoring
         #region properties like _appId, Document, etc.
 
         #region Timing / Debuging infos
-        private Stopwatch _timer = new Stopwatch();
 
         /// <summary>
         /// Helper to measure time used for stuff
         /// </summary>
-        public Stopwatch Timer
-        {
-            get { return _timer; }
-            set { _timer = value; }
-        }
+        public Stopwatch Timer { get; set; } = new Stopwatch();
 
         public long TimeForMemorySetup;
         public long TimeForDbImport;
@@ -58,12 +53,12 @@ namespace ToSic.Eav.ImportExport.Refactoring
         /// <summary>
         /// The entities created from the document. They will be saved to the repository.
         /// </summary>
-        public List<ImportEntity> Entities {get; private set; }
+        public List<ImportEntity> Entities {get; }
 
         /// <summary>
         /// Errors found while importing the document to memory.
         /// </summary>
-        public ImportErrorProtocol ErrorProtocol { get; private set; }
+        public ImportErrorProtocol ErrorProtocol { get; }
         #endregion
 
         private ImportEntity GetEntity(Guid entityGuid)
@@ -123,7 +118,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
             Timer.Start();
             try
             {
-                if (_languages == null || _languages.Count() == 0)
+                if (_languages == null || !_languages.Any())
                 {
                     _languages = new[] { string.Empty };
                 }
@@ -145,7 +140,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
                 var documentRoot = Document.Element(DocumentNodeNames.Root);
 
                 DocumentElements = documentRoot.Elements(DocumentNodeNames.Entity);
-                if (DocumentElements.Count() == 0)
+                if (!DocumentElements.Any())
                 {
                     ErrorProtocol.AppendError(ImportErrorCode.InvalidDocument);
                     return;
@@ -153,7 +148,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
 
                 // Check the content type of the document (it can be found on each element in the Type attribute)
                 var documentTypeAttribute = DocumentElements.First().Attribute(DocumentNodeNames.EntityTypeAttribute);
-                if (documentTypeAttribute == null || documentTypeAttribute.Value == null || documentTypeAttribute.Value != _contentType.Name.RemoveSpecialCharacters())
+                if (documentTypeAttribute?.Value == null || documentTypeAttribute.Value != _contentType.Name.RemoveSpecialCharacters())
                 {
                     ErrorProtocol.AppendError(ImportErrorCode.InvalidRoot);
                     return;
@@ -174,7 +169,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
                     }
                 }
                 var documentElementLanguagesAll = DocumentElements.GroupBy(element => element.Element(DocumentNodeNames.EntityGuid).Value).Select(group => group.Select(element => element.Element(DocumentNodeNames.EntityLanguage).Value).ToList());
-                var documentElementLanguagesCount = documentElementLanguagesAll.Select(item => item.Count());
+                var documentElementLanguagesCount = documentElementLanguagesAll.Select(item => item.Count);
                 if (documentElementLanguagesCount.Any(count => count != 1))
                 {
                     // It is an all language import, so check if all languages are specified for all entities
@@ -201,11 +196,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
                     }
 
                     var entityGuid = entityGuidManager.GetGuid(documentElement, _documentLanguageFallback);
-                    var entity = GetEntity(entityGuid);
-                    if (entity == null)
-                    {
-                        entity = AppendEntity(entityGuid);
-                    }
+                    var entity = GetEntity(entityGuid) ?? AppendEntity(entityGuid);
 
                     var attributes = _contentType.GetAttributes();
                     foreach (var attribute in attributes)
@@ -374,7 +365,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
            {
                var existingGuids = GetExistingEntityGuids();
                var createdGuids = GetCreatedEntityGuids();
-               return createdGuids.Where(guid => existingGuids.Contains(guid)).Count();
+               return createdGuids.Count(guid => existingGuids.Contains(guid));
            }
         }
 
@@ -396,17 +387,14 @@ namespace ToSic.Eav.ImportExport.Refactoring
                 {
                     return 0;
                 }
-                return GetEntityDeleteGuids().Count();
+                return GetEntityDeleteGuids().Count;
             }
         }
 
         /// <summary>
         /// Get the attribute names in the content type.
         /// </summary>
-        public IEnumerable<string> AttributeNamesInContentType
-        {
-            get { return _contentType.GetEntitiesAttributeNames(); }
-        }
+        public IEnumerable<string> AttributeNamesInContentType => _contentType.GetEntitiesAttributeNames();
 
         /// <summary>
         /// Get the attributes not imported (ignored) from the document to the repository.
@@ -442,19 +430,19 @@ namespace ToSic.Eav.ImportExport.Refactoring
                     {
                         if (content is ValueImportModel<string>)
                         {
-                            result += string.Format("<div>Value: {0}</div>", ((ValueImportModel<string>)content).Value);
+                            result += $"<div>Value: {((ValueImportModel<string>) content).Value}</div>";
                         }
                         else if (content is ValueImportModel<bool?>)
                         {
-                            result += string.Format("<div>Value: {0}</div>", ((ValueImportModel<bool?>)content).Value);
+                            result += $"<div>Value: {((ValueImportModel<bool?>) content).Value}</div>";
                         }
                         else if (content is ValueImportModel<decimal?>)
                         {
-                            result += string.Format("<div>Value: {0}</div>", ((ValueImportModel<decimal?>)content).Value);
+                            result += $"<div>Value: {((ValueImportModel<decimal?>) content).Value}</div>";
                         }
                         else if (content is ValueImportModel<DateTime?>)
                         {
-                            result += string.Format("<div>Value: {0}</div>", ((ValueImportModel<DateTime?>)content).Value);
+                            result += $"<div>Value: {((ValueImportModel<DateTime?>) content).Value}</div>";
                         }
                         else
                         {
@@ -462,7 +450,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
                         }
                         foreach (var dimension in content.ValueDimensions)
                         {
-                            result += string.Format("<div>Language: {0},{1}</div>", dimension.DimensionExternalKey, dimension.ReadOnly);
+                            result += $"<div>Language: {dimension.DimensionExternalKey},{dimension.ReadOnly}</div>";
                         }
                     }
                     result += "</li>";

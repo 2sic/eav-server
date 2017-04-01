@@ -21,47 +21,33 @@ namespace ToSic.Eav.BLL.Parts
         /// Get a single Entity by EntityId
         /// </summary>
         /// <returns>Entity or throws InvalidOperationException</returns>
-        public Entity GetEntity(int entityId)
-        {
-            return Context.SqlDb.Entities.Single(e => e.EntityID == entityId);
-        }
+        public Entity GetEntity(int entityId) => Context.SqlDb.Entities.Single(e => e.EntityID == entityId);
 
         /// <summary>
         /// Get a single Entity by EntityGuid. Ensure it's not deleted and has context's AppId
         /// </summary>
         /// <returns>Entity or throws InvalidOperationException</returns>
         public Entity GetEntity(Guid entityGuid)
-        {
             // GetEntity should never return a draft entity that has a published version
-            return GetEntitiesByGuid(entityGuid).Single(e => !e.PublishedEntityId.HasValue);
-        }
+            => GetEntitiesByGuid(entityGuid).Single(e => !e.PublishedEntityId.HasValue);
+        
 
 
-        internal IQueryable<Entity> GetEntitiesByGuid(Guid entityGuid)
-        {
-            return
-                Context.SqlDb.Entities.Where(
-                    e =>
-                        e.EntityGUID == entityGuid && !e.ChangeLogIDDeleted.HasValue &&
-                        !e.Set.ChangeLogIDDeleted.HasValue && e.Set.AppID == Context.AppId);
-        }
+        internal IQueryable<Entity> GetEntitiesByGuid(Guid entityGuid) 
+            => Context.SqlDb.Entities.Where(e =>
+                e.EntityGUID == entityGuid && !e.ChangeLogIDDeleted.HasValue &&
+                !e.Set.ChangeLogIDDeleted.HasValue && e.Set.AppID == Context.AppId);
 
         /// <summary>
         /// Test whether Entity exists on current App and is not deleted
         /// </summary>
-        public bool EntityExists(Guid entityGuid)
-        {
-            return GetEntitiesByGuid(entityGuid).Any();
-        }
+        public bool EntityExists(Guid entityGuid) => GetEntitiesByGuid(entityGuid).Any();
 
 
         /// <summary>
         /// Get a List of Entities with specified assignmentObjectTypeId and Key.
         /// </summary>
-        public IQueryable<Entity> GetEntities(int assignmentObjectTypeId, int keyNumber)
-        {
-            return GetEntitiesInternal(assignmentObjectTypeId, keyNumber);
-        }
+        public IQueryable<Entity> GetEntities(int assignmentObjectTypeId, int keyNumber) => GetEntitiesInternal(assignmentObjectTypeId, keyNumber);
 
         /// <summary>
         /// Get a List of Entities with specified assignmentObjectTypeId and Key.
@@ -74,10 +60,8 @@ namespace ToSic.Eav.BLL.Parts
         /// <summary>
         /// Get a List of Entities with specified assignmentObjectTypeId and Key.
         /// </summary>
-        public IQueryable<Entity> GetEntities(int assignmentObjectTypeId, string keyString)
-        {
-            return GetEntitiesInternal(assignmentObjectTypeId, null, null, keyString);
-        }
+        public IQueryable<Entity> GetEntities(int assignmentObjectTypeId, string keyString) 
+            => GetEntitiesInternal(assignmentObjectTypeId, null, null, keyString);
 
         /// <summary>
         /// Get a List of Entities with specified assignmentObjectTypeId and optional Key.
@@ -138,11 +122,6 @@ namespace ToSic.Eav.BLL.Parts
                 if (foundThisMetadata != null)
                 {
                     existingEntityId = foundThisMetadata.EntityID;
-                    //skipCreate = true;
-
-                    //throw new Exception(
-                    //    string.Format("An Entity already exists with AssignmentObjectTypeId {0} and KeyNumber {1}",
-                    //        Constants.AssignmentObjectTypeIdFieldProperties, keyNumber));
                 }
 
             }
@@ -250,23 +229,15 @@ namespace ToSic.Eav.BLL.Parts
             {
                 // Prevent duplicate Draft
                 if (draftEntityId.HasValue)
-                    throw new InvalidOperationException(string.Format("Published EntityId {0} has already a draft with EntityId {1}", repositoryId, draftEntityId));
+                    throw new InvalidOperationException(
+                        $"Published EntityId {repositoryId} has already a draft with EntityId {draftEntityId}");
 
                 throw new InvalidOperationException("It seems you're trying to update a published entity with a draft - this is not possible - the save should actually try to create a new draft instead without calling update.");
-
-                // create a new Draft-Entity
-                entity = CloneEntity(entity);
-                entity.IsPublished = false;
-                entity.PublishedEntityId = repositoryId;
-                
-                // must save so we have a real entityId/repositoryId for later assignments
-                Context.SqlDb.SaveChanges();
-                entity = Context.SqlDb.Entities.Single(e => e.EntityID == Context.Publishing.GetDraftEntityId(repositoryId));
             }
             // Prevent editing of Published if there's a draft
             else if (entity.IsPublished && draftEntityId.HasValue)
             {
-                throw new Exception(string.Format("Update Entity not allowed because a draft exists with EntityId {0}", draftEntityId));
+                throw new Exception($"Update Entity not allowed because a draft exists with EntityId {draftEntityId}");
             }
             #endregion
 
@@ -314,7 +285,7 @@ namespace ToSic.Eav.BLL.Parts
         internal void UpdateEntityFromImportModel(Entity currentEntity, Dictionary<string, List<IValueImportModel>> newValuesImport, List<ImportLogItem> updateLog, List<Attribute> attributeList, List<EavValue> currentValues, bool keepAttributesMissingInImport)
         {
             if (updateLog == null)
-                throw new ArgumentNullException("updateLog", "When Calling UpdateEntity() with newValues of Type IValueImportModel updateLog must be set.");
+                throw new ArgumentNullException(nameof(updateLog), "When Calling UpdateEntity() with newValues of Type IValueImportModel updateLog must be set.");
 
             // track updated values to remove values that were not updated automatically
             var updatedValueIds = new List<int>();
@@ -535,14 +506,6 @@ namespace ToSic.Eav.BLL.Parts
                 messages.Add(
                     $"found {entitiesAssignedToThis.Count} entities which are metadata for this, assigned children (like in a pieline) or assigned for other reasons: {string.Join(", ", entitiesAssignedToThis)}.");
             }
-            //var assignedEntitiesDataPipeline = GetEntitiesInternal(Constants.AssignmentObjectTypeEntity, entityId).Select(e => new TempEntityAndTypeInfos() { EntityId = e.EntityID, TypeId = e.AttributeSetID} ).ToList();
-            //if (assignedEntitiesDataPipeline.Any())
-            //{
-            //    TryToGetMoreInfosAboutDependencies(assignedEntitiesDataPipeline, messages);
-            //    messages.Add(
-            //        $"found {assignedEntitiesDataPipeline.Count} assigned data-pipeline entities: {string.Join(", ", assignedEntitiesDataPipeline)}.");
-            //}
-
             return Tuple.Create(!messages.Any(), string.Join(" ", messages));
         }
 

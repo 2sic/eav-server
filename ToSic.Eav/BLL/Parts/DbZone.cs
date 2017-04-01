@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -15,46 +14,27 @@ namespace ToSic.Eav.BLL.Parts
         /// </summary>
         /// <returns>Dictionary with ZoneId as Key and ZoneModel</returns>
         public Dictionary<int, Data.Zone> GetAllZones()
-        {
-            //var zones = (from z in Zones
-            //             select
-            //                 new
-            //                 {
-            //                     ZoneId = z.ZoneID,
-            //                     DefaultAppId = z.Apps.FirstOrDefault(a => a.Name == DefaultAppName).AppID,
-            //                     Apps = from a in z.Apps select new { a.AppID, a.Name }
-            //                 }).ToDictionary(z => z.ZoneId,
-            //                                     z =>
-            //                                     new Data.Zone
-            //                                     {
-            //                                         ZoneId = z.ZoneId,
-            //                                         Apps = z.Apps.ToDictionary(a => a.AppID, a => a.Name),
-            //                                         DefaultAppId = z.DefaultAppId
-            //                                     });
-            var zones = Context.SqlDb.Zones.ToDictionary(z => z.ZoneID, z => new Data.Zone(
-                        z.ZoneID,
-                        z.Apps.FirstOrDefault(a => a.Name == Constants.DefaultAppName).AppID,
-                        z.Apps.ToDictionary(a => a.AppID, a => a.Name)));
-            return zones;
-        }
+            => Context.SqlDb.Zones.ToDictionary(z => z.ZoneID, z => new Data.Zone(
+                z.ZoneID,
+                z.Apps.FirstOrDefault(a => a.Name == Constants.DefaultAppName).AppID,
+                z.Apps.ToDictionary(a => a.AppID, a => a.Name)));
+            
 
         /// <summary>
         /// Get all Zones
         /// </summary>
         /// <returns></returns>
         public List<Zone> GetZones()
-        {
-            return Context.SqlDb.Zones.ToList();
-        }
+            => Context.SqlDb.Zones.ToList();
+
 
         /// <summary>
         /// Get a single Zone
         /// </summary>
         /// <returns>Zone or null</returns>
         public Zone GetZone(int zoneId)
-        {
-            return Context.SqlDb.Zones.SingleOrDefault(z => z.ZoneID == zoneId);
-        }
+            => Context.SqlDb.Zones.SingleOrDefault(z => z.ZoneID == zoneId);
+        
 
 
 
@@ -82,7 +62,6 @@ namespace ToSic.Eav.BLL.Parts
         {
             var zone = Context.SqlDb.Zones.Single(z => z.ZoneID == zoneId);
             zone.Name = name;
-
             Context.SqlDb.SaveChanges();
         }
     }

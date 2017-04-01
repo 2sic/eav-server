@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data.Common;
 using System.Linq;
-using System.Text;
-using ToSic.Eav;
 using ToSic.Eav.BLL.Parts;
 using ToSic.Eav.Persistence;
 
@@ -130,7 +126,7 @@ namespace ToSic.Eav.BLL
             {
                 var zoneIdOfApp = SqlDb.Apps.Where(a => a.AppID == appId.Value).Select(a => (int?)a.ZoneID).SingleOrDefault();
                 if (!zoneIdOfApp.HasValue)
-                    throw new ArgumentException("App with id " + appId.Value + " doesn't exist.", "appId");
+                    throw new ArgumentException("App with id " + appId.Value + " doesn't exist.", nameof(appId));
                 _appId = appId.Value;
                 _zoneId = zoneIdOfApp.Value;
                 return;
@@ -146,7 +142,7 @@ namespace ToSic.Eav.BLL
             {
                 var foundApp = SqlDb.Apps.FirstOrDefault(a => a.ZoneID == _zoneId && a.AppID == appId.Value);
                 if (foundApp == null)
-                    throw new ArgumentException("App with id " + appId.Value + " doesn't exist.", "appId");
+                    throw new ArgumentException("App with id " + appId.Value + " doesn't exist.", nameof(appId));
                 _appId = appId.Value;
             }
             else
@@ -236,7 +232,6 @@ namespace ToSic.Eav.BLL
                 DataSource.GetCache(ZoneId, AppId).PurgeCache(ZoneId, AppId);
 
             return modifiedItems;
-            throw new NotImplementedException();
         }
 
         #endregion

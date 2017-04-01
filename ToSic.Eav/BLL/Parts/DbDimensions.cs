@@ -6,7 +6,6 @@ namespace ToSic.Eav.BLL.Parts
 {
 	public class DbDimensions: BllCommandBase
 	{
-        // public DbDimensions(EavDataController dc) : base(dc) { }
         public DbDimensions(EavDataController ctx) : base(ctx) { }
         private static List<Dimension> _cachedDimensions;
 
@@ -41,20 +40,16 @@ namespace ToSic.Eav.BLL.Parts
 		/// Get a single Dimension
 		/// </summary>
 		/// <returns>A Dimension or null</returns>
-		public Dimension GetDimension(int dimensionId)
-		{
-			return Context.SqlDb.Dimensions.SingleOrDefault(d => d.DimensionID == dimensionId);
-		}
+		public Dimension GetDimension(int dimensionId) 
+            => Context.SqlDb.Dimensions.SingleOrDefault(d => d.DimensionID == dimensionId);
 
-		/// <summary>
+	    /// <summary>
 		/// Get Dimensions by Ids
 		/// </summary>
-		internal IEnumerable<Dimension> GetDimensions(IEnumerable<int> dimensionIds)
-		{
-			return Context.SqlDb.Dimensions.Where(d => dimensionIds.Contains(d.DimensionID) && d.ZoneID == Context.ZoneId);
-		}
+		internal IEnumerable<Dimension> GetDimensions(IEnumerable<int> dimensionIds) 
+            => Context.SqlDb.Dimensions.Where(d => dimensionIds.Contains(d.DimensionID) && d.ZoneID == Context.ZoneId);
 
-		/// <summary>
+	    /// <summary>
 		/// Get a List of Dimensions having specified SystemKey and current ZoneId and AppId
 		/// </summary>
 		public List<Dimension> GetDimensionChildren(string systemKey)
@@ -67,12 +62,10 @@ namespace ToSic.Eav.BLL.Parts
 		/// <summary>
 		/// Test whehter Value exists on specified Entity and Attribute with specified DimensionIds 
 		/// </summary>
-		public bool ValueExists(List<int> dimensionIds, int entityId, int attributeId)
-		{
-            return Context.SqlDb.Values.Any(v => !v.ChangeLogIDDeleted.HasValue && v.EntityID == entityId && v.AttributeID == attributeId && v.ValuesDimensions.All(d => dimensionIds.Contains(d.DimensionID)));
-		}
+		public bool ValueExists(List<int> dimensionIds, int entityId, int attributeId) 
+            => Context.SqlDb.Values.Any(v => !v.ChangeLogIDDeleted.HasValue && v.EntityID == entityId && v.AttributeID == attributeId && v.ValuesDimensions.All(d => dimensionIds.Contains(d.DimensionID)));
 
-		/// <summary>
+	    /// <summary>
 		/// Get Dimensions to use for specified Entity and Attribute if unknown
 		/// </summary>
 		public IQueryable<Dimension> GetFallbackDimensions(int entityId, int attributeId)
@@ -102,12 +95,12 @@ namespace ToSic.Eav.BLL.Parts
 			ClearDimensionsCache();
 		}
 
-        public void AddOrUpdateLanguage(string cultureCode, string cultureText, bool Active, int PortalID)
+        public void AddOrUpdateLanguage(string cultureCode, string cultureText, bool active, int portalId)
         {
-            var EAVLanguage = GetLanguages().Where(l => l.ExternalKey == cultureCode).FirstOrDefault();
+            var eavLanguage = GetLanguages().FirstOrDefault(l => l.ExternalKey == cultureCode);
             // If the language exists in EAV, set the active state, else add it
-            if (EAVLanguage != null)
-                UpdateDimension(EAVLanguage.DimensionID, Active);
+            if (eavLanguage != null)
+                UpdateDimension(eavLanguage.DimensionID, active);
             else
             {
                 AddLanguage(cultureText, cultureCode);
@@ -142,32 +135,24 @@ namespace ToSic.Eav.BLL.Parts
 		/// <summary>
 		/// Get all Languages of current Zone and App
 		/// </summary>
-		public List<Dimension> GetLanguages()
-		{
-			return GetDimensionChildren("Culture");
-		}
+		public List<Dimension> GetLanguages() => GetDimensionChildren("Culture");
 
-		/// <summary>
+	    /// <summary>
 		/// Get LanguageId
 		/// </summary>
 		/// <param name="externalKey">Usually a Key like en-US or de-DE</param>
 		/// <returns>int or null if not foud</returns>
-		public int? GetLanguageId(string externalKey)
-		{
-			var Dimension = GetLanguages().FirstOrDefault(l => l.ExternalKey == externalKey);
-			return Dimension != null ? Dimension.DimensionID : (int?)null;
-		}
+		public int? GetLanguageId(string externalKey) 
+            => GetLanguages().FirstOrDefault(l => l.ExternalKey == externalKey)?.DimensionID;
 
-		/// <summary>
+	    /// <summary>
 		/// Get ExternalKey for specified LanguageId
 		/// </summary>
 		/// <returns>ExternalKey or null if not found</returns>
-		public string GetLanguageExternalKey(int languageId)
-		{
-			return GetLanguages().Where(l => l.DimensionID == languageId).Select(l => l.ExternalKey).FirstOrDefault();
-		}
+		public string GetLanguageExternalKey(int languageId) 
+            => GetLanguages().Where(l => l.DimensionID == languageId).Select(l => l.ExternalKey).FirstOrDefault();
 
-		/// <summary>
+	    /// <summary>
 		/// Add a new Language to current Zone
 		/// </summary>
 		public Dimension AddLanguage(string name, string externalKey)
@@ -190,11 +175,9 @@ namespace ToSic.Eav.BLL.Parts
 		/// Test whether Zone has any Languages/is multilingual
 		/// </summary>
 		/// <param name="zoneId">null means ZoneId on current Context</param>
-		public bool HasLanguages(int? zoneId = null)
-		{
-            return Context.SqlDb.Dimensions.Any(d => d.Parent == Context.SqlDb.Dimensions.FirstOrDefault(p => p.ZoneID == (zoneId.HasValue ? zoneId : Context.ZoneId) && p.ParentID == null && p.SystemKey == Constants.CultureSystemKey));
-		}
+		public bool HasLanguages(int? zoneId = null) 
+            => Context.SqlDb.Dimensions.Any(d => d.Parent == Context.SqlDb.Dimensions.FirstOrDefault(p => p.ZoneID == (zoneId ?? Context.ZoneId) && p.ParentID == null && p.SystemKey == Constants.CultureSystemKey));
 
-		#endregion
+	    #endregion
 	}
 }

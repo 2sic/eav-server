@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using Microsoft.Practices.Unity;
 using ToSic.Eav.Implementations.ValueConverter;
 using ToSic.Eav.Import;
@@ -26,11 +25,7 @@ namespace ToSic.Eav.ImportExport.Refactoring.Extensions
         public static IValueImportModel GetAttributeValue(this Import.ImportEntity importEntity, string valueName, string valueLanguage)
         {
             var values = importEntity.GetAttributeValues(valueName);
-            if (values == null)
-            {
-                return null;
-            }
-            return values.Where(value => value.ValueDimensions.Any(dimension => dimension.DimensionExternalKey == valueLanguage)).FirstOrDefault();
+            return values?.FirstOrDefault(value => value.ValueDimensions.Any(dimension => dimension.DimensionExternalKey == valueLanguage));
         }
 
         /// <summary>
@@ -94,7 +89,7 @@ namespace ToSic.Eav.ImportExport.Refactoring.Extensions
                 // Handle special attributes (for example of the system)
                 if (value.Key == "IsPublished")
                 {
-                    importEntity.IsPublished = value.Value is bool ? (bool)value.Value : true;
+                    importEntity.IsPublished = value.Value as bool? ?? true;
                     continue;
                 }        
                 // Handle content-type attributes
@@ -163,19 +158,12 @@ namespace ToSic.Eav.ImportExport.Refactoring.Extensions
 
                 case AttributeTypeEnum.Entity:
                     {   
-                        // trying to re-use existing code
                         valueModel = ValueImportModel.GenerateLightValueImportModel(valueString, valueType, importEntity);
-                        //valueModel = new ValueImportModel<List<Guid>>(importEntity) 
-                        //{ 
-                        //    Value = string.IsNullOrEmpty(valueString) 
-                        //        ? new List<Guid?>() 
-                        //        : valueString.Split(',').Select(Guid.Parse).ToList()
-                        //};
                     }
                     break;
 
-                case AttributeTypeEnum.String:
-                case AttributeTypeEnum.Custom:
+                //case AttributeTypeEnum.String:
+                //case AttributeTypeEnum.Custom:
                 default:
                     {   // String
                         valueModel = new ValueImportModel<string>(importEntity) { Value = valueString };

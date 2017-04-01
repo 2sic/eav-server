@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Policy;
 
 namespace ToSic.Eav.BLL.Parts
 {
@@ -54,26 +53,6 @@ namespace ToSic.Eav.BLL.Parts
         {
             return Context.SqlDb.AttributesInSets.Where(a => a.AttributeSetID == attributeSetId).OrderBy(a => a.SortOrder).ToList();
         }
-
-        ///// <summary>
-        ///// Change the sort order of an attribute - move up or down
-        ///// </summary>
-        ///// <remarks>Does an interchange with the Sort Order below/above the current attribute</remarks>
-        //public void ChangeAttributeOrder(int attributeId, int setId, AttributeMoveDirection direction)
-        //{
-        //    // todo 2dm: refactoring, causes some errors...
-        //    var attributeList = Context.SqlDb.AttributesInSets.Where(a => a.AttributeSetID == setId).ToList();
-
-        //    var attributeToMove = attributeList.Single(a => a.AttributeID == attributeId);
-        //    var attributeToInterchange = direction == AttributeMoveDirection.Up ?
-        //        attributeList.OrderByDescending(a => a.SortOrder).First(a => a.SortOrder < attributeToMove.SortOrder) :
-        //        attributeList.OrderBy(a => a.SortOrder).First(a => a.SortOrder > attributeToMove.SortOrder);
-
-        //    var newSortOrder = attributeToInterchange.SortOrder;
-        //    attributeToInterchange.SortOrder = attributeToMove.SortOrder;
-        //    attributeToMove.SortOrder = newSortOrder;
-        //    Context.SqlDb.SaveChanges();
-        //}
 
         /// <summary>
         /// Update the order of the attributes in the set.

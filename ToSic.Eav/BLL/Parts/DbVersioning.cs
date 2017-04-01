@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using ToSic.Eav.BLL;
@@ -100,10 +99,12 @@ namespace ToSic.Eav.Persistence
             }
             catch (InvalidOperationException ex)
             {
-                throw new InvalidOperationException(string.Format("Error getting EntityId {0} with ChangeId {1} from DataTimeline. {2}", entityId, changeId, ex.Message));
+                throw new InvalidOperationException(
+                    $"Error getting EntityId {entityId} with ChangeId {changeId} from DataTimeline. {ex.Message}");
             }
             if (timelineItem == null)
-                throw new InvalidOperationException(string.Format("EntityId {0} with ChangeId {1} not found in DataTimeline.", entityId, changeId));
+                throw new InvalidOperationException(
+                    $"EntityId {entityId} with ChangeId {changeId} not found in DataTimeline.");
 
             // Parse XML
             var xEntity = XElement.Parse(timelineItem);

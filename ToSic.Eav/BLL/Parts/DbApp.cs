@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace ToSic.Eav.BLL.Parts
@@ -43,9 +41,8 @@ namespace ToSic.Eav.BLL.Parts
         /// <param name="name">The name of the new App</param>
         /// <returns></returns>
         public App AddApp(string name)
-        {
-            return AddApp(Context.Zone.GetZone(Context.ZoneId), name);
-        }
+            => AddApp(Context.Zone.GetZone(Context.ZoneId), name);
+        
 
         /// <summary>
         /// Delete an existing App with any Values and Attributes
@@ -69,9 +66,8 @@ namespace ToSic.Eav.BLL.Parts
         /// </summary>
         /// <returns></returns>
         public List<App> GetApps()
-        {
-            return Context.SqlDb.Apps.Where(a => a.ZoneID == Context.ZoneId).ToList();
-        }
+            => Context.SqlDb.Apps.Where(a => a.ZoneID == Context.ZoneId).ToList();
+        
 
     }
 }

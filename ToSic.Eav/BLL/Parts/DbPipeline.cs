@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.BLL.Parts
 {
@@ -20,7 +19,7 @@ namespace ToSic.Eav.BLL.Parts
             // Clone Pipeline Entity with a new new Guid
             var sourcePipelineEntity = Context.Entities.GetEntity(pipelineEntityId);
             if (sourcePipelineEntity.Set.StaticName != Constants.DataPipelineStaticName) //PipelineAttributeSetStaticName)
-                throw new ArgumentException("Entity is not an DataPipeline Entity", "pipelineEntityId");
+                throw new ArgumentException("Entity is not an DataPipeline Entity", nameof(pipelineEntityId));
             var pipelineEntityClone = Context.Entities.CloneEntity(sourcePipelineEntity, true);
 
             // Copy Pipeline Parts with configuration Entity, assign KeyGuid of the new Pipeline Entity

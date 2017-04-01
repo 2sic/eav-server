@@ -12,7 +12,7 @@ namespace ToSic.Eav.Api.Api01
     /// </summary>
     public class SimpleDataController
     {
-        private readonly EavDataController Context;
+        private readonly EavDataController _context;
 
         private readonly string _defaultLanguageCode;
 
@@ -37,7 +37,7 @@ namespace ToSic.Eav.Api.Api01
             _appId = appId;
             _userName = userName;
             _defaultLanguageCode = defaultLanguageCode;
-            Context = EavDataController.Instance(zoneId, appId);
+            _context = EavDataController.Instance(zoneId, appId);
         }
 
 
@@ -54,7 +54,7 @@ namespace ToSic.Eav.Api.Api01
         /// <exception cref="ArgumentException">Content-type does not exist, or an attribute in values</exception>
         public void Create(string contentTypeName, Dictionary<string, object> values, bool filterUnknownFields = true)
         {
-            var attributeSet = Context.AttribSet.GetAllAttributeSets().FirstOrDefault(item => item.Name == contentTypeName);
+            var attributeSet = _context.AttribSet.GetAllAttributeSets().FirstOrDefault(item => item.Name == contentTypeName);
             if (attributeSet == null)
             {
                 throw new ArgumentException("Content type '" + contentTypeName + "' does not exist.");
@@ -91,7 +91,7 @@ namespace ToSic.Eav.Api.Api01
         /// <exception cref="ArgumentNullException">Entity does not exist</exception>
         public void Update(int entityId, Dictionary<string, object> values, bool filterUnknownFields = true)
         {
-            var entity = Context.Entities.GetEntity(entityId);
+            var entity = _context.Entities.GetEntity(entityId);
             Update(entity, values);
         }
 
@@ -108,13 +108,13 @@ namespace ToSic.Eav.Api.Api01
         /// <exception cref="ArgumentNullException">Entity does not exist</exception>
         public void Update(Guid entityGuid, Dictionary<string, object> values, bool filterUnknownFields = true)
         {
-            var entity = Context.Entities.GetEntity(entityGuid);
+            var entity = _context.Entities.GetEntity(entityGuid);
             Update(entity, values);
         }
 
         private void Update(Entity entity, Dictionary<string, object> values, bool filterUnknownFields = true)
         {
-            var attributeSet = Context.AttribSet.GetAttributeSet(entity.AttributeSetID);
+            var attributeSet = _context.AttribSet.GetAttributeSet(entity.AttributeSetID);
             var importEntity = CreateImportEntity(entity.EntityGUID, attributeSet.StaticName);
 
             if (filterUnknownFields)
@@ -133,11 +133,11 @@ namespace ToSic.Eav.Api.Api01
         public void Delete(int entityId)
         {
             // todo: refactor to use the eav-api delete
-            if (!Context.Entities.CanDeleteEntity(entityId)/*_contentContext.EntCommands.CanDeleteEntity(entityId)*/.Item1)
+            if (!_context.Entities.CanDeleteEntity(entityId)/*_contentContext.EntCommands.CanDeleteEntity(entityId)*/.Item1)
             {
                 throw new InvalidOperationException("The entity " + entityId + " cannot be deleted because of it is referenced by another object.");
             }
-            Context.Entities.DeleteEntity(entityId);
+            _context.Entities.DeleteEntity(entityId);
         }
 
 
@@ -150,7 +150,7 @@ namespace ToSic.Eav.Api.Api01
         public void Delete(Guid entityGuid)
         {
             // todo: refactor to use the eav-api delete
-            var entity = Context.Entities.GetEntity(entityGuid);
+            var entity = _context.Entities.GetEntity(entityGuid);
             Delete(entity.EntityID);
         }
 
@@ -185,7 +185,7 @@ namespace ToSic.Eav.Api.Api01
                     var guids = new List<Guid>();
                     foreach (var id in ids)
                     {
-                        var entity = Context.Entities.GetEntity(id);
+                        var entity = _context.Entities.GetEntity(id);
                         guids.Add(entity.EntityGUID);
                     }
                     result.Add(value.Key, string.Join(",", guids));

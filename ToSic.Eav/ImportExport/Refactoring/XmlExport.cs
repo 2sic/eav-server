@@ -107,7 +107,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
                         }
                         else
                         {
-                            documentElement.AppendValueReferenced(entity, attribute, language, languageFallback, languageScope, languages.Count() > 1, resourceReference);
+                            documentElement.AppendValueReferenced(entity, attribute, language, languageFallback, languageScope, languages.Count > 1, resourceReference);
                         }
                     }
                 }

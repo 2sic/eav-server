@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Api;
-using ToSic.Eav.Data;
-using ToSic.Eav.Import;
 
 namespace ToSic.Eav.BLL.Parts
 {
@@ -46,10 +42,6 @@ namespace ToSic.Eav.BLL.Parts
 
             // save first, to ensure it has an Id
             Context.SqlDb.SaveChanges();
-
-            //var fullApi = new BetaFullApi(Context.ZoneId, Context.AppId, Context);
-            //fullApi.Metadata_AddOrUpdate(Constants.AssignmentObjectTypeIdFieldProperties, ct.AttributeSetID, "@All", newValues);
-
         }
 
         public void CreateGhost(string staticName)
@@ -89,10 +81,6 @@ namespace ToSic.Eav.BLL.Parts
             
             // save first, to ensure it has an Id
             Context.SqlDb.SaveChanges();
-
-            //var fullApi = new BetaFullApi(Context.ZoneId, Context.AppId, Context);
-            //fullApi.Metadata_AddOrUpdate(Constants.AssignmentObjectTypeIdFieldProperties, ct.AttributeSetID, "@All", newValues);
-
         }
 
 
@@ -132,26 +120,7 @@ namespace ToSic.Eav.BLL.Parts
 
             return config.Select(a => new Tuple<IAttributeBase, Dictionary<string, IEntity>>(a.Attribute, a.Metadata));
         }
-
-        //public IEnumerable<dynamic> GetAttributeMetadataTypes()
-        //{
-        //    var metaDataSource = DataSource.GetMetaDataSource(Zonei, metaDataAppId);
-        //}
-
-        //public void Reorder(int contentTypeId, int attributeId, string direction)
-        //{
-        //    if (direction == "up")
-        //    {
-        //        Context.Attributes.ChangeAttributeOrder(attributeId, contentTypeId, AttributeMoveDirection.Up);
-        //        return;
-        //    }
-        //    else if (direction == "down")
-        //    {
-        //        Context.Attributes.ChangeAttributeOrder(attributeId, contentTypeId, AttributeMoveDirection.Down);
-        //        return;
-        //    }
-        //}
-
+        
         public void Reorder(int contentTypeId, List<int> newSortOrder)
         {
             Context.Attributes.UpdateAttributeOrder(contentTypeId, newSortOrder);

@@ -25,14 +25,9 @@ namespace ToSic.Eav.ImportExport.Refactoring.Extensions
         /// <summary>
         /// Get the value of an attribute in the language specified.
         /// </summary>
-        public static EavValue GetAttributeValue(this Eav.Entity entity, Attribute attribute, string language, string languageFallback)
-        {
-            var attributeValue = entity.GetAttributeValue(attribute, language);
-            if (attributeValue == null)
-            {
-                attributeValue = entity.GetAttributeValue(attribute, languageFallback);
-            }
-            return attributeValue;
-        }
+        public static EavValue GetAttributeValue(this Eav.Entity entity, Attribute attribute, string language,
+            string languageFallback)
+            => entity.GetAttributeValue(attribute, language) ??
+               entity.GetAttributeValue(attribute, languageFallback);
     }
 }

@@ -7,16 +7,6 @@ namespace ToSic.Eav.BLL.Parts
     {
         public DbPublishing(EavDataController c) : base(c) { }
 
-
-        ///// <summary>
-        ///// Publish a Draft Entity
-        ///// </summary>
-        ///// <param name="entityId">ID of the Draft-Entity</param>
-        //public Entity PublishEntity(int entityId)
-        //{
-        //    return PublishEntity(entityId, true);
-        //}
-
         /// <summary>
         /// Publish a Draft-Entity
         /// </summary>

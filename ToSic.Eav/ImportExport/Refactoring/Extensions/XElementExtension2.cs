@@ -78,8 +78,8 @@ namespace ToSic.Eav.ImportExport.Refactoring.Extensions
 
             var valueLanguagesReferenced = value.GetLanguagesReferenced(language, true)
                                                 .OrderBy(lang => lang != languageFallback)
-                                                .ThenBy(lan => lan);;
-            if (valueLanguagesReferenced.Count() == 0)
+                                                .ThenBy(lan => lan);
+            if (!valueLanguagesReferenced.Any())
             {   // If the value is a head value, serialize the plain value
                 element.AppendValue(valueName, value, resourceReferenceOption);
                 return;
@@ -106,7 +106,7 @@ namespace ToSic.Eav.ImportExport.Refactoring.Extensions
                 return;
             }
 
-            element.Append(valueName, string.Format("[ref({0},{1})]", valueLanguageReferenced, valueLanguageReadOnly ? "ro" : "rw"));
+            element.Append(valueName, $"[ref({valueLanguageReferenced},{(valueLanguageReadOnly ? "ro" : "rw")})]");
         }
     
     }

@@ -26,12 +26,9 @@ namespace ToSic.Eav.Import
         /// <summary>
         /// Get the Import Log
         /// </summary>
-        public List<ImportLogItem> ImportLog
-        {
-            get { return _importLog; }
-        }
+        public List<ImportLogItem> ImportLog => _importLog;
 
-        bool PreventUpdateOnDraftEntities { get; set; }
+        bool PreventUpdateOnDraftEntities { get; }
         #endregion
 
         /// <summary>
@@ -62,10 +59,12 @@ namespace ToSic.Eav.Import
                 _context.SqlDb.CommandTimeout = 3600;
 
             // Ensure cache is created
+            // ReSharper disable once NotAccessedVariable
             var y = DataSource.GetCache(Constants.DefaultZoneId, Constants.MetaDataAppId).LightList.Any();
             var cache = DataSource.GetCache(_context.ZoneId, _context.AppId);
             cache.PurgeCache(_context.ZoneId, _context.AppId);
-            var x = cache.LightList.Any(); // re-read something
+            // ReSharper disable once RedundantAssignment
+            y = cache.LightList.Any(); // re-read something
 
             #region initialize DB connection / transaction
             // Make sure the connection is open - because on multiple calls it's not clear if it was already opened or not

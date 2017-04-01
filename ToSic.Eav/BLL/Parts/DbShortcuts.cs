@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.Objects.DataClasses;
 using System.Linq;
 
@@ -26,9 +25,7 @@ namespace ToSic.Eav.BLL.Parts
             return clone;
         }
         #endregion
-
-
-
+        
 
         #region Assignment Object Types
         /// <summary>
