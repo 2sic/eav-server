@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using ToSic.Eav.BLL;
 using ToSic.Eav.DataSources.Caches;
 
@@ -35,6 +36,7 @@ namespace ToSic.Eav
             Purge(zoneId, appId, global);
         }
 
+        #region App Commands
         public static void AppDelete(int zoneId, int appId)
             => DoAndPurge(zoneId, appId, () => EavDataController.Instance(zoneId, appId).App.DeleteApp(appId), true);
 
@@ -53,6 +55,20 @@ namespace ToSic.Eav
         public static string GetAppName(int zoneId, int appId)
             => ((BaseCache) DataSource.GetCache(zoneId)).ZoneApps[zoneId].Apps[appId];
 
+        #endregion
+
+        #region ContentType Commands
+
+        public static IEnumerable<IContentType> ContentTypes(int zoneId, int appId, string scope = null, bool includeAttributeTypes = false)
+        {
+            var contentTypes = ((BaseCache)DataSource.GetCache(zoneId, appId)).GetContentTypes();
+            var set = contentTypes.Select(c => c.Value)
+                .Where(c => includeAttributeTypes || !c.Name.StartsWith("@"));
+            if(scope != null)
+                set = set.Where(p => p.Scope == scope);
+            return set.OrderBy(c => c.Name); 
+        }
+        #endregion
 
         public static void MetadataEnsureTypeAndSingleEntity(int zoneId, int appId, string scope, string setName,
             string label, int appAssignment, OrderedDictionary values)

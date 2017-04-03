@@ -73,6 +73,7 @@
     <Compile Include="Enums\AttributeTypeEnum.cs" />
     <Compile Include="Factory.cs" />
     <Compile Include="HelpersToRefactor.cs" />
+    <Compile Include="Implementations\UserInformation\NeutralEavUserInformation.cs" />
     <Compile Include="Implementations\ValueConverter\ConversionScenario.cs" />
     <Compile Include="Implementations\ValueConverter\IEavValueConverter.cs" />
     <Compile Include="Implementations\ValueConverter\NeutralValueConverter.cs" />
@@ -85,6 +86,7 @@
     <Compile Include="Interfaces\IIoC.cs" />
     <Compile Include="Interfaces\IRelatedEntities.cs" />
     <Compile Include="Interfaces\IRelationshipManager.cs" />
+    <Compile Include="Implementations\UserInformation\IEavUserInformation.cs" />
     <Compile Include="Interfaces\IValue.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
