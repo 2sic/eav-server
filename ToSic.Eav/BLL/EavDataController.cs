@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
 using ToSic.Eav.BLL.Parts;
+using ToSic.Eav.Implementations.UserInformation;
 using ToSic.Eav.Persistence;
+using Microsoft.Practices.Unity; // needed for the static Resolve<...>
 
 namespace ToSic.Eav.BLL
 {
@@ -53,10 +55,30 @@ namespace ToSic.Eav.BLL
             set { _zoneId = value; }
         }
 
+        private string _userName = null;
         /// <summary>
         /// Current UserName. Used for ChangeLog
         /// </summary>
-        public string UserName { get; set; }
+        public string UserName {
+            get
+            {
+                if (_userName != null) return _userName;
+                try
+                {
+                    // try to get using dependency injection
+                    var uinfo = Factory.Container.Resolve<IEavUserInformation>();
+                    _userName = uinfo.IdentityForLog;
+                }
+                catch
+                {
+                    _userName = "unresolved(eav)";
+                }
+                return _userName;
+            }
+            set
+            {
+                _userName = value;
+            }}
 
         #endregion
         
