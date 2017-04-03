@@ -4,11 +4,11 @@ using System.IO;
 using System.Linq;
 using Microsoft.Practices.Unity;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Implementations.UserInformation;
 using ToSic.Eav.Implementations.ValueConverter;
 using ToSic.Eav.Import;
 using ToSic.Eav.ImportExport.Refactoring;
 using ToSic.Eav.ImportExport.Refactoring.Options;
-using ToSic.Eav.ImportExport.Refactoring.ValueConverter;
 
 namespace ToSic.Eav.UnitTests.ImportExport.Refactoring
 {
@@ -241,6 +241,7 @@ On all your devices.</PreviewContent>
         {
             var cont = Eav.Factory.Container;
             cont.RegisterType(typeof(IEavValueConverter), typeof(NeutralValueConverter), new InjectionConstructor());
+            cont.RegisterType(typeof(IEavUserInformation), typeof(NeutralEavUserInformation), new InjectionConstructor());
             
         }
 

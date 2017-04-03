@@ -1,17 +1,7 @@
-﻿using ToSic.Eav.Implementations.ValueConverter;
-
-namespace ToSic.Eav.ImportExport.Refactoring.ValueConverter
+﻿namespace ToSic.Eav.Implementations.ValueConverter
 {
     public class NeutralValueConverter : IEavValueConverter
     {
-        public string Convert(ConversionScenario scenario, string type, string originalValue)
-        {
-            return originalValue;
-        }
-
+        public string Convert(ConversionScenario scenario, string type, string originalValue) => originalValue;
     }
-
-
-
-
 }
