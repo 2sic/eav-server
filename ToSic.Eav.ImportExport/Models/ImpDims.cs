@@ -1,6 +1,6 @@
-﻿namespace ToSic.Eav.Import
+﻿namespace ToSic.Eav.ImportExport.Models
 {
-    public class ValueDimension
+    public class ImpDims
     {
         public string DimensionExternalKey { get; set; }
         public bool ReadOnly { get; set; }

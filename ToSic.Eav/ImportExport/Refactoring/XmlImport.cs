@@ -6,6 +6,9 @@ using System.Linq;
 using System.Xml.Linq;
 using ToSic.Eav.BLL;
 using ToSic.Eav.Import;
+using ToSic.Eav.ImportExport.Interfaces;
+using ToSic.Eav.ImportExport.Logging;
+using ToSic.Eav.ImportExport.Models;
 using ToSic.Eav.ImportExport.Refactoring.Extensions;
 using ToSic.Eav.ImportExport.Refactoring.Options;
 
@@ -53,7 +56,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
         /// <summary>
         /// The entities created from the document. They will be saved to the repository.
         /// </summary>
-        public List<ImportEntity> Entities {get; }
+        public List<ImpEntity> Entities {get; }
 
         /// <summary>
         /// Errors found while importing the document to memory.
@@ -61,14 +64,14 @@ namespace ToSic.Eav.ImportExport.Refactoring
         public ImportErrorProtocol ErrorProtocol { get; }
         #endregion
 
-        private ImportEntity GetEntity(Guid entityGuid)
+        private ImpEntity GetEntity(Guid entityGuid)
         {
             return Entities.FirstOrDefault(entity => entity.EntityGuid == entityGuid);
         }
 
-        private ImportEntity AppendEntity(Guid entityGuid)
+        private ImpEntity AppendEntity(Guid entityGuid)
         {
-            var entity = new ImportEntity
+            var entity = new ImpEntity
             {
                 AttributeSetStaticName = _contentType.StaticName,
                 AssignmentObjectTypeId = Configuration.AssignmentObjectTypeIdDefault,// SexyContent.SexyContent.AssignmentObjectTypeIDDefault,
@@ -94,7 +97,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
         /// <param name="resourceReference">How value references to files and pages are handled</param>
         public XmlImport(int zoneId, int applicationId, int contentTypeId, Stream dataStream, IEnumerable<string> languages, string documentLanguageFallback, EntityClearImport entityClear, ResourceReferenceImport resourceReference)
         {
-            Entities = new List<ImportEntity>();
+            Entities = new List<ImpEntity>();
             ErrorProtocol = new ImportErrorProtocol();
 
             _appId = applicationId;
@@ -161,11 +164,13 @@ namespace ToSic.Eav.ImportExport.Refactoring
                 {
                     if (element.Element(DocumentNodeNames.EntityGuid) == null)
                     {
-                        element.Append(DocumentNodeNames.EntityGuid, "");
+                        element.Add(new XElement(DocumentNodeNames.EntityGuid, ""));
+                        //element.Append(DocumentNodeNames.EntityGuid, "");
                     }
                     if (element.Element(DocumentNodeNames.EntityLanguage) == null)
                     {
-                        element.Append(DocumentNodeNames.EntityLanguage, "");
+                        element.Add(new XElement(DocumentNodeNames.EntityLanguage, ""));
+                        //element.Append(DocumentNodeNames.EntityLanguage, "");
                     }
                 }
                 var documentElementLanguagesAll = DocumentElements.GroupBy(element => element.Element(DocumentNodeNames.EntityGuid).Value).Select(group => group.Select(element => element.Element(DocumentNodeNames.EntityLanguage).Value).ToList());
@@ -188,7 +193,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
                 {
                     documentElementNumber++;
 
-                    var documentElementLanguage = documentElement.GetChildElementValue(DocumentNodeNames.EntityLanguage);
+                    var documentElementLanguage = documentElement.Element(DocumentNodeNames.EntityLanguage)?.Value;
                     if (!_languages.Any(language => language == documentElementLanguage))
                     {   // DNN does not support the language
                         ErrorProtocol.AppendError(ImportErrorCode.InvalidLanguage, "Lang=" + documentElementLanguage, documentElementNumber);
@@ -203,13 +208,13 @@ namespace ToSic.Eav.ImportExport.Refactoring
                     {   
                         var valueType = attribute.Type;
                         var valueName = attribute.StaticName;
-                        var value = documentElement.GetChildElementValue(valueName);
-                        if (value == null || value.IsValueNull())
+                        var value = documentElement.Element(valueName)?.Value;
+                        if (value == null || value == "[]")// value.IsValueNull())
                         {
                             continue;
                         }
 
-                        if (value.IsValueEmpty())
+                        if (value == "[\"\"]")//value.IsValueEmpty())
                         {   // It is an empty string
                             entity.AppendAttributeValue(valueName, "", attribute.Type, documentElementLanguage, false, _resourceReference.IsResolve());
                             continue;
@@ -237,7 +242,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
                         }
                         var valueReadOnly = valueReferenceProtection == "ro";
 
-                        var entityValue = entity.GetAttributeValue(valueName, valueReferenceLanguage);
+                        var entityValue = entity.ValueOfLanguage(valueName, valueReferenceLanguage);
                         if (entityValue != null)
                         {
                             entityValue.AppendLanguageReference(documentElementLanguage, valueReadOnly);
@@ -246,21 +251,21 @@ namespace ToSic.Eav.ImportExport.Refactoring
 
                         // We do not have the value referenced in memory, so search for the 
                         // value in the database 
-                        var dbEntity = _contentType.GetEntity(entityGuid);
+                        var dbEntity = _contentType.EntityByGuid(entityGuid);
                         if (dbEntity == null)
                         {
                             ErrorProtocol.AppendError(ImportErrorCode.InvalidValueReference, value, documentElementNumber);
                             continue;
                         }
 
-                        var dbEntityValue = dbEntity.GetAttributeValue(attribute, valueReferenceLanguage);
+                        var dbEntityValue = dbEntity.GetValueOfExactLanguage(attribute, valueReferenceLanguage);
                         if(dbEntityValue == null)
                         {
                             ErrorProtocol.AppendError(ImportErrorCode.InvalidValueReference, value, documentElementNumber);
                             continue;
                         }
 
-                        entity.AppendAttributeValue(valueName, dbEntityValue.Value, valueType, valueReferenceLanguage, dbEntityValue.   IsLanguageReadOnly(valueReferenceLanguage), _resourceReference.IsResolve())
+                        entity.AppendAttributeValue(valueName, dbEntityValue.Value, valueType, valueReferenceLanguage, dbEntityValue.IsLanguageReadOnly(valueReferenceLanguage), _resourceReference.IsResolve())
                               .AppendLanguageReference(documentElementLanguage, valueReadOnly);       
                     }
                 }                
@@ -288,7 +293,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
                 var entityDeleteGuids = GetEntityDeleteGuids();
                 foreach(var entityGuid in entityDeleteGuids)
                 {
-                    var entityId = _contentType.GetEntity(entityGuid).EntityID;
+                    var entityId = _contentType.EntityByGuid(entityGuid).EntityID;
                     var context = EavDataController.Instance(_zoneId, _appId);
                     if (context.Entities.CanDeleteEntity(entityId)/* context.EntCommands.CanDeleteEntity(entityId)*/.Item1)
                         context.Entities.DeleteEntity(entityId);
@@ -394,16 +399,18 @@ namespace ToSic.Eav.ImportExport.Refactoring
         /// <summary>
         /// Get the attribute names in the content type.
         /// </summary>
-        public IEnumerable<string> AttributeNamesInContentType => _contentType.GetEntitiesAttributeNames();
+        public IEnumerable<string> AttributeNamesInContentType 
+            => _contentType.AttributesInSets.Select(item => item.Attribute.StaticName).ToList();
+        //_contentType.GetStaticNames();
 
         /// <summary>
         /// Get the attributes not imported (ignored) from the document to the repository.
         /// </summary>
         public IEnumerable<string> AttributeNamesNotImported
         {
-            get 
+            get
             {
-                var existingAttributes = _contentType.GetEntitiesAttributeNames();
+                var existingAttributes = AttributeNamesInContentType;//_contentType.GetStaticNames();
                 var creatdAttributes = AttributeNamesInDocument;
                 return existingAttributes.Except(creatdAttributes);
             }            
@@ -411,54 +418,54 @@ namespace ToSic.Eav.ImportExport.Refactoring
 
         #endregion Deserialize statistics methods
 
-        /// <summary>
-        /// Get a debug report about the import as html string.
-        /// </summary>
-        /// <returns>Report as HTML string</returns>
-        public string GetDebugReport()
-        {
-            var result = "<p>Details:</p>";
-            result += "<ul>";
-            result += "<li>Time for memory = " + TimeForMemorySetup + "; Time for DB = " + TimeForDbImport + "</li>";
-            foreach (var entity in Entities)
-            {
-                result += "<li><div>Entity: " + entity.EntityGuid + "</div><ul>";
-                foreach (var value in entity.Values)
-                {
-                    result += "<li><div>Attribute: " + value.Key + "</div>";
-                    foreach (var content in value.Value)
-                    {
-                        if (content is ValueImportModel<string>)
-                        {
-                            result += $"<div>Value: {((ValueImportModel<string>) content).Value}</div>";
-                        }
-                        else if (content is ValueImportModel<bool?>)
-                        {
-                            result += $"<div>Value: {((ValueImportModel<bool?>) content).Value}</div>";
-                        }
-                        else if (content is ValueImportModel<decimal?>)
-                        {
-                            result += $"<div>Value: {((ValueImportModel<decimal?>) content).Value}</div>";
-                        }
-                        else if (content is ValueImportModel<DateTime?>)
-                        {
-                            result += $"<div>Value: {((ValueImportModel<DateTime?>) content).Value}</div>";
-                        }
-                        else
-                        {
-                            result += "<div>Value: --</div>";
-                        }
-                        foreach (var dimension in content.ValueDimensions)
-                        {
-                            result += $"<div>Language: {dimension.DimensionExternalKey},{dimension.ReadOnly}</div>";
-                        }
-                    }
-                    result += "</li>";
-                }
-                result += "</ul></li>";
-            }
-            result += "</ul>";
-            return result;
-        }
+        ///// <summary>
+        ///// Get a debug report about the import as html string.
+        ///// </summary>
+        ///// <returns>Report as HTML string</returns>
+        //public string GetDebugReport()
+        //{
+        //    var result = "<p>Details:</p>";
+        //    result += "<ul>";
+        //    result += "<li>Time for memory = " + TimeForMemorySetup + "; Time for DB = " + TimeForDbImport + "</li>";
+        //    foreach (var entity in Entities)
+        //    {
+        //        result += "<li><div>Entity: " + entity.EntityGuid + "</div><ul>";
+        //        foreach (var value in entity.Values)
+        //        {
+        //            result += "<li><div>Attribute: " + value.Key + "</div>";
+        //            foreach (var content in value.Value)
+        //            {
+        //                if (content is ValueImportModel<string>)
+        //                {
+        //                    result += $"<div>Value: {((ValueImportModel<string>) content).Value}</div>";
+        //                }
+        //                else if (content is ValueImportModel<bool?>)
+        //                {
+        //                    result += $"<div>Value: {((ValueImportModel<bool?>) content).Value}</div>";
+        //                }
+        //                else if (content is ValueImportModel<decimal?>)
+        //                {
+        //                    result += $"<div>Value: {((ValueImportModel<decimal?>) content).Value}</div>";
+        //                }
+        //                else if (content is ValueImportModel<DateTime?>)
+        //                {
+        //                    result += $"<div>Value: {((ValueImportModel<DateTime?>) content).Value}</div>";
+        //                }
+        //                else
+        //                {
+        //                    result += "<div>Value: --</div>";
+        //                }
+        //                foreach (var dimension in content.ValueDimensions)
+        //                {
+        //                    result += $"<div>Language: {dimension.DimensionExternalKey},{dimension.ReadOnly}</div>";
+        //                }
+        //            }
+        //            result += "</li>";
+        //        }
+        //        result += "</ul></li>";
+        //    }
+        //    result += "</ul>";
+        //    return result;
+        //}
     }
 }

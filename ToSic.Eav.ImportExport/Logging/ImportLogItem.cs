@@ -1,24 +1,26 @@
 ﻿using System;
 using System.Diagnostics;
 using ToSic.Eav.Import;
+using ToSic.Eav.ImportExport.Interfaces;
+using ToSic.Eav.ImportExport.Models;
 
 namespace ToSic.Eav.ImportExport.Logging
 {
     public class ImportLogItem
     {
         public EventLogEntryType EntryType { get; private set; }
-        public ImportEntity ImportEntity { get; set; }
-        public ImportAttributeSet ImportAttributeSet { get; set; }
-        public ImportAttribute ImportAttribute { get; set; }
+        public ImpEntity ImpEntity { get; set; }
+        public ImpAttrSet ImpAttrSet { get; set; }
+        public ImpAttribute ImpAttribute { get; set; }
         public IValueImportModel Value { get; set; }
         public Exception Exception { get; set; }
         public string Message { get; private set; }
 
-        public ImportLogItem(EventLogEntryType entryType, string message, ImportEntity importEntity = null)
+        public ImportLogItem(EventLogEntryType entryType, string message, ImpEntity impEntity = null)
         {
             EntryType = entryType;
             Message = message;
-            ImportEntity = importEntity;
+            ImpEntity = impEntity;
         }
     }
 }

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Import;
 using ToSic.Eav.ImportExport;
+using ToSic.Eav.ImportExport.Interfaces;
+using ToSic.Eav.ImportExport.Models;
 
 namespace ToSic.Eav.BLL.Parts
 {
@@ -170,7 +172,7 @@ namespace ToSic.Eav.BLL.Parts
         /// <summary>
         /// Update a Value when using ValueViewModel
         /// </summary>
-        internal void UpdateValue(Entity currentEntity, Attribute attribute, bool masterRecord, List<EavValue> currentValues, IEntity entityModel, ValueToImport newValue, ICollection<int> dimensionIds)
+        internal void UpdateValue(Entity currentEntity, Attribute attribute, bool masterRecord, List<EavValue> currentValues, IEntity entityModel, ImpVal newValue, ICollection<int> dimensionIds)
         {
             switch (attribute.Type)
             {
@@ -189,7 +191,7 @@ namespace ToSic.Eav.BLL.Parts
         /// <summary>
         /// Update a Value in the Values-Table
         /// </summary>
-        private EavValue UpdateSimpleValue(Attribute attribute, Entity entity, ICollection<int> dimensionIds, bool masterRecord, object newValue, int? valueId, bool readOnly, List<EavValue> currentValues, IEntity entityModel, IEnumerable<Import.ValueDimension> valueDimensions = null)
+        private EavValue UpdateSimpleValue(Attribute attribute, Entity entity, ICollection<int> dimensionIds, bool masterRecord, object newValue, int? valueId, bool readOnly, List<EavValue> currentValues, IEntity entityModel, IEnumerable<ImportExport.Models.ImpDims> valueDimensions = null)
         {
             var newValueSerialized = HelpersToRefactor.SerializeValue(newValue);
             var changeId = Context.Versioning.GetChangeLogId();
@@ -270,7 +272,7 @@ namespace ToSic.Eav.BLL.Parts
         /// <summary>
         /// Get an EavValue for specified EntityId etc. or create a new one. Uses different mechanism when running an Import or ValueId is specified.
         /// </summary>
-        private EavValue GetOrCreateValue(Attribute attribute, Entity entity, bool masterRecord, int? valueId, bool readOnly, List<EavValue> currentValues, IEntity entityModel, string newValueSerialized, int changeId, IEnumerable<Import.ValueDimension> valueDimensions)
+        private EavValue GetOrCreateValue(Attribute attribute, Entity entity, bool masterRecord, int? valueId, bool readOnly, List<EavValue> currentValues, IEntity entityModel, string newValueSerialized, int changeId, IEnumerable<ImportExport.Models.ImpDims> valueDimensions)
         {
             EavValue value = null;
             // if Import-Dimension(s) are Specified

@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using ToSic.Eav.BLL;
 using ToSic.Eav.ImportExport.Logging;
+using ToSic.Eav.ImportExport.Models;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Import
@@ -50,7 +51,7 @@ namespace ToSic.Eav.Import
         /// <summary>
         /// Import AttributeSets and Entities
         /// </summary>
-        public DbTransaction RunImport(IEnumerable<ImportAttributeSet> newAttributeSets, IEnumerable<ImportEntity> newEntities)
+        public DbTransaction RunImport(IEnumerable<ImpAttrSet> newAttributeSets, IEnumerable<ImpEntity> newEntities)
         {
             _context.PurgeAppCacheOnSave = false;
 
@@ -126,7 +127,7 @@ namespace ToSic.Eav.Import
             }
         }
 
-        private DbTransaction ImportSomeAttributeSets(IEnumerable<ImportAttributeSet> newAttributeSets, DbTransaction transaction)
+        private DbTransaction ImportSomeAttributeSets(IEnumerable<ImpAttrSet> newAttributeSets, DbTransaction transaction)
         {
             foreach (var attributeSet in newAttributeSets)
                 ImportAttributeSet(attributeSet);
@@ -154,41 +155,41 @@ namespace ToSic.Eav.Import
         /// <summary>
         /// Import an AttributeSet with all Attributes and AttributeMetaData
         /// </summary>
-        private void ImportAttributeSet(ImportAttributeSet importAttributeSet)
+        private void ImportAttributeSet(ImpAttrSet impAttrSet)
         {
-            var destinationSet = _context.AttribSet.GetAttributeSet(importAttributeSet.StaticName);
+            var destinationSet = _context.AttribSet.GetAttributeSet(impAttrSet.StaticName);
             // add new AttributeSet
             if (destinationSet == null)
-                destinationSet = _context.AttribSet.AddContentTypeAndSave(importAttributeSet.Name, importAttributeSet.Description, importAttributeSet.StaticName, importAttributeSet.Scope, false);
+                destinationSet = _context.AttribSet.AddContentTypeAndSave(impAttrSet.Name, impAttrSet.Description, impAttrSet.StaticName, impAttrSet.Scope, false);
             else	// use/update existing attribute Set
             {
                 if (destinationSet.UsesConfigurationOfAttributeSet.HasValue)
                 {
-                    _importLog.Add(new ImportLogItem(EventLogEntryType.Error, "Not allowed to import/extend an AttributeSet which uses Configuration of another AttributeSet.") { ImportAttributeSet = importAttributeSet });
+                    _importLog.Add(new ImportLogItem(EventLogEntryType.Error, "Not allowed to import/extend an AttributeSet which uses Configuration of another AttributeSet.") { ImpAttrSet = impAttrSet });
                     return;
                 }
 
-                _importLog.Add(new ImportLogItem(EventLogEntryType.Information, "AttributeSet already exists") { ImportAttributeSet = importAttributeSet });
+                _importLog.Add(new ImportLogItem(EventLogEntryType.Information, "AttributeSet already exists") { ImpAttrSet = impAttrSet });
             }
 
-	        destinationSet.AlwaysShareConfiguration = importAttributeSet.AlwaysShareConfiguration;
+	        destinationSet.AlwaysShareConfiguration = impAttrSet.AlwaysShareConfiguration;
 
             // If a "Ghost"-content type is specified, try to assign that
-            if (!string.IsNullOrEmpty(importAttributeSet.UsesConfigurationOfAttributeSet))
+            if (!string.IsNullOrEmpty(impAttrSet.UsesConfigurationOfAttributeSet))
             {
                 // Look for a content type with the StaticName, which has no "UsesConfigurationOf..." set (is a master)
-                var ghostAttributeSets = _context.SqlDb.AttributeSets.Where(a => a.StaticName == importAttributeSet.UsesConfigurationOfAttributeSet && a.ChangeLogDeleted == null && a.UsesConfigurationOfAttributeSet == null).
+                var ghostAttributeSets = _context.SqlDb.AttributeSets.Where(a => a.StaticName == impAttrSet.UsesConfigurationOfAttributeSet && a.ChangeLogDeleted == null && a.UsesConfigurationOfAttributeSet == null).
                     OrderBy(a => a.AttributeSetID).ToList();
 
                 if (ghostAttributeSets.Count == 0)
                 {
-                    _importLog.Add(new ImportLogItem(EventLogEntryType.Warning, "AttributeSet not imported because master set not found: " + importAttributeSet.UsesConfigurationOfAttributeSet) { ImportAttributeSet = importAttributeSet });
+                    _importLog.Add(new ImportLogItem(EventLogEntryType.Warning, "AttributeSet not imported because master set not found: " + impAttrSet.UsesConfigurationOfAttributeSet) { ImpAttrSet = impAttrSet });
                     return;
                 }
 
                 // If multiple masters are found, use first and add a warning message
                 if (ghostAttributeSets.Count > 1)
-                    _importLog.Add(new ImportLogItem(EventLogEntryType.Warning, "Multiple potential master AttributeSets found for StaticName: " + importAttributeSet.UsesConfigurationOfAttributeSet) { ImportAttributeSet = importAttributeSet });
+                    _importLog.Add(new ImportLogItem(EventLogEntryType.Warning, "Multiple potential master AttributeSets found for StaticName: " + impAttrSet.UsesConfigurationOfAttributeSet) { ImpAttrSet = impAttrSet });
                 destinationSet.UsesConfigurationOfAttributeSet = ghostAttributeSets.First().AttributeSetID;
             }
             
@@ -200,18 +201,18 @@ namespace ToSic.Eav.Import
 	        _context.SqlDb.SaveChanges();
 
             // append all Attributes
-            foreach (var importAttribute in importAttributeSet.Attributes)
+            foreach (var importAttribute in impAttrSet.Attributes)
             {
                 Attribute destinationAttribute;
                 if(!_context.Attributes.Exists(destinationSet.AttributeSetID, importAttribute.StaticName))
                 {
                         // try to add new Attribute
-                        var isTitle = importAttribute == importAttributeSet.TitleAttribute;
+                        var isTitle = importAttribute == impAttrSet.TitleAttribute;
                     destinationAttribute = _context.Attributes.AppendAttribute(destinationSet, importAttribute.StaticName, importAttribute.Type, importAttribute.InputType, isTitle, false);
                 }
 				else
                 {
-					_importLog.Add(new ImportLogItem(EventLogEntryType.Warning, "Attribute already exists") { ImportAttribute = importAttribute });
+					_importLog.Add(new ImportLogItem(EventLogEntryType.Warning, "Attribute already exists") { ImpAttribute = importAttribute });
                     destinationAttribute = destinationSet.AttributesInSets.Single(a => a.Attribute.StaticName == importAttribute.StaticName).Attribute;
                 }
 
@@ -241,13 +242,13 @@ namespace ToSic.Eav.Import
             }
 
             // todo: optionally re-order the attributes
-            if (importAttributeSet.SortAttributes)
+            if (impAttrSet.SortAttributes)
             {
                 var attributeList = _context.SqlDb.AttributesInSets
                     .Where(a => a.AttributeSetID == destinationSet.AttributeSetID).ToList();
                 attributeList = attributeList
-                    .OrderBy(a => importAttributeSet.Attributes
-                        .IndexOf(importAttributeSet.Attributes
+                    .OrderBy(a => impAttrSet.Attributes
+                        .IndexOf(impAttrSet.Attributes
                             .First(ia => ia.StaticName == a.Attribute.StaticName)))
                     .ToList();
                 _context.Attributes.PersistAttributeSorting(attributeList);
@@ -257,20 +258,20 @@ namespace ToSic.Eav.Import
         /// <summary>
         /// Import an Entity with all values
         /// </summary>
-        private void PersistOneImportEntity(ImportEntity importEntity)
+        private void PersistOneImportEntity(ImpEntity impEntity)
         {
             var cache = DataSource.GetCache(null, _context.AppId);
 
             #region try to get AttributeSet or otherwise cancel & log error
 
             // var attributeSet = Context.AttribSet.GetAttributeSet(importEntity.AttributeSetStaticName);
-            var attributeSet = cache.GetContentType(importEntity.AttributeSetStaticName);
+            var attributeSet = cache.GetContentType(impEntity.AttributeSetStaticName);
             if (attributeSet == null) // AttributeSet not Found
             {
                 _importLog.Add(new ImportLogItem(EventLogEntryType.Error, "AttributeSet not found")
                 {
-                    ImportEntity = importEntity,
-                    ImportAttributeSet = new ImportAttributeSet {StaticName = importEntity.AttributeSetStaticName}
+                    ImpEntity = impEntity,
+                    ImpAttrSet = new ImpAttrSet {StaticName = impEntity.AttributeSetStaticName}
                 });
                 return;
             }
@@ -279,13 +280,13 @@ namespace ToSic.Eav.Import
 
             // Find existing Enties - meaning both draft and non-draft
             List<IEntity> existingEntities = null;
-            if (importEntity.EntityGuid.HasValue)
-                existingEntities = cache.LightList.Where(e => e.EntityGuid == importEntity.EntityGuid.Value).ToList();
+            if (impEntity.EntityGuid.HasValue)
+                existingEntities = cache.LightList.Where(e => e.EntityGuid == impEntity.EntityGuid.Value).ToList();
 
             #region Simplest case - add (nothing existing to update)
             if (existingEntities == null || !existingEntities.Any())
             {
-                _context.Entities.AddEntity(attributeSet.AttributeSetId, importEntity, _importLog, importEntity.IsPublished, null);
+                _context.Entities.AddEntity(attributeSet.AttributeSetId, impEntity, _importLog, impEntity.IsPublished, null);
                 return;
             }
 
@@ -294,10 +295,10 @@ namespace ToSic.Eav.Import
             // todo: 2dm 2016-06-29 check this
             #region Another simple case - we have published entities, but are saving unpublished - so we create a new one
 
-            if (!importEntity.IsPublished && existingEntities.Count(e => e.IsPublished == false) == 0 && !importEntity.ForceNoBranch)
+            if (!impEntity.IsPublished && existingEntities.Count(e => e.IsPublished == false) == 0 && !impEntity.ForceNoBranch)
             {
                 var publishedId = existingEntities.First().EntityId;
-                _context.Entities.AddEntity(attributeSet.AttributeSetId, importEntity, _importLog, importEntity.IsPublished, publishedId);
+                _context.Entities.AddEntity(attributeSet.AttributeSetId, impEntity, _importLog, impEntity.IsPublished, publishedId);
                 return;
             }
 
@@ -309,7 +310,7 @@ namespace ToSic.Eav.Import
 
             // Get existing, published Entity
             var editableVersionOfTheEntity = existingEntities.OrderBy(e => e.IsPublished ? 1 : 0).First(); // get draft first, otherwise the published
-            _importLog.Add(new ImportLogItem(EventLogEntryType.Information, "Entity already exists", importEntity));
+            _importLog.Add(new ImportLogItem(EventLogEntryType.Information, "Entity already exists", impEntity));
         
 
             #region ensure we don't save a draft is this is not allowed (usually in the case of xml-import)
@@ -317,16 +318,16 @@ namespace ToSic.Eav.Import
             // Prevent updating Draft-Entity - since the initial would be draft if it has one, this would throw
             if (PreventUpdateOnDraftEntities && !editableVersionOfTheEntity.IsPublished)
             {
-                _importLog.Add(new ImportLogItem(EventLogEntryType.Error, "Importing a Draft-Entity is not allowed", importEntity));
+                _importLog.Add(new ImportLogItem(EventLogEntryType.Error, "Importing a Draft-Entity is not allowed", impEntity));
                 return;
             }
 
             #endregion
 
             #region Ensure entity has same AttributeSet (do this after checking for the draft etc.
-            if (editableVersionOfTheEntity.Type.StaticName != importEntity.AttributeSetStaticName)
+            if (editableVersionOfTheEntity.Type.StaticName != impEntity.AttributeSetStaticName)
             {
-                _importLog.Add(new ImportLogItem(EventLogEntryType.Error, "Existing entity (which should be updated) has different ContentType", importEntity));
+                _importLog.Add(new ImportLogItem(EventLogEntryType.Error, "Existing entity (which should be updated) has different ContentType", impEntity));
                 return;
             }
             #endregion
@@ -335,13 +336,13 @@ namespace ToSic.Eav.Import
 
             #endregion
 
-            var newValues = importEntity.Values;
+            var newValues = impEntity.Values;
             if (_dontUpdateExistingAttributeValues) // Skip values that are already present in existing Entity
                 newValues = newValues.Where(v => editableVersionOfTheEntity.Attributes.All(ev => ev.Value.Name != v.Key))
                     .ToDictionary(v => v.Key, v => v.Value);
 
             _context.Entities.UpdateEntity(editableVersionOfTheEntity.RepositoryId, newValues, updateLog: _importLog,
-                preserveUndefinedValues: _keepAttributesMissingInImport, isPublished: importEntity.IsPublished, forceNoBranch: importEntity.ForceNoBranch);
+                preserveUndefinedValues: _keepAttributesMissingInImport, isPublished: impEntity.IsPublished, forceNoBranch: impEntity.ForceNoBranch);
 
             #endregion
         }

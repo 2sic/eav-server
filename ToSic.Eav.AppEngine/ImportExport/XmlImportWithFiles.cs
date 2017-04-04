@@ -10,6 +10,7 @@ using ToSic.Eav.BLL;
 using ToSic.Eav.Import;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Logging;
+using ToSic.Eav.ImportExport.Models;
 
 // needed for the static Resolve<...>
 
@@ -260,20 +261,20 @@ namespace ToSic.Eav.Apps.ImportExport
 
 		#region AttributeSets
 
-		private List<ImportAttributeSet> GetImportAttributeSets(IEnumerable<XElement> xAttributeSets)
+		private List<ImpAttrSet> GetImportAttributeSets(IEnumerable<XElement> xAttributeSets)
 		{
-            var importAttributeSets = new List<ImportAttributeSet>();
+            var importAttributeSets = new List<ImpAttrSet>();
 
 			// Loop through AttributeSets
 			foreach (var attributeSet in xAttributeSets)
 			{
-				var attributes = new List<ImportAttribute>();
-                var titleAttribute = new ImportAttribute();
+				var attributes = new List<ImpAttribute>();
+                var titleAttribute = new ImpAttribute();
 			    var attsetElem = attributeSet.Element(XmlConstants.Attributes);
                 if (attsetElem != null)
                     foreach (var xElementAttribute in attsetElem.Elements(XmlConstants.Attribute))
                     {
-                        var attribute = new ImportAttribute
+                        var attribute = new ImpAttribute
                         {
                             StaticName = xElementAttribute.Attribute("StaticName").Value,
                             Type = xElementAttribute.Attribute("Type").Value,
@@ -288,7 +289,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     }
 
 				// Add AttributeSet
-                importAttributeSets.Add(new ImportAttributeSet
+                importAttributeSets.Add(new ImpAttrSet
 				{
 					StaticName = attributeSet.Attribute(Const2.Static).Value,
 					Name = attributeSet.Attribute(Const2.Name).Value,
@@ -500,7 +501,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="entities"></param>
         /// <param name="assignmentObjectTypeId"></param>
         /// <returns></returns>
-        private List<ImportEntity> GetImportEntities(IEnumerable<XElement> entities, int assignmentObjectTypeId)
+        private List<ImpEntity> GetImportEntities(IEnumerable<XElement> entities, int assignmentObjectTypeId)
             => entities.Select(e => GetImportEntity(e, assignmentObjectTypeId)).ToList();
 		
 
@@ -511,7 +512,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="entityNode">The xml-Element of the entity to import</param>
         /// <param name="assignmentObjectTypeId">assignmentObjectTypeId</param>
         /// <returns></returns>
-        private ImportEntity GetImportEntity(XElement entityNode, int assignmentObjectTypeId)
+        private ImpEntity GetImportEntity(XElement entityNode, int assignmentObjectTypeId)
 		{
             #region retrieve optional metadata keys in the import - must happen before we apply corrections like AppId
             Guid? keyGuid = null;
@@ -569,7 +570,7 @@ namespace ToSic.Eav.Apps.ImportExport
 			    }
 			}
 
-			var importEntity = Eav.ImportExport.XmlImport.GetImportEntity(entityNode, assignmentObjectTypeId,
+			var importEntity = Eav.ImportExport.XmlToImportEntity.BuildImpEntityFromXml(entityNode, assignmentObjectTypeId,
 				_targetDimensions, _sourceDimensions, _sourceDefaultDimensionId, DefaultLanguage, keyNumber, keyGuid, keyString);
 
 			return importEntity;

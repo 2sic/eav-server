@@ -6,7 +6,9 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Import;
 using ToSic.Eav.ImportExport;
+using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Logging;
+using ToSic.Eav.ImportExport.Models;
 
 namespace ToSic.Eav.BLL.Parts
 {
@@ -81,9 +83,9 @@ namespace ToSic.Eav.BLL.Parts
         /// <summary>
         /// Import a new Entity
         /// </summary>
-        internal Entity AddEntity(int attributeSetId, Import.ImportEntity importEntity, List<ImportLogItem> importLog, bool isPublished, int? publishedTarget)
+        internal Entity AddEntity(int attributeSetId, ImpEntity impEntity, List<ImportLogItem> importLog, bool isPublished, int? publishedTarget)
         {
-            return AddEntity(null, attributeSetId, importEntity.Values, null, importEntity.KeyNumber, importEntity.KeyGuid, importEntity.KeyString, importEntity.AssignmentObjectTypeId, 0, importEntity.EntityGuid, null, updateLog: importLog, isPublished: isPublished, publishedEntityId: publishedTarget);
+            return AddEntity(null, attributeSetId, impEntity.Values, null, impEntity.KeyNumber, impEntity.KeyGuid, impEntity.KeyString, impEntity.AssignmentObjectTypeId, 0, impEntity.EntityGuid, null, updateLog: importLog, isPublished: isPublished, publishedEntityId: publishedTarget);
         }
 
         /// <summary>
@@ -300,9 +302,9 @@ namespace ToSic.Eav.BLL.Parts
                     // Log Warning for all Values
                     updateLog.AddRange(newValue.Value.Select(v => new ImportLogItem(EventLogEntryType.Warning, "Attribute not found for Value")
                     {
-                        ImportAttribute = new Import.ImportAttribute { StaticName = newValue.Key },
+                        ImpAttribute = new ImpAttribute { StaticName = newValue.Key },
                         Value = v,
-                        ImportEntity = v.ParentEntity
+                        ImpEntity = v.ParentEntity
                     }));
                     continue;
                 }
@@ -325,9 +327,9 @@ namespace ToSic.Eav.BLL.Parts
                     {
                         updateLog.Add(new ImportLogItem(EventLogEntryType.Error, "Update Entity-Value failed")
                         {
-                            ImportAttribute = new ImportAttribute { StaticName = newValue.Key },
+                            ImpAttribute = new ImpAttribute { StaticName = newValue.Key },
                             Value = newSingleValue,
-                            ImportEntity = newSingleValue.ParentEntity,
+                            ImpEntity = newSingleValue.ParentEntity,
                             Exception = ex
                         });
                     }
@@ -412,12 +414,12 @@ namespace ToSic.Eav.BLL.Parts
         /// <summary>
         /// Convert IOrderedDictionary to <see cref="Dictionary{String, ValueViewModel}" /> (for backward capability)
         /// </summary>
-        private Dictionary<string, ValueToImport> DictionaryToValuesViewModel(IDictionary newValues)
+        private Dictionary<string, ImpVal> DictionaryToValuesViewModel(IDictionary newValues)
         {
-            if (newValues is Dictionary<string, ValueToImport>)
-                return (Dictionary<string, ValueToImport>)newValues;
+            if (newValues is Dictionary<string, ImpVal>)
+                return (Dictionary<string, ImpVal>)newValues;
 
-            return newValues.Keys.Cast<object>().ToDictionary(key => key.ToString(), key => new ValueToImport { ReadOnly = false, Value = newValues[key] });
+            return newValues.Keys.Cast<object>().ToDictionary(key => key.ToString(), key => new ImpVal { ReadOnly = false, Value = newValues[key] });
         }
 
         #region Delete Commands

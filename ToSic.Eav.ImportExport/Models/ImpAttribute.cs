@@ -1,55 +1,57 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Import;
+using ToSic.Eav.ImportExport.Interfaces;
 
-namespace ToSic.Eav.Import
+namespace ToSic.Eav.ImportExport.Models
 {
-    public class ImportAttribute
+    public class ImpAttribute
     {
         public string StaticName { get; set; }
         public string Type { get; set; }
 
         public string InputType { get; set; }
-        public List<ImportEntity> AttributeMetaData { get; set; }
+        public List<ImpEntity> AttributeMetaData { get; set; }
 
         /// <summary>
         /// Default Constructor
         /// </summary>
-        public ImportAttribute() { }
+        public ImpAttribute() { }
 
         /// <summary>
         /// Get an Import-Attribute
         /// </summary>
-        private ImportAttribute(string staticName, string name, AttributeTypeEnum type, string notes, bool? visibleInEditUi, object defaultValue)
+        internal ImpAttribute(string staticName, string name, AttributeTypeEnum type, string notes, bool? visibleInEditUi, object defaultValue)
         {
             StaticName = staticName;
             Type = type.ToString();
-            AttributeMetaData = new List<ImportEntity> { GetAttributeMetaData(name, notes, visibleInEditUi, HelpersToRefactor.SerializeValue(defaultValue)) };
+            AttributeMetaData = new List<ImpEntity> { GetAttributeMetaData(name, notes, visibleInEditUi, HelpersToRefactor.SerializeValue(defaultValue)) };
         }
 
         /// <summary>
         /// Get an Import-Attribute
         /// </summary>
-        public static ImportAttribute StringAttribute(string staticName, string name, string notes, bool? visibleInEditUi, string inputType = null, int? rowCount = null, string defaultValue = null)
+        public static ImpAttribute StringAttribute(string staticName, string name, string notes, bool? visibleInEditUi, string inputType = null, int? rowCount = null, string defaultValue = null)
         {
-            var attribute = new ImportAttribute(staticName, name, AttributeTypeEnum.String, notes, visibleInEditUi, defaultValue);
-            attribute.AttributeMetaData.Add(GetStringAttributeMetaData(inputType, rowCount));
+            var attribute = new ImpAttribute(staticName, name, AttributeTypeEnum.String, notes, visibleInEditUi, defaultValue);
+            attribute.AttributeMetaData.Add(attribute.GetStringAttributeMetaData(inputType, rowCount));
             return attribute;
         }
 
         /// <summary>
         /// Get an Import-Attribute
         /// </summary>
-        public static ImportAttribute BooleanAttribute(string staticName, string name, string notes, bool? visibleInEditUi, bool? defaultValue = null)
+        public static ImpAttribute BooleanAttribute(string staticName, string name, string notes, bool? visibleInEditUi, bool? defaultValue = null)
         {
-            var attribute = new ImportAttribute(staticName, name, AttributeTypeEnum.Boolean, notes, visibleInEditUi, defaultValue);
+            var attribute = new ImpAttribute(staticName, name, AttributeTypeEnum.Boolean, notes, visibleInEditUi, defaultValue);
             return attribute;
         }
 
         /// <summary>
         /// Shortcut to get an @All Entity Describing an Attribute
         /// </summary>
-        private static ImportEntity GetAttributeMetaData(string name, string notes, bool? visibleInEditUi, string defaultValue = null)
+        private ImpEntity GetAttributeMetaData(string name, string notes, bool? visibleInEditUi, string defaultValue = null)
         {
-            var allEntity = new ImportEntity
+            var allEntity = new ImpEntity
             {
                 AttributeSetStaticName = "@All",
                 Values = new Dictionary<string, List<IValueImportModel>>()
@@ -66,9 +68,9 @@ namespace ToSic.Eav.Import
             return allEntity;
         }
 
-        private static ImportEntity GetStringAttributeMetaData(string inputType, int? rowCount)
+        private ImpEntity GetStringAttributeMetaData(string inputType, int? rowCount)
         {
-            var stringEntity = new ImportEntity
+            var stringEntity = new ImpEntity
             {
                 AttributeSetStaticName = "@String",
                 Values = new Dictionary<string, List<IValueImportModel>>()

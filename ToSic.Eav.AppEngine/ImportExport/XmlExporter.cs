@@ -217,7 +217,7 @@ namespace ToSic.Eav.Apps.ImportExport
             XElement entityXElement;
             try
             {
-                entityXElement = new XmlExport(EavAppContext).GetEntityXElement(e.EntityID);
+                entityXElement = new XmlNodeBuilder(EavAppContext).GetEntityXElement(e.EntityID);
             }
             catch (Exception ex)
             {

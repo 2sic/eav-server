@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
+using ToSic.Eav.Import;
+using ToSic.Eav.ImportExport.Models;
 
-namespace ToSic.Eav.Import
+namespace ToSic.Eav.ImportExport.Interfaces
 {
     public interface IValueImportModel
     {
-        IEnumerable<ValueDimension> ValueDimensions { get; set; }
-        ImportEntity ParentEntity { get; }
+        IEnumerable<ImpDims> ValueDimensions { get; set; }
+        ImpEntity ParentEntity { get; }
 
         String StringValueForTesting { get; }
 

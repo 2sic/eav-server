@@ -8,9 +8,9 @@ namespace ToSic.Eav.ImportExport
 	/// <summary>
 	/// Export EAV Data in XML Format
 	/// </summary>
-	public class XmlExport: BllCommandBase
+	public class XmlNodeBuilder: BllCommandBase
 	{
-        public XmlExport(EavDataController c) : base(c) { }
+        public XmlNodeBuilder(EavDataController c) : base(c) { }
 
         /// <summary>
         /// Returns an Entity XElement
@@ -19,8 +19,6 @@ namespace ToSic.Eav.ImportExport
         {
             var cache = DataSource.GetCache(Context.ZoneId, Context.AppId);
             var iEntity = cache.List[entityId];
-            //var iEntity = new DbLoadIntoEavDataStructure(Context).GetEavEntity(entityId);
-
             return GetEntityXElement(iEntity);
         }
 
@@ -40,7 +38,7 @@ namespace ToSic.Eav.ImportExport
         /// <summary>
         /// Returns an Entity XElement
         /// </summary>
-        public XElement GetEntityXElement(IEntity entity)
+        private XElement GetEntityXElement(IEntity entity)
 		{
 			var eavEntity = Context.Entities.GetEntity(entity.EntityId);
 			//var attributeSet = _ctx.GetAttributeSet(eavEntity.AttributeSetID);

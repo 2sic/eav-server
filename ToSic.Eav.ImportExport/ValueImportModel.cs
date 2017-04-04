@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using ToSic.Eav.ImportExport.Interfaces;
+using ToSic.Eav.ImportExport.Models;
 using static System.Decimal;
 
 namespace ToSic.Eav.Import
@@ -9,10 +11,10 @@ namespace ToSic.Eav.Import
     public class ValueImportModel<T> : IValueImportModel
     {
         public T Value { get; set; }
-        public IEnumerable<ValueDimension> ValueDimensions { get; set; }
-        public ImportEntity ParentEntity { get; }
+        public IEnumerable<ImpDims> ValueDimensions { get; set; }
+        public ImpEntity ParentEntity { get; }
 
-        public ValueImportModel(ImportEntity parentEntity)
+        public ValueImportModel(ImpEntity parentEntity)
         {
             ParentEntity = parentEntity;
         }
@@ -32,10 +34,10 @@ namespace ToSic.Eav.Import
         /// </summary>
         public void AppendLanguageReference(string language, bool readOnly)
         {
-            var valueDimesnions = ValueDimensions as List<Import.ValueDimension>;
+            var valueDimesnions = ValueDimensions as List<ImpDims>;
             if (valueDimesnions == null)
             {
-                valueDimesnions = new List<Import.ValueDimension>();
+                valueDimesnions = new List<ImpDims>();
                 ValueDimensions = valueDimesnions;
             }
 
@@ -43,7 +45,7 @@ namespace ToSic.Eav.Import
             {
                 valueDimesnions.Add
                 (
-                    new Import.ValueDimension { DimensionExternalKey = language, ReadOnly = readOnly }
+                    new ImpDims { DimensionExternalKey = language, ReadOnly = readOnly }
                 );
             }
         }
@@ -52,9 +54,9 @@ namespace ToSic.Eav.Import
 
     public static class ValueImportModel
     {   
-        public static IValueImportModel GetModel(string value, string attributeType, IEnumerable<ValueDimension> dimensions, ImportEntity importEntity)
+        public static IValueImportModel GetModel(string value, string attributeType, IEnumerable<ImpDims> dimensions, ImpEntity impEntity)
         {
-            var valueModel = GenerateLightValueImportModel(value, attributeType, importEntity);
+            var valueModel = GenerateLightValueImportModel(value, attributeType, impEntity);
 
             valueModel.ValueDimensions = dimensions;
 
@@ -62,7 +64,7 @@ namespace ToSic.Eav.Import
         }
 
         public static IValueImportModel GenerateLightValueImportModel(string value, string attributeType,
-            ImportEntity importEntity)
+            ImpEntity impEntity)
         {
             IValueImportModel valueModel;
             var type = AttributeTypeEnum.Undefined;
@@ -74,7 +76,7 @@ namespace ToSic.Eav.Import
                 case AttributeTypeEnum.String:
                 case AttributeTypeEnum.Hyperlink:
                 case AttributeTypeEnum.Custom:
-                    valueModel = new ValueImportModel<string>(importEntity) {Value = value};
+                    valueModel = new ValueImportModel<string>(impEntity) {Value = value};
                     break;
                 case AttributeTypeEnum.Number:
                     decimal typedDecimal;
@@ -82,7 +84,7 @@ namespace ToSic.Eav.Import
                     decimal? typedDecimalNullable = null;
                     if (isDecimal)
                         typedDecimalNullable = typedDecimal;
-                    valueModel = new ValueImportModel<decimal?>(importEntity)
+                    valueModel = new ValueImportModel<decimal?>(impEntity)
                     {
                         Value = typedDecimalNullable
                     };
@@ -97,11 +99,11 @@ namespace ToSic.Eav.Import
                             return guid == Guid.Empty ? new Guid?() : guid;
                         }).ToList()
                         : new List<Guid?>(0);
-                    valueModel = new ValueImportModel<List<Guid?>>(importEntity) {Value = entityGuids};
+                    valueModel = new ValueImportModel<List<Guid?>>(impEntity) {Value = entityGuids};
                     break;
                 case AttributeTypeEnum.DateTime:
                     DateTime typedDateTime;
-                    valueModel = new ValueImportModel<DateTime?>(importEntity)
+                    valueModel = new ValueImportModel<DateTime?>(impEntity)
                     {
                         Value =
                             DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out typedDateTime)
@@ -111,7 +113,7 @@ namespace ToSic.Eav.Import
                     break;
                 case AttributeTypeEnum.Boolean:
                     bool typedBoolean;
-                    valueModel = new ValueImportModel<bool?>(importEntity)
+                    valueModel = new ValueImportModel<bool?>(impEntity)
                     {
                         Value = bool.TryParse(value, out typedBoolean) ? typedBoolean : new bool?()
                     };

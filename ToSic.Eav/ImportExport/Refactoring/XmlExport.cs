@@ -9,12 +9,14 @@ namespace ToSic.Eav.ImportExport.Refactoring
 {
     public class XmlExport
     {
+        private readonly XmlPartsBuilder _builder = new XmlPartsBuilder();
+
         /// <summary>
-        /// Create a blank xml scheme for 2SexyContent data.
+        /// Create a blank xml scheme for data.
         /// </summary>
-        /// <param name="zoneId">ID of 2SexyContent zone</param>
-        /// <param name="applicationId">ID of 2SexyContent application</param>
-        /// <param name="contentTypeId">ID of 2SexyContent type</param>
+        /// <param name="zoneId">ID of zone</param>
+        /// <param name="applicationId">ID of application</param>
+        /// <param name="contentTypeId">ID of type</param>
         /// <returns>A string containing the blank xml scheme</returns>
         public string CreateBlankXml(int zoneId, int applicationId, int contentTypeId, string helpText = "")
         {
@@ -24,8 +26,8 @@ namespace ToSic.Eav.ImportExport.Refactoring
 
             var documentElement1 = GetDocumentEntityElement("", "", contentType.Name);
             var documentElement2 = GetDocumentEntityElement("", "", contentType.Name);
-            var documentRoot = GetDocumentRoot(documentElement1, documentElement2);
-            var document = GetDocument(documentRoot);
+            var documentRoot = BuildDocumentRoot(documentElement1, documentElement2);
+            var document = BuildDocument(documentRoot);
 
             var attributes = contentType.GetAttributes();
             var isFirstAttribute = true;
@@ -79,8 +81,8 @@ namespace ToSic.Eav.ImportExport.Refactoring
                 languages.Add(string.Empty);
             }
 
-            var documentRoot = GetDocumentRoot(null);
-            var document = GetDocument(documentRoot);
+            var documentRoot = BuildDocumentRoot(null);
+            var document = BuildDocument(documentRoot);
 
             var entities = contentType.Entities.Where(entity => entity.ChangeLogIDDeleted == null);
             if (selectedIds != null && selectedIds.Length > 0)
@@ -99,15 +101,18 @@ namespace ToSic.Eav.ImportExport.Refactoring
                     {
                         if (attribute.Type == "Entity")
                         {   // Handle separately
-                            documentElement.AppendEntityReferences(entity, attribute);
+                            _builder.AppendEntityReferences(documentElement, entity, attribute);
+                            // documentElement.AppendEntityReferences(entity, attribute);
                         }
                         else if (languageReference.IsResolve())
                         {
-                            documentElement.AppendValueResolved(entity, attribute, language, languageFallback, resourceReference);
+                            _builder.AppendValueResolved(documentElement, entity, attribute, language, languageFallback, resourceReference);
+                            //documentElement.AppendValueResolved(entity, attribute, language, languageFallback, resourceReference);
                         }
                         else
                         {
-                            documentElement.AppendValueReferenced(entity, attribute, language, languageFallback, languageScope, languages.Count > 1, resourceReference);
+                            _builder.AppendValueReferenced(documentElement, entity, attribute, language, languageFallback, languageScope, languages.Count > 1, resourceReference);
+                            //documentElement.AppendValueReferenced(entity, attribute, language, languageFallback, languageScope, languages.Count > 1, resourceReference);
                         }
                     }
                 }
@@ -117,24 +122,19 @@ namespace ToSic.Eav.ImportExport.Refactoring
         }
 
 
-        private static AttributeSet GetContentType(int zoneId, int applicationId, int contentTypeId)
+        private AttributeSet GetContentType(int zoneId, int applicationId, int contentTypeId)
         {
-            // todo: changed by 2dm 2015-06-02, must be checked by 2tk
-            var contentContext = EavDataController.Instance(zoneId, applicationId) ;// new SexyContent.SexyContent(zoneId, applicationId).ContentContext;
+            var contentContext = EavDataController.Instance(zoneId, applicationId) ;
             return contentContext.AttribSet.GetAttributeSet(contentTypeId);
         }
 
-        private static XDocument GetDocument(params object[] content)
-        {
-            return new XDocument(new XDeclaration("1.0", "UTF-8", "yes"), content);
-        }
+        private XDocument BuildDocument(params object[] content) 
+            => new XDocument(new XDeclaration("1.0", "UTF-8", "yes"), content);
 
-        private static XElement GetDocumentRoot(params object[] content)
-        {
-            return new XElement(DocumentNodeNames.Root, content);
-        }
+        private XElement BuildDocumentRoot(params object[] content) 
+            => new XElement(DocumentNodeNames.Root, content);
 
-        private static XElement GetDocumentEntityElement(object elementGuid, object elementLanguage, string contentTypeName)
+        private XElement GetDocumentEntityElement(object elementGuid, object elementLanguage, string contentTypeName)
         {
             return new XElement
                 (

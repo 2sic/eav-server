@@ -30,21 +30,21 @@ namespace ToSic.Eav.ImportExport.Refactoring.Extensions
             return defaultValue;
         }
 
-        /// <summary>
-        /// Is the string equals []?
-        /// </summary>
-        public static bool IsValueNull(this string valueString)
-        {
-            return valueString == "[]";
-        }
+        ///// <summary>
+        ///// Is the string equals []?
+        ///// </summary>
+        //public static bool IsValueNull(this string valueString)
+        //{
+        //    return valueString == "[]";
+        //}
 
-        /// <summary>
-        /// Is the string equals =(""), an empty string?
-        /// </summary>
-        public static bool IsValueEmpty(this string valueString)
-        {
-            return valueString == "[\"\"]";
-        }
+        ///// <summary>
+        ///// Is the string equals =(""), an empty string?
+        ///// </summary>
+        //public static bool IsValueEmpty(this string valueString)
+        //{
+        //    return valueString == "[\"\"]";
+        //}
 
         /// <summary>
         /// Remove special characters like ?, &, %, - or spaces from a string.

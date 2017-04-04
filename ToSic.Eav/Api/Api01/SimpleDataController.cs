@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.BLL;
-using ToSic.Eav.Import;
-using ToSic.Eav.ImportExport.Refactoring.Extensions;
+using ToSic.Eav.ImportExport.Interfaces;
+using ToSic.Eav.ImportExport.Models;
 
 namespace ToSic.Eav.Api.Api01
 {
@@ -64,8 +64,8 @@ namespace ToSic.Eav.Api.Api01
                 values = RemoveUnknownFields(values, attributeSet);
 
             var importEntity = CreateImportEntity(attributeSet.StaticName);
-            importEntity.AppendAttributeValues(attributeSet, ConvertEntityRelations(values), _defaultLanguageCode, false, true);
-            importEntity.Import(_zoneId, _appId, _userName);
+            AppendAttributeValues(importEntity, attributeSet, ConvertEntityRelations(values), _defaultLanguageCode, false, true);
+            ExecuteImport(importEntity);
         }
 
         private static Dictionary<string, object> RemoveUnknownFields(Dictionary<string, object> values, AttributeSet attributeSet)
@@ -120,8 +120,8 @@ namespace ToSic.Eav.Api.Api01
             if (filterUnknownFields)
                 values = RemoveUnknownFields(values, attributeSet);
 
-            importEntity.AppendAttributeValues(attributeSet, ConvertEntityRelations(values), _defaultLanguageCode, false, true);
-            importEntity.Import(_zoneId, _appId, _userName);
+            AppendAttributeValues(importEntity, attributeSet, ConvertEntityRelations(values), _defaultLanguageCode, false, true);
+            ExecuteImport(importEntity);
         }
 
 
@@ -156,14 +156,14 @@ namespace ToSic.Eav.Api.Api01
 
 
 
-        private static ImportEntity CreateImportEntity(string attributeSetStaticName)
+        private static ImpEntity CreateImportEntity(string attributeSetStaticName)
         {
             return CreateImportEntity(Guid.NewGuid(), attributeSetStaticName);
         }
 
-        private static ImportEntity CreateImportEntity(Guid entityGuid, string attributeSetStaticName)
+        private static ImpEntity CreateImportEntity(Guid entityGuid, string attributeSetStaticName)
         {
-            return new ImportEntity
+            return new ImpEntity
             {
                 EntityGuid = entityGuid,
                 AttributeSetStaticName = attributeSetStaticName,
@@ -196,6 +196,32 @@ namespace ToSic.Eav.Api.Api01
                 }
             }
             return result;
+        }
+
+        private void ExecuteImport(ImpEntity impEntity)
+        {
+            var import = new Eav.Import.Import(_zoneId, _appId, false);
+            import.RunImport(null, new[] { impEntity });
+        }
+
+        private void AppendAttributeValues(ImpEntity impEntity, AttributeSet attributeSet, Dictionary<string, object> values, string valuesLanguage, bool valuesReadOnly, bool resolveHyperlink)
+        {
+            foreach (var value in values)
+            {
+                // Handle special attributes (for example of the system)
+                if (value.Key == "IsPublished")
+                {
+                    impEntity.IsPublished = value.Value as bool? ?? true;
+                    continue;
+                }
+                // Handle content-type attributes
+                var attribute = attributeSet.AttributeByName(value.Key);
+                if (attribute == null)
+                {
+                    throw new ArgumentException("Attribute '" + value.Key + "' does not exist.");
+                }
+                impEntity.AppendAttributeValue(value.Key, value.Value.ToString(), attribute.Type, valuesLanguage, valuesReadOnly, resolveHyperlink);
+            }
         }
     }
 }

@@ -7,6 +7,7 @@ using System.Xml.XPath;
 using ToSic.Eav.BLL;
 using ToSic.Eav.BLL.Parts;
 using ToSic.Eav.ImportExport;
+using ToSic.Eav.ImportExport.Models;
 
 namespace ToSic.Eav.Persistence
 {
@@ -66,7 +67,7 @@ namespace ToSic.Eav.Persistence
         /// </summary>
         internal void SaveEntityToDataTimeline(Entity currentEntity)
         {
-            var export = new XmlExport(Context);
+            var export = new XmlNodeBuilder(Context);
             var entityModelSerialized = export.GetEntityXElementUncached(currentEntity.EntityID);
             var timelineItem = new DataTimelineItem
             {
@@ -89,7 +90,7 @@ namespace ToSic.Eav.Persistence
         /// <param name="entityId">EntityId</param>
         /// <param name="changeId">ChangeId to retrieve</param>
         /// <param name="defaultCultureDimension">Default Language</param>
-        public Import.ImportEntity GetEntityVersion(int entityId, int changeId, int? defaultCultureDimension)
+        public ImpEntity GetEntityVersion(int entityId, int changeId, int? defaultCultureDimension)
         {
             // Get Timeline Item
             string timelineItem;
@@ -128,9 +129,10 @@ namespace ToSic.Eav.Persistence
                 var sourceDimensionsIdsGrouped = (from n in allSourceDimensionIds group n by n into g select new { DimensionId = g.Key, Qty = g.Count() }).ToArray();
                 sourceDefaultDimensionId = sourceDimensionsIdsGrouped.Any() ? sourceDimensionsIdsGrouped.OrderByDescending(g => g.Qty).First().DimensionId : defaultCultureDimension.Value;
             }
-
+            var targetDimsRetyped = targetDimensions.Select(d => new Data.Dimension { DimensionId = d.DimensionID, Key = d.ExternalKey});
+            var sourceDimsRetyped = sourceDimensions.Select(s => new Data.Dimension {DimensionId = s.DimensionID, Key = s.ExternalKey});
             // Load Entity from Xml unsing XmlImport
-            return XmlImport.GetImportEntity(xEntity, assignmentObjectTypeId, targetDimensions, sourceDimensions, sourceDefaultDimensionId, defaultLanguage);
+            return XmlToImportEntity.BuildImpEntityFromXml(xEntity, assignmentObjectTypeId, targetDimensions, sourceDimensions, sourceDefaultDimensionId, defaultLanguage);
         }
 
         /// <summary>
@@ -213,7 +215,7 @@ namespace ToSic.Eav.Persistence
 
             // Restore Entity
             var import = new Import.Import(Context.ZoneId /* _zoneId*/,Context.AppId /* _appId*/, /*Context.UserName,*/ false, false);
-            import.RunImport(null, new List<Import.ImportEntity> { newVersion });
+            import.RunImport(null, new List<ImpEntity> { newVersion });
 
             // Delete Draft (if any)
             var entityDraft = new DbLoadIntoEavDataStructure(Context).GetEavEntity(entityId).GetDraft();

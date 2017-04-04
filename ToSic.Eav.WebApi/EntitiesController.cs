@@ -7,6 +7,8 @@ using ToSic.Eav.DataSources;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.WebApi.Formats;
 using ToSic.Eav.Import;
+using ToSic.Eav.ImportExport.Interfaces;
+using ToSic.Eav.ImportExport.Models;
 using ToSic.Eav.ImportExport.Refactoring.Extensions;
 
 namespace ToSic.Eav.WebApi
@@ -211,7 +213,7 @@ namespace ToSic.Eav.WebApi
         [HttpPost]
         public Dictionary<Guid, int> SaveMany([FromUri] int appId, [FromBody] List<EntityWithHeader> items)
         { 
-            var entitiesToImport = new List<ImportEntity>();
+            var entitiesToImport = new List<ImpEntity>();
 
             // must move guid from header to entity, because we only transfer it on the header (so no duplicates)
             foreach (var i in items)
@@ -248,7 +250,7 @@ namespace ToSic.Eav.WebApi
         }
 
 
-        private ImportEntity CreateImportEntity(EntityWithHeader editInfo, int appId)
+        private ImpEntity CreateImportEntity(EntityWithHeader editInfo, int appId)
         {
             var newEntity = editInfo.Entity;
             var metadata = editInfo.Header.Metadata;
@@ -259,7 +261,7 @@ namespace ToSic.Eav.WebApi
             #endregion
 
             // TODO 2tk: Refactor code - we use methods from XML import extensions!
-            var importEntity = new ImportEntity();
+            var importEntity = new ImpEntity();
 
             #region Guids, Ids, Published, Content-Types
             importEntity.EntityGuid = newEntity.Guid;

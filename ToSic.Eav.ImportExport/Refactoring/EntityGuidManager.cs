@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Xml.Linq;
-using ToSic.Eav.ImportExport.Refactoring.Extensions;
 using ToSic.Eav.ImportExport.Refactoring.Options;
 
 namespace ToSic.Eav.ImportExport.Refactoring
@@ -17,10 +16,10 @@ namespace ToSic.Eav.ImportExport.Refactoring
         {
             Guid entityGuid;
 
-            var elementGuid = element.GetChildElementValue(DocumentNodeNames.EntityGuid);
+            var elementGuid = element.Element(DocumentNodeNames.EntityGuid)?.Value;
             if (string.IsNullOrEmpty(elementGuid))
             {
-                var elementLanguage = element.GetChildElementValue(DocumentNodeNames.EntityLanguage);
+                var elementLanguage = element.Element(DocumentNodeNames.EntityLanguage)?.Value;
                 if (elementLanguage == languageFallback || string.IsNullOrEmpty(elementLanguage)) 
                 {   // If the element does not have a GUID and the element has data for the default 
                     // language, create a new GUID

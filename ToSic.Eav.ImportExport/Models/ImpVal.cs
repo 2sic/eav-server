@@ -1,10 +1,10 @@
-﻿namespace ToSic.Eav.ImportExport
+﻿namespace ToSic.Eav.ImportExport.Models
 {
 
 	/// <summary>
 	/// Represents a Value
 	/// </summary>
-	public class ValueToImport
+	public class ImpVal
 	{
 		/// <summary>
 		/// Gets or sets the Value

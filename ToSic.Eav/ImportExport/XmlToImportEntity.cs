@@ -3,19 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using ToSic.Eav.Import;
+using ToSic.Eav.ImportExport.Interfaces;
+using ToSic.Eav.ImportExport.Models;
 
 namespace ToSic.Eav.ImportExport
 {
+    // todo: ensure that Dimension is pre-converted from DB.Dimension to Data.Dimension, so we can
+    // extract this to import/export
+
 	/// <summary>
 	/// Import EAV Data from XML Format
 	/// </summary>
-	public class XmlImport
+	public class XmlToImportEntity
 	{
-		private class ImportValue
-		{
-			public XElement XmlValue;
-			public List<Import.ValueDimension> Dimensions;
-		}
 
 		/// <summary>
 		/// Returns an EAV import entity
@@ -29,9 +29,9 @@ namespace ToSic.Eav.ImportExport
 		/// <param name="keyNumber">KeyNumber of the Entity</param>
 		/// <param name="keyGuid">KeyGuid of the Entity</param>
 		/// <param name="keyString">KeyString of the Entity</param>
-		public static ImportEntity GetImportEntity(XElement xEntity, int assignmentObjectTypeId, List<Dimension> targetDimensions, List<Dimension> sourceDimensions, int? sourceDefaultDimensionId, string defaultLanguage, int? keyNumber = null, Guid? keyGuid = null, string keyString = null)
+		public static ImpEntity BuildImpEntityFromXml(XElement xEntity, int assignmentObjectTypeId, List<Dimension> targetDimensions, List<Dimension> sourceDimensions, int? sourceDefaultDimensionId, string defaultLanguage, int? keyNumber = null, Guid? keyGuid = null, string keyString = null)
 		{
-			var targetEntity = new ImportEntity
+			var targetEntity = new ImpEntity
 			{
 				AssignmentObjectTypeId = assignmentObjectTypeId,
 				AttributeSetStaticName = xEntity.Attribute("AttributeSetStaticName").Value,
@@ -105,9 +105,9 @@ namespace ToSic.Eav.ImportExport
 					// Process found value
 					if (sourceValue != null)
 					{
-						var dimensionsToAdd = new List<Import.ValueDimension>();
+						var dimensionsToAdd = new List<Models.ImpDims>();
 						if (targetDimensions.Single(p => p.ExternalKey == targetDimension.ExternalKey).DimensionID >= 1)
-							dimensionsToAdd.Add(new Import.ValueDimension { DimensionExternalKey = targetDimension.ExternalKey, ReadOnly = readOnly });
+							dimensionsToAdd.Add(new Models.ImpDims { DimensionExternalKey = targetDimension.ExternalKey, ReadOnly = readOnly });
 
 						// If value has already been added to the list, add just dimension with original ReadOnly state
 						var existingImportValue = tempTargetValues.FirstOrDefault(p => p.XmlValue == sourceValue);
@@ -134,5 +134,12 @@ namespace ToSic.Eav.ImportExport
 
 			return targetEntity;
 		}
-	}
+
+
+        private class ImportValue
+        {
+            public XElement XmlValue;
+            public List<Models.ImpDims> Dimensions;
+        }
+    }
 }
