@@ -136,18 +136,6 @@ namespace ToSic.Eav
 
             return EntityCreate(zoneId, appId, contentTypeName, values, entityGuid: newGuid).Item1;
         }
-
-        //public static bool EntityExists(int zoneId, int appId, Guid guid) 
-        //    => EavDataController.Instance(zoneId, appId).Entities.EntityExists(guid);
-
-        //public static int EntityGetOrResurrect(int zoneId, int appId, Guid guid)
-        //{
-        //    var existingEnt = EavDataController.Instance(zoneId, appId).Entities.GetEntitiesByGuid(guid).First();
-        //    if (existingEnt.ChangeLogDeleted != null)
-        //        existingEnt.ChangeLogDeleted = null;
-        //    return existingEnt.EntityID;
-        //}
-
         #endregion
 
 
@@ -170,6 +158,5 @@ namespace ToSic.Eav
 
 
 
-
-    }
+        }
 }

@@ -295,7 +295,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
                 }
             }
 
-            var import = new Import.Import(_zoneId, _appId, userId, dontUpdateExistingAttributeValues: false, keepAttributesMissingInImport: true);
+            var import = new Import.Import(_zoneId, _appId, /*userId,*/ dontUpdateExistingAttributeValues: false, keepAttributesMissingInImport: true);
             Timer.Start();
             import.RunImport(null, Entities);
             Timer.Stop();

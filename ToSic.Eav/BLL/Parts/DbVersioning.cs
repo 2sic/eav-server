@@ -212,7 +212,7 @@ namespace ToSic.Eav.Persistence
             var newVersion = GetEntityVersion(entityId, changeId, defaultCultureDimension);
 
             // Restore Entity
-            var import = new Import.Import(Context.ZoneId /* _zoneId*/,Context.AppId /* _appId*/, Context.UserName, false, false);
+            var import = new Import.Import(Context.ZoneId /* _zoneId*/,Context.AppId /* _appId*/, /*Context.UserName,*/ false, false);
             import.RunImport(null, new List<Import.ImportEntity> { newVersion });
 
             // Delete Draft (if any)

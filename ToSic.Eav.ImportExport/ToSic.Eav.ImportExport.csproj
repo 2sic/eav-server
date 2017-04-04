@@ -53,6 +53,7 @@
     <Compile Include="Environment\TennantFileItem.cs" />
     <Compile Include="ExportImportMessage.cs" />
     <Compile Include="FileManager.cs" />
+    <Compile Include="IImportExportEnvironment.cs" />
     <Compile Include="ImportAttribute.cs" />
     <Compile Include="ImportEntity.cs" />
     <Compile Include="ImportAttributeSet.cs" />

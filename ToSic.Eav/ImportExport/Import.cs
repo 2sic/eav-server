@@ -34,11 +34,12 @@ namespace ToSic.Eav.Import
         /// <summary>
         /// Initializes a new instance of the Import class.
         /// </summary>
-        public Import(int? zoneId, int? appId, string userName, bool dontUpdateExistingAttributeValues = true, bool keepAttributesMissingInImport = true, bool preventUpdateOnDraftEntities = true, bool largeImport = true)
+        public Import(int? zoneId, int? appId, /*string userName,*/ bool dontUpdateExistingAttributeValues = true, bool keepAttributesMissingInImport = true, bool preventUpdateOnDraftEntities = true, bool largeImport = true)
         {
             _context = EavDataController.Instance(zoneId, appId);
 
-            _context.UserName = userName;
+            // 2017-04-04 2dm removed this, as it's now dependency injected into the _context
+            //_context.UserName = userName;
             _dontUpdateExistingAttributeValues = dontUpdateExistingAttributeValues;
             _keepAttributesMissingInImport = keepAttributesMissingInImport;
             PreventUpdateOnDraftEntities = preventUpdateOnDraftEntities;

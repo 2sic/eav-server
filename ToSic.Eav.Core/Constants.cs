@@ -9,6 +9,8 @@ namespace ToSic.Eav
         /// Name of the Default App in all Zones
         /// </summary>
         public const string DefaultAppName = "Default";
+
+
         /// <summary>
         /// Default Entity AssignmentObjectTypeId
         /// </summary>
@@ -143,6 +145,19 @@ namespace ToSic.Eav
 
         public const string Hyperlink = "Hyperlink";
 
+        #endregion
+
+        #region Special use cases of entities
+        public const string ContentKey = "Content";
+        public const string ContentKeyLower = "content";
+
+        public const string PresentationKey = "Presentation";
+        public const string PresentationKeyLower = "presentation";
+        #endregion
+
+        #region special uses of Apps
+        public const string ContentAppName = "Content";
+        public const string AppAssignmentName = "App";
         #endregion
     }
 }

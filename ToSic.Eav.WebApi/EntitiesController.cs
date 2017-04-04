@@ -222,7 +222,7 @@ namespace ToSic.Eav.WebApi
                     entitiesToImport.Add(CreateImportEntity(entity, appId));
 
             // Create Import-controller & run import
-            var importController = new Import.Import(null, appId, UserIdentityToken, 
+            var importController = new Import.Import(null, appId, /*UserIdentityToken,*/ 
                 dontUpdateExistingAttributeValues: false, 
                 keepAttributesMissingInImport: false,
                 preventUpdateOnDraftEntities: false,
