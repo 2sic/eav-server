@@ -13,7 +13,6 @@ namespace ToSic.Eav.ImportExport
     {
         private readonly int _appId;
         private readonly int _zoneId;
-        //private readonly App _app;
         private string _sexycontentContentgroupName = "2SexyContent-ContentGroup";
         private string _sourceControlDataFolder = ".data";
         private string _sourceControlDataFile = "app.xml"; // lower case
@@ -122,8 +121,8 @@ namespace ToSic.Eav.ImportExport
 
         private XmlExporter GenerateExportXml(bool includeContentGroups, bool resetAppGuid)
         {
-// Get Export XML
-            var attributeSets = State.ContentTypes(_zoneId, _appId, includeAttributeTypes: true);//  _app.TemplateManager.GetAvailableContentTypes(true);
+            // Get Export XML
+            var attributeSets = State.ContentTypes(_zoneId, _appId, includeAttributeTypes: true);
             attributeSets = attributeSets.Where(a => !a.ConfigurationIsOmnipresent);
 
             var attributeSetIds = attributeSets.Select(p => p.AttributeSetId.ToString()).ToArray();

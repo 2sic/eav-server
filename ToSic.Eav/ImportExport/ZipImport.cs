@@ -6,11 +6,6 @@ using System.Net;
 using System.Web;
 using System.Xml.Linq;
 using ICSharpCode.SharpZipLib.Zip;
-using ToSic.Eav;
-using ToSic.Eav.ImportExport;
-//using ToSic.SexyContent;
-//using ToSic.Eav.DataSources.Caches;
-//using ToSic.SexyContent.Internal;
 
 namespace ToSic.Eav.ImportExport
 {
@@ -29,11 +24,6 @@ namespace ToSic.Eav.ImportExport
 
         }
 
-   //     public bool ImportApp(Stream zipStream, HttpServerUtility server, PortalSettings portalSettings, List<ExportImportMessage> messages)
-   //     {
-			//return ImportZip(zipStream, server, portalSettings, messages);
-   //     }
-
         /// <summary>
         /// Imports a ZIP file (from stream)
         /// </summary>
@@ -42,11 +32,9 @@ namespace ToSic.Eav.ImportExport
         ///// <param name="portalSettings"></param>
         /// <param name="messages"></param>
         /// <returns></returns>
-        public bool ImportZip(Stream zipStream, HttpServerUtility server/*, PortalSettings portalSettings, List<ExportImportMessage> messages*/)
+        public bool ImportZip(Stream zipStream, HttpServerUtility server)
         {
             List<ExportImportMessage> messages = _environment.Messages;
-            //if (messages == null)
-            //    messages = _environment.Messages;// new List<ExportImportMessage>();
 
             var temporaryDirectory = server.MapPath(Path.Combine(Eav.ImportExport.Settings.TemporaryDirectory, Guid.NewGuid().ToString()));
             var success = true;

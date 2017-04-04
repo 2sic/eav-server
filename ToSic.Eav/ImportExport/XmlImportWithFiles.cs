@@ -37,16 +37,6 @@ namespace ToSic.Eav.ImportExport
         /// </summary>
         private string DefaultLanguage { get; }
 
-		/// <summary>
-		/// The username used for logging (history etc.)
-		/// </summary>
-		//private string UserName { get; }
-
-		/// <summary>
-		/// The id of the current portal
-		/// </summary>
-		// private int? PortalId => PortalSettings.Current != null ? PortalSettings.Current.PortalId : new int?();
-
         private bool AllowSystemChanges { get; }
 
 		#region Prerequisites
