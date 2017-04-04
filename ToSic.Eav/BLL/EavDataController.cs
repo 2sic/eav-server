@@ -55,7 +55,7 @@ namespace ToSic.Eav.BLL
             set { _zoneId = value; }
         }
 
-        private string _userName = null;
+        private string _userName;
         /// <summary>
         /// Current UserName. Used for ChangeLog
         /// </summary>
