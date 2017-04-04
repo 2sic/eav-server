@@ -140,9 +140,9 @@ namespace ToSic.Eav.ImportExport.Refactoring
                     return;
                 }
 
-                var documentRoot = Document.Element(DocumentNodeNames.Root);
+                var documentRoot = Document.Element(XmlConstants.Root);
 
-                DocumentElements = documentRoot.Elements(DocumentNodeNames.Entity);
+                DocumentElements = documentRoot.Elements(XmlConstants.Entity);
                 if (!DocumentElements.Any())
                 {
                     ErrorProtocol.AppendError(ImportErrorCode.InvalidDocument);
@@ -150,7 +150,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
                 }
 
                 // Check the content type of the document (it can be found on each element in the Type attribute)
-                var documentTypeAttribute = DocumentElements.First().Attribute(DocumentNodeNames.EntityTypeAttribute);
+                var documentTypeAttribute = DocumentElements.First().Attribute(XmlConstants.EntityTypeAttribute);
                 if (documentTypeAttribute?.Value == null || documentTypeAttribute.Value != _contentType.Name.RemoveSpecialCharacters())
                 {
                     ErrorProtocol.AppendError(ImportErrorCode.InvalidRoot);
@@ -162,18 +162,18 @@ namespace ToSic.Eav.ImportExport.Refactoring
                 // Assure that each element has a GUID and language child element
                 foreach (var element in DocumentElements)
                 {
-                    if (element.Element(DocumentNodeNames.EntityGuid) == null)
+                    if (element.Element(XmlConstants.EntityGuid) == null)
                     {
-                        element.Add(new XElement(DocumentNodeNames.EntityGuid, ""));
+                        element.Add(new XElement(XmlConstants.EntityGuid, ""));
                         //element.Append(DocumentNodeNames.EntityGuid, "");
                     }
-                    if (element.Element(DocumentNodeNames.EntityLanguage) == null)
+                    if (element.Element(XmlConstants.EntityLanguage) == null)
                     {
-                        element.Add(new XElement(DocumentNodeNames.EntityLanguage, ""));
+                        element.Add(new XElement(XmlConstants.EntityLanguage, ""));
                         //element.Append(DocumentNodeNames.EntityLanguage, "");
                     }
                 }
-                var documentElementLanguagesAll = DocumentElements.GroupBy(element => element.Element(DocumentNodeNames.EntityGuid).Value).Select(group => group.Select(element => element.Element(DocumentNodeNames.EntityLanguage).Value).ToList());
+                var documentElementLanguagesAll = DocumentElements.GroupBy(element => element.Element(XmlConstants.EntityGuid).Value).Select(group => group.Select(element => element.Element(XmlConstants.EntityLanguage).Value).ToList());
                 var documentElementLanguagesCount = documentElementLanguagesAll.Select(item => item.Count);
                 if (documentElementLanguagesCount.Any(count => count != 1))
                 {
@@ -193,7 +193,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
                 {
                     documentElementNumber++;
 
-                    var documentElementLanguage = documentElement.Element(DocumentNodeNames.EntityLanguage)?.Value;
+                    var documentElementLanguage = documentElement.Element(XmlConstants.EntityLanguage)?.Value;
                     if (!_languages.Any(language => language == documentElementLanguage))
                     {   // DNN does not support the language
                         ErrorProtocol.AppendError(ImportErrorCode.InvalidLanguage, "Lang=" + documentElementLanguage, documentElementNumber);
@@ -216,7 +216,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
 
                         if (value == "[\"\"]")//value.IsValueEmpty())
                         {   // It is an empty string
-                            entity.AppendAttributeValue(valueName, "", attribute.Type, documentElementLanguage, false, _resourceReference.IsResolve());
+                            entity.AppendAttributeValue(valueName, "", attribute.Type, documentElementLanguage, false, _resourceReference== ResourceReferenceImport.Resolve);
                             continue;
                         }
 
@@ -225,7 +225,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
                         {   // It is not a value reference.. it is a normal text
                             try
                             {
-                                entity.AppendAttributeValue(valueName, value, valueType, documentElementLanguage, false, _resourceReference.IsResolve());
+                                entity.AppendAttributeValue(valueName, value, valueType, documentElementLanguage, false, _resourceReference == ResourceReferenceImport.Resolve);
                             }
                             catch (FormatException)
                             {
@@ -265,7 +265,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
                             continue;
                         }
 
-                        entity.AppendAttributeValue(valueName, dbEntityValue.Value, valueType, valueReferenceLanguage, dbEntityValue.IsLanguageReadOnly(valueReferenceLanguage), _resourceReference.IsResolve())
+                        entity.AppendAttributeValue(valueName, dbEntityValue.Value, valueType, valueReferenceLanguage, dbEntityValue.IsLanguageReadOnly(valueReferenceLanguage), _resourceReference == ResourceReferenceImport.Resolve)
                               .AppendLanguageReference(documentElementLanguage, valueReadOnly);       
                     }
                 }                
@@ -288,7 +288,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
             if (ErrorProtocol.HasErrors)
                 return false;
 
-            if (_entityClear.IsAll())
+            if (_entityClear == EntityClearImport.All)
             {
                 var entityDeleteGuids = GetEntityDeleteGuids();
                 foreach(var entityGuid in entityDeleteGuids)
@@ -329,7 +329,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
         {
             get
             {
-                return DocumentElements.Select(element => element.Element(DocumentNodeNames.EntityLanguage).Value).Distinct();
+                return DocumentElements.Select(element => element.Element(XmlConstants.EntityLanguage).Value).Distinct();
             }
         }
 
@@ -343,7 +343,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
                 return DocumentElements.SelectMany(element => element.Elements())
                                        .GroupBy(attribute => attribute.Name.LocalName)
                                        .Select(group => group.Key)
-                                       .Where(name => name != DocumentNodeNames.EntityGuid && name != DocumentNodeNames.EntityLanguage)
+                                       .Where(name => name != XmlConstants.EntityGuid && name != XmlConstants.EntityLanguage)
                                        .ToList();
             }
         }
@@ -388,7 +388,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
         {
             get 
             {
-                if (_entityClear.IsNone())
+                if (_entityClear == EntityClearImport.None)
                 {
                     return 0;
                 }

@@ -104,7 +104,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
                             _builder.AppendEntityReferences(documentElement, entity, attribute);
                             // documentElement.AppendEntityReferences(entity, attribute);
                         }
-                        else if (languageReference.IsResolve())
+                        else if (languageReference == LanguageReferenceExport.Resolve)
                         {
                             _builder.AppendValueResolved(documentElement, entity, attribute, language, languageFallback, resourceReference);
                             //documentElement.AppendValueResolved(entity, attribute, language, languageFallback, resourceReference);
@@ -132,16 +132,16 @@ namespace ToSic.Eav.ImportExport.Refactoring
             => new XDocument(new XDeclaration("1.0", "UTF-8", "yes"), content);
 
         private XElement BuildDocumentRoot(params object[] content) 
-            => new XElement(DocumentNodeNames.Root, content);
+            => new XElement(XmlConstants.Root, content);
 
         private XElement GetDocumentEntityElement(object elementGuid, object elementLanguage, string contentTypeName)
         {
             return new XElement
                 (
-                    DocumentNodeNames.Entity, 
-                    new XAttribute(DocumentNodeNames.EntityTypeAttribute, contentTypeName.RemoveSpecialCharacters()),
-                    new XElement(DocumentNodeNames.EntityGuid, elementGuid), 
-                    new XElement(DocumentNodeNames.EntityLanguage, elementLanguage)
+                    XmlConstants.Entity, 
+                    new XAttribute(XmlConstants.EntityTypeAttribute, contentTypeName.RemoveSpecialCharacters()),
+                    new XElement(XmlConstants.EntityGuid, elementGuid), 
+                    new XElement(XmlConstants.EntityLanguage, elementLanguage)
                 );
         }
     }

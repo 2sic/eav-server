@@ -16,10 +16,10 @@ namespace ToSic.Eav.ImportExport.Refactoring
         {
             Guid entityGuid;
 
-            var elementGuid = element.Element(DocumentNodeNames.EntityGuid)?.Value;
+            var elementGuid = element.Element(XmlConstants.EntityGuid)?.Value;
             if (string.IsNullOrEmpty(elementGuid))
             {
-                var elementLanguage = element.Element(DocumentNodeNames.EntityLanguage)?.Value;
+                var elementLanguage = element.Element(XmlConstants.EntityLanguage)?.Value;
                 if (elementLanguage == languageFallback || string.IsNullOrEmpty(elementLanguage)) 
                 {   // If the element does not have a GUID and the element has data for the default 
                     // language, create a new GUID

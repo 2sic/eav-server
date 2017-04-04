@@ -2,6 +2,27 @@
 {
     public class XmlConstants
     {
+        public const string Root = "SexyContentData";
+
+        //public const string Entity = "Entity";
+
+        public const string EntityGuid = "Guid";
+
+        public const string EntityLanguage = "Language";
+
+        public const string EntityTypeAttribute = "Type";
+
+
+        public const string Type = "Type";
+        public const string IsTitle = "IsTitle";
+        public const string Static = "StaticName";
+        public const string Name = "Name";
+        public const string Description = "Description";
+        public const string Scope = "Scope";
+        public const string AlwaysShareConfig = "AlwaysShareConfiguration";
+        public const string SortAttributes = "SortAttributes";
+
+
         public const string RootNode = "SexyContent";
         public const string Header = "Header";
         public const string App = "App";

@@ -49,7 +49,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Const2.cs" />
     <Compile Include="Environment\TennantFileItem.cs" />
     <Compile Include="ExportImportMessage.cs" />
     <Compile Include="FileManager.cs" />
@@ -62,7 +61,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Refactoring\Extensions\IEnumerableExtension.cs" />
     <Compile Include="Refactoring\Extensions\StringExtension.cs" />
-    <Compile Include="Refactoring\Options\DocumentNodeNames.cs" />
     <Compile Include="Refactoring\EntityGuidManager.cs" />
     <Compile Include="Refactoring\Extensions\XElementExtension1.cs" />
     <Compile Include="Logging\ImportError.cs" />
@@ -70,18 +68,10 @@
     <Compile Include="Refactoring\ImportErrorProtocol.cs" />
     <Compile Include="Refactoring\LocalizedDescriptionAttribute.cs" />
     <Compile Include="Refactoring\Options\EntityClearImport.cs" />
-    <Compile Include="Refactoring\Options\EntityClearImportExtension.cs" />
-    <Compile Include="Refactoring\Options\LanguageMissingExport.cs" />
-    <Compile Include="Refactoring\Options\LanguageMissingExportExtension.cs" />
     <Compile Include="Refactoring\Options\LanguageReferenceExport.cs" />
-    <Compile Include="Refactoring\Options\LanguageReferenceExportExtension.cs" />
-    <Compile Include="Refactoring\Options\LanguageReferenceImport.cs" />
-    <Compile Include="Refactoring\Options\LanguageReferenceImportExtension.cs" />
     <Compile Include="Refactoring\Options\RecordExport.cs" />
     <Compile Include="Refactoring\Options\ResourceReferenceExport.cs" />
-    <Compile Include="Refactoring\Options\ResourceReferenceExportExtension.cs" />
     <Compile Include="Refactoring\Options\ResourceReferenceImport.cs" />
-    <Compile Include="Refactoring\Options\ResourceReferenceImportExtension.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Models\ImpDims.cs" />
     <Compile Include="ValueImportModel.cs" />

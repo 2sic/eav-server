@@ -291,15 +291,15 @@ namespace ToSic.Eav.Apps.ImportExport
 				// Add AttributeSet
                 importAttributeSets.Add(new ImpAttrSet
 				{
-					StaticName = attributeSet.Attribute(Const2.Static).Value,
-					Name = attributeSet.Attribute(Const2.Name).Value,
-					Description = attributeSet.Attribute(Const2.Description).Value,
+					StaticName = attributeSet.Attribute(XmlConstants.Static).Value,
+					Name = attributeSet.Attribute(XmlConstants.Name).Value,
+					Description = attributeSet.Attribute(XmlConstants.Description).Value,
 					Attributes = attributes,
-					Scope = attributeSet.Attributes(Const2.Scope).Any() ? attributeSet.Attribute(Const2.Scope).Value : _environment.FallbackContentTypeScope,
-					AlwaysShareConfiguration = AllowSystemChanges && attributeSet.Attributes(Const2.AlwaysShareConfig).Any() && Boolean.Parse(attributeSet.Attribute(Const2.AlwaysShareConfig).Value),
+					Scope = attributeSet.Attributes(XmlConstants.Scope).Any() ? attributeSet.Attribute(XmlConstants.Scope).Value : _environment.FallbackContentTypeScope,
+					AlwaysShareConfiguration = AllowSystemChanges && attributeSet.Attributes(XmlConstants.AlwaysShareConfig).Any() && Boolean.Parse(attributeSet.Attribute(XmlConstants.AlwaysShareConfig).Value),
                     UsesConfigurationOfAttributeSet = attributeSet.Attributes("UsesConfigurationOfAttributeSet").Any() ? attributeSet.Attribute("UsesConfigurationOfAttributeSet").Value : "",
                     TitleAttribute = titleAttribute,
-                    SortAttributes = attributeSet.Attributes(Const2.SortAttributes).Any() && bool.Parse(attributeSet.Attribute(Const2.SortAttributes).Value)
+                    SortAttributes = attributeSet.Attributes(XmlConstants.SortAttributes).Any() && bool.Parse(attributeSet.Attribute(XmlConstants.SortAttributes).Value)
 				});
 			}
 

@@ -133,9 +133,9 @@ namespace ToSic.Eav.Apps.ImportExport
                 foreach (var x in EavAppContext.Attributes.GetAttributesInSet(id))
                 {
                     var attribute = new XElement("Attribute",
-                        new XAttribute(Const2.Static, x.Attribute.StaticName),
-                        new XAttribute(Const2.Type, x.Attribute.Type),
-                        new XAttribute(Const2.IsTitle, x.IsTitle),
+                        new XAttribute(XmlConstants.Static, x.Attribute.StaticName),
+                        new XAttribute(XmlConstants.Type, x.Attribute.Type),
+                        new XAttribute(XmlConstants.IsTitle, x.IsTitle),
                         // Add Attribute MetaData
                         from c in
                             EavAppContext.Entities.GetEntities(ToSic.Eav.Constants.AssignmentObjectTypeIdFieldProperties,
@@ -148,11 +148,11 @@ namespace ToSic.Eav.Apps.ImportExport
 
                 // Add AttributeSet / Content Type
                 var attributeSet = new XElement("AttributeSet",
-                    new XAttribute(Const2.Static, set.StaticName),
-                    new XAttribute(Const2.Name, set.Name),
-                    new XAttribute(Const2.Description, set.Description),
-                    new XAttribute(Const2.Scope, set.Scope),
-                    new XAttribute(Const2.AlwaysShareConfig, set.AlwaysShareConfiguration),
+                    new XAttribute(XmlConstants.Static, set.StaticName),
+                    new XAttribute(XmlConstants.Name, set.Name),
+                    new XAttribute(XmlConstants.Description, set.Description),
+                    new XAttribute(XmlConstants.Scope, set.Scope),
+                    new XAttribute(XmlConstants.AlwaysShareConfig, set.AlwaysShareConfiguration),
                     attributes);
 
                 // Add Ghost-Info if content type inherits from another content type

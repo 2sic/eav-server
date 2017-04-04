@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 using ToSic.Eav.Implementations.ValueConverter;
 using ToSic.Eav.ImportExport.Refactoring.Extensions;
@@ -104,7 +101,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
             {
                 element.Append(name, "[]");
             }
-            else if (resourceReferenceOption.IsResolve())
+            else if (resourceReferenceOption == ResourceReferenceExport.Resolve)
             {
                 element.Append(name, ResolveHyperlinksFromTennant(value));
             }
