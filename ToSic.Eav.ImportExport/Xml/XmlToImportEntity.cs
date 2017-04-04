@@ -8,9 +8,6 @@ using ToSic.Eav.ImportExport.Models;
 
 namespace ToSic.Eav.ImportExport
 {
-    // todo: ensure that Dimension is pre-converted from DB.Dimension to Data.Dimension, so we can
-    // extract this to import/export
-
 	/// <summary>
 	/// Import EAV Data from XML Format
 	/// </summary>
@@ -29,7 +26,7 @@ namespace ToSic.Eav.ImportExport
 		/// <param name="keyNumber">KeyNumber of the Entity</param>
 		/// <param name="keyGuid">KeyGuid of the Entity</param>
 		/// <param name="keyString">KeyString of the Entity</param>
-		public static ImpEntity BuildImpEntityFromXml(XElement xEntity, int assignmentObjectTypeId, List<Dimension> targetDimensions, List<Dimension> sourceDimensions, int? sourceDefaultDimensionId, string defaultLanguage, int? keyNumber = null, Guid? keyGuid = null, string keyString = null)
+		public static ImpEntity BuildImpEntityFromXml(XElement xEntity, int assignmentObjectTypeId, List<Data.Dimension> targetDimensions, List<Data.Dimension> sourceDimensions, int? sourceDefaultDimensionId, string defaultLanguage, int? keyNumber = null, Guid? keyGuid = null, string keyString = null)
 		{
 			var targetEntity = new ImpEntity
 			{
@@ -54,27 +51,27 @@ namespace ToSic.Eav.ImportExport
 				var tempTargetValues = new List<ImportValue>();
 
 				// Process each target's language
-				foreach (var targetDimension in targetDimensions.OrderByDescending(p => p.ExternalKey == defaultLanguage).ThenBy(p => p.ExternalKey))
+				foreach (var targetDimension in targetDimensions.OrderByDescending(p => p.Key == defaultLanguage).ThenBy(p => p.Key))
 				{
 					// This list will contain all source dimensions
-					var sourceLanguages = new List<Dimension>();
+					var sourceLanguages = new List<Data.Dimension>();
 
 					// Add exact match source language, if exists
-					var exactMatchSourceDimension = sourceDimensions.FirstOrDefault(p => p.ExternalKey == targetDimension.ExternalKey);
+					var exactMatchSourceDimension = sourceDimensions.FirstOrDefault(p => p.Key == targetDimension.Key);
 					if (exactMatchSourceDimension != null)
 						sourceLanguages.Add(exactMatchSourceDimension);
 
 					// Add un-exact match language
-					var unExactMatchSourceDimensions = sourceDimensions.Where(p => p.ExternalKey != targetDimension.ExternalKey && p.ExternalKey.StartsWith(targetDimension.ExternalKey.Substring(0, 3)))
-						.OrderByDescending(p => p.ExternalKey == defaultLanguage)
-						.ThenByDescending(p => p.ExternalKey.Substring(0, 2) == p.ExternalKey.Substring(3, 2))
-						.ThenBy(p => p.ExternalKey);
+					var unExactMatchSourceDimensions = sourceDimensions.Where(p => p.Key != targetDimension.Key && p.Key.StartsWith(targetDimension.Key.Substring(0, 3)))
+						.OrderByDescending(p => p.Key == defaultLanguage)
+						.ThenByDescending(p => p.Key.Substring(0, 2) == p.Key.Substring(3, 2))
+						.ThenBy(p => p.Key);
 					sourceLanguages.AddRange(unExactMatchSourceDimensions);
 
 					// Add primary language, if current target is primary
-                    if (targetDimension.ExternalKey == defaultLanguage && sourceDefaultDimensionId.HasValue)
+                    if (targetDimension.Key == defaultLanguage && sourceDefaultDimensionId.HasValue)
 					{
-						var sourcePrimaryLanguage = sourceDimensions.FirstOrDefault(p => p.DimensionID == sourceDefaultDimensionId);
+						var sourcePrimaryLanguage = sourceDimensions.FirstOrDefault(p => p.DimensionId == sourceDefaultDimensionId);
 						if (sourcePrimaryLanguage != null && !sourceLanguages.Contains(sourcePrimaryLanguage))
 							sourceLanguages.Add(sourcePrimaryLanguage);
 					}
@@ -84,30 +81,30 @@ namespace ToSic.Eav.ImportExport
 
 					foreach (var sourceLanguage in sourceLanguages)
 					{
-						sourceValue = sourceValues.FirstOrDefault(p => p.Elements("Dimension").Any(d => d.Attribute("DimensionID").Value == sourceLanguage.DimensionID.ToString()));
+						sourceValue = sourceValues.FirstOrDefault(p => p.Elements("Dimension").Any(d => d.Attribute("DimensionID").Value == sourceLanguage.DimensionId.ToString()));
 
 						if (sourceValue == null)
 							continue;
 
-						readOnly = Boolean.Parse(sourceValue.Elements("Dimension").FirstOrDefault(p => p.Attribute("DimensionID").Value == sourceLanguage.DimensionID.ToString()).Attribute("ReadOnly").Value);
+						readOnly = Boolean.Parse(sourceValue.Elements("Dimension").FirstOrDefault(p => p.Attribute("DimensionID").Value == sourceLanguage.DimensionId.ToString()).Attribute("ReadOnly").Value);
 
 						// Override ReadOnly for primary target language
-						if (targetDimension.ExternalKey == defaultLanguage)
+						if (targetDimension.Key == defaultLanguage)
 							readOnly = false;
 
 						break;
 					}
 
 					// Take first value if there is only one value wihtout a dimension (default / fallback value), but only in primary language
-					if (sourceValue == null && sourceValues.Count == 1 && !sourceValues.Elements("Dimension").Any() && targetDimension.ExternalKey == defaultLanguage)
+					if (sourceValue == null && sourceValues.Count == 1 && !sourceValues.Elements("Dimension").Any() && targetDimension.Key == defaultLanguage)
 						sourceValue = sourceValues.First();
 
 					// Process found value
 					if (sourceValue != null)
 					{
 						var dimensionsToAdd = new List<Models.ImpDims>();
-						if (targetDimensions.Single(p => p.ExternalKey == targetDimension.ExternalKey).DimensionID >= 1)
-							dimensionsToAdd.Add(new Models.ImpDims { DimensionExternalKey = targetDimension.ExternalKey, ReadOnly = readOnly });
+						if (targetDimensions.Single(p => p.Key == targetDimension.Key).DimensionId >= 1)
+							dimensionsToAdd.Add(new Models.ImpDims { DimensionExternalKey = targetDimension.Key, ReadOnly = readOnly });
 
 						// If value has already been added to the list, add just dimension with original ReadOnly state
 						var existingImportValue = tempTargetValues.FirstOrDefault(p => p.XmlValue == sourceValue);

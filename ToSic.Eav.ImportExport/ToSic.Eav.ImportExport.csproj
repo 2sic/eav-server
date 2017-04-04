@@ -88,6 +88,7 @@
     <Compile Include="Models\ImpVal.cs" />
     <Compile Include="XmlConstants.cs" />
     <Compile Include="Xml\XmlBuilder.cs" />
+    <Compile Include="Xml\XmlToImportEntity.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Logging\ImportErrorCode.de-DE.resx">

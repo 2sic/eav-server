@@ -570,8 +570,11 @@ namespace ToSic.Eav.Apps.ImportExport
 			    }
 			}
 
-			var importEntity = Eav.ImportExport.XmlToImportEntity.BuildImpEntityFromXml(entityNode, assignmentObjectTypeId,
-				_targetDimensions, _sourceDimensions, _sourceDefaultDimensionId, DefaultLanguage, keyNumber, keyGuid, keyString);
+            var targetDimsRetyped = _targetDimensions.Select(d => new Data.Dimension { DimensionId = d.DimensionID, Key = d.ExternalKey }).ToList();
+            var sourceDimsRetyped = _sourceDimensions.Select(s => new Data.Dimension { DimensionId = s.DimensionID, Key = s.ExternalKey }).ToList();
+
+            var importEntity = Eav.ImportExport.XmlToImportEntity.BuildImpEntityFromXml(entityNode, assignmentObjectTypeId,
+				targetDimsRetyped, sourceDimsRetyped, _sourceDefaultDimensionId, DefaultLanguage, keyNumber, keyGuid, keyString);
 
 			return importEntity;
 		}
