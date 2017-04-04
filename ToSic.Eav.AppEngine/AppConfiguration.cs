@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ToSic.Eav.AppEngine
+﻿namespace ToSic.Eav.Apps
 {
     /// <summary>
     /// Configuration values used by the runtime as the app is in use
     /// </summary>
-    public class AppConfiguration
+    public class Configuration
     {
         // todo: move to some kind of injection thingy?
 

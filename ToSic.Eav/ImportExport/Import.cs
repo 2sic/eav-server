@@ -5,6 +5,7 @@ using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
 using ToSic.Eav.BLL;
+using ToSic.Eav.ImportExport.Logging;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Import

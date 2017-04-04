@@ -7,9 +7,10 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
 using ToSic.Eav.BLL;
+using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Environment;
 
-namespace ToSic.Eav.ImportExport
+namespace ToSic.Eav.Apps.ImportExport
 {
 
     // todo: move all strings to XmlConstants
@@ -18,10 +19,10 @@ namespace ToSic.Eav.ImportExport
 
     public abstract class XmlExporter
     {
-        // initialize data context
+        #region simple properties
         internal EavDataController EavAppContext;
-        internal readonly List<int> ReferencedFileIds = new List<int>();
-        internal readonly List<int> ReferencedFolderIds = new List<int>();
+        protected readonly List<int> ReferencedFileIds = new List<int>();
+        protected readonly List<int> ReferencedFolderIds = new List<int>();
         public List<TennantFileItem> ReferencedFiles = new List<TennantFileItem>();
         private bool _isAppExport;
 
@@ -30,25 +31,34 @@ namespace ToSic.Eav.ImportExport
         public string[] EntityIDs;
         public List<ExportImportMessage> Messages = new List<ExportImportMessage>();
 
-        #region simple properties
 
         #endregion
 
-        #region Export
-
-        internal XmlExporter()
+        #region Constructor stuff
+        /// <summary>
+        /// Initiate the exporter
+        /// </summary>
+        /// <param name="zoneId"></param>
+        /// <param name="appId"></param>
+        protected XmlExporter(int zoneId, int appId)
         {
-            
+            EavAppContext = EavDataController.Instance(zoneId, appId); 
         }
 
+
         private string _appStaticName = "";
-        internal void Constructor(string appStaticName, bool appExport, string[] attrSetIds, string[] entityIds)
+        protected void Constructor(string appStaticName, bool appExport, string[] attrSetIds, string[] entityIds)
         {
             _appStaticName = appStaticName;
             _isAppExport = appExport;
             AttributeSetIDs = attrSetIds;
             EntityIDs = entityIds;
         }
+
+        #endregion
+
+        #region Export
+
 
 
         /// <summary>
@@ -82,7 +92,7 @@ namespace ToSic.Eav.ImportExport
 
         public XDocument ExportXDocument => _exportDocument;
 
-        internal void InitExportXDocument(string defaultLanguage, string moduleVersion)
+        protected void InitExportXDocument(string defaultLanguage, string moduleVersion)
         {
             // Create XML document and declaration
             var doc = _exportDocument = new XDocument(new XDeclaration("1.0", "UTF-8", "yes"), null);
@@ -196,16 +206,6 @@ namespace ToSic.Eav.ImportExport
 
         public abstract void AddFilesToExportQueue();
 
-        //private void AddAdamFilesToExportQueue()
-        //{
-        //    var adamIds = AdamManager.Export.AppFiles;
-        //    adamIds.ForEach(AddFileAndFolderToQueue);
-
-        //    // also add folders in adam - because empty folders may also have metadata assigned
-        //    var adamFolders = AdamManager.Export.AppFolders;
-        //    adamFolders.ForEach(AddFolderToQueue);
-        //}
-
         /// <summary>
         /// Returns an Entity XElement
         /// </summary>
@@ -217,7 +217,7 @@ namespace ToSic.Eav.ImportExport
             XElement entityXElement;
             try
             {
-                entityXElement = new ToSic.Eav.ImportExport.XmlExport(EavAppContext).GetEntityXElement(e.EntityID);
+                entityXElement = new XmlExport(EavAppContext).GetEntityXElement(e.EntityID);
             }
             catch (Exception ex)
             {
@@ -278,35 +278,8 @@ namespace ToSic.Eav.ImportExport
             return entityXElement;
         }
 
-        internal abstract void AddFileAndFolderToQueue(int fileNum);
+        protected abstract void AddFileAndFolderToQueue(int fileNum);
 
-        //internal void AddFileAndFolderToQueue(int fileNum)
-        //{
-        //    try
-        //    {
-        //        _referencedFileIds.Add(fileNum);
-
-        //        // also try to remember the folder
-        //        try
-        //        {
-        //            var file = _dnnFiles.GetFile(fileNum);
-        //            AddFolderToQueue(file.FolderId);
-        //        }
-        //        catch
-        //        {
-        //            // don't do anything, because if the file doesn't exist, its FOLDER should also not land in the queue
-        //        }
-        //    }
-        //    catch
-        //    {
-        //        // don't do anything, because if the file doesn't exist, it should also not land in the queue
-        //    }
-        //}
-
-        //private void AddFolderToQueue(int folderId)
-        //{
-        //    _referencedFolderIds.Add(folderId);
-        //}
 
         #endregion
 
@@ -324,7 +297,7 @@ namespace ToSic.Eav.ImportExport
                 );
         }
 
-        internal abstract TennantFileItem ResolveFile(int fileId);
+        protected abstract TennantFileItem ResolveFile(int fileId);
 
         private XElement GetFileXElement(int fileId)
         {
@@ -340,7 +313,7 @@ namespace ToSic.Eav.ImportExport
             );
         }
 
-        internal abstract string ResolveFolderId(int folderId);
+        protected abstract string ResolveFolderId(int folderId);
 
         private XElement GetFolderXElement(int folderId)
         {

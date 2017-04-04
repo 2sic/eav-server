@@ -6,8 +6,9 @@ using System.Net;
 using System.Web;
 using System.Xml.Linq;
 using ICSharpCode.SharpZipLib.Zip;
+using ToSic.Eav.ImportExport;
 
-namespace ToSic.Eav.ImportExport
+namespace ToSic.Eav.Apps.ImportExport
 {
     public class ZipImport
     {

@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net451</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Runtime\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Unity" Version="2.1.505.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj" />
+    <ProjectReference Include="..\ToSic.Eav.DataSources\ToSic.Eav.DataSources.csproj" />
+    <ProjectReference Include="..\ToSic.Eav\ToSic.Eav.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="SharpZipLib">
+      <HintPath>..\..\2SexyContent\Web\bin\SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Web" />
+  </ItemGroup>
+
+</Project>

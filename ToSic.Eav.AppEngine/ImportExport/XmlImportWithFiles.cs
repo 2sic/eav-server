@@ -5,14 +5,15 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Xml.Linq;
+using Microsoft.Practices.Unity;
 using ToSic.Eav.BLL;
 using ToSic.Eav.Import;
-using static System.Boolean;
-using static System.String;
-using Microsoft.Practices.Unity;// needed for the static Resolve<...>
-using ToSic.Eav.AppEngine;
+using ToSic.Eav.ImportExport;
+using ToSic.Eav.ImportExport.Logging;
 
-namespace ToSic.Eav.ImportExport
+// needed for the static Resolve<...>
+
+namespace ToSic.Eav.Apps.ImportExport
 {
     // todo: move all strings to XmlConstants
 
@@ -142,7 +143,7 @@ namespace ToSic.Eav.ImportExport
             if (appGuid != XmlConstants.AppContentGuid)
 			{
 				// Build Guid (take existing, or create a new)
-				if (IsNullOrEmpty(appGuid) || appGuid == new Guid().ToString())
+				if (String.IsNullOrEmpty(appGuid) || appGuid == new Guid().ToString())
 					appGuid = Guid.NewGuid().ToString();
 
 				// Adding app to EAV
@@ -201,7 +202,7 @@ namespace ToSic.Eav.ImportExport
 				Name = p.Attribute("Name").Value,
 				SystemKey = p.Attribute("SystemKey").Value,
 				ExternalKey = p.Attribute("ExternalKey").Value,
-				Active = Parse(p.Attribute("Active").Value)
+				Active = Boolean.Parse(p.Attribute("Active").Value)
 			}).ToList();
 
 			_sourceDefaultLanguage = xmlSource.Element(XmlConstants.Header)?.Element(XmlConstants.Language)?.Attribute(XmlConstants.LangDefault).Value;
@@ -230,7 +231,7 @@ namespace ToSic.Eav.ImportExport
 		    var entNodes = xmlSource.Elements(XmlConstants.Entities).Elements(XmlConstants.Entity);
 
             var importAttributeSets = GetImportAttributeSets(atsNodes);
-			var importEntities = GetImportEntities(entNodes, Configuration.AssignmentObjectTypeIdDefault);
+			var importEntities = GetImportEntities(entNodes, Eav.Configuration.AssignmentObjectTypeIdDefault);
 
 			var import = new Import.Import(_zoneId, _appId, /*UserName,*/ leaveExistingValuesUntouched);
 			import.RunImport(importAttributeSets, importEntities);
@@ -282,7 +283,7 @@ namespace ToSic.Eav.ImportExport
                         attributes.Add(attribute);
 
                         // Set Title Attribute
-                        if (Parse(xElementAttribute.Attribute("IsTitle").Value))
+                        if (Boolean.Parse(xElementAttribute.Attribute("IsTitle").Value))
                             titleAttribute = attribute;
                     }
 
@@ -294,7 +295,7 @@ namespace ToSic.Eav.ImportExport
 					Description = attributeSet.Attribute(Const2.Description).Value,
 					Attributes = attributes,
 					Scope = attributeSet.Attributes(Const2.Scope).Any() ? attributeSet.Attribute(Const2.Scope).Value : _environment.FallbackContentTypeScope,
-					AlwaysShareConfiguration = AllowSystemChanges && attributeSet.Attributes(Const2.AlwaysShareConfig).Any() && Parse(attributeSet.Attribute(Const2.AlwaysShareConfig).Value),
+					AlwaysShareConfiguration = AllowSystemChanges && attributeSet.Attributes(Const2.AlwaysShareConfig).Any() && Boolean.Parse(attributeSet.Attribute(Const2.AlwaysShareConfig).Value),
                     UsesConfigurationOfAttributeSet = attributeSet.Attributes("UsesConfigurationOfAttributeSet").Any() ? attributeSet.Attribute("UsesConfigurationOfAttributeSet").Value : "",
                     TitleAttribute = titleAttribute,
                     SortAttributes = attributeSet.Attributes(Const2.SortAttributes).Any() && bool.Parse(attributeSet.Attribute(Const2.SortAttributes).Value)
@@ -325,7 +326,7 @@ namespace ToSic.Eav.ImportExport
 
                     var contentTypeStaticName = template.Attribute(XmlConstants.AttSetStatic).Value;
 
-                    if (!IsNullOrEmpty(contentTypeStaticName) && cache.GetContentType(contentTypeStaticName) == null)
+                    if (!String.IsNullOrEmpty(contentTypeStaticName) && cache.GetContentType(contentTypeStaticName) == null)
                     {
                         ImportLog.Add(
                             new ExportImportMessage(
@@ -338,7 +339,7 @@ namespace ToSic.Eav.ImportExport
                     var demoEntityGuid = template.Attribute("DemoEntityGUID").Value;
                     var demoEntityId = new int?();
 
-                    if (!IsNullOrEmpty(demoEntityGuid))
+                    if (!String.IsNullOrEmpty(demoEntityGuid))
                     {
                         var entityGuid = Guid.Parse(demoEntityGuid);
                         if ( /*App.*/_eavContext.Entities.EntityExists(entityGuid))
@@ -353,10 +354,10 @@ namespace ToSic.Eav.ImportExport
                     }
 
                     var type = template.Attribute("Type").Value;
-                    var isHidden = Parse(template.Attribute("IsHidden").Value);
+                    var isHidden = Boolean.Parse(template.Attribute("IsHidden").Value);
                     var location = template.Attribute("Location").Value;
                     var publishData =
-                        Parse(template.Attribute("PublishData") == null
+                        Boolean.Parse(template.Attribute("PublishData") == null
                             ? "False"
                             : template.Attribute("PublishData").Value);
                     var streamsToPublish = template.Attribute("StreamsToPublish") == null
@@ -369,7 +370,7 @@ namespace ToSic.Eav.ImportExport
                     var pipelineEntityGuid = template.Attribute("PipelineEntityGUID");
                     var pipelineEntityId = new int?();
 
-                    if (!IsNullOrEmpty(pipelineEntityGuid?.Value))
+                    if (!String.IsNullOrEmpty(pipelineEntityGuid?.Value))
                     {
                         var entityGuid = Guid.Parse(pipelineEntityGuid.Value);
                         if (_eavContext.Entities.EntityExists(entityGuid))
@@ -384,7 +385,7 @@ namespace ToSic.Eav.ImportExport
 
                     var useForList = false;
                     if (template.Attribute("UseForList") != null)
-                        useForList = Parse(template.Attribute("UseForList").Value);
+                        useForList = Boolean.Parse(template.Attribute("UseForList").Value);
 
                     var lstTemplateDefaults = template.Elements(XmlConstants.Entity).Select(e =>
                     {
@@ -560,7 +561,7 @@ namespace ToSic.Eav.ImportExport
 
 
 				// Correct FileId in Hyperlink fields (takes XML data that lists files)
-			    if (!IsNullOrEmpty(sourceValueString) && sourceValue.Attribute("Type").Value == "Hyperlink")
+			    if (!String.IsNullOrEmpty(sourceValueString) && sourceValue.Attribute("Type").Value == "Hyperlink")
 			    {
 			        string newValue = GetMappedLink(sourceValueString);
 			        if (newValue != null)

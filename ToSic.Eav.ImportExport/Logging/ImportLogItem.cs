@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
+using ToSic.Eav.Import;
 
-namespace ToSic.Eav.Import
+namespace ToSic.Eav.ImportExport.Logging
 {
     public class ImportLogItem
     {

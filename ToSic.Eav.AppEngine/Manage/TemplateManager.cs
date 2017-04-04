@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 
-namespace ToSic.Eav.AppEngine
+namespace ToSic.Eav.Apps.Manage
 {
     /// <summary>
     /// Templates manager for the app engine - in charge of importing / modifying templates at app-level
     /// </summary>
-    public class TemplateManager
+    public class TemplatesManager
     {
         private readonly AppManager _appManager;
 
-        internal TemplateManager(AppManager appManager)
+        internal TemplatesManager(AppManager appManager)
         {
             _appManager = appManager;
         }
@@ -49,9 +49,9 @@ namespace ToSic.Eav.AppEngine
             };
 
             if (templateId.HasValue)
-                State.EntityUpdate(_appManager.ZoneId, _appManager.AppId, templateId.Value, values);
+                _appManager.Entities.Update(templateId.Value, values);
             else
-                State.EntityCreate(_appManager.ZoneId, _appManager.AppId, AppConfiguration.TemplateContentType, values);
+                _appManager.Entities.Create(Configuration.TemplateContentType, values);
         }
 
 

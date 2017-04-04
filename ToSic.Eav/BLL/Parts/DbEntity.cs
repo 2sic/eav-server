@@ -6,6 +6,7 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Import;
 using ToSic.Eav.ImportExport;
+using ToSic.Eav.ImportExport.Logging;
 
 namespace ToSic.Eav.BLL.Parts
 {

@@ -58,6 +58,7 @@
     <Compile Include="ImportEntity.cs" />
     <Compile Include="ImportAttributeSet.cs" />
     <Compile Include="IValueImportModel.cs" />
+    <Compile Include="Logging\ImportLogItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Refactoring\Extensions\IEnumerableExtension.cs" />
     <Compile Include="Refactoring\Extensions\StringExtension.cs" />

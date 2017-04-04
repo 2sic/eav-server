@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
-//using ToSic.Eav.Data;
-//using EntityRelationship = ToSic.Eav.Data.EntityRelationship;
-//using ToSic.SexyContent;
 
-namespace ToSic.Eav.AppEngine
+namespace ToSic.Eav.Apps
 {
     public class Template
     {

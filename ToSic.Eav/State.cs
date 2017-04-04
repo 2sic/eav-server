@@ -100,43 +100,6 @@ namespace ToSic.Eav
         }
         #endregion
 
-        #region Data-level entity actions
-
-        public static void EntityUpdate(int zoneId, int appId, int id, Dictionary<string, object> values)
-            => EavDataController.Instance(zoneId, appId).Entities.UpdateEntity(id, values);
-
-        public static Tuple<int, Guid> EntityCreate(int zoneId, int appId, string typeName, Dictionary<string, object> values, Guid? entityGuid = null)
-        {
-            var contentType = DataSource.GetCache(zoneId, appId).GetContentType(typeName);
-            var ent = EavDataController.Instance(zoneId, appId).Entities.AddEntity(contentType.AttributeSetId, values, null, null, entityGuid: entityGuid);
-            return new Tuple<int, Guid>(ent.EntityID, ent.EntityGUID);
-        }
-
-        public static bool EntityDelete(int zoneId, int appId, int id)
-        {
-            var eavContext = EavDataController.Instance(zoneId, appId);
-            var canDelete = eavContext.Entities.CanDeleteEntity(id);
-            if (!canDelete.Item1)
-                throw new Exception(canDelete.Item2);
-            return eavContext.Entities.DeleteEntity(id);
-        }
-
-        public static int EntityGetOrCreate(int zoneId, int appId, Guid? newGuid, string contentTypeName, Dictionary<string, object> values)
-        {
-            var ctl = EavDataController.Instance(zoneId, appId);
-            if (newGuid.HasValue && ctl.Entities.EntityExists(newGuid.Value)) // eavDc.Entities.EntityExists(newGuid.Value))
-            {
-                // check if it's deleted - if yes, resurrect
-                var existingEnt = ctl.Entities.GetEntitiesByGuid(newGuid.Value).First();
-                if (existingEnt.ChangeLogDeleted != null)
-                    existingEnt.ChangeLogDeleted = null;
-
-                return existingEnt.EntityID;
-            }
-
-            return EntityCreate(zoneId, appId, contentTypeName, values, entityGuid: newGuid).Item1;
-        }
-        #endregion
 
 
         public static void MetadataEnsureTypeAndSingleEntity(int zoneId, int appId, string scope, string setName,

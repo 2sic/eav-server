@@ -5,9 +5,12 @@ using System.Linq;
 using System.Web;
 using System.Xml.XPath;
 using ICSharpCode.SharpZipLib.Zip;
-using Microsoft.Practices.Unity; // needed for the static Resolve<...>
+using Microsoft.Practices.Unity;
+using ToSic.Eav.ImportExport;
 
-namespace ToSic.Eav.ImportExport
+// needed for the static Resolve<...>
+
+namespace ToSic.Eav.Apps.ImportExport
 {
     public class ZipExport
     {
