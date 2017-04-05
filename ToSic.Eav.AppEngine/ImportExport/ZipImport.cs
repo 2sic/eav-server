@@ -7,6 +7,7 @@ using System.Web;
 using System.Xml.Linq;
 using ICSharpCode.SharpZipLib.Zip;
 using ToSic.Eav.ImportExport;
+using ToSic.Eav.ImportExport.Logging;
 
 namespace ToSic.Eav.Apps.ImportExport
 {

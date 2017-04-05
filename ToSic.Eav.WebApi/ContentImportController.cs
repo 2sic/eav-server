@@ -45,13 +45,13 @@ namespace ToSic.Eav.WebApi
             AppId = args.AppId;
 
             var import = GetXmlImport(args);
-            if (import.ErrorProtocol.HasErrors)
+            if (import.ErrorLog.HasErrors)
             {
-                return new ContentImportResult(!import.ErrorProtocol.HasErrors, import.ErrorProtocol.Errors);
+                return new ContentImportResult(!import.ErrorLog.HasErrors, import.ErrorLog.Errors);
             }
             else
             {
-                return new ContentImportResult(!import.ErrorProtocol.HasErrors, new { AmountOfEntitiesCreated = import.AmountOfEntitiesCreated, AmountOfEntitiesDeleted = import.AmountOfEntitiesDeleted, AmountOfEntitiesUpdated = import.AmountOfEntitiesUpdated, AttributeNamesInDocument = import.AttributeNamesInDocument, AttributeNamesInContentType = import.AttributeNamesInContentType, AttributeNamesNotImported = import.AttributeNamesNotImported, DocumentElementsCount = import.DocumentElements.Count(), LanguagesInDocumentCount = import.LanguagesInDocument.Count() });
+                return new ContentImportResult(!import.ErrorLog.HasErrors, new { AmountOfEntitiesCreated = import.AmountOfEntitiesCreated, AmountOfEntitiesDeleted = import.AmountOfEntitiesDeleted, AmountOfEntitiesUpdated = import.AmountOfEntitiesUpdated, AttributeNamesInDocument = import.AttributeNamesInDocument, AttributeNamesInContentType = import.AttributeNamesInContentType, AttributeNamesNotImported = import.AttributeNamesNotImported, DocumentElementsCount = import.DocumentElements.Count(), LanguagesInDocumentCount = import.LanguagesInDocument.Count() });
             }
         }
 
@@ -61,11 +61,11 @@ namespace ToSic.Eav.WebApi
             AppId = args.AppId;
 
             var import = GetXmlImport(args);
-            if (!import.ErrorProtocol.HasErrors)
+            if (!import.ErrorLog.HasErrors)
             {
                 import.PersistImportToRepository(CurrentContext.UserName);
             }
-            return new ContentImportResult(!import.ErrorProtocol.HasErrors, null);
+            return new ContentImportResult(!import.ErrorLog.HasErrors, null);
         }
 
 

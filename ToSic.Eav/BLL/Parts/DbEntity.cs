@@ -85,7 +85,7 @@ namespace ToSic.Eav.BLL.Parts
         /// </summary>
         internal Entity AddEntity(int attributeSetId, ImpEntity impEntity, List<ImportLogItem> importLog, bool isPublished, int? publishedTarget)
         {
-            return AddEntity(null, attributeSetId, impEntity.Values, null, impEntity.KeyNumber, impEntity.KeyGuid, impEntity.KeyString, impEntity.AssignmentObjectTypeId, 0, impEntity.EntityGuid, null, updateLog: importLog, isPublished: isPublished, publishedEntityId: publishedTarget);
+            return AddEntity(null, attributeSetId, impEntity.Values, null, impEntity.KeyNumber, impEntity.KeyGuid, impEntity.KeyString, impEntity.KeyTypeId, 0, impEntity.EntityGuid, null, updateLog: importLog, isPublished: isPublished, publishedEntityId: publishedTarget);
         }
 
         /// <summary>
@@ -265,7 +265,7 @@ namespace ToSic.Eav.BLL.Parts
             var currentValues = entity.EntityID != 0 ? Context.SqlDb.Values.Include("Attribute").Include("ValuesDimensions").Where(v => v.EntityID == entity.EntityID).ToList() : entity.Values.ToList();
 
             // Update Values from Import Model
-            var newValuesImport = newValues as Dictionary<string, List<IValueImportModel>>;
+            var newValuesImport = newValues as Dictionary<string, List<IImpValue>>;
             if (newValuesImport != null)
                 UpdateEntityFromImportModel(entity, newValuesImport, updateLog, attributes, currentValues, preserveUndefinedValues);
             // Update Values from ValueViewModel
@@ -285,7 +285,7 @@ namespace ToSic.Eav.BLL.Parts
         /// <summary>
         /// Update an Entity when using the Import
         /// </summary>
-        internal void UpdateEntityFromImportModel(Entity currentEntity, Dictionary<string, List<IValueImportModel>> newValuesImport, List<ImportLogItem> updateLog, List<Attribute> attributeList, List<EavValue> currentValues, bool keepAttributesMissingInImport)
+        internal void UpdateEntityFromImportModel(Entity currentEntity, Dictionary<string, List<IImpValue>> newValuesImport, List<ImportLogItem> updateLog, List<Attribute> attributeList, List<EavValue> currentValues, bool keepAttributesMissingInImport)
         {
             if (updateLog == null)
                 throw new ArgumentNullException(nameof(updateLog), "When Calling UpdateEntity() with newValues of Type IValueImportModel updateLog must be set.");
@@ -303,7 +303,7 @@ namespace ToSic.Eav.BLL.Parts
                     updateLog.AddRange(newValue.Value.Select(v => new ImportLogItem(EventLogEntryType.Warning, "Attribute not found for Value")
                     {
                         ImpAttribute = new ImpAttribute { StaticName = newValue.Key },
-                        Value = v,
+                        ImpValue = v,
                         ImpEntity = v.ParentEntity
                     }));
                     continue;
@@ -328,7 +328,7 @@ namespace ToSic.Eav.BLL.Parts
                         updateLog.Add(new ImportLogItem(EventLogEntryType.Error, "Update Entity-Value failed")
                         {
                             ImpAttribute = new ImpAttribute { StaticName = newValue.Key },
-                            Value = newSingleValue,
+                            ImpValue = newSingleValue,
                             ImpEntity = newSingleValue.ParentEntity,
                             Exception = ex
                         });
@@ -414,12 +414,12 @@ namespace ToSic.Eav.BLL.Parts
         /// <summary>
         /// Convert IOrderedDictionary to <see cref="Dictionary{String, ValueViewModel}" /> (for backward capability)
         /// </summary>
-        private Dictionary<string, ImpVal> DictionaryToValuesViewModel(IDictionary newValues)
+        private Dictionary<string, ImpValueInside> DictionaryToValuesViewModel(IDictionary newValues)
         {
-            if (newValues is Dictionary<string, ImpVal>)
-                return (Dictionary<string, ImpVal>)newValues;
+            if (newValues is Dictionary<string, ImpValueInside>)
+                return (Dictionary<string, ImpValueInside>)newValues;
 
-            return newValues.Keys.Cast<object>().ToDictionary(key => key.ToString(), key => new ImpVal { ReadOnly = false, Value = newValues[key] });
+            return newValues.Keys.Cast<object>().ToDictionary(key => key.ToString(), key => new ImpValueInside { ReadOnly = false, Value = newValues[key] });
         }
 
         #region Delete Commands

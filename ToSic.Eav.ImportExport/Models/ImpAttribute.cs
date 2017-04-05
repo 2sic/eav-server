@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.Import;
 using ToSic.Eav.ImportExport.Interfaces;
 
 namespace ToSic.Eav.ImportExport.Models
@@ -54,16 +53,16 @@ namespace ToSic.Eav.ImportExport.Models
             var allEntity = new ImpEntity
             {
                 AttributeSetStaticName = "@All",
-                Values = new Dictionary<string, List<IValueImportModel>>()
+                Values = new Dictionary<string, List<IImpValue>>()
             };
             if (!string.IsNullOrEmpty(name))
-                allEntity.Values.Add("Name", new List<IValueImportModel> { new ValueImportModel<string>(allEntity) { Value = name } });
+                allEntity.Values.Add("Name", new List<IImpValue> { new ImpValue<string>(allEntity, name ) });
             if (!string.IsNullOrEmpty(notes))
-                allEntity.Values.Add("Notes", new List<IValueImportModel> { new ValueImportModel<string>(allEntity) { Value = notes } });
+                allEntity.Values.Add("Notes", new List<IImpValue> { new ImpValue<string>(allEntity, notes ) });
             if (visibleInEditUi.HasValue)
-                allEntity.Values.Add("VisibleInEditUI", new List<IValueImportModel> { new ValueImportModel<bool?>(allEntity) { Value = visibleInEditUi } });
+                allEntity.Values.Add("VisibleInEditUI", new List<IImpValue> { new ImpValue<bool?>(allEntity, visibleInEditUi ) });
             if (defaultValue != null)
-                allEntity.Values.Add("DefaultValue", new List<IValueImportModel> { new ValueImportModel<string>(allEntity) { Value = defaultValue } });
+                allEntity.Values.Add("DefaultValue", new List<IImpValue> { new ImpValue<string>(allEntity, defaultValue ) });
 
             return allEntity;
         }
@@ -73,12 +72,12 @@ namespace ToSic.Eav.ImportExport.Models
             var stringEntity = new ImpEntity
             {
                 AttributeSetStaticName = "@String",
-                Values = new Dictionary<string, List<IValueImportModel>>()
+                Values = new Dictionary<string, List<IImpValue>>()
             };
             if (!string.IsNullOrEmpty(inputType))
-                stringEntity.Values.Add("InputType", new List<IValueImportModel> { new ValueImportModel<string>(stringEntity) { Value = inputType } });
+                stringEntity.Values.Add("InputType", new List<IImpValue> { new ImpValue<string>(stringEntity, inputType ) });
             if (rowCount.HasValue)
-                stringEntity.Values.Add("RowCount", new List<IValueImportModel> { new ValueImportModel<decimal?>(stringEntity) { Value = rowCount } });
+                stringEntity.Values.Add("RowCount", new List<IImpValue> { new ImpValue<decimal?>(stringEntity, rowCount ) });
 
             return stringEntity;
         }

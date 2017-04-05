@@ -301,7 +301,7 @@ On all your devices.</PreviewContent>
 
             var entity31d9 = fileImport.Entities.First(e => e.EntityGuid == new Guid("31d93b03-cfb3-483b-8134-e08bbee9cd2c"));
             var previewContent = entity31d9.Values["PreviewContent"][0];
-            Assert.AreEqual("Easy and immediate separation of concerns.", (previewContent as IValueImportModel).StringValueForTesting);
+            Assert.AreEqual("Easy and immediate separation of concerns.", (previewContent as IImpValue).ToString());
 
             throw new Exception("Cant finish testing import yet - there is still a large bug creating much too much data!");
             //var fileImported = fileImport.PersistImportToRepository(UserNameOfTestingScript);

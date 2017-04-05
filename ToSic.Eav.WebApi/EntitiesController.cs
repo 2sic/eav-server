@@ -272,10 +272,10 @@ namespace ToSic.Eav.WebApi
             #endregion
 
             #region Metadata if we have any
-            importEntity.AssignmentObjectTypeId = Constants.DefaultAssignmentObjectTypeId;  // default case
+            importEntity.KeyTypeId = Constants.DefaultAssignmentObjectTypeId;  // default case
             if (metadata != null && metadata.HasMetadata)
             {
-                importEntity.AssignmentObjectTypeId = metadata.TargetType;
+                importEntity.KeyTypeId = metadata.TargetType;
                 importEntity.KeyGuid = metadata.KeyGuid;
                 importEntity.KeyNumber = metadata.KeyNumber;
                 importEntity.KeyString = metadata.KeyString;
@@ -283,7 +283,7 @@ namespace ToSic.Eav.WebApi
             #endregion
 
             // Attributes
-            importEntity.Values = new Dictionary<string, List<IValueImportModel>>();
+            importEntity.Values = new Dictionary<string, List<IImpValue>>();
 
             
             // only transfer the fields / values which exist in the content-type definition
@@ -299,17 +299,18 @@ namespace ToSic.Eav.WebApi
 
                 foreach (var value in attribute.Value.Values)
                 {
-                    var importValue = importEntity.AppendAttributeValue(attribute.Key, value.Value, attributeType);
+                    var stringValue = ImpEntity.ConvertValueObjectToString(value.Value);
+                    var importValue = importEntity.AppendAttributeValue(attribute.Key, stringValue, attributeType);
 
+                    // append languages OR empty language as fallback
                     if (value.Dimensions == null)
-                    {   // TODO2tk: Must this be done to save entities
-                        importValue.AppendLanguageReference("", false);
+                    {   // Must this be done to save entities
+                        importValue.AppendLanguageReference("", false); 
                         continue;
                     }
                     foreach (var dimension in value.Dimensions)
-                    {
                         importValue.AppendLanguageReference(dimension.Key, dimension.Value);
-                    }
+
                 }
             }
 

@@ -2,11 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.ImportExport.Logging;
 
-namespace ToSic.Eav.ImportExport.Refactoring
+namespace ToSic.Eav.ImportExport.Logging
 {
-    public class ImportErrorProtocol : IEnumerable<ImportError>
+    public class ImportErrorLog : IEnumerable<ImportError>
     {
         public ImportError this[int index] => _errors[index];
 

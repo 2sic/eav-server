@@ -167,9 +167,9 @@ namespace ToSic.Eav.Api.Api01
             {
                 EntityGuid = entityGuid,
                 AttributeSetStaticName = attributeSetStaticName,
-                AssignmentObjectTypeId = Configuration.AssignmentObjectTypeIdDefault, // SexyContent.AssignmentObjectTypeIDDefault,
+                KeyTypeId = Configuration.AssignmentObjectTypeIdDefault, // SexyContent.AssignmentObjectTypeIDDefault,
                 KeyNumber = null,
-                Values = new Dictionary<string, List<IValueImportModel>>()
+                Values = new Dictionary<string, List<IImpValue>>()
             };
         }
 

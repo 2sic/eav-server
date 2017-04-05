@@ -61,7 +61,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
         /// <summary>
         /// Errors found while importing the document to memory.
         /// </summary>
-        public ImportErrorProtocol ErrorProtocol { get; }
+        public ImportErrorLog ErrorLog { get; }
         #endregion
 
         private ImpEntity GetEntity(Guid entityGuid)
@@ -74,10 +74,10 @@ namespace ToSic.Eav.ImportExport.Refactoring
             var entity = new ImpEntity
             {
                 AttributeSetStaticName = _contentType.StaticName,
-                AssignmentObjectTypeId = Configuration.AssignmentObjectTypeIdDefault,// SexyContent.SexyContent.AssignmentObjectTypeIDDefault,
+                KeyTypeId = Configuration.AssignmentObjectTypeIdDefault,// SexyContent.SexyContent.AssignmentObjectTypeIDDefault,
                 EntityGuid = entityGuid,
                 KeyNumber = null,
-                Values = new Dictionary<string, List<IValueImportModel>>()
+                Values = new Dictionary<string, List<IImpValue>>()
             };
             Entities.Add(entity);
             return entity;
@@ -98,7 +98,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
         public XmlImport(int zoneId, int applicationId, int contentTypeId, Stream dataStream, IEnumerable<string> languages, string documentLanguageFallback, EntityClearImport entityClear, ResourceReferenceImport resourceReference)
         {
             Entities = new List<ImpEntity>();
-            ErrorProtocol = new ImportErrorProtocol();
+            ErrorLog = new ImportErrorLog();
 
             _appId = applicationId;
             _zoneId = zoneId;
@@ -128,7 +128,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
 
                 if (_contentType == null)
                 {
-                    ErrorProtocol.AppendError(ImportErrorCode.InvalidContentType);
+                    ErrorLog.AppendError(ImportErrorCode.InvalidContentType);
                     return;
                 }
 
@@ -136,7 +136,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
                 dataStream.Position = 0;
                 if (Document == null)
                 {
-                    ErrorProtocol.AppendError(ImportErrorCode.InvalidDocument);
+                    ErrorLog.AppendError(ImportErrorCode.InvalidDocument);
                     return;
                 }
 
@@ -145,7 +145,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
                 DocumentElements = documentRoot.Elements(XmlConstants.Entity);
                 if (!DocumentElements.Any())
                 {
-                    ErrorProtocol.AppendError(ImportErrorCode.InvalidDocument);
+                    ErrorLog.AppendError(ImportErrorCode.InvalidDocument);
                     return;
                 }
 
@@ -153,7 +153,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
                 var documentTypeAttribute = DocumentElements.First().Attribute(XmlConstants.EntityTypeAttribute);
                 if (documentTypeAttribute?.Value == null || documentTypeAttribute.Value != _contentType.Name.RemoveSpecialCharacters())
                 {
-                    ErrorProtocol.AppendError(ImportErrorCode.InvalidRoot);
+                    ErrorLog.AppendError(ImportErrorCode.InvalidRoot);
                     return;
                 }
 
@@ -182,7 +182,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
                     {   
                         if (_languages.Except(documentElementLanguages).Any())
                         {
-                            ErrorProtocol.AppendError(ImportErrorCode.MissingElementLanguage, "Langs=" + string.Join(", ", _languages));
+                            ErrorLog.AppendError(ImportErrorCode.MissingElementLanguage, "Langs=" + string.Join(", ", _languages));
                             return;
                         }
                     }
@@ -196,7 +196,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
                     var documentElementLanguage = documentElement.Element(XmlConstants.EntityLanguage)?.Value;
                     if (!_languages.Any(language => language == documentElementLanguage))
                     {   // DNN does not support the language
-                        ErrorProtocol.AppendError(ImportErrorCode.InvalidLanguage, "Lang=" + documentElementLanguage, documentElementNumber);
+                        ErrorLog.AppendError(ImportErrorCode.InvalidLanguage, "Lang=" + documentElementLanguage, documentElementNumber);
                         continue;
                     }
 
@@ -229,7 +229,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
                             }
                             catch (FormatException)
                             {
-                                ErrorProtocol.AppendError(ImportErrorCode.InvalidValueFormat, valueName + ":" + valueType + "=" + value, documentElementNumber);
+                                ErrorLog.AppendError(ImportErrorCode.InvalidValueFormat, valueName + ":" + valueType + "=" + value, documentElementNumber);
                             }
                             continue;
                         }
@@ -237,12 +237,12 @@ namespace ToSic.Eav.ImportExport.Refactoring
                         var valueReferenceProtection = value.GetValueReferenceProtection();
                         if (valueReferenceProtection != "rw" && valueReferenceProtection != "ro")
                         {
-                            ErrorProtocol.AppendError(ImportErrorCode.InvalidValueReferenceProtection, value, documentElementNumber);
+                            ErrorLog.AppendError(ImportErrorCode.InvalidValueReferenceProtection, value, documentElementNumber);
                             continue;
                         }
                         var valueReadOnly = valueReferenceProtection == "ro";
 
-                        var entityValue = entity.ValueOfLanguage(valueName, valueReferenceLanguage);
+                        var entityValue = entity.GetValueItemOfLanguage(valueName, valueReferenceLanguage);
                         if (entityValue != null)
                         {
                             entityValue.AppendLanguageReference(documentElementLanguage, valueReadOnly);
@@ -254,14 +254,14 @@ namespace ToSic.Eav.ImportExport.Refactoring
                         var dbEntity = _contentType.EntityByGuid(entityGuid);
                         if (dbEntity == null)
                         {
-                            ErrorProtocol.AppendError(ImportErrorCode.InvalidValueReference, value, documentElementNumber);
+                            ErrorLog.AppendError(ImportErrorCode.InvalidValueReference, value, documentElementNumber);
                             continue;
                         }
 
                         var dbEntityValue = dbEntity.GetValueOfExactLanguage(attribute, valueReferenceLanguage);
                         if(dbEntityValue == null)
                         {
-                            ErrorProtocol.AppendError(ImportErrorCode.InvalidValueReference, value, documentElementNumber);
+                            ErrorLog.AppendError(ImportErrorCode.InvalidValueReference, value, documentElementNumber);
                             continue;
                         }
 
@@ -272,7 +272,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
             }
             catch (Exception exception)
             {
-                ErrorProtocol.AppendError(ImportErrorCode.Unknown, exception.ToString());
+                ErrorLog.AppendError(ImportErrorCode.Unknown, exception.ToString());
             }
             Timer.Stop();
             TimeForMemorySetup = Timer.ElapsedMilliseconds;
@@ -285,7 +285,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
         /// <returns>True if succeeded</returns>
         public bool PersistImportToRepository(string userId)
         {
-            if (ErrorProtocol.HasErrors)
+            if (ErrorLog.HasErrors)
                 return false;
 
             if (_entityClear == EntityClearImport.All)

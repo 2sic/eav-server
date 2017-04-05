@@ -4,7 +4,7 @@
 	/// <summary>
 	/// Represents a Value
 	/// </summary>
-	public class ImpVal
+	public class ImpValueInside
 	{
 		/// <summary>
 		/// Gets or sets the Value

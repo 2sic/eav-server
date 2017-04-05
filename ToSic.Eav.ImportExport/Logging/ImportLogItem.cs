@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using ToSic.Eav.Import;
 using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Models;
 
@@ -12,7 +11,7 @@ namespace ToSic.Eav.ImportExport.Logging
         public ImpEntity ImpEntity { get; set; }
         public ImpAttrSet ImpAttrSet { get; set; }
         public ImpAttribute ImpAttribute { get; set; }
-        public IValueImportModel Value { get; set; }
+        public IImpValue ImpValue { get; set; }
         public Exception Exception { get; set; }
         public string Message { get; private set; }
 

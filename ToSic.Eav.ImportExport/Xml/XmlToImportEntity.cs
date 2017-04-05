@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using ToSic.Eav.Import;
 using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Models;
 
@@ -30,7 +29,7 @@ namespace ToSic.Eav.ImportExport
 		{
 			var targetEntity = new ImpEntity
 			{
-				AssignmentObjectTypeId = assignmentObjectTypeId,
+				KeyTypeId = assignmentObjectTypeId,
 				AttributeSetStaticName = xEntity.Attribute("AttributeSetStaticName").Value,
 				EntityGuid = Guid.Parse(xEntity.Attribute("EntityGUID").Value),
 				KeyNumber = keyNumber,
@@ -38,7 +37,7 @@ namespace ToSic.Eav.ImportExport
 				KeyString = keyString
 			};
 
-			var targetValues = new Dictionary<string, List<IValueImportModel>>();
+			var targetValues = new Dictionary<string, List<IImpValue>>();
 
 			// Group values by StaticName
 			var valuesGroupedByStaticName = xEntity.Elements("Value")
@@ -123,7 +122,11 @@ namespace ToSic.Eav.ImportExport
 
 				}
 
-				var currentAttributesImportValues = tempTargetValues.Select(tempImportValue => ValueImportModel.GetModel(tempImportValue.XmlValue.Attribute("Value").Value, tempImportValue.XmlValue.Attribute("Type").Value, tempImportValue.Dimensions, targetEntity)).ToList();
+				var currentAttributesImportValues = tempTargetValues.Select(tempImportValue 
+                    => targetEntity.PrepareTypedValue(tempImportValue.XmlValue.Attribute("Value").Value, 
+                        tempImportValue.XmlValue.Attribute("Type").Value, 
+                        tempImportValue.Dimensions))
+                    .ToList();
 				targetValues.Add(sourceAttribute.StaticName, currentAttributesImportValues);
 			}
 

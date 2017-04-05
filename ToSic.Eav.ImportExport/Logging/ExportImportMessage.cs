@@ -1,9 +1,9 @@
-namespace ToSic.Eav.ImportExport
+namespace ToSic.Eav.ImportExport.Logging
 {
     /// <summary>
     /// Describes a Message while Exporting / Importing
     /// </summary>
-    public class ExportImportMessage
+    public partial class ExportImportMessage
     {
         public ExportImportMessage(string Message, MessageTypes MessageType)
         {
@@ -13,6 +13,5 @@ namespace ToSic.Eav.ImportExport
 
         public string Message { get; set; }
         public MessageTypes MessageType { get; set; }
-        public enum MessageTypes { Warning, Information, Error }
     }
 }

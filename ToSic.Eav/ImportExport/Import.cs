@@ -223,7 +223,7 @@ namespace ToSic.Eav.Import
                     foreach (var entity in importAttribute.AttributeMetaData)
                     {
                         // Validate Entity
-                        entity.AssignmentObjectTypeId = Constants.MetadataForField;//.AssignmentObjectTypeIdFieldProperties;
+                        entity.KeyTypeId = Constants.MetadataForField;//.AssignmentObjectTypeIdFieldProperties;
 
                         // Set KeyNumber
                         if (destinationAttribute.AttributeID == 0)

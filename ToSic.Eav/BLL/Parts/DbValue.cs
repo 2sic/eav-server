@@ -99,35 +99,35 @@ namespace ToSic.Eav.BLL.Parts
         /// <summary>
         /// Update a Value when using IValueImportModel. Returns the Updated Value (for simple Values) or null (for Entity-Values)
         /// </summary>
-        internal object UpdateValueByImport(Entity entityInDb, Attribute attribute, List<EavValue> currentValues, IValueImportModel newValue)
+        internal object UpdateValueByImport(Entity entityInDb, Attribute attribute, List<EavValue> currentValues, IImpValue newImpValue)
         {
             switch (attribute.Type)
             {
                 // Handle Entity Relationships - they're stored in own tables
                 case "Entity":
-                    if (newValue is ValueImportModel<List<Guid>>)
-                        Context.Relationships.UpdateEntityRelationships(attribute.AttributeID, ((ValueImportModel<List<Guid>>)newValue).Value.Select(p => (Guid?)p).ToList(), null /* entityInDb.EntityGUID, null */, entityInDb.EntityID);
-                    if (newValue is ValueImportModel<List<Guid?>>)
-                        Context.Relationships.UpdateEntityRelationships(attribute.AttributeID, ((ValueImportModel<List<Guid?>>)newValue).Value.Select(p => p).ToList(), null, entityInDb.EntityID);
+                    if (newImpValue is ImpValue<List<Guid>>)
+                        Context.Relationships.UpdateEntityRelationships(attribute.AttributeID, ((ImpValue<List<Guid>>)newImpValue).Value.Select(p => (Guid?)p).ToList(), null /* entityInDb.EntityGUID, null */, entityInDb.EntityID);
+                    if (newImpValue is ImpValue<List<Guid?>>)
+                        Context.Relationships.UpdateEntityRelationships(attribute.AttributeID, ((ImpValue<List<Guid?>>)newImpValue).Value.Select(p => p).ToList(), null, entityInDb.EntityID);
                     else
-                        throw new NotSupportedException("UpdateValue() for Attribute " + attribute.StaticName + " with newValue of type" + newValue.GetType() + " not supported. Expected List<Guid>");
+                        throw new NotSupportedException("UpdateValue() for Attribute " + attribute.StaticName + " with newValue of type" + newImpValue.GetType() + " not supported. Expected List<Guid>");
 
                     return null;
                 // Handle simple values in Values-Table
                 default:
                     // masterRecord can be true or false, it's not used when valueDimensions is specified
-                    return UpdateSimpleValue(attribute, entityInDb, null, true, GetTypedValue(newValue, attribute.Type, attribute.StaticName), null, false, currentValues, null, newValue.ValueDimensions);
+                    return UpdateSimpleValue(attribute, entityInDb, null, true, GetTypedValue(newImpValue, attribute.Type, attribute.StaticName), null, false, currentValues, null, newImpValue.ValueDimensions);
             }
         }
 
         /// <summary>
         /// Get typed value from ValueImportModel
         /// </summary>
-        /// <param name="value">Value to convert</param>
+        /// <param name="impValue">Value to convert</param>
         /// <param name="attributeType">Attribute Type</param>
         /// <param name="attributeStaticName">Attribute StaticName</param>
         /// <param name="multiValuesSeparator">Indicates whehter returned value should be convertable to a human readable string - currently only used for GetEntityVersionValues()</param>
-        internal object GetTypedValue(IValueImportModel value, string attributeType = null, string attributeStaticName = null, string multiValuesSeparator = null)
+        internal object GetTypedValue(IImpValue impValue, string attributeType = null, string attributeStaticName = null, string multiValuesSeparator = null)
         {
             object typedValue;
 
@@ -136,24 +136,24 @@ namespace ToSic.Eav.BLL.Parts
             if(attributeType != null && Enum.IsDefined(typeof(AttributeTypeEnum), attributeType))
                 type = (AttributeTypeEnum)Enum.Parse(typeof(AttributeTypeEnum), attributeType);
 
-            if ((type == AttributeTypeEnum.Boolean || type == AttributeTypeEnum.Undefined) && value is ValueImportModel<bool?>) 
-                typedValue = ((ValueImportModel<bool?>)value).Value;
-            else if ((type == AttributeTypeEnum.DateTime || type == AttributeTypeEnum.Undefined) && value is ValueImportModel<DateTime?>)
-                typedValue = ((ValueImportModel<DateTime?>)value).Value;
-            else if ((type == AttributeTypeEnum.Number || type == AttributeTypeEnum.Undefined) && value is ValueImportModel<decimal?>)
-                typedValue = ((ValueImportModel<decimal?>)value).Value;
+            if ((type == AttributeTypeEnum.Boolean || type == AttributeTypeEnum.Undefined) && impValue is ImpValue<bool?>) 
+                typedValue = ((ImpValue<bool?>)impValue).Value;
+            else if ((type == AttributeTypeEnum.DateTime || type == AttributeTypeEnum.Undefined) && impValue is ImpValue<DateTime?>)
+                typedValue = ((ImpValue<DateTime?>)impValue).Value;
+            else if ((type == AttributeTypeEnum.Number || type == AttributeTypeEnum.Undefined) && impValue is ImpValue<decimal?>)
+                typedValue = ((ImpValue<decimal?>)impValue).Value;
             else if ((type == AttributeTypeEnum.String
                 || type == AttributeTypeEnum.Hyperlink
                 || type == AttributeTypeEnum.Custom
-                || type == AttributeTypeEnum.Undefined) && value is ValueImportModel<string>) 
-                typedValue = ((ValueImportModel<string>)value).Value;
-            else if (value is ValueImportModel<List<Guid>> && multiValuesSeparator != null)
+                || type == AttributeTypeEnum.Undefined) && impValue is ImpValue<string>) 
+                typedValue = ((ImpValue<string>)impValue).Value;
+            else if (impValue is ImpValue<List<Guid>> && multiValuesSeparator != null)
             {
-                var entityGuids = ((ValueImportModel<List<Guid>>)value).Value;
+                var entityGuids = ((ImpValue<List<Guid>>)impValue).Value;
                 typedValue = EntityGuidsToString(entityGuids, multiValuesSeparator);
             }
             else
-                throw new NotSupportedException($"GetTypedValue() for Attribute {attributeStaticName} (Type: {attributeType}) with newValue of type {value.GetType()} not supported.");
+                throw new NotSupportedException($"GetTypedValue() for Attribute {attributeStaticName} (Type: {attributeType}) with newValue of type {impValue.GetType()} not supported.");
             return typedValue;
         }
 
@@ -172,7 +172,7 @@ namespace ToSic.Eav.BLL.Parts
         /// <summary>
         /// Update a Value when using ValueViewModel
         /// </summary>
-        internal void UpdateValue(Entity currentEntity, Attribute attribute, bool masterRecord, List<EavValue> currentValues, IEntity entityModel, ImpVal newValue, ICollection<int> dimensionIds)
+        internal void UpdateValue(Entity currentEntity, Attribute attribute, bool masterRecord, List<EavValue> currentValues, IEntity entityModel, ImpValueInside newValue, ICollection<int> dimensionIds)
         {
             switch (attribute.Type)
             {
