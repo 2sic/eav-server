@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Web.Http;
-using ToSic.Eav.Api;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
@@ -127,8 +127,8 @@ namespace ToSic.Eav.WebApi
                 CurrentContext.ContentType.GetContentTypeConfiguration(staticName)
                     .OrderBy(ct => ((AttributeBase)ct.Item1).SortOrder);
 
-            var appDef = new BetaFullApi(null, appId, CurrentContext);
-            var appInputTypes = appDef.GetInputTypes(true).ToList();
+            //var appDef = new BetaFullApi(null, appId, CurrentContext);
+            var appInputTypes = new AppRuntime(appId).GetInputTypes(true).ToList();  // appDef.GetInputTypes(true).ToList();
             var noTitleCount = 0;
             var fldName = "";
 
@@ -202,8 +202,8 @@ namespace ToSic.Eav.WebApi
 	    public IEnumerable<Dictionary<string, object>> InputTypes(int appId)
 	    {
             SetAppIdAndUser(appId);
-            var appDef = new BetaFullApi(null, appId, CurrentContext);
-	        var appInputTypes = appDef.GetInputTypes(true).ToList();
+            //var appDef = new BetaFullApi(null, appId, CurrentContext);
+	        var appInputTypes = new AppRuntime(appId).GetInputTypes(true).ToList(); // appDef.GetInputTypes(true).ToList();
             
 	        return Serializer.Prepare(appInputTypes);
 

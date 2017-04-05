@@ -2,14 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
-using ToSic.Eav.Api;
+using ToSic.Eav.Apps;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.Persistence;
 using ToSic.Eav.WebApi.Formats;
-using ToSic.Eav.Import;
 using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Models;
-using ToSic.Eav.ImportExport.Refactoring.Extensions;
 
 namespace ToSic.Eav.WebApi
 {
@@ -83,8 +80,8 @@ namespace ToSic.Eav.WebApi
 	        SetAppIdAndUser(appId);
 	        Serializer.ConfigureForAdminUse();
 
-	        var api = new BetaFullApi(null, appId, CurrentContext);
-	        var list = Serializer.Prepare(api.GetEntitiesOfType(contentType));
+	        //var api = new BetaFullApi(null, appId, CurrentContext);
+	        var list = Serializer.Prepare(new AppRuntime(appId).GetEntities(contentType));//  api.GetEntitiesOfType(contentType));
 
 	        var newList = list.Select(li => li.ToDictionary(x1 => x1.Key, x2 => TruncateIfString(x2.Value, 50))).ToList();
 

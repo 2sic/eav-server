@@ -35,7 +35,11 @@ namespace ToSic.Eav.Apps.Interfaces
             AppId = app.AppId;
         }
 
-
+        public AppBase(int appId)
+        {
+            AppId = appId;
+            ZoneId = ((BaseCache) DataSource.GetInitialDataSource()).GetZoneAppId(appId: appId).Item1;
+        }
 
 
         internal BaseCache Cache => _cache ?? (_cache = (BaseCache) DataSource.GetCache(ZoneId, AppId));
