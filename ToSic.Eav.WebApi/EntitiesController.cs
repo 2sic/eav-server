@@ -187,7 +187,7 @@ namespace ToSic.Eav.WebApi
 
             foreach (var entity in items)
                 if (entity.Header.Group == null || !entity.Header.Group.SlotIsEmpty) // skip the ones which "shouldn't" be saved
-                    entitiesToImport.Add(CreateImportEntity(entity, appId));
+                    entitiesToImport.Add(CreateImportEntity(entity));
 
             // Create Import-controller & run import
             var importController = new Import.Import(null, appId, /*UserIdentityToken,*/
@@ -210,13 +210,13 @@ namespace ToSic.Eav.WebApi
                 return foundEntity;
             }).Where(e => e != null);
 
-            var IdList = foundItems.ToDictionary(f => f.EntityGuid, f => f.EntityId);
+            var idList = foundItems.ToDictionary(f => f.EntityGuid, f => f.EntityId);
 
-            return IdList;
+            return idList;
         }
 
 
-        private ImpEntity CreateImportEntity(EntityWithHeader editInfo, int appId)
+        private ImpEntity CreateImportEntity(EntityWithHeader editInfo)
         {
             var newEntity = editInfo.Entity;
             var metadata = editInfo.Header.Metadata;
@@ -227,18 +227,21 @@ namespace ToSic.Eav.WebApi
             #endregion
 
             // TODO 2tk: Refactor code - we use methods from XML import extensions!
-            var importEntity = new ImpEntity();
+            var importEntity = new ImpEntity
+            {
 
-            #region Guids, Ids, Published, Content-Types
-            importEntity.EntityGuid = newEntity.Guid;
-            importEntity.IsPublished = newEntity.IsPublished;
-            // 2dm 2016-06-29
-            importEntity.ForceNoBranch = !newEntity.IsBranch; // if it's not a branch, it should also force no branch...
-            importEntity.AttributeSetStaticName = newEntity.Type.StaticName;
-            #endregion
+                #region Guids, Ids, Published, Content-Types
+                EntityGuid = newEntity.Guid,
+                IsPublished = newEntity.IsPublished,
+                ForceNoBranch = !newEntity.IsBranch, // if it's not a branch, it should also force no branch...
+                AttributeSetStaticName = newEntity.Type.StaticName,
+                #endregion
+                // Metadata maybe?
+                KeyTypeId = Constants.DefaultAssignmentObjectTypeId  // default case
+            };
 
             #region Metadata if we have any
-            importEntity.KeyTypeId = Constants.DefaultAssignmentObjectTypeId;  // default case
+
             if (metadata != null && metadata.HasMetadata)
             {
                 importEntity.KeyTypeId = metadata.TargetType;

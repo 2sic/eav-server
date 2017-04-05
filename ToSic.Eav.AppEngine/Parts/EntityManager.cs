@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ToSic.Eav.Apps.Manage
+namespace ToSic.Eav.Apps.Parts
 {
     /// <summary>
     /// Manager for entities in an app

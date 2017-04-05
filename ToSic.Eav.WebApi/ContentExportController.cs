@@ -11,23 +11,6 @@ namespace ToSic.Eav.WebApi
 {
     public class ContentExportController : Eav3WebApiBase
     {
-        public class ContentExportArgs
-        {
-            public int AppId;
-
-            public string DefaultLanguage;
-
-            public string Language;
-
-            public RecordExport RecordExport;
-
-            public ResourceReferenceExport ResourcesReferences;
-
-            public LanguageReferenceExport LanguageReferences;
-
-            public string ContentType;
-        }
-
 
         [HttpGet]
         public HttpResponseMessage ExportContent(int appId, string language, string defaultLanguage, string contentType,
@@ -72,15 +55,8 @@ namespace ToSic.Eav.WebApi
             return response;
         }
 
-        //private int GetContentTypeId(string staticName)
-        //    => CurrentContext.AttribSet.GetAttributeSetId(staticName, null);
-
-
-        //private string GetContentTypeName(string staticName)
-        //    => CurrentContext.AttribSet.GetAttributeSet(staticName).Name;
-
         private string[] GetContextLanguages()
-            => CurrentContext.Dimensions.GetLanguages().Select(language => language.ExternalKey).ToArray();
+            => /*AppManager.Read.*/ CurrentContext.Dimensions.GetLanguages().Select(language => language.ExternalKey).ToArray();
 
     }
 }

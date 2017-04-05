@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ToSic.Eav.Apps.Manage
+namespace ToSic.Eav.Apps.Parts
 {
     /// <summary>
     /// Templates manager for the app engine - in charge of importing / modifying templates at app-level

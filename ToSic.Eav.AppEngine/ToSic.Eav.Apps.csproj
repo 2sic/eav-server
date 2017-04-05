@@ -5,10 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Runtime\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Unity" Version="2.1.505.2" />
   </ItemGroup>
 

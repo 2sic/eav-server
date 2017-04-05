@@ -1,6 +1,6 @@
 ﻿using System.Collections.Specialized;
 using ToSic.Eav.Apps.Interfaces;
-using ToSic.Eav.Apps.Manage;
+using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.BLL;
 
 namespace ToSic.Eav.Apps

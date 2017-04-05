@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Apps.Manage
+﻿namespace ToSic.Eav.Apps.Parts
 {
     /// <summary>
     /// Manager for entities in an app

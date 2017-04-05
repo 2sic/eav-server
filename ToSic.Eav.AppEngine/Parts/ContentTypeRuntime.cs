@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Web.Caching;
-using ToSic.Eav.DataSources;
 
-namespace ToSic.Eav.Apps.Manage
+namespace ToSic.Eav.Apps.Parts
 {
     /// <summary>
     /// Manager for entities in an app
@@ -25,7 +22,7 @@ namespace ToSic.Eav.Apps.Manage
         /// </summary>
         public IContentType Get(int contentTypeId) => _app.Cache.GetContentType(contentTypeId);
 
-        public IEnumerable<IContentType> Get(string scope = null, bool includeAttributeTypes = false)
+        public IEnumerable<IContentType> FromScope(string scope = null, bool includeAttributeTypes = false)
         {
             //var contentTypes = Cache.GetContentTypes();
             var set = All 
