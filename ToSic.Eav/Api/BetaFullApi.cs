@@ -60,27 +60,27 @@ namespace ToSic.Eav.Api
             Context = cntxt;
         }
 
+        // 2017-04-05
+        //public void Metadata_AddOrUpdate(int targetType, int targetId, string metadataTypeName,
+        //    Dictionary<string, object> values)
+        //{
+        //    // experimental - not in use yet - try to find the attribute...
+        //    //var generalSettings = Metadata.GetAssignedEntities(Constants.AssignmentObjectTypeIdFieldProperties, targetId, metadataTypeName);
+        //    //if (generalSettings != null)
+        //    //{
+        //    //    if (generalSettings.Count() == 1)
+        //    //        Context.Entities.UpdateEntity(generalSettings.First().EntityId, values);
+        //    //    else
+        //    //        throw new Exception("Tried to update metadata, but found more than 1 item which could be updated; aborting");
+        //    //}
+        //    //else
+        //    //{
+        //    //    var contentType = DataSource.GetCache(Context.ZoneId, Context.AppId).GetContentType("@All");
+        //    //    var entity = Context.Entities.AddEntity(contentType.AttributeSetId, values, null, null);
 
-        public void Metadata_AddOrUpdate(int targetType, int targetId, string metadataTypeName,
-            Dictionary<string, object> values)
-        {
-            // experimental - not in use yet - try to find the attribute...
-            //var generalSettings = Metadata.GetAssignedEntities(Constants.AssignmentObjectTypeIdFieldProperties, targetId, metadataTypeName);
-            //if (generalSettings != null)
-            //{
-            //    if (generalSettings.Count() == 1)
-            //        Context.Entities.UpdateEntity(generalSettings.First().EntityId, values);
-            //    else
-            //        throw new Exception("Tried to update metadata, but found more than 1 item which could be updated; aborting");
-            //}
-            //else
-            //{
-            //    var contentType = DataSource.GetCache(Context.ZoneId, Context.AppId).GetContentType("@All");
-            //    var entity = Context.Entities.AddEntity(contentType.AttributeSetId, values, null, null);
+        //    //}
 
-            //}
-
-        }
+        //}
 
 
         public IEnumerable<IEntity> GetEntitiesOfType(string contentTypeName)

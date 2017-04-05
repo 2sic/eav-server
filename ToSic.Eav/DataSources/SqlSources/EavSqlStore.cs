@@ -41,7 +41,6 @@ namespace ToSic.Eav.DataSources.SqlSources
 		{
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntities));
 			_context = EavDataController.Instance();
-            // DbS = new DbShortcuts(_context);
 		}
 
 		/// <summary>
@@ -57,19 +56,13 @@ namespace ToSic.Eav.DataSources.SqlSources
 
 		public override bool Ready => _ready;
 
-	    public AppDataPackage GetDataForCache(IDeferredEntitiesList targetCacheForDeferredLookups)
-		{
-			return new DbLoadIntoEavDataStructure(_context).GetAppDataPackage(null, AppId, targetCacheForDeferredLookups);
-		}
+	    public AppDataPackage GetDataForCache(IDeferredEntitiesList targetCacheForDeferredLookups) 
+            => new DbLoadIntoEavDataStructure(_context).GetAppDataPackage(null, AppId, targetCacheForDeferredLookups);
 
-	    public Dictionary<int, Data.Zone> GetAllZones()
-		{
-			return _context.Zone.GetAllZones();
-		}
+	    public Dictionary<int, Data.Zone> GetAllZones() 
+            => _context.Zone.GetAllZones();
 
-		public Dictionary<int, string> GetAssignmentObjectTypes()
-		{
-			return _context.DbS.GetAssignmentObjectTypes();
-		}
+	    public Dictionary<int, string> GetAssignmentObjectTypes() 
+            => _context.DbS.GetAssignmentObjectTypes();
 	}
 }

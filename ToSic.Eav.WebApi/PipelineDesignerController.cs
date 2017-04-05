@@ -231,7 +231,7 @@ namespace ToSic.Eav.WebApi
 			newEntityGuids.AddRange(newDataSources.Values);
 
 			foreach (var entityToDelet in existingEntityGuids.Where(existingGuid => !newEntityGuids.Contains(existingGuid)))
-				_context.Entities.DeleteEntity(entityToDelet);
+                _context.Entities.DeleteEntity(entityToDelet);
 		}
 
 	    /// <summary>

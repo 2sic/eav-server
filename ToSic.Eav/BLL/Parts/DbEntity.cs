@@ -60,11 +60,12 @@ namespace ToSic.Eav.BLL.Parts
             return GetEntitiesInternal(assignmentObjectTypeId, null, keyGuid);
         }
 
-        /// <summary>
-        /// Get a List of Entities with specified assignmentObjectTypeId and Key.
-        /// </summary>
-        public IQueryable<Entity> GetEntities(int assignmentObjectTypeId, string keyString) 
-            => GetEntitiesInternal(assignmentObjectTypeId, null, null, keyString);
+        // 2017-04-05
+        ///// <summary>
+        ///// Get a List of Entities with specified assignmentObjectTypeId and Key.
+        ///// </summary>
+        //public IQueryable<Entity> GetEntities(int assignmentObjectTypeId, string keyString) 
+        //    => GetEntitiesInternal(assignmentObjectTypeId, null, null, keyString);
 
         /// <summary>
         /// Get a List of Entities with specified assignmentObjectTypeId and optional Key.
@@ -190,22 +191,22 @@ namespace ToSic.Eav.BLL.Parts
         #endregion  
 
         #region Update
-        /// <summary>
-        /// Update an Entity
-        /// </summary>
-        /// <param name="entityGuid">EntityGUID</param>
-        /// <param name="newValues">new Values of this Entity</param>
-        /// <param name="autoSave">auto save Changes to DB</param>
-        /// <param name="dimensionIds">DimensionIds for all Values</param>
-        /// <param name="masterRecord">Is this the Master Record/Language</param>
-        /// <param name="updateLog">Update/Import Log List</param>
-        /// <param name="preserveUndefinedValues">Preserve Values if Attribute is not specifeied in NewValues</param>
-        /// <returns>the updated Entity</returns>
-        public Entity UpdateEntity(Guid entityGuid, IDictionary newValues, bool autoSave = true, ICollection<int> dimensionIds = null, bool masterRecord = true, List<ImportLogItem> updateLog = null, bool preserveUndefinedValues = true)
-        {
-            var entity = GetEntity(entityGuid);
-            return UpdateEntity(entity.EntityID, newValues, autoSave, dimensionIds, masterRecord, updateLog, preserveUndefinedValues);
-        }
+        ///// <summary>
+        ///// Update an Entity
+        ///// </summary>
+        ///// <param name="entityGuid">EntityGUID</param>
+        ///// <param name="newValues">new Values of this Entity</param>
+        ///// <param name="autoSave">auto save Changes to DB</param>
+        ///// <param name="dimensionIds">DimensionIds for all Values</param>
+        ///// <param name="masterRecord">Is this the Master Record/Language</param>
+        ///// <param name="updateLog">Update/Import Log List</param>
+        ///// <param name="preserveUndefinedValues">Preserve Values if Attribute is not specifeied in NewValues</param>
+        ///// <returns>the updated Entity</returns>
+        //public Entity UpdateEntity(Guid entityGuid, IDictionary newValues, bool autoSave = true, ICollection<int> dimensionIds = null, bool masterRecord = true, List<ImportLogItem> updateLog = null, bool preserveUndefinedValues = true)
+        //{
+        //    var entity = GetEntity(entityGuid);
+        //    return UpdateEntity(entity.EntityID, newValues, autoSave, dimensionIds, masterRecord, updateLog, preserveUndefinedValues);
+        //}
 
 
         /// <summary>

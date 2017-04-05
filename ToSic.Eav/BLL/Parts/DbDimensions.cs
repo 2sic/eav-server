@@ -59,26 +59,27 @@ namespace ToSic.Eav.BLL.Parts
 			return _cachedDimensions.Where(d => d.ParentID.HasValue && d.Parent.SystemKey == systemKey && d.ZoneID == Context.ZoneId).ToList();
 		}
 
-		/// <summary>
-		/// Test whehter Value exists on specified Entity and Attribute with specified DimensionIds 
-		/// </summary>
-		public bool ValueExists(List<int> dimensionIds, int entityId, int attributeId) 
-            => Context.SqlDb.Values.Any(v => !v.ChangeLogIDDeleted.HasValue && v.EntityID == entityId && v.AttributeID == attributeId && v.ValuesDimensions.All(d => dimensionIds.Contains(d.DimensionID)));
+		///// <summary>
+		///// Test whehter Value exists on specified Entity and Attribute with specified DimensionIds 
+		///// </summary>
+		//public bool ValueExists(List<int> dimensionIds, int entityId, int attributeId) 
+  //          => Context.SqlDb.Values.Any(v => !v.ChangeLogIDDeleted.HasValue && v.EntityID == entityId && v.AttributeID == attributeId && v.ValuesDimensions.All(d => dimensionIds.Contains(d.DimensionID)));
 
-	    /// <summary>
-		/// Get Dimensions to use for specified Entity and Attribute if unknown
-		/// </summary>
-		public IQueryable<Dimension> GetFallbackDimensions(int entityId, int attributeId)
-		{
-            return from vd in Context.SqlDb.ValuesDimensions
-				   where
-					  vd.Value.EntityID == entityId &&
-					  vd.Value.AttributeID == attributeId &&
-					  !vd.Value.ChangeLogIDDeleted.HasValue
-				   orderby vd.Value.ChangeLogIDCreated
-				   select
-					  vd.Dimension;
-		}
+        // 2017-04-05 2dm clean-up
+	 //   /// <summary>
+		///// Get Dimensions to use for specified Entity and Attribute if unknown
+		///// </summary>
+		//public IQueryable<Dimension> GetFallbackDimensions(int entityId, int attributeId)
+		//{
+  //          return from vd in Context.SqlDb.ValuesDimensions
+		//		   where
+		//			  vd.Value.EntityID == entityId &&
+		//			  vd.Value.AttributeID == attributeId &&
+		//			  !vd.Value.ChangeLogIDDeleted.HasValue
+		//		   orderby vd.Value.ChangeLogIDCreated
+		//		   select
+		//			  vd.Dimension;
+		//}
 
 		/// <summary>
 		/// Update a single Dimension
@@ -136,20 +137,21 @@ namespace ToSic.Eav.BLL.Parts
 		/// </summary>
 		public List<Dimension> GetLanguages() => GetDimensionChildren("Culture");
 
-	    /// <summary>
-		/// Get LanguageId
-		/// </summary>
-		/// <param name="externalKey">Usually a Key like en-US or de-DE</param>
-		/// <returns>int or null if not foud</returns>
-		public int? GetLanguageId(string externalKey) 
-            => GetLanguages().FirstOrDefault(l => l.ExternalKey == externalKey)?.DimensionID;
+        // 2017-04-05
+	 //   /// <summary>
+		///// Get LanguageId
+		///// </summary>
+		///// <param name="externalKey">Usually a Key like en-US or de-DE</param>
+		///// <returns>int or null if not foud</returns>
+		//public int? GetLanguageId(string externalKey) 
+  //          => GetLanguages().FirstOrDefault(l => l.ExternalKey == externalKey)?.DimensionID;
 
-	    /// <summary>
-		/// Get ExternalKey for specified LanguageId
-		/// </summary>
-		/// <returns>ExternalKey or null if not found</returns>
-		public string GetLanguageExternalKey(int languageId) 
-            => GetLanguages().Where(l => l.DimensionID == languageId).Select(l => l.ExternalKey).FirstOrDefault();
+	 //   /// <summary>
+		///// Get ExternalKey for specified LanguageId
+		///// </summary>
+		///// <returns>ExternalKey or null if not found</returns>
+		//public string GetLanguageExternalKey(int languageId) 
+  //          => GetLanguages().Where(l => l.DimensionID == languageId).Select(l => l.ExternalKey).FirstOrDefault();
 
 	    /// <summary>
 		/// Add a new Language to current Zone
@@ -170,12 +172,12 @@ namespace ToSic.Eav.BLL.Parts
 			return newLanguage;
 		}
 
-		/// <summary>
-		/// Test whether Zone has any Languages/is multilingual
-		/// </summary>
-		/// <param name="zoneId">null means ZoneId on current Context</param>
-		public bool HasLanguages(int? zoneId = null) 
-            => Context.SqlDb.Dimensions.Any(d => d.Parent == Context.SqlDb.Dimensions.FirstOrDefault(p => p.ZoneID == (zoneId ?? Context.ZoneId) && p.ParentID == null && p.SystemKey == Constants.CultureSystemKey));
+		///// <summary>
+		///// Test whether Zone has any Languages/is multilingual
+		///// </summary>
+		///// <param name="zoneId">null means ZoneId on current Context</param>
+		//public bool HasLanguages(int? zoneId = null) 
+  //          => Context.SqlDb.Dimensions.Any(d => d.Parent == Context.SqlDb.Dimensions.FirstOrDefault(p => p.ZoneID == (zoneId ?? Context.ZoneId) && p.ParentID == null && p.SystemKey == Constants.CultureSystemKey));
 
 	    #endregion
 	}

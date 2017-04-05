@@ -55,14 +55,15 @@ namespace ToSic.Eav.BLL.Parts
             return Tuple.Create(newZone, newApp);
         }
 
-        /// <summary>
-        /// Update a Zone
-        /// </summary>
-        public void UpdateZone(int zoneId, string name)
-        {
-            var zone = Context.SqlDb.Zones.Single(z => z.ZoneID == zoneId);
-            zone.Name = name;
-            Context.SqlDb.SaveChanges();
-        }
+        // 2017-04-05
+        ///// <summary>
+        ///// Update a Zone
+        ///// </summary>
+        //public void UpdateZone(int zoneId, string name)
+        //{
+        //    var zone = Context.SqlDb.Zones.Single(z => z.ZoneID == zoneId);
+        //    zone.Name = name;
+        //    Context.SqlDb.SaveChanges();
+        //}
     }
 }
