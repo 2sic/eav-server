@@ -1,61 +1,64 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps.Interfaces;
-using ToSic.Eav.DataSources;
+using ToSic.Eav.Apps.Manage;
+using ToSic.Eav.DataSources.Caches;
 
 namespace ToSic.Eav.Apps
 {
     public class AppRuntime : AppBase
     {
-        #region simple properties and constructor
+        #region constructors
         public AppRuntime(int zoneId, int appId) : base(zoneId, appId) { }
 
         public AppRuntime(IApp app) : base(app) { }
 
         // Special constructor, should be used with care as there is no Zone!
         public AppRuntime(int appId) :base (appId) { }
+
+        internal AppRuntime(BaseCache source): base(source) { }
         #endregion
 
-        public IDataSource Data => _data ?? (_data = DataSource.GetInitialDataSource(ZoneId, AppId));
+        public EntityRuntime Entities => _entities ?? (_entities = new EntityRuntime(this));
+        private EntityRuntime _entities;
 
-        private IDataSource _data;
+        public ContentTypeRuntime ContentTypes => _contentTypes ?? (_contentTypes = new ContentTypeRuntime(this));
+        private ContentTypeRuntime _contentTypes; 
 
-        public IEnumerable<IContentType> ContentTypes => Cache.GetContentTypes().Select(c => c.Value);
+        //internal IDataSource Data => _data ?? (_data = DataSource.GetInitialDataSource(ZoneId, AppId));
 
-        public IEnumerable<IContentType> GetContentTypes(string scope = null, bool includeAttributeTypes = false)
-        {
-            //var contentTypes = Cache.GetContentTypes();
-            var set = ContentTypes // contentTypes.Select(c => c.Value)
-                .Where(c => includeAttributeTypes || !c.Name.StartsWith("@"));
-            if (scope != null)
-                set = set.Where(p => p.Scope == scope);
-            return set.OrderBy(c => c.Name);
-        }
+        //private IDataSource _data;
 
-        public IEnumerable<IEntity> GetEntities(string contentTypeName)
-        {
-            var typeFilter = DataSource.GetDataSource<EntityTypeFilter>(appId: AppId, upstream: Cache, valueCollectionProvider: Data.ConfigurationProvider); // need to go to cache, to include published & unpublished
-            typeFilter.TypeName = contentTypeName;
-            return typeFilter.LightList;
-        }
+        //public IEnumerable<IContentType> ContentTypes => Cache.GetContentTypes().Select(c => c.Value);
 
-        public IEnumerable<IEntity> GetInputTypes(bool includeGlobalDefinitions)
-        {
-            var inputsOfThisApp = GetEntities(Constants.TypeForInputTypeDefinition).ToList();
+        //public IEnumerable<IContentType> GetContentTypes(string scope = null, bool includeAttributeTypes = false)
+        //{
+        //    //var contentTypes = Cache.GetContentTypes();
+        //    var set = ContentTypes // contentTypes.Select(c => c.Value)
+        //        .Where(c => includeAttributeTypes || !c.Name.StartsWith("@"));
+        //    if (scope != null)
+        //        set = set.Where(p => p.Scope == scope);
+        //    return set.OrderBy(c => c.Name);
+        //}
 
-            if (includeGlobalDefinitions)
-            {
-                var systemDef = new AppRuntime(Constants.MetaDataAppId);
-                var systemInputTypes = systemDef.GetInputTypes(false).ToList();
 
-                systemInputTypes.ForEach(sit => {
-                    if (inputsOfThisApp.FirstOrDefault(ait => ait.Title == sit.Title) == null)
-                        inputsOfThisApp.Add(sit);
-                });
+        //public IEnumerable<IEntity> GetInputTypes(bool includeGlobalDefinitions)
+        //{
+        //    var inputsOfThisApp = Entities.Get(Constants.TypeForInputTypeDefinition).ToList();
 
-            }
-            return inputsOfThisApp;
-        }
+        //    if (includeGlobalDefinitions)
+        //    {
+        //        var systemDef = new AppRuntime(Constants.MetaDataAppId);
+        //        var systemInputTypes = systemDef.GetInputTypes(false).ToList();
+
+        //        systemInputTypes.ForEach(sit => {
+        //            if (inputsOfThisApp.FirstOrDefault(ait => ait.Title == sit.Title) == null)
+        //                inputsOfThisApp.Add(sit);
+        //        });
+
+        //    }
+        //    return inputsOfThisApp;
+        //}
 
     }
 }

@@ -43,12 +43,6 @@ namespace ToSic.Eav.WebApi
 		/// <param name="eavConnectionString">optional EAV Connection String</param>
 		public PipelineDesignerController(string userName, string eavConnectionString = null)
 		{
-            // TODO URGENT - TRYING TO GET THIS TO WORK - HAS SIDE EFFECTS ON OTHER SERVICES
-            // Must discuss w/2bg, seems to work now anyhow...
-			// Preserving circular reference
-			// GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Serialize;
-			// GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.Objects;
-
 			_userName = userName;
 
 			if (eavConnectionString != null)
@@ -156,7 +150,7 @@ namespace ToSic.Eav.WebApi
 		/// <param name="id">PipelineEntityId</param>
 		public Dictionary<string, object> SavePipeline([FromBody] dynamic data, int appId, int? id = null)
 		{
-			var _context = EavDataController.Instance(appId: appId);
+			var _context = DbDataController.Instance(appId: appId);
 			_context.UserName = _userName;
 			var source = DataSource.GetInitialDataSource(appId: appId);
 
@@ -194,7 +188,7 @@ namespace ToSic.Eav.WebApi
 		/// <param name="dataSources">JSON describing the DataSources</param>
 		/// <param name="pipelineEntityGuid">EngityGuid of the Pipeline-Entity</param>
 		/// <param name="pipelinePartAttributeSetId">AttributeSetId of PipelineParts</param>
-		private Dictionary<string, Guid> SavePipelineParts(dynamic dataSources, Guid pipelineEntityGuid, int pipelinePartAttributeSetId, EavDataController _context)
+		private Dictionary<string, Guid> SavePipelineParts(dynamic dataSources, Guid pipelineEntityGuid, int pipelinePartAttributeSetId, DbDataController _context)
 		{
 			var newDataSources = new Dictionary<string, Guid>();
 
@@ -221,7 +215,7 @@ namespace ToSic.Eav.WebApi
 		/// <summary>
 		/// Delete Pipeline Parts (DataSources) that are not present
 		/// </summary>
-		private void DeletedRemovedPipelineParts(IEnumerable<JToken> dataSources, Dictionary<string, Guid> newDataSources, Guid pipelineEntityGuid, int zoneId, int appId, EavDataController _context)
+		private void DeletedRemovedPipelineParts(IEnumerable<JToken> dataSources, Dictionary<string, Guid> newDataSources, Guid pipelineEntityGuid, int zoneId, int appId, DbDataController _context)
 		{
 			// Get EntityGuids currently stored in EAV
 			var existingEntityGuids = DataPipeline.GetPipelineParts(zoneId, appId, pipelineEntityGuid).Select(e => e.EntityGuid);
@@ -241,7 +235,7 @@ namespace ToSic.Eav.WebApi
 	    /// <param name="appId"></param>
 	    /// <param name="pipeline">JSON with the new Entity-Values</param>
 	    /// <param name="newDataSources">Array with new DataSources and the unsavedName and final EntityGuid</param>
-	    private void SavePipelineEntity(int? id, int appId, dynamic pipeline, IDictionary<string, Guid> newDataSources, EavDataController _context)
+	    private void SavePipelineEntity(int? id, int appId, dynamic pipeline, IDictionary<string, Guid> newDataSources, DbDataController _context)
 		{
 			// Create a clone so it can be modifie before saving but doesn't affect the underlaying JObject.
 			// A new Pipeline Entity must be saved twice, but some Field-Values are changed before saving it
@@ -357,9 +351,9 @@ namespace ToSic.Eav.WebApi
 		[HttpGet]
 		public object ClonePipeline(int appId, int id)
 		{
-            var eavCt = EavDataController.Instance(appId: appId);
-            var clonePipelineEntity = new DbPipeline(eavCt).CopyDataPipeline(appId, id, _userName);
-			return new { EntityId = clonePipelineEntity.EntityID };
+            var eavCt = DbDataController.Instance(appId: appId);
+            var clonedId = new DbPipeline(eavCt).CopyDataPipeline(appId, id, _userName);
+			return new { EntityId = clonedId };
 		}
 
 		/// <summary>
@@ -369,7 +363,7 @@ namespace ToSic.Eav.WebApi
 		public object DeletePipeline(int appId, int id)
 		{
 			//if (_context == null)
-				var _context = EavDataController.Instance(appId: appId);
+				var _context = DbDataController.Instance(appId: appId);
 
 		    var canDeleteResult = (_context.Entities.CanDeleteEntity(id));// _context.EntCommands.CanDeleteEntity(id);
 			if (!canDeleteResult.Item1)

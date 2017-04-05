@@ -7,16 +7,16 @@ namespace ToSic.Eav.BLL.Parts
 {
     public class DbAttribute: BllCommandBase
     {
-        public DbAttribute(EavDataController cntx) : base(cntx) {}
+        public DbAttribute(DbDataController cntx) : base(cntx) {}
 
         /// <summary>
         /// Get Attributes of an AttributeSet
         /// </summary>
         public IQueryable<Attribute> GetAttributes(int attributeSetId)
         {
-            attributeSetId = Context.AttribSet.ResolveAttributeSetId(attributeSetId);
+            attributeSetId = DbContext.AttribSet.ResolveAttributeSetId(attributeSetId);
 
-            return from ais in Context.SqlDb.AttributesInSets
+            return from ais in DbContext.SqlDb.AttributesInSets
                    where ais.AttributeSetID == attributeSetId
                    orderby ais.SortOrder
                    select ais.Attribute;
@@ -51,7 +51,7 @@ namespace ToSic.Eav.BLL.Parts
         /// </summary>
         public List<AttributeInSet> GetAttributesInSet(int attributeSetId)
         {
-            return Context.SqlDb.AttributesInSets.Where(a => a.AttributeSetID == attributeSetId).OrderBy(a => a.SortOrder).ToList();
+            return DbContext.SqlDb.AttributesInSets.Where(a => a.AttributeSetID == attributeSetId).OrderBy(a => a.SortOrder).ToList();
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace ToSic.Eav.BLL.Parts
         /// <param name="newSortOrder">Array of attribute ids which defines the new sort order</param>
         public void UpdateAttributeOrder(int setId, List<int> newSortOrder)
         {
-            var attributeList = Context.SqlDb.AttributesInSets.Where(a => a.AttributeSetID == setId).ToList();
+            var attributeList = DbContext.SqlDb.AttributesInSets.Where(a => a.AttributeSetID == setId).ToList();
             attributeList = attributeList.OrderBy(a => newSortOrder.IndexOf(a.AttributeID)).ToList();
 
             PersistAttributeSorting(attributeList);
@@ -71,7 +71,7 @@ namespace ToSic.Eav.BLL.Parts
         {
             var index = 0;
             attributeList.ForEach(a => a.SortOrder = index++);
-            Context.SqlDb.SaveChanges();
+            DbContext.SqlDb.SaveChanges();
         }
 
         /// <summary>
@@ -79,14 +79,14 @@ namespace ToSic.Eav.BLL.Parts
         /// </summary>
         public void SetTitleAttribute(int attributeId, int attributeSetId)
         {
-            Context.SqlDb.AttributesInSets.Single(a => a.AttributeID == attributeId && a.AttributeSetID == attributeSetId).IsTitle = true;
+            DbContext.SqlDb.AttributesInSets.Single(a => a.AttributeID == attributeId && a.AttributeSetID == attributeSetId).IsTitle = true;
 
             // unset other Attributes with isTitle=true
-            var oldTitleAttributes = Context.SqlDb.AttributesInSets.Where(s => s.AttributeSetID == attributeSetId && s.IsTitle);
+            var oldTitleAttributes = DbContext.SqlDb.AttributesInSets.Where(s => s.AttributeSetID == attributeSetId && s.IsTitle);
             foreach (var oldTitleAttribute in oldTitleAttributes)
                 oldTitleAttribute.IsTitle = false;
 
-            Context.SqlDb.SaveChanges();
+            DbContext.SqlDb.SaveChanges();
         }
 
         /// <summary>
@@ -98,9 +98,9 @@ namespace ToSic.Eav.BLL.Parts
                 throw new Exception("can't rename to something empty");
 
             // ensure that it's in the set
-            var attr = Context.SqlDb.AttributesInSets.Single(a => a.AttributeID == attributeId && a.AttributeSetID == attributeSetId).Attribute;
+            var attr = DbContext.SqlDb.AttributesInSets.Single(a => a.AttributeID == attributeId && a.AttributeSetID == attributeSetId).Attribute;
             attr.StaticName = newName;
-            Context.SqlDb.SaveChanges();
+            DbContext.SqlDb.SaveChanges();
         }
 
         ///// <summary>
@@ -144,7 +144,7 @@ namespace ToSic.Eav.BLL.Parts
         /// </summary>
         private Attribute AppendAttribute(AttributeSet attributeSet, int attributeSetId, string staticName, string type, string inputType, bool isTitle, bool autoSave)
         {
-            var sortOrder = attributeSet != null ? attributeSet.AttributesInSets.Max(s => (int?)s.SortOrder) : Context.SqlDb.AttributesInSets.Where(a => a.AttributeSetID == attributeSetId).Max(s => (int?)s.SortOrder);
+            var sortOrder = attributeSet != null ? attributeSet.AttributesInSets.Max(s => (int?)s.SortOrder) : DbContext.SqlDb.AttributesInSets.Where(a => a.AttributeSetID == attributeSetId).Max(s => (int?)s.SortOrder);
             if (!sortOrder.HasValue)
                 sortOrder = 0;
             else
@@ -164,10 +164,10 @@ namespace ToSic.Eav.BLL.Parts
 
         internal bool Exists(int attributeSetId, string staticName)
         {
-            return Context.SqlDb.AttributesInSets.Any(
+            return DbContext.SqlDb.AttributesInSets.Any(
                 s =>
                     s.Attribute.StaticName == staticName && !s.Attribute.ChangeLogIDDeleted.HasValue &&
-                    s.AttributeSetID == attributeSetId && s.Set.AppID == Context.AppId);
+                    s.AttributeSetID == attributeSetId && s.Set.AppID == DbContext.AppId);
         }
 
         /// <summary>
@@ -176,7 +176,7 @@ namespace ToSic.Eav.BLL.Parts
         private Attribute AddAttribute(AttributeSet attributeSet, int attributeSetId, string staticName, string type, string inputType, int sortOrder, int attributeGroupId, bool isTitle, bool autoSave)
         {
             if (attributeSet == null)
-                attributeSet = Context.SqlDb.AttributeSets.Single(a => a.AttributeSetID == attributeSetId);
+                attributeSet = DbContext.SqlDb.AttributeSets.Single(a => a.AttributeSetID == attributeSetId);
             else if (attributeSetId != 0)
                 throw new Exception("Can only set attributeSet or attributeSetId");
 
@@ -192,7 +192,7 @@ namespace ToSic.Eav.BLL.Parts
             {
                 Type = type,
                 StaticName = staticName,
-                ChangeLogIDCreated = Context.Versioning.GetChangeLogId()
+                ChangeLogIDCreated = DbContext.Versioning.GetChangeLogId()
             };
             var setAssignment = new AttributeInSet
             {
@@ -202,8 +202,8 @@ namespace ToSic.Eav.BLL.Parts
                 AttributeGroupID = attributeGroupId,
                 IsTitle = isTitle
             };
-            Context.SqlDb.AddToAttributes(newAttribute);
-            Context.SqlDb.AddToAttributesInSets(setAssignment);
+            DbContext.SqlDb.AddToAttributes(newAttribute);
+            DbContext.SqlDb.AddToAttributesInSets(setAssignment);
 
             // Set Attribute as Title if there's no title field in this set
             if (!attributeSet.AttributesInSets.Any(a => a.IsTitle))
@@ -219,7 +219,7 @@ namespace ToSic.Eav.BLL.Parts
 
             // If attribute has not been saved, we must save now to get the id (and assign entities)
             if (autoSave || newAttribute.AttributeID == 0)
-                Context.SqlDb.SaveChanges();
+                DbContext.SqlDb.SaveChanges();
 
             #region set the input type
             // new: set the inputType - this is a bit tricky because it needs an attached entity of type "@All" to set the value to...
@@ -251,18 +251,18 @@ namespace ToSic.Eav.BLL.Parts
         /// </summary>
         public Entity UpdateAttributeAdditionalProperties(int attributeId, bool isAllProperty, IDictionary fieldProperties)
         {
-            var fieldPropertyEntity = Context.SqlDb.Entities.FirstOrDefault(e => e.AssignmentObjectTypeID == Constants.AssignmentObjectTypeIdFieldProperties && e.KeyNumber == attributeId);
+            var fieldPropertyEntity = DbContext.SqlDb.Entities.FirstOrDefault(e => e.AssignmentObjectTypeID == Constants.AssignmentObjectTypeIdFieldProperties && e.KeyNumber == attributeId);
             if (fieldPropertyEntity != null)
-                return Context.Entities.UpdateEntity(fieldPropertyEntity.EntityID, fieldProperties);
+                return DbContext.Entities.UpdateEntity(fieldPropertyEntity.EntityID, fieldProperties);
 
-            var metaDataSetName = isAllProperty ? "@All" : "@" + Context.SqlDb.Attributes.Single(a => a.AttributeID == attributeId).Type;
+            var metaDataSetName = isAllProperty ? "@All" : "@" + DbContext.SqlDb.Attributes.Single(a => a.AttributeID == attributeId).Type;
             var systemScope = AttributeScope.System.ToString();
-            var attSetFirst = Context.SqlDb.AttributeSets.FirstOrDefault(s => s.StaticName == metaDataSetName && s.Scope == systemScope && s.AppID == Context.AppId && !s.ChangeLogIDDeleted.HasValue /* _appId*/);
+            var attSetFirst = DbContext.SqlDb.AttributeSets.FirstOrDefault(s => s.StaticName == metaDataSetName && s.Scope == systemScope && s.AppID == DbContext.AppId && !s.ChangeLogIDDeleted.HasValue /* _appId*/);
             if(attSetFirst == null)
-                throw new Exception("Can't continue, couldn't find attrib-set with: " + systemScope + ":" + metaDataSetName + " in app " + Context.AppId);
+                throw new Exception("Can't continue, couldn't find attrib-set with: " + systemScope + ":" + metaDataSetName + " in app " + DbContext.AppId);
             var attributeSetId = attSetFirst.AttributeSetID;
 
-            return Context.Entities.AddEntity(attributeSetId, fieldProperties, null, attributeId, Constants.AssignmentObjectTypeIdFieldProperties);
+            return DbContext.Entities.AddEntity(attributeSetId, fieldProperties, null, attributeId, Constants.AssignmentObjectTypeIdFieldProperties);
         }
 
 
@@ -270,21 +270,21 @@ namespace ToSic.Eav.BLL.Parts
         public bool RemoveAttribute(int attributeId)
         {
             // Remove values and valueDimensions of this attribute
-            var values = Context.SqlDb.Values.Where(a => a.AttributeID == attributeId).ToList();
+            var values = DbContext.SqlDb.Values.Where(a => a.AttributeID == attributeId).ToList();
             values.ForEach(v => {
                 v.ValuesDimensions.ToList().ForEach(vd => {
-                    Context.SqlDb.ValuesDimensions.DeleteObject(vd);
+                    DbContext.SqlDb.ValuesDimensions.DeleteObject(vd);
                 });
-                Context.SqlDb.Values.DeleteObject(v);
+                DbContext.SqlDb.Values.DeleteObject(v);
             });
-            Context.SqlDb.SaveChanges();
+            DbContext.SqlDb.SaveChanges();
 
-            var attr = Context.SqlDb.Attributes.FirstOrDefault(a => a.AttributeID == attributeId);
+            var attr = DbContext.SqlDb.Attributes.FirstOrDefault(a => a.AttributeID == attributeId);
 
             if (attr != null)
-                Context.SqlDb.Attributes.DeleteObject(attr);
+                DbContext.SqlDb.Attributes.DeleteObject(attr);
 
-            Context.SqlDb.SaveChanges();
+            DbContext.SqlDb.SaveChanges();
             return true;
         }
     }

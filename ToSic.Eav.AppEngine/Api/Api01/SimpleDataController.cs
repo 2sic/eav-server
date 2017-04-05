@@ -5,6 +5,10 @@ using ToSic.Eav.BLL;
 using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Models;
 
+// This is the simple API used to quickly create/edit/delete entities
+// It's in the Apps-project, because we are trying to elliminate the plain ToSic.Eav as it was structured in 2016
+
+// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Api.Api01
 {
     /// <summary>
@@ -12,7 +16,7 @@ namespace ToSic.Eav.Api.Api01
     /// </summary>
     public class SimpleDataController
     {
-        private readonly EavDataController _context;
+        private readonly DbDataController _context;
 
         private readonly string _defaultLanguageCode;
 
@@ -37,7 +41,7 @@ namespace ToSic.Eav.Api.Api01
             _appId = appId;
             _userName = userName;
             _defaultLanguageCode = defaultLanguageCode;
-            _context = EavDataController.Instance(zoneId, appId);
+            _context = DbDataController.Instance(zoneId, appId);
         }
 
 
@@ -91,7 +95,7 @@ namespace ToSic.Eav.Api.Api01
         /// <exception cref="ArgumentNullException">Entity does not exist</exception>
         public void Update(int entityId, Dictionary<string, object> values, bool filterUnknownFields = true)
         {
-            var entity = _context.Entities.GetEntity(entityId);
+            var entity = _context.Entities.GetDbEntity(entityId);
             Update(entity, values);
         }
 
@@ -108,7 +112,7 @@ namespace ToSic.Eav.Api.Api01
         /// <exception cref="ArgumentNullException">Entity does not exist</exception>
         public void Update(Guid entityGuid, Dictionary<string, object> values, bool filterUnknownFields = true)
         {
-            var entity = _context.Entities.GetEntity(entityGuid);
+            var entity = _context.Entities.GetDbEntity(entityGuid);
             Update(entity, values);
         }
 
@@ -150,7 +154,7 @@ namespace ToSic.Eav.Api.Api01
         public void Delete(Guid entityGuid)
         {
             // todo: refactor to use the eav-api delete
-            var entity = _context.Entities.GetEntity(entityGuid);
+            var entity = _context.Entities.GetDbEntity(entityGuid);
             Delete(entity.EntityID);
         }
 
@@ -185,7 +189,7 @@ namespace ToSic.Eav.Api.Api01
                     var guids = new List<Guid>();
                     foreach (var id in ids)
                     {
-                        var entity = _context.Entities.GetEntity(id);
+                        var entity = _context.Entities.GetDbEntity(id);
                         guids.Add(entity.EntityGUID);
                     }
                     result.Add(value.Key, string.Join(",", guids));

@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.DataSources.Caches;
+﻿using ToSic.Eav.DataSources;
+using ToSic.Eav.DataSources.Caches;
 
 namespace ToSic.Eav.Apps.Interfaces
 {
@@ -41,8 +42,14 @@ namespace ToSic.Eav.Apps.Interfaces
             ZoneId = ((BaseCache) DataSource.GetInitialDataSource()).GetZoneAppId(appId: appId).Item1;
         }
 
+        internal AppBase(BaseCache source)
+        {
+            _cache = source;
+            AppId = _cache.AppId;
+            ZoneId = _cache.ZoneId;
+        }
 
-        internal BaseCache Cache => _cache ?? (_cache = (BaseCache) DataSource.GetCache(ZoneId, AppId));
+        internal BaseCache Cache => _cache ?? (_cache = (BaseCache) DataSource.GetInitialDataSource(ZoneId, AppId));
         private BaseCache _cache;
 
         #endregion

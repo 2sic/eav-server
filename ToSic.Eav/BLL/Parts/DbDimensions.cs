@@ -6,7 +6,7 @@ namespace ToSic.Eav.BLL.Parts
 {
 	public class DbDimensions: BllCommandBase
 	{
-        public DbDimensions(EavDataController ctx) : base(ctx) { }
+        public DbDimensions(DbDataController ctx) : base(ctx) { }
         private static List<Dimension> _cachedDimensions;
 
         #region Cached Dimensions
@@ -16,7 +16,7 @@ namespace ToSic.Eav.BLL.Parts
 	    internal void EnsureDimensionsCache()
         {
             if (_cachedDimensions == null)
-                _cachedDimensions = Context.SqlDb.Dimensions.ToList();
+                _cachedDimensions = DbContext.SqlDb.Dimensions.ToList();
         }
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace ToSic.Eav.BLL.Parts
 		{
 			EnsureDimensionsCache();
 
-            return _cachedDimensions.Where(d => string.Equals(d.SystemKey, systemKey, StringComparison.InvariantCultureIgnoreCase) && string.Equals(d.ExternalKey, externalKey, StringComparison.InvariantCultureIgnoreCase) && d.ZoneID == Context.ZoneId).Select(d => d.DimensionID).FirstOrDefault();
+            return _cachedDimensions.Where(d => string.Equals(d.SystemKey, systemKey, StringComparison.InvariantCultureIgnoreCase) && string.Equals(d.ExternalKey, externalKey, StringComparison.InvariantCultureIgnoreCase) && d.ZoneID == DbContext.ZoneId).Select(d => d.DimensionID).FirstOrDefault();
 		}
 
 		/// <summary>
@@ -41,13 +41,13 @@ namespace ToSic.Eav.BLL.Parts
 		/// </summary>
 		/// <returns>A Dimension or null</returns>
 		public Dimension GetDimension(int dimensionId) 
-            => Context.SqlDb.Dimensions.SingleOrDefault(d => d.DimensionID == dimensionId);
+            => DbContext.SqlDb.Dimensions.SingleOrDefault(d => d.DimensionID == dimensionId);
 
 	    /// <summary>
 		/// Get Dimensions by Ids
 		/// </summary>
 		internal IEnumerable<Dimension> GetDimensions(IEnumerable<int> dimensionIds) 
-            => Context.SqlDb.Dimensions.Where(d => dimensionIds.Contains(d.DimensionID) && d.ZoneID == Context.ZoneId);
+            => DbContext.SqlDb.Dimensions.Where(d => dimensionIds.Contains(d.DimensionID) && d.ZoneID == DbContext.ZoneId);
 
 	    /// <summary>
 		/// Get a List of Dimensions having specified SystemKey and current ZoneId and AppId
@@ -56,7 +56,7 @@ namespace ToSic.Eav.BLL.Parts
 		{
 			EnsureDimensionsCache();
 
-			return _cachedDimensions.Where(d => d.ParentID.HasValue && d.Parent.SystemKey == systemKey && d.ZoneID == Context.ZoneId).ToList();
+			return _cachedDimensions.Where(d => d.ParentID.HasValue && d.Parent.SystemKey == systemKey && d.ZoneID == DbContext.ZoneId).ToList();
 		}
 
 		///// <summary>
@@ -86,13 +86,13 @@ namespace ToSic.Eav.BLL.Parts
 		/// </summary>
 		public void UpdateDimension(int dimensionId, bool? active = null, string name = null)
 		{
-			var dimension = Context.SqlDb.Dimensions.Single(d => d.DimensionID == dimensionId);
+			var dimension = DbContext.SqlDb.Dimensions.Single(d => d.DimensionID == dimensionId);
 			if (active.HasValue)
 				dimension.Active = active.Value;
 			if (name != null)
 				dimension.Name = name;
 
-            Context.SqlDb.SaveChanges();
+            DbContext.SqlDb.SaveChanges();
 			ClearDimensionsCache();
 		}
 
@@ -122,10 +122,10 @@ namespace ToSic.Eav.BLL.Parts
 				Zone = zone,
 				Parent = parent
 			};
-            Context.SqlDb.AddToDimensions(newDimension);
+            DbContext.SqlDb.AddToDimensions(newDimension);
 
 			if (autoSave)
-                Context.SqlDb.SaveChanges();
+                DbContext.SqlDb.SaveChanges();
 
 			ClearDimensionsCache();
 		}
@@ -163,10 +163,10 @@ namespace ToSic.Eav.BLL.Parts
 				Name = name,
 				ExternalKey = externalKey,
 				ParentID = GetDimensionId("Culture", null),
-                ZoneID = Context.ZoneId
+                ZoneID = DbContext.ZoneId
 			};
-            Context.SqlDb.AddToDimensions(newLanguage);
-            Context.SqlDb.SaveChanges();
+            DbContext.SqlDb.AddToDimensions(newLanguage);
+            DbContext.SqlDb.SaveChanges();
 			ClearDimensionsCache();
 
 			return newLanguage;

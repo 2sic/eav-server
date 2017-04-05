@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web.Http;
 using Microsoft.Practices.Unity;
+using ToSic.Eav.Apps;
 using ToSic.Eav.BLL;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Serializers;
@@ -16,10 +17,12 @@ namespace ToSic.Eav.WebApi
         #region Helpers
         internal IDataSource InitialDS => DataSource.GetInitialDataSource(appId: AppId);
 
+        internal AppManager AppManager => new AppManager(AppId);
+
         internal IMetaDataSource MetaDS => DataSource.GetMetaDataSource(appId: AppId);
 
-        internal EavDataController _context;
-	    internal EavDataController CurrentContext => _context ?? (_context = EavDataController.Instance(appId: AppId));
+        internal DbDataController _context;
+	    internal DbDataController CurrentContext => _context ?? (_context = DbDataController.Instance(appId: AppId));
 
         // I must keep the serializer so it can be configured from outside if necessary
 	    private Serializer _serializer;
@@ -40,14 +43,14 @@ namespace ToSic.Eav.WebApi
 
         #region App-ID helper
 
-        private const int _emptyAppId = -1;
-	    private int _appId = _emptyAppId;
+        private const int EmptyAppId = -1;
+	    private int _appId = EmptyAppId;
 
 	    public int AppId
 	    {
 	        get
 	        {
-	            if(_appId == -1)
+	            if(_appId == EmptyAppId)
                     throw new Exception("AppId not initialized");
 	            return _appId;
 	        }
@@ -69,12 +72,14 @@ namespace ToSic.Eav.WebApi
 	    }
         #endregion
 
-        public void SetAppIdAndUser(int appId)
+        public void SetAppIdAndUser(int? appId)
         {
-            _appId = appId;
+            //_appId = appId;
+            if (appId.HasValue)
+                AppId = appId.Value;
+
             if (string.IsNullOrWhiteSpace(CurrentContext.UserName))
                 SetUser(UserIdentityToken);
-                //CurrentContext.UserName = System.Web.HttpContext.Current.User.Identity.Name;
         }
 
         private string _userTokenOverride = null;
@@ -83,7 +88,7 @@ namespace ToSic.Eav.WebApi
             _userTokenOverride = userIdentityToken; // save for later
 
             // if the context is already initialized, then set it directly (otherwise this will be called later)
-            if (_appId != _emptyAppId) // already initialized
+            if (_appId != EmptyAppId) // already initialized
                 CurrentContext.UserName = userIdentityToken;
         }
 

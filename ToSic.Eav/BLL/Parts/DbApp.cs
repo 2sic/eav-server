@@ -6,7 +6,7 @@ namespace ToSic.Eav.BLL.Parts
 {
     public class DbApp: BllCommandBase
     {
-        public DbApp(EavDataController cntx) : base(cntx) {}
+        public DbApp(DbDataController cntx) : base(cntx) {}
 
 
         /// <summary>
@@ -15,18 +15,18 @@ namespace ToSic.Eav.BLL.Parts
         public App AddApp(Zone zone, string name = Constants.DefaultAppName)
         {
             if (zone == null)
-                zone = Context.Zone.GetZone(Context.ZoneId);
+                zone = DbContext.Zone.GetZone(DbContext.ZoneId);
 
             var newApp = new App
             {
                 Name = name,
                 Zone = zone
             };
-            Context.SqlDb.AddToApps(newApp);
+            DbContext.SqlDb.AddToApps(newApp);
 
-            Context.SqlDb.SaveChanges();	// required to ensure AppId is created - required in EnsureSharedAttributeSets();
+            DbContext.SqlDb.SaveChanges();	// required to ensure AppId is created - required in EnsureSharedAttributeSets();
 
-            Context.AttribSet.EnsureSharedAttributeSets(newApp);
+            DbContext.AttribSet.EnsureSharedAttributeSets(newApp);
 
             // 2017-04-01 removed, shouldn't be necessary any more at this level
             // PurgeGlobalCache(Context.ZoneId, Context.AppId);
@@ -56,15 +56,15 @@ namespace ToSic.Eav.BLL.Parts
         /// <param name="appId">AppId to delete</param>
         public void DeleteApp(int appId)
         {
-            if (appId != Context.AppId)  // this only happens if there is some kind of id-fallback
+            if (appId != DbContext.AppId)  // this only happens if there is some kind of id-fallback
                 throw new Exception("An app can only be removed inside of it's own context.");
 
             // enure changelog exists and is set to SQL CONTEXT_INFO variable
-            if (Context.Versioning.MainChangeLogId == 0)
-                Context.Versioning.GetChangeLogId(Context.UserName);
+            if (DbContext.Versioning.MainChangeLogId == 0)
+                DbContext.Versioning.GetChangeLogId(DbContext.UserName);
 
             // Delete app using StoredProcedure
-            Context.SqlDb.DeleteAppInternal(appId);
+            DbContext.SqlDb.DeleteAppInternal(appId);
 
             // 2017-04-01 2dm removed from here, must happen at "outer" layer
             // Remove App from Global Cache
@@ -76,7 +76,7 @@ namespace ToSic.Eav.BLL.Parts
         /// </summary>
         /// <returns></returns>
         public List<App> GetApps()
-            => Context.SqlDb.Apps.Where(a => a.ZoneID == Context.ZoneId).ToList();
+            => DbContext.SqlDb.Apps.Where(a => a.ZoneID == DbContext.ZoneId).ToList();
         
 
     }

@@ -11,7 +11,7 @@ namespace ToSic.Eav.DataSources.SqlSources
 	/// </summary>
 	public sealed class EavSqlStore : BaseDataSource, IRootSource
 	{
-		private readonly EavDataController _context;
+		private readonly DbDataController _context;
 	    // private readonly DbShortcuts DbS;
 		private bool _ready;
 
@@ -28,11 +28,7 @@ namespace ToSic.Eav.DataSources.SqlSources
 
 	    #endregion
 
-        private IDictionary<int, IEntity> GetEntities()
-		{
-            // 2015-08-08 2dm: note: changed to use the source null (previously this), as it's only used for internal deferred child-entity lookups and would cause infinite looping
-			return new DbLoadIntoEavDataStructure(_context).GetEavEntities(AppId, null);
-		}
+
 
 		/// <summary>
 		/// Constructs a new EavSqlStore DataSource
@@ -40,8 +36,12 @@ namespace ToSic.Eav.DataSources.SqlSources
 		public EavSqlStore()
 		{
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntities));
-			_context = EavDataController.Instance();
-		}
+			_context = DbDataController.Instance();
+
+            // 2015-08-08 2dm: note: changed to use the source null (previously this), as it's only used for internal deferred child-entity lookups and would cause infinite looping
+            IDictionary<int, IEntity> GetEntities()
+                => new DbLoadIntoEavDataStructure(_context).GetAppDataPackage(null, AppId, null, true).Entities; // .GetEavEntities(AppId, null);
+        }
 
 		/// <summary>
 		/// Set Zone and App for this DataSource

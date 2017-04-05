@@ -10,7 +10,7 @@ namespace ToSic.Eav
 	/// </summary>
 	public class VersionUpgrade
 	{
-		private readonly EavDataController _metaDataCtx = EavDataController.Instance(Constants.DefaultZoneId, Constants.MetaDataAppId);
+		private readonly DbDataController _metaDataCtx = DbDataController.Instance(Constants.DefaultZoneId, Constants.MetaDataAppId);
 		private readonly string _userName;
 
 		/// <summary>

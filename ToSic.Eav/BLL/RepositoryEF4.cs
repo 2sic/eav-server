@@ -17,16 +17,16 @@ namespace ToSic.Eav.BLL
         /// 
         /// </summary>
         /// <param name="dataController"></param>
-        public RepositoryEF4(EavDataController dataController) : base(dataController)
+        public RepositoryEF4(DbDataController dataController) : base(dataController)
         {
         }
 
         public IEnumerable<dynamic> AppsGet(int zoneId) 
-            => Context.App.GetApps().Select(a => new { Id = a.AppID, Name = a.Name, Zone = a.ZoneID });
+            => DbContext.App.GetApps().Select(a => new { Id = a.AppID, Name = a.Name, Zone = a.ZoneID });
 
         public dynamic AppGet(int zoneId, int appId)
         {
-            var a = Context.App.GetApps().First(x => x.AppID == appId);
+            var a = DbContext.App.GetApps().First(x => x.AppID == appId);
             return new { Id = a.AppID, Name = a.Name, Zone = a.ZoneID };
         }
 

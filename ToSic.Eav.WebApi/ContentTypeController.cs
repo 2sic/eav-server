@@ -128,7 +128,7 @@ namespace ToSic.Eav.WebApi
                     .OrderBy(ct => ((AttributeBase)ct.Item1).SortOrder);
 
             //var appDef = new BetaFullApi(null, appId, CurrentContext);
-            var appInputTypes = new AppRuntime(appId).GetInputTypes(true).ToList();  // appDef.GetInputTypes(true).ToList();
+            var appInputTypes = new AppRuntime(appId).ContentTypes.GetInputTypes(true).ToList();  // appDef.GetInputTypes(true).ToList();
             var noTitleCount = 0;
             var fldName = "";
 
@@ -202,8 +202,7 @@ namespace ToSic.Eav.WebApi
 	    public IEnumerable<Dictionary<string, object>> InputTypes(int appId)
 	    {
             SetAppIdAndUser(appId);
-            //var appDef = new BetaFullApi(null, appId, CurrentContext);
-	        var appInputTypes = new AppRuntime(appId).GetInputTypes(true).ToList(); // appDef.GetInputTypes(true).ToList();
+	        var appInputTypes = new AppRuntime(appId).ContentTypes.GetInputTypes(true).ToList(); // appDef.GetInputTypes(true).ToList();
             
 	        return Serializer.Prepare(appInputTypes);
 

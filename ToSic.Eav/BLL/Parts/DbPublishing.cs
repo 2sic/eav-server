@@ -5,7 +5,7 @@ namespace ToSic.Eav.BLL.Parts
 {
     internal class DbPublishing: BllCommandBase
     {
-        public DbPublishing(EavDataController c) : base(c) { }
+        public DbPublishing(DbDataController c) : base(c) { }
 
         /// <summary>
         /// Publish a Draft-Entity
@@ -15,14 +15,14 @@ namespace ToSic.Eav.BLL.Parts
         /// <returns>The published Entity</returns>
         public Entity PublishDraftInDbEntity(int entityId, bool autoSave)
         {
-            var unpublishedEntity = Context.Entities.GetEntity(entityId);
+            var unpublishedEntity = DbContext.Entities.GetDbEntity(entityId);
             if (unpublishedEntity.IsPublished)
             {
                 // try to get the draft if it exists
                 var draftId = GetDraftEntityId(entityId);
                 if (!draftId.HasValue)
                     throw new InvalidOperationException($"EntityId {entityId} is already published");
-                unpublishedEntity = Context.Entities.GetEntity(draftId.Value);
+                unpublishedEntity = DbContext.Entities.GetDbEntity(draftId.Value);
             }
             Entity publishedEntity;
 
@@ -35,15 +35,15 @@ namespace ToSic.Eav.BLL.Parts
             // Replace currently published Entity with draft Entity and delete the draft
             else
             {
-                publishedEntity = Context.Entities.GetEntity(unpublishedEntity.PublishedEntityId.Value);
-                Context.Values.CloneEntityValues(unpublishedEntity, publishedEntity);
+                publishedEntity = DbContext.Entities.GetDbEntity(unpublishedEntity.PublishedEntityId.Value);
+                DbContext.Values.CloneEntityValues(unpublishedEntity, publishedEntity);
 
                 // delete the Draft Entity
-                Context.Entities.DeleteEntity(unpublishedEntity, false);
+                DbContext.Entities.DeleteEntity(unpublishedEntity, false);
             }
 
             if (autoSave)
-                Context.SqlDb.SaveChanges();
+                DbContext.SqlDb.SaveChanges();
 
             return publishedEntity;
         }
@@ -56,7 +56,7 @@ namespace ToSic.Eav.BLL.Parts
         /// <returns></returns>
         public Entity ClearDraftBranchAndSetPublishedState(int unpublishedEntityId, bool newPublishedState = true)
         {
-            var unpublishedEntity = Context.Entities.GetEntity(unpublishedEntityId);
+            var unpublishedEntity = DbContext.Entities.GetDbEntity(unpublishedEntityId);
             // 2dm 2016-06-29 this should now be allowed, so we turn off the test
             //if (unpublishedEntity.IsPublished)
             //    throw new InvalidOperationException(string.Format("EntityId {0} is already published", unpublishedEntityId));
@@ -72,11 +72,11 @@ namespace ToSic.Eav.BLL.Parts
             // Replace currently published Entity with draft Entity and delete the draft
             else
             {
-                publishedEntity = Context.Entities.GetEntity(unpublishedEntity.PublishedEntityId.Value);
+                publishedEntity = DbContext.Entities.GetDbEntity(unpublishedEntity.PublishedEntityId.Value);
                 publishedEntity.IsPublished = newPublishedState;
 
                 // delete the Draft Entity
-                Context.Entities.DeleteEntity(unpublishedEntity, false);
+                DbContext.Entities.DeleteEntity(unpublishedEntity, false);
             }
 
             return publishedEntity;
@@ -88,7 +88,7 @@ namespace ToSic.Eav.BLL.Parts
         /// <param name="entityId">EntityId of the Published Entity</param>
         internal int? GetDraftEntityId(int entityId)
         {
-            return Context.SqlDb.Entities.Where(e => e.PublishedEntityId == entityId && !e.ChangeLogIDDeleted.HasValue).Select(e => (int?)e.EntityID).SingleOrDefault();
+            return DbContext.SqlDb.Entities.Where(e => e.PublishedEntityId == entityId && !e.ChangeLogIDDeleted.HasValue).Select(e => (int?)e.EntityID).SingleOrDefault();
         }
     }
 }

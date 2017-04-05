@@ -6,7 +6,7 @@ namespace ToSic.Eav.BLL.Parts
 {
     public class DbShortcuts: BllCommandBase
     {
-        public DbShortcuts(EavDataController c) : base(c) { }
+        public DbShortcuts(DbDataController c) : base(c) { }
 
         #region helpers
         /// <summary>
@@ -16,7 +16,7 @@ namespace ToSic.Eav.BLL.Parts
         public T CopyEfEntity<T>(T entity) where T : EntityObject
         {
             var copyKeys = false;
-            var clone =  Context.SqlDb.CreateObject<T>();
+            var clone =  DbContext.SqlDb.CreateObject<T>();
             var pis = entity.GetType().GetProperties();
 
             foreach (var pi in from pi in pis let attrs = (EdmScalarPropertyAttribute[])pi.GetCustomAttributes(typeof(EdmScalarPropertyAttribute), false) from attr in attrs where copyKeys || !attr.EntityKeyProperty select pi)
@@ -35,7 +35,7 @@ namespace ToSic.Eav.BLL.Parts
         /// <returns></returns>
         public AssignmentObjectType GetAssignmentObjectType(string name)
         {
-            return Context.SqlDb.AssignmentObjectTypes.Single(a => a.Name == name);
+            return DbContext.SqlDb.AssignmentObjectTypes.Single(a => a.Name == name);
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace ToSic.Eav.BLL.Parts
         /// </summary>
         public Dictionary<int, string> GetAssignmentObjectTypes()
         {
-            return (from a in Context.SqlDb.AssignmentObjectTypes
+            return (from a in DbContext.SqlDb.AssignmentObjectTypes
                     select new { a.AssignmentObjectTypeID, a.Name }).ToDictionary(a => a.AssignmentObjectTypeID, a => a.Name);
         }
 

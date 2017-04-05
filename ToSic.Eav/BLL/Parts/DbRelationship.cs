@@ -12,7 +12,7 @@ namespace ToSic.Eav.BLL.Parts
             new List<EntityRelationshipQueueItem>();
 
 
-        public DbRelationship(EavDataController cntx) : base(cntx)
+        public DbRelationship(DbDataController cntx) : base(cntx)
         {
         }
 
@@ -28,7 +28,7 @@ namespace ToSic.Eav.BLL.Parts
 
             // Delete all existing relationships
             foreach (var relationToDelete in existingRelationships)
-                Context.SqlDb.EntityRelationships.DeleteObject(relationToDelete);
+                DbContext.SqlDb.EntityRelationships.DeleteObject(relationToDelete);
 
             // Create new relationships
             for (var i = 0; i < newEntityIds.Count; i++)
@@ -65,14 +65,14 @@ namespace ToSic.Eav.BLL.Parts
             foreach (var relationship in _entityRelationshipsQueue)
             {
                 var entity = relationship.ParentEntityGuid.HasValue 
-                        ? Context.Entities.GetEntity(relationship.ParentEntityGuid.Value)
-                        : Context.Entities.GetEntity(relationship.ParentEntityId.Value);
+                        ? DbContext.Entities.GetDbEntity(relationship.ParentEntityGuid.Value)
+                        : DbContext.Entities.GetDbEntity(relationship.ParentEntityId.Value);
                 var childEntityIds = new List<int?>();
                 foreach (var childGuid in relationship.ChildEntityGuids)
                 {
                     try
                     {
-                        childEntityIds.Add(childGuid.HasValue ? Context.Entities.GetEntity(childGuid.Value).EntityID : new int?());
+                        childEntityIds.Add(childGuid.HasValue ? DbContext.Entities.GetDbEntity(childGuid.Value).EntityID : new int?());
                     }
                     catch (InvalidOperationException)
                     {

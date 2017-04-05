@@ -9,27 +9,24 @@ namespace ToSic.Eav.BLL
 {
     public class DbLoadIntoEavDataStructure: BllCommandBase
     {
-        public DbLoadIntoEavDataStructure(EavDataController cntx) : base(cntx)
+        public DbLoadIntoEavDataStructure(DbDataController cntx) : base(cntx)
         {
         }
 
-        /// <summary>
-        /// Get all Entities Models for specified AppId
-        /// </summary>
-        internal IDictionary<int, IEntity> GetEavEntities(int appId, BaseCache source)
-        {
-            return GetAppDataPackage(null, appId, source, true).Entities;
-        }
+        ///// <summary>
+        ///// Get all Entities Models for specified AppId
+        ///// </summary>
+        //internal IDictionary<int, IEntity> GetEavEntities(int appId, BaseCache source) => GetAppDataPackage(null, appId, source, true).Entities;
 
         /// <summary>
         /// Get all ContentTypes for specified AppId. If called multiple times it loads from a private field.
         /// </summary>
-        internal IDictionary<int, IContentType> GetEavContentTypes(int appId)
+        private IDictionary<int, IContentType> GetEavContentTypes(int appId)
         {
-            if (!Context.AttribSet.ContentTypes.ContainsKey(appId))
+            if (!DbContext.AttribSet.ContentTypes.ContainsKey(appId))
             {
                 // Load from DB
-                var contentTypes = from set in Context.SqlDb.AttributeSets
+                var contentTypes = from set in DbContext.SqlDb.AttributeSets
                     where set.AppID == appId && !set.ChangeLogIDDeleted.HasValue
                     select new
                     {
@@ -48,7 +45,7 @@ namespace ToSic.Eav.BLL
                                 a.SortOrder
                             }),
                         IsGhost = set.UsesConfigurationOfAttributeSet,
-                        SharedAttributes = (from a in Context.SqlDb.AttributesInSets
+                        SharedAttributes = (from a in DbContext.SqlDb.AttributesInSets
                             where a.AttributeSetID == set.UsesConfigurationOfAttributeSet
                             select new
                             {
@@ -58,7 +55,7 @@ namespace ToSic.Eav.BLL
                                 a.IsTitle,
                                 a.SortOrder
                             }),
-                        SharedAppDef = (from master in Context.SqlDb.AttributeSets
+                        SharedAppDef = (from master in DbContext.SqlDb.AttributeSets
                                         where master.AttributeSetID == (set.UsesConfigurationOfAttributeSet ?? set.AttributeSetID)
                                               && master.UsesConfigurationOfAttributeSet == null
                             select new
@@ -70,14 +67,14 @@ namespace ToSic.Eav.BLL
                     };
 
                 // Convert to ContentType-Model
-                Context.AttribSet.ContentTypes[appId] = contentTypes.ToDictionary(k1 => k1.AttributeSetID, set => (IContentType)new ContentType(set.Name, set.StaticName, set.AttributeSetID, set.Scope, set.Description, set.IsGhost, set.SharedAppDef.ZoneId, set.SharedAppDef.AppId, set.SharedAppDef.ConfigIsOmnipresent)
+                DbContext.AttribSet.ContentTypes[appId] = contentTypes.ToDictionary(k1 => k1.AttributeSetID, set => (IContentType)new ContentType(set.Name, set.StaticName, set.AttributeSetID, set.Scope, set.Description, set.IsGhost, set.SharedAppDef.ZoneId, set.SharedAppDef.AppId, set.SharedAppDef.ConfigIsOmnipresent)
                 {
                     AttributeDefinitions = (set.IsGhost.HasValue ? set.SharedAttributes : set.Attributes)
                             .ToDictionary(k2 => k2.AttributeID, a => new AttributeBase(a.StaticName, a.Type, a.IsTitle, a.AttributeID, a.SortOrder) as IAttributeBase)
                 });
             }
 
-            return Context.AttribSet.ContentTypes[appId];
+            return DbContext.AttribSet.ContentTypes[appId];
         }
 
         /// <summary>Get Data to populate ICache</summary>
@@ -104,14 +101,14 @@ namespace ToSic.Eav.BLL
 
             // Ensure published Versions of Drafts are also loaded (if filtered by EntityId, otherwise all Entities from the app are loaded anyway)
             if (filterByEntityIds)
-                entityIds = entityIds.Union(from e in Context.SqlDb.Entities
+                entityIds = entityIds.Union(from e in DbContext.SqlDb.Entities
                                             where e.PublishedEntityId.HasValue && !e.IsPublished && entityIds.Contains(e.EntityID) && !entityIds.Contains(e.PublishedEntityId.Value) && e.ChangeLogDeleted == null
                                             select e.PublishedEntityId.Value).ToArray();
             #endregion
 
             #region Get Entities with Attribute-Values from Database
 
-            var entitiesWithAandVfromDb = from e in Context.SqlDb.Entities
+            var entitiesWithAandVfromDb = from e in DbContext.SqlDb.Entities
                                  where
                                      !e.ChangeLogIDDeleted.HasValue &&
                                      e.Set.AppID == appId &&
@@ -299,7 +296,7 @@ namespace ToSic.Eav.BLL
             #endregion
 
             #region Populate Entity-Relationships (after all EntityModels are created)
-            var relationshipsRaw = from r in Context.SqlDb.EntityRelationships
+            var relationshipsRaw = from r in DbContext.SqlDb.EntityRelationships
                                    where r.Attribute.AttributesInSets.Any(s => s.Set.AppID == appId && (!filterByEntityIds || (!r.ChildEntityID.HasValue || entityIds.Contains(r.ChildEntityID.Value)) || entityIds.Contains(r.ParentEntityID)))
                                    orderby r.ParentEntityID, r.AttributeID, r.ChildEntityID
                                    select new { r.ParentEntityID, r.Attribute.StaticName, r.ChildEntityID };
@@ -322,7 +319,7 @@ namespace ToSic.Eav.BLL
         /// </summary>
         /// <returns>A single IEntity or throws InvalidOperationException</returns>
         public IEntity GetEavEntity(int entityId, BaseCache source = null)
-            => GetAppDataPackage(new[] {entityId}, Context.AppId, source, true)
+            => GetAppDataPackage(new[] {entityId}, DbContext.AppId, source, true)
                 .Entities.Single(e => e.Key == entityId).Value; // must filter by EntityId again because of Drafts
 
     }

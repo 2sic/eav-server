@@ -2,11 +2,11 @@
 {
     public class BllCommandBase
     {
-        public EavDataController Context { get; internal set; }
+        protected DbDataController DbContext { get; private set; }
 
-        public BllCommandBase(EavDataController dataController)
+        internal BllCommandBase(DbDataController dataController)
         {
-            Context = dataController;
+            DbContext = dataController;
         }
 
     }

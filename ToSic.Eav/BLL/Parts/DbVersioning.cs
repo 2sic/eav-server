@@ -13,7 +13,7 @@ namespace ToSic.Eav.Persistence
 {
     internal class DbVersioning: BllCommandBase
     {
-        internal DbVersioning(EavDataController cntx) : base(cntx)
+        internal DbVersioning(DbDataController cntx) : base(cntx)
         {
         }
 
@@ -28,9 +28,9 @@ namespace ToSic.Eav.Persistence
         {
             if (MainChangeLogId == 0)
             {
-                if (Context.SqlDb.Connection.State != ConnectionState.Open)
-                    Context.SqlDb.Connection.Open();	// make sure same connection is used later
-                MainChangeLogId = Context.SqlDb.AddChangeLog(userName).Single().ChangeID;
+                if (DbContext.SqlDb.Connection.State != ConnectionState.Open)
+                    DbContext.SqlDb.Connection.Open();	// make sure same connection is used later
+                MainChangeLogId = DbContext.SqlDb.AddChangeLog(userName).Single().ChangeID;
             }
 
             return MainChangeLogId;
@@ -41,7 +41,7 @@ namespace ToSic.Eav.Persistence
         /// </summary>
         internal int GetChangeLogId()
         {
-            return GetChangeLogId(Context.UserName);
+            return GetChangeLogId(DbContext.UserName);
         }
 
         /// <summary>
@@ -54,8 +54,8 @@ namespace ToSic.Eav.Persistence
                 throw new Exception("ChangeLogID was already set");
 
 
-            Context.SqlDb.Connection.Open();	// make sure same connection is used later
-            Context.SqlDb.SetChangeLogIdInternal(changeLogId);
+            DbContext.SqlDb.Connection.Open();	// make sure same connection is used later
+            DbContext.SqlDb.SetChangeLogIdInternal(changeLogId);
             MainChangeLogId = changeLogId;
         }
 
@@ -67,7 +67,7 @@ namespace ToSic.Eav.Persistence
         /// </summary>
         internal void SaveEntityToDataTimeline(Entity currentEntity)
         {
-            var export = new XmlNodeBuilder(Context);
+            var export = new XmlNodeBuilder(DbContext);
             var entityModelSerialized = export.GetEntityXElementUncached(currentEntity.EntityID);
             var timelineItem = new DataTimelineItem
             {
@@ -79,9 +79,9 @@ namespace ToSic.Eav.Persistence
                 SysLogID = GetChangeLogId(),
                 SysCreatedDate = DateTime.Now
             };
-            Context.SqlDb.AddToDataTimeline(timelineItem);
+            DbContext.SqlDb.AddToDataTimeline(timelineItem);
 
-            Context.SqlDb.SaveChanges();
+            DbContext.SqlDb.SaveChanges();
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace ToSic.Eav.Persistence
             string timelineItem;
             try
             {
-                timelineItem = Context.SqlDb.DataTimeline.Where(d => d.Operation == Constants.DataTimelineEntityStateOperation && d.SourceID == entityId && d.SysLogID == changeId).Select(d => d.NewData).SingleOrDefault();
+                timelineItem = DbContext.SqlDb.DataTimeline.Where(d => d.Operation == Constants.DataTimelineEntityStateOperation && d.SourceID == entityId && d.SysLogID == changeId).Select(d => d.NewData).SingleOrDefault();
             }
             catch (InvalidOperationException ex)
             {
@@ -110,17 +110,17 @@ namespace ToSic.Eav.Persistence
             // Parse XML
             var xEntity = XElement.Parse(timelineItem);
             var assignmentObjectTypeName = xEntity.Attribute("AssignmentObjectType").Value;
-            var assignmentObjectTypeId = new DbShortcuts(Context).GetAssignmentObjectType(assignmentObjectTypeName).AssignmentObjectTypeID;
+            var assignmentObjectTypeId = new DbShortcuts(DbContext).GetAssignmentObjectType(assignmentObjectTypeName).AssignmentObjectTypeID;
 
             // Prepare source and target-Languages
             if (!defaultCultureDimension.HasValue)
                 throw new NotSupportedException("GetEntityVersion without defaultCultureDimension is not yet supported.");
 
-            var defaultLanguage = Context.Dimensions.GetDimension(defaultCultureDimension.Value).ExternalKey;
-            var targetDimensions = Context.Dimensions.GetLanguages();
+            var defaultLanguage = DbContext.Dimensions.GetDimension(defaultCultureDimension.Value).ExternalKey;
+            var targetDimensions = DbContext.Dimensions.GetLanguages();
             var allSourceDimensionIds = ((IEnumerable<object>)xEntity.XPathEvaluate("/Value/Dimension/@DimensionID")).Select(d => int.Parse(((XAttribute)d).Value)).ToArray();
             var allSourceDimensionIdsDistinct = allSourceDimensionIds.Distinct().ToArray();
-            var sourceDimensions = Context.Dimensions.GetDimensions(allSourceDimensionIdsDistinct).ToList();
+            var sourceDimensions = DbContext.Dimensions.GetDimensions(allSourceDimensionIdsDistinct).ToList();
             int sourceDefaultDimensionId;
             if (allSourceDimensionIdsDistinct.Contains(defaultCultureDimension.Value))	// if default culture exists in the Entity, sourceDefaultDimensionId is still the same
                 sourceDefaultDimensionId = defaultCultureDimension.Value;
@@ -158,8 +158,8 @@ namespace ToSic.Eav.Persistence
         public List<EntityHistoryItem> GetEntityHistory(int entityId)
         {
             // get Versions from DataTimeline
-            var entityVersions = (from d in Context.SqlDb.DataTimeline
-                join c in Context.SqlDb.ChangeLogs on d.SysLogID equals c.ChangeID
+            var entityVersions = (from d in DbContext.SqlDb.DataTimeline
+                join c in DbContext.SqlDb.ChangeLogs on d.SysLogID equals c.ChangeID
                 where d.Operation == Constants.DataTimelineEntityStateOperation && d.SourceID == entityId
                 orderby c.Timestamp descending
                 select new EntityHistoryItem() { SysCreatedDate = d.SysCreatedDate, User = c.User, ChangeId = c.ChangeID}).ToList();
@@ -193,11 +193,11 @@ namespace ToSic.Eav.Persistence
                 foreach (var valueModel in attribute.Value)
                 {
                     var firstLanguage = valueModel.ValueDimensions.First().DimensionExternalKey;
-                    result.Rows.Add(attribute.Key, firstLanguage, Context.Values.GetTypedValue(valueModel, multiValuesSeparator: multiValuesSeparator));	// Add Main-Language
+                    result.Rows.Add(attribute.Key, firstLanguage, DbContext.Values.GetTypedValue(valueModel, multiValuesSeparator: multiValuesSeparator));	// Add Main-Language
 
                     foreach (var valueDimension in valueModel.ValueDimensions.Skip(1))	// Add additional Languages
                     {
-                        result.Rows.Add(attribute.Key, valueDimension.DimensionExternalKey, Context.Values.GetTypedValue(valueModel, multiValuesSeparator: multiValuesSeparator), firstLanguage + (valueDimension.ReadOnly ? " (read)" : " (write)"));
+                        result.Rows.Add(attribute.Key, valueDimension.DimensionExternalKey, DbContext.Values.GetTypedValue(valueModel, multiValuesSeparator: multiValuesSeparator), firstLanguage + (valueDimension.ReadOnly ? " (read)" : " (write)"));
                     }
                 }
             }
@@ -214,13 +214,13 @@ namespace ToSic.Eav.Persistence
             var newVersion = GetEntityVersion(entityId, changeId, defaultCultureDimension);
 
             // Restore Entity
-            var import = new Import.Import(Context.ZoneId /* _zoneId*/,Context.AppId /* _appId*/, /*Context.UserName,*/ false, false);
+            var import = new Import.Import(DbContext.ZoneId /* _zoneId*/,DbContext.AppId /* _appId*/, /*Context.UserName,*/ false, false);
             import.RunImport(null, new List<ImpEntity> { newVersion });
 
             // Delete Draft (if any)
-            var entityDraft = new DbLoadIntoEavDataStructure(Context).GetEavEntity(entityId).GetDraft();
+            var entityDraft = new DbLoadIntoEavDataStructure(DbContext).GetEavEntity(entityId).GetDraft();
             if (entityDraft != null)
-                Context.Entities.DeleteEntity(entityDraft.RepositoryId);
+                DbContext.Entities.DeleteEntity(entityDraft.RepositoryId);
         }
 
     }

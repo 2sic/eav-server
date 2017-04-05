@@ -28,6 +28,7 @@ namespace ToSic.Eav.Apps.Manage
             return state;
         }
 
+        #region Delete
         /// <summary>
         /// delete an entity
         /// </summary>
@@ -41,6 +42,12 @@ namespace ToSic.Eav.Apps.Manage
                 throw new Exception(canDelete.Item2);
             return _appManager.DataController.Entities.DeleteEntity(id);
         }
+
+        public bool DeletePossible(int entityId) => _appManager.DataController.Entities.CanDeleteEntity(entityId).Item1;
+
+        public string DeleteHinderance(int entityId) => _appManager.DataController.Entities.CanDeleteEntity(entityId).Item2;
+        #endregion
+
 
         /// <summary>
         /// Create an entity in this app, optionally with a GUID provided for the new ID

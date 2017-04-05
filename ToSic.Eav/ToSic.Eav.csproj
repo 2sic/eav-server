@@ -62,9 +62,8 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Api\Api01\SimpleDataController.cs" />
     <Compile Include="BLL\BllCommandBase.cs" />
-    <Compile Include="BLL\EavDataController.cs" />
+    <Compile Include="BLL\DbDataController.cs" />
     <Compile Include="BLL\Parts\DbContentType.cs" />
     <Compile Include="BLL\Parts\DbApp.cs" />
     <Compile Include="BLL\Parts\DbZone.cs" />

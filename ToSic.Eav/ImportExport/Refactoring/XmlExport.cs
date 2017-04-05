@@ -124,7 +124,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
 
         private AttributeSet GetContentType(int zoneId, int applicationId, int contentTypeId)
         {
-            var contentContext = EavDataController.Instance(zoneId, applicationId) ;
+            var contentContext = DbDataController.Instance(zoneId, applicationId) ;
             return contentContext.AttribSet.GetAttributeSet(contentTypeId);
         }
 

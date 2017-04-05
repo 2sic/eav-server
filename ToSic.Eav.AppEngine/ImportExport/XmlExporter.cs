@@ -21,7 +21,7 @@ namespace ToSic.Eav.Apps.ImportExport
     public abstract class XmlExporter
     {
         #region simple properties
-        internal EavDataController EavAppContext;
+        internal DbDataController EavAppContext;
         protected readonly List<int> ReferencedFileIds = new List<int>();
         protected readonly List<int> ReferencedFolderIds = new List<int>();
         public List<TennantFileItem> ReferencedFiles = new List<TennantFileItem>();
@@ -43,7 +43,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="appId"></param>
         protected XmlExporter(int zoneId, int appId)
         {
-            EavAppContext = EavDataController.Instance(zoneId, appId); 
+            EavAppContext = DbDataController.Instance(zoneId, appId); 
         }
 
 
@@ -182,7 +182,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 var id = int.Parse(entityId);
 
                 // Get the entity and ContentType from ContentContext add Add it to ContentItems
-                var entity = EavAppContext.Entities.GetEntity(id);
+                var entity = EavAppContext.Entities.GetDbEntity(id);
                 entities.Add(GetEntityXElement(entity));
             }
 

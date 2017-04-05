@@ -10,14 +10,14 @@ namespace ToSic.Eav.ImportExport
 	/// </summary>
 	public class XmlNodeBuilder: BllCommandBase
 	{
-        public XmlNodeBuilder(EavDataController c) : base(c) { }
+        public XmlNodeBuilder(DbDataController c) : base(c) { }
 
         /// <summary>
         /// Returns an Entity XElement
         /// </summary>
         public XElement GetEntityXElement(int entityId)
         {
-            var cache = DataSource.GetCache(Context.ZoneId, Context.AppId);
+            var cache = DataSource.GetCache(DbContext.ZoneId, DbContext.AppId);
             var iEntity = cache.List[entityId];
             return GetEntityXElement(iEntity);
         }
@@ -30,7 +30,7 @@ namespace ToSic.Eav.ImportExport
         {
             //var cache = DataSource.GetCache(Context.ZoneId, Context.AppId);
             //var iEntity = cache.List[entityId];
-            var iEntity = new DbLoadIntoEavDataStructure(Context).GetEavEntity(entityId);
+            var iEntity = new DbLoadIntoEavDataStructure(DbContext).GetEavEntity(entityId);
 
             return GetEntityXElement(iEntity);
         }
@@ -40,7 +40,7 @@ namespace ToSic.Eav.ImportExport
         /// </summary>
         private XElement GetEntityXElement(IEntity entity)
 		{
-			var eavEntity = Context.Entities.GetEntity(entity.EntityId);
+			var eavEntity = DbContext.Entities.GetDbEntity(entity.EntityId);
 			//var attributeSet = _ctx.GetAttributeSet(eavEntity.AttributeSetID);
             
 			// Prepare Values

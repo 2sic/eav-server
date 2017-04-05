@@ -26,7 +26,7 @@ namespace ToSic.Eav.Apps.ImportExport
 		private string _sourceDefaultLanguage;
 		private int? _sourceDefaultDimensionId;
 		private List<Dimension> _targetDimensions;
-        private EavDataController _eavContext;
+        private DbDataController _eavContext;
 		private int _appId;
 		private int _zoneId;
 		private readonly Dictionary<int, int> _fileIdCorrectionList = new Dictionary<int, int>();
@@ -148,7 +148,7 @@ namespace ToSic.Eav.Apps.ImportExport
 					appGuid = Guid.NewGuid().ToString();
 
 				// Adding app to EAV
-                var eavDc = EavDataController.Instance(zoneId, null);
+                var eavDc = DbDataController.Instance(zoneId, null);
 			    var app = eavDc.App.AddApp(null, appGuid);
 				eavDc.SqlDb.SaveChanges();
 
@@ -175,7 +175,7 @@ namespace ToSic.Eav.Apps.ImportExport
 		{
 			//_sexy = new SxcInstance(zoneId, appId); // 2016-03-26 2dm this used to have a third parameter false = don't enable caching, which hasn't been respected for a while; removed it
             // App = new App(zoneId, appId, PortalSettings.Current); // 2016-04-07 2dm refactored this out of this, as using App had side-effects
-		    _eavContext = EavDataController.Instance(zoneId, appId);
+		    _eavContext = DbDataController.Instance(zoneId, appId);
             
 			_appId = appId;
 			_zoneId = zoneId;
@@ -344,7 +344,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     {
                         var entityGuid = Guid.Parse(demoEntityGuid);
                         if ( /*App.*/_eavContext.Entities.EntityExists(entityGuid))
-                            demoEntityId = /*App.*/ _eavContext.Entities.GetEntity(entityGuid).EntityID;
+                            demoEntityId = /*App.*/ _eavContext.Entities.GetDbEntity(entityGuid).EntityID;
                         else
                             ImportLog.Add(
                                 new ExportImportMessage(
@@ -375,7 +375,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     {
                         var entityGuid = Guid.Parse(pipelineEntityGuid.Value);
                         if (_eavContext.Entities.EntityExists(entityGuid))
-                            pipelineEntityId = _eavContext.Entities.GetEntity(entityGuid).EntityID;
+                            pipelineEntityId = _eavContext.Entities.GetDbEntity(entityGuid).EntityID;
                         else
                             ImportLog.Add(
                                 new ExportImportMessage(
@@ -416,7 +416,7 @@ namespace ToSic.Eav.Apps.ImportExport
                         {
                             var xmlDemoEntityGuid = Guid.Parse(xmlDemoEntityGuidString);
                             if (_eavContext.Entities.EntityExists(xmlDemoEntityGuid))
-                                xmlDemoEntityId = _eavContext.Entities.GetEntity(xmlDemoEntityGuid).EntityID;
+                                xmlDemoEntityId = _eavContext.Entities.GetDbEntity(xmlDemoEntityGuid).EntityID;
                         }
 
                         return new TemplateDefault
@@ -531,7 +531,7 @@ namespace ToSic.Eav.Apps.ImportExport
 				// Special case: App AttributeSets must be assigned to the current app
 				case XmlConstants.App:
 					keyNumber = _appId;
-					assignmentObjectTypeId = State.GetAssignmentTypeId(Constants.AppAssignmentName);// ContentTypeHelpers.AssignmentObjectTypeIDSexyContentApp;
+					assignmentObjectTypeId = SystemRuntime.GetKeyTypeId(Constants.AppAssignmentName);// ContentTypeHelpers.AssignmentObjectTypeIDSexyContentApp;
 					break;
                 case XmlConstants.Entity:
                 case "Data Pipeline": // this one is an old key, remove some time in the future; was probably almost never used...

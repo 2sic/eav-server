@@ -8,7 +8,7 @@ using Microsoft.Practices.Unity; // needed for the static Resolve<...>
 namespace ToSic.Eav.BLL
 {
 
-    public class EavDataController
+    public class DbDataController
     {
         #region Extracted, now externalized objects with actions and private fields
 
@@ -87,7 +87,7 @@ namespace ToSic.Eav.BLL
 
         public EavContext SqlDb { get; private set; }
 
-        private EavDataController()
+        private DbDataController()
         {
         }
 
@@ -98,11 +98,11 @@ namespace ToSic.Eav.BLL
         /// <summary>
         /// Returns a new instace of the Eav Context. InitZoneApp must be called afterward.
         /// </summary>
-        private static EavDataController Instance()
+        private static DbDataController Instance()
         {
             var connectionString = Configuration.GetConnectionString();
             var context = new EavContext(connectionString);
-            var dc = new EavDataController {SqlDb = context};
+            var dc = new DbDataController {SqlDb = context};
             dc.DbS = new DbShortcuts(dc);
             dc.Versioning = new DbVersioning(dc);
             dc.Entities = new DbEntity(dc);
@@ -126,7 +126,7 @@ namespace ToSic.Eav.BLL
         /// <summary>
         /// Returns a new instace of the Eav Context on specified ZoneId and/or AppId
         /// </summary>
-        public static EavDataController Instance(int? zoneId = null, int? appId = null)
+        public static DbDataController Instance(int? zoneId = null, int? appId = null)
         {
             var context = Instance();
             context.InitZoneApp(zoneId, appId);

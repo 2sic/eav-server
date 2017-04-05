@@ -13,18 +13,18 @@ namespace ToSic.Eav.Apps
         {
         }
 
-        internal EavDataController DataController => _eavContext ?? (_eavContext = EavDataController.Instance(ZoneId));
-        private EavDataController _eavContext;
+        internal DbDataController DataController => _eavContext ?? (_eavContext = DbDataController.Instance(ZoneId));
+        private DbDataController _eavContext;
         #endregion
 
         #region App management
-        public void DeleteApp(int appId) => State.DoAndPurge(ZoneId, appId, () => DataController.App.DeleteApp(appId), true);
+        public void DeleteApp(int appId) => SystemManager.DoAndPurge(ZoneId, appId, () => DataController.App.DeleteApp(appId), true);
 
         public int CreateApp()
         {
             var app = DataController.App.AddApp(null, Guid.NewGuid().ToString());
 
-            State.Purge(ZoneId, app.AppID, true);
+            SystemManager.PurgeEverything();
             return app.AppID;
         }
         #endregion
@@ -33,8 +33,8 @@ namespace ToSic.Eav.Apps
 
         public static int CreateZone(string name)
         {
-            var zoneId = EavDataController.Instance().Zone.AddZone(name).Item1.ZoneID;
-            State.Purge(0, 0, true);
+            var zoneId = DbDataController.Instance().Zone.AddZone(name).Item1.ZoneID;
+            SystemManager.PurgeEverything();
             return zoneId;
         }
 

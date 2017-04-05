@@ -126,11 +126,11 @@ namespace ToSic.Eav.Apps.ImportExport
         private XmlExporter GenerateExportXml(bool includeContentGroups, bool resetAppGuid)
         {
             // Get Export XML
-            var attributeSets = new AppRuntime(_zoneId, _appId).GetContentTypes(includeAttributeTypes: true);
+            var attributeSets = new AppRuntime(_zoneId, _appId).ContentTypes.Get(includeAttributeTypes: true);
             attributeSets = attributeSets.Where(a => !a.ConfigurationIsOmnipresent);
 
             var attributeSetIds = attributeSets.Select(p => p.AttributeSetId.ToString()).ToArray();
-            var templateTypeId = State.GetAssignmentTypeId(Settings.TemplateContentType);
+            var templateTypeId = SystemRuntime.GetKeyTypeId(Settings.TemplateContentType);
             var entities =
                 DataSource.GetInitialDataSource(_zoneId, _appId).Out["Default"].List.Where(
                     e => e.Value.AssignmentObjectTypeId != templateTypeId

@@ -17,7 +17,7 @@ namespace ToSic.Eav.Import
     public class Import
     {
         #region Private Fields
-        private readonly EavDataController _context;
+        private readonly DbDataController _context;
         private readonly bool _dontUpdateExistingAttributeValues;
         private readonly bool _keepAttributesMissingInImport;
         private readonly List<ImportLogItem> _importLog = new List<ImportLogItem>();
@@ -38,7 +38,7 @@ namespace ToSic.Eav.Import
         /// </summary>
         public Import(int? zoneId, int? appId, bool dontUpdateExistingAttributeValues = true, bool keepAttributesMissingInImport = true, bool preventUpdateOnDraftEntities = true, bool largeImport = true)
         {
-            _context = EavDataController.Instance(zoneId, appId);
+            _context = DbDataController.Instance(zoneId, appId);
 
             // 2017-04-04 2dm removed this, as it's now dependency injected into the _context
             //_context.UserName = userName;

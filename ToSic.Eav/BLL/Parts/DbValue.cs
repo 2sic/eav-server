@@ -10,7 +10,7 @@ namespace ToSic.Eav.BLL.Parts
 {
     public class DbValue : BllCommandBase
     {
-        public DbValue(EavDataController cntx) : base(cntx)
+        public DbValue(DbDataController cntx) : base(cntx)
         {
         }
 
@@ -23,13 +23,13 @@ namespace ToSic.Eav.BLL.Parts
             if (target.Values.Any())
             {
                 foreach (var eavValue in target.Values)
-                    eavValue.ChangeLogIDDeleted = Context.Versioning.GetChangeLogId();
+                    eavValue.ChangeLogIDDeleted = DbContext.Versioning.GetChangeLogId();
             }
 
             // Add all Values with Dimensions
             foreach (var eavValue in source.Values.ToList())
             {
-                var value = Context.DbS.CopyEfEntity(eavValue);
+                var value = DbContext.DbS.CopyEfEntity(eavValue);
                 // copy Dimensions
                 foreach (var valuesDimension in eavValue.ValuesDimensions)
                     value.ValuesDimensions.Add(new ValueDimension
@@ -61,7 +61,7 @@ namespace ToSic.Eav.BLL.Parts
         /// </summary>
         internal EavValue AddValue(Entity entity, int attributeId, string value, bool autoSave = true)
         {
-            var changeId = Context.Versioning.GetChangeLogId();
+            var changeId = DbContext.Versioning.GetChangeLogId();
 
             var newValue = new EavValue
             {
@@ -71,9 +71,9 @@ namespace ToSic.Eav.BLL.Parts
                 ChangeLogIDCreated = changeId
             };
 
-            Context.SqlDb.AddToValues(newValue);
+            DbContext.SqlDb.AddToValues(newValue);
             if (autoSave)
-                Context.SqlDb.SaveChanges();
+                DbContext.SqlDb.SaveChanges();
             return newValue;
         }
 
@@ -92,7 +92,7 @@ namespace ToSic.Eav.BLL.Parts
             currentValue.ChangeLogIDDeleted = null;
 
             if (autoSave)
-                Context.SqlDb.SaveChanges();
+                DbContext.SqlDb.SaveChanges();
         }
 
         #region Update Values
@@ -106,9 +106,9 @@ namespace ToSic.Eav.BLL.Parts
                 // Handle Entity Relationships - they're stored in own tables
                 case "Entity":
                     if (newImpValue is ImpValue<List<Guid>>)
-                        Context.Relationships.UpdateEntityRelationships(attribute.AttributeID, ((ImpValue<List<Guid>>)newImpValue).Value.Select(p => (Guid?)p).ToList(), null /* entityInDb.EntityGUID, null */, entityInDb.EntityID);
+                        DbContext.Relationships.UpdateEntityRelationships(attribute.AttributeID, ((ImpValue<List<Guid>>)newImpValue).Value.Select(p => (Guid?)p).ToList(), null /* entityInDb.EntityGUID, null */, entityInDb.EntityID);
                     if (newImpValue is ImpValue<List<Guid?>>)
-                        Context.Relationships.UpdateEntityRelationships(attribute.AttributeID, ((ImpValue<List<Guid?>>)newImpValue).Value.Select(p => p).ToList(), null, entityInDb.EntityID);
+                        DbContext.Relationships.UpdateEntityRelationships(attribute.AttributeID, ((ImpValue<List<Guid?>>)newImpValue).Value.Select(p => p).ToList(), null, entityInDb.EntityID);
                     else
                         throw new NotSupportedException("UpdateValue() for Attribute " + attribute.StaticName + " with newValue of type" + newImpValue.GetType() + " not supported. Expected List<Guid>");
 
@@ -162,7 +162,7 @@ namespace ToSic.Eav.BLL.Parts
             var guidIds = entityGuids.ToDictionary(k => k, v => (int?)null);
             foreach (var entityGuid in guidIds.ToList())
             {
-                var firstEntityId = Context.Entities.GetEntitiesByGuid(entityGuid.Key).Select(e => (int?)e.EntityID).FirstOrDefault();
+                var firstEntityId = DbContext.Entities.GetEntitiesByGuid(entityGuid.Key).Select(e => (int?)e.EntityID).FirstOrDefault();
                 if (firstEntityId != null)
                     guidIds[entityGuid.Key] = firstEntityId;
             }
@@ -179,7 +179,7 @@ namespace ToSic.Eav.BLL.Parts
                 // Handle Entity Relationships - they're stored in own tables
                 case "Entity":
                     var entityIds = newValue.Value is int?[] ? (int?[])newValue.Value : ((int[])newValue.Value).Select(v => (int?)v).ToArray();
-                    Context.Relationships.UpdateEntityRelationships(attribute.AttributeID, entityIds, currentEntity);
+                    DbContext.Relationships.UpdateEntityRelationships(attribute.AttributeID, entityIds, currentEntity);
                     break;
                 // Handle simple values in Values-Table
                 default:
@@ -194,7 +194,7 @@ namespace ToSic.Eav.BLL.Parts
         private EavValue UpdateSimpleValue(Attribute attribute, Entity entity, ICollection<int> dimensionIds, bool masterRecord, object newValue, int? valueId, bool readOnly, List<EavValue> currentValues, IEntity entityModel, IEnumerable<ImportExport.Models.ImpDims> valueDimensions = null)
         {
             var newValueSerialized = HelpersToRefactor.SerializeValue(newValue);
-            var changeId = Context.Versioning.GetChangeLogId();
+            var changeId = DbContext.Versioning.GetChangeLogId();
 
             // Get Value or create new one
             var value = GetOrCreateValue(attribute, entity, masterRecord, valueId, readOnly, currentValues, entityModel, newValueSerialized, changeId, valueDimensions);
@@ -209,7 +209,7 @@ namespace ToSic.Eav.BLL.Parts
                 foreach (var valueDimension in valueDimensions)
                 {
                     // ToDo: 2bg Log Error but continue
-                    var dimensionId = Context.Dimensions.GetDimensionId(null, valueDimension.DimensionExternalKey);
+                    var dimensionId = DbContext.Dimensions.GetDimensionId(null, valueDimension.DimensionExternalKey);
                     if (dimensionId == 0)
                         throw new Exception("Dimension " + valueDimension.DimensionExternalKey + " not found. EntityId: " + entity.EntityID + " Attribute-StaticName: " + attribute.StaticName);
 
@@ -224,7 +224,7 @@ namespace ToSic.Eav.BLL.Parts
                 }
 
                 // remove old dimensions
-                valueDimensionsToDelete.ForEach(Context.SqlDb.DeleteObject);
+                valueDimensionsToDelete.ForEach(DbContext.SqlDb.DeleteObject);
             }
             // Update Dimensions as specified on the whole Entity
             else if (dimensionIds != null)

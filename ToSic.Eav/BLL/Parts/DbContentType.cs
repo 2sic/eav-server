@@ -6,13 +6,13 @@ namespace ToSic.Eav.BLL.Parts
 {
     public class DbContentType: BllCommandBase
     {
-        public DbContentType(EavDataController cntx) : base(cntx) {}
+        public DbContentType(DbDataController cntx) : base(cntx) {}
 
 
         private AttributeSet GetAttributeSetByStaticName(string staticName)
         {
-            return Context.SqlDb.AttributeSets.FirstOrDefault(a =>
-                a.AppID == Context.AppId && a.StaticName == staticName && a.ChangeLogDeleted == null
+            return DbContext.SqlDb.AttributeSets.FirstOrDefault(a =>
+                a.AppID == DbContext.AppId && a.StaticName == staticName && a.ChangeLogDeleted == null
                 );
         }
 
@@ -24,13 +24,13 @@ namespace ToSic.Eav.BLL.Parts
             {
                 ct = new AttributeSet()
                 {
-                    AppID = Context.AppId,
+                    AppID = DbContext.AppId,
                     StaticName = Guid.NewGuid().ToString(),// staticName,
                     Scope = scope == "" ? null : scope,
                     UsesConfigurationOfAttributeSet = usesConfigurationOfOtherSet,
                     AlwaysShareConfiguration = alwaysShareConfig
                 };
-                Context.SqlDb.AddToAttributeSets(ct);
+                DbContext.SqlDb.AddToAttributeSets(ct);
             }
 
             ct.Name = name;
@@ -38,10 +38,10 @@ namespace ToSic.Eav.BLL.Parts
             ct.Scope = scope;
             if (changeStaticName) // note that this is a very "deep" change
                 ct.StaticName = newStaticName;
-            ct.ChangeLogIDCreated = Context.Versioning.GetChangeLogId(Context.UserName);
+            ct.ChangeLogIDCreated = DbContext.Versioning.GetChangeLogId(DbContext.UserName);
 
             // save first, to ensure it has an Id
-            Context.SqlDb.SaveChanges();
+            DbContext.SqlDb.SaveChanges();
         }
 
         public void CreateGhost(string staticName)
@@ -51,7 +51,7 @@ namespace ToSic.Eav.BLL.Parts
                 throw new Exception("current App already has a content-type with this static name - cannot continue");
 
             // find the original
-            var attSets = Context.SqlDb.AttributeSets
+            var attSets = DbContext.SqlDb.AttributeSets
                 .Where(ats => ats.StaticName == staticName 
                     && !ats.UsesConfigurationOfAttributeSet.HasValue    // never duplicate a clone/ghost
                     && ats.ChangeLogDeleted == null                     // never duplicate a deleted
@@ -68,19 +68,19 @@ namespace ToSic.Eav.BLL.Parts
             var attSet = attSets.FirstOrDefault();
             var newSet = new AttributeSet()
             {
-                AppID = Context.AppId, // needs the new, current appid
+                AppID = DbContext.AppId, // needs the new, current appid
                 StaticName = attSet.StaticName,
                 Name = attSet.Name,
                 Scope = attSet.Scope,
                 Description = attSet.Description,
                 UsesConfigurationOfAttributeSet = attSet.AttributeSetID,
                 AlwaysShareConfiguration = false, // this is copy, never re-share
-                ChangeLogIDCreated = Context.Versioning.GetChangeLogId(Context.UserName)
+                ChangeLogIDCreated = DbContext.Versioning.GetChangeLogId(DbContext.UserName)
             };
-            Context.SqlDb.AddToAttributeSets(newSet);
+            DbContext.SqlDb.AddToAttributeSets(newSet);
             
             // save first, to ensure it has an Id
-            Context.SqlDb.SaveChanges();
+            DbContext.SqlDb.SaveChanges();
         }
 
 
@@ -88,8 +88,8 @@ namespace ToSic.Eav.BLL.Parts
         {
             var setToDelete = GetAttributeSetByStaticName(staticName);
 
-            setToDelete.ChangeLogIDDeleted = Context.Versioning.GetChangeLogId(Context.UserName);
-            Context.SqlDb.SaveChanges();
+            setToDelete.ChangeLogIDDeleted = DbContext.Versioning.GetChangeLogId(DbContext.UserName);
+            DbContext.SqlDb.SaveChanges();
         }
 
 
@@ -98,7 +98,7 @@ namespace ToSic.Eav.BLL.Parts
         /// </summary>
         public IEnumerable<Tuple<IAttributeBase, Dictionary<string, IEntity>>> GetContentTypeConfiguration(string contentTypeStaticName)
         {
-            var cache = DataSource.GetCache(null, Context.AppId);
+            var cache = DataSource.GetCache(null, DbContext.AppId);
             var result = cache.GetContentType(contentTypeStaticName);
 
             if (result == null)
@@ -123,7 +123,7 @@ namespace ToSic.Eav.BLL.Parts
         
         public void Reorder(int contentTypeId, List<int> newSortOrder)
         {
-            Context.Attributes.UpdateAttributeOrder(contentTypeId, newSortOrder);
+            DbContext.Attributes.UpdateAttributeOrder(contentTypeId, newSortOrder);
         }
     }
 }
