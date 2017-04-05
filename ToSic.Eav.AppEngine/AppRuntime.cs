@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.Apps.Interfaces;
+﻿using ToSic.Eav.Apps.Interfaces;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.DataSources.Caches;
 
@@ -25,6 +23,8 @@ namespace ToSic.Eav.Apps
         public ContentTypeRuntime ContentTypes => _contentTypes ?? (_contentTypes = new ContentTypeRuntime(this));
         private ContentTypeRuntime _contentTypes; 
 
+        public QueryRuntime Queries => _queries ?? (_queries = new QueryRuntime(this));
+        private QueryRuntime _queries; 
 
 
 

@@ -262,7 +262,7 @@ namespace ToSic.Eav.BLL.Parts
                 throw new Exception("Can't continue, couldn't find attrib-set with: " + systemScope + ":" + metaDataSetName + " in app " + DbContext.AppId);
             var attributeSetId = attSetFirst.AttributeSetID;
 
-            return DbContext.Entities.AddEntity(attributeSetId, fieldProperties, null, attributeId, Constants.AssignmentObjectTypeIdFieldProperties);
+            return DbContext.Entities.AddEntity(attributeSetId, fieldProperties, /*null,*/ attributeId, Constants.AssignmentObjectTypeIdFieldProperties);
         }
 
 

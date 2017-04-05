@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,14 +8,11 @@ namespace ToSic.Eav.Apps.Parts
     /// <summary>
     /// Manager for entities in an app
     /// </summary>
-    public class EntitiesManager
+    public class EntitiesManager: BaseManager
     {
-        private readonly AppManager _appManager;
-        internal EntitiesManager(AppManager appManager)
+        public EntitiesManager(AppManager app) : base(app)
         {
-            _appManager = appManager;
         }
-
 
         /// <summary>
         /// Publish an entity 
@@ -29,19 +27,23 @@ namespace ToSic.Eav.Apps.Parts
         }
 
         #region Delete
+
         /// <summary>
         /// delete an entity
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="force"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public bool Delete(int id)
+        public bool Delete(int id, bool force = false)
         {
             var canDelete = _appManager.DataController.Entities.CanDeleteEntity(id);
-            if (!canDelete.Item1)
+            if (!canDelete.Item1 && !force)
                 throw new Exception(canDelete.Item2);
             return _appManager.DataController.Entities.DeleteEntity(id);
         }
+
+        public bool Delete(Guid guid) => _appManager.DataController.Entities.DeleteEntity(guid);
 
         public bool DeletePossible(int entityId) => _appManager.DataController.Entities.CanDeleteEntity(entityId).Item1;
 
@@ -59,7 +61,7 @@ namespace ToSic.Eav.Apps.Parts
         public Tuple<int, Guid> Create(string typeName, Dictionary<string, object> values, Guid? entityGuid = null)
         {
             var contentType = _appManager.Cache.GetContentType(typeName);
-            var ent = _appManager.DataController.Entities.AddEntity(contentType.AttributeSetId, values, null, null, entityGuid: entityGuid);
+            var ent = _appManager.DataController.Entities.AddEntity(contentType.AttributeSetId, values, null, null);//, null, entityGuid: entityGuid);
             return new Tuple<int, Guid>(ent.EntityID, ent.EntityGUID);
         }
 
@@ -69,8 +71,9 @@ namespace ToSic.Eav.Apps.Parts
         /// </summary>
         /// <param name="id"></param>
         /// <param name="values"></param>
-        public void Update(int id, Dictionary<string, object> values)
-            => _appManager.DataController.Entities.UpdateEntity(id, values);
+        /// <param name="dimensionIds"></param>
+        public void Update(int id, Dictionary<string, object> values, ICollection<int> dimensionIds = null)
+            => _appManager.DataController.Entities.UpdateEntity(id, values, dimensionIds: dimensionIds);
 
         /// <summary>
         /// Get an entity, or create it with the values provided.

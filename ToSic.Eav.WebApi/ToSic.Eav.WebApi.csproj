@@ -67,7 +67,6 @@
     <Compile Include="EntityPickerController.cs" />
     <Compile Include="Formats\CompleteEntity.cs" />
     <Compile Include="Formats\ItemIdentifiers.cs" />
-    <Compile Include="Helpers.cs" />
     <Compile Include="Json\Helpers.cs" />
     <Compile Include="PipelineDesignerController.cs">
       <SubType>Code</SubType>

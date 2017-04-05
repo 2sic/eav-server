@@ -85,36 +85,41 @@ namespace ToSic.Eav.BLL.Parts
         /// </summary>
         internal Entity AddEntity(int attributeSetId, ImpEntity impEntity, List<ImportLogItem> importLog, bool isPublished, int? publishedTarget)
         {
-            return AddEntity(null, attributeSetId, impEntity.Values, null, impEntity.KeyNumber, impEntity.KeyGuid, impEntity.KeyString, impEntity.KeyTypeId, 0, impEntity.EntityGuid, null, updateLog: importLog, isPublished: isPublished, publishedEntityId: publishedTarget);
+            return AddEntity(/*null,*/ attributeSetId, impEntity.Values, /*null,*/ impEntity.KeyNumber, impEntity.KeyGuid, impEntity.KeyString, impEntity.KeyTypeId, 0, impEntity.EntityGuid, null, updateLog: importLog, isPublished: isPublished, publishedEntityId: publishedTarget);
         }
 
         /// <summary>
         /// Add a new Entity
         /// </summary>
-        internal Entity AddEntity(AttributeSet attributeSet, IDictionary values, int? configurationSet, int? key, int assignmentObjectTypeId = Constants.DefaultAssignmentObjectTypeId, int sortOrder = 0, Guid? entityGuid = null, ICollection<int> dimensionIds = null, bool isPublished = true)
+        internal Entity AddEntity(AttributeSet attributeSet, IDictionary values, /*int? configurationSet,*/ int? key, int assignmentObjectTypeId = Constants.DefaultAssignmentObjectTypeId, int sortOrder = 0, Guid? entityGuid = null, ICollection<int> dimensionIds = null, bool isPublished = true)
         {
-            return AddEntity(attributeSet, 0, values, configurationSet, key, null, null, assignmentObjectTypeId, sortOrder, entityGuid, dimensionIds, isPublished: isPublished);
+            return AddEntity(attributeSet.AttributeSetID/*, 0*/, values, /*configurationSet,*/ key, null, null, assignmentObjectTypeId, sortOrder, entityGuid, dimensionIds, isPublished: isPublished);
         }
 
         /// <summary>
         /// Add a new Entity
         /// </summary>
-        internal Entity AddEntity(int attributeSetId, IDictionary values, int? configurationSet, int? key, int assignmentObjectTypeId = Constants.DefaultAssignmentObjectTypeId, int sortOrder = 0, Guid? entityGuid = null, ICollection<int> dimensionIds = null, bool isPublished = true)
+        internal Entity AddEntity(int attributeSetId, IDictionary values, /*int? configurationSet,*/ int? key, int assignmentObjectTypeId = Constants.DefaultAssignmentObjectTypeId, int sortOrder = 0, Guid? entityGuid = null, ICollection<int> dimensionIds = null, bool isPublished = true)
         {
-            return AddEntity(null, attributeSetId, values, configurationSet, key, null, null, assignmentObjectTypeId, sortOrder, entityGuid, dimensionIds, isPublished: isPublished);
+            return AddEntity(/*null,*/ attributeSetId, values, /*configurationSet,*/ key, null, null, assignmentObjectTypeId, sortOrder, entityGuid, dimensionIds, isPublished: isPublished);
         }
 
+        ///// <summary>
+        ///// Add a new Entity
+        ///// </summary>
+        //public Entity AddEntity(int attributeSetId, IDictionary values, int? configurationSet, Guid key, int assignmentObjectTypeId = Constants.DefaultAssignmentObjectTypeId)//, int sortOrder = 0, Guid? entityGuid = null, ICollection<int> dimensionIds = null, bool isPublished = true)
+        //{
+        //    return AddEntity(null, attributeSetId, values, configurationSet, null, key, null, assignmentObjectTypeId);
+        //}
         /// <summary>
         /// Add a new Entity
         /// </summary>
-        public Entity AddEntity(int attributeSetId, IDictionary values, int? configurationSet, Guid key, int assignmentObjectTypeId = Constants.DefaultAssignmentObjectTypeId, int sortOrder = 0, Guid? entityGuid = null, ICollection<int> dimensionIds = null, bool isPublished = true)
-        {
-            return AddEntity(null, attributeSetId, values, configurationSet, null, key, null, assignmentObjectTypeId, sortOrder, entityGuid, dimensionIds, isPublished: isPublished);
-        }
-        /// <summary>
-        /// Add a new Entity
-        /// </summary>
-        internal Entity AddEntity(AttributeSet attributeSet, int attributeSetId, IDictionary values, int? configurationSet, int? keyNumber, Guid? keyGuid, string keyString, int assignmentObjectTypeId, int sortOrder, Guid? entityGuid, ICollection<int> dimensionIds, List<ImportLogItem> updateLog = null, bool isPublished = true, int? publishedEntityId = null)
+        public Entity AddEntity(/*AttributeSet attributeSet,*/ int attributeSetId, 
+            IDictionary values, /*int? configurationSet, */
+            int? keyNumber = null, Guid? keyGuid = null, string keyString = null, int assignmentObjectTypeId = Constants.DefaultAssignmentObjectTypeId, 
+            int sortOrder = 0, 
+            Guid? entityGuid = null, ICollection<int> dimensionIds = null, List<ImportLogItem> updateLog = null, 
+            bool isPublished = true, int? publishedEntityId = null)
         {
             // var skipCreate = false;
             var existingEntityId = 0;
@@ -137,7 +142,7 @@ namespace ToSic.Eav.BLL.Parts
             {
                 var newEntity = new Entity
                 {
-                    ConfigurationSet = configurationSet,
+                    ConfigurationSet = null, // configurationSet,
                     AssignmentObjectTypeID = assignmentObjectTypeId,
                     KeyNumber = keyNumber,
                     KeyGuid = keyGuid,
@@ -152,9 +157,9 @@ namespace ToSic.Eav.BLL.Parts
                     Owner = DbContext.UserName
                 };
 
-                if (attributeSet != null)
-                    newEntity.Set = attributeSet;
-                else
+                //if (attributeSet != null)
+                //    newEntity.Set = attributeSet;
+                //else
                     newEntity.AttributeSetID = attributeSetId;
 
                 DbContext.SqlDb.AddToEntities(newEntity);

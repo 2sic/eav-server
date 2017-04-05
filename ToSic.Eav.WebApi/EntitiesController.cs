@@ -313,7 +313,7 @@ namespace ToSic.Eav.WebApi
             // check if it has related items or another reason to prevent deleting
             var deleteControl = AppManager.Entities.DeletePossible(id);// CurrentContext.Entities.CanDeleteEntity(id);
             if (deleteControl || force)
-                AppManager.Entities.Delete(id);
+                AppManager.Entities.Delete(id, force);
             //CurrentContext.Entities.DeleteEntity(id, force);
             else
                 throw new InvalidOperationException("Item " + id +

@@ -7,10 +7,11 @@ using System.Web.Http;
 using Microsoft.Practices.Unity;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.BLL;
 using ToSic.Eav.BLL.Parts;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.Serializers;
 using ToSic.Eav.ValueProvider;
 
@@ -21,6 +22,7 @@ namespace ToSic.Eav.WebApi
 	/// </summary>
 	public class PipelineDesignerController : ApiController
     {
+        #region initializers etc. - work on later
         #region Helpers
         // I must keep the serializer so it can be configured from outside if necessary
         private Serializer _serializer;
@@ -52,11 +54,12 @@ namespace ToSic.Eav.WebApi
 			ValueProviders = new List<IValueProvider>();
 		}
 
+        #endregion
 
-		/// <summary>
-		/// Get a Pipeline with DataSources
-		/// </summary>
-		[HttpGet]
+        /// <summary>
+        /// Get a Pipeline with DataSources
+        /// </summary>
+        [HttpGet]
 		public Dictionary<string, object> GetPipeline(int appId, int? id = null)
 		{
 			Dictionary<string, object> pipelineJson = null;
@@ -70,10 +73,10 @@ namespace ToSic.Eav.WebApi
 				var dataSources = DataPipeline.GetPipelineParts(source.ZoneId, source.AppId, pipelineEntity.EntityGuid);
 
 				#region Deserialize some Entity-Values
-				pipelineJson = Helpers.GetEntityValues(pipelineEntity);
+				pipelineJson = EntityToDictionary(pipelineEntity);
 				pipelineJson[Constants.DataPipelineStreamWiringStaticName] = DataPipelineWiring.Deserialize((string)pipelineJson[Constants.DataPipelineStreamWiringStaticName]);
 
-				foreach (var dataSource in Helpers.GetEntityValues(dataSources))
+				foreach (var dataSource in dataSources.Select(e => EntityToDictionary(e)))// Helpers.GetEntityValues(dataSources))
 				{
 					dataSource["VisualDesignerData"] = JsonConvert.DeserializeObject((string)dataSource["VisualDesignerData"]);
 					
@@ -87,59 +90,74 @@ namespace ToSic.Eav.WebApi
 				#endregion
 			}
 
+            Tuple<Dictionary<string, object>, List<Dictionary<string, object>>> set = new Tuple<Dictionary<string, object>, List<Dictionary<string, object>>>(pipelineJson, dataSourcesJson);
+		    
+
+
 			// return consolidated Data
 			return new Dictionary<string, object>
 			{
-				{"Pipeline", pipelineJson},
-				{"DataSources", dataSourcesJson}
+				{"Pipeline", set.Item1},
+				{"DataSources", set.Item2}
 			};
-		}
 
-		/// <summary>
-		/// Get installed DataSources from .NET Runtime but only those with [PipelineDesigner Attribute]
-		/// </summary>
-		[HttpGet]
-		public IEnumerable<object> GetInstalledDataSources()
+            Dictionary<string, object> EntityToDictionary(IEntity entity)
+            {
+                var attributes = entity.Attributes.ToDictionary(k => k.Value.Name, v =>  v.Value[0]);
+                attributes.Add("EntityId", entity.EntityId);
+                attributes.Add("EntityGuid", entity.EntityGuid);
+                return attributes;
+            }
+        }
+
+
+
+        /// <summary>
+        /// Get installed DataSources from .NET Runtime but only those with [PipelineDesigner Attribute]
+        /// </summary>
+        [HttpGet]
+		public IEnumerable<QueryRuntime.QueryInfoTemp> GetInstalledDataSources()
 		{
-			var result = new List<object>();
-			var installedDataSources = DataSource.GetInstalledDataSources();
-			foreach (var dataSource in installedDataSources.Where(d => d.GetCustomAttributes(typeof(PipelineDesignerAttribute), false).Any()))
-			{
-				#region Create Instance of DataSource to get In- and Out-Streams
-				ICollection<string> outStreamNames = new string[0];
-				ICollection<string> inStreamNames = new string[0];
-				if (!dataSource.IsInterface && !dataSource.IsAbstract)
-				{
-					var dataSourceInstance = (IDataSource)Activator.CreateInstance(dataSource);
-					try
-					{
-						outStreamNames = dataSourceInstance.Out.Keys;
-					}
-					catch
-					{
-						outStreamNames = null;
-					}
-				}
-				// Handle Interfaces (currently only ICache) with Unity
-				else if (dataSource.IsInterface)
-				{
-					var dataSourceInstance = (IDataSource)Factory.Container.Resolve(dataSource);
-					outStreamNames = dataSourceInstance.Out.Keys;
-					if (dataSourceInstance is ICache)
-						inStreamNames = null;
-				}
-				#endregion
+			//var result = new List<object>();
+			//var installedDataSources = DataSource.GetInstalledDataSources();
+			//foreach (var dataSource in installedDataSources.Where(d => d.GetCustomAttributes(typeof(PipelineDesignerAttribute), false).Any()))
+			//{
+			//	#region Create Instance of DataSource to get In- and Out-Streams
+			//	ICollection<string> outStreamNames = new string[0];
+			//	ICollection<string> inStreamNames = new string[0];
+			//	if (!dataSource.IsInterface && !dataSource.IsAbstract)
+			//	{
+			//		var dataSourceInstance = (IDataSource)Activator.CreateInstance(dataSource);
+			//		try
+			//		{
+			//			outStreamNames = dataSourceInstance.Out.Keys;
+			//		}
+			//		catch
+			//		{
+			//			outStreamNames = null;
+			//		}
+			//	}
+			//	// Handle Interfaces (currently only ICache) with Unity
+			//	else if (dataSource.IsInterface)
+			//	{
+			//		var dataSourceInstance = (IDataSource)Factory.Container.Resolve(dataSource);
+			//		outStreamNames = dataSourceInstance.Out.Keys;
+			//		if (dataSourceInstance is ICache)
+			//			inStreamNames = null;
+			//	}
+			//	#endregion
 
-				result.Add(new
-				{
-					PartAssemblyAndType = dataSource.FullName + ", " + dataSource.Assembly.GetName().Name,
-					ClassName = dataSource.Name,
-					In = inStreamNames,
-					Out = outStreamNames
-				});
-			}
+			//	result.Add(new
+			//	{
+			//		PartAssemblyAndType = dataSource.FullName + ", " + dataSource.Assembly.GetName().Name,
+			//		ClassName = dataSource.Name,
+			//		In = inStreamNames,
+			//		Out = outStreamNames
+			//	});
+			//}
 
-			return result;
+			//return result;
+		    return QueryRuntime.GetInstalledDataSources();
 		}
 
 		/// <summary>
@@ -151,6 +169,8 @@ namespace ToSic.Eav.WebApi
 		public Dictionary<string, object> SavePipeline([FromBody] dynamic data, int appId, int? id = null)
 		{
 			var _context = DbDataController.Instance(appId: appId);
+            var AppManager = new AppManager(appId);
+
 			_context.UserName = _userName;
 			var source = DataSource.GetInitialDataSource(appId: appId);
 
@@ -173,8 +193,8 @@ namespace ToSic.Eav.WebApi
 			}
 
 			var pipelinePartAttributeSetId = _context.AttribSet.GetAttributeSet(Constants.DataPipelinePartStaticName).AttributeSetID;
-			var newDataSources = SavePipelineParts(data.dataSources, pipelineEntityGuid, pipelinePartAttributeSetId, _context);
-			DeletedRemovedPipelineParts(data.dataSources, newDataSources, pipelineEntityGuid, source.ZoneId, source.AppId, _context);
+			var newDataSources = SavePipelineParts(data.dataSources, pipelineEntityGuid, pipelinePartAttributeSetId, AppManager, _context);
+			DeletedRemovedPipelineParts(data.dataSources, newDataSources, pipelineEntityGuid, source.ZoneId, source.AppId, AppManager);//, _context);
 
 			// Update Pipeline Entity with new Wirings etc.
 			SavePipelineEntity(id.Value, appId, data.pipeline, newDataSources, _context);
@@ -188,7 +208,7 @@ namespace ToSic.Eav.WebApi
 		/// <param name="dataSources">JSON describing the DataSources</param>
 		/// <param name="pipelineEntityGuid">EngityGuid of the Pipeline-Entity</param>
 		/// <param name="pipelinePartAttributeSetId">AttributeSetId of PipelineParts</param>
-		private Dictionary<string, Guid> SavePipelineParts(dynamic dataSources, Guid pipelineEntityGuid, int pipelinePartAttributeSetId, DbDataController _context)
+		private Dictionary<string, Guid> SavePipelineParts(dynamic dataSources, Guid pipelineEntityGuid, int pipelinePartAttributeSetId, AppManager AppManager, DbDataController _context)
 		{
 			var newDataSources = new Dictionary<string, Guid>();
 
@@ -200,12 +220,15 @@ namespace ToSic.Eav.WebApi
 				// Update existing DataSource
 				var newValues = GetEntityValues(dataSource);
 				if (dataSource.EntityId != null)
-					_context.Entities.UpdateEntity((int)dataSource.EntityId, newValues);
+                    AppManager.Entities.Update((int)dataSource.EntityId, newValues);
+					//_context.Entities.UpdateEntity((int)dataSource.EntityId, newValues);
 				// Add new DataSource
 				else
 				{
-					var entitiy = _context.Entities.AddEntity(pipelinePartAttributeSetId, newValues, null, pipelineEntityGuid, Constants.AssignmentObjectTypeEntity);
-					newDataSources.Add((string)dataSource.EntityGuid, entitiy.EntityGUID);
+					var entitiy = //AppManager.Entities.Create(pipelinePartAttributeSetId, newValues, null, pipelineEntityGuid, Constants.AssignmentObjectTypeEntity);
+                        _context.Entities.AddEntity(pipelinePartAttributeSetId, newValues, /*null, */ null, pipelineEntityGuid, null, Constants.MetadataForEntity);
+                    //_context.Entities.AddEntity(pipelinePartAttributeSetId, newValues, null, pipelineEntityGuid, Constants.AssignmentObjectTypeEntity);
+                    newDataSources.Add((string)dataSource.EntityGuid, entitiy.EntityGUID);
 				}
 			}
 
@@ -215,7 +238,7 @@ namespace ToSic.Eav.WebApi
 		/// <summary>
 		/// Delete Pipeline Parts (DataSources) that are not present
 		/// </summary>
-		private void DeletedRemovedPipelineParts(IEnumerable<JToken> dataSources, Dictionary<string, Guid> newDataSources, Guid pipelineEntityGuid, int zoneId, int appId, DbDataController _context)
+		private void DeletedRemovedPipelineParts(IEnumerable<JToken> dataSources, Dictionary<string, Guid> newDataSources, Guid pipelineEntityGuid, int zoneId, int appId, AppManager AppManager)//, DbDataController _context)
 		{
 			// Get EntityGuids currently stored in EAV
 			var existingEntityGuids = DataPipeline.GetPipelineParts(zoneId, appId, pipelineEntityGuid).Select(e => e.EntityGuid);
@@ -224,8 +247,9 @@ namespace ToSic.Eav.WebApi
 			var newEntityGuids = dataSources.Select(d => (string)((JObject)d).Property("EntityGuid").Value).Where(g => g != "Out" && !g.StartsWith("unsaved")).Select(Guid.Parse).ToList();
 			newEntityGuids.AddRange(newDataSources.Values);
 
-			foreach (var entityToDelet in existingEntityGuids.Where(existingGuid => !newEntityGuids.Contains(existingGuid)))
-                _context.Entities.DeleteEntity(entityToDelet);
+		    foreach (var entityToDelet in existingEntityGuids.Where(existingGuid => !newEntityGuids.Contains(existingGuid)))
+		        AppManager.Entities.Delete(entityToDelet);
+                //_context.Entities.DeleteEntity(entityToDelet);
 		}
 
 	    /// <summary>
@@ -237,9 +261,18 @@ namespace ToSic.Eav.WebApi
 	    /// <param name="newDataSources">Array with new DataSources and the unsavedName and final EntityGuid</param>
 	    private void SavePipelineEntity(int? id, int appId, dynamic pipeline, IDictionary<string, Guid> newDataSources, DbDataController _context)
 		{
-			// Create a clone so it can be modifie before saving but doesn't affect the underlaying JObject.
-			// A new Pipeline Entity must be saved twice, but some Field-Values are changed before saving it
-			dynamic pipelineClone = pipeline.DeepClone();
+            #region prevent save without pipeline ID
+            if (!id.HasValue)
+            {
+                //var attributeSetId = _context.GetAttributeSet(DataSource.DataPipelineStaticName).AttributeSetID;
+                // return _context.AddEntity(attributeSetId, newValues, null, null)
+                throw new NotSupportedException("Saving a new Pipeline directly from the Pipeline-Designer is currently disabled because of Culture/Dimension Issues. Please create a new Pipeline using the Pipeline Management.");
+            }
+            #endregion
+
+            // Create a clone so it can be modifie before saving but doesn't affect the underlaying JObject.
+            // A new Pipeline Entity must be saved twice (create and update), but some Field-Values are changed before saving it
+            dynamic pipelineClone = pipeline.DeepClone();
 
 			// Update Wirings of Entities just added
 			IEnumerable<WireInfo> wirings = pipeline.StreamWiring.ToObject<IEnumerable<WireInfo>>();
@@ -258,22 +291,17 @@ namespace ToSic.Eav.WebApi
 				}
 				wirings = wiringsNew;
 			}
-			pipelineClone.StreamWiring = DataPipelineWiring.Serialize(wirings);
-
 			// Validate Stream Wirings
 			foreach (var wireInfo in wirings.Where(wireInfo => wirings.Count(w => w.To == wireInfo.To && w.In == wireInfo.In) > 1))
 				throw new Exception(
 				    $"DataSource \"{wireInfo.To}\" has multiple In-Streams with Name \"{wireInfo.In}\". Each In-Stream must have an unique Name and can have only one connection.");
 
-			// Add/Update Entity
-			IDictionary newValues = GetEntityValues(pipelineClone);
 
-			if (!id.HasValue)
-			{
-				//var attributeSetId = _context.GetAttributeSet(DataSource.DataPipelineStaticName).AttributeSetID;
-				// return _context.AddEntity(attributeSetId, newValues, null, null)
-				throw new NotSupportedException("Saving a new Pipeline directly from the Pipeline-Designer is currently disabled because of Culture/Dimension Issues. Please create a new Pipeline using the Pipeline Management.");
-			}
+			pipelineClone.StreamWiring = DataPipelineWiring.Serialize(wirings);
+
+			// Add/Update Entity
+			var newValues = GetEntityValues(pipelineClone);
+
 
 			// Guess DimensionIDs for the Pipeline-Entity
 			var source = DataSource.GetInitialDataSource(appId: appId);
@@ -283,14 +311,15 @@ namespace ToSic.Eav.WebApi
 			if (pipelineEntity.Title.Values.Any())
 				dimensionIds = pipelineEntity.Title.Values.First().Languages.Select(l => l.DimensionId).ToArray();
 
-	        _context.Entities.UpdateEntity(id.Value, newValues, dimensionIds: dimensionIds);
+            new AppManager(appId).Entities.Update(id.Value, newValues, dimensionIds: dimensionIds);
+	        //_context.Entities.UpdateEntity(id.Value, newValues, dimensionIds: dimensionIds);
 		}
 
 		/// <summary>
 		/// Update an Entity with values from a JObject
 		/// </summary>
 		/// <param name="newValues">JObject with new Values</param>
-		private static IDictionary GetEntityValues(JToken newValues)
+		private static Dictionary<string, object> GetEntityValues(JToken newValues)
 		{
 			var newValuesDict = newValues.ToObject<IDictionary<string, object>>();
 

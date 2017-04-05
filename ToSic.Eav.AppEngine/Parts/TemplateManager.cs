@@ -5,17 +5,11 @@ namespace ToSic.Eav.Apps.Parts
     /// <summary>
     /// Templates manager for the app engine - in charge of importing / modifying templates at app-level
     /// </summary>
-    public class TemplatesManager
+    public class TemplatesManager: BaseManager
     {
-        private readonly AppManager _appManager;
-
-        internal TemplatesManager(AppManager appManager)
-        {
-            _appManager = appManager;
-        }
+        public TemplatesManager(AppManager app) : base(app) {}
 
         #region Template
-
 
         /// <summary>
         /// Adds or updates a template - will create a new template if templateId is not specified
