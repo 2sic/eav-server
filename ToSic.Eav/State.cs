@@ -36,68 +36,20 @@ namespace ToSic.Eav
             Purge(zoneId, appId, global);
         }
         #endregion
-
-        #region Zone commands
-
-        public static int ZoneCreate(string name)
-        {
-            var zoneId = EavDataController.Instance()
-                .Zone.AddZone(name).Item1.ZoneID;
-            Purge(zoneId, GetDefaultAppId(zoneId), true);
-            return zoneId;
-        }
-        #endregion
-
-        #region Zone Language / Culture / Dimension commands
-        public static List<Tuple<bool, string>> ZoneLanguages(int zoneId)
-        {
-            return EavDataController.Instance(zoneId).Dimensions.GetLanguages()
-                .Select(d => new Tuple<bool, string>(d.Active, d.ExternalKey))
-                .ToList();
-        }
-
-        public static void ZoneLanguageAddOrUpdate(int zoneId, string cultureCode, string cultureText, bool active)
-            => EavDataController.Instance(zoneId).Dimensions.AddOrUpdateLanguage(cultureCode, cultureText, active);
-
-        #endregion
-
-        #region App Commands
-
-
-        public static int GetDefaultAppId(int zoneId)
-            => ((BaseCache)DataSource.GetCache(zoneId)).ZoneApps[zoneId].DefaultAppId;
-
-        public static void AppDelete(int zoneId, int appId)
-            => DoAndPurge(zoneId, appId, () => EavDataController.Instance(zoneId, appId).App.DeleteApp(appId), true);
-
-        public static int AppCreate(int zoneId)
-        {
-            var eavContext = EavDataController.Instance(zoneId);
-            var app = eavContext.App.AddApp(null, Guid.NewGuid().ToString());
-
-            Purge(zoneId, app.AppID, true);
-            return app.AppID;
-        }
-
-        public static Dictionary<int, string> GetAppList(int zoneId)
-            => ((BaseCache)DataSource.GetCache(zoneId)).ZoneApps[zoneId].Apps;
-
-        public static string GetAppName(int zoneId, int appId)
-            => ((BaseCache) DataSource.GetCache(zoneId)).ZoneApps[zoneId].Apps[appId];
-
-        #endregion
+        
+            
 
         #region ContentType Commands
 
-        public static IEnumerable<IContentType> ContentTypes(int zoneId, int appId, string scope = null, bool includeAttributeTypes = false)
-        {
-            var contentTypes = ((BaseCache)DataSource.GetCache(zoneId, appId)).GetContentTypes();
-            var set = contentTypes.Select(c => c.Value)
-                .Where(c => includeAttributeTypes || !c.Name.StartsWith("@"));
-            if(scope != null)
-                set = set.Where(p => p.Scope == scope);
-            return set.OrderBy(c => c.Name); 
-        }
+        //public static IEnumerable<IContentType> ContentTypes(int zoneId, int appId, string scope = null, bool includeAttributeTypes = false)
+        //{
+        //    var contentTypes = ((BaseCache)DataSource.GetCache(zoneId, appId)).GetContentTypes();
+        //    var set = contentTypes.Select(c => c.Value)
+        //        .Where(c => includeAttributeTypes || !c.Name.StartsWith("@"));
+        //    if(scope != null)
+        //        set = set.Where(p => p.Scope == scope);
+        //    return set.OrderBy(c => c.Name); 
+        //}
         #endregion
 
 

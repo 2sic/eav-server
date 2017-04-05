@@ -14,11 +14,6 @@ namespace ToSic.Eav.DataSources.Caches
 	/// </summary>
 	public abstract class BaseCache : BaseDataSource, IMetaDataSource, ICache, IDeferredEntitiesList
 	{
-        ///// <summary>PublishedEntities Stream Name</summary>
-        //public const string PublishedStreamName = "Published";
-        ///// <summary>Draft-Entities Stream Name</summary>
-        //public const string DraftsStreamName = "Drafts";
-
 		protected new BaseCache Cache { get; set; }
 
 		protected BaseCache()
@@ -31,31 +26,19 @@ namespace ToSic.Eav.DataSources.Caches
 		}
 
         #region Default Streams: All=Default; Published, Draft
-        private IDictionary<int, IEntity> GetEntities()
-		{
-			return EnsureCache().Entities;
-		}
+        private IDictionary<int, IEntity> GetEntities() => EnsureCache().Entities;
 
-        /// <summary>
+	    /// <summary>
         /// This retrieves the cached list-only set (without the dictionar)
         /// </summary>
         /// <returns></returns>
-	    private IEnumerable<IEntity> GetList()
-	    {
-	        return EnsureCache().List;
-	    }
+	    private IEnumerable<IEntity> GetList() => EnsureCache().List;
 
-	    private IDictionary<int, IEntity> GetPublishedEntities()
-		{
-			return EnsureCache().PublishedEntities;
-		}
+	    private IDictionary<int, IEntity> GetPublishedEntities() => EnsureCache().PublishedEntities;
 
-		private IDictionary<int, IEntity> GetDraftEntities()
-		{
-			return EnsureCache().DraftEntities;
-		}
+	    private IDictionary<int, IEntity> GetDraftEntities() => EnsureCache().DraftEntities;
 
-        #endregion
+	    #endregion
 
         /// <summary>
 		/// The root DataSource
@@ -67,7 +50,8 @@ namespace ToSic.Eav.DataSources.Caches
 		/// <summary>
 		/// Gets or sets the Dictionary of all Zones an Apps
 		/// </summary>
-		public abstract Dictionary<int, Data.Zone> ZoneApps { get; protected set; }
+		public abstract Dictionary<int, Zone> ZoneApps { get; protected set; }
+
 		/// <summary>
 		/// Gets or sets the Dictionary of all AssignmentObjectTypes
 		/// </summary>
@@ -188,21 +172,14 @@ namespace ToSic.Eav.DataSources.Caches
 		/// <summary>
 		/// Get a ContentType by Id
 		/// </summary>
-		public IContentType GetContentType(int contentTypeId)
-		{
-			var cache = EnsureCache();
-			return cache.ContentTypes.FirstOrDefault(c => c.Key == contentTypeId).Value;
-		}
+		public IContentType GetContentType(int contentTypeId) => EnsureCache().ContentTypes.FirstOrDefault(c => c.Key == contentTypeId).Value;
 
-		/// <summary>
+	    /// <summary>
 		/// Get all Content Types
 		/// </summary>
-		public IDictionary<int, IContentType> GetContentTypes()
-		{
-			return EnsureCache().ContentTypes;
-		}
+		public IDictionary<int, IContentType> GetContentTypes() => EnsureCache().ContentTypes;
 
-		/// <summary>
+	    /// <summary>
 		/// Get/Resolve ZoneId and AppId for specified ZoneId and/or AppId. If both are null, default ZoneId with it's default App is returned.
 		/// </summary>
 		/// <returns>Item1 = ZoneId, Item2 = AppId</returns>

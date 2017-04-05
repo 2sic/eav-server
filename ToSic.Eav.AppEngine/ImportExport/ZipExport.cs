@@ -126,7 +126,7 @@ namespace ToSic.Eav.Apps.ImportExport
         private XmlExporter GenerateExportXml(bool includeContentGroups, bool resetAppGuid)
         {
             // Get Export XML
-            var attributeSets = State.ContentTypes(_zoneId, _appId, includeAttributeTypes: true);
+            var attributeSets = new AppRuntime(_zoneId, _appId).GetContentTypes(includeAttributeTypes: true);
             attributeSets = attributeSets.Where(a => !a.ConfigurationIsOmnipresent);
 
             var attributeSetIds = attributeSets.Select(p => p.AttributeSetId.ToString()).ToArray();

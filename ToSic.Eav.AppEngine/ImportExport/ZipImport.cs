@@ -83,7 +83,7 @@ namespace ToSic.Eav.Apps.ImportExport
 									var isAppImport = doc.Element("SexyContent").Element("Header").Elements("App").Any() && doc.Element("SexyContent").Element("Header").Element("App").Attribute("Guid").Value != "Default";
 
                                     if (!isAppImport && !_appId.HasValue)
-                                        _appId = State.GetDefaultAppId(_zoneId);// ((BaseCache) DataSource.GetCache(_zoneId)).ZoneApps[_zoneId].DefaultAppId;
+                                        _appId = new ZoneRuntime(_zoneId).DefaultAppId;// ((BaseCache) DataSource.GetCache(_zoneId)).ZoneApps[_zoneId].DefaultAppId;
 
                                     if (isAppImport)
                                     {
