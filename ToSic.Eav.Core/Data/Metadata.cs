@@ -14,7 +14,7 @@ namespace ToSic.Eav.Data
         /// </summary>
         public bool HasMetadata
         {
-            get { return TargetType != Constants.DefaultAssignmentObjectTypeId; }
+            get { return TargetType != Constants.NotMetadata; }
         }
 
         /// <summary>

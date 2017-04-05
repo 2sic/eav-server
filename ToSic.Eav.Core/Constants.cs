@@ -11,10 +11,6 @@ namespace ToSic.Eav
         public const string DefaultAppName = "Default";
 
 
-        /// <summary>
-        /// Default Entity AssignmentObjectTypeId
-        /// </summary>
-        public const int DefaultAssignmentObjectTypeId = 1;
         public const string CultureSystemKey = "Culture";
         /// <summary>
         /// DataTimeline Operation-Key for Entity-States (Entity-Versioning)
@@ -46,6 +42,15 @@ namespace ToSic.Eav
         /// AppId where MetaData (Entities) are stored.
         /// </summary>
         public static readonly int MetaDataAppId = 1;
+
+
+        /// <summary>
+        /// Default Entity AssignmentObjectTypeId
+        /// </summary>
+        [Obsolete("Use NotMetadata instead")]
+        public const int AssignmentObjectTypeId = 1;
+        public const int NotMetadata = 1;
+
         /// <summary>
         /// AssignmentObjectTypeId for FieldProperties (Field MetaData)
         /// </summary>

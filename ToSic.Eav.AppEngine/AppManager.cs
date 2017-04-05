@@ -1,4 +1,6 @@
 ﻿using System.Collections.Specialized;
+using System.Data.Common.CommandTrees;
+using System.Security.Cryptography;
 using ToSic.Eav.Apps.Interfaces;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.BLL;
@@ -24,6 +26,10 @@ namespace ToSic.Eav.Apps
         private AppRuntime _runtime;
         #endregion
 
+        internal DbDataController DataController => _eavContext ?? (_eavContext = DbDataController.Instance(ZoneId, AppId));
+        private DbDataController _eavContext;
+
+
         /// <summary>
         /// The template management subsystem
         /// </summary>
@@ -36,9 +42,10 @@ namespace ToSic.Eav.Apps
         public EntitiesManager Entities => _entities ?? (_entities = new EntitiesManager(this));
         private EntitiesManager _entities;
 
+        public QueryManager Queries => _queries ?? (_queries = new QueryManager(this));
+        private QueryManager _queries;
 
-        internal DbDataController DataController => _eavContext ?? (_eavContext = DbDataController.Instance(ZoneId, AppId));
-        private DbDataController _eavContext;
+
 
 
         public void MetadataEnsureTypeAndSingleEntity(string scope, string setName, string label, int appAssignment, OrderedDictionary values)
@@ -50,7 +57,7 @@ namespace ToSic.Eav.Apps
             if (values == null)
                 values = new OrderedDictionary();
 
-            DataController.Entities.AddEntity(contentType, values, /*null,*/ DataController.AppId, appAssignment);
+            DataController.Entities.AddEntity(contentType.AttributeSetID, values, keyNumber: DataController.AppId, keyTypeId: appAssignment);
 
             SystemManager.Purge(ZoneId, AppId);
         }

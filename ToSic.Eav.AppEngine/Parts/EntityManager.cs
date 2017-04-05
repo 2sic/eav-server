@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -50,21 +49,26 @@ namespace ToSic.Eav.Apps.Parts
         public string DeleteHinderance(int entityId) => _appManager.DataController.Entities.CanDeleteEntity(entityId).Item2;
         #endregion
 
-
         /// <summary>
         /// Create an entity in this app, optionally with a GUID provided for the new ID
         /// </summary>
         /// <param name="typeName"></param>
         /// <param name="values"></param>
-        /// <param name="entityGuid"></param>
         /// <returns></returns>
-        public Tuple<int, Guid> Create(string typeName, Dictionary<string, object> values, Guid? entityGuid = null)
+        public Tuple<int, Guid> Create(string typeName, Dictionary<string, object> values)
         {
-            var contentType = _appManager.Cache.GetContentType(typeName);
-            var ent = _appManager.DataController.Entities.AddEntity(contentType.AttributeSetId, values, null, null);//, null, entityGuid: entityGuid);
-            return new Tuple<int, Guid>(ent.EntityID, ent.EntityGUID);
+            //var contentType = _appManager.Cache.GetContentType(typeName);
+            //var ent = _appManager.DataController.Entities.AddEntity(contentType.AttributeSetId, values);
+            //return new Tuple<int, Guid>(ent.EntityID, ent.EntityGUID);
+            return Create(typeName, values, Constants.NotMetadata);
         }
 
+        public Tuple<int, Guid> Create(string typeName, Dictionary<string, object> values, int keyTypeId, int? keyNumber = null, string keyString = null, Guid? keyGuid = null)
+        {
+            var contentType = _appManager.Cache.GetContentType(typeName);
+            var ent = _appManager.DataController.Entities.AddEntity(contentType.AttributeSetId, values, keyTypeId: keyTypeId, keyNumber: keyNumber, keyString: keyString, keyGuid: keyGuid);
+            return new Tuple<int, Guid>(ent.EntityID, ent.EntityGUID);
+        }
 
         /// <summary>
         /// Update an entity
@@ -94,8 +98,8 @@ namespace ToSic.Eav.Apps.Parts
 
                 return existingEnt.EntityID;
             }
-
-            return Create(contentTypeName, values, newGuid).Item1;
+            var contentType = _appManager.Cache.GetContentType(contentTypeName).AttributeSetId;
+            return _appManager.DataController.Entities.AddEntity(contentType, values, entityGuid: newGuid).EntityID;
         }
 
     }

@@ -94,7 +94,7 @@ namespace ToSic.Eav.Data
 			{
 				throw new KeyNotFoundException($"The Title Attribute with Name \"{titleAttribute}\" doesn't exist in the Entity-Attributes.");
 			}
-			AssignmentObjectTypeId = Constants.DefaultAssignmentObjectTypeId;
+			AssignmentObjectTypeId = Constants.NotMetadata;
 			IsPublished = true;
             if (modified.HasValue)
                 Modified = modified.Value;

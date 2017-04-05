@@ -286,7 +286,7 @@ namespace ToSic.Eav.Import
             #region Simplest case - add (nothing existing to update)
             if (existingEntities == null || !existingEntities.Any())
             {
-                _context.Entities.AddEntity(attributeSet.AttributeSetId, impEntity, _importLog, impEntity.IsPublished, null);
+                _context.Entities.AddImportEntity(attributeSet.AttributeSetId, impEntity, _importLog, impEntity.IsPublished, null);
                 return;
             }
 
@@ -298,7 +298,7 @@ namespace ToSic.Eav.Import
             if (!impEntity.IsPublished && existingEntities.Count(e => e.IsPublished == false) == 0 && !impEntity.ForceNoBranch)
             {
                 var publishedId = existingEntities.First().EntityId;
-                _context.Entities.AddEntity(attributeSet.AttributeSetId, impEntity, _importLog, impEntity.IsPublished, publishedId);
+                _context.Entities.AddImportEntity(attributeSet.AttributeSetId, impEntity, _importLog, impEntity.IsPublished, publishedId);
                 return;
             }
 

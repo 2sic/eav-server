@@ -237,7 +237,7 @@ namespace ToSic.Eav.WebApi
                 AttributeSetStaticName = newEntity.Type.StaticName,
                 #endregion
                 // Metadata maybe?
-                KeyTypeId = Constants.DefaultAssignmentObjectTypeId  // default case
+                KeyTypeId = Constants.NotMetadata  // default case
             };
 
             #region Metadata if we have any

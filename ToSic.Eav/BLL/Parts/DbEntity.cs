@@ -83,26 +83,29 @@ namespace ToSic.Eav.BLL.Parts
         /// <summary>
         /// Import a new Entity
         /// </summary>
-        internal Entity AddEntity(int attributeSetId, ImpEntity impEntity, List<ImportLogItem> importLog, bool isPublished, int? publishedTarget)
+        internal Entity AddImportEntity(int attributeSetId, ImpEntity impEntity, List<ImportLogItem> importLog, bool isPublished, int? publishedTarget)
         {
-            return AddEntity(/*null,*/ attributeSetId, impEntity.Values, /*null,*/ impEntity.KeyNumber, impEntity.KeyGuid, impEntity.KeyString, impEntity.KeyTypeId, 0, impEntity.EntityGuid, null, updateLog: importLog, isPublished: isPublished, publishedEntityId: publishedTarget);
+            return AddEntity(attributeSetId, impEntity.Values, 
+                impEntity.KeyNumber, impEntity.KeyGuid, impEntity.KeyString, impEntity.KeyTypeId, 
+                0, impEntity.EntityGuid, null, importLog, isPublished, publishedTarget);
         }
 
-        /// <summary>
-        /// Add a new Entity
-        /// </summary>
-        internal Entity AddEntity(AttributeSet attributeSet, IDictionary values, /*int? configurationSet,*/ int? key, int assignmentObjectTypeId = Constants.DefaultAssignmentObjectTypeId, int sortOrder = 0, Guid? entityGuid = null, ICollection<int> dimensionIds = null, bool isPublished = true)
-        {
-            return AddEntity(attributeSet.AttributeSetID/*, 0*/, values, /*configurationSet,*/ key, null, null, assignmentObjectTypeId, sortOrder, entityGuid, dimensionIds, isPublished: isPublished);
-        }
+        ///// <summary>
+        ///// Add a new Entity
+        ///// </summary>
+        //internal Entity AddEntity(AttributeSet attributeSet, IDictionary values,int? key, int assignmentObjectTypeId)//, int sortOrder = 0, Guid? entityGuid = null, ICollection<int> dimensionIds = null, bool isPublished = true)
+        //{
+        //    return AddEntity(attributeSet.AttributeSetID, values, key, null, null, assignmentObjectTypeId); //, sortOrder, entityGuid, dimensionIds, isPublished: isPublished);
+        //}
 
-        /// <summary>
-        /// Add a new Entity
-        /// </summary>
-        internal Entity AddEntity(int attributeSetId, IDictionary values, /*int? configurationSet,*/ int? key, int assignmentObjectTypeId = Constants.DefaultAssignmentObjectTypeId, int sortOrder = 0, Guid? entityGuid = null, ICollection<int> dimensionIds = null, bool isPublished = true)
-        {
-            return AddEntity(/*null,*/ attributeSetId, values, /*configurationSet,*/ key, null, null, assignmentObjectTypeId, sortOrder, entityGuid, dimensionIds, isPublished: isPublished);
-        }
+        ///// <summary>
+        ///// Add a new Entity
+        ///// </summary>
+        //internal Entity AddEntity(int attributeSetId, IDictionary values, int? key, int assignmentObjectTypeId)// = Constants.DefaultAssignmentObjectTypeId, int sortOrder = 0, Guid? entityGuid = null, ICollection<int> dimensionIds = null, bool isPublished = true)
+        //{
+        //    return AddEntity(attributeSetId, values, key, null, null, assignmentObjectTypeId);
+        //        //, sortOrder, entityGuid, dimensionIds, isPublished: isPublished);
+        //}
 
         ///// <summary>
         ///// Add a new Entity
@@ -111,12 +114,12 @@ namespace ToSic.Eav.BLL.Parts
         //{
         //    return AddEntity(null, attributeSetId, values, configurationSet, null, key, null, assignmentObjectTypeId);
         //}
+        
         /// <summary>
         /// Add a new Entity
         /// </summary>
-        public Entity AddEntity(/*AttributeSet attributeSet,*/ int attributeSetId, 
-            IDictionary values, /*int? configurationSet, */
-            int? keyNumber = null, Guid? keyGuid = null, string keyString = null, int assignmentObjectTypeId = Constants.DefaultAssignmentObjectTypeId, 
+        public Entity AddEntity(int attributeSetId, IDictionary values, 
+            int? keyNumber = null, Guid? keyGuid = null, string keyString = null, int keyTypeId = Constants.NotMetadata, 
             int sortOrder = 0, 
             Guid? entityGuid = null, ICollection<int> dimensionIds = null, List<ImportLogItem> updateLog = null, 
             bool isPublished = true, int? publishedEntityId = null)
@@ -124,10 +127,10 @@ namespace ToSic.Eav.BLL.Parts
             // var skipCreate = false;
             var existingEntityId = 0;
             // Prevent duplicate add of FieldProperties
-            if (assignmentObjectTypeId == Constants.AssignmentObjectTypeIdFieldProperties && keyNumber.HasValue)
+            if (keyTypeId == Constants.MetadataForField && keyNumber.HasValue)
             {
                 var foundThisMetadata =
-                    GetEntities(Constants.AssignmentObjectTypeIdFieldProperties, keyNumber.Value)
+                    GetEntities(Constants.MetadataForField, keyNumber.Value)
                         .FirstOrDefault(e => e.AttributeSetID == attributeSetId);
                 if (foundThisMetadata != null)
                 {
@@ -143,7 +146,7 @@ namespace ToSic.Eav.BLL.Parts
                 var newEntity = new Entity
                 {
                     ConfigurationSet = null, // configurationSet,
-                    AssignmentObjectTypeID = assignmentObjectTypeId,
+                    AssignmentObjectTypeID = keyTypeId,
                     KeyNumber = keyNumber,
                     KeyGuid = keyGuid,
                     KeyString = keyString,
