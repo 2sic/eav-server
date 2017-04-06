@@ -39,18 +39,25 @@ namespace ToSic.Eav.Apps.Interfaces
         public AppBase(int appId)
         {
             AppId = appId;
-            ZoneId = ((BaseCache) DataSource.GetInitialDataSource()).GetZoneAppId(appId: appId).Item1;
+            ZoneId = ((BaseCache) DataSource.GetCache(null)).GetZoneAppId(appId: appId).Item1;
         }
 
-        internal AppBase(BaseCache source)
+        internal AppBase(IDataSource data)
         {
-            _cache = source;
-            AppId = _cache.AppId;
-            ZoneId = _cache.ZoneId;
+            _data = data;
+            AppId = _data.AppId;
+            ZoneId = _data.ZoneId;
         }
 
-        internal BaseCache Cache => _cache ?? (_cache = (BaseCache) DataSource.GetInitialDataSource(ZoneId, AppId));
+
+        #region Data & Cache
+        internal BaseCache Cache => _cache ?? (_cache = (BaseCache) Data.Cache);
         private BaseCache _cache;
+
+        internal IDataSource Data => _data ?? (_data = DataSource.GetInitialDataSource(ZoneId, AppId));
+        private IDataSource _data;
+
+        #endregion
 
         #endregion
 

@@ -20,7 +20,7 @@ namespace ToSic.Eav.WebApi
         #region GetOne GetAll calls
         public IEntity GetEntityOrThrowError(string contentType, int id, int? appId = null)
         {
-            SetAppIdAndUser(appId);
+            //SetAppIdAndUser(appId);
 
             // must use cache, because it shows both published  unpublished
             var found = AppManager.Read.Entities.Get(id);// DataSource.GetCache(null, AppId).List[id];
@@ -53,6 +53,8 @@ namespace ToSic.Eav.WebApi
         /// <returns></returns>
         public Dictionary<string, object> GetOne(string contentType, int id, int? appId = null, string cultureCode = null)
         {
+            SetAppIdAndUser(appId);
+
             var found = GetEntityOrThrowError(contentType, id, appId);
             return Serializer.Prepare(found);
         }
@@ -135,6 +137,8 @@ namespace ToSic.Eav.WebApi
         [HttpPost]
         public List<EntityWithHeader> GetManyForEditing([FromUri]int appId, [FromBody]List<ItemIdentifier> items)
         {
+            SetAppIdAndUser(appId);
+
             // clean up content-type names in case it's using the nice-name instead of the static name...
             //var cache = DataSource.GetCache(null, appId);
             foreach (var itm in items.Where(i => !string.IsNullOrEmpty(i.ContentTypeName)).ToArray())
@@ -179,6 +183,8 @@ namespace ToSic.Eav.WebApi
         [HttpPost]
         public Dictionary<Guid, int> SaveMany([FromUri] int appId, [FromBody] List<EntityWithHeader> items)
         {
+            SetAppIdAndUser(appId);
+
             var entitiesToImport = new List<ImpEntity>();
 
             // must move guid from header to entity, because we only transfer it on the header (so no duplicates)

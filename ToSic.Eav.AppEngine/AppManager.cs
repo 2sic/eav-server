@@ -22,7 +22,7 @@ namespace ToSic.Eav.Apps
 
         #region Access the Runtime
 
-        public AppRuntime Read => _runtime ?? (_runtime = new AppRuntime(Cache));
+        public AppRuntime Read => _runtime ?? (_runtime = new AppRuntime(Data));
         private AppRuntime _runtime;
         #endregion
 

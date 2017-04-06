@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Apps.Interfaces;
 using ToSic.Eav.Apps.Parts;
-using ToSic.Eav.DataSources.Caches;
+using ToSic.Eav.DataSources;
 
 namespace ToSic.Eav.Apps
 {
@@ -14,7 +14,7 @@ namespace ToSic.Eav.Apps
         // Special constructor, should be used with care as there is no Zone!
         public AppRuntime(int appId) :base (appId) { }
 
-        internal AppRuntime(BaseCache source): base(source) { }
+        internal AppRuntime(IDataSource data): base(data) { }
         #endregion
 
         public EntityRuntime Entities => _entities ?? (_entities = new EntityRuntime(this));

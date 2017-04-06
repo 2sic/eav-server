@@ -127,7 +127,8 @@ namespace ToSic.Eav.WebApi
                 CurrentContext.ContentType.GetContentTypeConfiguration(staticName)
                     .OrderBy(ct => ((AttributeBase)ct.Item1).SortOrder);
 
-            //var appDef = new BetaFullApi(null, appId, CurrentContext);
+            //var appDef = new ToSic.Eav.Api.BetaFullApi(null, appId, CurrentContext);
+            //var debug = appDef.GetInputTypes(true).ToList();
             var appInputTypes = new AppRuntime(appId).ContentTypes.GetInputTypes(true).ToList();  // appDef.GetInputTypes(true).ToList();
             var noTitleCount = 0;
             var fldName = "";
