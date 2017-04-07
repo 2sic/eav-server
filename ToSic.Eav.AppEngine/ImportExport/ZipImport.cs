@@ -31,8 +31,6 @@ namespace ToSic.Eav.Apps.ImportExport
         /// </summary>
         /// <param name="zipStream"></param>
         /// <param name="server"></param>
-        ///// <param name="portalSettings"></param>
-        /// <param name="messages"></param>
         /// <returns></returns>
         public bool ImportZip(Stream zipStream, HttpServerUtility server)
         {
@@ -186,7 +184,7 @@ namespace ToSic.Eav.Apps.ImportExport
         {
             if (reqVersionNode != null)
             {
-                var vSxc = _environment.ModuleVersion;// Settings.Version;
+                var vSxc = Version.Parse(_environment.ModuleVersion);// Settings.Version;
                 var reqSxcV = Version.Parse(reqVersionNode);
                 if (reqSxcV.CompareTo(vSxc) == 1) // required is bigger
                     throw new Exception("this app requires 2sxc version " + reqVersionNode +

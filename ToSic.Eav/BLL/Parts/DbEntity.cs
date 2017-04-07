@@ -287,7 +287,7 @@ namespace ToSic.Eav.BLL.Parts
 
             DbContext.SqlDb.SaveChanges();	// must save now to generate EntityModel afterward for DataTimeline
 
-            DbContext.Versioning.SaveEntityToDataTimeline(entity);
+            //DbContext.Versioning.SaveEntityToDataTimeline(entity);
 
             return entity;
         }

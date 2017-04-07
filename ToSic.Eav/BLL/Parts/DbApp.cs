@@ -54,10 +54,11 @@ namespace ToSic.Eav.BLL.Parts
         /// Delete an existing App with any Values and Attributes
         /// </summary>
         /// <param name="appId">AppId to delete</param>
-        public void DeleteApp(int appId)
+        internal void DeleteApp(int appId)
         {
-            if (appId != DbContext.AppId)  // this only happens if there is some kind of id-fallback
-                throw new Exception("An app can only be removed inside of it's own context.");
+            // 2017-04-06 2dm disabled this check, as of now the context doesn't know the app-id as it's comming from the Zone
+            //if (appId != DbContext.AppId)  // this only happens if there is some kind of id-fallback
+            //    throw new Exception("An app can only be removed inside of it's own context.");
 
             // enure changelog exists and is set to SQL CONTEXT_INFO variable
             if (DbContext.Versioning.MainChangeLogId == 0)

@@ -165,6 +165,7 @@ namespace ToSic.Eav.Apps.ImportExport
 				return false;
 			}
 
+            DataSource.GetCache(null).PurgeGlobalCache();   // must do this, to ensure that the app-id exists now 
 			return ImportXml(zoneId, appId.Value, doc);
 		}
 
