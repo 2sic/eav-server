@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
+using ToSic.Eav.Apps;
 using ToSic.Eav.WebApi.Formats;
 using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Models;
@@ -201,8 +202,8 @@ namespace ToSic.Eav.WebApi
                 keepAttributesMissingInImport: false,
                 preventUpdateOnDraftEntities: false,
                 largeImport: false);
-            importController.RunImport(null, entitiesToImport.ToArray());
-
+            importController.ImportIntoDB(null, entitiesToImport.ToArray());
+            SystemManager.Purge(appId);
 
             // find / update IDs of items updated to return to client
             //var cache = DataSource.GetCache(null, appId);

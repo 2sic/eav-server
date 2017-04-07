@@ -15,7 +15,8 @@ namespace ToSic.Eav.Apps.ImportExport
     {
         private int? _appId;
         private readonly int _zoneId;
-        private bool _allowRazor;
+        // ReSharper disable once NotAccessedField.Local
+        private bool _allowRazor; // note: not used yet, but will be important in the future 
         private readonly IImportExportEnvironment _environment;
         public ZipImport(IImportExportEnvironment environment, int zoneId, int? appId, bool allowRazor)
         {
@@ -95,8 +96,8 @@ namespace ToSic.Eav.Apps.ImportExport
                                         var reqVersionNodeDnn = appConfig.Elements("Value")?.FirstOrDefault(v => v.Attribute("Key").Value == "RequiredDnnVersion")?.Attribute("Value")?.Value;
 
                                         CheckRequiredEnvironmentVersions(reqVersionNode, reqVersionNodeDnn);
-
                                         #endregion
+
                                         var folder = appConfig.Elements("Value").First(v => v.Attribute("Key").Value == "Folder").Attribute("Value").Value;
 
                                         //var appPath = Path.Combine(AppHelpers.AppBasePath(null), folder);
@@ -105,7 +106,7 @@ namespace ToSic.Eav.Apps.ImportExport
                                         var appPath = _environment.TargetPath(folder);
                                         if (Directory.Exists(appPath))
                                         {
-                                            throw new Exception("The app could not be installed because the app-folder '" + appPath + "' already exists. Please remove or rename the folder and install the app again.");
+                                            throw new Exception("The app could not be installed because the app-folder '" + appPath + "' already exists. Please remove or rename the folder in the [portals]/2sxc and install the app again.");
                                         }
 
                                         if (xmlIndex == 0)

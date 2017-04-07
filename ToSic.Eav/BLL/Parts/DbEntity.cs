@@ -28,7 +28,7 @@ namespace ToSic.Eav.BLL.Parts
         /// Get a single Entity by EntityGuid. Ensure it's not deleted and has context's AppId
         /// </summary>
         /// <returns>Entity or throws InvalidOperationException</returns>
-        public Entity GetDbEntity(Guid entityGuid)
+        public Entity GetMostCurrentDbEntity(Guid entityGuid)
             // GetEntity should never return a draft entity that has a published version
             => GetEntitiesByGuid(entityGuid).Single(e => !e.PublishedEntityId.HasValue);
         
@@ -69,7 +69,7 @@ namespace ToSic.Eav.BLL.Parts
         /// <summary>
         /// Get a List of Entities with specified assignmentObjectTypeId and optional Key.
         /// </summary>
-        internal IQueryable<Entity> GetEntities(int assignmentObjectTypeId, int? keyNumber = null, Guid? keyGuid = null, string keyString = null)
+        internal IQueryable<Entity> GetAssignedEntities(int assignmentObjectTypeId, int? keyNumber = null, Guid? keyGuid = null, string keyString = null)
         {
             return from e in DbContext.SqlDb.Entities
                    where e.AssignmentObjectTypeID == assignmentObjectTypeId
@@ -130,7 +130,7 @@ namespace ToSic.Eav.BLL.Parts
             if (keyTypeId == Constants.MetadataForField && keyNumber.HasValue)
             {
                 var foundThisMetadata =
-                    GetEntities(Constants.MetadataForField, keyNumber.Value)
+                    GetAssignedEntities(Constants.MetadataForField, keyNumber.Value)
                         .FirstOrDefault(e => e.AttributeSetID == attributeSetId);
                 if (foundThisMetadata != null)
                 {
@@ -442,7 +442,7 @@ namespace ToSic.Eav.BLL.Parts
         /// <summary>
         /// Delete an Entity
         /// </summary>
-        public bool DeleteEntity(Guid entityGuid) => DeleteEntity(GetDbEntity(entityGuid));
+        public bool DeleteEntity(Guid entityGuid) => DeleteEntity(GetMostCurrentDbEntity(entityGuid));
 
         /// <summary>
         /// Delete an Entity
@@ -505,7 +505,7 @@ namespace ToSic.Eav.BLL.Parts
             }
             #endregion
 
-            var entitiesAssignedToThis = GetEntities(Constants.AssignmentObjectTypeEntity, entityId).Select(e => new TempEntityAndTypeInfos() { EntityId = e.EntityID, TypeId = e.AttributeSetID}).ToList();
+            var entitiesAssignedToThis = GetAssignedEntities(Constants.AssignmentObjectTypeEntity, entityId).Select(e => new TempEntityAndTypeInfos() { EntityId = e.EntityID, TypeId = e.AttributeSetID}).ToList();
             if (entitiesAssignedToThis.Any())
             {
                 TryToGetMoreInfosAboutDependencies(entitiesAssignedToThis, messages);

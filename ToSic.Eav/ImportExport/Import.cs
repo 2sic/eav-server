@@ -51,7 +51,7 @@ namespace ToSic.Eav.Import
         /// <summary>
         /// Import AttributeSets and Entities
         /// </summary>
-        public DbTransaction RunImport(IEnumerable<ImpAttrSet> newAttributeSets, IEnumerable<ImpEntity> newEntities)
+        public DbTransaction ImportIntoDB(IEnumerable<ImpAttrSet> newAttributeSets, IEnumerable<ImpEntity> newEntities)
         {
             _context.PurgeAppCacheOnSave = false;
 
@@ -61,13 +61,14 @@ namespace ToSic.Eav.Import
             if (_largeImport)
                 _context.SqlDb.CommandTimeout = 3600;
 
+            // todo: CleanImport - change access to attribute set to use DB
             // Ensure cache is created
             // ReSharper disable once NotAccessedVariable
-            var y = DataSource.GetCache(Constants.DefaultZoneId, Constants.MetaDataAppId).LightList.Any();
-            var cache = DataSource.GetCache(_context.ZoneId, _context.AppId);
-            cache.PurgeCache(_context.ZoneId, _context.AppId);
-            // ReSharper disable once RedundantAssignment
-            y = cache.LightList.Any(); // re-read something
+            //var y = DataSource.GetCache(Constants.DefaultZoneId, Constants.MetaDataAppId).LightList.Any();
+            //var cache = DataSource.GetCache(_context.ZoneId, _context.AppId);
+            //cache.PurgeCache(_context.ZoneId, _context.AppId);
+            //// ReSharper disable once RedundantAssignment
+            //y = cache.LightList.Any(); // re-read something
 
             #region initialize DB connection / transaction
             // Make sure the connection is open - because on multiple calls it's not clear if it was already opened or not
@@ -115,8 +116,9 @@ namespace ToSic.Eav.Import
                 transaction.Commit();
                 _context.SqlDb.Connection.Close();
 
+                // todo: CleanImport - change access to attribute set to use DB
                 // always Purge Cache
-                DataSource.GetCache(_context.ZoneId, _context.AppId).PurgeCache(_context.ZoneId, _context.AppId);
+                //DataSource.GetCache(_context.ZoneId, _context.AppId).PurgeCache(_context.ZoneId, _context.AppId);
 
                 return transaction;
             }
@@ -140,12 +142,14 @@ namespace ToSic.Eav.Import
 
             // Commit DB Transaction and refresh cache
             transaction.Commit();
-            // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-            DataSource.GetCache(Constants.DefaultZoneId, Constants.MetaDataAppId).LightList.Any();
-            var cache = DataSource.GetCache(_context.ZoneId, _context.AppId);
-            cache.PurgeCache(_context.ZoneId, _context.AppId);
-            // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-            cache.LightList.Any(); // re-read something
+
+            // todo: CleanImport - change access to attribute set to use DB
+            //// ReSharper disable once ReturnValueOfPureMethodIsNotUsed
+            //DataSource.GetCache(Constants.DefaultZoneId, Constants.MetaDataAppId).LightList.Any();
+            //var cache = DataSource.GetCache(_context.ZoneId, _context.AppId);
+            //cache.PurgeCache(_context.ZoneId, _context.AppId);
+            //// ReSharper disable once ReturnValueOfPureMethodIsNotUsed
+            //cache.LightList.Any(); // re-read something
 
             // re-start transaction
             transaction = _context.SqlDb.Connection.BeginTransaction();
@@ -216,7 +220,6 @@ namespace ToSic.Eav.Import
                     destinationAttribute = destinationSet.AttributesInSets.Single(a => a.Attribute.StaticName == importAttribute.StaticName).Attribute;
                 }
 
-                var mds = DataSource.GetMetaDataSource(_context.ZoneId, _context.AppId);
                 // Insert AttributeMetaData
                 if (/* isNewAttribute && */ importAttribute.AttributeMetaData != null)
                 {
@@ -230,11 +233,22 @@ namespace ToSic.Eav.Import
                             _context.SqlDb.SaveChanges();
                         entity.KeyNumber = destinationAttribute.AttributeID;
 
-                        var existingEntity = mds.GetAssignedEntities(Constants.MetadataForField, //.AssignmentObjectTypeIdFieldProperties,
-                            destinationAttribute.AttributeID, entity.AttributeSetStaticName).FirstOrDefault();
+                        // Get guid of previously existing assignment - if it exists
+                        // todo: CleanImport - change access to attribute set to use DB
+                        // todo: TestImport
+                        var existingMetadata = _context.Entities
+                            .GetAssignedEntities(Constants.MetadataForField,keyNumber:destinationAttribute.AttributeID)
+                            .FirstOrDefault(e => e.AttributeSetID == destinationAttribute.AttributeID);
 
-                        if (existingEntity != null)
-                            entity.EntityGuid = existingEntity.EntityGuid;
+                        if (existingMetadata != null)
+                            entity.EntityGuid = existingMetadata.EntityGUID;
+
+                        //var mds = DataSource.GetMetaDataSource(_context.ZoneId, _context.AppId);
+                        //var existingEntity = mds.GetAssignedEntities(Constants.MetadataForField, //.AssignmentObjectTypeIdFieldProperties,
+                        //    destinationAttribute.AttributeID, entity.AttributeSetStaticName).FirstOrDefault();
+
+                        //if (existingEntity != null)
+                        //    entity.EntityGuid = existingEntity.EntityGuid;
 
                         PersistOneImportEntity(entity);
                     }
@@ -260,13 +274,17 @@ namespace ToSic.Eav.Import
         /// </summary>
         private void PersistOneImportEntity(ImpEntity impEntity)
         {
-            var cache = DataSource.GetCache(null, _context.AppId);
+            //var cache = DataSource.GetCache(null, _context.AppId);
 
             #region try to get AttributeSet or otherwise cancel & log error
 
             // var attributeSet = Context.AttribSet.GetAttributeSet(importEntity.AttributeSetStaticName);
-            var attributeSet = cache.GetContentType(impEntity.AttributeSetStaticName);
-            if (attributeSet == null) // AttributeSet not Found
+
+            // todo: CleanImport - change access to attribute set to use DB
+            var dbAttrSet = _context.AttribSet.GetAttributeSet(impEntity.AttributeSetStaticName);
+
+            //var attributeSet = cache.GetContentType(impEntity.AttributeSetStaticName);
+            if (/*attributeSet*/ dbAttrSet == null) // AttributeSet not Found
             {
                 _importLog.Add(new ImportLogItem(EventLogEntryType.Error, "AttributeSet not found")
                 {
@@ -279,14 +297,18 @@ namespace ToSic.Eav.Import
             #endregion
 
             // Find existing Enties - meaning both draft and non-draft
-            List<IEntity> existingEntities = null;
+            //List<IEntity> cacheExistingEntities = null;
+            List<Entity> dbExistingEntities = null;
             if (impEntity.EntityGuid.HasValue)
-                existingEntities = cache.LightList.Where(e => e.EntityGuid == impEntity.EntityGuid.Value).ToList();
+            {
+                dbExistingEntities = _context.Entities.GetEntitiesByGuid(impEntity.EntityGuid.Value).ToList();
+                //cacheExistingEntities = cache.LightList.Where(e => e.EntityGuid == impEntity.EntityGuid.Value).ToList();
+            }
 
             #region Simplest case - add (nothing existing to update)
-            if (existingEntities == null || !existingEntities.Any())
+            if (/*cacheExistingEntities*/dbExistingEntities == null || !/*cacheExistingEntities*/dbExistingEntities.Any())
             {
-                _context.Entities.AddImportEntity(attributeSet.AttributeSetId, impEntity, _importLog, impEntity.IsPublished, null);
+                _context.Entities.AddImportEntity(/*attributeSet.AttributeSetId*/ dbAttrSet.AttributeSetID, impEntity, _importLog, impEntity.IsPublished, null);
                 return;
             }
 
@@ -295,10 +317,10 @@ namespace ToSic.Eav.Import
             // todo: 2dm 2016-06-29 check this
             #region Another simple case - we have published entities, but are saving unpublished - so we create a new one
 
-            if (!impEntity.IsPublished && existingEntities.Count(e => e.IsPublished == false) == 0 && !impEntity.ForceNoBranch)
+            if (!impEntity.IsPublished && /*cacheExistingEntities*/dbExistingEntities.Count(e => e.IsPublished == false) == 0 && !impEntity.ForceNoBranch)
             {
-                var publishedId = existingEntities.First().EntityId;
-                _context.Entities.AddImportEntity(attributeSet.AttributeSetId, impEntity, _importLog, impEntity.IsPublished, publishedId);
+                var publishedId = dbExistingEntities.First().EntityID;// cacheExistingEntities.First().EntityId;
+                _context.Entities.AddImportEntity(/*attributeSet.AttributeSetId*/ dbAttrSet.AttributeSetID, impEntity, _importLog, impEntity.IsPublished, publishedId);
                 return;
             }
 
@@ -309,7 +331,7 @@ namespace ToSic.Eav.Import
             #region Do Various Error checking like: Does it really exist, is it not draft, ensure we have the correct Content-Type
 
             // Get existing, published Entity
-            var editableVersionOfTheEntity = existingEntities.OrderBy(e => e.IsPublished ? 1 : 0).First(); // get draft first, otherwise the published
+            var editableVersionOfTheEntity = /*cacheExistingEntities*/dbExistingEntities.OrderBy(e => e.IsPublished ? 1 : 0).First(); // get draft first, otherwise the published
             _importLog.Add(new ImportLogItem(EventLogEntryType.Information, "Entity already exists", impEntity));
         
 
@@ -325,7 +347,9 @@ namespace ToSic.Eav.Import
             #endregion
 
             #region Ensure entity has same AttributeSet (do this after checking for the draft etc.
-            if (editableVersionOfTheEntity.Type.StaticName != impEntity.AttributeSetStaticName)
+            var editableEntityContentType = _context.AttribSet.GetAttributeSet(editableVersionOfTheEntity.AttributeSetID);
+            if (editableEntityContentType.StaticName != impEntity.AttributeSetStaticName)
+            //if (editableVersionOfTheEntity.Type.StaticName != impEntity.AttributeSetStaticName)
             {
                 _importLog.Add(new ImportLogItem(EventLogEntryType.Error, "Existing entity (which should be updated) has different ContentType", impEntity));
                 return;
@@ -336,12 +360,14 @@ namespace ToSic.Eav.Import
 
             #endregion
 
+            // todo: TestImport - ensure that it correctly skips the existing values
             var newValues = impEntity.Values;
             if (_dontUpdateExistingAttributeValues) // Skip values that are already present in existing Entity
-                newValues = newValues.Where(v => editableVersionOfTheEntity.Attributes.All(ev => ev.Value.Name != v.Key))
+                newValues = newValues.Where(v => editableVersionOfTheEntity.Values/*.Attributes*/.All(ev => ev.Attribute.StaticName/*.Value.Name*/ != v.Key))
                     .ToDictionary(v => v.Key, v => v.Value);
 
-            _context.Entities.UpdateEntity(editableVersionOfTheEntity.RepositoryId, newValues, updateLog: _importLog,
+            // todo: TestImport - ensure that the EntityId of this is what previously was the RepositoryID
+            _context.Entities.UpdateEntity(editableVersionOfTheEntity.EntityID/*RepositoryId*/, newValues, updateLog: _importLog,
                 preserveUndefinedValues: _keepAttributesMissingInImport, isPublished: impEntity.IsPublished, forceNoBranch: impEntity.ForceNoBranch);
 
             #endregion

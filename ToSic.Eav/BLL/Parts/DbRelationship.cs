@@ -65,14 +65,14 @@ namespace ToSic.Eav.BLL.Parts
             foreach (var relationship in _entityRelationshipsQueue)
             {
                 var entity = relationship.ParentEntityGuid.HasValue 
-                        ? DbContext.Entities.GetDbEntity(relationship.ParentEntityGuid.Value)
+                        ? DbContext.Entities.GetMostCurrentDbEntity(relationship.ParentEntityGuid.Value)
                         : DbContext.Entities.GetDbEntity(relationship.ParentEntityId.Value);
                 var childEntityIds = new List<int?>();
                 foreach (var childGuid in relationship.ChildEntityGuids)
                 {
                     try
                     {
-                        childEntityIds.Add(childGuid.HasValue ? DbContext.Entities.GetDbEntity(childGuid.Value).EntityID : new int?());
+                        childEntityIds.Add(childGuid.HasValue ? DbContext.Entities.GetMostCurrentDbEntity(childGuid.Value).EntityID : new int?());
                     }
                     catch (InvalidOperationException)
                     {

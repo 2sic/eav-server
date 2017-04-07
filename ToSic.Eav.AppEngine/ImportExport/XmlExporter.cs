@@ -139,7 +139,7 @@ namespace ToSic.Eav.Apps.ImportExport
                         new XAttribute(XmlConstants.IsTitle, x.IsTitle),
                         // Add Attribute MetaData
                         from c in
-                            EavAppContext.Entities.GetEntities(ToSic.Eav.Constants.AssignmentObjectTypeIdFieldProperties,
+                            EavAppContext.Entities.GetAssignedEntities(ToSic.Eav.Constants.AssignmentObjectTypeIdFieldProperties,
                                 x.AttributeID).ToList()
                         select GetEntityXElement(c)
                         );

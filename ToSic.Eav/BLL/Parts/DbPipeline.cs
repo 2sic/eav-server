@@ -23,7 +23,7 @@ namespace ToSic.Eav.BLL.Parts
             var pipelineEntityClone = DbContext.Entities.CloneEntity(sourcePipelineEntity, true);
 
             // Copy Pipeline Parts with configuration Entity, assign KeyGuid of the new Pipeline Entity
-            var pipelineParts = DbContext.Entities.GetEntities(Constants.AssignmentObjectTypeEntity, null, sourcePipelineEntity.EntityGUID);
+            var pipelineParts = DbContext.Entities.GetAssignedEntities(Constants.AssignmentObjectTypeEntity, null, sourcePipelineEntity.EntityGUID);
             var pipelinePartClones = new Dictionary<string, Guid>();	// track Guids of originals and their clone
             foreach (var pipelinePart in pipelineParts)
             {
@@ -32,7 +32,7 @@ namespace ToSic.Eav.BLL.Parts
                 pipelinePartClones.Add(pipelinePart.EntityGUID.ToString(), pipelinePartClone.EntityGUID);
 
                 // Copy Configuration Entity, assign KeyGuid of the Clone
-                var configurationEntity = DbContext.Entities.GetEntities(Constants.AssignmentObjectTypeEntity, null, pipelinePart.EntityGUID).SingleOrDefault();
+                var configurationEntity = DbContext.Entities.GetAssignedEntities(Constants.AssignmentObjectTypeEntity, null, pipelinePart.EntityGUID).SingleOrDefault();
                 if (configurationEntity != null)
                 {
                     var configurationClone = DbContext.Entities.CloneEntity(configurationEntity, true);

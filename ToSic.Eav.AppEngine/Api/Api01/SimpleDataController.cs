@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Apps;
 using ToSic.Eav.BLL;
 using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Models;
@@ -112,7 +113,7 @@ namespace ToSic.Eav.Api.Api01
         /// <exception cref="ArgumentNullException">Entity does not exist</exception>
         public void Update(Guid entityGuid, Dictionary<string, object> values, bool filterUnknownFields = true)
         {
-            var entity = _context.Entities.GetDbEntity(entityGuid);
+            var entity = _context.Entities.GetMostCurrentDbEntity(entityGuid);
             Update(entity, values);
         }
 
@@ -154,7 +155,7 @@ namespace ToSic.Eav.Api.Api01
         public void Delete(Guid entityGuid)
         {
             // todo: refactor to use the eav-api delete
-            var entity = _context.Entities.GetDbEntity(entityGuid);
+            var entity = _context.Entities.GetMostCurrentDbEntity(entityGuid);
             Delete(entity.EntityID);
         }
 
@@ -205,7 +206,8 @@ namespace ToSic.Eav.Api.Api01
         private void ExecuteImport(ImpEntity impEntity)
         {
             var import = new Eav.Import.Import(_zoneId, _appId, false);
-            import.RunImport(null, new[] { impEntity });
+            import.ImportIntoDB(null, new[] { impEntity });
+            SystemManager.Purge(_zoneId, _appId);
         }
 
         private void AppendAttributeValues(ImpEntity impEntity, AttributeSet attributeSet, Dictionary<string, object> values, string valuesLanguage, bool valuesReadOnly, bool resolveHyperlink)

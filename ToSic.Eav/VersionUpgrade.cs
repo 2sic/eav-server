@@ -116,7 +116,7 @@ namespace ToSic.Eav
 		    var x = cache.LightList.First();
 
             var import = new Import.Import(Constants.DefaultZoneId, Constants.MetaDataAppId/*, _userName*/);
-			import.RunImport(attributeSets, null);
+			import.ImportIntoDB(attributeSets, null);
 
 			#region Mark all AttributeSets as shared and ensure they exist on all Apps
 			foreach (var attributeSet in attributeSets)

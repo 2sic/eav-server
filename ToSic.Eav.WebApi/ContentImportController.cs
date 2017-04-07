@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Web.Http;
+using ToSic.Eav.Apps;
 using ToSic.Eav.ImportExport.Refactoring;
 using ToSic.Eav.ImportExport.Refactoring.Options;
 
@@ -64,6 +65,7 @@ namespace ToSic.Eav.WebApi
             if (!import.ErrorLog.HasErrors)
             {
                 import.PersistImportToRepository(CurrentContext.UserName);
+                SystemManager.Purge(AppId);
             }
             return new ContentImportResult(!import.ErrorLog.HasErrors, null);
         }

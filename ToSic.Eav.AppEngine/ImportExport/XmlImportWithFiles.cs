@@ -235,8 +235,11 @@ namespace ToSic.Eav.Apps.ImportExport
             var importAttributeSets = GetImportAttributeSets(atsNodes);
 			var importEntities = GetImportEntities(entNodes, Eav.Configuration.AssignmentObjectTypeIdDefault);
 
+
 			var import = new Import.Import(_zoneId, _appId, /*UserName,*/ leaveExistingValuesUntouched);
-			import.RunImport(importAttributeSets, importEntities);
+			import.ImportIntoDB(importAttributeSets, importEntities);
+            SystemManager.Purge(_zoneId, _appId);
+
 			ImportLog.AddRange(GetExportImportMessagesFromImportLog(import.ImportLog));
 
 			if (xmlSource.Elements(XmlConstants.Templates).Any())
@@ -345,7 +348,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     {
                         var entityGuid = Guid.Parse(demoEntityGuid);
                         if ( /*App.*/_eavContext.Entities.EntityExists(entityGuid))
-                            demoEntityId = /*App.*/ _eavContext.Entities.GetDbEntity(entityGuid).EntityID;
+                            demoEntityId = /*App.*/ _eavContext.Entities.GetMostCurrentDbEntity(entityGuid).EntityID;
                         else
                             ImportLog.Add(
                                 new ExportImportMessage(
@@ -376,7 +379,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     {
                         var entityGuid = Guid.Parse(pipelineEntityGuid.Value);
                         if (_eavContext.Entities.EntityExists(entityGuid))
-                            pipelineEntityId = _eavContext.Entities.GetDbEntity(entityGuid).EntityID;
+                            pipelineEntityId = _eavContext.Entities.GetMostCurrentDbEntity(entityGuid).EntityID;
                         else
                             ImportLog.Add(
                                 new ExportImportMessage(
@@ -417,7 +420,7 @@ namespace ToSic.Eav.Apps.ImportExport
                         {
                             var xmlDemoEntityGuid = Guid.Parse(xmlDemoEntityGuidString);
                             if (_eavContext.Entities.EntityExists(xmlDemoEntityGuid))
-                                xmlDemoEntityId = _eavContext.Entities.GetDbEntity(xmlDemoEntityGuid).EntityID;
+                                xmlDemoEntityId = _eavContext.Entities.GetMostCurrentDbEntity(xmlDemoEntityGuid).EntityID;
                         }
 
                         return new TemplateDefault

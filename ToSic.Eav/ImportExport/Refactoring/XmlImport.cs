@@ -300,9 +300,11 @@ namespace ToSic.Eav.ImportExport.Refactoring
                 }
             }
 
-            var import = new Import.Import(_zoneId, _appId, /*userId,*/ dontUpdateExistingAttributeValues: false, keepAttributesMissingInImport: true);
             Timer.Start();
-            import.RunImport(null, Entities);
+            var import = new Import.Import(_zoneId, _appId, /*userId,*/ dontUpdateExistingAttributeValues: false, keepAttributesMissingInImport: true);
+            import.ImportIntoDB(null, Entities);
+            // important note: don't purge cache here, but the caller MUST do this!
+
             Timer.Stop();
             TimeForDbImport = Timer.ElapsedMilliseconds;
             return true;

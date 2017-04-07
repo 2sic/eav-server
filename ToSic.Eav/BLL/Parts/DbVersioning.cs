@@ -215,7 +215,9 @@ namespace ToSic.Eav.Persistence
 
             // Restore Entity
             var import = new Import.Import(DbContext.ZoneId /* _zoneId*/,DbContext.AppId /* _appId*/, /*Context.UserName,*/ false, false);
-            import.RunImport(null, new List<ImpEntity> { newVersion });
+            import.ImportIntoDB(null, new List<ImpEntity> { newVersion });
+            
+            // IMPORTANT : IF THIS IS EVER USED, REMEMBER TO CLEAR THE CACHE in the calling method
 
             // Delete Draft (if any)
             var entityDraft = new DbLoadIntoEavDataStructure(DbContext).GetEavEntity(entityId).GetDraft();
