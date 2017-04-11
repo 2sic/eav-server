@@ -56,6 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Environment\TennantFileItem.cs" />
+    <Compile Include="Interfaces\IRepositoryImporter.cs" />
     <Compile Include="Logging\ExportImportMessage.cs" />
     <Compile Include="FileManager.cs" />
     <Compile Include="IImportExportEnvironment.cs" />

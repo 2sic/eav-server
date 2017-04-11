@@ -2,7 +2,7 @@
 using System.Data.Objects.DataClasses;
 using System.Linq;
 
-namespace ToSic.Eav.BLL.Parts
+namespace ToSic.Eav.Repository.EF4.Parts
 {
     public class DbShortcuts: BllCommandBase
     {

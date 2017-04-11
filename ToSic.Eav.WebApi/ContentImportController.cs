@@ -3,9 +3,8 @@ using System.IO;
 using System.Linq;
 using System.Web.Http;
 using ToSic.Eav.Apps;
-using ToSic.Eav.BLL.Parts;
 using ToSic.Eav.ImportExport.Options;
-
+using ToSic.Eav.Repository.EF4.Parts;
 
 
 namespace ToSic.Eav.WebApi

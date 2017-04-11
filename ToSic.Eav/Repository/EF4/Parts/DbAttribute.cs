@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ToSic.Eav.BLL.Parts
+namespace ToSic.Eav.Repository.EF4.Parts
 {
     public class DbAttribute: BllCommandBase
     {

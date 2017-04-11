@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.DataSources;
 
-namespace ToSic.Eav.BLL.Parts
+namespace ToSic.Eav.Repository.EF4.Parts
 {
     public class DbPipeline: BllCommandBase
     {

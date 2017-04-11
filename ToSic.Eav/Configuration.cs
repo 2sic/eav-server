@@ -4,6 +4,8 @@ using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.DataSources.RootSources;
 using ToSic.Eav.DataSources.SqlSources;
+using ToSic.Eav.Implementations;
+using ToSic.Eav.ImportExport.Interfaces;
 
 namespace ToSic.Eav
 {
@@ -91,7 +93,10 @@ namespace ToSic.Eav
                 cont.RegisterType<ICache, QuickCache>();
             if (!cont.IsRegistered<IRootSource>())
                 cont.RegisterType<IRootSource, EavSqlStore>();
-            
+
+            if (!cont.IsRegistered<IRepositoryImporter>())
+                cont.RegisterType<IRepositoryImporter, RepositoryImporter>();
+
             // register some Default Constructors
             cont.RegisterType<SqlDataSource>(new InjectionConstructor());
             cont.RegisterType<DataTableDataSource>(new InjectionConstructor());

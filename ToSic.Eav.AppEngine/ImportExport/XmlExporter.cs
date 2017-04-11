@@ -6,11 +6,11 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
-using ToSic.Eav.BLL;
-using ToSic.Eav.BLL.Parts;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Environment;
 using ToSic.Eav.ImportExport.Logging;
+using ToSic.Eav.Repository.EF4;
+using ToSic.Eav.Repository.EF4.Parts;
 
 namespace ToSic.Eav.Apps.ImportExport
 {

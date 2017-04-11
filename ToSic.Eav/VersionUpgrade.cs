@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.BLL;
-using ToSic.Eav.BLL.Parts;
 using ToSic.Eav.ImportExport.Models;
+using ToSic.Eav.Repository.EF4;
+using ToSic.Eav.Repository.EF4.Parts;
 
 namespace ToSic.Eav
 {

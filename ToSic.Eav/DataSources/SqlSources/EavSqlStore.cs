@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.BLL;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.RootSources;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Repository.EF4;
 
 namespace ToSic.Eav.DataSources.SqlSources
 {

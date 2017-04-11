@@ -8,7 +8,7 @@ using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Logging;
 using ToSic.Eav.ImportExport.Models;
 
-namespace ToSic.Eav.BLL.Parts
+namespace ToSic.Eav.Repository.EF4.Parts
 {
     public class DbEntity: BllCommandBase
     {

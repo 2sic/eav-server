@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps.Interfaces;
-using ToSic.Eav.BLL;
+using ToSic.Eav.Repository.EF4;
 
 namespace ToSic.Eav.Apps
 {

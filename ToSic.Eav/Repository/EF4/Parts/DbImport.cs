@@ -7,7 +7,7 @@ using System.Linq;
 using ToSic.Eav.ImportExport.Logging;
 using ToSic.Eav.ImportExport.Models;
 
-namespace ToSic.Eav.BLL.Parts
+namespace ToSic.Eav.Repository.EF4.Parts
 {
     /// <summary>
     /// Import Schema and Entities to the EAV SqlStore

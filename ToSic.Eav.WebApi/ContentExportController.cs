@@ -4,8 +4,8 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Web.Http;
-using ToSic.Eav.BLL.Parts;
 using ToSic.Eav.ImportExport.Options;
+using ToSic.Eav.Repository.EF4.Parts;
 
 namespace ToSic.Eav.WebApi
 {

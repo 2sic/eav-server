@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
-using ToSic.Eav.BLL;
-using ToSic.Eav.BLL.Parts;
 using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Models;
+using ToSic.Eav.Repository.EF4;
+using ToSic.Eav.Repository.EF4.Parts;
 
 // This is the simple API used to quickly create/edit/delete entities
 // It's in the Apps-project, because we are trying to elliminate the plain ToSic.Eav as it was structured in 2016

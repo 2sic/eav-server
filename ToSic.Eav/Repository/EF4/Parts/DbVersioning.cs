@@ -4,12 +4,10 @@ using System.Data;
 using System.Linq;
 using System.Xml.Linq;
 using System.Xml.XPath;
-using ToSic.Eav.BLL;
-using ToSic.Eav.BLL.Parts;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Models;
 
-namespace ToSic.Eav.Persistence
+namespace ToSic.Eav.Repository.EF4.Parts
 {
     internal class DbVersioning: BllCommandBase
     {

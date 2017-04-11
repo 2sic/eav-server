@@ -3,7 +3,7 @@ using System.Data.Objects.DataClasses;
 using System.Linq;
 using System.Xml.Linq;
 
-namespace ToSic.Eav.BLL.Parts
+namespace ToSic.Eav.Repository.EF4.Parts
 {
 	/// <summary>
 	/// Export EAV Data in XML Format

@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.BLL
+﻿namespace ToSic.Eav.Repository.EF4
 {
     public class BllCommandBase
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
-using ToSic.Eav.BLL.Parts;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.Repository.EF4.Parts;
 
 namespace ToSic.Eav.Apps.Parts
 {

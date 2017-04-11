@@ -5,18 +5,20 @@ using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.Interfaces;
 
-namespace ToSic.Eav.BLL
+namespace ToSic.Eav.Repository.EF4
 {
-    public class DbLoadIntoEavDataStructure: BllCommandBase
+    /// <summary>
+    /// 
+    /// </summary>
+    internal class DbLoadIntoEavDataStructure: BllCommandBase
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cntx"></param>
         public DbLoadIntoEavDataStructure(DbDataController cntx) : base(cntx)
         {
         }
-
-        ///// <summary>
-        ///// Get all Entities Models for specified AppId
-        ///// </summary>
-        //internal IDictionary<int, IEntity> GetEavEntities(int appId, BaseCache source) => GetAppDataPackage(null, appId, source, true).Entities;
 
         /// <summary>
         /// Get all ContentTypes for specified AppId. If called multiple times it loads from a private field.

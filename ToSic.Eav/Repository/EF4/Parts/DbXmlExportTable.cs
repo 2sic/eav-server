@@ -6,7 +6,7 @@ using ToSic.Eav.Implementations.ValueConverter;
 using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.ImportExport.Xml;
 
-namespace ToSic.Eav.BLL.Parts
+namespace ToSic.Eav.Repository.EF4.Parts
 {
     /// <summary>
     /// For exporting a content-type into xml, either just the schema or with data

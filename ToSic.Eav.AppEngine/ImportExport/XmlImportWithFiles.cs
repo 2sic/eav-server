@@ -6,11 +6,11 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Xml.Linq;
 using Microsoft.Practices.Unity;
-using ToSic.Eav.BLL;
-using ToSic.Eav.BLL.Parts;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Logging;
 using ToSic.Eav.ImportExport.Models;
+using ToSic.Eav.Repository.EF4;
+using ToSic.Eav.Repository.EF4.Parts;
 
 // needed for the static Resolve<...>
 

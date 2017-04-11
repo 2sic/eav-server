@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.BLL;
 
-namespace ToSic.Eav.Persistence
+namespace ToSic.Eav.Repository.EF4.Parts
 {
     public class DbAttributeSet : BllCommandBase
     {

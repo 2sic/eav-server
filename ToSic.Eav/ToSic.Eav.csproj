@@ -70,35 +70,34 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BLL\BllCommandBase.cs" />
-    <Compile Include="BLL\DbDataController.cs" />
-    <Compile Include="BLL\Parts\DbContentType.cs" />
-    <Compile Include="BLL\Parts\DbApp.cs" />
-    <Compile Include="BLL\Parts\DbZone.cs" />
-    <Compile Include="BLL\RepositoryEF4.cs" />
+    <Compile Include="Repository\EF4\BllCommandBase.cs" />
+    <Compile Include="Repository\EF4\DbDataController.cs" />
+    <Compile Include="Repository\EF4\Parts\DbContentType.cs" />
+    <Compile Include="Repository\EF4\Parts\DbApp.cs" />
+    <Compile Include="Repository\EF4\Parts\DbZone.cs" />
+    <Compile Include="Repository\EF4\Parts\DbPipeline.cs" />
     <Compile Include="Configuration.cs" />
-    <Compile Include="BLL\Parts\DbPipeline.cs" />
     <Compile Include="DataSources\SqlSources\EavSqlStore.cs" />
-    <Compile Include="BLL\Parts\DbXmlExportTable.cs">
+    <Compile Include="Repository\EF4\Parts\DbXmlExportTable.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="BLL\Parts\DbXmlImportVTable.cs">
+    <Compile Include="Repository\EF4\Parts\DbXmlImportVTable.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="BLL\Parts\DbXmlBuilder.cs" />
-    <Compile Include="BLL\Parts\DbAttributeSet.cs" />
-    <Compile Include="BLL\Parts\DbAttribute.cs" />
-    <Compile Include="BLL\Parts\DbPublishing.cs" />
-    <Compile Include="BLL\Parts\DbRelationship.cs" />
-    <Compile Include="BLL\Parts\DbValue.cs" />
-    <Compile Include="BLL\Parts\DbEntity.cs" />
-    <Compile Include="BLL\DbLoadIntoEavDataStructure.cs" />
-    <Compile Include="BLL\Parts\DbShortcuts.cs" />
-    <Compile Include="BLL\Parts\DbVersioning.cs" />
-    <Compile Include="BLL\Parts\DbImport.cs" />
-    <Compile Include="BLL\Parts\DbDimensions.cs" />
+    <Compile Include="Repository\EF4\Parts\DbXmlBuilder.cs" />
+    <Compile Include="Repository\EF4\Parts\DbAttributeSet.cs" />
+    <Compile Include="Repository\EF4\Parts\DbAttribute.cs" />
+    <Compile Include="Repository\EF4\Parts\DbPublishing.cs" />
+    <Compile Include="Repository\EF4\Parts\DbRelationship.cs" />
+    <Compile Include="Repository\EF4\Parts\DbValue.cs" />
+    <Compile Include="Repository\EF4\Parts\DbEntity.cs" />
+    <Compile Include="Repository\EF4\DbLoadIntoEavDataStructure.cs" />
+    <Compile Include="Repository\EF4\Parts\DbShortcuts.cs" />
+    <Compile Include="Repository\EF4\Parts\DbVersioning.cs" />
+    <Compile Include="Repository\EF4\Parts\DbImport.cs" />
+    <Compile Include="Repository\EF4\Parts\DbDimensions.cs" />
+    <Compile Include="Implementations\RepositoryImporter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="State.cs" />
     <Compile Include="VersionUpgrade.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -129,7 +128,9 @@
       <Name>ToSic.Eav.TokenEngine</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="BLL\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy "$(TargetPath)" "$(SolutionDir)..\2SexyContent\Web\bin"</PostBuildEvent>

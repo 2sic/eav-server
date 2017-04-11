@@ -1,9 +1,7 @@
 ﻿using System.Collections.Specialized;
-using System.Data.Common.CommandTrees;
-using System.Security.Cryptography;
 using ToSic.Eav.Apps.Interfaces;
 using ToSic.Eav.Apps.Parts;
-using ToSic.Eav.BLL;
+using ToSic.Eav.Repository.EF4;
 
 namespace ToSic.Eav.Apps
 {

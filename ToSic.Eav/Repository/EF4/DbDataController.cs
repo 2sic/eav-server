@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Linq;
-using ToSic.Eav.BLL.Parts;
+using Microsoft.Practices.Unity;
 using ToSic.Eav.Implementations.UserInformation;
-using ToSic.Eav.Persistence;
-using Microsoft.Practices.Unity; // needed for the static Resolve<...>
+using ToSic.Eav.Repository.EF4.Parts;
 
-namespace ToSic.Eav.BLL
+// needed for the static Resolve<...>
+
+namespace ToSic.Eav.Repository.EF4
 {
 
     public class DbDataController
@@ -26,7 +27,7 @@ namespace ToSic.Eav.BLL
         public DbApp App { get; private set; }
         public DbContentType ContentType { get; private set; }
 
-        public RepositoryEF4 Repository { get; private set; }
+        //public RepositoryEF4 Repository { get; private set; }
 
         public int _appId;
         internal int _zoneId;
@@ -116,7 +117,7 @@ namespace ToSic.Eav.BLL
             dc.App = new DbApp(dc);
             dc.ContentType = new DbContentType(dc);
 
-            dc.Repository = new RepositoryEF4(dc);
+            //dc.Repository = new RepositoryEF4(dc);
 
             dc.SqlDb.AlternateSaveHandler += dc.SaveChanges;
 
