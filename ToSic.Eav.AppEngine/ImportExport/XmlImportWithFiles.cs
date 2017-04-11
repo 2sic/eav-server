@@ -7,7 +7,7 @@ using System.Web;
 using System.Xml.Linq;
 using Microsoft.Practices.Unity;
 using ToSic.Eav.BLL;
-using ToSic.Eav.Import;
+using ToSic.Eav.BLL.Parts;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Logging;
 using ToSic.Eav.ImportExport.Models;
@@ -236,7 +236,7 @@ namespace ToSic.Eav.Apps.ImportExport
 			var importEntities = GetImportEntities(entNodes, Eav.Configuration.AssignmentObjectTypeIdDefault);
 
 
-			var import = new Import.Import(_zoneId, _appId, /*UserName,*/ leaveExistingValuesUntouched);
+			var import = new DbImport(_zoneId, _appId, /*UserName,*/ leaveExistingValuesUntouched);
 			import.ImportIntoDb(importAttributeSets, importEntities);
             SystemManager.Purge(_zoneId, _appId);
 

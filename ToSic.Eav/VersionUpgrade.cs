@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.BLL;
+using ToSic.Eav.BLL.Parts;
 using ToSic.Eav.ImportExport.Models;
 
 namespace ToSic.Eav
@@ -115,7 +116,7 @@ namespace ToSic.Eav
 		    // ReSharper disable once UnusedVariable
 		    var x = cache.LightList.First();
 
-            var import = new Import.Import(Constants.DefaultZoneId, Constants.MetaDataAppId/*, _userName*/);
+            var import = new DbImport(Constants.DefaultZoneId, Constants.MetaDataAppId/*, _userName*/);
 			import.ImportIntoDb(attributeSets, null);
 
 			#region Mark all AttributeSets as shared and ensure they exist on all Apps

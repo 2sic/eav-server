@@ -4,17 +4,15 @@ using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
-using ToSic.Eav.BLL;
 using ToSic.Eav.ImportExport.Logging;
 using ToSic.Eav.ImportExport.Models;
 
-// ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Import
+namespace ToSic.Eav.BLL.Parts
 {
     /// <summary>
     /// Import Schema and Entities to the EAV SqlStore
     /// </summary>
-    public class Import
+    public class DbImport
     {
         #region Private Fields
         private readonly DbDataController _context;
@@ -36,7 +34,7 @@ namespace ToSic.Eav.Import
         /// <summary>
         /// Initializes a new instance of the Import class.
         /// </summary>
-        public Import(int? zoneId, int? appId, bool dontUpdateExistingAttributeValues = true, bool keepAttributesMissingInImport = true, bool preventUpdateOnDraftEntities = true, bool largeImport = true)
+        public DbImport(int? zoneId, int? appId, bool dontUpdateExistingAttributeValues = true, bool keepAttributesMissingInImport = true, bool preventUpdateOnDraftEntities = true, bool largeImport = true)
         {
             _context = DbDataController.Instance(zoneId, appId);
 

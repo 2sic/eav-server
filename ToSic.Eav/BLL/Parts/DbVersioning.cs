@@ -214,7 +214,7 @@ namespace ToSic.Eav.Persistence
             var newVersion = GetEntityVersion(entityId, changeId, defaultCultureDimension);
 
             // Restore Entity
-            var import = new Import.Import(DbContext.ZoneId /* _zoneId*/,DbContext.AppId /* _appId*/, /*Context.UserName,*/ false, false);
+            var import = new DbImport(DbContext.ZoneId /* _zoneId*/,DbContext.AppId /* _appId*/, /*Context.UserName,*/ false, false);
             import.ImportIntoDb(null, new List<ImpEntity> { newVersion });
             
             // IMPORTANT : IF THIS IS EVER USED, REMEMBER TO CLEAR THE CACHE in the calling method

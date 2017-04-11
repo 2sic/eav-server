@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using ToSic.Eav.Apps;
+using ToSic.Eav.BLL.Parts;
 using ToSic.Eav.WebApi.Formats;
 using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Models;
@@ -197,7 +198,7 @@ namespace ToSic.Eav.WebApi
                     entitiesToImport.Add(CreateImportEntity(entity));
 
             // Create Import-controller & run import
-            var importController = new Import.Import(null, appId, /*UserIdentityToken,*/
+            var importController = new DbImport(null, appId, /*UserIdentityToken,*/
                 dontUpdateExistingAttributeValues: false,
                 keepAttributesMissingInImport: false,
                 preventUpdateOnDraftEntities: false,

@@ -139,7 +139,7 @@ namespace ToSic.Eav.Apps.ImportExport
                         new XAttribute(XmlConstants.IsTitle, x.IsTitle),
                         // Add Attribute MetaData
                         from c in
-                            EavAppContext.Entities.GetAssignedEntities(ToSic.Eav.Constants.AssignmentObjectTypeIdFieldProperties,
+                            EavAppContext.Entities.GetAssignedEntities(Constants.MetadataForField,//.AssignmentObjectTypeIdFieldProperties,
                                 x.AttributeID).ToList()
                         select GetEntityXElement(c)
                         );
@@ -259,13 +259,13 @@ namespace ToSic.Eav.Apps.ImportExport
                 }
             }
 
-	        if (e.KeyGuid.HasValue)
-		        entityXElement.Add(new XAttribute("KeyGuid", e.KeyGuid));
-
-            if (e.KeyNumber.HasValue)
-                entityXElement.Add(new XAttribute("KeyNumber", e.KeyNumber));
-            if (!string.IsNullOrEmpty(e.KeyString))
-                entityXElement.Add(new XAttribute("KeyString", e.KeyString));
+            // 2017-04-11 2dm moved to Get...uncached
+	        //if (e.KeyGuid.HasValue)
+		       // entityXElement.Add(new XAttribute("KeyGuid", e.KeyGuid));
+         //   if (e.KeyNumber.HasValue)
+         //       entityXElement.Add(new XAttribute("KeyNumber", e.KeyNumber));
+         //   if (!string.IsNullOrEmpty(e.KeyString))
+         //       entityXElement.Add(new XAttribute("KeyString", e.KeyString));
 
             //return new XElement("Entity",
             //    new XAttribute("AssignmentObjectType", e.AssignmentObjectType.Name),

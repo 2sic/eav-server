@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using ToSic.Eav.BLL;
-using ToSic.Eav.Import;
+using ToSic.Eav.BLL.Parts;
 using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Logging;
 using ToSic.Eav.ImportExport.Models;
@@ -301,7 +301,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
             }
 
             Timer.Start();
-            var import = new Import.Import(_zoneId, _appId, /*userId,*/ dontUpdateExistingAttributeValues: false, keepAttributesMissingInImport: true);
+            var import = new DbImport(_zoneId, _appId, /*userId,*/ dontUpdateExistingAttributeValues: false, keepAttributesMissingInImport: true);
             import.ImportIntoDb(null, Entities);
             // important note: don't purge cache here, but the caller MUST do this!
 
