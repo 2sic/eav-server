@@ -1,81 +1,37 @@
 ﻿using System;
 using System.Linq;
 using System.Xml.Linq;
+using ToSic.Eav.ImportExport.Refactoring.Extensions;
 
 namespace ToSic.Eav.ImportExport.Xml
 {
     public class XmlBuilder
     {
 
+        public XDocument BuildDocument(params object[] content)
+            => new XDocument(new XDeclaration("1.0", "UTF-8", "yes"), content);
 
-        ///// <summary>
-        ///// Returns an Entity XElement
-        ///// </summary>
-        //public XElement BuildEntityXElement(IEntity entity, string assignmentObjectTypeName, int? keyNumber = null, string keyString = null, Guid? keyGuid = null)
-        //{
-        //    // initial
-        //    //var attributeSet = _ctx.GetAttributeSet(eavEntity.AttributeSetID);
-        //    // replacement, before passing it in
-        //    //var eavEntity = DbContext.Entities.GetDbEntity(entity.EntityId);
-        //    //var assignmentObjectTypeName = eavEntity.AssignmentObjectType.Name;
+        public XElement BuildRootNode(params object[] content)
+            => new XElement(XmlConstants.Root, content);
 
 
-        //    // Prepare Values
-        //    var values = (from e in entity.Attributes
-        //                  where e.Value.Values != null
-        //                  select new
-        //                  {
-        //                      allValues = from v in e.Value.Values
-        //                                  select new
-        //                                  {
-        //                                      e.Key,
-        //                                      e.Value.Type,
-        //                                      ValueModel = v
-        //                                  }
-        //                  }).SelectMany(e => e.allValues);
+        public XElement BuildDocumentWithRoot(params object[] content)
+        {
+            var documentRoot = BuildRootNode(content);
+            var document = BuildDocument(documentRoot);
+            return documentRoot;
+        }
 
-        //    var valuesXElement = from v in values
-        //                         select GetValueXElement(v.Key, v.ValueModel, v.Type);
-
-        //    // create Entity-XElement
-        //    var result = new XElement("Entity",
-        //        new XAttribute("AssignmentObjectType", assignmentObjectTypeName),   // todo 2017-04-11 2dm: why is this stored, but not the keys???
-        //        new XAttribute("AttributeSetStaticName", entity.Type.StaticName),
-        //        new XAttribute("AttributeSetName", entity.Type.Name),
-        //        new XAttribute("EntityGUID", entity.EntityGuid),
-        //        valuesXElement);
-
-        //    // try to add keys - moved to here from xml-exporter
-        //    if (keyGuid.HasValue)
-        //        result.Add(new XAttribute("KeyGuid", keyGuid));
-        //    if (keyNumber.HasValue)
-        //        result.Add(new XAttribute("KeyNumber", keyNumber));
-        //    if (!string.IsNullOrEmpty(keyString))
-        //        result.Add(new XAttribute("KeyString", keyString));
-
-        //    return result;
-        //}
-
-        ///// <summary>
-        ///// Gets a Value XElement
-        ///// </summary>
-        //private XElement GetValueXElement(string attributeStaticname, IValue value, string attributeType)
-        //{
-        //    var valueSerialized = value.Serialized;
-        //    // create Value-Child-Element with Dimensions as Children
-        //    var valueXElement = new XElement("Value",
-        //        new XAttribute("Key", attributeStaticname),
-        //        new XAttribute("Value", valueSerialized),
-        //        !String.IsNullOrEmpty(attributeType) ? new XAttribute("Type", attributeType) : null,
-        //        value.Languages.Select(p => new XElement("Dimension",
-        //                new XAttribute("DimensionID", p.DimensionId),
-        //                new XAttribute("ReadOnly", p.ReadOnly)
-        //            ))
-        //        );
-
-        //    return valueXElement;
-        //}
-
+        public XElement BuildEntity(object elementGuid, object elementLanguage, string contentTypeName)
+        {
+            return new XElement
+                (
+                    XmlConstants.Entity,
+                    new XAttribute(XmlConstants.EntityTypeAttribute, contentTypeName.RemoveSpecialCharacters()),
+                    new XElement(XmlConstants.EntityGuid, elementGuid),
+                    new XElement(XmlConstants.EntityLanguage, elementLanguage)
+                );
+        }
 
     }
 }

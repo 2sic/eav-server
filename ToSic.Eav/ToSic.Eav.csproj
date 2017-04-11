@@ -79,14 +79,13 @@
     <Compile Include="Configuration.cs" />
     <Compile Include="BLL\Parts\DbPipeline.cs" />
     <Compile Include="DataSources\SqlSources\EavSqlStore.cs" />
-    <Compile Include="ImportExport\Refactoring\XmlExport.cs">
+    <Compile Include="BLL\Parts\DbXmlExportTable.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ImportExport\Refactoring\XmlPartsBuilder.cs" />
     <Compile Include="ImportExport\Refactoring\XmlImport.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ImportExport\XmlNodeBuilder.cs" />
+    <Compile Include="BLL\Parts\DbXmlBuilder.cs" />
     <Compile Include="BLL\Parts\DbAttributeSet.cs" />
     <Compile Include="BLL\Parts\DbAttribute.cs" />
     <Compile Include="BLL\Parts\DbPublishing.cs" />

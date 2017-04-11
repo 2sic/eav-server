@@ -4,8 +4,10 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Web.Http;
+using ToSic.Eav.BLL.Parts;
 using ToSic.Eav.ImportExport.Refactoring;
 using ToSic.Eav.ImportExport.Refactoring.Options;
+using ToSic.Eav.ImportExport.Xml;
 
 namespace ToSic.Eav.WebApi
 {
@@ -37,9 +39,10 @@ namespace ToSic.Eav.WebApi
                 throw new Exception("trouble finding selected IDs to export", e);
             }
 
+            var tableExporter = new DbXmlExportTable(CurrentContext);
             var fileContent = recordExport == RecordExport.Blank
-                ? new XmlExport().CreateBlankXml(CurrentContext.ZoneId, appId, contentTypeId) 
-                : new XmlExport().CreateXml(CurrentContext.ZoneId, appId, contentTypeId, language ?? "", defaultLanguage, contextLanguages, languageReferences, resourcesReferences, ids);
+                ? /*new DbXmlExportTable().*/ tableExporter.ContentTypeSchemaXmlFromDb(/*CurrentContext.ZoneId, appId,*/ contentTypeId) 
+                : /*new DbXmlExportTable().*/ tableExporter.ContentTypeXmlFromDb(/*CurrentContext.ZoneId, appId, */contentTypeId, language ?? "", defaultLanguage, contextLanguages, languageReferences, resourcesReferences, ids);
 
             var fileName = $"2sxc {contentTypeName.Replace(" ", "-")} {language} {(recordExport == RecordExport.Blank ? "Template" : "Data")} {DateTime.Now.ToString("yyyyMMddHHmmss")}.xml";
 

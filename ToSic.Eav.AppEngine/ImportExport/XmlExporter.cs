@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
 using ToSic.Eav.BLL;
+using ToSic.Eav.BLL.Parts;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Environment;
 using ToSic.Eav.ImportExport.Logging;
@@ -218,7 +219,7 @@ namespace ToSic.Eav.Apps.ImportExport
             XElement entityXElement;
             try
             {
-                entityXElement = new XmlNodeBuilder(EavAppContext).GetEntityXElement(e.EntityID);
+                entityXElement = new DbXmlBuilder(EavAppContext).XmlEntity(e.EntityID);
             }
             catch (Exception ex)
             {
