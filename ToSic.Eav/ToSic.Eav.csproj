@@ -82,7 +82,7 @@
     <Compile Include="BLL\Parts\DbXmlExportTable.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ImportExport\Refactoring\XmlImport.cs">
+    <Compile Include="BLL\Parts\DbXmlImportVTable.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="BLL\Parts\DbXmlBuilder.cs" />

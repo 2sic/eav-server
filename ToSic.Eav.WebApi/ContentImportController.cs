@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Web.Http;
 using ToSic.Eav.Apps;
+using ToSic.Eav.BLL.Parts;
 using ToSic.Eav.ImportExport.Refactoring;
 using ToSic.Eav.ImportExport.Refactoring.Options;
 
@@ -46,14 +47,18 @@ namespace ToSic.Eav.WebApi
             AppId = args.AppId;
 
             var import = GetXmlImport(args);
-            if (import.ErrorLog.HasErrors)
-            {
-                return new ContentImportResult(!import.ErrorLog.HasErrors, import.ErrorLog.Errors);
-            }
-            else
-            {
-                return new ContentImportResult(!import.ErrorLog.HasErrors, new { AmountOfEntitiesCreated = import.AmountOfEntitiesCreated, AmountOfEntitiesDeleted = import.AmountOfEntitiesDeleted, AmountOfEntitiesUpdated = import.AmountOfEntitiesUpdated, AttributeNamesInDocument = import.AttributeNamesInDocument, AttributeNamesInContentType = import.AttributeNamesInContentType, AttributeNamesNotImported = import.AttributeNamesNotImported, DocumentElementsCount = import.DocumentElements.Count(), LanguagesInDocumentCount = import.LanguagesInDocument.Count() });
-            }
+            return import.ErrorLog.HasErrors 
+                ? new ContentImportResult(!import.ErrorLog.HasErrors, import.ErrorLog.Errors) 
+                : new ContentImportResult(!import.ErrorLog.HasErrors, new {
+                    import.AmountOfEntitiesCreated,
+                    import.AmountOfEntitiesDeleted,
+                    import.AmountOfEntitiesUpdated,
+                    import.AttributeNamesInDocument,
+                    import.AttributeNamesInContentType,
+                    import.AttributeNamesNotImported,
+                    DocumentElementsCount = import.DocumentElements.Count(),
+                    LanguagesInDocumentCount = import.LanguagesInDocument.Count()
+                });
         }
 
         [HttpPost]
@@ -71,14 +76,14 @@ namespace ToSic.Eav.WebApi
         }
 
 
-        private XmlImport GetXmlImport(ContentImportArgs args)
+        private DbXmlImportVTable GetXmlImport(ContentImportArgs args)
         {
             var contentTypeId = CurrentContext.AttribSet.GetAttributeSetWithEitherName(args.ContentType).AttributeSetID;// GetContentTypeId(args.ContentType);
             var contextLanguages = GetContextLanguages();
 
             using (var contentSteam = new MemoryStream(Convert.FromBase64String(args.ContentBase64)))
             {
-                return new XmlImport(CurrentContext.ZoneId, args.AppId, contentTypeId, contentSteam, contextLanguages, args.DefaultLanguage, args.ClearEntities, args.ResourcesReferences);
+                return new DbXmlImportVTable(CurrentContext.ZoneId, args.AppId, contentTypeId, contentSteam, contextLanguages, args.DefaultLanguage, args.ClearEntities, args.ResourcesReferences);
             }
         }
 

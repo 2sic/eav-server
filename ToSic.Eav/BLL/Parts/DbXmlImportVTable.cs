@@ -4,17 +4,27 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
-using ToSic.Eav.BLL;
-using ToSic.Eav.BLL.Parts;
+using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Logging;
 using ToSic.Eav.ImportExport.Models;
+using ToSic.Eav.ImportExport.Refactoring;
 using ToSic.Eav.ImportExport.Refactoring.Extensions;
 using ToSic.Eav.ImportExport.Refactoring.Options;
 
-namespace ToSic.Eav.ImportExport.Refactoring
+namespace ToSic.Eav.BLL.Parts
 {
-    public class XmlImport
+
+    // todo:
+    // if possible, split appart into
+    // 1. xml > import entity
+    // 2. import-entity > db
+    // core dependencies are the data-structure of the content-type, which is used to build the import-entity
+
+    /// <summary>
+    /// Import a virtual table of content-items
+    /// </summary>
+    public class DbXmlImportVTable
     {
         #region properties like _appId, Document, etc.
 
@@ -74,7 +84,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
             var entity = new ImpEntity
             {
                 AttributeSetStaticName = _contentType.StaticName,
-                KeyTypeId = Configuration.AssignmentObjectTypeIdDefault,// SexyContent.SexyContent.AssignmentObjectTypeIDDefault,
+                KeyTypeId = Configuration.AssignmentObjectTypeIdDefault,
                 EntityGuid = entityGuid,
                 KeyNumber = null,
                 Values = new Dictionary<string, List<IImpValue>>()
@@ -95,7 +105,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
         /// <param name="documentLanguageFallback">Fallback document language</param>
         /// <param name="entityClear">How to handle entities already in the repository</param>
         /// <param name="resourceReference">How value references to files and pages are handled</param>
-        public XmlImport(int zoneId, int applicationId, int contentTypeId, Stream dataStream, IEnumerable<string> languages, string documentLanguageFallback, EntityClearImport entityClear, ResourceReferenceImport resourceReference)
+        public DbXmlImportVTable(int zoneId, int applicationId, int contentTypeId, Stream dataStream, IEnumerable<string> languages, string documentLanguageFallback, EntityClearImport entityClear, ResourceReferenceImport resourceReference)
         {
             Entities = new List<ImpEntity>();
             ErrorLog = new ImportErrorLog();
@@ -327,28 +337,16 @@ namespace ToSic.Eav.ImportExport.Refactoring
         /// <summary>
         /// Get the languages found in the xml document.
         /// </summary>
-        public IEnumerable<string> LanguagesInDocument
-        {
-            get
-            {
-                return DocumentElements.Select(element => element.Element(XmlConstants.EntityLanguage).Value).Distinct();
-            }
-        }
+        public IEnumerable<string> LanguagesInDocument => DocumentElements.Select(element => element.Element(XmlConstants.EntityLanguage).Value).Distinct();
 
         /// <summary>
         /// Get the attribute names in the xml document.
         /// </summary>
-        public IEnumerable<string> AttributeNamesInDocument
-        {
-            get 
-            {
-                return DocumentElements.SelectMany(element => element.Elements())
-                                       .GroupBy(attribute => attribute.Name.LocalName)
-                                       .Select(group => group.Key)
-                                       .Where(name => name != XmlConstants.EntityGuid && name != XmlConstants.EntityLanguage)
-                                       .ToList();
-            }
-        }
+        public IEnumerable<string> AttributeNamesInDocument => DocumentElements.SelectMany(element => element.Elements())
+            .GroupBy(attribute => attribute.Name.LocalName)
+            .Select(group => @group.Key)
+            .Where(name => name != XmlConstants.EntityGuid && name != XmlConstants.EntityLanguage)
+            .ToList();
 
         /// <summary>
         /// The amount of enities created in the repository on data import.
@@ -386,17 +384,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
         /// <summary>
         /// The amount of enities deleted in the repository on data import.
         /// </summary>
-        public int AmountOfEntitiesDeleted
-        {
-            get 
-            {
-                if (_entityClear == EntityClearImport.None)
-                {
-                    return 0;
-                }
-                return GetEntityDeleteGuids().Count;
-            }
-        }
+        public int AmountOfEntitiesDeleted => _entityClear == EntityClearImport.None ? 0 : GetEntityDeleteGuids().Count;
 
         /// <summary>
         /// Get the attribute names in the content type.
@@ -419,55 +407,6 @@ namespace ToSic.Eav.ImportExport.Refactoring
         }
 
         #endregion Deserialize statistics methods
-
-        ///// <summary>
-        ///// Get a debug report about the import as html string.
-        ///// </summary>
-        ///// <returns>Report as HTML string</returns>
-        //public string GetDebugReport()
-        //{
-        //    var result = "<p>Details:</p>";
-        //    result += "<ul>";
-        //    result += "<li>Time for memory = " + TimeForMemorySetup + "; Time for DB = " + TimeForDbImport + "</li>";
-        //    foreach (var entity in Entities)
-        //    {
-        //        result += "<li><div>Entity: " + entity.EntityGuid + "</div><ul>";
-        //        foreach (var value in entity.Values)
-        //        {
-        //            result += "<li><div>Attribute: " + value.Key + "</div>";
-        //            foreach (var content in value.Value)
-        //            {
-        //                if (content is ValueImportModel<string>)
-        //                {
-        //                    result += $"<div>Value: {((ValueImportModel<string>) content).Value}</div>";
-        //                }
-        //                else if (content is ValueImportModel<bool?>)
-        //                {
-        //                    result += $"<div>Value: {((ValueImportModel<bool?>) content).Value}</div>";
-        //                }
-        //                else if (content is ValueImportModel<decimal?>)
-        //                {
-        //                    result += $"<div>Value: {((ValueImportModel<decimal?>) content).Value}</div>";
-        //                }
-        //                else if (content is ValueImportModel<DateTime?>)
-        //                {
-        //                    result += $"<div>Value: {((ValueImportModel<DateTime?>) content).Value}</div>";
-        //                }
-        //                else
-        //                {
-        //                    result += "<div>Value: --</div>";
-        //                }
-        //                foreach (var dimension in content.ValueDimensions)
-        //                {
-        //                    result += $"<div>Language: {dimension.DimensionExternalKey},{dimension.ReadOnly}</div>";
-        //                }
-        //            }
-        //            result += "</li>";
-        //        }
-        //        result += "</ul></li>";
-        //    }
-        //    result += "</ul>";
-        //    return result;
-        //}
+        
     }
 }

@@ -5,9 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Web.Http;
 using ToSic.Eav.BLL.Parts;
-using ToSic.Eav.ImportExport.Refactoring;
 using ToSic.Eav.ImportExport.Refactoring.Options;
-using ToSic.Eav.ImportExport.Xml;
 
 namespace ToSic.Eav.WebApi
 {
@@ -23,8 +21,8 @@ namespace ToSic.Eav.WebApi
 
             // todo: continue here!
             var ct = CurrentContext.AttribSet.GetAttributeSetWithEitherName(contentType);
-            var contentTypeId = ct.AttributeSetID;// GetContentTypeId(contentType);
-            var contentTypeName = ct.Name;// GetContentTypeName(contentType);
+            var contentTypeId = ct.AttributeSetID;
+            var contentTypeName = ct.Name;
             var contextLanguages = GetContextLanguages();
 
             // check if we have an array of ids
@@ -41,18 +39,17 @@ namespace ToSic.Eav.WebApi
 
             var tableExporter = new DbXmlExportTable(CurrentContext);
             var fileContent = recordExport == RecordExport.Blank
-                ? /*new DbXmlExportTable().*/ tableExporter.ContentTypeSchemaXmlFromDb(/*CurrentContext.ZoneId, appId,*/ contentTypeId) 
-                : /*new DbXmlExportTable().*/ tableExporter.ContentTypeXmlFromDb(/*CurrentContext.ZoneId, appId, */contentTypeId, language ?? "", defaultLanguage, contextLanguages, languageReferences, resourcesReferences, ids);
+                ? tableExporter.SchemaXmlFromDb(contentTypeId) 
+                : tableExporter.TableXmlFromDb(contentTypeId, language ?? "", defaultLanguage, contextLanguages, languageReferences, resourcesReferences, ids);
 
-            var fileName = $"2sxc {contentTypeName.Replace(" ", "-")} {language} {(recordExport == RecordExport.Blank ? "Template" : "Data")} {DateTime.Now.ToString("yyyyMMddHHmmss")}.xml";
+            var fileName = $"2sxc {contentTypeName.Replace(" ", "-")} {language} {(recordExport == RecordExport.Blank ? "Template" : "Data")} {DateTime.Now:yyyyMMddHHmmss}.xml";
 
             var response = new HttpResponseMessage(HttpStatusCode.OK);
             response.Content = new StringContent(fileContent);
             response.Content.Headers.ContentType = new MediaTypeHeaderValue("text/xml");
             // 2rm 2016-02-27 removed, probably caused truncating issues
             //response.Content.Headers.ContentLength = fileContent.Length;
-            response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
-            {
+            response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment") {
                 FileName = fileName
             };
             return response;

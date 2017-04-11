@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.Practices.Unity;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.BLL.Parts;
 using ToSic.Eav.Implementations.UserInformation;
 using ToSic.Eav.Implementations.ValueConverter;
 using ToSic.Eav.ImportExport.Interfaces;
@@ -294,7 +295,7 @@ On all your devices.</PreviewContent>
 
         private void Do1ImportWith20ContentItems()
         {
-            var fileImport = new XmlImport(ZoneId, AppId, ContentTypeSimpleContent,
+            var fileImport = new DbXmlImportVTable(ZoneId, AppId, ContentTypeSimpleContent,
                 GenerateStreamFromString(FullExportOfSimpleContentAll), new List<string>(), "", EntityClearImport.None,
                 ResourceReferenceImport.Keep);
 

@@ -3,7 +3,6 @@ using System.Linq;
 using System.Xml.Linq;
 using Microsoft.Practices.Unity;
 using ToSic.Eav.Implementations.ValueConverter;
-using ToSic.Eav.ImportExport.Refactoring;
 using ToSic.Eav.ImportExport.Refactoring.Extensions;
 using ToSic.Eav.ImportExport.Refactoring.Options;
 using ToSic.Eav.ImportExport.Xml;
@@ -17,8 +16,6 @@ namespace ToSic.Eav.BLL.Parts
     {
         private readonly XmlBuilder _xBuilder = new XmlBuilder();
 
-        private readonly XmlPartsBuilder _dbBuilder = new XmlPartsBuilder();
-
         /// <summary>
         /// 
         /// </summary>
@@ -30,47 +27,32 @@ namespace ToSic.Eav.BLL.Parts
         /// <summary>
         /// Create a blank xml scheme for data of one content-type
         /// </summary>
-        /// <param name="zoneId">ID of zone</param>
-        /// <param name="applicationId">ID of application</param>
         /// <param name="contentTypeId">ID of type</param>
-        /// <param name="helpText"></param>
         /// <returns>A string containing the blank xml scheme</returns>
-        public string ContentTypeSchemaXmlFromDb(/*int zoneId, int applicationId,*/ int contentTypeId, string helpText = "")
+        public string SchemaXmlFromDb(int contentTypeId)
         {
-            var contentType = DbContext.AttribSet.GetAttributeSet(contentTypeId);// GetContentType(zoneId, applicationId, contentTypeId);
+            var contentType = DbContext.AttribSet.GetAttributeSet(contentTypeId);
             if (contentType == null) 
                 return null;
 
-            var documentElement1 = _xBuilder.BuildEntity("", "", contentType.Name);
-            var documentElement2 = _xBuilder.BuildEntity("", "", contentType.Name);
-            //var rootNode = BuildDocumentRoot(documentElement1, documentElement2);
-            //var document = _xBuilder.BuildDocument(rootNode);
-            var rootNode = _xBuilder.BuildDocumentWithRoot(documentElement1, documentElement2);
+            // build two emtpy nodes for easier filling in by the user
+            var firstRow = _xBuilder.BuildEntity("", "", contentType.Name);
+            var secondRow = _xBuilder.BuildEntity("", "", contentType.Name);
+            var rootNode = _xBuilder.BuildDocumentWithRoot(firstRow, secondRow);
 
             var attributes = contentType.GetAttributes();
-            var isFirstAttribute = true;
             foreach (var attribute in attributes)
             {
-                  if (isFirstAttribute)
-                  {
-                      documentElement1.Append(attribute.StaticName, helpText);
-                      isFirstAttribute = false;
-                  }
-                  else
-                  {
-                    documentElement1.Append(attribute.StaticName, "");
-                  }
-                  documentElement2.Append(attribute.StaticName, "");  
+                firstRow.Append(attribute.StaticName, "");
+                secondRow.Append(attribute.StaticName, "");  
             }
 
-            return rootNode.Document.ToString();// document.ToString();
+            return rootNode.Document.ToString();
         }
 
         /// <summary>
         /// Serialize 2SexyContent data to an xml string.
         /// </summary>
-        /// <param name="zoneId">ID of 2SexyContent zone</param>
-        /// <param name="applicationId">ID of 2SexyContent application</param>
         /// <param name="contentTypeId">ID of 2SexyContent type</param>
         /// <param name="languageSelected">Language of the data to be serialized (null for all languages)</param>
         /// <param name="languageFallback">Language fallback of the system</param>
@@ -79,9 +61,9 @@ namespace ToSic.Eav.BLL.Parts
         /// <param name="resourceReference">How value references to files and pages are handled</param>
         /// <param name="selectedIds">array of IDs to export only these</param>
         /// <returns>A string containing the xml data</returns>
-        public string ContentTypeXmlFromDb(/*int zoneId, int applicationId,*/ int contentTypeId, string languageSelected, string languageFallback, IEnumerable<string> languageScope, LanguageReferenceExport languageReference, ResourceReferenceExport resourceReference, int[] selectedIds)
+        public string TableXmlFromDb(int contentTypeId, string languageSelected, string languageFallback, IEnumerable<string> languageScope, LanguageReferenceExport languageReference, ResourceReferenceExport resourceReference, int[] selectedIds)
         {
-            var contentType = DbContext.AttribSet.GetAttributeSet(contentTypeId);// GetContentType(zoneId, applicationId, contentTypeId);
+            var contentType = DbContext.AttribSet.GetAttributeSet(contentTypeId);
             if (contentType == null)
                 return null;
 
@@ -139,30 +121,6 @@ namespace ToSic.Eav.BLL.Parts
 
             return documentRoot.Document.ToString();// document.ToString();
         }
-
-
-        //private AttributeSet GetContentType(int zoneId, int applicationId, int contentTypeId)
-        //{
-        //    var contentContext = DbDataController.Instance(zoneId, applicationId) ;
-        //    return contentContext.AttribSet.GetAttributeSet(contentTypeId);
-        //}
-
-        //private XDocument BuildDocument(params object[] content) 
-        //    => new XDocument(new XDeclaration("1.0", "UTF-8", "yes"), content);
-
-        //private XElement BuildDocumentRoot(params object[] content) 
-        //    => new XElement(XmlConstants.Root, content);
-
-        //public XElement BuildEntity(object elementGuid, object elementLanguage, string contentTypeName)
-        //{
-        //    return new XElement
-        //        (
-        //            XmlConstants.Entity, 
-        //            new XAttribute(XmlConstants.EntityTypeAttribute, contentTypeName.RemoveSpecialCharacters()),
-        //            new XElement(XmlConstants.EntityGuid, elementGuid), 
-        //            new XElement(XmlConstants.EntityLanguage, elementLanguage)
-        //        );
-        //}
 
         #region Helpers to assemble the xml
 
