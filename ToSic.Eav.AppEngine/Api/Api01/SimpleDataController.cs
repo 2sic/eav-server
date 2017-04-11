@@ -206,7 +206,7 @@ namespace ToSic.Eav.Api.Api01
         private void ExecuteImport(ImpEntity impEntity)
         {
             var import = new Eav.Import.Import(_zoneId, _appId, false);
-            import.ImportIntoDB(null, new[] { impEntity });
+            import.ImportIntoDb(null, new[] { impEntity });
             SystemManager.Purge(_zoneId, _appId);
         }
 

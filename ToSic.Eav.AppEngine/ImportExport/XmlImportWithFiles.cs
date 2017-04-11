@@ -237,7 +237,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
 
 			var import = new Import.Import(_zoneId, _appId, /*UserName,*/ leaveExistingValuesUntouched);
-			import.ImportIntoDB(importAttributeSets, importEntities);
+			import.ImportIntoDb(importAttributeSets, importEntities);
             SystemManager.Purge(_zoneId, _appId);
 
 			ImportLog.AddRange(GetExportImportMessagesFromImportLog(import.ImportLog));

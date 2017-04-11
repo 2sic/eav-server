@@ -202,7 +202,7 @@ namespace ToSic.Eav.WebApi
                 keepAttributesMissingInImport: false,
                 preventUpdateOnDraftEntities: false,
                 largeImport: false);
-            importController.ImportIntoDB(null, entitiesToImport.ToArray());
+            importController.ImportIntoDb(null, entitiesToImport.ToArray());
             SystemManager.Purge(appId);
 
             // find / update IDs of items updated to return to client

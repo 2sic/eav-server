@@ -302,7 +302,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
 
             Timer.Start();
             var import = new Import.Import(_zoneId, _appId, /*userId,*/ dontUpdateExistingAttributeValues: false, keepAttributesMissingInImport: true);
-            import.ImportIntoDB(null, Entities);
+            import.ImportIntoDb(null, Entities);
             // important note: don't purge cache here, but the caller MUST do this!
 
             Timer.Stop();

@@ -51,7 +51,7 @@ namespace ToSic.Eav.Import
         /// <summary>
         /// Import AttributeSets and Entities
         /// </summary>
-        public DbTransaction ImportIntoDB(IEnumerable<ImpAttrSet> newAttributeSets, IEnumerable<ImpEntity> newEntities)
+        public DbTransaction ImportIntoDb(IEnumerable<ImpAttrSet> newAttributeSets, IEnumerable<ImpEntity> newEntities)
         {
             _context.PurgeAppCacheOnSave = false;
 
@@ -86,14 +86,15 @@ namespace ToSic.Eav.Import
 
                 if (newAttributeSets != null)
                 {
+                    var newSetsList = newAttributeSets.ToList();
                     // first: import the attribute sets in the system scope, as they may be needed by others...
                     // ...and would need a cache-refresh before 
-                    var sysAttributeSets = newAttributeSets.Where(a => a.Scope == Constants.ScopeSystem);
+                    var sysAttributeSets = newSetsList.Where(a => a.Scope == Constants.ScopeSystem).ToList();
                     if(sysAttributeSets.Any())
                         transaction = ImportSomeAttributeSets(sysAttributeSets, transaction);
 
                     // now the remaining attributeSets
-                    var nonSysAttribSets = newAttributeSets.Where(a => !sysAttributeSets.Contains(a));
+                    var nonSysAttribSets = newSetsList.Where(a => !sysAttributeSets.Contains(a)).ToList();
                     if(nonSysAttribSets.Any())
                         transaction = ImportSomeAttributeSets(nonSysAttribSets, transaction);
                 }
