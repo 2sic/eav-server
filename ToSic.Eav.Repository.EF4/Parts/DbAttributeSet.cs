@@ -136,7 +136,7 @@ namespace ToSic.Eav.Repository.EF4.Parts
         /// <summary>
         /// Ensure all AttributeSets with AlwaysShareConfiguration=true exist on all Apps an Zones
         /// </summary>
-        internal void EnsureSharedAttributeSets()
+        public void EnsureSharedAttributeSets()
         {
             foreach (var app in DbContext.SqlDb.Apps)
                 EnsureSharedAttributeSets(app, false);

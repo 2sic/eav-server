@@ -103,6 +103,10 @@
       <Project>{4a899869-ac44-44a4-8733-395d549f6297}</Project>
       <Name>ToSic.Eav.Persistence.EF4</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ToSic.Eav.Repository.EF4\ToSic.Eav.Repository.EF4.csproj">
+      <Project>{5982ebc4-ff32-4651-b996-745be498e526}</Project>
+      <Name>ToSic.Eav.Repository.EF4</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ToSic.Eav.Tokens\ToSic.Eav.TokenEngine.csproj">
       <Project>{2a81f269-8cca-4afd-a85f-82b1c2343965}</Project>
       <Name>ToSic.Eav.TokenEngine</Name>

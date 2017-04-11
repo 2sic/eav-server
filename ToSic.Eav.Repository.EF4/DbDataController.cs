@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.Practices.Unity;
 using ToSic.Eav.Implementations.UserInformation;
+using ToSic.Eav.Interfaces;
 using ToSic.Eav.Repository.EF4.Parts;
 
 // needed for the static Resolve<...>
@@ -95,13 +96,15 @@ namespace ToSic.Eav.Repository.EF4
 
         #endregion
 
+
         #region Constructor and Init
         /// <summary>
         /// Returns a new instace of the Eav Context. InitZoneApp must be called afterward.
         /// </summary>
         private static DbDataController Instance()
         {
-            var connectionString = Configuration.GetConnectionString();
+            var Configuration = Factory.Container.Resolve<ISystemConfiguration>();
+            var connectionString = Configuration.DbConnectionString;// Configuration.GetConnectionString();
             var context = new EavContext(connectionString);
             var dc = new DbDataController {SqlDb = context};
             dc.DbS = new DbShortcuts(dc);

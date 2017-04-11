@@ -1,18 +1,14 @@
 ﻿using System;
-using Microsoft.Practices.Unity;
-using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSources.Caches;
-using ToSic.Eav.DataSources.RootSources;
-using ToSic.Eav.DataSources.SqlSources;
-using ToSic.Eav.Implementations;
-using ToSic.Eav.ImportExport.Interfaces;
+using System.Data.EntityClient;
+using System.Configuration;
+using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav
 {
 	/// <summary>
 	/// Global Eav Configuration
 	/// </summary>
-	public class Configuration
+	public class Configuration : ISystemConfiguration
 	{
 		private const string DefaultConnectionStringName = "EavContext";
 		private static string _connectionStringName;
@@ -41,10 +37,10 @@ namespace ToSic.Eav
 				//string ConnectionStringName = HttpContext.Current.Application[AppSettingPrefix + "." + ConnectionStringSetting].ToString();
 				var connectionStringName = _connectionStringName;
 
-				var builder = new System.Data.EntityClient.EntityConnectionStringBuilder();
+				var builder = new EntityConnectionStringBuilder();
 				try
 				{
-					builder.ProviderConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings[connectionStringName].ConnectionString;
+					builder.ProviderConnectionString = ConfigurationManager.ConnectionStrings[connectionStringName].ConnectionString;
 				}
 				catch (NullReferenceException)
 				{
@@ -60,7 +56,7 @@ namespace ToSic.Eav
 			}
 			try
 			{
-				return System.Configuration.ConfigurationManager.ConnectionStrings[DefaultConnectionStringName].ConnectionString;
+				return ConfigurationManager.ConnectionStrings[DefaultConnectionStringName].ConnectionString;
 			}
 			catch (NullReferenceException)
 			{
@@ -80,28 +76,35 @@ namespace ToSic.Eav
                 return _assignmentObjectTypeIdDefault;
             }
         }
-        #endregion
 
-        #region Configure Unity Factory with defaults
-        /// <summary>
-        /// Register Types in Unity Container
-        /// </summary>
-        /// <remarks>If Unity is not configured in App/Web.config this can be used</remarks>
-        public IUnityContainer ConfigureDefaultMappings(IUnityContainer cont)
-        {
-            if (!cont.IsRegistered<ICache>())
-                cont.RegisterType<ICache, QuickCache>();
-            if (!cont.IsRegistered<IRootSource>())
-                cont.RegisterType<IRootSource, EavSqlStore>();
+	    public int KeyTypeDefault => AssignmentObjectTypeIdDefault;
 
-            if (!cont.IsRegistered<IRepositoryImporter>())
-                cont.RegisterType<IRepositoryImporter, RepositoryImporter>();
+	    public string DbConnectionString => GetConnectionString();
 
-            // register some Default Constructors
-            cont.RegisterType<SqlDataSource>(new InjectionConstructor());
-            cont.RegisterType<DataTableDataSource>(new InjectionConstructor());
-            return cont;
-        }
-        #endregion
+	    #endregion
+
+        //#region Configure Unity Factory with defaults
+        ///// <summary>
+        ///// Register Types in Unity Container
+        ///// </summary>
+        ///// <remarks>If Unity is not configured in App/Web.config this can be used</remarks>
+        //public IUnityContainer ConfigureDefaultMappings(IUnityContainer cont)
+        //{
+        //    if (!cont.IsRegistered<ICache>())
+        //        cont.RegisterType<ICache, QuickCache>();
+        //    if (!cont.IsRegistered<IRootSource>())
+        //        cont.RegisterType<IRootSource, EavSqlStore>();
+
+        //    if (!cont.IsRegistered<IRepositoryImporter>())
+        //        cont.RegisterType<IRepositoryImporter, RepositoryImporter>();
+
+        //    // register some Default Constructors
+        //    cont.RegisterType<SqlDataSource>(new InjectionConstructor());
+        //    cont.RegisterType<DataTableDataSource>(new InjectionConstructor());
+
+            
+        //    return cont;
+        //}
+        //#endregion
     }
 }

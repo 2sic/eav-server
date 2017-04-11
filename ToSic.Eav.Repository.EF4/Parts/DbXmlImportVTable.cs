@@ -13,6 +13,9 @@ using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.ImportExport.Validation;
 using ToSic.Eav.ImportExport.Xml;
 
+using Microsoft.Practices.Unity;
+using ToSic.Eav.Interfaces;
+
 namespace ToSic.Eav.Repository.EF4.Parts
 {
 
@@ -81,12 +84,15 @@ namespace ToSic.Eav.Repository.EF4.Parts
             return Entities.FirstOrDefault(entity => entity.EntityGuid == entityGuid);
         }
 
+        [Dependency]
+        public ISystemConfiguration Configuration { get; }
+
         private ImpEntity AppendEntity(Guid entityGuid)
         {
             var entity = new ImpEntity
             {
                 AttributeSetStaticName = _contentType.StaticName,
-                KeyTypeId = Configuration.AssignmentObjectTypeIdDefault,
+                KeyTypeId = Configuration.KeyTypeDefault,// Configuration.AssignmentObjectTypeIdDefault,
                 EntityGuid = entityGuid,
                 KeyNumber = null,
                 Values = new Dictionary<string, List<IImpValue>>()
