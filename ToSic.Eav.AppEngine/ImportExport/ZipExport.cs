@@ -134,7 +134,7 @@ namespace ToSic.Eav.Apps.ImportExport
             var entities =
                 DataSource.GetInitialDataSource(_zoneId, _appId).Out["Default"].List.Where(
                     e => e.Value.AssignmentObjectTypeId != templateTypeId
-                         && e.Value.AssignmentObjectTypeId != Constants.AssignmentObjectTypeIdFieldProperties).ToList();
+                         && e.Value.AssignmentObjectTypeId != Constants.MetadataForField).ToList();
 
             if (!includeContentGroups)
                 entities = entities.Where(p => p.Value.Type.StaticName != _sexycontentContentgroupName).ToList();

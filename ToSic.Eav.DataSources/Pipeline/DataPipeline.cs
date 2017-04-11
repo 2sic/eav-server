@@ -42,7 +42,7 @@ namespace ToSic.Eav.DataSources
 		public static IEnumerable<IEntity> GetPipelineParts(int zoneId, int appId, Guid pipelineEntityGuid)
 		{
 			var metaDataSource = DataSource.GetMetaDataSource(zoneId, appId);
-			return metaDataSource.GetAssignedEntities(Constants.AssignmentObjectTypeEntity, pipelineEntityGuid, Constants.DataPipelinePartStaticName);
+			return metaDataSource.GetAssignedEntities(Constants.MetadataForEntity, pipelineEntityGuid, Constants.DataPipelinePartStaticName);
 		}
 
 

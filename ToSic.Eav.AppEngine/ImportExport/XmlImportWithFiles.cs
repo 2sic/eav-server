@@ -486,7 +486,7 @@ namespace ToSic.Eav.Apps.ImportExport
                         ExportImportMessage.MessageTypes.Information));
                 }
 
-                catch (Exception e)
+                catch (Exception)
                 {
                     ImportLog.Add(new ExportImportMessage("Import for template '" + name + "' failed.",
                         ExportImportMessage.MessageTypes.Information));

@@ -19,7 +19,7 @@ namespace ToSic.Eav.DataSources.Caches
         private const string RefreshOnSourceRefreshKey = "RefreshOnSourceRefresh";
         private const string CacheDurationInSecondsKey = "CacheDurationInSeconds";
 	    private const string ReturnCacheWhileRefreshingKey = "ReturnCacheWhileRefreshing";
-	    private bool EnforceUniqueCache = false;
+	    //private bool EnforceUniqueCache = false;
 
 		/// <summary>
 		/// An alternate app to switch to

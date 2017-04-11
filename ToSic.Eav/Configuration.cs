@@ -20,8 +20,8 @@ namespace ToSic.Eav
 		public static void SetConnectionString(string connectionStringName)
 		{
 			//HttpContext.Current.Application[AppSettingPrefix + "." + ConnectionStringSetting] = ConnectionStringName;
-			if (_connectionStringName != connectionStringName)
-				_connectionStringName = connectionStringName;
+			//if (_connectionStringName != connectionStringName)
+			_connectionStringName = connectionStringName;
 		}
 
 		/// <summary>
@@ -67,6 +67,10 @@ namespace ToSic.Eav
         #region Common Assignment Object Types
 
 	    private static int _assignmentObjectTypeIdDefault = -1;
+        /// <summary>
+        /// The Key-Type ID for "Default" - actually it's a stable value, but 
+        /// we originally thought it may change from system to system...
+        /// </summary>
         public static int AssignmentObjectTypeIdDefault
         {
             get
@@ -77,8 +81,14 @@ namespace ToSic.Eav
             }
         }
 
+	    /// <summary>
+	    /// The ID for Key-For-Type-Default
+	    /// </summary>
 	    public int KeyTypeDefault => AssignmentObjectTypeIdDefault;
 
+	    /// <summary>
+	    /// Db Connection String used in the Eav-Connector
+	    /// </summary>
 	    public string DbConnectionString => GetConnectionString();
 
 	    #endregion

@@ -397,7 +397,7 @@ namespace ToSic.Eav.Repository.EF4.Parts
                 foreach (var valueToPurge in valuesToPurge)
                 {
                     // Don't touch Value if attribute is not visible in UI
-                    var attributeMetadata = attributeMetadataSource.GetAssignedEntities(Constants.AssignmentObjectTypeIdFieldProperties, valueToPurge.AttributeID, "@All").FirstOrDefault();
+                    var attributeMetadata = attributeMetadataSource.GetAssignedEntities(Constants.MetadataForField, valueToPurge.AttributeID, "@All").FirstOrDefault();
                     if (attributeMetadata != null)
                     {
                         var visibleInEditUi = ((Attribute<bool?>)attributeMetadata["VisibleInEditUI"]).TypedContents;
@@ -505,7 +505,7 @@ namespace ToSic.Eav.Repository.EF4.Parts
             }
             #endregion
 
-            var entitiesAssignedToThis = GetAssignedEntities(Constants.AssignmentObjectTypeEntity, entityId).Select(e => new TempEntityAndTypeInfos() { EntityId = e.EntityID, TypeId = e.AttributeSetID}).ToList();
+            var entitiesAssignedToThis = GetAssignedEntities(Constants.MetadataForEntity, entityId).Select(e => new TempEntityAndTypeInfos() { EntityId = e.EntityID, TypeId = e.AttributeSetID}).ToList();
             if (entitiesAssignedToThis.Any())
             {
                 TryToGetMoreInfosAboutDependencies(entitiesAssignedToThis, messages);

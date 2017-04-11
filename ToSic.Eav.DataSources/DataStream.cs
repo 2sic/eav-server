@@ -88,7 +88,7 @@ namespace ToSic.Eav.DataSources
 
 			        return _dicList;
 			    }
-			    catch (InvalidOperationException ex)
+			    catch (InvalidOperationException)
 			    {
 			        // this is a special exeption - for example when using SQL. Pass it on to enable proper testing
 			        throw;
@@ -134,7 +134,7 @@ namespace ToSic.Eav.DataSources
                         var getEntitiesDelegate = new GetIEnumerableDelegate(_lightListDelegate);
                         _lightList = getEntitiesDelegate();
                     }
-                    catch (InvalidOperationException ex) // this is a special exeption - for example when using SQL. Pass it on to enable proper testing
+                    catch (InvalidOperationException) // this is a special exeption - for example when using SQL. Pass it on to enable proper testing
                     {
                         throw;
                     }

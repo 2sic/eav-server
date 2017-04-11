@@ -114,7 +114,7 @@ namespace ToSic.Eav.Repository.EF4.Parts
             {
                 Attribute = a.Value,
                 Metadata = metaDataSource
-                    .GetAssignedEntities(Constants.AssignmentObjectTypeIdFieldProperties, a.Value.AttributeId)
+                    .GetAssignedEntities(Constants.MetadataForField, a.Value.AttributeId)
                     .ToDictionary(e => e.Type.StaticName.TrimStart('@'), e => e)
             });
 

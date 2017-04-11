@@ -251,7 +251,7 @@ namespace ToSic.Eav.Repository.EF4.Parts
         /// </summary>
         public Entity UpdateAttributeAdditionalProperties(int attributeId, bool isAllProperty, IDictionary fieldProperties)
         {
-            var fieldPropertyEntity = DbContext.SqlDb.Entities.FirstOrDefault(e => e.AssignmentObjectTypeID == Constants.AssignmentObjectTypeIdFieldProperties && e.KeyNumber == attributeId);
+            var fieldPropertyEntity = DbContext.SqlDb.Entities.FirstOrDefault(e => e.AssignmentObjectTypeID == Constants.MetadataForField && e.KeyNumber == attributeId);
             if (fieldPropertyEntity != null)
                 return DbContext.Entities.UpdateEntity(fieldPropertyEntity.EntityID, fieldProperties);
 
