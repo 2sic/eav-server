@@ -3,8 +3,7 @@ using System.Linq;
 using System.Xml.Linq;
 using Microsoft.Practices.Unity;
 using ToSic.Eav.Implementations.ValueConverter;
-using ToSic.Eav.ImportExport.Refactoring.Extensions;
-using ToSic.Eav.ImportExport.Refactoring.Options;
+using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.ImportExport.Xml;
 
 namespace ToSic.Eav.BLL.Parts
@@ -57,11 +56,11 @@ namespace ToSic.Eav.BLL.Parts
         /// <param name="languageSelected">Language of the data to be serialized (null for all languages)</param>
         /// <param name="languageFallback">Language fallback of the system</param>
         /// <param name="languageScope">Languages supported of the system</param>
-        /// <param name="languageReference">How value references to other languages are handled</param>
-        /// <param name="resourceReference">How value references to files and pages are handled</param>
+        /// <param name="exportLanguageReference">How value references to other languages are handled</param>
+        /// <param name="exportResourceReference">How value references to files and pages are handled</param>
         /// <param name="selectedIds">array of IDs to export only these</param>
         /// <returns>A string containing the xml data</returns>
-        public string TableXmlFromDb(int contentTypeId, string languageSelected, string languageFallback, IEnumerable<string> languageScope, LanguageReferenceExport languageReference, ResourceReferenceExport resourceReference, int[] selectedIds)
+        public string TableXmlFromDb(int contentTypeId, string languageSelected, string languageFallback, IEnumerable<string> languageScope, ExportLanguageResolution exportLanguageReference, ExportResourceReferenceMode exportResourceReference, int[] selectedIds)
         {
             var contentType = DbContext.AttribSet.GetAttributeSet(contentTypeId);
             if (contentType == null)
@@ -105,14 +104,14 @@ namespace ToSic.Eav.BLL.Parts
                             AppendEntityReferences(documentElement, entity, attribute);
                             // documentElement.AppendEntityReferences(entity, attribute);
                         }
-                        else if (languageReference == LanguageReferenceExport.Resolve)
+                        else if (exportLanguageReference == ExportLanguageResolution.Resolve)
                         {
-                            AppendValueResolved(documentElement, entity, attribute, language, languageFallback, resourceReference);
+                            AppendValueResolved(documentElement, entity, attribute, language, languageFallback, exportResourceReference);
                             //documentElement.AppendValueResolved(entity, attribute, language, languageFallback, resourceReference);
                         }
                         else
                         {
-                            AppendValueReferenced(documentElement, entity, attribute, language, languageFallback, languageScope, languages.Count > 1, resourceReference);
+                            AppendValueReferenced(documentElement, entity, attribute, language, languageFallback, languageScope, languages.Count > 1, exportResourceReference);
                             //documentElement.AppendValueReferenced(entity, attribute, language, languageFallback, languageScope, languages.Count > 1, resourceReference);
                         }
                     }
@@ -136,18 +135,18 @@ namespace ToSic.Eav.BLL.Parts
         /// Append an element to this. If the attribute is named xxx and the value is 4711 in the language specified, 
         /// the element appended will be <xxx>4711</xxx>. File and page references can be resolved optionally.
         /// </summary>
-        private void AppendValueResolved(XElement element, Eav.Entity entity, Attribute attribute, string language, string languageFallback, ResourceReferenceExport resourceReferenceOption)
+        private void AppendValueResolved(XElement element, Eav.Entity entity, Attribute attribute, string language, string languageFallback, ExportResourceReferenceMode exportResourceReferenceOption)
         {
             var valueName = attribute.StaticName;
             var value = entity.GetValueOfLanguageOrFallback(attribute, language, languageFallback);
-            AppendValue(element, valueName, value, resourceReferenceOption);
+            AppendValue(element, valueName, value, exportResourceReferenceOption);
         }
 
         /// <summary>
         /// Append an element to this. The element will get the name of the attribute, and if possible the value will 
         /// be referenced to another language (for example [ref(en-US,ro)].
         /// </summary>
-        private void AppendValueReferenced(XElement element, Eav.Entity entity, Attribute attribute, string language, string languageFallback, IEnumerable<string> languageScope, bool referenceParentLanguagesOnly, ResourceReferenceExport resourceReferenceOption)
+        private void AppendValueReferenced(XElement element, Eav.Entity entity, Attribute attribute, string language, string languageFallback, IEnumerable<string> languageScope, bool referenceParentLanguagesOnly, ExportResourceReferenceMode exportResourceReferenceOption)
         {
             var valueName = attribute.StaticName;
             var value = entity.GetValueOfExactLanguage(attribute, language);
@@ -161,7 +160,7 @@ namespace ToSic.Eav.BLL.Parts
                                          .FirstOrDefault(l => l == language); // value.GetLanguage(language);
             if (valueLanguage == null)
             {   // If no language is found, serialize the plain value
-                AppendValue(element, valueName, value, resourceReferenceOption);
+                AppendValue(element, valueName, value, exportResourceReferenceOption);
                 return;
             }
 
@@ -170,7 +169,7 @@ namespace ToSic.Eav.BLL.Parts
                                                 .ThenBy(lan => lan);
             if (!valueLanguagesReferenced.Any())
             {   // If the value is a head value, serialize the plain value
-                AppendValue(element, valueName, value, resourceReferenceOption);
+                AppendValue(element, valueName, value, exportResourceReferenceOption);
                 return;
             }
 
@@ -191,7 +190,7 @@ namespace ToSic.Eav.BLL.Parts
 
             if (valueLanguageReferenced == null)
             {
-                AppendValue(element, valueName, value, resourceReferenceOption);
+                AppendValue(element, valueName, value, exportResourceReferenceOption);
                 return;
             }
 
@@ -204,7 +203,7 @@ namespace ToSic.Eav.BLL.Parts
         /// Append an element to this. The element will have the value of the EavValue. File and page references 
         /// can optionally be resolved.
         /// </summary>
-        private void AppendValue(XElement element, XName name, EavValue value, ResourceReferenceExport resourceReferenceOption)
+        private void AppendValue(XElement element, XName name, EavValue value, ExportResourceReferenceMode exportResourceReferenceOption)
         {
             if (value == null)
             {
@@ -214,7 +213,7 @@ namespace ToSic.Eav.BLL.Parts
             {
                 element.Append(name, "[]");
             }
-            else if (resourceReferenceOption == ResourceReferenceExport.Resolve)
+            else if (exportResourceReferenceOption == ExportResourceReferenceMode.Resolve)
             {
                 element.Append(name, ResolveHyperlinksFromTennant(value));
             }
@@ -257,6 +256,24 @@ namespace ToSic.Eav.BLL.Parts
         }
 
         #endregion
+        
 
+    }
+
+    internal static class QuickExtensions
+    {
+        internal static int IndexOf<T>(this IEnumerable<T> list, T item)
+        {
+            return list.TakeWhile(i => !i.Equals(item)).Count();
+        }
+
+        /// <summary>
+        /// Apend an element to this.
+        /// </summary>
+        public static void Append(this XElement element, XName name, object value)
+        {
+            element.Add(new XElement(name, value));
+        }
+        
     }
 }

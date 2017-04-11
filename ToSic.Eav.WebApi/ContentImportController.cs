@@ -4,8 +4,8 @@ using System.Linq;
 using System.Web.Http;
 using ToSic.Eav.Apps;
 using ToSic.Eav.BLL.Parts;
-using ToSic.Eav.ImportExport.Refactoring;
-using ToSic.Eav.ImportExport.Refactoring.Options;
+using ToSic.Eav.ImportExport.Options;
+
 
 
 namespace ToSic.Eav.WebApi
@@ -18,9 +18,9 @@ namespace ToSic.Eav.WebApi
 
             public string DefaultLanguage;
 
-            public ResourceReferenceImport ResourcesReferences;
+            public ImportResourceReferenceMode ImportResourcesReferences;
 
-            public EntityClearImport ClearEntities;
+            public ImportDeleteUnmentionedItems ClearEntities;
 
             public string ContentType;
 
@@ -83,7 +83,7 @@ namespace ToSic.Eav.WebApi
 
             using (var contentSteam = new MemoryStream(Convert.FromBase64String(args.ContentBase64)))
             {
-                return new DbXmlImportVTable(CurrentContext.ZoneId, args.AppId, contentTypeId, contentSteam, contextLanguages, args.DefaultLanguage, args.ClearEntities, args.ResourcesReferences);
+                return new DbXmlImportVTable(CurrentContext.ZoneId, args.AppId, contentTypeId, contentSteam, contextLanguages, args.DefaultLanguage, args.ClearEntities, args.ImportResourcesReferences);
             }
         }
 

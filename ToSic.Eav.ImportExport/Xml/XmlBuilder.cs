@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Xml.Linq;
-using ToSic.Eav.ImportExport.Refactoring.Extensions;
+using ToSic.Eav.ImportExport.Validation;
 
 namespace ToSic.Eav.ImportExport.Xml
 {

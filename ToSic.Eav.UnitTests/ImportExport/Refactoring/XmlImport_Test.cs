@@ -8,8 +8,8 @@ using ToSic.Eav.BLL.Parts;
 using ToSic.Eav.Implementations.UserInformation;
 using ToSic.Eav.Implementations.ValueConverter;
 using ToSic.Eav.ImportExport.Interfaces;
-using ToSic.Eav.ImportExport.Refactoring;
-using ToSic.Eav.ImportExport.Refactoring.Options;
+using ToSic.Eav.ImportExport.Options;
+
 
 namespace ToSic.Eav.UnitTests.ImportExport.Refactoring
 {
@@ -296,8 +296,8 @@ On all your devices.</PreviewContent>
         private void Do1ImportWith20ContentItems()
         {
             var fileImport = new DbXmlImportVTable(ZoneId, AppId, ContentTypeSimpleContent,
-                GenerateStreamFromString(FullExportOfSimpleContentAll), new List<string>(), "", EntityClearImport.None,
-                ResourceReferenceImport.Keep);
+                GenerateStreamFromString(FullExportOfSimpleContentAll), new List<string>(), "", ImportDeleteUnmentionedItems.None,
+                ImportResourceReferenceMode.Keep);
 
             var entity31d9 = fileImport.Entities.First(e => e.EntityGuid == new Guid("31d93b03-cfb3-483b-8134-e08bbee9cd2c"));
             var previewContent = entity31d9.Values["PreviewContent"][0];

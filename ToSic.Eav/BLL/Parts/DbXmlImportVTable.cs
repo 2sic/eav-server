@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Logging;
 using ToSic.Eav.ImportExport.Models;
-using ToSic.Eav.ImportExport.Refactoring;
-using ToSic.Eav.ImportExport.Refactoring.Extensions;
-using ToSic.Eav.ImportExport.Refactoring.Options;
+using ToSic.Eav.ImportExport.Options;
+using ToSic.Eav.ImportExport.Validation;
+using ToSic.Eav.ImportExport.Xml;
 
 namespace ToSic.Eav.BLL.Parts
 {
@@ -20,6 +21,7 @@ namespace ToSic.Eav.BLL.Parts
     // 1. xml > import entity
     // 2. import-entity > db
     // core dependencies are the data-structure of the content-type, which is used to build the import-entity
+    // it also looks up data in the DB to validate if they already exist - to see if it's a new/update scenario
 
     /// <summary>
     /// Import a virtual table of content-items
@@ -59,9 +61,9 @@ namespace ToSic.Eav.BLL.Parts
 
         private IEnumerable<string> _languages;
 
-        private readonly ResourceReferenceImport _resourceReference;
+        private readonly ImportResourceReferenceMode _importResourceReference;
 
-        private readonly EntityClearImport _entityClear;
+        private readonly ImportDeleteUnmentionedItems _entityClear;
 
         /// <summary>
         /// The entities created from the document. They will be saved to the repository.
@@ -104,8 +106,8 @@ namespace ToSic.Eav.BLL.Parts
         /// <param name="languages">Languages that can be imported (2SexyContent languages enabled)</param>
         /// <param name="documentLanguageFallback">Fallback document language</param>
         /// <param name="entityClear">How to handle entities already in the repository</param>
-        /// <param name="resourceReference">How value references to files and pages are handled</param>
-        public DbXmlImportVTable(int zoneId, int applicationId, int contentTypeId, Stream dataStream, IEnumerable<string> languages, string documentLanguageFallback, EntityClearImport entityClear, ResourceReferenceImport resourceReference)
+        /// <param name="importResourceReference">How value references to files and pages are handled</param>
+        public DbXmlImportVTable(int zoneId, int applicationId, int contentTypeId, Stream dataStream, IEnumerable<string> languages, string documentLanguageFallback, ImportDeleteUnmentionedItems entityClear, ImportResourceReferenceMode importResourceReference)
         {
             Entities = new List<ImpEntity>();
             ErrorLog = new ImportErrorLog();
@@ -116,7 +118,7 @@ namespace ToSic.Eav.BLL.Parts
             _languages = languages;
             _documentLanguageFallback = documentLanguageFallback;
             _entityClear = entityClear;
-            _resourceReference = resourceReference;
+            _importResourceReference = importResourceReference;
 
             ValidateAndImportToMemory(dataStream);
         }
@@ -198,7 +200,7 @@ namespace ToSic.Eav.BLL.Parts
                     }
                 }
  
-                var entityGuidManager = new EntityGuidManager();
+                var entityGuidManager = new ImportItemGuidManager();
                 foreach (var documentElement in DocumentElements)
                 {
                     documentElementNumber++;
@@ -226,7 +228,7 @@ namespace ToSic.Eav.BLL.Parts
 
                         if (value == "[\"\"]")//value.IsValueEmpty())
                         {   // It is an empty string
-                            entity.AppendAttributeValue(valueName, "", attribute.Type, documentElementLanguage, false, _resourceReference== ResourceReferenceImport.Resolve);
+                            entity.AppendAttributeValue(valueName, "", attribute.Type, documentElementLanguage, false, _importResourceReference== ImportResourceReferenceMode.Resolve);
                             continue;
                         }
 
@@ -235,7 +237,7 @@ namespace ToSic.Eav.BLL.Parts
                         {   // It is not a value reference.. it is a normal text
                             try
                             {
-                                entity.AppendAttributeValue(valueName, value, valueType, documentElementLanguage, false, _resourceReference == ResourceReferenceImport.Resolve);
+                                entity.AppendAttributeValue(valueName, value, valueType, documentElementLanguage, false, _importResourceReference == ImportResourceReferenceMode.Resolve);
                             }
                             catch (FormatException)
                             {
@@ -275,7 +277,7 @@ namespace ToSic.Eav.BLL.Parts
                             continue;
                         }
 
-                        entity.AppendAttributeValue(valueName, dbEntityValue.Value, valueType, valueReferenceLanguage, dbEntityValue.IsLanguageReadOnly(valueReferenceLanguage), _resourceReference == ResourceReferenceImport.Resolve)
+                        entity.AppendAttributeValue(valueName, dbEntityValue.Value, valueType, valueReferenceLanguage, dbEntityValue.IsLanguageReadOnly(valueReferenceLanguage), _importResourceReference == ImportResourceReferenceMode.Resolve)
                               .AppendLanguageReference(documentElementLanguage, valueReadOnly);       
                     }
                 }                
@@ -298,7 +300,7 @@ namespace ToSic.Eav.BLL.Parts
             if (ErrorLog.HasErrors)
                 return false;
 
-            if (_entityClear == EntityClearImport.All)
+            if (_entityClear == ImportDeleteUnmentionedItems.All)
             {
                 var entityDeleteGuids = GetEntityDeleteGuids();
                 foreach(var entityGuid in entityDeleteGuids)
@@ -384,7 +386,7 @@ namespace ToSic.Eav.BLL.Parts
         /// <summary>
         /// The amount of enities deleted in the repository on data import.
         /// </summary>
-        public int AmountOfEntitiesDeleted => _entityClear == EntityClearImport.None ? 0 : GetEntityDeleteGuids().Count;
+        public int AmountOfEntitiesDeleted => _entityClear == ImportDeleteUnmentionedItems.None ? 0 : GetEntityDeleteGuids().Count;
 
         /// <summary>
         /// Get the attribute names in the content type.
@@ -408,5 +410,30 @@ namespace ToSic.Eav.BLL.Parts
 
         #endregion Deserialize statistics methods
         
+    }
+
+
+
+
+    internal static class StringExtension
+    {
+        /// <summary>
+        /// Get for example en-US from [ref(en-US,ro)].
+        /// </summary>
+        public static string GetValueReferenceLanguage(this string valueString)
+        {
+            var match = Regex.Match(valueString, @"\[ref\((?<language>.+),(?<readOnly>.+)\)\]");
+            return match.Success ? match.Groups["language"].Value : null;
+        }
+
+        /// <summary>
+        /// Get for example ro from [ref(en-US,ro)].
+        /// </summary>
+        public static string GetValueReferenceProtection(this string valueString, string defaultValue = "")
+        {
+            var match = Regex.Match(valueString, @"\[ref\((?<language>.+),(?<readOnly>.+)\)\]");
+            return match.Success ? match.Groups["readOnly"].Value : defaultValue;
+        }
+
     }
 }

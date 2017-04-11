@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Resources;
 
-namespace ToSic.Eav.ImportExport.Refactoring
+namespace ToSic.Eav.ImportExport.Logging
 {
     /// <summary>
     /// Attribute to describe and localize enumeration values.
@@ -16,32 +16,28 @@ namespace ToSic.Eav.ImportExport.Refactoring
     /// </summary>
     internal class LocalizedDescriptionAttribute : DescriptionAttribute
     {
-        private readonly string resourceKey;
+        private readonly string _resourceKey;
         
-        private readonly ResourceManager resourceManager;
+        private readonly ResourceManager _resourceManager;
         
         public LocalizedDescriptionAttribute(string resourceKey, Type resourceType)
         {
-            resourceManager = new ResourceManager(resourceType.FullName, resourceType.Assembly);
-            this.resourceKey = resourceKey;
+            _resourceManager = new ResourceManager(resourceType.FullName, resourceType.Assembly);
+            this._resourceKey = resourceKey;
         }
 
         public LocalizedDescriptionAttribute(string resourceKey, Type resourceType, string resourceFolder)
         {
-            resourceManager = new ResourceManager(resourceFolder + "." + resourceType.Name, resourceType.Assembly);
-            this.resourceKey = resourceKey;
+            _resourceManager = new ResourceManager(resourceFolder + "." + resourceType.Name, resourceType.Assembly);
+            this._resourceKey = resourceKey;
         }
 
         public override string Description
         {
             get
             {
-                var displayName = resourceManager.GetString(resourceKey);
-                if (string.IsNullOrEmpty(displayName))
-                {
-                    return $"[{resourceKey}]";
-                }
-                return displayName;
+                var displayName = _resourceManager.GetString(_resourceKey);
+                return string.IsNullOrEmpty(displayName) ? $"[{_resourceKey}]" : displayName;
             }
         }
     }

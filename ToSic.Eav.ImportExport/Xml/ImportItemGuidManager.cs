@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Xml.Linq;
-using ToSic.Eav.ImportExport.Refactoring.Options;
 
-namespace ToSic.Eav.ImportExport.Refactoring
+namespace ToSic.Eav.ImportExport.Xml
 {
-    public class EntityGuidManager
+    public class ImportItemGuidManager
     {
-        private Guid entityGuidLast = Guid.Empty;
+        private Guid _entityGuidLast = Guid.Empty;
 
         /// <summary>
         /// Get the entity GUID for a document element of the XML file (maybe the last GUID or the next 
@@ -27,7 +26,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
                 }
                 else
                 {
-                    entityGuid = entityGuidLast;
+                    entityGuid = _entityGuidLast;
                 }
             }
             else
@@ -35,7 +34,7 @@ namespace ToSic.Eav.ImportExport.Refactoring
                 entityGuid = Guid.Parse(elementGuid);
             }
 
-            entityGuidLast = entityGuid;
+            _entityGuidLast = entityGuid;
             return entityGuid;
         }
     }

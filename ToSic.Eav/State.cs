@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using ToSic.Eav.BLL;
-using ToSic.Eav.DataSources.Caches;
-
-namespace ToSic.Eav
+﻿namespace ToSic.Eav
 {
     static class State
     {
