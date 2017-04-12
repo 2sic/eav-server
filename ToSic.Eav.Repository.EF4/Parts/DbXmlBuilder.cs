@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Objects.DataClasses;
 using System.Linq;
 using System.Xml.Linq;
@@ -18,19 +19,30 @@ namespace ToSic.Eav.Repository.EF4.Parts
         internal DbXmlBuilder(DbDataController c) : base(c) { }
 
         /// <summary>
+        /// Use as local cache, because often we'll need the same attribute set again and again in an export
+        /// </summary>
+        private readonly Dictionary<int, AttributeSet> _attrSetCache = new Dictionary<int, AttributeSet>();
+
+        /// <summary>
         /// Returns an Entity XElement
         /// </summary>
         internal XElement XmlEntity(int entityId)
         {
             var entity = DbContext.Entities.GetDbEntity(entityId);
+            if(!_attrSetCache.ContainsKey(entity.AttributeSetID))
+                _attrSetCache[entity.AttributeSetID] = DbContext.AttribSet.GetAttributeSet(entity.AttributeSetID);
             var assignmentObjectTypeName = entity.AssignmentObjectType.Name;
-            var attributeSet = DbContext.AttribSet.GetAttributeSet(entity.AttributeSetID);
+            var attributeSet = _attrSetCache[entity.AttributeSetID];
 
-            var values = entity.Values.Select(e => new {Key = e.Attribute.StaticName, Type = e.Attribute.AttributeType.Type, e.Value, Dimensions = e.ValuesDimensions });
-            var relationships = entity.EntityParentRelationships.Select(r => new { Key = r.Attribute.StaticName, Value = r.ChildEntity.EntityGUID.ToString() });
-            var relSets = relationships.GroupBy(r => r.Key).Select(g => new {g.Key, Value = g.Select(x => x.Value).JoinStrings( ",")});
+            var values = entity.Values.Select(e => new {Key = e.Attribute.StaticName, e.Attribute.AttributeType.Type, e.Value, Dimensions = e.ValuesDimensions });
             var valuesXElement = values.Select(v => XmlValue(v.Key, v.Value, v.Type, v.Dimensions));
-            var relsXElement = relSets.Select(r => XmlValue(r.Key, r.Value, "Entity", null));
+
+            var relationships = entity.EntityParentRelationships.GroupBy(r => r.Attribute.StaticName)
+                    .Select( r => new {
+                                r.Key,
+                                Value = r.Select(x => x.ChildEntity.EntityGUID.ToString()).JoinStrings(",")
+                            });
+            var relsXElement = relationships.Select(r => XmlValue(r.Key, r.Value, "Entity", null));
 
             // create Entity-XElement
             var entityXElement = new XElement("Entity",
