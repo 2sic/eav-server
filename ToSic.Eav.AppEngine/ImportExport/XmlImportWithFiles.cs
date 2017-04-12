@@ -233,7 +233,7 @@ namespace ToSic.Eav.Apps.ImportExport
 		    var entNodes = xmlSource.Elements(XmlConstants.Entities).Elements(XmlConstants.Entity);
 
             var importAttributeSets = GetImportAttributeSets(atsNodes);
-			var importEntities = GetImportEntities(entNodes, Eav.Configuration.AssignmentObjectTypeIdDefault);
+		    var importEntities = GetImportEntities(entNodes, Constants.NotMetadata);// Eav.Configuration.AssignmentObjectTypeIdDefault);
 
 
 			var import = new DbImport(_zoneId, _appId, /*UserName,*/ leaveExistingValuesUntouched);

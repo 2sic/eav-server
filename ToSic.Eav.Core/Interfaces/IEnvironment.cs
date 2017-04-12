@@ -8,7 +8,6 @@ namespace ToSic.Eav.Interfaces
 {
     public interface ISystemConfiguration
     {
-        int KeyTypeDefault { get; }
         string DbConnectionString { get; }
     }
 }

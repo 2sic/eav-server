@@ -54,7 +54,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BllCommandBase.cs" />
-    <Compile Include="Class1.cs" />
     <Compile Include="DataSources\SqlSources\EavSqlStore.cs" />
     <Compile Include="DbDataController.cs" />
     <Compile Include="DbLoadIntoEavDataStructure.cs" />

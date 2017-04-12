@@ -92,7 +92,7 @@ namespace ToSic.Eav.Repository.EF4.Parts
             var entity = new ImpEntity
             {
                 AttributeSetStaticName = _contentType.StaticName,
-                KeyTypeId = Configuration.KeyTypeDefault,// Configuration.AssignmentObjectTypeIdDefault,
+                // KeyTypeId = Configuration.KeyTypeDefault,// Configuration.AssignmentObjectTypeIdDefault,
                 EntityGuid = entityGuid,
                 KeyNumber = null,
                 Values = new Dictionary<string, List<IImpValue>>()

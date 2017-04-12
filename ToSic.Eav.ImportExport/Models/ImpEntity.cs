@@ -20,7 +20,7 @@ namespace ToSic.Eav.ImportExport.Models
         public int? KeyNumber { get; set; }
         public Guid? KeyGuid { get; set; }
         public string KeyString { get; set; }
-        public int KeyTypeId { get; set; }
+        public int KeyTypeId { get; set; } = Constants.NotMetadata;
 
         // Draft / Publish / Don't allow Draft
         public bool IsPublished { get; set; }

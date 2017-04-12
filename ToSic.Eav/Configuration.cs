@@ -19,8 +19,6 @@ namespace ToSic.Eav
 		/// <param name="connectionStringName">Name of the ConnectionString in web.config</param>
 		public static void SetConnectionString(string connectionStringName)
 		{
-			//HttpContext.Current.Application[AppSettingPrefix + "." + ConnectionStringSetting] = ConnectionStringName;
-			//if (_connectionStringName != connectionStringName)
 			_connectionStringName = connectionStringName;
 		}
 
@@ -64,27 +62,7 @@ namespace ToSic.Eav
 			}
         }
 
-        #region Common Assignment Object Types
-
-	    private static int _assignmentObjectTypeIdDefault = -1;
-        /// <summary>
-        /// The Key-Type ID for "Default" - actually it's a stable value, but 
-        /// we originally thought it may change from system to system...
-        /// </summary>
-        public static int AssignmentObjectTypeIdDefault
-        {
-            get
-            {
-                if(_assignmentObjectTypeIdDefault == -1)
-                    _assignmentObjectTypeIdDefault = DataSource.GetCache(Constants.DefaultZoneId, Constants.MetaDataAppId).GetAssignmentObjectTypeId("Default");
-                return _assignmentObjectTypeIdDefault;
-            }
-        }
-
-	    /// <summary>
-	    /// The ID for Key-For-Type-Default
-	    /// </summary>
-	    public int KeyTypeDefault => AssignmentObjectTypeIdDefault;
+        #region Internal depedency injection...
 
 	    /// <summary>
 	    /// Db Connection String used in the Eav-Connector
@@ -93,28 +71,5 @@ namespace ToSic.Eav
 
 	    #endregion
 
-        //#region Configure Unity Factory with defaults
-        ///// <summary>
-        ///// Register Types in Unity Container
-        ///// </summary>
-        ///// <remarks>If Unity is not configured in App/Web.config this can be used</remarks>
-        //public IUnityContainer ConfigureDefaultMappings(IUnityContainer cont)
-        //{
-        //    if (!cont.IsRegistered<ICache>())
-        //        cont.RegisterType<ICache, QuickCache>();
-        //    if (!cont.IsRegistered<IRootSource>())
-        //        cont.RegisterType<IRootSource, EavSqlStore>();
-
-        //    if (!cont.IsRegistered<IRepositoryImporter>())
-        //        cont.RegisterType<IRepositoryImporter, RepositoryImporter>();
-
-        //    // register some Default Constructors
-        //    cont.RegisterType<SqlDataSource>(new InjectionConstructor());
-        //    cont.RegisterType<DataTableDataSource>(new InjectionConstructor());
-
-            
-        //    return cont;
-        //}
-        //#endregion
     }
 }

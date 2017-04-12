@@ -173,7 +173,7 @@ namespace ToSic.Eav.Api.Api01
             {
                 EntityGuid = entityGuid,
                 AttributeSetStaticName = attributeSetStaticName,
-                KeyTypeId = Configuration.AssignmentObjectTypeIdDefault, // SexyContent.AssignmentObjectTypeIDDefault,
+                KeyTypeId = Constants.NotMetadata,// Configuration.AssignmentObjectTypeIdDefault, // SexyContent.AssignmentObjectTypeIDDefault,
                 KeyNumber = null,
                 Values = new Dictionary<string, List<IImpValue>>()
             };
