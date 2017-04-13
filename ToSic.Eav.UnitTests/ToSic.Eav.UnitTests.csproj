@@ -79,6 +79,7 @@
     <Compile Include="DataSources\Paging_Test.cs" />
     <Compile Include="Data\ContentType_Test.cs" />
     <Compile Include="Data\Entity_Test.cs" />
+    <Compile Include="Ef4LoadTests.cs" />
     <Compile Include="ImportExport\Refactoring\XmlExport_Test.cs" />
     <Compile Include="ImportExport\Refactoring\XmlImport_Test.cs" />
     <Compile Include="InitializeTests.cs" />

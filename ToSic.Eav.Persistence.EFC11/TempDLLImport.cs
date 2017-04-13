@@ -5,7 +5,7 @@ namespace ToSic.Eav.Persistence.EFC11
 {
     internal class Class1
     {
-        // Note: uncomment this, to get most DLLs into the eav/bin...
+        // Note: uncomment this, to get most DLLs into the eav/bin to then run the build-from-db-command
 
         //public Microsoft.EntityFrameworkCore.DbContext xyz()
         //{

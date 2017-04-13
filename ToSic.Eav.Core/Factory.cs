@@ -14,7 +14,7 @@ namespace ToSic.Eav
 		/// <summary>
 		/// The IoC Container responsible for our Inversion of Control
 		/// Use this everywhere!
-		/// Currently a bit of overkill, but will help with testability in the future. 
+		/// Syntax: Factory.Container.Resolve<Type>
 		/// </summary>
 		public static IUnityContainer Container
 		{

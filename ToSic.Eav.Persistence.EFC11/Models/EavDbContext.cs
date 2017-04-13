@@ -22,11 +22,18 @@ namespace ToSic.Eav.Persistence.EFC11.Models
         public virtual DbSet<ToSicEavValuesDimensions> ToSicEavValuesDimensions { get; set; }
         public virtual DbSet<ToSicEavZones> ToSicEavZones { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-            optionsBuilder.UseSqlServer(@"Data Source=NBK-DEV-04\SQLEXPRESS;Initial Catalog=""2flex 2Sexy Content"";Integrated Security=True;");
-        }
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+        //    optionsBuilder.UseSqlServer(@"Data Source=NBK-DEV-04\SQLEXPRESS;Initial Catalog=""2flex 2Sexy Content"";Integrated Security=True;");
+        //}
+
+        //private string _connectionString;
+
+        //public EavDbContext(string conString)
+        //{}
+        public EavDbContext(DbContextOptions<EavDbContext> options) : base(options) { }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

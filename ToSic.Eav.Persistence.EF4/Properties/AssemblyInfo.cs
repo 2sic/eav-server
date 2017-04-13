@@ -36,3 +36,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion("4.4.0.0")]
 
 [assembly: InternalsVisibleTo("ToSic.Eav.Repository.EF4")]
+[assembly: InternalsVisibleTo("ToSic.Eav.UnitTests")]

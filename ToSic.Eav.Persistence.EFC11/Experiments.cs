@@ -11,11 +11,11 @@ namespace ToSic.Eav.Persistence.EFC11
     {
         static void something()
         {
-            using (var db = new EavDbContext())
-            {
-                var results = db.ToSicEavZones.Where(x => x.Name == "Default");
+            //using (var db = new EavDbContext())
+            //{
+            //    var results = db.ToSicEavZones.Where(x => x.Name == "Default");
 
-            }
+            //}
         }
 
     }
