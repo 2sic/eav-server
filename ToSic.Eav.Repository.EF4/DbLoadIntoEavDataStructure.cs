@@ -10,7 +10,7 @@ namespace ToSic.Eav.Repository.EF4
     /// <summary>
     /// 
     /// </summary>
-    public /* internal */ class DbLoadIntoEavDataStructure: BllCommandBase
+    internal class DbLoadIntoEavDataStructure: BllCommandBase
     {
         /// <summary>
         /// 
@@ -23,7 +23,7 @@ namespace ToSic.Eav.Repository.EF4
         /// <summary>
         /// Get all ContentTypes for specified AppId. If called multiple times it loads from a private field.
         /// </summary>
-        public /*internal*/ IDictionary<int, IContentType> GetEavContentTypes(int appId)
+        internal IDictionary<int, IContentType> GetEavContentTypes(int appId)
         {
             if (!DbContext.AttribSet.ContentTypes.ContainsKey(appId))
             {
@@ -323,6 +323,14 @@ namespace ToSic.Eav.Repository.EF4
         public IEntity GetEavEntity(int entityId, BaseCache source = null)
             => GetAppDataPackage(new[] {entityId}, DbContext.AppId, source, true)
                 .Entities.Single(e => e.Key == entityId).Value; // must filter by EntityId again because of Drafts
+
+
+        #region Testing / Analytics helpers
+
+        internal void ResetCacheForTesting()
+            => DbContext.AttribSet.ResetCacheForTesting();
+
+        #endregion
 
     }
 }

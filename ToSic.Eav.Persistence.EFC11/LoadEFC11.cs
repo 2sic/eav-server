@@ -1,44 +1,183 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.EFC11.Models;
-// using ToSic.Eav.DataSources.Caches;
 
 namespace ToSic.Eav.Persistence.EFC11
 {
     /// <summary>
     /// 
     /// </summary>
-    public class LoadEfc11// : BllCommandBase
+    internal class LoadEfc11
     {
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        ///// <param name="cntx"></param>
-        //public DbLoadIntoEavDataStructure(DbDataController cntx) : base(cntx)
-        //{
-        //}
-        public LoadEfc11(EavDbContext dbContext)
+        #region constructor and private vars
+        internal LoadEfc11(EavDbContext dbContext)
         {
-            DbContext = dbContext;
+            _dbContext = dbContext;
         }
 
-        private EavDbContext DbContext;
+        private readonly EavDbContext _dbContext;
 
-        private readonly Dictionary<int, Dictionary<int, IContentType>> _contentTypes 
+        private Dictionary<int, Dictionary<int, IContentType>> _contentTypes 
             = new Dictionary<int, Dictionary<int, IContentType>>();
+        #endregion
+
+        #region Testing / Analytics helpers
+        internal void ResetCacheForTesting()
+        => _contentTypes = new Dictionary<int, Dictionary<int, IContentType>>();
+        #endregion
 
         /// <summary>
-        /// Get all ContentTypes for specified AppId. If called multiple times it loads from a private field.
+        /// Get all ContentTypes for specified AppId. 
+        /// If uses temporary caching, so if called multiple times it loads from a private field.
         /// </summary>
         internal IDictionary<int, IContentType> GetEavContentTypes(int appId)
         {
             if (!_contentTypes.ContainsKey(appId))
+                LoadContentTypesIntoLocalCache(appId);
+            return _contentTypes[appId];
+        }
+
+        /// <summary>
+        /// Load DB content-types into loader-cache
+        /// </summary>
+        /// <param name="appId"></param>
+        private void LoadContentTypesIntoLocalCache(int appId)
+        {
+            // Load from DB
+            var contentTypes = _dbContext.ToSicEavAttributeSets
+                    .Where(set => set.AppId == appId && set.ChangeLogDeleted == null)
+                    .Include(set => set.ToSicEavAttributesInSets)
+                        .ThenInclude(attrs => attrs.Attribute)
+                    .Include(set => set.App)
+                    .Include(set => set.UsesConfigurationOfAttributeSetNavigation)
+                        .ThenInclude(master => master.App)
+                    .ToList()
+                    .Select(set => new
+                    {
+                        set.AttributeSetId,
+                        set.Name,
+                        set.StaticName,
+                        set.Scope,
+                        set.Description,
+                        Attributes = set.ToSicEavAttributesInSets
+                            .Select(a => new
+                            {
+                                a.AttributeId,
+                                a.Attribute.StaticName,
+                                a.Attribute.Type,
+                                a.IsTitle,
+                                a.SortOrder
+                            })
+                        ,
+                        IsGhost = set.UsesConfigurationOfAttributeSet,
+                        SharedAttributes =
+                        set.UsesConfigurationOfAttributeSetNavigation?.ToSicEavAttributesInSets
+                            // (from a in DbContext.ToSicEavAttributesInSets
+                            //where a.AttributeSetId == set.UsesConfigurationOfAttributeSet
+                            .Select(a => new
+                            {
+                                a.AttributeId,
+                                a.Attribute.StaticName,
+                                a.Attribute.Type,
+                                a.IsTitle,
+                                a.SortOrder
+                            }),
+                        AppId = set.UsesConfigurationOfAttributeSetNavigation?.AppId ?? set.AppId,
+                        ZoneId = set.UsesConfigurationOfAttributeSetNavigation?.App?.ZoneId ?? set.App.ZoneId,
+                        ConfigIsOmnipresent =
+                        set.UsesConfigurationOfAttributeSetNavigation?.AlwaysShareConfiguration ?? set.AlwaysShareConfiguration,
+
+
+                        //SharedAppDef = (from master in DbContext.ToSicEavAttributeSets
+                        //                where master.AttributeSetId == (set.UsesConfigurationOfAttributeSet ?? set.AttributeSetId)
+                        //                      && master.UsesConfigurationOfAttributeSet == null
+                        //                select new
+                        //                {
+                        //                    master.AppId,
+                        //                    master.App.ZoneId,
+                        //                    ConfigIsOmnipresent = master.AlwaysShareConfiguration
+                        //                }).FirstOrDefault()
+                    })
+                //.ToList()
+                ;
+
+            //var contentTypes = from set in DbContext.ToSicEavAttributeSets
+            //                   where set.AppId == appId && !set.ChangeLogDeleted.HasValue
+            //                   select new
+            //                   {
+            //                       set.AttributeSetId,
+            //                       set.Name,
+            //                       set.StaticName,
+            //                       set.Scope,
+            //                       set.Description,
+            //                       Attributes =
+            //                       (from a in set.ToSicEavAttributesInSets
+            //                                     select new
+            //                                     {
+            //                                         a.AttributeId,
+            //                                         a.Attribute.StaticName,
+            //                                         a.Attribute.Type,
+            //                                         a.IsTitle,
+            //                                         a.SortOrder
+            //                                     }),
+            //                       ToSicEavAttributesInSets = set.ToSicEavAttributesInSets,
+
+
+            //                       IsGhost = set.UsesConfigurationOfAttributeSet
+
+            //,
+            //SharedAttributes = (from a in DbContext.ToSicEavAttributesInSets
+            //                    where a.AttributeSetId == set.UsesConfigurationOfAttributeSet
+            //                    select new
+            //                    {
+            //                        a.AttributeId,
+            //                        a.Attribute.StaticName,
+            //                        a.Attribute.Type,
+            //                        a.IsTitle,
+            //                        a.SortOrder
+            //                    })
+
+            //    ,
+            //SharedAppDef = (from master in DbContext.ToSicEavAttributeSets
+            //                where master.AttributeSetId == (set.UsesConfigurationOfAttributeSet ?? set.AttributeSetId)
+            //                      && master.UsesConfigurationOfAttributeSet == null
+            //                select new
+            //                {
+            //                    master.AppId,
+            //                    master.App.ZoneId,
+            //                    ConfigIsOmnipresent = master.AlwaysShareConfiguration
+            //                }).FirstOrDefault()
+            //};
+
+            // Convert to ContentType-Model
+            _contentTypes[appId] = contentTypes.ToDictionary(k1 => k1.AttributeSetId,
+                set =>
+                    (IContentType)
+                    new ContentType(set.Name, set.StaticName, set.AttributeSetId, set.Scope, set.Description, set.IsGhost,
+                        set.ZoneId, set.AppId, set.ConfigIsOmnipresent)
+                    {
+                        AttributeDefinitions = (set.IsGhost.HasValue ? set.SharedAttributes : set.Attributes)
+                            .ToDictionary(k2 => k2.AttributeId,
+                                a =>
+                                    new AttributeBase(a.StaticName, a.Type, a.IsTitle, a.AttributeId, a.SortOrder) as
+                                        IAttributeBase)
+                    });
+        }
+
+
+        /// <summary>
+        /// Get all ContentTypes for specified AppId. If called multiple times it loads from a private field.
+        /// </summary>
+        internal IDictionary<int, IContentType> GetEavContentTypesSlower(int appId)
+        {
+            if (!_contentTypes.ContainsKey(appId))
             {
                 // Load from DB
-                var contentTypes = from set in DbContext.ToSicEavAttributeSets
+                var contentTypes = from set in _dbContext.ToSicEavAttributeSets
                     where set.AppId == appId && !set.ChangeLogDeleted.HasValue
                     select new
                     {
@@ -57,7 +196,7 @@ namespace ToSic.Eav.Persistence.EFC11
                                 a.SortOrder
                             }),
                         IsGhost = set.UsesConfigurationOfAttributeSet,
-                        SharedAttributes = (from a in DbContext.ToSicEavAttributesInSets
+                        SharedAttributes = (from a in _dbContext.ToSicEavAttributesInSets
                             where a.AttributeSetId == set.UsesConfigurationOfAttributeSet
                             select new
                             {
@@ -66,8 +205,9 @@ namespace ToSic.Eav.Persistence.EFC11
                                 a.Attribute.Type,
                                 a.IsTitle,
                                 a.SortOrder
-                            }),
-                        SharedAppDef = (from master in DbContext.ToSicEavAttributeSets
+                            })
+                            ,
+                        SharedAppDef = (from master in _dbContext.ToSicEavAttributeSets
                                         where master.AttributeSetId == (set.UsesConfigurationOfAttributeSet ?? set.AttributeSetId)
                                               && master.UsesConfigurationOfAttributeSet == null
                             select new
@@ -112,14 +252,14 @@ namespace ToSic.Eav.Persistence.EFC11
 
             // Ensure published Versions of Drafts are also loaded (if filtered by EntityId, otherwise all Entities from the app are loaded anyway)
             if (filterByEntityIds)
-                entityIds = entityIds.Union(from e in DbContext.ToSicEavEntities
+                entityIds = entityIds.Union(from e in _dbContext.ToSicEavEntities
                                             where e.PublishedEntityId.HasValue && !e.IsPublished && entityIds.Contains(e.EntityId) && !entityIds.Contains(e.PublishedEntityId.Value) && e.ChangeLogDeleted == null
                                             select e.PublishedEntityId.Value).ToArray();
             #endregion
 
             #region Get Entities with Attribute-Values from Database
 
-            var entitiesWithAandVfromDb = from e in DbContext.ToSicEavEntities
+            var entitiesWithAandVfromDb = from e in _dbContext.ToSicEavEntities
                                  where
                                      !e.ChangeLogDeleted.HasValue &&
                                      e.AttributeSet.AppId == appId &&
@@ -307,7 +447,7 @@ namespace ToSic.Eav.Persistence.EFC11
             #endregion
 
             #region Populate Entity-Relationships (after all EntityModels are created)
-            var relationshipsRaw = from r in DbContext.ToSicEavEntityRelationships //.SqlDb.EntityRelationships
+            var relationshipsRaw = from r in _dbContext.ToSicEavEntityRelationships //.SqlDb.EntityRelationships
                                    where r.Attribute.ToSicEavAttributesInSets.Any(s => s.AttributeSet.AppId == appId && (!filterByEntityIds || (!r.ChildEntityId.HasValue || entityIds.Contains(r.ChildEntityId.Value)) || entityIds.Contains(r.ParentEntityId)))
                                    orderby r.ParentEntityId, r.AttributeId, r.ChildEntityId
                                    select new { r.ParentEntityId, r.Attribute.StaticName, r.ChildEntityId };

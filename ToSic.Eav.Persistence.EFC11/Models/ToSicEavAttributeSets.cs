@@ -9,6 +9,7 @@ namespace ToSic.Eav.Persistence.EFC11.Models
         {
             ToSicEavAttributeGroups = new HashSet<ToSicEavAttributeGroups>();
             ToSicEavAttributesInSets = new HashSet<ToSicEavAttributesInSets>();
+            //ToSicEavAttributesInSharedSets = new HashSet<ToSicEavAttributesInSets>();
             ToSicEavEntities = new HashSet<ToSicEavEntities>();
         }
 
@@ -25,6 +26,10 @@ namespace ToSic.Eav.Persistence.EFC11.Models
 
         public virtual ICollection<ToSicEavAttributeGroups> ToSicEavAttributeGroups { get; set; }
         public virtual ICollection<ToSicEavAttributesInSets> ToSicEavAttributesInSets { get; set; }
+
+        // 2dm added
+        //public virtual ICollection<ToSicEavAttributesInSets> ToSicEavAttributesInSharedSets { get; set; }
+
         public virtual ICollection<ToSicEavEntities> ToSicEavEntities { get; set; }
         public virtual ToSicEavApps App { get; set; }
         public virtual ToSicEavChangeLog ChangeLogCreatedNavigation { get; set; }

@@ -148,6 +148,7 @@ namespace ToSic.Eav.Persistence.EFC11.Models
                     .WithMany(p => p.InverseUsesConfigurationOfAttributeSetNavigation)
                     .HasForeignKey(d => d.UsesConfigurationOfAttributeSet)
                     .HasConstraintName("FK_ToSIC_EAV_AttributeSets_ToSIC_EAV_AttributeSets");
+
             });
 
             modelBuilder.Entity<ToSicEavAttributeTypes>(entity =>

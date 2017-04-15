@@ -9,8 +9,12 @@ namespace ToSic.Eav.Repository.EF4.Parts
         public DbAttributeSet(DbDataController dc) : base(dc) { }
 
         /// <summary>caches all AttributeSets for each App</summary>
-        internal readonly Dictionary<int, Dictionary<int, IContentType>> ContentTypes = new Dictionary<int, Dictionary<int, IContentType>>();
+        internal Dictionary<int, Dictionary<int, IContentType>> ContentTypes = new Dictionary<int, Dictionary<int, IContentType>>();
 
+        #region Testing / Analytics helpers
+        internal void ResetCacheForTesting()
+            => ContentTypes = new Dictionary<int, Dictionary<int, IContentType>>();
+        #endregion
 
 
         /// <summary>

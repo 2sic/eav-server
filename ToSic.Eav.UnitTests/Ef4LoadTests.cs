@@ -12,13 +12,44 @@ namespace ToSic.Eav.Persistence.EFC11.Tests
     public class Ef4LoadTests
     {
 
+        #region test preparations
+
+        private DbDataController _db;
+        private DbLoadIntoEavDataStructure _loader;
+
+        [TestInitialize]
+        public void Init()
+        {
+            _db = DbDataController.Instance(null, 2);
+            _loader = new DbLoadIntoEavDataStructure(_db);
+        }
+        #endregion
+
         [TestMethod]
         public void TryToLoadCtsOf2()
         {
-            var dbc = DbDataController.Instance(null, 2);
-            var loader = new DbLoadIntoEavDataStructure(dbc);
-            var types = loader.GetEavContentTypes(2);
+            _loader.ResetCacheForTesting();
+            var results = _loader.GetEavContentTypes(2);
+            Assert.AreEqual(61, results.Count, "dummy test: ");
+        }
 
+        [TestMethod]
+        public void TryToLoadCtsOf2Again()
+        {
+            _loader.ResetCacheForTesting();
+            var results = _loader.GetEavContentTypes(2);
+            Assert.AreEqual(61, results.Count, "dummy test: ");
+        }
+        [TestMethod]
+        public void TryToLoadCtsOf2TenXCleared()
+        {
+            var results = _loader.GetEavContentTypes(2);
+            for (var x = 0; x < 9; x++)
+            {
+                _loader.ResetCacheForTesting();
+                results = _loader.GetEavContentTypes(2);
+            }
+            Assert.AreEqual(61, results.Count, "dummy test: ");
         }
     }
 }
