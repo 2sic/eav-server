@@ -7,8 +7,8 @@ namespace ToSic.Eav.Persistence.EFC11.Models
     {
         public ToSicEavEntities()
         {
-            ToSicEavEntityRelationshipsChildEntity = new HashSet<ToSicEavEntityRelationships>();
-            ToSicEavEntityRelationshipsParentEntity = new HashSet<ToSicEavEntityRelationships>();
+            RelationshipsWithThisAsChild = new HashSet<ToSicEavEntityRelationships>();
+            RelationshipsWithThisAsParent = new HashSet<ToSicEavEntityRelationships>();
             ToSicEavValues = new HashSet<ToSicEavValues>();
         }
 
@@ -28,8 +28,8 @@ namespace ToSic.Eav.Persistence.EFC11.Models
         public int ChangeLogModified { get; set; }
         public string Owner { get; set; }
 
-        public virtual ICollection<ToSicEavEntityRelationships> ToSicEavEntityRelationshipsChildEntity { get; set; }
-        public virtual ICollection<ToSicEavEntityRelationships> ToSicEavEntityRelationshipsParentEntity { get; set; }
+        public virtual ICollection<ToSicEavEntityRelationships> RelationshipsWithThisAsChild { get; set; }
+        public virtual ICollection<ToSicEavEntityRelationships> RelationshipsWithThisAsParent { get; set; }
         public virtual ICollection<ToSicEavValues> ToSicEavValues { get; set; }
         public virtual ToSicEavAssignmentObjectTypes AssignmentObjectType { get; set; }
         public virtual ToSicEavAttributeSets AttributeSet { get; set; }

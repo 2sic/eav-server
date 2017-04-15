@@ -11,10 +11,10 @@ namespace ToSic.Eav.Persistence.EFC11
     /// <summary>
     /// 
     /// </summary>
-    internal class LoadEfc11
+    internal class Efc11Loader
     {
         #region constructor and private vars
-        internal LoadEfc11(EavDbContext dbContext)
+        internal Efc11Loader(EavDbContext dbContext)
         {
             _dbContext = dbContext;
         }
@@ -30,6 +30,7 @@ namespace ToSic.Eav.Persistence.EFC11
         => _contentTypes = new Dictionary<int, Dictionary<int, IContentType>>();
         #endregion
 
+        #region Load Content-Types into IContent-Type Dictionary
         /// <summary>
         /// Get all ContentTypes for specified AppId. 
         /// If uses temporary caching, so if called multiple times it loads from a private field.
@@ -74,37 +75,29 @@ namespace ToSic.Eav.Persistence.EFC11
                             })
                         ,
                         IsGhost = set.UsesConfigurationOfAttributeSet,
-                        SharedAttributes =
-                        set.UsesConfigurationOfAttributeSetNavigation?.ToSicEavAttributesInSets
-                            // (from a in DbContext.ToSicEavAttributesInSets
-                            //where a.AttributeSetId == set.UsesConfigurationOfAttributeSet
-                            .Select(a => new
-                            {
-                                a.AttributeId,
-                                a.Attribute.StaticName,
-                                a.Attribute.Type,
-                                a.IsTitle,
-                                a.SortOrder
-                            }),
+                        SharedDefinitionId = set.UsesConfigurationOfAttributeSet,
                         AppId = set.UsesConfigurationOfAttributeSetNavigation?.AppId ?? set.AppId,
                         ZoneId = set.UsesConfigurationOfAttributeSetNavigation?.App?.ZoneId ?? set.App.ZoneId,
                         ConfigIsOmnipresent =
                         set.UsesConfigurationOfAttributeSetNavigation?.AlwaysShareConfiguration ?? set.AlwaysShareConfiguration,
-
-
-                        //SharedAppDef = (from master in DbContext.ToSicEavAttributeSets
-                        //                where master.AttributeSetId == (set.UsesConfigurationOfAttributeSet ?? set.AttributeSetId)
-                        //                      && master.UsesConfigurationOfAttributeSet == null
-                        //                select new
-                        //                {
-                        //                    master.AppId,
-                        //                    master.App.ZoneId,
-                        //                    ConfigIsOmnipresent = master.AlwaysShareConfiguration
-                        //                }).FirstOrDefault()
                     })
-                //.ToList()
-                ;
+                .ToList();
 
+            var shareids = contentTypes.Select(c => c.SharedDefinitionId).ToList();
+            var sharedAttribs = _dbContext.ToSicEavAttributeSets
+                .Include(s => s.ToSicEavAttributesInSets)
+                    .ThenInclude(a => a.Attribute)
+                .Where(s => shareids.Contains(s.AttributeSetId))
+                .ToDictionary(s => s.AttributeSetId, s => s.ToSicEavAttributesInSets.Select(a => new
+                {
+                    a.AttributeId,
+                    a.Attribute.StaticName,
+                    a.Attribute.Type,
+                    a.IsTitle,
+                    a.SortOrder
+                }));
+
+            #region old stuff / hidden
             //var contentTypes = from set in DbContext.ToSicEavAttributeSets
             //                   where set.AppId == appId && !set.ChangeLogDeleted.HasValue
             //                   select new
@@ -152,20 +145,21 @@ namespace ToSic.Eav.Persistence.EFC11
             //                    ConfigIsOmnipresent = master.AlwaysShareConfiguration
             //                }).FirstOrDefault()
             //};
+            #endregion 
 
             // Convert to ContentType-Model
             _contentTypes[appId] = contentTypes.ToDictionary(k1 => k1.AttributeSetId,
-                set =>
-                    (IContentType)
-                    new ContentType(set.Name, set.StaticName, set.AttributeSetId, set.Scope, set.Description, set.IsGhost,
-                        set.ZoneId, set.AppId, set.ConfigIsOmnipresent)
+                set => (IContentType) new ContentType(set.Name, set.StaticName, set.AttributeSetId, 
+                    set.Scope, set.Description, set.IsGhost, set.ZoneId, set.AppId, set.ConfigIsOmnipresent)
                     {
-                        AttributeDefinitions = (set.IsGhost.HasValue ? set.SharedAttributes : set.Attributes)
+                        AttributeDefinitions =  (set.SharedDefinitionId.HasValue
+                                ? sharedAttribs[set.SharedDefinitionId.Value]
+                                : set.Attributes)
                             .ToDictionary(k2 => k2.AttributeId,
-                                a =>
-                                    new AttributeBase(a.StaticName, a.Type, a.IsTitle, a.AttributeId, a.SortOrder) as
-                                        IAttributeBase)
-                    });
+                                a => new AttributeBase(a.StaticName, a.Type, a.IsTitle, a.AttributeId, a.SortOrder) as
+                                    IAttributeBase)
+                    }
+            );
         }
 
 
@@ -228,6 +222,8 @@ namespace ToSic.Eav.Persistence.EFC11
             return _contentTypes[appId];
         }
 
+        #endregion
+
         /// <summary>Get Data to populate ICache</summary>
         /// <param name="entityIds">null or a List of EntitiIds</param>
         /// <param name="appId">AppId (can be different than the appId on current context (e.g. if something is needed from the default appId, like MetaData)</param>
@@ -259,73 +255,175 @@ namespace ToSic.Eav.Persistence.EFC11
 
             #region Get Entities with Attribute-Values from Database
 
-            var entitiesWithAandVfromDb = from e in _dbContext.ToSicEavEntities
-                                 where
-                                     !e.ChangeLogDeleted.HasValue &&
-                                     e.AttributeSet.AppId == appId &&
-                                     e.AttributeSet.ChangeLogDeleted == null &&
-                                     (	// filter by EntityIds (if set)
-                                         !filterByEntityIds ||
-                                         entityIds.Contains(e.EntityId) ||
-                                         (e.PublishedEntityId.HasValue && entityIds.Contains(e.PublishedEntityId.Value))	// also load Drafts
-                                         )
-                                 orderby
-                                     e.EntityId	// guarantees Published appear before draft
-                                 select new
-                                 {
-                                     e.EntityId,
-                                     e.EntityGuid,
-                                     e.AttributeSetId,
-                                     Metadata = new Metadata
-                                     {
-                                         TargetType = e.AssignmentObjectTypeId,
-                                         KeyGuid = e.KeyGuid,
-                                         KeyNumber = e.KeyNumber,
-                                         KeyString = e.KeyString
-                                     },
-                                     e.IsPublished,
-                                     e.PublishedEntityId,
-                                     e.Owner, // new 2016-03-01
-                                     Modified = e.ChangeLogModifiedNavigation.Timestamp, //.ChangeLogModified.Timestamp,
-                                     RelatedEntities = from r in e.ToSicEavEntityRelationshipsParentEntity
-                                                       group r by r.AttributeId
-                                                           into rg
-                                                           select new
-                                                           {
-                                                               AttributeID = rg.Key,
-                                                               Childs = rg.OrderBy(c => c.SortOrder).Select(c => c.ChildEntityId)
-                                                           },
-                                     Attributes = from v in e.ToSicEavValues
-                                                  where !v.ChangeLogDeleted.HasValue
-                                                  group v by v.AttributeId
-                                                      into vg
-                                                      select new
-                                                      {
-                                                          AttributeID = vg.Key,
-                                                          Values = from v2 in vg
-                                                                   orderby v2.ChangeLogCreated
-                                                                   select new
-                                                                   {
-                                                                       v2.ValueId,
-                                                                       v2.Value,
-                                                                       Languages = from l in v2.ToSicEavValuesDimensions//.ValuesDimensions
-                                                                                   select new Dimension
-                                                                                   {
-                                                                                       DimensionId = l.DimensionId,
-                                                                                       ReadOnly = l.ReadOnly,
-                                                                                       Key = l.Dimension.ExternalKey.ToLower()
-                                                                                   },
-                                                                       v2.ChangeLogCreated
-                                                                   }
-                                                      }
-                                 };
+            var rawEntities = _dbContext.ToSicEavEntities
+                .Include(e => e.AttributeSet)
+                .Include(e => e.ToSicEavValues)
+                    .ThenInclude(v => v.ToSicEavValuesDimensions)
+                .Where(e => !e.ChangeLogDeleted.HasValue &&
+                            e.AttributeSet.AppId == appId &&
+                            e.AttributeSet.ChangeLogDeleted == null &&
+                            ( 
+                                // filter by EntityIds (if set)
+                                !filterByEntityIds || entityIds.Contains(e.EntityId) ||
+                                e.PublishedEntityId.HasValue && entityIds.Contains(e.PublishedEntityId.Value)
+                                // also load Drafts
+                            ))
+                .Select(e => new
+                {
+                    e.EntityId,
+                    e.EntityGuid,
+                    e.AttributeSetId,
+                    Metadata = new Metadata
+                    {
+                        TargetType = e.AssignmentObjectTypeId,
+                        KeyGuid = e.KeyGuid,
+                        KeyNumber = e.KeyNumber,
+                        KeyString = e.KeyString
+                    },
+                    e.IsPublished,
+                    e.PublishedEntityId,
+                    e.Owner, 
+                    Modified = e.ChangeLogModifiedNavigation.Timestamp, 
+                    // RelTest = e.RelationshipsWithThisAsParent,
+                    //RelatedEntities = e.RelationshipsWithThisAsParent
+                    //    // .Where(r => r.ParentEntityId == e.EntityId) // test
+                    //    .GroupBy(r => r.AttributeId)
+                    //    .Select(rg => new {
+                    //        AttributeID = rg.Key,
+                    //        Childs = rg.OrderBy(c => c.SortOrder).Select(c => c.ChildEntityId)
+                    //    }),
+
+
+                    //Attributes = e.ToSicEavValues
+                    //    .Where(v => !v.ChangeLogDeleted.HasValue)
+                    //    .GroupBy(v => v.AttributeId)
+                    //    .Select(vg =>  new {
+                    //        AttributeID = vg.Key,
+                    //        Values = vg
+                    //            .OrderBy(v2 => v2.ChangeLogCreated)
+                    //            .Select(v2 => new {
+                    //            v2.ValueId,
+                    //            v2.Value,
+                    //            Languages = v2.ToSicEavValuesDimensions
+                    //                .Select(l =>  new Dimension
+                    //                {
+                    //                    DimensionId = l.DimensionId,
+                    //                    ReadOnly = l.ReadOnly,
+                    //                    Key = l.Dimension.ExternalKey.ToLower()
+                    //                }),
+                    //            v2.ChangeLogCreated
+                    //        })
+                    //    })
+                }).ToList();
+            var eIds = rawEntities.Select(e => e.EntityId).ToList();
+
+            var relatedEntities = _dbContext.ToSicEavEntityRelationships
+                .Where(r => eIds.Contains(r.ParentEntityId))
+                .GroupBy(g => g.ParentEntityId)
+                .ToDictionary(g => g.Key, g => g.GroupBy(r => r.AttributeId)
+                    .Select(rg => new
+                    {
+                        AttributeID = rg.Key,
+                        Childs = rg.OrderBy(c => c.SortOrder).Select(c => c.ChildEntityId)
+                    }));
+
+            var attributes = _dbContext.ToSicEavValues
+                .Include(v => v.ToSicEavValuesDimensions)
+                .Where(r => eIds.Contains(r.EntityId))
+                .Where(v => !v.ChangeLogDeleted.HasValue)
+                .GroupBy(e => e.EntityId)
+                .ToDictionary(e => e.Key, e => e.GroupBy(v => v.AttributeId)
+                    .Select(vg => new
+                    {
+                        AttributeID = vg.Key,
+                        Values = vg
+                            .OrderBy(v2 => v2.ChangeLogCreated)
+                            .Select(v2 => new
+                            {
+                                v2.ValueId,
+                                v2.Value,
+                                Languages = v2.ToSicEavValuesDimensions
+                                    .Select(l => new Dimension
+                                    {
+                                        DimensionId = l.DimensionId,
+                                        ReadOnly = l.ReadOnly,
+                                        Key = l.Dimension.ExternalKey.ToLower()
+                                    }),
+                                v2.ChangeLogCreated
+                            })
+                    }));
+
+            #region hidden / commented out
+            //var entitiesWithAandVfromDb = from e in _dbContext.ToSicEavEntities
+            //                     where
+            //                         !e.ChangeLogDeleted.HasValue &&
+            //                         e.AttributeSet.AppId == appId &&
+            //                         e.AttributeSet.ChangeLogDeleted == null &&
+            //                         (	// filter by EntityIds (if set)
+            //                             !filterByEntityIds ||
+            //                             entityIds.Contains(e.EntityId) ||
+            //                             (e.PublishedEntityId.HasValue && entityIds.Contains(e.PublishedEntityId.Value))	// also load Drafts
+            //                             )
+            //                     orderby
+            //                         e.EntityId	// guarantees Published appear before draft
+            //                     select new
+            //                     {
+            //                         e.EntityId,
+            //                         e.EntityGuid,
+            //                         e.AttributeSetId,
+            //                         Metadata = new Metadata
+            //                         {
+            //                             TargetType = e.AssignmentObjectTypeId,
+            //                             KeyGuid = e.KeyGuid,
+            //                             KeyNumber = e.KeyNumber,
+            //                             KeyString = e.KeyString
+            //                         },
+            //                         e.IsPublished,
+            //                         e.PublishedEntityId,
+            //                         e.Owner, // new 2016-03-01
+            //                         Modified = e.ChangeLogModifiedNavigation.Timestamp, //.ChangeLogModified.Timestamp,
+            //                         RelatedEntities = from r in e.ToSicEavEntityRelationshipsParentEntity
+            //                                           group r by r.AttributeId
+            //                                               into rg
+            //                                               select new
+            //                                               {
+            //                                                   AttributeID = rg.Key,
+            //                                                   Childs = rg.OrderBy(c => c.SortOrder).Select(c => c.ChildEntityId)
+            //                                               },
+            //                         Attributes = from v in e.ToSicEavValues
+            //                                      where !v.ChangeLogDeleted.HasValue
+            //                                      group v by v.AttributeId
+            //                                          into vg
+            //                                          select new
+            //                                          {
+            //                                              AttributeID = vg.Key,
+            //                                              Values = from v2 in vg
+            //                                                       orderby v2.ChangeLogCreated
+            //                                                       select new
+            //                                                       {
+            //                                                           v2.ValueId,
+            //                                                           v2.Value,
+            //                                                           Languages = from l in v2.ToSicEavValuesDimensions//.ValuesDimensions
+            //                                                                       select new Dimension
+            //                                                                       {
+            //                                                                           DimensionId = l.DimensionId,
+            //                                                                           ReadOnly = l.ReadOnly,
+            //                                                                           Key = l.Dimension.ExternalKey.ToLower()
+            //                                                                       },
+            //                                                           v2.ChangeLogCreated
+            //                                                       }
+            //                                          }
+            //                     };
             #endregion
+            #endregion
+
+            // return null;
 
             #region Build EntityModels
             var entities = new Dictionary<int, IEntity>();
             var entList = new List<IEntity>();
 
-            foreach (var e in entitiesWithAandVfromDb)
+            foreach (var e in rawEntities)
             {
                 var contentType = (ContentType)contentTypes[e.AttributeSetId];
                 var newEntity = new Entity(e.EntityGuid, e.EntityId, e.EntityId, e.Metadata /* e.AssignmentObjectTypeID */, contentType, e.IsPublished, relationships, e.Modified, e.Owner);
@@ -395,8 +493,9 @@ namespace ToSic.Eav.Persistence.EFC11
 
                 #endregion
 
-                #region add Related-Entities Attributes
-                foreach (var r in e.RelatedEntities)
+                #region add Related-Entities Attributes to the entity
+                if(relatedEntities.ContainsKey(e.EntityId))
+                foreach (var r in relatedEntities[e.EntityId])
                 {
                     var attributeModel = allAttribsOfThisType[r.AttributeID];
                     var valueModel = Value.GetValueModel(((IAttributeBase)attributeModel).Type, r.Childs, source);
@@ -406,33 +505,35 @@ namespace ToSic.Eav.Persistence.EFC11
                 }
                 #endregion
 
-                #region Add "normal" Attributes (that are not Entity-Relations)
-                foreach (var a in e.Attributes)
-                {
-                    IAttributeManagement attributeModel;
-                    try
+                //if (false)
+                    #region Add "normal" Attributes (that are not Entity-Relations)
+                if(attributes.ContainsKey(e.EntityId))
+                    foreach (var a in attributes[e.EntityId])// e.Attributes)
                     {
-                        attributeModel = allAttribsOfThisType[a.AttributeID];
-                    }
-                    catch (KeyNotFoundException)
-                    {
-                        continue;
-                    }
-                    if (attributeModel.IsTitle)
-                        newEntity.Title = attributeModel;
-                    var valuesModelList = new List<IValue>();
+                        IAttributeManagement attributeModel;
+                        try
+                        {
+                            attributeModel = allAttribsOfThisType[a.AttributeID];
+                        }
+                        catch (KeyNotFoundException)
+                        {
+                            continue;
+                        }
+                        if (attributeModel.IsTitle)
+                            newEntity.Title = attributeModel;
+                        var valuesModelList = new List<IValue>();
 
-                    #region Add all Values
-                    foreach (var v in a.Values)
-                    {
-                        var valueModel = Value.GetValueModel(((IAttributeBase)attributeModel).Type, v.Value, v.Languages, v.ValueId, v.ChangeLogCreated);
-                        valuesModelList.Add(valueModel);
-                    }
-                    #endregion
+                        #region Add all Values
+                        foreach (var v in a.Values)
+                        {
+                            var valueModel = Value.GetValueModel(((IAttributeBase)attributeModel).Type, v.Value, v.Languages, v.ValueId, v.ChangeLogCreated);
+                            valuesModelList.Add(valueModel);
+                        }
+                        #endregion
 
-                    attributeModel.Values = valuesModelList;
-                    attributeModel.DefaultValue = (IValueManagement)valuesModelList.FirstOrDefault();
-                }
+                        attributeModel.Values = valuesModelList;
+                        attributeModel.DefaultValue = (IValueManagement)valuesModelList.FirstOrDefault();
+                    }
 
                 // Special treatment in case there is no title 
                 // sometimes happens if the title-field is re-defined and ol data might no have this
@@ -446,20 +547,36 @@ namespace ToSic.Eav.Persistence.EFC11
             }
             #endregion
 
-            #region Populate Entity-Relationships (after all EntityModels are created)
-            var relationshipsRaw = from r in _dbContext.ToSicEavEntityRelationships //.SqlDb.EntityRelationships
-                                   where r.Attribute.ToSicEavAttributesInSets.Any(s => s.AttributeSet.AppId == appId && (!filterByEntityIds || (!r.ChildEntityId.HasValue || entityIds.Contains(r.ChildEntityId.Value)) || entityIds.Contains(r.ParentEntityId)))
-                                   orderby r.ParentEntityId, r.AttributeId, r.ChildEntityId
-                                   select new { r.ParentEntityId, r.Attribute.StaticName, r.ChildEntityId };
+            #region Populate Entity-Relationships (after all Entitys are created)
+
+            var relationshipsRaw = from r in _dbContext.ToSicEavEntityRelationships
+                                    where
+                                    r.Attribute.ToSicEavAttributesInSets.Any(
+                                        s =>
+                                            s.AttributeSet.AppId == appId &&
+                                            (!filterByEntityIds ||
+                                            (!r.ChildEntityId.HasValue || entityIds.Contains(r.ChildEntityId.Value)) ||
+                                            entityIds.Contains(r.ParentEntityId)))
+                                    orderby r.ParentEntityId, r.AttributeId, r.ChildEntityId
+                                    select new { r.ParentEntityId, r.Attribute.StaticName, r.ChildEntityId };
+
             foreach (var relationship in relationshipsRaw)
             {
                 try
                 {
-                    if(entities.ContainsKey(relationship.ParentEntityId) && (!relationship.ChildEntityId.HasValue || entities.ContainsKey(relationship.ChildEntityId.Value)))
-                        relationships.Add(new EntityRelationshipItem(entities[relationship.ParentEntityId], relationship.ChildEntityId.HasValue ? entities[relationship.ChildEntityId.Value] : null));
+                    if (entities.ContainsKey(relationship.ParentEntityId) &&
+                        (!relationship.ChildEntityId.HasValue ||
+                         entities.ContainsKey(relationship.ChildEntityId.Value)))
+                        relationships.Add(new EntityRelationshipItem(entities[relationship.ParentEntityId],
+                            relationship.ChildEntityId.HasValue ? entities[relationship.ChildEntityId.Value] : null));
                 }
-                catch (KeyNotFoundException) { } // may occour if not all entities are loaded - edited 2rm 2015-09-29: Should not occur anymore
+                catch (KeyNotFoundException)
+                {
+                    // may occour if not all entities are loaded - edited 2rm 2015-09-29: Should not occur anymore
+                    // ignore
+                }
             }
+
             #endregion
 
             return new AppDataPackage(entities, entList, contentTypes, metadataForGuid, metadataForNumber, metadataForString, relationships);

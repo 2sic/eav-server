@@ -26,6 +26,13 @@ namespace ToSic.Eav.Persistence.EFC11.Tests
         #endregion
 
         [TestMethod]
+        public void TestLoadXApp2()
+        {
+            var result = _loader.GetAppDataPackage(null, 2, null, false);
+            Assert.AreEqual(1063, result.Entities.Count, "counting...");
+        }
+
+        [TestMethod]
         public void TryToLoadCtsOf2()
         {
             _loader.ResetCacheForTesting();

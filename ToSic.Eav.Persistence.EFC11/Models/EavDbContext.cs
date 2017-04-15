@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace ToSic.Eav.Persistence.EFC11.Models
@@ -28,10 +27,6 @@ namespace ToSic.Eav.Persistence.EFC11.Models
         //    optionsBuilder.UseSqlServer(@"Data Source=NBK-DEV-04\SQLEXPRESS;Initial Catalog=""2flex 2Sexy Content"";Integrated Security=True;");
         //}
 
-        //private string _connectionString;
-
-        //public EavDbContext(string conString)
-        //{}
         public EavDbContext(DbContextOptions<EavDbContext> options) : base(options) { }
 
 
@@ -387,12 +382,12 @@ namespace ToSic.Eav.Persistence.EFC11.Models
                     .HasConstraintName("FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_Attributes");
 
                 entity.HasOne(d => d.ChildEntity)
-                    .WithMany(p => p.ToSicEavEntityRelationshipsChildEntity)
+                    .WithMany(p => p.RelationshipsWithThisAsChild)
                     .HasForeignKey(d => d.ChildEntityId)
                     .HasConstraintName("FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_ChildEntities");
 
                 entity.HasOne(d => d.ParentEntity)
-                    .WithMany(p => p.ToSicEavEntityRelationshipsParentEntity)
+                    .WithMany(p => p.RelationshipsWithThisAsParent)
                     .HasForeignKey(d => d.ParentEntityId)
                     .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_ParentEntities");

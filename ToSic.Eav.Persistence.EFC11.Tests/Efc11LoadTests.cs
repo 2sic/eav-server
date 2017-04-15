@@ -14,14 +14,14 @@ namespace ToSic.Eav.Persistence.EFC11.Tests
         #region test preparations
 
         private EavDbContext _db;
-        private LoadEfc11 _loader;
+        private Efc11Loader _loader;
 
         [TestInitialize]
         public void Init()
         {
             Trace.Write("initializing DB & loader");
             _db = Factory.Container.Resolve<EavDbContext>();
-            _loader = new LoadEfc11(_db);
+            _loader = new Efc11Loader(_db);
         }
         #endregion
 
@@ -32,13 +32,13 @@ namespace ToSic.Eav.Persistence.EFC11.Tests
             Assert.IsTrue(results.ZoneId == 1, "zone doesn't fit - it is " + results.ZoneId);
         }
 
-        //[TestMethod]
-        //public void TestLoadAppBlog()
-        //{
-        //    var results = TestLoadApp(2);
+        [TestMethod]
+        public void TestLoadXAppBlog()
+        {
+            var results = TestLoadApp(2);
 
-        //    Assert.IsTrue(results.List.Count() == 1000, "tried counting");
-        //}
+            Assert.AreEqual(1063, results.Entities.Count, "tried counting");
+        }
 
         [TestMethod]
         public void LoadContentTypesOf2Once()
