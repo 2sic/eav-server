@@ -93,7 +93,7 @@ namespace ToSic.Eav.Persistence.EFC11.Tests
 
         private AppDataPackage TestLoadApp(int appId)
         {
-            return _loader.CompleteApp(appId, null, null);
+            return _loader.AppPackage(appId, null, null);
         }
 
         private IDictionary<int, IContentType> TestLoadCts(int appId)

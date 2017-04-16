@@ -48,7 +48,7 @@ namespace ToSic.Eav.DataSources.SqlSources
 
             // 2015-08-08 2dm: note: changed to use the source null (previously this), as it's only used for internal deferred child-entity lookups and would cause infinite looping
             IDictionary<int, IEntity> GetEntities()
-                => _loader.CompleteApp(AppId, null, null, true).Entities; // .GetEavEntities(AppId, null);
+                => _loader.AppPackage(AppId, null, null, true).Entities; // .GetEavEntities(AppId, null);
         }
 
 		/// <summary>
@@ -64,7 +64,7 @@ namespace ToSic.Eav.DataSources.SqlSources
 		public override bool Ready => _ready;
 
 	    public AppDataPackage GetDataForCache(IDeferredEntitiesList targetCacheForDeferredLookups) 
-            => _loader.CompleteApp(AppId, null, targetCacheForDeferredLookups);
+            => _loader.AppPackage(AppId, null, targetCacheForDeferredLookups);
 
 	    public Dictionary<int, Data.Zone> GetAllZones() => _loader.Zones();// _context.Zone.GetAllZones();
 

@@ -28,7 +28,7 @@ namespace ToSic.Eav.Persistence.EFC11.Tests
         [TestMethod]
         public void TestLoadXApp2()
         {
-            var result = _loader.CompleteApp(2, null, null, false);
+            var result = _loader.AppPackage(2, null, null, false);
             Assert.AreEqual(1063, result.Entities.Count, "counting...");
         }
 

@@ -18,7 +18,7 @@ namespace ToSic.Eav
 	/// </summary>
 	public class DependencyInjection
 	{
-        public bool UseEfCore = false;
+        public bool UseEfCore = true;
 
         #region Configure Unity Factory with defaults
         /// <summary>
@@ -41,15 +41,14 @@ namespace ToSic.Eav
             if (!cont.IsRegistered<IRepositoryLoader>())
                 if (UseEfCore)
                     cont.RegisterType<IRepositoryLoader, Efc11Loader>(
-                        new InjectionConstructor(new ResolvedParameter<EavDbContext>())); // use the empty constructor
+                        new InjectionConstructor(new ResolvedParameter<EavDbContext>())); 
                 else
-                    cont.RegisterType<IRepositoryLoader, Ef4Loader>(new InjectionConstructor());
+                    cont.RegisterType<IRepositoryLoader, Ef4Loader>(new InjectionConstructor());// use the empty constructor
 
 
             #region register the new EF1.1 ORM
-            //var conStr = new Configuration().DbConnectionString;
             if (!cont.IsRegistered<EavDbContext>())
-                cont.RegisterType<EavDbContext>(new HierarchicalLifetimeManager(), new InjectionFactory(
+                cont.RegisterType<EavDbContext>(new InjectionFactory(
                     obj =>
                     {
                         var opts = new DbContextOptionsBuilder<EavDbContext>();

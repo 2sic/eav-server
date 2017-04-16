@@ -95,7 +95,7 @@ namespace ToSic.Eav.Repository.EF4
         /// <param name="source">DataSource to get child entities</param>
         /// <param name="entitiesOnly">If only the CachItem.Entities is needed, this can be set to true to imporove performance</param>
         /// <returns>An object with everything which an app has, usually for caching</returns>
-        public AppDataPackage CompleteApp(int appId, int[] entityIds = null, IDeferredEntitiesList source = null, bool entitiesOnly = false)
+        public AppDataPackage AppPackage(int appId, int[] entityIds = null, IDeferredEntitiesList source = null, bool entitiesOnly = false)
         {
             var contentTypes = ContentTypes(appId);
 
@@ -331,7 +331,7 @@ namespace ToSic.Eav.Repository.EF4
         /// </summary>
         /// <returns>A single IEntity or throws InvalidOperationException</returns>
         public IEntity Entity(int appId, int entityId)//, IDeferredEntitiesList source = null)
-            => CompleteApp(/*DbContext.AppId*/appId, new[] {entityId}, null, true)
+            => AppPackage(/*DbContext.AppId*/appId, new[] {entityId}, null, true)
                 .Entities.Single(e => e.Key == entityId).Value; // must filter by EntityId again because of Drafts
 
 

@@ -21,8 +21,6 @@ namespace ToSic.Eav.Persistence.EFC11
 
         private readonly EavDbContext _dbContext;
 
-        private Dictionary<int, Dictionary<int, IContentType>> _contentTypes 
-            = new Dictionary<int, Dictionary<int, IContentType>>();
         #endregion
 
         #region Testing / Analytics helpers
@@ -31,6 +29,9 @@ namespace ToSic.Eav.Persistence.EFC11
         #endregion
 
         #region Load Content-Types into IContent-Type Dictionary
+        private Dictionary<int, Dictionary<int, IContentType>> _contentTypes 
+            = new Dictionary<int, Dictionary<int, IContentType>>();
+
         /// <summary>
         /// Get all ContentTypes for specified AppId. 
         /// If uses temporary caching, so if called multiple times it loads from a private field.
@@ -114,13 +115,14 @@ namespace ToSic.Eav.Persistence.EFC11
 
         #endregion
 
+        #region AppPackage
         /// <summary>Get Data to populate ICache</summary>
         /// <param name="appId">AppId (can be different than the appId on current context (e.g. if something is needed from the default appId, like MetaData)</param>
         /// <param name="entityIds">null or a List of EntitiIds</param>
         /// <param name="source">DataSource to get child entities</param>
         /// <param name="entitiesOnly">If only the CachItem.Entities is needed, this can be set to true to imporove performance</param>
         /// <returns>Item1: EntityModels, Item2: all ContentTypes, Item3: Assignment Object Types</returns>
-        public AppDataPackage CompleteApp(int appId, int[] entityIds = null, IDeferredEntitiesList source = null, bool entitiesOnly = false)
+        public AppDataPackage AppPackage(int appId, int[] entityIds = null, IDeferredEntitiesList source = null, bool entitiesOnly = false)
         {
             var contentTypes = ContentTypes(appId);
 
@@ -190,6 +192,7 @@ namespace ToSic.Eav.Persistence.EFC11
 
             var attributes = _dbContext.ToSicEavValues
                 .Include(v => v.ToSicEavValuesDimensions)
+                    .ThenInclude(d => d.Dimension)
                 .Where(r => eIds.Contains(r.EntityId))
                 .Where(v => !v.ChangeLogDeleted.HasValue)
                 .GroupBy(e => e.EntityId)
@@ -209,7 +212,7 @@ namespace ToSic.Eav.Persistence.EFC11
                                         DimensionId = l.DimensionId,
                                         ReadOnly = l.ReadOnly,
                                         Key = l.Dimension.ExternalKey.ToLower()
-                                    }),
+                                    }).ToList(),
                                 v2.ChangeLogCreated
                             })
                     }));
@@ -378,12 +381,14 @@ namespace ToSic.Eav.Persistence.EFC11
             return new AppDataPackage(entities, entList, contentTypes, metadataForGuid, metadataForNumber, metadataForString, relationships);
         }
 
+        #endregion
+
         /// <summary>
         /// Get EntityModel for specified EntityId
         /// </summary>
         /// <returns>A single IEntity or throws InvalidOperationException</returns>
         public IEntity Entity(int appId, int entityId)
-            => CompleteApp(appId, new[] { entityId }, null, true)
+            => AppPackage(appId, new[] { entityId }, null, true)
                 .Entities.Single(e => e.Key == entityId).Value; // must filter by EntityId again because of Drafts
 
         public Dictionary<int, string> MetadataTargetTypes() => _dbContext.ToSicEavAssignmentObjectTypes

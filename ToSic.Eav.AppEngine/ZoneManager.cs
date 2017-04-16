@@ -55,12 +55,12 @@ namespace ToSic.Eav.Apps
         private static readonly Dictionary<int, List<ZoneLanguagesTemp>> LanguageCache =
             new Dictionary<int, List<ZoneLanguagesTemp>>();
 
-        // note: cache at this level (to not instantiate a DB controller !) 
         // todo: move retrieval to an interface, then move this read to ZoneRuntime!!!
         public List<ZoneLanguagesTemp> Languages
         {
             get
             {
+                // note: cache at this level (to not instantiate a DB controller !) 
                 if (!LanguageCache.ContainsKey(ZoneId))
                 {
                     LanguageCache[ZoneId] = DataController.Dimensions.GetLanguages()

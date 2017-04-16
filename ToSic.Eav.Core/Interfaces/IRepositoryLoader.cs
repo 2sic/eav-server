@@ -22,7 +22,7 @@ namespace ToSic.Eav.Interfaces
         /// <param name="source">DataSource to get child entities</param>
         /// <param name="entitiesOnly">If only the CachItem.Entities is needed, this can be set to true to imporove performance</param>
         /// <returns>An object with everything which an app has, usually for caching</returns>
-        AppDataPackage CompleteApp(int appId, int[] entityIds = null, IDeferredEntitiesList source = null, bool entitiesOnly = false);
+        AppDataPackage AppPackage(int appId, int[] entityIds = null, IDeferredEntitiesList source = null, bool entitiesOnly = false);
 
         Dictionary<int, string> MetadataTargetTypes();
 
