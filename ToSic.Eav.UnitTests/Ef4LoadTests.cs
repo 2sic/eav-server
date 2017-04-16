@@ -15,20 +15,20 @@ namespace ToSic.Eav.Persistence.EFC11.Tests
         #region test preparations
 
         private DbDataController _db;
-        private DbLoadIntoEavDataStructure _loader;
+        private Ef4Loader _loader;
 
         [TestInitialize]
         public void Init()
         {
             _db = DbDataController.Instance(null, 2);
-            _loader = new DbLoadIntoEavDataStructure(_db);
+            _loader = new Ef4Loader(_db);
         }
         #endregion
 
         [TestMethod]
         public void TestLoadXApp2()
         {
-            var result = _loader.GetAppDataPackage(null, 2, null, false);
+            var result = _loader.CompleteApp(2, null, null, false);
             Assert.AreEqual(1063, result.Entities.Count, "counting...");
         }
 
@@ -36,7 +36,7 @@ namespace ToSic.Eav.Persistence.EFC11.Tests
         public void TryToLoadCtsOf2()
         {
             _loader.ResetCacheForTesting();
-            var results = _loader.GetEavContentTypes(2);
+            var results = _loader.ContentTypes(2);
             Assert.AreEqual(61, results.Count, "dummy test: ");
         }
 
@@ -44,17 +44,17 @@ namespace ToSic.Eav.Persistence.EFC11.Tests
         public void TryToLoadCtsOf2Again()
         {
             _loader.ResetCacheForTesting();
-            var results = _loader.GetEavContentTypes(2);
+            var results = _loader.ContentTypes(2);
             Assert.AreEqual(61, results.Count, "dummy test: ");
         }
         [TestMethod]
         public void TryToLoadCtsOf2TenXCleared()
         {
-            var results = _loader.GetEavContentTypes(2);
+            var results = _loader.ContentTypes(2);
             for (var x = 0; x < 9; x++)
             {
                 _loader.ResetCacheForTesting();
-                results = _loader.GetEavContentTypes(2);
+                results = _loader.ContentTypes(2);
             }
             Assert.AreEqual(61, results.Count, "dummy test: ");
         }

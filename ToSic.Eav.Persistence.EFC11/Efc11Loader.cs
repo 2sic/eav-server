@@ -11,7 +11,7 @@ namespace ToSic.Eav.Persistence.EFC11
     /// <summary>
     /// 
     /// </summary>
-    internal class Efc11Loader
+    internal class Efc11Loader: IRepositoryLoader
     {
         #region constructor and private vars
         internal Efc11Loader(EavDbContext dbContext)
@@ -35,7 +35,7 @@ namespace ToSic.Eav.Persistence.EFC11
         /// Get all ContentTypes for specified AppId. 
         /// If uses temporary caching, so if called multiple times it loads from a private field.
         /// </summary>
-        internal IDictionary<int, IContentType> GetEavContentTypes(int appId)
+        public IDictionary<int, IContentType> ContentTypes(int appId)
         {
             if (!_contentTypes.ContainsKey(appId))
                 LoadContentTypesIntoLocalCache(appId);
@@ -97,56 +97,6 @@ namespace ToSic.Eav.Persistence.EFC11
                     a.SortOrder
                 }));
 
-            #region old stuff / hidden
-            //var contentTypes = from set in DbContext.ToSicEavAttributeSets
-            //                   where set.AppId == appId && !set.ChangeLogDeleted.HasValue
-            //                   select new
-            //                   {
-            //                       set.AttributeSetId,
-            //                       set.Name,
-            //                       set.StaticName,
-            //                       set.Scope,
-            //                       set.Description,
-            //                       Attributes =
-            //                       (from a in set.ToSicEavAttributesInSets
-            //                                     select new
-            //                                     {
-            //                                         a.AttributeId,
-            //                                         a.Attribute.StaticName,
-            //                                         a.Attribute.Type,
-            //                                         a.IsTitle,
-            //                                         a.SortOrder
-            //                                     }),
-            //                       ToSicEavAttributesInSets = set.ToSicEavAttributesInSets,
-
-
-            //                       IsGhost = set.UsesConfigurationOfAttributeSet
-
-            //,
-            //SharedAttributes = (from a in DbContext.ToSicEavAttributesInSets
-            //                    where a.AttributeSetId == set.UsesConfigurationOfAttributeSet
-            //                    select new
-            //                    {
-            //                        a.AttributeId,
-            //                        a.Attribute.StaticName,
-            //                        a.Attribute.Type,
-            //                        a.IsTitle,
-            //                        a.SortOrder
-            //                    })
-
-            //    ,
-            //SharedAppDef = (from master in DbContext.ToSicEavAttributeSets
-            //                where master.AttributeSetId == (set.UsesConfigurationOfAttributeSet ?? set.AttributeSetId)
-            //                      && master.UsesConfigurationOfAttributeSet == null
-            //                select new
-            //                {
-            //                    master.AppId,
-            //                    master.App.ZoneId,
-            //                    ConfigIsOmnipresent = master.AlwaysShareConfiguration
-            //                }).FirstOrDefault()
-            //};
-            #endregion 
-
             // Convert to ContentType-Model
             _contentTypes[appId] = contentTypes.ToDictionary(k1 => k1.AttributeSetId,
                 set => (IContentType) new ContentType(set.Name, set.StaticName, set.AttributeSetId, 
@@ -162,77 +112,17 @@ namespace ToSic.Eav.Persistence.EFC11
             );
         }
 
-
-        /// <summary>
-        /// Get all ContentTypes for specified AppId. If called multiple times it loads from a private field.
-        /// </summary>
-        internal IDictionary<int, IContentType> GetEavContentTypesSlower(int appId)
-        {
-            if (!_contentTypes.ContainsKey(appId))
-            {
-                // Load from DB
-                var contentTypes = from set in _dbContext.ToSicEavAttributeSets
-                    where set.AppId == appId && !set.ChangeLogDeleted.HasValue
-                    select new
-                    {
-                        set.AttributeSetId,
-                        set.Name,
-                        set.StaticName,
-                        set.Scope,
-                        set.Description,
-                        Attributes = (from a in set.ToSicEavAttributesInSets
-                            select new
-                            {
-                                a.AttributeId,
-                                a.Attribute.StaticName,
-                                a.Attribute.Type,
-                                a.IsTitle,
-                                a.SortOrder
-                            }),
-                        IsGhost = set.UsesConfigurationOfAttributeSet,
-                        SharedAttributes = (from a in _dbContext.ToSicEavAttributesInSets
-                            where a.AttributeSetId == set.UsesConfigurationOfAttributeSet
-                            select new
-                            {
-                                a.AttributeId,
-                                a.Attribute.StaticName,
-                                a.Attribute.Type,
-                                a.IsTitle,
-                                a.SortOrder
-                            })
-                            ,
-                        SharedAppDef = (from master in _dbContext.ToSicEavAttributeSets
-                                        where master.AttributeSetId == (set.UsesConfigurationOfAttributeSet ?? set.AttributeSetId)
-                                              && master.UsesConfigurationOfAttributeSet == null
-                            select new
-                            {
-                                master.AppId, master.App.ZoneId,
-                                ConfigIsOmnipresent = master.AlwaysShareConfiguration
-                            }).FirstOrDefault()
-                    };
-
-                // Convert to ContentType-Model
-                _contentTypes[appId] = contentTypes.ToDictionary(k1 => k1.AttributeSetId, set => (IContentType)new ContentType(set.Name, set.StaticName, set.AttributeSetId, set.Scope, set.Description, set.IsGhost, set.SharedAppDef.ZoneId, set.SharedAppDef.AppId, set.SharedAppDef.ConfigIsOmnipresent)
-                {
-                    AttributeDefinitions = (set.IsGhost.HasValue ? set.SharedAttributes : set.Attributes)
-                            .ToDictionary(k2 => k2.AttributeId, a => new AttributeBase(a.StaticName, a.Type, a.IsTitle, a.AttributeId, a.SortOrder) as IAttributeBase)
-                });
-            }
-
-            return _contentTypes[appId];
-        }
-
         #endregion
 
         /// <summary>Get Data to populate ICache</summary>
-        /// <param name="entityIds">null or a List of EntitiIds</param>
         /// <param name="appId">AppId (can be different than the appId on current context (e.g. if something is needed from the default appId, like MetaData)</param>
+        /// <param name="entityIds">null or a List of EntitiIds</param>
         /// <param name="source">DataSource to get child entities</param>
         /// <param name="entitiesOnly">If only the CachItem.Entities is needed, this can be set to true to imporove performance</param>
         /// <returns>Item1: EntityModels, Item2: all ContentTypes, Item3: Assignment Object Types</returns>
-        internal AppDataPackage GetAppDataPackage(int[] entityIds, int appId, IDeferredEntitiesList source, bool entitiesOnly = false)
+        public AppDataPackage CompleteApp(int appId, int[] entityIds = null, IDeferredEntitiesList source = null, bool entitiesOnly = false)
         {
-            var contentTypes = GetEavContentTypes(appId);
+            var contentTypes = ContentTypes(appId);
 
             var metadataForGuid = new Dictionary<int, Dictionary<Guid, IEnumerable<IEntity>>>();
             var metadataForNumber = new Dictionary<int, Dictionary<int, IEnumerable<IEntity>>>();
@@ -284,36 +174,7 @@ namespace ToSic.Eav.Persistence.EFC11
                     e.PublishedEntityId,
                     e.Owner, 
                     Modified = e.ChangeLogModifiedNavigation.Timestamp, 
-                    // RelTest = e.RelationshipsWithThisAsParent,
-                    //RelatedEntities = e.RelationshipsWithThisAsParent
-                    //    // .Where(r => r.ParentEntityId == e.EntityId) // test
-                    //    .GroupBy(r => r.AttributeId)
-                    //    .Select(rg => new {
-                    //        AttributeID = rg.Key,
-                    //        Childs = rg.OrderBy(c => c.SortOrder).Select(c => c.ChildEntityId)
-                    //    }),
 
-
-                    //Attributes = e.ToSicEavValues
-                    //    .Where(v => !v.ChangeLogDeleted.HasValue)
-                    //    .GroupBy(v => v.AttributeId)
-                    //    .Select(vg =>  new {
-                    //        AttributeID = vg.Key,
-                    //        Values = vg
-                    //            .OrderBy(v2 => v2.ChangeLogCreated)
-                    //            .Select(v2 => new {
-                    //            v2.ValueId,
-                    //            v2.Value,
-                    //            Languages = v2.ToSicEavValuesDimensions
-                    //                .Select(l =>  new Dimension
-                    //                {
-                    //                    DimensionId = l.DimensionId,
-                    //                    ReadOnly = l.ReadOnly,
-                    //                    Key = l.Dimension.ExternalKey.ToLower()
-                    //                }),
-                    //            v2.ChangeLogCreated
-                    //        })
-                    //    })
                 }).ToList();
             var eIds = rawEntities.Select(e => e.EntityId).ToList();
 
@@ -353,71 +214,7 @@ namespace ToSic.Eav.Persistence.EFC11
                             })
                     }));
 
-            #region hidden / commented out
-            //var entitiesWithAandVfromDb = from e in _dbContext.ToSicEavEntities
-            //                     where
-            //                         !e.ChangeLogDeleted.HasValue &&
-            //                         e.AttributeSet.AppId == appId &&
-            //                         e.AttributeSet.ChangeLogDeleted == null &&
-            //                         (	// filter by EntityIds (if set)
-            //                             !filterByEntityIds ||
-            //                             entityIds.Contains(e.EntityId) ||
-            //                             (e.PublishedEntityId.HasValue && entityIds.Contains(e.PublishedEntityId.Value))	// also load Drafts
-            //                             )
-            //                     orderby
-            //                         e.EntityId	// guarantees Published appear before draft
-            //                     select new
-            //                     {
-            //                         e.EntityId,
-            //                         e.EntityGuid,
-            //                         e.AttributeSetId,
-            //                         Metadata = new Metadata
-            //                         {
-            //                             TargetType = e.AssignmentObjectTypeId,
-            //                             KeyGuid = e.KeyGuid,
-            //                             KeyNumber = e.KeyNumber,
-            //                             KeyString = e.KeyString
-            //                         },
-            //                         e.IsPublished,
-            //                         e.PublishedEntityId,
-            //                         e.Owner, // new 2016-03-01
-            //                         Modified = e.ChangeLogModifiedNavigation.Timestamp, //.ChangeLogModified.Timestamp,
-            //                         RelatedEntities = from r in e.ToSicEavEntityRelationshipsParentEntity
-            //                                           group r by r.AttributeId
-            //                                               into rg
-            //                                               select new
-            //                                               {
-            //                                                   AttributeID = rg.Key,
-            //                                                   Childs = rg.OrderBy(c => c.SortOrder).Select(c => c.ChildEntityId)
-            //                                               },
-            //                         Attributes = from v in e.ToSicEavValues
-            //                                      where !v.ChangeLogDeleted.HasValue
-            //                                      group v by v.AttributeId
-            //                                          into vg
-            //                                          select new
-            //                                          {
-            //                                              AttributeID = vg.Key,
-            //                                              Values = from v2 in vg
-            //                                                       orderby v2.ChangeLogCreated
-            //                                                       select new
-            //                                                       {
-            //                                                           v2.ValueId,
-            //                                                           v2.Value,
-            //                                                           Languages = from l in v2.ToSicEavValuesDimensions//.ValuesDimensions
-            //                                                                       select new Dimension
-            //                                                                       {
-            //                                                                           DimensionId = l.DimensionId,
-            //                                                                           ReadOnly = l.ReadOnly,
-            //                                                                           Key = l.Dimension.ExternalKey.ToLower()
-            //                                                                       },
-            //                                                           v2.ChangeLogCreated
-            //                                                       }
-            //                                          }
-            //                     };
             #endregion
-            #endregion
-
-            // return null;
 
             #region Build EntityModels
             var entities = new Dictionary<int, IEntity>();
@@ -505,8 +302,7 @@ namespace ToSic.Eav.Persistence.EFC11
                 }
                 #endregion
 
-                //if (false)
-                    #region Add "normal" Attributes (that are not Entity-Relations)
+                #region Add "normal" Attributes (that are not Entity-Relations)
                 if(attributes.ContainsKey(e.EntityId))
                     foreach (var a in attributes[e.EntityId])// e.Attributes)
                     {
@@ -582,13 +378,27 @@ namespace ToSic.Eav.Persistence.EFC11
             return new AppDataPackage(entities, entList, contentTypes, metadataForGuid, metadataForNumber, metadataForString, relationships);
         }
 
-        ///// <summary>
-        ///// Get EntityModel for specified EntityId
-        ///// </summary>
-        ///// <returns>A single IEntity or throws InvalidOperationException</returns>
-        //public IEntity GetEavEntity(int entityId, BaseCache source = null)
-        //    => GetAppDataPackage(new[] { entityId }, DbContext.AppId, source, true)
-        //        .Entities.Single(e => e.Key == entityId).Value; // must filter by EntityId again because of Drafts
+        /// <summary>
+        /// Get EntityModel for specified EntityId
+        /// </summary>
+        /// <returns>A single IEntity or throws InvalidOperationException</returns>
+        public IEntity Entity(int appId, int entityId)
+            => CompleteApp(appId, new[] { entityId }, null, true)
+                .Entities.Single(e => e.Key == entityId).Value;
+
+        public Dictionary<int, string> MetadataTargetTypes() => _dbContext.ToSicEavAssignmentObjectTypes
+            .ToDictionary(a => a.AssignmentObjectTypeId, a => a.Name);
+
+        [Obsolete("Warning - untested, could be slow")]
+        public Dictionary<int, Zone> Zones()
+        {
+            return _dbContext.ToSicEavZones.ToDictionary(z => z.ZoneId, z => new Zone(
+                z.ZoneId,
+                z.ToSicEavApps.FirstOrDefault(a => a.Name == Constants.DefaultAppName).AppId,
+                z.ToSicEavApps.ToDictionary(a => a.AppId, a => a.Name)));
+        }
+
+        // must filter by EntityId again because of Drafts
 
     }
 }

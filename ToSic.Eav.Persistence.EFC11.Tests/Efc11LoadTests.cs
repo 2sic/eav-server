@@ -70,14 +70,23 @@ namespace ToSic.Eav.Persistence.EFC11.Tests
             Assert.AreEqual(61, results.Count, "dummy test: ");
         }
 
+        [TestMethod]
+        public void TestMetadataTargetTypes()
+        {
+            var types = _loader.MetadataTargetTypes();
+
+            Assert.AreEqual(100, types.Count);
+            Assert.IsTrue(types[Constants.NotMetadata] == "Default");
+        }
+
         private AppDataPackage TestLoadApp(int appId)
         {
-            return _loader.GetAppDataPackage(null, appId, null);
+            return _loader.CompleteApp(appId, null, null);
         }
 
         private IDictionary<int, IContentType> TestLoadCts(int appId)
         {
-            return _loader.GetEavContentTypes(appId);
+            return _loader.ContentTypes(appId);
         }
 
     }
