@@ -2,7 +2,7 @@
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.RootSources;
 using ToSic.Eav.Interfaces;
-using ToSic.Eav.Repository.EF4;
+//using ToSic.Eav.Repository.EF4;
 
 // important: don't change the namespace just like that, as there are strings referencing it for this loader
 // ReSharper disable once CheckNamespace
@@ -16,6 +16,11 @@ namespace ToSic.Eav.DataSources.SqlSources
 		//private readonly DbDataController _context;
 	    private readonly IRepositoryLoader _loader;
 		private bool _ready;
+
+	    public EavSqlStore(IRepositoryLoader loader)
+	    {
+	        _loader = loader;
+	    }
 
   //      #region App/Zone
   //      /// <summary>
@@ -39,7 +44,7 @@ namespace ToSic.Eav.DataSources.SqlSources
 		{
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntities));
 			//_context = DbDataController.Instance();
-		    _loader = new Ef4Loader();//_context);
+		    //_loader = new Ef4Loader();//_context);
 
             // 2015-08-08 2dm: note: changed to use the source null (previously this), as it's only used for internal deferred child-entity lookups and would cause infinite looping
             IDictionary<int, IEntity> GetEntities()

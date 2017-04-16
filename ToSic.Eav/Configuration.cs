@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data.EntityClient;
 using System.Configuration;
 using ToSic.Eav.Interfaces;
 
@@ -27,39 +26,18 @@ namespace ToSic.Eav
 		/// SetConnectionString must be called before (if not, DefaultConnectionStringName is used).
 		/// ConnectionString must be a simple SQL Connection string (not a Entity Framework one).
 		/// </summary>
-		/// <returns>ConnectionString for the EntityFramework</returns>
-		internal static string GetConnectionString()
-		{
-			if (!string.IsNullOrEmpty(_connectionStringName))
-			{
-				//string ConnectionStringName = HttpContext.Current.Application[AppSettingPrefix + "." + ConnectionStringSetting].ToString();
-				var connectionStringName = _connectionStringName;
+		/// <returns>ConnectionString or fallback from config for dev purpose</returns>
 
-				var builder = new EntityConnectionStringBuilder();
-				try
-				{
-					builder.ProviderConnectionString = ConfigurationManager.ConnectionStrings[connectionStringName].ConnectionString;
-				}
-				catch (NullReferenceException)
-				{
-					throw new Exception("Couldn't load Connection String with name \"" + connectionStringName + "\"");
-				}
-				if (!builder.ProviderConnectionString.Contains("MultipleActiveResultSets"))
-					builder.ProviderConnectionString += ";MultipleActiveResultSets=True";
-
-			    builder.Metadata = "res://*/Persistence.EavContext.csdl|res://*/Persistence.EavContext.ssdl|res://*/Persistence.EavContext.msl";
-				builder.Provider = "System.Data.SqlClient";
-
-				return builder.ToString();
-			}
-			try
-			{
-				return ConfigurationManager.ConnectionStrings[DefaultConnectionStringName].ConnectionString;
-			}
-			catch (NullReferenceException)
-			{
-				throw new Exception("Couldn't load Connection String with name \"" + DefaultConnectionStringName + "\"");
-			}
+	    internal static string ConnectionString(string key)
+	    {
+            try
+            {
+                return ConfigurationManager.ConnectionStrings[key].ConnectionString;
+            }
+            catch (NullReferenceException)
+            {
+                throw new Exception("Couldn't load Connection String with name \"" + key + "\"");
+            }
         }
 
         #region Internal depedency injection...
@@ -67,7 +45,9 @@ namespace ToSic.Eav
 	    /// <summary>
 	    /// Db Connection String used in the Eav-Connector
 	    /// </summary>
-	    public string DbConnectionString => GetConnectionString();
+	    public string DbConnectionString => ConnectionString(string.IsNullOrEmpty(_connectionStringName)
+                ? DefaultConnectionStringName
+                : _connectionStringName);
 
 	    #endregion
 

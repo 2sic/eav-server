@@ -79,6 +79,18 @@ namespace ToSic.Eav.Persistence.EFC11.Tests
             Assert.IsTrue(types[Constants.NotMetadata] == "Default");
         }
 
+        [TestMethod]
+        public void TestZonesLoader()
+        {
+            var zones = _loader.Zones();
+            var defapp = zones.First().Value.DefaultAppId;
+            var apps = zones[2].Apps;
+            
+            Assert.AreEqual(1, defapp, "def app on first zone");
+            Assert.AreEqual(67, zones.Count, "zone count");
+            Assert.AreEqual(24, apps.Count, "app count on second zone");
+        }
+
         private AppDataPackage TestLoadApp(int appId)
         {
             return _loader.CompleteApp(appId, null, null);

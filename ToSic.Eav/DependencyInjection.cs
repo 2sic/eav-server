@@ -1,4 +1,5 @@
-﻿using Microsoft.Practices.Unity;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Practices.Unity;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.DataSources.RootSources;
@@ -6,6 +7,9 @@ using ToSic.Eav.DataSources.SqlSources;
 using ToSic.Eav.Implementations;
 using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Persistence.EFC11;
+using ToSic.Eav.Persistence.EFC11.Models;
+using ToSic.Eav.Repository.EF4;
 
 namespace ToSic.Eav
 {
@@ -14,6 +18,8 @@ namespace ToSic.Eav
 	/// </summary>
 	public class DependencyInjection
 	{
+        public bool UseEfCore = false;
+
         #region Configure Unity Factory with defaults
         /// <summary>
         /// Register Types in Unity Container
@@ -32,6 +38,26 @@ namespace ToSic.Eav
             if (!cont.IsRegistered<ISystemConfiguration>())
                 cont.RegisterType<ISystemConfiguration, Configuration>();
 
+            if (!cont.IsRegistered<IRepositoryLoader>())
+                if (UseEfCore)
+                    cont.RegisterType<IRepositoryLoader, Efc11Loader>(
+                        new InjectionConstructor(new ResolvedParameter<EavDbContext>())); // use the empty constructor
+                else
+                    cont.RegisterType<IRepositoryLoader, Ef4Loader>(new InjectionConstructor());
+
+
+            #region register the new EF1.1 ORM
+            //var conStr = new Configuration().DbConnectionString;
+            if (!cont.IsRegistered<EavDbContext>())
+                cont.RegisterType<EavDbContext>(new HierarchicalLifetimeManager(), new InjectionFactory(
+                    obj =>
+                    {
+                        var opts = new DbContextOptionsBuilder<EavDbContext>();
+                        opts.UseSqlServer(new Configuration().DbConnectionString);
+                        return new EavDbContext(opts.Options);
+                    }));
+            #endregion
+
             // register some Default Constructors
             cont.RegisterType<SqlDataSource>(new InjectionConstructor());
             cont.RegisterType<DataTableDataSource>(new InjectionConstructor());
@@ -39,6 +65,7 @@ namespace ToSic.Eav
             
             return cont;
         }
+
         #endregion
     }
 }

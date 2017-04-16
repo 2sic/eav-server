@@ -15,7 +15,7 @@ namespace ToSic.Eav.DataSources.Caches
             Cache = this;
         }
 
-        public override Dictionary<int, Zone> ZoneApps // note: short version doesn't work: { get; protected set; }
+        public override Dictionary<int, Zone> ZoneApps 
         {
             get { return _zoneApps; }
             protected set { _zoneApps = value; }
@@ -28,6 +28,8 @@ namespace ToSic.Eav.DataSources.Caches
             protected set { _assignmentObjectTypes = value; }
         }
         private static Dictionary<int, string> _assignmentObjectTypes;
+
+
 
         public override string CacheKeySchema => "Z{0}A{1}";
 
@@ -50,7 +52,6 @@ namespace ToSic.Eav.DataSources.Caches
                 throw new Exception("issue with setting cache item - key is '" + cacheKey + "' and cache is null =" +
                                     (Caches == null) + " and item is null=" + (item == null), ex);
             }
-
         }
 
         protected override AppDataPackage GetCacheItem(string cacheKey) => Caches[cacheKey];

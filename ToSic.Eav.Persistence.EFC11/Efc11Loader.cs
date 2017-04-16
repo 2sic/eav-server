@@ -11,10 +11,10 @@ namespace ToSic.Eav.Persistence.EFC11
     /// <summary>
     /// 
     /// </summary>
-    internal class Efc11Loader: IRepositoryLoader
+    public class Efc11Loader: IRepositoryLoader
     {
         #region constructor and private vars
-        internal Efc11Loader(EavDbContext dbContext)
+        public Efc11Loader(EavDbContext dbContext)
         {
             _dbContext = dbContext;
         }
@@ -384,21 +384,17 @@ namespace ToSic.Eav.Persistence.EFC11
         /// <returns>A single IEntity or throws InvalidOperationException</returns>
         public IEntity Entity(int appId, int entityId)
             => CompleteApp(appId, new[] { entityId }, null, true)
-                .Entities.Single(e => e.Key == entityId).Value;
+                .Entities.Single(e => e.Key == entityId).Value; // must filter by EntityId again because of Drafts
 
         public Dictionary<int, string> MetadataTargetTypes() => _dbContext.ToSicEavAssignmentObjectTypes
             .ToDictionary(a => a.AssignmentObjectTypeId, a => a.Name);
 
-        [Obsolete("Warning - untested, could be slow")]
-        public Dictionary<int, Zone> Zones()
-        {
-            return _dbContext.ToSicEavZones.ToDictionary(z => z.ZoneId, z => new Zone(
-                z.ZoneId,
-                z.ToSicEavApps.FirstOrDefault(a => a.Name == Constants.DefaultAppName).AppId,
+        public Dictionary<int, Zone> Zones() => _dbContext.ToSicEavZones
+            .Include(z => z.ToSicEavApps)
+            .ToDictionary(z => z.ZoneId, z => new Zone(z.ZoneId,
+                z.ToSicEavApps.FirstOrDefault(a => a.Name == Constants.DefaultAppName)?.AppId ?? -1,
                 z.ToSicEavApps.ToDictionary(a => a.AppId, a => a.Name)));
-        }
 
-        // must filter by EntityId again because of Drafts
 
     }
 }

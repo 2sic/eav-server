@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.EntityClient;
 using System.Linq;
 using Microsoft.Practices.Unity;
 using ToSic.Eav.Implementations.UserInformation;
@@ -98,13 +99,14 @@ namespace ToSic.Eav.Repository.EF4
 
 
         #region Constructor and Init
+
         /// <summary>
         /// Returns a new instace of the Eav Context. InitZoneApp must be called afterward.
         /// </summary>
         private static DbDataController Instance()
         {
-            var Configuration = Factory.Container.Resolve<ISystemConfiguration>();
-            var connectionString = Configuration.DbConnectionString;// Configuration.GetConnectionString();
+            var configuration = Factory.Container.Resolve<ISystemConfiguration>();
+            var connectionString = BuildEf4ConnectionString(configuration.DbConnectionString); //Configuration.DbConnectionString;// Configuration.GetConnectionString();
             var context = new EavContext(connectionString);
             var dc = new DbDataController {SqlDb = context};
             dc.DbS = new DbShortcuts(dc);
@@ -222,5 +224,25 @@ namespace ToSic.Eav.Repository.EF4
 
         #endregion
 
+
+        private static string BuildEf4ConnectionString(string simpleConStr)
+        {
+            // check if it's an already fully built EF4 string, if yes, just keep it
+            if (simpleConStr.Contains(".ssdl"))
+                return simpleConStr;
+
+            var builder = new EntityConnectionStringBuilder
+            {
+                ProviderConnectionString = simpleConStr,
+                Metadata =
+                    "res://*/Persistence.EavContext.csdl|res://*/Persistence.EavContext.ssdl|res://*/Persistence.EavContext.msl",
+                Provider = "System.Data.SqlClient"
+            };
+
+            if (!builder.ProviderConnectionString.Contains("MultipleActiveResultSets"))
+                builder.ProviderConnectionString += ";MultipleActiveResultSets=True";
+
+            return builder.ToString();
+        }
     }
 }

@@ -9,14 +9,15 @@ namespace ToSic.Eav.Repository.EF4
     /// <summary>
     /// 
     /// </summary>
-    internal class Ef4Loader: /*BllCommandBase,*/ IRepositoryLoader
+    public class Ef4Loader: /*BllCommandBase,*/ IRepositoryLoader
     {
         internal DbDataController DbContext;
         public Ef4Loader()
         {
             DbContext = DbDataController.Instance();
-
         }
+
+
         /// <summary>
         /// 
         /// </summary>
@@ -339,6 +340,7 @@ namespace ToSic.Eav.Repository.EF4
             => DbContext.AttribSet.ResetCacheForTesting();
 
         public Dictionary<int, string> MetadataTargetTypes() => DbContext.DbS.GetAssignmentObjectTypes();
+
         public Dictionary<int, Data.Zone> Zones() => DbContext.Zone.GetAllZones();
 
 
