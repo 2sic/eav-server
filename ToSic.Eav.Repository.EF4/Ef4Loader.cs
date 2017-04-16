@@ -11,10 +11,13 @@ namespace ToSic.Eav.Repository.EF4
     /// </summary>
     public class Ef4Loader: /*BllCommandBase,*/ IRepositoryLoader
     {
-        internal DbDataController DbContext;
+        // improtant note: must manually instantiate it, otherwise
+        // each time this object is created (which happens a lot) the DBController is fully initialized
+        internal DbDataController DbContext => _dbc ?? (_dbc = DbDataController.Instance());
+
+        private DbDataController _dbc;
         public Ef4Loader()
         {
-            DbContext = DbDataController.Instance();
         }
 
 
@@ -24,7 +27,7 @@ namespace ToSic.Eav.Repository.EF4
         /// <param name="cntx"></param>
         public Ef4Loader(DbDataController cntx) // : base(cntx)
         {
-            DbContext = cntx;
+            _dbc = cntx;
         }
 
         /// <summary>

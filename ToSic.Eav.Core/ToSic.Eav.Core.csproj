@@ -87,6 +87,7 @@
     <Compile Include="Interfaces\IContentType.cs" />
     <Compile Include="Interfaces\IDeferredEntitiesList.cs" />
     <Compile Include="Interfaces\IEnvironment.cs" />
+    <Compile Include="Interfaces\ILanguage.cs" />
     <Compile Include="Interfaces\IMetadata.cs" />
     <Compile Include="Interfaces\IDimension.cs" />
     <Compile Include="Interfaces\IEntity.cs" />

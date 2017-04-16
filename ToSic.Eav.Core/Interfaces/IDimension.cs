@@ -1,9 +1,9 @@
 ﻿namespace ToSic.Eav
 {
-	/// <summary>
-	/// Represents a Dimension
-	/// </summary>
-	public interface IDimension
+    /// <summary>
+    /// Represents a Dimension
+    /// </summary>
+    public interface IDimension
 	{
 		/// <summary>
 		/// Gets the internal DimensionId
@@ -17,12 +17,5 @@
 		/// Gets whether Dimension is assigned read only
 		/// </summary>
 		bool ReadOnly { get; }
-	}
-
-	/// <summary>
-	/// Represents a Language
-	/// </summary>
-	public interface ILanguage : IDimension
-	{
 	}
 }

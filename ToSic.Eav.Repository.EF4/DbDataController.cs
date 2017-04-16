@@ -143,7 +143,7 @@ namespace ToSic.Eav.Repository.EF4
         /// <summary>
         /// Set ZoneId and AppId on current context.
         /// </summary>
-        public void InitZoneApp(int? zoneId = null, int? appId = null)
+        private void InitZoneApp(int? zoneId = null, int? appId = null)
         {
             // If nothing is supplied, use defaults
             if (!zoneId.HasValue && !appId.HasValue)
