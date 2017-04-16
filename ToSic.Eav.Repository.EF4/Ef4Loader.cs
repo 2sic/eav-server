@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Repository.EF4
@@ -10,20 +9,27 @@ namespace ToSic.Eav.Repository.EF4
     /// <summary>
     /// 
     /// </summary>
-    internal class DbLoadIntoEavDataStructure: BllCommandBase
+    internal class Ef4Loader: /*BllCommandBase,*/ IRepositoryLoader
     {
+        internal DbDataController DbContext;
+        public Ef4Loader()
+        {
+            DbContext = DbDataController.Instance();
+
+        }
         /// <summary>
         /// 
         /// </summary>
         /// <param name="cntx"></param>
-        public DbLoadIntoEavDataStructure(DbDataController cntx) : base(cntx)
+        public Ef4Loader(DbDataController cntx) // : base(cntx)
         {
+            DbContext = cntx;
         }
 
         /// <summary>
         /// Get all ContentTypes for specified AppId. If called multiple times it loads from a private field.
         /// </summary>
-        internal IDictionary<int, IContentType> GetEavContentTypes(int appId)
+        public IDictionary<int, IContentType> ContentTypes(int appId)
         {
             if (!DbContext.AttribSet.ContentTypes.ContainsKey(appId))
             {
@@ -80,14 +86,14 @@ namespace ToSic.Eav.Repository.EF4
         }
 
         /// <summary>Get Data to populate ICache</summary>
-        /// <param name="entityIds">null or a List of EntitiIds</param>
         /// <param name="appId">AppId (can be different than the appId on current context (e.g. if something is needed from the default appId, like MetaData)</param>
+        /// <param name="entityIds">null or a List of EntitiIds</param>
         /// <param name="source">DataSource to get child entities</param>
         /// <param name="entitiesOnly">If only the CachItem.Entities is needed, this can be set to true to imporove performance</param>
-        /// <returns>Item1: EntityModels, Item2: all ContentTypes, Item3: Assignment Object Types</returns>
-        internal AppDataPackage GetAppDataPackage(int[] entityIds, int appId, IDeferredEntitiesList source, bool entitiesOnly = false)
+        /// <returns>An object with everything which an app has, usually for caching</returns>
+        public AppDataPackage CompleteApp(int appId, int[] entityIds = null, IDeferredEntitiesList source = null, bool entitiesOnly = false)
         {
-            var contentTypes = GetEavContentTypes(appId);
+            var contentTypes = ContentTypes(appId);
 
             var metadataForGuid = new Dictionary<int, Dictionary<Guid, IEnumerable<IEntity>>>();
             var metadataForNumber = new Dictionary<int, Dictionary<int, IEnumerable<IEntity>>>();
@@ -320,15 +326,21 @@ namespace ToSic.Eav.Repository.EF4
         /// Get EntityModel for specified EntityId
         /// </summary>
         /// <returns>A single IEntity or throws InvalidOperationException</returns>
-        public IEntity GetEavEntity(int entityId, BaseCache source = null)
-            => GetAppDataPackage(new[] {entityId}, DbContext.AppId, source, true)
+        public IEntity Entity(int appId, int entityId)//, IDeferredEntitiesList source = null)
+            => CompleteApp(/*DbContext.AppId*/appId, new[] {entityId}, null, true)
                 .Entities.Single(e => e.Key == entityId).Value; // must filter by EntityId again because of Drafts
+
+
 
 
         #region Testing / Analytics helpers
 
         internal void ResetCacheForTesting()
             => DbContext.AttribSet.ResetCacheForTesting();
+
+        public Dictionary<int, string> MetadataTargetTypes() => DbContext.DbS.GetAssignmentObjectTypes();
+        public Dictionary<int, Data.Zone> Zones() => DbContext.Zone.GetAllZones();
+
 
         #endregion
 

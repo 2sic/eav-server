@@ -215,10 +215,10 @@ namespace ToSic.Eav.Repository.EF4.Parts
             var import = new DbImport(DbContext.ZoneId /* _zoneId*/,DbContext.AppId /* _appId*/, /*Context.UserName,*/ false, false);
             import.ImportIntoDb(null, new List<ImpEntity> { newVersion });
             
-            // IMPORTANT : IF THIS IS EVER USED, REMEMBER TO CLEAR THE CACHE in the calling method
+            // IMPORTANT : IF THIS IS EVER USED, REMEMBER TO CLEAR THE CACHE afterwards in the calling method
 
             // Delete Draft (if any)
-            var entityDraft = new DbLoadIntoEavDataStructure(DbContext).GetEavEntity(entityId).GetDraft();
+            var entityDraft = new Ef4Loader(DbContext).Entity(DbContext.AppId, entityId).GetDraft();
             if (entityDraft != null)
                 DbContext.Entities.DeleteEntity(entityDraft.RepositoryId);
         }

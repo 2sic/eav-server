@@ -74,7 +74,7 @@
     <Compile Include="Data\Value.cs" />
     <Compile Include="Data\Value_ofT.cs" />
     <Compile Include="Data\Zone.cs" />
-    <Compile Include="Entity.cs" />
+    <Compile Include="Data\Entity.cs" />
     <Compile Include="Enums\AttributeScope.cs" />
     <Compile Include="Enums\AttributeTypeEnum.cs" />
     <Compile Include="Factory.cs" />
@@ -94,6 +94,7 @@
     <Compile Include="Interfaces\IRelatedEntities.cs" />
     <Compile Include="Interfaces\IRelationshipManager.cs" />
     <Compile Include="Implementations\UserInformation\IEavUserInformation.cs" />
+    <Compile Include="Interfaces\IRepositoryLoader.cs" />
     <Compile Include="Interfaces\IValue.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

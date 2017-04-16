@@ -56,7 +56,7 @@
     <Compile Include="BllCommandBase.cs" />
     <Compile Include="DataSources\SqlSources\EavSqlStore.cs" />
     <Compile Include="DbDataController.cs" />
-    <Compile Include="DbLoadIntoEavDataStructure.cs" />
+    <Compile Include="Ef4Loader.cs" />
     <Compile Include="Implementations\RepositoryImporter.cs" />
     <Compile Include="Parts\DbApp.cs" />
     <Compile Include="Parts\DbAttribute.cs" />

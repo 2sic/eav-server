@@ -377,7 +377,7 @@ namespace ToSic.Eav.Repository.EF4.Parts
         /// </summary>
         private void UpdateEntityDefault(Entity entity, IDictionary newValues, ICollection<int> dimensionIds, bool masterRecord, List<Attribute> attributes, List<EavValue> currentValues)
         {
-            var entityModel = entity.EntityID != 0 ? new DbLoadIntoEavDataStructure(DbContext).GetEavEntity(entity.EntityID) : null;
+            var entityModel = entity.EntityID != 0 ? new Ef4Loader(DbContext).Entity(DbContext.AppId, entity.EntityID) : null;
             var newValuesTyped = DictionaryToValuesViewModel(newValues);
             foreach (var newValue in newValuesTyped)
             {
@@ -491,7 +491,7 @@ namespace ToSic.Eav.Repository.EF4.Parts
         public Tuple<bool, string> CanDeleteEntity(int entityId)
         {
             var messages = new List<string>();
-            var entityModel = new DbLoadIntoEavDataStructure(DbContext).GetEavEntity(entityId);
+            var entityModel = new Ef4Loader(DbContext).Entity(DbContext.AppId, entityId);
 
             if (!entityModel.IsPublished && entityModel.GetPublished() == null)	// always allow Deleting Draft-Only Entity 
                 return new Tuple<bool, string>(true, null);
