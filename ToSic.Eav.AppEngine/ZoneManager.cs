@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Permissions;
 using ToSic.Eav.Apps.Interfaces;
+using ToSic.Eav.Persistence.EFC11.Models;
 using ToSic.Eav.Repository.EF4;
 
 namespace ToSic.Eav.Apps
@@ -14,8 +16,18 @@ namespace ToSic.Eav.Apps
         {
         }
 
+        //internal ZoneManager(EavDbContext _dbContext) : base(0)
+        //{
+        //    EfcContext = _dbContext;
+        //}
+
         internal DbDataController DataController => _eavContext ?? (_eavContext = DbDataController.Instance(ZoneId));
         private DbDataController _eavContext;
+
+        //internal EfcRepository Repo => _repo ?? (_repo = EfcRepository.Instance(ZoneId));
+        //private EfcRepository _repo;
+
+        //private EavDbContext EfcContext;
 
         #endregion
 
@@ -38,6 +50,7 @@ namespace ToSic.Eav.Apps
 
         public static int CreateZone(string name)
         {
+            //var zoneId = ZoneRepo.Create(name);
             var zoneId = DbDataController.Instance().Zone.AddZone(name).Item1.ZoneID;
             SystemManager.PurgeEverything();
             return zoneId;
@@ -49,7 +62,8 @@ namespace ToSic.Eav.Apps
 
 
         public void SaveLanguage(string cultureCode, string cultureText, bool active)
-            => DataController.Dimensions.AddOrUpdateLanguage(cultureCode, cultureText, active);
+            => //Repo.Dimensions.AddOrUpdateLanguage(cultureCode, cultureText, active);
+         DataController.Dimensions.AddOrUpdateLanguage(cultureCode, cultureText, active);
 
 
         private static readonly Dictionary<int, List<ZoneLanguagesTemp>> LanguageCache =

@@ -32,5 +32,6 @@ namespace ToSic.Eav
 			}
 		}
 
+        public static t Resolve<t>() => Container.Resolve<t>();
 	}
 }

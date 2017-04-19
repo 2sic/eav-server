@@ -80,7 +80,6 @@
     <Compile Include="Serializers\Serializer.cs" />
     <Compile Include="MetadataController.cs" />
     <Compile Include="EntitiesController.cs" />
-    <Compile Include="ZoneController.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.AppEngine\ToSic.Eav.Apps.csproj">
