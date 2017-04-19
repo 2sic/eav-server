@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using ToSic.Eav.Persistence.EFC11.Models;
 
-namespace ToSic.Eav.Repository.EF4.Parts
+namespace ToSic.Eav.Repository.Efc.Parts
 {
     public class DbApp: BllCommandBase
     {
@@ -11,17 +13,17 @@ namespace ToSic.Eav.Repository.EF4.Parts
         /// <summary>
         /// Add a new App
         /// </summary>
-        public App AddApp(Zone zone, string name = Constants.DefaultAppName)
+        public ToSicEavApps AddApp(ToSicEavZones zone, string name = Constants.DefaultAppName)
         {
             if (zone == null)
                 zone = DbContext.Zone.GetZone(DbContext.ZoneId);
 
-            var newApp = new App
+            var newApp = new ToSicEavApps
             {
                 Name = name,
                 Zone = zone
             };
-            DbContext.SqlDb.AddToApps(newApp);
+            DbContext.SqlDb.Add(newApp);
 
             DbContext.SqlDb.SaveChanges();	// required to ensure AppId is created - required in EnsureSharedAttributeSets();
 
@@ -64,7 +66,7 @@ namespace ToSic.Eav.Repository.EF4.Parts
                 DbContext.Versioning.GetChangeLogId(DbContext.UserName);
 
             // Delete app using StoredProcedure
-            DbContext.SqlDb.DeleteAppInternal(appId);
+            DbContext.SqlDb.Database.ExecuteSqlCommand("ToSIC_EAV_DeleteApp @p0", parameters: new[] { appId });// .DeleteAppInternal(appId);
 
             // 2017-04-01 2dm removed from here, must happen at "outer" layer
             // Remove App from Global Cache
@@ -75,8 +77,8 @@ namespace ToSic.Eav.Repository.EF4.Parts
         /// Get all Apps in the current Zone
         /// </summary>
         /// <returns></returns>
-        public List<App> GetApps()
-            => DbContext.SqlDb.Apps.Where(a => a.ZoneID == DbContext.ZoneId).ToList();
+        public List<ToSicEavApps> GetApps()
+            => DbContext.SqlDb.ToSicEavApps.Where(a => a.ZoneId == DbContext.ZoneId).ToList();
         
 
     }

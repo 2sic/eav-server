@@ -4,8 +4,9 @@ using System.Linq;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Models;
+using ToSic.Eav.Persistence.EFC11.Models;
 
-namespace ToSic.Eav.Repository.EF4.Parts
+namespace ToSic.Eav.Repository.Efc.Parts
 {
     public class DbValue : BllCommandBase
     {
@@ -16,40 +17,40 @@ namespace ToSic.Eav.Repository.EF4.Parts
         /// <summary>
         /// Copy all Values (including Related Entities) from teh Source Entity to the target entity
         /// </summary>
-        internal void CloneEntityValues(Entity source, Entity target)
+        internal void CloneEntityValues(ToSicEavEntities source, ToSicEavEntities target)
         {
             // Clear values on target (including Dimensions). Must be done in separate steps, would cause unallowed null-Foreign-Keys
-            if (target.Values.Any())
+            if (target.ToSicEavValues.Any())
             {
-                foreach (var eavValue in target.Values)
-                    eavValue.ChangeLogIDDeleted = DbContext.Versioning.GetChangeLogId();
+                foreach (var eavValue in target.ToSicEavValues)
+                    eavValue.ChangeLogDeleted = DbContext.Versioning.GetChangeLogId();
             }
 
             // Add all Values with Dimensions
-            foreach (var eavValue in source.Values.ToList())
+            foreach (var eavValue in source.ToSicEavValues.ToList())
             {
-                var value = DbContext.DbS.CopyEfEntity(eavValue);
+                var value = eavValue;// 2017-04-19 todo validate // DbContext.DbS.CopyEfEntity(eavValue);
                 // copy Dimensions
-                foreach (var valuesDimension in eavValue.ValuesDimensions)
-                    value.ValuesDimensions.Add(new ValueDimension
+                foreach (var valuesDimension in eavValue.ToSicEavValuesDimensions)
+                    value.ToSicEavValuesDimensions.Add(new ToSicEavValuesDimensions
                     {
-                        DimensionID = valuesDimension.DimensionID,
+                        DimensionId = valuesDimension.DimensionId,
                         ReadOnly = valuesDimension.ReadOnly
                     });
 
-                target.Values.Add(value);
+                target.ToSicEavValues.Add(value);
             }
 
             #region copy relationships
             // note the related Entities are managed in the EntityParentRelationships. not sure why though
-            target.EntityParentRelationships.Clear();
+            target.RelationshipsWithThisAsParent/*EntityParentRelationships*/.Clear();
 
             // Add all Related Entities
-            foreach (var entityParentRelationship in source.EntityParentRelationships)
-                target.EntityParentRelationships.Add(new EntityRelationship
+            foreach (var entityParentRelationship in source.RelationshipsWithThisAsParent/*.EntityParentRelationships*/)
+                target.RelationshipsWithThisAsParent/*.EntityParentRelationships*/.Add(new ToSicEavEntityRelationships
                 {
-                    AttributeID = entityParentRelationship.AttributeID,
-                    ChildEntityID = entityParentRelationship.ChildEntityID,
+                    AttributeId = entityParentRelationship.AttributeId,
+                    ChildEntityId = entityParentRelationship.ChildEntityId,
                     SortOrder = entityParentRelationship.SortOrder
                 });
             #endregion
@@ -58,19 +59,19 @@ namespace ToSic.Eav.Repository.EF4.Parts
         /// <summary>
         /// Add a new Value
         /// </summary>
-        internal EavValue AddValue(Entity entity, int attributeId, string value, bool autoSave = true)
+        internal ToSicEavValues AddValue(ToSicEavEntities entity, int attributeId, string value, bool autoSave = true)
         {
             var changeId = DbContext.Versioning.GetChangeLogId();
 
-            var newValue = new EavValue
+            var newValue = new ToSicEavValues
             {
-                AttributeID = attributeId,
+                AttributeId = attributeId,
                 Entity = entity,
                 Value = value,
-                ChangeLogIDCreated = changeId
+                ChangeLogCreated = changeId
             };
 
-            DbContext.SqlDb.AddToValues(newValue);
+            DbContext.SqlDb.Add(newValue);
             if (autoSave)
                 DbContext.SqlDb.SaveChanges();
             return newValue;
@@ -80,15 +81,15 @@ namespace ToSic.Eav.Repository.EF4.Parts
         /// <summary>
         /// Update a Value
         /// </summary>
-        internal void UpdateValue(EavValue currentValue, string value, int changeId, bool autoSave = true)
+        internal void UpdateValue(ToSicEavValues currentValue, string value, int changeId, bool autoSave = true)
         {
             // only if value has changed
             if (currentValue.Value.Equals(value))
                 return;
 
             currentValue.Value = value;
-            currentValue.ChangeLogIDModified = changeId;
-            currentValue.ChangeLogIDDeleted = null;
+            currentValue.ChangeLogModified = changeId;
+            currentValue.ChangeLogDeleted = null;
 
             if (autoSave)
                 DbContext.SqlDb.SaveChanges();
@@ -98,16 +99,16 @@ namespace ToSic.Eav.Repository.EF4.Parts
         /// <summary>
         /// Update a Value when using IValueImportModel. Returns the Updated Value (for simple Values) or null (for Entity-Values)
         /// </summary>
-        internal object UpdateValueByImport(Entity entityInDb, Attribute attribute, List<EavValue> currentValues, IImpValue newImpValue)
+        internal object UpdateValueByImport(ToSicEavEntities entityInDb, ToSicEavAttributes attribute, List<ToSicEavValues> currentValues, IImpValue newImpValue)
         {
             switch (attribute.Type)
             {
                 // Handle Entity Relationships - they're stored in own tables
                 case "Entity":
                     if (newImpValue is ImpValue<List<Guid>>)
-                        DbContext.Relationships.UpdateEntityRelationships(attribute.AttributeID, ((ImpValue<List<Guid>>)newImpValue).Value.Select(p => (Guid?)p).ToList(), null /* entityInDb.EntityGUID, null */, entityInDb.EntityID);
+                        DbContext.Relationships.UpdateEntityRelationships(attribute.AttributeId, ((ImpValue<List<Guid>>)newImpValue).Value.Select(p => (Guid?)p).ToList(), null /* entityInDb.EntityGuid, null */, entityInDb.EntityId);
                     if (newImpValue is ImpValue<List<Guid?>>)
-                        DbContext.Relationships.UpdateEntityRelationships(attribute.AttributeID, ((ImpValue<List<Guid?>>)newImpValue).Value.Select(p => p).ToList(), null, entityInDb.EntityID);
+                        DbContext.Relationships.UpdateEntityRelationships(attribute.AttributeId, ((ImpValue<List<Guid?>>)newImpValue).Value.Select(p => p).ToList(), null, entityInDb.EntityId);
                     else
                         throw new NotSupportedException("UpdateValue() for Attribute " + attribute.StaticName + " with newValue of type" + newImpValue.GetType() + " not supported. Expected List<Guid>");
 
@@ -161,7 +162,7 @@ namespace ToSic.Eav.Repository.EF4.Parts
             var guidIds = entityGuids.ToDictionary(k => k, v => (int?)null);
             foreach (var entityGuid in guidIds.ToList())
             {
-                var firstEntityId = DbContext.Entities.GetEntitiesByGuid(entityGuid.Key).Select(e => (int?)e.EntityID).FirstOrDefault();
+                var firstEntityId = DbContext.Entities.GetEntitiesByGuid(entityGuid.Key).Select(e => (int?)e.EntityId).FirstOrDefault();
                 if (firstEntityId != null)
                     guidIds[entityGuid.Key] = firstEntityId;
             }
@@ -171,14 +172,14 @@ namespace ToSic.Eav.Repository.EF4.Parts
         /// <summary>
         /// Update a Value when using ValueViewModel
         /// </summary>
-        internal void UpdateValue(Entity currentEntity, Attribute attribute, bool masterRecord, List<EavValue> currentValues, IEntity entityModel, ImpValueInside newValue, ICollection<int> dimensionIds)
+        internal void UpdateValue(ToSicEavEntities currentEntity, ToSicEavAttributes attribute, bool masterRecord, List<ToSicEavValues> currentValues, IEntity entityModel, ImpValueInside newValue, ICollection<int> dimensionIds)
         {
             switch (attribute.Type)
             {
                 // Handle Entity Relationships - they're stored in own tables
                 case "Entity":
                     var entityIds = newValue.Value is int?[] ? (int?[])newValue.Value : ((int[])newValue.Value).Select(v => (int?)v).ToArray();
-                    DbContext.Relationships.UpdateEntityRelationships(attribute.AttributeID, entityIds, currentEntity);
+                    DbContext.Relationships.UpdateEntityRelationships(attribute.AttributeId, entityIds, currentEntity);
                     break;
                 // Handle simple values in Values-Table
                 default:
@@ -190,7 +191,7 @@ namespace ToSic.Eav.Repository.EF4.Parts
         /// <summary>
         /// Update a Value in the Values-Table
         /// </summary>
-        private EavValue UpdateSimpleValue(Attribute attribute, Entity entity, ICollection<int> dimensionIds, bool masterRecord, object newValue, int? valueId, bool readOnly, List<EavValue> currentValues, IEntity entityModel, IEnumerable<ImportExport.Models.ImpDims> valueDimensions = null)
+        private ToSicEavValues UpdateSimpleValue(ToSicEavAttributes attribute, ToSicEavEntities entity, ICollection<int> dimensionIds, bool masterRecord, object newValue, int? valueId, bool readOnly, List<ToSicEavValues> currentValues, IEntity entityModel, IEnumerable<ImportExport.Models.ImpDims> valueDimensions = null)
         {
             var newValueSerialized = HelpersToRefactor.SerializeValue(newValue);
             var changeId = DbContext.Versioning.GetChangeLogId();
@@ -203,34 +204,34 @@ namespace ToSic.Eav.Repository.EF4.Parts
             // Update Dimensions as specified by Import
             if (valueDimensions != null && valueDimensions.Any())
             {
-                var valueDimensionsToDelete = value.ValuesDimensions.ToList();
+                var valueDimensionsToDelete = value.ToSicEavValuesDimensions.ToList();
                 // loop all specified Dimensions, add or update it for this value
                 foreach (var valueDimension in valueDimensions)
                 {
                     // ToDo: 2bg Log Error but continue
                     var dimensionId = DbContext.Dimensions.GetDimensionId(null, valueDimension.DimensionExternalKey);
                     if (dimensionId == 0)
-                        throw new Exception("Dimension " + valueDimension.DimensionExternalKey + " not found. EntityId: " + entity.EntityID + " Attribute-StaticName: " + attribute.StaticName);
+                        throw new Exception("Dimension " + valueDimension.DimensionExternalKey + " not found. EntityId: " + entity.EntityId + " Attribute-StaticName: " + attribute.StaticName);
 
-                    var existingValueDimension = value.ValuesDimensions.SingleOrDefault(v => v.DimensionID == dimensionId);
+                    var existingValueDimension = value.ToSicEavValuesDimensions.SingleOrDefault(v => v.DimensionId == dimensionId);
                     if (existingValueDimension == null)
-                        value.ValuesDimensions.Add(new ValueDimension { DimensionID = dimensionId, ReadOnly = valueDimension.ReadOnly });
+                        value.ToSicEavValuesDimensions.Add(new ToSicEavValuesDimensions { DimensionId = dimensionId, ReadOnly = valueDimension.ReadOnly });
                     else
                     {
-                        valueDimensionsToDelete.Remove(valueDimensionsToDelete.Single(vd => vd.DimensionID == dimensionId));
+                        valueDimensionsToDelete.Remove(valueDimensionsToDelete.Single(vd => vd.DimensionId == dimensionId));
                         existingValueDimension.ReadOnly = valueDimension.ReadOnly;
                     }
                 }
 
                 // remove old dimensions
-                valueDimensionsToDelete.ForEach(DbContext.SqlDb.DeleteObject);
+                DbContext.SqlDb.RemoveRange(valueDimensionsToDelete); // 2017-04-19 todo validate // valueDimensionsToDelete.ForEach(DbContext.SqlDb.DeleteObject);
             }
             // Update Dimensions as specified on the whole Entity
             else if (dimensionIds != null)
             {
                 #region Ensure specified Dimensions are updated/added (whether Value has changed or not)
                 // Update existing ValuesDimensions
-                foreach (var valueDimension in value.ValuesDimensions.Where(vd => dimensionIds.Contains(vd.DimensionID)))
+                foreach (var valueDimension in value.ToSicEavValuesDimensions.Where(vd => dimensionIds.Contains(vd.DimensionId)))
                 {
                     // ReSharper disable RedundantCheckBeforeAssignment
                     // Check to prevent unneeded DB queries
@@ -240,8 +241,8 @@ namespace ToSic.Eav.Repository.EF4.Parts
                 }
 
                 // Add new ValuesDimensions
-                foreach (var dimensionId in dimensionIds.Where(i => value.ValuesDimensions.All(d => d.DimensionID != i)))
-                    value.ValuesDimensions.Add(new ValueDimension { DimensionID = dimensionId, ReadOnly = readOnly });
+                foreach (var dimensionId in dimensionIds.Where(i => value.ToSicEavValuesDimensions.All(d => d.DimensionId != i)))
+                    value.ToSicEavValuesDimensions.Add(new ToSicEavValuesDimensions { DimensionId = dimensionId, ReadOnly = readOnly });
 
                 #endregion
 
@@ -249,16 +250,16 @@ namespace ToSic.Eav.Repository.EF4.Parts
                 if (!masterRecord)
                 {
                     // Get other Values for current Attribute having all Current Dimensions assigned
-                    var otherValuesWithCurrentDimensions = currentValues.Where(v => v.AttributeID == attribute.AttributeID && v.ValueID != value.ValueID && dimensionIds.All(d => v.ValuesDimensions.Select(vd => vd.DimensionID).Contains(d)));
+                    var otherValuesWithCurrentDimensions = currentValues.Where(v => v.AttributeId == attribute.AttributeId && v.ValueId != value.ValueId && dimensionIds.All(d => v.ToSicEavValuesDimensions.Select(vd => vd.DimensionId).Contains(d)));
                     foreach (var otherValue in otherValuesWithCurrentDimensions)
                     {
-                        foreach (var valueDimension in otherValue.ValuesDimensions.Where(vd => dimensionIds.Contains(vd.DimensionID)).ToList())
+                        foreach (var valueDimension in otherValue.ToSicEavValuesDimensions.Where(vd => dimensionIds.Contains(vd.DimensionId)).ToList())
                         {
                             // if only one Dimension assigned, mark this value as deleted
-                            if (otherValue.ValuesDimensions.Count == 1)
-                                otherValue.ChangeLogIDDeleted = changeId;
+                            if (otherValue.ToSicEavValuesDimensions.Count == 1)
+                                otherValue.ChangeLogDeleted = changeId;
 
-                            otherValue.ValuesDimensions.Remove(valueDimension);
+                            otherValue.ToSicEavValuesDimensions.Remove(valueDimension);
                         }
                     }
                 }
@@ -271,45 +272,45 @@ namespace ToSic.Eav.Repository.EF4.Parts
         /// <summary>
         /// Get an EavValue for specified EntityId etc. or create a new one. Uses different mechanism when running an Import or ValueId is specified.
         /// </summary>
-        private EavValue GetOrCreateValue(Attribute attribute, Entity entity, bool masterRecord, int? valueId, bool readOnly, List<EavValue> currentValues, IEntity entityModel, string newValueSerialized, int changeId, IEnumerable<ImportExport.Models.ImpDims> valueDimensions)
+        private ToSicEavValues GetOrCreateValue(ToSicEavAttributes attribute, ToSicEavEntities entity, bool masterRecord, int? valueId, bool readOnly, List<ToSicEavValues> currentValues, IEntity entityModel, string newValueSerialized, int changeId, IEnumerable<ImportExport.Models.ImpDims> valueDimensions)
         {
-            EavValue value = null;
+            ToSicEavValues value = null;
             // if Import-Dimension(s) are Specified
             if (valueDimensions != null && valueDimensions.Any())
             {
                 // Get first value having first Dimension or add new value
-                value = currentValues.FirstOrDefault(v => v.ChangeLogIDDeleted == null && v.Attribute.StaticName == attribute.StaticName && v.ValuesDimensions.Any(d => d.Dimension.ExternalKey.Equals(valueDimensions.First().DimensionExternalKey, StringComparison.InvariantCultureIgnoreCase))) ??
-                        AddValue(entity, attribute.AttributeID, newValueSerialized, autoSave: false);
+                value = currentValues.FirstOrDefault(v => v.ChangeLogDeleted == null && v.Attribute.StaticName == attribute.StaticName && v.ToSicEavValuesDimensions.Any(d => d.Dimension.ExternalKey.Equals(valueDimensions.First().DimensionExternalKey, StringComparison.InvariantCultureIgnoreCase))) ??
+                        AddValue(entity, attribute.AttributeId, newValueSerialized, autoSave: false);
             }
-            // if ValueID & EntityId is specified, use this Value
-            else if (valueId.HasValue && entity.EntityID != 0)
+            // if ValueId & EntityId is specified, use this Value
+            else if (valueId.HasValue && entity.EntityId != 0)
             {
-                value = currentValues.Single(v => v.ValueID == valueId.Value && v.Attribute.StaticName == attribute.StaticName);
-                // If Master, ensure ValueID is from Master!
+                value = currentValues.Single(v => v.ValueId == valueId.Value && v.Attribute.StaticName == attribute.StaticName);
+                // If Master, ensure ValueId is from Master!
                 var attributeModel = (IAttributeManagement)entityModel.Attributes.SingleOrDefault(a => a.Key == attribute.StaticName).Value;
-                if (masterRecord && value.ValueID != attributeModel.DefaultValue.ValueId)
-                    throw new Exception("Master Record cannot use a ValueID rather ValueID from Master. Attribute-StaticName: " + attribute.StaticName);
+                if (masterRecord && value.ValueId != attributeModel.DefaultValue.ValueId)
+                    throw new Exception("Master Record cannot use a ValueId rather ValueId from Master. Attribute-StaticName: " + attribute.StaticName);
             }
             // Find Value (if not specified) or create new one
             else
             {
                 if (masterRecord) // if true, don't create new Value (except no one exists)
-                    value = currentValues.Where(v => v.AttributeID == attribute.AttributeID).OrderBy(a => a.ChangeLogIDCreated).FirstOrDefault();
+                    value = currentValues.Where(v => v.AttributeId == attribute.AttributeId).OrderBy(a => a.ChangeLogCreated).FirstOrDefault();
 
                 // if no Value found, create new one
                 if (value == null)
                 {
-                    if (!masterRecord && currentValues.All(v => v.AttributeID != attribute.AttributeID))
+                    if (!masterRecord && currentValues.All(v => v.AttributeId != attribute.AttributeId))
                         // if updating Additional-Entity but Default-Entity doesn't have any atom
                         throw new Exception("Update of a \"" + attribute.StaticName +
                                             "\" is not allowed. You must first updated this Value for the Default-Entity.");
 
-                    value = AddValue(entity, attribute.AttributeID, newValueSerialized, autoSave: false);
+                    value = AddValue(entity, attribute.AttributeId, newValueSerialized, autoSave: false);
                 }
             }
 
             // Update old/existing Value
-            if (value.ValueID != 0 || entity.EntityID == 0)
+            if (value.ValueId != 0 || entity.EntityId == 0)
             {
                 if (!readOnly)
                     UpdateValue(value, newValueSerialized, changeId, false);

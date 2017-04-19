@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Data.EntityClient;
 using System.Linq;
 using Microsoft.Practices.Unity;
 using ToSic.Eav.Implementations.UserInformation;
-using ToSic.Eav.Interfaces;
-using ToSic.Eav.Repository.EF4.Parts;
+using ToSic.Eav.Persistence.EFC11.Models;
+using ToSic.Eav.Repository.Efc.Parts;
 
-// needed for the static Resolve<...>
-
-namespace ToSic.Eav.Repository.EF4
+namespace ToSic.Eav.Repository.Efc
 {
 
     public class DbDataController
@@ -88,7 +85,7 @@ namespace ToSic.Eav.Repository.EF4
         
         #region new stuff
 
-        public EavContext SqlDb { get; private set; }
+        public EavDbContext SqlDb { get; private set; }
 
         private DbDataController()
         {
@@ -105,9 +102,9 @@ namespace ToSic.Eav.Repository.EF4
         /// </summary>
         private static DbDataController Instance()
         {
-            var configuration = Factory.Container.Resolve<ISystemConfiguration>();
-            var connectionString = BuildEf4ConnectionString(configuration.DbConnectionString); //Configuration.DbConnectionString;// Configuration.GetConnectionString();
-            var context = new EavContext(connectionString);
+            // var configuration = Factory.Container.Resolve<ISystemConfiguration>();
+            // var connectionString = BuildEf4ConnectionString(configuration.DbConnectionString); //Configuration.DbConnectionString;// Configuration.GetConnectionString();
+            var context = Factory.Resolve<EavDbContext>();//  new EavContext(connectionString);
             var dc = new DbDataController {SqlDb = context};
             dc.DbS = new DbShortcuts(dc);
             dc.Versioning = new DbVersioning(dc);
@@ -124,7 +121,8 @@ namespace ToSic.Eav.Repository.EF4
 
             //dc.Repository = new RepositoryEF4(dc);
 
-            dc.SqlDb.AlternateSaveHandler += dc.SaveChanges;
+            // 2017-04-19 TODO
+            // dc.SqlDb.AlternateSaveHandler += dc.SaveChanges;
 
             return dc;
         }
@@ -156,7 +154,7 @@ namespace ToSic.Eav.Repository.EF4
             // If only AppId is supplied, look up it's zone and use that
             if (!zoneId.HasValue && appId.HasValue)
             {
-                var zoneIdOfApp = SqlDb.Apps.Where(a => a.AppID == appId.Value).Select(a => (int?)a.ZoneID).SingleOrDefault();
+                var zoneIdOfApp = SqlDb.ToSicEavApps.Where(a => a.AppId == appId.Value).Select(a => (int?)a.ZoneId).SingleOrDefault();
                 if (!zoneIdOfApp.HasValue)
                     throw new ArgumentException("App with id " + appId.Value + " doesn't exist.", nameof(appId));
                 _appId = appId.Value;
@@ -172,13 +170,13 @@ namespace ToSic.Eav.Repository.EF4
 
             if (appId.HasValue)
             {
-                var foundApp = SqlDb.Apps.FirstOrDefault(a => a.ZoneID == _zoneId && a.AppID == appId.Value);
+                var foundApp = SqlDb.ToSicEavApps.FirstOrDefault(a => a.ZoneId == _zoneId && a.AppId == appId.Value);
                 if (foundApp == null)
                     throw new ArgumentException("App with id " + appId.Value + " doesn't exist.", nameof(appId));
                 _appId = appId.Value;
             }
             else
-                _appId = SqlDb.Apps.First(a => a.Name == Constants.DefaultAppName).AppID;
+                _appId = SqlDb.ToSicEavApps.First(a => a.Name == Constants.DefaultAppName).AppId;
 
         }
 
@@ -200,49 +198,49 @@ namespace ToSic.Eav.Repository.EF4
 
 
 
-        /// <summary>
-        /// Persists all updates to the data source and optionally resets change tracking in the object context.
-        /// Also Creates an initial ChangeLog (used by SQL Server for Auditing).
-        /// If items were modified, Cache is purged on current Zone/App
-        /// </summary>
-        public int SaveChanges(System.Data.Objects.SaveOptions options, EavContext.OriginalSaveChangesEvent baseEvent)
-        {
-            if (_appId == 0)
-                throw new Exception("SaveChanges with AppId 0 not allowed.");
+        ///// <summary>
+        ///// Persists all updates to the data source and optionally resets change tracking in the object context.
+        ///// Also Creates an initial ChangeLog (used by SQL Server for Auditing).
+        ///// If items were modified, Cache is purged on current Zone/App
+        ///// </summary>
+        //public int SaveChanges(System.Data.Objects.SaveOptions options, EavContext.OriginalSaveChangesEvent baseEvent)
+        //{
+        //    if (_appId == 0)
+        //        throw new Exception("SaveChanges with AppId 0 not allowed.");
 
-            // enure changelog exists and is set to SQL CONTEXT_INFO variable
-            if (Versioning.MainChangeLogId == 0)
-                Versioning.GetChangeLogId(UserName);
+        //    // enure changelog exists and is set to SQL CONTEXT_INFO variable
+        //    if (Versioning.MainChangeLogId == 0)
+        //        Versioning.GetChangeLogId(UserName);
 
-            var modifiedItems = baseEvent(options);
+        //    var modifiedItems = baseEvent(options);
 
-            if (modifiedItems != 0 && PurgeAppCacheOnSave)
-                DataSource.GetCache(ZoneId, AppId).PurgeCache(ZoneId, AppId);
+        //    if (modifiedItems != 0 && PurgeAppCacheOnSave)
+        //        DataSource.GetCache(ZoneId, AppId).PurgeCache(ZoneId, AppId);
 
-            return modifiedItems;
-        }
+        //    return modifiedItems;
+        //}
 
         #endregion
 
+        // 2017-04-19 unnecessary
+        //private static string BuildEf4ConnectionString(string simpleConStr)
+        //{
+        //    // check if it's an already fully built EF4 string, if yes, just keep it
+        //    if (simpleConStr.Contains(".ssdl"))
+        //        return simpleConStr;
 
-        private static string BuildEf4ConnectionString(string simpleConStr)
-        {
-            // check if it's an already fully built EF4 string, if yes, just keep it
-            if (simpleConStr.Contains(".ssdl"))
-                return simpleConStr;
+        //    var builder = new EntityConnectionStringBuilder
+        //    {
+        //        ProviderConnectionString = simpleConStr,
+        //        Metadata =
+        //            "res://*/Persistence.EavContext.csdl|res://*/Persistence.EavContext.ssdl|res://*/Persistence.EavContext.msl",
+        //        Provider = "System.Data.SqlClient"
+        //    };
 
-            var builder = new EntityConnectionStringBuilder
-            {
-                ProviderConnectionString = simpleConStr,
-                Metadata =
-                    "res://*/Persistence.EavContext.csdl|res://*/Persistence.EavContext.ssdl|res://*/Persistence.EavContext.msl",
-                Provider = "System.Data.SqlClient"
-            };
+        //    if (!builder.ProviderConnectionString.Contains("MultipleActiveResultSets"))
+        //        builder.ProviderConnectionString += ";MultipleActiveResultSets=True";
 
-            if (!builder.ProviderConnectionString.Contains("MultipleActiveResultSets"))
-                builder.ProviderConnectionString += ";MultipleActiveResultSets=True";
-
-            return builder.ToString();
-        }
+        //    return builder.ToString();
+        //}
     }
 }

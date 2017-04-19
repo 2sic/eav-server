@@ -4,10 +4,13 @@ using System.Data;
 using System.Linq;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Models;
+using ToSic.Eav.Persistence.EFC11;
+using ToSic.Eav.Persistence.EFC11.Models;
 
-namespace ToSic.Eav.Repository.EF4.Parts
+namespace ToSic.Eav.Repository.Efc.Parts
 {
     internal class DbVersioning: BllCommandBase
     {
@@ -26,9 +29,13 @@ namespace ToSic.Eav.Repository.EF4.Parts
         {
             if (MainChangeLogId == 0)
             {
-                if (DbContext.SqlDb.Connection.State != ConnectionState.Open)
-                    DbContext.SqlDb.Connection.Open();	// make sure same connection is used later
-                MainChangeLogId = DbContext.SqlDb.AddChangeLog(userName).Single().ChangeID;
+                var con = DbContext.SqlDb.Database.GetDbConnection(); // DbContext.SqlDb.Connection
+                if (con.State != ConnectionState.Open)
+                    con.Open();	// make sure same connection is used later
+                MainChangeLogId = DbContext.SqlDb.ToSicEavChangeLog
+                    .FromSql("ToSIC_EAV_ChangeLogAdd @p0", userName)
+                    .Single().ChangeId;
+                // .AddChangeLog(userName).Single().ChangeID;
             }
 
             return MainChangeLogId;
@@ -52,8 +59,8 @@ namespace ToSic.Eav.Repository.EF4.Parts
                 throw new Exception("ChangeLogID was already set");
 
 
-            DbContext.SqlDb.Connection.Open();	// make sure same connection is used later
-            DbContext.SqlDb.SetChangeLogIdInternal(changeLogId);
+            DbContext.SqlDb.Database.OpenConnection();//.Connection.Open();	// make sure same connection is used later
+            DbContext.SqlDb.Database.ExecuteSqlCommand("ToSIC_EAV_ChangeLogSet @p0", changeLogId);// .SetChangeLogIdInternal(changeLogId);
             MainChangeLogId = changeLogId;
         }
 
@@ -63,21 +70,21 @@ namespace ToSic.Eav.Repository.EF4.Parts
         /// <summary>
         /// Persist modified Entity to DataTimeline
         /// </summary>
-        internal void SaveEntityToDataTimeline(Entity currentEntity)
+        internal void SaveEntityToDataTimeline(ToSicEavEntities currentEntity)
         {
             var export = new DbXmlBuilder(DbContext);
-            var entityModelSerialized = export.XmlEntity(currentEntity.EntityID);
-            var timelineItem = new DataTimelineItem
+            var entityModelSerialized = export.XmlEntity(currentEntity.EntityId);
+            var timelineItem = new ToSicEavDataTimeline()
             {
                 SourceTable = "ToSIC_EAV_Entities",
                 Operation = Constants.DataTimelineEntityStateOperation,
                 NewData = entityModelSerialized.ToString(),
-                SourceGuid = currentEntity.EntityGUID,
-                SourceID = currentEntity.EntityID,
-                SysLogID = GetChangeLogId(),
+                SourceGuid = currentEntity.EntityGuid,
+                SourceId = currentEntity.EntityId,
+                SysLogId = GetChangeLogId(),
                 SysCreatedDate = DateTime.Now
             };
-            DbContext.SqlDb.AddToDataTimeline(timelineItem);
+            DbContext.SqlDb.Add(timelineItem);
 
             DbContext.SqlDb.SaveChanges();
         }
@@ -94,7 +101,7 @@ namespace ToSic.Eav.Repository.EF4.Parts
             string timelineItem;
             try
             {
-                timelineItem = DbContext.SqlDb.DataTimeline.Where(d => d.Operation == Constants.DataTimelineEntityStateOperation && d.SourceID == entityId && d.SysLogID == changeId).Select(d => d.NewData).SingleOrDefault();
+                timelineItem = DbContext.SqlDb.ToSicEavDataTimeline.Where(d => d.Operation == Constants.DataTimelineEntityStateOperation && d.SourceId == entityId && d.SysLogId == changeId).Select(d => d.NewData).SingleOrDefault();
             }
             catch (InvalidOperationException ex)
             {
@@ -108,7 +115,7 @@ namespace ToSic.Eav.Repository.EF4.Parts
             // Parse XML
             var xEntity = XElement.Parse(timelineItem);
             var assignmentObjectTypeName = xEntity.Attribute("AssignmentObjectType").Value;
-            var assignmentObjectTypeId = new DbShortcuts(DbContext).GetAssignmentObjectType(assignmentObjectTypeName).AssignmentObjectTypeID;
+            var assignmentObjectTypeId = new DbShortcuts(DbContext).GetAssignmentObjectType(assignmentObjectTypeName).AssignmentObjectTypeId;
 
             // Prepare source and target-Languages
             if (!defaultCultureDimension.HasValue)
@@ -116,7 +123,7 @@ namespace ToSic.Eav.Repository.EF4.Parts
 
             var defaultLanguage = DbContext.Dimensions.GetDimension(defaultCultureDimension.Value).ExternalKey;
             var targetDimensions = DbContext.Dimensions.GetLanguages();
-            var allSourceDimensionIds = ((IEnumerable<object>)xEntity.XPathEvaluate("/Value/Dimension/@DimensionID")).Select(d => int.Parse(((XAttribute)d).Value)).ToArray();
+            var allSourceDimensionIds = ((IEnumerable<object>)xEntity.XPathEvaluate("/Value/Dimension/@DimensionId")).Select(d => int.Parse(((XAttribute)d).Value)).ToArray();
             var allSourceDimensionIdsDistinct = allSourceDimensionIds.Distinct().ToArray();
             var sourceDimensions = DbContext.Dimensions.GetDimensions(allSourceDimensionIdsDistinct).ToList();
             int sourceDefaultDimensionId;
@@ -127,8 +134,8 @@ namespace ToSic.Eav.Repository.EF4.Parts
                 var sourceDimensionsIdsGrouped = (from n in allSourceDimensionIds group n by n into g select new { DimensionId = g.Key, Qty = g.Count() }).ToArray();
                 sourceDefaultDimensionId = sourceDimensionsIdsGrouped.Any() ? sourceDimensionsIdsGrouped.OrderByDescending(g => g.Qty).First().DimensionId : defaultCultureDimension.Value;
             }
-            var targetDimsRetyped = targetDimensions.Select(d => new Data.Dimension { DimensionId = d.DimensionID, Key = d.ExternalKey}).ToList();
-            var sourceDimsRetyped = sourceDimensions.Select(s => new Data.Dimension {DimensionId = s.DimensionID, Key = s.ExternalKey}).ToList();
+            var targetDimsRetyped = targetDimensions.Select(d => new Data.Dimension { DimensionId = d.DimensionId, Key = d.ExternalKey}).ToList();
+            var sourceDimsRetyped = sourceDimensions.Select(s => new Data.Dimension {DimensionId = s.DimensionId, Key = s.ExternalKey}).ToList();
             // Load Entity from Xml unsing XmlImport
             return XmlToImportEntity.BuildImpEntityFromXml(xEntity, assignmentObjectTypeId, targetDimsRetyped, sourceDimsRetyped, sourceDefaultDimensionId, defaultLanguage);
         }
@@ -156,11 +163,11 @@ namespace ToSic.Eav.Repository.EF4.Parts
         public List<EntityHistoryItem> GetEntityHistory(int entityId)
         {
             // get Versions from DataTimeline
-            var entityVersions = (from d in DbContext.SqlDb.DataTimeline
-                join c in DbContext.SqlDb.ChangeLogs on d.SysLogID equals c.ChangeID
-                where d.Operation == Constants.DataTimelineEntityStateOperation && d.SourceID == entityId
+            var entityVersions = (from d in DbContext.SqlDb.ToSicEavDataTimeline
+                join c in DbContext.SqlDb.ToSicEavChangeLog on d.SysLogId equals c.ChangeId
+                where d.Operation == Constants.DataTimelineEntityStateOperation && d.SourceId == entityId
                 orderby c.Timestamp descending
-                select new EntityHistoryItem() { SysCreatedDate = d.SysCreatedDate, User = c.User, ChangeId = c.ChangeID}).ToList();
+                select new EntityHistoryItem() { SysCreatedDate = d.SysCreatedDate, User = c.User, ChangeId = c.ChangeId}).ToList();
             return entityVersions;
         }
 
@@ -218,7 +225,7 @@ namespace ToSic.Eav.Repository.EF4.Parts
             // IMPORTANT : IF THIS IS EVER USED, REMEMBER TO CLEAR THE CACHE afterwards in the calling method
 
             // Delete Draft (if any)
-            var entityDraft = new Ef4Loader(DbContext).Entity(DbContext.AppId, entityId).GetDraft();
+            var entityDraft = new Efc11Loader(DbContext.SqlDb).Entity(DbContext.AppId, entityId).GetDraft();
             if (entityDraft != null)
                 DbContext.Entities.DeleteEntity(entityDraft.RepositoryId);
         }

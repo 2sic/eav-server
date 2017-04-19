@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using ToSic.Eav.ImportExport.Logging;
 using ToSic.Eav.ImportExport.Models;
+using ToSic.Eav.Persistence.EFC11.Models;
 
-namespace ToSic.Eav.Repository.EF4.Parts
+namespace ToSic.Eav.Repository.Efc.Parts
 {
     /// <summary>
     /// Import Schema and Entities to the EAV SqlStore
@@ -49,7 +51,7 @@ namespace ToSic.Eav.Repository.EF4.Parts
         /// <summary>
         /// Import AttributeSets and Entities
         /// </summary>
-        public DbTransaction ImportIntoDb(IEnumerable<ImpAttrSet> newAttributeSets, IEnumerable<ImpEntity> newEntities)
+        internal /*IDbContextTransaction*/ void ImportIntoDb(IEnumerable<ImpAttrSet> newAttributeSets, IEnumerable<ImpEntity> newEntities)
         {
             _context.PurgeAppCacheOnSave = false;
 
@@ -57,7 +59,7 @@ namespace ToSic.Eav.Repository.EF4.Parts
             // todo 2dm/2tk - discuss, this shouldn't be this high on a normal save, only on a real import
             // todo: on any error, cancel/rollback the transaction
             if (_largeImport)
-                _context.SqlDb.CommandTimeout = 3600;
+                _context.SqlDb.Database.SetCommandTimeout(3600);//.CommandTimeout = 3600;
 
             // todo: CleanImport - change access to attribute set to use DB
             // Ensure cache is created
@@ -70,10 +72,11 @@ namespace ToSic.Eav.Repository.EF4.Parts
 
             #region initialize DB connection / transaction
             // Make sure the connection is open - because on multiple calls it's not clear if it was already opened or not
-            if (_context.SqlDb.Connection.State != ConnectionState.Open)
-                _context.SqlDb.Connection.Open();
+            var con = _context.SqlDb.Database.GetDbConnection(); // _context.SqlDb.Database.Connection
+            if (con.State != ConnectionState.Open)
+                con.Open();
 
-            var transaction = _context.SqlDb.Connection.BeginTransaction();
+            var transaction = _context.SqlDb.Database/*.Connection*/.BeginTransaction();
 
             #endregion
 
@@ -113,13 +116,13 @@ namespace ToSic.Eav.Repository.EF4.Parts
 
                 // Commit DB Transaction
                 transaction.Commit();
-                _context.SqlDb.Connection.Close();
+                _context.SqlDb.Database.CloseConnection();// .Connection.Close();
 
                 // todo: CleanImport - change access to attribute set to use DB
                 // always Purge Cache
                 //DataSource.GetCache(_context.ZoneId, _context.AppId).PurgeCache(_context.ZoneId, _context.AppId);
 
-                return transaction;
+                // return transaction;
             }
             catch (Exception)
             {
@@ -128,7 +131,7 @@ namespace ToSic.Eav.Repository.EF4.Parts
             }
         }
 
-        private DbTransaction ImportSomeAttributeSets(IEnumerable<ImpAttrSet> newAttributeSets, DbTransaction transaction)
+        private IDbContextTransaction ImportSomeAttributeSets(IEnumerable<ImpAttrSet> newAttributeSets, IDbContextTransaction transaction)
         {
             foreach (var attributeSet in newAttributeSets)
                 ImportAttributeSet(attributeSet);
@@ -151,7 +154,7 @@ namespace ToSic.Eav.Repository.EF4.Parts
             //cache.LightList.Any(); // re-read something
 
             // re-start transaction
-            transaction = _context.SqlDb.Connection.BeginTransaction();
+            transaction = _context.SqlDb.Database/*.Connection*/.BeginTransaction();
             return transaction;
         }
 
@@ -181,8 +184,8 @@ namespace ToSic.Eav.Repository.EF4.Parts
             if (!string.IsNullOrEmpty(impAttrSet.UsesConfigurationOfAttributeSet))
             {
                 // Look for a content type with the StaticName, which has no "UsesConfigurationOf..." set (is a master)
-                var ghostAttributeSets = _context.SqlDb.AttributeSets.Where(a => a.StaticName == impAttrSet.UsesConfigurationOfAttributeSet && a.ChangeLogDeleted == null && a.UsesConfigurationOfAttributeSet == null).
-                    OrderBy(a => a.AttributeSetID).ToList();
+                var ghostAttributeSets = _context.SqlDb.ToSicEavAttributeSets.Where(a => a.StaticName == impAttrSet.UsesConfigurationOfAttributeSet && a.ChangeLogDeleted == null && a.UsesConfigurationOfAttributeSet == null).
+                    OrderBy(a => a.AttributeSetId).ToList();
 
                 if (ghostAttributeSets.Count == 0)
                 {
@@ -193,7 +196,7 @@ namespace ToSic.Eav.Repository.EF4.Parts
                 // If multiple masters are found, use first and add a warning message
                 if (ghostAttributeSets.Count > 1)
                     _importLog.Add(new ImportLogItem(EventLogEntryType.Warning, "Multiple potential master AttributeSets found for StaticName: " + impAttrSet.UsesConfigurationOfAttributeSet) { ImpAttrSet = impAttrSet });
-                destinationSet.UsesConfigurationOfAttributeSet = ghostAttributeSets.First().AttributeSetID;
+                destinationSet.UsesConfigurationOfAttributeSet = ghostAttributeSets.First().AttributeSetId;
             }
             
 
@@ -206,8 +209,8 @@ namespace ToSic.Eav.Repository.EF4.Parts
             // append all Attributes
             foreach (var importAttribute in impAttrSet.Attributes)
             {
-                Attribute destinationAttribute;
-                if(!_context.Attributes.Exists(destinationSet.AttributeSetID, importAttribute.StaticName))
+                ToSicEavAttributes destinationAttribute;
+                if(!_context.Attributes.Exists(destinationSet.AttributeSetId, importAttribute.StaticName))
                 {
                         // try to add new Attribute
                         var isTitle = importAttribute == impAttrSet.TitleAttribute;
@@ -216,7 +219,7 @@ namespace ToSic.Eav.Repository.EF4.Parts
 				else
                 {
 					_importLog.Add(new ImportLogItem(EventLogEntryType.Warning, "Attribute already exists") { ImpAttribute = importAttribute });
-                    destinationAttribute = destinationSet.AttributesInSets.Single(a => a.Attribute.StaticName == importAttribute.StaticName).Attribute;
+                    destinationAttribute = destinationSet.ToSicEavAttributesInSets.Single(a => a.Attribute.StaticName == importAttribute.StaticName).Attribute;
                 }
 
                 // Insert AttributeMetaData
@@ -228,23 +231,23 @@ namespace ToSic.Eav.Repository.EF4.Parts
                         entity.KeyTypeId = Constants.MetadataForField;//.AssignmentObjectTypeIdFieldProperties;
 
                         // Set KeyNumber
-                        if (destinationAttribute.AttributeID == 0)
+                        if (destinationAttribute.AttributeId == 0)
                             _context.SqlDb.SaveChanges();
-                        entity.KeyNumber = destinationAttribute.AttributeID;
+                        entity.KeyNumber = destinationAttribute.AttributeId;
 
                         // Get guid of previously existing assignment - if it exists
                         // todo: CleanImport - change access to attribute set to use DB
                         // todo: TestImport
                         var existingMetadata = _context.Entities
-                            .GetAssignedEntities(Constants.MetadataForField,keyNumber:destinationAttribute.AttributeID)
-                            .FirstOrDefault(e => e.AttributeSetID == destinationAttribute.AttributeID);
+                            .GetAssignedEntities(Constants.MetadataForField,keyNumber:destinationAttribute.AttributeId)
+                            .FirstOrDefault(e => e.AttributeSetId == destinationAttribute.AttributeId);
 
                         if (existingMetadata != null)
-                            entity.EntityGuid = existingMetadata.EntityGUID;
+                            entity.EntityGuid = existingMetadata.EntityGuid;
 
                         //var mds = DataSource.GetMetaDataSource(_context.ZoneId, _context.AppId);
                         //var existingEntity = mds.GetAssignedEntities(Constants.MetadataForField, //.AssignmentObjectTypeIdFieldProperties,
-                        //    destinationAttribute.AttributeID, entity.AttributeSetStaticName).FirstOrDefault();
+                        //    destinationAttribute.AttributeId, entity.AttributeSetStaticName).FirstOrDefault();
 
                         //if (existingEntity != null)
                         //    entity.EntityGuid = existingEntity.EntityGuid;
@@ -257,8 +260,8 @@ namespace ToSic.Eav.Repository.EF4.Parts
             // todo: optionally re-order the attributes
             if (impAttrSet.SortAttributes)
             {
-                var attributeList = _context.SqlDb.AttributesInSets
-                    .Where(a => a.AttributeSetID == destinationSet.AttributeSetID).ToList();
+                var attributeList = _context.SqlDb.ToSicEavAttributesInSets
+                    .Where(a => a.AttributeSetId == destinationSet.AttributeSetId).ToList();
                 attributeList = attributeList
                     .OrderBy(a => impAttrSet.Attributes
                         .IndexOf(impAttrSet.Attributes
@@ -297,7 +300,7 @@ namespace ToSic.Eav.Repository.EF4.Parts
 
             // Find existing Enties - meaning both draft and non-draft
             //List<IEntity> cacheExistingEntities = null;
-            List<Entity> dbExistingEntities = null;
+            List<ToSicEavEntities> dbExistingEntities = null;
             if (impEntity.EntityGuid.HasValue)
             {
                 dbExistingEntities = _context.Entities.GetEntitiesByGuid(impEntity.EntityGuid.Value).ToList();
@@ -307,7 +310,7 @@ namespace ToSic.Eav.Repository.EF4.Parts
             #region Simplest case - add (nothing existing to update)
             if (/*cacheExistingEntities*/dbExistingEntities == null || !/*cacheExistingEntities*/dbExistingEntities.Any())
             {
-                _context.Entities.AddImportEntity(/*attributeSet.AttributeSetId*/ dbAttrSet.AttributeSetID, impEntity, _importLog, impEntity.IsPublished, null);
+                _context.Entities.AddImportEntity(/*attributeSet.AttributeSetId*/ dbAttrSet.AttributeSetId, impEntity, _importLog, impEntity.IsPublished, null);
                 return;
             }
 
@@ -318,8 +321,8 @@ namespace ToSic.Eav.Repository.EF4.Parts
 
             if (!impEntity.IsPublished && /*cacheExistingEntities*/dbExistingEntities.Count(e => e.IsPublished == false) == 0 && !impEntity.ForceNoBranch)
             {
-                var publishedId = dbExistingEntities.First().EntityID;// cacheExistingEntities.First().EntityId;
-                _context.Entities.AddImportEntity(/*attributeSet.AttributeSetId*/ dbAttrSet.AttributeSetID, impEntity, _importLog, impEntity.IsPublished, publishedId);
+                var publishedId = dbExistingEntities.First().EntityId;// cacheExistingEntities.First().EntityId;
+                _context.Entities.AddImportEntity(/*attributeSet.AttributeSetId*/ dbAttrSet.AttributeSetId, impEntity, _importLog, impEntity.IsPublished, publishedId);
                 return;
             }
 
@@ -346,7 +349,7 @@ namespace ToSic.Eav.Repository.EF4.Parts
             #endregion
 
             #region Ensure entity has same AttributeSet (do this after checking for the draft etc.
-            var editableEntityContentType = _context.AttribSet.GetAttributeSet(editableVersionOfTheEntity.AttributeSetID);
+            var editableEntityContentType = _context.AttribSet.GetAttributeSet(editableVersionOfTheEntity.AttributeSetId);
             if (editableEntityContentType.StaticName != impEntity.AttributeSetStaticName)
             //if (editableVersionOfTheEntity.Type.StaticName != impEntity.AttributeSetStaticName)
             {
@@ -362,11 +365,11 @@ namespace ToSic.Eav.Repository.EF4.Parts
             // todo: TestImport - ensure that it correctly skips the existing values
             var newValues = impEntity.Values;
             if (_dontUpdateExistingAttributeValues) // Skip values that are already present in existing Entity
-                newValues = newValues.Where(v => editableVersionOfTheEntity.Values/*.Attributes*/.All(ev => ev.Attribute.StaticName/*.Value.Name*/ != v.Key))
+                newValues = newValues.Where(v => editableVersionOfTheEntity.ToSicEavValues/*.Attributes*/.All(ev => ev.Attribute.StaticName/*.Value.Name*/ != v.Key))
                     .ToDictionary(v => v.Key, v => v.Value);
 
             // todo: TestImport - ensure that the EntityId of this is what previously was the RepositoryID
-            _context.Entities.UpdateEntity(editableVersionOfTheEntity.EntityID/*RepositoryId*/, newValues, updateLog: _importLog,
+            _context.Entities.UpdateEntity(editableVersionOfTheEntity.EntityId/*RepositoryId*/, newValues, updateLog: _importLog,
                 preserveUndefinedValues: _keepAttributesMissingInImport, isPublished: impEntity.IsPublished, forceNoBranch: impEntity.ForceNoBranch);
 
             #endregion

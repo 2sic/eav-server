@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Persistence.EFC11.Models;
 
-namespace ToSic.Eav.Repository.EF4.Parts
+namespace ToSic.Eav.Repository.Efc.Parts
 {
     public class DbRelationship: BllCommandBase
     {
@@ -19,25 +20,25 @@ namespace ToSic.Eav.Repository.EF4.Parts
         /// <summary>
         /// Update Relationships of an Entity
         /// </summary>
-        internal void UpdateEntityRelationships(int attributeId, IEnumerable<int?> newValue, Entity currentEntity)
+        internal void UpdateEntityRelationships(int attributeId, IEnumerable<int?> newValue, ToSicEavEntities currentEntity)
         {
             // remove existing Relationships that are not in new list
             var newEntityIds = newValue.ToList();
             var existingRelationships =
-                currentEntity.EntityParentRelationships.Where(e => e.AttributeID == attributeId).ToList();
+                currentEntity.RelationshipsWithThisAsParent/*.EntityParentRelationships*/.Where(e => e.AttributeId == attributeId).ToList();
 
             // Delete all existing relationships
             foreach (var relationToDelete in existingRelationships)
-                DbContext.SqlDb.EntityRelationships.DeleteObject(relationToDelete);
+                DbContext.SqlDb.ToSicEavEntityRelationships.Remove(relationToDelete);
 
             // Create new relationships
             for (var i = 0; i < newEntityIds.Count; i++)
             {
                 var newEntityId = newEntityIds[i];
-                currentEntity.EntityParentRelationships.Add(new EntityRelationship
+                currentEntity.RelationshipsWithThisAsParent/*.EntityParentRelationships*/.Add(new ToSicEavEntityRelationships
                 {
-                    AttributeID = attributeId,
-                    ChildEntityID = newEntityId,
+                    AttributeId = attributeId,
+                    ChildEntityId = newEntityId,
                     SortOrder = i
                 });
             }
@@ -72,7 +73,7 @@ namespace ToSic.Eav.Repository.EF4.Parts
                 {
                     try
                     {
-                        childEntityIds.Add(childGuid.HasValue ? DbContext.Entities.GetMostCurrentDbEntity(childGuid.Value).EntityID : new int?());
+                        childEntityIds.Add(childGuid.HasValue ? DbContext.Entities.GetMostCurrentDbEntity(childGuid.Value).EntityId : new int?());
                     }
                     catch (InvalidOperationException)
                     {

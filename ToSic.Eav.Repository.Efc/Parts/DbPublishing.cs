@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Linq;
+using ToSic.Eav.Persistence.EFC11.Models;
 
-namespace ToSic.Eav.Repository.EF4.Parts
+namespace ToSic.Eav.Repository.Efc.Parts
 {
     internal class DbPublishing: BllCommandBase
     {
@@ -13,7 +14,7 @@ namespace ToSic.Eav.Repository.EF4.Parts
         /// <param name="entityId"></param>
         /// <param name="autoSave">Call SaveChanges() automatically? Set to false if you want to do further DB changes</param>
         /// <returns>The published Entity</returns>
-        public Entity PublishDraftInDbEntity(int entityId, bool autoSave)
+        public ToSicEavEntities PublishDraftInDbEntity(int entityId, bool autoSave)
         {
             var unpublishedEntity = DbContext.Entities.GetDbEntity(entityId);
             if (unpublishedEntity.IsPublished)
@@ -24,7 +25,7 @@ namespace ToSic.Eav.Repository.EF4.Parts
                     throw new InvalidOperationException($"EntityId {entityId} is already published");
                 unpublishedEntity = DbContext.Entities.GetDbEntity(draftId.Value);
             }
-            Entity publishedEntity;
+            ToSicEavEntities publishedEntity;
 
             // Publish Draft-Entity
             if (!unpublishedEntity.PublishedEntityId.HasValue)
@@ -54,14 +55,14 @@ namespace ToSic.Eav.Repository.EF4.Parts
         /// <param name="unpublishedEntityId"></param>
         /// <param name="newPublishedState"></param>
         /// <returns></returns>
-        public Entity ClearDraftBranchAndSetPublishedState(int unpublishedEntityId, bool newPublishedState = true)
+        public ToSicEavEntities ClearDraftBranchAndSetPublishedState(int unpublishedEntityId, bool newPublishedState = true)
         {
             var unpublishedEntity = DbContext.Entities.GetDbEntity(unpublishedEntityId);
             // 2dm 2016-06-29 this should now be allowed, so we turn off the test
             //if (unpublishedEntity.IsPublished)
             //    throw new InvalidOperationException(string.Format("EntityId {0} is already published", unpublishedEntityId));
 
-            Entity publishedEntity;
+            ToSicEavEntities publishedEntity;
 
             // Publish Draft-Entity
             if (!unpublishedEntity.PublishedEntityId.HasValue)
@@ -88,7 +89,7 @@ namespace ToSic.Eav.Repository.EF4.Parts
         /// <param name="entityId">EntityId of the Published Entity</param>
         internal int? GetDraftEntityId(int entityId)
         {
-            return DbContext.SqlDb.Entities.Where(e => e.PublishedEntityId == entityId && !e.ChangeLogIDDeleted.HasValue).Select(e => (int?)e.EntityID).SingleOrDefault();
+            return DbContext.SqlDb.ToSicEavEntities.Where(e => e.PublishedEntityId == entityId && !e.ChangeLogDeleted.HasValue).Select(e => (int?)e.EntityId).SingleOrDefault();
         }
     }
 }

@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Persistence.EFC11.Models;
 
-namespace ToSic.Eav.Repository.EF4.Parts
+namespace ToSic.Eav.Repository.Efc.Parts
 {
     public class DbContentType: BllCommandBase
     {
         public DbContentType(DbDataController cntx) : base(cntx) {}
 
 
-        private AttributeSet GetAttributeSetByStaticName(string staticName)
+        private ToSicEavAttributeSets GetAttributeSetByStaticName(string staticName)
         {
-            return DbContext.SqlDb.AttributeSets.FirstOrDefault(a =>
-                a.AppID == DbContext.AppId && a.StaticName == staticName && a.ChangeLogDeleted == null
+            return DbContext.SqlDb.ToSicEavAttributeSets.FirstOrDefault(a =>
+                a.AppId == DbContext.AppId && a.StaticName == staticName && a.ChangeLogDeleted == null
                 );
         }
 
@@ -22,15 +23,15 @@ namespace ToSic.Eav.Repository.EF4.Parts
 
             if (ct == null)
             {
-                ct = new AttributeSet()
+                ct = new ToSicEavAttributeSets()
                 {
-                    AppID = DbContext.AppId,
+                    AppId = DbContext.AppId,
                     StaticName = Guid.NewGuid().ToString(),// staticName,
                     Scope = scope == "" ? null : scope,
                     UsesConfigurationOfAttributeSet = usesConfigurationOfOtherSet,
                     AlwaysShareConfiguration = alwaysShareConfig
                 };
-                DbContext.SqlDb.AddToAttributeSets(ct);
+                DbContext.SqlDb.Add(ct);
             }
 
             ct.Name = name;
@@ -38,7 +39,7 @@ namespace ToSic.Eav.Repository.EF4.Parts
             ct.Scope = scope;
             if (changeStaticName) // note that this is a very "deep" change
                 ct.StaticName = newStaticName;
-            ct.ChangeLogIDCreated = DbContext.Versioning.GetChangeLogId(DbContext.UserName);
+            ct.ChangeLogCreated = DbContext.Versioning.GetChangeLogId(DbContext.UserName);
 
             // save first, to ensure it has an Id
             DbContext.SqlDb.SaveChanges();
@@ -51,33 +52,33 @@ namespace ToSic.Eav.Repository.EF4.Parts
                 throw new Exception("current App already has a content-type with this static name - cannot continue");
 
             // find the original
-            var attSets = DbContext.SqlDb.AttributeSets
+            var attSets = DbContext.SqlDb.ToSicEavAttributeSets
                 .Where(ats => ats.StaticName == staticName 
                     && !ats.UsesConfigurationOfAttributeSet.HasValue    // never duplicate a clone/ghost
                     && ats.ChangeLogDeleted == null                     // never duplicate a deleted
                     && ats.AlwaysShareConfiguration == false)           // never duplicate an always-share
-                .OrderBy(ats => ats.AttributeSetID)
+                .OrderBy(ats => ats.AttributeSetId)
                 .ToList();
 
-            if(attSets.Count == 0)
+            if(attSets.Count() == 0)
                 throw new ArgumentException("can't find an original, non-ghost content-type with the static name '" + staticName + "'");
 
-            if (attSets.Count > 1)
-                throw new Exception("found " + attSets.Count + " (expected 1) original, non-ghost content-type with the static name '" + staticName + "' - so won't create ghost as it's not clear off which you would want to ghost.");
+            if (attSets.Count() > 1)
+                throw new Exception("found " + attSets.Count() + " (expected 1) original, non-ghost content-type with the static name '" + staticName + "' - so won't create ghost as it's not clear off which you would want to ghost.");
 
             var attSet = attSets.FirstOrDefault();
-            var newSet = new AttributeSet()
+            var newSet = new ToSicEavAttributeSets()
             {
-                AppID = DbContext.AppId, // needs the new, current appid
+                AppId = DbContext.AppId, // needs the new, current appid
                 StaticName = attSet.StaticName,
                 Name = attSet.Name,
                 Scope = attSet.Scope,
                 Description = attSet.Description,
-                UsesConfigurationOfAttributeSet = attSet.AttributeSetID,
+                UsesConfigurationOfAttributeSet = attSet.AttributeSetId,
                 AlwaysShareConfiguration = false, // this is copy, never re-share
-                ChangeLogIDCreated = DbContext.Versioning.GetChangeLogId(DbContext.UserName)
+                ChangeLogCreated = DbContext.Versioning.GetChangeLogId(DbContext.UserName)
             };
-            DbContext.SqlDb.AddToAttributeSets(newSet);
+            DbContext.SqlDb.Add(newSet);
             
             // save first, to ensure it has an Id
             DbContext.SqlDb.SaveChanges();
@@ -88,7 +89,7 @@ namespace ToSic.Eav.Repository.EF4.Parts
         {
             var setToDelete = GetAttributeSetByStaticName(staticName);
 
-            setToDelete.ChangeLogIDDeleted = DbContext.Versioning.GetChangeLogId(DbContext.UserName);
+            setToDelete.ChangeLogDeleted = DbContext.Versioning.GetChangeLogId(DbContext.UserName);
             DbContext.SqlDb.SaveChanges();
         }
 

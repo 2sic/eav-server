@@ -5,8 +5,9 @@ using Microsoft.Practices.Unity;
 using ToSic.Eav.Implementations.ValueConverter;
 using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.ImportExport.Xml;
+using ToSic.Eav.Persistence.EFC11.Models;
 
-namespace ToSic.Eav.Repository.EF4.Parts
+namespace ToSic.Eav.Repository.Efc.Parts
 {
     /// <summary>
     /// For exporting a content-type into xml, either just the schema or with data
@@ -84,16 +85,16 @@ namespace ToSic.Eav.Repository.EF4.Parts
             //var document = _xBuilder.BuildDocument(documentRoot);
             var documentRoot = _xBuilder.BuildDocumentWithRoot();
 
-            var entities = contentType.Entities.Where(entity => entity.ChangeLogIDDeleted == null);
+            var entities = contentType.ToSicEavEntities.Where(entity => entity.ChangeLogDeleted == null);
             if (selectedIds != null && selectedIds.Length > 0)
-                entities = entities.Where(e => selectedIds.Contains(e.EntityID));
+                entities = entities.Where(e => selectedIds.Contains(e.EntityId));
 
             foreach (var entity in entities)
             {
 
                 foreach (var language in languages)
                 {
-                    var documentElement = _xBuilder.BuildEntity(entity.EntityGUID, language, contentType.Name);
+                    var documentElement = _xBuilder.BuildEntity(entity.EntityGuid, language, contentType.Name);
                     documentRoot.Add(documentElement);
                     
                     var attributes = contentType.GetAttributes();
@@ -123,10 +124,10 @@ namespace ToSic.Eav.Repository.EF4.Parts
 
         #region Helpers to assemble the xml
 
-        private void AppendEntityReferences(XElement element, Entity entity, Attribute attribute)
+        private void AppendEntityReferences(XElement element, ToSicEavEntities entity, ToSicEavAttributes attribute)
         {
-            var entityGuids = attribute.ToSIC_EAV_EntityRelationships.Where(rel => rel.ParentEntityID == entity.EntityID)
-                                                                     .Select(rel => rel.ChildEntity.EntityGUID);
+            var entityGuids = attribute.ToSicEavEntityRelationships.Where(rel => rel.ParentEntityId == entity.EntityId)
+                                                                     .Select(rel => rel.ChildEntity.EntityGuid);
             var entityGuidsString = string.Join(",", entityGuids);
             element.Append(attribute.StaticName, entityGuidsString);
         }
@@ -135,7 +136,7 @@ namespace ToSic.Eav.Repository.EF4.Parts
         /// Append an element to this. If the attribute is named xxx and the value is 4711 in the language specified, 
         /// the element appended will be <xxx>4711</xxx>. File and page references can be resolved optionally.
         /// </summary>
-        private void AppendValueResolved(XElement element, Eav.Entity entity, Attribute attribute, string language, string languageFallback, ExportResourceReferenceMode exportResourceReferenceOption)
+        private void AppendValueResolved(XElement element, ToSicEavEntities entity, ToSicEavAttributes attribute, string language, string languageFallback, ExportResourceReferenceMode exportResourceReferenceOption)
         {
             var valueName = attribute.StaticName;
             var value = entity.GetValueOfLanguageOrFallback(attribute, language, languageFallback);
@@ -146,7 +147,7 @@ namespace ToSic.Eav.Repository.EF4.Parts
         /// Append an element to this. The element will get the name of the attribute, and if possible the value will 
         /// be referenced to another language (for example [ref(en-US,ro)].
         /// </summary>
-        private void AppendValueReferenced(XElement element, Eav.Entity entity, Attribute attribute, string language, string languageFallback, IEnumerable<string> languageScope, bool referenceParentLanguagesOnly, ExportResourceReferenceMode exportResourceReferenceOption)
+        private void AppendValueReferenced(XElement element, ToSicEavEntities entity, ToSicEavAttributes attribute, string language, string languageFallback, IEnumerable<string> languageScope, bool referenceParentLanguagesOnly, ExportResourceReferenceMode exportResourceReferenceOption)
         {
             var valueName = attribute.StaticName;
             var value = entity.GetValueOfExactLanguage(attribute, language);
@@ -156,7 +157,7 @@ namespace ToSic.Eav.Repository.EF4.Parts
                 return;
             }
 
-            var valueLanguage = value.ValuesDimensions.Select(reference => reference.Dimension.ExternalKey)
+            var valueLanguage = value.ToSicEavValuesDimensions.Select(reference => reference.Dimension.ExternalKey)
                                          .FirstOrDefault(l => l == language); // value.GetLanguage(language);
             if (valueLanguage == null)
             {   // If no language is found, serialize the plain value
@@ -203,7 +204,7 @@ namespace ToSic.Eav.Repository.EF4.Parts
         /// Append an element to this. The element will have the value of the EavValue. File and page references 
         /// can optionally be resolved.
         /// </summary>
-        private void AppendValue(XElement element, XName name, EavValue value, ExportResourceReferenceMode exportResourceReferenceOption)
+        private void AppendValue(XElement element, XName name, ToSicEavValues value, ExportResourceReferenceMode exportResourceReferenceOption)
         {
             if (value == null)
             {
@@ -232,7 +233,7 @@ namespace ToSic.Eav.Repository.EF4.Parts
         /// File:4711 to Content/file4711.jpg. If the reference cannot be reoslved, 
         /// the original value will be returned. 
         /// </summary>
-        private string ResolveHyperlinksFromTennant(EavValue value)
+        private string ResolveHyperlinksFromTennant(ToSicEavValues value)
         {
             if (value.Attribute.Type == Constants.Hyperlink)
             {
@@ -247,9 +248,9 @@ namespace ToSic.Eav.Repository.EF4.Parts
         /// Get languages this value is referenced from, but not the language specified. The 
         /// method helps to find languages the value belongs to expect the current language.
         /// </summary>
-        private IEnumerable<string> GetLanguagesReferenced(EavValue value, string valueLanguage, bool referenceReadWrite)
+        private IEnumerable<string> GetLanguagesReferenced(ToSicEavValues value, string valueLanguage, bool referenceReadWrite)
         {
-            return value.ValuesDimensions.Where(reference => !referenceReadWrite || !reference.ReadOnly)
+            return value.ToSicEavValuesDimensions.Where(reference => !referenceReadWrite || !reference.ReadOnly)
                                          .Where(reference => reference.Dimension.ExternalKey != valueLanguage)
                                          .Select(reference => reference.Dimension.ExternalKey)
                                          .ToList();

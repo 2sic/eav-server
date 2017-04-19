@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
+using Microsoft.Practices.Unity;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Logging;
@@ -12,11 +13,10 @@ using ToSic.Eav.ImportExport.Models;
 using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.ImportExport.Validation;
 using ToSic.Eav.ImportExport.Xml;
-
-using Microsoft.Practices.Unity;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Persistence.EFC11.Models;
 
-namespace ToSic.Eav.Repository.EF4.Parts
+namespace ToSic.Eav.Repository.Efc.Parts
 {
 
     // todo:
@@ -48,7 +48,7 @@ namespace ToSic.Eav.Repository.EF4.Parts
 
         private readonly int _zoneId;
 
-        private readonly AttributeSet _contentType;
+        private readonly ToSicEavAttributeSets _contentType;
 
         /// <summary>
         /// The xml document to imported.
@@ -311,7 +311,7 @@ namespace ToSic.Eav.Repository.EF4.Parts
                 var entityDeleteGuids = GetEntityDeleteGuids();
                 foreach(var entityGuid in entityDeleteGuids)
                 {
-                    var entityId = _contentType.EntityByGuid(entityGuid).EntityID;
+                    var entityId = _contentType.EntityByGuid(entityGuid).EntityId;
                     var context = DbDataController.Instance(_zoneId, _appId);
                     if (context.Entities.CanDeleteEntity(entityId)/* context.EntCommands.CanDeleteEntity(entityId)*/.Item1)
                         context.Entities.DeleteEntity(entityId);
@@ -332,7 +332,7 @@ namespace ToSic.Eav.Repository.EF4.Parts
         #region Deserialize statistics methods
         private List<Guid> GetExistingEntityGuids()
         {
-            var existingGuids = _contentType.Entities.Where(entity => entity.ChangeLogIDDeleted == null).Select(entity => entity.EntityGUID).ToList();
+            var existingGuids = _contentType.ToSicEavEntities.Where(entity => entity.ChangeLogDeleted == null).Select(entity => entity.EntityGuid).ToList();
             return existingGuids;
         }
 
@@ -398,7 +398,7 @@ namespace ToSic.Eav.Repository.EF4.Parts
         /// Get the attribute names in the content type.
         /// </summary>
         public IEnumerable<string> AttributeNamesInContentType 
-            => _contentType.AttributesInSets.Select(item => item.Attribute.StaticName).ToList();
+            => _contentType.ToSicEavAttributesInSets.Select(item => item.Attribute.StaticName).ToList();
         //_contentType.GetStaticNames();
 
         /// <summary>

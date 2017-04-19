@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.DataSources;
 
-namespace ToSic.Eav.Repository.EF4.Parts
+namespace ToSic.Eav.Repository.Efc.Parts
 {
     public class DbPipeline: BllCommandBase
     {
@@ -18,31 +18,31 @@ namespace ToSic.Eav.Repository.EF4.Parts
 
             // Clone Pipeline Entity with a new new Guid
             var sourcePipelineEntity = DbContext.Entities.GetDbEntity(pipelineEntityId);
-            if (sourcePipelineEntity.Set.StaticName != Constants.DataPipelineStaticName) //PipelineAttributeSetStaticName)
+            if (sourcePipelineEntity.AttributeSet.StaticName != Constants.DataPipelineStaticName) //PipelineAttributeSetStaticName)
                 throw new ArgumentException("Entity is not an DataPipeline Entity", nameof(pipelineEntityId));
             var pipelineEntityClone = DbContext.Entities.CloneEntity(sourcePipelineEntity, true);
 
             // Copy Pipeline Parts with configuration Entity, assign KeyGuid of the new Pipeline Entity
-            var pipelineParts = DbContext.Entities.GetAssignedEntities(Constants.MetadataForEntity, null, sourcePipelineEntity.EntityGUID);
+            var pipelineParts = DbContext.Entities.GetAssignedEntities(Constants.MetadataForEntity, null, sourcePipelineEntity.EntityGuid);
             var pipelinePartClones = new Dictionary<string, Guid>();	// track Guids of originals and their clone
             foreach (var pipelinePart in pipelineParts)
             {
                 var pipelinePartClone = DbContext.Entities.CloneEntity(pipelinePart, true);
-                pipelinePartClone.KeyGuid = pipelineEntityClone.EntityGUID;
-                pipelinePartClones.Add(pipelinePart.EntityGUID.ToString(), pipelinePartClone.EntityGUID);
+                pipelinePartClone.KeyGuid = pipelineEntityClone.EntityGuid;
+                pipelinePartClones.Add(pipelinePart.EntityGuid.ToString(), pipelinePartClone.EntityGuid);
 
                 // Copy Configuration Entity, assign KeyGuid of the Clone
-                var configurationEntity = DbContext.Entities.GetAssignedEntities(Constants.MetadataForEntity, null, pipelinePart.EntityGUID).SingleOrDefault();
+                var configurationEntity = DbContext.Entities.GetAssignedEntities(Constants.MetadataForEntity, null, pipelinePart.EntityGuid).SingleOrDefault();
                 if (configurationEntity != null)
                 {
                     var configurationClone = DbContext.Entities.CloneEntity(configurationEntity, true);
-                    configurationClone.KeyGuid = pipelinePartClone.EntityGUID;
+                    configurationClone.KeyGuid = pipelinePartClone.EntityGuid;
                 }
             }
 
             #region Update Stream-Wirings
 
-            var streamWiring = pipelineEntityClone.Values.Single(v => v.Attribute.StaticName == Constants.DataPipelineStreamWiringStaticName);// StreamWiringAttributeName);
+            var streamWiring = pipelineEntityClone.ToSicEavValues.Single(v => v.Attribute.StaticName == Constants.DataPipelineStreamWiringStaticName);// StreamWiringAttributeName);
             var wiringsClone = new List<WireInfo>();
             var wiringsSource = DataPipelineWiring.Deserialize(streamWiring.Value);
             if (wiringsSource != null)
@@ -64,7 +64,7 @@ namespace ToSic.Eav.Repository.EF4.Parts
 
             DbContext.SqlDb.SaveChanges();
 
-            return pipelineEntityClone.EntityID;
+            return pipelineEntityClone.EntityId;
         }
     }
 }
