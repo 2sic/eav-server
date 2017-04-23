@@ -55,7 +55,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// Delete an existing App with any Values and Attributes
         /// </summary>
         /// <param name="appId">AppId to delete</param>
-        internal void DeleteApp(int appId)
+        public void DeleteApp(int appId)
         {
             // 2017-04-06 2dm disabled this check, as of now the context doesn't know the app-id as it's comming from the Zone
             //if (appId != DbContext.AppId)  // this only happens if there is some kind of id-fallback

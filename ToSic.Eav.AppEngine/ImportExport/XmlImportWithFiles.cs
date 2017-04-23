@@ -9,8 +9,9 @@ using Microsoft.Practices.Unity;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Logging;
 using ToSic.Eav.ImportExport.Models;
-using ToSic.Eav.Repository.EF4;
-using ToSic.Eav.Repository.EF4.Parts;
+using ToSic.Eav.Persistence.EFC11.Models;
+using ToSic.Eav.Repository.Efc;
+using ToSic.Eav.Repository.Efc.Parts;
 
 // needed for the static Resolve<...>
 
@@ -22,10 +23,10 @@ namespace ToSic.Eav.Apps.ImportExport
 	{
 		public List<ExportImportMessage> ImportLog;
 
-		private List<Dimension> _sourceDimensions;
+		private List<ToSicEavDimensions> _sourceDimensions;
 		private string _sourceDefaultLanguage;
 		private int? _sourceDefaultDimensionId;
-		private List<Dimension> _targetDimensions;
+		private List<ToSicEavDimensions> _targetDimensions;
         private DbDataController _eavContext;
 		private int _appId;
 		private int _zoneId;
@@ -152,7 +153,7 @@ namespace ToSic.Eav.Apps.ImportExport
 			    var app = eavDc.App.AddApp(null, appGuid);
 				eavDc.SqlDb.SaveChanges();
 
-				appId = app.AppID;
+				appId = app.AppId;
 			}
 			else
 			{
@@ -198,9 +199,9 @@ namespace ToSic.Eav.Apps.ImportExport
 			PrepareFileIdCorrectionList(xmlSource);
 
 			#region Prepare dimensions
-			_sourceDimensions = xmlSource.Element(XmlConstants.Header)?.Element(XmlConstants.Dimensions)?.Elements(XmlConstants.Dim).Select(p => new Dimension
+			_sourceDimensions = xmlSource.Element(XmlConstants.Header)?.Element(XmlConstants.Dimensions)?.Elements(XmlConstants.Dim).Select(p => new ToSicEavDimensions
 			{
-				DimensionID = int.Parse(p.Attribute(XmlConstants.DimId).Value),
+				DimensionId = int.Parse(p.Attribute(XmlConstants.DimId).Value),
 				Name = p.Attribute("Name").Value,
 				SystemKey = p.Attribute("SystemKey").Value,
 				ExternalKey = p.Attribute("ExternalKey").Value,
@@ -215,12 +216,12 @@ namespace ToSic.Eav.Apps.ImportExport
             }
 
             _sourceDefaultDimensionId = _sourceDimensions.Any() ?
-				_sourceDimensions.FirstOrDefault(p => p.ExternalKey == _sourceDefaultLanguage)?.DimensionID
+				_sourceDimensions.FirstOrDefault(p => p.ExternalKey == _sourceDefaultLanguage)?.DimensionId
 				: new int?();
 
 			_targetDimensions = _eavContext.Dimensions.GetDimensionChildren("Culture");
 			if (_targetDimensions.Count == 0)
-				_targetDimensions.Add(new Dimension
+				_targetDimensions.Add(new ToSicEavDimensions
 				{
 					Active = true,
 					ExternalKey = DefaultLanguage,
@@ -348,7 +349,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     {
                         var entityGuid = Guid.Parse(demoEntityGuid);
                         if ( /*App.*/_eavContext.Entities.EntityExists(entityGuid))
-                            demoEntityId = /*App.*/ _eavContext.Entities.GetMostCurrentDbEntity(entityGuid).EntityID;
+                            demoEntityId = /*App.*/ _eavContext.Entities.GetMostCurrentDbEntity(entityGuid).EntityId;
                         else
                             ImportLog.Add(
                                 new ExportImportMessage(
@@ -379,7 +380,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     {
                         var entityGuid = Guid.Parse(pipelineEntityGuid.Value);
                         if (_eavContext.Entities.EntityExists(entityGuid))
-                            pipelineEntityId = _eavContext.Entities.GetMostCurrentDbEntity(entityGuid).EntityID;
+                            pipelineEntityId = _eavContext.Entities.GetMostCurrentDbEntity(entityGuid).EntityId;
                         else
                             ImportLog.Add(
                                 new ExportImportMessage(
@@ -420,7 +421,7 @@ namespace ToSic.Eav.Apps.ImportExport
                         {
                             var xmlDemoEntityGuid = Guid.Parse(xmlDemoEntityGuidString);
                             if (_eavContext.Entities.EntityExists(xmlDemoEntityGuid))
-                                xmlDemoEntityId = _eavContext.Entities.GetMostCurrentDbEntity(xmlDemoEntityGuid).EntityID;
+                                xmlDemoEntityId = _eavContext.Entities.GetMostCurrentDbEntity(xmlDemoEntityGuid).EntityId;
                         }
 
                         return new TemplateDefault
@@ -574,8 +575,8 @@ namespace ToSic.Eav.Apps.ImportExport
 			    }
 			}
 
-            var targetDimsRetyped = _targetDimensions.Select(d => new Data.Dimension { DimensionId = d.DimensionID, Key = d.ExternalKey }).ToList();
-            var sourceDimsRetyped = _sourceDimensions.Select(s => new Data.Dimension { DimensionId = s.DimensionID, Key = s.ExternalKey }).ToList();
+            var targetDimsRetyped = _targetDimensions.Select(d => new Data.Dimension { DimensionId = d.DimensionId, Key = d.ExternalKey }).ToList();
+            var sourceDimsRetyped = _sourceDimensions.Select(s => new Data.Dimension { DimensionId = s.DimensionId, Key = s.ExternalKey }).ToList();
 
             var importEntity = Eav.ImportExport.XmlToImportEntity.BuildImpEntityFromXml(entityNode, assignmentObjectTypeId,
 				targetDimsRetyped, sourceDimsRetyped, _sourceDefaultDimensionId, DefaultLanguage, keyNumber, keyGuid, keyString);

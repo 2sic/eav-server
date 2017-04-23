@@ -9,7 +9,9 @@ using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.EFC11;
 using ToSic.Eav.Persistence.EFC11.Models;
-using ToSic.Eav.Repository.EF4;
+using ToSic.Eav.Repository.Efc.Implementations;
+
+//using ToSic.Eav.Repository.EF4;
 
 namespace ToSic.Eav
 {
@@ -39,11 +41,11 @@ namespace ToSic.Eav
                 cont.RegisterType<ISystemConfiguration, Configuration>();
 
             if (!cont.IsRegistered<IRepositoryLoader>())
-                if (UseEfCore)
+                //if (UseEfCore)
                     cont.RegisterType<IRepositoryLoader, Efc11Loader>(
                         new InjectionConstructor(new ResolvedParameter<EavDbContext>())); 
-                else
-                    cont.RegisterType<IRepositoryLoader, Ef4Loader>(new InjectionConstructor());// use the empty constructor
+                //else
+                //    cont.RegisterType<IRepositoryLoader, Ef4Loader>(new InjectionConstructor());// use the empty constructor
 
 
             #region register the new EF1.1 ORM

@@ -157,9 +157,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Append a new Attribute to an AttributeSet
         /// </summary>
-        public ToSicEavAttributes AddAttribute(int attributeSetId, string staticName, string type, string inputType, int sortOrder = 0, int attributeGroupId = 1, bool isTitle = false, bool autoSave = true)
+        public /*ToSicEavAttributes*/ int AddAttribute(int attributeSetId, string staticName, string type, string inputType, int sortOrder = 0, int attributeGroupId = 1, bool isTitle = false, bool autoSave = true)
         {
-            return AddAttribute(null, attributeSetId, staticName, type, inputType, sortOrder, attributeGroupId, isTitle, autoSave);
+            return AddAttribute(null, attributeSetId, staticName, type, inputType, sortOrder, attributeGroupId, isTitle, autoSave)
+                .AttributeId;
         }
 
 
@@ -288,5 +289,14 @@ namespace ToSic.Eav.Repository.Efc.Parts
             DbContext.SqlDb.SaveChanges();
             return true;
         }
+
+
+        // new parts
+        public string[] DataTypes(int appId)
+        {
+            //SetAppIdAndUser(appId);
+            return DbContext.SqlDb.ToSicEavAttributeTypes.OrderBy(a => a.Type).Select(a => a.Type).ToArray();
+        }
+
     }
 }

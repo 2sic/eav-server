@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web.Http;
 using ToSic.Eav.Apps;
 using ToSic.Eav.ImportExport.Options;
-using ToSic.Eav.Repository.EF4.Parts;
+using ToSic.Eav.Repository.Efc.Parts;
 
 
 namespace ToSic.Eav.WebApi
@@ -77,7 +77,7 @@ namespace ToSic.Eav.WebApi
 
         private DbXmlImportVTable GetXmlImport(ContentImportArgs args)
         {
-            var contentTypeId = CurrentContext.AttribSet.GetAttributeSetWithEitherName(args.ContentType).AttributeSetID;// GetContentTypeId(args.ContentType);
+            var contentTypeId = CurrentContext.AttribSet.GetAttributeSetIdWithEitherName(args.ContentType);//.AttributeSetId;//.AttributeSetID;// GetContentTypeId(args.ContentType);
             var contextLanguages = GetContextLanguages();
 
             using (var contentSteam = new MemoryStream(Convert.FromBase64String(args.ContentBase64)))
@@ -88,7 +88,7 @@ namespace ToSic.Eav.WebApi
 
         private string[] GetContextLanguages()
         {
-            return CurrentContext.Dimensions.GetLanguages().Select(language => language.ExternalKey).ToArray();
+            return CurrentContext.Dimensions.GetLanguagesExtNames();//.GetLanguages().Select(language => language.ExternalKey).ToArray();
         }
 
         //private int GetContentTypeId(string name)

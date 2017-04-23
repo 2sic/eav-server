@@ -59,7 +59,7 @@ namespace ToSic.Eav.Apps.Parts
         {
             //var contentType = _appManager.Cache.GetContentType(typeName);
             //var ent = _appManager.DataController.Entities.AddEntity(contentType.AttributeSetId, values);
-            //return new Tuple<int, Guid>(ent.EntityID, ent.EntityGUID);
+            //return new Tuple<int, Guid>(ent.EntityId, ent.EntityGuid);
             return Create(typeName, values, Constants.NotMetadata);
         }
 
@@ -67,7 +67,7 @@ namespace ToSic.Eav.Apps.Parts
         {
             var contentType = _appManager.Cache.GetContentType(typeName);
             var ent = _appManager.DataController.Entities.AddEntity(contentType.AttributeSetId, values, keyTypeId: keyTypeId, keyNumber: keyNumber, keyString: keyString, keyGuid: keyGuid);
-            return new Tuple<int, Guid>(ent.EntityID, ent.EntityGUID);
+            return new Tuple<int, Guid>(ent.EntityId, ent.EntityGuid);
         }
 
         /// <summary>
@@ -96,10 +96,10 @@ namespace ToSic.Eav.Apps.Parts
                 if (existingEnt.ChangeLogDeleted != null)
                     existingEnt.ChangeLogDeleted = null;
 
-                return existingEnt.EntityID;
+                return existingEnt.EntityId;
             }
             var contentType = _appManager.Cache.GetContentType(contentTypeName).AttributeSetId;
-            return _appManager.DataController.Entities.AddEntity(contentType, values, entityGuid: newGuid).EntityID;
+            return _appManager.DataController.Entities.AddEntity(contentType, values, entityGuid: newGuid).EntityId;
         }
 
     }

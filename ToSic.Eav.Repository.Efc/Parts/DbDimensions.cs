@@ -138,26 +138,30 @@ namespace ToSic.Eav.Repository.Efc.Parts
 		/// </summary>
 		public List<ToSicEavDimensions> GetLanguages() => GetDimensionChildren("Culture");
 
-        // 2017-04-05
-	 //   /// <summary>
-		///// Get LanguageId
-		///// </summary>
-		///// <param name="externalKey">Usually a Key like en-US or de-DE</param>
-		///// <returns>int or null if not foud</returns>
-		//public int? GetLanguageId(string externalKey) 
-  //          => GetLanguages().FirstOrDefault(l => l.ExternalKey == externalKey)?.DimensionId;
 
-	 //   /// <summary>
-		///// Get ExternalKey for specified LanguageId
-		///// </summary>
-		///// <returns>ExternalKey or null if not found</returns>
-		//public string GetLanguageExternalKey(int languageId) 
-  //          => GetLanguages().Where(l => l.DimensionId == languageId).Select(l => l.ExternalKey).FirstOrDefault();
+        public string[] GetLanguagesExtNames() => GetLanguages().Select(language => language.ExternalKey).ToArray();
 
-	    /// <summary>
-		/// Add a new Language to current Zone
-		/// </summary>
-		public ToSicEavDimensions AddLanguage(string name, string externalKey)
+
+	    // 2017-04-05
+        //   /// <summary>
+        ///// Get LanguageId
+        ///// </summary>
+        ///// <param name="externalKey">Usually a Key like en-US or de-DE</param>
+        ///// <returns>int or null if not foud</returns>
+        //public int? GetLanguageId(string externalKey) 
+        //          => GetLanguages().FirstOrDefault(l => l.ExternalKey == externalKey)?.DimensionId;
+
+        //   /// <summary>
+        ///// Get ExternalKey for specified LanguageId
+        ///// </summary>
+        ///// <returns>ExternalKey or null if not found</returns>
+        //public string GetLanguageExternalKey(int languageId) 
+        //          => GetLanguages().Where(l => l.DimensionId == languageId).Select(l => l.ExternalKey).FirstOrDefault();
+
+        /// <summary>
+        /// Add a new Language to current Zone
+        /// </summary>
+        public ToSicEavDimensions AddLanguage(string name, string externalKey)
 		{
 			var newLanguage = new ToSicEavDimensions
             {

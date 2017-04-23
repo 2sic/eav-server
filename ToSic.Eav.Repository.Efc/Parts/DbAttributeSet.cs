@@ -74,6 +74,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
             }
         }
 
+        public int GetAttributeSetIdWithEitherName(string name) => GetAttributeSetWithEitherName(name).AttributeSetId;
+
         /// <summary>
         /// if AttributeSet refers another AttributeSet, get ID of the refered AttributeSet. Otherwise returns passed AttributeSetId.
         /// </summary>

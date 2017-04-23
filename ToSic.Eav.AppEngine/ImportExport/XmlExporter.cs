@@ -9,8 +9,9 @@ using System.Xml.Linq;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Environment;
 using ToSic.Eav.ImportExport.Logging;
-using ToSic.Eav.Repository.EF4;
-using ToSic.Eav.Repository.EF4.Parts;
+using ToSic.Eav.Persistence.EFC11.Models;
+using ToSic.Eav.Repository.Efc;
+using ToSic.Eav.Repository.Efc.Parts;
 
 namespace ToSic.Eav.Apps.ImportExport
 {
@@ -110,7 +111,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     : null,
                 new XElement("Language", new XAttribute("Default", defaultLanguage)),
                 new XElement("Dimensions", dimensions.Select(d => new XElement("Dimension",
-                    new XAttribute("DimensionID", d.DimensionID),
+                    new XAttribute("DimensionID", d.DimensionId),
                     new XAttribute("Name", d.Name),
                     new XAttribute("SystemKey", d.SystemKey ?? String.Empty),
                     new XAttribute("ExternalKey", d.ExternalKey ?? String.Empty),
@@ -141,7 +142,7 @@ namespace ToSic.Eav.Apps.ImportExport
                         // Add Attribute MetaData
                         from c in
                             EavAppContext.Entities.GetAssignedEntities(Constants.MetadataForField,//.AssignmentObjectTypeIdFieldProperties,
-                                x.AttributeID).ToList()
+                                x.AttributeId).ToList()
                         select GetEntityXElement(c)
                         );
 
@@ -161,9 +162,9 @@ namespace ToSic.Eav.Apps.ImportExport
                 if (set.UsesConfigurationOfAttributeSet.HasValue)
                 {
                     var parentAttributeSet =
-                        EavAppContext.SqlDb.AttributeSets.First(
+                        EavAppContext.SqlDb.ToSicEavAttributeSets.First(
                             a =>
-                                a.AttributeSetID == set.UsesConfigurationOfAttributeSet.Value &&
+                                a.AttributeSetId == set.UsesConfigurationOfAttributeSet.Value &&
                                 a.ChangeLogDeleted == null);
                     attributeSet.Add(new XAttribute("UsesConfigurationOfAttributeSet", parentAttributeSet.StaticName));
                 }
@@ -213,17 +214,17 @@ namespace ToSic.Eav.Apps.ImportExport
         /// </summary>
         /// <param name="e"></param>
         /// <returns></returns>
-        private XElement GetEntityXElement(Entity e)
+        private XElement GetEntityXElement(ToSicEavEntities e)
         {
             //Note that this often throws errors in a dev environment, where the data may be mangled manually in the DB
             XElement entityXElement;
             try
             {
-                entityXElement = new DbXmlBuilder(EavAppContext).XmlEntity(e.EntityID);
+                entityXElement = new DbXmlBuilder(EavAppContext).XmlEntity(e.EntityId);
             }
             catch (Exception ex)
             {
-                throw new Exception("failed on entity id '" + e.EntityID + "' of set-type '" + e.AttributeSetID + "'", ex);
+                throw new Exception("failed on entity id '" + e.EntityId + "' of set-type '" + e.AttributeSetId + "'", ex);
             }
 
             foreach (var value in entityXElement.Elements("Value"))
@@ -233,18 +234,18 @@ namespace ToSic.Eav.Apps.ImportExport
                 var valueKey = value.Attribute("Key").Value;
 
                 // Special cases for Template ContentTypes
-                if (e.Set.StaticName == "2SexyContent-Template-ContentTypes" && !string.IsNullOrEmpty(valueString))
+                if (e.AttributeSet.StaticName == "2SexyContent-Template-ContentTypes" && !string.IsNullOrEmpty(valueString))
                 {
                     switch (valueKey)
                     {
                         case "ContentTypeID":
-                            var attributeSet = EavAppContext.AttribSet.GetAllAttributeSets().FirstOrDefault(a => a.AttributeSetID == int.Parse(valueString));
+                            var attributeSet = EavAppContext.AttribSet.GetAllAttributeSets().FirstOrDefault(a => a.AttributeSetId == int.Parse(valueString));
                             value.Attribute("Value").SetValue(attributeSet != null ? attributeSet.StaticName : string.Empty);
                             break;
                         case "DemoEntityID":
                             var entityId = int.Parse(valueString);
-                            var demoEntity = EavAppContext.SqlDb.Entities.FirstOrDefault(en => en.EntityID == entityId);
-                            value.Attribute("Value").SetValue(demoEntity?.EntityGUID.ToString() ?? string.Empty);
+                            var demoEntity = EavAppContext.SqlDb.ToSicEavEntities.FirstOrDefault(en => en.EntityId == entityId);
+                            value.Attribute("Value").SetValue(demoEntity?.EntityGuid.ToString() ?? string.Empty);
                             break;
                     }
                 }
@@ -272,8 +273,8 @@ namespace ToSic.Eav.Apps.ImportExport
             //    new XAttribute("AssignmentObjectType", e.AssignmentObjectType.Name),
             //    new XAttribute("AttributeSetStaticName", attributeSet.StaticName),
             //    new XAttribute("AttributeSetName", attributeSet.Name),
-            //    new XAttribute("EntityGUID", e.EntityGUID),
-            //    from c in Sexy.ContentContext.GetValues(e.EntityID)
+            //    new XAttribute("EntityGUID", e.EntityGuid),
+            //    from c in Sexy.ContentContext.GetValues(e.EntityId)
             //    where c.ChangeLogDeleted == null
             //    select GetAttributeValueXElement(c.Attribute.StaticName, c, c.Attribute.Type, attributeSet));
 

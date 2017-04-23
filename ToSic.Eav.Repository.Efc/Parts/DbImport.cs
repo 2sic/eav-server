@@ -51,7 +51,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Import AttributeSets and Entities
         /// </summary>
-        internal /*IDbContextTransaction*/ void ImportIntoDb(IEnumerable<ImpAttrSet> newAttributeSets, IEnumerable<ImpEntity> newEntities)
+        public /*IDbContextTransaction*/ void ImportIntoDb(IEnumerable<ImpAttrSet> newAttributeSets, IEnumerable<ImpEntity> newEntities)
         {
             _context.PurgeAppCacheOnSave = false;
 

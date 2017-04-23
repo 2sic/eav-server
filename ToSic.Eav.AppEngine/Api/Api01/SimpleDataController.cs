@@ -4,8 +4,9 @@ using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Models;
-using ToSic.Eav.Repository.EF4;
-using ToSic.Eav.Repository.EF4.Parts;
+using ToSic.Eav.Persistence.EFC11.Models;
+using ToSic.Eav.Repository.Efc;
+using ToSic.Eav.Repository.Efc.Parts;
 
 // This is the simple API used to quickly create/edit/delete entities
 // It's in the Apps-project, because we are trying to elliminate the plain ToSic.Eav as it was structured in 2016
@@ -74,7 +75,7 @@ namespace ToSic.Eav.Api.Api01
             ExecuteImport(importEntity);
         }
 
-        private static Dictionary<string, object> RemoveUnknownFields(Dictionary<string, object> values, AttributeSet attributeSet)
+        private static Dictionary<string, object> RemoveUnknownFields(Dictionary<string, object> values, ToSicEavAttributeSets attributeSet)
         {
             var listAllowed = attributeSet.GetAttributes();
             values =
@@ -97,8 +98,8 @@ namespace ToSic.Eav.Api.Api01
         /// <exception cref="ArgumentNullException">Entity does not exist</exception>
         public void Update(int entityId, Dictionary<string, object> values, bool filterUnknownFields = true)
         {
-            var entity = _context.Entities.GetDbEntity(entityId);
-            Update(entity, values);
+            //var entity = _context.Entities.GetDbEntity(entityId);
+            Update(entityId, values);
         }
 
         /// <summary>
@@ -118,10 +119,10 @@ namespace ToSic.Eav.Api.Api01
             Update(entity, values);
         }
 
-        private void Update(Entity entity, Dictionary<string, object> values, bool filterUnknownFields = true)
+        private void Update(ToSicEavEntities entity, Dictionary<string, object> values, bool filterUnknownFields = true)
         {
-            var attributeSet = _context.AttribSet.GetAttributeSet(entity.AttributeSetID);
-            var importEntity = CreateImportEntity(entity.EntityGUID, attributeSet.StaticName);
+            var attributeSet = _context.AttribSet.GetAttributeSet(entity.AttributeSetId);
+            var importEntity = CreateImportEntity(entity.EntityGuid, attributeSet.StaticName);
 
             if (filterUnknownFields)
                 values = RemoveUnknownFields(values, attributeSet);
@@ -157,7 +158,7 @@ namespace ToSic.Eav.Api.Api01
         {
             // todo: refactor to use the eav-api delete
             var entity = _context.Entities.GetMostCurrentDbEntity(entityGuid);
-            Delete(entity.EntityID);
+            Delete(entity.EntityId);
         }
 
 
@@ -192,7 +193,7 @@ namespace ToSic.Eav.Api.Api01
                     foreach (var id in ids)
                     {
                         var entity = _context.Entities.GetDbEntity(id);
-                        guids.Add(entity.EntityGUID);
+                        guids.Add(entity.EntityGuid);
                     }
                     result.Add(value.Key, string.Join(",", guids));
                 }
@@ -211,7 +212,7 @@ namespace ToSic.Eav.Api.Api01
             SystemManager.Purge(_zoneId, _appId);
         }
 
-        private void AppendAttributeValues(ImpEntity impEntity, AttributeSet attributeSet, Dictionary<string, object> values, string valuesLanguage, bool valuesReadOnly, bool resolveHyperlink)
+        private void AppendAttributeValues(ImpEntity impEntity, ToSicEavAttributeSets attributeSet, Dictionary<string, object> values, string valuesLanguage, bool valuesReadOnly, bool resolveHyperlink)
         {
             foreach (var value in values)
             {

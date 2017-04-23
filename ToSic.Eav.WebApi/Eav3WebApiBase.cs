@@ -3,7 +3,7 @@ using System.Web.Http;
 using Microsoft.Practices.Unity;
 using ToSic.Eav.Apps;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.Repository.EF4;
+using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Serializers;
 
 namespace ToSic.Eav.WebApi

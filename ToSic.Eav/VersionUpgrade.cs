@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.ImportExport.Models;
-using ToSic.Eav.Repository.EF4;
-using ToSic.Eav.Repository.EF4.Parts;
+using ToSic.Eav.Repository.Efc;
+using ToSic.Eav.Repository.Efc.Parts;
+//using ToSic.Eav.Repository.EF4;
+//using ToSic.Eav.Repository.EF4.Parts;
 
 namespace ToSic.Eav
 {
@@ -12,6 +14,7 @@ namespace ToSic.Eav
 	public class VersionUpgrade
 	{
 		private readonly DbDataController _metaDataCtx = DbDataController.Instance(Constants.DefaultZoneId, Constants.MetaDataAppId);
+		//private readonly DbDataController _metaDataCtx = DbDataController.Instance(Constants.DefaultZoneId, Constants.MetaDataAppId);
 		private readonly string _userName;
 
 		/// <summary>

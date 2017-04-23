@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Web.Http;
 using ToSic.Eav.ImportExport.Options;
-using ToSic.Eav.Repository.EF4.Parts;
+using ToSic.Eav.Repository.Efc.Parts;
 
 namespace ToSic.Eav.WebApi
 {
@@ -20,10 +20,10 @@ namespace ToSic.Eav.WebApi
             AppId = appId;
 
             // todo: continue here!
-            var ct = CurrentContext.AttribSet.GetAttributeSetWithEitherName(contentType);
-            var contentTypeId = ct.AttributeSetID;
-            var contentTypeName = ct.Name;
-            var contextLanguages = GetContextLanguages();
+            //var ct = CurrentContext.AttribSet.GetAttributeSetWithEitherName(contentType);
+            var contentTypeId = CurrentContext.AttribSet.GetAttributeSetIdWithEitherName(contentType);// ct.AttributeSetId;// AttributeSetID;
+            var contentTypeName = contentType;// 2017-04-23 2dm check! ct.Name;
+            var contextLanguages = CurrentContext.Dimensions.GetLanguagesExtNames();// GetContextLanguages();
 
             // check if we have an array of ids
             int[] ids = null;
@@ -55,8 +55,8 @@ namespace ToSic.Eav.WebApi
             return response;
         }
 
-        private string[] GetContextLanguages()
-            => /*AppManager.Read.*/ CurrentContext.Dimensions.GetLanguages().Select(language => language.ExternalKey).ToArray();
+        //private string[] GetContextLanguages()
+        //    => /*AppManager.Read.*/ CurrentContext.Dimensions.GetLanguages().Select(language => language.ExternalKey).ToArray();
 
     }
 }

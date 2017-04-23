@@ -4,7 +4,7 @@ using System.Linq;
 using System.Security.Permissions;
 using ToSic.Eav.Apps.Interfaces;
 using ToSic.Eav.Persistence.EFC11.Models;
-using ToSic.Eav.Repository.EF4;
+using ToSic.Eav.Repository.Efc;
 
 namespace ToSic.Eav.Apps
 {
@@ -41,7 +41,7 @@ namespace ToSic.Eav.Apps
             var app = DataController.App.AddApp(null, Guid.NewGuid().ToString());
 
             SystemManager.PurgeEverything();
-            return app.AppID;
+            return app.AppId;
         }
 
         #endregion
@@ -51,7 +51,7 @@ namespace ToSic.Eav.Apps
         public static int CreateZone(string name)
         {
             //var zoneId = ZoneRepo.Create(name);
-            var zoneId = DbDataController.Instance().Zone.AddZone(name).Item1.ZoneID;
+            var zoneId = DbDataController.Instance().Zone.AddZone(name).Item1.ZoneId;
             SystemManager.PurgeEverything();
             return zoneId;
         }

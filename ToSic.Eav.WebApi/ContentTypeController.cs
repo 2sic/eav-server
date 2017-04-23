@@ -194,8 +194,9 @@ namespace ToSic.Eav.WebApi
 	    [HttpGet]
 	    public string[] DataTypes(int appId)
 	    {
-            SetAppIdAndUser(appId);
-	        return CurrentContext.SqlDb.AttributeTypes.OrderBy(a => a.Type).Select(a => a.Type).ToArray();
+            //SetAppIdAndUser(appId);
+            //CurrentContext.SqlDb.AttributeTypes.OrderBy(a => a.Type).Select(a => a.Type).ToArray();
+            return CurrentContext.Attributes.DataTypes(appId);
 	    }
 
 	    [HttpGet]
@@ -216,7 +217,7 @@ namespace ToSic.Eav.WebApi
         public int AddField(int appId, int contentTypeId, string staticName, string type, string inputType, int sortOrder)
 	    {
             SetAppIdAndUser(appId);
-	        return CurrentContext.Attributes.AddAttribute(contentTypeId, staticName, type, inputType, sortOrder, 1, false, true).AttributeID;
+	        return CurrentContext.Attributes.AddAttribute(contentTypeId, staticName, type, inputType, sortOrder, 1, false, true);//.AttributeId;//.AttributeID;
 	    }
 
         [HttpGet]
