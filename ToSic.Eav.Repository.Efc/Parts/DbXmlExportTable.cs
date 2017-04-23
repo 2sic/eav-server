@@ -5,7 +5,7 @@ using Microsoft.Practices.Unity;
 using ToSic.Eav.Implementations.ValueConverter;
 using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.ImportExport.Xml;
-using ToSic.Eav.Persistence.EFC11.Models;
+using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {

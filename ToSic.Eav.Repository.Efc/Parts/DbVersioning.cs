@@ -7,8 +7,8 @@ using System.Xml.XPath;
 using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Models;
-using ToSic.Eav.Persistence.EFC11;
-using ToSic.Eav.Persistence.EFC11.Models;
+using ToSic.Eav.Persistence.Efc;
+using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {

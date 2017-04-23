@@ -2,7 +2,7 @@
 using System.Linq;
 using Microsoft.Practices.Unity;
 using ToSic.Eav.Implementations.UserInformation;
-using ToSic.Eav.Persistence.EFC11.Models;
+using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repository.Efc.Parts;
 
 namespace ToSic.Eav.Repository.Efc

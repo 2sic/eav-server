@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ToSic.Eav.Persistence.EFC11.Models;
+using ToSic.Eav.Persistence.Efc.Models;
 
-namespace ToSic.Eav.Persistence.EFC11
+namespace ToSic.Eav.Persistence.Efc
 {
     public class Experiments
     {

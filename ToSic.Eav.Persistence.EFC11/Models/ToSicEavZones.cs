@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ToSic.Eav.Persistence.EFC11.Models
+namespace ToSic.Eav.Persistence.Efc.Models
 {
     public partial class ToSicEavZones//: RepoZone
     {

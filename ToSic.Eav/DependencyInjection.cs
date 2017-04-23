@@ -7,8 +7,8 @@ using ToSic.Eav.DataSources.SqlSources;
 using ToSic.Eav.Implementations;
 using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.Interfaces;
-using ToSic.Eav.Persistence.EFC11;
-using ToSic.Eav.Persistence.EFC11.Models;
+using ToSic.Eav.Persistence.Efc;
+using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repository.Efc.Implementations;
 
 //using ToSic.Eav.Repository.EF4;

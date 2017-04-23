@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Persistence.EFC11.Models;
+using ToSic.Eav.Persistence.Efc.Models;
 // using System.Data.Objects.DataClasses;
 
 namespace ToSic.Eav.Repository.Efc.Parts

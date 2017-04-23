@@ -7,8 +7,8 @@
     <ProjectGuid>{EB8491A7-4147-4A18-AC74-CD1BE957FF48}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ToSic.Eav.Persistence.EFC11.Tests</RootNamespace>
-    <AssemblyName>ToSic.Eav.Persistence.EFC11.Tests</AssemblyName>
+    <RootNamespace>ToSic.Eav.Persistence.Efc.Tests</RootNamespace>
+    <AssemblyName>ToSic.Eav.Persistence.Efc.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -133,9 +133,9 @@
       <Project>{82f94588-269b-4cdd-98d1-d5cb14c39090}</Project>
       <Name>ToSic.Eav.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ToSic.Eav.Persistence.EFC11\ToSic.Eav.Persistence.EFC11.csproj">
-      <Project>{bb55dea4-0869-4c59-836e-d654f4416121}</Project>
-      <Name>ToSic.Eav.Persistence.EFC11</Name>
+    <ProjectReference Include="..\ToSic.Eav.Persistence.EFC11\ToSic.Eav.Persistence.Efc.csproj">
+      <Project>{0b6f21c6-e066-419e-9a6b-c34ffd668a16}</Project>
+      <Name>ToSic.Eav.Persistence.Efc</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />

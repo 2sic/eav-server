@@ -151,9 +151,9 @@
       <Project>{5a75cd35-99f4-4cf0-944a-dc0f5d68b430}</Project>
       <Name>ToSic.Eav.ImportExport</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ToSic.Eav.Persistence.EFC11\ToSic.Eav.Persistence.EFC11.csproj">
+    <ProjectReference Include="..\ToSic.Eav.Persistence.EFC11\ToSic.Eav.Persistence.Efc.csproj">
       <Project>{0b6f21c6-e066-419e-9a6b-c34ffd668a16}</Project>
-      <Name>ToSic.Eav.Persistence.EFC11</Name>
+      <Name>ToSic.Eav.Persistence.Efc</Name>
     </ProjectReference>
     <ProjectReference Include="..\ToSic.Eav.Repository.Efc\ToSic.Eav.Repository.Efc.csproj">
       <Project>{2bba13d2-f6d2-443b-b7c8-8f4c31432c03}</Project>

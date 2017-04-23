@@ -37,4 +37,4 @@ using System.Runtime.InteropServices;
 
 
 [assembly: InternalsVisibleTo("ToSic.Eav.Repository.EF4")]
-[assembly: InternalsVisibleTo("ToSic.Eav.Persistence.EFC11")]
+[assembly: InternalsVisibleTo("ToSic.Eav.Persistence.Efc")]

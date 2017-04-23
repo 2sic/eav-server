@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using Microsoft.Practices.Unity;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Persistence.EFC11.Models;
+using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Persistence.EFC11.Tests
 {

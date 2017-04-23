@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-namespace ToSic.Eav.Persistence.EFC11.Models
+namespace ToSic.Eav.Persistence.Efc.Models
 {
     public partial class ToSicEavEntities
     {

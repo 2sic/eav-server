@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net451</TargetFramework>
+    <AssemblyName>ToSic.Eav.Persistence.Efc</AssemblyName>
+    <RootNamespace>ToSic.Eav.Persistence.Efc</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

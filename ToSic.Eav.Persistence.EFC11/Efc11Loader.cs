@@ -4,9 +4,9 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
-using ToSic.Eav.Persistence.EFC11.Models;
+using ToSic.Eav.Persistence.Efc.Models;
 
-namespace ToSic.Eav.Persistence.EFC11
+namespace ToSic.Eav.Persistence.Efc
 {
     /// <summary>
     /// 
