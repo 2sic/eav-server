@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 
+// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Persistence.Efc.Models
 {
     public partial class ToSicEavEntities

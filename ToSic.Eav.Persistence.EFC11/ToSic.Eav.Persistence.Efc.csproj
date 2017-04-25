@@ -6,6 +6,10 @@
     <RootNamespace>ToSic.Eav.Persistence.Efc</RootNamespace>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='efc and WebApi|AnyCPU'" />
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug eav only|AnyCPU'" />
+
   <ItemGroup>
     <Compile Remove="Repository.cs" />
     <Compile Remove="Repository\AppRepo.cs" />

@@ -6,6 +6,10 @@
     <FileVersion>1.4.0.0</FileVersion>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='efc and WebApi|AnyCPU'" />
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug eav only|AnyCPU'" />
+
   <ItemGroup>
     <PackageReference Include="Unity" Version="4.0.1" />
   </ItemGroup>

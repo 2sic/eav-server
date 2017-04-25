@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Persistence.Efc.Models
 {
     public partial class ToSicEavAttributeSets
