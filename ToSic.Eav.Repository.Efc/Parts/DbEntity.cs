@@ -25,7 +25,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// Get a single Entity by EntityId
         /// </summary>
         /// <returns>Entity or throws InvalidOperationException</returns>
-        internal ToSicEavEntities GetDbEntity(int entityId) => DbContext.SqlDb.ToSicEavEntities.Single(e => e.EntityId == entityId);
+        internal ToSicEavEntities GetDbEntity(int entityId)
+            => DbContext.SqlDb.ToSicEavEntities
+                .Include(e => e.RelationshipsWithThisAsParent)
+                .Include(e => e.RelationshipsWithThisAsChild)
+                .Single(e => e.EntityId == entityId);
 
         /// <summary>
         /// Get a single Entity by EntityGuid. Ensure it's not deleted and has context's AppId
@@ -38,8 +42,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
 
         internal IQueryable<ToSicEavEntities> GetEntitiesByGuid(Guid entityGuid) 
-            => DbContext.SqlDb.ToSicEavEntities.Where(e =>
-                e.EntityGuid == entityGuid && !e.ChangeLogDeleted.HasValue &&
+            => DbContext.SqlDb.ToSicEavEntities
+            .Include(e => e.RelationshipsWithThisAsParent)
+            .Include(e => e.RelationshipsWithThisAsChild)
+            .Where(e => e.EntityGuid == entityGuid && !e.ChangeLogDeleted.HasValue &&
                 !e.AttributeSet.ChangeLogDeleted.HasValue && e.AttributeSet.AppId == DbContext.AppId);
 
         /// <summary>

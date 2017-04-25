@@ -27,27 +27,42 @@ namespace ToSic.Eav.Repository.Efc.Parts
             var existingRelationships =
                 currentEntity.RelationshipsWithThisAsParent/*.EntityParentRelationships*/.Where(e => e.AttributeId == attributeId).ToList();
 
-            // Delete all existing relationships
-            foreach (var relationToDelete in existingRelationships)
+            // Delete all existing relationships (important, because the order, which is part of the key, is important afterwards)
+            foreach (var relationToDelete in existingRelationships)//.Where(r => !newEntityIds.Contains(r.ChildEntityId)))
                 DbContext.SqlDb.ToSicEavEntityRelationships.Remove(relationToDelete);
 
-            // Create new relationships
-            for (var i = 0; i < newEntityIds.Count; i++)
+            DbContext.SqlDb.SaveChanges();
+
+            // Create new relationships which didn't exist before
+            var reallyNewIds = newEntityIds;//.Where(n => !existingRelationships.Select(r => r.ChildEntityId).Contains(n)).ToList();
+            for (var i = 0; i < /*newEntityIds*/reallyNewIds.Count; i++)
             {
-                var newEntityId = newEntityIds[i];
+                var newEntityId = /*newEntityIds*/reallyNewIds[i];
                 currentEntity.RelationshipsWithThisAsParent/*.EntityParentRelationships*/.Add(new ToSicEavEntityRelationships
                 {
                     AttributeId = attributeId,
                     ChildEntityId = newEntityId,
+                    //ParentEntityId = currentEntity.EntityId,
                     SortOrder = i
                 });
             }
+
+            // new: now sort them all
+            //for (var i = 0; i < newEntityIds.Count; i++)
+            //{
+            //    var newEntityId = newEntityIds[i];
+            //    var rel = currentEntity.RelationshipsWithThisAsParent.Single(r => r.AttributeId == attributeId && r.ChildEntityId == newEntityId);
+            //    rel.SortOrder = i;
+            //}
+
+            // test code
+            DbContext.SqlDb.SaveChanges();
         }
 
-        /// <summary>
-        /// Update Relationships of an Entity. Update isn't done until ImportEntityRelationshipsQueue() is called!
-        /// </summary>
-        internal void UpdateEntityRelationships(int attributeId, List<Guid?> newValue, Guid? entityGuid, int? entityId)
+            /// <summary>
+            /// Update Relationships of an Entity. Update isn't done until ImportEntityRelationshipsQueue() is called!
+            /// </summary>
+            internal void UpdateEntityRelationships(int attributeId, List<Guid?> newValue, Guid? entityGuid, int? entityId)
         {
             _entityRelationshipsQueue.Add(new EntityRelationshipQueueItem
             {

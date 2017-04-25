@@ -102,9 +102,7 @@ namespace ToSic.Eav.Repository.Efc
         /// </summary>
         private static DbDataController Instance()
         {
-            // var configuration = Factory.Container.Resolve<ISystemConfiguration>();
-            // var connectionString = BuildEf4ConnectionString(configuration.DbConnectionString); //Configuration.DbConnectionString;// Configuration.GetConnectionString();
-            var context = Factory.Resolve<EavDbContext>();//  new EavContext(connectionString);
+            var context = Factory.Resolve<EavDbContext>();
             var dc = new DbDataController {SqlDb = context};
             dc.DbS = new DbShortcuts(dc);
             dc.Versioning = new DbVersioning(dc);
@@ -119,10 +117,7 @@ namespace ToSic.Eav.Repository.Efc
             dc.App = new DbApp(dc);
             dc.ContentType = new DbContentType(dc);
 
-            //dc.Repository = new RepositoryEF4(dc);
-
-            // 2017-04-19 TODO
-            // dc.SqlDb.AlternateSaveHandler += dc.SaveChanges;
+            dc.SqlDb.AlternateSaveHandler += dc.SaveChanges;
 
             return dc;
         }
@@ -188,59 +183,32 @@ namespace ToSic.Eav.Repository.Efc
         /// Get or seth whether SaveChanges() should automatically purge cache.
         /// </summary>
         /// <remarks>Usefull if many changes are made in a batch and Cache should be purged after that batch</remarks>
-        private bool _purgeAppCacheOnSave = true;
+       public bool PurgeAppCacheOnSave { get; set; } = true;
 
-        public bool PurgeAppCacheOnSave
+
+        /// <summary>
+        /// Persists all updates to the data source and optionally resets change tracking in the object context.
+        /// Also Creates an initial ChangeLog (used by SQL Server for Auditing).
+        /// If items were modified, Cache is purged on current Zone/App
+        /// </summary>
+        public int SaveChanges(bool acceptAllChangesOnSuccess, EavDbContext.SaveChangesEvent baseEvent)
         {
-            get { return _purgeAppCacheOnSave; }
-            set { _purgeAppCacheOnSave = value; }
+            if (_appId == 0)
+                throw new Exception("SaveChanges with AppId 0 not allowed.");
+
+            // enure changelog exists and is set to SQL CONTEXT_INFO variable
+            if (Versioning.MainChangeLogId == 0)
+                Versioning.GetChangeLogId(UserName);
+
+            var modifiedItems = baseEvent(acceptAllChangesOnSuccess);
+
+            if (modifiedItems != 0 && PurgeAppCacheOnSave)
+                DataSource.GetCache(ZoneId, AppId).PurgeCache(ZoneId, AppId);
+
+            return modifiedItems;
         }
-
-
-
-        ///// <summary>
-        ///// Persists all updates to the data source and optionally resets change tracking in the object context.
-        ///// Also Creates an initial ChangeLog (used by SQL Server for Auditing).
-        ///// If items were modified, Cache is purged on current Zone/App
-        ///// </summary>
-        //public int SaveChanges(System.Data.Objects.SaveOptions options, EavContext.OriginalSaveChangesEvent baseEvent)
-        //{
-        //    if (_appId == 0)
-        //        throw new Exception("SaveChanges with AppId 0 not allowed.");
-
-        //    // enure changelog exists and is set to SQL CONTEXT_INFO variable
-        //    if (Versioning.MainChangeLogId == 0)
-        //        Versioning.GetChangeLogId(UserName);
-
-        //    var modifiedItems = baseEvent(options);
-
-        //    if (modifiedItems != 0 && PurgeAppCacheOnSave)
-        //        DataSource.GetCache(ZoneId, AppId).PurgeCache(ZoneId, AppId);
-
-        //    return modifiedItems;
-        //}
 
         #endregion
 
-        // 2017-04-19 unnecessary
-        //private static string BuildEf4ConnectionString(string simpleConStr)
-        //{
-        //    // check if it's an already fully built EF4 string, if yes, just keep it
-        //    if (simpleConStr.Contains(".ssdl"))
-        //        return simpleConStr;
-
-        //    var builder = new EntityConnectionStringBuilder
-        //    {
-        //        ProviderConnectionString = simpleConStr,
-        //        Metadata =
-        //            "res://*/Persistence.EavContext.csdl|res://*/Persistence.EavContext.ssdl|res://*/Persistence.EavContext.msl",
-        //        Provider = "System.Data.SqlClient"
-        //    };
-
-        //    if (!builder.ProviderConnectionString.Contains("MultipleActiveResultSets"))
-        //        builder.ProviderConnectionString += ";MultipleActiveResultSets=True";
-
-        //    return builder.ToString();
-        //}
     }
 }
