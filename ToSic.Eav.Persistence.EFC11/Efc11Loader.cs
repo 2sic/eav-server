@@ -348,17 +348,17 @@ namespace ToSic.Eav.Persistence.Efc
 
             #region Populate Entity-Relationships (after all Entitys are created)
 
-            var relationshipsRaw = from r in _dbContext.ToSicEavEntityRelationships
-                                    where
-                                    r.Attribute.ToSicEavAttributesInSets.Any(
-                                        s =>
-                                            s.AttributeSet.AppId == appId &&
-                                            (!filterByEntityIds ||
-                                            (!r.ChildEntityId.HasValue || entityIds.Contains(r.ChildEntityId.Value)) ||
-                                            entityIds.Contains(r.ParentEntityId)))
-                                    orderby r.ParentEntityId, r.AttributeId, r.ChildEntityId
-                                    select new { r.ParentEntityId, r.Attribute.StaticName, r.ChildEntityId };
+            var relationshipQuery = _dbContext.ToSicEavEntityRelationships
+                .Include(er => er.Attribute.ToSicEavAttributesInSets)
+                .Where(r => r.Attribute.ToSicEavAttributesInSets.Any(s => s.AttributeSet.AppId == appId) // && 
+                )
+                .Where(r => !filterByEntityIds || !r.ChildEntityId.HasValue || entityIds.Contains(r.ChildEntityId.Value) ||
+                         entityIds.Contains(r.ParentEntityId))
+                // .ToList()
+                .OrderBy(r => r.ParentEntityId).ThenBy(r => r.AttributeId).ThenBy(r => r.ChildEntityId)
+                .Select(r => new {r.ParentEntityId, r.Attribute.StaticName, r.ChildEntityId});
 
+            var relationshipsRaw = relationshipQuery.ToList();
             foreach (var relationship in relationshipsRaw)
             {
                 try
