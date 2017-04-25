@@ -108,7 +108,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     foreach (var entity in newEntities)
                         PersistOneImportEntity(entity);
 
-                    _context.Relationships.ImportEntityRelationshipsQueue();
+                    _context.Relationships.ImportRelationshipQueue();
 
                     _context.SqlDb.SaveChanges();
                 }
@@ -136,7 +136,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             foreach (var attributeSet in newAttributeSets)
                 ImportAttributeSet(attributeSet);
 
-            _context.Relationships.ImportEntityRelationshipsQueue();
+            _context.Relationships.ImportRelationshipQueue();
 
             _context.AttribSet.EnsureSharedAttributeSets();
 

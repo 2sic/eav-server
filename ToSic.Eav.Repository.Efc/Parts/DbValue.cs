@@ -105,10 +105,16 @@ namespace ToSic.Eav.Repository.Efc.Parts
             {
                 // Handle Entity Relationships - they're stored in own tables
                 case "Entity":
-                    if (newImpValue is ImpValue<List<Guid>>)
-                        DbContext.Relationships.UpdateEntityRelationships(attribute.AttributeId, ((ImpValue<List<Guid>>)newImpValue).Value.Select(p => (Guid?)p).ToList(), null /* entityInDb.EntityGuid, null */, entityInDb.EntityId);
-                    if (newImpValue is ImpValue<List<Guid?>>)
-                        DbContext.Relationships.UpdateEntityRelationships(attribute.AttributeId, ((ImpValue<List<Guid?>>)newImpValue).Value.Select(p => p).ToList(), null, entityInDb.EntityId);
+                    if (newImpValue is ImpValue<List<Guid>> || newImpValue is ImpValue<List<Guid?>>)
+                    {
+                        // often the list is not nullable, but sometimes it is - the further processing always expects nullable Guids
+                        var guidList = (newImpValue as ImpValue<List<Guid>>)?.Value.Select(p => (Guid?) p) 
+                            ?? ((ImpValue<List<Guid?>>)newImpValue).Value.Select(p => p);
+                        DbContext.Relationships.AddToQueue(attribute.AttributeId, guidList.ToList(), null, entityInDb.EntityId);
+                    }
+                    // old version with less clear code
+                    //if (newImpValue is ImpValue<List<Guid?>>)
+                    //    DbContext.Relationships.UpdateEntityRelationships(attribute.AttributeId, ((ImpValue<List<Guid?>>)newImpValue).Value.Select(p => (Guid?)p).ToList(), null, entityInDb.EntityId);
                     else
                         throw new NotSupportedException("UpdateValue() for Attribute " + attribute.StaticName + " with newValue of type" + newImpValue.GetType() + " not supported. Expected List<Guid>");
 
@@ -170,7 +176,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         }
 
         /// <summary>
-        /// Update a Value when using ValueViewModel
+        /// Update a Value 
         /// </summary>
         internal void UpdateValue(ToSicEavEntities currentEntity, ToSicEavAttributes attribute, bool masterRecord, List<ToSicEavValues> currentValues, IEntity entityModel, ImpValueInside newValue, ICollection<int> dimensionIds)
         {
