@@ -27,6 +27,8 @@ namespace ToSic.Eav.Apps.ImportExport
 
         }
 
+        //public List<ExportImportMessage> Messages => _environment.Messages;
+
         /// <summary>
         /// Imports a ZIP file (from stream)
         /// </summary>
@@ -37,8 +39,9 @@ namespace ToSic.Eav.Apps.ImportExport
         {
             List<ExportImportMessage> messages = _environment.Messages;
 
-            var temporaryDirectory = server.MapPath(Path.Combine(Eav.ImportExport.Settings.TemporaryDirectory, Guid.NewGuid().ToString()));
+            var temporaryDirectory = server.MapPath(Path.Combine(Settings.TemporaryDirectory, Guid.NewGuid().ToString()));
             var success = true;
+            Exception finalEx = null;
 
             try
             {
@@ -158,6 +161,7 @@ namespace ToSic.Eav.Apps.ImportExport
             }
             catch (Exception e)
             {
+                finalEx = e; // keep to throw later
                 // Add error message and return false
                 messages.Add(new ExportImportMessage("Could not import the app / package: " + e.Message, ExportImportMessage.MessageTypes.Error));
                 // Exceptions.LogException(e);
@@ -177,6 +181,9 @@ namespace ToSic.Eav.Apps.ImportExport
                     // If deleting is not possible, just leave the temporary folder as it is
                 }
             }
+
+            if (finalEx != null)
+                throw finalEx; // must throw, to enable logging outside
 
             return success;
         }
@@ -222,7 +229,7 @@ namespace ToSic.Eav.Apps.ImportExport
             }
 
             using (var file = File.OpenRead(destinationPath))
-                success = ImportZip(file, HttpContext.Current.Server/*, PortalSettings.Current, _environment.Messages*/);
+                success = ImportZip(file, HttpContext.Current.Server);
 
             File.Delete(destinationPath);
 

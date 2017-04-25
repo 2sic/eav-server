@@ -114,6 +114,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             return result;
         }
 
+        private List<ToSicEavAttributeSets> _rememberSharedSets;
         /// <summary>
         /// Ensure all AttributeSets with AlwaysShareConfiguration=true exist on specified App. App must be saved and have an AppId
         /// </summary>
@@ -122,8 +123,14 @@ namespace ToSic.Eav.Repository.Efc.Parts
             if (app.AppId == 0)
                 throw new Exception("App must have a valid AppId");
 
-            // todo: bad - don't want data-sources here
-            var sharedAttributeSets = GetAttributeSets(Constants.MetaDataAppId, null).Where(a => a.AlwaysShareConfiguration);
+            var sharedAttributeSets = _rememberSharedSets ?? (_rememberSharedSets = GetAttributeSets(Constants.MetaDataAppId, null).Where(a => a.AlwaysShareConfiguration).ToList());
+            var currentAppSharedSets = GetAttributeSets(app.AppId, null).Where(a => a.AlwaysShareConfiguration).ToList();
+
+            // test if all sets already exist
+            var foundMatches = currentAppSharedSets.Where(c => sharedAttributeSets.Any(s => s.StaticName == c.StaticName));
+            if (sharedAttributeSets.Count == foundMatches.Count())
+                return;
+
             foreach (var sharedSet in sharedAttributeSets)
             {
                 // 2017-04-25 2dm moved to inner call, as this additional call wasn't reliable with EFC
