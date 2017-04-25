@@ -44,8 +44,8 @@ namespace ToSic.Eav.DataSources.Caches
 		/// The root DataSource
 		/// </summary>
 		/// <remarks>Unity sets this automatically</remarks>
-		[Dependency]
-		public IRootSource Backend { get; set; }
+		public IRootSource Backend => _backend ?? (_backend = Factory.Resolve<IRootSource>());
+	    private IRootSource _backend;
 
 		/// <summary>
 		/// Gets or sets the Dictionary of all Zones an Apps

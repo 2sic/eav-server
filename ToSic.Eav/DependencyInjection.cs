@@ -54,7 +54,10 @@ namespace ToSic.Eav
                     obj =>
                     {
                         var opts = new DbContextOptionsBuilder<EavDbContext>();
-                        opts.UseSqlServer(new Configuration().DbConnectionString);
+                        var conStr = new Configuration().DbConnectionString;
+                        if (!conStr.ToLower().Contains("multipleactiveresultsets")) // this is needed to allow querying data while preparing new data on the same DbContext
+                            conStr += ";MultipleActiveResultSets=True";
+                        opts.UseSqlServer(conStr);
                         return new EavDbContext(opts.Options);
                     }));
             #endregion
