@@ -350,11 +350,9 @@ namespace ToSic.Eav.Persistence.Efc
 
             var relationshipQuery = _dbContext.ToSicEavEntityRelationships
                 .Include(er => er.Attribute.ToSicEavAttributesInSets)
-                .Where(r => r.Attribute.ToSicEavAttributesInSets.Any(s => s.AttributeSet.AppId == appId) // && 
-                )
+                .Where(r => r.Attribute.ToSicEavAttributesInSets.Any(s => s.AttributeSet.AppId == appId))
                 .Where(r => !filterByEntityIds || !r.ChildEntityId.HasValue || entityIds.Contains(r.ChildEntityId.Value) ||
                          entityIds.Contains(r.ParentEntityId))
-                // .ToList()
                 .OrderBy(r => r.ParentEntityId).ThenBy(r => r.AttributeId).ThenBy(r => r.ChildEntityId)
                 .Select(r => new {r.ParentEntityId, r.Attribute.StaticName, r.ChildEntityId});
 

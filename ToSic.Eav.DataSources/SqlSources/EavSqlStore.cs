@@ -38,8 +38,8 @@ namespace ToSic.Eav.DataSources.SqlSources
 		/// </summary>
 		public void InitZoneApp(int zoneId, int appId)
 		{
-			/*_context.*/ZoneId = zoneId;
-			/*_context.*/AppId = appId;
+			ZoneId = zoneId;
+			AppId = appId;
 			_ready = true;
 		}
 
@@ -48,8 +48,8 @@ namespace ToSic.Eav.DataSources.SqlSources
 	    public AppDataPackage GetDataForCache(IDeferredEntitiesList targetCacheForDeferredLookups) 
             => Loader.AppPackage(AppId, null, targetCacheForDeferredLookups);
 
-	    public Dictionary<int, Data.Zone> GetAllZones() => Loader.Zones();// _context.Zone.GetAllZones();
+	    public Dictionary<int, Data.Zone> GetAllZones() => Loader.Zones();
 
-	    public Dictionary<int, string> GetAssignmentObjectTypes() => Loader.MetadataTargetTypes();// _context.DbS.GetAssignmentObjectTypes();
+	    public Dictionary<int, string> GetAssignmentObjectTypes() => Loader.MetadataTargetTypes();
 	}
 }
