@@ -126,13 +126,15 @@ namespace ToSic.Eav.Repository.Efc.Parts
             var sharedAttributeSets = GetAttributeSets(Constants.MetaDataAppId, null).Where(a => a.AlwaysShareConfiguration);
             foreach (var sharedSet in sharedAttributeSets)
             {
+                // 2017-04-25 2dm moved to inner call, as this additional call wasn't reliable with EFC
                 // Skip if attributeSet with StaticName already exists
-                if (app.ToSicEavAttributeSets.Any(a => a.StaticName == sharedSet.StaticName && !a.ChangeLogDeleted.HasValue))
-                    continue;
+                //if (app.ToSicEavAttributeSets.Any(a => a.StaticName == sharedSet.StaticName && !a.ChangeLogDeleted.HasValue))
+                //    continue;
 
-                // create new AttributeSet
-                var newAttributeSet = AddContentTypeAndSave(sharedSet.Name, sharedSet.Description, sharedSet.StaticName, sharedSet.Scope, false, app.AppId);
-                newAttributeSet.UsesConfigurationOfAttributeSet = sharedSet.AttributeSetId;
+                // create new AttributeSet - will be null if already exists
+                var newOrNull = AddContentTypeAndSave(sharedSet.Name, sharedSet.Description, sharedSet.StaticName, sharedSet.Scope, false, true, app.AppId);
+                if (newOrNull != null)
+                    newOrNull.UsesConfigurationOfAttributeSet = sharedSet.AttributeSetId;
             }
 
             // Ensure new AttributeSets are created and cache is refreshed
@@ -151,14 +153,15 @@ namespace ToSic.Eav.Repository.Efc.Parts
             DbContext.SqlDb.SaveChanges();
         }
 
-        /// <summary>
-        /// Add a new AttributeSet
-        /// </summary>
-        public ToSicEavAttributeSets AddContentTypeAndSave(string name, string description, string staticName, string scope, bool autoSave = true)
-            => AddContentTypeAndSave(name, description, staticName, scope, autoSave, null);
+        //2017-04-25 2dm removed trivial overload
+        ///// <summary>
+        ///// Add a new AttributeSet
+        ///// </summary>
+        //public ToSicEavAttributeSets AddContentTypeAndSave(string name, string description, string staticName, string scope, bool autoSave)
+        //    => AddContentTypeAndSave(name, description, staticName, scope, autoSave, false, null);
         
 
-        internal ToSicEavAttributeSets AddContentTypeAndSave(string name, string description, string staticName, string scope, bool autoSave, int? appId)
+        internal ToSicEavAttributeSets AddContentTypeAndSave(string name, string description, string staticName, string scope, bool autoSave, bool skipExisting, int? appId)
         {
             if (string.IsNullOrEmpty(staticName))
                 staticName = Guid.NewGuid().ToString();
@@ -167,7 +170,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             // ensure AttributeSet with StaticName doesn't exist on App
             if (DbContext.AttribSet.AttributeSetExists(staticName, targetAppId))
+            {
+                if (skipExisting)
+                    return null;
                 throw new Exception("An AttributeSet with StaticName \"" + staticName + "\" already exists.");
+            }
 
             var newSet = new ToSicEavAttributeSets
             {

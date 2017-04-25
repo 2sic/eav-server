@@ -145,16 +145,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
             // Commit DB Transaction and refresh cache
             transaction.Commit();
 
-            // todo: CleanImport - change access to attribute set to use DB
-            //// ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-            //DataSource.GetCache(Constants.DefaultZoneId, Constants.MetaDataAppId).LightList.Any();
-            //var cache = DataSource.GetCache(_context.ZoneId, _context.AppId);
-            //cache.PurgeCache(_context.ZoneId, _context.AppId);
-            //// ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-            //cache.LightList.Any(); // re-read something
-
             // re-start transaction
-            transaction = _context.SqlDb.Database/*.Connection*/.BeginTransaction();
+            transaction = _context.SqlDb.Database.BeginTransaction();
             return transaction;
         }
 
@@ -166,7 +158,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             var destinationSet = _context.AttribSet.GetAttributeSet(impAttrSet.StaticName);
             // add new AttributeSet
             if (destinationSet == null)
-                destinationSet = _context.AttribSet.AddContentTypeAndSave(impAttrSet.Name, impAttrSet.Description, impAttrSet.StaticName, impAttrSet.Scope, false);
+                destinationSet = _context.AttribSet.AddContentTypeAndSave(impAttrSet.Name, impAttrSet.Description, impAttrSet.StaticName, impAttrSet.Scope, false, false, null);
             else	// use/update existing attribute Set
             {
                 if (destinationSet.UsesConfigurationOfAttributeSet.HasValue)

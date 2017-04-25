@@ -49,7 +49,7 @@ namespace ToSic.Eav.Apps
         public void MetadataEnsureTypeAndSingleEntity(string scope, string setName, string label, int appAssignment, OrderedDictionary values)
         {
             var contentType = !DataController.AttribSet.AttributeSetExists(setName, AppId)
-                ? DataController.AttribSet.AddContentTypeAndSave(setName, label, setName, scope)
+                ? DataController.AttribSet.AddContentTypeAndSave(setName, label, setName, scope, true, false, null)
                 : DataController.AttribSet.GetAttributeSet(setName);
 
             if (values == null)
