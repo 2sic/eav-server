@@ -66,7 +66,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 DbContext.Versioning.GetChangeLogId(DbContext.UserName);
 
             // Delete app using StoredProcedure
-            DbContext.SqlDb.Database.ExecuteSqlCommand("ToSIC_EAV_DeleteApp @p0", parameters: new[] { appId });// .DeleteAppInternal(appId);
+            DbContext.SqlDb.Database.ExecuteSqlCommand("ToSIC_EAV_DeleteApp @p0", appId);// .DeleteAppInternal(appId);
 
             // 2017-04-01 2dm removed from here, must happen at "outer" layer
             // Remove App from Global Cache
