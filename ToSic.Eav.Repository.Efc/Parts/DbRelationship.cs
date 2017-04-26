@@ -17,7 +17,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Update Relationships of an Entity
         /// </summary>
-        internal void UpdateEntityRelationships(int attributeId, IEnumerable<int?> newValue, ToSicEavEntities currentEntity)
+        internal void UpdateEntityRelationshipsAndSave(int attributeId, IEnumerable<int?> newValue, ToSicEavEntities currentEntity)
         {
             // remove existing Relationships that are not in new list
             var newEntityIds = newValue.ToList();
@@ -61,7 +61,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Import Entity Relationships Queue (Populated by UpdateEntityRelationships) and Clear Queue afterward.
         /// </summary>
-        internal void ImportRelationshipQueue()
+        internal void ImportRelationshipQueueAndSave()
         {
             foreach (var relationship in _relationshipToSave)
             {
@@ -83,7 +83,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     }
                 }
 
-                UpdateEntityRelationships(relationship.AttributeId, childEntityIds, entity);
+                UpdateEntityRelationshipsAndSave(relationship.AttributeId, childEntityIds, entity);
             }
 
             _relationshipToSave.Clear();

@@ -110,11 +110,14 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 if (newEntities != null)
                 {
                     foreach (var entity in newEntities)
+                    {
                         PersistOneImportEntity(entity);
+                        _context.SqlDb.SaveChanges(); // do for each entity because EFC is fairly ineficcient anyways (no batch), so better do 1-by-1 for better debugging
+                    }
 
-                    _context.Relationships.ImportRelationshipQueue();
+                    _context.Relationships.ImportRelationshipQueueAndSave();
 
-                    _context.SqlDb.SaveChanges();
+                    //_context.SqlDb.SaveChanges();
                 }
                 #endregion
 
@@ -140,7 +143,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             foreach (var attributeSet in newAttributeSets)
                 ImportAttributeSet(attributeSet);
 
-            _context.Relationships.ImportRelationshipQueue();
+            _context.Relationships.ImportRelationshipQueueAndSave();
 
             // in case anything imported was to be shared, ensure that
             _context.AttribSet.EnsureSharedAttributeSetsOnEverything();

@@ -185,7 +185,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 // Handle Entity Relationships - they're stored in own tables
                 case "Entity":
                     var entityIds = newValue.Value is int?[] ? (int?[])newValue.Value : ((int[])newValue.Value).Select(v => (int?)v).ToArray();
-                    DbContext.Relationships.UpdateEntityRelationships(attribute.AttributeId, entityIds, currentEntity);
+                    DbContext.Relationships.UpdateEntityRelationshipsAndSave(attribute.AttributeId, entityIds, currentEntity);
                     break;
                 // Handle simple values in Values-Table
                 default:

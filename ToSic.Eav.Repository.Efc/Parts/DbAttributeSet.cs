@@ -123,12 +123,19 @@ namespace ToSic.Eav.Repository.Efc.Parts
             if (app.AppId == 0)
                 throw new Exception("App must have a valid AppId");
 
+            // don't test the Metadata app, waste of time
+            if (app.AppId == Constants.MetaDataAppId)
+                return;
+
             var sharedAttributeSets = _rememberSharedSets ?? (_rememberSharedSets = GetAttributeSets(Constants.MetaDataAppId, null).Where(a => a.AlwaysShareConfiguration).ToList());
-            var currentAppSharedSets = GetAttributeSets(app.AppId, null).Where(a => a.UsesConfigurationOfAttributeSet.HasValue).ToList();
+            var currentAppSharedSets = GetAttributeSets(app.AppId, null).Where(a => a.UsesConfigurationOfAttributeSet.HasValue).Select(c => c.UsesConfigurationOfAttributeSet.Value).ToList();
 
             // test if all sets already exist
-            var foundMatches = currentAppSharedSets.Where(c => sharedAttributeSets.Any(s => s.AttributeSetId == (c.UsesConfigurationOfAttributeSet ?? 0)));
-            if (sharedAttributeSets.Count == foundMatches.Count())
+            var complete = true;
+            sharedAttributeSets.ForEach(reqSet => complete = complete && currentAppSharedSets.Any(c => c == reqSet.AttributeSetId));
+
+            //var foundMatches = currentAppSharedSets.Where(c => sharedAttributeSets.Any(s => s.AttributeSetId == (c.UsesConfigurationOfAttributeSet ?? 0)));
+            if (complete)// sharedAttributeSets.Count == foundMatches.Count())
                 return;
 
             foreach (var sharedSet in sharedAttributeSets)
