@@ -180,7 +180,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 existingEntityId = newEntity.EntityId;
             }
 
-            var updatedEntity = UpdateEntity(existingEntityId, values, masterRecord: true, dimensionIds: dimensionIds, autoSave: false, updateLog: updateLog, isPublished: isPublished);
+            var updatedEntity = UpdateEntity(existingEntityId, values, /*masterRecord: true,*/ dimensionIds: dimensionIds, autoSave: false, updateLog: updateLog, isPublished: isPublished);
 
             DbContext.SqlDb.SaveChanges();
 
@@ -240,7 +240,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <param name="isPublished">Is this Entity Published or a draft</param>
         /// <param name="forceNoBranch">this forces the published-state to be applied to the original, without creating a draft-branhc</param>
         /// <returns>the updated Entity</returns>
-        public ToSicEavEntities UpdateEntity(int repositoryId, IDictionary newValues, bool autoSave = true, ICollection<int> dimensionIds = null, bool masterRecord = true, List<ImportLogItem> updateLog = null, bool preserveUndefinedValues = true, bool isPublished = true, bool forceNoBranch = false)
+        public ToSicEavEntities UpdateEntity(int repositoryId, IDictionary newValues, bool autoSave = true, ICollection<int> dimensionIds = null, /*bool masterRecord = true,*/ List<ImportLogItem> updateLog = null, bool preserveUndefinedValues = true, bool isPublished = true, bool forceNoBranch = false)
         {
             var entity = DbContext.SqlDb.ToSicEavEntities.Single(e => e.EntityId == repositoryId);
             var draftEntityId = DbContext.Publishing.GetDraftEntityId(repositoryId);
@@ -289,7 +289,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 UpdateEntityFromImportModel(entity, newValuesImport, updateLog, attributes, currentValues, preserveUndefinedValues);
             // Update Values from ValueViewModel
             else
-                UpdateEntityDefault(entity, newValues, dimensionIds, masterRecord, attributes, currentValues);
+                UpdateEntityDefault(entity, newValues, dimensionIds/*, masterRecord*/, attributes, currentValues);
 
 
             entity.ChangeLogModified = DbContext.Versioning.GetChangeLogId();
@@ -384,15 +384,15 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Update an Entity when not using the Import
         /// </summary>
-        private void UpdateEntityDefault(ToSicEavEntities entity, IDictionary newValues, ICollection<int> dimensionIds, bool masterRecord, List<ToSicEavAttributes> attributes, List<ToSicEavValues> currentValues)
+        private void UpdateEntityDefault(ToSicEavEntities entity, IDictionary newValues, ICollection<int> dimensionIds, /*bool masterRecord,*/ List<ToSicEavAttributes> attributes, List<ToSicEavValues> currentValues)
         {
-            var entityModel = entity.EntityId != 0 ? new Efc11Loader(DbContext.SqlDb).Entity(DbContext.AppId, entity.EntityId) : null;
+            //var entityModel = entity.EntityId != 0 ? new Efc11Loader(DbContext.SqlDb).Entity(DbContext.AppId, entity.EntityId) : null;
             var newValuesTyped = DictionaryToValuesViewModel(newValues);
             foreach (var newValue in newValuesTyped)
             {
                 var attribute = attributes.FirstOrDefault(a => a.StaticName == newValue.Key);
                 if(attribute != null)
-                    DbContext.Values.UpdateValue(entity, attribute, masterRecord, currentValues, entityModel, newValue.Value, dimensionIds);
+                    DbContext.Values.UpdateValue(entity, attribute, /*masterRecord,*/ currentValues, /*entityModel,*/ newValue.Value, dimensionIds);
             }
 
             #region if Dimensions are specified, purge/remove specified dimensions for Values that are not in newValues

@@ -255,7 +255,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         {
             var fieldPropertyEntity = DbContext.SqlDb.ToSicEavEntities.FirstOrDefault(e => e.AssignmentObjectTypeId == Constants.MetadataForField && e.KeyNumber == attributeId);
             if (fieldPropertyEntity != null)
-                return DbContext.Entities.UpdateEntity(fieldPropertyEntity.EntityId, fieldProperties);
+                return DbContext.Entities.UpdateEntity(fieldPropertyEntity.EntityId, fieldProperties/*, masterRecord:true*/);
 
             var metaDataSetName = isAllProperty ? "@All" : "@" + DbContext.SqlDb.ToSicEavAttributes.Single(a => a.AttributeId == attributeId).Type;
             var systemScope = AttributeScope.System.ToString();

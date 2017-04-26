@@ -122,7 +122,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 // Handle simple values in Values-Table
                 default:
                     // masterRecord can be true or false, it's not used when valueDimensions is specified
-                    return UpdateSimpleValue(attribute, entityInDb, null, true, GetTypedValue(newImpValue, attribute.Type, attribute.StaticName), null, false, currentValues, null, newImpValue.ValueDimensions);
+                    return UpdateSimpleValue(attribute, entityInDb, null, /*true,*/ GetTypedValue(newImpValue, attribute.Type, attribute.StaticName), null, false, currentValues, /*entityModel: null,*/ newImpValue.ValueDimensions);
             }
         }
 
@@ -178,7 +178,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Update a Value 
         /// </summary>
-        internal void UpdateValue(ToSicEavEntities currentEntity, ToSicEavAttributes attribute, bool masterRecord, List<ToSicEavValues> currentValues, IEntity entityModel, ImpValueInside newValue, ICollection<int> dimensionIds)
+        internal void UpdateValue(ToSicEavEntities currentEntity, ToSicEavAttributes attribute, /*bool masterRecord,*/ List<ToSicEavValues> currentValues, /*IEntity entityModel,*/ ImpValueInside newValue, ICollection<int> dimensionIds)
         {
             switch (attribute.Type)
             {
@@ -189,7 +189,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     break;
                 // Handle simple values in Values-Table
                 default:
-                    UpdateSimpleValue(attribute, currentEntity, dimensionIds, masterRecord, newValue.Value, newValue.ValueId, newValue.ReadOnly, currentValues, entityModel);
+                    UpdateSimpleValue(attribute, currentEntity, dimensionIds, /*masterRecord,*/ newValue.Value, newValue.ValueId, newValue.ReadOnly, currentValues/*, entityModel*/);
                     break;
             }
         }
@@ -197,13 +197,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Update a Value in the Values-Table
         /// </summary>
-        private ToSicEavValues UpdateSimpleValue(ToSicEavAttributes attribute, ToSicEavEntities entity, ICollection<int> dimensionIds, bool masterRecord, object newValue, int? valueId, bool readOnly, List<ToSicEavValues> currentValues, IEntity entityModel, IEnumerable<ImportExport.Models.ImpDims> valueDimensions = null)
+        private ToSicEavValues UpdateSimpleValue(ToSicEavAttributes attribute, ToSicEavEntities entity, ICollection<int> dimensionIds, /*bool masterRecord,*/ object newValue, int? valueId, bool readOnly, List<ToSicEavValues> currentValues, /*IEntity entityModel,*/ IEnumerable<ImportExport.Models.ImpDims> valueDimensions = null)
         {
             var newValueSerialized = HelpersToRefactor.SerializeValue(newValue);
             var changeId = DbContext.Versioning.GetChangeLogId();
 
             // Get Value or create new one
-            var value = GetOrCreateValue(attribute, entity, masterRecord, valueId, readOnly, currentValues, entityModel, newValueSerialized, changeId, valueDimensions);
+            var value = GetOrCreateValue(attribute, entity, /*masterRecord,*/ valueId, readOnly, currentValues, /*entityModel,*/ newValueSerialized, changeId, valueDimensions);
 
             #region Update DimensionIds on this and other values
 
@@ -252,23 +252,24 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                 #endregion
 
+                //2017-04-25 cancel all this, masterRecord is always true
                 // Remove current Dimension(s) from other Values
-                if (!masterRecord)
-                {
-                    // Get other Values for current Attribute having all Current Dimensions assigned
-                    var otherValuesWithCurrentDimensions = currentValues.Where(v => v.AttributeId == attribute.AttributeId && v.ValueId != value.ValueId && dimensionIds.All(d => v.ToSicEavValuesDimensions.Select(vd => vd.DimensionId).Contains(d)));
-                    foreach (var otherValue in otherValuesWithCurrentDimensions)
-                    {
-                        foreach (var valueDimension in otherValue.ToSicEavValuesDimensions.Where(vd => dimensionIds.Contains(vd.DimensionId)).ToList())
-                        {
-                            // if only one Dimension assigned, mark this value as deleted
-                            if (otherValue.ToSicEavValuesDimensions.Count == 1)
-                                otherValue.ChangeLogDeleted = changeId;
+                //if (!masterRecord)
+                //{
+                //    // Get other Values for current Attribute having all Current Dimensions assigned
+                //    var otherValuesWithCurrentDimensions = currentValues.Where(v => v.AttributeId == attribute.AttributeId && v.ValueId != value.ValueId && dimensionIds.All(d => v.ToSicEavValuesDimensions.Select(vd => vd.DimensionId).Contains(d)));
+                //    foreach (var otherValue in otherValuesWithCurrentDimensions)
+                //    {
+                //        foreach (var valueDimension in otherValue.ToSicEavValuesDimensions.Where(vd => dimensionIds.Contains(vd.DimensionId)).ToList())
+                //        {
+                //            // if only one Dimension assigned, mark this value as deleted
+                //            if (otherValue.ToSicEavValuesDimensions.Count == 1)
+                //                otherValue.ChangeLogDeleted = changeId;
 
-                            otherValue.ToSicEavValuesDimensions.Remove(valueDimension);
-                        }
-                    }
-                }
+                //            otherValue.ToSicEavValuesDimensions.Remove(valueDimension);
+                //        }
+                //    }
+                //}
             }
             #endregion
 
@@ -278,7 +279,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Get an EavValue for specified EntityId etc. or create a new one. Uses different mechanism when running an Import or ValueId is specified.
         /// </summary>
-        private ToSicEavValues GetOrCreateValue(ToSicEavAttributes attribute, ToSicEavEntities entity, bool masterRecord, int? valueId, bool readOnly, List<ToSicEavValues> currentValues, IEntity entityModel, string newValueSerialized, int changeId, IEnumerable<ImportExport.Models.ImpDims> valueDimensions)
+        private ToSicEavValues GetOrCreateValue(ToSicEavAttributes attribute, ToSicEavEntities entity, /*bool masterRecord,*/ int? valueId, bool readOnly, List<ToSicEavValues> currentValues, /*IEntity entityModel, */string newValueSerialized, int changeId, IEnumerable<ImportExport.Models.ImpDims> valueDimensions)
         {
             ToSicEavValues value = null;
             // if Import-Dimension(s) are Specified
@@ -293,23 +294,28 @@ namespace ToSic.Eav.Repository.Efc.Parts
             {
                 value = currentValues.Single(v => v.ValueId == valueId.Value && v.Attribute.StaticName == attribute.StaticName);
                 // If Master, ensure ValueId is from Master!
-                var attributeModel = (IAttributeManagement)entityModel.Attributes.SingleOrDefault(a => a.Key == attribute.StaticName).Value;
-                if (masterRecord && value.ValueId != attributeModel.DefaultValue.ValueId)
-                    throw new Exception("Master Record cannot use a ValueId rather ValueId from Master. Attribute-StaticName: " + attribute.StaticName);
+
+                // 2017-04-25 deep dependency on an IEntity, slowing down import dramatically, must change
+                // 2017-04-25 the original / old code - I believe it solves an issue which we don't have any more, so I'll just comment it out for now
+                //var attributeModel = (IAttributeManagement)entityModel.Attributes.SingleOrDefault(a => a.Key == attribute.StaticName).Value;
+                //if (/*masterRecord &&*/ value.ValueId != attributeModel.DefaultValue.ValueId)
+                //    throw new Exception("Master Record cannot use a ValueId rather ValueId from Master. Attribute-StaticName: " + attribute.StaticName);
             }
             // Find Value (if not specified) or create new one
             else
             {
-                if (masterRecord) // if true, don't create new Value (except no one exists)
-                    value = currentValues.Where(v => v.AttributeId == attribute.AttributeId).OrderBy(a => a.ChangeLogCreated).FirstOrDefault();
+                //2017-04-25 2dm disabled this, masterRecord is always true
+                // if (masterRecord) // if true, don't create new Value (except no one exists)
+                value = currentValues.Where(v => v.AttributeId == attribute.AttributeId).OrderBy(a => a.ChangeLogCreated).FirstOrDefault();
 
                 // if no Value found, create new one
                 if (value == null)
                 {
-                    if (!masterRecord && currentValues.All(v => v.AttributeId != attribute.AttributeId))
-                        // if updating Additional-Entity but Default-Entity doesn't have any atom
-                        throw new Exception("Update of a \"" + attribute.StaticName +
-                                            "\" is not allowed. You must first updated this Value for the Default-Entity.");
+                    //2017-04-25 2dm disabled this, masterRecord is always true
+                    //if (!masterRecord && currentValues.All(v => v.AttributeId != attribute.AttributeId))
+                    //    // if updating Additional-Entity but Default-Entity doesn't have any atom
+                    //    throw new Exception("Update of a \"" + attribute.StaticName +
+                    //                        "\" is not allowed. You must first updated this Value for the Default-Entity.");
 
                     value = AddValue(entity, attribute.AttributeId, newValueSerialized, autoSave: false);
                 }

@@ -118,16 +118,16 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Ensure all AttributeSets with AlwaysShareConfiguration=true exist on specified App. App must be saved and have an AppId
         /// </summary>
-        internal void EnsureSharedAttributeSets(ToSicEavApps app, bool autoSave = true)
+        internal void PrepareMissingSharedAttributesOnApp(ToSicEavApps app)//, bool autoSave = true)
         {
             if (app.AppId == 0)
                 throw new Exception("App must have a valid AppId");
 
             var sharedAttributeSets = _rememberSharedSets ?? (_rememberSharedSets = GetAttributeSets(Constants.MetaDataAppId, null).Where(a => a.AlwaysShareConfiguration).ToList());
-            var currentAppSharedSets = GetAttributeSets(app.AppId, null).Where(a => a.AlwaysShareConfiguration).ToList();
+            var currentAppSharedSets = GetAttributeSets(app.AppId, null).Where(a => a.UsesConfigurationOfAttributeSet.HasValue).ToList();
 
             // test if all sets already exist
-            var foundMatches = currentAppSharedSets.Where(c => sharedAttributeSets.Any(s => s.StaticName == c.StaticName));
+            var foundMatches = currentAppSharedSets.Where(c => sharedAttributeSets.Any(s => s.AttributeSetId == (c.UsesConfigurationOfAttributeSet ?? 0)));
             if (sharedAttributeSets.Count == foundMatches.Count())
                 return;
 
@@ -145,17 +145,18 @@ namespace ToSic.Eav.Repository.Efc.Parts
             }
 
             // Ensure new AttributeSets are created and cache is refreshed
-            if (autoSave)
-                DbContext.SqlDb.SaveChanges();
+            //2017-04-26 2dm disabled here, let caller handle this
+            //if (autoSave)
+            //    DbContext.SqlDb.SaveChanges();
         }
 
         /// <summary>
         /// Ensure all AttributeSets with AlwaysShareConfiguration=true exist on all Apps an Zones
         /// </summary>
-        public void EnsureSharedAttributeSets()
+        public void EnsureSharedAttributeSetsOnEverything()
         {
             foreach (var app in DbContext.SqlDb.ToSicEavApps)
-                EnsureSharedAttributeSets(app, false);
+                PrepareMissingSharedAttributesOnApp(app);//, false);
 
             DbContext.SqlDb.SaveChanges();
         }

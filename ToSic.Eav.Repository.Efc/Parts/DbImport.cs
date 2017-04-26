@@ -76,7 +76,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             if (con.State != ConnectionState.Open)
                 con.Open();
 
-            var transaction = _context.SqlDb.Database/*.Connection*/.BeginTransaction();
+            var transaction = _context.SqlDb.Database.BeginTransaction();
 
             #endregion
 
@@ -92,12 +92,16 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     // ...and would need a cache-refresh before 
                     var sysAttributeSets = newSetsList.Where(a => a.Scope == Constants.ScopeSystem).ToList();
                     if(sysAttributeSets.Any())
-                        transaction = ImportSomeAttributeSets(sysAttributeSets, transaction);
+                        // 2017-04-26 disabled inner transaction close, seems very unclean
+                        //transaction = 
+                        ImportSomeAttributeSets(sysAttributeSets, transaction);
 
                     // now the remaining attributeSets
                     var nonSysAttribSets = newSetsList.Where(a => !sysAttributeSets.Contains(a)).ToList();
                     if(nonSysAttribSets.Any())
-                        transaction = ImportSomeAttributeSets(nonSysAttribSets, transaction);
+                        // 2017-04-26 disabled inner transaction close, seems very unclean
+                        //transaction = 
+                        ImportSomeAttributeSets(nonSysAttribSets, transaction);
                 }
 
                 #endregion
@@ -131,23 +135,26 @@ namespace ToSic.Eav.Repository.Efc.Parts
             }
         }
 
-        private IDbContextTransaction ImportSomeAttributeSets(IEnumerable<ImpAttrSet> newAttributeSets, IDbContextTransaction transaction)
+        private /*IDbContextTransaction*/ void ImportSomeAttributeSets(IEnumerable<ImpAttrSet> newAttributeSets, IDbContextTransaction transaction)
         {
             foreach (var attributeSet in newAttributeSets)
                 ImportAttributeSet(attributeSet);
 
             _context.Relationships.ImportRelationshipQueue();
 
-            _context.AttribSet.EnsureSharedAttributeSets();
+            // in case anything imported was to be shared, ensure that
+            _context.AttribSet.EnsureSharedAttributeSetsOnEverything();
 
             _context.SqlDb.SaveChanges();
 
             // Commit DB Transaction and refresh cache
-            transaction.Commit();
+            // 2017-04-26 disabled inner transaction close, seems very unclean
+            // transaction.Commit();
 
             // re-start transaction
-            transaction = _context.SqlDb.Database.BeginTransaction();
-            return transaction;
+            // 2017-04-26 disabled inner transaction close, seems very unclean
+            //transaction = _context.SqlDb.Database.BeginTransaction();
+            //return transaction;
         }
 
         /// <summary>
@@ -194,7 +201,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             if (destinationSet.AlwaysShareConfiguration)
 	        {
-		        _context.AttribSet.EnsureSharedAttributeSets();
+		        _context.AttribSet.EnsureSharedAttributeSetsOnEverything();
 	        }
 	        _context.SqlDb.SaveChanges();
 
@@ -361,7 +368,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     .ToDictionary(v => v.Key, v => v.Value);
 
             // todo: TestImport - ensure that the EntityId of this is what previously was the RepositoryID
-            _context.Entities.UpdateEntity(editableVersionOfTheEntity.EntityId/*RepositoryId*/, newValues, updateLog: _importLog,
+            _context.Entities.UpdateEntity(editableVersionOfTheEntity.EntityId/*RepositoryId*/, newValues, /*masterRecord:true,*/ updateLog: _importLog,
                 preserveUndefinedValues: _keepAttributesMissingInImport, isPublished: impEntity.IsPublished, forceNoBranch: impEntity.ForceNoBranch);
 
             #endregion

@@ -208,7 +208,7 @@ namespace ToSic.Eav.Apps.ImportExport
 				Active = Boolean.Parse(p.Attribute("Active").Value)
 			}).ToList();
 
-			_sourceDefaultLanguage = xmlSource.Element(XmlConstants.Header)?.Element(XmlConstants.Language)?.Attribute(XmlConstants.LangDefault).Value;
+			_sourceDefaultLanguage = xmlSource.Element(XmlConstants.Header)?.Element(XmlConstants.Language)?.Attribute(XmlConstants.LangDefault)?.Value;
 		    if (_sourceDimensions == null || _sourceDefaultLanguage == null)
 		    {
                 ImportLog.Add(new ExportImportMessage("Cant find source dimensions or source-default language.", ExportImportMessage.MessageTypes.Error));
@@ -237,7 +237,7 @@ namespace ToSic.Eav.Apps.ImportExport
 		    var importEntities = GetImportEntities(entNodes, Constants.NotMetadata);// Eav.Configuration.AssignmentObjectTypeIdDefault);
 
 
-			var import = new DbImport(_zoneId, _appId, /*UserName,*/ leaveExistingValuesUntouched);
+			var import = new DbImport(_zoneId, _appId, leaveExistingValuesUntouched);
 			import.ImportIntoDb(importAttributeSets, importEntities);
             SystemManager.Purge(_zoneId, _appId);
 

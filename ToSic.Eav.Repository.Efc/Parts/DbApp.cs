@@ -27,7 +27,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             DbContext.SqlDb.SaveChanges();	// required to ensure AppId is created - required in EnsureSharedAttributeSets();
 
-            DbContext.AttribSet.EnsureSharedAttributeSets(newApp);
+            DbContext.AttribSet.PrepareMissingSharedAttributesOnApp(newApp);
+
+            DbContext.SqlDb.SaveChanges();	
 
             // 2017-04-01 removed, shouldn't be necessary any more at this level
             // PurgeGlobalCache(Context.ZoneId, Context.AppId);
