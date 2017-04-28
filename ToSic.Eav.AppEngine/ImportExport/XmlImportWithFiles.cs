@@ -7,6 +7,7 @@ using System.Web;
 using System.Xml.Linq;
 using Microsoft.Practices.Unity;
 using ToSic.Eav.ImportExport;
+using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Logging;
 using ToSic.Eav.ImportExport.Models;
 using ToSic.Eav.Persistence.Efc.Models;
@@ -120,7 +121,7 @@ namespace ToSic.Eav.Apps.ImportExport
         public bool ImportApp(int zoneId, XDocument doc, out int? appId)
 		{
 			// Increase script timeout to prevent timeouts
-			HttpContext.Current.Server.ScriptTimeout = 300;
+			//HttpContext.Current.Server.ScriptTimeout = 300;
 
 			appId = new int?();
 

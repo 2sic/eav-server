@@ -77,7 +77,7 @@
     <Compile Include="Interfaces\IRepositoryImporter.cs" />
     <Compile Include="Logging\ExportImportMessage.cs" />
     <Compile Include="FileManager.cs" />
-    <Compile Include="IImportExportEnvironment.cs" />
+    <Compile Include="Interfaces\IImportExportEnvironment.cs" />
     <Compile Include="Logging\MessageTypes.cs" />
     <Compile Include="Models\ImpAttribute.cs" />
     <Compile Include="Models\ImpEntity.cs" />

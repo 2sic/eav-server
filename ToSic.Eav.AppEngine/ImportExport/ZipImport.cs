@@ -7,6 +7,7 @@ using System.Web;
 using System.Xml.Linq;
 using ICSharpCode.SharpZipLib.Zip;
 using ToSic.Eav.ImportExport;
+using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Logging;
 
 namespace ToSic.Eav.Apps.ImportExport
@@ -33,13 +34,13 @@ namespace ToSic.Eav.Apps.ImportExport
         /// Imports a ZIP file (from stream)
         /// </summary>
         /// <param name="zipStream"></param>
-        /// <param name="server"></param>
+        /// <param name="temporaryDirectory"></param>
         /// <returns></returns>
-        public bool ImportZip(Stream zipStream, HttpServerUtility server)
+        public bool ImportZip(Stream zipStream, string temporaryDirectory)//HttpServerUtility server)
         {
             List<ExportImportMessage> messages = _environment.Messages;
 
-            var temporaryDirectory = server.MapPath(Path.Combine(Settings.TemporaryDirectory, Guid.NewGuid().ToString()));
+            //var temporaryDirectory = server.MapPath(Path.Combine(Settings.TemporaryDirectory, Guid.NewGuid().ToString()));
             var success = true;
             Exception finalEx = null;
 
@@ -228,8 +229,12 @@ namespace ToSic.Eav.Apps.ImportExport
                 throw new Exception("Could not download app package from '" + packageUrl + "'.", e);
             }
 
+            var temporaryDirectory = HttpContext.Current.Server.MapPath(Path.Combine(Settings.TemporaryDirectory, Guid.NewGuid().ToString()));
+            // Increase script timeout to prevent timeouts
+            HttpContext.Current.Server.ScriptTimeout = 300;
+
             using (var file = File.OpenRead(destinationPath))
-                success = ImportZip(file, HttpContext.Current.Server);
+                success = ImportZip(file, temporaryDirectory);// HttpContext.Current.Server);
 
             File.Delete(destinationPath);
 

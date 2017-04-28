@@ -1,0 +1,51 @@
+.co-tiles-wrapper {
+	margin-top: 30px;
+}
+.co-tiles-wrapper p {
+	margin: 0;
+}
+a.co-link-box {
+	overflow: hidden;
+	display: block;
+	transition: opacity .5s;
+}
+a.co-link-box, a.co-link-box:link, a.co-link-box:hover, a.co-link-box:active{
+	text-decoration: none;
+}
+a.co-link-box:hover  {
+	opacity: .6;
+} 
+.co-tiles-item {
+	margin-bottom: 30px;	
+}
+.co-icon-wrapper {
+	position: relative;
+	font-size: 15px;
+	text-align: center;
+	padding-bottom: 20px;
+
+}
+.co-icon-wrapper .co-icon {
+	margin-top: 30px;
+}
+.co-icon-wrapper h3 {
+	padding: 0 20px;
+}
+.co-icon-wrapper p {
+	padding: 0 20px;
+}
+.co-icon-wrapper .co-icon {
+    font-size: 3em;
+}
+.co-icon-wrapper.co-text-white, .co-icon-wrapper.co-text-white p, .co-icon-wrapper.co-text-white h3 {
+	color: #fff;
+}
+.co-icon-wrapper.co-text-black, .co-icon-wrapper.co-text-black p, .co-icon-wrapper.co-text-black h3{
+	color: #000;
+}
+.co-icon-wrapper.co-bg-white {
+	background: #fff;
+}
+.co-icon-wrapper.co-bg-black {
+	background: #000;
+}

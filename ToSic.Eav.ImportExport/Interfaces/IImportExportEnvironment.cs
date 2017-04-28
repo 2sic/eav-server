@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using ToSic.Eav.ImportExport.Logging;
 
-namespace ToSic.Eav.ImportExport
+namespace ToSic.Eav.ImportExport.Interfaces
 {
     public interface IImportExportEnvironment
     {

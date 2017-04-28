@@ -1,0 +1,7 @@
+﻿@media screen {
+	.qr-print-only { display: none;}
+}
+@media print
+{
+    .qr-print-only { display: block; }
+}

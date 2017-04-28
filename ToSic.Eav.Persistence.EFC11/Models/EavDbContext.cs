@@ -27,7 +27,12 @@ namespace ToSic.Eav.Persistence.Efc.Models
         //    optionsBuilder.UseSqlServer(@"Data Source=NBK-DEV-04\SQLEXPRESS;Initial Catalog=""2flex 2Sexy Content"";Integrated Security=True;");
         //}
 
-        public EavDbContext(DbContextOptions<EavDbContext> options) : base(options) { }
+        public bool DebugMode = false;
+
+        public EavDbContext(DbContextOptions<EavDbContext> options) : base(options)
+        {
+            
+        }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -403,7 +408,8 @@ namespace ToSic.Eav.Persistence.Efc.Models
                 entity.HasIndex(e => new { e.AttributeId, e.EntityId, e.ChangeLogDeleted })
                     .HasName("IX_EAV_Values1");
 
-                entity.HasIndex(e => new { e.Value, e.ChangeLogCreated, e.EntityId, e.ChangeLogDeleted, e.AttributeId, e.ValueId })
+                // 2017-04-28 disabled e.Value in this index - on one hand it's useless, but it also seems to affect sql queries to 450 chars on that field!
+                entity.HasIndex(e => new { /*e.Value,*/ e.ChangeLogCreated, e.EntityId, e.ChangeLogDeleted, e.AttributeId, e.ValueId })
                     .HasName("IX_EAV_Values2");
 
                 entity.Property(e => e.ValueId).HasColumnName("ValueID");

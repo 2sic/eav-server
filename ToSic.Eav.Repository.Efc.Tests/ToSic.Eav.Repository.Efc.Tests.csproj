@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{EB8491A7-4147-4A18-AC74-CD1BE957FF48}</ProjectGuid>
+    <ProjectGuid>{F989FE10-C84A-4B18-AAA7-4665EC85B059}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ToSic.Eav.Persistence.Efc.Tests</RootNamespace>
-    <AssemblyName>ToSic.Eav.Persistence.Efc.Tests</AssemblyName>
+    <RootNamespace>ToSic.Eav.Repository.Efc.Tests</RootNamespace>
+    <AssemblyName>ToSic.Eav.Repository.Efc.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -36,24 +36,6 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'efc and WebApi|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\efc and WebApi\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'debug eav only|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\debug eav only\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.EntityFrameworkCore, Version=1.1.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
@@ -138,26 +120,38 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Efc11LoadTests.cs" />
     <Compile Include="InitializeTests.cs" />
+    <Compile Include="Mocks\ImportExportEnvironmentMock.cs" />
+    <Compile Include="ImportAppTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ZoneTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ToSic.Eav.AppEngine\ToSic.Eav.Apps.csproj">
+      <Project>{FA1B4495-6B85-400F-A5E3-0E292CCBFAE2}</Project>
+      <Name>ToSic.Eav.Apps</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj">
       <Project>{82f94588-269b-4cdd-98d1-d5cb14c39090}</Project>
       <Name>ToSic.Eav.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\ToSic.Eav.ImportExport\ToSic.Eav.ImportExport.csproj">
-      <Project>{5a75cd35-99f4-4cf0-944a-dc0f5d68b430}</Project>
+      <Project>{5A75CD35-99F4-4CF0-944A-DC0F5D68B430}</Project>
       <Name>ToSic.Eav.ImportExport</Name>
     </ProjectReference>
     <ProjectReference Include="..\ToSic.Eav.Persistence.EFC11\ToSic.Eav.Persistence.Efc.csproj">
       <Project>{0b6f21c6-e066-419e-9a6b-c34ffd668a16}</Project>
       <Name>ToSic.Eav.Persistence.Efc</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ToSic.Eav.Repository.Efc\ToSic.Eav.Repository.Efc.csproj">
+      <Project>{2bba13d2-f6d2-443b-b7c8-8f4c31432c03}</Project>
+      <Name>ToSic.Eav.Repository.Efc</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ToSic.Eav\ToSic.Eav.csproj">
+      <Project>{cf3b9349-8c66-4901-8edb-a4ec1d75326b}</Project>
+      <Name>ToSic.Eav</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />

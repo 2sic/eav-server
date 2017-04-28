@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Persistence.Efc.Models
@@ -18,12 +20,36 @@ namespace ToSic.Eav.Persistence.Efc.Models
 		/// </summary>
 		public override int SaveChanges(bool acceptAllChangesOnSuccess)
         {
+            realBaseEvent = base.SaveChanges;
             if (AlternateSaveHandler != null)
-                return AlternateSaveHandler(acceptAllChangesOnSuccess, base.SaveChanges);
+                return AlternateSaveHandler(acceptAllChangesOnSuccess, SaveChangesAndLogEverything);
             throw new Exception("the save should never happen without an alternate save handler registered");
         }
+
+        private SaveChangesEvent realBaseEvent;
         #endregion
 
+        public int SaveChangesAndLogEverything(bool acceptAllChangesOnSuccess)
+        {
+            ChangeTracker.DetectChanges();
+
+            //updateUpdatedProperty<SourceInfo>();
+            //updateUpdatedProperty<DataEventRecord>();
+
+            return realBaseEvent(acceptAllChangesOnSuccess);
+        }
+
+
+        // note: demo code from https://damienbod.com/2016/12/13/ef-core-diagnosis-and-features-with-ms-sql-server/
+        //private void updateUpdatedProperty<T>() where T : class
+        //{
+        //    var modifiedSourceInfo =
+        //        ChangeTracker.Entries<T>()
+        //            .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
+
+        //    //foreach (var entry in modifiedSourceInfo)
+        //    //    entry.Property("UpdatedTimestamp").CurrentValue = DateTime.UtcNow;
+        //}
 
     }
 }

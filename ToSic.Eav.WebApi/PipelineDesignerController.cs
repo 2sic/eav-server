@@ -41,8 +41,8 @@ namespace ToSic.Eav.WebApi
 		{
 			//_userName = userName;
 
-			if (eavConnectionString != null)
-				Eav.Configuration.SetConnectionString(eavConnectionString);
+			//if (eavConnectionString != null)
+			//	Eav.Configuration.SetConnectionStringKey(eavConnectionString);
 
 			// Init empty list of ValueProviders
 			ValueProviders = new List<IValueProvider>();
