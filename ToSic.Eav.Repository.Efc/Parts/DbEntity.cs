@@ -55,28 +55,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         internal bool EntityExists(Guid entityGuid) => GetEntitiesByGuid(entityGuid).Any();
 
-
-        // 2017-04-05
-        ///// <summary>
-        ///// Get a List of Entities with specified assignmentObjectTypeId and Key.
-        ///// </summary>
-        //public IQueryable<Entity> GetEntities(int assignmentObjectTypeId, int keyNumber) => GetEntitiesInternal(assignmentObjectTypeId, keyNumber);
-
-        ///// <summary>
-        ///// Get a List of Entities with specified assignmentObjectTypeId and Key.
-        ///// </summary>
-        //public IQueryable<Entity> GetEntities(int assignmentObjectTypeId, Guid keyGuid)
-        //{
-        //    return GetEntities(assignmentObjectTypeId, null, keyGuid);
-        //}
-
-        // 2017-04-05
-        ///// <summary>
-        ///// Get a List of Entities with specified assignmentObjectTypeId and Key.
-        ///// </summary>
-        //public IQueryable<Entity> GetEntities(int assignmentObjectTypeId, string keyString) 
-        //    => GetEntitiesInternal(assignmentObjectTypeId, null, null, keyString);
-
+        
         /// <summary>
         /// Get a List of Entities with specified assignmentObjectTypeId and optional Key.
         /// </summary>
@@ -100,31 +79,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 impEntity.KeyNumber, impEntity.KeyGuid, impEntity.KeyString, impEntity.KeyTypeId, 
                 0, impEntity.EntityGuid, null, importLog, isPublished, publishedTarget);
         }
-
-        ///// <summary>
-        ///// Add a new Entity
-        ///// </summary>
-        //internal Entity AddEntity(AttributeSet attributeSet, IDictionary values,int? key, int assignmentObjectTypeId)//, int sortOrder = 0, Guid? entityGuid = null, ICollection<int> dimensionIds = null, bool isPublished = true)
-        //{
-        //    return AddEntity(attributeSet.AttributeSetId, values, key, null, null, assignmentObjectTypeId); //, sortOrder, entityGuid, dimensionIds, isPublished: isPublished);
-        //}
-
-        ///// <summary>
-        ///// Add a new Entity
-        ///// </summary>
-        //internal Entity AddEntity(int attributeSetId, IDictionary values, int? key, int assignmentObjectTypeId)// = Constants.DefaultAssignmentObjectTypeId, int sortOrder = 0, Guid? entityGuid = null, ICollection<int> dimensionIds = null, bool isPublished = true)
-        //{
-        //    return AddEntity(attributeSetId, values, key, null, null, assignmentObjectTypeId);
-        //        //, sortOrder, entityGuid, dimensionIds, isPublished: isPublished);
-        //}
-
-        ///// <summary>
-        ///// Add a new Entity
-        ///// </summary>
-        //public Entity AddEntity(int attributeSetId, IDictionary values, int? configurationSet, Guid key, int assignmentObjectTypeId = Constants.DefaultAssignmentObjectTypeId)//, int sortOrder = 0, Guid? entityGuid = null, ICollection<int> dimensionIds = null, bool isPublished = true)
-        //{
-        //    return AddEntity(null, attributeSetId, values, configurationSet, null, key, null, assignmentObjectTypeId);
-        //}
+        
         
         /// <summary>
         /// Add a new Entity
@@ -154,7 +109,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             if (existingEntityId == 0)
             {
-                var newEntity = new ToSicEavEntities()
+                var newEntity = new ToSicEavEntities
                 {
                     ConfigurationSet = null, // configurationSet,
                     AssignmentObjectTypeId = keyTypeId,
@@ -168,13 +123,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
                         (entityGuid.HasValue && entityGuid.Value != new Guid()) ? entityGuid.Value : Guid.NewGuid(),
                     IsPublished = isPublished,
                     PublishedEntityId = isPublished ? null : publishedEntityId,
-                    Owner = DbContext.UserName
+                    Owner = DbContext.UserName,
+                    AttributeSetId = attributeSetId
                 };
-
-                //if (attributeSet != null)
-                //    newEntity.Set = attributeSet;
-                //else
-                    newEntity.AttributeSetId = attributeSetId;
 
                 DbContext.SqlDb.Add(newEntity);
 
@@ -185,6 +136,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
             var updatedEntity = UpdateEntity(existingEntityId, values, /*masterRecord: true,*/ dimensionIds: dimensionIds, autoSave: false, updateLog: updateLog, isPublished: isPublished);
 
             DbContext.SqlDb.SaveChanges();
+
+            DbContext.Versioning.SaveEntity(updatedEntity.EntityId, updatedEntity.EntityGuid, true);
 
             return updatedEntity;
         }
@@ -211,24 +164,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
         #endregion  
 
         #region Update
-        ///// <summary>
-        ///// Update an Entity
-        ///// </summary>
-        ///// <param name="entityGuid">EntityGuid</param>
-        ///// <param name="newValues">new Values of this Entity</param>
-        ///// <param name="autoSave">auto save Changes to DB</param>
-        ///// <param name="dimensionIds">DimensionIds for all Values</param>
-        ///// <param name="masterRecord">Is this the Master Record/Language</param>
-        ///// <param name="updateLog">Update/Import Log List</param>
-        ///// <param name="preserveUndefinedValues">Preserve Values if Attribute is not specifeied in NewValues</param>
-        ///// <returns>the updated Entity</returns>
-        //public Entity UpdateEntity(Guid entityGuid, IDictionary newValues, bool autoSave = true, ICollection<int> dimensionIds = null, bool masterRecord = true, List<ImportLogItem> updateLog = null, bool preserveUndefinedValues = true)
-        //{
-        //    var entity = GetEntity(entityGuid);
-        //    return UpdateEntity(entity.EntityId, newValues, autoSave, dimensionIds, masterRecord, updateLog, preserveUndefinedValues);
-        //}
-
-
         /// <summary>
         /// Update an Entity
         /// </summary>
@@ -376,10 +311,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
             }
             else
             {
-                // Note 2015-10-20 2dm & 2rm
-                // We changed this section a lot, and believe it now does what we expect. 
-                // We believe that since the importmodel contains all language/value combinations...
-                // ...so any "untouched" values should be removed, since all others were updated/touched.
+                // Since the importmodel contains all language/value combinations...
+                // ...any "untouched" values should be removed, since all others were updated/touched.
                 var untouchedValuesOfChangedAttributes = untouchedValues.Where(v => updatedAttributeIds.Contains(v.AttributeId));
                 untouchedValuesOfChangedAttributes.ToList().ForEach(v => v.ChangeLogDeleted = DbContext.Versioning.GetChangeLogId());
             }

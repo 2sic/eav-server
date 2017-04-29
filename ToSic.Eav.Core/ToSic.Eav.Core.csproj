@@ -77,6 +77,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
+    <Compile Include="Constants_Relationships.cs" />
     <Compile Include="Data\AppDataPackage.cs" />
     <Compile Include="Data\AttributeBase.cs" />
     <Compile Include="Data\AttributeHelperTools.cs" />

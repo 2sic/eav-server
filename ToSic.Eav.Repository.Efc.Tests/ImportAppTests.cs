@@ -44,7 +44,11 @@ namespace ToSic.Eav.Repository.Efc.Tests
             ImportAnApp("tile");
         }
 
-
+        [TestMethod]
+        public void DeleteApp_Qr()
+        {
+            DeleteAnApp(Apps["qr"].Guid);
+        }
         [TestMethod]
         public void ImportApp_Qr()
         {

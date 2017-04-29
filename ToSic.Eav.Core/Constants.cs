@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace ToSic.Eav
 {
-    public class Constants
+    public partial class Constants
     {
         /// <summary>
         /// Name of the Default App in all Zones

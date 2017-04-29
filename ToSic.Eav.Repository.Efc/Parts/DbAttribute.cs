@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
@@ -52,7 +53,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         public List<ToSicEavAttributesInSets> GetAttributesInSet(int attributeSetId)
         {
-            return DbContext.SqlDb.ToSicEavAttributesInSets.Where(a => a.AttributeSetId == attributeSetId).OrderBy(a => a.SortOrder).ToList();
+            return DbContext.SqlDb.ToSicEavAttributesInSets
+                .Include(ais => ais.Attribute)
+                .Where(a => a.AttributeSetId == attributeSetId)
+                .OrderBy(a => a.SortOrder)
+                .ToList();
         }
 
         /// <summary>
@@ -220,7 +225,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             }
 
             // If attribute has not been saved, we must save now to get the id (and assign entities)
-            if (autoSave || newAttribute.AttributeId == 0)
+            if (autoSave || newAttribute.AttributeId == 0 || newAttribute.AttributeId < 0) // < 0 means it's an EF-core new temp-ID
                 DbContext.SqlDb.SaveChanges();
 
             #region set the input type

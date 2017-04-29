@@ -74,21 +74,20 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 #region import AttributeSets if any were included
                 if (newAttributeSets != null)
                 {
+                    _context.Versioning.ActivateQueue();;
                     var newSetsList = newAttributeSets.ToList();
                     // first: import the attribute sets in the system scope, as they may be needed by others...
                     // ...and would need a cache-refresh before 
                     var sysAttributeSets = newSetsList.Where(a => a.Scope == Constants.ScopeSystem).ToList();
                     if(sysAttributeSets.Any())
-                        // 2017-04-26 disabled inner transaction close, seems very unclean
-                        //transaction = 
                         ImportSomeAttributeSets(sysAttributeSets, transaction);
 
                     // now the remaining attributeSets
                     var nonSysAttribSets = newSetsList.Where(a => !sysAttributeSets.Contains(a)).ToList();
                     if(nonSysAttribSets.Any())
-                        // 2017-04-26 disabled inner transaction close, seems very unclean
-                        //transaction = 
                         ImportSomeAttributeSets(nonSysAttribSets, transaction);
+
+                    _context.Versioning.ProcessQueue();
                 }
 
                 #endregion
@@ -96,7 +95,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 #region import Entities
                 if (newEntities != null)
                 {
-                    _context.Versioning.DelayVersioning = true;
+                    _context.Versioning.ActivateQueue();
                     foreach (var entity in newEntities)
                     {
                         PersistOneImportEntity(entity);
@@ -107,11 +106,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     _context.Relationships.ImportRelationshipQueueAndSave();
 
                     // must do this after importing the relationship queue!
-                    _context.Versioning.SaveQueue();
-
-                    // now put all into versioning!
-
-                    //_context.SqlDb.SaveChanges();
+                    _context.Versioning.ProcessQueue();
                 }
                 #endregion
 
@@ -213,7 +208,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                         entity.KeyTypeId = Constants.MetadataForField;//.AssignmentObjectTypeIdFieldProperties;
 
                         // Set KeyNumber
-                        if (destinationAttribute.AttributeId == 0)
+                        if (destinationAttribute.AttributeId == 0 || destinationAttribute.AttributeId < 0) // < 0 is ef-core temp id
                             _context.SqlDb.SaveChanges();
                         entity.KeyNumber = destinationAttribute.AttributeId;
 

@@ -19,6 +19,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         {
             return DbContext.SqlDb.ToSicEavEntityRelationships
                 .Include(r => r.ChildEntity)
+                .Include(r => r.Attribute)
                 .Where(r => r.ParentEntityId == parentId)
                 .ToList();
         }

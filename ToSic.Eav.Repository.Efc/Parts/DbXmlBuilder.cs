@@ -51,8 +51,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 .GroupBy(r => r.Attribute.StaticName)
                 .Select(r => new {
                     r.Key,
-                    Value = r.Select(x => x.ChildEntity.EntityGuid.ToString()).JoinStrings(",")
-                });
+                    Value = r.Select(x => x.ChildEntity?.EntityGuid.ToString() ?? Constants.EmptyRelationship).JoinStrings(",")
+                }).ToList();
             var relsXElement = relationships.Select(r => XmlValue(r.Key, r.Value, "Entity", null));
 
             // create Entity-XElement

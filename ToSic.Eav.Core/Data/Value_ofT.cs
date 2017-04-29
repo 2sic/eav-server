@@ -26,7 +26,7 @@ namespace ToSic.Eav.Data
                 var relationshipValue = value as Value<EntityRelationship>;
                 if (relationshipValue != null)
                 {
-                    var entityGuids = relationshipValue.TypedContents.Select(e => e?.EntityGuid.ToString() ?? "null");                    //var entityGuids = relationshipValue.TypedContents.EntityIds.Select(entityId => entityId.HasValue ? Context.Entities.GetEntity(entityId.Value).EntityGUID : Guid.Empty);
+                    var entityGuids = relationshipValue.TypedContents.Select(e => e?.EntityGuid.ToString() ?? Constants.EmptyRelationship);                    //var entityGuids = relationshipValue.TypedContents.EntityIds.Select(entityId => entityId.HasValue ? Context.Entities.GetEntity(entityId.Value).EntityGUID : Guid.Empty);
                     return string.Join(",", entityGuids);
                 }
 

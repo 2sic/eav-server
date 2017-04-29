@@ -329,7 +329,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             }
 
             // Update old/existing Value
-            if (value.ValueId != 0 || entity.EntityId == 0)
+            if (value.ValueId != 0 || entity.EntityId == 0 || entity.EntityId < 0) //  < 0 is ef-core temp id
             {
                 if (!readOnly)
                     UpdateValue(value, newValueSerialized, changeId, false);

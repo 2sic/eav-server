@@ -127,7 +127,7 @@ namespace ToSic.Eav.ImportExport.Models
                     var entityGuids = !IsNullOrEmpty(value)
                         ? value.Split(',').Select(v =>
                         {
-                            if (v == "null") // this is the case when an export contains a list with nulls
+                            if (v == Constants.EmptyRelationship) // this is the case when an export contains a list with nulls
                                 return new Guid?();
                             var guid = Guid.Parse(v);
                             return guid == Guid.Empty ? new Guid?() : guid;
@@ -163,11 +163,10 @@ namespace ToSic.Eav.ImportExport.Models
             var valueString = "";
             foreach (var item in enumerable)
             {
-                // warning: 2dm testing 2016-01-27 
                 // should actually be something like
                 // (item as Newtonsoft.Json.Linq.JValue).Type == Newtonsoft.Json.Linq.JTokenType.Null
-                // but these are libraries I don't want in this project / temp-refactoring
-                valueString += (item.ToString() == "" ? "null" : item) + ",";
+                // but I don't want these are libraries  in this project / temp-refactoring
+                valueString += (item.ToString() == "" ? Constants.EmptyRelationship : item) + ",";
             }
             return valueString.Trim(','); // rmv trailing/leading commas
         }
