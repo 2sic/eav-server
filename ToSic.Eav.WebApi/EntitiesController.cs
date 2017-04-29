@@ -198,8 +198,7 @@ namespace ToSic.Eav.WebApi
                     entitiesToImport.Add(CreateImportEntity(entity));
 
             // Create Import-controller & run import
-            var importController = new DbImport(null, appId, /*UserIdentityToken,*/
-                dontUpdateExistingAttributeValues: false,
+            var importController = new DbImport(null, appId, dontUpdateExistingAttributeValues: false,
                 keepAttributesMissingInImport: false,
                 preventUpdateOnDraftEntities: false,
                 largeImport: false);
@@ -207,10 +206,9 @@ namespace ToSic.Eav.WebApi
             SystemManager.Purge(appId);
 
             // find / update IDs of items updated to return to client
-            //var cache = DataSource.GetCache(null, appId);
             var foundItems = items.Select(e =>
             {
-                var foundEntity = AppManager.Read.Entities.Get(e.Header.Guid);// cache.LightList.FirstOrDefault(c => e.Header.Guid == c.EntityGuid);
+                var foundEntity = AppManager.Read.Entities.Get(e.Header.Guid);
                 if (foundEntity == null)
                     return null;
                 if (foundEntity.GetDraft() != null)

@@ -64,8 +64,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
             //    throw new Exception("An app can only be removed inside of it's own context.");
 
             // enure changelog exists and is set to SQL CONTEXT_INFO variable
-            if (DbContext.Versioning.MainChangeLogId == 0)
-                DbContext.Versioning.GetChangeLogId(DbContext.UserName);
+            //if (DbContext.Versioning.MainChangeLogId == 0)
+            DbContext.Versioning.GetChangeLogId();
 
             // Delete app using StoredProcedure
             DbContext.SqlDb.Database.ExecuteSqlCommand("ToSIC_EAV_DeleteApp @p0", appId);// .DeleteAppInternal(appId);

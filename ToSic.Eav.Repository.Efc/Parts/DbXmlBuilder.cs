@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Practices.ObjectBuilder2;
 using ToSic.Eav.Persistence.Efc.Models;
 
@@ -31,19 +32,27 @@ namespace ToSic.Eav.Repository.Efc.Parts
         internal XElement XmlEntity(int entityId)
         {
             var entity = DbContext.Entities.GetDbEntity(entityId);
-            if(!_attrSetCache.ContainsKey(entity.AttributeSetId))
-                _attrSetCache[entity.AttributeSetId] = DbContext.AttribSet.GetAttributeSet(entity.AttributeSetId);
-            var assignmentObjectTypeName = entity.AssignmentObjectType.Name;
-            var attributeSet = _attrSetCache[entity.AttributeSetId];
+            var assignmentObjectTypeName = DbContext.SqlDb.ToSicEavAssignmentObjectTypes
+                .Single(at => at.AssignmentObjectTypeId == entity.AssignmentObjectTypeId).Name; 
+            var attributeSet = GetAttributeSetDefinitionFromCache(entity.AttributeSetId);
 
-            var values = entity.ToSicEavValues.Select(e => new {Key = e.Attribute.StaticName, e.Attribute.TypeNavigation.Type, e.Value, Dimensions = e.ToSicEavValuesDimensions });
+            var dbValues = DbContext.SqlDb.ToSicEavValues
+                .Include(v => v.Attribute)
+                .ThenInclude(a => a.TypeNavigation)
+                .Include(v => v.ToSicEavValuesDimensions)
+                .ThenInclude(d => d.Dimension)
+                .Where(v => v.EntityId == entityId && !v.ChangeLogDeleted.HasValue)
+                .ToList();
+            var values = dbValues
+                .Select(e => new {Key = e.Attribute.StaticName, e.Attribute.TypeNavigation.Type, e.Value, Dimensions = e.ToSicEavValuesDimensions });
             var valuesXElement = values.Select(v => XmlValue(v.Key, v.Value, v.Type, v.Dimensions));
 
-            var relationships = entity.RelationshipsWithThisAsParent/*EntityParentRelationships*/.GroupBy(r => r.Attribute.StaticName)
-                    .Select( r => new {
-                                r.Key,
-                                Value = r.Select(x => x.ChildEntity.EntityGuid.ToString()).JoinStrings(",")
-                            });
+            var relationships = DbContext.Relationships.GetRelationshipsOfParent(entityId)
+                .GroupBy(r => r.Attribute.StaticName)
+                .Select(r => new {
+                    r.Key,
+                    Value = r.Select(x => x.ChildEntity.EntityGuid.ToString()).JoinStrings(",")
+                });
             var relsXElement = relationships.Select(r => XmlValue(r.Key, r.Value, "Entity", null));
 
             // create Entity-XElement
@@ -66,8 +75,16 @@ namespace ToSic.Eav.Repository.Efc.Parts
             return entityXElement;
         }
 
+	    private ToSicEavAttributeSets GetAttributeSetDefinitionFromCache(int attributeSetId)
+	    {
+	        if (!_attrSetCache.ContainsKey(attributeSetId))
+	            _attrSetCache[attributeSetId] = DbContext.AttribSet.GetAttributeSet(attributeSetId);
+	        var attributeSet = _attrSetCache[attributeSetId];
+	        return attributeSet;
+	    }
 
-        /// <summary>
+
+	    /// <summary>
         /// Generate an xml-node containing a value, 
         /// plus optionally sub-nodes describing the dimensions / relationships inside
         /// </summary>

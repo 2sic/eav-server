@@ -51,40 +51,27 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Import AttributeSets and Entities
         /// </summary>
-        public /*IDbContextTransaction*/ void ImportIntoDb(IEnumerable<ImpAttrSet> newAttributeSets, IEnumerable<ImpEntity> newEntities)
+        public void ImportIntoDb(IEnumerable<ImpAttrSet> newAttributeSets, IEnumerable<ImpEntity> newEntities)
         {
             _context.PurgeAppCacheOnSave = false;
 
             // Enhance the SQL timeout for imports
-            // todo 2dm/2tk - discuss, this shouldn't be this high on a normal save, only on a real import
-            // todo: on any error, cancel/rollback the transaction
             if (_largeImport)
-                _context.SqlDb.Database.SetCommandTimeout(3600);//.CommandTimeout = 3600;
-
-            // todo: CleanImport - change access to attribute set to use DB
-            // Ensure cache is created
-            // ReSharper disable once NotAccessedVariable
-            //var y = DataSource.GetCache(Constants.DefaultZoneId, Constants.MetaDataAppId).LightList.Any();
-            //var cache = DataSource.GetCache(_context.ZoneId, _context.AppId);
-            //cache.PurgeCache(_context.ZoneId, _context.AppId);
-            //// ReSharper disable once RedundantAssignment
-            //y = cache.LightList.Any(); // re-read something
+                _context.SqlDb.Database.SetCommandTimeout(3600);
 
             #region initialize DB connection / transaction
             // Make sure the connection is open - because on multiple calls it's not clear if it was already opened or not
-            var con = _context.SqlDb.Database.GetDbConnection(); // _context.SqlDb.Database.Connection
+            var con = _context.SqlDb.Database.GetDbConnection();
             if (con.State != ConnectionState.Open)
                 con.Open();
 
             var transaction = _context.SqlDb.Database.BeginTransaction();
 
             #endregion
-
-            try // run import, but rollback transaction if necessary
+            // run import, but rollback transaction if necessary
+            try 
             {
-
                 #region import AttributeSets if any were included
-
                 if (newAttributeSets != null)
                 {
                     var newSetsList = newAttributeSets.ToList();
@@ -109,13 +96,20 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 #region import Entities
                 if (newEntities != null)
                 {
+                    _context.Versioning.DelayVersioning = true;
                     foreach (var entity in newEntities)
                     {
                         PersistOneImportEntity(entity);
-                        _context.SqlDb.SaveChanges(); // do for each entity because EFC is fairly ineficcient anyways (no batch), so better do 1-by-1 for better debugging
+                        // do this just to be sure, in case it didn't always happen internally...
+                        _context.SqlDb.SaveChanges(); 
                     }
 
                     _context.Relationships.ImportRelationshipQueueAndSave();
+
+                    // must do this after importing the relationship queue!
+                    _context.Versioning.SaveQueue();
+
+                    // now put all into versioning!
 
                     //_context.SqlDb.SaveChanges();
                 }
@@ -123,13 +117,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                 // Commit DB Transaction
                 transaction.Commit();
-                _context.SqlDb.Database.CloseConnection();// .Connection.Close();
+                _context.SqlDb.Database.CloseConnection();
 
-                // todo: CleanImport - change access to attribute set to use DB
-                // always Purge Cache
-                //DataSource.GetCache(_context.ZoneId, _context.AppId).PurgeCache(_context.ZoneId, _context.AppId);
-
-                // return transaction;
             }
             catch (Exception)
             {
@@ -138,7 +127,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             }
         }
 
-        private /*IDbContextTransaction*/ void ImportSomeAttributeSets(IEnumerable<ImpAttrSet> newAttributeSets, IDbContextTransaction transaction)
+        private void ImportSomeAttributeSets(IEnumerable<ImpAttrSet> newAttributeSets, IDbContextTransaction transaction)
         {
             foreach (var attributeSet in newAttributeSets)
                 ImportAttributeSet(attributeSet);
@@ -149,15 +138,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
             _context.AttribSet.EnsureSharedAttributeSetsOnEverything();
 
             _context.SqlDb.SaveChanges();
-
-            // Commit DB Transaction and refresh cache
-            // 2017-04-26 disabled inner transaction close, seems very unclean
-            // transaction.Commit();
-
-            // re-start transaction
-            // 2017-04-26 disabled inner transaction close, seems very unclean
-            //transaction = _context.SqlDb.Database.BeginTransaction();
-            //return transaction;
         }
 
         /// <summary>
@@ -278,17 +258,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         private void PersistOneImportEntity(ImpEntity impEntity)
         {
-            //var cache = DataSource.GetCache(null, _context.AppId);
-
             #region try to get AttributeSet or otherwise cancel & log error
 
-            // var attributeSet = Context.AttribSet.GetAttributeSet(importEntity.AttributeSetStaticName);
-
-            // todo: CleanImport - change access to attribute set to use DB
             var dbAttrSet = _context.AttribSet.GetAttributeSet(impEntity.AttributeSetStaticName);
 
-            //var attributeSet = cache.GetContentType(impEntity.AttributeSetStaticName);
-            if (/*attributeSet*/ dbAttrSet == null) // AttributeSet not Found
+            if (dbAttrSet == null) // AttributeSet not Found
             {
                 _importLog.Add(new ImportLogItem(EventLogEntryType.Error, "AttributeSet not found")
                 {
@@ -301,30 +275,25 @@ namespace ToSic.Eav.Repository.Efc.Parts
             #endregion
 
             // Find existing Enties - meaning both draft and non-draft
-            //List<IEntity> cacheExistingEntities = null;
             List<ToSicEavEntities> dbExistingEntities = null;
             if (impEntity.EntityGuid.HasValue)
-            {
                 dbExistingEntities = _context.Entities.GetEntitiesByGuid(impEntity.EntityGuid.Value).ToList();
-                //cacheExistingEntities = cache.LightList.Where(e => e.EntityGuid == impEntity.EntityGuid.Value).ToList();
-            }
 
             #region Simplest case - add (nothing existing to update)
-            if (/*cacheExistingEntities*/dbExistingEntities == null || !/*cacheExistingEntities*/dbExistingEntities.Any())
+            if (dbExistingEntities == null || !dbExistingEntities.Any())
             {
-                _context.Entities.AddImportEntity(/*attributeSet.AttributeSetId*/ dbAttrSet.AttributeSetId, impEntity, _importLog, impEntity.IsPublished, null);
+                _context.Entities.AddImportEntity(dbAttrSet.AttributeSetId, impEntity, _importLog, impEntity.IsPublished, null);
                 return;
             }
 
             #endregion
 
-            // todo: 2dm 2016-06-29 check this
             #region Another simple case - we have published entities, but are saving unpublished - so we create a new one
 
-            if (!impEntity.IsPublished && /*cacheExistingEntities*/dbExistingEntities.Count(e => e.IsPublished == false) == 0 && !impEntity.ForceNoBranch)
+            if (!impEntity.IsPublished && dbExistingEntities.Count(e => e.IsPublished == false) == 0 && !impEntity.ForceNoBranch)
             {
-                var publishedId = dbExistingEntities.First().EntityId;// cacheExistingEntities.First().EntityId;
-                _context.Entities.AddImportEntity(/*attributeSet.AttributeSetId*/ dbAttrSet.AttributeSetId, impEntity, _importLog, impEntity.IsPublished, publishedId);
+                var publishedId = dbExistingEntities.First().EntityId;
+                _context.Entities.AddImportEntity(dbAttrSet.AttributeSetId, impEntity, _importLog, impEntity.IsPublished, publishedId);
                 return;
             }
 
@@ -335,7 +304,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             #region Do Various Error checking like: Does it really exist, is it not draft, ensure we have the correct Content-Type
 
             // Get existing, published Entity
-            var editableVersionOfTheEntity = /*cacheExistingEntities*/dbExistingEntities.OrderBy(e => e.IsPublished ? 1 : 0).First(); // get draft first, otherwise the published
+            var editableVersionOfTheEntity = dbExistingEntities.OrderBy(e => e.IsPublished ? 1 : 0).First(); // get draft first, otherwise the published
             _importLog.Add(new ImportLogItem(EventLogEntryType.Information, "Entity already exists", impEntity));
         
 
@@ -353,7 +322,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
             #region Ensure entity has same AttributeSet (do this after checking for the draft etc.
             var editableEntityContentType = _context.AttribSet.GetAttributeSet(editableVersionOfTheEntity.AttributeSetId);
             if (editableEntityContentType.StaticName != impEntity.AttributeSetStaticName)
-            //if (editableVersionOfTheEntity.Type.StaticName != impEntity.AttributeSetStaticName)
             {
                 _importLog.Add(new ImportLogItem(EventLogEntryType.Error, "Existing entity (which should be updated) has different ContentType", impEntity));
                 return;
@@ -367,7 +335,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             // todo: TestImport - ensure that it correctly skips the existing values
             var newValues = impEntity.Values;
             if (_dontUpdateExistingAttributeValues) // Skip values that are already present in existing Entity
-                newValues = newValues.Where(v => editableVersionOfTheEntity.ToSicEavValues/*.Attributes*/.All(ev => ev.Attribute.StaticName/*.Value.Name*/ != v.Key))
+                newValues = newValues.Where(v => editableVersionOfTheEntity.ToSicEavValues.All(ev => ev.Attribute.StaticName != v.Key))
                     .ToDictionary(v => v.Key, v => v.Value);
 
             // todo: TestImport - ensure that the EntityId of this is what previously was the RepositoryID

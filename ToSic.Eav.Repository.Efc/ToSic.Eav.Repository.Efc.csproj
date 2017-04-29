@@ -141,6 +141,7 @@
     <Compile Include="Parts\DbRelationship.cs" />
     <Compile Include="Parts\DbShortcuts.cs" />
     <Compile Include="Parts\DbValue.cs" />
+    <Compile Include="Parts\DbVersioning_Unused.cs" />
     <Compile Include="Parts\DbVersioning.cs" />
     <Compile Include="Parts\DbXmlBuilder.cs" />
     <Compile Include="Parts\DbXmlExportTable.cs" />

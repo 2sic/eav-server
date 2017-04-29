@@ -197,8 +197,8 @@ namespace ToSic.Eav.Repository.Efc
                 throw new Exception("SaveChanges with AppId 0 not allowed.");
 
             // enure changelog exists and is set to SQL CONTEXT_INFO variable
-            if (Versioning.MainChangeLogId == 0)
-                Versioning.GetChangeLogId(UserName);
+            //if (Versioning.MainChangeLogId == 0)
+            Versioning.GetChangeLogId();
 
             var modifiedItems = baseEvent(acceptAllChangesOnSuccess);
 

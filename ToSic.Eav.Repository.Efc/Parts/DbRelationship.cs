@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
@@ -13,6 +14,14 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
 
         public DbRelationship(DbDataController cntx) : base(cntx) {}
+
+        internal ICollection<ToSicEavEntityRelationships> GetRelationshipsOfParent(int parentId)
+        {
+            return DbContext.SqlDb.ToSicEavEntityRelationships
+                .Include(r => r.ChildEntity)
+                .Where(r => r.ParentEntityId == parentId)
+                .ToList();
+        }
 
         /// <summary>
         /// Update Relationships of an Entity
@@ -65,9 +74,14 @@ namespace ToSic.Eav.Repository.Efc.Parts
         {
             foreach (var relationship in _relationshipToSave)
             {
-                var entity = relationship.ParentEntityGuid.HasValue 
-                        ? DbContext.Entities.GetMostCurrentDbEntity(relationship.ParentEntityGuid.Value)
-                        : DbContext.Entities.GetDbEntity(relationship.ParentEntityId.Value);
+                var entity = relationship.ParentEntityGuid.HasValue
+                    ? DbContext.Entities.GetMostCurrentDbEntity(relationship.ParentEntityGuid.Value)
+                    : relationship.ParentEntityId.HasValue
+                        ? DbContext.Entities.GetDbEntity(relationship.ParentEntityId.Value)
+                        : null;
+                if(entity == null)
+                    throw new Exception("neither guid nor id provided, can't update relationships");
+
                 var childEntityIds = new List<int?>();
                 foreach (var childGuid in relationship.ChildEntityGuids)
                 {
@@ -79,7 +93,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     }
                     catch (InvalidOperationException)
                     {
-                        // ignore, may occur if the child entity wasn't created successfully
+                        // ignore, may occur if the child entity doesn't exist / wasn't created successfully
                     }
                 }
 

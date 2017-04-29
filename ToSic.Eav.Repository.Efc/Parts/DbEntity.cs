@@ -19,6 +19,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
         {
         }
 
+        
+
         #region Get Commands
 
         /// <summary>
@@ -270,7 +272,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             if (!entity.IsPublished && isPublished || !isPublished && forceNoBranch)
             {
                 if (entity.PublishedEntityId.HasValue)	// if Entity has a published Version, add an additional DateTimeline Item for the Update of this Draft-Entity
-                    DbContext.Versioning.SaveEntityToDataTimeline(entity);
+                    DbContext.Versioning.SaveEntity(entity.EntityId, entity.EntityGuid, false);
                 entity = DbContext.Publishing.ClearDraftBranchAndSetPublishedState(repositoryId, isPublished); // must save intermediate because otherwise we get duplicate IDs
             }
             #endregion
@@ -303,7 +305,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             DbContext.SqlDb.SaveChanges();	// must save now to generate EntityModel afterward for DataTimeline
 
-            //DbContext.Versioning.SaveEntityToDataTimeline(entity);
+            DbContext.Versioning.SaveEntity(entity.EntityId, entity.EntityGuid, useDelayedSerialize: true);
 
             return entity;
         }

@@ -39,7 +39,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             ct.Scope = scope;
             if (changeStaticName) // note that this is a very "deep" change
                 ct.StaticName = newStaticName;
-            ct.ChangeLogCreated = DbContext.Versioning.GetChangeLogId(DbContext.UserName);
+            ct.ChangeLogCreated = DbContext.Versioning.GetChangeLogId();
 
             // save first, to ensure it has an Id
             DbContext.SqlDb.SaveChanges();
@@ -76,7 +76,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 Description = attSet.Description,
                 UsesConfigurationOfAttributeSet = attSet.AttributeSetId,
                 AlwaysShareConfiguration = false, // this is copy, never re-share
-                ChangeLogCreated = DbContext.Versioning.GetChangeLogId(DbContext.UserName)
+                ChangeLogCreated = DbContext.Versioning.GetChangeLogId()
             };
             DbContext.SqlDb.Add(newSet);
             
@@ -89,7 +89,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         {
             var setToDelete = GetAttributeSetByStaticName(staticName);
 
-            setToDelete.ChangeLogDeleted = DbContext.Versioning.GetChangeLogId(DbContext.UserName);
+            setToDelete.ChangeLogDeleted = DbContext.Versioning.GetChangeLogId();
             DbContext.SqlDb.SaveChanges();
         }
 
