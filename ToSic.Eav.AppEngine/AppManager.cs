@@ -1,6 +1,7 @@
 ﻿using System.Collections.Specialized;
 using ToSic.Eav.Apps.Interfaces;
 using ToSic.Eav.Apps.Parts;
+using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repository.Efc;
 
 namespace ToSic.Eav.Apps
@@ -48,9 +49,14 @@ namespace ToSic.Eav.Apps
 
         public void MetadataEnsureTypeAndSingleEntity(string scope, string setName, string label, int appAssignment, OrderedDictionary values)
         {
-            var contentType = !DataController.AttribSet.AttributeSetExists(setName, AppId)
-                ? DataController.AttribSet.AddContentTypeAndSave(setName, label, setName, scope, true, false, null)
-                : DataController.AttribSet.GetAttributeSet(setName);
+            ToSicEavAttributeSets contentType;
+            if (DataController.AttribSet.AttributeSetExists(AppId, setName))
+                contentType = DataController.AttribSet.GetAttributeSet(setName);
+            else
+            {
+                contentType = DataController.AttribSet.PrepareSet(setName, label, setName, scope, /*true,*/ false, null);
+                DataController.SqlDb.SaveChanges();
+            }
 
             if (values == null)
                 values = new OrderedDictionary();

@@ -24,15 +24,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 Zone = zone
             };
             DbContext.SqlDb.Add(newApp);
-
             DbContext.SqlDb.SaveChanges();	// required to ensure AppId is created - required in EnsureSharedAttributeSets();
 
             DbContext.AttribSet.PrepareMissingSharedAttributesOnApp(newApp);
 
             DbContext.SqlDb.SaveChanges();	
-
-            // 2017-04-01 removed, shouldn't be necessary any more at this level
-            // PurgeGlobalCache(Context.ZoneId, Context.AppId);
 
             return newApp;
         }

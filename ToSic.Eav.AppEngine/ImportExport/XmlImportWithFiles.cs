@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Web;
 using System.Xml.Linq;
 using Microsoft.Practices.Unity;
 using ToSic.Eav.ImportExport;
@@ -13,8 +12,6 @@ using ToSic.Eav.ImportExport.Models;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Repository.Efc.Parts;
-
-// needed for the static Resolve<...>
 
 namespace ToSic.Eav.Apps.ImportExport
 {
@@ -49,17 +46,14 @@ namespace ToSic.Eav.Apps.ImportExport
 		/// Create a new xmlImport instance
 		/// </summary>
 		/// <param name="defaultLanguage">The portals default language / culture - example: de-DE</param>
-		/// <param name="userName"></param>
 		/// <param name="allowSystemChanges">Specify if the import should be able to change system-wide things like shared attributesets</param>
-		public XmlImportWithFiles(string defaultLanguage, /*string userName,*/ bool allowSystemChanges = false)
+		public XmlImportWithFiles(string defaultLanguage, bool allowSystemChanges = false)
 		{
-		    _environment = Factory.Container.Resolve<IImportExportEnvironment>();// new ImportExportEnvironment(); // todo: depedency injection
+		    _environment = Factory.Container.Resolve<IImportExportEnvironment>();
 			// Prepare
 			ImportLog = new List<ExportImportMessage>();
 			DefaultLanguage = defaultLanguage;
 			AllowSystemChanges = allowSystemChanges;
-		    //UserName = userName;
-
         }
 
 		public bool IsCompatible(XDocument doc)
@@ -75,7 +69,7 @@ namespace ToSic.Eav.Apps.ImportExport
 			// Return if Version does not match
 			if (rn.Attributes().All(a => a.Name != "MinimumRequiredVersion") || new Version(rn.Attribute("MinimumRequiredVersion").Value) > new Version(_environment.ModuleVersion))
 			{
-				ImportLog.Add(new ExportImportMessage("This template or app requires 2sxc " + rn.Attribute("MinimumRequiredVersion").Value + " in order to work, you have version " + _environment.ModuleVersion + " installed.", ExportImportMessage.MessageTypes.Error));
+				ImportLog.Add(new ExportImportMessage("This template or app requires version " + rn.Attribute("MinimumRequiredVersion").Value + " in order to work, you have version " + _environment.ModuleVersion + " installed.", ExportImportMessage.MessageTypes.Error));
 				return false;
 			}
 
@@ -135,7 +129,7 @@ namespace ToSic.Eav.Apps.ImportExport
 			var xmlSource = doc.Element(XmlConstants.RootNode);
 			var xApp = xmlSource?.Element(XmlConstants.Header)?.Element(XmlConstants.App);
 
-			var appGuid = xApp?.Attribute(XmlConstants.Guid).Value;
+			var appGuid = xApp?.Attribute(XmlConstants.Guid)?.Value;
 
             if (appGuid == null)
             {
@@ -150,7 +144,7 @@ namespace ToSic.Eav.Apps.ImportExport
 					appGuid = Guid.NewGuid().ToString();
 
 				// Adding app to EAV
-                var eavDc = DbDataController.Instance(zoneId, null);
+                var eavDc = DbDataController.Instance(zoneId);
 			    var app = eavDc.App.AddApp(null, appGuid);
 				eavDc.SqlDb.SaveChanges();
 
@@ -176,8 +170,6 @@ namespace ToSic.Eav.Apps.ImportExport
 		/// </summary>
 		public bool ImportXml(int zoneId, int appId, XDocument doc, bool leaveExistingValuesUntouched = true)
 		{
-			//_sexy = new SxcInstance(zoneId, appId); // 2016-03-26 2dm this used to have a third parameter false = don't enable caching, which hasn't been respected for a while; removed it
-            // App = new App(zoneId, appId, PortalSettings.Current); // 2016-04-07 2dm refactored this out of this, as using App had side-effects
 		    _eavContext = DbDataController.Instance(zoneId, appId);
             
 			_appId = appId;
@@ -200,7 +192,7 @@ namespace ToSic.Eav.Apps.ImportExport
 			PrepareFileIdCorrectionList(xmlSource);
 
 			#region Prepare dimensions
-			_sourceDimensions = xmlSource.Element(XmlConstants.Header)?.Element(XmlConstants.Dimensions)?.Elements(XmlConstants.Dim).Select(p => new ToSicEavDimensions
+			_sourceDimensions = xmlSource.Element(XmlConstants.Header)?.Element(XmlConstants.DimensionDefinition)?.Elements(XmlConstants.DimensionDefElement).Select(p => new ToSicEavDimensions
 			{
 				DimensionId = int.Parse(p.Attribute(XmlConstants.DimId).Value),
 				Name = p.Attribute("Name").Value,
@@ -522,17 +514,19 @@ namespace ToSic.Eav.Apps.ImportExport
 		{
             #region retrieve optional metadata keys in the import - must happen before we apply corrections like AppId
             Guid? keyGuid = null;
-            if (entityNode.Attribute(XmlConstants.KeyGuid) != null)
-                keyGuid = Guid.Parse(entityNode.Attribute(XmlConstants.KeyGuid).Value);
+		    var maybeGuid = entityNode.Attribute(XmlConstants.KeyGuid);
+            if (maybeGuid != null)
+                keyGuid = Guid.Parse(maybeGuid.Value);
             int? keyNumber = null;
-            if (entityNode.Attribute(XmlConstants.KeyNumber) != null)
-                keyNumber = int.Parse(entityNode.Attribute(XmlConstants.KeyNumber).Value);
+		    var maybeNumber = entityNode.Attribute(XmlConstants.KeyNumber);
+            if (maybeNumber != null)
+                keyNumber = int.Parse(maybeNumber.Value);
 
             var keyString = entityNode.Attribute(XmlConstants.KeyString)?.Value;
             #endregion
 
             #region check if the xml has an own assignment object type (then we wouldn't use the default)
-            switch (entityNode.Attribute(XmlConstants.KeyTargetType).Value)
+            switch (entityNode.Attribute(XmlConstants.KeyTargetType)?.Value)
 			{
 				// Special case: App AttributeSets must be assigned to the current app
 				case XmlConstants.App:

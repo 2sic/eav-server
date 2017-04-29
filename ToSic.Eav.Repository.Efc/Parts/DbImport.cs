@@ -4,7 +4,6 @@ using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using ToSic.Eav.ImportExport.Logging;
 using ToSic.Eav.ImportExport.Models;
 using ToSic.Eav.Persistence.Efc.Models;
@@ -39,9 +38,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
         public DbImport(int? zoneId, int? appId, bool dontUpdateExistingAttributeValues = true, bool keepAttributesMissingInImport = true, bool preventUpdateOnDraftEntities = true, bool largeImport = true)
         {
             _context = DbDataController.Instance(zoneId, appId);
-
-            // 2017-04-04 2dm removed this, as it's now dependency injected into the _context
-            //_context.UserName = userName;
             _dontUpdateExistingAttributeValues = dontUpdateExistingAttributeValues;
             _keepAttributesMissingInImport = keepAttributesMissingInImport;
             PreventUpdateOnDraftEntities = preventUpdateOnDraftEntities;
@@ -73,41 +69,36 @@ namespace ToSic.Eav.Repository.Efc.Parts
             {
                 #region import AttributeSets if any were included
                 if (newAttributeSets != null)
-                {
-                    _context.Versioning.ActivateQueue();;
-                    var newSetsList = newAttributeSets.ToList();
-                    // first: import the attribute sets in the system scope, as they may be needed by others...
-                    // ...and would need a cache-refresh before 
-                    var sysAttributeSets = newSetsList.Where(a => a.Scope == Constants.ScopeSystem).ToList();
-                    if(sysAttributeSets.Any())
-                        ImportSomeAttributeSets(sysAttributeSets, transaction);
+                    _context.Versioning.QueueDuringAction(() => { // .ActivateQueue();
+                        var newSetsList = newAttributeSets.ToList();
+                        // first: import the attribute sets in the system scope, as they may be needed by others...
+                        // ...and would need a cache-refresh before 
+                        var sysAttributeSets = newSetsList.Where(a => a.Scope == Constants.ScopeSystem).ToList();
+                        if (sysAttributeSets.Any())
+                            ImportSomeAttributeSets(sysAttributeSets);
 
-                    // now the remaining attributeSets
-                    var nonSysAttribSets = newSetsList.Where(a => !sysAttributeSets.Contains(a)).ToList();
-                    if(nonSysAttribSets.Any())
-                        ImportSomeAttributeSets(nonSysAttribSets, transaction);
+                        // now the remaining attributeSets
+                        var nonSysAttribSets = newSetsList.Where(a => !sysAttributeSets.Contains(a)).ToList();
+                        if (nonSysAttribSets.Any())
+                            ImportSomeAttributeSets(nonSysAttribSets);
 
-                    _context.Versioning.ProcessQueue();
-                }
+                        //_context.Versioning.ProcessQueue();
+                    });
 
                 #endregion
 
                 #region import Entities
                 if (newEntities != null)
-                {
-                    _context.Versioning.ActivateQueue();
-                    foreach (var entity in newEntities)
+                    _context.Versioning.QueueDuringAction(() => // .ActivateQueue();
                     {
-                        PersistOneImportEntity(entity);
-                        // do this just to be sure, in case it didn't always happen internally...
-                        _context.SqlDb.SaveChanges(); 
-                    }
+                        foreach (var entity in newEntities)
+                            _context.DoAndSave(() => PersistOneImportEntity(entity));
 
-                    _context.Relationships.ImportRelationshipQueueAndSave();
+                        _context.Relationships.ImportRelationshipQueueAndSave();
 
-                    // must do this after importing the relationship queue!
-                    _context.Versioning.ProcessQueue();
-                }
+                        // must do this after importing the relationship queue!
+                        //_context.Versioning.ProcessQueue();
+                    });
                 #endregion
 
                 // Commit DB Transaction
@@ -122,7 +113,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             }
         }
 
-        private void ImportSomeAttributeSets(IEnumerable<ImpAttrSet> newAttributeSets, IDbContextTransaction transaction)
+        private void ImportSomeAttributeSets(IEnumerable<ImpAttrSet> newAttributeSets)
         {
             foreach (var attributeSet in newAttributeSets)
                 ImportAttributeSet(attributeSet);
@@ -130,9 +121,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             _context.Relationships.ImportRelationshipQueueAndSave();
 
             // in case anything imported was to be shared, ensure that
-            _context.AttribSet.EnsureSharedAttributeSetsOnEverything();
-
-            _context.SqlDb.SaveChanges();
+            _context.AttribSet.EnsureSharedAttributeSetsOnEverythingAndSave();
         }
 
         /// <summary>
@@ -140,112 +129,162 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         private void ImportAttributeSet(ImpAttrSet impAttrSet)
         {
-            var destinationSet = _context.AttribSet.GetAttributeSet(impAttrSet.StaticName);
-            // add new AttributeSet
-            if (destinationSet == null)
-                destinationSet = _context.AttribSet.AddContentTypeAndSave(impAttrSet.Name, impAttrSet.Description, impAttrSet.StaticName, impAttrSet.Scope, false, false, null);
-            else	// use/update existing attribute Set
-            {
-                if (destinationSet.UsesConfigurationOfAttributeSet.HasValue)
-                {
-                    _importLog.Add(new ImportLogItem(EventLogEntryType.Error, "Not allowed to import/extend an AttributeSet which uses Configuration of another AttributeSet.") { ImpAttrSet = impAttrSet });
-                    return;
-                }
+            // initialize destinationSet - create or test existing if ok
+            var destinationSet = GetAndCheckIfValidOrCreateDestinationSet(impAttrSet);
+            if (destinationSet == null) // something went wrong, skip this import
+                return;
 
-                _importLog.Add(new ImportLogItem(EventLogEntryType.Information, "AttributeSet already exists") { ImpAttrSet = impAttrSet });
-            }
-
-	        destinationSet.AlwaysShareConfiguration = impAttrSet.AlwaysShareConfiguration;
-
-            // If a "Ghost"-content type is specified, try to assign that
-            if (!string.IsNullOrEmpty(impAttrSet.UsesConfigurationOfAttributeSet))
-            {
-                // Look for a content type with the StaticName, which has no "UsesConfigurationOf..." set (is a master)
-                var ghostAttributeSets = _context.SqlDb.ToSicEavAttributeSets.Where(a => a.StaticName == impAttrSet.UsesConfigurationOfAttributeSet && a.ChangeLogDeleted == null && a.UsesConfigurationOfAttributeSet == null).
-                    OrderBy(a => a.AttributeSetId).ToList();
-
-                if (ghostAttributeSets.Count == 0)
-                {
-                    _importLog.Add(new ImportLogItem(EventLogEntryType.Warning, "AttributeSet not imported because master set not found: " + impAttrSet.UsesConfigurationOfAttributeSet) { ImpAttrSet = impAttrSet });
-                    return;
-                }
-
-                // If multiple masters are found, use first and add a warning message
-                if (ghostAttributeSets.Count > 1)
-                    _importLog.Add(new ImportLogItem(EventLogEntryType.Warning, "Multiple potential master AttributeSets found for StaticName: " + impAttrSet.UsesConfigurationOfAttributeSet) { ImpAttrSet = impAttrSet });
-                destinationSet.UsesConfigurationOfAttributeSet = ghostAttributeSets.First().AttributeSetId;
-            }
-            
-
+            // if this set expects to share it's configuration, ensure that it does
             if (destinationSet.AlwaysShareConfiguration)
-	        {
-		        _context.AttribSet.EnsureSharedAttributeSetsOnEverything();
-	        }
-	        _context.SqlDb.SaveChanges();
+                _context.AttribSet.EnsureSharedAttributeSetsOnEverythingAndSave();
 
             // append all Attributes
             foreach (var importAttribute in impAttrSet.Attributes)
             {
                 ToSicEavAttributes destinationAttribute;
-                if(!_context.Attributes.Exists(destinationSet.AttributeSetId, importAttribute.StaticName))
+                if(!_context.Attributes.AttributeExistsInSet(destinationSet.AttributeSetId, importAttribute.StaticName))
                 {
-                        // try to add new Attribute
-                        var isTitle = importAttribute == impAttrSet.TitleAttribute;
-                    destinationAttribute = _context.Attributes.AppendAttribute(destinationSet, importAttribute.StaticName, importAttribute.Type, importAttribute.InputType, isTitle, false);
+                    // try to add new Attribute
+                    var isTitle = importAttribute == impAttrSet.TitleAttribute;
+                    destinationAttribute = _context.Attributes
+                        .AppendToEndAndSave(destinationSet, 0, importAttribute.StaticName, importAttribute.Type, importAttribute.InputType, isTitle);//, false);
                 }
 				else
                 {
 					_importLog.Add(new ImportLogItem(EventLogEntryType.Warning, "Attribute already exists") { ImpAttribute = importAttribute });
-                    destinationAttribute = destinationSet.ToSicEavAttributesInSets.Single(a => a.Attribute.StaticName == importAttribute.StaticName).Attribute;
+                    destinationAttribute = destinationSet.ToSicEavAttributesInSets
+                        .Single(a => a.Attribute.StaticName == importAttribute.StaticName).Attribute;
                 }
 
-                // Insert AttributeMetaData
-                if (/* isNewAttribute && */ importAttribute.AttributeMetaData != null)
-                {
-                    foreach (var entity in importAttribute.AttributeMetaData)
-                    {
-                        // Validate Entity
-                        entity.KeyTypeId = Constants.MetadataForField;//.AssignmentObjectTypeIdFieldProperties;
-
-                        // Set KeyNumber
-                        if (destinationAttribute.AttributeId == 0 || destinationAttribute.AttributeId < 0) // < 0 is ef-core temp id
-                            _context.SqlDb.SaveChanges();
-                        entity.KeyNumber = destinationAttribute.AttributeId;
-
-                        // Get guid of previously existing assignment - if it exists
-                        // todo: CleanImport - change access to attribute set to use DB
-                        // todo: TestImport
-                        var existingMetadata = _context.Entities
-                            .GetAssignedEntities(Constants.MetadataForField,keyNumber:destinationAttribute.AttributeId)
-                            .FirstOrDefault(e => e.AttributeSetId == destinationAttribute.AttributeId);
-
-                        if (existingMetadata != null)
-                            entity.EntityGuid = existingMetadata.EntityGuid;
-
-                        //var mds = DataSource.GetMetaDataSource(_context.ZoneId, _context.AppId);
-                        //var existingEntity = mds.GetAssignedEntities(Constants.MetadataForField, //.AssignmentObjectTypeIdFieldProperties,
-                        //    destinationAttribute.AttributeId, entity.AttributeSetStaticName).FirstOrDefault();
-
-                        //if (existingEntity != null)
-                        //    entity.EntityGuid = existingEntity.EntityGuid;
-
-                        PersistOneImportEntity(entity);
-                    }
-                }
+                // save additional entities containing AttributeMetaData for this attribute
+                if (importAttribute.AttributeMetaData != null)
+                    SaveImportedAttributeMetadata(importAttribute.AttributeMetaData, destinationAttribute.AttributeId);
             }
 
-            // todo: optionally re-order the attributes
+            // optionally re-order the attributes if specified in import
             if (impAttrSet.SortAttributes)
+                SortAttributesByImportOrder(impAttrSet, destinationSet);
+        }
+
+        private ToSicEavAttributeSets GetAndCheckIfValidOrCreateDestinationSet(ImpAttrSet impAttrSet)
+        {
+            var destinationSet = _context.AttribSet.GetAttributeSet(impAttrSet.StaticName);
+
+            // add new AttributeSet, do basic configuration if possible, then save
+            if (destinationSet == null)
+                destinationSet = _context.AttribSet.PrepareSet(impAttrSet.Name, impAttrSet.Description,
+                    impAttrSet.StaticName, impAttrSet.Scope, false, null);
+
+            // to use existing attribute Set, do some minimal conflict-checking
+            else
             {
-                var attributeList = _context.SqlDb.ToSicEavAttributesInSets
-                    .Where(a => a.AttributeSetId == destinationSet.AttributeSetId).ToList();
-                attributeList = attributeList
-                    .OrderBy(a => impAttrSet.Attributes
-                        .IndexOf(impAttrSet.Attributes
-                            .First(ia => ia.StaticName == a.Attribute.StaticName)))
-                    .ToList();
-                _context.Attributes.PersistAttributeSorting(attributeList);
+                _importLog.Add(new ImportLogItem(EventLogEntryType.Information, "AttributeSet already exists")
+                {
+                    ImpAttrSet = impAttrSet
+                });
+                if (destinationSet.UsesConfigurationOfAttributeSet.HasValue)
+                {
+                    _importLog.Add(new ImportLogItem(EventLogEntryType.Error,
+                        "Not allowed to import/extend an AttributeSet which uses Configuration of another AttributeSet.")
+                    {
+                        ImpAttrSet = impAttrSet
+                    });
+                    return null;
+                }
             }
+
+            // If a "Ghost"-content type is specified, try to assign that
+            if (!string.IsNullOrEmpty(impAttrSet.UsesConfigurationOfAttributeSet))
+            {
+                var ghostParentId = FindCorrectGhostParentId(impAttrSet);
+                if (ghostParentId == 0) return null;
+                destinationSet.UsesConfigurationOfAttributeSet = ghostParentId;
+            }
+
+            destinationSet.AlwaysShareConfiguration = impAttrSet.AlwaysShareConfiguration;
+            _context.SqlDb.SaveChanges();
+
+            // all ok :)
+            return destinationSet;
+        }
+
+        /// <summary>
+        /// Look up the ghost-parent-id
+        /// </summary>
+        /// <param name="impAttrSet"></param>
+        /// <returns>The parent id as needed, or 0 if not found - which usually indicates an import problem</returns>
+        private int FindCorrectGhostParentId(ImpAttrSet impAttrSet)
+        {
+            // Look for a content type with the StaticName, which has no "UsesConfigurationOf..." set (is a master)
+            var ghostAttributeSets = _context.SqlDb.ToSicEavAttributeSets.Where(
+                    a => a.StaticName == impAttrSet.UsesConfigurationOfAttributeSet
+                         && a.ChangeLogDeleted == null
+                         && a.UsesConfigurationOfAttributeSet == null).
+                OrderBy(a => a.AttributeSetId)
+                .ToList();
+
+            if (ghostAttributeSets.Count == 0)
+            {
+                _importLog.Add(new ImportLogItem(EventLogEntryType.Warning, "AttributeSet not imported because master set not found: " + impAttrSet.UsesConfigurationOfAttributeSet) {ImpAttrSet = impAttrSet});
+                return 0;
+            }
+
+            // If multiple masters are found, use first and add a warning message
+            if (ghostAttributeSets.Count > 1)
+                _importLog.Add(new ImportLogItem(EventLogEntryType.Warning, "Multiple potential master AttributeSets found for StaticName: " + impAttrSet.UsesConfigurationOfAttributeSet) {ImpAttrSet = impAttrSet});
+            
+            // all ok, return id
+            return ghostAttributeSets.First().AttributeSetId;
+        }
+
+        /// <summary>
+        /// Save additional entities describing the attribute
+        /// </summary>
+        /// <param name="attributeMetaData"></param>
+        /// <param name="destinationAttributeId"></param>
+        private void SaveImportedAttributeMetadata(List<ImpEntity> attributeMetaData, int destinationAttributeId)
+        {
+            foreach (var entity in attributeMetaData)
+            {
+                // Validate Entity
+                entity.KeyTypeId = Constants.MetadataForField;
+
+                // Set KeyNumber
+                if (destinationAttributeId == 0 || destinationAttributeId < 0) // < 0 is ef-core temp id
+                    _context.SqlDb.SaveChanges();
+                entity.KeyNumber = destinationAttributeId;
+
+                // Get guid of previously existing assignment - if it exists
+                var existingMetadata = _context.Entities
+                    .GetAssignedEntities(Constants.MetadataForField, keyNumber: destinationAttributeId)
+                    .FirstOrDefault(e => e.AttributeSetId == destinationAttributeId);
+
+                if (existingMetadata != null)
+                    entity.EntityGuid = existingMetadata.EntityGuid;
+
+                PersistOneImportEntity(entity);
+            }
+        }
+
+        /// <summary>
+        /// Sometimes the import asks for sorting the fields again according to input
+        /// this method will then take care of re-sorting them correctly
+        /// Fields which were not in the import will simply land at the end
+        /// </summary>
+        /// <param name="impAttrSet"></param>
+        /// <param name="destinationSet"></param>
+        private void SortAttributesByImportOrder(ImpAttrSet impAttrSet, ToSicEavAttributeSets destinationSet)
+        {
+            var attributeList = _context.SqlDb.ToSicEavAttributesInSets
+                .Where(a => a.AttributeSetId == destinationSet.AttributeSetId)
+                .ToList();
+
+            attributeList = attributeList
+                .OrderBy(a => impAttrSet.Attributes
+                    .IndexOf(impAttrSet.Attributes
+                        .First(ia => ia.StaticName == a.Attribute.StaticName)))
+                .ToList();
+            _context.Attributes.PersistAttributeOrder(attributeList);
         }
 
         /// <summary>

@@ -132,6 +132,9 @@
     <Compile Include="Parts\DbApp.cs" />
     <Compile Include="Parts\DbAttribute.cs" />
     <Compile Include="Parts\DbAttributeSet.cs" />
+    <Compile Include="Parts\DbAttributeSet_Shared.cs" />
+    <Compile Include="Parts\DbAttributeSet_Ghosts.cs" />
+    <Compile Include="Parts\DbAttribute_Sorting.cs" />
     <Compile Include="Parts\DbContentType.cs" />
     <Compile Include="Parts\DbDimensions.cs" />
     <Compile Include="Parts\DbEntity.cs" />

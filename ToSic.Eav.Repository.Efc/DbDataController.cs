@@ -26,16 +26,11 @@ namespace ToSic.Eav.Repository.Efc
         public DbApp App { get; private set; }
         public DbContentType ContentType { get; private set; }
 
-        //public RepositoryEF4 Repository { get; private set; }
-
         public int _appId;
         internal int _zoneId;
         #endregion
 
         #region Properties like AppId, ZoneId, UserName etc.
-
-        // todo: remove the get/set because the default is already set in initialization...
-
 
         /// <summary>
         /// AppId of this whole Context
@@ -210,5 +205,13 @@ namespace ToSic.Eav.Repository.Efc
 
         #endregion
 
+        #region Shorthand for do & save
+
+        internal void DoAndSave(Action action)
+        {
+            action.Invoke();
+            SqlDb.SaveChanges();
+        }
+        #endregion
     }
 }

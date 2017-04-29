@@ -43,9 +43,17 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         private bool _useQueue;
 
-        public void ActivateQueue() => _useQueue = true;
 
-        public void ProcessQueue()
+        public void QueueDuringAction(Action action)
+        {
+            _useQueue = true;
+            action.Invoke();
+            ProcessQueue();
+        }
+
+        //public void ActivateQueue() => _useQueue = true;
+
+        private void ProcessQueue()
         {
             _useQueue = false;
             Save();

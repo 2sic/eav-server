@@ -7,16 +7,16 @@ using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
-    public class DbAttribute: BllCommandBase
+    public partial class DbAttribute: BllCommandBase
     {
         public DbAttribute(DbDataController cntx) : base(cntx) {}
 
         /// <summary>
         /// Get Attributes of an AttributeSet
         /// </summary>
-        public IQueryable<ToSicEavAttributes> GetAttributeDefinitions(int attributeSetId)
+        internal IQueryable<ToSicEavAttributes> GetAttributeDefinitions(int attributeSetId)
         {
-            attributeSetId = DbContext.AttribSet.ResolveAttributeSetId(attributeSetId);
+            attributeSetId = DbContext.AttribSet.ResolvePotentialGhostAttributeSetId(attributeSetId);
 
             return from ais in DbContext.SqlDb.ToSicEavAttributesInSets
                    where ais.AttributeSetId == attributeSetId
@@ -24,6 +24,57 @@ namespace ToSic.Eav.Repository.Efc.Parts
                    select ais.Attribute;
         }
 
+
+
+
+
+        /// <summary>
+        /// Get a list of all Attributes in Set for specified AttributeSetId
+        /// </summary>
+        public List<ToSicEavAttributesInSets> GetAttributesInSet(int attributeSetId)
+        {
+            return DbContext.SqlDb.ToSicEavAttributesInSets
+                .Include(ais => ais.Attribute)
+                .Where(a => a.AttributeSetId == attributeSetId)
+                .OrderBy(a => a.SortOrder)
+                .ToList();
+        }
+
+
+        /// <summary>
+        /// Set an Attribute as Title on an AttributeSet
+        /// </summary>
+        public void SetTitleAttribute(int attributeId, int attributeSetId)
+        {
+            DbContext.SqlDb.ToSicEavAttributesInSets
+                .Single(a => a.AttributeId == attributeId && a.AttributeSetId == attributeSetId).IsTitle = true;
+
+            // unset other Attributes with isTitle=true
+            var oldTitleAttributes = DbContext.SqlDb.ToSicEavAttributesInSets
+                .Where(s => s.AttributeSetId == attributeSetId && s.IsTitle);
+            foreach (var oldTitleAttribute in oldTitleAttributes)
+                oldTitleAttribute.IsTitle = false;
+
+            DbContext.SqlDb.SaveChanges();
+        }
+
+        /// <summary>
+        /// Set an Attribute as Title on an AttributeSet
+        /// </summary>
+        public void RenameStaticName(int attributeId, int attributeSetId, string newName)
+        {
+            if(string.IsNullOrWhiteSpace(newName))
+                throw new Exception("can't rename to something empty");
+
+            // ensure that it's in the set
+            var attr = DbContext.SqlDb.ToSicEavAttributesInSets
+                .Single(a => a.AttributeId == attributeId && a.AttributeSetId == attributeSetId)
+                .Attribute;
+            attr.StaticName = newName;
+            DbContext.SqlDb.SaveChanges();
+        }
+
+        #region deprecated / disabled code
 
         ///// <summary>
         ///// Get a List of all Attributes in specified AttributeSet
@@ -47,68 +98,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
         //    return Context.SqlDb.AttributesInSets.Single(a => a.AttributeSetId == attributeSetId && a.IsTitle).Attribute;
         //}
 
-
-        /// <summary>
-        /// Get a list of all Attributes in Set for specified AttributeSetId
-        /// </summary>
-        public List<ToSicEavAttributesInSets> GetAttributesInSet(int attributeSetId)
-        {
-            return DbContext.SqlDb.ToSicEavAttributesInSets
-                .Include(ais => ais.Attribute)
-                .Where(a => a.AttributeSetId == attributeSetId)
-                .OrderBy(a => a.SortOrder)
-                .ToList();
-        }
-
-        /// <summary>
-        /// Update the order of the attributes in the set.
-        /// </summary>
-        /// <param name="setId"></param>
-        /// <param name="newSortOrder">Array of attribute ids which defines the new sort order</param>
-        public void UpdateAttributeOrder(int setId, List<int> newSortOrder)
-        {
-            var attributeList = DbContext.SqlDb.ToSicEavAttributesInSets.Where(a => a.AttributeSetId == setId).ToList();
-            attributeList = attributeList.OrderBy(a => newSortOrder.IndexOf(a.AttributeId)).ToList();
-
-            PersistAttributeSorting(attributeList);
-        }
-
-        public void PersistAttributeSorting(List<ToSicEavAttributesInSets> attributeList)
-        {
-            var index = 0;
-            attributeList.ForEach(a => a.SortOrder = index++);
-            DbContext.SqlDb.SaveChanges();
-        }
-
-        /// <summary>
-        /// Set an Attribute as Title on an AttributeSet
-        /// </summary>
-        public void SetTitleAttribute(int attributeId, int attributeSetId)
-        {
-            DbContext.SqlDb.ToSicEavAttributesInSets.Single(a => a.AttributeId == attributeId && a.AttributeSetId == attributeSetId).IsTitle = true;
-
-            // unset other Attributes with isTitle=true
-            var oldTitleAttributes = DbContext.SqlDb.ToSicEavAttributesInSets.Where(s => s.AttributeSetId == attributeSetId && s.IsTitle);
-            foreach (var oldTitleAttribute in oldTitleAttributes)
-                oldTitleAttribute.IsTitle = false;
-
-            DbContext.SqlDb.SaveChanges();
-        }
-
-        /// <summary>
-        /// Set an Attribute as Title on an AttributeSet
-        /// </summary>
-        public void RenameStaticName(int attributeId, int attributeSetId, string newName)
-        {
-            if(string.IsNullOrWhiteSpace(newName))
-                throw new Exception("can't rename to something empty");
-
-            // ensure that it's in the set
-            var attr = DbContext.SqlDb.ToSicEavAttributesInSets.Single(a => a.AttributeId == attributeId && a.AttributeSetId == attributeSetId).Attribute;
-            attr.StaticName = newName;
-            DbContext.SqlDb.SaveChanges();
-        }
-
         ///// <summary>
         ///// Update an Attribute
         ///// </summary>
@@ -130,14 +119,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
         //    return attribute;
         //}
 
-
-        /// <summary>
-        /// Append a new Attribute to an AttributeSet
-        /// </summary>
-        public ToSicEavAttributes AppendAttribute(ToSicEavAttributeSets attributeSet, string staticName, string type, string inputType, bool isTitle = false, bool autoSave = true)
-        {
-            return AppendAttribute(attributeSet, 0, staticName, type, inputType, isTitle, autoSave);
-        }
         ///// <summary>
         ///// Append a new Attribute to an AttributeSet
         ///// </summary>
@@ -145,54 +126,82 @@ namespace ToSic.Eav.Repository.Efc.Parts
         //{
         //    return AppendAttribute(null, attributeSetId, staticName, type, inputType, isTitle, true);
         //}
+
+
+        ///// <summary>
+        ///// Append a new Attribute to an AttributeSet
+        ///// </summary>
+        //public ToSicEavAttributes AppendAttribute(ToSicEavAttributeSets attributeSet, string staticName, string type, string inputType, bool isTitle = false, bool autoSave = true)
+        //{
+        //    return AppendAttribute(attributeSet, 0, staticName, type, inputType, isTitle, autoSave);
+        //}
+        #endregion
+
         /// <summary>
         /// Append a new Attribute to an AttributeSet
         /// </summary>
-        private ToSicEavAttributes AppendAttribute(ToSicEavAttributeSets attributeSet, int attributeSetId, string staticName, string type, string inputType, bool isTitle, bool autoSave)
+        internal ToSicEavAttributes AppendToEndAndSave(ToSicEavAttributeSets attributeSet, int attributeSetId, string staticName, string type, string inputType, bool isTitle)//, bool autoSave)
         {
-            var sortOrder = attributeSet != null ? attributeSet.ToSicEavAttributesInSets.Max(s => (int?)s.SortOrder) : DbContext.SqlDb.ToSicEavAttributesInSets.Where(a => a.AttributeSetId == attributeSetId).Max(s => (int?)s.SortOrder);
-            if (!sortOrder.HasValue)
-                sortOrder = 0;
+            var maxIndex = attributeSet != null
+                ? attributeSet.ToSicEavAttributesInSets
+                    .Max(s => (int?) s.SortOrder)
+                : DbContext.SqlDb.ToSicEavAttributesInSets
+                    .Where(a => a.AttributeSetId == attributeSetId)
+                    .Max(s => (int?) s.SortOrder);
+
+            if (!maxIndex.HasValue)
+                maxIndex = 0;
             else
-                sortOrder++;
+                maxIndex++;
 
-            return AddAttribute(attributeSet, attributeSetId, staticName, type, inputType, sortOrder.Value, 1, isTitle, autoSave);
+            return AddAttributeAndSave(attributeSet, attributeSetId, staticName, type, inputType, maxIndex.Value, 1, isTitle);//, autoSave);
+        }
+
+        /// <summary>
+        /// Append a new Attribute to an AttributeSet
+        /// Simple overload returning int so it can be used from outside
+        /// </summary>
+        public int CreateAttributeAndInitializeAndSave(int attributeSetId, string staticName, string type, string inputType, int sortOrder)//, int attributeGroupId, bool isTitle)
+        {
+            var newAttribute = AddAttributeAndSave(null, attributeSetId, staticName, type, inputType, sortOrder, 1, false);//, true);
+            
+            // set the nice name and input type, important for newly created attributes
+            InitializeNameAndInputType(staticName, inputType, newAttribute);
+
+            return newAttribute.AttributeId;
+        }
+
+        /// <summary>
+        /// Check if a valid, undeleted attribute-set exists
+        /// </summary>
+        /// <param name="attributeSetId"></param>
+        /// <param name="staticName"></param>
+        /// <returns></returns>
+        internal bool AttributeExistsInSet(int attributeSetId, string staticName)
+        {
+            return DbContext.SqlDb.ToSicEavAttributesInSets.Any(s =>
+                s.Attribute.StaticName == staticName 
+                && !s.Attribute.ChangeLogDeleted.HasValue 
+                && s.AttributeSetId == attributeSetId 
+                && s.AttributeSet.AppId == DbContext.AppId);
         }
 
         /// <summary>
         /// Append a new Attribute to an AttributeSet
         /// </summary>
-        public /*ToSicEavAttributes*/ int AddAttribute(int attributeSetId, string staticName, string type, string inputType, int sortOrder = 0, int attributeGroupId = 1, bool isTitle = false, bool autoSave = true)
-        {
-            return AddAttribute(null, attributeSetId, staticName, type, inputType, sortOrder, attributeGroupId, isTitle, autoSave)
-                .AttributeId;
-        }
-
-
-        internal bool Exists(int attributeSetId, string staticName)
-        {
-            return DbContext.SqlDb.ToSicEavAttributesInSets.Any(
-                s =>
-                    s.Attribute.StaticName == staticName && !s.Attribute.ChangeLogDeleted.HasValue &&
-                    s.AttributeSetId == attributeSetId && s.AttributeSet.AppId == DbContext.AppId);
-        }
-
-        /// <summary>
-        /// Append a new Attribute to an AttributeSet
-        /// </summary>
-        private ToSicEavAttributes AddAttribute(ToSicEavAttributeSets attributeSet, int attributeSetId, string staticName, string type, string inputType, int sortOrder, int attributeGroupId, bool isTitle, bool autoSave)
+        public ToSicEavAttributes AddAttributeAndSave(ToSicEavAttributeSets attributeSet, int attributeSetId, string staticName, string type, string inputType, int sortOrder, int attributeGroupId, bool isTitle)//, bool autoSave)
         {
             if (attributeSet == null)
-                attributeSet = DbContext.SqlDb.ToSicEavAttributeSets.Single(a => a.AttributeSetId == attributeSetId);
+                attributeSet = DbContext.SqlDb.ToSicEavAttributeSets
+                    .Single(a => a.AttributeSetId == attributeSetId);
             else if (attributeSetId != 0)
                 throw new Exception("Can only set attributeSet or attributeSetId");
 
-//            if (!System.Text.RegularExpressions.Regex.IsMatch(staticName, Constants.AttributeStaticNameRegEx, System.Text.RegularExpressions.RegexOptions.IgnoreCase))
             if (!Constants.AttributeStaticName.IsMatch(staticName))
                 throw new Exception("Attribute static name \"" + staticName + "\" is invalid. " + Constants.AttributeStaticNameRegExNotes);
 
             // Prevent Duplicate Name
-            if (Exists(attributeSet.AttributeSetId, staticName))// Context.SqlDb.AttributesInSets.Any(s => s.Attribute.StaticName == staticName && !s.Attribute.ChangeLogDeleted.HasValue && s.AttributeSetId == attributeSet.AttributeSetId && s.Set.AppId == Context.AppId ))
+            if (AttributeExistsInSet(attributeSet.AttributeSetId, staticName))
                 throw new ArgumentException("An Attribute with static name " + staticName + " already exists", nameof(staticName));
 
             var newAttribute = new ToSicEavAttributes
@@ -224,23 +233,26 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     titleField.IsTitle = false;
             }
 
+            // 2017-04-29 new: since it's always new, it will always save
             // If attribute has not been saved, we must save now to get the id (and assign entities)
-            if (autoSave || newAttribute.AttributeId == 0 || newAttribute.AttributeId < 0) // < 0 means it's an EF-core new temp-ID
+            //if (autoSave || newAttribute.AttributeId == 0 || newAttribute.AttributeId < 0) // < 0 means it's an EF-core new temp-ID
                 DbContext.SqlDb.SaveChanges();
 
-            #region set the input type
+
+            return newAttribute;
+        }
+
+        private void InitializeNameAndInputType(string staticName, string inputType, ToSicEavAttributes newAttribute)
+        {
             // new: set the inputType - this is a bit tricky because it needs an attached entity of type "@All" to set the value to...
             var newValues = new Dictionary<string, object>
             {
-                {"VisibleInEditUI", true },
+                {"VisibleInEditUI", true},
                 {"Name", staticName},
                 {"InputType", inputType}
             };
 
             UpdateAttributeAdditionalProperties(newAttribute.AttributeId, true, newValues);
-            #endregion
-
-            return newAttribute;
         }
 
         public bool UpdateInputType(int attributeId, string inputType)
@@ -274,10 +286,12 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
 
         // todo: add security check if it really is in this app and content-type
-        public bool RemoveAttribute(int attributeId)
+        public bool RemoveAttributeAndAllValues(int attributeId)
         {
             // Remove values and valueDimensions of this attribute
-            var values = DbContext.SqlDb.ToSicEavValues.Where(a => a.AttributeId == attributeId).ToList();
+            var values = DbContext.SqlDb.ToSicEavValues
+                .Where(a => a.AttributeId == attributeId).ToList();
+
             values.ForEach(v => {
                 v.ToSicEavValuesDimensions.ToList().ForEach(vd => {
                     DbContext.SqlDb.ToSicEavValuesDimensions.Remove(vd);
@@ -297,9 +311,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
 
         // new parts
-        public string[] DataTypes(int appId)
+        public string[] DataTypeNames(int appId)
         {
-            //SetAppIdAndUser(appId);
             return DbContext.SqlDb.ToSicEavAttributeTypes.OrderBy(a => a.Type).Select(a => a.Type).ToArray();
         }
 

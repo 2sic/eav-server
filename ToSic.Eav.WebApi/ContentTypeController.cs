@@ -196,7 +196,7 @@ namespace ToSic.Eav.WebApi
 	    {
             //SetAppIdAndUser(appId);
             //CurrentContext.SqlDb.AttributeTypes.OrderBy(a => a.Type).Select(a => a.Type).ToArray();
-            return CurrentContext.Attributes.DataTypes(appId);
+            return CurrentContext.Attributes.DataTypeNames(appId);
 	    }
 
 	    [HttpGet]
@@ -217,7 +217,7 @@ namespace ToSic.Eav.WebApi
         public int AddField(int appId, int contentTypeId, string staticName, string type, string inputType, int sortOrder)
 	    {
             SetAppIdAndUser(appId);
-	        return CurrentContext.Attributes.AddAttribute(contentTypeId, staticName, type, inputType, sortOrder, 1, false, true);//.AttributeId;//.AttributeID;
+	        return CurrentContext.Attributes.CreateAttributeAndInitializeAndSave(contentTypeId, staticName, type, inputType, sortOrder);//, 1, false, true);
 	    }
 
         [HttpGet]
@@ -232,7 +232,7 @@ namespace ToSic.Eav.WebApi
 	    public bool DeleteField(int appId, int contentTypeId, int attributeId)
 	    {
             SetAppIdAndUser(appId);
-            return CurrentContext.Attributes.RemoveAttribute(attributeId);
+            return CurrentContext.Attributes.RemoveAttributeAndAllValues(attributeId);
 	    }
 
         [HttpGet]

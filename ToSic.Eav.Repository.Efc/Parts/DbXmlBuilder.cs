@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 using System.Xml.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Practices.ObjectBuilder2;
+using ToSic.Eav.ImportExport;
 using ToSic.Eav.Persistence.Efc.Models;
-
-//using System.Data.Objects.DataClasses;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
@@ -60,16 +60,16 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 new XAttribute("AssignmentObjectType", assignmentObjectTypeName), 
                 new XAttribute("AttributeSetStaticName", attributeSet.StaticName),
                 new XAttribute("AttributeSetName", attributeSet.Name),
-                new XAttribute("EntityGuid", entity.EntityGuid),
+                new XAttribute("EntityGUID", entity.EntityGuid),
                 valuesXElement, relsXElement);
 
             // try to add keys - moved to here from xml-exporter
             if (entity.KeyGuid.HasValue)
-                entityXElement.Add(new XAttribute("KeyGuid", entity.KeyGuid));
+                entityXElement.Add(new XAttribute(XmlConstants.KeyGuid/* "KeyGuid"*/, entity.KeyGuid));
             if (entity.KeyNumber.HasValue)
-                entityXElement.Add(new XAttribute("KeyNumber", entity.KeyNumber));
+                entityXElement.Add(new XAttribute(XmlConstants.KeyNumber/*"KeyNumber"*/, entity.KeyNumber));
             if (!string.IsNullOrEmpty(entity.KeyString))
-                entityXElement.Add(new XAttribute("KeyString", entity.KeyString));
+                entityXElement.Add(new XAttribute(XmlConstants.KeyString/*"KeyString"*/, entity.KeyString));
 
 
             return entityXElement;
@@ -97,13 +97,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
         {
             //var valueSerialized = value.Serialized;
             // create Value-Child-Element with Dimensions as Children
-            var valueXElement = new XElement("Value",
-                new XAttribute("Key", attributeStaticname),
-                new XAttribute("Value", valueSerialized),
+            var valueXElement = new XElement(XmlConstants.ValueNode,// "Value",
+                new XAttribute(XmlConstants.ValueKeyAttr /*"Key"*/, attributeStaticname),
+                new XAttribute(XmlConstants.ValueValueAttr/*"Value"*/, valueSerialized),
                 !String.IsNullOrEmpty(attributeType) ? new XAttribute("Type", attributeType) : null,
-                dimensions?.Select(p => new XElement("Dimension",
-                        new XAttribute("DimensionId", p.DimensionId),
-                        new XAttribute("ReadOnly", p.ReadOnly)
+                dimensions?.Select(p => new XElement(XmlConstants.ValueDimNode/*"Dimension"*/,
+                        new XAttribute(XmlConstants.DimId/* "DimensionId"*/, p.DimensionId),
+                        new XAttribute(XmlConstants.ValueDimRoAttr/* "ReadOnly"*/, p.ReadOnly)
                     ))
                 );
 

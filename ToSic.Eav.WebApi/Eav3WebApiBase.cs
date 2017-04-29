@@ -15,14 +15,14 @@ namespace ToSic.Eav.WebApi
     {
 
         #region Helpers
-        internal IDataSource InitialDS => DataSource.GetInitialDataSource(appId: AppId);
+        //internal IDataSource InitialDS => DataSource.GetInitialDataSource(appId: AppId);
 
         internal AppManager AppManager => new AppManager(AppId);
 
-        internal IMetaDataSource MetaDS => DataSource.GetMetaDataSource(appId: AppId);
+        internal IMetaDataSource MetaDs => DataSource.GetMetaDataSource(appId: AppId);
 
-        internal DbDataController _context;
-	    internal DbDataController CurrentContext => _context ?? (_context = DbDataController.Instance(appId: AppId));
+        private DbDataController _dbContext;
+	    internal DbDataController CurrentContext => _dbContext ?? (_dbContext = DbDataController.Instance(appId: AppId));
 
         // I must keep the serializer so it can be configured from outside if necessary
 	    private Serializer _serializer;
@@ -78,21 +78,21 @@ namespace ToSic.Eav.WebApi
             if (appId.HasValue)
                 AppId = appId.Value;
 
-            if (string.IsNullOrWhiteSpace(CurrentContext.UserName))
-                SetUser(UserIdentityToken);
+            //if (string.IsNullOrWhiteSpace(CurrentContext.UserName))
+            //    SetUser(UserIdentityToken);
         }
 
-        private string _userTokenOverride = null;
-        public void SetUser(string userIdentityToken)
-        {
-            _userTokenOverride = userIdentityToken; // save for later
+        //private string _userTokenOverride = null;
+        //public void SetUser(string userIdentityToken)
+        //{
+        //    _userTokenOverride = userIdentityToken; // save for later
 
-            // if the context is already initialized, then set it directly (otherwise this will be called later)
-            if (_appId != EmptyAppId) // already initialized
-                CurrentContext.UserName = userIdentityToken;
-        }
+        //    // if the context is already initialized, then set it directly (otherwise this will be called later)
+        //    if (_appId != EmptyAppId) // already initialized
+        //        CurrentContext.UserName = userIdentityToken;
+        //}
 
-        internal string UserIdentityToken => _userTokenOverride ?? System.Web.HttpContext.Current.User.Identity.Name;
+        //internal string UserIdentityToken => _userTokenOverride ?? System.Web.HttpContext.Current.User.Identity.Name;
 
     }
 }

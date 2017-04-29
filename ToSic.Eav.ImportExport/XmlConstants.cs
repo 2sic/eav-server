@@ -55,9 +55,17 @@
         public const string FolderNodeId = "Id";
         public const string FolderNodePath = "RelativePath";
 
+        // Values
+        public const string ValueNode = "Value";
+        public const string ValueKeyAttr = "Key";
+        public const string ValueValueAttr = "Value";
+        public const string ValueDimNode = "Dimension";
+        // public const string ValueDimIdAttr = "DimensionId";
+        public const string ValueDimRoAttr = "ReadOnly";
+
         // Dimensions
-        public const string Dimensions = "Dimensions";
-        public const string Dim = "Dimension";
+        public const string DimensionDefinition = "Dimensions";
+        public const string DimensionDefElement = "Dimension";
         public const string DimId = "DimensionID";
         public const string Language = "Language";
         public const string LangDefault = "Default";
