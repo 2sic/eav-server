@@ -178,7 +178,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Update a Value 
         /// </summary>
-        internal void UpdateValue(ToSicEavEntities currentEntity, ToSicEavAttributes attribute, /*bool masterRecord,*/ List<ToSicEavValues> currentValues, /*IEntity entityModel,*/ ImpValueInside newValue, ICollection<int> dimensionIds)
+        internal void UpdateValue(ToSicEavEntities currentEntity, ToSicEavAttributes attribute, /*bool masterRecord,*/ List<ToSicEavValues> dbValues, /*IEntity entityModel,*/ ImpValueInside newValue, ICollection<int> dimensionIds)
         {
             switch (attribute.Type)
             {
@@ -189,7 +189,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     break;
                 // Handle simple values in Values-Table
                 default:
-                    UpdateSimpleValue(attribute, currentEntity, dimensionIds, /*masterRecord,*/ newValue.Value, newValue.ValueId, newValue.ReadOnly, currentValues/*, entityModel*/);
+                    UpdateSimpleValue(attribute, currentEntity, dimensionIds, /*masterRecord,*/ newValue.Value, newValue.ValueId, newValue.ReadOnly, dbValues/*, entityModel*/);
                     break;
             }
         }
@@ -197,13 +197,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Update a Value in the Values-Table
         /// </summary>
-        private ToSicEavValues UpdateSimpleValue(ToSicEavAttributes attribute, ToSicEavEntities entity, ICollection<int> dimensionIds, /*bool masterRecord,*/ object newValue, int? valueId, bool readOnly, List<ToSicEavValues> currentValues, /*IEntity entityModel,*/ IEnumerable<ImportExport.Models.ImpDims> valueDimensions = null)
+        private ToSicEavValues UpdateSimpleValue(ToSicEavAttributes attribute, ToSicEavEntities entity, ICollection<int> dimensionIds, /*bool masterRecord,*/ object newValue, int? valueId, bool readOnly, List<ToSicEavValues> dbValues, /*IEntity entityModel,*/ IEnumerable<ImportExport.Models.ImpDims> valueDimensions = null)
         {
             var newValueSerialized = HelpersToRefactor.SerializeValue(newValue);
             var changeId = DbContext.Versioning.GetChangeLogId();
 
             // Get Value or create new one
-            var value = GetOrCreateValue(attribute, entity, /*masterRecord,*/ valueId, readOnly, currentValues, /*entityModel,*/ newValueSerialized, changeId, valueDimensions);
+            var value = GetOrCreateValue(attribute, entity, /*masterRecord,*/ valueId, readOnly, dbValues, /*entityModel,*/ newValueSerialized, changeId, valueDimensions);
 
             #region Update DimensionIds on this and other values
 
@@ -279,20 +279,27 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Get an EavValue for specified EntityId etc. or create a new one. Uses different mechanism when running an Import or ValueId is specified.
         /// </summary>
-        private ToSicEavValues GetOrCreateValue(ToSicEavAttributes attribute, ToSicEavEntities entity, /*bool masterRecord,*/ int? valueId, bool readOnly, List<ToSicEavValues> currentValues, /*IEntity entityModel, */string newValueSerialized, int changeId, IEnumerable<ImportExport.Models.ImpDims> valueDimensions)
+        private ToSicEavValues GetOrCreateValue(ToSicEavAttributes attribute, ToSicEavEntities entity, /*bool masterRecord,*/ int? valueId, bool readOnly, List<ToSicEavValues> dbValues, /*IEntity entityModel, */string newValueSerialized, int changeId, IEnumerable<ImpDims> valueDimensions)
         {
             ToSicEavValues value = null;
             // if Import-Dimension(s) are Specified
             if (valueDimensions != null && valueDimensions.Any())
             {
                 // Get first value having first Dimension or add new value
-                value = currentValues.FirstOrDefault(v => v.ChangeLogDeleted == null && v.Attribute.StaticName == attribute.StaticName && v.ToSicEavValuesDimensions.Any(d => d.Dimension.ExternalKey.Equals(valueDimensions.First().DimensionExternalKey, StringComparison.InvariantCultureIgnoreCase))) ??
-                        AddValue(entity, attribute.AttributeId, newValueSerialized, autoSave: false);
+                value = dbValues.FirstOrDefault(v =>
+                            v.ChangeLogDeleted == null
+                            && v.Attribute.StaticName == attribute.StaticName
+                            && 
+
+                            (v.ToSicEavValuesDimensions.Any(d =>
+                                d.Dimension.ExternalKey.Equals(valueDimensions.First().DimensionExternalKey,
+                                    StringComparison.InvariantCultureIgnoreCase))))
+                        ?? AddValue(entity, attribute.AttributeId, newValueSerialized, autoSave: false);
             }
             // if ValueId & EntityId is specified, use this Value
             else if (valueId.HasValue && entity.EntityId != 0)
             {
-                value = currentValues.Single(v => v.ValueId == valueId.Value && v.Attribute.StaticName == attribute.StaticName);
+                value = dbValues.Single(v => v.ValueId == valueId.Value && v.Attribute.StaticName == attribute.StaticName);
                 // If Master, ensure ValueId is from Master!
 
                 // 2017-04-25 deep dependency on an IEntity, slowing down import dramatically, must change
@@ -306,7 +313,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             {
                 //2017-04-25 2dm disabled this, masterRecord is always true
                 // if (masterRecord) // if true, don't create new Value (except no one exists)
-                value = currentValues.Where(v => v.AttributeId == attribute.AttributeId).OrderBy(a => a.ChangeLogCreated).FirstOrDefault();
+                value = dbValues.Where(v => v.AttributeId == attribute.AttributeId).OrderBy(a => a.ChangeLogCreated).FirstOrDefault();
 
                 // if no Value found, create new one
                 if (value == null)

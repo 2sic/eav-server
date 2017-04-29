@@ -27,6 +27,8 @@ namespace ToSic.Eav.Repository.Efc.Tests
             { "qr", new AppImportDef() { Name = "QR Code", Guid = "55e57a39-e506-416a-aed0-1c7459d31e86", Zip = "2sxcApp_QRCode_01.00.03.zip"}}
 
         };
+
+        // just a note: this is Portal 54 or something on Daniels test server, change it to your system if you want to run these tests!
         public const int ZoneId = 56;
 
         #endregion

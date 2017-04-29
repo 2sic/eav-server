@@ -13,7 +13,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Get Attributes of an AttributeSet
         /// </summary>
-        public IQueryable<ToSicEavAttributes> GetAttributes(int attributeSetId)
+        public IQueryable<ToSicEavAttributes> GetAttributeDefinitions(int attributeSetId)
         {
             attributeSetId = DbContext.AttribSet.ResolveAttributeSetId(attributeSetId);
 

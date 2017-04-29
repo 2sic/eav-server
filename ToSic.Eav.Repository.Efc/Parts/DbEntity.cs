@@ -280,16 +280,23 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 dimensionIds = new List<int>(0);
 
             // Load all Attributes and current Values - .ToList() to prevent (slow) lazy loading
-            var attributes = DbContext.Attributes.GetAttributes(entity.AttributeSetId).ToList();
-            var currentValues = entity.EntityId != 0 ? DbContext.SqlDb.ToSicEavValues.Include(x => x.Attribute).Include(x => x.ToSicEavValuesDimensions).Where(v => v.EntityId == entity.EntityId).ToList() : entity.ToSicEavValues.ToList();
+            var attributes = DbContext.Attributes.GetAttributeDefinitions(entity.AttributeSetId).ToList();
+            var dbValues = entity.EntityId != 0
+                ? DbContext.SqlDb.ToSicEavValues
+                    .Include(x => x.Attribute)
+                    .Include(x => x.ToSicEavValuesDimensions)
+                        .ThenInclude(d => d.Dimension)
+                    .Where(v => v.EntityId == entity.EntityId && v.ChangeLogDeleted == null)
+                    .ToList()
+                : entity.ToSicEavValues.ToList();
 
             // Update Values from Import Model
             var newValuesImport = newValues as Dictionary<string, List<IImpValue>>;
             if (newValuesImport != null)
-                UpdateEntityFromImportModel(entity, newValuesImport, updateLog, attributes, currentValues, preserveUndefinedValues);
+                UpdateEntityFromImportModel(entity, newValuesImport, updateLog, attributes, dbValues, preserveUndefinedValues);
             // Update Values from ValueViewModel
             else
-                UpdateEntityDefault(entity, newValues, dimensionIds/*, masterRecord*/, attributes, currentValues);
+                UpdateEntityDefault(entity, newValues, dimensionIds/*, masterRecord*/, attributes, dbValues);
 
 
             entity.ChangeLogModified = DbContext.Versioning.GetChangeLogId();
@@ -384,7 +391,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Update an Entity when not using the Import
         /// </summary>
-        private void UpdateEntityDefault(ToSicEavEntities entity, IDictionary newValues, ICollection<int> dimensionIds, /*bool masterRecord,*/ List<ToSicEavAttributes> attributes, List<ToSicEavValues> currentValues)
+        private void UpdateEntityDefault(ToSicEavEntities entity, IDictionary newValues, ICollection<int> dimensionIds, /*bool masterRecord,*/ List<ToSicEavAttributes> attributes, List<ToSicEavValues> dbValues)
         {
             //var entityModel = entity.EntityId != 0 ? new Efc11Loader(DbContext.SqlDb).Entity(DbContext.AppId, entity.EntityId) : null;
             var newValuesTyped = DictionaryToValuesViewModel(newValues);
@@ -392,7 +399,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             {
                 var attribute = attributes.FirstOrDefault(a => a.StaticName == newValue.Key);
                 if(attribute != null)
-                    DbContext.Values.UpdateValue(entity, attribute, /*masterRecord,*/ currentValues, /*entityModel,*/ newValue.Value, dimensionIds);
+                    DbContext.Values.UpdateValue(entity, attribute, /*masterRecord,*/ dbValues, /*entityModel,*/ newValue.Value, dimensionIds);
             }
 
             #region if Dimensions are specified, purge/remove specified dimensions for Values that are not in newValues
