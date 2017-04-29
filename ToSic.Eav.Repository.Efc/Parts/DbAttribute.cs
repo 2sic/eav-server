@@ -11,40 +11,12 @@ namespace ToSic.Eav.Repository.Efc.Parts
     {
         public DbAttribute(DbDataController cntx) : base(cntx) {}
 
-        /// <summary>
-        /// Get Attributes of an AttributeSet
-        /// </summary>
-        internal IQueryable<ToSicEavAttributes> GetAttributeDefinitions(int attributeSetId)
-        {
-            attributeSetId = DbContext.AttribSet.ResolvePotentialGhostAttributeSetId(attributeSetId);
-
-            return from ais in DbContext.SqlDb.ToSicEavAttributesInSets
-                   where ais.AttributeSetId == attributeSetId
-                   orderby ais.SortOrder
-                   select ais.Attribute;
-        }
-
-
-
-
-
-        /// <summary>
-        /// Get a list of all Attributes in Set for specified AttributeSetId
-        /// </summary>
-        public List<ToSicEavAttributesInSets> GetAttributesInSet(int attributeSetId)
-        {
-            return DbContext.SqlDb.ToSicEavAttributesInSets
-                .Include(ais => ais.Attribute)
-                .Where(a => a.AttributeSetId == attributeSetId)
-                .OrderBy(a => a.SortOrder)
-                .ToList();
-        }
 
 
         /// <summary>
         /// Set an Attribute as Title on an AttributeSet
         /// </summary>
-        public void SetTitleAttribute(int attributeId, int attributeSetId)
+        public void SetTitleAttributeAndSave(int attributeId, int attributeSetId)
         {
             DbContext.SqlDb.ToSicEavAttributesInSets
                 .Single(a => a.AttributeId == attributeId && a.AttributeSetId == attributeSetId).IsTitle = true;
@@ -61,7 +33,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Set an Attribute as Title on an AttributeSet
         /// </summary>
-        public void RenameStaticName(int attributeId, int attributeSetId, string newName)
+        public void RenameStaticNameAndSave(int attributeId, int attributeSetId, string newName)
         {
             if(string.IsNullOrWhiteSpace(newName))
                 throw new Exception("can't rename to something empty");
@@ -171,20 +143,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
             return newAttribute.AttributeId;
         }
 
-        /// <summary>
-        /// Check if a valid, undeleted attribute-set exists
-        /// </summary>
-        /// <param name="attributeSetId"></param>
-        /// <param name="staticName"></param>
-        /// <returns></returns>
-        internal bool AttributeExistsInSet(int attributeSetId, string staticName)
-        {
-            return DbContext.SqlDb.ToSicEavAttributesInSets.Any(s =>
-                s.Attribute.StaticName == staticName 
-                && !s.Attribute.ChangeLogDeleted.HasValue 
-                && s.AttributeSetId == attributeSetId 
-                && s.AttributeSet.AppId == DbContext.AppId);
-        }
 
         /// <summary>
         /// Append a new Attribute to an AttributeSet
@@ -272,7 +230,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         {
             var fieldPropertyEntity = DbContext.SqlDb.ToSicEavEntities.FirstOrDefault(e => e.AssignmentObjectTypeId == Constants.MetadataForField && e.KeyNumber == attributeId);
             if (fieldPropertyEntity != null)
-                return DbContext.Entities.UpdateEntity(fieldPropertyEntity.EntityId, fieldProperties/*, masterRecord:true*/);
+                return DbContext.Entities.SaveEntity(fieldPropertyEntity.EntityId, fieldProperties/*, masterRecord:true*/);
 
             var metaDataSetName = isAllProperty ? "@All" : "@" + DbContext.SqlDb.ToSicEavAttributes.Single(a => a.AttributeId == attributeId).Type;
             var systemScope = AttributeScope.System.ToString();
@@ -286,7 +244,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
 
         // todo: add security check if it really is in this app and content-type
-        public bool RemoveAttributeAndAllValues(int attributeId)
+        public bool RemoveAttributeAndAllValuesAndSave(int attributeId)
         {
             // Remove values and valueDimensions of this attribute
             var values = DbContext.SqlDb.ToSicEavValues
@@ -310,11 +268,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
         }
 
 
-        // new parts
-        public string[] DataTypeNames(int appId)
-        {
-            return DbContext.SqlDb.ToSicEavAttributeTypes.OrderBy(a => a.Type).Select(a => a.Type).ToArray();
-        }
 
     }
 }

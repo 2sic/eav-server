@@ -95,18 +95,15 @@ namespace ToSic.Eav.Repository.Efc.Parts
             // Prevent duplicate add of FieldProperties
             if (keyTypeId == Constants.MetadataForField && keyNumber.HasValue)
             {
-                var foundThisMetadata =
-                    GetAssignedEntities(Constants.MetadataForField, keyNumber.Value)
+                var foundThisMetadata = GetAssignedEntities(Constants.MetadataForField, keyNumber.Value)
                         .FirstOrDefault(e => e.AttributeSetId == attributeSetId);
                 if (foundThisMetadata != null)
-                {
                     existingEntityId = foundThisMetadata.EntityId;
-                }
-
             }
 
             var changeId = DbContext.Versioning.GetChangeLogId();
 
+            #region generate brand-new entity if non exists yet
             if (existingEntityId == 0)
             {
                 var newEntity = new ToSicEavEntities
@@ -128,18 +125,16 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 };
 
                 DbContext.SqlDb.Add(newEntity);
-
                 DbContext.SqlDb.SaveChanges();
                 existingEntityId = newEntity.EntityId;
             }
+            #endregion
 
-            var updatedEntity = UpdateEntity(existingEntityId, values, /*masterRecord: true,*/ dimensionIds: dimensionIds, autoSave: false, updateLog: updateLog, isPublished: isPublished);
+            return SaveEntity(existingEntityId, values, /*masterRecord: true,*/ dimensionIds: dimensionIds, autoSave: false, updateLog: updateLog, isPublished: isPublished);
 
-            DbContext.SqlDb.SaveChanges();
-
-            DbContext.Versioning.SaveEntity(updatedEntity.EntityId, updatedEntity.EntityGuid, true);
-
-            return updatedEntity;
+            //DbContext.SqlDb.SaveChanges();
+            //DbContext.Versioning.SaveEntity(updatedEntity.EntityId, updatedEntity.EntityGuid, true);
+            //return updatedEntity;
         }
 
         #endregion
@@ -177,7 +172,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <param name="isPublished">Is this Entity Published or a draft</param>
         /// <param name="forceNoBranch">this forces the published-state to be applied to the original, without creating a draft-branhc</param>
         /// <returns>the updated Entity</returns>
-        public ToSicEavEntities UpdateEntity(int repositoryId, IDictionary newValues, bool autoSave = true, ICollection<int> dimensionIds = null, /*bool masterRecord = true,*/ List<ImportLogItem> updateLog = null, bool preserveUndefinedValues = true, bool isPublished = true, bool forceNoBranch = false)
+        public ToSicEavEntities SaveEntity(int repositoryId, IDictionary newValues, bool autoSave = true, ICollection<int> dimensionIds = null, /*bool masterRecord = true,*/ List<ImportLogItem> updateLog = null, bool preserveUndefinedValues = true, bool isPublished = true, bool forceNoBranch = false)
         {
             var entity = DbContext.SqlDb.ToSicEavEntities.Single(e => e.EntityId == repositoryId);
             var draftEntityId = DbContext.Publishing.GetDraftEntityId(repositoryId);
@@ -185,19 +180,15 @@ namespace ToSic.Eav.Repository.Efc.Parts
             #region Unpublished Save (Draft-Saves)
             // Current Entity is published but Update as a draft
             if (entity.IsPublished && !isPublished && !forceNoBranch)
-            {
                 // Prevent duplicate Draft
-                if (draftEntityId.HasValue)
-                    throw new InvalidOperationException(
-                        $"Published EntityId {repositoryId} has already a draft with EntityId {draftEntityId}");
+                throw draftEntityId.HasValue
+                    ? new InvalidOperationException($"Published EntityId {repositoryId} has already a draft with EntityId {draftEntityId}")
+                    : new InvalidOperationException("It seems you're trying to update a published entity with a draft - this is not possible - the save should actually try to create a new draft instead without calling update.");
 
-                throw new InvalidOperationException("It seems you're trying to update a published entity with a draft - this is not possible - the save should actually try to create a new draft instead without calling update.");
-            }
             // Prevent editing of Published if there's a draft
-            else if (entity.IsPublished && draftEntityId.HasValue)
-            {
+            if (entity.IsPublished && draftEntityId.HasValue)
                 throw new Exception($"Update Entity not allowed because a draft exists with EntityId {draftEntityId}");
-            }
+
             #endregion
 
             #region If draft but should be published, correct what's necessary

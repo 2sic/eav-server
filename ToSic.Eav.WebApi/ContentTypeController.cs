@@ -232,21 +232,21 @@ namespace ToSic.Eav.WebApi
 	    public bool DeleteField(int appId, int contentTypeId, int attributeId)
 	    {
             SetAppIdAndUser(appId);
-            return CurrentContext.Attributes.RemoveAttributeAndAllValues(attributeId);
+            return CurrentContext.Attributes.RemoveAttributeAndAllValuesAndSave(attributeId);
 	    }
 
         [HttpGet]
 	    public void SetTitle(int appId, int contentTypeId, int attributeId)
 	    {
             SetAppIdAndUser(appId);
-            CurrentContext.Attributes.SetTitleAttribute(attributeId, contentTypeId);
+            CurrentContext.Attributes.SetTitleAttributeAndSave(attributeId, contentTypeId);
 	    }
 
         [HttpGet]
         public bool Rename(int appId, int contentTypeId, int attributeId, string newName)
         {
             SetAppIdAndUser(appId);
-            CurrentContext.Attributes.RenameStaticName(attributeId, contentTypeId, newName);
+            CurrentContext.Attributes.RenameStaticNameAndSave(attributeId, contentTypeId, newName);
             return true;
         }
 

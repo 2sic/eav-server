@@ -373,7 +373,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     .ToDictionary(v => v.Key, v => v.Value);
 
             // todo: TestImport - ensure that the EntityId of this is what previously was the RepositoryID
-            _context.Entities.UpdateEntity(editableVersionOfTheEntity.EntityId/*RepositoryId*/, newValues, /*masterRecord:true,*/ updateLog: _importLog,
+            _context.Entities.SaveEntity(editableVersionOfTheEntity.EntityId/*RepositoryId*/, newValues, /*masterRecord:true,*/ updateLog: _importLog,
                 preserveUndefinedValues: _keepAttributesMissingInImport, isPublished: impEntity.IsPublished, forceNoBranch: impEntity.ForceNoBranch);
 
             #endregion
