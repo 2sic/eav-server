@@ -17,15 +17,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.TokenEngine", "To
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.WebApi", "ToSic.Eav.WebApi\ToSic.Eav.WebApi.csproj", "{F93F5FB1-95A6-4C4B-BDCF-B001E82F766F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.Persistence.EF4", "ToSic.Eav.Persistence.EF4\ToSic.Eav.Persistence.EF4.csproj", "{4A899869-AC44-44A4-8733-395D549F6297}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.Ui", "..\eav\ToSic.Eav.Ui.csproj", "{B0E86C3B-C791-4544-9B81-707F28196680}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.DataSources.Tests", "ToSic.Eav.DataSources.Tests\ToSic.Eav.DataSources.Tests.csproj", "{C212A78C-25BB-4A77-AFBB-B5939352CE36}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.Apps", "ToSic.Eav.AppEngine\ToSic.Eav.Apps.csproj", "{FA1B4495-6B85-400F-A5E3-0E292CCBFAE2}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.Repository.EF4", "ToSic.Eav.Repository.EF4\ToSic.Eav.Repository.EF4.csproj", "{5982EBC4-FF32-4651-B996-745BE498E526}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToSic.Eav.Persistence.Efc", "ToSic.Eav.Persistence.EFC11\ToSic.Eav.Persistence.Efc.csproj", "{0B6F21C6-E066-419E-9A6B-C34FFD668A16}"
 EndProject
@@ -88,9 +84,6 @@ Global
 		{F93F5FB1-95A6-4C4B-BDCF-B001E82F766F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F93F5FB1-95A6-4C4B-BDCF-B001E82F766F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F93F5FB1-95A6-4C4B-BDCF-B001E82F766F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4A899869-AC44-44A4-8733-395D549F6297}.debug eav only|Any CPU.ActiveCfg = debug eav only|Any CPU
-		{4A899869-AC44-44A4-8733-395D549F6297}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4A899869-AC44-44A4-8733-395D549F6297}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B0E86C3B-C791-4544-9B81-707F28196680}.debug eav only|Any CPU.ActiveCfg = Debug|Any CPU
 		{B0E86C3B-C791-4544-9B81-707F28196680}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B0E86C3B-C791-4544-9B81-707F28196680}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -104,9 +97,6 @@ Global
 		{FA1B4495-6B85-400F-A5E3-0E292CCBFAE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FA1B4495-6B85-400F-A5E3-0E292CCBFAE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FA1B4495-6B85-400F-A5E3-0E292CCBFAE2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5982EBC4-FF32-4651-B996-745BE498E526}.debug eav only|Any CPU.ActiveCfg = debug eav only|Any CPU
-		{5982EBC4-FF32-4651-B996-745BE498E526}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5982EBC4-FF32-4651-B996-745BE498E526}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0B6F21C6-E066-419E-9A6B-C34FFD668A16}.debug eav only|Any CPU.ActiveCfg = debug eav only|Any CPU
 		{0B6F21C6-E066-419E-9A6B-C34FFD668A16}.debug eav only|Any CPU.Build.0 = debug eav only|Any CPU
 		{0B6F21C6-E066-419E-9A6B-C34FFD668A16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

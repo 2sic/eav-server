@@ -1,8 +1,0 @@
-﻿
-Note: you may wonder why we have a folder called "Persistence" in this small projcet. 
-
-This is historical, because the connection string this object receives contains a sequence something like /Persistence/EavContext... in the medatata. 
-
-Because of that, the model only works (with that connection string) if it is in such a folder. We don't want to change the connection string, 
-
-...so the object must be in this folder, EVEN IF IT'S NOT IN THIS NAMESPACE
