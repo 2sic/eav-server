@@ -2,14 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-//using Microsoft.Practices.Unity;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Implementations.UserInformation;
-using ToSic.Eav.Implementations.ValueConverter;
 using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Options;
-using ToSic.Eav.Repository.EF4.Parts;
-
+using ToSic.Eav.Repository.Efc.Parts;
 
 namespace ToSic.Eav.UnitTests.ImportExport.Refactoring
 {

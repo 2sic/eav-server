@@ -75,6 +75,9 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="ToSic.Eav">
+      <HintPath>..\..\2SexyContent\Web\DesktopModules\ToSIC_SexyContent\Bin\ToSic.Eav.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />

@@ -21,8 +21,8 @@ namespace ToSic.Eav.WebApi
 
             // todo: continue here!
             //var ct = CurrentContext.AttribSet.GetAttributeSetWithEitherName(contentType);
+
             var contentTypeId = CurrentContext.AttribSet.GetAttributeSetIdWithEitherName(contentType);// ct.AttributeSetId;// AttributeSetID;
-            var contentTypeName = contentType;// 2017-04-23 2dm check! ct.Name;
             var contextLanguages = CurrentContext.Dimensions.GetLanguagesExtNames();// GetContextLanguages();
 
             // check if we have an array of ids
@@ -38,17 +38,19 @@ namespace ToSic.Eav.WebApi
             }
 
             var tableExporter = new DbXmlExportTable(CurrentContext);
+            tableExporter.Init(contentTypeId);
             var fileContent = exportSelection == ExportSelection.Blank
-                ? tableExporter.SchemaXmlFromDb(contentTypeId) 
-                : tableExporter.TableXmlFromDb(contentTypeId, language ?? "", defaultLanguage, contextLanguages, exportLanguageReferences, exportResourcesReferences, ids);
+                ? tableExporter.EmptySchemaXml() 
+                : tableExporter.TableXmlFromDb(language ?? "", defaultLanguage, contextLanguages, exportLanguageReferences, exportResourcesReferences, ids);
 
+            var contentTypeName = tableExporter.NiceContentTypeName;// 2017-04-23 2dm check! ct.Name;
             var fileName = $"2sxc {contentTypeName.Replace(" ", "-")} {language} {(exportSelection == ExportSelection.Blank ? "Template" : "Data")} {DateTime.Now:yyyyMMddHHmmss}.xml";
 
-            var response = new HttpResponseMessage(HttpStatusCode.OK);
-            response.Content = new StringContent(fileContent);
+            var response = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(fileContent)
+            };
             response.Content.Headers.ContentType = new MediaTypeHeaderValue("text/xml");
-            // 2rm 2016-02-27 removed, probably caused truncating issues
-            //response.Content.Headers.ContentLength = fileContent.Length;
             response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment") {
                 FileName = fileName
             };

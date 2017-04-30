@@ -24,36 +24,44 @@ namespace ToSic.Eav.Repository.Efc.Parts
         {
         }
 
+        /// <param name="contentTypeId">ID of type</param>
+        public void Init(int contentTypeId)
+        {
+            ContentType = DbContext.AttribSet.GetAttributeSet(contentTypeId);
+        }
+
+        private ToSicEavAttributeSets ContentType { get; set; }
+
+        public string NiceContentTypeName => ContentType.Name; 
+
+
         /// <summary>
         /// Create a blank xml scheme for data of one content-type
         /// </summary>
-        /// <param name="contentTypeId">ID of type</param>
         /// <returns>A string containing the blank xml scheme</returns>
-        public string SchemaXmlFromDb(int contentTypeId)
+        public string EmptySchemaXml()
         {
-            var contentType = DbContext.AttribSet.GetAttributeSet(contentTypeId);
-            if (contentType == null) 
+            if (ContentType == null) 
                 return null;
 
             // build two emtpy nodes for easier filling in by the user
-            var firstRow = _xBuilder.BuildEntity("", "", contentType.Name);
-            var secondRow = _xBuilder.BuildEntity("", "", contentType.Name);
+            var firstRow = _xBuilder.BuildEntity("", "", ContentType.Name);
+            var secondRow = _xBuilder.BuildEntity("", "", ContentType.Name);
             var rootNode = _xBuilder.BuildDocumentWithRoot(firstRow, secondRow);
 
-            var attributes = contentType.GetAttributes();
+            var attributes = ContentType.GetAttributes();
             foreach (var attribute in attributes)
             {
                 firstRow.Append(attribute.StaticName, "");
                 secondRow.Append(attribute.StaticName, "");  
             }
 
-            return rootNode.Document.ToString();
+            return rootNode.Document?.ToString();
         }
 
         /// <summary>
-        /// Serialize 2SexyContent data to an xml string.
+        /// Serialize data to an xml string.
         /// </summary>
-        /// <param name="contentTypeId">ID of 2SexyContent type</param>
         /// <param name="languageSelected">Language of the data to be serialized (null for all languages)</param>
         /// <param name="languageFallback">Language fallback of the system</param>
         /// <param name="languageScope">Languages supported of the system</param>
@@ -61,75 +69,71 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <param name="exportResourceReference">How value references to files and pages are handled</param>
         /// <param name="selectedIds">array of IDs to export only these</param>
         /// <returns>A string containing the xml data</returns>
-        public string TableXmlFromDb(int contentTypeId, string languageSelected, string languageFallback, IEnumerable<string> languageScope, ExportLanguageResolution exportLanguageReference, ExportResourceReferenceMode exportResourceReference, int[] selectedIds)
+        public string TableXmlFromDb(string languageSelected, string languageFallback, string[] languageScope, ExportLanguageResolution exportLanguageReference, ExportResourceReferenceMode exportResourceReference, int[] selectedIds)
         {
-            var contentType = DbContext.AttribSet.GetAttributeSet(contentTypeId);
-            if (contentType == null)
-                return null;
+            if (ContentType == null) return null;
 
             var languages = new List<string>();
-            if (!string.IsNullOrEmpty(languageSelected))
-            {
-                languages.Add(languageSelected);
-            }
+            if (!string.IsNullOrEmpty(languageSelected))// only selected language
+                languages.Add(languageSelected);    
             else if (languageScope.Any())
-            {   // Export all languages
-                languages.AddRange(languageScope);
-            }
+                languages.AddRange(languageScope);// Export all languages
             else
-            {
-                languages.Add(string.Empty);
-            }
+                languages.Add(string.Empty); // default
 
-            //var documentRoot = BuildDocumentRoot(null);
-            //var document = _xBuilder.BuildDocument(documentRoot);
             var documentRoot = _xBuilder.BuildDocumentWithRoot();
 
-            var entities = contentType.ToSicEavEntities.Where(entity => entity.ChangeLogDeleted == null);
+            // Query all entities, or just the ones with specified IDs
+            var entities = DbContext.Entities.GetEntitiesByType(ContentType);
             if (selectedIds != null && selectedIds.Length > 0)
                 entities = entities.Where(e => selectedIds.Contains(e.EntityId));
+            var entList = entities.ToList();
 
-            foreach (var entity in entities)
+            // Get the attribute definitions
+            var attribsOfType = DbContext.Attributes.GetAttributeDefinitions(ContentType.AttributeSetId).ToList();
+
+            var DbXml = new DbXmlBuilder(DbContext);
+            foreach (var entity in entList)
             {
+                var relationships = DbXml.GetSerializedRelationshipGuids(entity.EntityId);
 
                 foreach (var language in languages)
                 {
-                    var documentElement = _xBuilder.BuildEntity(entity.EntityGuid, language, contentType.Name);
+                    var documentElement = _xBuilder.BuildEntity(entity.EntityGuid, language, ContentType.Name);
                     documentRoot.Add(documentElement);
-                    
-                    var attributes = contentType.GetAttributes();
+
+                    var attributes = attribsOfType;
                     foreach (var attribute in attributes)
                     {
-                        if (attribute.Type == "Entity")
-                        {   // Handle separately
-                            AppendEntityReferences(documentElement, entity, attribute);
-                            // documentElement.AppendEntityReferences(entity, attribute);
-                        }
+                        if (attribute.Type == "Entity") // Special, handle separately
+                            AppendEntityReferences(documentElement, attribute.StaticName, relationships.ContainsKey(attribute.StaticName) ? relationships[attribute.StaticName]:"");// entity, attribute);
                         else if (exportLanguageReference == ExportLanguageResolution.Resolve)
-                        {
-                            AppendValueResolved(documentElement, entity, attribute, language, languageFallback, exportResourceReference);
-                            //documentElement.AppendValueResolved(entity, attribute, language, languageFallback, resourceReference);
-                        }
+                            AppendValueResolved(documentElement, entity, attribute, language, languageFallback,
+                                exportResourceReference);
                         else
-                        {
-                            AppendValueReferenced(documentElement, entity, attribute, language, languageFallback, languageScope, languages.Count > 1, exportResourceReference);
-                            //documentElement.AppendValueReferenced(entity, attribute, language, languageFallback, languageScope, languages.Count > 1, resourceReference);
-                        }
+                            AppendValueReferenced(documentElement, entity, attribute, language, languageFallback,
+                                languageScope, languages.Count > 1, exportResourceReference);
                     }
                 }
             }
 
-            return documentRoot.Document.ToString();// document.ToString();
+            return documentRoot.Document?.ToString();// document.ToString();
         }
 
         #region Helpers to assemble the xml
 
-        private void AppendEntityReferences(XElement element, ToSicEavEntities entity, ToSicEavAttributes attribute)
+        private void AppendEntityReferences(XElement element, string attrName, string entityGuidsString)// ToSicEavEntities entity, ToSicEavAttributes attribute)
         {
-            var entityGuids = attribute.ToSicEavEntityRelationships.Where(rel => rel.ParentEntityId == entity.EntityId)
-                                                                     .Select(rel => rel.ChildEntity.EntityGuid);
-            var entityGuidsString = string.Join(",", entityGuids);
-            element.Append(attribute.StaticName, entityGuidsString);
+            // note: minimal duplicate code for guid-serialization w/XmlExport & DbXmlExportTable
+            //var relationships = DbContext.Relationships.GetRelationshipsOfParent(entity.EntityId)
+            //    .Where(r => r.Attribute == attribute)
+            //    .OrderBy(r => r.SortOrder)
+            //    .ToList();
+
+            //var entityGuidsString = string.Join(",", 
+            //    relationships.Select(x =>  x.ChildEntity?.EntityGuid.ToString() ?? Constants.EmptyRelationship));
+
+            element.Append(attrName, entityGuidsString);
         }
 
         /// <summary>

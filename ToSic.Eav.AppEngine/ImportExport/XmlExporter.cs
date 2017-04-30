@@ -281,23 +281,6 @@ namespace ToSic.Eav.Apps.ImportExport
                 }
             }
 
-            // 2017-04-11 2dm moved to Get...uncached
-	        //if (e.KeyGuid.HasValue)
-		       // entityXElement.Add(new XAttribute("KeyGuid", e.KeyGuid));
-         //   if (e.KeyNumber.HasValue)
-         //       entityXElement.Add(new XAttribute("KeyNumber", e.KeyNumber));
-         //   if (!string.IsNullOrEmpty(e.KeyString))
-         //       entityXElement.Add(new XAttribute("KeyString", e.KeyString));
-
-            //return new XElement("Entity",
-            //    new XAttribute("AssignmentObjectType", e.AssignmentObjectType.Name),
-            //    new XAttribute("AttributeSetStaticName", attributeSet.StaticName),
-            //    new XAttribute("AttributeSetName", attributeSet.Name),
-            //    new XAttribute("EntityGUID", e.EntityGuid),
-            //    from c in Sexy.ContentContext.GetValues(e.EntityId)
-            //    where c.ChangeLogDeleted == null
-            //    select GetAttributeValueXElement(c.Attribute.StaticName, c, c.Attribute.Type, attributeSet));
-
             return entityXElement;
         }
 

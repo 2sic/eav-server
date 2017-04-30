@@ -31,7 +31,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// Get a single AttributeSet
         /// </summary>
         public ToSicEavAttributeSets GetAttributeSet(int attributeSetId)
-            => DbContext.SqlDb.ToSicEavAttributeSets.SingleOrDefault(
+            => DbContext.SqlDb.ToSicEavAttributeSets
+            .SingleOrDefault(
                 a => a.AttributeSetId == attributeSetId
                      && a.AppId == DbContext.AppId
                      && !a.ChangeLogDeleted.HasValue);
@@ -45,7 +46,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                      && a.AppId == DbContext.AppId
                      && !a.ChangeLogDeleted.HasValue);
 
-        private ToSicEavAttributeSets GetAttributeSetWithEitherName(string name)
+        public ToSicEavAttributeSets GetAttributeSetWithEitherName(string name)
         {
             var appId = DbContext.AppId;
 

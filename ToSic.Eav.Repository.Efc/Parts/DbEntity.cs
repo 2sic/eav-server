@@ -50,6 +50,16 @@ namespace ToSic.Eav.Repository.Efc.Parts
             .Where(e => e.EntityGuid == entityGuid && !e.ChangeLogDeleted.HasValue &&
                 !e.AttributeSet.ChangeLogDeleted.HasValue && e.AttributeSet.AppId == DbContext.AppId);
 
+
+        internal IQueryable<ToSicEavEntities> GetEntitiesByType(ToSicEavAttributeSets set)
+        {
+            return DbContext.SqlDb.ToSicEavEntities
+                .Include(e => e.RelationshipsWithThisAsParent)
+                .Include(e => e.RelationshipsWithThisAsChild)
+                .Include(e => e.ToSicEavValues)
+                .Where(e => e.AttributeSet == set);
+        }
+
         /// <summary>
         /// Test whether Entity exists on current App and is not deleted
         /// </summary>

@@ -46,12 +46,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 .Select(e => new {Key = e.Attribute.StaticName, e.Attribute.TypeNavigation.Type, e.Value, Dimensions = e.ToSicEavValuesDimensions });
             var valuesXElement = values.Select(v => XmlValue(v.Key, v.Value, v.Type, v.Dimensions));
 
-            var relationships = DbContext.Relationships.GetRelationshipsOfParent(entityId)
-                .GroupBy(r => r.Attribute.StaticName)
-                .Select(r => new {
-                    r.Key,
-                    Value = string.Join(",", r.Select(x => x.ChildEntity?.EntityGuid.ToString() ?? Constants.EmptyRelationship))
-                }).ToList();
+            // note: minimal duplicate code for guid-serialization w/XmlExport & DbXmlExportTable
+            var relationships = GetSerializedRelationshipGuids(entityId);
+
             var relsXElement = relationships.Select(r => XmlValue(r.Key, r.Value, "Entity", null));
 
             // create Entity-XElement
@@ -73,6 +70,22 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             return entityXElement;
         }
+
+	    internal Dictionary<string, string> GetSerializedRelationshipGuids(int entityId)
+	    {
+	        var relationships = DbContext.Relationships.GetRelationshipsOfParent(entityId)
+	            .GroupBy(r => r.Attribute.StaticName)
+	            .ToDictionary(r => r.Key, r =>
+	                    // new {
+	                    //    r.Key,
+	                    //    Value = 
+	                        string.Join(",", r
+	                            .OrderBy(a => a.SortOrder)
+	                            .Select(x => x.ChildEntity?.EntityGuid.ToString() ?? Constants.EmptyRelationship))
+	                //}
+	            );
+	        return relationships;
+	    }
 
 	    private ToSicEavAttributeSets GetAttributeSetDefinitionFromCache(int attributeSetId)
 	    {

@@ -111,7 +111,6 @@
     <Compile Include="DataSources\Paging_Test.cs" />
     <Compile Include="Data\ContentType_Test.cs" />
     <Compile Include="Data\Entity_Test.cs" />
-    <Compile Include="Ef4LoadTests.cs" />
     <Compile Include="ImportExport\Refactoring\XmlExport_Test.cs" />
     <Compile Include="ImportExport\Refactoring\XmlImport_Test.cs" />
     <Compile Include="InitializeTests.cs" />
@@ -155,6 +154,14 @@
     <ProjectReference Include="..\ToSic.Eav.ImportExport\ToSic.Eav.ImportExport.csproj">
       <Project>{5a75cd35-99f4-4cf0-944a-dc0f5d68b430}</Project>
       <Name>ToSic.Eav.ImportExport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ToSic.Eav.Persistence.EFC11\ToSic.Eav.Persistence.Efc.csproj">
+      <Project>{0b6f21c6-e066-419e-9a6b-c34ffd668a16}</Project>
+      <Name>ToSic.Eav.Persistence.Efc</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ToSic.Eav.Repository.Efc\ToSic.Eav.Repository.Efc.csproj">
+      <Project>{2bba13d2-f6d2-443b-b7c8-8f4c31432c03}</Project>
+      <Name>ToSic.Eav.Repository.Efc</Name>
     </ProjectReference>
     <ProjectReference Include="..\ToSic.Eav.Tokens\ToSic.Eav.TokenEngine.csproj">
       <Project>{2a81f269-8cca-4afd-a85f-82b1c2343965}</Project>

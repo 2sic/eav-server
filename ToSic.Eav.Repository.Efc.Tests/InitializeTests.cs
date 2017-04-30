@@ -2,12 +2,14 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Implementations.UserInformation;
 using ToSic.Eav.Implementations.ValueConverter;
 using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.Persistence.Efc.Diagnostics;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repository.Efc.Tests.Mocks;
+using ToSic.SexyContent.ImportExport;
 
 namespace ToSic.Eav.Repository.Efc.Tests
 {
@@ -30,9 +32,12 @@ namespace ToSic.Eav.Repository.Efc.Tests
             Configuration.SetConnectionString(conStr);
             Factory.ActivateNetCoreDi(sc =>
             {
-                sc.AddTransient<IImportExportEnvironment, ImportExportEnvironmentMock>();
                 sc.AddTransient<IEavValueConverter, NeutralValueConverter>();//new InjectionConstructor());
                 sc.AddTransient<IEavUserInformation, NeutralEavUserInformation>();//new InjectionConstructor());
+                sc.AddTransient<IEavUserInformation, NeutralEavUserInformation>();//new InjectionConstructor());
+
+                sc.AddTransient<XmlExporter, ToSxcXmlExporter>();//(new InjectionConstructor(0, 0, true, new string[0], new string[0]));
+                sc.AddTransient<IImportExportEnvironment, ImportExportEnvironmentMock>();
 
                 new DependencyInjection().ConfigureNetCoreContainer(sc);
             });
