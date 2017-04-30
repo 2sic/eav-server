@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Practices.ObjectBuilder2;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
@@ -104,7 +103,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         private void Save()
         {
             // now handle the delayed queue, which waited with serializing
-            _delaySerialization.ForEach(td => SerializeEntityAndAddToQueue(td.Key, td.Value));
+            _delaySerialization.ToList().ForEach(td => SerializeEntityAndAddToQueue(td.Key, td.Value));
             _delaySerialization.Clear();
 
             DbContext.SqlDb.ToSicEavDataTimeline.AddRange(_queue);

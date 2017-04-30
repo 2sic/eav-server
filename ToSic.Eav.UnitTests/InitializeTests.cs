@@ -8,7 +8,11 @@ namespace ToSic.Eav.UnitTests
         [AssemblyInitialize()]
         public static void AssemblyInit(TestContext context)
         {
-            new DependencyInjection().ConfigureDefaultMappings(Eav.Factory.CreateContainer()/*.Container*/);
+            Eav.Factory.ActivateNetCoreDi(sc =>
+            {
+
+            });
+            //new DependencyInjection().ConfigureDefaultMappings(Eav.Factory.CreateContainer()/*.Container*/);
         }
     }
 }

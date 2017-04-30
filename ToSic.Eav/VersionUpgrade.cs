@@ -3,8 +3,6 @@ using System.Linq;
 using ToSic.Eav.ImportExport.Models;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Repository.Efc.Parts;
-//using ToSic.Eav.Repository.EF4;
-//using ToSic.Eav.Repository.EF4.Parts;
 
 namespace ToSic.Eav
 {

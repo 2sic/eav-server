@@ -1,8 +1,6 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Infrastructure;
+﻿using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Practices.Unity;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Implementations.UserInformation;
 using ToSic.Eav.Implementations.ValueConverter;
@@ -32,14 +30,11 @@ namespace ToSic.Eav.Repository.Efc.Tests
             Configuration.SetConnectionString(conStr);
             Factory.ActivateNetCoreDi(sc =>
             {
-                //var cont = Factory.CreateContainer(); //.Container;
                 sc.AddTransient<IImportExportEnvironment, ImportExportEnvironmentMock>();
                 sc.AddTransient<IEavValueConverter, NeutralValueConverter>();//new InjectionConstructor());
                 sc.AddTransient<IEavUserInformation, NeutralEavUserInformation>();//new InjectionConstructor());
 
                 new DependencyInjection().ConfigureNetCoreContainer(sc);
-
-                return sc;
             });
 
         }
@@ -53,17 +48,16 @@ namespace ToSic.Eav.Repository.Efc.Tests
             loggerFactory.AddProvider(new EfCoreLoggerProvider());
         }
 
-        private static void ConfigureUnityDI()
-        {
-            //var conStr = @"Data Source=(local)\SQLEXPRESS;Initial Catalog=""2flex 2Sexy Content"";Integrated Security=True;";
-            Configuration.SetConnectionString(conStr);
-            var cont = Factory.CreateContainer();//.Container;
+        //private static void ConfigureUnityDI()
+        //{
+        //    Configuration.SetConnectionString(conStr);
+        //    var cont = Factory.CreateContainer();//.Container;
 
-            cont.RegisterType<IImportExportEnvironment, ImportExportEnvironmentMock>();
-            cont.RegisterType<IEavValueConverter, NeutralValueConverter>(new InjectionConstructor());
-            cont.RegisterType<IEavUserInformation, NeutralEavUserInformation>(new InjectionConstructor());
+        //    cont.RegisterType<IImportExportEnvironment, ImportExportEnvironmentMock>();
+        //    cont.RegisterType<IEavValueConverter, NeutralValueConverter>(new InjectionConstructor());
+        //    cont.RegisterType<IEavUserInformation, NeutralEavUserInformation>(new InjectionConstructor());
 
-            new DependencyInjection().ConfigureDefaultMappings(cont);
-        }
+        //    new DependencyInjection().ConfigureDefaultMappings(cont);
+        //}
     }
 }

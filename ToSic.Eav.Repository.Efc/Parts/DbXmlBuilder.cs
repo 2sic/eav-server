@@ -4,7 +4,6 @@ using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Practices.ObjectBuilder2;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.Persistence.Efc.Models;
 
@@ -51,7 +50,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 .GroupBy(r => r.Attribute.StaticName)
                 .Select(r => new {
                     r.Key,
-                    Value = r.Select(x => x.ChildEntity?.EntityGuid.ToString() ?? Constants.EmptyRelationship).JoinStrings(",")
+                    Value = string.Join(",", r.Select(x => x.ChildEntity?.EntityGuid.ToString() ?? Constants.EmptyRelationship))
                 }).ToList();
             var relsXElement = relationships.Select(r => XmlValue(r.Key, r.Value, "Entity", null));
 

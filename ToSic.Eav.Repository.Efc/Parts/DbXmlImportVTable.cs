@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
-using Microsoft.Practices.Unity;
+//using Microsoft.Practices.Unity;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Logging;
@@ -84,8 +84,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
             return Entities.FirstOrDefault(entity => entity.EntityGuid == entityGuid);
         }
 
-        [Dependency]
-        public ISystemConfiguration Configuration { get; }
+        // [Dependency]
+        //public ISystemConfiguration Configuration { get; }
 
         private ImpEntity AppendEntity(Guid entityGuid)
         {

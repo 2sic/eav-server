@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Practices.Unity;
+//using Microsoft.Practices.Unity;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Persistence.Efc.Models;
 
@@ -17,15 +17,21 @@ namespace ToSic.Eav.UnitTests
 
         private static void ConfigureDependencyInjection()
         {
-            var container = Eav.Factory.CreateContainer();//.Container;
             var conStr = @"Data Source=(local)\SQLEXPRESS;Initial Catalog=""2flex 2Sexy Content"";Integrated Security=True;";
-            container.RegisterType<EavDbContext>(new HierarchicalLifetimeManager(), new InjectionFactory(
-                obj =>
-                {
-                    var opts = new DbContextOptionsBuilder<EavDbContext>();
-                    opts.UseSqlServer(conStr);
-                    return new EavDbContext(opts.Options);
-                }));
+            Configuration.SetConnectionString(conStr);
+            Eav.Factory.ActivateNetCoreDi(sc =>
+            {
+
+            });
+
+            //var container = Eav.Factory.CreateContainer();//.Container;
+            //container.RegisterType<EavDbContext>(new HierarchicalLifetimeManager(), new InjectionFactory(
+            //    obj =>
+            //    {
+            //        var opts = new DbContextOptionsBuilder<EavDbContext>();
+            //        opts.UseSqlServer(conStr);
+            //        return new EavDbContext(opts.Options);
+            //    }));
         }
     }
 }
