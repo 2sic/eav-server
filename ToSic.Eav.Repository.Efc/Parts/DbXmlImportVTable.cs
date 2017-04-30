@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
-//using Microsoft.Practices.Unity;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Logging;
@@ -13,7 +12,6 @@ using ToSic.Eav.ImportExport.Models;
 using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.ImportExport.Validation;
 using ToSic.Eav.ImportExport.Xml;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
@@ -45,10 +43,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
         #endregion
 
         private readonly int _appId;
-
         private readonly int _zoneId;
 
-        private readonly ToSicEavAttributeSets _contentType;
+        private ToSicEavAttributeSets ContentType { get; }
 
         /// <summary>
         /// The xml document to imported.
@@ -64,14 +61,16 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         private IEnumerable<string> _languages;
 
-        private readonly ImportResourceReferenceMode _importResourceReference;
+        private readonly ImportResourceReferenceMode _resolveReferenceMode;
 
-        private readonly ImportDeleteUnmentionedItems _entityClear;
+        private readonly ImportDeleteUnmentionedItems _deleteSetting;
 
         /// <summary>
         /// The entities created from the document. They will be saved to the repository.
         /// </summary>
-        public List<ImpEntity> Entities {get; }
+        public List<ImpEntity> ImportEntities {get; }
+        private ImpEntity GetImportEntity(Guid entityGuid) => ImportEntities
+            .FirstOrDefault(entity => entity.EntityGuid == entityGuid);
 
         /// <summary>
         /// Errors found while importing the document to memory.
@@ -79,25 +78,18 @@ namespace ToSic.Eav.Repository.Efc.Parts
         public ImportErrorLog ErrorLog { get; }
         #endregion
 
-        private ImpEntity GetEntity(Guid entityGuid)
-        {
-            return Entities.FirstOrDefault(entity => entity.EntityGuid == entityGuid);
-        }
-
-        // [Dependency]
-        //public ISystemConfiguration Configuration { get; }
 
         private ImpEntity AppendEntity(Guid entityGuid)
         {
             var entity = new ImpEntity
             {
-                AttributeSetStaticName = _contentType.StaticName,
-                // KeyTypeId = Configuration.KeyTypeDefault,// Configuration.AssignmentObjectTypeIdDefault,
+                AttributeSetStaticName = ContentType.StaticName,
+                KeyTypeId = Constants.NotMetadata,
                 EntityGuid = entityGuid,
                 KeyNumber = null,
                 Values = new Dictionary<string, List<IImpValue>>()
             };
-            Entities.Add(entity);
+            ImportEntities.Add(entity);
             return entity;
         }
 
@@ -106,187 +98,46 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// for errors. If no error could be found, the data can be persisted to the repository.
         /// </summary>
         /// <param name="zoneId">ID of 2SexyContent zone</param>
-        /// <param name="applicationId">ID of 2SexyContent application</param>
+        /// <param name="appId">ID of 2SexyContent application</param>
         /// <param name="contentTypeId">ID of 2SexyContent type</param>
         /// <param name="dataStream">Xml data stream to import</param>
         /// <param name="languages">Languages that can be imported (2SexyContent languages enabled)</param>
         /// <param name="documentLanguageFallback">Fallback document language</param>
-        /// <param name="entityClear">How to handle entities already in the repository</param>
-        /// <param name="importResourceReference">How value references to files and pages are handled</param>
-        public DbXmlImportVTable(int zoneId, int applicationId, int contentTypeId, Stream dataStream, IEnumerable<string> languages, string documentLanguageFallback, ImportDeleteUnmentionedItems entityClear, ImportResourceReferenceMode importResourceReference)
+        /// <param name="deleteSetting">How to handle entities already in the repository</param>
+        /// <param name="resolveReferenceMode">How value references to files and pages are handled</param>
+        public DbXmlImportVTable(int zoneId, int appId, int contentTypeId, Stream dataStream, IEnumerable<string> languages, string documentLanguageFallback, ImportDeleteUnmentionedItems deleteSetting, ImportResourceReferenceMode resolveReferenceMode)
         {
-            Entities = new List<ImpEntity>();
+            ImportEntities = new List<ImpEntity>();
             ErrorLog = new ImportErrorLog();
 
-            _appId = applicationId;
+            _appId = appId;
             _zoneId = zoneId;
-            _contentType = DbDataController.Instance(zoneId, applicationId).AttribSet.GetAttributeSet(contentTypeId);
+            DbContext = DbDataController.Instance(zoneId, appId);
+
+            ContentType = DbContext.AttribSet.GetAttributeSet(contentTypeId);
+            if (ContentType == null)
+            {
+                ErrorLog.AppendError(ImportErrorCode.InvalidContentType);
+                return;
+            }
+
+            AttributesOfType = DbContext.Attributes.GetAttributeDefinitions(contentTypeId).ToList();
+            ExistingEntities = DbContext.Entities.GetEntitiesByType(ContentType).ToList();
+
             _languages = languages;
+            if (_languages == null || !_languages.Any())
+                _languages = new[] { string.Empty };
+
             _documentLanguageFallback = documentLanguageFallback;
-            _entityClear = entityClear;
-            _importResourceReference = importResourceReference;
+            _deleteSetting = deleteSetting;
+            _resolveReferenceMode = resolveReferenceMode;
 
-            ValidateAndImportToMemory(dataStream);
-        }
-
-        /// <summary>
-        /// Deserialize a 2sxc data xml stream to the memory. The data will also be checked for 
-        /// errors.
-        /// </summary>
-        /// <param name="dataStream">Data stream</param>
-        private void ValidateAndImportToMemory(Stream dataStream)
-        {
             Timer.Start();
             try
             {
-                if (_languages == null || !_languages.Any())
-                {
-                    _languages = new[] { string.Empty };
-                }
-
-                if (_contentType == null)
-                {
-                    ErrorLog.AppendError(ImportErrorCode.InvalidContentType);
-                    return;
-                }
-
-                Document = XDocument.Load(dataStream);
-                dataStream.Position = 0;
-                if (Document == null)
-                {
-                    ErrorLog.AppendError(ImportErrorCode.InvalidDocument);
-                    return;
-                }
-
-                var documentRoot = Document.Element(XmlConstants.Root);
-
-                DocumentElements = documentRoot.Elements(XmlConstants.Entity);
-                if (!DocumentElements.Any())
-                {
-                    ErrorLog.AppendError(ImportErrorCode.InvalidDocument);
-                    return;
-                }
-
-                // Check the content type of the document (it can be found on each element in the Type attribute)
-                var documentTypeAttribute = DocumentElements.First().Attribute(XmlConstants.EntityTypeAttribute);
-                if (documentTypeAttribute?.Value == null || documentTypeAttribute.Value != _contentType.Name.RemoveSpecialCharacters())
-                {
-                    ErrorLog.AppendError(ImportErrorCode.InvalidRoot);
-                    return;
-                }
-
-                var documentElementNumber = 0;
-
-                // Assure that each element has a GUID and language child element
-                foreach (var element in DocumentElements)
-                {
-                    if (element.Element(XmlConstants.EntityGuid) == null)
-                    {
-                        element.Add(new XElement(XmlConstants.EntityGuid, ""));
-                        //element.Append(DocumentNodeNames.EntityGuid, "");
-                    }
-                    if (element.Element(XmlConstants.EntityLanguage) == null)
-                    {
-                        element.Add(new XElement(XmlConstants.EntityLanguage, ""));
-                        //element.Append(DocumentNodeNames.EntityLanguage, "");
-                    }
-                }
-                var documentElementLanguagesAll = DocumentElements.GroupBy(element => element.Element(XmlConstants.EntityGuid).Value).Select(group => group.Select(element => element.Element(XmlConstants.EntityLanguage).Value).ToList());
-                var documentElementLanguagesCount = documentElementLanguagesAll.Select(item => item.Count);
-                if (documentElementLanguagesCount.Any(count => count != 1))
-                {
-                    // It is an all language import, so check if all languages are specified for all entities
-                    foreach (var documentElementLanguages in documentElementLanguagesAll)
-                    {   
-                        if (_languages.Except(documentElementLanguages).Any())
-                        {
-                            ErrorLog.AppendError(ImportErrorCode.MissingElementLanguage, "Langs=" + string.Join(", ", _languages));
-                            return;
-                        }
-                    }
-                }
- 
-                var entityGuidManager = new ImportItemGuidManager();
-                foreach (var documentElement in DocumentElements)
-                {
-                    documentElementNumber++;
-
-                    var documentElementLanguage = documentElement.Element(XmlConstants.EntityLanguage)?.Value;
-                    if (!_languages.Any(language => language == documentElementLanguage))
-                    {   // DNN does not support the language
-                        ErrorLog.AppendError(ImportErrorCode.InvalidLanguage, "Lang=" + documentElementLanguage, documentElementNumber);
-                        continue;
-                    }
-
-                    var entityGuid = entityGuidManager.GetGuid(documentElement, _documentLanguageFallback);
-                    var entity = GetEntity(entityGuid) ?? AppendEntity(entityGuid);
-
-                    var attributes = _contentType.GetAttributes();
-                    foreach (var attribute in attributes)
-                    {   
-                        var valueType = attribute.Type;
-                        var valueName = attribute.StaticName;
-                        var value = documentElement.Element(valueName)?.Value;
-                        if (value == null || value == "[]")// value.IsValueNull())
-                        {
-                            continue;
-                        }
-
-                        if (value == "[\"\"]")//value.IsValueEmpty())
-                        {   // It is an empty string
-                            entity.AppendAttributeValue(valueName, "", attribute.Type, documentElementLanguage, false, _importResourceReference== ImportResourceReferenceMode.Resolve);
-                            continue;
-                        }
-
-                        var valueReferenceLanguage = value.GetValueReferenceLanguage();
-                        if (valueReferenceLanguage == null)
-                        {   // It is not a value reference.. it is a normal text
-                            try
-                            {
-                                entity.AppendAttributeValue(valueName, value, valueType, documentElementLanguage, false, _importResourceReference == ImportResourceReferenceMode.Resolve);
-                            }
-                            catch (FormatException)
-                            {
-                                ErrorLog.AppendError(ImportErrorCode.InvalidValueFormat, valueName + ":" + valueType + "=" + value, documentElementNumber);
-                            }
-                            continue;
-                        }
-
-                        var valueReferenceProtection = value.GetValueReferenceProtection();
-                        if (valueReferenceProtection != "rw" && valueReferenceProtection != "ro")
-                        {
-                            ErrorLog.AppendError(ImportErrorCode.InvalidValueReferenceProtection, value, documentElementNumber);
-                            continue;
-                        }
-                        var valueReadOnly = valueReferenceProtection == "ro";
-
-                        var entityValue = entity.GetValueItemOfLanguage(valueName, valueReferenceLanguage);
-                        if (entityValue != null)
-                        {
-                            entityValue.AppendLanguageReference(documentElementLanguage, valueReadOnly);
-                            continue;
-                        }
-
-                        // We do not have the value referenced in memory, so search for the 
-                        // value in the database 
-                        var dbEntity = _contentType.EntityByGuid(entityGuid);
-                        if (dbEntity == null)
-                        {
-                            ErrorLog.AppendError(ImportErrorCode.InvalidValueReference, value, documentElementNumber);
-                            continue;
-                        }
-
-                        var dbEntityValue = dbEntity.GetValueOfExactLanguage(attribute, valueReferenceLanguage);
-                        if(dbEntityValue == null)
-                        {
-                            ErrorLog.AppendError(ImportErrorCode.InvalidValueReference, value, documentElementNumber);
-                            continue;
-                        }
-
-                        entity.AppendAttributeValue(valueName, dbEntityValue.Value, valueType, valueReferenceLanguage, dbEntityValue.IsLanguageReadOnly(valueReferenceLanguage), _importResourceReference == ImportResourceReferenceMode.Resolve)
-                              .AppendLanguageReference(documentElementLanguage, valueReadOnly);       
-                    }
-                }                
+                if (!LoadStreamIntoDocumentElement(dataStream)) return;
+                if (!RunDocumentValidityChecks()) return;
+                ValidateAndImportToMemory();
             }
             catch (Exception exception)
             {
@@ -294,6 +145,174 @@ namespace ToSic.Eav.Repository.Efc.Parts
             }
             Timer.Stop();
             TimeForMemorySetup = Timer.ElapsedMilliseconds;
+        }
+        private DbDataController DbContext { get; }
+        private List<ToSicEavAttributes> AttributesOfType { get; set; }
+        private List<ToSicEavEntities> ExistingEntities { get; }
+
+        private ToSicEavEntities FindInExisting(Guid guid)
+            => ExistingEntities.FirstOrDefault(e => e.EntityGuid == guid);
+
+        /// <summary>
+        /// Deserialize data xml stream to the memory. The data will also be checked for 
+        /// errors.
+        /// </summary>
+        private void ValidateAndImportToMemory()
+        {
+            var documentElementNumber = 0;
+            var entityGuidManager = new ImportItemGuidManager();
+
+            foreach (var documentElement in DocumentElements)
+            {
+                documentElementNumber++;
+
+                var documentElementLanguage = documentElement.Element(XmlConstants.EntityLanguage)?.Value;
+                if (_languages.All(language => language != documentElementLanguage))
+                {
+                    // DNN does not support the language
+                    ErrorLog.AppendError(ImportErrorCode.InvalidLanguage, "Lang=" + documentElementLanguage,
+                        documentElementNumber);
+                    continue;
+                }
+
+                var entityGuid = entityGuidManager.GetGuid(documentElement, _documentLanguageFallback);
+                var entity = GetImportEntity(entityGuid) ?? AppendEntity(entityGuid);
+
+                foreach (var attribute in AttributesOfType)
+                {
+                    var valueType = attribute.Type;
+                    var valueName = attribute.StaticName;
+                    var value = documentElement.Element(valueName)?.Value;
+                    if (value == null || value == "[]") // value.IsValueNull())
+                        continue;
+
+                    if (value == "[\"\"]") //value.IsValueEmpty())
+                    {
+                        // It is an empty string
+                        entity.AppendAttributeValue(valueName, "", attribute.Type, documentElementLanguage, false,
+                            _resolveReferenceMode == ImportResourceReferenceMode.Resolve);
+                        continue;
+                    }
+
+                    var valueReferenceLanguage = value.GetValueReferenceLanguage();
+                    if (valueReferenceLanguage == null) // It is not a value reference.. it is a normal text
+                    {
+                        try
+                        {
+                            entity.AppendAttributeValue(valueName, value, valueType, documentElementLanguage, false,
+                                _resolveReferenceMode == ImportResourceReferenceMode.Resolve);
+                        }
+                        catch (FormatException)
+                        {
+                            ErrorLog.AppendError(ImportErrorCode.InvalidValueFormat,
+                                valueName + ":" + valueType + "=" + value, documentElementNumber);
+                        }
+                        continue;
+                    }
+
+                    var valueReferenceProtection = value.GetValueReferenceProtection();
+                    if (valueReferenceProtection != "rw" && valueReferenceProtection != "ro")
+                    {
+                        ErrorLog.AppendError(ImportErrorCode.InvalidValueReferenceProtection, value,
+                            documentElementNumber);
+                        continue;
+                    }
+                    var valueReadOnly = valueReferenceProtection == "ro";
+
+                    var entityValue = entity.GetValueItemOfLanguage(valueName, valueReferenceLanguage);
+                    if (entityValue != null)
+                    {
+                        entityValue.AppendLanguageReference(documentElementLanguage, valueReadOnly);
+                        continue;
+                    }
+
+                    // We do not have the value referenced in memory, so search for the 
+                    // value in the database 
+                    var dbEntity = FindInExisting(entityGuid); // _contentType.EntityByGuid(entityGuid);
+                    if (dbEntity == null)
+                    {
+                        ErrorLog.AppendError(ImportErrorCode.InvalidValueReference, value, documentElementNumber);
+                        continue;
+                    }
+
+                    var dbEntityValue = dbEntity.GetValueOfExactLanguage(attribute, valueReferenceLanguage);
+                    if (dbEntityValue == null)
+                    {
+                        ErrorLog.AppendError(ImportErrorCode.InvalidValueReference, value, documentElementNumber);
+                        continue;
+                    }
+
+                    entity.AppendAttributeValue(valueName, dbEntityValue.Value, valueType, valueReferenceLanguage,
+                            dbEntityValue.IsLanguageReadOnly(valueReferenceLanguage),
+                            _resolveReferenceMode == ImportResourceReferenceMode.Resolve)
+                        .AppendLanguageReference(documentElementLanguage, valueReadOnly);
+                }
+            }
+
+        }
+
+        private bool RunDocumentValidityChecks()
+        {
+            // Assure that each element has a GUID and language child element
+            foreach (var element in DocumentElements)
+            {
+                if (element.Element(XmlConstants.EntityGuid) == null)
+                    element.Add(new XElement(XmlConstants.EntityGuid, ""));
+                if (element.Element(XmlConstants.EntityLanguage) == null)
+                    element.Add(new XElement(XmlConstants.EntityLanguage, ""));
+            }
+
+            var documentElementLanguagesAll = DocumentElements
+                .GroupBy(element => element.Element(XmlConstants.EntityGuid)?.Value)
+                .Select(group => @group
+                    .Select(element => element.Element(XmlConstants.EntityLanguage)?.Value)
+                    .ToList())
+                .ToList();
+
+            var documentElementLanguagesCount = documentElementLanguagesAll.Select(item => item.Count);
+
+            if (documentElementLanguagesCount.Any(count => count != 1))
+                // It is an all language import, so check if all languages are specified for all entities
+                if (documentElementLanguagesAll.Any(lang => _languages.Except(lang).Any()))
+                {
+                    ErrorLog.AppendError(ImportErrorCode.MissingElementLanguage,
+                        "Langs=" + string.Join(", ", _languages));
+                    return false;
+                }
+            return true;
+        }
+
+        private bool LoadStreamIntoDocumentElement(Stream dataStream)
+        {
+            Document = XDocument.Load(dataStream);
+            dataStream.Position = 0;
+            if (Document == null)
+            {
+                ErrorLog.AppendError(ImportErrorCode.InvalidDocument);
+                return false;
+            }
+
+            var documentRoot = Document.Element(XmlConstants.Root);
+            if (documentRoot == null)
+                throw new Exception("can't import - document doesn't have a root element");
+
+            DocumentElements = documentRoot.Elements(XmlConstants.Entity).ToList();
+            if (!DocumentElements.Any())
+            {
+                ErrorLog.AppendError(ImportErrorCode.InvalidDocument);
+                return false;
+            }
+
+            // Check the content type of the document (it can be found on each element in the Type attribute)
+            var documentTypeAttribute = DocumentElements.First().Attribute(XmlConstants.EntityTypeAttribute);
+            if (documentTypeAttribute?.Value == null ||
+                documentTypeAttribute.Value != ContentType.Name.RemoveSpecialCharacters())
+            {
+                ErrorLog.AppendError(ImportErrorCode.InvalidRoot);
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -306,21 +325,20 @@ namespace ToSic.Eav.Repository.Efc.Parts
             if (ErrorLog.HasErrors)
                 return false;
 
-            if (_entityClear == ImportDeleteUnmentionedItems.All)
+            if (_deleteSetting == ImportDeleteUnmentionedItems.All)
             {
                 var entityDeleteGuids = GetEntityDeleteGuids();
                 foreach(var entityGuid in entityDeleteGuids)
                 {
-                    var entityId = _contentType.EntityByGuid(entityGuid).EntityId;
-                    var context = DbDataController.Instance(_zoneId, _appId);
-                    if (context.Entities.CanDeleteEntity(entityId)/* context.EntCommands.CanDeleteEntity(entityId)*/.Item1)
-                        context.Entities.DeleteEntity(entityId);
+                    var entityId = FindInExisting(entityGuid).EntityId;
+                    if (DbContext.Entities.CanDeleteEntity(entityId).Item1)
+                        DbContext.Entities.DeleteEntity(entityId);
                 }
             }
 
             Timer.Start();
-            var import = new DbImport(_zoneId, _appId, /*userId,*/ dontUpdateExistingAttributeValues: false, keepAttributesMissingInImport: true);
-            import.ImportIntoDb(null, Entities);
+            var import = new DbImport(_zoneId, _appId, false);
+            import.ImportIntoDb(null, ImportEntities);
             // important note: don't purge cache here, but the caller MUST do this!
 
             Timer.Stop();
@@ -332,20 +350,20 @@ namespace ToSic.Eav.Repository.Efc.Parts
         #region Deserialize statistics methods
         private List<Guid> GetExistingEntityGuids()
         {
-            var existingGuids = _contentType.ToSicEavEntities.Where(entity => entity.ChangeLogDeleted == null).Select(entity => entity.EntityGuid).ToList();
+            var existingGuids = ExistingEntities 
+                .Select(entity => entity.EntityGuid).ToList();
             return existingGuids;
         }
 
-        private List<Guid> GetCreatedEntityGuids()
-        {
-            var newGuids = Entities.Select(entity => entity.EntityGuid.Value).ToList();
-            return newGuids;
-        }
+        private List<Guid> GetCreatedEntityGuids() 
+            => ImportEntities.Select(entity => entity.EntityGuid ?? Guid.NewGuid()).ToList();
 
         /// <summary>
         /// Get the languages found in the xml document.
         /// </summary>
-        public IEnumerable<string> LanguagesInDocument => DocumentElements.Select(element => element.Element(XmlConstants.EntityLanguage).Value).Distinct();
+        public IEnumerable<string> LanguagesInDocument => DocumentElements
+            .Select(element => element.Element(XmlConstants.EntityLanguage)?.Value)
+            .Distinct();
 
         /// <summary>
         /// Get the attribute names in the xml document.
@@ -392,13 +410,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// The amount of enities deleted in the repository on data import.
         /// </summary>
-        public int AmountOfEntitiesDeleted => _entityClear == ImportDeleteUnmentionedItems.None ? 0 : GetEntityDeleteGuids().Count;
+        public int AmountOfEntitiesDeleted => _deleteSetting == ImportDeleteUnmentionedItems.None ? 0 : GetEntityDeleteGuids().Count;
 
         /// <summary>
         /// Get the attribute names in the content type.
         /// </summary>
         public IEnumerable<string> AttributeNamesInContentType 
-            => _contentType.ToSicEavAttributesInSets.Select(item => item.Attribute.StaticName).ToList();
+            => AttributesOfType /*_contentType.ToSicEavAttributesInSets*/.Select(item => item.StaticName).ToList();
         //_contentType.GetStaticNames();
 
         /// <summary>

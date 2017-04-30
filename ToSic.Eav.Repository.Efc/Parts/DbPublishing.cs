@@ -88,8 +88,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         /// <param name="entityId">EntityId of the Published Entity</param>
         internal int? GetDraftEntityId(int entityId)
-        {
-            return DbContext.SqlDb.ToSicEavEntities.Where(e => e.PublishedEntityId == entityId && !e.ChangeLogDeleted.HasValue).Select(e => (int?)e.EntityId).SingleOrDefault();
-        }
+            => DbContext.SqlDb.ToSicEavEntities
+                .Where(e => e.PublishedEntityId == entityId && !e.ChangeLogDeleted.HasValue)
+                .Select(e => (int?) e.EntityId)
+                .SingleOrDefault();
     }
 }

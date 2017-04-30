@@ -92,10 +92,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
             // Get the attribute definitions
             var attribsOfType = DbContext.Attributes.GetAttributeDefinitions(ContentType.AttributeSetId).ToList();
 
-            var DbXml = new DbXmlBuilder(DbContext);
+            var dbXml = new DbXmlBuilder(DbContext);
             foreach (var entity in entList)
             {
-                var relationships = DbXml.GetSerializedRelationshipGuids(entity.EntityId);
+                var relationships = dbXml.GetSerializedRelationshipGuids(entity.EntityId);
 
                 foreach (var language in languages)
                 {
@@ -117,22 +117,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 }
             }
 
-            return documentRoot.Document?.ToString();// document.ToString();
+            return documentRoot.Document?.ToString();
         }
 
         #region Helpers to assemble the xml
 
-        private void AppendEntityReferences(XElement element, string attrName, string entityGuidsString)// ToSicEavEntities entity, ToSicEavAttributes attribute)
+        private void AppendEntityReferences(XElement element, string attrName, string entityGuidsString)
         {
-            // note: minimal duplicate code for guid-serialization w/XmlExport & DbXmlExportTable
-            //var relationships = DbContext.Relationships.GetRelationshipsOfParent(entity.EntityId)
-            //    .Where(r => r.Attribute == attribute)
-            //    .OrderBy(r => r.SortOrder)
-            //    .ToList();
-
-            //var entityGuidsString = string.Join(",", 
-            //    relationships.Select(x =>  x.ChildEntity?.EntityGuid.ToString() ?? Constants.EmptyRelationship));
-
             element.Append(attrName, entityGuidsString);
         }
 
@@ -181,25 +172,15 @@ namespace ToSic.Eav.Repository.Efc.Parts
             var valueLanguageReferenced = default(string);
             var valueLanguageReadOnly = value.IsLanguageReadOnly(language);
             if (referenceParentLanguagesOnly)
-            {
-                valueLanguageReferenced = valueLanguagesReferenced.FirstOrDefault
-                    (
-                        lang => languageScope.IndexOf(lang) < languageScope.IndexOf(language)
-                    );
-            }
+                valueLanguageReferenced = valueLanguagesReferenced
+                    .FirstOrDefault(lang => languageScope.IndexOf(lang) < languageScope.IndexOf(language));
             else if (valueLanguageReadOnly)
-            {   // If one language is serialized, do not serialize read-write values 
-                // as references
-                valueLanguageReferenced = valueLanguagesReferenced.First();
-            }
+                valueLanguageReferenced = valueLanguagesReferenced.First();// If one language is serialized, do not serialize read-write values as references
 
-            if (valueLanguageReferenced == null)
-            {
+            if (valueLanguageReferenced != null)
+                element.Append(valueName, $"[ref({valueLanguageReferenced},{(valueLanguageReadOnly ? "ro" : "rw")})]");
+            else
                 AppendValue(element, valueName, value, exportResourceReferenceOption);
-                return;
-            }
-
-            element.Append(valueName, $"[ref({valueLanguageReferenced},{(valueLanguageReadOnly ? "ro" : "rw")})]");
         }
 
 
@@ -211,25 +192,15 @@ namespace ToSic.Eav.Repository.Efc.Parts
         private void AppendValue(XElement element, XName name, ToSicEavValues value, ExportResourceReferenceMode exportResourceReferenceOption)
         {
             if (value == null)
-            {
                 element.Append(name, "[]");
-            }
             else if (value.Value == null)
-            {
                 element.Append(name, "[]");
-            }
             else if (exportResourceReferenceOption == ExportResourceReferenceMode.Resolve)
-            {
                 element.Append(name, ResolveHyperlinksFromTennant(value));
-            }
             else if (value.Value == string.Empty)
-            {
                 element.Append(name, "[\"\"]");
-            }
             else
-            {
                 element.Append(name, value.Value);
-            }
         }
 
         /// <summary>
@@ -239,12 +210,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         private string ResolveHyperlinksFromTennant(ToSicEavValues value)
         {
-            if (value.Attribute.Type == Constants.Hyperlink)
-            {
-                var vc = Factory.Resolve<IEavValueConverter>();
-                return vc.Convert(ConversionScenario.GetFriendlyValue, Constants.Hyperlink, value.Value);
-            }
-            return value.Value;
+            if (value.Attribute.Type != Constants.Hyperlink) return value.Value;
+            var vc = Factory.Resolve<IEavValueConverter>();
+            return vc.Convert(ConversionScenario.GetFriendlyValue, Constants.Hyperlink, value.Value);
         }
 
 
@@ -254,10 +222,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         private IEnumerable<string> GetLanguagesReferenced(ToSicEavValues value, string valueLanguage, bool referenceReadWrite)
         {
-            return value.ToSicEavValuesDimensions.Where(reference => !referenceReadWrite || !reference.ReadOnly)
-                                         .Where(reference => reference.Dimension.ExternalKey != valueLanguage)
-                                         .Select(reference => reference.Dimension.ExternalKey)
-                                         .ToList();
+            return value.ToSicEavValuesDimensions
+                .Where(reference => !referenceReadWrite || !reference.ReadOnly)
+                .Where(reference => reference.Dimension.ExternalKey != valueLanguage)
+                .Select(reference => reference.Dimension.ExternalKey)
+                .ToList();
         }
 
         #endregion
@@ -267,18 +236,14 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
     internal static class QuickExtensions
     {
-        internal static int IndexOf<T>(this IEnumerable<T> list, T item)
-        {
-            return list.TakeWhile(i => !i.Equals(item)).Count();
-        }
+        internal static int IndexOf<T>(this IEnumerable<T> list, T item) 
+            => list.TakeWhile(i => !i.Equals(item)).Count();
 
         /// <summary>
         /// Apend an element to this.
         /// </summary>
         public static void Append(this XElement element, XName name, object value)
-        {
-            element.Add(new XElement(name, value));
-        }
+            => element.Add(new XElement(name, value));
         
     }
 }

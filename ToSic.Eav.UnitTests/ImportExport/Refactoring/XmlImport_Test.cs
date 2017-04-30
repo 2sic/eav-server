@@ -296,7 +296,7 @@ On all your devices.</PreviewContent>
                 GenerateStreamFromString(FullExportOfSimpleContentAll), new List<string>(), "", ImportDeleteUnmentionedItems.None,
                 ImportResourceReferenceMode.Keep);
 
-            var entity31d9 = fileImport.Entities.First(e => e.EntityGuid == new Guid("31d93b03-cfb3-483b-8134-e08bbee9cd2c"));
+            var entity31d9 = fileImport.ImportEntities.First(e => e.EntityGuid == new Guid("31d93b03-cfb3-483b-8134-e08bbee9cd2c"));
             var previewContent = entity31d9.Values["PreviewContent"][0];
             Assert.AreEqual("Easy and immediate separation of concerns.", (previewContent as IImpValue).ToString());
 

@@ -8,7 +8,6 @@ using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Logging;
 using ToSic.Eav.ImportExport.Models;
-using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
@@ -443,13 +442,18 @@ namespace ToSic.Eav.Repository.Efc.Parts
         public Tuple<bool, string> CanDeleteEntity(int entityId)
         {
             var messages = new List<string>();
-            var entityModel = new Efc11Loader(DbContext.SqlDb).Entity(DbContext.AppId, entityId);
+            var entity = GetDbEntity(entityId);
+            //var entityModel = new Efc11Loader(DbContext.SqlDb).Entity(DbContext.AppId, entityId);
+            //if (!entityModel.IsPublished && entityModel.GetPublished() == null)	// always allow Deleting Draft-Only Entity 
 
-            if (!entityModel.IsPublished && entityModel.GetPublished() == null)	// always allow Deleting Draft-Only Entity 
+            if (!entity.IsPublished && entity.PublishedEntityId == null)	// always allow Deleting Draft-Only Entity 
                 return new Tuple<bool, string>(true, null);
 
             #region check if there are relationships where this is a child
-            var parents = DbContext.SqlDb.ToSicEavEntityRelationships.Where(r => r.ChildEntityId == entityId).Select(r => new TempEntityAndTypeInfos { EntityId = r.ParentEntityId, TypeId = r.ParentEntity.AttributeSetId} ).ToList();
+            var parents = DbContext.SqlDb.ToSicEavEntityRelationships
+                .Where(r => r.ChildEntityId == entityId)
+                .Select(r => new TempEntityAndTypeInfos { EntityId = r.ParentEntityId, TypeId = r.ParentEntity.AttributeSetId} )
+                .ToList();
             if (parents.Any())
             {
                 TryToGetMoreInfosAboutDependencies(parents, messages);
@@ -457,7 +461,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
             }
             #endregion
 
-            var entitiesAssignedToThis = GetAssignedEntities(Constants.MetadataForEntity, entityId).Select(e => new TempEntityAndTypeInfos() { EntityId = e.EntityId, TypeId = e.AttributeSetId}).ToList();
+            var entitiesAssignedToThis = GetAssignedEntities(Constants.MetadataForEntity, entityId)
+                .Select(e => new TempEntityAndTypeInfos() { EntityId = e.EntityId, TypeId = e.AttributeSetId})
+                .ToList();
             if (entitiesAssignedToThis.Any())
             {
                 TryToGetMoreInfosAboutDependencies(entitiesAssignedToThis, messages);
