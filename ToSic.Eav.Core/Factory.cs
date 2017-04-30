@@ -79,19 +79,29 @@ namespace ToSic.Eav
             if (Debug)
                 LogResolve(typeof(t), true);
 
-            return UseCore
-                ? ServiceProvider.GetService<t>()
-                : Container.Resolve<t>();
+            if(!UseCore)
+                return Container.Resolve<t>();
+            var found = ServiceProvider.GetService<t>();
+
+            if (found == null) // unregistered type
+                found = ActivatorUtilities.CreateInstance<t>(ServiceProvider);
+            return found;
         }
 
         public static object Resolve(Type t)
         {
             if (Debug)
                 LogResolve(t, false);
+            if(!UseCore)
+                return Container.Resolve(t);
 
-            return UseCore
-	            ? ServiceProvider.GetService(t)
-	            : Container.Resolve(t);
+            var found = ServiceProvider.GetService(t);
+
+            if (found == null) // unregistered type
+                found = ActivatorUtilities.CreateInstance(ServiceProvider, t);
+
+            return found;
+	            
 	    }
 
 	    public static int CountResolves;
