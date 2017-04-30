@@ -98,6 +98,8 @@ namespace ToSic.Eav.DataSources
 
         #endregion
 
+        // Important: This constructor must come BEFORE the other constructors
+        // because it is the one which the .net Core DI should use!
         /// <summary>
 		/// Initializes a new instance of the SqlDataSource class
 		/// </summary>

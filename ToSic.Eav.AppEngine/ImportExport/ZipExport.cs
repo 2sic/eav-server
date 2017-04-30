@@ -142,7 +142,9 @@ namespace ToSic.Eav.Apps.ImportExport
             var entityIds = entities
                 .Select(e => e.Value.EntityId.ToString()).ToArray();
 
-            var xmlExport = Factory.Container.Resolve<XmlExporter>(new ParameterOverrides { { "zoneId", _zoneId }, { "appId", _appId}, {"appExport", true}, { "contentTypeIds", attributeSetIds }, {"entityIds", entityIds} });
+            var xmlExport = Factory.Resolve<XmlExporter>()
+                .Init(_zoneId, _appId, true, attributeSetIds, entityIds);
+            // var xmlExport = Factory.Container.Resolve<XmlExporter>(new ParameterOverrides { { "zoneId", _zoneId }, { "appId", _appId}, {"appExport", true}, { "contentTypeIds", attributeSetIds }, {"entityIds", entityIds} });
             // new ToSxcXmlExporter(_zoneId, _appId, true, attributeSetIds, entityIds);
 
             #region reset App Guid if necessary

@@ -75,7 +75,7 @@ namespace ToSic.Eav.ImportExport.Models
 
         private static string TryToResolveLink(string valueString, AttributeTypeEnum valueType)
         {
-            var valueConverter = Factory.Container.Resolve<IEavValueConverter>();
+            var valueConverter = Factory.Resolve<IEavValueConverter>();
             return valueConverter.Convert(ConversionScenario.ConvertFriendlyToData, valueType.ToString(), valueString);
         }
 

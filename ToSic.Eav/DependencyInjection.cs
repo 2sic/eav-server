@@ -4,12 +4,13 @@ using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.DataSources.RootSources;
 using ToSic.Eav.DataSources.SqlSources;
-using ToSic.Eav.Implementations;
 using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repository.Efc.Implementations;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 //using ToSic.Eav.Repository.EF4;
 
@@ -20,9 +21,54 @@ namespace ToSic.Eav
 	/// </summary>
 	public class DependencyInjection
 	{
-        public bool UseEfCore = true;
+
+
+        #region try to configure the ef-core container
+
+     //   public static ServiceCollection ServiceCollection 
+     //       => _serviceCollection ?? (_serviceCollection = new ServiceCollection());
+
+	    //public static IServiceProvider ServiceProvider
+	    //    => (_serviceCollection ?? (_serviceCollection = new ServiceCollection()))
+	    //        .BuildServiceProvider();
+
+	    //private static IServiceProvider _serviceprovider;
+	    //private static ServiceCollection _serviceCollection;
+
+	    /// <summary>
+	    /// Use this to setup the new DI container
+	    /// </summary>
+	    /// <param name="serviceCollection"></param>
+	    public void ConfigureNetCoreContainer(IServiceCollection serviceCollection)
+	    {
+            serviceCollection.TryAddTransient<ICache, QuickCache>();
+            serviceCollection.TryAddTransient<IRootSource, EavSqlStore>();
+
+            serviceCollection.TryAddTransient<IRepositoryImporter, RepositoryImporter>();
+
+            serviceCollection.TryAddTransient<ISystemConfiguration, Configuration>();
+
+            serviceCollection.TryAddTransient<IRepositoryLoader, Efc11Loader>();
+
+            var conStr = new Configuration().DbConnectionString;
+            if (!conStr.ToLower().Contains("multipleactiveresultsets")) // this is needed to allow querying data while preparing new data on the same DbContext
+                conStr += ";MultipleActiveResultSets=True";
+
+            serviceCollection.AddDbContext<EavDbContext>(options => options.UseSqlServer(conStr), 
+                ServiceLifetime.Transient); // transient lifetime is important, otherwise 2-3x slower!
+
+            // register some Default Constructors
+            serviceCollection.TryAddTransient<SqlDataSource>();
+            serviceCollection.TryAddTransient<DataTableDataSource>();
+
+            
+        }
+        #endregion
+
+
 
         #region Configure Unity Factory with defaults
+
         /// <summary>
         /// Register Types in Unity Container
         /// </summary>
@@ -41,12 +87,13 @@ namespace ToSic.Eav
                 cont.RegisterType<ISystemConfiguration, Configuration>();
 
             if (!cont.IsRegistered<IRepositoryLoader>())
-                //if (UseEfCore)
-                    cont.RegisterType<IRepositoryLoader, Efc11Loader>(
-                        new InjectionConstructor(new ResolvedParameter<EavDbContext>())); 
-                //else
-                //    cont.RegisterType<IRepositoryLoader, Ef4Loader>(new InjectionConstructor());// use the empty constructor
+                cont.RegisterType<IRepositoryLoader, Efc11Loader>(
+                    new InjectionConstructor(new ResolvedParameter<EavDbContext>()));
 
+
+            var conStr = new Configuration().DbConnectionString;
+            if (!conStr.ToLower().Contains("multipleactiveresultsets")) // this is needed to allow querying data while preparing new data on the same DbContext
+                conStr += ";MultipleActiveResultSets=True";
 
             #region register the new EF1.1 ORM
             if (!cont.IsRegistered<EavDbContext>())
@@ -54,9 +101,6 @@ namespace ToSic.Eav
                     obj =>
                     {
                         var opts = new DbContextOptionsBuilder<EavDbContext>();
-                        var conStr = new Configuration().DbConnectionString;
-                        if (!conStr.ToLower().Contains("multipleactiveresultsets")) // this is needed to allow querying data while preparing new data on the same DbContext
-                            conStr += ";MultipleActiveResultSets=True";
                         opts.UseSqlServer(conStr);
                         return new EavDbContext(opts.Options);
                     }));

@@ -49,7 +49,7 @@ namespace ToSic.Eav.Apps.ImportExport
 		/// <param name="allowSystemChanges">Specify if the import should be able to change system-wide things like shared attributesets</param>
 		public XmlImportWithFiles(string defaultLanguage, bool allowSystemChanges = false)
 		{
-		    _environment = Factory.Container.Resolve<IImportExportEnvironment>();
+		    _environment = Factory.Resolve<IImportExportEnvironment>();
 			// Prepare
 			ImportLog = new List<ExportImportMessage>();
 			DefaultLanguage = defaultLanguage;

@@ -237,7 +237,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         {
             if (value.Attribute.Type == Constants.Hyperlink)
             {
-                var vc = Factory.Container.Resolve<IEavValueConverter>();
+                var vc = Factory.Resolve<IEavValueConverter>();
                 return vc.Convert(ConversionScenario.GetFriendlyValue, Constants.Hyperlink, value.Value);
             }
             return value.Value;

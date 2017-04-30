@@ -50,7 +50,7 @@ namespace ToSic.Eav
 			{
 				throw new Exception("DataSource not installed on Server: " + sourceName);
 			}
-			var newDs = (BaseDataSource)Factory.Container.Resolve(type);
+			var newDs = (BaseDataSource)Factory.Resolve(type);
 			ConfigureNewDataSource(newDs, zoneId, appId, upstream, valueCollectionProvider);
 			return newDs;
 		}
@@ -68,7 +68,7 @@ namespace ToSic.Eav
 		{
             if(upstream == null && valueCollectionProvider == null)
                     throw new Exception("Trying to GetDataSource<T> but cannot do so if both upstream and ConfigurationProvider are null.");
-			var newDs = (BaseDataSource)Factory.Container.Resolve(typeof(T));
+			var newDs = (BaseDataSource)Factory.Resolve(typeof(T));
 			ConfigureNewDataSource(newDs, zoneId, appId, upstream, valueCollectionProvider ?? upstream.ConfigurationProvider);
 			return (T)Convert.ChangeType(newDs, typeof(T));
 		}

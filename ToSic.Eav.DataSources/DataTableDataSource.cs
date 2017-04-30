@@ -70,12 +70,14 @@ namespace ToSic.Eav.DataSources
 		        // _hasModifiedField = !string.IsNullOrWhiteSpace(value);
 		    }
 		}
-		#endregion
+        #endregion
 
-		/// <summary>
-		/// Initializes a new instance of the DataTableDataSource class
-		/// </summary>
-		public DataTableDataSource()
+        // Important: This constructor must come BEFORE the other constructors
+        // because it is the one which the .net Core DI should use!
+        /// <summary>
+        /// Initializes a new instance of the DataTableDataSource class
+        /// </summary>
+        public DataTableDataSource()
 		{
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntities));
 			Configuration.Add(TitleFieldKey, EntityTitleDefaultColumnName);

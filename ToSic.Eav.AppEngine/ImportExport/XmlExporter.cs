@@ -38,15 +38,17 @@ namespace ToSic.Eav.Apps.ImportExport
         #endregion
 
         #region Constructor stuff
-        /// <summary>
-        /// Initiate the exporter
-        /// </summary>
-        /// <param name="zoneId"></param>
-        /// <param name="appId"></param>
-        protected XmlExporter(int zoneId, int appId)
-        {
-            EavAppContext = DbDataController.Instance(zoneId, appId); 
-        }
+
+        ///// <summary>
+        ///// Initiate the exporter
+        ///// </summary>
+        ///// <param name="zoneId"></param>
+        ///// <param name="appId"></param>
+        //protected XmlExporter(int zoneId, int appId)
+        //{
+        //     EavAppContext = DbDataController.Instance(zoneId, appId); 
+           
+        //}
 
 
         private string _appStaticName = "";
@@ -56,6 +58,23 @@ namespace ToSic.Eav.Apps.ImportExport
             _isAppExport = appExport;
             AttributeSetIDs = attrSetIds;
             EntityIDs = entityIds;
+        }
+
+        /// <summary>
+        /// Not that the overload of this must take care of creating the EavAppContext and calling the Constructor
+        /// </summary>
+        /// <param name="zoneId"></param>
+        /// <param name="appId"></param>
+        /// <param name="appExport"></param>
+        /// <param name="attrSetIds"></param>
+        /// <param name="entityIds"></param>
+        /// <returns></returns>
+        public abstract XmlExporter Init(int zoneId, int appId, bool appExport, string[] attrSetIds, string[] entityIds);
+
+        private void EnsureThisIsInitialized()
+        {
+            if(EavAppContext == null || string.IsNullOrEmpty(_appStaticName))
+                throw new Exception("Xml Exporter is not initialized - this is required before trying to export");
         }
 
         #endregion
@@ -70,6 +89,8 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <returns></returns>
         public string GenerateNiceXml()
         {
+            EnsureThisIsInitialized();
+
             var doc = ExportXDocument;
 
             // Will be used to show an export protocoll in future

@@ -215,7 +215,7 @@ namespace ToSic.Eav.Data
 
 			if (resolveHyperlinks && attribute != null && result is string && attribute.Type == Constants.Hyperlink)
 			{
-				var vc = Factory.Container.Resolve<IEavValueConverter>();
+				var vc = Factory.Resolve<IEavValueConverter>();
 				result = vc.Convert(ConversionScenario.GetFriendlyValue, Constants.Hyperlink, (string)result);
 			}
 

@@ -53,6 +53,8 @@ namespace ToSic.Eav.Repository.Efc.Tests
         public void ImportApp_Qr()
         {
             ImportAnApp("qr");
+            Console.Write("resolves: " + Factory.CountResolves);
+            Console.Write(string.Join("\n", Factory.ResolvesList));
         }
 
         internal void ImportAnApp(string name)

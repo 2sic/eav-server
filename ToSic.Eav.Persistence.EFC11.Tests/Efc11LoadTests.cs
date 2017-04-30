@@ -20,7 +20,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
         public void Init()
         {
             Trace.Write("initializing DB & loader");
-            _db = Factory.Container.Resolve<EavDbContext>();
+            _db = Factory.Resolve<EavDbContext>();
             _loader = new Efc11Loader(_db);
         }
         #endregion

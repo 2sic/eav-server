@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.Practices.Unity;
+using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.Implementations.UserInformation;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repository.Efc.Parts;
@@ -61,7 +62,7 @@ namespace ToSic.Eav.Repository.Efc
                 try
                 {
                     // try to get using dependency injection
-                    var uinfo = Factory.Container.Resolve<IEavUserInformation>();
+                    var uinfo = Factory.Resolve<IEavUserInformation>();
                     _userName = uinfo.IdentityForLog;
                 }
                 catch
@@ -197,11 +198,15 @@ namespace ToSic.Eav.Repository.Efc
 
             var modifiedItems = baseEvent(acceptAllChangesOnSuccess);
 
+
             if (modifiedItems != 0 && PurgeAppCacheOnSave)
-                DataSource.GetCache(ZoneId, AppId).PurgeCache(ZoneId, AppId);
+                (_cache ?? (_cache = Eav.Factory.Resolve<ICache>())).PurgeCache(ZoneId, AppId);
+                //DataSource.GetCache(ZoneId, AppId).PurgeCache(ZoneId, AppId);
 
             return modifiedItems;
         }
+
+        private ICache _cache;
 
         #endregion
 

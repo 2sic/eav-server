@@ -167,3 +167,4 @@ ToSic.Eav.ManagementUI/node_modules/
 ToSic.Eav.ManagementUI/.grunt/
 ToSic.Eav.ManagementUI/bower_components/
 ToSic.Eav.ManagementUI/tmp/
+/ToSic.Eav.Repository.Efc.Tests/Destination

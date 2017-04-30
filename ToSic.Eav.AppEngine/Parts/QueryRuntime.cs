@@ -35,7 +35,7 @@ namespace ToSic.Eav.Apps.Parts
                 // Handle Interfaces (currently only ICache) with Unity
                 else if (dataSource.IsInterface)
                 {
-                    var dataSourceInstance = (IDataSource)Factory.Container.Resolve(dataSource);
+                    var dataSourceInstance = (IDataSource)Factory.Resolve(dataSource);
                     outStreamNames = dataSourceInstance.Out.Keys;
                     if (dataSourceInstance is ICache)
                         inStreamNames = null;

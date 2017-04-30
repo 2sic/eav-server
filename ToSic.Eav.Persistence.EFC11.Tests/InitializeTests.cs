@@ -17,7 +17,7 @@ namespace ToSic.Eav.UnitTests
 
         private static void ConfigureDependencyInjection()
         {
-            var container = Eav.Factory.Container;
+            var container = Eav.Factory.CreateContainer();//.Container;
             var conStr = @"Data Source=(local)\SQLEXPRESS;Initial Catalog=""2flex 2Sexy Content"";Integrated Security=True;";
             container.RegisterType<EavDbContext>(new HierarchicalLifetimeManager(), new InjectionFactory(
                 obj =>

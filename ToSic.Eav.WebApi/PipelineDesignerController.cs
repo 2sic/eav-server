@@ -23,7 +23,7 @@ namespace ToSic.Eav.WebApi
         #region Helpers
         // I must keep the serializer so it can be configured from outside if necessary
         private Serializer _serializer;
-        public Serializer Serializer => _serializer ?? (_serializer = Factory.Container.Resolve<Serializer>());
+        public Serializer Serializer => _serializer ?? (_serializer = Factory.Resolve<Serializer>());
 
 	    #endregion
         //private EavDataController _context;

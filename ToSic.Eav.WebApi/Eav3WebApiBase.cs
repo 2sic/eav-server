@@ -32,7 +32,7 @@ namespace ToSic.Eav.WebApi
 	        {
 	            if (_serializer == null)
 	            {
-	                _serializer = Factory.Container.Resolve<Serializer>();
+	                _serializer = Factory.Resolve<Serializer>();
 	                _serializer.IncludeGuid = true;
 	            }
 	            return _serializer;
