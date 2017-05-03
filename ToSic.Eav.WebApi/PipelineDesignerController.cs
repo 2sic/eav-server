@@ -26,8 +26,6 @@ namespace ToSic.Eav.WebApi
         public Serializer Serializer => _serializer ?? (_serializer = Factory.Resolve<Serializer>());
 
 	    #endregion
-        //private EavDataController _context;
-		//private readonly string _userName;
 		public List<IValueProvider> ValueProviders { get; set; }
 
         /// <summary>
@@ -39,11 +37,6 @@ namespace ToSic.Eav.WebApi
         /// <param name="eavConnectionString">optional EAV Connection String</param>
         public PipelineDesignerController(/*string userName,*/ string eavConnectionString = null)
 		{
-			//_userName = userName;
-
-			//if (eavConnectionString != null)
-			//	Eav.Configuration.SetConnectionStringKey(eavConnectionString);
-
 			// Init empty list of ValueProviders
 			ValueProviders = new List<IValueProvider>();
 		}
@@ -111,48 +104,7 @@ namespace ToSic.Eav.WebApi
         /// </summary>
         [HttpGet]
 		public IEnumerable<QueryRuntime.QueryInfoTemp> GetInstalledDataSources()
-		{
-			//var result = new List<object>();
-			//var installedDataSources = DataSource.GetInstalledDataSources();
-			//foreach (var dataSource in installedDataSources.Where(d => d.GetCustomAttributes(typeof(PipelineDesignerAttribute), false).Any()))
-			//{
-			//	#region Create Instance of DataSource to get In- and Out-Streams
-			//	ICollection<string> outStreamNames = new string[0];
-			//	ICollection<string> inStreamNames = new string[0];
-			//	if (!dataSource.IsInterface && !dataSource.IsAbstract)
-			//	{
-			//		var dataSourceInstance = (IDataSource)Activator.CreateInstance(dataSource);
-			//		try
-			//		{
-			//			outStreamNames = dataSourceInstance.Out.Keys;
-			//		}
-			//		catch
-			//		{
-			//			outStreamNames = null;
-			//		}
-			//	}
-			//	// Handle Interfaces (currently only ICache) with Unity
-			//	else if (dataSource.IsInterface)
-			//	{
-			//		var dataSourceInstance = (IDataSource)Factory.Container.Resolve(dataSource);
-			//		outStreamNames = dataSourceInstance.Out.Keys;
-			//		if (dataSourceInstance is ICache)
-			//			inStreamNames = null;
-			//	}
-			//	#endregion
-
-			//	result.Add(new
-			//	{
-			//		PartAssemblyAndType = dataSource.FullName + ", " + dataSource.Assembly.GetName().Name,
-			//		ClassName = dataSource.Name,
-			//		In = inStreamNames,
-			//		Out = outStreamNames
-			//	});
-			//}
-
-			//return result;
-		    return QueryRuntime.GetInstalledDataSources();
-		}
+		    => QueryRuntime.GetInstalledDataSources();
 
 		/// <summary>
 		/// Save Pipeline
@@ -162,7 +114,6 @@ namespace ToSic.Eav.WebApi
 		/// <param name="id">PipelineEntityId</param>
 		public Dictionary<string, object> SavePipeline([FromBody] dynamic data, int appId, int? id = null)
 		{
-			//var _context = DbDataController.Instance(appId: appId);
             var appManager = new AppManager(appId);
 
 			//_context.UserName = _userName;
@@ -186,12 +137,12 @@ namespace ToSic.Eav.WebApi
 				//id = entity.EntityID;
 			}
 
-		    var pipelinePartAttributeSetId = appManager.Read.ContentTypes.Get(Constants.DataPipelinePartStaticName).StaticName;//  _context.AttribSet.GetAttributeSet(Constants.DataPipelinePartStaticName).StaticName;//AttributeSetID;
-			var newDataSources = SavePipelineParts(data.dataSources, pipelineEntityGuid, pipelinePartAttributeSetId, appManager);//, _context);
-			DeletedRemovedPipelineParts(data.dataSources, newDataSources, pipelineEntityGuid, source.ZoneId, source.AppId, appManager);//, _context);
+		    var pipelinePartAttributeSetId = appManager.Read.ContentTypes.Get(Constants.DataPipelinePartStaticName).StaticName;
+			var newDataSources = SavePipelineParts(data.dataSources, pipelineEntityGuid, pipelinePartAttributeSetId, appManager);
+			DeletedRemovedPipelineParts(data.dataSources, newDataSources, pipelineEntityGuid, source.ZoneId, source.AppId, appManager);
 
 			// Update Pipeline Entity with new Wirings etc.
-		    SavePipelineEntity(id.Value, appId, data.pipeline, newDataSources, appManager);// _context);
+		    SavePipelineEntity(id.Value, appId, data.pipeline, newDataSources, appManager);
 
 			return GetPipeline(appId, id.Value);
 		}
@@ -216,14 +167,11 @@ namespace ToSic.Eav.WebApi
 				var newValues = GetEntityValues(dataSource);
 				if (dataSource.EntityId != null)
                     appManager.Entities.Update((int)dataSource.EntityId, newValues);
-					//_context.Entities.UpdateEntity((int)dataSource.EntityId, newValues);
 				// Add new DataSource
 				else
 				{
 
                     Tuple<int, Guid> entity = appManager.Entities.Create(pipelinePartAttributeSetId, newValues, Constants.MetadataForEntity, keyGuid: pipelineEntityGuid);
-                    //_context.Entities.AddEntity(pipelinePartAttributeSetId, newValues, keyGuid: pipelineEntityGuid, keyTypeId: Constants.MetadataForEntity);
-                    //_context.Entities.AddEntity(pipelinePartAttributeSetId, newValues, null, pipelineEntityGuid, Constants.AssignmentObjectTypeEntity);
                     newDataSources.Add((string)dataSource.EntityGuid, entity.Item2);
 				}
 			}
@@ -245,7 +193,6 @@ namespace ToSic.Eav.WebApi
 
 		    foreach (var entityToDelete in existingEntityGuids.Where(existingGuid => !newEntityGuids.Contains(existingGuid)))
 		        appManager.Entities.Delete(entityToDelete);
-                //_context.Entities.DeleteEntity(entityToDelet);
 		}
 
         /// <summary>
@@ -309,7 +256,6 @@ namespace ToSic.Eav.WebApi
 				dimensionIds = pipelineEntity.Title.Values.First().Languages.Select(l => l.DimensionId).ToArray();
 
             appManager.Entities.Update(id.Value, newValues, dimensionIds: dimensionIds);
-	        //_context.Entities.UpdateEntity(id.Value, newValues, dimensionIds: dimensionIds);
 		}
 
 		/// <summary>
@@ -345,7 +291,7 @@ namespace ToSic.Eav.WebApi
             // ...and return the results
 			return new
 			{
-				Query = query, // Serializer.Prepare(outStreams), // outStreams.Out.ToDictionary(k => k.Key, v => v.Value.List.Select(l => l.Value)),
+				Query = query, 
 				debugInfo.Streams,
 				debugInfo.Sources,
                 QueryTimer = new { 
@@ -365,23 +311,15 @@ namespace ToSic.Eav.WebApi
 		[HttpGet]
 		public dynamic PipelineDebugInfo(int appId, int id)
 		=> new DataSources.Debug.PipelineInfo(ConstructPipeline(appId, id, true));
+
+
+        /// <summary>
+        /// Clone a Pipeline with all DataSources and their configurations
+        /// </summary>
+        [HttpGet]
+        public object ClonePipeline(int appId, int id)
+            => new { EntityId = new AppManager(appId).Queries.Clone(id) };
 		
-
-
-
-
-
-		/// <summary>
-		/// Clone a Pipeline with all DataSources and their configurations
-		/// </summary>
-		[HttpGet]
-		public object ClonePipeline(int appId, int id)
-		{
-            return new { EntityId = new AppManager(appId).Queries.Clone(id) };
-   //         var eavCt = DbDataController.Instance(appId: appId);
-   //         var clonedId = new DbPipeline(eavCt).CopyDataPipeline(appId, id, _userName);
-			//return new { EntityId = clonedId };
-		}
 
 		/// <summary>
 		/// Delete a Pipeline with the Pipeline Entity, Pipeline Parts and their Configurations. Stops if the if the Pipeline Entity has relationships to other Entities.
@@ -389,34 +327,6 @@ namespace ToSic.Eav.WebApi
 		[HttpGet]
 		public object DeletePipeline(int appId, int id)
 		{
-			////if (_context == null)
-			//	var _context = DbDataController.Instance(appId: appId);
-
-		 //   var canDeleteResult = (_context.Entities.CanDeleteEntity(id));// _context.EntCommands.CanDeleteEntity(id);
-			//if (!canDeleteResult.Item1)
-			//	throw new Exception(canDeleteResult.Item2);
-
-
-			//// Get the Entity describing the Pipeline and Pipeline Parts (DataSources)
-			//var source = DataSource.GetInitialDataSource(appId: appId);
-			//var pipelineEntity = DataPipeline.GetPipelineEntity(id, source);
-			//var dataSources = DataPipeline.GetPipelineParts(source.ZoneId, source.AppId, pipelineEntity.EntityGuid);
-			//var metaDataSource = DataSource.GetMetaDataSource(appId: appId);
-
-			//// Delete Pipeline Parts
-			//foreach (var dataSource in dataSources)
-			//{
-			//	// Delete Configuration Entities (if any)
-			//	var dataSourceConfig = metaDataSource.GetAssignedEntities(Constants.MetadataForEntity /* .AssignmentObjectTypeEntity*/, dataSource.EntityGuid).FirstOrDefault();
-			//	if (dataSourceConfig != null)
-			//		_context.Entities.DeleteEntity(dataSourceConfig.EntityId);
-
-			//	_context.Entities.DeleteEntity(dataSource.EntityId);
-			//}
-
-			//// Delete Pipeline
-			//_context.Entities.DeleteEntity(id);
-
 		    new AppManager(appId).Queries.Delete(id);
 			return new { Result = "Success" };
 		}

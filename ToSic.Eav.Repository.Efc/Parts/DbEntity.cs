@@ -9,7 +9,6 @@ using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Logging;
 using ToSic.Eav.ImportExport.Models;
 using ToSic.Eav.Persistence.Efc.Models;
-using System.Linq.Expressions;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
@@ -28,9 +27,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
                    .Include(e => e.RelationshipsWithThisAsParent)
                    .Include(e => e.RelationshipsWithThisAsChild);
 
-        private IQueryable<ToSicEavEntities> IncludeMultiple(IQueryable<ToSicEavEntities> origQuery, string additionalTables)//Expression<Func<ToSicEavEntities, IQueryable<ToSicEavEntities>>> navigationPropertyPath)
+        private IQueryable<ToSicEavEntities> IncludeMultiple(IQueryable<ToSicEavEntities> origQuery, string additionalTables)
         {
-            //var origQuery = EntityQuery;
             additionalTables.Split(',').ToList().ForEach(a => origQuery = origQuery.Include(a.Trim()));
             return origQuery;
         }
@@ -40,10 +38,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         /// <returns>Entity or throws InvalidOperationException</returns>
         internal ToSicEavEntities GetDbEntity(int entityId)
-            =>  //DbContext.SqlDb.ToSicEavEntities
-                //.Include(e => e.RelationshipsWithThisAsParent)
-                //.Include(e => e.RelationshipsWithThisAsChild)
-                EntityQuery.Single(e => e.EntityId == entityId);
+            =>  EntityQuery.Single(e => e.EntityId == entityId);
 
         internal ToSicEavEntities GetDbEntity(int entityId, string includes)
             => IncludeMultiple(EntityQuery, includes).Single(e => e.EntityId == entityId);
@@ -59,19 +54,12 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
 
         internal IQueryable<ToSicEavEntities> GetEntitiesByGuid(Guid entityGuid) 
-            => EntityQuery // DbContext.SqlDb.ToSicEavEntities
-            //.Include(e => e.RelationshipsWithThisAsParent)
-            //.Include(e => e.RelationshipsWithThisAsChild)
-            .Where(e => e.EntityGuid == entityGuid && !e.ChangeLogDeleted.HasValue &&
+            => EntityQuery.Where(e => e.EntityGuid == entityGuid && !e.ChangeLogDeleted.HasValue &&
                 !e.AttributeSet.ChangeLogDeleted.HasValue && e.AttributeSet.AppId == DbContext.AppId);
 
 
         internal IQueryable<ToSicEavEntities> GetEntitiesByType(ToSicEavAttributeSets set)
-        => EntityQuery // DbContext.SqlDb.ToSicEavEntities
-                //.Include(e => e.RelationshipsWithThisAsParent)
-                //.Include(e => e.RelationshipsWithThisAsChild)
-                .Include(e => e.ToSicEavValues)
-                .Where(e => e.AttributeSet == set);
+        => EntityQuery.Where(e => e.AttributeSet == set);
 
 
         /// <summary>
@@ -102,13 +90,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         {
             int assignmentObjectTypeId = Constants.MetadataForEntity;
             var query = GetAssignedEntities(Constants.MetadataForEntity, keyGuid: keyGuid, includes: includes)
-            //var origQuery = DbContext.SqlDb.ToSicEavEntities
                 .Where(e => e.AttributeSet.AppId == appId);
-            //    .Where(e => e.AssignmentObjectTypeId == assignmentObjectTypeId
-            //       && e.KeyGuid == keyGuid
-            //       && e.ChangeLogDeleted == null);
-            //if (!string.IsNullOrEmpty(includes))
-            //    origQuery = IncludeMultiple(origQuery, includes);
             return query;
         }
 
