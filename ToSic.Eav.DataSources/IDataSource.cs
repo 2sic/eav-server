@@ -99,6 +99,8 @@ namespace ToSic.Eav.DataSources
         string CachePartialKey { get; }
         string CacheFullKey { get; }
         DateTime CacheLastRefresh { get; }
+
+        bool TempUsesDynamicOut { get; }
         #endregion
     }
 

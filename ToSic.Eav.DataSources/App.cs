@@ -77,6 +77,7 @@ namespace ToSic.Eav.DataSources
 			Configuration.Add(ZoneSwitchKey, "[Settings:" + ZoneSwitchKey + "||0]");
 
             CacheRelevantConfigurations = new[] { AppSwitchKey, ZoneSwitchKey };
+            TempUsesDynamicOut = true;
         }
 
 		/// <summary>

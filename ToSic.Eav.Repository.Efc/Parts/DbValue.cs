@@ -29,7 +29,12 @@ namespace ToSic.Eav.Repository.Efc.Parts
             // Add all Values with Dimensions
             foreach (var eavValue in source.ToSicEavValues.ToList())
             {
-                var value = eavValue;// 2017-04-19 todo validate // DbContext.DbS.CopyEfEntity(eavValue);
+                var value = new ToSicEavValues()
+                {
+                    AttributeId = eavValue.AttributeId,
+                    Value = eavValue.Value,
+                    ChangeLogCreated = DbContext.Versioning.GetChangeLogId()
+                };// eavValue;// 2017-04-19 todo validate // DbContext.DbS.CopyEfEntity(eavValue);
                 // copy Dimensions
                 foreach (var valuesDimension in eavValue.ToSicEavValuesDimensions)
                     value.ToSicEavValuesDimensions.Add(new ToSicEavValuesDimensions

@@ -220,11 +220,11 @@ namespace ToSic.Eav.WebApi
 				// Add new DataSource
 				else
 				{
-                    
-					var entity = appManager.Entities.Create(pipelinePartAttributeSetId, newValues, Constants.MetadataForEntity, keyGuid: pipelineEntityGuid);
-                        //_context.Entities.AddEntity(pipelinePartAttributeSetId, newValues, keyGuid: pipelineEntityGuid, keyTypeId: Constants.MetadataForEntity);
+
+                    Tuple<int, Guid> entity = appManager.Entities.Create(pipelinePartAttributeSetId, newValues, Constants.MetadataForEntity, keyGuid: pipelineEntityGuid);
+                    //_context.Entities.AddEntity(pipelinePartAttributeSetId, newValues, keyGuid: pipelineEntityGuid, keyTypeId: Constants.MetadataForEntity);
                     //_context.Entities.AddEntity(pipelinePartAttributeSetId, newValues, null, pipelineEntityGuid, Constants.AssignmentObjectTypeEntity);
-                    newDataSources.Add((string)dataSource.EntityGuid, entity.EntityGUID);
+                    newDataSources.Add((string)dataSource.EntityGuid, entity.Item2);
 				}
 			}
 

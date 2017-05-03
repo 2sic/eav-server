@@ -23,14 +23,17 @@ namespace ToSic.Eav.Apps.Parts
                 if (!dataSource.IsInterface && !dataSource.IsAbstract)
                 {
                     var dataSourceInstance = (IDataSource)Activator.CreateInstance(dataSource);
-                    try
-                    {
-                        outStreamNames = dataSourceInstance.Out.Keys;
-                    }
-                    catch
-                    {
+                    if (dataSourceInstance.TempUsesDynamicOut) // skip this if out-connections cannot be queried
                         outStreamNames = null;
-                    }
+                    else
+                        try
+                        {
+                            outStreamNames = dataSourceInstance.Out.Keys;
+                        }
+                        catch
+                        {
+                            outStreamNames = null;
+                        }
                 }
                 // Handle Interfaces (currently only ICache) with Unity
                 else if (dataSource.IsInterface)

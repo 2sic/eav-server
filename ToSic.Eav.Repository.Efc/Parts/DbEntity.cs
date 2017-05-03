@@ -9,6 +9,7 @@ using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Logging;
 using ToSic.Eav.ImportExport.Models;
 using ToSic.Eav.Persistence.Efc.Models;
+using System.Linq.Expressions;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
@@ -18,19 +19,34 @@ namespace ToSic.Eav.Repository.Efc.Parts
         {
         }
 
-        
+
 
         #region Get Commands
+
+        private IQueryable<ToSicEavEntities> EntityQuery 
+            => DbContext.SqlDb.ToSicEavEntities
+                   .Include(e => e.RelationshipsWithThisAsParent)
+                   .Include(e => e.RelationshipsWithThisAsChild);
+
+        private IQueryable<ToSicEavEntities> IncludeMultiple(IQueryable<ToSicEavEntities> origQuery, string additionalTables)//Expression<Func<ToSicEavEntities, IQueryable<ToSicEavEntities>>> navigationPropertyPath)
+        {
+            //var origQuery = EntityQuery;
+            additionalTables.Split(',').ToList().ForEach(a => origQuery = origQuery.Include(a.Trim()));
+            return origQuery;
+        }
 
         /// <summary>
         /// Get a single Entity by EntityId
         /// </summary>
         /// <returns>Entity or throws InvalidOperationException</returns>
         internal ToSicEavEntities GetDbEntity(int entityId)
-            => DbContext.SqlDb.ToSicEavEntities
-                .Include(e => e.RelationshipsWithThisAsParent)
-                .Include(e => e.RelationshipsWithThisAsChild)
-                .Single(e => e.EntityId == entityId);
+            =>  //DbContext.SqlDb.ToSicEavEntities
+                //.Include(e => e.RelationshipsWithThisAsParent)
+                //.Include(e => e.RelationshipsWithThisAsChild)
+                EntityQuery.Single(e => e.EntityId == entityId);
+
+        internal ToSicEavEntities GetDbEntity(int entityId, string includes)
+            => IncludeMultiple(EntityQuery, includes).Single(e => e.EntityId == entityId);
 
         /// <summary>
         /// Get a single Entity by EntityGuid. Ensure it's not deleted and has context's AppId
@@ -43,21 +59,20 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
 
         internal IQueryable<ToSicEavEntities> GetEntitiesByGuid(Guid entityGuid) 
-            => DbContext.SqlDb.ToSicEavEntities
-            .Include(e => e.RelationshipsWithThisAsParent)
-            .Include(e => e.RelationshipsWithThisAsChild)
+            => EntityQuery // DbContext.SqlDb.ToSicEavEntities
+            //.Include(e => e.RelationshipsWithThisAsParent)
+            //.Include(e => e.RelationshipsWithThisAsChild)
             .Where(e => e.EntityGuid == entityGuid && !e.ChangeLogDeleted.HasValue &&
                 !e.AttributeSet.ChangeLogDeleted.HasValue && e.AttributeSet.AppId == DbContext.AppId);
 
 
         internal IQueryable<ToSicEavEntities> GetEntitiesByType(ToSicEavAttributeSets set)
-        {
-            return DbContext.SqlDb.ToSicEavEntities
-                .Include(e => e.RelationshipsWithThisAsParent)
-                .Include(e => e.RelationshipsWithThisAsChild)
+        => EntityQuery // DbContext.SqlDb.ToSicEavEntities
+                //.Include(e => e.RelationshipsWithThisAsParent)
+                //.Include(e => e.RelationshipsWithThisAsChild)
                 .Include(e => e.ToSicEavValues)
                 .Where(e => e.AttributeSet == set);
-        }
+
 
         /// <summary>
         /// Test whether Entity exists on current App and is not deleted
@@ -68,14 +83,35 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Get a List of Entities with specified assignmentObjectTypeId and optional Key.
         /// </summary>
-        internal IQueryable<ToSicEavEntities> GetAssignedEntities(int assignmentObjectTypeId, int? keyNumber = null, Guid? keyGuid = null, string keyString = null)
+        internal IQueryable<ToSicEavEntities> GetAssignedEntities(int assignmentObjectTypeId, int? keyNumber = null, Guid? keyGuid = null, string keyString = null, string includes = null)
         {
-            return from e in DbContext.SqlDb.ToSicEavEntities
-                   where e.AssignmentObjectTypeId == assignmentObjectTypeId
+            var origQuery = DbContext.SqlDb.ToSicEavEntities
+                .Where(e => e.AssignmentObjectTypeId == assignmentObjectTypeId
                    && (keyNumber.HasValue && e.KeyNumber == keyNumber.Value || keyGuid.HasValue && e.KeyGuid == keyGuid.Value || keyString != null && e.KeyString == keyString)
-                   && e.ChangeLogDeleted == null
-                   select e;
+                   && e.ChangeLogDeleted == null);
+            if (!string.IsNullOrEmpty(includes))
+                origQuery = IncludeMultiple(origQuery, includes);
+            return origQuery;
         }
+
+        /// <summary>
+        /// Get a Metadata items which enhance existing Entities, 
+        /// and use the GUID to keep reference. This is extra complex, because the Guid can be in use multiple times on various apps
+        /// </summary>
+        internal IQueryable<ToSicEavEntities> GetEntityMetadataByGuid(int appId, Guid keyGuid, string includes = null)
+        {
+            int assignmentObjectTypeId = Constants.MetadataForEntity;
+            var query = GetAssignedEntities(Constants.MetadataForEntity, keyGuid: keyGuid, includes: includes)
+            //var origQuery = DbContext.SqlDb.ToSicEavEntities
+                .Where(e => e.AttributeSet.AppId == appId);
+            //    .Where(e => e.AssignmentObjectTypeId == assignmentObjectTypeId
+            //       && e.KeyGuid == keyGuid
+            //       && e.ChangeLogDeleted == null);
+            //if (!string.IsNullOrEmpty(includes))
+            //    origQuery = IncludeMultiple(origQuery, includes);
+            return query;
+        }
+
         #endregion
 
         #region Add Commands
@@ -154,7 +190,19 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         internal ToSicEavEntities CloneEntity(ToSicEavEntities sourceEntity, bool assignNewEntityGuid = false)
         {
-            var clone = sourceEntity; // 2017-04-19 todo validate //  DbContext.DbS.CopyEfEntity(sourceEntity);
+            // var clone = sourceEntity; // 2017-04-19 todo validate //  DbContext.DbS.CopyEfEntity(sourceEntity);
+            var versioningId = DbContext.Versioning.GetChangeLogId();
+            var clone = new ToSicEavEntities()
+            {
+                AttributeSet = sourceEntity.AttributeSet,
+                ConfigurationSet = sourceEntity.ConfigurationSet,
+                AssignmentObjectTypeId = sourceEntity.AssignmentObjectTypeId,
+                KeyGuid = sourceEntity.KeyGuid,
+                KeyNumber = sourceEntity.KeyNumber,
+                KeyString = sourceEntity.KeyString,
+                ChangeLogCreated = versioningId,
+                ChangeLogModified = versioningId
+        };
 
             DbContext.SqlDb.Add(clone);
 
