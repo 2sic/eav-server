@@ -62,8 +62,10 @@ namespace ToSic.Eav.Apps
 
 
         public void SaveLanguage(string cultureCode, string cultureText, bool active)
-            => //Repo.Dimensions.AddOrUpdateLanguage(cultureCode, cultureText, active);
-         DataController.Dimensions.AddOrUpdateLanguage(cultureCode, cultureText, active);
+        {
+            DataController.Dimensions.AddOrUpdateLanguage(cultureCode, cultureText, active);
+            LanguageCache.Remove(ZoneId);
+        }
 
 
         private static readonly Dictionary<int, List<ZoneLanguagesTemp>> LanguageCache =
