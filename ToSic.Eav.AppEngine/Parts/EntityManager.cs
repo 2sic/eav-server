@@ -21,7 +21,7 @@ namespace ToSic.Eav.Apps.Parts
         /// <returns></returns>
         public bool Publish(int repositoryId, bool state)
         {
-            _appManager.DataController.Publishing.PublishDraftInDbEntity(repositoryId, state);
+            _appManager.DataController.Publishing.PublishDraftInDbEntity(repositoryId);//, state);
             return state;
         }
 

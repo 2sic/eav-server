@@ -14,7 +14,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <param name="entityId"></param>
         /// <param name="autoSave">Call SaveChanges() automatically? Set to false if you want to do further DB changes</param>
         /// <returns>The published Entity</returns>
-        public ToSicEavEntities PublishDraftInDbEntity(int entityId, bool autoSave)
+        public ToSicEavEntities PublishDraftInDbEntity(int entityId)
         {
             var unpublishedEntity = DbContext.Entities.GetDbEntity(entityId);
             if (unpublishedEntity.IsPublished)
@@ -39,12 +39,14 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 publishedEntity = DbContext.Entities.GetDbEntity(unpublishedEntity.PublishedEntityId.Value);
                 DbContext.Values.CloneEntityValues(unpublishedEntity, publishedEntity);
 
+                //DbContext.SqlDb.SaveChanges();
+
                 // delete the Draft Entity
                 DbContext.Entities.DeleteEntity(unpublishedEntity, false);
             }
 
-            if (autoSave)
-                DbContext.SqlDb.SaveChanges();
+            //if (autoSave)
+            DbContext.SqlDb.SaveChanges();
 
             return publishedEntity;
         }

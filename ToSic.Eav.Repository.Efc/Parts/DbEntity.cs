@@ -22,10 +22,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         #region Get Commands
 
-        private IQueryable<ToSicEavEntities> EntityQuery 
+        private IQueryable<ToSicEavEntities> EntityQuery
             => DbContext.SqlDb.ToSicEavEntities
                    .Include(e => e.RelationshipsWithThisAsParent)
-                   .Include(e => e.RelationshipsWithThisAsChild);
+                   .Include(e => e.RelationshipsWithThisAsChild)
+                   .Include(e => e.ToSicEavValues)
+                    .ThenInclude(v => v.ToSicEavValuesDimensions);
+            
 
         private IQueryable<ToSicEavEntities> IncludeMultiple(IQueryable<ToSicEavEntities> origQuery, string additionalTables)
         {
@@ -432,6 +435,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
         {
             if (entity == null)
                 return false;
+
+            // get full entity again to be sure we are deleting everything - otherwise inbound unreliable
+            entity = DbContext.Entities.GetDbEntity(entity.EntityId, "ToSicEavValues,ToSicEavValues.ToSicEavValuesDimensions");
+
 
             #region Delete Related Records (Values, Value-Dimensions, Relationships)
             // Delete all Value-Dimensions

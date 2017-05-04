@@ -20,9 +20,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
         internal void CloneEntityValues(ToSicEavEntities source, ToSicEavEntities target)
         {
             // Clear values on target (including Dimensions). Must be done in separate steps, would cause unallowed null-Foreign-Keys
-            if (target.ToSicEavValues.Any())
+            if (target.ToSicEavValues.Any(v => v.ChangeLogDeleted == null))
             {
-                foreach (var eavValue in target.ToSicEavValues)
+                foreach (var eavValue in target.ToSicEavValues.Where(v => v.ChangeLogDeleted == null))
                     eavValue.ChangeLogDeleted = DbContext.Versioning.GetChangeLogId();
             }
 
