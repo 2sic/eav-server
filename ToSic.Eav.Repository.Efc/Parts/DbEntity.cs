@@ -24,10 +24,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         private IQueryable<ToSicEavEntities> EntityQuery
             => DbContext.SqlDb.ToSicEavEntities
-                   .Include(e => e.RelationshipsWithThisAsParent)
-                   .Include(e => e.RelationshipsWithThisAsChild)
-                   .Include(e => e.ToSicEavValues)
-                    .ThenInclude(v => v.ToSicEavValuesDimensions);
+                .Include(e => e.RelationshipsWithThisAsParent)
+                .Include(e => e.RelationshipsWithThisAsChild)
+                .Include(e => e.ToSicEavValues)
+                    .ThenInclude(v => v.ToSicEavValuesDimensions)
+                        .ThenInclude(d => d.Dimension);
             
 
         private IQueryable<ToSicEavEntities> IncludeMultiple(IQueryable<ToSicEavEntities> origQuery, string additionalTables)
