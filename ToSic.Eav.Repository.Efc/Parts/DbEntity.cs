@@ -213,7 +213,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <returns>the updated Entity</returns>
         public ToSicEavEntities SaveEntity(int repositoryId, IDictionary newValues, bool autoSave = true, ICollection<int> dimensionIds = null, /*bool masterRecord = true,*/ List<ImportLogItem> updateLog = null, bool preserveUndefinedValues = true, bool isPublished = true, bool forceNoBranch = false)
         {
-            //var entity = DbContext.SqlDb.ToSicEavEntities.Single(e => e.EntityId == repositoryId);
             var entity = DbContext.Entities.GetDbEntity(repositoryId);
             var draftEntityId = DbContext.Publishing.GetDraftEntityId(repositoryId);
 
