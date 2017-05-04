@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Permissions;
 using ToSic.Eav.Apps.Interfaces;
-using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repository.Efc;
 
 namespace ToSic.Eav.Apps
@@ -16,18 +14,8 @@ namespace ToSic.Eav.Apps
         {
         }
 
-        //internal ZoneManager(EavDbContext _dbContext) : base(0)
-        //{
-        //    EfcContext = _dbContext;
-        //}
-
         internal DbDataController DataController => _eavContext ?? (_eavContext = DbDataController.Instance(ZoneId));
         private DbDataController _eavContext;
-
-        //internal EfcRepository Repo => _repo ?? (_repo = EfcRepository.Instance(ZoneId));
-        //private EfcRepository _repo;
-
-        //private EavDbContext EfcContext;
 
         #endregion
 

@@ -52,8 +52,9 @@ namespace ToSic.Eav.Apps.ImportExport
 
 
         private string _appStaticName = "";
-        protected void Constructor(string appStaticName, bool appExport, string[] attrSetIds, string[] entityIds)
+        protected void Constructor(int zoneId, int appId, string appStaticName, bool appExport, string[] attrSetIds, string[] entityIds)
         {
+            EavAppContext = DbDataController.Instance(zoneId, appId); 
             _appStaticName = appStaticName;
             _isAppExport = appExport;
             AttributeSetIDs = attrSetIds;
@@ -118,6 +119,8 @@ namespace ToSic.Eav.Apps.ImportExport
 
         protected void InitExportXDocument(string defaultLanguage, string moduleVersion)
         {
+            EnsureThisIsInitialized();
+
             // Create XML document and declaration
             var doc = _exportDocument = new XDocument(new XDeclaration("1.0", "UTF-8", "yes"), null);
 

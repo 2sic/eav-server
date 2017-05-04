@@ -194,8 +194,7 @@ namespace ToSic.Eav.WebApi
 	    [HttpGet]
 	    public string[] DataTypes(int appId)
 	    {
-            //SetAppIdAndUser(appId);
-            //CurrentContext.SqlDb.AttributeTypes.OrderBy(a => a.Type).Select(a => a.Type).ToArray();
+            SetAppIdAndUser(appId);
             return CurrentContext.Attributes.DataTypeNames(appId);
 	    }
 
