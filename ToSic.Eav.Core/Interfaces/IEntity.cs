@@ -82,6 +82,7 @@ namespace ToSic.Eav
         /// </summary>
         /// <returns>The entity title as a string</returns>
         string GetBestTitle();
+        string GetBestTitle(string[] dimensions);
 
         /// <summary>
         /// Owner of this entity

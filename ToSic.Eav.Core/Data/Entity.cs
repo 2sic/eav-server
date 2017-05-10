@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web.Script.Serialization;
 using ToSic.Eav.Implementations.ValueConverter;
 //using Microsoft.Practices.Unity;
@@ -223,14 +224,38 @@ namespace ToSic.Eav.Data
         }
 
         /// <summary>
-        /// Best way to get the current entities title
-        /// </summary>
-        /// <returns>The entity title as a string</returns>
-	    public string GetBestTitle() => GetBestValue(Constants.EntityFieldTitle)?.ToString();
-
-        /// <summary>
         /// Owner of this entity
         /// </summary>
 	    public string Owner { get; internal set; }
+
+        /// <summary>
+        /// Best way to get the current entities title
+        /// </summary>
+        /// <returns>The entity title as a string</returns>
+	    public string GetBestTitle() => GetBestTitle(null, 0);
+
+        public string GetBestTitle(string[] dimensions) => GetBestTitle(dimensions, 0);
+
+        /// <summary>
+        /// Try to look up the title while also checking titles built with entities,
+        /// but make sure we don't recurse forever
+        /// </summary>
+        /// <param name="dimensions"></param>
+        /// <param name="recursionCount"></param>
+        /// <returns></returns>
+        internal string GetBestTitle(string[] dimensions, int recursionCount)
+        {
+            var bestTitle = GetBestValue(Constants.EntityFieldTitle, dimensions);
+
+            // in case the title is an entity-picker and has items, try to ask it for the title
+            // note that we're counting recursions, just to be sure it won't loop forever
+            var maybeRelationship = bestTitle as EntityRelationship;
+            if (recursionCount < 3 && (maybeRelationship?.Any() ?? false))
+                bestTitle = (maybeRelationship.FirstOrDefault() as Entity)?
+                    .GetBestTitle(dimensions, recursionCount + 1) 
+                    ?? bestTitle;
+
+            return bestTitle?.ToString();
+        }
     }
 }

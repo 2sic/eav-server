@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Web.Http;
+using Newtonsoft.Json;
 using ToSic.Eav.DataSources;
 
 // ReSharper disable once CheckNamespace
@@ -36,7 +37,8 @@ namespace ToSic.Eav.Serializers
         public Serializer()
         {
             // Ensure that date-times are sent in the Zulu-time format (UTC) and not with offsets which causes many problems during round-trips
-            GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Utc;//.Unspecified;
+            GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;//.Unspecified;
+            //GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
         }
 
         #region Language
@@ -116,7 +118,7 @@ namespace ToSic.Eav.Serializers
                     return ((Data.EntityRelationship) value).Select(p => new SerializableRelationship
                     {
                         Id = p?.EntityId,
-                        Title = p?.GetBestValue(Constants.EntityFieldTitle, Languages)?.ToString()
+                        Title = p?.GetBestTitle(Languages)
                     }).ToList();
 				return value;
 				
@@ -168,7 +170,7 @@ namespace ToSic.Eav.Serializers
             if (!entityValues.ContainsKey("Title"))
                 try // there are strange cases where the title is missing, then just ignore this
                 {
-                    entityValues.Add("Title", entity.GetBestValue(Constants.EntityFieldTitle, Languages, true));
+                    entityValues.Add("Title", entity.GetBestTitle(Languages));
                 }
                 // ReSharper disable once EmptyGeneralCatchClause
                 catch
