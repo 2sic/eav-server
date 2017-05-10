@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ToSic.Eav.DataSources.Caches
 {
@@ -7,7 +8,7 @@ namespace ToSic.Eav.DataSources.Caches
 	/// Return all Entities from a specific App
 	/// </summary>
 	[PipelineDesigner]
-	public class CacheAllStreams : BaseDataSource
+	public class CacheAllStreams : BaseDataSource, IDeferredDataSource
 	{
 
         // Todo: caching parameters
@@ -82,24 +83,34 @@ namespace ToSic.Eav.DataSources.Caches
 		{
             EnsureConfigurationIsLoaded();
 
-            _Out.Clear();
+            //_Out.Clear();
 
-		    foreach (var dataStream in In)
+            // attach all missing streams, now that Out is used the first time
+            // note that some streams were already added because of the DeferredOut
+		    foreach (var dataStream in In.Where(s => !_Out.ContainsKey(s.Key)))
 		    {
-		        var inStream = dataStream.Value as DataStream;
-
-                var outStream = new DataStream(this, dataStream.Key, () => inStream.List, () => inStream.LightList, true);
-
-                // inStream.AutoCaching = true;
-		        if (CacheDurationInSeconds != 0) // only set if a value other than 0 (= default) was given
-		            outStream.CacheDurationInSeconds = CacheDurationInSeconds;
-                outStream.CacheRefreshOnSourceRefresh = RefreshOnSourceRefresh;
-
-                _Out.Add(dataStream.Key, outStream);
-
+		        //var inStream = dataStream.Value as DataStream;
+		        AttachDeferredStreamToOut(dataStream.Key);
 		    }
-		    // _Out = In;
 		}
+
+        private IDataStream AttachDeferredStreamToOut(string name)
+	    {
+            EnsureConfigurationIsLoaded();
+
+	        var outStream = new DataStream(this, name, () => In[name].List, () => In[name].LightList, true);
+
+	        // inStream.AutoCaching = true;
+	        if (CacheDurationInSeconds != 0) // only set if a value other than 0 (= default) was given
+	            outStream.CacheDurationInSeconds = CacheDurationInSeconds;
+	        outStream.CacheRefreshOnSourceRefresh = RefreshOnSourceRefresh;
+
+	        _Out.Add(name, outStream);
+	        return outStream;
+	    }
+
+        // already attach an out, ready to consume in when it's there
+	    public IDataStream DeferredOut(string name) => AttachDeferredStreamToOut(name);
 	}
 
 }

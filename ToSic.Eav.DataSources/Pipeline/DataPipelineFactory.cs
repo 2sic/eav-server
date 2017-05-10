@@ -145,18 +145,22 @@ namespace ToSic.Eav.DataSources
 			ConnectOutStreams(dataSourcesWithNoInStreams, dataSources, wirings, initializedWirings);
 
 			// 2. init DataSources with In-Streams of DataSources which are already wired
+            // note: there is a bug here, because when a DS has "In" from multiple sources, then it won't always be ready to provide out...
 			// repeat until all are connected
-			while (true)
+		    while (true)
 			{
 				var dataSourcesWithInitializedInStreams = dataSources.Where(d => initializedWirings.Any(w => w.To == d.Key));
-				var connectionsCreated = ConnectOutStreams(dataSourcesWithInitializedInStreams, dataSources, wirings, initializedWirings);
+			    //var previousWiringsCount = initializedWirings.Count;    // count connections before binding more items
 
-				if (!connectionsCreated)
+				var connectionsCreated = ConnectOutStreams(dataSourcesWithInitializedInStreams, dataSources, wirings, initializedWirings);
+			    //var newWiringCount = initializedWirings.Count;          // count again afterwards, nowe ones should have been created
+
+				if (!connectionsCreated)// || previousWiringsCount == newWiringCount)
 					break;
 			}
 
 			// 3. Test all Wirings were created
-			if (wirings.Count() != initializedWirings.Count)
+			if (wirings.Count != initializedWirings.Count)
 			{
 				var notInitialized = wirings.Where(w => !initializedWirings.Any(i => i.From == w.From && i.Out == w.Out && i.To == w.To && i.In == w.In));
 				var error = string.Join(", ", notInitialized);
@@ -173,15 +177,26 @@ namespace ToSic.Eav.DataSources
 
 			foreach (var dataSource in dataSourcesToInit)
 			{
-				// loop all wirings from this DataSource (except already initialized)
-				foreach (var wire in allWirings.Where(w => w.From == dataSource.Key && !initializedWirings.Any(i => w.From == i.From && w.Out == i.Out && w.To == i.To && w.In == i.In)))
+			    var unassignedConnectionsForThisSource = allWirings.Where(w =>
+			        w.From == dataSource.Key &&
+			        !initializedWirings.Any(i => w.From == i.From && w.Out == i.Out && w.To == i.To && w.In == i.In));
+                // loop all wirings from this DataSource (except already initialized)
+                foreach (var wire in unassignedConnectionsForThisSource)
 				{
-					var sourceDsrc = allDataSources[wire.From];
-					((IDataTarget)allDataSources[wire.To]).In[wire.In] = sourceDsrc.Out[wire.Out];
+				    try
+				    {
+				        var sourceDsrc = allDataSources[wire.From];
+				        var sourceStream = (sourceDsrc as IDeferredDataSource)?.DeferredOut(wire.Out) ?? sourceDsrc.Out[wire.Out]; // if the source provides deferredOut, use that
+				        ((IDataTarget) allDataSources[wire.To]).In[wire.In] = sourceStream;// sourceDsrc.Out[wire.Out];
 
-					initializedWirings.Add(wire);
+				        initializedWirings.Add(wire);
 
-					wiringsCreated = true;
+				        wiringsCreated = true;
+				    }
+				    catch (Exception ex)
+				    {
+				        throw new Exception("Trouble with connecting query from " + wire.From + ":" + wire.Out + " to " + wire.To + ":" + wire.In, ex);
+				    }
 				}
 			}
 

@@ -92,7 +92,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         internal IQueryable<ToSicEavEntities> GetEntityMetadataByGuid(int appId, Guid keyGuid, string includes = null)
         {
-            int assignmentObjectTypeId = Constants.MetadataForEntity;
             var query = GetAssignedEntities(Constants.MetadataForEntity, keyGuid: keyGuid, includes: includes)
                 .Where(e => e.AttributeSet.AppId == appId);
             return query;
@@ -362,46 +361,46 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         private void UpdateEntityDefault(ToSicEavEntities entity, IDictionary newValues, ICollection<int> dimensionIds, /*bool masterRecord,*/ List<ToSicEavAttributes> attributes, List<ToSicEavValues> dbValues)
         {
-            //var entityModel = entity.EntityId != 0 ? new Efc11Loader(DbContext.SqlDb).Entity(DbContext.AppId, entity.EntityId) : null;
             var newValuesTyped = DictionaryToValuesViewModel(newValues);
             foreach (var newValue in newValuesTyped)
             {
                 var attribute = attributes.FirstOrDefault(a => a.StaticName == newValue.Key);
                 if(attribute != null)
-                    DbContext.Values.UpdateValue(entity, attribute, /*masterRecord,*/ dbValues, /*entityModel,*/ newValue.Value, dimensionIds);
+                    DbContext.Values.UpdateValue(entity, attribute, /*masterRecord,*/ dbValues, newValue.Value, dimensionIds);
             }
 
             #region if Dimensions are specified, purge/remove specified dimensions for Values that are not in newValues
-            if (dimensionIds.Count > 0)
+            if (dimensionIds.Count <= 0) return;
+
+            var attributeMetadataSource = DataSource.GetMetaDataSource(DbContext.ZoneId, DbContext.AppId);
+
+            var keys = newValuesTyped.Keys.ToArray();
+            // Get all Values that are not present in newValues
+            var valuesToPurge = entity.ToSicEavValues
+                .Where(v => !v.ChangeLogDeleted.HasValue
+                            && !keys.Contains(v.Attribute.StaticName)
+                            && v.ToSicEavValuesDimensions.Any(d => dimensionIds.Contains(d.DimensionId)));
+            foreach (var valueToPurge in valuesToPurge)
             {
-                var attributeMetadataSource = DataSource.GetMetaDataSource(DbContext.ZoneId, DbContext.AppId);
+                // Don't touch Value if attribute is not visible in UI
+                var attributeMetadata = attributeMetadataSource.GetAssignedEntities(Constants.MetadataForField, valueToPurge.AttributeId, "@All").FirstOrDefault();
+                var visibleInEditUi = ((Attribute<bool?>) attributeMetadata?["VisibleInEditUI"])?.TypedContents;
+                if (visibleInEditUi == false)
+                    continue;
 
-                var keys = newValuesTyped.Keys.ToArray();
-                // Get all Values that are not present in newValues
-                var valuesToPurge = entity.ToSicEavValues.Where(v => !v.ChangeLogDeleted.HasValue && !keys.Contains(v.Attribute.StaticName) && v.ToSicEavValuesDimensions.Any(d => dimensionIds.Contains(d.DimensionId)));
-                foreach (var valueToPurge in valuesToPurge)
+                // Check if the Value is only used in this supplied dimension (carefull, dont' know what to do if we have multiple dimensions!, must define later)
+                // if yes, delete/invalidate the value
+                if (valueToPurge.ToSicEavValuesDimensions.Count == 1)
+                    valueToPurge.ChangeLogDeleted = DbContext.Versioning.GetChangeLogId();
+
+                // if now, remove dimension from Value
+                else
                 {
-                    // Don't touch Value if attribute is not visible in UI
-                    var attributeMetadata = attributeMetadataSource.GetAssignedEntities(Constants.MetadataForField, valueToPurge.AttributeId, "@All").FirstOrDefault();
-                    if (attributeMetadata != null)
-                    {
-                        var visibleInEditUi = ((Attribute<bool?>)attributeMetadata["VisibleInEditUI"]).TypedContents;
-                        if (visibleInEditUi == false)
-                            continue;
-                    }
-
-                    // Check if the Value is only used in this supplied dimension (carefull, dont' know what to do if we have multiple dimensions!, must define later)
-                    // if yes, delete/invalidate the value
-                    if (valueToPurge.ToSicEavValuesDimensions.Count == 1)
-                        valueToPurge.ChangeLogDeleted = DbContext.Versioning.GetChangeLogId();
-                    // if now, remove dimension from Value
-                    else
-                    {
-                        foreach (var valueDimension in valueToPurge.ToSicEavValuesDimensions.Where(d => dimensionIds.Contains(d.DimensionId)).ToList())
-                            valueToPurge.ToSicEavValuesDimensions.Remove(valueDimension);
-                    }
+                    foreach (var valueDimension in valueToPurge.ToSicEavValuesDimensions.Where(d => dimensionIds.Contains(d.DimensionId)).ToList())
+                        valueToPurge.ToSicEavValuesDimensions.Remove(valueDimension);
                 }
             }
+
             #endregion
         }
         #endregion
@@ -444,13 +443,14 @@ namespace ToSic.Eav.Repository.Efc.Parts
             #region Delete Related Records (Values, Value-Dimensions, Relationships)
             // Delete all Value-Dimensions
             var valueDimensions = entity.ToSicEavValues.SelectMany(v => v.ToSicEavValuesDimensions).ToList();
-            DbContext.SqlDb.RemoveRange(valueDimensions); // 2017-04-19 todo validate // valueDimensions.ForEach(DbContext.SqlDb.DeleteObject);
+            DbContext.SqlDb.RemoveRange(valueDimensions);
             // Delete all Values
-            DbContext.SqlDb.RemoveRange(entity.ToSicEavValues.ToList()); // 2017-04-19 todo validate //entity.ToSicEavValues.ToList().ForEach(DbContext.SqlDb.DeleteObject);
+            DbContext.SqlDb.RemoveRange(entity.ToSicEavValues.ToList());
             // Delete all Parent-Relationships
-            entity.RelationshipsWithThisAsParent.Clear(); // 2017-04-19 todo validate // /*.EntityParentRelationships*/.ToList().ForEach(DbContext.SqlDb.DeleteObject);
+            entity.RelationshipsWithThisAsParent.Clear();
             if (removeFromParents)
-                entity.RelationshipsWithThisAsChild.Clear(); // 2017-04-19 todo validate //*.EntityChildRelationships*/.ToList().ForEach(DbContext.SqlDb.DeleteObject);
+                entity.RelationshipsWithThisAsChild.Clear();
+
             #endregion
 
             // If entity was Published, set Deleted-Flag
@@ -466,7 +466,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             else
             {
                 // Delete all Child-Relationships
-                entity.RelationshipsWithThisAsChild.Clear(); // 2017-04-19 todo validate // /*.EntityChildRelationships*/.ToList().ForEach(DbContext.SqlDb.DeleteObject);
+                entity.RelationshipsWithThisAsChild.Clear();
                 DbContext.SqlDb.Remove(entity);
             }
 
