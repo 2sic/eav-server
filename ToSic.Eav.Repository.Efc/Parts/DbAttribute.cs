@@ -40,6 +40,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             // ensure that it's in the set
             var attr = DbContext.SqlDb.ToSicEavAttributesInSets
+                .Include(a => a.Attribute)
                 .Single(a => a.AttributeId == attributeId && a.AttributeSetId == attributeSetId)
                 .Attribute;
             attr.StaticName = newName;
