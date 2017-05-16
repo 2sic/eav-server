@@ -27,7 +27,7 @@ namespace ToSic.Eav.Api.Api01
 
         private readonly int _appId;
 
-        private readonly string _userName;
+        //private readonly string _userName;
 
 
 
@@ -36,13 +36,13 @@ namespace ToSic.Eav.Api.Api01
         /// </summary>
         /// <param name="zoneId">Zone ID</param>
         /// <param name="appId">App ID</param>
-        /// <param name="userName">Name of user loged in</param>
+        ///// <param name="userName">Name of user loged in</param>
         /// <param name="defaultLanguageCode">Default language of system</param>
-        public SimpleDataController(int zoneId, int appId, string userName, string defaultLanguageCode)
+        public SimpleDataController(int zoneId, int appId, /*string userName,*/ string defaultLanguageCode)
         {
             _zoneId = zoneId;
             _appId = appId;
-            _userName = userName;
+            //_userName = userName;
             _defaultLanguageCode = defaultLanguageCode;
             _context = DbDataController.Instance(zoneId, appId);
         }
@@ -59,27 +59,39 @@ namespace ToSic.Eav.Api.Api01
         ///     entity ids. 
         /// </param>
         /// <exception cref="ArgumentException">Content-type does not exist, or an attribute in values</exception>
-        public void Create(string contentTypeName, Dictionary<string, object> values, bool filterUnknownFields = true)
+        public void Create(string contentTypeName, Dictionary<string, object> values)//, bool filterUnknownFields = true)
         {
+            // ensure it's case insensitive...
+            values = new Dictionary<string, object>(values, StringComparer.OrdinalIgnoreCase);
+
+            // ensure the type really exists
             var attributeSet = _context.AttribSet.GetAllAttributeSets().FirstOrDefault(item => item.Name == contentTypeName);
             if (attributeSet == null)
-            {
                 throw new ArgumentException("Content type '" + contentTypeName + "' does not exist.");
-            }
 
-            if (filterUnknownFields)
+            // if (filterUnknownFields)
                 values = RemoveUnknownFields(values, attributeSet);
 
-            var importEntity = CreateImportEntity(attributeSet.StaticName);
+            if (!values.ContainsKey(Constants.EntityFieldGuid))
+                values.Add(Constants.EntityFieldGuid, Guid.NewGuid());
+
+            var eGuid = Guid.Parse(values[Constants.EntityFieldGuid].ToString());
+            var importEntity = CreateImportEntity(eGuid, attributeSet.StaticName);
             AppendAttributeValues(importEntity, attributeSet, ConvertEntityRelations(values), _defaultLanguageCode, false, true);
             ExecuteImport(importEntity);
         }
 
         private static Dictionary<string, object> RemoveUnknownFields(Dictionary<string, object> values, ToSicEavAttributeSets attributeSet)
         {
+            // todo: ensure things like IsPublished and EntityGuid don't get filtered...
+            // part of https://github.com/2sic/2sxc/issues/1173
             var listAllowed = attributeSet.GetAttributes();
+            var allowedNames = listAllowed.Select(a => a.StaticName.ToLower()).ToList();
+            allowedNames.Add(Constants.EntityFieldGuid);
+            allowedNames.Add(Constants.EntityFieldIsPublished);
             values =
-                values.Where(x => listAllowed.Any(y => y.StaticName == x.Key))
+                //values.Where(x => listAllowed.Any(y => y.StaticName == x.Key))
+                values.Where(x => allowedNames.Any(y => y == x.Key.ToLower()))
                     .ToDictionary(x => x.Key, y => y.Value);
             return values;
         }
@@ -96,10 +108,10 @@ namespace ToSic.Eav.Api.Api01
         /// </param>
         /// <exception cref="ArgumentException">Attribute in values does not exit</exception>
         /// <exception cref="ArgumentNullException">Entity does not exist</exception>
-        public void Update(int entityId, Dictionary<string, object> values, bool filterUnknownFields = true)
+        public void Update(int entityId, Dictionary<string, object> values)
         {
-            //var entity = _context.Entities.GetDbEntity(entityId);
-            Update(entityId, values);
+            var entity = _context.Entities.GetDbEntity(entityId);
+            Update(entity, values);
         }
 
         /// <summary>
@@ -113,7 +125,7 @@ namespace ToSic.Eav.Api.Api01
         /// </param>
         /// <exception cref="ArgumentException">Attribute in values does not exit</exception>
         /// <exception cref="ArgumentNullException">Entity does not exist</exception>
-        public void Update(Guid entityGuid, Dictionary<string, object> values, bool filterUnknownFields = true)
+        public void Update(Guid entityGuid, Dictionary<string, object> values)//, bool filterUnknownFields = true)
         {
             var entity = _context.Entities.GetMostCurrentDbEntity(entityGuid);
             Update(entity, values);
@@ -140,7 +152,7 @@ namespace ToSic.Eav.Api.Api01
         public void Delete(int entityId)
         {
             // todo: refactor to use the eav-api delete
-            if (!_context.Entities.CanDeleteEntity(entityId)/*_contentContext.EntCommands.CanDeleteEntity(entityId)*/.Item1)
+            if (!_context.Entities.CanDeleteEntity(entityId).Item1)
             {
                 throw new InvalidOperationException("The entity " + entityId + " cannot be deleted because of it is referenced by another object.");
             }
@@ -163,10 +175,10 @@ namespace ToSic.Eav.Api.Api01
 
 
 
-        private static ImpEntity CreateImportEntity(string attributeSetStaticName)
-        {
-            return CreateImportEntity(Guid.NewGuid(), attributeSetStaticName);
-        }
+        //private static ImpEntity CreateImportEntity(string attributeSetStaticName)
+        //{
+        //    return CreateImportEntity(Guid.NewGuid(), attributeSetStaticName);
+        //}
 
         private static ImpEntity CreateImportEntity(Guid entityGuid, string attributeSetStaticName)
         {
@@ -174,7 +186,7 @@ namespace ToSic.Eav.Api.Api01
             {
                 EntityGuid = entityGuid,
                 AttributeSetStaticName = attributeSetStaticName,
-                KeyTypeId = Constants.NotMetadata,// Configuration.AssignmentObjectTypeIdDefault, // SexyContent.AssignmentObjectTypeIDDefault,
+                KeyTypeId = Constants.NotMetadata,
                 KeyNumber = null,
                 Values = new Dictionary<string, List<IImpValue>>()
             };
@@ -225,10 +237,8 @@ namespace ToSic.Eav.Api.Api01
                 // Handle content-type attributes
                 var attribute = attributeSet.AttributeByName(value.Key);
                 if (attribute == null)
-                {
                     throw new ArgumentException("Attribute '" + value.Key + "' does not exist.");
-                }
-                impEntity.AppendAttributeValue(value.Key, value.Value.ToString(), attribute.Type, valuesLanguage, valuesReadOnly, resolveHyperlink);
+                impEntity.AppendAttributeValue(attribute.StaticName, value.Value.ToString(), attribute.Type, valuesLanguage, valuesReadOnly, resolveHyperlink);
             }
         }
     }

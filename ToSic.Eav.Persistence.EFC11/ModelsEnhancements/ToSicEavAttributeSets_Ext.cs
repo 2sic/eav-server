@@ -21,10 +21,10 @@ namespace ToSic.Eav.Persistence.Efc.Models
             => ToSicEavAttributesInSets.Select(item => item.Attribute).ToList();
 
         public ToSicEavAttributes AttributeByName(string attributeName)
-            => GetAttributes().FirstOrDefault(attr => attr.StaticName == attributeName);
+            => GetAttributes().FirstOrDefault(attr => attr.StaticName.ToLower() == attributeName.ToLower());
 
-        public ToSicEavEntities EntityByGuid(Guid entityGuid)
-            => ToSicEavEntities.FirstOrDefault(entity => entity.EntityGuid == entityGuid && entity.ChangeLogDeleted == null);
+        //public ToSicEavEntities EntityByGuid(Guid entityGuid)
+        //    => ToSicEavEntities.FirstOrDefault(entity => entity.EntityGuid == entityGuid && entity.ChangeLogDeleted == null);
 
     }
 
