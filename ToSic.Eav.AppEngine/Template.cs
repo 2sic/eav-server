@@ -6,26 +6,6 @@ namespace ToSic.Eav.Apps
 {
     public class Template
     {
-        // todo: move to central...
-        internal const string TemplateName = "Name";
-        internal const string TemplatePath = "Path";
-        internal const string TemplateContentType = "ContentTypeStaticName";
-        internal const string TemplateContentDemo = "ContentDemoEntity";
-        internal const string TemplatePresentationType = "PresentationTypeStaticName";
-        internal const string TemplatePresentationDemo = "PresentationDemoEntity";
-        internal const string TemplateListContentType = "ListContentTypeStaticName";
-        internal const string TemplateListContentDemo = "ListContentDemoEntity";
-        internal const string TemplateListPresentationType = "ListPresentationTypeStaticName";
-        internal const string TemplateListPresentationDemo = "ListPresentationDemoEntity";
-        internal const string TemplateType = "Type";
-        internal const string TemplteIsHidden = "IsHidden";
-        internal const string TemplateLocation = "Location";
-        internal const string TemplateUseList = "UseForList";
-        internal const string TemplatePublishEnable = "PublishData";
-        internal const string TemplatePublishStreams = "StreamsToPublish";
-        internal const string TemplateViewName = "ViewNameInUrl";
-        internal const string TemplateTypeRazor = "C# Razor";
-
         private readonly IEntity _templateEntity;
 
         public Template(IEntity templateEntity)
@@ -40,27 +20,27 @@ namespace ToSic.Eav.Apps
 
         public int TemplateId => _templateEntity.EntityId;
 
-        public string Name => (string) _templateEntity.GetBestValue(TemplateName, new[] {Thread.CurrentThread.CurrentUICulture.Name});
+        public string Name => (string) _templateEntity.GetBestValue(AppConstants.TemplateName, new[] {Thread.CurrentThread.CurrentUICulture.Name});
 
-        public string Path => GetBestString(TemplatePath);
+        public string Path => GetBestString(AppConstants.TemplatePath);
 
-        public string ContentTypeStaticName => GetBestString(TemplateContentType);
+        public string ContentTypeStaticName => GetBestString(AppConstants.TemplateContentType);
 
-        public IEntity ContentDemoEntity => GetBestRelationship(TemplateContentDemo);
+        public IEntity ContentDemoEntity => GetBestRelationship(AppConstants.TemplateContentDemo);
 
-        public string PresentationTypeStaticName => GetBestString(TemplatePresentationType);
+        public string PresentationTypeStaticName => GetBestString(AppConstants.TemplatePresentationType);
 
-        public IEntity PresentationDemoEntity => GetBestRelationship(TemplatePresentationDemo);
+        public IEntity PresentationDemoEntity => GetBestRelationship(AppConstants.TemplatePresentationDemo);
 
-        public string ListContentTypeStaticName => GetBestString(TemplateListContentType);
+        public string ListContentTypeStaticName => GetBestString(AppConstants.TemplateListContentType);
 
-        public IEntity ListContentDemoEntity => GetBestRelationship(TemplateListContentDemo);
+        public IEntity ListContentDemoEntity => GetBestRelationship(AppConstants.TemplateListContentDemo);
 
-        public string ListPresentationTypeStaticName => GetBestString(TemplateListPresentationType);
+        public string ListPresentationTypeStaticName => GetBestString(AppConstants.TemplateListPresentationType);
 
-        public IEntity ListPresentationDemoEntity => GetBestRelationship(TemplateListPresentationDemo);
+        public IEntity ListPresentationDemoEntity => GetBestRelationship(AppConstants.TemplateListPresentationDemo);
 
-        public string Type => GetBestString(TemplateType);
+        public string Type => GetBestString(AppConstants.TemplateType);
         public Guid Guid => _templateEntity.EntityGuid;
 
         public string GetTypeStaticName(string groupPart)
@@ -80,20 +60,20 @@ namespace ToSic.Eav.Apps
             }
         }
 
-        public bool IsHidden => GetBestBool(TemplteIsHidden);
+        public bool IsHidden => GetBestBool(AppConstants.TemplteIsHidden);
 
-        public string Location => GetBestString(TemplateLocation);
-        public bool UseForList => GetBestBool(TemplateUseList);
-        public bool PublishData => GetBestBool(TemplatePublishEnable);
-        public string StreamsToPublish => GetBestString(TemplatePublishStreams);
+        public string Location => GetBestString(AppConstants.TemplateLocation);
+        public bool UseForList => GetBestBool(AppConstants.TemplateUseList);
+        public bool PublishData => GetBestBool(AppConstants.TemplatePublishEnable);
+        public string StreamsToPublish => GetBestString(AppConstants.TemplatePublishStreams);
 
 
         public IEntity Pipeline => ((Data.EntityRelationship)_templateEntity.Attributes["Pipeline"][0]).FirstOrDefault();
-        public string ViewNameInUrl => GetBestString(TemplateViewName);
+        public string ViewNameInUrl => GetBestString(AppConstants.TemplateViewName);
 
         /// <summary>
         /// Returns true if the current template uses Razor
         /// </summary>
-        public bool IsRazor => Type == TemplateTypeRazor;
+        public bool IsRazor => Type == AppConstants.TemplateTypeRazor;
     }
 }
