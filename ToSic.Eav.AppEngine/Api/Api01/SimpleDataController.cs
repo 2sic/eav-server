@@ -229,11 +229,18 @@ namespace ToSic.Eav.Api.Api01
             foreach (var value in values)
             {
                 // Handle special attributes (for example of the system)
-                if (value.Key == "IsPublished")
+                if (value.Key.ToLower() == Constants.EntityFieldIsPublished)
                 {
                     impEntity.IsPublished = value.Value as bool? ?? true;
                     continue;
                 }
+
+                if ((value.Key.ToLower() == Constants.EntityFieldGuid))
+                {
+                    // Ignore entity guid - it's already set earlier
+                    continue;
+                }
+
                 // Handle content-type attributes
                 var attribute = attributeSet.AttributeByName(value.Key);
                 if (attribute == null)
