@@ -70,9 +70,10 @@ namespace ToSic.Eav.Api.Api01
                 throw new ArgumentException("Content type '" + contentTypeName + "' does not exist.");
 
             // if (filterUnknownFields)
-                values = RemoveUnknownFields(values, attributeSet);
+                //values = RemoveUnknownFields(values, attributeSet);
 
-            if (!values.ContainsKey(Constants.EntityFieldGuid))
+            //if (!values.ContainsKey(Constants.EntityFieldGuid))
+            if(values.All(v => v.Key.ToLower() != Constants.EntityFieldGuid))
                 values.Add(Constants.EntityFieldGuid, Guid.NewGuid());
 
             var eGuid = Guid.Parse(values[Constants.EntityFieldGuid].ToString());
@@ -243,9 +244,8 @@ namespace ToSic.Eav.Api.Api01
 
                 // Handle content-type attributes
                 var attribute = attributeSet.AttributeByName(value.Key);
-                if (attribute == null)
-                    throw new ArgumentException("Attribute '" + value.Key + "' does not exist.");
-                impEntity.AppendAttributeValue(attribute.StaticName, value.Value.ToString(), attribute.Type, valuesLanguage, valuesReadOnly, resolveHyperlink);
+                if (attribute != null)
+                    impEntity.AppendAttributeValue(attribute.StaticName, value.Value.ToString(), attribute.Type, valuesLanguage, valuesReadOnly, resolveHyperlink);
             }
         }
     }

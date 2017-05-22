@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
@@ -23,6 +24,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         public List<ToSicEavAttributeSets> GetAllAttributeSets()
             => DbContext.SqlDb.ToSicEavAttributeSets
+            .Include(a => a.ToSicEavAttributesInSets)
+                .ThenInclude(a => a.Attribute)
             .Where(a => a.AppId == DbContext.AppId && !a.ChangeLogDeleted.HasValue)
             .ToList();
 
