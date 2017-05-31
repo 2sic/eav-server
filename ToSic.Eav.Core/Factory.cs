@@ -21,17 +21,18 @@ namespace ToSic.Eav
 	        var sc = ServiceCollection;
 	        configure.Invoke(sc);
 	        _sp = sc.BuildServiceProvider();
-
 	    }
 
         private static IServiceProvider ServiceProvider
 	    {
 	        get
 	        {
-	            if (_sp != null) return _sp;
-	            throw new Exception("service provider not built yet");
+                // 2017-05-31 2rm Quick work-around for issue https://github.com/2sic/2sxc/issues/1200
+	            return ServiceCollection.BuildServiceProvider();
+	            //if (_sp != null) return _sp;
+	            //throw new Exception("service provider not built yet");
 	        }
-	    }
+        }
 
 	    private static IServiceProvider _sp;
         
