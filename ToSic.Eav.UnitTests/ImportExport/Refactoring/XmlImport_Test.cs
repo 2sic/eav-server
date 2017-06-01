@@ -236,10 +236,6 @@ On all your devices.</PreviewContent>
         [ClassInitialize]
         public static void InitUnity(TestContext tc)
         {
-            throw new Exception("todo - must configure .net core IoC container ");
-            //var cont = Eav.Factory.CreateContainer();//.Container;
-            //cont.RegisterType(typeof(IEavValueConverter), typeof(NeutralValueConverter), new InjectionConstructor());
-            //cont.RegisterType(typeof(IEavUserInformation), typeof(NeutralEavUserInformation), new InjectionConstructor());
             
         }
 

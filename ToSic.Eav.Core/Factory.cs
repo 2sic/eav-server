@@ -27,11 +27,15 @@ namespace ToSic.Eav
 	    {
 	        get
 	        {
+                // 2017-06-01 2dm attempt to use "child" scoped provider
+                //return _sp.CreateScope().ServiceProvider;
+
                 // 2017-05-31 2rm Quick work-around for issue https://github.com/2sic/2sxc/issues/1200
-	            return ServiceCollection.BuildServiceProvider();
-	            //if (_sp != null) return _sp;
-	            //throw new Exception("service provider not built yet");
-	        }
+                //return ServiceCollection.BuildServiceProvider();
+
+                if (_sp != null) return _sp;
+                throw new Exception("service provider not built yet");
+            }
         }
 
 	    private static IServiceProvider _sp;

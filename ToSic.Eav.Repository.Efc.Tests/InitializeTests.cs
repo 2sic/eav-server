@@ -27,6 +27,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             Factory.Debug = true;
         }
 
+        // note: keep in sync w/the Repository.Efc.Tests and Persistence.Efc.Tests
         private static void ConfigureEfcDi()
         {
             Configuration.SetConnectionString(conStr);
@@ -36,6 +37,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
                 sc.AddTransient<IEavUserInformation, NeutralEavUserInformation>();//new InjectionConstructor());
                 sc.AddTransient<IEavUserInformation, NeutralEavUserInformation>();//new InjectionConstructor());
 
+                // these are only used in Repository.Efc.Tests
                 sc.AddTransient<XmlExporter, ToSxcXmlExporter>();//(new InjectionConstructor(0, 0, true, new string[0], new string[0]));
                 sc.AddTransient<IImportExportEnvironment, ImportExportEnvironmentMock>();
 

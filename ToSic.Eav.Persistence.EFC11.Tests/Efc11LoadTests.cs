@@ -87,7 +87,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
             var apps = zones[2].Apps;
             
             Assert.AreEqual(1, defapp, "def app on first zone");
-            Assert.AreEqual(67, zones.Count, "zone count");
+            Assert.AreEqual(69, zones.Count, "zone count - often changes, as new test-portals are made");
             Assert.AreEqual(24, apps.Count, "app count on second zone");
         }
 
