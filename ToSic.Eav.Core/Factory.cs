@@ -31,10 +31,10 @@ namespace ToSic.Eav
                 //return _sp.CreateScope().ServiceProvider;
 
                 // 2017-05-31 2rm Quick work-around for issue https://github.com/2sic/2sxc/issues/1200
-                //return ServiceCollection.BuildServiceProvider();
+                return ServiceCollection.BuildServiceProvider();
 
-                if (_sp != null) return _sp;
-                throw new Exception("service provider not built yet");
+                //if (_sp != null) return _sp;
+                //throw new Exception("service provider not built yet");
             }
         }
 
