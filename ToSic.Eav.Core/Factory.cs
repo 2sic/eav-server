@@ -28,11 +28,13 @@ namespace ToSic.Eav
 	    {
 	        get
 	        {
-                // 2017-06-01 2dm attempt to use "child" scoped provider
-                //return _sp.CreateScope().ServiceProvider;
-
+                // Because 2sxc runs inside DNN as a webforms project and not asp.net core mvc, we have
+                // to make sure the serviceprovider object is disposed correctly. If we don't do this,
+                // connections to the database are kept open, and this leads to errors like "SQL timeout:
+                // "All pooled connections were in use". https://github.com/2sic/2sxc/issues/1200
+                
                 // Scope serviceprovider based on request
-	            var httpContext = HttpContext.Current;
+                var httpContext = HttpContext.Current;
                 if (httpContext == null) return _sp.CreateScope().ServiceProvider;
 
 	            if (httpContext.Items[ServiceProviderKey] == null)
@@ -47,14 +49,16 @@ namespace ToSic.Eav
                 }
 
                 return (IServiceProvider)httpContext.Items[ServiceProviderKey];
-	            
 
-	            // 2017-05-31 2rm Quick work-around for issue https://github.com/2sic/2sxc/issues/1200
-	            // return ServiceCollection.BuildServiceProvider();
+	            // 2017-06-01 2dm attempt to use "child" scoped provider
+	            //return _sp.CreateScope().ServiceProvider;
 
-	            //if (_sp != null) return _sp;
-	            //throw new Exception("service provider not built yet");
-	        }
+                // 2017-05-31 2rm Quick work-around for issue https://github.com/2sic/2sxc/issues/1200
+                // return ServiceCollection.BuildServiceProvider();
+
+                //if (_sp != null) return _sp;
+                //throw new Exception("service provider not built yet");
+            }
         }
 
 	    private static IServiceProvider _sp;
