@@ -153,9 +153,11 @@ namespace ToSic.Eav.ImportExport.Models
 
         public static string ConvertValueObjectToString(object value)
         {
-            if (value == null) return null;
-            if (value is string) return value as string;
-            if (!(value is IEnumerable)) return value.ToString();
+            // 2017-06-06 2rm seems to do the same as ToSic.Eav.HelpersToRefactor.SerializeValue
+            //if (value == null) return null;
+            //if (value is string) return value as string;
+            //if (!(value is IEnumerable)) return value.ToString();
+            if (!(value is IEnumerable)) return HelpersToRefactor.SerializeValue(value);
 
             // handle relationship references - a list of GUIDs or nulls - should be csv in the end
             var enumerable = value as IEnumerable;
