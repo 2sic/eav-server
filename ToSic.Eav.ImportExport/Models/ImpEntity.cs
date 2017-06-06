@@ -154,8 +154,8 @@ namespace ToSic.Eav.ImportExport.Models
         public static string ConvertValueObjectToString(object value)
         {
             // 2017-06-06 2rm seems to do the same as ToSic.Eav.HelpersToRefactor.SerializeValue
-            //if (value == null) return null;
-            //if (value is string) return value as string;
+            if (value == null) return null;
+            if (value is string) return value as string;
             //if (!(value is IEnumerable)) return value.ToString();
             if (!(value is IEnumerable)) return HelpersToRefactor.SerializeValue(value);
 
