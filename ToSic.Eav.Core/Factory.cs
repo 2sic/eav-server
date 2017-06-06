@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Web;
 
 namespace ToSic.Eav
 {
@@ -11,7 +12,7 @@ namespace ToSic.Eav
 	/// </summary>
 	public class Factory
 	{
-
+	    private const string ServiceProviderKey = "2sxc-scoped-serviceprovider";
 	    private static readonly IServiceCollection ServiceCollection = new ServiceCollection();
 
         public delegate void ServiceConfigurator(IServiceCollection service);
@@ -30,12 +31,30 @@ namespace ToSic.Eav
                 // 2017-06-01 2dm attempt to use "child" scoped provider
                 //return _sp.CreateScope().ServiceProvider;
 
-                // 2017-05-31 2rm Quick work-around for issue https://github.com/2sic/2sxc/issues/1200
-                return ServiceCollection.BuildServiceProvider();
+                // Scope serviceprovider based on request
+	            var httpContext = HttpContext.Current;
+                if (httpContext == null) return _sp.CreateScope().ServiceProvider;
 
-                //if (_sp != null) return _sp;
-                //throw new Exception("service provider not built yet");
-            }
+	            if (httpContext.Items[ServiceProviderKey] == null)
+	            {
+	                httpContext.Items[ServiceProviderKey] = _sp.CreateScope().ServiceProvider;
+
+                    // Make sure service provider is disposed after request finishes
+	                httpContext.AddOnRequestCompleted(context =>
+	                {
+	                    ((IDisposable) context.Items[ServiceProviderKey])?.Dispose();
+	                });
+                }
+
+                return (IServiceProvider)httpContext.Items[ServiceProviderKey];
+	            
+
+	            // 2017-05-31 2rm Quick work-around for issue https://github.com/2sic/2sxc/issues/1200
+	            // return ServiceCollection.BuildServiceProvider();
+
+	            //if (_sp != null) return _sp;
+	            //throw new Exception("service provider not built yet");
+	        }
         }
 
 	    private static IServiceProvider _sp;
