@@ -17,8 +17,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.TokenEngine", "To
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.WebApi", "ToSic.Eav.WebApi\ToSic.Eav.WebApi.csproj", "{F93F5FB1-95A6-4C4B-BDCF-B001E82F766F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.Ui", "..\eav\ToSic.Eav.Ui.csproj", "{B0E86C3B-C791-4544-9B81-707F28196680}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.DataSources.Tests", "ToSic.Eav.DataSources.Tests\ToSic.Eav.DataSources.Tests.csproj", "{C212A78C-25BB-4A77-AFBB-B5939352CE36}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.Apps", "ToSic.Eav.AppEngine\ToSic.Eav.Apps.csproj", "{FA1B4495-6B85-400F-A5E3-0E292CCBFAE2}"
@@ -353,27 +351,6 @@ Global
 		{F93F5FB1-95A6-4C4B-BDCF-B001E82F766F}.Release|Windows-x64.Build.0 = Release|Any CPU
 		{F93F5FB1-95A6-4C4B-BDCF-B001E82F766F}.Release|Windows-x86.ActiveCfg = Release|Any CPU
 		{F93F5FB1-95A6-4C4B-BDCF-B001E82F766F}.Release|Windows-x86.Build.0 = Release|Any CPU
-		{B0E86C3B-C791-4544-9B81-707F28196680}.debug eav only|Android.ActiveCfg = Debug|Any CPU
-		{B0E86C3B-C791-4544-9B81-707F28196680}.debug eav only|Any CPU.ActiveCfg = Debug|Any CPU
-		{B0E86C3B-C791-4544-9B81-707F28196680}.debug eav only|DNN.ActiveCfg = Debug|Any CPU
-		{B0E86C3B-C791-4544-9B81-707F28196680}.debug eav only|iOS.ActiveCfg = Debug|Any CPU
-		{B0E86C3B-C791-4544-9B81-707F28196680}.debug eav only|Windows-ARM.ActiveCfg = Debug|Any CPU
-		{B0E86C3B-C791-4544-9B81-707F28196680}.debug eav only|Windows-x64.ActiveCfg = Debug|Any CPU
-		{B0E86C3B-C791-4544-9B81-707F28196680}.debug eav only|Windows-x86.ActiveCfg = Debug|Any CPU
-		{B0E86C3B-C791-4544-9B81-707F28196680}.Debug|Android.ActiveCfg = Debug|Any CPU
-		{B0E86C3B-C791-4544-9B81-707F28196680}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B0E86C3B-C791-4544-9B81-707F28196680}.Debug|DNN.ActiveCfg = Debug|Any CPU
-		{B0E86C3B-C791-4544-9B81-707F28196680}.Debug|iOS.ActiveCfg = Debug|Any CPU
-		{B0E86C3B-C791-4544-9B81-707F28196680}.Debug|Windows-ARM.ActiveCfg = Debug|Any CPU
-		{B0E86C3B-C791-4544-9B81-707F28196680}.Debug|Windows-x64.ActiveCfg = Debug|Any CPU
-		{B0E86C3B-C791-4544-9B81-707F28196680}.Debug|Windows-x86.ActiveCfg = Debug|Any CPU
-		{B0E86C3B-C791-4544-9B81-707F28196680}.Release|Android.ActiveCfg = Release|Any CPU
-		{B0E86C3B-C791-4544-9B81-707F28196680}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B0E86C3B-C791-4544-9B81-707F28196680}.Release|DNN.ActiveCfg = Release|Any CPU
-		{B0E86C3B-C791-4544-9B81-707F28196680}.Release|iOS.ActiveCfg = Release|Any CPU
-		{B0E86C3B-C791-4544-9B81-707F28196680}.Release|Windows-ARM.ActiveCfg = Release|Any CPU
-		{B0E86C3B-C791-4544-9B81-707F28196680}.Release|Windows-x64.ActiveCfg = Release|Any CPU
-		{B0E86C3B-C791-4544-9B81-707F28196680}.Release|Windows-x86.ActiveCfg = Release|Any CPU
 		{C212A78C-25BB-4A77-AFBB-B5939352CE36}.debug eav only|Android.ActiveCfg = debug eav only|Any CPU
 		{C212A78C-25BB-4A77-AFBB-B5939352CE36}.debug eav only|Android.Build.0 = debug eav only|Any CPU
 		{C212A78C-25BB-4A77-AFBB-B5939352CE36}.debug eav only|Any CPU.ActiveCfg = debug eav only|Any CPU

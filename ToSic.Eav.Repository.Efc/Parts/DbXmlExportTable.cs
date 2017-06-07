@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-//using Microsoft.Practices.Unity;
 using ToSic.Eav.Implementations.ValueConverter;
+using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.ImportExport.Xml;
 using ToSic.Eav.Persistence.Efc.Models;
@@ -105,7 +105,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     var attributes = attribsOfType;
                     foreach (var attribute in attributes)
                     {
-                        if (attribute.Type == "Entity") // Special, handle separately
+                        if (attribute.Type == XmlConstants.Entity /* "Entity" */) // Special, handle separately
                             AppendEntityReferences(documentElement, attribute.StaticName, relationships.ContainsKey(attribute.StaticName) ? relationships[attribute.StaticName]:"");// entity, attribute);
                         else if (exportLanguageReference == ExportLanguageResolution.Resolve)
                             AppendValueResolved(documentElement, entity, attribute, language, languageFallback,
@@ -148,7 +148,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             var value = entity.GetValueOfExactLanguage(attribute, language);
             if (value == null)
             {
-                element.Append(valueName, "[]");
+                element.Append(valueName, XmlConstants.Null /* "[]" */);
                 return;
             }
 
@@ -178,7 +178,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 valueLanguageReferenced = valueLanguagesReferenced.First();// If one language is serialized, do not serialize read-write values as references
 
             if (valueLanguageReferenced != null)
-                element.Append(valueName, $"[ref({valueLanguageReferenced},{(valueLanguageReadOnly ? "ro" : "rw")})]");
+                element.Append(valueName, $"[ref({valueLanguageReferenced},{(valueLanguageReadOnly ? XmlConstants.ReadOnly /* "ro" */ : XmlConstants.ReadWrite /* "rw" */)})]");
             else
                 AppendValue(element, valueName, value, exportResourceReferenceOption);
         }
@@ -192,13 +192,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
         private void AppendValue(XElement element, XName name, ToSicEavValues value, ExportResourceReferenceMode exportResourceReferenceOption)
         {
             if (value == null)
-                element.Append(name, "[]");
+                element.Append(name, XmlConstants.Null /* "[]" */);
             else if (value.Value == null)
-                element.Append(name, "[]");
+                element.Append(name, XmlConstants.Null /* "[]" */);
             else if (exportResourceReferenceOption == ExportResourceReferenceMode.Resolve)
                 element.Append(name, ResolveHyperlinksFromTennant(value));
             else if (value.Value == string.Empty)
-                element.Append(name, "[\"\"]");
+                element.Append(name, XmlConstants.Empty /* "[\"\"]" */);
             else
                 element.Append(name, value.Value);
         }

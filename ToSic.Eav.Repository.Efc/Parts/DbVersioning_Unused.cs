@@ -6,6 +6,7 @@ using System.Xml.Linq;
 using System.Xml.XPath;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Models;
+using ToSic.Eav.ImportExport.Xml;
 using ToSic.Eav.Persistence.Efc;
 
 namespace ToSic.Eav.Repository.Efc.Parts
@@ -40,7 +41,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             // Parse XML
             var xEntity = XElement.Parse(timelineItem);
-            var assignmentObjectTypeName = xEntity.Attribute("AssignmentObjectType").Value;
+            var assignmentObjectTypeName = xEntity.Attribute(XmlConstants.KeyTargetType /*"AssignmentObjectType" */).Value;
             var assignmentObjectTypeId = new DbShortcuts(DbContext).GetAssignmentObjectType(assignmentObjectTypeName).AssignmentObjectTypeId;
 
             // Prepare source and target-Languages
@@ -115,8 +116,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             var result = new DataTable();
             result.Columns.Add("Field");
-            result.Columns.Add("Language");
-            result.Columns.Add("Value");
+            result.Columns.Add(XmlConstants.EntityLanguage);
+            result.Columns.Add(XmlConstants.ValueNode);
             result.Columns.Add("SharedWith");
 
             foreach (var attribute in entityVersion.Values)
@@ -145,7 +146,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             var newVersion = Unused_GetEntityVersion(entityId, changeId, defaultCultureDimension);
 
             // Restore Entity
-            var import = new DbImport(DbContext.ZoneId /* _zoneId*/,DbContext.AppId /* _appId*/, /*Context.UserName,*/ false, false);
+            var import = new DbImport(DbContext.ZoneId /* _zoneId*/, DbContext.AppId /* _appId*/, /*Context.UserName,*/ false, false);
             import.ImportIntoDb(null, new List<ImpEntity> { newVersion });
             
             // IMPORTANT : IF THIS IS EVER USED, REMEMBER TO CLEAR THE CACHE afterwards in the calling method

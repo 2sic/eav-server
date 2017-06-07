@@ -126,20 +126,19 @@ namespace ToSic.Eav.Apps.ImportExport
 
             #region Header
 
-            var dimensions = EavAppContext.Dimensions.GetDimensionChildren("Culture");
+            var dimensions = EavAppContext.Dimensions.GetDimensionChildren(XmlConstants.Culture);
             var header = new XElement(XmlConstants.Header,
-                _isAppExport && _appStaticName != "Default"
-                    ? new XElement(XmlConstants.App,
+                _isAppExport && _appStaticName != XmlConstants.AppContentGuid ? new XElement(XmlConstants.App,
                         new XAttribute(XmlConstants.Guid, _appStaticName)
                         )
                     : null,
-                new XElement("Language", new XAttribute("Default", defaultLanguage)),
-                new XElement("Dimensions", dimensions.Select(d => new XElement("Dimension",
-                    new XAttribute("DimensionID", d.DimensionId),
-                    new XAttribute("Name", d.Name),
-                    new XAttribute("SystemKey", d.SystemKey ?? String.Empty),
-                    new XAttribute("ExternalKey", d.ExternalKey ?? String.Empty),
-                    new XAttribute("Active", d.Active)
+                new XElement(XmlConstants.Language, new XAttribute(XmlConstants.LangDefault, defaultLanguage)),
+                new XElement(XmlConstants.DimensionDefinition, dimensions.Select(d => new XElement(XmlConstants.DimensionDefElement,
+                    new XAttribute(XmlConstants.DimId, d.DimensionId),
+                    new XAttribute(XmlConstants.Name, d.Name),
+                    new XAttribute(XmlConstants.CultureSysKey, d.SystemKey ?? string.Empty),
+                    new XAttribute(XmlConstants.CultureExtKey, d.ExternalKey ?? string.Empty),
+                    new XAttribute(XmlConstants.CultureIsActiveAttrib, d.Active)
                     )))
                 );
 
@@ -147,19 +146,19 @@ namespace ToSic.Eav.Apps.ImportExport
 
             #region Attribute Sets
 
-            var attributeSets = new XElement("AttributeSets");
+            var attributeSets = new XElement(XmlConstants.AttributeSets);
 
             // Go through each AttributeSetID
             foreach (var attributeSetId in AttributeSetIDs)
             {
                 var id = int.Parse(attributeSetId);
                 var set = EavAppContext.AttribSet.GetAttributeSet(id);
-                var attributes = new XElement("Attributes");
+                var attributes = new XElement(XmlConstants.Attributes);
 
                 // Add all Attributes to AttributeSet including meta informations
                 foreach (var x in EavAppContext.Attributes.GetAttributesInSet(id))
                 {
-                    var attribute = new XElement("Attribute",
+                    var attribute = new XElement(XmlConstants.Attribute,
                         new XAttribute(XmlConstants.Static, x.Attribute.StaticName),
                         new XAttribute(XmlConstants.Type, x.Attribute.Type),
                         new XAttribute(XmlConstants.IsTitle, x.IsTitle),
@@ -173,7 +172,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 }
 
                 // Add AttributeSet / Content Type
-                var attributeSet = new XElement("AttributeSet",
+                var attributeSet = new XElement(XmlConstants.AttributeSet,
                     new XAttribute(XmlConstants.Static, set.StaticName),
                     new XAttribute(XmlConstants.Name, set.Name),
                     new XAttribute(XmlConstants.Description, set.Description),
@@ -189,7 +188,7 @@ namespace ToSic.Eav.Apps.ImportExport
                             a =>
                                 a.AttributeSetId == set.UsesConfigurationOfAttributeSet.Value &&
                                 a.ChangeLogDeleted == null);
-                    attributeSet.Add(new XAttribute("UsesConfigurationOfAttributeSet", parentAttributeSet.StaticName));
+                    attributeSet.Add(new XAttribute(XmlConstants.AttributeSetParentDef, parentAttributeSet.StaticName));
                 }
 
                 attributeSets.Add(attributeSet);
@@ -199,7 +198,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             #region Entities
 
-            var entities = new XElement("Entities");
+            var entities = new XElement(XmlConstants.Entities);
 
             // Go through each Entity
             foreach (var entityId in EntityIDs)
@@ -219,10 +218,10 @@ namespace ToSic.Eav.Apps.ImportExport
 
             // Create root node "SexyContent" and add ContentTypes, ContentItems and Templates
             doc.Add(new XElement(XmlConstants.RootNode,
-                new XAttribute("FileVersion", Settings.FileVersion),
-                new XAttribute("MinimumRequiredVersion", Settings.MinimumRequiredVersion),
-                new XAttribute("ModuleVersion", moduleVersion),
-                new XAttribute("ExportDate", DateTime.Now),
+                new XAttribute(XmlConstants.FileVersion, Settings.FileVersion),
+                new XAttribute(XmlConstants.MinEnvVersion, Settings.MinimumRequiredVersion),
+                new XAttribute(XmlConstants.MinModVersion, moduleVersion),
+                new XAttribute(XmlConstants.ExportDate, DateTime.Now),
                 header,
                 attributeSets,
                 entities,
@@ -250,37 +249,37 @@ namespace ToSic.Eav.Apps.ImportExport
                 throw new Exception("failed on entity id '" + e.EntityId + "' of set-type '" + e.AttributeSetId + "'", ex);
             }
 
-            foreach (var value in entityXElement.Elements("Value"))
+            foreach (var value in entityXElement.Elements(XmlConstants.ValueNode))
             {
-                var valueString = value.Attribute("Value").Value;
-                var valueType = value.Attribute("Type").Value;
-                var valueKey = value.Attribute("Key").Value;
+                var valueString = value.Attribute(XmlConstants.ValueAttr).Value;
+                var valueType = value.Attribute(XmlConstants.EntityTypeAttribute).Value;
+                var valueKey = value.Attribute(XmlConstants.KeyAttr).Value;
 
                 // Special cases for Template ContentTypes
-                if (e.AttributeSet.StaticName == "2SexyContent-Template-ContentTypes" && !string.IsNullOrEmpty(valueString))
+                if (e.AttributeSet.StaticName == XmlConstants.CtTemplate && !string.IsNullOrEmpty(valueString))
                 {
                     switch (valueKey)
                     {
-                        case "ContentTypeID":
+                        case XmlConstants.TemplateContentTypeId:
                             var attributeSet = EavAppContext.AttribSet.GetAllAttributeSets().FirstOrDefault(a => a.AttributeSetId == int.Parse(valueString));
-                            value.Attribute("Value").SetValue(attributeSet != null ? attributeSet.StaticName : string.Empty);
+                            value.Attribute(XmlConstants.ValueAttr).SetValue(attributeSet != null ? attributeSet.StaticName : string.Empty);
                             break;
-                        case "DemoEntityID":
+                        case XmlConstants.TemplateDemoItemId:
                             var entityId = int.Parse(valueString);
                             var demoEntity = EavAppContext.SqlDb.ToSicEavEntities.FirstOrDefault(en => en.EntityId == entityId);
-                            value.Attribute("Value").SetValue(demoEntity?.EntityGuid.ToString() ?? string.Empty);
+                            value.Attribute(XmlConstants.ValueAttr).SetValue(demoEntity?.EntityGuid.ToString() ?? string.Empty);
                             break;
                     }
                 }
 
                 // Collect all referenced files for adding a file list to the xml later
-                if (valueType == "Hyperlink")
+                if (valueType == XmlConstants.ValueTypeLink)
                 {
-                    var fileRegex = new Regex("^File:(?<FileId>[0-9]+)", RegexOptions.IgnoreCase);
+                    var fileRegex = new Regex(XmlConstants.FileRefRegex /*"^File:(?<FileId>[0-9]+)"*/, RegexOptions.IgnoreCase);
                     var a = fileRegex.Match(valueString);
                     // try remember the file
-                    if (a.Success && a.Groups["FileId"].Length > 0)
-                        AddFileAndFolderToQueue(int.Parse(a.Groups["FileId"].Value));
+                    if (a.Success && a.Groups[XmlConstants.FileIdInRegEx].Length > 0)
+                        AddFileAndFolderToQueue(int.Parse(a.Groups[XmlConstants.FileIdInRegEx].Value));
                 }
             }
 
@@ -294,7 +293,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
         #region Files & Pages
 
-        private XElement GetFilesXElements() => new XElement("PortalFiles",
+        private XElement GetFilesXElements() => new XElement(XmlConstants.PortalFiles /*"PortalFiles" */,
             ReferencedFileIds.Distinct().Select(GetFileXElement)
         );
 
@@ -316,9 +315,9 @@ namespace ToSic.Eav.Apps.ImportExport
 
             ReferencedFiles.Add(file);
 
-            return new XElement("File",
-                new XAttribute("Id", file.Id),
-                new XAttribute("RelativePath", file.RelativePath)
+            return new XElement(XmlConstants.FileNode,
+                new XAttribute(XmlConstants.FileIdAttr, file.Id),
+                new XAttribute(XmlConstants.FolderNodePath/*"RelativePath"*/, file.RelativePath)
             );
         }
 

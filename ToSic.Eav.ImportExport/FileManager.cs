@@ -34,8 +34,7 @@ namespace ToSic.Eav.ImportExport
             foreach (var file in filteredFiles)
             {
                 var relativeFilePath = file.Replace(_sourceFolder, "");
-                var destinationFilePath = String.Format("{0}{1}{2}",
-                destinationFolder, Path.DirectorySeparatorChar, relativeFilePath);
+                var destinationFilePath = $"{destinationFolder}{Path.DirectorySeparatorChar}{relativeFilePath}";
                 
                 Directory.CreateDirectory(Path.GetDirectoryName(destinationFilePath));
 

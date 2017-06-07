@@ -86,7 +86,7 @@
     <Compile Include="Options\ImportResourceReferenceMode.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Models\ImpDims.cs" />
-    <Compile Include="ImpValue.cs" />
+    <Compile Include="Models\ImpValue.cs" />
     <Compile Include="Models\ImpValueInside.cs" />
     <Compile Include="XmlConstants.cs" />
     <Compile Include="Xml\XmlBuilder.cs" />

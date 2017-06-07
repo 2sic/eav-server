@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using ToSic.Eav.ImportExport.Interfaces;
-using ToSic.Eav.ImportExport.Models;
 
-namespace ToSic.Eav.ImportExport
+namespace ToSic.Eav.ImportExport.Models
 {
     public class ImpValue<T> : IImpValue
     {

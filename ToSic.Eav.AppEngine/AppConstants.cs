@@ -19,7 +19,7 @@
         internal const string TemplateListPresentationType = "ListPresentationTypeStaticName";
         internal const string TemplateListPresentationDemo = "ListPresentationDemoEntity";
         internal const string TemplateType = "Type";
-        internal const string TemplteIsHidden = "IsHidden";
+        internal const string TemplateIsHidden = "IsHidden";
         internal const string TemplateLocation = "Location";
         internal const string TemplateUseList = "UseForList";
         internal const string TemplatePublishEnable = "PublishData";
@@ -27,6 +27,12 @@
         internal const string TemplateViewName = "ViewNameInUrl";
         internal const string TemplateTypeRazor = "C# Razor";
 
+        #endregion
+
+        #region List / Content / Presentation capabilities
+
+        public const string ListContent = "ListContent";
+        public const string ListPresentation = "ListPresentation";
         #endregion
     }
 }

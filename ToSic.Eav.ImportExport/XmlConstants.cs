@@ -1,10 +1,12 @@
-﻿namespace ToSic.Eav.ImportExport
+﻿using System.Text.RegularExpressions;
+
+namespace ToSic.Eav.ImportExport
 {
     public class XmlConstants
     {
+        // nodes which are actually 2sxc-specific, and should be refactored some time
         public const string Root = "SexyContentData";
-
-        //public const string Entity = "Entity";
+        public const string CtTemplate = "2SexyContent-Template-ContentTypes";
 
         public const string EntityGuid = "Guid";
 
@@ -25,20 +27,29 @@
 
         public const string RootNode = "SexyContent";
         public const string Header = "Header";
+        public const string FileVersion = "FileVersion";
+        public const string ExportDate = "ExportDate";
+        public const string Culture = "Culture";
+        public const string CultureSysKey = "SystemKey";
+        public const string CultureExtKey = "ExternalKey";
+        public const string CultureIsActiveAttrib = "Active";
         public const string App = "App";
         public const string AppContentGuid = "Default";
         public const string Guid = "Guid";
+        public const string GuidNode = "EntityGUID";
 
         // attributes / sets
         public const string AttributeSets = "AttributeSets";
         public const string AttributeSet = "AttributeSet";
         public const string AttSetStatic = "AttributeSetStaticName";
+        public const string AttSetNiceName = "AttributeSetName";
         public const string Entities = "Entities";
         public const string Entity = "Entity";
         public const string ContentType = "ContentType";
         public const string CmsObject = "CmsObject";
         public const string Attributes = "Attributes";
         public const string Attribute = "Attribute";
+        public const string AttributeSetParentDef = "UsesConfigurationOfAttributeSet";
 
         // Keys for metadata
         public const string KeyTargetType = "AssignmentObjectType";
@@ -47,7 +58,12 @@
         public const string KeyString = "KeyString";
 
         // files
+        public const string ValueTypeLink = "Hyperlink";
         public const string PortalFiles = "PortalFiles";
+        public const string FileIdInRegEx = "FileId";
+        public const string FileRefRegex = "^File:(?<FileId>[0-9]+)";
+        public const string FileNode = "File";
+        public const string FileIdAttr = "Id";
 
         // Folder stuff
         public const string FolderGroup = "PortalFolders";
@@ -57,8 +73,8 @@
 
         // Values
         public const string ValueNode = "Value";
-        public const string ValueKeyAttr = "Key";
-        public const string ValueValueAttr = "Value";
+        public const string KeyAttr = "Key";
+        public const string ValueAttr = "Value";
         public const string ValueDimNode = "Dimension";
         // public const string ValueDimIdAttr = "DimensionId";
         public const string ValueDimRoAttr = "ReadOnly";
@@ -71,7 +87,24 @@
         public const string LangDefault = "Default";
 
         // Templates
+        // note: many nodes are also in AppConstants, as they are actually standard nodes in the template-entity
         public const string Templates = "Templates";
         public const string Template = "Template";
+        public const string TemplateItemType = "ItemType";
+        public const string TemplateContentTypeId = "ContentTypeID";
+        public const string TemplateDemoItemId = "DemoEntityID";
+        public const string TemplateDemoItemGuid = "DemoEntityGUID";
+        public const string TemplatePipelineGuid = "PipelineEntityGUID";
+
+
+        // Virtual Table Export - Placeholders/codes
+        public const string Null = "[]";
+        public const string Empty = "[\"\"]";
+        public const string ReadOnly = "ro";
+        public const string ReadWrite = "rw";
+
+        // Versioning information
+        public const string MinEnvVersion = "MinimumRequiredVersion";
+        public const string MinModVersion = "ModuleVersion";
     }
 }

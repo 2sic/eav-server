@@ -183,10 +183,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     var valueType = attribute.Type;
                     var valueName = attribute.StaticName;
                     var value = documentElement.Element(valueName)?.Value;
-                    if (value == null || value == "[]") // value.IsValueNull())
+                    if (value == null || value == XmlConstants.Null /* "[]" */) // value.IsValueNull())
                         continue;
 
-                    if (value == "[\"\"]") //value.IsValueEmpty())
+                    if (value == XmlConstants.Empty /* "[\"\"]" */) //value.IsValueEmpty())
                     {
                         // It is an empty string
                         entity.AppendAttributeValue(valueName, "", attribute.Type, documentElementLanguage, false,
@@ -211,13 +211,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     }
 
                     var valueReferenceProtection = value.GetValueReferenceProtection();
-                    if (valueReferenceProtection != "rw" && valueReferenceProtection != "ro")
+                    if (valueReferenceProtection != XmlConstants.ReadWrite /* "rw" */ && valueReferenceProtection != XmlConstants.ReadOnly /* "ro" */)
                     {
                         ErrorLog.AppendError(ImportErrorCode.InvalidValueReferenceProtection, value,
                             documentElementNumber);
                         continue;
                     }
-                    var valueReadOnly = valueReferenceProtection == "ro";
+                    var valueReadOnly = valueReferenceProtection == XmlConstants.ReadOnly /* "ro" */;
 
                     var entityValue = entity.GetValueItemOfLanguage(valueName, valueReferenceLanguage);
                     if (entityValue != null)

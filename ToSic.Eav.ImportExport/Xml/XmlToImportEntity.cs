@@ -5,7 +5,7 @@ using System.Xml.Linq;
 using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Models;
 
-namespace ToSic.Eav.ImportExport
+namespace ToSic.Eav.ImportExport.Xml
 {
 	/// <summary>
 	/// Import EAV Data from XML Format
@@ -30,8 +30,8 @@ namespace ToSic.Eav.ImportExport
 			var targetEntity = new ImpEntity
 			{
 				KeyTypeId = assignmentObjectTypeId,
-				AttributeSetStaticName = xEntity.Attribute("AttributeSetStaticName").Value,
-				EntityGuid = Guid.Parse(xEntity.Attribute("EntityGUID").Value),
+				AttributeSetStaticName = xEntity.Attribute(XmlConstants.AttSetStatic /* "AttributeSetStaticName" */).Value,
+				EntityGuid = Guid.Parse(xEntity.Attribute(XmlConstants.GuidNode /* "EntityGUID" */).Value),
 				KeyNumber = keyNumber,
 				KeyGuid = keyGuid,
 				KeyString = keyString
@@ -40,8 +40,8 @@ namespace ToSic.Eav.ImportExport
 			var targetValues = new Dictionary<string, List<IImpValue>>();
 
 			// Group values by StaticName
-			var valuesGroupedByStaticName = xEntity.Elements("Value")
-				.GroupBy(v => v.Attribute("Key").Value, e => e, (key, e) => new { StaticName = key, Values = e.ToList() });
+			var valuesGroupedByStaticName = xEntity.Elements(XmlConstants.ValueNode)
+				.GroupBy(v => v.Attribute(XmlConstants.KeyAttr /* "Key" */).Value, e => e, (key, e) => new { StaticName = key, Values = e.ToList() });
 
 			// Process each attribute (values grouped by StaticName)
 			foreach (var sourceAttribute in valuesGroupedByStaticName)
@@ -80,12 +80,12 @@ namespace ToSic.Eav.ImportExport
 
 					foreach (var sourceLanguage in sourceLanguages)
 					{
-						sourceValue = sourceValues.FirstOrDefault(p => p.Elements("Dimension").Any(d => d.Attribute("DimensionID").Value == sourceLanguage.DimensionId.ToString()));
+						sourceValue = sourceValues.FirstOrDefault(p => p.Elements(XmlConstants.ValueDimNode /* "Dimension" */).Any(d => d.Attribute(XmlConstants.DimId /* "DimensionID" */).Value == sourceLanguage.DimensionId.ToString()));
 
 						if (sourceValue == null)
 							continue;
 
-						readOnly = Boolean.Parse(sourceValue.Elements("Dimension").FirstOrDefault(p => p.Attribute("DimensionID").Value == sourceLanguage.DimensionId.ToString()).Attribute("ReadOnly").Value);
+						readOnly = Boolean.Parse(sourceValue.Elements(XmlConstants.ValueDimNode /* "Dimension" */).FirstOrDefault(p => p.Attribute(XmlConstants.DimId /* "DimensionID" */).Value == sourceLanguage.DimensionId.ToString()).Attribute("ReadOnly").Value);
 
 						// Override ReadOnly for primary target language
 						if (targetDimension.Key == defaultLanguage)
@@ -95,7 +95,7 @@ namespace ToSic.Eav.ImportExport
 					}
 
 					// Take first value if there is only one value wihtout a dimension (default / fallback value), but only in primary language
-					if (sourceValue == null && sourceValues.Count == 1 && !sourceValues.Elements("Dimension").Any() && targetDimension.Key == defaultLanguage)
+					if (sourceValue == null && sourceValues.Count == 1 && !sourceValues.Elements(XmlConstants.ValueDimNode /* "Dimension" */).Any() && targetDimension.Key == defaultLanguage)
 						sourceValue = sourceValues.First();
 
 					// Process found value
@@ -123,8 +123,8 @@ namespace ToSic.Eav.ImportExport
 				}
 
 				var currentAttributesImportValues = tempTargetValues.Select(tempImportValue 
-                    => targetEntity.PrepareTypedValue(tempImportValue.XmlValue.Attribute("Value").Value, 
-                        tempImportValue.XmlValue.Attribute("Type").Value, 
+                    => targetEntity.PrepareTypedValue(tempImportValue.XmlValue.Attribute(XmlConstants.ValueAttr).Value, 
+                        tempImportValue.XmlValue.Attribute(XmlConstants.EntityTypeAttribute /* "Type" */).Value, 
                         tempImportValue.Dimensions))
                     .ToList();
 				targetValues.Add(sourceAttribute.StaticName, currentAttributesImportValues);

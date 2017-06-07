@@ -40,7 +40,6 @@ namespace ToSic.Eav.Apps.ImportExport
         {
             List<ExportImportMessage> messages = _environment.Messages;
 
-            //var temporaryDirectory = server.MapPath(Path.Combine(Settings.TemporaryDirectory, Guid.NewGuid().ToString()));
             var success = true;
             Exception finalEx = null;
 
@@ -78,33 +77,32 @@ namespace ToSic.Eav.Apps.ImportExport
                                 {
                                     var fileContents = File.ReadAllText(Path.Combine(appDirectory, xmlFileName));
 	                                var doc = XDocument.Parse(fileContents);
-									var import = new XmlImportWithFiles(_environment.DefaultLanguage/*, Environment.Dnn7.UserIdentity.CurrentUserIdentityToken*/ /*PortalSettings.Current.UserInfo.Username*/);
+									var import = new XmlImportWithFiles(_environment.DefaultLanguage);
 
 									if (!import.IsCompatible(doc))
-										throw new Exception("The app / package is not compatible with this version of 2sxc.");
+										throw new Exception("The app / package is not compatible with this version of eav and the 2sxc-host.");
 
-									var isAppImport = doc.Element("SexyContent").Element("Header").Elements("App").Any() && doc.Element("SexyContent").Element("Header").Element("App").Attribute("Guid").Value != "Default";
+									var isAppImport = doc.Element(XmlConstants.RootNode).Element(XmlConstants.Header).Elements(XmlConstants.App).Any() 
+                                        && doc.Element(XmlConstants.RootNode).Element(XmlConstants.Header).Element(XmlConstants.App).Attribute(XmlConstants.Guid).Value != XmlConstants.AppContentGuid /* "Default" */;
 
                                     if (!isAppImport && !_appId.HasValue)
-                                        _appId = new ZoneRuntime(_zoneId).DefaultAppId;// ((BaseCache) DataSource.GetCache(_zoneId)).ZoneApps[_zoneId].DefaultAppId;
+                                        _appId = new ZoneRuntime(_zoneId).DefaultAppId;
 
                                     if (isAppImport)
                                     {
-                                        var appConfig = XDocument.Parse(fileContents).Element("SexyContent")
-                                            .Element("Entities")
-                                            .Elements("Entity")
-                                            .Single(e => e.Attribute("AttributeSetStaticName").Value == "2SexyContent-App");
+                                        var appConfig = XDocument.Parse(fileContents).Element(XmlConstants.RootNode)
+                                            .Element(XmlConstants.Entities)
+                                            .Elements(XmlConstants.Entity)
+                                            .Single(e => e.Attribute(XmlConstants.AttSetStatic).Value == "2SexyContent-App");
 
                                         #region Version Checks (new in 08.03.03)
-                                        var reqVersionNode = appConfig.Elements("Value")?.FirstOrDefault(v => v.Attribute("Key").Value == "RequiredVersion")?.Attribute("Value")?.Value;
-                                        var reqVersionNodeDnn = appConfig.Elements("Value")?.FirstOrDefault(v => v.Attribute("Key").Value == "RequiredDnnVersion")?.Attribute("Value")?.Value;
+                                        var reqVersionNode = appConfig.Elements(XmlConstants.ValueNode)?.FirstOrDefault(v => v.Attribute(XmlConstants.KeyAttr).Value == "RequiredVersion")?.Attribute(XmlConstants.ValueAttr)?.Value;
+                                        var reqVersionNodeDnn = appConfig.Elements(XmlConstants.ValueNode)?.FirstOrDefault(v => v.Attribute(XmlConstants.KeyAttr).Value == "RequiredDnnVersion")?.Attribute(XmlConstants.ValueAttr)?.Value;
 
                                         CheckRequiredEnvironmentVersions(reqVersionNode, reqVersionNodeDnn);
                                         #endregion
 
-                                        var folder = appConfig.Elements("Value").First(v => v.Attribute("Key").Value == "Folder").Attribute("Value").Value;
-
-                                        //var appPath = Path.Combine(AppHelpers.AppBasePath(null), folder);
+                                        var folder = appConfig.Elements(XmlConstants.ValueNode).First(v => v.Attribute(XmlConstants.KeyAttr).Value == "Folder").Attribute(XmlConstants.ValueAttr).Value;
 
                                         // Do not import (throw error) if the app directory already exists
                                         var appPath = _environment.TargetPath(folder);
@@ -116,9 +114,9 @@ namespace ToSic.Eav.Apps.ImportExport
                                         if (xmlIndex == 0)
                                         {
                                             // Handle PortalFiles folder
-                                            var portalTempRoot = Path.Combine(appDirectory, "PortalFiles");
+                                            var portalTempRoot = Path.Combine(appDirectory, XmlConstants.PortalFiles);
                                             if (Directory.Exists(portalTempRoot))
-                                                _environment.TransferFilesToTennant(portalTempRoot, "");//, false, messages);
+                                                _environment.TransferFilesToTennant(portalTempRoot, "");
                                         }
 
                                         import.ImportApp(_zoneId, doc, out appId);
@@ -129,9 +127,9 @@ namespace ToSic.Eav.Apps.ImportExport
                                         if (xmlIndex == 0 && import.IsCompatible(doc))
                                         {
                                             // Handle PortalFiles folder
-                                            var portalTempRoot = Path.Combine(appDirectory, "PortalFiles");
+                                            var portalTempRoot = Path.Combine(appDirectory, XmlConstants.PortalFiles);
                                             if (Directory.Exists(portalTempRoot))
-                                                _environment.TransferFilesToTennant(portalTempRoot, "");//, false, messages);
+                                                _environment.TransferFilesToTennant(portalTempRoot, "");
                                         }
 
                                         import.ImportXml(_zoneId, appId.Value, doc);
@@ -142,9 +140,6 @@ namespace ToSic.Eav.Apps.ImportExport
 
                                     xmlIndex++;
                                 }
-
-                                //var sexy = new SxcInstance(_zoneId, appId.Value);
-                                // var app = new App(_zoneId, appId.Value,  PortalSettings.Current, false);
 
                                 // Copy all files in 2sexy folder to (portal file system) 2sexy folder
                                 var templateRoot = _environment.TemplatesRoot(_zoneId, appId.Value);// server.MapPath(Internal.TemplateManager.GetTemplatePathRoot(Settings.TemplateLocations.PortalFileSystem, app));
@@ -212,7 +207,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
         public bool ImportZipFromUrl(string packageUrl, bool isAppImport)
         {
-            var tempDirectory = new DirectoryInfo(HttpContext.Current.Server.MapPath(Eav.ImportExport.Settings.TemporaryDirectory));
+            var tempDirectory = new DirectoryInfo(HttpContext.Current.Server.MapPath(Settings.TemporaryDirectory));
             if (!tempDirectory.Exists)
                 Directory.CreateDirectory(tempDirectory.FullName);
 
@@ -234,7 +229,7 @@ namespace ToSic.Eav.Apps.ImportExport
             HttpContext.Current.Server.ScriptTimeout = 300;
 
             using (var file = File.OpenRead(destinationPath))
-                success = ImportZip(file, temporaryDirectory);// HttpContext.Current.Server);
+                success = ImportZip(file, temporaryDirectory);
 
             File.Delete(destinationPath);
 

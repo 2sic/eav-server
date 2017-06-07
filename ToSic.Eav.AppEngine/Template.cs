@@ -60,7 +60,7 @@ namespace ToSic.Eav.Apps
             }
         }
 
-        public bool IsHidden => GetBestBool(AppConstants.TemplteIsHidden);
+        public bool IsHidden => GetBestBool(AppConstants.TemplateIsHidden);
 
         public string Location => GetBestString(AppConstants.TemplateLocation);
         public bool UseForList => GetBestBool(AppConstants.TemplateUseList);
