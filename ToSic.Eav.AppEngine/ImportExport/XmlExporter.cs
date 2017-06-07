@@ -9,16 +9,13 @@ using System.Xml.Linq;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Environment;
 using ToSic.Eav.ImportExport.Logging;
+using ToSic.Eav.ImportExport.Xml;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Repository.Efc.Parts;
 
 namespace ToSic.Eav.Apps.ImportExport
 {
-
-    // todo: move all strings to XmlConstants
-
-
 
     public abstract class XmlExporter
     {
@@ -122,7 +119,7 @@ namespace ToSic.Eav.Apps.ImportExport
             EnsureThisIsInitialized();
 
             // Create XML document and declaration
-            var doc = _exportDocument = new XDocument(new XDeclaration("1.0", "UTF-8", "yes"), null);
+            var doc = _exportDocument = new XmlBuilder().BuildDocument(); // before 2017-06-07 2dm: new XDocument(new XDeclaration("1.0", "UTF-8", "yes"), null);
 
             #region Header
 
@@ -342,7 +339,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <summary>
         /// Creates a new StringWriter with UTF8 Encoding
         /// </summary>
-        public class Utf8StringWriter : StringWriter
+        internal class Utf8StringWriter : StringWriter
         {
             public override Encoding Encoding => Encoding.UTF8;
         }

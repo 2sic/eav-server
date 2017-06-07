@@ -7,8 +7,10 @@ using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
-    internal  partial class DbVersioning: BllCommandBase
+    public  partial class DbVersioning: BllCommandBase
     {
+        private const string EntitiesTableName = "ToSIC_EAV_Entities";
+
         internal DbVersioning(DbDataController cntx) : base(cntx) { }
 
         #region Change-Log ID
@@ -86,7 +88,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             var entityModelSerialized = export.XmlEntity(entityId);
             var timelineItem = new ToSicEavDataTimeline
             {
-                SourceTable = "ToSIC_EAV_Entities",
+                SourceTable = EntitiesTableName,// "ToSIC_EAV_Entities",
                 Operation = Constants.DataTimelineEntityStateOperation,
                 NewData = entityModelSerialized.ToString(),
                 SourceGuid = entityGuid,

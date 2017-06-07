@@ -111,6 +111,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="VersioningTests.cs" />
     <Compile Include="InitializeTests.cs" />
     <Compile Include="Mocks\ImportExportEnvironmentMock.cs" />
     <Compile Include="ImportAppTests.cs" />

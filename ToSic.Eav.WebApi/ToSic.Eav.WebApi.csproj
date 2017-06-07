@@ -76,13 +76,11 @@
     <Compile Include="EntityPickerController.cs" />
     <Compile Include="Formats\CompleteEntity.cs" />
     <Compile Include="Formats\ItemIdentifiers.cs" />
-    <Compile Include="Json\Helpers.cs" />
     <Compile Include="PipelineDesignerController.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Eav3WebApiBase.cs" />
-    <Compile Include="Serializers\SerializableRelationship.cs" />
     <Compile Include="Serializers\Serializer.cs" />
     <Compile Include="MetadataController.cs" />
     <Compile Include="EntitiesController.cs" />

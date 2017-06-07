@@ -15,7 +15,7 @@ namespace ToSic.Eav.Repository.Efc
 
         public DbShortcuts DbS { get; private set; }
 
-        internal DbVersioning Versioning { get; private set; }
+        public DbVersioning Versioning { get; private set; }
         public DbEntity Entities { get; private set; }
         public DbValue Values { get; private set; }
         public DbAttribute Attributes { get; private set; }

@@ -30,8 +30,8 @@ namespace ToSic.Eav.ImportExport.Xml
 			var targetEntity = new ImpEntity
 			{
 				KeyTypeId = assignmentObjectTypeId,
-				AttributeSetStaticName = xEntity.Attribute(XmlConstants.AttSetStatic /* "AttributeSetStaticName" */).Value,
-				EntityGuid = Guid.Parse(xEntity.Attribute(XmlConstants.GuidNode /* "EntityGUID" */).Value),
+				AttributeSetStaticName = xEntity.Attribute(XmlConstants.AttSetStatic).Value,
+				EntityGuid = Guid.Parse(xEntity.Attribute(XmlConstants.GuidNode).Value),
 				KeyNumber = keyNumber,
 				KeyGuid = keyGuid,
 				KeyString = keyString

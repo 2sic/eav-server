@@ -36,26 +36,27 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             var dbValues = DbContext.SqlDb.ToSicEavValues
                 .Include(v => v.Attribute)
-                .ThenInclude(a => a.TypeNavigation)
+                    .ThenInclude(a => a.TypeNavigation)
                 .Include(v => v.ToSicEavValuesDimensions)
-                .ThenInclude(d => d.Dimension)
+                    .ThenInclude(d => d.Dimension)
                 .Where(v => v.EntityId == entityId && !v.ChangeLogDeleted.HasValue)
                 .ToList();
+
             var values = dbValues
                 .Select(e => new {Key = e.Attribute.StaticName, e.Attribute.TypeNavigation.Type, e.Value, Dimensions = e.ToSicEavValuesDimensions });
             var valuesXElement = values.Select(v => XmlValue(v.Key, v.Value, v.Type, v.Dimensions));
 
-            // note: minimal duplicate code for guid-serialization w/XmlExport & DbXmlExportTable
+            // note: minimal duplicate code for guid-serialization w/XmlExport
             var relationships = GetSerializedRelationshipGuids(entityId);
 
             var relsXElement = relationships.Select(r => XmlValue(r.Key, r.Value, XmlConstants.Entity, null));
 
             // create Entity-XElement
-            var entityXElement = new XElement(XmlConstants.Entity /* "Entity" */,
-                new XAttribute(XmlConstants.KeyTargetType /* "AssignmentObjectType" */, assignmentObjectTypeName), 
-                new XAttribute(XmlConstants.AttSetStatic /* "AttributeSetStaticName" */, attributeSet.StaticName),
-                new XAttribute(XmlConstants.AttSetNiceName /* "AttributeSetName" */, attributeSet.Name),
-                new XAttribute(XmlConstants.GuidNode /* "EntityGUID" */, entity.EntityGuid),
+            var entityXElement = new XElement(XmlConstants.Entity,
+                new XAttribute(XmlConstants.KeyTargetType, assignmentObjectTypeName), 
+                new XAttribute(XmlConstants.AttSetStatic, attributeSet.StaticName),
+                new XAttribute(XmlConstants.AttSetNiceName, attributeSet.Name),
+                new XAttribute(XmlConstants.GuidNode, entity.EntityGuid),
                 valuesXElement, relsXElement);
 
             // try to add keys - moved to here from xml-exporter

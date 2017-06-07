@@ -51,6 +51,10 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\2SexyContent\Web\bin\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Entity" />
@@ -63,6 +67,9 @@
   <ItemGroup>
     <Compile Include="Environment\TennantFileItem.cs" />
     <Compile Include="Interfaces\IRepositoryImporter.cs" />
+    <Compile Include="Json\JsonBuilder.cs" />
+    <Compile Include="Serializers\SerializableRelationship.cs" />
+    <Compile Include="Serializers\SerializerHelper.cs" />
     <Compile Include="Logging\ExportImportMessage.cs" />
     <Compile Include="FileManager.cs" />
     <Compile Include="Interfaces\IImportExportEnvironment.cs" />
@@ -74,6 +81,7 @@
     <Compile Include="Logging\ImportLogItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Validation\StringExtension.cs" />
+    <Compile Include="Versioning\ItemHistory.cs" />
     <Compile Include="Xml\ImportItemGuidManager.cs" />
     <Compile Include="Logging\ImportError.cs" />
     <Compile Include="Logging\ImportErrorCode.cs" />
