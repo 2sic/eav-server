@@ -6,6 +6,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.WebApi.Formats;
 using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Models;
+using ToSic.Eav.ImportExport.Versioning;
 using ToSic.Eav.Repository.Efc.Parts;
 
 namespace ToSic.Eav.WebApi
@@ -20,12 +21,12 @@ namespace ToSic.Eav.WebApi
         { }
 
         #region GetOne GetAll calls
-        public IEntity GetEntityOrThrowError(string contentType, int id, int? appId = null)
+        public IEntity GetEntityOrThrowError(string contentType, int id)
         {
             //SetAppIdAndUser(appId);
 
             // must use cache, because it shows both published  unpublished
-            var found = AppManager.Read.Entities.Get(id);// DataSource.GetCache(null, AppId).List[id];
+            var found = AppManager.Read.Entities.Get(id);
             if (contentType != null && !(found.Type.Name == contentType || found.Type.StaticName == contentType))
                 throw new KeyNotFoundException("Can't find " + id + "of type '" + contentType + "'");
             return found;
@@ -36,9 +37,6 @@ namespace ToSic.Eav.WebApi
             SetAppIdAndUser(appId);
 
             // must use cache, because it shows both published  unpublished
-            //var list = DataSource.GetCache(null, AppId).LightList;
-            //var itm = list // pre-fetch for security and content-type check
-            //    .FirstOrDefault(e => e.EntityGuid == guid);
             var itm = AppManager.Read.Entities.Get(guid);
             if (itm == null || (contentType != null && !(itm.Type.Name == contentType || itm.Type.StaticName == contentType)))
                 throw new KeyNotFoundException("Can't find " + guid + "of type '" + contentType + "'");
@@ -57,7 +55,7 @@ namespace ToSic.Eav.WebApi
         {
             SetAppIdAndUser(appId);
 
-            var found = GetEntityOrThrowError(contentType, id, appId);
+            var found = GetEntityOrThrowError(contentType, id);
             return Serializer.Prepare(found);
         }
 
@@ -105,7 +103,7 @@ namespace ToSic.Eav.WebApi
                 case "multi-language":
                     Serializer.IncludeAllEditingInfos = true;
 
-                    var found = GetEntityOrThrowError(contentType, duplicateFrom ?? id, appId);
+                    var found = GetEntityOrThrowError(contentType, duplicateFrom ?? id);
                     var maybeDraft = found.GetDraft();
                     if (maybeDraft != null)
                         found = maybeDraft;
@@ -309,22 +307,17 @@ namespace ToSic.Eav.WebApi
         public void Delete(string contentType, int id, int? appId = null, bool force = false)
         {
             SetAppIdAndUser(appId);
-            //if (appId.HasValue)
-            //    AppId = appId.Value;
-            //var finalAppId = appId ?? AppId;
-            var found = AppManager.Read.Entities.Get(id);//   DataSource.GetCache(null, appId ?? AppId).List[id];// InitialDS.List[id];
+
+            var found = AppManager.Read.Entities.Get(id);
             if (found.Type.Name != contentType && found.Type.StaticName != contentType)
                 throw new KeyNotFoundException("Can't find " + id + "of type '" + contentType + "'");
 
             // check if it has related items or another reason to prevent deleting
-            var deleteControl = AppManager.Entities.DeletePossible(id);// CurrentContext.Entities.CanDeleteEntity(id);
+            var deleteControl = AppManager.Entities.DeletePossible(id);
             if (deleteControl || force)
                 AppManager.Entities.Delete(id, force);
-            //CurrentContext.Entities.DeleteEntity(id, force);
             else
-                throw new InvalidOperationException("Item " + id +
-                                                    " cannot be deleted. It is used by other items: " +
-                                                    AppManager.Entities.DeleteHinderance(id));// deleteControl.Item2);
+                throw new InvalidOperationException($"Item {id} cannot be deleted. It is used by other items: {AppManager.Entities.DeleteHinderance(id)}");
         }
 
         /// <summary>
@@ -340,10 +333,7 @@ namespace ToSic.Eav.WebApi
         public void Delete(string contentType, Guid entityGuid, int? appId = null, bool force = false)
         {
             SetAppIdAndUser(appId);
-            //if (appId.HasValue)
-            //    AppId = appId.Value;
-            var entity = AppManager.Read.Entities.Get(entityGuid);// CurrentContext.Entities.GetDbEntity(entityGuid);
-            //AppManager.Entities.Delete()
+            var entity = AppManager.Read.Entities.Get(entityGuid);
             Delete(contentType, entity.EntityId, force: force);
         }
 
@@ -353,31 +343,22 @@ namespace ToSic.Eav.WebApi
 
         #region History
 
-        //[HttpGet]
-        //public List<DbVersioning.EntityHistoryItem> History(int appId, int entityId)
-        //{
-        //       SetAppIdAndUser(appId);
-        //       var versions = CurrentContext.Versioning.GetEntityHistory(entityId);
-        //    return versions;
-        //}
+        [HttpGet]
+        public List<ItemHistory> History(int appId, int entityId)
+        {
+            SetAppIdAndUser(appId);
+            var versions = AppManager.Entities.GetHistory(entityId);// CurrentContext.Versioning.GetEntityHistory(entityId);
+            return versions;
+        }
 
-        //[HttpGet]
-        //public dynamic HistoryDetails(int appId, int entityId, int changeId)
-        //{
-        //       SetAppIdAndUser(appId);
-        //       var result = CurrentContext.Versioning.GetEntityVersionValues(entityId, changeId, null, null);
-        //    return result;
-        //}
-
-        //[HttpGet]
-        //public bool HistoryRestore(int appId, int entityId, int changeId)
-        //{
-        //    var DefaultCultureDimension = 0;
-        //       throw  new Exception("this is not tested yet!");
-        //       SetAppIdAndUser(appId);
-        //       CurrentContext.Versioning.RestoreEntityVersion(entityId, changeId, DefaultCultureDimension);
-        //    return true;
-        //   }
+        [HttpGet]
+        public bool Restore(int appId, int entityId, int changeId, int defaultCultureDimension = 0)
+        {
+            //throw new Exception("this is not tested yet!");
+            SetAppIdAndUser(appId);
+            AppManager.Entities.RestorePrevious(entityId, changeId, defaultCultureDimension); // CurrentContext.Versioning.RestoreEntityVersion(entityId, changeId, DefaultCultureDimension);
+            return true;
+        }
         #endregion
     }
 }

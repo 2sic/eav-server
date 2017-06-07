@@ -23,10 +23,12 @@ namespace ToSic.Eav.Apps.ImportExport
 	{
 		public List<ExportImportMessage> ImportLog;
 
-		private List<ToSicEavDimensions> _sourceDimensions;
+		//private List<ToSicEavDimensions> _sourceDimensions;
+		private List<Data.Dimension> _sourceDimensions;
 		private string _sourceDefaultLanguage;
 		private int? _sourceDefaultDimensionId;
-		private List<ToSicEavDimensions> _targetDimensions;
+		//private List<ToSicEavDimensions> _targetDimensions;
+        private List<Data.Dimension> _targetDimensions;
         private DbDataController _eavContext;
 		private int _appId;
 		private int _zoneId;
@@ -193,8 +195,8 @@ namespace ToSic.Eav.Apps.ImportExport
             PrepareFolderIdCorrectionListAndCreateMissingFolders(xmlSource);
 			PrepareFileIdCorrectionList(xmlSource);
 
-			#region Prepare dimensions
-			_sourceDimensions = xmlSource.Element(XmlConstants.Header)?.Element(XmlConstants.DimensionDefinition)?.Elements(XmlConstants.DimensionDefElement).Select(p => new ToSicEavDimensions
+            #region Prepare dimensions (languages) based on header...
+            var sDimensions = xmlSource.Element(XmlConstants.Header)?.Element(XmlConstants.DimensionDefinition)?.Elements(XmlConstants.DimensionDefElement).Select(p => new ToSicEavDimensions
 			{
 				DimensionId = int.Parse(p.Attribute(XmlConstants.DimId).Value),
 				Name = p.Attribute(XmlConstants.Name).Value,
@@ -204,28 +206,30 @@ namespace ToSic.Eav.Apps.ImportExport
 			}).ToList();
 
 			_sourceDefaultLanguage = xmlSource.Element(XmlConstants.Header)?.Element(XmlConstants.Language)?.Attribute(XmlConstants.LangDefault)?.Value;
-		    if (_sourceDimensions == null || _sourceDefaultLanguage == null)
+		    if (sDimensions == null || _sourceDefaultLanguage == null)
 		    {
                 ImportLog.Add(new ExportImportMessage("Cant find source dimensions or source-default language.", ExportImportMessage.MessageTypes.Error));
                 return false;
             }
 
-            _sourceDefaultDimensionId = _sourceDimensions.Any() ?
-				_sourceDimensions.FirstOrDefault(p => p.ExternalKey == _sourceDefaultLanguage)?.DimensionId
+            _sourceDefaultDimensionId = sDimensions.Any() ?
+                sDimensions.FirstOrDefault(p => p.ExternalKey == _sourceDefaultLanguage)?.DimensionId
 				: new int?();
+            _sourceDimensions = sDimensions.Select(s => new Data.Dimension { DimensionId = s.DimensionId, Key = s.ExternalKey }).ToList();
 
-			_targetDimensions = _eavContext.Dimensions.GetDimensionChildren(XmlConstants.Culture);
-			if (_targetDimensions.Count == 0)
-				_targetDimensions.Add(new ToSicEavDimensions
+            var langs = _eavContext.Dimensions.GetLanguages();//.GetDimensionChildren(Constants.CultureSystemKey);
+			if (langs.Count == 0)
+				langs.Add(new ToSicEavDimensions
 				{
 					Active = true,
 					ExternalKey = DefaultLanguage,
 					Name = "(added by import System, default language " + DefaultLanguage + ")",
-					SystemKey = XmlConstants.Culture
+					SystemKey = Constants.CultureSystemKey
 				});
-			#endregion
+            _targetDimensions = langs.Select(d => new Data.Dimension { DimensionId = d.DimensionId, Key = d.ExternalKey }).ToList();
+            #endregion
 
-		    var atsNodes = xmlSource.Element(XmlConstants.AttributeSets)?.Elements(XmlConstants.AttributeSet);
+            var atsNodes = xmlSource.Element(XmlConstants.AttributeSets)?.Elements(XmlConstants.AttributeSet);
 		    var entNodes = xmlSource.Elements(XmlConstants.Entities).Elements(XmlConstants.Entity);
 
             var importAttributeSets = GetImportAttributeSets(atsNodes);
@@ -547,11 +551,11 @@ namespace ToSic.Eav.Apps.ImportExport
 			    }
 			}
 
-            var targetDimsRetyped = _targetDimensions.Select(d => new Data.Dimension { DimensionId = d.DimensionId, Key = d.ExternalKey }).ToList();
-            var sourceDimsRetyped = _sourceDimensions.Select(s => new Data.Dimension { DimensionId = s.DimensionId, Key = s.ExternalKey }).ToList();
+            //var targetDimsRetyped = _targetDimensions.Select(d => new Data.Dimension { DimensionId = d.DimensionId, Key = d.ExternalKey }).ToList();
+            //var sourceDimsRetyped = _sourceDimensions.Select(s => new Data.Dimension { DimensionId = s.DimensionId, Key = s.ExternalKey }).ToList();
 
             var importEntity = XmlToImportEntity.BuildImpEntityFromXml(entityNode, assignmentObjectTypeId,
-				targetDimsRetyped, sourceDimsRetyped, _sourceDefaultDimensionId, DefaultLanguage, keyNumber, keyGuid, keyString);
+				_targetDimensions, _sourceDimensions, _sourceDefaultDimensionId, DefaultLanguage, keyNumber, keyGuid, keyString);
 
 			return importEntity;
 		}

@@ -48,18 +48,21 @@ namespace ToSic.Eav.Repository.Efc.Parts
             //    throw new NotSupportedException("GetEntityVersion without defaultCultureDimension is not yet supported.");
 
             var defaultLanguage = DbContext.Dimensions.GetDimension(defaultCultureDimension).ExternalKey;
+
             var targetDimensions = DbContext.Dimensions.GetLanguages();
-            var allSourceDimensionIds = ((IEnumerable<object>)xEntity.XPathEvaluate("/Value/Dimension/@DimensionId")).Select(d => int.Parse(((XAttribute)d).Value)).ToArray();
-            var allSourceDimensionIdsDistinct = allSourceDimensionIds.Distinct().ToArray();
-            var sourceDimensions = DbContext.Dimensions.GetDimensions(allSourceDimensionIdsDistinct).ToList();
+            var allXmlDimensionIds = ((IEnumerable<object>)xEntity.XPathEvaluate("/Value/Dimension/@DimensionId")).Select(d => int.Parse(((XAttribute)d).Value)).ToArray();
+            var allSourceDimensionIdsDistinct = allXmlDimensionIds.Distinct().ToArray();
+            var sourceDimensions = DbContext.Dimensions.GetDimensions(allSourceDimensionIdsDistinct);
             int sourceDefaultDimensionId;
             if (allSourceDimensionIdsDistinct.Contains(defaultCultureDimension))	// if default culture exists in the Entity, sourceDefaultDimensionId is still the same
                 sourceDefaultDimensionId = defaultCultureDimension;
             else
             {
-                var sourceDimensionsIdsGrouped = (from n in allSourceDimensionIds group n by n into g select new { DimensionId = g.Key, Qty = g.Count() }).ToArray();
+                var sourceDimensionsIdsGrouped = (from n in allXmlDimensionIds group n by n into g select new { DimensionId = g.Key, Qty = g.Count() }).ToArray();
                 sourceDefaultDimensionId = sourceDimensionsIdsGrouped.Any() ? sourceDimensionsIdsGrouped.OrderByDescending(g => g.Qty).First().DimensionId : defaultCultureDimension;
             }
+
+
             var targetDimsRetyped = targetDimensions.Select(d => new Data.Dimension { DimensionId = d.DimensionId, Key = d.ExternalKey}).ToList();
             var sourceDimsRetyped = sourceDimensions.Select(s => new Data.Dimension {DimensionId = s.DimensionId, Key = s.ExternalKey}).ToList();
             // Load Entity from Xml unsing XmlImport
@@ -135,35 +138,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
         }
 
 
-        ///// <summary>
-        ///// Get the Values of an Entity in the specified Version
-        ///// </summary>
-        //public DataTable Unused_GetEntityVersionValues(int entityId, int changeId, int? defaultCultureDimension, string multiValuesSeparator = null)
-        //{
-        //    var entityVersion = PrepareRestoreEntity(entityId, changeId, defaultCultureDimension);
-
-        //    var result = new DataTable();
-        //    result.Columns.Add("Field");
-        //    result.Columns.Add(XmlConstants.EntityLanguage);
-        //    result.Columns.Add(XmlConstants.ValueNode);
-        //    result.Columns.Add("SharedWith");
-
-        //    foreach (var attribute in entityVersion.Values)
-        //    {
-        //        foreach (var valueModel in attribute.Value)
-        //        {
-        //            var firstLanguage = valueModel.ValueDimensions.First().DimensionExternalKey;
-        //            result.Rows.Add(attribute.Key, firstLanguage, DbContext.Values.GetTypedValue(valueModel, multiValuesSeparator: multiValuesSeparator));	// Add Main-Language
-
-        //            foreach (var valueDimension in valueModel.ValueDimensions.Skip(1))	// Add additional Languages
-        //            {
-        //                result.Rows.Add(attribute.Key, valueDimension.DimensionExternalKey, DbContext.Values.GetTypedValue(valueModel, multiValuesSeparator: multiValuesSeparator), firstLanguage + (valueDimension.ReadOnly ? " (read)" : " (write)"));
-        //            }
-        //        }
-        //    }
-
-        //    return result;
-        //}
 
         /// <summary>
         /// Restore an Entity to the specified Version by creating a new Version using the Import

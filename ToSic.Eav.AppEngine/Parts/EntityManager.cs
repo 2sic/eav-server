@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.ImportExport.Versioning;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -75,6 +76,7 @@ namespace ToSic.Eav.Apps.Parts
         /// </summary>
         /// <param name="id"></param>
         /// <param name="values"></param>
+        /// <param name="dimensionIds"></param>
         public void Update(int id, Dictionary<string, object> values, ICollection<int> dimensionIds = null)
             => _appManager.DataController.Entities.SaveEntity(id, values, dimensionIds: dimensionIds /*, masterRecord:true*/);
 
@@ -101,5 +103,10 @@ namespace ToSic.Eav.Apps.Parts
             return _appManager.DataController.Entities.AddEntity(contentType, values, entityGuid: newGuid).EntityId;
         }
 
+
+        public List<ItemHistory> GetHistory(int id) => _appManager.DataController.Versioning.GetHistoryList(id, true);
+
+        public void RestorePrevious(int id, int historyId, int primaryDimensionId)
+            => _appManager.DataController.Versioning.RestoreEntity(id, historyId, primaryDimensionId); 
     }
 }

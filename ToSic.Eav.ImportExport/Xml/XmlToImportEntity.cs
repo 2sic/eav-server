@@ -41,7 +41,7 @@ namespace ToSic.Eav.ImportExport.Xml
 
 			// Group values by StaticName
 			var valuesGroupedByStaticName = xEntity.Elements(XmlConstants.ValueNode)
-				.GroupBy(v => v.Attribute(XmlConstants.KeyAttr /* "Key" */).Value, e => e, (key, e) => new { StaticName = key, Values = e.ToList() });
+				.GroupBy(v => v.Attribute(XmlConstants.KeyAttr).Value, e => e, (key, e) => new { StaticName = key, Values = e.ToList() });
 
 			// Process each attribute (values grouped by StaticName)
 			foreach (var sourceAttribute in valuesGroupedByStaticName)
@@ -124,7 +124,7 @@ namespace ToSic.Eav.ImportExport.Xml
 
 				var currentAttributesImportValues = tempTargetValues.Select(tempImportValue 
                     => targetEntity.PrepareTypedValue(tempImportValue.XmlValue.Attribute(XmlConstants.ValueAttr).Value, 
-                        tempImportValue.XmlValue.Attribute(XmlConstants.EntityTypeAttribute /* "Type" */).Value, 
+                        tempImportValue.XmlValue.Attribute(XmlConstants.EntityTypeAttribute).Value, 
                         tempImportValue.Dimensions))
                     .ToList();
 				targetValues.Add(sourceAttribute.StaticName, currentAttributesImportValues);
