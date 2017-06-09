@@ -29,7 +29,7 @@ namespace ToSic.Eav
 		public void EnsurePipelineDesignerAttributeSets()
 		{
 			#region Define AttributeSets for DataPipeline and DataPipelinePart
-			var pipelinesAttributeSet = ImpAttrSet.SystemAttributeSet(Constants.DataPipelineStaticName, "Describes a set of data sources and how they are interconnected.",
+			var pipelinesAttributeSet = ImpContentType.SystemAttributeSet(Constants.DataPipelineStaticName, "Describes a set of data sources and how they are interconnected.",
 				new List<ImpAttribute>
 				{
 					ImpAttribute.StringAttribute("Name", "Pipeline name", "Descriptive Name", true),
@@ -40,7 +40,7 @@ namespace ToSic.Eav
 					ImpAttribute.StringAttribute("TestParameters", "Test-Parameters", "Static Parameters to test the Pipeline with. Format as [Token:Property]=Value", true, rowCount: 10)
 			});
 
-			var pipelinePartsAttributeSet = ImpAttrSet.SystemAttributeSet(Constants.DataPipelinePartStaticName, "A part in the data pipeline, usually a data source/target element.",
+			var pipelinePartsAttributeSet = ImpContentType.SystemAttributeSet(Constants.DataPipelinePartStaticName, "A part in the data pipeline, usually a data source/target element.",
 				new List<ImpAttribute>
 				{
 					ImpAttribute.StringAttribute("Name", "Name", "The part name for easy identification by the user", true),
@@ -52,28 +52,28 @@ namespace ToSic.Eav
 
 			#region Define AttributeSets for DataSources Configurations
 
-			var dsrcApp = ImpAttrSet.SystemAttributeSet("|Config ToSic.Eav.DataSources.App", "used to configure an App DataSource", new List<ImpAttribute>());
+			var dsrcApp = ImpContentType.SystemAttributeSet("|Config ToSic.Eav.DataSources.App", "used to configure an App DataSource", new List<ImpAttribute>());
 
-			var dsrcAttributeFilter = ImpAttrSet.SystemAttributeSet("|Config ToSic.Eav.DataSources.AttributeFilter", "used to configure an AttributeFilter DataSource",
+			var dsrcAttributeFilter = ImpContentType.SystemAttributeSet("|Config ToSic.Eav.DataSources.AttributeFilter", "used to configure an AttributeFilter DataSource",
 				new List<ImpAttribute>
 				{
 					ImpAttribute.StringAttribute("AttributeNames", "AttributeNames", null, true),
 				});
 
-			var dsrcEntityIdFilter = ImpAttrSet.SystemAttributeSet("|Config ToSic.Eav.DataSources.EntityIdFilter", "used to configure an EntityIdFilter DataSource",
+			var dsrcEntityIdFilter = ImpContentType.SystemAttributeSet("|Config ToSic.Eav.DataSources.EntityIdFilter", "used to configure an EntityIdFilter DataSource",
 				new List<ImpAttribute>
 				{
 					ImpAttribute.StringAttribute("EntityIds", "EntityIds", "Comma separated list of Entity IDs, like 503,522,5066,32", true),
 					//Import.AttributeHelperTools.BooleanAttribute("PassThroughOnEmptyEntityIds", "Pass-Throught on empty EntityIds", "If this is true and EntityIds results to an empty list, all entities are passed through.", true, false),
 				});
 
-			var dsrcEntityTypeFilter = ImpAttrSet.SystemAttributeSet("|Config ToSic.Eav.DataSources.EntityTypeFilter", "used to configure an EntityTypeFilter DataSource",
+			var dsrcEntityTypeFilter = ImpContentType.SystemAttributeSet("|Config ToSic.Eav.DataSources.EntityTypeFilter", "used to configure an EntityTypeFilter DataSource",
 				new List<ImpAttribute>
 				{
 					ImpAttribute.StringAttribute("TypeName", "TypeName", null, true),
 				});
 
-			var dsrcValueFilter = ImpAttrSet.SystemAttributeSet("|Config ToSic.Eav.DataSources.ValueFilter", "used to configure a ValueFilter DataSource",
+			var dsrcValueFilter = ImpContentType.SystemAttributeSet("|Config ToSic.Eav.DataSources.ValueFilter", "used to configure a ValueFilter DataSource",
 				new List<ImpAttribute>
 				{
 					ImpAttribute.StringAttribute("Attribute", "Attribute", null, true),
@@ -81,14 +81,14 @@ namespace ToSic.Eav
 					//Import.AttributeHelperTools.BooleanAttribute("PassThroughOnEmptyValue", "Pass-Throught on empty Value", "If this is true and Value results to an empty string, all entities are passed through.", true, false)
 				});
 
-			var dsrcValueSort = ImpAttrSet.SystemAttributeSet("|Config ToSic.Eav.DataSources.ValueSort", "used to configure a ValueSort DataSource",
+			var dsrcValueSort = ImpContentType.SystemAttributeSet("|Config ToSic.Eav.DataSources.ValueSort", "used to configure a ValueSort DataSource",
 				new List<ImpAttribute>
 				{
 					ImpAttribute.StringAttribute("Attributes", "Attributes", null, true),
 					ImpAttribute.StringAttribute("Directions", "Directions", null, true),
 				});
 
-			var dsrcRelationshipFilter = ImpAttrSet.SystemAttributeSet("|Config ToSic.Eav.DataSources.RelationshipFilter", "used to configure a RelationshipFilter DataSource",
+			var dsrcRelationshipFilter = ImpContentType.SystemAttributeSet("|Config ToSic.Eav.DataSources.RelationshipFilter", "used to configure a RelationshipFilter DataSource",
 				new List<ImpAttribute>
 				{
 					ImpAttribute.StringAttribute("Relationship", "Relationship", null, true),
@@ -99,7 +99,7 @@ namespace ToSic.Eav
 			#endregion
 
 			// Collect AttributeSets for use in Import
-			var attributeSets = new List<ImpAttrSet>
+			var attributeSets = new List<ImpContentType>
 			{
 				pipelinesAttributeSet,
 				pipelinePartsAttributeSet,

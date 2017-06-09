@@ -10,40 +10,15 @@ namespace ToSic.Eav.Data
     /// </summary>
     public class Value
     {
-        public int ValueId { get; set; }
-        public IEnumerable<ILanguage> Languages { get; set; }
-        public int ChangeLogIdCreated { get; set; }
-
+        public IEnumerable<ILanguage> Languages { get; private set; }
 
         /// <summary>
         /// Creates a Typed Value Model
         /// </summary>
-        public static IValue GetValueModel(string attributeType, string value)
+        public static IValue Build(string attributeType, object value, IEnumerable<ILanguage> languages, IDeferredEntitiesList fullEntityListForLookup = null)
         {
-            return GetValueModel(attributeType, (object)value, new Dimension[0], -1, -1);
-        }
-        /// <summary>
-        /// Creates a Typed Value Model
-        /// </summary>
-        public static IValue GetValueModel(string attributeType, string value, IEnumerable<ILanguage> languages, int valueId, int changeLogIdCreated)
-        {
-            return GetValueModel(attributeType, (object)value, languages, valueId, changeLogIdCreated);
-        }
-
-        /// <summary>
-        /// Creates a Typed Value Model for an Entity-Attribute
-        /// </summary>
-        public static IValue GetValueModel(string attributeType, IEnumerable<int?> entityIds, IDeferredEntitiesList fullEntityListForLookup = null)
-        {
-            return GetValueModel(attributeType, entityIds, new Dimension[0], -1, -1, fullEntityListForLookup);
-        }
-
-        /// <summary>
-        /// Creates a Typed Value Model
-        /// </summary>
-        private static IValue GetValueModel(string attributeType, object value, IEnumerable<ILanguage> languages, int valueId, int changeLogIdCreated, IDeferredEntitiesList fullEntityListForLookup = null)
-        {
-            IValueManagement typedModel;
+            if (languages == null) languages = new Dimension[0];
+            Value typedModel;
             var stringValue = value as string;
             try
             {
@@ -80,10 +55,15 @@ namespace ToSic.Eav.Data
             }
 
             typedModel.Languages = languages;
-            typedModel.ValueId = valueId;
-            typedModel.ChangeLogIdCreated = changeLogIdCreated;
 
             return (IValue)typedModel;
         }
+
+
+        internal static readonly Value<EntityRelationship> NullRelationship = new Value<EntityRelationship>(new EntityRelationship(null))
+        {
+            Languages = new Dimension[0]
+        };
+
     }
 }

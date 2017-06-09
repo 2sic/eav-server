@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data
 {
@@ -9,7 +10,7 @@ namespace ToSic.Eav.Data
     /// </summary>
     public class AttributeHelperTools
     {
-        private static readonly Value<EntityRelationship> EntityRelationshipDefaultValue = new Value<EntityRelationship>(new EntityRelationship(null)) { Languages = new Dimension[0] };
+        //private static readonly Value<EntityRelationship> EntityRelationshipDefaultValue = new Value<EntityRelationship>(new EntityRelationship(null)) { Languages = new Dimension[0] };
 
         /// <summary>
         /// Convert a NameValueCollection-Like List to a Dictionary of IAttributes
@@ -26,7 +27,7 @@ namespace ToSic.Eav.Data
                 var valuesModelList = new List<IValue>();
                 if (attribute.Value != null)
                 {
-                    var valueModel = Value.GetValueModel(baseModel.Type, attribute.Value.ToString());
+                    var valueModel = Value.Build(baseModel.Type, attribute.Value.ToString(), null, null);
                     valuesModelList.Add(valueModel);
                 }
 
@@ -67,7 +68,7 @@ namespace ToSic.Eav.Data
                 case AttributeTypeEnum.Number:
                     return new Attribute<decimal?>(definition.Name, definition.Type, definition.IsTitle, definition.AttributeId, definition.SortOrder);
                 case AttributeTypeEnum.Entity: 
-                    return new Attribute<EntityRelationship>(definition.Name, definition.Type, definition.IsTitle, definition.AttributeId, definition.SortOrder) { Values = new IValue[] { EntityRelationshipDefaultValue } };
+                    return new Attribute<EntityRelationship>(definition.Name, definition.Type, definition.IsTitle, definition.AttributeId, definition.SortOrder) { Values = new IValue[] { Value.NullRelationship /*EntityRelationshipDefaultValue */} };
                 case AttributeTypeEnum.String:
                 case AttributeTypeEnum.Hyperlink:
                 case AttributeTypeEnum.Custom:

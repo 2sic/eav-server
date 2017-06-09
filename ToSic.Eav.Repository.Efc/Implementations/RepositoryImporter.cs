@@ -17,7 +17,7 @@ namespace ToSic.Eav.Repository.Efc.Implementations
         /// <param name="appId"></param>
         /// <param name="newAttributeSets"></param>
         /// <param name="newEntities"></param>
-        public void Import(int? zoneId, int? appId, IEnumerable<ImpAttrSet> newAttributeSets, IEnumerable<ImpEntity> newEntities)
+        public void Import(int? zoneId, int? appId, IEnumerable<ImpContentType> newAttributeSets, IEnumerable<ImpEntity> newEntities)
         {
             var import = new DbImport(zoneId, appId);
             import.ImportIntoDb(newAttributeSets, newEntities);

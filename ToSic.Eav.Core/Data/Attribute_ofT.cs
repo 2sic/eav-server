@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data
 {
@@ -13,7 +14,7 @@ namespace ToSic.Eav.Data
         public Attribute(string name, string type, bool isTitle, int attributeId, int sortOrder) : base(name, type, isTitle, attributeId, sortOrder) { }
 
         public IEnumerable<IValue> Values { get; set; }
-        public IValueManagement DefaultValue { get; set; }
+        public IValue DefaultValue { get; set; }
 
         public ValueType TypedContents
         {
@@ -35,7 +36,7 @@ namespace ToSic.Eav.Data
             }
         }
 
-        public ITypedValue<ValueType> Typed
+        public IValueOfDimension<ValueType> Typed
         {
             get { return new TypedValue<ValueType>(Values, TypedContents); }
         }

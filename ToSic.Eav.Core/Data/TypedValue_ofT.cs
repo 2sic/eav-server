@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data
 {
     /// <summary>
     /// Typed Value
     /// </summary>
-    public class TypedValue<T> : ITypedValue<T>
+    public class TypedValue<T> : IValueOfDimension<T>
     {
         private readonly IEnumerable<IValue> _values;
         private readonly T _typedContents;
@@ -21,10 +22,7 @@ namespace ToSic.Eav.Data
             _typedContents = typedContents;
         }
 
-        public T this[int languageId]
-        {
-            get { return this[new[] { languageId }]; }
-        }
+        public T this[int languageId] => this[new[] { languageId }];
 
         public T this[int[] languageIds]
         {
@@ -36,13 +34,13 @@ namespace ToSic.Eav.Data
                     // try match all specified Dimensions
                     var valueHavingSpecifiedLanguages = _values.FirstOrDefault(va => languageIds.All(di => va.Languages.Select(d => d.DimensionId).Contains(di)));
                     if (valueHavingSpecifiedLanguages != null)
-                    {
                         try
                         {
-                            return ((IValue<T>)valueHavingSpecifiedLanguages).TypedContents;
+                            return ((IValue<T>) valueHavingSpecifiedLanguages).TypedContents;
                         }
-                        catch (InvalidCastException) { }// may occour for nullable types
-                    }
+                        catch (InvalidCastException)
+                        {
+                        } // may occour for nullable types
                 }
 
                 // use Default
@@ -50,10 +48,7 @@ namespace ToSic.Eav.Data
             }
         }
 
-        public T this[string languageKey]
-        {
-            get { return this[new[] { languageKey }]; }
-        }
+        public T this[string languageKey] => this[new[] { languageKey }];
 
         public T this[string[] languageKeys]
         {
@@ -65,13 +60,13 @@ namespace ToSic.Eav.Data
                     // try match all specified Dimensions
                     var valueHavingSpecifiedLanguages = _values.FirstOrDefault(va => languageKeys.All(lk => va.Languages.Select(d => d.Key).Contains(lk.ToLower())));
                     if (valueHavingSpecifiedLanguages != null)
-                    {
                         try
                         {
-                            return ((IValue<T>)valueHavingSpecifiedLanguages).TypedContents;
+                            return ((IValue<T>) valueHavingSpecifiedLanguages).TypedContents;
                         }
-                        catch (InvalidCastException) { }	// may occour for nullable types
-                    }
+                        catch (InvalidCastException)
+                        {
+                        } // may occour for nullable types
                 }
 
                 // use Default

@@ -47,7 +47,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Import AttributeSets and Entities
         /// </summary>
-        public void ImportIntoDb(IEnumerable<ImpAttrSet> newAttributeSets, IEnumerable<ImpEntity> newEntities)
+        public void ImportIntoDb(IEnumerable<ImpContentType> newAttributeSets, IEnumerable<ImpEntity> newEntities)
         {
             _context.PurgeAppCacheOnSave = false;
 
@@ -113,7 +113,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             }
         }
 
-        private void ImportSomeAttributeSets(IEnumerable<ImpAttrSet> newAttributeSets)
+        private void ImportSomeAttributeSets(IEnumerable<ImpContentType> newAttributeSets)
         {
             foreach (var attributeSet in newAttributeSets)
                 ImportAttributeSet(attributeSet);
@@ -127,10 +127,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Import an AttributeSet with all Attributes and AttributeMetaData
         /// </summary>
-        private void ImportAttributeSet(ImpAttrSet impAttrSet)
+        private void ImportAttributeSet(ImpContentType impContentType)
         {
             // initialize destinationSet - create or test existing if ok
-            var destinationSet = GetAndCheckIfValidOrCreateDestinationSet(impAttrSet);
+            var destinationSet = GetAndCheckIfValidOrCreateDestinationSet(impContentType);
             if (destinationSet == null) // something went wrong, skip this import
                 return;
 
@@ -139,13 +139,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 _context.AttribSet.EnsureSharedAttributeSetsOnEverythingAndSave();
 
             // append all Attributes
-            foreach (var importAttribute in impAttrSet.Attributes)
+            foreach (var importAttribute in impContentType.Attributes)
             {
                 ToSicEavAttributes destinationAttribute;
                 if(!_context.Attributes.AttributeExistsInSet(destinationSet.AttributeSetId, importAttribute.StaticName))
                 {
                     // try to add new Attribute
-                    var isTitle = importAttribute == impAttrSet.TitleAttribute;
+                    var isTitle = importAttribute == impContentType.TitleAttribute;
                     destinationAttribute = _context.Attributes
                         .AppendToEndAndSave(destinationSet, 0, importAttribute.StaticName, importAttribute.Type, importAttribute.InputType, isTitle);//, false);
                 }
@@ -162,46 +162,46 @@ namespace ToSic.Eav.Repository.Efc.Parts
             }
 
             // optionally re-order the attributes if specified in import
-            if (impAttrSet.SortAttributes)
-                SortAttributesByImportOrder(impAttrSet, destinationSet);
+            if (impContentType.SortAttributes)
+                SortAttributesByImportOrder(impContentType, destinationSet);
         }
 
-        private ToSicEavAttributeSets GetAndCheckIfValidOrCreateDestinationSet(ImpAttrSet impAttrSet)
+        private ToSicEavAttributeSets GetAndCheckIfValidOrCreateDestinationSet(ImpContentType impContentType)
         {
-            var destinationSet = _context.AttribSet.GetAttributeSet(impAttrSet.StaticName);
+            var destinationSet = _context.AttribSet.GetAttributeSet(impContentType.StaticName);
 
             // add new AttributeSet, do basic configuration if possible, then save
             if (destinationSet == null)
-                destinationSet = _context.AttribSet.PrepareSet(impAttrSet.Name, impAttrSet.Description,
-                    impAttrSet.StaticName, impAttrSet.Scope, false, null);
+                destinationSet = _context.AttribSet.PrepareSet(impContentType.Name, impContentType.Description,
+                    impContentType.StaticName, impContentType.Scope, false, null);
 
             // to use existing attribute Set, do some minimal conflict-checking
             else
             {
                 _importLog.Add(new ImportLogItem(EventLogEntryType.Information, "AttributeSet already exists")
                 {
-                    ImpAttrSet = impAttrSet
+                    ImpContentType = impContentType
                 });
                 if (destinationSet.UsesConfigurationOfAttributeSet.HasValue)
                 {
                     _importLog.Add(new ImportLogItem(EventLogEntryType.Error,
                         "Not allowed to import/extend an AttributeSet which uses Configuration of another AttributeSet.")
                     {
-                        ImpAttrSet = impAttrSet
+                        ImpContentType = impContentType
                     });
                     return null;
                 }
             }
 
             // If a "Ghost"-content type is specified, try to assign that
-            if (!string.IsNullOrEmpty(impAttrSet.UsesConfigurationOfAttributeSet))
+            if (!string.IsNullOrEmpty(impContentType.UsesConfigurationOfAttributeSet))
             {
-                var ghostParentId = FindCorrectGhostParentId(impAttrSet);
+                var ghostParentId = FindCorrectGhostParentId(impContentType);
                 if (ghostParentId == 0) return null;
                 destinationSet.UsesConfigurationOfAttributeSet = ghostParentId;
             }
 
-            destinationSet.AlwaysShareConfiguration = impAttrSet.AlwaysShareConfiguration;
+            destinationSet.AlwaysShareConfiguration = impContentType.AlwaysShareConfiguration;
             _context.SqlDb.SaveChanges();
 
             // all ok :)
@@ -211,13 +211,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Look up the ghost-parent-id
         /// </summary>
-        /// <param name="impAttrSet"></param>
+        /// <param name="impContentType"></param>
         /// <returns>The parent id as needed, or 0 if not found - which usually indicates an import problem</returns>
-        private int FindCorrectGhostParentId(ImpAttrSet impAttrSet)
+        private int FindCorrectGhostParentId(ImpContentType impContentType)
         {
             // Look for a content type with the StaticName, which has no "UsesConfigurationOf..." set (is a master)
             var ghostAttributeSets = _context.SqlDb.ToSicEavAttributeSets.Where(
-                    a => a.StaticName == impAttrSet.UsesConfigurationOfAttributeSet
+                    a => a.StaticName == impContentType.UsesConfigurationOfAttributeSet
                          && a.ChangeLogDeleted == null
                          && a.UsesConfigurationOfAttributeSet == null).
                 OrderBy(a => a.AttributeSetId)
@@ -225,13 +225,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             if (ghostAttributeSets.Count == 0)
             {
-                _importLog.Add(new ImportLogItem(EventLogEntryType.Warning, "AttributeSet not imported because master set not found: " + impAttrSet.UsesConfigurationOfAttributeSet) {ImpAttrSet = impAttrSet});
+                _importLog.Add(new ImportLogItem(EventLogEntryType.Warning, "AttributeSet not imported because master set not found: " + impContentType.UsesConfigurationOfAttributeSet) {ImpContentType = impContentType});
                 return 0;
             }
 
             // If multiple masters are found, use first and add a warning message
             if (ghostAttributeSets.Count > 1)
-                _importLog.Add(new ImportLogItem(EventLogEntryType.Warning, "Multiple potential master AttributeSets found for StaticName: " + impAttrSet.UsesConfigurationOfAttributeSet) {ImpAttrSet = impAttrSet});
+                _importLog.Add(new ImportLogItem(EventLogEntryType.Warning, "Multiple potential master AttributeSets found for StaticName: " + impContentType.UsesConfigurationOfAttributeSet) {ImpContentType = impContentType});
             
             // all ok, return id
             return ghostAttributeSets.First().AttributeSetId;
@@ -271,17 +271,17 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// this method will then take care of re-sorting them correctly
         /// Fields which were not in the import will simply land at the end
         /// </summary>
-        /// <param name="impAttrSet"></param>
+        /// <param name="impContentType"></param>
         /// <param name="destinationSet"></param>
-        private void SortAttributesByImportOrder(ImpAttrSet impAttrSet, ToSicEavAttributeSets destinationSet)
+        private void SortAttributesByImportOrder(ImpContentType impContentType, ToSicEavAttributeSets destinationSet)
         {
             var attributeList = _context.SqlDb.ToSicEavAttributesInSets
                 .Where(a => a.AttributeSetId == destinationSet.AttributeSetId)
                 .ToList();
 
             attributeList = attributeList
-                .OrderBy(a => impAttrSet.Attributes
-                    .IndexOf(impAttrSet.Attributes
+                .OrderBy(a => impContentType.Attributes
+                    .IndexOf(impContentType.Attributes
                         .First(ia => ia.StaticName == a.Attribute.StaticName)))
                 .ToList();
             _context.Attributes.PersistAttributeOrder(attributeList);
@@ -301,7 +301,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 _importLog.Add(new ImportLogItem(EventLogEntryType.Error, "AttributeSet not found")
                 {
                     ImpEntity = impEntity,
-                    ImpAttrSet = new ImpAttrSet {StaticName = impEntity.AttributeSetStaticName}
+                    ImpContentType = new ImpContentType {StaticName = impEntity.AttributeSetStaticName}
                 });
                 return;
             }

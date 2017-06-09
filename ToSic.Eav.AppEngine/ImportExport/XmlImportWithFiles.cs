@@ -265,9 +265,9 @@ namespace ToSic.Eav.Apps.ImportExport
 
 		#region AttributeSets
 
-		private List<ImpAttrSet> GetImportAttributeSets(IEnumerable<XElement> xAttributeSets)
+		private List<ImpContentType> GetImportAttributeSets(IEnumerable<XElement> xAttributeSets)
 		{
-            var importAttributeSets = new List<ImpAttrSet>();
+            var importAttributeSets = new List<ImpContentType>();
 
 			// Loop through AttributeSets
 			foreach (var attributeSet in xAttributeSets)
@@ -293,7 +293,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     }
 
 				// Add AttributeSet
-                importAttributeSets.Add(new ImpAttrSet
+                importAttributeSets.Add(new ImpContentType
 				{
 					StaticName = attributeSet.Attribute(XmlConstants.Static).Value,
 					Name = attributeSet.Attribute(XmlConstants.Name).Value,

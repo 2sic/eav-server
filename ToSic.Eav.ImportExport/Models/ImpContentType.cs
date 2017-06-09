@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.ImportExport.Models
 {
-	public class ImpAttrSet
+	public class ImpContentType
 	{
 		public string Name { get; set; }
 		public string StaticName { get; set; }
@@ -16,9 +16,9 @@ namespace ToSic.Eav.ImportExport.Models
 
 	    public bool SortAttributes { get; set; } = false;
 
-        public ImpAttrSet() { }
+        public ImpContentType() { }
 
-		private ImpAttrSet(string name, string staticName, string description, string scope, List<ImpAttribute> attributes, bool alwaysShareConfiguration = false)
+		private ImpContentType(string name, string staticName, string description, string scope, List<ImpAttribute> attributes, bool alwaysShareConfiguration = false)
 		{
 			Name = name;
 			StaticName = staticName;
@@ -31,9 +31,9 @@ namespace ToSic.Eav.ImportExport.Models
 		/// <summary>
 		/// Shortcut go get a new AttributeSet with Scope=System and Name=StaticName
 		/// </summary>
-		public static ImpAttrSet SystemAttributeSet(string staticName, string description, List<ImpAttribute> attributes, bool alwaysShareConfiguration = false)
+		public static ImpContentType SystemAttributeSet(string staticName, string description, List<ImpAttribute> attributes, bool alwaysShareConfiguration = false)
 		{
-			return new ImpAttrSet(staticName, staticName, description, "System", attributes, alwaysShareConfiguration);
+			return new ImpContentType(staticName, staticName, description, "System", attributes, alwaysShareConfiguration);
 		}
 	}
 }

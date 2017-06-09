@@ -298,10 +298,10 @@ namespace ToSic.Eav.Persistence.Efc
                 foreach (var r in relatedEntities[e.EntityId])
                 {
                     var attributeModel = allAttribsOfThisType[r.AttributeID];
-                    var valueModel = Value.GetValueModel(((IAttributeBase)attributeModel).Type, r.Childs, source);
+                    var valueModel = Value.Build(((IAttributeBase)attributeModel).Type, r.Childs, null, source);
                     var valuesModelList = new List<IValue> { valueModel };
                     attributeModel.Values = valuesModelList;
-                    attributeModel.DefaultValue = (IValueManagement)valuesModelList.FirstOrDefault();
+                    attributeModel.DefaultValue = valuesModelList.FirstOrDefault();
                 }
                 #endregion
 
@@ -325,13 +325,13 @@ namespace ToSic.Eav.Persistence.Efc
                         #region Add all Values
                         foreach (var v in a.Values)
                         {
-                            var valueModel = Value.GetValueModel(((IAttributeBase)attributeModel).Type, v.Value, v.Languages, v.ValueId, v.ChangeLogCreated);
+                            var valueModel = Value.Build(((IAttributeBase)attributeModel).Type, v.Value, v.Languages, null);
                             valuesModelList.Add(valueModel);
                         }
                         #endregion
 
                         attributeModel.Values = valuesModelList;
-                        attributeModel.DefaultValue = (IValueManagement)valuesModelList.FirstOrDefault();
+                        attributeModel.DefaultValue = valuesModelList.FirstOrDefault();
                     }
 
                 // Special treatment in case there is no title 
