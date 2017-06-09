@@ -83,6 +83,7 @@
     <Compile Include="Constants.cs" />
     <Compile Include="Constants_Relationships.cs" />
     <Compile Include="Data\AppDataPackage.cs" />
+    <Compile Include="Data\AttributeDefinition.cs" />
     <Compile Include="Data\AttributeBase.cs" />
     <Compile Include="Data\AttributeHelperTools.cs" />
     <Compile Include="Data\Attribute_ofT.cs" />
@@ -106,7 +107,7 @@
     <Compile Include="Implementations\ValueConverter\ConversionScenario.cs" />
     <Compile Include="Implementations\ValueConverter\IEavValueConverter.cs" />
     <Compile Include="Implementations\ValueConverter\NeutralValueConverter.cs" />
-    <Compile Include="Interfaces\IAttributeManagement.cs" />
+    <Compile Include="Interfaces\IAttributeDefinition.cs" />
     <Compile Include="Interfaces\IValue_T.cs" />
     <Compile Include="Interfaces\IValueOfDimension_T.cs" />
     <Compile Include="Interfaces\IAttribute_T.cs" />

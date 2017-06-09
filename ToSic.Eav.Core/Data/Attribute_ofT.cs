@@ -6,45 +6,40 @@ using ToSic.Eav.Interfaces;
 namespace ToSic.Eav.Data
 {
     /// <summary>
-    /// Represents an Attribute with Values of a Generic Type
+    /// Represents an Attribute / Property of an Entity with Values of a Generic Type
     /// </summary>
-    /// <typeparam name="ValueType">Type of the Value</typeparam>
-    public class Attribute<ValueType> : AttributeBase, IAttribute<ValueType>, IAttributeManagement
+    /// <typeparam name="TType">Type of the Value</typeparam>
+    public class Attribute<TType> : AttributeBase, IAttribute<TType>//, IAttributeManagement
     {
-        public Attribute(string name, string type, bool isTitle, int attributeId, int sortOrder) : base(name, type, isTitle, attributeId, sortOrder) { }
+        public Attribute(string name, string type, bool isTitle/*, int attributeId, int sortOrder*/) : base(name, type, isTitle/*, attributeId, sortOrder*/) { }
 
         public IEnumerable<IValue> Values { get; set; }
-        public IValue DefaultValue { get; set; }
+        // 2017-06-07 2dm disabled, as it seems unnecessary and never used...
+        //public IValue DefaultValue { get; set; }
 
-        public ValueType TypedContents
+        public TType TypedContents
         {
             get
             {
 				// Prevent Exception if Values is null
 	            if (Values == null)
-		            return default(ValueType);
+		            return default(TType);
 
                 try
                 {
-                    var value = (IValue<ValueType>)Values.FirstOrDefault();
-                    return value != null ? value.TypedContents : default(ValueType);
+                    var value = (IValue<TType>)Values.FirstOrDefault();
+                    return value != null ? value.TypedContents : default(TType);
                 }
                 catch
                 {
-                    return default(ValueType);
+                    return default(TType);
                 }
             }
         }
 
-        public IValueOfDimension<ValueType> Typed
-        {
-            get { return new TypedValue<ValueType>(Values, TypedContents); }
-        }
+        public IValueOfDimension<TType> Typed => new TypedValue<TType>(Values, TypedContents);
 
-        public object this[int languageId]
-        {
-            get { return this[new[] { languageId }]; }
-        }
+        public object this[int languageId] => this[new[] { languageId }];
 
         public object this[int[] languageIds]
         {
@@ -59,13 +54,13 @@ namespace ToSic.Eav.Data
                     {
                         try
                         {
-                            return ((IValue<ValueType>)valueHavingSpecifiedLanguages).TypedContents;
+                            return ((IValue<TType>)valueHavingSpecifiedLanguages).TypedContents;
                         }
                         catch (InvalidCastException) { } // may occour for nullable types
                     }
                 }
                 // use Default
-                return TypedContents == null ? default(ValueType) : TypedContents;
+                return TypedContents == null ? default(TType) : TypedContents;
             }
         }
 
@@ -87,13 +82,13 @@ namespace ToSic.Eav.Data
                     {
                         try
                         {
-                            return ((IValue<ValueType>)valueHavingSpecifiedLanguages).TypedContents;
+                            return ((IValue<TType>)valueHavingSpecifiedLanguages).TypedContents;
                         }
                         catch (InvalidCastException) { }	// may occour for nullable types
                     }
                 }
                 // use Default
-                return TypedContents == null ? default(ValueType) : TypedContents;
+                return TypedContents == null ? default(TType) : TypedContents;
             }
         }
     }

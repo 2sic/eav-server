@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-
-namespace ToSic.Eav
+﻿namespace ToSic.Eav.Interfaces
 {
 	/// <summary>
-	/// Represents an Attribute
+	/// Represents an Attribute. This is the base for both
+	/// - attribute definition (in the IContentType)
+	/// - attribute with values-list (in the IEntity)
 	/// </summary>
 	public interface IAttributeBase
 	{
@@ -19,10 +19,11 @@ namespace ToSic.Eav
 
         bool IsTitle { get; }
 
-        // additional info for the persistence layer
-        int AttributeId { get; }
+        // 2017-06-09 2dm extracting to IAttributeDefinition to separate implementation specifics
+        //// additional info for the persistence layer
+        //int AttributeId { get; }
 
-        int SortOrder { get; }
+        //int SortOrder { get; }
 
     }
 }

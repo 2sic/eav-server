@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data
 {
@@ -40,9 +41,9 @@ namespace ToSic.Eav.Data
         /// <summary>
 		/// Dictionary with all Attribute Definitions
         /// </summary>
-        public IDictionary<int, IAttributeBase> AttributeDefinitions { get; set; }
+        public IDictionary<int, IAttributeDefinition> AttributeDefinitions { get; set; }
 
-        public IAttributeBase this[string fieldName]
+        public IAttributeDefinition this[string fieldName]
         {
             get {
                 var found = AttributeDefinitions.Where(a => a.Value.Name == fieldName).Select(x => x.Value).FirstOrDefault();

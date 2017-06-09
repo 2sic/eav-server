@@ -107,8 +107,7 @@ namespace ToSic.Eav.Persistence.Efc
                                 ? sharedAttribs[set.SharedDefinitionId.Value]
                                 : set.Attributes)
                             .ToDictionary(k2 => k2.AttributeId,
-                                a => new AttributeBase(a.StaticName, a.Type, a.IsTitle, a.AttributeId, a.SortOrder) as
-                                    IAttributeBase)
+                                a => new AttributeDefinition(a.StaticName, a.Type, a.IsTitle, a.AttributeId, a.SortOrder) as IAttributeDefinition)
                     }
             );
         }
@@ -228,14 +227,14 @@ namespace ToSic.Eav.Persistence.Efc
                 var contentType = (ContentType)contentTypes[e.AttributeSetId];
                 var newEntity = new Entity(e.EntityGuid, e.EntityId, e.EntityId, e.Metadata, contentType, e.IsPublished, relationships, e.Modified, e.Owner);
 
-                var allAttribsOfThisType = new Dictionary<int, IAttributeManagement>();	// temporary Dictionary to set values later more performant by Dictionary-Key (AttributeId)
-                IAttributeManagement titleAttrib = null;
+                var allAttribsOfThisType = new Dictionary<int, IAttribute>();	// temporary Dictionary to set values later more performant by Dictionary-Key (AttributeId)
+                IAttribute titleAttrib = null;
 
-                // Add all Attributes from that Content-Type
+                // Add all Attributes of that Content-Type
                 foreach (var definition in contentType.AttributeDefinitions.Values)
                 {
-                    var newAttribute = AttributeHelperTools.GetAttributeManagementModel(definition);
-                    newEntity.Attributes.Add(((IAttributeBase)newAttribute).Name, newAttribute);
+                    var newAttribute = AttributeHelperTools.CreateTypedAttribute(definition);
+                    newEntity.Attributes.Add(newAttribute.Name, newAttribute);
                     allAttribsOfThisType.Add(definition.AttributeId, newAttribute);
                     if (newAttribute.IsTitle)
                         titleAttrib = newAttribute;
@@ -301,15 +300,16 @@ namespace ToSic.Eav.Persistence.Efc
                     var valueModel = Value.Build(((IAttributeBase)attributeModel).Type, r.Childs, null, source);
                     var valuesModelList = new List<IValue> { valueModel };
                     attributeModel.Values = valuesModelList;
-                    attributeModel.DefaultValue = valuesModelList.FirstOrDefault();
-                }
+                    // 2017-06-07 2dm disabled, as it seems unnecessary and never used...
+                    //attributeModel.DefaultValue = valuesModelList.FirstOrDefault();
+                    }
                 #endregion
 
                 #region Add "normal" Attributes (that are not Entity-Relations)
-                if(attributes.ContainsKey(e.EntityId))
+                if (attributes.ContainsKey(e.EntityId))
                     foreach (var a in attributes[e.EntityId])// e.Attributes)
                     {
-                        IAttributeManagement attributeModel;
+                        IAttribute attributeModel;
                         try
                         {
                             attributeModel = allAttribsOfThisType[a.AttributeID];
@@ -331,7 +331,8 @@ namespace ToSic.Eav.Persistence.Efc
                         #endregion
 
                         attributeModel.Values = valuesModelList;
-                        attributeModel.DefaultValue = valuesModelList.FirstOrDefault();
+                        // 2017-06-07 2dm disabled, as it seems unnecessary and never used...
+                        //attributeModel.DefaultValue = valuesModelList.FirstOrDefault();
                     }
 
                 // Special treatment in case there is no title 

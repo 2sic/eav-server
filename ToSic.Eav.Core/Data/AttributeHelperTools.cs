@@ -22,8 +22,8 @@ namespace ToSic.Eav.Data
             foreach (var attribute in attributes)
             {
                 var attributeType = GetAttributeTypeName(attribute.Value);
-                var baseModel = new AttributeBase(attribute.Key, attributeType, attribute.Key == titleAttributeName, attributeId: 0, sortOrder: 0);
-                var attributeModel = GetAttributeManagementModel(baseModel);
+                var baseModel = new AttributeDefinition(attribute.Key, attributeType, attribute.Key == titleAttributeName, 0, 0);
+                var attributeModel = CreateTypedAttribute(baseModel);
                 var valuesModelList = new List<IValue>();
                 if (attribute.Value != null)
                 {
@@ -57,23 +57,23 @@ namespace ToSic.Eav.Data
         /// Get Attribute for specified Typ
         /// </summary>
 		/// <returns><see cref="Attribute{ValueType}"/></returns>
-        public static IAttributeManagement GetAttributeManagementModel(IAttributeBase definition)
+        public static IAttribute CreateTypedAttribute(IAttributeDefinition definition)
         {
             switch (definition.ControlledType)
             {
                 case AttributeTypeEnum.Boolean:  
-                    return new Attribute<bool?>(definition.Name, definition.Type, definition.IsTitle, definition.AttributeId, definition.SortOrder);
+                    return new Attribute<bool?>(definition.Name, definition.Type, definition.IsTitle);
                 case AttributeTypeEnum.DateTime:
-                    return new Attribute<DateTime?>(definition.Name, definition.Type, definition.IsTitle, definition.AttributeId, definition.SortOrder);
+                    return new Attribute<DateTime?>(definition.Name, definition.Type, definition.IsTitle);
                 case AttributeTypeEnum.Number:
-                    return new Attribute<decimal?>(definition.Name, definition.Type, definition.IsTitle, definition.AttributeId, definition.SortOrder);
+                    return new Attribute<decimal?>(definition.Name, definition.Type, definition.IsTitle);
                 case AttributeTypeEnum.Entity: 
-                    return new Attribute<EntityRelationship>(definition.Name, definition.Type, definition.IsTitle, definition.AttributeId, definition.SortOrder) { Values = new IValue[] { Value.NullRelationship /*EntityRelationshipDefaultValue */} };
+                    return new Attribute<EntityRelationship>(definition.Name, definition.Type, definition.IsTitle) { Values = new IValue[] { Value.NullRelationship /*EntityRelationshipDefaultValue */} };
                 case AttributeTypeEnum.String:
                 case AttributeTypeEnum.Hyperlink:
                 case AttributeTypeEnum.Custom:
                 default:
-                    return new Attribute<string>(definition.Name, definition.Type, definition.IsTitle, definition.AttributeId, definition.SortOrder);
+                    return new Attribute<string>(definition.Name, definition.Type, definition.IsTitle);
             }
         }
     }

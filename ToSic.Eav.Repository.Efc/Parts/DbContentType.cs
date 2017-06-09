@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
@@ -60,14 +61,14 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 .OrderBy(ats => ats.AttributeSetId)
                 .ToList();
 
-            if(attSets.Count() == 0)
+            if(!attSets.Any())
                 throw new ArgumentException("can't find an original, non-ghost content-type with the static name '" + staticName + "'");
 
-            if (attSets.Count() > 1)
-                throw new Exception("found " + attSets.Count() + " (expected 1) original, non-ghost content-type with the static name '" + staticName + "' - so won't create ghost as it's not clear off which you would want to ghost.");
+            if (attSets.Count > 1)
+                throw new Exception("found " + attSets.Count + " (expected 1) original, non-ghost content-type with the static name '" + staticName + "' - so won't create ghost as it's not clear off which you would want to ghost.");
 
-            var attSet = attSets.FirstOrDefault();
-            var newSet = new ToSicEavAttributeSets()
+            var attSet = attSets.First();
+            var newSet = new ToSicEavAttributeSets
             {
                 AppId = DbContext.AppId, // needs the new, current appid
                 StaticName = attSet.StaticName,
@@ -97,7 +98,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Returns the configuration for a content type
         /// </summary>
-        public IEnumerable<Tuple<IAttributeBase, Dictionary<string, IEntity>>> GetContentTypeConfiguration(string contentTypeStaticName)
+        public IEnumerable<Tuple<IAttributeDefinition, Dictionary<string, IEntity>>> GetContentTypeConfiguration(string contentTypeStaticName)
         {
             var cache = DataSource.GetCache(null, DbContext.AppId);
             var result = cache.GetContentType(contentTypeStaticName);
@@ -119,7 +120,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     .ToDictionary(e => e.Type.StaticName.TrimStart('@'), e => e)
             });
 
-            return config.Select(a => new Tuple<IAttributeBase, Dictionary<string, IEntity>>(a.Attribute, a.Metadata));
+            return config.Select(a => new Tuple<IAttributeDefinition, Dictionary<string, IEntity>>(a.Attribute, a.Metadata));
         }
         
         public void Reorder(int contentTypeId, List<int> newSortOrder)

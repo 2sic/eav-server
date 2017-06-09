@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Interfaces;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav
@@ -29,10 +30,10 @@ namespace ToSic.Eav
         /// <summary>
         /// Dictionary with all Attribute Definitions
         /// </summary>
-        IDictionary<int, IAttributeBase> AttributeDefinitions { get; set; }
+        IDictionary<int, IAttributeDefinition> AttributeDefinitions { get; set; }
 
         // A simple indexer to get an attribute
-        IAttributeBase this[string fieldName] { get; }
+        IAttributeDefinition this[string fieldName] { get; }
 
         /// <summary>
         /// Get the scope of the Content Type

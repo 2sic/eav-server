@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.Interfaces;
 
-namespace ToSic.Eav
+namespace ToSic.Eav.Interfaces
 {
     /// <summary>
     /// Represents an Attribute with Values
@@ -11,7 +10,7 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Gets a IEnumerable of all Values of this Entity's Attribute
 		/// </summary>
-		IEnumerable<IValue> Values { get; }
+		IEnumerable<IValue> Values { get; set; } // temp set, must find out how to remove this again form the interface
 		/// <summary>
 		/// Gets the Value for this Language
 		/// </summary>

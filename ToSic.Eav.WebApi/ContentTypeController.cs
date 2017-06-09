@@ -125,11 +125,9 @@ namespace ToSic.Eav.WebApi
 
             var fields =
                 CurrentContext.ContentType.GetContentTypeConfiguration(staticName)
-                    .OrderBy(ct => ((AttributeBase)ct.Item1).SortOrder);
+                    .OrderBy(ct => ct.Item1.SortOrder);
 
-            //var appDef = new ToSic.Eav.Api.BetaFullApi(null, appId, CurrentContext);
-            //var debug = appDef.GetInputTypes(true).ToList();
-            var appInputTypes = new AppRuntime(appId).ContentTypes.GetInputTypes(true).ToList();  // appDef.GetInputTypes(true).ToList();
+            var appInputTypes = new AppRuntime(appId).ContentTypes.GetInputTypes(true).ToList();
             var noTitleCount = 0;
             var fldName = "";
 
@@ -139,7 +137,7 @@ namespace ToSic.Eav.WebApi
             {
                 inputTypesDic =
                     appInputTypes.ToDictionary(
-                        a => (fldName = a.GetBestTitle() ?? "error-no-title" + noTitleCount++),
+                        a => fldName = a.GetBestTitle() ?? "error-no-title" + noTitleCount++,
                         a => a);
             }
             catch (Exception ex)
@@ -154,7 +152,7 @@ namespace ToSic.Eav.WebApi
                 return new
                 {
                     Id = a.Item1.AttributeId,
-                    ((AttributeBase)a.Item1).SortOrder,
+                    a.Item1.SortOrder,
                     a.Item1.Type,
                     InputType = inputtype,
                     StaticName = a.Item1.Name,
