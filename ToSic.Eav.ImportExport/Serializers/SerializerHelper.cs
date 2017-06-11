@@ -141,7 +141,7 @@ namespace ToSic.Eav.Serializers
 
             if (IncludeMetadata)
             {
-                if(entity.Metadata.HasMetadata)
+                if(entity.Metadata.IsMetadata)
                     entityValues.Add("Metadata", entity.Metadata);
             }
 
@@ -150,9 +150,9 @@ namespace ToSic.Eav.Serializers
                 {
                     entityValues.Add("Title", entity.GetBestTitle(Languages));
                 }
-                // ReSharper disable once EmptyGeneralCatchClause
                 catch
                 {
+                    // ignore
                 }
 
             return entityValues;

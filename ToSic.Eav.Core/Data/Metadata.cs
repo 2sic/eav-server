@@ -8,19 +8,22 @@ namespace ToSic.Eav.Data
     /// </summary>
     public class Metadata : IMetadata
     {
+        // 2017-06-11 try to disable this completely, I'm assuming we only used it internally
+        ///// <summary>
+        ///// Will return true if a target-type was assigned
+        ///// </summary>
+        //[Obsolete("don't use this any more, it's a wrong name - should be IsMetadata")]
+        //public bool HasMetadata => TargetType != Constants.NotMetadata;
 
         /// <summary>
         /// Will return true if a target-type was assigned
         /// </summary>
-        public bool HasMetadata
-        {
-            get { return TargetType != Constants.NotMetadata; }
-        }
+        public bool IsMetadata => TargetType != Constants.NotMetadata;
 
         /// <summary>
         /// This is the AssignmentObjectTypeId - usually 1 (none), 2 (attribute), 4 (entity)
         /// </summary>
-        public int TargetType { get; set; }
+        public int TargetType { get; set; } = Constants.NotMetadata;
 
         public string Key { get; set; }
 
@@ -38,5 +41,14 @@ namespace ToSic.Eav.Data
         /// The KeyString is null or the string of the key as stored in "Key"
         /// </summary>
         public string KeyString { get; set; }
+
+        public Metadata CloseIsMetadata() => new Metadata
+        {
+            TargetType = TargetType,
+            Key = Key,
+            KeyString = KeyString,
+            KeyNumber = KeyNumber,
+            KeyGuid = KeyGuid
+        };
     }
 }

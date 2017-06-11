@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using ToSic.Eav.Data;
 using ToSic.Eav.Implementations.ValueConverter;
 using ToSic.Eav.ImportExport.Interfaces;
-//using Microsoft.Practices.Unity;
 using static System.String;
 
 namespace ToSic.Eav.ImportExport.Models
@@ -17,10 +17,7 @@ namespace ToSic.Eav.ImportExport.Models
         public Guid? EntityGuid { get; set; }
 
         // Keys
-        public int? KeyNumber { get; set; }
-        public Guid? KeyGuid { get; set; }
-        public string KeyString { get; set; }
-        public int KeyTypeId { get; set; } = Constants.NotMetadata;
+        public Metadata Metadata { get; set; } = new Metadata();
 
         // Draft / Publish / Don't allow Draft
         public bool IsPublished { get; set; }

@@ -108,6 +108,7 @@
     <Compile Include="Implementations\ValueConverter\IEavValueConverter.cs" />
     <Compile Include="Implementations\ValueConverter\NeutralValueConverter.cs" />
     <Compile Include="Interfaces\IAttributeDefinition.cs" />
+    <Compile Include="Interfaces\IMetadata.cs" />
     <Compile Include="Interfaces\IValue_T.cs" />
     <Compile Include="Interfaces\IValueOfDimension_T.cs" />
     <Compile Include="Interfaces\IAttribute_T.cs" />
@@ -117,7 +118,7 @@
     <Compile Include="Interfaces\IDeferredEntitiesList.cs" />
     <Compile Include="Interfaces\IEnvironment.cs" />
     <Compile Include="Interfaces\ILanguage.cs" />
-    <Compile Include="Interfaces\IMetadata.cs" />
+    <Compile Include="Interfaces\IIsMetadata.cs" />
     <Compile Include="Interfaces\IDimension.cs" />
     <Compile Include="Interfaces\IEntity.cs" />
     <Compile Include="Interfaces\IIoC.cs" />

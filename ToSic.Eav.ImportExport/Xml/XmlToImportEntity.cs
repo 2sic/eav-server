@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
+using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Models;
 
@@ -27,15 +28,18 @@ namespace ToSic.Eav.ImportExport.Xml
 		/// <param name="keyString">KeyString of the Entity</param>
 		public static ImpEntity BuildImpEntityFromXml(XElement xEntity, int assignmentObjectTypeId, List<Data.Dimension> targetDimensions, List<Data.Dimension> sourceDimensions, int? sourceDefaultDimensionId, string defaultLanguage, int? keyNumber = null, Guid? keyGuid = null, string keyString = null)
 		{
-			var targetEntity = new ImpEntity
-			{
-				KeyTypeId = assignmentObjectTypeId,
-				AttributeSetStaticName = xEntity.Attribute(XmlConstants.AttSetStatic).Value,
-				EntityGuid = Guid.Parse(xEntity.Attribute(XmlConstants.GuidNode).Value),
-				KeyNumber = keyNumber,
-				KeyGuid = keyGuid,
-				KeyString = keyString
-			};
+		    var targetEntity = new ImpEntity
+		    {
+		        AttributeSetStaticName = xEntity.Attribute(XmlConstants.AttSetStatic).Value,
+		        EntityGuid = Guid.Parse(xEntity.Attribute(XmlConstants.GuidNode).Value),
+		        Metadata = new Metadata
+		        {
+		            TargetType = assignmentObjectTypeId,
+		            KeyNumber = keyNumber,
+		            KeyGuid = keyGuid,
+		            KeyString = keyString
+		        }
+		    };
 
 			var targetValues = new Dictionary<string, List<IImpValue>>();
 

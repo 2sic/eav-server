@@ -247,12 +247,12 @@ namespace ToSic.Eav.Repository.Efc.Parts
             foreach (var entity in attributeMetaData)
             {
                 // Validate Entity
-                entity.KeyTypeId = Constants.MetadataForField;
+                entity.Metadata.TargetType = Constants.MetadataForField;
 
                 // Set KeyNumber
                 if (destinationAttributeId == 0 || destinationAttributeId < 0) // < 0 is ef-core temp id
                     _context.SqlDb.SaveChanges();
-                entity.KeyNumber = destinationAttributeId;
+                entity.Metadata.KeyNumber = destinationAttributeId;
 
                 // Get guid of previously existing assignment - if it exists
                 var existingMetadata = _context.Entities

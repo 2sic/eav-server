@@ -252,7 +252,7 @@ namespace ToSic.Eav.Persistence.Efc
                 #region Add metadata-lists based on AssignmentObjectTypes
 
                 // unclear why #1 is handled in a special way - why should this not be cached? I believe 1 means no specific assignment
-                if (e.Metadata.HasMetadata && !entitiesOnly)
+                if (e.Metadata.IsMetadata && !entitiesOnly)
                 {
                     // Try guid first. Note that an item can be assigned to both a guid, string and an int if necessary, though not commonly used
                     if (e.Metadata.KeyGuid.HasValue)

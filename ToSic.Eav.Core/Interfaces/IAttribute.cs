@@ -11,21 +11,24 @@ namespace ToSic.Eav.Interfaces
 		/// Gets a IEnumerable of all Values of this Entity's Attribute
 		/// </summary>
 		IEnumerable<IValue> Values { get; set; } // temp set, must find out how to remove this again form the interface
-		/// <summary>
-		/// Gets the Value for this Language
-		/// </summary>
-		object this[int languageId] { get; }
-		/// <summary>
-		/// Gets the Value for this Languages
-		/// </summary>
-		object this[int[] languageIds] { get; }
-		/// <summary>
-		/// Gets the Value for this Language
-		/// </summary>
-		object this[string languageKey] { get; }
-		/// <summary>
-		/// Gets the Value for this Languages
-		/// </summary>
-		object this[string[] languageKeys] { get; }
-	}
+
+        #region 2017-06-11 2dm turned off / moved to typed...
+        /// <summary>
+        /// Gets the Value for this Language
+        /// </summary>
+        object this[int languageId] { get; }
+        /// <summary>
+        /// Gets the Value for this Languages
+        /// </summary>
+        object this[int[] languageIds] { get; }
+        /// <summary>
+        /// Gets the Value for this Language
+        /// </summary>
+        object this[string languageKey] { get; }
+        /// <summary>
+        /// Gets the Value for this Languages
+        /// </summary>
+        object this[string[] languageKeys] { get; }
+        #endregion
+    }
 }

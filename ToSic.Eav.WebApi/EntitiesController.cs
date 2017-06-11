@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Data;
 using ToSic.Eav.WebApi.Formats;
 using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Models;
@@ -241,18 +242,20 @@ namespace ToSic.Eav.WebApi
                 AttributeSetStaticName = newEntity.Type.StaticName,
                 #endregion
                 // Metadata maybe?
-                KeyTypeId = Constants.NotMetadata  // default case
+                //KeyTypeId = Constants.NotMetadata  // default case
             };
 
             #region Metadata if we have any
-
+            // todo: as the objects are of the same type, we can probably remove the Format.Metadata-type soon...
             if (metadata != null && metadata.HasMetadata)
-            {
-                importEntity.KeyTypeId = metadata.TargetType;
-                importEntity.KeyGuid = metadata.KeyGuid;
-                importEntity.KeyNumber = metadata.KeyNumber;
-                importEntity.KeyString = metadata.KeyString;
-            }
+                importEntity.Metadata = new Data.Metadata
+                {
+                    TargetType = metadata.TargetType,
+                    KeyGuid = metadata.KeyGuid,
+                    KeyNumber = metadata.KeyNumber,
+                    KeyString = metadata.KeyString
+                };
+
             #endregion
 
             // Attributes

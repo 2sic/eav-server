@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.ImportExport.Versioning;
+using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -50,24 +51,11 @@ namespace ToSic.Eav.Apps.Parts
         public string DeleteHinderance(int entityId) => _appManager.DataController.Entities.CanDeleteEntity(entityId).Item2;
         #endregion
 
-        /// <summary>
-        /// Create an entity in this app, optionally with a GUID provided for the new ID
-        /// </summary>
-        /// <param name="typeName"></param>
-        /// <param name="values"></param>
-        /// <returns></returns>
-        public Tuple<int, Guid> Create(string typeName, Dictionary<string, object> values)
-        {
-            //var contentType = _appManager.Cache.GetContentType(typeName);
-            //var ent = _appManager.DataController.Entities.AddEntity(contentType.AttributeSetId, values);
-            //return new Tuple<int, Guid>(ent.EntityId, ent.EntityGuid);
-            return Create(typeName, values, Constants.NotMetadata);
-        }
 
-        public Tuple<int, Guid> Create(string typeName, Dictionary<string, object> values, int keyTypeId, int? keyNumber = null, string keyString = null, Guid? keyGuid = null)
+        public Tuple<int, Guid> Create(string typeName, Dictionary<string, object> values, IIsMetadata isMetadata = null)
         {
             var contentType = _appManager.Cache.GetContentType(typeName);
-            var ent = _appManager.DataController.Entities.AddEntity(contentType.AttributeSetId, values, keyTypeId: keyTypeId, keyNumber: keyNumber, keyString: keyString, keyGuid: keyGuid);
+            var ent = _appManager.DataController.Entities.AddEntity(contentType.AttributeSetId, values, isMetadata);
             return new Tuple<int, Guid>(ent.EntityId, ent.EntityGuid);
         }
 

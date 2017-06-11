@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using ToSic.Eav.Data;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
@@ -240,7 +241,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 throw new Exception("Can't continue, couldn't find attrib-set with: " + systemScope + ":" + metaDataSetName + " in app " + DbContext.AppId);
             var attributeSetId = attSetFirst.AttributeSetId;
 
-            return DbContext.Entities.AddEntity(attributeSetId, fieldProperties, keyNumber: attributeId, keyTypeId: Constants.MetadataForField);
+            return DbContext.Entities.AddEntity(attributeSetId, fieldProperties, new Metadata { KeyNumber = attributeId, TargetType = Constants.MetadataForField });
         }
 
 

@@ -133,8 +133,8 @@ namespace ToSic.Eav.Apps.ImportExport
             var templateTypeId = SystemRuntime.GetKeyTypeId(Settings.TemplateContentType);
             var entities =
                 DataSource.GetInitialDataSource(_zoneId, _appId).Out["Default"].List.Where(
-                    e => e.Value.AssignmentObjectTypeId != templateTypeId
-                         && e.Value.AssignmentObjectTypeId != Constants.MetadataForField).ToList();
+                    e => e.Value.Metadata.TargetType != templateTypeId
+                         && e.Value.Metadata.TargetType != Constants.MetadataForField).ToList();
 
             if (!includeContentGroups)
                 entities = entities.Where(p => p.Value.Type.StaticName != _sexycontentContentgroupName).ToList();

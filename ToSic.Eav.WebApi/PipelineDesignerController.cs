@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Parts;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Serializers;
 using ToSic.Eav.ValueProvider;
@@ -171,7 +172,7 @@ namespace ToSic.Eav.WebApi
 				else
 				{
 
-                    Tuple<int, Guid> entity = appManager.Entities.Create(pipelinePartAttributeSetId, newValues, Constants.MetadataForEntity, keyGuid: pipelineEntityGuid);
+                    Tuple<int, Guid> entity = appManager.Entities.Create(pipelinePartAttributeSetId, newValues, new Metadata { TargetType = Constants.MetadataForEntity, KeyGuid = pipelineEntityGuid});
                     newDataSources.Add((string)dataSource.EntityGuid, entity.Item2);
 				}
 			}

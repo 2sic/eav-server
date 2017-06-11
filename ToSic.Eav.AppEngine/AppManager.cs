@@ -1,6 +1,7 @@
 ﻿using System.Collections.Specialized;
 using ToSic.Eav.Apps.Interfaces;
 using ToSic.Eav.Apps.Parts;
+using ToSic.Eav.Data;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repository.Efc;
 
@@ -61,7 +62,7 @@ namespace ToSic.Eav.Apps
             if (values == null)
                 values = new OrderedDictionary();
 
-            DataController.Entities.AddEntity(contentType.AttributeSetId, values, keyNumber: DataController.AppId, keyTypeId: appAssignment);
+            DataController.Entities.AddEntity(contentType.AttributeSetId, values, new Metadata { KeyNumber = DataController.AppId, TargetType = appAssignment});
 
             SystemManager.Purge(ZoneId, AppId);
         }

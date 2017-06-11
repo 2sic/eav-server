@@ -187,8 +187,8 @@ namespace ToSic.Eav.Api.Api01
             {
                 EntityGuid = entityGuid,
                 AttributeSetStaticName = attributeSetStaticName,
-                KeyTypeId = Constants.NotMetadata,
-                KeyNumber = null,
+                //KeyTypeId = Constants.NotMetadata,
+                //KeyNumber = null,
                 Values = new Dictionary<string, List<IImpValue>>()
             };
         }

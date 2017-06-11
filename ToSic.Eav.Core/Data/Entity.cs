@@ -58,7 +58,7 @@ namespace ToSic.Eav.Data
         /// Internal value - ignore for now
         /// </summary>
         [Obsolete("You should use Metadata.TargetType instead")]
-		public int AssignmentObjectTypeId { get; internal set; }
+        public int AssignmentObjectTypeId => Metadata.TargetType; //{ get; internal set; }
 
         public IMetadata Metadata { get; set; }
         /// <summary>
@@ -75,7 +75,7 @@ namespace ToSic.Eav.Data
         /// </summary>
         /// <param name="attributeName"></param>
         /// <returns></returns>
-		public IAttribute this[string attributeName] => (Attributes.ContainsKey(attributeName)) ? Attributes[attributeName] : null;
+		public IAttribute this[string attributeName] => Attributes.ContainsKey(attributeName) ? Attributes[attributeName] : null;
 
 	    #endregion
 
@@ -95,8 +95,8 @@ namespace ToSic.Eav.Data
 			{
 				throw new KeyNotFoundException($"The Title Attribute with Name \"{titleAttribute}\" doesn't exist in the Entity-Attributes.");
 			}
-			AssignmentObjectTypeId = Constants.NotMetadata;
-			IsPublished = true;
+            Metadata = new Metadata();
+		    IsPublished = true;
             if (modified.HasValue)
                 Modified = modified.Value;
 			Relationships = new RelationshipManager(this, new EntityRelationshipItem[0]);
@@ -105,14 +105,13 @@ namespace ToSic.Eav.Data
 		/// <summary>
 		/// Create a new Entity
 		/// </summary>
-		public Entity(Guid entityGuid, int entityId, int repositoryId, IMetadata metadata /* int assignmentObjectTypeId */, IContentType type, bool isPublished, IEnumerable<EntityRelationshipItem> allRelationships, DateTime modified, string owner)
+		public Entity(Guid entityGuid, int entityId, int repositoryId, IMetadata isMetadata, IContentType type, bool isPublished, IEnumerable<EntityRelationshipItem> allRelationships, DateTime modified, string owner)
 		{
 			EntityId = entityId;
 			EntityGuid = entityGuid;
-		    Metadata = metadata;
-		    AssignmentObjectTypeId = Metadata.TargetType;// assignmentObjectTypeId;
-			Attributes = new Dictionary<string, IAttribute>(StringComparer.OrdinalIgnoreCase); // 2015-04-24 added, maybe a risk but should help with tokens
-			Type = type;
+		    Metadata = isMetadata;
+		    Attributes = new Dictionary<string, IAttribute>(StringComparer.OrdinalIgnoreCase);
+		    Type = type;
 			IsPublished = isPublished;
 			RepositoryId = repositoryId;
 			Modified = modified;
@@ -131,7 +130,8 @@ namespace ToSic.Eav.Data
 		{
 			EntityId = entity.EntityId;
 			EntityGuid = entity.EntityGuid;
-			AssignmentObjectTypeId = entity.AssignmentObjectTypeId;
+		    Metadata = ((Metadata)entity.Metadata).CloseIsMetadata();
+			//AssignmentObjectTypeId = entity.AssignmentObjectTypeId;
 			Type = entity.Type;
 			Title = entity.Title;
 			IsPublished = entity.IsPublished;

@@ -84,9 +84,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
             var entity = new ImpEntity
             {
                 AttributeSetStaticName = ContentType.StaticName,
-                KeyTypeId = Constants.NotMetadata,
                 EntityGuid = entityGuid,
-                KeyNumber = null,
+                //KeyTypeId = Constants.NotMetadata,
+                //KeyNumber = null,
                 Values = new Dictionary<string, List<IImpValue>>()
             };
             ImportEntities.Add(entity);

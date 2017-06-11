@@ -18,12 +18,5 @@
         AttributeTypeEnum ControlledType { get; }
 
         bool IsTitle { get; }
-
-        // 2017-06-09 2dm extracting to IAttributeDefinition to separate implementation specifics
-        //// additional info for the persistence layer
-        //int AttributeId { get; }
-
-        //int SortOrder { get; }
-
     }
 }

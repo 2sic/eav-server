@@ -8,6 +8,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Logging;
 using ToSic.Eav.ImportExport.Models;
+using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
@@ -106,7 +107,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
         internal ToSicEavEntities AddImportEntity(int attributeSetId, ImpEntity impEntity, List<ImportLogItem> importLog, bool isPublished, int? publishedTarget)
         {
             return AddEntity(attributeSetId, impEntity.Values, 
-                impEntity.KeyNumber, impEntity.KeyGuid, impEntity.KeyString, impEntity.KeyTypeId, 
+                //impEntity.KeyNumber, impEntity.KeyGuid, impEntity.KeyString, impEntity.KeyTypeId, 
+                impEntity.Metadata,
                 0, impEntity.EntityGuid, null, importLog, isPublished, publishedTarget);
         }
         
@@ -115,11 +117,18 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// Add a new Entity
         /// </summary>
         public ToSicEavEntities AddEntity(int attributeSetId, IDictionary values, 
-            int? keyNumber = null, Guid? keyGuid = null, string keyString = null, int keyTypeId = Constants.NotMetadata, 
+            //int? keyNumber = null, Guid? keyGuid = null, string keyString = null, int keyTypeId = Constants.NotMetadata, 
+            IIsMetadata isMetadata = null,
             int sortOrder = 0, 
             Guid? entityGuid = null, ICollection<int> dimensionIds = null, List<ImportLogItem> updateLog = null, 
             bool isPublished = true, int? publishedEntityId = null)
         {
+            // moving to IsMetadata
+            int? keyNumber = isMetadata?.KeyNumber;
+            Guid? keyGuid = isMetadata?.KeyGuid;
+            string keyString = isMetadata?.KeyString;
+            int keyTypeId = isMetadata?.TargetType ?? Constants.NotMetadata;
+
             // var skipCreate = false;
             var existingEntityId = 0;
             // Prevent duplicate add of FieldProperties

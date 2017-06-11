@@ -9,13 +9,11 @@ namespace ToSic.Eav.Data
     /// Represents an Attribute / Property of an Entity with Values of a Generic Type
     /// </summary>
     /// <typeparam name="TType">Type of the Value</typeparam>
-    public class Attribute<TType> : AttributeBase, IAttribute<TType>//, IAttributeManagement
+    public class Attribute<TType> : AttributeBase, IAttribute<TType>
     {
-        public Attribute(string name, string type, bool isTitle/*, int attributeId, int sortOrder*/) : base(name, type, isTitle/*, attributeId, sortOrder*/) { }
+        public Attribute(string name, string type, bool isTitle) : base(name, type, isTitle) { }
 
         public IEnumerable<IValue> Values { get; set; }
-        // 2017-06-07 2dm disabled, as it seems unnecessary and never used...
-        //public IValue DefaultValue { get; set; }
 
         public TType TypedContents
         {
@@ -51,23 +49,20 @@ namespace ToSic.Eav.Data
                     // try match all specified Dimensions
                     var valueHavingSpecifiedLanguages = Values.FirstOrDefault(va => languageIds.All(di => va.Languages.Select(d => d.DimensionId).Contains(di)));
                     if (valueHavingSpecifiedLanguages != null)
-                    {
                         try
                         {
-                            return ((IValue<TType>)valueHavingSpecifiedLanguages).TypedContents;
+                            return ((IValue<TType>) valueHavingSpecifiedLanguages).TypedContents;
                         }
-                        catch (InvalidCastException) { } // may occour for nullable types
-                    }
+                        catch (InvalidCastException)
+                        {
+                        } // may occour for nullable types
                 }
                 // use Default
                 return TypedContents == null ? default(TType) : TypedContents;
             }
         }
 
-        public object this[string languageKey]
-        {
-            get { return this[new[] { languageKey }]; }
-        }
+        public object this[string languageKey] => this[new[] { languageKey }];
 
         public object this[string[] languageKeys]
         {
@@ -79,13 +74,13 @@ namespace ToSic.Eav.Data
                     // try match all specified Dimensions
                     var valueHavingSpecifiedLanguages = Values.FirstOrDefault(va => languageKeys.All(vk => va.Languages.Select(d => d.Key).Contains(vk.ToLower())));
                     if (valueHavingSpecifiedLanguages != null)
-                    {
                         try
                         {
-                            return ((IValue<TType>)valueHavingSpecifiedLanguages).TypedContents;
+                            return ((IValue<TType>) valueHavingSpecifiedLanguages).TypedContents;
                         }
-                        catch (InvalidCastException) { }	// may occour for nullable types
-                    }
+                        catch (InvalidCastException)
+                        {
+                        } // may occour for nullable types
                 }
                 // use Default
                 return TypedContents == null ? default(TType) : TypedContents;
