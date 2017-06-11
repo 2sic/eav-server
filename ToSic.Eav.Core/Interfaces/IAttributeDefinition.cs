@@ -12,5 +12,7 @@
 
         int SortOrder { get; }
 
+        bool IsTitle { get; }
+
     }
 }

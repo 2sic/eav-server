@@ -236,7 +236,7 @@ namespace ToSic.Eav.Persistence.Efc
                     var newAttribute = AttributeHelperTools.CreateTypedAttribute(definition);
                     newEntity.Attributes.Add(newAttribute.Name, newAttribute);
                     allAttribsOfThisType.Add(definition.AttributeId, newAttribute);
-                    if (newAttribute.IsTitle)
+                    if (definition.IsTitle)
                         titleAttrib = newAttribute;
                 }
 
@@ -318,14 +318,14 @@ namespace ToSic.Eav.Persistence.Efc
                         {
                             continue;
                         }
-                        if (attributeModel.IsTitle)
+                        if (attributeModel == titleAttrib)// attributeModel.IsTitle)
                             newEntity.Title = attributeModel;
                         var valuesModelList = new List<IValue>();
 
                         #region Add all Values
                         foreach (var v in a.Values)
                         {
-                            var valueModel = Value.Build(((IAttributeBase)attributeModel).Type, v.Value, v.Languages, null);
+                            var valueModel = Value.Build(attributeModel.Type, v.Value, v.Languages, null);
                             valuesModelList.Add(valueModel);
                         }
                         #endregion

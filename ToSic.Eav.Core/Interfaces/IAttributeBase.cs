@@ -17,6 +17,5 @@
 		string Type { get; }
         AttributeTypeEnum ControlledType { get; }
 
-        bool IsTitle { get; }
     }
 }

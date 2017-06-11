@@ -8,6 +8,7 @@ namespace ToSic.Eav.ImportExport.Models
 		public string StaticName { get; set; }
 		public string Description { get; set; }
 		public string Scope { get; set; }
+
 		public List<ImpAttribute> Attributes { get; set; }	// The List<> class guarantees ordering
 		public ImpAttribute TitleAttribute { get; set; }
 		public bool AlwaysShareConfiguration { get; set; }

@@ -273,24 +273,26 @@ namespace ToSic.Eav.Apps.ImportExport
 			foreach (var attributeSet in xAttributeSets)
 			{
 				var attributes = new List<ImpAttribute>();
-                var titleAttribute = new ImpAttribute();
+                ImpAttribute titleAttribute = null;// = new ImpAttribute();
 			    var attsetElem = attributeSet.Element(XmlConstants.Attributes);
                 if (attsetElem != null)
                     foreach (var xElementAttribute in attsetElem.Elements(XmlConstants.Attribute))
                     {
-                        var attribute = new ImpAttribute
-                        {
-                            StaticName = xElementAttribute.Attribute(XmlConstants.Static).Value,
-                            Type = xElementAttribute.Attribute(XmlConstants.EntityTypeAttribute).Value,
-                            AttributeMetaData = GetImportEntities(xElementAttribute.Elements(XmlConstants.Entity), Constants.MetadataForField)//.AssignmentObjectTypeIdFieldProperties)
-                        };
-
+                        var attribute = new ImpAttribute(
+                            xElementAttribute.Attribute(XmlConstants.Static).Value,
+                            null,
+                            xElementAttribute.Attribute(XmlConstants.EntityTypeAttribute).Value,
+                            null, null, null
+                        );
+                        attribute.AttributeMetaData = GetImportEntities(xElementAttribute.Elements(XmlConstants.Entity), Constants.MetadataForField);
                         attributes.Add(attribute);
 
                         // Set Title Attribute
                         if (Boolean.Parse(xElementAttribute.Attribute(XmlConstants.IsTitle).Value))
                             titleAttribute = attribute;
                     }
+			    if (titleAttribute == null)
+			        titleAttribute = attributes.FirstOrDefault();
 
 				// Add AttributeSet
                 importAttributeSets.Add(new ImpContentType

@@ -13,6 +13,8 @@ namespace ToSic.Eav.Data
 
         public int SortOrder { get; internal set; }
 
+        public bool IsTitle { get; set; }
+
         /// <summary>
         /// Extended constructor when also storing the persistance ID-Info
         /// </summary>
@@ -23,6 +25,7 @@ namespace ToSic.Eav.Data
         /// <param name="sortOrder"></param>
         public AttributeDefinition(string name, string type, bool isTitle, int attributeId, int sortOrder): base(name, type, isTitle)
 		{
+            IsTitle = isTitle;
             AttributeId = attributeId;
             SortOrder = sortOrder;
 		}

@@ -189,12 +189,12 @@ namespace ToSic.Eav.Repository.Efc.Parts
             {
                 // Handle Entity Relationships - they're stored in own tables
                 case "Entity":
-                    var entityIds = newValue.Value is int?[] ? (int?[])newValue.Value : ((int[])newValue.Value).Select(v => (int?)v).ToArray();
+                    var entityIds = newValue.Value as int?[] ?? ((int[])newValue.Value).Select(v => (int?)v).ToArray();
                     DbContext.Relationships.UpdateEntityRelationshipsAndSave(attribute.AttributeId, entityIds, currentEntity);
                     break;
                 // Handle simple values in Values-Table
                 default:
-                    UpdateSimpleValue(attribute, currentEntity, dimensionIds, /*masterRecord,*/ newValue.Value, newValue.ValueId, newValue.ReadOnly, dbValues/*, entityModel*/);
+                    UpdateSimpleValue(attribute, currentEntity, dimensionIds, /*masterRecord,*/ newValue.Value, /*newValue.ValueId*/null, newValue.ReadOnly, dbValues/*, entityModel*/);
                     break;
             }
         }

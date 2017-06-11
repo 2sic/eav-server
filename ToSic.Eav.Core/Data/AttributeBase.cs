@@ -27,7 +27,7 @@ namespace ToSic.Eav.Data
             internal set { _controlledType = value; }
         }
 
-        public bool IsTitle { get; set; }
+        //public bool IsTitle { get; set; }
 
         // 2017-06-07 2dm moving to AttributeDefinition
         // additional info for the persistence layer
@@ -47,7 +47,7 @@ namespace ToSic.Eav.Data
 		{
             Name = name;
             Type = type;
-            IsTitle = isTitle;
+            //IsTitle = isTitle;
 
             //AttributeId = attributeId;
             //SortOrder = sortOrder;

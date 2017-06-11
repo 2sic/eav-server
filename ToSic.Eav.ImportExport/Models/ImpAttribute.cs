@@ -1,37 +1,39 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Interfaces;
 
 namespace ToSic.Eav.ImportExport.Models
 {
-    public class ImpAttribute
+    public class ImpAttribute//: AttributeDefinition
     {
-        public string StaticName { get; set; }
+        public string Name { get; set; }
         public string Type { get; set; }
 
         public string InputType { get; set; }
         public List<ImpEntity> AttributeMetaData { get; set; }
 
-        /// <summary>
-        /// Default Constructor
-        /// </summary>
-        public ImpAttribute() { }
+        // 2017-06-11 removing empty contructor
+        ///// <summary>
+        ///// Default Constructor
+        ///// </summary>
+        //public ImpAttribute() { }
 
         /// <summary>
         /// Get an Import-Attribute
         /// </summary>
-        internal ImpAttribute(string staticName, string name, AttributeTypeEnum type, string notes, bool? visibleInEditUi, object defaultValue)
+        public ImpAttribute(string name, string niceName, string type, string notes, bool? visibleInEditUi, object defaultValue)
         {
-            StaticName = staticName;
-            Type = type.ToString();
-            AttributeMetaData = new List<ImpEntity> { GetAttributeMetaData(name, notes, visibleInEditUi, HelpersToRefactor.SerializeValue(defaultValue)) };
+            Name = name;
+            Type = type;//.ToString();
+            AttributeMetaData = new List<ImpEntity> { GetAttributeMetaData(niceName, notes, visibleInEditUi, HelpersToRefactor.SerializeValue(defaultValue)) };
         }
 
         /// <summary>
         /// Get an Import-Attribute
         /// </summary>
-        public static ImpAttribute StringAttribute(string staticName, string name, string notes, bool? visibleInEditUi, string inputType = null, int? rowCount = null, string defaultValue = null)
+        public static ImpAttribute StringAttribute(string staticName, string niceName, string notes, bool? visibleInEditUi, string inputType = null, int? rowCount = null, string defaultValue = null)
         {
-            var attribute = new ImpAttribute(staticName, name, AttributeTypeEnum.String, notes, visibleInEditUi, defaultValue);
+            var attribute = new ImpAttribute(staticName, niceName, AttributeTypeEnum.String.ToString(), notes, visibleInEditUi, defaultValue);
             attribute.AttributeMetaData.Add(attribute.GetStringAttributeMetaData(inputType, rowCount));
             return attribute;
         }
@@ -41,7 +43,7 @@ namespace ToSic.Eav.ImportExport.Models
         /// </summary>
         public static ImpAttribute BooleanAttribute(string staticName, string name, string notes, bool? visibleInEditUi, bool? defaultValue = null)
         {
-            var attribute = new ImpAttribute(staticName, name, AttributeTypeEnum.Boolean, notes, visibleInEditUi, defaultValue);
+            var attribute = new ImpAttribute(staticName, name, AttributeTypeEnum.Boolean.ToString(), notes, visibleInEditUi, defaultValue);
             return attribute;
         }
 

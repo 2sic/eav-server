@@ -307,7 +307,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     // Log Warning for all Values
                     updateLog.AddRange(newValue.Value.Select(v => new ImportLogItem(EventLogEntryType.Warning, "Attribute not found for Value")
                     {
-                        ImpAttribute = new ImpAttribute { StaticName = newValue.Key },
+                        ImpAttribute =newValue.Key,// new ImpAttribute { Name = newValue.Key },
                         ImpValue = v,
                         ImpEntity = v.ParentEntity
                     }));
@@ -332,7 +332,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     {
                         updateLog.Add(new ImportLogItem(EventLogEntryType.Error, "Update Entity-Value failed")
                         {
-                            ImpAttribute = new ImpAttribute { StaticName = newValue.Key },
+                            ImpAttribute = newValue.Key, //new ImpAttribute { Name = newValue.Key },
                             ImpValue = newSingleValue,
                             ImpEntity = newSingleValue.ParentEntity,
                             Exception = ex

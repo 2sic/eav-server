@@ -10,7 +10,7 @@ namespace ToSic.Eav.ImportExport.Logging
         public EventLogEntryType EntryType { get; private set; }
         public ImpEntity ImpEntity { get; set; }
         public ImpContentType ImpContentType { get; set; }
-        public ImpAttribute ImpAttribute { get; set; }
+        public string ImpAttribute { get; set; }
         public IImpValue ImpValue { get; set; }
         public Exception Exception { get; set; }
         public string Message { get; private set; }

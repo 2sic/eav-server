@@ -142,18 +142,18 @@ namespace ToSic.Eav.Repository.Efc.Parts
             foreach (var importAttribute in impContentType.Attributes)
             {
                 ToSicEavAttributes destinationAttribute;
-                if(!_context.Attributes.AttributeExistsInSet(destinationSet.AttributeSetId, importAttribute.StaticName))
+                if(!_context.Attributes.AttributeExistsInSet(destinationSet.AttributeSetId, importAttribute.Name))
                 {
                     // try to add new Attribute
                     var isTitle = importAttribute == impContentType.TitleAttribute;
                     destinationAttribute = _context.Attributes
-                        .AppendToEndAndSave(destinationSet, 0, importAttribute.StaticName, importAttribute.Type, importAttribute.InputType, isTitle);//, false);
+                        .AppendToEndAndSave(destinationSet, 0, importAttribute.Name, importAttribute.Type, importAttribute.InputType, isTitle);//, false);
                 }
 				else
                 {
-					_importLog.Add(new ImportLogItem(EventLogEntryType.Warning, "Attribute already exists") { ImpAttribute = importAttribute });
+					_importLog.Add(new ImportLogItem(EventLogEntryType.Warning, "Attribute already exists") { ImpAttribute = importAttribute.Name });
                     destinationAttribute = destinationSet.ToSicEavAttributesInSets
-                        .Single(a => a.Attribute.StaticName == importAttribute.StaticName).Attribute;
+                        .Single(a => a.Attribute.StaticName == importAttribute.Name).Attribute;
                 }
 
                 // save additional entities containing AttributeMetaData for this attribute
@@ -282,7 +282,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             attributeList = attributeList
                 .OrderBy(a => impContentType.Attributes
                     .IndexOf(impContentType.Attributes
-                        .First(ia => ia.StaticName == a.Attribute.StaticName)))
+                        .First(ia => ia.Name == a.Attribute.StaticName)))
                 .ToList();
             _context.Attributes.PersistAttributeOrder(attributeList);
         }
