@@ -5,7 +5,7 @@ namespace ToSic.Eav.ImportExport.Interfaces
 {
     public interface IImpValue
     {
-        List<ImpDims> ValueDimensions { get; set; }
+        List<ILanguage> ValueDimensions { get; set; }
         ImpEntity ParentEntity { get; }
 
         void AppendLanguageReference(string language, bool readOnly);

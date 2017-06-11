@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Interfaces;
 
 namespace ToSic.Eav.ImportExport.Models
@@ -6,7 +7,7 @@ namespace ToSic.Eav.ImportExport.Models
     public class ImpValue<T> : IImpValue
     {
         public T Value { get; set; }
-        public List<ImpDims> ValueDimensions { get; set; }
+        public List<ILanguage> ValueDimensions { get; set; }
         public ImpEntity ParentEntity { get; }
 
         public ImpValue(ImpEntity parentEntity, T value)
@@ -23,10 +24,10 @@ namespace ToSic.Eav.ImportExport.Models
         {
             // init real dimensions in case it's null...
             if (ValueDimensions == null)
-                ValueDimensions = new List<ImpDims>();
+                ValueDimensions = new List<ILanguage>();
 
             if (!string.IsNullOrEmpty(language))
-                ValueDimensions.Add( new ImpDims { DimensionExternalKey = language, ReadOnly = readOnly } );
+                ValueDimensions.Add( new Dimension { Key = language, ReadOnly = readOnly } );
         }
         #endregion
     }

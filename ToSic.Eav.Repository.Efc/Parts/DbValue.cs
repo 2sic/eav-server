@@ -202,7 +202,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Update a Value in the Values-Table
         /// </summary>
-        private ToSicEavValues UpdateSimpleValue(ToSicEavAttributes attribute, ToSicEavEntities entity, ICollection<int> dimensionIds, /*bool masterRecord,*/ object newValue, int? valueId, bool readOnly, List<ToSicEavValues> dbValues, /*IEntity entityModel,*/ IEnumerable<ImportExport.Models.ImpDims> valueDimensions = null)
+        private ToSicEavValues UpdateSimpleValue(ToSicEavAttributes attribute, ToSicEavEntities entity, ICollection<int> dimensionIds, /*bool masterRecord,*/ object newValue, int? valueId, bool readOnly, List<ToSicEavValues> dbValues, /*IEntity entityModel,*/ IEnumerable<ILanguage> valueDimensions = null)
         {
             var newValueSerialized = HelpersToRefactor.SerializeValue(newValue);
             var changeId = DbContext.Versioning.GetChangeLogId();
@@ -220,9 +220,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 foreach (var valueDimension in valueDimensions)
                 {
                     // ToDo: 2bg Log Error but continue
-                    var dimensionId = DbContext.Dimensions.GetDimensionId(null, valueDimension.DimensionExternalKey);
+                    var dimensionId = DbContext.Dimensions.GetDimensionId(null, valueDimension.Key);
                     if (dimensionId == 0)
-                        throw new Exception("Dimension " + valueDimension.DimensionExternalKey + " not found. EntityId: " + entity.EntityId + " Attribute-StaticName: " + attribute.StaticName);
+                        throw new Exception("Dimension " + valueDimension.Key + " not found. EntityId: " + entity.EntityId + " Attribute-StaticName: " + attribute.StaticName);
 
                     var existingValueDimension = value.ToSicEavValuesDimensions.SingleOrDefault(v => v.DimensionId == dimensionId);
                     if (existingValueDimension == null)
@@ -284,7 +284,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Get an EavValue for specified EntityId etc. or create a new one. Uses different mechanism when running an Import or ValueId is specified.
         /// </summary>
-        private ToSicEavValues GetOrCreateValue(ToSicEavAttributes attribute, ToSicEavEntities entity, /*bool masterRecord,*/ int? valueId, bool readOnly, List<ToSicEavValues> dbValues, /*IEntity entityModel, */string newValueSerialized, int changeId, IEnumerable<ImpDims> valueDimensions)
+        private ToSicEavValues GetOrCreateValue(ToSicEavAttributes attribute, ToSicEavEntities entity, /*bool masterRecord,*/ int? valueId, bool readOnly, List<ToSicEavValues> dbValues, /*IEntity entityModel, */string newValueSerialized, int changeId, IEnumerable<ILanguage> valueDimensions)
         {
             ToSicEavValues value = null;
             // if Import-Dimension(s) are Specified
@@ -297,7 +297,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                             && 
 
                             (v.ToSicEavValuesDimensions.Any(d =>
-                                d.Dimension.ExternalKey.Equals(valueDimensions.First().DimensionExternalKey,
+                                d.Dimension.ExternalKey.Equals(valueDimensions.First().Key,
                                     StringComparison.InvariantCultureIgnoreCase))))
                         ?? AddValue(entity, attribute.AttributeId, newValueSerialized, autoSave: false);
             }

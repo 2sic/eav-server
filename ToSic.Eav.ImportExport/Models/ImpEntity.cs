@@ -44,7 +44,7 @@ namespace ToSic.Eav.ImportExport.Models
                 .Where(item => item.Key == key)
                 .Select(item => item.Value)
                 .FirstOrDefault(); // impEntity.ValueValues(valueName);
-            return values?.FirstOrDefault(value => value.ValueDimensions.Any(dimension => dimension.DimensionExternalKey == language));
+            return values?.FirstOrDefault(value => value.ValueDimensions.Any(dimension => dimension.Key == language));
         }
 
 
@@ -85,7 +85,7 @@ namespace ToSic.Eav.ImportExport.Models
         }
 
 
-        public IImpValue PrepareTypedValue(string value, string attributeType, List<ImpDims> dimensions)
+        public IImpValue PrepareTypedValue(string value, string attributeType, List<ILanguage> dimensions)
         {
             var valueModel = BuildTypedImpValueWithoutDimensions(value, attributeType);
             valueModel.ValueDimensions = dimensions;

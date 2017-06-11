@@ -105,9 +105,9 @@ namespace ToSic.Eav.ImportExport.Xml
 					// Process found value
 					if (sourceValue != null)
 					{
-						var dimensionsToAdd = new List<Models.ImpDims>();
+						var dimensionsToAdd = new List<ILanguage>();
 						if (targetDimensions.Single(p => p.Key == targetDimension.Key).DimensionId >= 1)
-							dimensionsToAdd.Add(new Models.ImpDims { DimensionExternalKey = targetDimension.Key, ReadOnly = readOnly });
+							dimensionsToAdd.Add(new Dimension { Key = targetDimension.Key, ReadOnly = readOnly });
 
 						// If value has already been added to the list, add just dimension with original ReadOnly state
 						var existingImportValue = tempTargetValues.FirstOrDefault(p => p.XmlValue == sourceValue);
@@ -143,7 +143,7 @@ namespace ToSic.Eav.ImportExport.Xml
         private class ImportValue
         {
             public XElement XmlValue;
-            public List<Models.ImpDims> Dimensions;
+            public List<ILanguage> Dimensions;
         }
     }
 }
