@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Newtonsoft.Json;
+using ToSic.Eav.Interfaces;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Serializers

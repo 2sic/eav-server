@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav
+﻿namespace ToSic.Eav.Interfaces
 {
     /// <summary>
     /// Represents a Language

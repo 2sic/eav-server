@@ -1,7 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
-
-namespace ToSic.Eav.Persistence.Efc
+﻿namespace ToSic.Eav.Persistence.Efc
 {
     internal class Class1
     {

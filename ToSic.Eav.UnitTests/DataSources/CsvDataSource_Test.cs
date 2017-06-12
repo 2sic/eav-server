@@ -109,7 +109,7 @@ namespace ToSic.Eav.UnitTests.DataSources
             }
         }
 
-        private static object GetAttributeValue(IEntity entity, string name)
+        private static object GetAttributeValue(ToSic.Eav.Interfaces.IEntity entity, string name)
         {
             return entity.GetBestValue(entity.Attributes[name].Name);
         }

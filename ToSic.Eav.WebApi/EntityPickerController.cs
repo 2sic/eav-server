@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
-using ToSic.Eav.Interfaces;
 using static System.String;
 
 namespace ToSic.Eav.WebApi
@@ -18,7 +17,7 @@ namespace ToSic.Eav.WebApi
         {
             var dimensionIds = dimensionId ?? 0;
 
-            IContentType contentType = null;
+            ToSic.Eav.Interfaces.IContentType contentType = null;
             if (!IsNullOrEmpty(contentTypeName))
                 contentType = DataSource.GetCache(null, appId).GetContentType(contentTypeName);
 
@@ -47,7 +46,7 @@ namespace ToSic.Eav.WebApi
             return entities;
         }
 
-        private string GetTitle(IEntity l, int dimensionIds)
+        private string GetTitle(ToSic.Eav.Interfaces.IEntity l, int dimensionIds)
         {
             string title;
 

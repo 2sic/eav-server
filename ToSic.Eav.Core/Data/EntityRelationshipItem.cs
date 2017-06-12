@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Data
+﻿using ToSic.Eav.Interfaces;
+
+namespace ToSic.Eav.Data
 {
 	/// <summary>
 	/// Represents a Relation between two entities

@@ -4,7 +4,6 @@ using System.Linq;
 //using Microsoft.Practices.Unity;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Persistence.Efc.Tests
@@ -97,7 +96,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
             return _loader.AppPackage(appId, null, null);
         }
 
-        private IDictionary<int, IContentType> TestLoadCts(int appId)
+        private IDictionary<int, ToSic.Eav.Interfaces.IContentType> TestLoadCts(int appId)
         {
             return _loader.ContentTypes(appId);
         }

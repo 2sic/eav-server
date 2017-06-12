@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -11,19 +10,19 @@ namespace ToSic.Eav.Apps.Parts
     {
         public ContentTypeRuntime(AppRuntime app) : base(app){}
 
-        public IEnumerable<IContentType> All => _app.Cache.GetContentTypes().Select(c => c.Value);
+        public IEnumerable<ToSic.Eav.Interfaces.IContentType> All => _app.Cache.GetContentTypes().Select(c => c.Value);
 
         /// <summary>
         /// Gets a GeontentType by Name
         /// </summary>
-        public IContentType Get(string name) => _app.Cache.GetContentType(name);
+        public ToSic.Eav.Interfaces.IContentType Get(string name) => _app.Cache.GetContentType(name);
 
         /// <summary>
         /// Gets a ContentType by Id
         /// </summary>
-        public IContentType Get(int contentTypeId) => _app.Cache.GetContentType(contentTypeId);
+        public ToSic.Eav.Interfaces.IContentType Get(int contentTypeId) => _app.Cache.GetContentType(contentTypeId);
 
-        public IEnumerable<IContentType> FromScope(string scope = null, bool includeAttributeTypes = false)
+        public IEnumerable<ToSic.Eav.Interfaces.IContentType> FromScope(string scope = null, bool includeAttributeTypes = false)
         {
             //var contentTypes = Cache.GetContentTypes();
             var set = All 
@@ -34,7 +33,7 @@ namespace ToSic.Eav.Apps.Parts
         }
 
 
-        public IEnumerable<IEntity> GetInputTypes(bool includeGlobalDefinitions)
+        public IEnumerable<ToSic.Eav.Interfaces.IEntity> GetInputTypes(bool includeGlobalDefinitions)
         {
             var inputsOfThisApp = _app.Entities.Get(Constants.TypeForInputTypeDefinition).ToList();
 

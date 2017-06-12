@@ -121,7 +121,6 @@
     <Compile Include="Interfaces\IIsMetadata.cs" />
     <Compile Include="Interfaces\IDimension.cs" />
     <Compile Include="Interfaces\IEntity.cs" />
-    <Compile Include="Interfaces\IIoC.cs" />
     <Compile Include="Interfaces\IRelatedEntities.cs" />
     <Compile Include="Interfaces\IRelationshipManager.cs" />
     <Compile Include="Implementations\UserInformation\IEavUserInformation.cs" />

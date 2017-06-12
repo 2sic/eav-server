@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
-using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Models;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Repository.Efc.Parts;
@@ -190,7 +188,7 @@ namespace ToSic.Eav.Api.Api01
                 //AttributeSetStaticName = attributeSetStaticName,
                 //KeyTypeId = Constants.NotMetadata,
                 //KeyNumber = null,
-                Values = new Dictionary<string, List<IValue>>()
+                Values = new Dictionary<string, List<Interfaces.IValue>>()
             };
         }
 

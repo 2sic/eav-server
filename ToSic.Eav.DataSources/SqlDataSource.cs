@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
 {

@@ -14,13 +14,13 @@ namespace ToSic.Eav.Apps.Parts
 
         #region Get
 
-        public IEnumerable<IEntity> All => _app.Cache.LightList;
+        public IEnumerable<ToSic.Eav.Interfaces.IEntity> All => _app.Cache.LightList;
 
-        public IEntity Get(int entityId) => _app.Cache.List[entityId];
+        public ToSic.Eav.Interfaces.IEntity Get(int entityId) => _app.Cache.List[entityId];
 
-        public IEntity Get(Guid entityGuid) => _app.Cache.LightList.FirstOrDefault(e => e.EntityGuid == entityGuid);
+        public ToSic.Eav.Interfaces.IEntity Get(Guid entityGuid) => _app.Cache.LightList.FirstOrDefault(e => e.EntityGuid == entityGuid);
 
-        public IEnumerable<IEntity> Get(string contentTypeName)
+        public IEnumerable<ToSic.Eav.Interfaces.IEntity> Get(string contentTypeName)
         {
             var typeFilter = DataSource.GetDataSource<EntityTypeFilter>(appId: _app.AppId, upstream: _app.Cache, valueCollectionProvider: _app.Data.ConfigurationProvider); // need to go to cache, to include published & unpublished
             typeFilter.TypeName = contentTypeName;

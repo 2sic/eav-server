@@ -89,7 +89,7 @@ namespace ToSic.Eav.WebApi
 				{"DataSources", set.Item2}
 			};
 
-            Dictionary<string, object> EntityToDictionary(IEntity entity)
+            Dictionary<string, object> EntityToDictionary(ToSic.Eav.Interfaces.IEntity entity)
             {
                 var attributes = entity.Attributes.ToDictionary(k => k.Value.Name, v =>  v.Value[0]);
                 attributes.Add("EntityId", entity.EntityId);

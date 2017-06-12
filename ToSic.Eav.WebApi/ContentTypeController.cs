@@ -32,7 +32,7 @@ namespace ToSic.Eav.WebApi
             return filteredType;
 	    }
 
-	    private dynamic ContentTypeForJson(IContentType t, ICache cache)
+	    private dynamic ContentTypeForJson(ToSic.Eav.Interfaces.IContentType t, ICache cache)
 	    {
 	        var metadata = GetMetadata((ContentType)t, cache);
 
@@ -60,7 +60,7 @@ namespace ToSic.Eav.WebApi
 	        return jsonReady;
 	    }
 
-	    public IEntity GetMetadata(ContentType ct, ICache cache = null)
+	    public ToSic.Eav.Interfaces.IEntity GetMetadata(ContentType ct, ICache cache = null)
 	    {
 	        var metaCache = (cache != null && ct.ParentConfigurationAppId == cache.AppId)
 	            ? cache
@@ -135,7 +135,7 @@ namespace ToSic.Eav.WebApi
             var fldName = "";
 
             // assemble a list of all input-types (like "string-default", "string-wysiwyg..."
-            Dictionary<string, IEntity> inputTypesDic;
+            Dictionary<string, ToSic.Eav.Interfaces.IEntity> inputTypesDic;
             try
             {
                 inputTypesDic =
@@ -168,7 +168,7 @@ namespace ToSic.Eav.WebApi
             });
         }
 
-	    private string findInputType(Dictionary<string, IEntity> definitions)
+	    private string findInputType(Dictionary<string, ToSic.Eav.Interfaces.IEntity> definitions)
 	    {
 	        if (!definitions.ContainsKey("All"))
 	            return "unknown";

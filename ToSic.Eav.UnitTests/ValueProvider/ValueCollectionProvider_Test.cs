@@ -61,7 +61,7 @@ namespace ToSic.Eav.UnitTests.ValueProvider
             return settings;
         }
 
-        public IEntity AppSettings()
+        public ToSic.Eav.Interfaces.IEntity AppSettings()
         {
             var vals = new Dictionary<string, object>()
             {
@@ -75,7 +75,7 @@ namespace ToSic.Eav.UnitTests.ValueProvider
             return ent;
         }
 
-        public IEntity AppResources()
+        public ToSic.Eav.Interfaces.IEntity AppResources()
         {
             var vals = new Dictionary<string, object>()
             {

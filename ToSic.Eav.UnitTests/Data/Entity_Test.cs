@@ -42,7 +42,7 @@ namespace ToSic.Eav.UnitTests.Data
 
 
         #region Test-Data (entities)
-        public IEntity TestEntityDaniel()
+        public ToSic.Eav.Interfaces.IEntity TestEntityDaniel()
         {
             var valDaniel = new Dictionary<string, object>()
             {
@@ -55,7 +55,7 @@ namespace ToSic.Eav.UnitTests.Data
             return entDaniel;
         }
 
-        public IEntity TestEntityLeonie()
+        public ToSic.Eav.Interfaces.IEntity TestEntityLeonie()
         {
             var valLeonie = new Dictionary<string, object>()
             {
@@ -68,7 +68,7 @@ namespace ToSic.Eav.UnitTests.Data
             var entLeonie = new Eav.Data.Entity(2, "TestType", valLeonie, "FirstName");
             return entLeonie;
         }
-        public IEntity TestEntityPet(int petNumber)
+        public ToSic.Eav.Interfaces.IEntity TestEntityPet(int petNumber)
         {
             var valsPet = new Dictionary<string, object>()
             {

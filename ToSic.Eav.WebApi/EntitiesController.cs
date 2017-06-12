@@ -5,10 +5,8 @@ using System.Web.Http;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.WebApi.Formats;
-using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Models;
 using ToSic.Eav.ImportExport.Versioning;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Repository.Efc.Parts;
 
 namespace ToSic.Eav.WebApi
@@ -23,7 +21,7 @@ namespace ToSic.Eav.WebApi
         { }
 
         #region GetOne GetAll calls
-        public IEntity GetEntityOrThrowError(string contentType, int id)
+        public ToSic.Eav.Interfaces.IEntity GetEntityOrThrowError(string contentType, int id)
         {
             //SetAppIdAndUser(appId);
 
@@ -34,7 +32,7 @@ namespace ToSic.Eav.WebApi
             return found;
         }
 
-        public IEntity GetEntityOrThrowError(string contentType, Guid guid, int? appId = null)
+        public ToSic.Eav.Interfaces.IEntity GetEntityOrThrowError(string contentType, Guid guid, int? appId = null)
         {
             SetAppIdAndUser(appId);
 
@@ -260,7 +258,7 @@ namespace ToSic.Eav.WebApi
             #endregion
 
             // Attributes
-            importEntity.Values = new Dictionary<string, List<IValue>>();
+            importEntity.Values = new Dictionary<string, List<Interfaces.IValue>>();
 
 
             // only transfer the fields / values which exist in the content-type definition

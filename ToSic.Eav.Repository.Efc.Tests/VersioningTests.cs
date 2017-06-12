@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.ImportExport.Versioning;
-using ToSic.Eav.Repository.Efc.Tests.Mocks;
 
 namespace ToSic.Eav.Repository.Efc.Tests
 {

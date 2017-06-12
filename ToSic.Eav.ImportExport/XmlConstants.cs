@@ -1,6 +1,4 @@
-﻿using System.Text.RegularExpressions;
-
-namespace ToSic.Eav.ImportExport
+﻿namespace ToSic.Eav.ImportExport
 {
     public class XmlConstants
     {

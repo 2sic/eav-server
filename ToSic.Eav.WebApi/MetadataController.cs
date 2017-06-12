@@ -29,7 +29,7 @@ namespace ToSic.Eav.WebApi
             if (appId.HasValue)
                 AppId = appId.Value;
 
-            IEnumerable<IEntity> entityList;
+            IEnumerable<ToSic.Eav.Interfaces.IEntity> entityList;
             if (keyType == "guid")
             {
                 var guidkey = Guid.Parse(key);
