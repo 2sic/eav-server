@@ -12,7 +12,7 @@ namespace ToSic.Eav.ImportExport.Models
 	    public string ParentConfigurationStaticName { get; set; }
 	    public bool SortAttributes { get; set; } = false;
 
-        public ImpContentType(string name) : base(name) { }
+        public ImpContentType(string name) : base(name, name) { }
 
 		private ImpContentType(string name, string staticName, string description, string scope, List<ImpAttribDefinition> attributes, bool alwaysShareConfiguration = false)
             : base(name, staticName, 0, scope, description, null, 0, 0, alwaysShareConfiguration)

@@ -1,3 +1,4 @@
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Interfaces;
@@ -67,9 +68,11 @@ namespace ToSic.Eav.Data
         /// Overload for in-memory entities
         /// </summary>
         /// <param name="name"></param>
-        public ContentType(string name)
+        /// <param name="staticName"></param>
+        public ContentType(string name, string staticName = null)
         {
             Name = name;
+            StaticName = staticName ?? name;
         }
 
     }
