@@ -184,10 +184,10 @@ namespace ToSic.Eav.Api.Api01
 
         private static ImpEntity CreateImportEntity(Guid entityGuid, string attributeSetStaticName)
         {
-            return new ImpEntity
+            return new ImpEntity(attributeSetStaticName)
             {
                 EntityGuid = entityGuid,
-                AttributeSetStaticName = attributeSetStaticName,
+                //AttributeSetStaticName = attributeSetStaticName,
                 //KeyTypeId = Constants.NotMetadata,
                 //KeyNumber = null,
                 Values = new Dictionary<string, List<IValue>>()

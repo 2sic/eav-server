@@ -40,9 +40,9 @@ namespace ToSic.Eav.ImportExport.Models
         /// </summary>
         private ImpEntity CreateAttributeMetadata(string name, string notes, bool? visibleInEditUi, string defaultValue = null)
         {
-            var allEntity = new ImpEntity
+            var allEntity = new ImpEntity("@All")
             {
-                AttributeSetStaticName = "@All",
+                //AttributeSetStaticName = "@All",
                 Values = new Dictionary<string, List<IValue>>()
             };
             if (!string.IsNullOrEmpty(name))
@@ -59,9 +59,9 @@ namespace ToSic.Eav.ImportExport.Models
 
         private ImpEntity CreateStringAttribMetadata(string inputType, int? rowCount)
         {
-            var stringEntity = new ImpEntity
+            var stringEntity = new ImpEntity("@String")
             {
-                AttributeSetStaticName = "@String",
+                //AttributeSetStaticName = "@String",
                 Values = new Dictionary<string, List<IValue>>()
             };
             if (!string.IsNullOrEmpty(inputType))

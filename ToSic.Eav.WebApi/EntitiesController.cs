@@ -233,14 +233,14 @@ namespace ToSic.Eav.WebApi
             #endregion
 
             // TODO 2tk: Refactor code - we use methods from XML import extensions!
-            var importEntity = new ImpEntity
+            var importEntity = new ImpEntity(newEntity.Type.StaticName)
             {
 
                 #region Guids, Ids, Published, Content-Types
                 EntityGuid = newEntity.Guid,
                 IsPublished = newEntity.IsPublished,
                 ForceNoBranch = !newEntity.IsBranch, // if it's not a branch, it should also force no branch...
-                AttributeSetStaticName = newEntity.Type.StaticName,
+                //AttributeSetStaticName = newEntity.Type.StaticName,
                 #endregion
                 // Metadata maybe?
                 //KeyTypeId = Constants.NotMetadata  // default case

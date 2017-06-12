@@ -82,9 +82,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         private ImpEntity AppendEntity(Guid entityGuid)
         {
-            var entity = new ImpEntity
+            var entity = new ImpEntity(ContentType.StaticName)
             {
-                AttributeSetStaticName = ContentType.StaticName,
+                //AttributeSetStaticName = ContentType.StaticName,
                 EntityGuid = entityGuid,
                 //KeyTypeId = Constants.NotMetadata,
                 //KeyNumber = null,

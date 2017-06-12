@@ -13,13 +13,13 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Name
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; protected set; }
         /// <summary>
         /// Static name - can be a GUID or a system-term for special types
         /// </summary>
-        public string StaticName { get; set; }
+        public string StaticName { get; protected set; }
 
-        public string Description { get; set;  }
+        public string Description { get; protected set;  }
         /// <summary>
         /// What this content-types if for, if it's a system type or something
         /// </summary>
@@ -29,17 +29,17 @@ namespace ToSic.Eav.Data
         /// Internal Id of the attribute-set of this content-type. Don't worry about this one, you probably won't understand it and that's ok. 
         /// </summary>
         public int ContentTypeId { get; }
-        /// <summary>
-        /// todo
-        /// </summary>
+
+        #region Sharing Content Types
         public int? ParentConfigurationId { get; }
         public int ParentConfigurationAppId { get; }
         public int ParentConfigurationZoneId { get; }
 
         public bool AlwaysShareConfiguration { get; protected set; }
+        #endregion
 
         /// <summary>
-		/// Dictionary with all Attribute Definitions
+        /// Dictionary with all Attribute Definitions
         /// </summary>
         public IList<IAttributeDefinition> Attributes { get; set; }
 

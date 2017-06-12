@@ -5,17 +5,9 @@ namespace ToSic.Eav.ImportExport.Models
 {
 	public class ImpContentType: ContentType
 	{
-		//public string Name { get; set; }
-		//public string StaticName { get; set; }
-		//public string Description { get; set; }
-		//public string Scope { get; set; }
-
 		public List<ImpAttribDefinition> TempAttribDefinitions { get; set; }	// The List<> class guarantees ordering
-		public ImpAttribDefinition TitleAttribute { get; set; }
+		//public ImpAttribDefinition TitleAttribute { get; set; }
 
-		//public bool AlwaysShareConfiguration { get; set; }
-
-        
         // Import specific special fields...
 	    public string ParentConfigurationStaticName { get; set; }
 	    public bool SortAttributes { get; set; } = false;
@@ -25,12 +17,7 @@ namespace ToSic.Eav.ImportExport.Models
 		private ImpContentType(string name, string staticName, string description, string scope, List<ImpAttribDefinition> attributes, bool alwaysShareConfiguration = false)
             : base(name, staticName, 0, scope, description, null, 0, 0, alwaysShareConfiguration)
 		{
-			//Name = name;
-			//StaticName = staticName;
-			//Description = description;
-			//Scope = scope;
 			TempAttribDefinitions = attributes;
-			//AlwaysShareConfiguration = alwaysShareConfiguration;
 		}
 
 		/// <summary>
@@ -41,10 +28,12 @@ namespace ToSic.Eav.ImportExport.Models
 			return new ImpContentType(staticName, staticName, description, "System", attributes, alwaysShareConfiguration);
 		}
 
-	    public void SetImportParameters(string scope, bool alwaysShareDef)
+	    public void SetImportParameters(string scope, string staticName, string description, bool alwaysShareDef)
 	    {
-	        AlwaysShareConfiguration = alwaysShareDef;
 	        Scope = scope;
-	    }
-	}
+	        StaticName = staticName;
+	        Description = description;
+            AlwaysShareConfiguration = alwaysShareDef;
+        }
+    }
 }

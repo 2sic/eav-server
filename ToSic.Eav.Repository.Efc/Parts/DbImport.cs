@@ -145,7 +145,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 if(!_context.Attributes.AttributeExistsInSet(destinationSet.AttributeSetId, importAttribute.Name))
                 {
                     // try to add new Attribute
-                    var isTitle = importAttribute == impContentType.TitleAttribute;
+                    var isTitle = importAttribute.IsTitle;// == impContentType.TitleAttribute;
                     destinationAttribute = _context.Attributes
                         .AppendToEndAndSave(destinationSet, 0, importAttribute.Name, importAttribute.Type, /*importAttribute.InputType, */ isTitle);//, false);
                 }
@@ -294,14 +294,15 @@ namespace ToSic.Eav.Repository.Efc.Parts
         {
             #region try to get AttributeSet or otherwise cancel & log error
 
-            var dbAttrSet = _context.AttribSet.GetAttributeSet(impEntity.AttributeSetStaticName);
+            var dbAttrSet = _context.AttribSet.GetAttributeSet(impEntity.Type.StaticName);//.AttributeSetStaticName);
 
             if (dbAttrSet == null) // AttributeSet not Found
             {
                 _importLog.Add(new ImportLogItem(EventLogEntryType.Error, "AttributeSet not found")
                 {
                     //ImpEntity = impEntity,
-                    ImpContentType = new ImpContentType(impEntity.AttributeSetStaticName) {StaticName = impEntity.AttributeSetStaticName}
+                    ImpContentType = new ImpContentType(impEntity.Type.StaticName)//.AttributeSetStaticName)// {StaticName = impEntity.AttributeSetStaticName}
+                    
                 });
                 return;
             }
@@ -355,7 +356,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             #region Ensure entity has same AttributeSet (do this after checking for the draft etc.
             var editableEntityContentType = _context.AttribSet.GetAttributeSet(editableVersionOfTheEntity.AttributeSetId);
-            if (editableEntityContentType.StaticName != impEntity.AttributeSetStaticName)
+            if (editableEntityContentType.StaticName != impEntity.Type.StaticName)//.AttributeSetStaticName)
             {
                 _importLog.Add(new ImportLogItem(EventLogEntryType.Error, "Existing entity (which should be updated) has different ContentType"/*, impEntity*/));
                 return;

@@ -5,7 +5,6 @@ using System.Globalization;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Implementations.ValueConverter;
-using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.Interfaces;
 using static System.String;
 
@@ -14,7 +13,11 @@ namespace ToSic.Eav.ImportExport.Models
     public class ImpEntity
     {
         // Type and IDs
-        public string AttributeSetStaticName { get; set; }
+        //public string AttributeSetStaticName { get; set; }
+
+        // new:
+        public IContentType Type { get;  }
+
         public Guid? EntityGuid { get; set; }
 
         // Keys
@@ -26,10 +29,11 @@ namespace ToSic.Eav.ImportExport.Models
 
         public Dictionary<string, List<IValue>> Values { get; set; }
 
-        public ImpEntity()
+        public ImpEntity(string contentTypeName)
         {
             IsPublished = true;
             ForceNoBranch = false;
+            Type = new ContentType(contentTypeName);
         }
 
 

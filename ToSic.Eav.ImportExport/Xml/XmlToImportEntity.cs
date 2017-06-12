@@ -29,9 +29,9 @@ namespace ToSic.Eav.ImportExport.Xml
 		/// <param name="keyString">KeyString of the Entity</param>
 		public static ImpEntity BuildImpEntityFromXml(XElement xEntity, int assignmentObjectTypeId, List<Data.Dimension> targetDimensions, List<Data.Dimension> sourceDimensions, int? sourceDefaultDimensionId, string defaultLanguage, int? keyNumber = null, Guid? keyGuid = null, string keyString = null)
 		{
-		    var targetEntity = new ImpEntity
+		    var targetEntity = new ImpEntity(xEntity.Attribute(XmlConstants.AttSetStatic).Value)
 		    {
-		        AttributeSetStaticName = xEntity.Attribute(XmlConstants.AttSetStatic).Value,
+		        //AttributeSetStaticName = xEntity.Attribute(XmlConstants.AttSetStatic).Value,
 		        EntityGuid = Guid.Parse(xEntity.Attribute(XmlConstants.GuidNode).Value),
 		        Metadata = new Metadata
 		        {

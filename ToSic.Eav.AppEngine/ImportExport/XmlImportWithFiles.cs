@@ -289,29 +289,32 @@ namespace ToSic.Eav.Apps.ImportExport
 
                         // Set Title Attribute
                         if (Boolean.Parse(xElementAttribute.Attribute(XmlConstants.IsTitle).Value))
+                        {
+                            attribute.IsTitle = true;
                             titleAttribute = attribute;
+                        }
                     }
-			    if (titleAttribute == null)
-			        titleAttribute = attributes.FirstOrDefault();
+			    if(!attributes.Any(a => a.IsTitle)) //(titleAttribute == null)
+			    {
+			        attributes.First().IsTitle = true;
+                    //titleAttribute = attributes.First();
+			    }
 
-				// Add AttributeSet
+			    // Add AttributeSet
                 var ct = new ImpContentType(attributeSet.Attribute(XmlConstants.Name).Value)
 				{
-					StaticName = attributeSet.Attribute(XmlConstants.Static).Value,
-					Name = attributeSet.Attribute(XmlConstants.Name).Value,
-					Description = attributeSet.Attribute(XmlConstants.Description).Value,
 					TempAttribDefinitions = attributes,
-					//Scope = attributeSet.Attributes(XmlConstants.Scope).Any() ? attributeSet.Attribute(XmlConstants.Scope).Value : _environment.FallbackContentTypeScope,
-     //               AlwaysShareConfiguration = AllowSystemChanges && attributeSet.Attributes(XmlConstants.AlwaysShareConfig).Any() && Boolean.Parse(attributeSet.Attribute(XmlConstants.AlwaysShareConfig).Value),
                     ParentConfigurationStaticName = attributeSet.Attributes(XmlConstants.AttributeSetParentDef).Any() ? attributeSet.Attribute(XmlConstants.AttributeSetParentDef).Value : "",
-                    TitleAttribute = titleAttribute,
+                    //TitleAttribute = titleAttribute,
                     SortAttributes = attributeSet.Attributes(XmlConstants.SortAttributes).Any() && bool.Parse(attributeSet.Attribute(XmlConstants.SortAttributes).Value)
 				};
 			    ct.SetImportParameters(
 			        scope: attributeSet.Attributes(XmlConstants.Scope).Any()
 			            ? attributeSet.Attribute(XmlConstants.Scope).Value
 			            : _environment.FallbackContentTypeScope,
-			        alwaysShareDef: AllowSystemChanges && attributeSet.Attributes(XmlConstants.AlwaysShareConfig).Any() &&
+                    staticName:attributeSet.Attribute(XmlConstants.Static).Value,
+                    description: attributeSet.Attribute(XmlConstants.Description).Value,
+                    alwaysShareDef: AllowSystemChanges && attributeSet.Attributes(XmlConstants.AlwaysShareConfig).Any() &&
 			                        Boolean.Parse(attributeSet.Attribute(XmlConstants.AlwaysShareConfig).Value)
 			    );
 			    importAttributeSets.Add(ct);
