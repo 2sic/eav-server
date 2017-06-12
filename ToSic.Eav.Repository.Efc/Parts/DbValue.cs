@@ -4,6 +4,7 @@ using System.Linq;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Models;
+using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
@@ -104,7 +105,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Update a Value when using IValueImportModel. Returns the Updated Value (for simple Values) or null (for Entity-Values)
         /// </summary>
-        internal object UpdateValueByImport(ToSicEavEntities entityInDb, ToSicEavAttributes attribute, List<ToSicEavValues> currentValues, IImpValue newImpValue)
+        internal object UpdateValueByImport(ToSicEavEntities entityInDb, ToSicEavAttributes attribute, List<ToSicEavValues> currentValues, IValue /* 2017-06-12 2dm temp IImpValue */ newImpValue)
         {
             switch (attribute.Type)
             {
@@ -138,7 +139,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <param name="attributeType">Attribute Type</param>
         /// <param name="attributeStaticName">Attribute StaticName</param>
         /// <param name="multiValuesSeparator">Indicates whehter returned value should be convertable to a human readable string - currently only used for GetEntityVersionValues()</param>
-        internal object GetTypedValue(IImpValue impValue, string attributeType = null, string attributeStaticName = null, string multiValuesSeparator = null)
+        internal object GetTypedValue(IValue /* 2017-06-12 2dm temp IImpValue */ impValue, string attributeType = null, string attributeStaticName = null, string multiValuesSeparator = null)
         {
             object typedValue;
 
@@ -183,18 +184,18 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Update a Value 
         /// </summary>
-        internal void UpdateValue(ToSicEavEntities currentEntity, ToSicEavAttributes attribute, /*bool masterRecord,*/ List<ToSicEavValues> dbValues, /*IEntity entityModel,*/ ImpValueInside newValue, ICollection<int> dimensionIds)
+        internal void UpdateValue(ToSicEavEntities currentEntity, ToSicEavAttributes attribute, /*bool masterRecord,*/ List<ToSicEavValues> dbValues, /*ImpValueInside*/ object newValue, ICollection<int> dimensionIds)
         {
             switch (attribute.Type)
             {
                 // Handle Entity Relationships - they're stored in own tables
                 case "Entity":
-                    var entityIds = newValue.Value as int?[] ?? ((int[])newValue.Value).Select(v => (int?)v).ToArray();
+                    var entityIds = newValue as int?[] ?? ((int[])newValue).Select(v => (int?)v).ToArray();
                     DbContext.Relationships.UpdateEntityRelationshipsAndSave(attribute.AttributeId, entityIds, currentEntity);
                     break;
                 // Handle simple values in Values-Table
                 default:
-                    UpdateSimpleValue(attribute, currentEntity, dimensionIds, /*masterRecord,*/ newValue.Value, /*newValue.ValueId*/null, newValue.ReadOnly, dbValues/*, entityModel*/);
+                    UpdateSimpleValue(attribute, currentEntity, dimensionIds, /*masterRecord,*/ newValue, /*newValue.ValueId*/null, /*newValue.ReadOnly*/ false, dbValues/*, entityModel*/);
                     break;
             }
         }

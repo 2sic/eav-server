@@ -228,7 +228,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Update AdditionalProperties of an attribute 
         /// </summary>
-        public ToSicEavEntities UpdateAttributeAdditionalProperties(int attributeId, bool isAllProperty, IDictionary fieldProperties)
+        public ToSicEavEntities UpdateAttributeAdditionalProperties(int attributeId, bool isAllProperty, Dictionary<string, object> fieldProperties)
         {
             var fieldPropertyEntity = DbContext.SqlDb.ToSicEavEntities.FirstOrDefault(e => e.AssignmentObjectTypeId == Constants.MetadataForField && e.KeyNumber == attributeId);
             if (fieldPropertyEntity != null)

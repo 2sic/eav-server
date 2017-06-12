@@ -6,7 +6,7 @@ using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.ImportExport.Models
 {
-    public class ImpValueWithLanguages<T> : Value<T>, IImpValue
+    public class ImpValueWithLanguages<T> : Value<T>, IValue /* 2017-06-12 2dm temp IImpValue */
     {
         //public T TypedContents { get; set; }
         //public List<ILanguage> Languages { get; set; } = new List<ILanguage>();

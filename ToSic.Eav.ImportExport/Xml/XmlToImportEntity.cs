@@ -5,6 +5,7 @@ using System.Xml.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Models;
+using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.ImportExport.Xml
 {
@@ -41,7 +42,7 @@ namespace ToSic.Eav.ImportExport.Xml
 		        }
 		    };
 
-			var targetValues = new Dictionary<string, List<IImpValue>>();
+			var targetValues = new Dictionary<string, List<IValue /* 2017-06-12 2dm temp IImpValue */>>();
 
 			// Group values by StaticName
 			var valuesGroupedByStaticName = xEntity.Elements(XmlConstants.ValueNode)

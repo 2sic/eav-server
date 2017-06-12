@@ -8,6 +8,7 @@ using ToSic.Eav.WebApi.Formats;
 using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Models;
 using ToSic.Eav.ImportExport.Versioning;
+using ToSic.Eav.Interfaces;
 using ToSic.Eav.Repository.Efc.Parts;
 
 namespace ToSic.Eav.WebApi
@@ -259,7 +260,7 @@ namespace ToSic.Eav.WebApi
             #endregion
 
             // Attributes
-            importEntity.Values = new Dictionary<string, List<IImpValue>>();
+            importEntity.Values = new Dictionary<string, List<IValue /* 2017-06-12 2dm temp IImpValue */>>();
 
 
             // only transfer the fields / values which exist in the content-type definition

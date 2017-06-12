@@ -13,6 +13,7 @@ using ToSic.Eav.ImportExport.Models;
 using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.ImportExport.Validation;
 using ToSic.Eav.ImportExport.Xml;
+using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
@@ -88,7 +89,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 EntityGuid = entityGuid,
                 //KeyTypeId = Constants.NotMetadata,
                 //KeyNumber = null,
-                Values = new Dictionary<string, List<IImpValue>>()
+                Values = new Dictionary<string, List<IValue /* 2017-06-12 2dm temp IImpValue */>>()
             };
             ImportEntities.Add(entity);
             return entity;

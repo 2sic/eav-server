@@ -1,4 +1,5 @@
-﻿using System.Collections.Specialized;
+﻿using System.Collections.Generic;
+using System.Collections.Specialized;
 using ToSic.Eav.Apps.Interfaces;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
@@ -48,7 +49,7 @@ namespace ToSic.Eav.Apps
 
 
 
-        public void MetadataEnsureTypeAndSingleEntity(string scope, string setName, string label, int appAssignment, OrderedDictionary values)
+        public void MetadataEnsureTypeAndSingleEntity(string scope, string setName, string label, int appAssignment, Dictionary<string, object> values)
         {
             ToSicEavAttributeSets contentType;
             if (DataController.AttribSet.AttributeSetExists(AppId, setName))
@@ -60,7 +61,7 @@ namespace ToSic.Eav.Apps
             }
 
             if (values == null)
-                values = new OrderedDictionary();
+                values = new Dictionary<string, object>();
 
             DataController.Entities.AddEntity(contentType.AttributeSetId, values, new Metadata { KeyNumber = DataController.AppId, TargetType = appAssignment});
 

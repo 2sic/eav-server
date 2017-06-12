@@ -77,7 +77,6 @@
     <Compile Include="Models\ImpAttribute.cs" />
     <Compile Include="Models\ImpEntity.cs" />
     <Compile Include="Models\ImpContentType.cs" />
-    <Compile Include="Interfaces\IImpValue.cs" />
     <Compile Include="Logging\ImportLogItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Validation\StringExtension.cs" />
@@ -94,7 +93,6 @@
     <Compile Include="Options\ImportResourceReferenceMode.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Models\ImpValueWithLanguages.cs" />
-    <Compile Include="Models\ImpValueInside.cs" />
     <Compile Include="XmlConstants.cs" />
     <Compile Include="Xml\XmlBuilder.cs" />
     <Compile Include="Xml\XmlToImportEntity.cs" />

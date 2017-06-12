@@ -123,6 +123,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
             Guid? entityGuid = null, ICollection<int> dimensionIds = null, List<ImportLogItem> updateLog = null, 
             bool isPublished = true, int? publishedEntityId = null)
         {
+            // note: values is either a dictionary <string, object> or <string, IList<IValue>>
+
             // moving to IsMetadata
             int? keyNumber = isMetadata?.KeyNumber;
             Guid? keyGuid = isMetadata?.KeyGuid;
@@ -270,12 +272,12 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 : entity.ToSicEavValues.ToList();
 
             // Update Values from Import Model
-            var newValuesImport = newValues as Dictionary<string, List<IImpValue>>;
+            var newValuesImport = newValues as Dictionary<string, List<IValue /* 2017-06-12 2dm temp IImpValue */>>;
             if (newValuesImport != null)
                 UpdateEntityFromImportModel(entity, newValuesImport, updateLog, attributes, dbValues, preserveUndefinedValues);
             // Update Values from ValueViewModel
             else
-                UpdateEntityDefault(entity, newValues, dimensionIds/*, masterRecord*/, attributes, dbValues);
+                UpdateEntityDefault(entity, (Dictionary<string, object>)newValues, dimensionIds/*, masterRecord*/, attributes, dbValues);
 
 
             entity.ChangeLogModified = DbContext.Versioning.GetChangeLogId();
@@ -290,7 +292,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Update an Entity when using the Import
         /// </summary>
-        private void UpdateEntityFromImportModel(ToSicEavEntities currentEntity, Dictionary<string, List<IImpValue>> newValuesImport, List<ImportLogItem> updateLog, List<ToSicEavAttributes> attributeList, List<ToSicEavValues> currentValues, bool keepAttributesMissingInImport)
+        private void UpdateEntityFromImportModel(ToSicEavEntities currentEntity, Dictionary<string, List<IValue /* 2017-06-12 2dm temp IImpValue */>> newValuesImport, List<ImportLogItem> updateLog, List<ToSicEavAttributes> attributeList, List<ToSicEavValues> currentValues, bool keepAttributesMissingInImport)
         {
             if (updateLog == null)
                 throw new ArgumentNullException(nameof(updateLog), "When Calling UpdateEntity() with newValues of Type IValueImportModel updateLog must be set.");
@@ -368,9 +370,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Update an Entity when not using the Import
         /// </summary>
-        private void UpdateEntityDefault(ToSicEavEntities entity, IDictionary newValues, ICollection<int> dimensionIds, /*bool masterRecord,*/ List<ToSicEavAttributes> attributes, List<ToSicEavValues> dbValues)
+        private void UpdateEntityDefault(ToSicEavEntities entity, IDictionary<string, object> newValues, ICollection<int> dimensionIds, /*bool masterRecord,*/ List<ToSicEavAttributes> attributes, List<ToSicEavValues> dbValues)
         {
-            var newValuesTyped = DictionaryToValuesViewModel(newValues);
+            var newValuesTyped = newValues;// DictionaryToValuesViewModel(newValues);
             foreach (var newValue in newValuesTyped)
             {
                 var attribute = attributes.FirstOrDefault(a => a.StaticName == newValue.Key);
@@ -414,16 +416,16 @@ namespace ToSic.Eav.Repository.Efc.Parts
         }
         #endregion
 
-        /// <summary>
-        /// Convert IOrderedDictionary to <see cref="Dictionary{String, ValueViewModel}" /> (for backward capability)
-        /// </summary>
-        private Dictionary<string, ImpValueInside> DictionaryToValuesViewModel(IDictionary newValues)
-        {
-            if (newValues is Dictionary<string, ImpValueInside>)
-                return (Dictionary<string, ImpValueInside>)newValues;
+        ///// <summary>
+        ///// Convert IOrderedDictionary to <see cref="Dictionary{String, ValueViewModel}" /> (for backward capability)
+        ///// </summary>
+        //private Dictionary<string, /*ImpValueInside*/ object> DictionaryToValuesViewModel(IDictionary<string, List<IValue>> newValues)
+        //{
+        //    //if (newValues is Dictionary<string, ImpValueInside>)
+        //    //    return (Dictionary<string, ImpValueInside>)newValues;
 
-            return newValues.Keys.Cast<object>().ToDictionary(key => key.ToString(), key => new ImpValueInside { ReadOnly = false, Value = newValues[key] });
-        }
+        //    return newValues.Keys.Cast<object>().ToDictionary(key => key.ToString(), key => /*new ImpValueInside { ReadOnly = false, Value =*/ newValues[key] /*}*/);
+        //}
 
         #region Delete Commands
 

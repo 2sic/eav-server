@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Interfaces;
+using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.ImportExport.Models
 {
@@ -43,16 +44,16 @@ namespace ToSic.Eav.ImportExport.Models
             var allEntity = new ImpEntity
             {
                 AttributeSetStaticName = "@All",
-                Values = new Dictionary<string, List<IImpValue>>()
+                Values = new Dictionary<string, List<IValue /* 2017-06-12 2dm temp IImpValue */>>()
             };
             if (!string.IsNullOrEmpty(name))
-                allEntity.Values.Add("Name", new List<IImpValue> { new ImpValueWithLanguages<string>(/*allEntity,*/ name ) });
+                allEntity.Values.Add("Name", new List<IValue /* 2017-06-12 2dm temp IImpValue */> { new ImpValueWithLanguages<string>(/*allEntity,*/ name ) });
             if (!string.IsNullOrEmpty(notes))
-                allEntity.Values.Add("Notes", new List<IImpValue> { new ImpValueWithLanguages<string>(/*allEntity,*/ notes ) });
+                allEntity.Values.Add("Notes", new List<IValue /* 2017-06-12 2dm temp IImpValue */> { new ImpValueWithLanguages<string>(/*allEntity,*/ notes ) });
             if (visibleInEditUi.HasValue)
-                allEntity.Values.Add("VisibleInEditUI", new List<IImpValue> { new ImpValueWithLanguages<bool?>(/*allEntity,*/ visibleInEditUi ) });
+                allEntity.Values.Add("VisibleInEditUI", new List<IValue /* 2017-06-12 2dm temp IImpValue */> { new ImpValueWithLanguages<bool?>(/*allEntity,*/ visibleInEditUi ) });
             if (defaultValue != null)
-                allEntity.Values.Add("DefaultValue", new List<IImpValue> { new ImpValueWithLanguages<string>(/*allEntity,*/ defaultValue ) });
+                allEntity.Values.Add("DefaultValue", new List<IValue /* 2017-06-12 2dm temp IImpValue */> { new ImpValueWithLanguages<string>(/*allEntity,*/ defaultValue ) });
 
             return allEntity;
         }
@@ -62,12 +63,12 @@ namespace ToSic.Eav.ImportExport.Models
             var stringEntity = new ImpEntity
             {
                 AttributeSetStaticName = "@String",
-                Values = new Dictionary<string, List<IImpValue>>()
+                Values = new Dictionary<string, List<IValue /* 2017-06-12 2dm temp IImpValue */>>()
             };
             if (!string.IsNullOrEmpty(inputType))
-                stringEntity.Values.Add("InputType", new List<IImpValue> { new ImpValueWithLanguages<string>(/*stringEntity,*/ inputType ) });
+                stringEntity.Values.Add("InputType", new List<IValue /* 2017-06-12 2dm temp IImpValue */> { new ImpValueWithLanguages<string>(/*stringEntity,*/ inputType ) });
             if (rowCount.HasValue)
-                stringEntity.Values.Add("RowCount", new List<IImpValue> { new ImpValueWithLanguages<decimal?>(/*stringEntity,*/ rowCount ) });
+                stringEntity.Values.Add("RowCount", new List<IValue /* 2017-06-12 2dm temp IImpValue */> { new ImpValueWithLanguages<decimal?>(/*stringEntity,*/ rowCount ) });
 
             return stringEntity;
         }

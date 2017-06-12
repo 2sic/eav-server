@@ -6,6 +6,7 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Implementations.ValueConverter;
 using ToSic.Eav.ImportExport.Interfaces;
+using ToSic.Eav.Interfaces;
 using static System.String;
 
 namespace ToSic.Eav.ImportExport.Models
@@ -23,7 +24,7 @@ namespace ToSic.Eav.ImportExport.Models
         public bool IsPublished { get; set; }
         public bool ForceNoBranch { get; set; }
 
-        public Dictionary<string, List<IImpValue>> Values { get; set; }
+        public Dictionary<string, List<IValue /* 2017-06-12 2dm temp IImpValue */>> Values { get; set; }
 
         public ImpEntity()
         {
@@ -38,7 +39,7 @@ namespace ToSic.Eav.ImportExport.Models
         /// <summary>
         /// Get the value of an attribute in the language specified.
         /// </summary>
-        public IImpValue GetValueItemOfLanguage(string key, string language)
+        public IValue /* 2017-06-12 2dm temp IImpValue */ GetValueItemOfLanguage(string key, string language)
         {
             var values = Values
                 .Where(item => item.Key == key)
@@ -53,7 +54,7 @@ namespace ToSic.Eav.ImportExport.Models
         /// Add a value to the attribute specified. To do so, set the name, type and string of the value, as 
         /// well as some language properties.
         /// </summary>
-        public IImpValue AppendAttributeValue(string attributeName, string value, string valueType, string language = null, bool languageReadOnly = false, bool resolveHyperlink = false)
+        public IValue /* 2017-06-12 2dm temp IImpValue */ AppendAttributeValue(string attributeName, string value, string valueType, string language = null, bool languageReadOnly = false, bool resolveHyperlink = false)
         {
             var valueModel = BuildTypedImpValueWithoutDimensions(value, valueType, resolveHyperlink);
 
@@ -63,7 +64,7 @@ namespace ToSic.Eav.ImportExport.Models
             // add or replace...
             var attrExists = Values.Where(item => item.Key == attributeName).Select(item => item.Value).FirstOrDefault();
             if (attrExists == null)
-                Values.Add(attributeName, new List<IImpValue> { valueModel });
+                Values.Add(attributeName, new List<IValue /* 2017-06-12 2dm temp IImpValue */> { valueModel });
             else
                 Values[attributeName].Add(valueModel);
 
@@ -85,7 +86,7 @@ namespace ToSic.Eav.ImportExport.Models
         }
 
 
-        public IImpValue PrepareTypedValue(string value, string attributeType, List<ILanguage> dimensions)
+        public IValue /* 2017-06-12 2dm temp IImpValue */ PrepareTypedValue(string value, string attributeType, List<ILanguage> dimensions)
         {
             var valueModel = BuildTypedImpValueWithoutDimensions(value, attributeType);
             foreach (var dimension in dimensions)
@@ -96,10 +97,10 @@ namespace ToSic.Eav.ImportExport.Models
             return valueModel;
         }
 
-        private IImpValue BuildTypedImpValueWithoutDimensions(string value, string valueType, bool resolveHyperlink = false)
+        private IValue /* 2017-06-12 2dm temp IImpValue */ BuildTypedImpValueWithoutDimensions(string value, string valueType, bool resolveHyperlink = false)
         {
             ImpEntity parentEntity = this;
-            IImpValue impValueModel;
+            IValue /* 2017-06-12 2dm temp IImpValue */ impValueModel;
 
             var type = FindTypeOnEnumOrUndefined(valueType);
 
