@@ -35,28 +35,29 @@ namespace ToSic.Eav.Data
             _fullEntityList = fullEntitiesListForLookup; 
         }
 
-        public override string ToString()
-        {
-            return EntityIds == null ? string.Empty : string.Join(", ", EntityIds.Select(e => e));
-        }
+        public override string ToString() => EntityIds == null ? string.Empty : string.Join(",", EntityIds.Select(e => e));
 
         public IEnumerator<IEntity> GetEnumerator()
         {
             // If necessary, initialize first. Note that it will only add Ids which really exist in the source (the source should be the cache)
             if (_entities == null)
                 //_entities = _source == null ? new List<IEntity>() : _source.Out[Constants.DefaultStreamName].List.Where(l => EntityIds.Contains(l.Key)).Select(l => l.Value).ToList();
-                _entities = _fullEntityList == null ? new List<IEntity>() 
-                    : EntityIds.Select(l => l.HasValue 
-                    ? (_fullEntityList.List.ContainsKey(l.Value) ? _fullEntityList.List[l.Value] : null) // special: in rare cases, the entity has been deleted and is therefor missing
-                    : null).ToList();
+                LoadEntities();
 
             return new EntityEnum(_entities);
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
+        private void LoadEntities()
         {
-            return GetEnumerator();
+            _entities = _fullEntityList == null
+                ? new List<IEntity>()
+                : EntityIds.Select(l => l.HasValue
+                    ? (_fullEntityList.List.ContainsKey(l.Value) ? _fullEntityList.List[l.Value] : null)
+                    // special: in rare cases, the entity has been deleted and is therefor missing
+                    : null).ToList();
         }
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         /// <remarks>Source: http://msdn.microsoft.com/en-us/library/system.collections.ienumerable.getenumerator.aspx </remarks>
         class EntityEnum : IEnumerator<IEntity>
@@ -97,10 +98,7 @@ namespace ToSic.Eav.Data
                 }
             }
 
-            object IEnumerator.Current
-            {
-                get { return Current; }
-            }
+            object IEnumerator.Current => Current;
         }
     }
 }

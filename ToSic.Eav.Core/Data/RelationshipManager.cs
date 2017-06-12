@@ -26,26 +26,16 @@ namespace ToSic.Eav.Data
 		/// <summary>
 		/// Get all Child Entities
 		/// </summary>
-		public IEnumerable<IEntity> AllChildren
-		{
-			get { return AllRelationships.Where(r => r.Parent == _entity).Select(r => r.Child); }
-		}
+		public IEnumerable<IEntity> AllChildren => AllRelationships.Where(r => r.Parent == _entity).Select(r => r.Child);
 
-		/// <summary>
+	    /// <summary>
 		/// Get all Parent Entities
 		/// </summary>
-		public IEnumerable<IEntity> AllParents
-		{
-			get { return AllRelationships.Where(r => r.Child == _entity).Select(r => r.Parent); }
-		}
+		public IEnumerable<IEntity> AllParents => AllRelationships.Where(r => r.Child == _entity).Select(r => r.Parent);
 
-		/// <summary>
+	    /// <summary>
 		/// Get Children of a specified Attribute Name
 		/// </summary>
-		public IRelatedEntities Children
-		{
-			get { return new RelatedEntities(_entity.Attributes); }
-		}
-
+		public IRelatedEntities Children => new RelatedEntities(_entity.Attributes);
 	}
 }

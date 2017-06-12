@@ -27,10 +27,10 @@ namespace ToSic.Eav.Data
         {
             get
             {
-                Attribute<Data.EntityRelationship> relationship;
+                Attribute<EntityRelationship> relationship;
                 try
                 {
-                    relationship = _attributes[attributeName] as Attribute<Data.EntityRelationship>;
+                    relationship = _attributes[attributeName] as Attribute<EntityRelationship>;
                 }
                 catch (KeyNotFoundException)
                 {

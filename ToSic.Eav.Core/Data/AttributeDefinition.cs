@@ -30,11 +30,13 @@ namespace ToSic.Eav.Data
             SortOrder = sortOrder;
 		}
 
+
+
         /// <summary>
         /// Get Attribute for specified Typ
         /// </summary>
 		/// <returns><see cref="Attribute{ValueType}"/></returns>
-        public IAttribute CreateDerivedAttribute()
+        public IAttribute CreateAttribute()
         {
             switch (ControlledType)
             {

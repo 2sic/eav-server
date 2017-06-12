@@ -112,7 +112,7 @@ namespace ToSic.Eav.Data
 		}
 
 		/// <summary>
-		/// Create a new Entity
+		/// Create a new Entity from a data store (usually SQL backend)
 		/// </summary>
 		public Entity(Guid entityGuid, int entityId, int repositoryId, IMetadata isMetadata, IContentType type, bool isPublished, IEnumerable<EntityRelationshipItem> allRelationships, DateTime modified, string owner)
 		{
@@ -139,7 +139,7 @@ namespace ToSic.Eav.Data
 		{
 			EntityId = entity.EntityId;
 			EntityGuid = entity.EntityGuid;
-		    Metadata = ((Metadata)entity.Metadata).CloseIsMetadata();
+		    Metadata = ((Metadata)entity.Metadata).CloneIsMetadata();
 			//AssignmentObjectTypeId = entity.AssignmentObjectTypeId;
 			Type = entity.Type;
 			Title = entity.Title;
@@ -163,7 +163,7 @@ namespace ToSic.Eav.Data
             {
                 var attributeType = GetAttributeTypeName(attribute.Value);
                 var baseModel = new AttributeDefinition(attribute.Key, attributeType, attribute.Key == titleAttributeName, 0, 0);
-                var attributeModel = baseModel.CreateDerivedAttribute();// CreateTypedAttribute(baseModel);
+                var attributeModel = baseModel.CreateAttribute();// CreateTypedAttribute(baseModel);
                 var valuesModelList = new List<IValue>();
                 if (attribute.Value != null)
                 {

@@ -273,7 +273,7 @@ namespace ToSic.Eav.Apps.ImportExport
 			foreach (var attributeSet in xAttributeSets)
 			{
 				var attributes = new List<ImpAttribDefinition>();
-                ImpAttribDefinition titleAttribute = null;// = new ImpAttribute();
+                //ImpAttribDefinition titleAttribute = null;// = new ImpAttribute();
 			    var attsetElem = attributeSet.Element(XmlConstants.Attributes);
                 if (attsetElem != null)
                     foreach (var xElementAttribute in attsetElem.Elements(XmlConstants.Attribute))
@@ -291,7 +291,7 @@ namespace ToSic.Eav.Apps.ImportExport
                         if (Boolean.Parse(xElementAttribute.Attribute(XmlConstants.IsTitle).Value))
                         {
                             attribute.IsTitle = true;
-                            titleAttribute = attribute;
+                            //titleAttribute = attribute;
                         }
                     }
 			    if(!attributes.Any(a => a.IsTitle)) //(titleAttribute == null)

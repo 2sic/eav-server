@@ -233,7 +233,7 @@ namespace ToSic.Eav.Persistence.Efc
                 // Add all Attributes of that Content-Type
                 foreach (var definition in contentType.Attributes)
                 {
-                    var newAttribute = ((AttributeDefinition) definition).CreateDerivedAttribute();// AttributeHelperTools.CreateTypedAttribute(definition);
+                    var newAttribute = ((AttributeDefinition) definition).CreateAttribute();// AttributeHelperTools.CreateTypedAttribute(definition);
                     newEntity.Attributes.Add(newAttribute.Name, newAttribute);
                     allAttribsOfThisType.Add(definition.AttributeId, newAttribute);
                     if (definition.IsTitle)

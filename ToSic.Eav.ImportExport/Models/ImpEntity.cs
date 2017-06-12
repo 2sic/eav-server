@@ -43,7 +43,7 @@ namespace ToSic.Eav.ImportExport.Models
         /// <summary>
         /// Get the value of an attribute in the language specified.
         /// </summary>
-        public IValue GetValueItemOfLanguage(string key, string language)
+        public IValue ImpGetValueItemOfLanguage(string key, string language)
         {
             var values = Values
                 .Where(item => item.Key == key)
@@ -60,7 +60,7 @@ namespace ToSic.Eav.ImportExport.Models
         /// </summary>
         public IValue AppendAttributeValue(string attributeName, string value, string valueType, string language = null, bool languageReadOnly = false, bool resolveHyperlink = false)
         {
-            var valueModel = BuildTypedImpValueWithoutDimensions(value, valueType, resolveHyperlink);
+            var valueModel = ImpBuildTypedImpValueWithoutDimensions(value, valueType, resolveHyperlink);
 
             if (language != null)
                 valueModel.Languages.Add(new Dimension { Key = language, ReadOnly = languageReadOnly });//.AddLanguageReference(language, languageReadOnly);
@@ -75,13 +75,13 @@ namespace ToSic.Eav.ImportExport.Models
             return valueModel;
         }
 
-        private static string TryToResolveLink(string valueString, AttributeTypeEnum valueType)
+        private static string ImpTryToResolveLink(string valueString, AttributeTypeEnum valueType)
         {
             var valueConverter = Factory.Resolve<IEavValueConverter>();
             return valueConverter.Convert(ConversionScenario.ConvertFriendlyToData, valueType.ToString(), valueString);
         }
 
-        private static AttributeTypeEnum FindTypeOnEnumOrUndefined(string attributeType)
+        private static AttributeTypeEnum ImpFindTypeOnEnumOrUndefined(string attributeType)
         {
             var type = AttributeTypeEnum.Undefined;
             if (attributeType != null && Enum.IsDefined(typeof(AttributeTypeEnum), attributeType))
@@ -90,9 +90,9 @@ namespace ToSic.Eav.ImportExport.Models
         }
 
 
-        public IValue PrepareTypedValue(string value, string attributeType, List<ILanguage> dimensions)
+        public IValue ImpPrepareTypedValue(string value, string attributeType, List<ILanguage> dimensions)
         {
-            var valueModel = BuildTypedImpValueWithoutDimensions(value, attributeType);
+            var valueModel = ImpBuildTypedImpValueWithoutDimensions(value, attributeType);
             foreach (var dimension in dimensions)
             {
                 valueModel.Languages.Add(dimension);
@@ -101,16 +101,16 @@ namespace ToSic.Eav.ImportExport.Models
             return valueModel;
         }
 
-        private IValue BuildTypedImpValueWithoutDimensions(string value, string valueType, bool resolveHyperlink = false)
+        private IValue ImpBuildTypedImpValueWithoutDimensions(string value, string valueType, bool resolveHyperlink = false)
         {
             ImpEntity parentEntity = this;
             IValue impValueModel;
 
-            var type = FindTypeOnEnumOrUndefined(valueType);
+            var type = ImpFindTypeOnEnumOrUndefined(valueType);
 
             // special case hyperlink & resolve - preconvert if possible
             if (resolveHyperlink && type == AttributeTypeEnum.Hyperlink)
-                value = TryToResolveLink(value, type);
+                value = ImpTryToResolveLink(value, type);
 
             switch (type)
             {
@@ -157,7 +157,7 @@ namespace ToSic.Eav.ImportExport.Models
             return impValueModel;
         }
 
-        public static string ConvertValueObjectToString(object value)
+        public static string ImpConvertValueObjectToString(object value)
         {
             // 2017-06-06 2rm seems to do the same as ToSic.Eav.HelpersToRefactor.SerializeValue
             if (value == null) return null;

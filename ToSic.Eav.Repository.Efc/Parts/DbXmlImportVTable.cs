@@ -220,7 +220,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     }
                     var valueReadOnly = valueReferenceProtection == XmlConstants.ReadOnly /* "ro" */;
 
-                    var entityValue = entity.GetValueItemOfLanguage(valueName, valueReferenceLanguage);
+                    var entityValue = entity.ImpGetValueItemOfLanguage(valueName, valueReferenceLanguage);
                     if (entityValue != null)
                     {
                         //entityValue.AddLanguageReference(documentElementLanguage, valueReadOnly);

@@ -274,7 +274,7 @@ namespace ToSic.Eav.WebApi
 
                 foreach (var value in attribute.Value.Values)
                 {
-                    var stringValue = ImpEntity.ConvertValueObjectToString(value.Value);
+                    var stringValue = ImpEntity.ImpConvertValueObjectToString(value.Value);
                     var importValue = importEntity.AppendAttributeValue(attribute.Key, stringValue, attributeType);
 
                     // append languages OR empty language as fallback

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data
@@ -6,7 +7,7 @@ namespace ToSic.Eav.Data
     /// <summary>
     /// Represents a Dimension Assignment
     /// </summary>
-    public class Metadata : IMetadata
+    public class Metadata : IMetadata, IHasMetadata
     {
         // 2017-06-11 try to disable this completely, I'm assuming we only used it internally
         ///// <summary>
@@ -42,7 +43,7 @@ namespace ToSic.Eav.Data
         /// </summary>
         public string KeyString { get; set; }
 
-        public Metadata CloseIsMetadata() => new Metadata
+        public Metadata CloneIsMetadata() => new Metadata
         {
             TargetType = TargetType,
             Key = Key,
@@ -50,5 +51,13 @@ namespace ToSic.Eav.Data
             KeyNumber = KeyNumber,
             KeyGuid = KeyGuid
         };
+
+
+        #region HasMetadata
+        public bool HasMetadata { get; set; } = false;
+
+
+        public List<IEntity> Items { get; set; } = null;
+        #endregion
     }
 }

@@ -1,4 +1,3 @@
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Interfaces;
@@ -48,6 +47,9 @@ namespace ToSic.Eav.Data
 
         #endregion
 
+        public Metadata Metadata = new Metadata();
+
+        #region constructors
         /// <summary>
         /// Initializes a new instance of the ContentType class.
         /// </summary>
@@ -74,6 +76,8 @@ namespace ToSic.Eav.Data
             Name = name;
             StaticName = staticName ?? name;
         }
+        #endregion
+
 
     }
 }

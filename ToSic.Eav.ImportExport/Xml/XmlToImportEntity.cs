@@ -127,7 +127,7 @@ namespace ToSic.Eav.ImportExport.Xml
 				}
 
 				var currentAttributesImportValues = tempTargetValues.Select(tempImportValue 
-                    => targetEntity.PrepareTypedValue(tempImportValue.XmlValue.Attribute(XmlConstants.ValueAttr).Value, 
+                    => targetEntity.ImpPrepareTypedValue(tempImportValue.XmlValue.Attribute(XmlConstants.ValueAttr).Value, 
                         tempImportValue.XmlValue.Attribute(XmlConstants.EntityTypeAttribute).Value, 
                         tempImportValue.Dimensions))
                     .ToList();
