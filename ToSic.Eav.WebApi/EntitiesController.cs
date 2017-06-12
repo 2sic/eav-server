@@ -260,7 +260,7 @@ namespace ToSic.Eav.WebApi
             #endregion
 
             // Attributes
-            importEntity.Values = new Dictionary<string, List<IValue /* 2017-06-12 2dm temp IImpValue */>>();
+            importEntity.Values = new Dictionary<string, List<IValue>>();
 
 
             // only transfer the fields / values which exist in the content-type definition

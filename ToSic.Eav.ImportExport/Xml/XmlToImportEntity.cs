@@ -42,7 +42,7 @@ namespace ToSic.Eav.ImportExport.Xml
 		        }
 		    };
 
-			var targetValues = new Dictionary<string, List<IValue /* 2017-06-12 2dm temp IImpValue */>>();
+			var targetValues = new Dictionary<string, List<IValue>>();
 
 			// Group values by StaticName
 			var valuesGroupedByStaticName = xEntity.Elements(XmlConstants.ValueNode)

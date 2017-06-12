@@ -12,7 +12,7 @@ namespace ToSic.Eav.ImportExport.Logging
         //public ImpEntity ImpEntity { get; set; }
         public ImpContentType ImpContentType { get; set; }
         public string ImpAttribute { get; set; }
-        public IValue /* 2017-06-12 2dm temp IImpValue */ ImpValue { get; set; }
+        public IValue ImpValue { get; set; }
         public Exception Exception { get; set; }
         public string Message { get; private set; }
 

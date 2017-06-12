@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.ImportExport;
-using ToSic.Eav.ImportExport.Interfaces;
-using ToSic.Eav.ImportExport.Models;
+using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Efc.Models;
 
@@ -105,17 +103,17 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Update a Value when using IValueImportModel. Returns the Updated Value (for simple Values) or null (for Entity-Values)
         /// </summary>
-        internal object UpdateValueByImport(ToSicEavEntities entityInDb, ToSicEavAttributes attribute, List<ToSicEavValues> currentValues, IValue /* 2017-06-12 2dm temp IImpValue */ newImpValue)
+        internal object UpdateValueByImport(ToSicEavEntities entityInDb, ToSicEavAttributes attribute, List<ToSicEavValues> currentValues, IValue newImpValue)
         {
             switch (attribute.Type)
             {
                 // Handle Entity Relationships - they're stored in own tables
                 case "Entity":
-                    if (newImpValue is ImpValueWithLanguages<List<Guid>> || newImpValue is ImpValueWithLanguages<List<Guid?>>)
+                    if (newImpValue is Value<List<Guid>> || newImpValue is Value<List<Guid?>>)
                     {
                         // often the list is not nullable, but sometimes it is - the further processing always expects nullable Guids
-                        var guidList = (newImpValue as ImpValueWithLanguages<List<Guid>>)?.TypedContents.Select(p => (Guid?) p) 
-                            ?? ((ImpValueWithLanguages<List<Guid?>>)newImpValue).TypedContents.Select(p => p);
+                        var guidList = (newImpValue as Value<List<Guid>>)?.TypedContents.Select(p => (Guid?) p) 
+                            ?? ((Value<List<Guid?>>)newImpValue).TypedContents.Select(p => p);
                         DbContext.Relationships.AddToQueue(attribute.AttributeId, guidList.ToList(), null, entityInDb.EntityId);
                     }
                     // old version with less clear code
@@ -139,7 +137,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <param name="attributeType">Attribute Type</param>
         /// <param name="attributeStaticName">Attribute StaticName</param>
         /// <param name="multiValuesSeparator">Indicates whehter returned value should be convertable to a human readable string - currently only used for GetEntityVersionValues()</param>
-        internal object GetTypedValue(IValue /* 2017-06-12 2dm temp IImpValue */ impValue, string attributeType = null, string attributeStaticName = null, string multiValuesSeparator = null)
+        internal object GetTypedValue(IValue impValue, string attributeType = null, string attributeStaticName = null, string multiValuesSeparator = null)
         {
             object typedValue;
 
@@ -148,20 +146,20 @@ namespace ToSic.Eav.Repository.Efc.Parts
             if(attributeType != null && Enum.IsDefined(typeof(AttributeTypeEnum), attributeType))
                 type = (AttributeTypeEnum)Enum.Parse(typeof(AttributeTypeEnum), attributeType);
 
-            if ((type == AttributeTypeEnum.Boolean || type == AttributeTypeEnum.Undefined) && impValue is ImpValueWithLanguages<bool?>) 
-                typedValue = ((ImpValueWithLanguages<bool?>)impValue).TypedContents;
-            else if ((type == AttributeTypeEnum.DateTime || type == AttributeTypeEnum.Undefined) && impValue is ImpValueWithLanguages<DateTime?>)
-                typedValue = ((ImpValueWithLanguages<DateTime?>)impValue).TypedContents;
-            else if ((type == AttributeTypeEnum.Number || type == AttributeTypeEnum.Undefined) && impValue is ImpValueWithLanguages<decimal?>)
-                typedValue = ((ImpValueWithLanguages<decimal?>)impValue).TypedContents;
+            if ((type == AttributeTypeEnum.Boolean || type == AttributeTypeEnum.Undefined) && impValue is Value<bool?>) 
+                typedValue = ((Value<bool?>)impValue).TypedContents;
+            else if ((type == AttributeTypeEnum.DateTime || type == AttributeTypeEnum.Undefined) && impValue is Value<DateTime?>)
+                typedValue = ((Value<DateTime?>)impValue).TypedContents;
+            else if ((type == AttributeTypeEnum.Number || type == AttributeTypeEnum.Undefined) && impValue is Value<decimal?>)
+                typedValue = ((Value<decimal?>)impValue).TypedContents;
             else if ((type == AttributeTypeEnum.String
                 || type == AttributeTypeEnum.Hyperlink
                 || type == AttributeTypeEnum.Custom
-                || type == AttributeTypeEnum.Undefined) && impValue is ImpValueWithLanguages<string>) 
-                typedValue = ((ImpValueWithLanguages<string>)impValue).TypedContents;
-            else if (impValue is ImpValueWithLanguages<List<Guid>> && multiValuesSeparator != null)
+                || type == AttributeTypeEnum.Undefined) && impValue is Value<string>) 
+                typedValue = ((Value<string>)impValue).TypedContents;
+            else if (impValue is Value<List<Guid>> && multiValuesSeparator != null)
             {
-                var entityGuids = ((ImpValueWithLanguages<List<Guid>>)impValue).TypedContents;
+                var entityGuids = ((Value<List<Guid>>)impValue).TypedContents;
                 typedValue = EntityGuidsToString(entityGuids, multiValuesSeparator);
             }
             else

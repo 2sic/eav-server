@@ -272,13 +272,13 @@ namespace ToSic.Eav.Apps.ImportExport
 			// Loop through AttributeSets
 			foreach (var attributeSet in xAttributeSets)
 			{
-				var attributes = new List<ImpAttribute>();
-                ImpAttribute titleAttribute = null;// = new ImpAttribute();
+				var attributes = new List<ImpAttribDefinition>();
+                ImpAttribDefinition titleAttribute = null;// = new ImpAttribute();
 			    var attsetElem = attributeSet.Element(XmlConstants.Attributes);
                 if (attsetElem != null)
                     foreach (var xElementAttribute in attsetElem.Elements(XmlConstants.Attribute))
                     {
-                        var attribute = new ImpAttribute(
+                        var attribute = new ImpAttribDefinition(
                             xElementAttribute.Attribute(XmlConstants.Static).Value,
                             null,
                             xElementAttribute.Attribute(XmlConstants.EntityTypeAttribute).Value,
@@ -295,18 +295,27 @@ namespace ToSic.Eav.Apps.ImportExport
 			        titleAttribute = attributes.FirstOrDefault();
 
 				// Add AttributeSet
-                importAttributeSets.Add(new ImpContentType
+                var ct = new ImpContentType(attributeSet.Attribute(XmlConstants.Name).Value)
 				{
 					StaticName = attributeSet.Attribute(XmlConstants.Static).Value,
 					Name = attributeSet.Attribute(XmlConstants.Name).Value,
 					Description = attributeSet.Attribute(XmlConstants.Description).Value,
-					Attributes = attributes,
-					Scope = attributeSet.Attributes(XmlConstants.Scope).Any() ? attributeSet.Attribute(XmlConstants.Scope).Value : _environment.FallbackContentTypeScope,
-					AlwaysShareConfiguration = AllowSystemChanges && attributeSet.Attributes(XmlConstants.AlwaysShareConfig).Any() && Boolean.Parse(attributeSet.Attribute(XmlConstants.AlwaysShareConfig).Value),
-                    UsesConfigurationOfAttributeSet = attributeSet.Attributes(XmlConstants.AttributeSetParentDef).Any() ? attributeSet.Attribute(XmlConstants.AttributeSetParentDef).Value : "",
+					TempAttribDefinitions = attributes,
+					//Scope = attributeSet.Attributes(XmlConstants.Scope).Any() ? attributeSet.Attribute(XmlConstants.Scope).Value : _environment.FallbackContentTypeScope,
+     //               AlwaysShareConfiguration = AllowSystemChanges && attributeSet.Attributes(XmlConstants.AlwaysShareConfig).Any() && Boolean.Parse(attributeSet.Attribute(XmlConstants.AlwaysShareConfig).Value),
+                    ParentConfigurationStaticName = attributeSet.Attributes(XmlConstants.AttributeSetParentDef).Any() ? attributeSet.Attribute(XmlConstants.AttributeSetParentDef).Value : "",
                     TitleAttribute = titleAttribute,
                     SortAttributes = attributeSet.Attributes(XmlConstants.SortAttributes).Any() && bool.Parse(attributeSet.Attribute(XmlConstants.SortAttributes).Value)
-				});
+				};
+			    ct.SetImportParameters(
+			        scope: attributeSet.Attributes(XmlConstants.Scope).Any()
+			            ? attributeSet.Attribute(XmlConstants.Scope).Value
+			            : _environment.FallbackContentTypeScope,
+			        alwaysShareDef: AllowSystemChanges && attributeSet.Attributes(XmlConstants.AlwaysShareConfig).Any() &&
+			                        Boolean.Parse(attributeSet.Attribute(XmlConstants.AlwaysShareConfig).Value)
+			    );
+			    importAttributeSets.Add(ct);
+
 			}
 
 			return importAttributeSets;

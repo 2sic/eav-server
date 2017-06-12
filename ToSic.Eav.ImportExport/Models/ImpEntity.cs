@@ -24,7 +24,7 @@ namespace ToSic.Eav.ImportExport.Models
         public bool IsPublished { get; set; }
         public bool ForceNoBranch { get; set; }
 
-        public Dictionary<string, List<IValue /* 2017-06-12 2dm temp IImpValue */>> Values { get; set; }
+        public Dictionary<string, List<IValue>> Values { get; set; }
 
         public ImpEntity()
         {
@@ -39,7 +39,7 @@ namespace ToSic.Eav.ImportExport.Models
         /// <summary>
         /// Get the value of an attribute in the language specified.
         /// </summary>
-        public IValue /* 2017-06-12 2dm temp IImpValue */ GetValueItemOfLanguage(string key, string language)
+        public IValue GetValueItemOfLanguage(string key, string language)
         {
             var values = Values
                 .Where(item => item.Key == key)
@@ -54,7 +54,7 @@ namespace ToSic.Eav.ImportExport.Models
         /// Add a value to the attribute specified. To do so, set the name, type and string of the value, as 
         /// well as some language properties.
         /// </summary>
-        public IValue /* 2017-06-12 2dm temp IImpValue */ AppendAttributeValue(string attributeName, string value, string valueType, string language = null, bool languageReadOnly = false, bool resolveHyperlink = false)
+        public IValue AppendAttributeValue(string attributeName, string value, string valueType, string language = null, bool languageReadOnly = false, bool resolveHyperlink = false)
         {
             var valueModel = BuildTypedImpValueWithoutDimensions(value, valueType, resolveHyperlink);
 
@@ -64,7 +64,7 @@ namespace ToSic.Eav.ImportExport.Models
             // add or replace...
             var attrExists = Values.Where(item => item.Key == attributeName).Select(item => item.Value).FirstOrDefault();
             if (attrExists == null)
-                Values.Add(attributeName, new List<IValue /* 2017-06-12 2dm temp IImpValue */> { valueModel });
+                Values.Add(attributeName, new List<IValue> { valueModel });
             else
                 Values[attributeName].Add(valueModel);
 
@@ -86,7 +86,7 @@ namespace ToSic.Eav.ImportExport.Models
         }
 
 
-        public IValue /* 2017-06-12 2dm temp IImpValue */ PrepareTypedValue(string value, string attributeType, List<ILanguage> dimensions)
+        public IValue PrepareTypedValue(string value, string attributeType, List<ILanguage> dimensions)
         {
             var valueModel = BuildTypedImpValueWithoutDimensions(value, attributeType);
             foreach (var dimension in dimensions)
@@ -97,10 +97,10 @@ namespace ToSic.Eav.ImportExport.Models
             return valueModel;
         }
 
-        private IValue /* 2017-06-12 2dm temp IImpValue */ BuildTypedImpValueWithoutDimensions(string value, string valueType, bool resolveHyperlink = false)
+        private IValue BuildTypedImpValueWithoutDimensions(string value, string valueType, bool resolveHyperlink = false)
         {
             ImpEntity parentEntity = this;
-            IValue /* 2017-06-12 2dm temp IImpValue */ impValueModel;
+            IValue impValueModel;
 
             var type = FindTypeOnEnumOrUndefined(valueType);
 
@@ -115,7 +115,7 @@ namespace ToSic.Eav.ImportExport.Models
                 case AttributeTypeEnum.Undefined:
                 case AttributeTypeEnum.Empty:
                 case AttributeTypeEnum.Custom:
-                    impValueModel = new ImpValueWithLanguages<string>(/*parentEntity,*/ value);
+                    impValueModel = new Value<string>(/*parentEntity,*/ value);
                     break;
                 case AttributeTypeEnum.Number:
                     decimal typedDecimal;
@@ -123,7 +123,7 @@ namespace ToSic.Eav.ImportExport.Models
                     decimal? typedDecimalNullable = null;
                     if (isDecimal)
                         typedDecimalNullable = typedDecimal;
-                    impValueModel = new ImpValueWithLanguages<decimal?>(/*parentEntity,*/ typedDecimalNullable);
+                    impValueModel = new Value<decimal?>(/*parentEntity,*/ typedDecimalNullable);
                     break;
                 case AttributeTypeEnum.Entity:
                     var entityGuids = !IsNullOrEmpty(value)
@@ -135,17 +135,17 @@ namespace ToSic.Eav.ImportExport.Models
                             return guid == Guid.Empty ? new Guid?() : guid;
                         }).ToList()
                         : new List<Guid?>(0);
-                    impValueModel = new ImpValueWithLanguages<List<Guid?>>(/*parentEntity,*/ entityGuids);
+                    impValueModel = new Value<List<Guid?>>(/*parentEntity,*/ entityGuids);
                     break;
                 case AttributeTypeEnum.DateTime:
                     DateTime typedDateTime;
-                    impValueModel = new ImpValueWithLanguages<DateTime?>(/*parentEntity,*/ DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out typedDateTime)
+                    impValueModel = new Value<DateTime?>(/*parentEntity,*/ DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out typedDateTime)
                                 ? typedDateTime
                                 : new DateTime?());
                     break;
                 case AttributeTypeEnum.Boolean:
                     bool typedBoolean;
-                    impValueModel = new ImpValueWithLanguages<bool?>(/*parentEntity,*/ bool.TryParse(value, out typedBoolean) ? typedBoolean : new bool?());
+                    impValueModel = new Value<bool?>(/*parentEntity,*/ bool.TryParse(value, out typedBoolean) ? typedBoolean : new bool?());
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(type.ToString(), value, "Unexpected type argument found in import XML.");

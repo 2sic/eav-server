@@ -7,7 +7,7 @@ namespace ToSic.Eav.Data
     /// <summary>
     /// Represents a Content Type
     /// </summary>
-    public class ContentType : IContentType
+    public class ContentType : IContentType, IContentTypeShareable
     {
         #region simple properties
         /// <summary>
@@ -20,36 +20,30 @@ namespace ToSic.Eav.Data
         public string StaticName { get; set; }
 
         public string Description { get; set;  }
+        /// <summary>
+        /// What this content-types if for, if it's a system type or something
+        /// </summary>
+        public string Scope { get; protected set; }
 
         /// <summary>
         /// Internal Id of the attribute-set of this content-type. Don't worry about this one, you probably won't understand it and that's ok. 
         /// </summary>
-        public int AttributeSetId { get; }
-        /// <summary>
-        /// What this content-types if for, if it's a system type or something
-        /// </summary>
-        public string Scope { get; }
+        public int ContentTypeId { get; }
         /// <summary>
         /// todo
         /// </summary>
-        public int? UsesConfigurationOfAttributeSet { get; }
-        public int ConfigurationAppId { get; }
-        public int ConfigurationZoneId { get; }
+        public int? ParentConfigurationId { get; }
+        public int ParentConfigurationAppId { get; }
+        public int ParentConfigurationZoneId { get; }
 
-        public bool ConfigurationIsOmnipresent { get; }
+        public bool AlwaysShareConfiguration { get; protected set; }
 
         /// <summary>
 		/// Dictionary with all Attribute Definitions
         /// </summary>
-        public IDictionary<int, IAttributeDefinition> AttributeDefinitions { get; set; }
+        public IList<IAttributeDefinition> Attributes { get; set; }
 
-        public IAttributeDefinition this[string fieldName]
-        {
-            get {
-                var found = AttributeDefinitions.Where(a => a.Value.Name == fieldName).Select(x => x.Value).FirstOrDefault();
-                return found; 
-            }
-        }
+        public IAttributeDefinition this[string fieldName] => Attributes.FirstOrDefault(a => a.Name == fieldName);
 
         #endregion
 
@@ -60,13 +54,13 @@ namespace ToSic.Eav.Data
         {
             Name = name;
             StaticName = staticName;
-            AttributeSetId = attributeSetId;
+            ContentTypeId = attributeSetId;
             Description = description;
             Scope = scope;
-            UsesConfigurationOfAttributeSet = usesConfigurationOfAttributeSet;
-            ConfigurationZoneId = configZoneId;
-            ConfigurationAppId = configAppId;
-            ConfigurationIsOmnipresent = configurationIsOmnipresent;
+            ParentConfigurationId = usesConfigurationOfAttributeSet;
+            ParentConfigurationZoneId = configZoneId;
+            ParentConfigurationAppId = configAppId;
+            AlwaysShareConfiguration = configurationIsOmnipresent;
         }
 
         /// <summary>

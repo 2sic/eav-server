@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Efc.Models;
 
@@ -101,22 +102,22 @@ namespace ToSic.Eav.Repository.Efc.Parts
         public IEnumerable<Tuple<IAttributeDefinition, Dictionary<string, IEntity>>> GetContentTypeConfiguration(string contentTypeStaticName)
         {
             var cache = DataSource.GetCache(null, DbContext.AppId);
-            var result = cache.GetContentType(contentTypeStaticName);
+            var result = (ContentType)cache.GetContentType(contentTypeStaticName);
 
             if (result == null)
                 throw new Exception("Content type " + contentTypeStaticName + " not found.");
 
             // Resolve ZoneId & AppId of the MetaData. If this AttributeSet uses configuration of another AttributeSet, use MetaData-ZoneId & -AppId
-            var metaDataAppId = result.ConfigurationAppId;
-            var metaDataZoneId = result.ConfigurationZoneId;
+            var metaDataAppId = result.ParentConfigurationAppId;
+            var metaDataZoneId = result.ParentConfigurationZoneId;
 
             var metaDataSource = DataSource.GetMetaDataSource(metaDataZoneId, metaDataAppId);
 
-            var config = result.AttributeDefinitions.Select(a => new
+            var config = result.Attributes.Select(a => new
             {
-                Attribute = a.Value,
+                Attribute = a,
                 Metadata = metaDataSource
-                    .GetAssignedEntities(Constants.MetadataForField, a.Value.AttributeId)
+                    .GetAssignedEntities(Constants.MetadataForField, a.AttributeId)
                     .ToDictionary(e => e.Type.StaticName.TrimStart('@'), e => e)
             });
 

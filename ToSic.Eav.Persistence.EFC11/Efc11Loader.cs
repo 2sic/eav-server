@@ -103,11 +103,11 @@ namespace ToSic.Eav.Persistence.Efc
                 set => (IContentType) new ContentType(set.Name, set.StaticName, set.AttributeSetId, 
                     set.Scope, set.Description, set.IsGhost, set.ZoneId, set.AppId, set.ConfigIsOmnipresent)
                     {
-                        AttributeDefinitions =  (set.SharedDefinitionId.HasValue
+                        Attributes =  (set.SharedDefinitionId.HasValue
                                 ? sharedAttribs[set.SharedDefinitionId.Value]
                                 : set.Attributes)
-                            .ToDictionary(k2 => k2.AttributeId,
-                                a => new AttributeDefinition(a.StaticName, a.Type, a.IsTitle, a.AttributeId, a.SortOrder) as IAttributeDefinition)
+                            .Select(a => new AttributeDefinition(a.StaticName, a.Type, a.IsTitle, a.AttributeId, a.SortOrder) as IAttributeDefinition)
+                            .ToList()
                     }
             );
         }
@@ -231,7 +231,7 @@ namespace ToSic.Eav.Persistence.Efc
                 IAttribute titleAttrib = null;
 
                 // Add all Attributes of that Content-Type
-                foreach (var definition in contentType.AttributeDefinitions.Values)
+                foreach (var definition in contentType.Attributes)
                 {
                     var newAttribute = ((AttributeDefinition) definition).CreateDerivedAttribute();// AttributeHelperTools.CreateTypedAttribute(definition);
                     newEntity.Attributes.Add(newAttribute.Name, newAttribute);

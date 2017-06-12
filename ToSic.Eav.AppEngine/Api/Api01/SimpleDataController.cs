@@ -190,7 +190,7 @@ namespace ToSic.Eav.Api.Api01
                 AttributeSetStaticName = attributeSetStaticName,
                 //KeyTypeId = Constants.NotMetadata,
                 //KeyNumber = null,
-                Values = new Dictionary<string, List<IValue /* 2017-06-12 2dm temp IImpValue */>>()
+                Values = new Dictionary<string, List<IValue>>()
             };
         }
 

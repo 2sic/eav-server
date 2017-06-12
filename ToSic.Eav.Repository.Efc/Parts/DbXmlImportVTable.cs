@@ -7,7 +7,6 @@ using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
-using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Logging;
 using ToSic.Eav.ImportExport.Models;
 using ToSic.Eav.ImportExport.Options;
@@ -89,7 +88,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 EntityGuid = entityGuid,
                 //KeyTypeId = Constants.NotMetadata,
                 //KeyNumber = null,
-                Values = new Dictionary<string, List<IValue /* 2017-06-12 2dm temp IImpValue */>>()
+                Values = new Dictionary<string, List<IValue>>()
             };
             ImportEntities.Add(entity);
             return entity;

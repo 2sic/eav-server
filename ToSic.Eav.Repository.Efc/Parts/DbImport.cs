@@ -139,7 +139,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 _context.AttribSet.EnsureSharedAttributeSetsOnEverythingAndSave();
 
             // append all Attributes
-            foreach (var importAttribute in impContentType.Attributes)
+            foreach (var importAttribute in impContentType.TempAttribDefinitions)
             {
                 ToSicEavAttributes destinationAttribute;
                 if(!_context.Attributes.AttributeExistsInSet(destinationSet.AttributeSetId, importAttribute.Name))
@@ -194,7 +194,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             }
 
             // If a "Ghost"-content type is specified, try to assign that
-            if (!string.IsNullOrEmpty(impContentType.UsesConfigurationOfAttributeSet))
+            if (!string.IsNullOrEmpty(impContentType.ParentConfigurationStaticName))
             {
                 var ghostParentId = FindCorrectGhostParentId(impContentType);
                 if (ghostParentId == 0) return null;
@@ -217,7 +217,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         {
             // Look for a content type with the StaticName, which has no "UsesConfigurationOf..." set (is a master)
             var ghostAttributeSets = _context.SqlDb.ToSicEavAttributeSets.Where(
-                    a => a.StaticName == impContentType.UsesConfigurationOfAttributeSet
+                    a => a.StaticName == impContentType.ParentConfigurationStaticName
                          && a.ChangeLogDeleted == null
                          && a.UsesConfigurationOfAttributeSet == null).
                 OrderBy(a => a.AttributeSetId)
@@ -225,13 +225,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             if (ghostAttributeSets.Count == 0)
             {
-                _importLog.Add(new ImportLogItem(EventLogEntryType.Warning, "AttributeSet not imported because master set not found: " + impContentType.UsesConfigurationOfAttributeSet) {ImpContentType = impContentType});
+                _importLog.Add(new ImportLogItem(EventLogEntryType.Warning, "AttributeSet not imported because master set not found: " + impContentType.ParentConfigurationStaticName) {ImpContentType = impContentType});
                 return 0;
             }
 
             // If multiple masters are found, use first and add a warning message
             if (ghostAttributeSets.Count > 1)
-                _importLog.Add(new ImportLogItem(EventLogEntryType.Warning, "Multiple potential master AttributeSets found for StaticName: " + impContentType.UsesConfigurationOfAttributeSet) {ImpContentType = impContentType});
+                _importLog.Add(new ImportLogItem(EventLogEntryType.Warning, "Multiple potential master AttributeSets found for StaticName: " + impContentType.ParentConfigurationStaticName) {ImpContentType = impContentType});
             
             // all ok, return id
             return ghostAttributeSets.First().AttributeSetId;
@@ -280,8 +280,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 .ToList();
 
             attributeList = attributeList
-                .OrderBy(a => impContentType.Attributes
-                    .IndexOf(impContentType.Attributes
+                .OrderBy(a => impContentType.TempAttribDefinitions
+                    .IndexOf(impContentType.TempAttribDefinitions
                         .First(ia => ia.Name == a.Attribute.StaticName)))
                 .ToList();
             _context.Attributes.PersistAttributeOrder(attributeList);
@@ -301,7 +301,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 _importLog.Add(new ImportLogItem(EventLogEntryType.Error, "AttributeSet not found")
                 {
                     //ImpEntity = impEntity,
-                    ImpContentType = new ImpContentType {StaticName = impEntity.AttributeSetStaticName}
+                    ImpContentType = new ImpContentType(impEntity.AttributeSetStaticName) {StaticName = impEntity.AttributeSetStaticName}
                 });
                 return;
             }

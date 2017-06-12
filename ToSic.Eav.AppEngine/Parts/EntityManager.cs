@@ -55,7 +55,7 @@ namespace ToSic.Eav.Apps.Parts
         public Tuple<int, Guid> Create(string typeName, Dictionary<string, object> values, IIsMetadata isMetadata = null)
         {
             var contentType = _appManager.Cache.GetContentType(typeName);
-            var ent = _appManager.DataController.Entities.AddEntity(contentType.AttributeSetId, values, isMetadata);
+            var ent = _appManager.DataController.Entities.AddEntity(contentType.ContentTypeId, values, isMetadata);
             return new Tuple<int, Guid>(ent.EntityId, ent.EntityGuid);
         }
 
@@ -87,7 +87,7 @@ namespace ToSic.Eav.Apps.Parts
 
                 return existingEnt.EntityId;
             }
-            var contentType = _appManager.Cache.GetContentType(contentTypeName).AttributeSetId;
+            var contentType = _appManager.Cache.GetContentType(contentTypeName).ContentTypeId;
             return _appManager.DataController.Entities.AddEntity(contentType, values, entityGuid: newGuid).EntityId;
         }
 

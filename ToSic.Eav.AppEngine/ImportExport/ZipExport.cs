@@ -8,6 +8,7 @@ using ICSharpCode.SharpZipLib.Zip;
 //using Microsoft.Practices.Unity;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Logging;
+using ToSic.Eav.Interfaces;
 
 // needed for the static Resolve<...>
 
@@ -127,9 +128,9 @@ namespace ToSic.Eav.Apps.ImportExport
         {
             // Get Export XML
             var attributeSets = new AppRuntime(_zoneId, _appId).ContentTypes.FromScope(includeAttributeTypes: true);
-            attributeSets = attributeSets.Where(a => !a.ConfigurationIsOmnipresent);
+            attributeSets = attributeSets.Where(a => !((IContentTypeShareable)a).AlwaysShareConfiguration);
 
-            var attributeSetIds = attributeSets.Select(p => p.AttributeSetId.ToString()).ToArray();
+            var attributeSetIds = attributeSets.Select(p => p.ContentTypeId.ToString()).ToArray();
             var templateTypeId = SystemRuntime.GetKeyTypeId(Settings.TemplateContentType);
             var entities =
                 DataSource.GetInitialDataSource(_zoneId, _appId).Out["Default"].List.Where(

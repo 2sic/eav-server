@@ -7,6 +7,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
+using ToSic.Eav.Interfaces;
 using ToSic.Eav.Serializers;
 
 namespace ToSic.Eav.WebApi
@@ -33,35 +34,37 @@ namespace ToSic.Eav.WebApi
 
 	    private dynamic ContentTypeForJson(IContentType t, ICache cache)
 	    {
-	        var metadata = GetMetadata(t, cache);
+	        var metadata = GetMetadata((ContentType)t, cache);
 
 	        var nameOverride = metadata?.GetBestValue(Constants.ContentTypeMetadataLabel).ToString();
 	        if (string.IsNullOrEmpty(nameOverride))
 	            nameOverride = t.Name;
             var ser = new Serializer();
 
+	        var share = (IContentTypeShareable) t;
+
             var jsonReady = new
 	        {
-	            Id = t.AttributeSetId,
+	            Id = t.ContentTypeId,
                 t.Name,
                 Label = nameOverride,
 	            t.StaticName,
 	            t.Scope,
 	            t.Description,
-	            UsesSharedDef = t.UsesConfigurationOfAttributeSet != null,
-	            SharedDefId = t.UsesConfigurationOfAttributeSet,
+	            UsesSharedDef = share.ParentConfigurationId != null,
+	            SharedDefId = share.ParentConfigurationId,
 	            Items = cache.LightList.Count(i => i.Type == t),
-	            Fields = ((ContentType)t).AttributeDefinitions.Count,
+	            Fields = ((ContentType)t).Attributes.Count,
                 Metadata = ser.Prepare(metadata)
 	        };
 	        return jsonReady;
 	    }
 
-	    public IEntity GetMetadata(IContentType ct, ICache cache = null)
+	    public IEntity GetMetadata(ContentType ct, ICache cache = null)
 	    {
-	        var metaCache = (cache != null && ct.ConfigurationAppId == cache.AppId)
+	        var metaCache = (cache != null && ct.ParentConfigurationAppId == cache.AppId)
 	            ? cache
-	            : DataSource.GetCache(ct.ConfigurationZoneId, ct.ConfigurationAppId);
+	            : DataSource.GetCache(ct.ParentConfigurationZoneId, ct.ParentConfigurationAppId);
 
             var metaDataSource = (IMetaDataSource)metaCache;
 	        return metaDataSource.GetAssignedEntities(

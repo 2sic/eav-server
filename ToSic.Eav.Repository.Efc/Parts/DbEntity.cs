@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Data;
-using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Logging;
 using ToSic.Eav.ImportExport.Models;
 using ToSic.Eav.Interfaces;
@@ -272,7 +271,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 : entity.ToSicEavValues.ToList();
 
             // Update Values from Import Model
-            var newValuesImport = newValues as Dictionary<string, List<IValue /* 2017-06-12 2dm temp IImpValue */>>;
+            var newValuesImport = newValues as Dictionary<string, List<IValue>>;
             if (newValuesImport != null)
                 UpdateEntityFromImportModel(entity, newValuesImport, updateLog, attributes, dbValues, preserveUndefinedValues);
             // Update Values from ValueViewModel
@@ -292,7 +291,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Update an Entity when using the Import
         /// </summary>
-        private void UpdateEntityFromImportModel(ToSicEavEntities currentEntity, Dictionary<string, List<IValue /* 2017-06-12 2dm temp IImpValue */>> newValuesImport, List<ImportLogItem> updateLog, List<ToSicEavAttributes> attributeList, List<ToSicEavValues> currentValues, bool keepAttributesMissingInImport)
+        private void UpdateEntityFromImportModel(ToSicEavEntities currentEntity, Dictionary<string, List<IValue>> newValuesImport, List<ImportLogItem> updateLog, List<ToSicEavAttributes> attributeList, List<ToSicEavValues> currentValues, bool keepAttributesMissingInImport)
         {
             if (updateLog == null)
                 throw new ArgumentNullException(nameof(updateLog), "When Calling UpdateEntity() with newValues of Type IValueImportModel updateLog must be set.");
