@@ -4,6 +4,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Logging;
 using ToSic.Eav.ImportExport.Models;
 using ToSic.Eav.Persistence.Efc.Models;
@@ -246,13 +247,14 @@ namespace ToSic.Eav.Repository.Efc.Parts
         {
             foreach (var entity in attributeMetaData)
             {
+                var md = (Metadata) entity.Metadata;
                 // Validate Entity
-                entity.Metadata.TargetType = Constants.MetadataForField;
+                md.TargetType = Constants.MetadataForField;
 
                 // Set KeyNumber
                 if (destinationAttributeId == 0 || destinationAttributeId < 0) // < 0 is ef-core temp id
                     _context.SqlDb.SaveChanges();
-                entity.Metadata.KeyNumber = destinationAttributeId;
+                md.KeyNumber = destinationAttributeId;
 
                 // Get guid of previously existing assignment - if it exists
                 var existingMetadata = _context.Entities
@@ -311,8 +313,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             // Find existing Enties - meaning both draft and non-draft
             List<ToSicEavEntities> dbExistingEntities = null;
-            if (impEntity.EntityGuid.HasValue)
-                dbExistingEntities = _context.Entities.GetEntitiesByGuid(impEntity.EntityGuid.Value).ToList();
+            if (impEntity.EntityGuid != Guid.Empty)//.HasValue)
+                dbExistingEntities = _context.Entities.GetEntitiesByGuid(impEntity.EntityGuid/*.Value*/).ToList();
 
             #region Simplest case - add (nothing existing to update)
             if (dbExistingEntities == null || !dbExistingEntities.Any())
@@ -368,7 +370,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             #endregion
 
             // todo: TestImport - ensure that it correctly skips the existing values
-            var newValues = impEntity.Values;
+            var newValues = impEntity.Attributes;
             if (_dontUpdateExistingAttributeValues) // Skip values that are already present in existing Entity
                 newValues = newValues.Where(v => editableVersionOfTheEntity.ToSicEavValues.All(ev => ev.Attribute.StaticName != v.Key))
                     .ToDictionary(v => v.Key, v => v.Value);

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
 
@@ -40,40 +41,56 @@ namespace ToSic.Eav.ImportExport.Models
         /// </summary>
         private ImpEntity CreateAttributeMetadata(string name, string notes, bool? visibleInEditUi, string defaultValue)
         {
-            var allEntity = new ImpEntity("@All")
-            {
-                Values = new Dictionary<string, List<IValue>>()
-            };
-            if (!string.IsNullOrEmpty(name))
-                allEntity.Values.Add("Name", new List<IValue> { new Value<string>(name ) });
-            if (!string.IsNullOrEmpty(notes))
-                allEntity.Values.Add("Notes", new List<IValue> { new Value<string>(notes ) });
-            if (visibleInEditUi.HasValue)
-                allEntity.Values.Add("VisibleInEditUI", new List<IValue> { new Value<bool?>(visibleInEditUi ) });
-            if (defaultValue != null)
-                allEntity.Values.Add("DefaultValue", new List<IValue> { new Value<string>(defaultValue ) });
+            //var allEntity = new ImpEntity("@All")
+            //{
+            //    ImpAttributes = new Dictionary<string, List<IValue>>()
+            //};
+            //if (!string.IsNullOrEmpty(name))
+            //    allEntity.ImpAttributes.Add("Name", new List<IValue> { new Value<string>(name ) });
+            //if (!string.IsNullOrEmpty(notes))
+            //    allEntity.ImpAttributes.Add("Notes", new List<IValue> { new Value<string>(notes ) });
+            //if (visibleInEditUi.HasValue)
+            //    allEntity.ImpAttributes.Add("VisibleInEditUI", new List<IValue> { new Value<bool?>(visibleInEditUi ) });
+            //if (defaultValue != null)
+            //    allEntity.ImpAttributes.Add("DefaultValue", new List<IValue> { new Value<string>(defaultValue ) });
 
-            return allEntity;
+            //return allEntity;
+
+            // 2017-06-12 new using entity
+            var valDic = new Dictionary<string, object>();
+            if (!string.IsNullOrEmpty(name))
+                valDic.Add("Name", name);
+            if (!string.IsNullOrEmpty(notes))
+                valDic.Add("Notes", notes);
+            if (visibleInEditUi.HasValue)
+                valDic.Add("VisibleInEditUI", visibleInEditUi);
+            if (defaultValue != null)
+                valDic.Add("DefaultValue", defaultValue);
+
+            return new ImpEntity(Guid.Empty, "@All", valDic, "");
         }
 
         private ImpEntity CreateStringAttribMetadata(string inputType, int? rowCount)
         {
+            // old
+            //var Values = new Dictionary<string, List<IValue>>();
+            //if (!string.IsNullOrEmpty(inputType))
+            //    Values.Add("InputType", new List<IValue> { new Value<string>(inputType) });
+            //if (rowCount.HasValue)
+            //    Values.Add("RowCount", new List<IValue> { new Value<decimal?>(rowCount) });
+            //var stringEntity = new ImpEntity("@String")
+            //{
+            //    ImpAttributes = Values
+            //};
+            //return stringEntity;
 
-            var Values = new Dictionary<string, List<IValue>>();
-            if (!string.IsNullOrEmpty(inputType))
-                Values.Add("InputType", new List<IValue> { new Value<string>(inputType) });
-            if (rowCount.HasValue)
-                Values.Add("RowCount", new List<IValue> { new Value<decimal?>(rowCount) });
-            var stringEntity = new ImpEntity("@String")
-            {
-                Values = Values
-            };
+            var valDic = new Dictionary<string, object>();
+            if (!string.IsNullOrEmpty(inputType)) valDic.Add("InputType", inputType);
+            if (rowCount.HasValue) valDic.Add("RowCount", rowCount);
 
             // 2017-06-12 new using entity
-            //var stringIEnt = new Entity(0, "@String", stringEntity.Values, false, null);
+            return new ImpEntity(Guid.Empty, "@String", valDic, "");
 
-
-            return stringEntity;
         }
     }
 }

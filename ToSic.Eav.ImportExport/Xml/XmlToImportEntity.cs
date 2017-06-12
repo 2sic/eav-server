@@ -41,7 +41,7 @@ namespace ToSic.Eav.ImportExport.Xml
 		        }
 		    };
 
-			var targetValues = new Dictionary<string, List<IValue>>();
+		    var targetValues = new Dictionary<string, IAttribute>();// List<IValue>>();
 
 			// Group values by StaticName
 			var valuesGroupedByStaticName = xEntity.Elements(XmlConstants.ValueNode)
@@ -84,12 +84,12 @@ namespace ToSic.Eav.ImportExport.Xml
 
 					foreach (var sourceLanguage in sourceLanguages)
 					{
-						sourceValue = sourceValues.FirstOrDefault(p => p.Elements(XmlConstants.ValueDimNode /* "Dimension" */).Any(d => d.Attribute(XmlConstants.DimId /* "DimensionID" */).Value == sourceLanguage.DimensionId.ToString()));
+						sourceValue = sourceValues.FirstOrDefault(p => p.Elements(XmlConstants.ValueDimNode).Any(d => d.Attribute(XmlConstants.DimId).Value == sourceLanguage.DimensionId.ToString()));
 
 						if (sourceValue == null)
 							continue;
 
-						readOnly = Boolean.Parse(sourceValue.Elements(XmlConstants.ValueDimNode /* "Dimension" */).FirstOrDefault(p => p.Attribute(XmlConstants.DimId /* "DimensionID" */).Value == sourceLanguage.DimensionId.ToString()).Attribute("ReadOnly").Value);
+						readOnly = Boolean.Parse(sourceValue.Elements(XmlConstants.ValueDimNode).FirstOrDefault(p => p.Attribute(XmlConstants.DimId).Value == sourceLanguage.DimensionId.ToString()).Attribute("ReadOnly").Value);
 
 						// Override ReadOnly for primary target language
 						if (targetDimension.Key == defaultLanguage)
@@ -99,7 +99,7 @@ namespace ToSic.Eav.ImportExport.Xml
 					}
 
 					// Take first value if there is only one value wihtout a dimension (default / fallback value), but only in primary language
-					if (sourceValue == null && sourceValues.Count == 1 && !sourceValues.Elements(XmlConstants.ValueDimNode /* "Dimension" */).Any() && targetDimension.Key == defaultLanguage)
+					if (sourceValue == null && sourceValues.Count == 1 && !sourceValues.Elements(XmlConstants.ValueDimNode).Any() && targetDimension.Key == defaultLanguage)
 						sourceValue = sourceValues.First();
 
 					// Process found value
@@ -126,15 +126,18 @@ namespace ToSic.Eav.ImportExport.Xml
 
 				}
 
-				var currentAttributesImportValues = tempTargetValues.Select(tempImportValue 
-                    => targetEntity.ImpPrepareTypedValue(tempImportValue.XmlValue.Attribute(XmlConstants.ValueAttr).Value, 
-                        tempImportValue.XmlValue.Attribute(XmlConstants.EntityTypeAttribute).Value, 
-                        tempImportValue.Dimensions))
+				var currentAttributesImportValues = tempTargetValues.Select(tempImportValue
+				        => Value.Build(tempImportValue.XmlValue.Attribute(XmlConstants.EntityTypeAttribute).Value,
+				            tempImportValue.XmlValue.Attribute(XmlConstants.ValueAttr).Value,
+				            tempImportValue.Dimensions))
                     .ToList();
-				targetValues.Add(sourceAttribute.StaticName, currentAttributesImportValues);
+			    var newAttr = AttributeBase.CreateTypedAttribute(sourceAttribute.StaticName, tempTargetValues.First().XmlValue.Attribute(XmlConstants.EntityTypeAttribute).Value);
+			    newAttr.Values = currentAttributesImportValues;
+
+                targetValues.Add(sourceAttribute.StaticName, newAttr);
 			}
 
-			targetEntity.Values = targetValues;
+			targetEntity.Attributes = targetValues;
 
 			return targetEntity;
 		}

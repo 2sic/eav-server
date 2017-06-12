@@ -188,7 +188,7 @@ namespace ToSic.Eav.Api.Api01
                 //AttributeSetStaticName = attributeSetStaticName,
                 //KeyTypeId = Constants.NotMetadata,
                 //KeyNumber = null,
-                Values = new Dictionary<string, List<Interfaces.IValue>>()
+                Attributes = new Dictionary<string, Interfaces.IAttribute>()// new Dictionary<string, List<Interfaces.IValue>>()
             };
         }
 

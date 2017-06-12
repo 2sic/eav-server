@@ -88,7 +88,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 EntityGuid = entityGuid,
                 //KeyTypeId = Constants.NotMetadata,
                 //KeyNumber = null,
-                Values = new Dictionary<string, List<IValue>>()
+                Attributes = new Dictionary<string, IAttribute>()//= new Dictionary<string, List<IValue>>() 
             };
             ImportEntities.Add(entity);
             return entity;
@@ -358,8 +358,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
             return existingGuids;
         }
 
+        // todo: warning: 2017-06-12 2dm - I changed this a bit, must check for side-effects
         private List<Guid> GetCreatedEntityGuids() 
-            => ImportEntities.Select(entity => entity.EntityGuid ?? Guid.NewGuid()).ToList();
+            => ImportEntities.Select(entity => entity.EntityGuid != Guid.Empty ? entity.EntityGuid : Guid.NewGuid()).ToList();
 
         /// <summary>
         /// Get the languages found in the xml document.

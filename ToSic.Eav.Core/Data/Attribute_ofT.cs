@@ -13,7 +13,7 @@ namespace ToSic.Eav.Data
     {
         public Attribute(string name, string type/*, bool isTitle*/) : base(name, type/*, isTitle*/) { }
 
-        public IEnumerable<IValue> Values { get; set; }
+        public IList<IValue> Values { get; set; }
 
         public TType TypedContents
         {

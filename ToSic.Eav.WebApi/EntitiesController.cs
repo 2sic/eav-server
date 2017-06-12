@@ -258,7 +258,7 @@ namespace ToSic.Eav.WebApi
             #endregion
 
             // Attributes
-            importEntity.Values = new Dictionary<string, List<Interfaces.IValue>>();
+            importEntity.Attributes = new Dictionary<string, Interfaces.IAttribute>();// = new Dictionary<string, List<Interfaces.IValue>>();
 
 
             // only transfer the fields / values which exist in the content-type definition

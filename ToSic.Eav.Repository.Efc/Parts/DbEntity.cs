@@ -105,7 +105,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         internal ToSicEavEntities AddImportEntity(int attributeSetId, ImpEntity impEntity, List<ImportLogItem> importLog, bool isPublished, int? publishedTarget)
         {
-            return AddEntity(attributeSetId, impEntity.Values, 
+            return AddEntity(attributeSetId, impEntity.Attributes, 
                 //impEntity.KeyNumber, impEntity.KeyGuid, impEntity.KeyString, impEntity.KeyTypeId, 
                 impEntity.Metadata,
                 0, impEntity.EntityGuid, null, importLog, isPublished, publishedTarget);

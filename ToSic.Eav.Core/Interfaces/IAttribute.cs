@@ -10,7 +10,7 @@ namespace ToSic.Eav.Interfaces
 		/// <summary>
 		/// Gets a IEnumerable of all Values of this Entity's Attribute
 		/// </summary>
-		IEnumerable<IValue> Values { get; set; } // temp set, must find out how to remove this again form the interface
+		IList<IValue> Values { get; set; } // temp set, must find out how to remove this again form the interface
 
         #region 2017-06-11 2dm turned off / moved to typed...
         /// <summary>

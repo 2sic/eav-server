@@ -26,7 +26,7 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Id as GUID
         /// </summary>
-		public Guid EntityGuid { get; internal set; }
+		public Guid EntityGuid { get; /*internal*/ set; }
         /// <summary>
         /// Offical title of this content-item
         /// </summary>
@@ -34,7 +34,7 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// List of all attributes
         /// </summary>
-		public Dictionary<string, IAttribute> Attributes { get; internal set; }
+		public Dictionary<string, IAttribute> Attributes { get; set; }
         /// <summary>
         /// Type-definition of this content-item
         /// </summary>
@@ -66,7 +66,7 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Published/Draft status. If not published, it may be invisble, but there may also be another item visible ATM
         /// </summary>
-        public bool IsPublished { get; internal set; }
+        public bool IsPublished { get; set; }
         /// <summary>
         /// If this entity is published and there is a draft of it, then it can be navigated through DraftEntity
         /// </summary>
@@ -162,12 +162,12 @@ namespace ToSic.Eav.Data
             foreach (var attribute in attributes)
             {
                 var attributeType = GetAttributeTypeName(attribute.Value);
-                var baseModel = new AttributeDefinition(attribute.Key, attributeType, attribute.Key == titleAttributeName, 0, 0);
-                var attributeModel = baseModel.CreateAttribute();// CreateTypedAttribute(baseModel);
+                //var baseModel = new AttributeDefinition(attribute.Key, attributeType, attribute.Key == titleAttributeName, 0, 0);
+                var attributeModel = AttributeBase.CreateTypedAttribute(attribute.Key, attributeType);//  baseModel.CreateAttribute();
                 var valuesModelList = new List<IValue>();
                 if (attribute.Value != null)
                 {
-                    var valueModel = Value.Build(baseModel.Type, attribute.Value.ToString(), null);
+                    var valueModel = Value.Build(attributeType, attribute.Value.ToString(), null);
                     valuesModelList.Add(valueModel);
                 }
 

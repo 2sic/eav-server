@@ -15,43 +15,59 @@ namespace ToSic.Eav.Data
 
         public AttributeTypeEnum ControlledType
         {
-            get
-            {
-                // if the type has not been set yet, try to look it up...
-                if (_controlledType == AttributeTypeEnum.Undefined
-                    && Type != null
-                    && Enum.IsDefined(typeof (AttributeTypeEnum), Type))
-                    _controlledType = (AttributeTypeEnum) Enum.Parse(typeof (AttributeTypeEnum), Type);
-                return _controlledType;
+            get {
+                return _controlledType != AttributeTypeEnum.Undefined 
+                    ? _controlledType
+                    : _controlledType = ParseToAttributeTypeEnum(Type);
             }
             internal set { _controlledType = value; }
         }
 
-        //public bool IsTitle { get; set; }
-
-        // 2017-06-07 2dm moving to AttributeDefinition
-        // additional info for the persistence layer
-        //public int AttributeId { get; set; }
-
-        //public int SortOrder { get; internal set; }
+        private static AttributeTypeEnum ParseToAttributeTypeEnum(string typeName)
+        {
+            // if the type has not been set yet, try to look it up...
+            if (typeName != null && Enum.IsDefined(typeof(AttributeTypeEnum), typeName))
+                return (AttributeTypeEnum) Enum.Parse(typeof(AttributeTypeEnum), typeName);
+            return AttributeTypeEnum.Undefined;
+        }
 
         /// <summary>
         /// Extended constructor when also storing the persistance ID-Info
         /// </summary>
         /// <param name="name"></param>
         /// <param name="type"></param>
-        /// <param name="isTitle"></param>
-        ///// <param name="attributeId"></param>
-        ///// <param name="sortOrder"></param>
-        public AttributeBase(string name, string type/*, bool isTitle*/)//, int attributeId, int sortOrder)
-		{
+        public AttributeBase(string name, string type)
+        {
             Name = name;
             Type = type;
-            //IsTitle = isTitle;
-
-            //AttributeId = attributeId;
-            //SortOrder = sortOrder;
 		}
+
+        /// <summary>
+        /// Get Attribute for specified Typ
+        /// </summary>
+        /// <returns><see cref="Attribute{ValueType}"/></returns>
+        public static IAttribute CreateTypedAttribute(string name, AttributeTypeEnum type)
+        {
+            var typeName = type.ToString();
+            switch (type)
+            {
+                case AttributeTypeEnum.Boolean:
+                    return new Attribute<bool?>(name, typeName);
+                case AttributeTypeEnum.DateTime:
+                    return new Attribute<DateTime?>(name, typeName);
+                case AttributeTypeEnum.Number:
+                    return new Attribute<decimal?>(name, typeName);
+                case AttributeTypeEnum.Entity:
+                    return new Attribute<EntityRelationship>(name, typeName) { Values = new IValue[] { Value.NullRelationship } };
+                case AttributeTypeEnum.String:
+                case AttributeTypeEnum.Hyperlink:
+                case AttributeTypeEnum.Custom:
+                default:
+                    return new Attribute<string>(name, typeName);
+            }
+        }
+
+        public static IAttribute CreateTypedAttribute(string name, string type) => CreateTypedAttribute(name, ParseToAttributeTypeEnum(type));
 
     }
 }

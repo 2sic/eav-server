@@ -10,30 +10,22 @@ using static System.String;
 
 namespace ToSic.Eav.ImportExport.Models
 {
-    public class ImpEntity
+    public class ImpEntity: Entity
     {
-        // Type and IDs
-        //public string AttributeSetStaticName { get; set; }
-
-        // new:
-        public IContentType Type { get;  }
-
-        public Guid? EntityGuid { get; set; }
-
-        // Keys
-        public Metadata Metadata { get; set; } = new Metadata();
-
-        // Draft / Publish / Don't allow Draft
-        public bool IsPublished { get; set; }
         public bool ForceNoBranch { get; set; }
 
-        public Dictionary<string, List<IValue>> Values { get; set; }
-
-        public ImpEntity(string contentTypeName)
+        public ImpEntity(string contentTypeName): base(0, contentTypeName, null, null, null)
         {
-            IsPublished = true;
             ForceNoBranch = false;
-            Type = new ContentType(contentTypeName);
+        }
+
+        /// <summary>
+        /// Create a new Entity. Used to create InMemory Entities that are not persisted to the EAV SqlStore.
+        /// </summary>
+        public ImpEntity(Guid entityGuid, string contentTypeName, IDictionary<string, object> values,
+            string titleAttribute) : base(0, contentTypeName, values, titleAttribute)
+        {
+            EntityGuid = entityGuid;
         }
 
 
@@ -45,11 +37,11 @@ namespace ToSic.Eav.ImportExport.Models
         /// </summary>
         public IValue ImpGetValueItemOfLanguage(string key, string language)
         {
-            var values = Values
+            var values = Attributes
                 .Where(item => item.Key == key)
                 .Select(item => item.Value)
                 .FirstOrDefault(); // impEntity.ValueValues(valueName);
-            return values?.FirstOrDefault(value => value.Languages.Any(dimension => dimension.Key == language));
+            return values?.Values.FirstOrDefault(value => value.Languages.Any(dimension => dimension.Key == language));
         }
 
 
@@ -66,11 +58,16 @@ namespace ToSic.Eav.ImportExport.Models
                 valueModel.Languages.Add(new Dimension { Key = language, ReadOnly = languageReadOnly });//.AddLanguageReference(language, languageReadOnly);
 
             // add or replace...
-            var attrExists = Values.Where(item => item.Key == attributeName).Select(item => item.Value).FirstOrDefault();
+            var attrExists = Attributes.Where(item => item.Key == attributeName).Select(item => item.Value).FirstOrDefault();
             if (attrExists == null)
-                Values.Add(attributeName, new List<IValue> { valueModel });
+            {
+                var newAttr = AttributeBase.CreateTypedAttribute(attributeName, valueType);
+                newAttr.Values.Add(valueModel);
+                Attributes.Add(attributeName, newAttr);
+                //ImpAttributes.Add(attributeName, new List<IValue> {valueModel});
+            }
             else
-                Values[attributeName].Add(valueModel);
+                Attributes[attributeName].Values.Add(valueModel);
 
             return valueModel;
         }
@@ -90,16 +87,16 @@ namespace ToSic.Eav.ImportExport.Models
         }
 
 
-        public IValue ImpPrepareTypedValue(string value, string attributeType, List<ILanguage> dimensions)
-        {
-            var valueModel = ImpBuildTypedImpValueWithoutDimensions(value, attributeType);
-            foreach (var dimension in dimensions)
-            {
-                valueModel.Languages.Add(dimension);
-            }
-            //valueModel.Languages = dimensions;
-            return valueModel;
-        }
+        //public IValue ImpPrepareTypedValue(string value, string attributeType, List<ILanguage> dimensions)
+        //{
+        //    var valueModel = ImpBuildTypedImpValueWithoutDimensions(value, attributeType);
+        //    foreach (var dimension in dimensions)
+        //    {
+        //        valueModel.Languages.Add(dimension);
+        //    }
+        //    //valueModel.Languages = dimensions;
+        //    return valueModel;
+        //}
 
         private IValue ImpBuildTypedImpValueWithoutDimensions(string value, string valueType, bool resolveHyperlink = false)
         {
