@@ -280,12 +280,14 @@ namespace ToSic.Eav.WebApi
 
                     // append languages OR empty language as fallback
                     if (value.Dimensions == null)
-                    {   // Must this be done to save entities
-                        importValue.AppendLanguageReference("", false);
+                    {
+                        // 2017-06-12 2dm - AFAIK this never added anything, because key was "", so just comment ount
+                        // Must this be done to save entities
+                        //importValue.AddLanguageReference("", false);
                         continue;
                     }
                     foreach (var dimension in value.Dimensions)
-                        importValue.AppendLanguageReference(dimension.Key, dimension.Value);
+                        importValue.Languages.Add(new Dimension { Key = dimension.Key, ReadOnly = dimension.Value });//.AddLanguageReference(dimension.Key, dimension.Value);
 
                 }
             }

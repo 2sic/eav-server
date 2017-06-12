@@ -10,14 +10,14 @@ namespace ToSic.Eav.Data
     /// </summary>
     public class Value
     {
-        public IEnumerable<ILanguage> Languages { get; private set; }
+        public IList<ILanguage> Languages { get; private set; }
 
         /// <summary>
         /// Creates a Typed Value Model
         /// </summary>
-        public static IValue Build(string attributeType, object value, IEnumerable<ILanguage> languages, IDeferredEntitiesList fullEntityListForLookup = null)
+        public static IValue Build(string attributeType, object value, List<ILanguage> languages, IDeferredEntitiesList fullEntityListForLookup = null)
         {
-            if (languages == null) languages = new Dimension[0];
+            if (languages == null) languages = new List<ILanguage>();
             Value typedModel;
             var stringValue = value as string;
             try
@@ -62,7 +62,7 @@ namespace ToSic.Eav.Data
 
         internal static readonly Value<EntityRelationship> NullRelationship = new Value<EntityRelationship>(new EntityRelationship(null))
         {
-            Languages = new Dimension[0]
+            Languages = new List<ILanguage>()
         };
 
     }

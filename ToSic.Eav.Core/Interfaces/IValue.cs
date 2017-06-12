@@ -10,7 +10,7 @@ namespace ToSic.Eav.Interfaces
         /// <summary>
         /// Gets the Languages assigned to this Value
         /// </summary>
-        IEnumerable<ILanguage> Languages { get; }
+        IList<ILanguage> Languages { get; }
 
         // 2017-06-09 2dm removed, seems unused
         //string Serialized {get;}

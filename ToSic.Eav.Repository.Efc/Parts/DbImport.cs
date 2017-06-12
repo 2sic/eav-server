@@ -147,7 +147,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     // try to add new Attribute
                     var isTitle = importAttribute == impContentType.TitleAttribute;
                     destinationAttribute = _context.Attributes
-                        .AppendToEndAndSave(destinationSet, 0, importAttribute.Name, importAttribute.Type, importAttribute.InputType, isTitle);//, false);
+                        .AppendToEndAndSave(destinationSet, 0, importAttribute.Name, importAttribute.Type, /*importAttribute.InputType, */ isTitle);//, false);
                 }
 				else
                 {
@@ -300,7 +300,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             {
                 _importLog.Add(new ImportLogItem(EventLogEntryType.Error, "AttributeSet not found")
                 {
-                    ImpEntity = impEntity,
+                    //ImpEntity = impEntity,
                     ImpContentType = new ImpContentType {StaticName = impEntity.AttributeSetStaticName}
                 });
                 return;
@@ -339,7 +339,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             // Get existing, published Entity
             var editableVersionOfTheEntity = dbExistingEntities.OrderBy(e => e.IsPublished ? 1 : 0).First(); // get draft first, otherwise the published
-            _importLog.Add(new ImportLogItem(EventLogEntryType.Information, "Entity already exists", impEntity));
+            _importLog.Add(new ImportLogItem(EventLogEntryType.Information, "Entity already exists"/*, impEntity*/));
         
 
             #region ensure we don't save a draft is this is not allowed (usually in the case of xml-import)
@@ -347,7 +347,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             // Prevent updating Draft-Entity - since the initial would be draft if it has one, this would throw
             if (PreventUpdateOnDraftEntities && !editableVersionOfTheEntity.IsPublished)
             {
-                _importLog.Add(new ImportLogItem(EventLogEntryType.Error, "Importing a Draft-Entity is not allowed", impEntity));
+                _importLog.Add(new ImportLogItem(EventLogEntryType.Error, "Importing a Draft-Entity is not allowed"/*, impEntity*/));
                 return;
             }
 
@@ -357,7 +357,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             var editableEntityContentType = _context.AttribSet.GetAttributeSet(editableVersionOfTheEntity.AttributeSetId);
             if (editableEntityContentType.StaticName != impEntity.AttributeSetStaticName)
             {
-                _importLog.Add(new ImportLogItem(EventLogEntryType.Error, "Existing entity (which should be updated) has different ContentType", impEntity));
+                _importLog.Add(new ImportLogItem(EventLogEntryType.Error, "Existing entity (which should be updated) has different ContentType"/*, impEntity*/));
                 return;
             }
             #endregion

@@ -43,7 +43,7 @@ namespace ToSic.Eav.Data
         /// <param name="isTitle"></param>
         ///// <param name="attributeId"></param>
         ///// <param name="sortOrder"></param>
-        public AttributeBase(string name, string type, bool isTitle)//, int attributeId, int sortOrder)
+        public AttributeBase(string name, string type/*, bool isTitle*/)//, int attributeId, int sortOrder)
 		{
             Name = name;
             Type = type;

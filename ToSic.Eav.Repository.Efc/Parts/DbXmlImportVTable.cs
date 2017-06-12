@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
+using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Logging;
@@ -222,7 +223,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     var entityValue = entity.GetValueItemOfLanguage(valueName, valueReferenceLanguage);
                     if (entityValue != null)
                     {
-                        entityValue.AppendLanguageReference(documentElementLanguage, valueReadOnly);
+                        //entityValue.AddLanguageReference(documentElementLanguage, valueReadOnly);
+                        entityValue.Languages.Add(new Dimension { Key = documentElementLanguage, ReadOnly = valueReadOnly });
                         continue;
                     }
 
@@ -245,7 +247,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     entity.AppendAttributeValue(valueName, dbEntityValue.Value, valueType, valueReferenceLanguage,
                             dbEntityValue.IsLanguageReadOnly(valueReferenceLanguage),
                             _resolveReferenceMode == ImportResourceReferenceMode.Resolve)
-                        .AppendLanguageReference(documentElementLanguage, valueReadOnly);
+                        //.AddLanguageReference(documentElementLanguage, valueReadOnly);
+                        .Languages.Add(new Dimension { Key = documentElementLanguage, ReadOnly = valueReadOnly });
                 }
             }
 

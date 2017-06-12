@@ -11,7 +11,7 @@ namespace ToSic.Eav.Data
     /// <typeparam name="TType">Type of the Value</typeparam>
     public class Attribute<TType> : AttributeBase, IAttribute<TType>
     {
-        public Attribute(string name, string type, bool isTitle) : base(name, type, isTitle) { }
+        public Attribute(string name, string type/*, bool isTitle*/) : base(name, type/*, isTitle*/) { }
 
         public IEnumerable<IValue> Values { get; set; }
 

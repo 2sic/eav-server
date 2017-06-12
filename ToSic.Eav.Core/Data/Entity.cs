@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Script.Serialization;
 using ToSic.Eav.Implementations.ValueConverter;
-//using Microsoft.Practices.Unity;
 using ToSic.Eav.Interfaces;
 #pragma warning disable 618
 
@@ -49,10 +48,6 @@ namespace ToSic.Eav.Data
         /// </summary>
 		[ScriptIgnore]
 		public IRelationshipManager Relationships { get; internal set; }
-        /// <summary>
-        /// Published/Draft status. If not published, it may be invisble, but there may also be another item visible ATM
-        /// </summary>
-		public bool IsPublished { get; internal set; }
 
         /// <summary>
         /// Internal value - ignore for now
@@ -61,6 +56,17 @@ namespace ToSic.Eav.Data
         public int AssignmentObjectTypeId => Metadata.TargetType; //{ get; internal set; }
 
         public IMetadata Metadata { get; set; }
+
+        /// <summary>
+        /// Owner of this entity
+        /// </summary>
+        public string Owner { get; internal set; }
+
+        #region IsPublished, DratEntity, PublishedEntity
+        /// <summary>
+        /// Published/Draft status. If not published, it may be invisble, but there may also be another item visible ATM
+        /// </summary>
+        public bool IsPublished { get; internal set; }
         /// <summary>
         /// If this entity is published and there is a draft of it, then it can be navigated through DraftEntity
         /// </summary>
@@ -69,24 +75,27 @@ namespace ToSic.Eav.Data
         /// If this entity is draft and there is a published edition, then it can be navigated through PublishedEntity
         /// </summary>
         public IEntity PublishedEntity { get; set; }
+        #endregion
 
         /// <summary>
         /// Shorhand accessor to retrieve an attribute
         /// </summary>
         /// <param name="attributeName"></param>
         /// <returns></returns>
-		public IAttribute this[string attributeName] => Attributes.ContainsKey(attributeName) ? Attributes[attributeName] : null;
+        public IAttribute this[string attributeName] => Attributes.ContainsKey(attributeName) ? Attributes[attributeName] : null;
 
-	    #endregion
+        #endregion
+
+        #region various constructors to create entities
 
         /// <summary>
-		/// Create a new Entity. Used to create InMemory Entities that are not persisted to the EAV SqlStore.
-		/// </summary>
-		public Entity(int entityId, string contentTypeName, IDictionary<string, object> values, string titleAttribute, DateTime? modified = null)
+        /// Create a new Entity. Used to create InMemory Entities that are not persisted to the EAV SqlStore.
+        /// </summary>
+        public Entity(int entityId, string contentTypeName, IDictionary<string, object> values, string titleAttribute, DateTime? modified = null)
 		{
 			EntityId = entityId;
 			Type = new ContentType(contentTypeName);
-			Attributes = AttributeHelperTools.GetTypedDictionaryForSingleLanguage(values, titleAttribute);
+			Attributes = GetTypedAttributesSimple(values, titleAttribute);
 			try
 			{
 				Title = Attributes[titleAttribute];
@@ -142,6 +151,51 @@ namespace ToSic.Eav.Data
             Owner = owner;
         }
 
+        #region Helper to assemble an entity from a dictionary of properties
+        /// <summary>
+        /// Convert a NameValueCollection-Like List to a Dictionary of IAttributes
+        /// </summary>
+        private static Dictionary<string, IAttribute> GetTypedAttributesSimple(IDictionary<string, object> attributes, string titleAttributeName)
+        {
+            var result = new Dictionary<string, IAttribute>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var attribute in attributes)
+            {
+                var attributeType = GetAttributeTypeName(attribute.Value);
+                var baseModel = new AttributeDefinition(attribute.Key, attributeType, attribute.Key == titleAttributeName, 0, 0);
+                var attributeModel = baseModel.CreateDerivedAttribute();// CreateTypedAttribute(baseModel);
+                var valuesModelList = new List<IValue>();
+                if (attribute.Value != null)
+                {
+                    var valueModel = Value.Build(baseModel.Type, attribute.Value.ToString(), null);
+                    valuesModelList.Add(valueModel);
+                }
+
+                attributeModel.Values = valuesModelList;
+
+                result[attribute.Key] = attributeModel;
+            }
+
+            return result;
+
+            // helper to get text-name of the type
+            string GetAttributeTypeName(object value)
+            {
+                if (value is DateTime)
+                    return "DateTime";
+                if (value is decimal || value is int || value is double)
+                    return "Number";
+                if (value is bool)
+                    return "Boolean";
+                return "String";
+            }
+        }
+
+        #endregion
+
+        #endregion
+
+        #region GetDraft and GetPublished
         /// <summary>
         /// The draft entity fitting this published entity
         /// </summary>
@@ -154,14 +208,18 @@ namespace ToSic.Eav.Data
 	    /// <returns></returns>
 	    public IEntity GetPublished() => PublishedEntity;
 
-	    /// <summary>
-	    /// Retrieves the best possible value for an attribute or virtual attribute (like EntityTitle)
-	    /// Assumes default preferred language
-	    /// </summary>
-	    /// <param name="attributeName">Name of the attribute or virtual attribute</param>
-	    /// <param name="resolveHyperlinks"></param>
-	    /// <returns></returns>
-	    public object GetBestValue(string attributeName, bool resolveHyperlinks = false)
+        #endregion
+
+        #region GetBestValue and GetTitle
+
+        /// <summary>
+        /// Retrieves the best possible value for an attribute or virtual attribute (like EntityTitle)
+        /// Assumes default preferred language
+        /// </summary>
+        /// <param name="attributeName">Name of the attribute or virtual attribute</param>
+        /// <param name="resolveHyperlinks"></param>
+        /// <returns></returns>
+        public object GetBestValue(string attributeName, bool resolveHyperlinks = false)
 	        => GetBestValue(attributeName, new string[0], resolveHyperlinks);
 	    
 
@@ -223,10 +281,6 @@ namespace ToSic.Eav.Data
             return result;
         }
 
-        /// <summary>
-        /// Owner of this entity
-        /// </summary>
-	    public string Owner { get; internal set; }
 
         /// <summary>
         /// Best way to get the current entities title
@@ -257,5 +311,7 @@ namespace ToSic.Eav.Data
 
             return bestTitle?.ToString();
         }
+
+        #endregion
     }
 }

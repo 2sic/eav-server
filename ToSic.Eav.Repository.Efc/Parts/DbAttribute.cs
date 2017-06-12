@@ -114,7 +114,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Append a new Attribute to an AttributeSet
         /// </summary>
-        internal ToSicEavAttributes AppendToEndAndSave(ToSicEavAttributeSets attributeSet, int attributeSetId, string staticName, string type, string inputType, bool isTitle)//, bool autoSave)
+        internal ToSicEavAttributes AppendToEndAndSave(ToSicEavAttributeSets attributeSet, int attributeSetId, string staticName, string type, /*string inputType,*/ bool isTitle)//, bool autoSave)
         {
             var maxIndex = attributeSet != null
                 ? attributeSet.ToSicEavAttributesInSets
@@ -128,7 +128,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             else
                 maxIndex++;
 
-            return AddAttributeAndSave(attributeSet, attributeSetId, staticName, type, inputType, maxIndex.Value, 1, isTitle);//, autoSave);
+            return AddAttributeAndSave(attributeSet, attributeSetId, staticName, type, /*inputType,*/ maxIndex.Value, 1, isTitle);//, autoSave);
         }
 
         /// <summary>
@@ -137,7 +137,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         public int CreateAttributeAndInitializeAndSave(int attributeSetId, string staticName, string type, string inputType, int sortOrder)//, int attributeGroupId, bool isTitle)
         {
-            var newAttribute = AddAttributeAndSave(null, attributeSetId, staticName, type, inputType, sortOrder, 1, false);//, true);
+            var newAttribute = AddAttributeAndSave(null, attributeSetId, staticName, type, /*inputType,*/ sortOrder, 1, false);//, true);
             
             // set the nice name and input type, important for newly created attributes
             InitializeNameAndInputType(staticName, inputType, newAttribute);
@@ -149,7 +149,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Append a new Attribute to an AttributeSet
         /// </summary>
-        public ToSicEavAttributes AddAttributeAndSave(ToSicEavAttributeSets attributeSet, int attributeSetId, string staticName, string type, string inputType, int sortOrder, int attributeGroupId, bool isTitle)//, bool autoSave)
+        public ToSicEavAttributes AddAttributeAndSave(ToSicEavAttributeSets attributeSet, int attributeSetId, string staticName, string type, /*string inputType,*/ int sortOrder, int attributeGroupId, bool isTitle)//, bool autoSave)
         {
             if (attributeSet == null)
                 attributeSet = DbContext.SqlDb.ToSicEavAttributeSets

@@ -211,7 +211,7 @@ namespace ToSic.Eav.Persistence.Efc
                                         DimensionId = l.DimensionId,
                                         ReadOnly = l.ReadOnly,
                                         Key = l.Dimension.ExternalKey.ToLower()
-                                    }).ToList(),
+                                    } as ILanguage).ToList(),
                                 v2.ChangeLogCreated
                             })
                     }));
@@ -233,7 +233,7 @@ namespace ToSic.Eav.Persistence.Efc
                 // Add all Attributes of that Content-Type
                 foreach (var definition in contentType.AttributeDefinitions.Values)
                 {
-                    var newAttribute = AttributeHelperTools.CreateTypedAttribute(definition);
+                    var newAttribute = ((AttributeDefinition) definition).CreateDerivedAttribute();// AttributeHelperTools.CreateTypedAttribute(definition);
                     newEntity.Attributes.Add(newAttribute.Name, newAttribute);
                     allAttribsOfThisType.Add(definition.AttributeId, newAttribute);
                     if (definition.IsTitle)
@@ -297,7 +297,7 @@ namespace ToSic.Eav.Persistence.Efc
                 foreach (var r in relatedEntities[e.EntityId])
                 {
                     var attributeModel = allAttribsOfThisType[r.AttributeID];
-                    var valueModel = Value.Build(((IAttributeBase)attributeModel).Type, r.Childs, null, source);
+                    var valueModel = Value.Build(attributeModel.Type, r.Childs, null, source);
                     var valuesModelList = new List<IValue> { valueModel };
                     attributeModel.Values = valuesModelList;
                     // 2017-06-07 2dm disabled, as it seems unnecessary and never used...

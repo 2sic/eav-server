@@ -44,7 +44,7 @@ namespace ToSic.Eav.ImportExport.Models
                 .Where(item => item.Key == key)
                 .Select(item => item.Value)
                 .FirstOrDefault(); // impEntity.ValueValues(valueName);
-            return values?.FirstOrDefault(value => value.ValueDimensions.Any(dimension => dimension.Key == language));
+            return values?.FirstOrDefault(value => value.Languages.Any(dimension => dimension.Key == language));
         }
 
 
@@ -58,7 +58,7 @@ namespace ToSic.Eav.ImportExport.Models
             var valueModel = BuildTypedImpValueWithoutDimensions(value, valueType, resolveHyperlink);
 
             if (language != null)
-                valueModel.AppendLanguageReference(language, languageReadOnly);
+                valueModel.Languages.Add(new Dimension { Key = language, ReadOnly = languageReadOnly });//.AddLanguageReference(language, languageReadOnly);
 
             // add or replace...
             var attrExists = Values.Where(item => item.Key == attributeName).Select(item => item.Value).FirstOrDefault();
@@ -88,7 +88,11 @@ namespace ToSic.Eav.ImportExport.Models
         public IImpValue PrepareTypedValue(string value, string attributeType, List<ILanguage> dimensions)
         {
             var valueModel = BuildTypedImpValueWithoutDimensions(value, attributeType);
-            valueModel.ValueDimensions = dimensions;
+            foreach (var dimension in dimensions)
+            {
+                valueModel.Languages.Add(dimension);
+            }
+            //valueModel.Languages = dimensions;
             return valueModel;
         }
 
@@ -107,10 +111,10 @@ namespace ToSic.Eav.ImportExport.Models
             {
                 case AttributeTypeEnum.String:
                 case AttributeTypeEnum.Hyperlink:
-                case AttributeTypeEnum.Undefined:   // note: added 2017-04-05 by 2dm, should be correct, but may not throw important errors now
-                case AttributeTypeEnum.Empty:       // note: added 2017-04-05 by 2dm, should be correct, but may not throw important errors now
+                case AttributeTypeEnum.Undefined:
+                case AttributeTypeEnum.Empty:
                 case AttributeTypeEnum.Custom:
-                    impValueModel = new ImpValue<string>(parentEntity, value);
+                    impValueModel = new ImpValueWithLanguages<string>(/*parentEntity,*/ value);
                     break;
                 case AttributeTypeEnum.Number:
                     decimal typedDecimal;
@@ -118,7 +122,7 @@ namespace ToSic.Eav.ImportExport.Models
                     decimal? typedDecimalNullable = null;
                     if (isDecimal)
                         typedDecimalNullable = typedDecimal;
-                    impValueModel = new ImpValue<decimal?>(parentEntity, typedDecimalNullable);
+                    impValueModel = new ImpValueWithLanguages<decimal?>(/*parentEntity,*/ typedDecimalNullable);
                     break;
                 case AttributeTypeEnum.Entity:
                     var entityGuids = !IsNullOrEmpty(value)
@@ -130,17 +134,17 @@ namespace ToSic.Eav.ImportExport.Models
                             return guid == Guid.Empty ? new Guid?() : guid;
                         }).ToList()
                         : new List<Guid?>(0);
-                    impValueModel = new ImpValue<List<Guid?>>(parentEntity, entityGuids);
+                    impValueModel = new ImpValueWithLanguages<List<Guid?>>(/*parentEntity,*/ entityGuids);
                     break;
                 case AttributeTypeEnum.DateTime:
                     DateTime typedDateTime;
-                    impValueModel = new ImpValue<DateTime?>(parentEntity, DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out typedDateTime)
+                    impValueModel = new ImpValueWithLanguages<DateTime?>(/*parentEntity,*/ DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out typedDateTime)
                                 ? typedDateTime
                                 : new DateTime?());
                     break;
                 case AttributeTypeEnum.Boolean:
                     bool typedBoolean;
-                    impValueModel = new ImpValue<bool?>(parentEntity, bool.TryParse(value, out typedBoolean) ? typedBoolean : new bool?());
+                    impValueModel = new ImpValueWithLanguages<bool?>(/*parentEntity,*/ bool.TryParse(value, out typedBoolean) ? typedBoolean : new bool?());
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(type.ToString(), value, "Unexpected type argument found in import XML.");

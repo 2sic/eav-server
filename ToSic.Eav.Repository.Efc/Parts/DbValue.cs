@@ -110,11 +110,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
             {
                 // Handle Entity Relationships - they're stored in own tables
                 case "Entity":
-                    if (newImpValue is ImpValue<List<Guid>> || newImpValue is ImpValue<List<Guid?>>)
+                    if (newImpValue is ImpValueWithLanguages<List<Guid>> || newImpValue is ImpValueWithLanguages<List<Guid?>>)
                     {
                         // often the list is not nullable, but sometimes it is - the further processing always expects nullable Guids
-                        var guidList = (newImpValue as ImpValue<List<Guid>>)?.Value.Select(p => (Guid?) p) 
-                            ?? ((ImpValue<List<Guid?>>)newImpValue).Value.Select(p => p);
+                        var guidList = (newImpValue as ImpValueWithLanguages<List<Guid>>)?.TypedContents.Select(p => (Guid?) p) 
+                            ?? ((ImpValueWithLanguages<List<Guid?>>)newImpValue).TypedContents.Select(p => p);
                         DbContext.Relationships.AddToQueue(attribute.AttributeId, guidList.ToList(), null, entityInDb.EntityId);
                     }
                     // old version with less clear code
@@ -127,7 +127,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 // Handle simple values in Values-Table
                 default:
                     // masterRecord can be true or false, it's not used when valueDimensions is specified
-                    return UpdateSimpleValue(attribute, entityInDb, null, /*true,*/ GetTypedValue(newImpValue, attribute.Type, attribute.StaticName), null, false, currentValues, /*entityModel: null,*/ newImpValue.ValueDimensions);
+                    return UpdateSimpleValue(attribute, entityInDb, null, /*true,*/ GetTypedValue(newImpValue, attribute.Type, attribute.StaticName), null, false, currentValues, /*entityModel: null,*/ newImpValue.Languages);
             }
         }
 
@@ -147,20 +147,20 @@ namespace ToSic.Eav.Repository.Efc.Parts
             if(attributeType != null && Enum.IsDefined(typeof(AttributeTypeEnum), attributeType))
                 type = (AttributeTypeEnum)Enum.Parse(typeof(AttributeTypeEnum), attributeType);
 
-            if ((type == AttributeTypeEnum.Boolean || type == AttributeTypeEnum.Undefined) && impValue is ImpValue<bool?>) 
-                typedValue = ((ImpValue<bool?>)impValue).Value;
-            else if ((type == AttributeTypeEnum.DateTime || type == AttributeTypeEnum.Undefined) && impValue is ImpValue<DateTime?>)
-                typedValue = ((ImpValue<DateTime?>)impValue).Value;
-            else if ((type == AttributeTypeEnum.Number || type == AttributeTypeEnum.Undefined) && impValue is ImpValue<decimal?>)
-                typedValue = ((ImpValue<decimal?>)impValue).Value;
+            if ((type == AttributeTypeEnum.Boolean || type == AttributeTypeEnum.Undefined) && impValue is ImpValueWithLanguages<bool?>) 
+                typedValue = ((ImpValueWithLanguages<bool?>)impValue).TypedContents;
+            else if ((type == AttributeTypeEnum.DateTime || type == AttributeTypeEnum.Undefined) && impValue is ImpValueWithLanguages<DateTime?>)
+                typedValue = ((ImpValueWithLanguages<DateTime?>)impValue).TypedContents;
+            else if ((type == AttributeTypeEnum.Number || type == AttributeTypeEnum.Undefined) && impValue is ImpValueWithLanguages<decimal?>)
+                typedValue = ((ImpValueWithLanguages<decimal?>)impValue).TypedContents;
             else if ((type == AttributeTypeEnum.String
                 || type == AttributeTypeEnum.Hyperlink
                 || type == AttributeTypeEnum.Custom
-                || type == AttributeTypeEnum.Undefined) && impValue is ImpValue<string>) 
-                typedValue = ((ImpValue<string>)impValue).Value;
-            else if (impValue is ImpValue<List<Guid>> && multiValuesSeparator != null)
+                || type == AttributeTypeEnum.Undefined) && impValue is ImpValueWithLanguages<string>) 
+                typedValue = ((ImpValueWithLanguages<string>)impValue).TypedContents;
+            else if (impValue is ImpValueWithLanguages<List<Guid>> && multiValuesSeparator != null)
             {
-                var entityGuids = ((ImpValue<List<Guid>>)impValue).Value;
+                var entityGuids = ((ImpValueWithLanguages<List<Guid>>)impValue).TypedContents;
                 typedValue = EntityGuidsToString(entityGuids, multiValuesSeparator);
             }
             else

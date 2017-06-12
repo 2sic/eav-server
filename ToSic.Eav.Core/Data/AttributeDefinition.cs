@@ -23,12 +23,36 @@ namespace ToSic.Eav.Data
         /// <param name="isTitle"></param>
         /// <param name="attributeId"></param>
         /// <param name="sortOrder"></param>
-        public AttributeDefinition(string name, string type, bool isTitle, int attributeId, int sortOrder): base(name, type, isTitle)
+        public AttributeDefinition(string name, string type, bool isTitle, int attributeId, int sortOrder): base(name, type/*, isTitle*/)
 		{
             IsTitle = isTitle;
             AttributeId = attributeId;
             SortOrder = sortOrder;
 		}
+
+        /// <summary>
+        /// Get Attribute for specified Typ
+        /// </summary>
+		/// <returns><see cref="Attribute{ValueType}"/></returns>
+        public IAttribute CreateDerivedAttribute()
+        {
+            switch (ControlledType)
+            {
+                case AttributeTypeEnum.Boolean:
+                    return new Attribute<bool?>(Name, Type);
+                case AttributeTypeEnum.DateTime:
+                    return new Attribute<DateTime?>(Name, Type);
+                case AttributeTypeEnum.Number:
+                    return new Attribute<decimal?>(Name, Type);
+                case AttributeTypeEnum.Entity:
+                    return new Attribute<EntityRelationship>(Name, Type) { Values = new IValue[] { Value.NullRelationship} };
+                case AttributeTypeEnum.String:
+                case AttributeTypeEnum.Hyperlink:
+                case AttributeTypeEnum.Custom:
+                default:
+                    return new Attribute<string>(Name, Type);
+            }
+        }
 
     }
 }

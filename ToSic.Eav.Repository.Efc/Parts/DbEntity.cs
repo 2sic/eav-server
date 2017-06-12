@@ -309,7 +309,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     {
                         ImpAttribute =newValue.Key,// new ImpAttribute { Name = newValue.Key },
                         ImpValue = v,
-                        ImpEntity = v.ParentEntity
+                        //ImpEntity = v.ParentEntity
                     }));
                     continue;
                 }
@@ -334,7 +334,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                         {
                             ImpAttribute = newValue.Key, //new ImpAttribute { Name = newValue.Key },
                             ImpValue = newSingleValue,
-                            ImpEntity = newSingleValue.ParentEntity,
+                            //ImpEntity = newSingleValue.ParentEntity,
                             Exception = ex
                         });
                     }
