@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.ImportExport.Models;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.ImportExport.Xml
@@ -26,7 +25,7 @@ namespace ToSic.Eav.ImportExport.Xml
 		/// <param name="keyNumber">KeyNumber of the Entity</param>
 		/// <param name="keyGuid">KeyGuid of the Entity</param>
 		/// <param name="keyString">KeyString of the Entity</param>
-		public static ImpEntity BuildImpEntityFromXml(XElement xEntity, int assignmentObjectTypeId, List<Data.Dimension> targetDimensions, List<Data.Dimension> sourceDimensions, int? sourceDefaultDimensionId, string defaultLanguage, int? keyNumber = null, Guid? keyGuid = null, string keyString = null)
+		public static Entity BuildImpEntityFromXml(XElement xEntity, int assignmentObjectTypeId, List<Data.Dimension> targetDimensions, List<Data.Dimension> sourceDimensions, int? sourceDefaultDimensionId, string defaultLanguage, int? keyNumber = null, Guid? keyGuid = null, string keyString = null)
 		{
 		    var targetValues = new Dictionary<string, IAttribute>();// List<IValue>>();
 
@@ -128,7 +127,7 @@ namespace ToSic.Eav.ImportExport.Xml
             //    reason is that ATM it prepares IAttributes, but the simple creator can't handle that - expects String,object
             //    but I need IAttribute, because it contains language information
 
-            var targetEntity = new ImpEntity(Guid.Parse(xEntity.Attribute(XmlConstants.GuidNode).Value), xEntity.Attribute(XmlConstants.AttSetStatic).Value, targetValues.ToDictionary(x => x.Key, y => (object)y.Value))
+            var targetEntity = new Entity(Guid.Parse(xEntity.Attribute(XmlConstants.GuidNode).Value), xEntity.Attribute(XmlConstants.AttSetStatic).Value, targetValues.ToDictionary(x => x.Key, y => (object)y.Value))
             {
                 //AttributeSetStaticName = xEntity.Attribute(XmlConstants.AttSetStatic).Value,
                 //EntityGuid = Guid.Parse(xEntity.Attribute(XmlConstants.GuidNode).Value),

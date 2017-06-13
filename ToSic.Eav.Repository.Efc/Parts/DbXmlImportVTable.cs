@@ -9,12 +9,11 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Logging;
-using ToSic.Eav.ImportExport.Models;
 using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.ImportExport.Validation;
 using ToSic.Eav.ImportExport.Xml;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Efc.Models;
+using Entity = ToSic.Eav.Data.Entity;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
@@ -70,8 +69,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// The entities created from the document. They will be saved to the repository.
         /// </summary>
-        public List<ImpEntity> ImportEntities {get; }
-        private ImpEntity GetImportEntity(Guid entityGuid) => ImportEntities
+        public List<Data.Entity> ImportEntities {get; }
+        private Data.Entity GetImportEntity(Guid entityGuid) => ImportEntities
             .FirstOrDefault(entity => entity.EntityGuid == entityGuid);
 
         /// <summary>
@@ -81,9 +80,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
         #endregion
 
 
-        private ImpEntity AppendEntity(Guid entityGuid)
+        private Entity AppendEntity(Guid entityGuid)
         {
-            var entity = new ImpEntity(entityGuid, ContentType.StaticName, new Dictionary<string, object>());
+            var entity = new Entity(entityGuid, ContentType.StaticName, new Dictionary<string, object>());
             {
                 //AttributeSetStaticName = ContentType.StaticName,
                 
@@ -109,7 +108,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <param name="resolveReferenceMode">How value references to files and pages are handled</param>
         public DbXmlImportVTable(int zoneId, int appId, int contentTypeId, Stream dataStream, IEnumerable<string> languages, string documentLanguageFallback, ImportDeleteUnmentionedItems deleteSetting, ImportResourceReferenceMode resolveReferenceMode)
         {
-            ImportEntities = new List<ImpEntity>();
+            ImportEntities = new List<Entity>();
             ErrorLog = new ImportErrorLog();
 
             _appId = appId;

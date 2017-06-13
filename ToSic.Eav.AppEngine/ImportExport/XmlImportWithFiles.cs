@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
+using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Logging;
@@ -494,7 +495,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="entities"></param>
         /// <param name="assignmentObjectTypeId"></param>
         /// <returns></returns>
-        private List<ImpEntity> GetImportEntities(IEnumerable<XElement> entities, int assignmentObjectTypeId)
+        private List<Entity> GetImportEntities(IEnumerable<XElement> entities, int assignmentObjectTypeId)
             => entities.Select(e => GetImportEntity(e, assignmentObjectTypeId)).ToList();
 		
 
@@ -505,7 +506,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="entityNode">The xml-Element of the entity to import</param>
         /// <param name="assignmentObjectTypeId">assignmentObjectTypeId</param>
         /// <returns></returns>
-        private ImpEntity GetImportEntity(XElement entityNode, int assignmentObjectTypeId)
+        private Entity GetImportEntity(XElement entityNode, int assignmentObjectTypeId)
 		{
             #region retrieve optional metadata keys in the import - must happen before we apply corrections like AppId
             Guid? keyGuid = null;

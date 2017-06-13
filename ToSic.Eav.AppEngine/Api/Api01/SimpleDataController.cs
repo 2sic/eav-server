@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport.Models;
 using ToSic.Eav.Persistence.Efc.Models;
@@ -68,7 +69,7 @@ namespace ToSic.Eav.Api.Api01
                 values.Add(Constants.EntityFieldGuid, Guid.NewGuid());
 
             var eGuid = Guid.Parse(values[Constants.EntityFieldGuid].ToString());
-            var importEntity = new ImpEntity(eGuid, attributeSet.StaticName, new Dictionary<string, object>());// CreateImportEntity(eGuid, attributeSet.StaticName);
+            var importEntity = new Entity(eGuid, attributeSet.StaticName, new Dictionary<string, object>());// CreateImportEntity(eGuid, attributeSet.StaticName);
             AppendAttributeValues(importEntity, attributeSet, ConvertEntityRelations(values), _defaultLanguageCode, false, true);
             ExecuteImport(importEntity);
         }
@@ -124,7 +125,7 @@ namespace ToSic.Eav.Api.Api01
         private void Update(ToSicEavEntities entity, Dictionary<string, object> values, bool filterUnknownFields = true)
         {
             var attributeSet = _context.AttribSet.GetAttributeSet(entity.AttributeSetId);
-            var importEntity = new ImpEntity(entity.EntityGuid, attributeSet.StaticName, new Dictionary<string, object>());// CreateImportEntity(entity.EntityGuid, attributeSet.StaticName);
+            var importEntity = new Entity(entity.EntityGuid, attributeSet.StaticName, new Dictionary<string, object>());// CreateImportEntity(entity.EntityGuid, attributeSet.StaticName);
 
             if (filterUnknownFields)
                 values = RemoveUnknownFields(values, attributeSet);
@@ -187,21 +188,21 @@ namespace ToSic.Eav.Api.Api01
             return result;
         }
 
-        private void ExecuteImport(ImpEntity impEntity)
+        private void ExecuteImport(Entity entity)
         {
             var import = new DbImport(_zoneId, _appId, false);
-            import.ImportIntoDb(null, new[] { impEntity });
+            import.ImportIntoDb(null, new[] { entity });
             SystemManager.Purge(_zoneId, _appId);
         }
 
-        private void AppendAttributeValues(ImpEntity impEntity, ToSicEavAttributeSets attributeSet, Dictionary<string, object> values, string valuesLanguage, bool valuesReadOnly, bool resolveHyperlink)
+        private void AppendAttributeValues(Entity entity, ToSicEavAttributeSets attributeSet, Dictionary<string, object> values, string valuesLanguage, bool valuesReadOnly, bool resolveHyperlink)
         {
             foreach (var value in values)
             {
                 // Handle special attributes (for example of the system)
                 if (value.Key.ToLower() == Constants.EntityFieldIsPublished)
                 {
-                    impEntity.IsPublished = value.Value as bool? ?? true;
+                    entity.IsPublished = value.Value as bool? ?? true;
                     continue;
                 }
 
@@ -212,7 +213,7 @@ namespace ToSic.Eav.Api.Api01
                 // Handle content-type attributes
                 var attribute = attributeSet.AttributeByName(value.Key);
                 if (attribute != null)
-                    impEntity.Attributes.AddValue(attribute.StaticName, value.Value.ToString(), attribute.Type, valuesLanguage, valuesReadOnly, resolveHyperlink);
+                    entity.Attributes.AddValue(attribute.StaticName, value.Value.ToString(), attribute.Type, valuesLanguage, valuesReadOnly, resolveHyperlink);
             }
         }
     }

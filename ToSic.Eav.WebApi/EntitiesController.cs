@@ -6,7 +6,6 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.WebApi.Formats;
-using ToSic.Eav.ImportExport.Models;
 using ToSic.Eav.ImportExport.Versioning;
 using ToSic.Eav.Repository.Efc.Parts;
 
@@ -186,7 +185,7 @@ namespace ToSic.Eav.WebApi
         {
             SetAppIdAndUser(appId);
 
-            var entitiesToImport = new List<ImpEntity>();
+            var entitiesToImport = new List<Entity>();
 
             // must move guid from header to entity, because we only transfer it on the header (so no duplicates)
             foreach (var i in items)
@@ -221,7 +220,7 @@ namespace ToSic.Eav.WebApi
         }
 
 
-        private ImpEntity CreateImportEntity(EntityWithHeader editInfo)
+        private Entity CreateImportEntity(EntityWithHeader editInfo)
         {
             var newEntity = editInfo.Entity;
             var metadata = editInfo.Header.Metadata;
@@ -265,7 +264,7 @@ namespace ToSic.Eav.WebApi
                 }
             }
 
-            var importEntity = new ImpEntity(newEntity.Guid,newEntity.Type.StaticName, attribs.ToDictionary(x => x.Key, y => (object)y.Value))
+            var importEntity = new Entity(newEntity.Guid,newEntity.Type.StaticName, attribs.ToDictionary(x => x.Key, y => (object)y.Value))
             {
 
                 #region Guids, Ids, Published, Content-Types

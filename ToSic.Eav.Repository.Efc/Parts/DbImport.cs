@@ -8,6 +8,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Logging;
 using ToSic.Eav.ImportExport.Models;
 using ToSic.Eav.Persistence.Efc.Models;
+using Entity = ToSic.Eav.Data.Entity;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
@@ -48,7 +49,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Import AttributeSets and Entities
         /// </summary>
-        public void ImportIntoDb(IEnumerable<ImpContentType> newAttributeSets, IEnumerable<ImpEntity> newEntities)
+        public void ImportIntoDb(IEnumerable<ImpContentType> newAttributeSets, IEnumerable<Entity> newEntities)
         {
             _context.PurgeAppCacheOnSave = false;
 
@@ -243,7 +244,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         /// <param name="attributeMetaData"></param>
         /// <param name="destinationAttributeId"></param>
-        private void SaveImportedAttributeMetadata(List<ImpEntity> attributeMetaData, int destinationAttributeId)
+        private void SaveImportedAttributeMetadata(List<Entity> attributeMetaData, int destinationAttributeId)
         {
             foreach (var entity in attributeMetaData)
             {
@@ -292,18 +293,18 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Import an Entity with all values
         /// </summary>
-        private void PersistOneImportEntity(ImpEntity impEntity)
+        private void PersistOneImportEntity(Entity entity)
         {
             #region try to get AttributeSet or otherwise cancel & log error
 
-            var dbAttrSet = _context.AttribSet.GetAttributeSet(impEntity.Type.StaticName);//.AttributeSetStaticName);
+            var dbAttrSet = _context.AttribSet.GetAttributeSet(entity.Type.StaticName);//.AttributeSetStaticName);
 
             if (dbAttrSet == null) // AttributeSet not Found
             {
                 _importLog.Add(new ImportLogItem(EventLogEntryType.Error, "AttributeSet not found")
                 {
                     //ImpEntity = impEntity,
-                    ImpContentType = new ImpContentType(impEntity.Type.StaticName)//.AttributeSetStaticName)// {StaticName = impEntity.AttributeSetStaticName}
+                    ImpContentType = new ImpContentType(entity.Type.StaticName)//.AttributeSetStaticName)// {StaticName = impEntity.AttributeSetStaticName}
                     
                 });
                 return;
@@ -313,13 +314,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             // Find existing Enties - meaning both draft and non-draft
             List<ToSicEavEntities> dbExistingEntities = null;
-            if (impEntity.EntityGuid != Guid.Empty)//.HasValue)
-                dbExistingEntities = _context.Entities.GetEntitiesByGuid(impEntity.EntityGuid/*.Value*/).ToList();
+            if (entity.EntityGuid != Guid.Empty)//.HasValue)
+                dbExistingEntities = _context.Entities.GetEntitiesByGuid(entity.EntityGuid/*.Value*/).ToList();
 
             #region Simplest case - add (nothing existing to update)
             if (dbExistingEntities == null || !dbExistingEntities.Any())
             {
-                _context.Entities.AddImportEntity(dbAttrSet.AttributeSetId, impEntity, _importLog, impEntity.IsPublished, null);
+                _context.Entities.AddImportEntity(dbAttrSet.AttributeSetId, entity, _importLog, entity.IsPublished, null);
                 return;
             }
 
@@ -327,10 +328,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             #region Another simple case - we have published entities, but are saving unpublished - so we create a new one
 
-            if (!impEntity.IsPublished && dbExistingEntities.Count(e => e.IsPublished == false) == 0 && !impEntity.OnSaveForceNoBranching)
+            if (!entity.IsPublished && dbExistingEntities.Count(e => e.IsPublished == false) == 0 && !entity.OnSaveForceNoBranching)
             {
                 var publishedId = dbExistingEntities.First().EntityId;
-                _context.Entities.AddImportEntity(dbAttrSet.AttributeSetId, impEntity, _importLog, impEntity.IsPublished, publishedId);
+                _context.Entities.AddImportEntity(dbAttrSet.AttributeSetId, entity, _importLog, entity.IsPublished, publishedId);
                 return;
             }
 
@@ -358,7 +359,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             #region Ensure entity has same AttributeSet (do this after checking for the draft etc.
             var editableEntityContentType = _context.AttribSet.GetAttributeSet(editableVersionOfTheEntity.AttributeSetId);
-            if (editableEntityContentType.StaticName != impEntity.Type.StaticName)//.AttributeSetStaticName)
+            if (editableEntityContentType.StaticName != entity.Type.StaticName)//.AttributeSetStaticName)
             {
                 _importLog.Add(new ImportLogItem(EventLogEntryType.Error, "Existing entity (which should be updated) has different ContentType"/*, impEntity*/));
                 return;
@@ -370,14 +371,14 @@ namespace ToSic.Eav.Repository.Efc.Parts
             #endregion
 
             // todo: TestImport - ensure that it correctly skips the existing values
-            var newValues = impEntity.Attributes;
+            var newValues = entity.Attributes;
             if (_dontUpdateExistingAttributeValues) // Skip values that are already present in existing Entity
                 newValues = newValues.Where(v => editableVersionOfTheEntity.ToSicEavValues.All(ev => ev.Attribute.StaticName != v.Key))
                     .ToDictionary(v => v.Key, v => v.Value);
 
             // todo: TestImport - ensure that the EntityId of this is what previously was the RepositoryID
             _context.Entities.SaveEntity(editableVersionOfTheEntity.EntityId/*RepositoryId*/, newValues, /*masterRecord:true,*/ updateLog: _importLog,
-                preserveUndefinedValues: _keepAttributesMissingInImport, isPublished: impEntity.IsPublished, forceNoBranch: impEntity.OnSaveForceNoBranching);
+                preserveUndefinedValues: _keepAttributesMissingInImport, isPublished: entity.IsPublished, forceNoBranch: entity.OnSaveForceNoBranching);
 
             #endregion
         }

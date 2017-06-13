@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Models;
 using ToSic.Eav.ImportExport.Versioning;
@@ -21,7 +22,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <param name="entityId">EntityId</param>
         /// <param name="changeId">ChangeId to retrieve</param>
         /// <param name="defaultCultureDimension">Default Language</param>
-        private ImpEntity PrepareRestoreEntity(int entityId, int changeId, int defaultCultureDimension)
+        private Entity PrepareRestoreEntity(int entityId, int changeId, int defaultCultureDimension)
         {
             // Get Timeline Item
             string timelineItem;
@@ -153,7 +154,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             // Restore Entity
             var import = new DbImport(DbContext.ZoneId, DbContext.AppId, false, false);
-            import.ImportIntoDb(null, new List<ImpEntity> { newVersion });
+            import.ImportIntoDb(null, new List<Entity> { newVersion });
             
             // IMPORTANT : IF THIS IS EVER USED, REMEMBER TO CLEAR THE CACHE afterwards in the calling method
 

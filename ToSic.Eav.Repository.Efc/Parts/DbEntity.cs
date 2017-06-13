@@ -6,7 +6,6 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Logging;
-using ToSic.Eav.ImportExport.Models;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Efc.Models;
 
@@ -103,12 +102,12 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Import a new Entity
         /// </summary>
-        internal ToSicEavEntities AddImportEntity(int attributeSetId, ImpEntity impEntity, List<ImportLogItem> importLog, bool isPublished, int? publishedTarget)
+        internal ToSicEavEntities AddImportEntity(int attributeSetId, Entity entity, List<ImportLogItem> importLog, bool isPublished, int? publishedTarget)
         {
-            return AddEntity(attributeSetId, impEntity.Attributes, 
+            return AddEntity(attributeSetId, entity.Attributes, 
                 //impEntity.KeyNumber, impEntity.KeyGuid, impEntity.KeyString, impEntity.KeyTypeId, 
-                impEntity.Metadata,
-                0, impEntity.EntityGuid, null, importLog, isPublished, publishedTarget);
+                entity.Metadata,
+                0, entity.EntityGuid, null, importLog, isPublished, publishedTarget);
         }
         
         

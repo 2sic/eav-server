@@ -75,7 +75,6 @@
     <Compile Include="Interfaces\IImportExportEnvironment.cs" />
     <Compile Include="Logging\MessageTypes.cs" />
     <Compile Include="Models\ImpAttribDefinition.cs" />
-    <Compile Include="Models\ImpEntity.cs" />
     <Compile Include="Models\ImpContentType.cs" />
     <Compile Include="Logging\ImportLogItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
