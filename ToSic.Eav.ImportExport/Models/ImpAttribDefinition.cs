@@ -67,7 +67,7 @@ namespace ToSic.Eav.ImportExport.Models
             if (defaultValue != null)
                 valDic.Add("DefaultValue", defaultValue);
 
-            return new ImpEntity(Guid.Empty, "@All", valDic, "");
+            return new ImpEntity(Guid.Empty, "@All", valDic);
         }
 
         private ImpEntity CreateStringAttribMetadata(string inputType, int? rowCount)
@@ -89,7 +89,7 @@ namespace ToSic.Eav.ImportExport.Models
             if (rowCount.HasValue) valDic.Add("RowCount", rowCount);
 
             // 2017-06-12 new using entity
-            return new ImpEntity(Guid.Empty, "@String", valDic, "");
+            return new ImpEntity(Guid.Empty, "@String", valDic);
 
         }
     }

@@ -82,13 +82,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         private ImpEntity AppendEntity(Guid entityGuid)
         {
-            var entity = new ImpEntity(ContentType.StaticName)
+            var entity = new ImpEntity(entityGuid, ContentType.StaticName, new Dictionary<string, object>());
             {
                 //AttributeSetStaticName = ContentType.StaticName,
-                EntityGuid = entityGuid,
+                
                 //KeyTypeId = Constants.NotMetadata,
                 //KeyNumber = null,
-                Attributes = new Dictionary<string, IAttribute>()//= new Dictionary<string, List<IValue>>() 
+                //Attributes = new Dictionary<string, IAttribute>()//= new Dictionary<string, List<IValue>>() 
             };
             ImportEntities.Add(entity);
             return entity;
@@ -190,7 +190,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     if (value == XmlConstants.Empty /* "[\"\"]" */) //value.IsValueEmpty())
                     {
                         // It is an empty string
-                        entity.AppendAttributeValue(valueName, "", attribute.Type, documentElementLanguage, false,
+                        ImpEntity.AppendAttributeValue(entity.Attributes, valueName, "", attribute.Type, documentElementLanguage, false,
                             _resolveReferenceMode == ImportResourceReferenceMode.Resolve);
                         continue;
                     }
@@ -200,7 +200,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     {
                         try
                         {
-                            entity.AppendAttributeValue(valueName, value, valueType, documentElementLanguage, false,
+                            ImpEntity.AppendAttributeValue(entity.Attributes, valueName, value, valueType, documentElementLanguage, false,
                                 _resolveReferenceMode == ImportResourceReferenceMode.Resolve);
                         }
                         catch (FormatException)
@@ -244,7 +244,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                         continue;
                     }
 
-                    entity.AppendAttributeValue(valueName, dbEntityValue.Value, valueType, valueReferenceLanguage,
+                    ImpEntity.AppendAttributeValue(entity.Attributes, valueName, dbEntityValue.Value, valueType, valueReferenceLanguage,
                             dbEntityValue.IsLanguageReadOnly(valueReferenceLanguage),
                             _resolveReferenceMode == ImportResourceReferenceMode.Resolve)
                         //.AddLanguageReference(documentElementLanguage, valueReadOnly);

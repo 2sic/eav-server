@@ -22,8 +22,7 @@ namespace ToSic.Eav.ImportExport.Models
         /// <summary>
         /// Create a new Entity. Used to create InMemory Entities that are not persisted to the EAV SqlStore.
         /// </summary>
-        public ImpEntity(Guid entityGuid, string contentTypeName, IDictionary<string, object> values,
-            string titleAttribute) : base(0, contentTypeName, values, titleAttribute)
+        public ImpEntity(Guid entityGuid, string contentTypeName, IDictionary<string, object> values) : base(0, contentTypeName, values)
         {
             EntityGuid = entityGuid;
         }
@@ -50,7 +49,7 @@ namespace ToSic.Eav.ImportExport.Models
         /// Add a value to the attribute specified. To do so, set the name, type and string of the value, as 
         /// well as some language properties.
         /// </summary>
-        public IValue AppendAttributeValue(string attributeName, string value, string valueType, string language = null, bool languageReadOnly = false, bool resolveHyperlink = false)
+        public static IValue AppendAttributeValue(Dictionary<string, IAttribute> target, string attributeName, string value, string valueType, string language = null, bool languageReadOnly = false, bool resolveHyperlink = false)
         {
             var valueModel = ImpBuildTypedImpValueWithoutDimensions(value, valueType, resolveHyperlink);
 
@@ -58,16 +57,16 @@ namespace ToSic.Eav.ImportExport.Models
                 valueModel.Languages.Add(new Dimension { Key = language, ReadOnly = languageReadOnly });//.AddLanguageReference(language, languageReadOnly);
 
             // add or replace...
-            var attrExists = Attributes.Where(item => item.Key == attributeName).Select(item => item.Value).FirstOrDefault();
+            var attrExists = target.Where(item => item.Key == attributeName).Select(item => item.Value).FirstOrDefault();
             if (attrExists == null)
             {
                 var newAttr = AttributeBase.CreateTypedAttribute(attributeName, valueType);
                 newAttr.Values.Add(valueModel);
-                Attributes.Add(attributeName, newAttr);
+                target.Add(attributeName, newAttr);
                 //ImpAttributes.Add(attributeName, new List<IValue> {valueModel});
             }
             else
-                Attributes[attributeName].Values.Add(valueModel);
+                target[attributeName].Values.Add(valueModel);
 
             return valueModel;
         }
@@ -98,9 +97,9 @@ namespace ToSic.Eav.ImportExport.Models
         //    return valueModel;
         //}
 
-        private IValue ImpBuildTypedImpValueWithoutDimensions(string value, string valueType, bool resolveHyperlink = false)
+        private static IValue ImpBuildTypedImpValueWithoutDimensions(string value, string valueType, bool resolveHyperlink = false)
         {
-            ImpEntity parentEntity = this;
+            //ImpEntity parentEntity = this;
             IValue impValueModel;
 
             var type = ImpFindTypeOnEnumOrUndefined(valueType);

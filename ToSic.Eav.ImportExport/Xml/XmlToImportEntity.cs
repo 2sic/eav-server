@@ -28,19 +28,6 @@ namespace ToSic.Eav.ImportExport.Xml
 		/// <param name="keyString">KeyString of the Entity</param>
 		public static ImpEntity BuildImpEntityFromXml(XElement xEntity, int assignmentObjectTypeId, List<Data.Dimension> targetDimensions, List<Data.Dimension> sourceDimensions, int? sourceDefaultDimensionId, string defaultLanguage, int? keyNumber = null, Guid? keyGuid = null, string keyString = null)
 		{
-		    var targetEntity = new ImpEntity(xEntity.Attribute(XmlConstants.AttSetStatic).Value)
-		    {
-		        //AttributeSetStaticName = xEntity.Attribute(XmlConstants.AttSetStatic).Value,
-		        EntityGuid = Guid.Parse(xEntity.Attribute(XmlConstants.GuidNode).Value),
-		        Metadata = new Metadata
-		        {
-		            TargetType = assignmentObjectTypeId,
-		            KeyNumber = keyNumber,
-		            KeyGuid = keyGuid,
-		            KeyString = keyString
-		        }
-		    };
-
 		    var targetValues = new Dictionary<string, IAttribute>();// List<IValue>>();
 
 			// Group values by StaticName
@@ -137,7 +124,24 @@ namespace ToSic.Eav.ImportExport.Xml
                 targetValues.Add(sourceAttribute.StaticName, newAttr);
 			}
 
-			targetEntity.Attributes = targetValues;
+            //continue here
+            //    reason is that ATM it prepares IAttributes, but the simple creator can't handle that - expects String,object
+            //    but I need IAttribute, because it contains language information
+
+            var targetEntity = new ImpEntity(Guid.Parse(xEntity.Attribute(XmlConstants.GuidNode).Value), xEntity.Attribute(XmlConstants.AttSetStatic).Value, targetValues.ToDictionary(x => x.Key, y => (object)y.Value))
+            {
+                //AttributeSetStaticName = xEntity.Attribute(XmlConstants.AttSetStatic).Value,
+                //EntityGuid = Guid.Parse(xEntity.Attribute(XmlConstants.GuidNode).Value),
+                Metadata = new Metadata
+                {
+                    TargetType = assignmentObjectTypeId,
+                    KeyNumber = keyNumber,
+                    KeyGuid = keyGuid,
+                    KeyString = keyString
+                }
+            };
+
+            //targetEntity.Attributes = targetValues;
 
 			return targetEntity;
 		}

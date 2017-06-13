@@ -26,10 +26,6 @@ namespace ToSic.Eav.Api.Api01
 
         private readonly int _appId;
 
-        //private readonly string _userName;
-
-
-
         /// <summary>
         /// Create a simple data controller to create, update and delete entities.
         /// </summary>
@@ -37,11 +33,10 @@ namespace ToSic.Eav.Api.Api01
         /// <param name="appId">App ID</param>
         ///// <param name="userName">Name of user loged in</param>
         /// <param name="defaultLanguageCode">Default language of system</param>
-        public SimpleDataController(int zoneId, int appId, /*string userName,*/ string defaultLanguageCode)
+        public SimpleDataController(int zoneId, int appId, string defaultLanguageCode)
         {
             _zoneId = zoneId;
             _appId = appId;
-            //_userName = userName;
             _defaultLanguageCode = defaultLanguageCode;
             _context = DbDataController.Instance(zoneId, appId);
         }
@@ -68,15 +63,11 @@ namespace ToSic.Eav.Api.Api01
             if (attributeSet == null)
                 throw new ArgumentException("Content type '" + contentTypeName + "' does not exist.");
 
-            // if (filterUnknownFields)
-                //values = RemoveUnknownFields(values, attributeSet);
-
-            //if (!values.ContainsKey(Constants.EntityFieldGuid))
             if(values.All(v => v.Key.ToLower() != Constants.EntityFieldGuid))
                 values.Add(Constants.EntityFieldGuid, Guid.NewGuid());
 
             var eGuid = Guid.Parse(values[Constants.EntityFieldGuid].ToString());
-            var importEntity = CreateImportEntity(eGuid, attributeSet.StaticName);
+            var importEntity = new ImpEntity(eGuid, attributeSet.StaticName, new Dictionary<string, object>());// CreateImportEntity(eGuid, attributeSet.StaticName);
             AppendAttributeValues(importEntity, attributeSet, ConvertEntityRelations(values), _defaultLanguageCode, false, true);
             ExecuteImport(importEntity);
         }
@@ -89,10 +80,8 @@ namespace ToSic.Eav.Api.Api01
             var allowedNames = listAllowed.Select(a => a.StaticName.ToLower()).ToList();
             allowedNames.Add(Constants.EntityFieldGuid);
             allowedNames.Add(Constants.EntityFieldIsPublished);
-            values =
-                //values.Where(x => listAllowed.Any(y => y.StaticName == x.Key))
-                values.Where(x => allowedNames.Any(y => y == x.Key.ToLower()))
-                    .ToDictionary(x => x.Key, y => y.Value);
+            values = values.Where(x => allowedNames.Any(y => y == x.Key.ToLower()))
+                .ToDictionary(x => x.Key, y => y.Value);
             return values;
         }
 
@@ -134,7 +123,7 @@ namespace ToSic.Eav.Api.Api01
         private void Update(ToSicEavEntities entity, Dictionary<string, object> values, bool filterUnknownFields = true)
         {
             var attributeSet = _context.AttribSet.GetAttributeSet(entity.AttributeSetId);
-            var importEntity = CreateImportEntity(entity.EntityGuid, attributeSet.StaticName);
+            var importEntity = new ImpEntity(entity.EntityGuid, attributeSet.StaticName, new Dictionary<string, object>());// CreateImportEntity(entity.EntityGuid, attributeSet.StaticName);
 
             if (filterUnknownFields)
                 values = RemoveUnknownFields(values, attributeSet);
@@ -153,9 +142,8 @@ namespace ToSic.Eav.Api.Api01
         {
             // todo: refactor to use the eav-api delete
             if (!_context.Entities.CanDeleteEntity(entityId).Item1)
-            {
-                throw new InvalidOperationException("The entity " + entityId + " cannot be deleted because of it is referenced by another object.");
-            }
+                throw new InvalidOperationException("The entity " + entityId +
+                                                    " cannot be deleted because of it is referenced by another object.");
             _context.Entities.DeleteEntity(entityId);
         }
 
@@ -180,17 +168,17 @@ namespace ToSic.Eav.Api.Api01
         //    return CreateImportEntity(Guid.NewGuid(), attributeSetStaticName);
         //}
 
-        private static ImpEntity CreateImportEntity(Guid entityGuid, string attributeSetStaticName)
-        {
-            return new ImpEntity(attributeSetStaticName)
-            {
-                EntityGuid = entityGuid,
-                //AttributeSetStaticName = attributeSetStaticName,
-                //KeyTypeId = Constants.NotMetadata,
-                //KeyNumber = null,
-                Attributes = new Dictionary<string, Interfaces.IAttribute>()// new Dictionary<string, List<Interfaces.IValue>>()
-            };
-        }
+        //private static ImpEntity CreateImportEntity(Guid entityGuid, string attributeSetStaticName)
+        //{
+        //    return new ImpEntity(entityGuid,attributeSetStaticName, new Dictionary<string, object>())
+        //    {
+        //        //EntityGuid = entityGuid,
+        //        //AttributeSetStaticName = attributeSetStaticName,
+        //        //KeyTypeId = Constants.NotMetadata,
+        //        //KeyNumber = null,
+        //        //Attributes = new Dictionary<string, Interfaces.IAttribute>()// new Dictionary<string, List<Interfaces.IValue>>()
+        //    };
+        //}
 
 
         private Dictionary<string, object> ConvertEntityRelations(Dictionary<string, object> values)
@@ -235,16 +223,14 @@ namespace ToSic.Eav.Api.Api01
                     continue;
                 }
 
-                if ((value.Key.ToLower() == Constants.EntityFieldGuid))
-                {
-                    // Ignore entity guid - it's already set earlier
+                // Ignore entity guid - it's already set earlier
+                if (value.Key.ToLower() == Constants.EntityFieldGuid)
                     continue;
-                }
 
                 // Handle content-type attributes
                 var attribute = attributeSet.AttributeByName(value.Key);
                 if (attribute != null)
-                    impEntity.AppendAttributeValue(attribute.StaticName, value.Value.ToString(), attribute.Type, valuesLanguage, valuesReadOnly, resolveHyperlink);
+                    ImpEntity.AppendAttributeValue(impEntity.Attributes, attribute.StaticName, value.Value.ToString(), attribute.Type, valuesLanguage, valuesReadOnly, resolveHyperlink);
             }
         }
     }

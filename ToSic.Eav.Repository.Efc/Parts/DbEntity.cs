@@ -271,7 +271,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 : entity.ToSicEavValues.ToList();
 
             // Update Values from Import Model
-            var newValuesImport = newValues as Dictionary<string, List<IValue>>;
+            var newValuesImport = newValues as Dictionary<string, IAttribute>;
             if (newValuesImport != null)
                 UpdateEntityFromImportModel(entity, newValuesImport, updateLog, attributes, dbValues, preserveUndefinedValues);
             // Update Values from ValueViewModel
@@ -291,7 +291,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Update an Entity when using the Import
         /// </summary>
-        private void UpdateEntityFromImportModel(ToSicEavEntities currentEntity, Dictionary<string, List<IValue>> newValuesImport, List<ImportLogItem> updateLog, List<ToSicEavAttributes> attributeList, List<ToSicEavValues> currentValues, bool keepAttributesMissingInImport)
+        private void UpdateEntityFromImportModel(ToSicEavEntities currentEntity, Dictionary<string, IAttribute> newValuesImport, List<ImportLogItem> updateLog, List<ToSicEavAttributes> attributeList, List<ToSicEavValues> currentValues, bool keepAttributesMissingInImport)
         {
             if (updateLog == null)
                 throw new ArgumentNullException(nameof(updateLog), "When Calling UpdateEntity() with newValues of Type IValueImportModel updateLog must be set.");
@@ -306,7 +306,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 if (attribute == null) // Attribute not found
                 {
                     // Log Warning for all Values
-                    updateLog.AddRange(newValue.Value.Select(v => new ImportLogItem(EventLogEntryType.Warning, "Attribute not found for Value")
+                    updateLog.AddRange(newValue.Value.Values.Select(v => new ImportLogItem(EventLogEntryType.Warning, "Attribute not found for Value")
                     {
                         ImpAttribute =newValue.Key,// new ImpAttribute { Name = newValue.Key },
                         ImpValue = v,
@@ -319,7 +319,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 updatedAttributeIds.Add(attribute.AttributeId);
 
                 // Go through each value / dimensions combination
-                foreach (var newSingleValue in newValue.Value)
+                foreach (var newSingleValue in newValue.Value.Values)
                 {
                     try
                     {

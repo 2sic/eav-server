@@ -230,12 +230,45 @@ namespace ToSic.Eav.WebApi
                 throw new Exception("Item must have a GUID");
             #endregion
 
-            // TODO 2tk: Refactor code - we use methods from XML import extensions!
-            var importEntity = new ImpEntity(newEntity.Type.StaticName)
+
+            // Attributes
+            var attribs = new Dictionary<string, Interfaces.IAttribute>();// = new Dictionary<string, List<Interfaces.IValue>>();
+
+            // only transfer the fields / values which exist in the content-type definition
+            var attributeSet = AppManager.Read.ContentTypes.Get(newEntity.Type.StaticName);// DataSource.GetCache(null, appId).GetContentType(newEntity.Type.StaticName);
+            foreach (var attribute in newEntity.Attributes)
+            {
+                var attDef = attributeSet[attribute.Key];
+                var attributeType = attDef.Type;
+
+                // don't save anything of the type empty - this is heading-only
+                if (attributeType == AttributeTypeEnum.Empty.ToString())
+                    continue;
+
+                foreach (var value in attribute.Value.Values)
+                {
+                    var stringValue = ImpEntity.ImpConvertValueObjectToString(value.Value);
+                    var importValue = ImpEntity.AppendAttributeValue(attribs, attribute.Key, stringValue, attributeType);
+
+                    // append languages OR empty language as fallback
+                    if (value.Dimensions == null)
+                    {
+                        // 2017-06-12 2dm - AFAIK this never added anything, because key was "", so just comment ount
+                        // Must this be done to save entities
+                        //importValue.AddLanguageReference("", false);
+                        continue;
+                    }
+                    foreach (var dimension in value.Dimensions)
+                        importValue.Languages.Add(new Dimension { Key = dimension.Key, ReadOnly = dimension.Value });//.AddLanguageReference(dimension.Key, dimension.Value);
+
+                }
+            }
+
+            var importEntity = new ImpEntity(newEntity.Guid,newEntity.Type.StaticName, attribs.ToDictionary(x => x.Key, y => (object)y.Value))
             {
 
                 #region Guids, Ids, Published, Content-Types
-                EntityGuid = newEntity.Guid,
+                //EntityGuid = newEntity.Guid,
                 IsPublished = newEntity.IsPublished,
                 ForceNoBranch = !newEntity.IsBranch, // if it's not a branch, it should also force no branch...
                 //AttributeSetStaticName = newEntity.Type.StaticName,
@@ -257,39 +290,7 @@ namespace ToSic.Eav.WebApi
 
             #endregion
 
-            // Attributes
-            importEntity.Attributes = new Dictionary<string, Interfaces.IAttribute>();// = new Dictionary<string, List<Interfaces.IValue>>();
 
-
-            // only transfer the fields / values which exist in the content-type definition
-            var attributeSet = AppManager.Read.ContentTypes.Get(newEntity.Type.StaticName);// DataSource.GetCache(null, appId).GetContentType(newEntity.Type.StaticName);
-            foreach (var attribute in newEntity.Attributes)
-            {
-                var attDef = attributeSet[attribute.Key];
-                var attributeType = attDef.Type;
-
-                // don't save anything of the type empty - this is heading-only
-                if (attributeType == AttributeTypeEnum.Empty.ToString())
-                    continue;
-
-                foreach (var value in attribute.Value.Values)
-                {
-                    var stringValue = ImpEntity.ImpConvertValueObjectToString(value.Value);
-                    var importValue = importEntity.AppendAttributeValue(attribute.Key, stringValue, attributeType);
-
-                    // append languages OR empty language as fallback
-                    if (value.Dimensions == null)
-                    {
-                        // 2017-06-12 2dm - AFAIK this never added anything, because key was "", so just comment ount
-                        // Must this be done to save entities
-                        //importValue.AddLanguageReference("", false);
-                        continue;
-                    }
-                    foreach (var dimension in value.Dimensions)
-                        importValue.Languages.Add(new Dimension { Key = dimension.Key, ReadOnly = dimension.Value });//.AddLanguageReference(dimension.Key, dimension.Value);
-
-                }
-            }
 
             return importEntity;
         }

@@ -22,10 +22,11 @@ namespace ToSic.Eav.Interfaces
 		/// </summary>
 		Guid EntityGuid { get; }
 
-		/// <summary>
-		/// Gets the AssignmentObjectTypeId
-		/// </summary>
-		int AssignmentObjectTypeId { get; }
+        // 2017-06-13 2dm - try to disable this - I assume it's only used internally
+		///// <summary>
+		///// Gets the AssignmentObjectTypeId
+		///// </summary>
+		//int AssignmentObjectTypeId { get; }
 
         IMetadata Metadata { get; }
 		/// <summary>

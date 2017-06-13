@@ -294,18 +294,15 @@ namespace ToSic.Eav.Apps.ImportExport
                             //titleAttribute = attribute;
                         }
                     }
-			    if(!attributes.Any(a => a.IsTitle)) //(titleAttribute == null)
-			    {
+                // check if it's normal (not a ghost) but still missing a title
+			    if(attributes.Any() && !attributes.Any(a => a.IsTitle)) 
 			        attributes.First().IsTitle = true;
-                    //titleAttribute = attributes.First();
-			    }
 
 			    // Add AttributeSet
                 var ct = new ImpContentType(attributeSet.Attribute(XmlConstants.Name).Value)
 				{
 					TempAttribDefinitions = attributes,
                     ParentConfigurationStaticName = attributeSet.Attributes(XmlConstants.AttributeSetParentDef).Any() ? attributeSet.Attribute(XmlConstants.AttributeSetParentDef).Value : "",
-                    //TitleAttribute = titleAttribute,
                     SortAttributes = attributeSet.Attributes(XmlConstants.SortAttributes).Any() && bool.Parse(attributeSet.Attribute(XmlConstants.SortAttributes).Value)
 				};
 			    ct.SetImportParameters(

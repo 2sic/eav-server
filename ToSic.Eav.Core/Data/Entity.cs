@@ -49,11 +49,12 @@ namespace ToSic.Eav.Data
 		[ScriptIgnore]
 		public IRelationshipManager Relationships { get; internal set; }
 
-        /// <summary>
-        /// Internal value - ignore for now
-        /// </summary>
-        [Obsolete("You should use Metadata.TargetType instead")]
-        public int AssignmentObjectTypeId => Metadata.TargetType; //{ get; internal set; }
+        // 2017-06-13 2dm - try to disable this - I assume it's only used internally
+        ///// <summary>
+        ///// Internal value - ignore for now
+        ///// </summary>
+        //[Obsolete("You should use Metadata.TargetType instead")]
+        //public int AssignmentObjectTypeId => Metadata.TargetType; //{ get; internal set; }
 
         public IMetadata Metadata { get; set; }
 
@@ -91,14 +92,15 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Create a new Entity. Used to create InMemory Entities that are not persisted to the EAV SqlStore.
         /// </summary>
-        public Entity(int entityId, string contentTypeName, IDictionary<string, object> values, string titleAttribute, DateTime? modified = null)
+        public Entity(int entityId, string contentTypeName, IDictionary<string, object> values, string titleAttribute = null, DateTime? modified = null)
 		{
 			EntityId = entityId;
 			Type = new ContentType(contentTypeName);
 			Attributes = GetTypedAttributesSimple(values, titleAttribute);
 			try
 			{
-				Title = Attributes[titleAttribute];
+			    if (titleAttribute != null)
+			        Title = Attributes[titleAttribute];
 			}
 			catch (KeyNotFoundException)
 			{
@@ -161,19 +163,27 @@ namespace ToSic.Eav.Data
 
             foreach (var attribute in attributes)
             {
-                var attributeType = GetAttributeTypeName(attribute.Value);
-                //var baseModel = new AttributeDefinition(attribute.Key, attributeType, attribute.Key == titleAttributeName, 0, 0);
-                var attributeModel = AttributeBase.CreateTypedAttribute(attribute.Key, attributeType);//  baseModel.CreateAttribute();
-                var valuesModelList = new List<IValue>();
-                if (attribute.Value != null)
+                // in case the object is already an IAttribute, use that, don't rebuild it
+                if (attribute.Value is IAttribute)
+                    result[attribute.Key] = (IAttribute) attribute.Value;
+                else
                 {
-                    var valueModel = Value.Build(attributeType, attribute.Value.ToString(), null);
-                    valuesModelList.Add(valueModel);
+                    var attributeType = GetAttributeTypeName(attribute.Value);
+                    //var baseModel = new AttributeDefinition(attribute.Key, attributeType, attribute.Key == titleAttributeName, 0, 0);
+                    var attributeModel = AttributeBase.CreateTypedAttribute(attribute.Key, attributeType);//  baseModel.CreateAttribute();
+                    var valuesModelList = new List<IValue>();
+                    if (attribute.Value != null)
+                    {
+                        var valueModel = Value.Build(attributeType, attribute.Value.ToString(), null);
+                        valuesModelList.Add(valueModel);
+                    }
+
+                    attributeModel.Values = valuesModelList;
+
+                    result[attribute.Key] = attributeModel;
                 }
 
-                attributeModel.Values = valuesModelList;
 
-                result[attribute.Key] = attributeModel;
             }
 
             return result;
@@ -187,6 +197,8 @@ namespace ToSic.Eav.Data
                     return "Number";
                 if (value is bool)
                     return "Boolean";
+                if (value is Guid || value is List<Guid> || value is List<Guid?>)
+                    return "Entity";
                 return "String";
             }
         }
