@@ -1,8 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.ImportExport.Models;
+using ToSic.Eav.Data;
+using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Interfaces;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Repository.Efc.Parts;
+using AttributeDefinition = ToSic.Eav.Data.Builder.AttributeDefinition;
+using ContentType = ToSic.Eav.Data.Builder.ContentType;
 
 namespace ToSic.Eav
 {
@@ -29,77 +33,77 @@ namespace ToSic.Eav
 		public void EnsurePipelineDesignerAttributeSets()
 		{
 			#region Define AttributeSets for DataPipeline and DataPipelinePart
-			var pipelinesAttributeSet = ImpContentType.SystemAttributeSet(Constants.DataPipelineStaticName, "Describes a set of data sources and how they are interconnected.",
-				new List<ImpAttribDefinition>
+			var pipelinesAttributeSet = ContentType.SystemAttributeSet(Constants.DataPipelineStaticName, "Describes a set of data sources and how they are interconnected.",
+				new List<IAttributeDefinition>
 				{
-					ImpAttribDefinition.StringAttribute("Name", "Pipeline name", "Descriptive Name", true),
-					ImpAttribDefinition.StringAttribute("Description", "Description", "Short info about this pipeline, what it's for", true),
-					ImpAttribDefinition.BooleanAttribute("AllowEdit", "Allow Edit", "If set to false, the pipeline-system will only show this pipeline but not allow changes.", true, true),
-					ImpAttribDefinition.StringAttribute("StreamsOut", "Streams Out", "Comma separated list of streams this pipeline offers to the target. Like 'Content, Presentation, ListContent, ListPresentation'", false),
-					ImpAttribDefinition.StringAttribute("StreamWiring", "Stream Wiring", "List of connections between the parts of this pipeline, each connection on one line, like 6730:Default>6732:Default", false, rowCount: 10),
-					ImpAttribDefinition.StringAttribute("TestParameters", "Test-Parameters", "Static Parameters to test the Pipeline with. Format as [Token:Property]=Value", true, rowCount: 10)
+                    AttributeDefinition.StringAttribute("Name", "Pipeline name", "Descriptive Name", true),
+                    AttributeDefinition.StringAttribute("Description", "Description", "Short info about this pipeline, what it's for", true),
+                    AttributeDefinition.BooleanAttribute("AllowEdit", "Allow Edit", "If set to false, the pipeline-system will only show this pipeline but not allow changes.", true, true),
+                    AttributeDefinition.StringAttribute("StreamsOut", "Streams Out", "Comma separated list of streams this pipeline offers to the target. Like 'Content, Presentation, ListContent, ListPresentation'", false),
+                    AttributeDefinition.StringAttribute("StreamWiring", "Stream Wiring", "List of connections between the parts of this pipeline, each connection on one line, like 6730:Default>6732:Default", false, rowCount: 10),
+                    AttributeDefinition.StringAttribute("TestParameters", "Test-Parameters", "Static Parameters to test the Pipeline with. Format as [Token:Property]=Value", true, rowCount: 10)
 			});
 
-			var pipelinePartsAttributeSet = ImpContentType.SystemAttributeSet(Constants.DataPipelinePartStaticName, "A part in the data pipeline, usually a data source/target element.",
-				new List<ImpAttribDefinition>
+			var pipelinePartsAttributeSet = ContentType.SystemAttributeSet(Constants.DataPipelinePartStaticName, "A part in the data pipeline, usually a data source/target element.",
+				new List<IAttributeDefinition>
 				{
-					ImpAttribDefinition.StringAttribute("Name", "Name", "The part name for easy identification by the user", true),
-					ImpAttribDefinition.StringAttribute("Description", "Description", "Notes about this item", true),
-					ImpAttribDefinition.StringAttribute("PartAssemblyAndType", "Part Assembly and Type", "Assembly and type info to help the system find this dll etc.", true),
-					ImpAttribDefinition.StringAttribute("VisualDesignerData", "Visual Designer Data", "Technical data for the designer so it can save it's values etc.", true),
+                    AttributeDefinition.StringAttribute("Name", "Name", "The part name for easy identification by the user", true),
+                    AttributeDefinition.StringAttribute("Description", "Description", "Notes about this item", true),
+                    AttributeDefinition.StringAttribute("PartAssemblyAndType", "Part Assembly and Type", "Assembly and type info to help the system find this dll etc.", true),
+                    AttributeDefinition.StringAttribute("VisualDesignerData", "Visual Designer Data", "Technical data for the designer so it can save it's values etc.", true),
 				});
 			#endregion
 
 			#region Define AttributeSets for DataSources Configurations
 
-			var dsrcApp = ImpContentType.SystemAttributeSet("|Config ToSic.Eav.DataSources.App", "used to configure an App DataSource", new List<ImpAttribDefinition>());
+			var dsrcApp = ContentType.SystemAttributeSet("|Config ToSic.Eav.DataSources.App", "used to configure an App DataSource", new List<IAttributeDefinition>());
 
-			var dsrcAttributeFilter = ImpContentType.SystemAttributeSet("|Config ToSic.Eav.DataSources.AttributeFilter", "used to configure an AttributeFilter DataSource",
-				new List<ImpAttribDefinition>
+			var dsrcAttributeFilter = ContentType.SystemAttributeSet("|Config ToSic.Eav.DataSources.AttributeFilter", "used to configure an AttributeFilter DataSource",
+				new List<IAttributeDefinition>
 				{
-					ImpAttribDefinition.StringAttribute("AttributeNames", "AttributeNames", null, true),
+                    AttributeDefinition.StringAttribute("AttributeNames", "AttributeNames", null, true),
 				});
 
-			var dsrcEntityIdFilter = ImpContentType.SystemAttributeSet("|Config ToSic.Eav.DataSources.EntityIdFilter", "used to configure an EntityIdFilter DataSource",
-				new List<ImpAttribDefinition>
+			var dsrcEntityIdFilter = ContentType.SystemAttributeSet("|Config ToSic.Eav.DataSources.EntityIdFilter", "used to configure an EntityIdFilter DataSource",
+				new List<IAttributeDefinition>
 				{
-					ImpAttribDefinition.StringAttribute("EntityIds", "EntityIds", "Comma separated list of Entity IDs, like 503,522,5066,32", true),
+                    AttributeDefinition.StringAttribute("EntityIds", "EntityIds", "Comma separated list of Entity IDs, like 503,522,5066,32", true),
 					//Import.AttributeHelperTools.BooleanAttribute("PassThroughOnEmptyEntityIds", "Pass-Throught on empty EntityIds", "If this is true and EntityIds results to an empty list, all entities are passed through.", true, false),
 				});
 
-			var dsrcEntityTypeFilter = ImpContentType.SystemAttributeSet("|Config ToSic.Eav.DataSources.EntityTypeFilter", "used to configure an EntityTypeFilter DataSource",
-				new List<ImpAttribDefinition>
+			var dsrcEntityTypeFilter = ContentType.SystemAttributeSet("|Config ToSic.Eav.DataSources.EntityTypeFilter", "used to configure an EntityTypeFilter DataSource",
+				new List<IAttributeDefinition>
 				{
-					ImpAttribDefinition.StringAttribute("TypeName", "TypeName", null, true),
+                    AttributeDefinition.StringAttribute("TypeName", "TypeName", null, true),
 				});
 
-			var dsrcValueFilter = ImpContentType.SystemAttributeSet("|Config ToSic.Eav.DataSources.ValueFilter", "used to configure a ValueFilter DataSource",
-				new List<ImpAttribDefinition>
+			var dsrcValueFilter = ContentType.SystemAttributeSet("|Config ToSic.Eav.DataSources.ValueFilter", "used to configure a ValueFilter DataSource",
+				new List<IAttributeDefinition>
 				{
-					ImpAttribDefinition.StringAttribute("Attribute", "Attribute", null, true),
-					ImpAttribDefinition.StringAttribute("Value", "Value", null, true),
+                    AttributeDefinition.StringAttribute("Attribute", "Attribute", null, true),
+                    AttributeDefinition.StringAttribute("Value", "Value", null, true),
 					//Import.AttributeHelperTools.BooleanAttribute("PassThroughOnEmptyValue", "Pass-Throught on empty Value", "If this is true and Value results to an empty string, all entities are passed through.", true, false)
 				});
 
-			var dsrcValueSort = ImpContentType.SystemAttributeSet("|Config ToSic.Eav.DataSources.ValueSort", "used to configure a ValueSort DataSource",
-				new List<ImpAttribDefinition>
+			var dsrcValueSort = ContentType.SystemAttributeSet("|Config ToSic.Eav.DataSources.ValueSort", "used to configure a ValueSort DataSource",
+				new List<IAttributeDefinition>
 				{
-					ImpAttribDefinition.StringAttribute("Attributes", "Attributes", null, true),
-					ImpAttribDefinition.StringAttribute("Directions", "Directions", null, true),
+                    AttributeDefinition.StringAttribute("Attributes", "Attributes", null, true),
+                    AttributeDefinition.StringAttribute("Directions", "Directions", null, true),
 				});
 
-			var dsrcRelationshipFilter = ImpContentType.SystemAttributeSet("|Config ToSic.Eav.DataSources.RelationshipFilter", "used to configure a RelationshipFilter DataSource",
-				new List<ImpAttribDefinition>
+			var dsrcRelationshipFilter = ContentType.SystemAttributeSet("|Config ToSic.Eav.DataSources.RelationshipFilter", "used to configure a RelationshipFilter DataSource",
+				new List<IAttributeDefinition>
 				{
-					ImpAttribDefinition.StringAttribute("Relationship", "Relationship", null, true),
-					ImpAttribDefinition.StringAttribute("Filter", "Filter", null, true),
+                    AttributeDefinition.StringAttribute("Relationship", "Relationship", null, true),
+                    AttributeDefinition.StringAttribute("Filter", "Filter", null, true),
 					//Import.AttributeHelperTools.BooleanAttribute("PassThroughOnEmptyFilter", "Pass-Throught on empty Filter", "If this is true and Filter results to an empty string, all entities are passed through.", true, false),
 				});
 
 			#endregion
 
 			// Collect AttributeSets for use in Import
-			var attributeSets = new List<ImpContentType>
+			var attributeSets = new List<Data.ContentType>
 			{
 				pipelinesAttributeSet,
 				pipelinePartsAttributeSet,

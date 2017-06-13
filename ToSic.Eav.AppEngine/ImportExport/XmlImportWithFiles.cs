@@ -8,8 +8,8 @@ using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Logging;
-using ToSic.Eav.ImportExport.Models;
 using ToSic.Eav.ImportExport.Xml;
+using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Repository.Efc.Parts;
@@ -266,26 +266,26 @@ namespace ToSic.Eav.Apps.ImportExport
 
 		#region AttributeSets
 
-		private List<ImpContentType> GetImportAttributeSets(IEnumerable<XElement> xAttributeSets)
+		private List<ContentType> GetImportAttributeSets(IEnumerable<XElement> xAttributeSets)
 		{
-            var importAttributeSets = new List<ImpContentType>();
+            var importAttributeSets = new List<ContentType>();
 
 			// Loop through AttributeSets
 			foreach (var attributeSet in xAttributeSets)
 			{
-				var attributes = new List<ImpAttribDefinition>();
+				var attributes = new List<IAttributeDefinition>();
                 //ImpAttribDefinition titleAttribute = null;// = new ImpAttribute();
 			    var attsetElem = attributeSet.Element(XmlConstants.Attributes);
                 if (attsetElem != null)
                     foreach (var xElementAttribute in attsetElem.Elements(XmlConstants.Attribute))
                     {
-                        var attribute = new ImpAttribDefinition(
+                        var attribute = new AttributeDefinition(
                             xElementAttribute.Attribute(XmlConstants.Static).Value,
                             null,
                             xElementAttribute.Attribute(XmlConstants.EntityTypeAttribute).Value,
                             null, null, null
                         );
-                        attribute.AttributeMetaData = GetImportEntities(xElementAttribute.Elements(XmlConstants.Entity), Constants.MetadataForField);
+                        attribute.InternalAttributeMetaData = GetImportEntities(xElementAttribute.Elements(XmlConstants.Entity), Constants.MetadataForField);
                         attributes.Add(attribute);
 
                         // Set Title Attribute
@@ -297,14 +297,14 @@ namespace ToSic.Eav.Apps.ImportExport
                     }
                 // check if it's normal (not a ghost) but still missing a title
 			    if(attributes.Any() && !attributes.Any(a => a.IsTitle)) 
-			        attributes.First().IsTitle = true;
+			        (attributes.First() as AttributeDefinition).IsTitle = true;
 
 			    // Add AttributeSet
-                var ct = new ImpContentType(attributeSet.Attribute(XmlConstants.Name).Value)
+                var ct = new ContentType(attributeSet.Attribute(XmlConstants.Name).Value)
 				{
-					TempAttribDefinitions = attributes,
-                    ParentConfigurationStaticName = attributeSet.Attributes(XmlConstants.AttributeSetParentDef).Any() ? attributeSet.Attribute(XmlConstants.AttributeSetParentDef).Value : "",
-                    SortAttributes = attributeSet.Attributes(XmlConstants.SortAttributes).Any() && bool.Parse(attributeSet.Attribute(XmlConstants.SortAttributes).Value)
+					Attributes = attributes,
+                    OnSaveUseParentStaticName = attributeSet.Attributes(XmlConstants.AttributeSetParentDef).Any() ? attributeSet.Attribute(XmlConstants.AttributeSetParentDef).Value : "",
+                    OnSaveSortAttributes = attributeSet.Attributes(XmlConstants.SortAttributes).Any() && bool.Parse(attributeSet.Attribute(XmlConstants.SortAttributes).Value)
 				};
 			    ct.SetImportParameters(
 			        scope: attributeSet.Attributes(XmlConstants.Scope).Any()

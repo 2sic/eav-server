@@ -79,5 +79,21 @@ namespace ToSic.Eav.Data
         #endregion
 
 
+        #region Helpers just for creating ContentTypes which will be imported
+        public void SetImportParameters(string scope, string staticName, string description, bool alwaysShareDef)
+	    {
+	        Scope = scope;
+	        StaticName = staticName;
+	        Description = description;
+            AlwaysShareConfiguration = alwaysShareDef;
+        }
+
+        // special values just needed for import / save 
+        // todo: try to place in a sub-object to un-clutter this ContentType object
+        public bool OnSaveSortAttributes { get; set; } = false;
+        public string OnSaveUseParentStaticName { get; set; }
+
+
+        #endregion
     }
 }

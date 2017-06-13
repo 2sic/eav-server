@@ -88,6 +88,7 @@
     <Compile Include="Data\Builder\AttributeDefinition.cs" />
     <Compile Include="Data\Builder\Attributes.cs" />
     <Compile Include="Data\Attribute_ofT.cs" />
+    <Compile Include="Data\Builder\ContentType.cs" />
     <Compile Include="Data\ContentType.cs" />
     <Compile Include="Data\Metadata.cs" />
     <Compile Include="Data\Dimension.cs" />

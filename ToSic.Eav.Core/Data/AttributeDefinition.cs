@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data
@@ -30,6 +32,14 @@ namespace ToSic.Eav.Data
             SortOrder = sortOrder;
 		}
 
+        /// <summary>
+        /// Get an Import-Attribute
+        /// </summary>
+        public AttributeDefinition(string name, string niceName, string type, string notes, bool? visibleInEditUi, object defaultValue): this(name, type, false, 0, 0)
+        {
+            InternalAttributeMetaData = new List<Entity> { Builder.AttributeDefinition.CreateAttributeMetadata(niceName, notes, visibleInEditUi, HelpersToRefactor.SerializeValue(defaultValue)) };
+        }
+
 
 
         /// <summary>
@@ -38,5 +48,10 @@ namespace ToSic.Eav.Data
         /// <returns><see cref="Attribute{ValueType}"/></returns>
         public IAttribute CreateAttribute() => CreateTypedAttribute(Name, Type);
 
+
+        #region material for defining/creating attributes / defining them for import
+
+        public List<Entity> InternalAttributeMetaData { get; set; }
+        #endregion
     }
 }
