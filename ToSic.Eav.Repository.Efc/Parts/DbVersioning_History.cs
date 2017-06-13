@@ -5,6 +5,7 @@ using System.Xml.Linq;
 using System.Xml.XPath;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
+using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Versioning;
 using ToSic.Eav.ImportExport.Xml;
 
@@ -20,10 +21,53 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         /// <param name="entityId">EntityId</param>
         /// <param name="changeId">ChangeId to retrieve</param>
-        /// <param name="defaultCultureDimension">Default Language</param>
-        private Entity PrepareRestoreEntity(int entityId, int changeId, int defaultCultureDimension)
+        ///// <param name="defaultCultureDimension">Default Language</param>
+        private Entity PrepareRestoreEntity(int entityId, int changeId/*, int defaultCultureDimension*/)
         {
-            // Get Timeline Item
+            var environment = Factory.Resolve<IImportExportEnvironment>();
+            var defLanguage = environment.DefaultLanguage;
+
+            var xEntity = GetTimelineItemOrThrowError(entityId, changeId);
+
+            var assignmentObjectTypeName = xEntity.Attribute(XmlConstants.KeyTargetType).Value;
+            var assignmentObjectTypeId = new DbShortcuts(DbContext).GetAssignmentObjectType(assignmentObjectTypeName).AssignmentObjectTypeId;
+
+            #region language detection / assignment temporarily not working yet - going without languages first
+            //// Prepare source and target-Languages
+            ////if (!defaultCultureDimension.HasValue)
+            ////    throw new NotSupportedException("GetEntityVersion without defaultCultureDimension is not yet supported.");
+
+            //var defaultLanguage = DbContext.Dimensions.GetDimension(defaultCultureDimension).ExternalKey;
+
+            //var currentLangs = DbContext.Dimensions.GetLanguages(false);
+            var currentLangs = DbContext.Dimensions.GetLanguageListForImport(defLanguage);
+            var sourceDimensions = DbContext.Dimensions.GetLanguages(true);
+
+
+            //var allXmlDimensionIds = ((IEnumerable<object>)xEntity.XPathEvaluate("/Value/Dimension/@DimensionId")).Select(d => int.Parse(((XAttribute)d).Value)).ToArray();
+            //var allSourceDimensionIdsDistinct = allXmlDimensionIds.Distinct().ToArray();
+            //var sourceDimensions = DbContext.Dimensions.GetDimensions(allSourceDimensionIdsDistinct);
+            //int sourceDefaultDimensionId;
+            //if (allSourceDimensionIdsDistinct.Contains(defaultCultureDimension))	// if default culture exists in the Entity, sourceDefaultDimensionId is still the same
+            //    sourceDefaultDimensionId = defaultCultureDimension;
+            //else
+            //{
+            //    var sourceDimensionsIdsGrouped = (from n in allXmlDimensionIds group n by n into g select new { DimensionId = g.Key, Qty = g.Count() }).ToArray();
+            //    sourceDefaultDimensionId = sourceDimensionsIdsGrouped.Any() ? sourceDimensionsIdsGrouped.OrderByDescending(g => g.Qty).First().DimensionId : defaultCultureDimension;
+            //}
+
+
+            //var targetDimsRetyped = currentLangs.Select(d => new Dimension { DimensionId = d.DimensionId, Key = d.ExternalKey}).ToList();
+            var sourceDimsRetyped = sourceDimensions.Select(s => new Dimension { DimensionId = s.DimensionId, Key = s.ExternalKey }).ToList();
+            #endregion
+
+            // Load Entity from Xml unsing XmlImport
+            return XmlToImportEntity.BuildEntityFromXml(xEntity, assignmentObjectTypeId, currentLangs, sourceDimsRetyped, null, defLanguage);
+        }
+
+        private XElement GetTimelineItemOrThrowError(int entityId, int changeId)
+        {
+// Get Timeline Item
             string timelineItem;
             try
             {
@@ -40,33 +84,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             // Parse XML
             var xEntity = XElement.Parse(timelineItem);
-            var assignmentObjectTypeName = xEntity.Attribute(XmlConstants.KeyTargetType).Value;
-            var assignmentObjectTypeId = new DbShortcuts(DbContext).GetAssignmentObjectType(assignmentObjectTypeName).AssignmentObjectTypeId;
-
-            // Prepare source and target-Languages
-            //if (!defaultCultureDimension.HasValue)
-            //    throw new NotSupportedException("GetEntityVersion without defaultCultureDimension is not yet supported.");
-
-            var defaultLanguage = DbContext.Dimensions.GetDimension(defaultCultureDimension).ExternalKey;
-
-            var targetDimensions = DbContext.Dimensions.GetLanguages();
-            var allXmlDimensionIds = ((IEnumerable<object>)xEntity.XPathEvaluate("/Value/Dimension/@DimensionId")).Select(d => int.Parse(((XAttribute)d).Value)).ToArray();
-            var allSourceDimensionIdsDistinct = allXmlDimensionIds.Distinct().ToArray();
-            var sourceDimensions = DbContext.Dimensions.GetDimensions(allSourceDimensionIdsDistinct);
-            int sourceDefaultDimensionId;
-            if (allSourceDimensionIdsDistinct.Contains(defaultCultureDimension))	// if default culture exists in the Entity, sourceDefaultDimensionId is still the same
-                sourceDefaultDimensionId = defaultCultureDimension;
-            else
-            {
-                var sourceDimensionsIdsGrouped = (from n in allXmlDimensionIds group n by n into g select new { DimensionId = g.Key, Qty = g.Count() }).ToArray();
-                sourceDefaultDimensionId = sourceDimensionsIdsGrouped.Any() ? sourceDimensionsIdsGrouped.OrderByDescending(g => g.Qty).First().DimensionId : defaultCultureDimension;
-            }
-
-
-            var targetDimsRetyped = targetDimensions.Select(d => new Data.Dimension { DimensionId = d.DimensionId, Key = d.ExternalKey}).ToList();
-            var sourceDimsRetyped = sourceDimensions.Select(s => new Data.Dimension {DimensionId = s.DimensionId, Key = s.ExternalKey}).ToList();
-            // Load Entity from Xml unsing XmlImport
-            return XmlToImportEntity.BuildImpEntityFromXml(xEntity, assignmentObjectTypeId, targetDimsRetyped, sourceDimsRetyped, sourceDefaultDimensionId, defaultLanguage);
+            return xEntity;
         }
 
 
@@ -142,14 +160,14 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Restore an Entity to the specified Version by creating a new Version using the Import
         /// </summary>
-        public void RestoreEntity(int entityId, int changeId, int defaultCultureDimension)
+        public void RestoreEntity(int entityId, int changeId)
         {
-            // Get Entity in specified Version/ChangeId
-            var newVersion = PrepareRestoreEntity(entityId, changeId, defaultCultureDimension);
-
             // ensure we have an AppId, as this item could exist multiple times
             if (DbContext.AppId == 0)
                 throw new Exception("can't work without a valid app-id, will cancel");
+
+            // Get Entity in specified Version/ChangeId
+            var newVersion = PrepareRestoreEntity(entityId, changeId);
 
             // Restore Entity
             var import = new DbImport(DbContext.ZoneId, DbContext.AppId, false, false);

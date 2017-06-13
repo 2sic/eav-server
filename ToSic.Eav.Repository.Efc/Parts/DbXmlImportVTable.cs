@@ -69,8 +69,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// The entities created from the document. They will be saved to the repository.
         /// </summary>
-        public List<Data.Entity> ImportEntities {get; }
-        private Data.Entity GetImportEntity(Guid entityGuid) => ImportEntities
+        public List<Entity> ImportEntities {get; }
+        private Entity GetImportEntity(Guid entityGuid) => ImportEntities
             .FirstOrDefault(entity => entity.EntityGuid == entityGuid);
 
         /// <summary>

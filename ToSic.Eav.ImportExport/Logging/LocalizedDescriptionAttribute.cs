@@ -23,13 +23,13 @@ namespace ToSic.Eav.ImportExport.Logging
         public LocalizedDescriptionAttribute(string resourceKey, Type resourceType)
         {
             _resourceManager = new ResourceManager(resourceType.FullName, resourceType.Assembly);
-            this._resourceKey = resourceKey;
+            _resourceKey = resourceKey;
         }
 
         public LocalizedDescriptionAttribute(string resourceKey, Type resourceType, string resourceFolder)
         {
             _resourceManager = new ResourceManager(resourceFolder + "." + resourceType.Name, resourceType.Assembly);
-            this._resourceKey = resourceKey;
+            _resourceKey = resourceKey;
         }
 
         public override string Description

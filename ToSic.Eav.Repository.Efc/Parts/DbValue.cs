@@ -212,7 +212,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             #region Update DimensionIds on this and other values
 
             // Update Dimensions as specified by Import
-            if (valueDimensions != null && valueDimensions.Any())
+            if (valueDimensions != null) // 2017-06-13 2dm - must also do if list is empty, to remove old parts... && valueDimensions.Any())
             {
                 var valueDimensionsToDelete = value.ToSicEavValuesDimensions.ToList();
                 // loop all specified Dimensions, add or update it for this value
@@ -234,7 +234,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 }
 
                 // remove old dimensions
-                DbContext.SqlDb.RemoveRange(valueDimensionsToDelete); // 2017-04-19 todo validate // valueDimensionsToDelete.ForEach(DbContext.SqlDb.DeleteObject);
+                DbContext.SqlDb.RemoveRange(valueDimensionsToDelete);
             }
             // Update Dimensions as specified on the whole Entity
             else if (dimensionIds != null)

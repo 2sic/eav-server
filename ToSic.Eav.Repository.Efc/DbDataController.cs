@@ -200,7 +200,7 @@ namespace ToSic.Eav.Repository.Efc
 
 
             if (modifiedItems != 0 && PurgeAppCacheOnSave)
-                (_cache ?? (_cache = Eav.Factory.Resolve<ICache>())).PurgeCache(ZoneId, AppId);
+                (_cache ?? (_cache = Factory.Resolve<ICache>())).PurgeCache(ZoneId, AppId);
                 //DataSource.GetCache(ZoneId, AppId).PurgeCache(ZoneId, AppId);
 
             return modifiedItems;

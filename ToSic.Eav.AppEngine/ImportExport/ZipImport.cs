@@ -77,7 +77,7 @@ namespace ToSic.Eav.Apps.ImportExport
                                 {
                                     var fileContents = File.ReadAllText(Path.Combine(appDirectory, xmlFileName));
 	                                var doc = XDocument.Parse(fileContents);
-									var import = new XmlImportWithFiles(_environment.DefaultLanguage);
+                                    var import = new XmlImportWithFiles();//_environment.DefaultLanguage);
 
 									if (!import.IsCompatible(doc))
 										throw new Exception("The app / package is not compatible with this version of eav and the 2sxc-host.");

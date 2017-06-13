@@ -67,7 +67,7 @@ namespace ToSic.Eav.Apps
                 // note: cache at this level (to not instantiate a DB controller !) 
                 if (!LanguageCache.ContainsKey(ZoneId))
                 {
-                    LanguageCache[ZoneId] = DataController.Dimensions.GetLanguages()
+                    LanguageCache[ZoneId] = DataController.Dimensions.GetLanguages(true)
                         // ReSharper disable once SuspiciousTypeConversion.Global
                         .Select(d => new ZoneLanguagesTemp {Active = d.Active, TennantKey = d.ExternalKey})
                         .ToList();

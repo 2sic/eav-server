@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Versioning;
+using ToSic.Eav.Repository.Efc.Tests.Mocks;
 
 namespace ToSic.Eav.Repository.Efc.Tests
 {
@@ -26,6 +28,9 @@ namespace ToSic.Eav.Repository.Efc.Tests
         // just a note: this is Portal 54 or something on Daniels test server, change it to your system if you want to run these tests!
         public const int ZoneId = 56;
 
+        public IImportExportEnvironment Environment = new ImportExportEnvironmentMock();
+
+
         #endregion
 
         [TestMethod]
@@ -36,7 +41,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var dc = DbDataController.Instance(DevPc2dmZoneId, DevPc2dmAppId);
             var all = dc.Versioning.GetHistoryList(id, false);
             var vId = all.First(x => x.VersionNumber == version).ChangeSetId;
-            dc.Versioning.RestoreEntity(DevPc2dmItemOnHome, vId, DevPc2dmLanguageDefault);
+            dc.Versioning.RestoreEntity(DevPc2dmItemOnHome, vId);
 
         }
 

@@ -34,10 +34,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public ToSicEavAssignmentObjectTypes GetAssignmentObjectType(string name)
-        {
-            return DbContext.SqlDb.ToSicEavAssignmentObjectTypes.Single(a => a.Name == name);
-        }
+        public ToSicEavAssignmentObjectTypes GetAssignmentObjectType(string name) => DbContext.SqlDb.ToSicEavAssignmentObjectTypes.Single(a => a.Name == name);
 
         /// <summary>
         /// Get all AssignmentObjectTypes with Id and Name

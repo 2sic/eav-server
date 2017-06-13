@@ -94,7 +94,7 @@ namespace ToSic.Eav.Apps.Parts
 
         public List<ItemHistory> GetHistory(int id) => _appManager.DataController.Versioning.GetHistoryList(id, true);
 
-        public void RestorePrevious(int id, int historyId, int primaryDimensionId)
-            => _appManager.DataController.Versioning.RestoreEntity(id, historyId, primaryDimensionId); 
+        public void RestorePrevious(int id, int historyId)
+            => _appManager.DataController.Versioning.RestoreEntity(id, historyId); 
     }
 }

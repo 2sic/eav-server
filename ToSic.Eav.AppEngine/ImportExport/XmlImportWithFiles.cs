@@ -25,11 +25,11 @@ namespace ToSic.Eav.Apps.ImportExport
 		public List<ExportImportMessage> ImportLog;
 
 		//private List<ToSicEavDimensions> _sourceDimensions;
-		private List<Data.Dimension> _sourceDimensions;
+		private List<Dimension> _sourceDimensions;
 		private string _sourceDefaultLanguage;
 		private int? _sourceDefaultDimensionId;
 		//private List<ToSicEavDimensions> _targetDimensions;
-        private List<Data.Dimension> _targetDimensions;
+        private List<Dimension> _targetDimensions;
         private DbDataController _eavContext;
 		private int _appId;
 		private int _zoneId;
@@ -52,12 +52,12 @@ namespace ToSic.Eav.Apps.ImportExport
 		/// </summary>
 		/// <param name="defaultLanguage">The portals default language / culture - example: de-DE</param>
 		/// <param name="allowSystemChanges">Specify if the import should be able to change system-wide things like shared attributesets</param>
-		public XmlImportWithFiles(string defaultLanguage, bool allowSystemChanges = false)
+		public XmlImportWithFiles(string defaultLanguage = null, bool allowSystemChanges = false)
 		{
 		    _environment = Factory.Resolve<IImportExportEnvironment>();
 			// Prepare
 			ImportLog = new List<ExportImportMessage>();
-			DefaultLanguage = defaultLanguage;
+		    DefaultLanguage = defaultLanguage ?? _environment.DefaultLanguage;
 			AllowSystemChanges = allowSystemChanges;
         }
 
@@ -197,14 +197,7 @@ namespace ToSic.Eav.Apps.ImportExport
 			PrepareFileIdCorrectionList(xmlSource);
 
             #region Prepare dimensions (languages) based on header...
-            var sDimensions = xmlSource.Element(XmlConstants.Header)?.Element(XmlConstants.DimensionDefinition)?.Elements(XmlConstants.DimensionDefElement).Select(p => new ToSicEavDimensions
-			{
-				DimensionId = int.Parse(p.Attribute(XmlConstants.DimId).Value),
-				Name = p.Attribute(XmlConstants.Name).Value,
-				SystemKey = p.Attribute(XmlConstants.CultureSysKey).Value,
-				ExternalKey = p.Attribute(XmlConstants.CultureExtKey).Value,
-				Active = Boolean.Parse(p.Attribute(XmlConstants.CultureIsActiveAttrib).Value)
-			}).ToList();
+            var sDimensions = BuildSourceDimensionsList(xmlSource);
 
 			_sourceDefaultLanguage = xmlSource.Element(XmlConstants.Header)?.Element(XmlConstants.Language)?.Attribute(XmlConstants.LangDefault)?.Value;
 		    if (sDimensions == null || _sourceDefaultLanguage == null)
@@ -216,18 +209,20 @@ namespace ToSic.Eav.Apps.ImportExport
             _sourceDefaultDimensionId = sDimensions.Any() ?
                 sDimensions.FirstOrDefault(p => p.ExternalKey == _sourceDefaultLanguage)?.DimensionId
 				: new int?();
-            _sourceDimensions = sDimensions.Select(s => new Data.Dimension { DimensionId = s.DimensionId, Key = s.ExternalKey }).ToList();
+            _sourceDimensions = sDimensions.Select(s => new Dimension { DimensionId = s.DimensionId, Key = s.ExternalKey }).ToList();
 
-            var langs = _eavContext.Dimensions.GetLanguages();//.GetDimensionChildren(Constants.CultureSystemKey);
-			if (langs.Count == 0)
-				langs.Add(new ToSicEavDimensions
-				{
-					Active = true,
-					ExternalKey = DefaultLanguage,
-					Name = "(added by import System, default language " + DefaultLanguage + ")",
-					SystemKey = Constants.CultureSystemKey
-				});
-            _targetDimensions = langs.Select(d => new Data.Dimension { DimensionId = d.DimensionId, Key = d.ExternalKey }).ToList();
+            // 2017-06-13 2dm moving to dimensions layer...
+            //var langs = _eavContext.Dimensions.GetLanguages();//.GetDimensionChildren(Constants.CultureSystemKey);
+            //if (langs.Count == 0)
+            //	langs.Add(new ToSicEavDimensions
+            //	{
+            //		Active = true,
+            //		ExternalKey = DefaultLanguage,
+            //		Name = "(added by import System, default language " + DefaultLanguage + ")",
+            //		SystemKey = Constants.CultureSystemKey
+            //	});
+            //_targetDimensions = langs.Select(d => new Data.Dimension { DimensionId = d.DimensionId, Key = d.ExternalKey }).ToList();
+            _targetDimensions = _eavContext.Dimensions.GetLanguageListForImport(DefaultLanguage);
             #endregion
 
             var atsNodes = xmlSource.Element(XmlConstants.AttributeSets)?.Elements(XmlConstants.AttributeSet);
@@ -249,7 +244,24 @@ namespace ToSic.Eav.Apps.ImportExport
 			return true;
 		}
 
-        /// <summary>
+	    private static List<ToSicEavDimensions> BuildSourceDimensionsList(XElement xmlSource)
+	    {
+	        var sDimensions =
+	            xmlSource.Element(XmlConstants.Header)?
+	                .Element(XmlConstants.DimensionDefinition)?
+	                .Elements(XmlConstants.DimensionDefElement)
+	                .Select(p => new ToSicEavDimensions
+	                {
+	                    DimensionId = int.Parse(p.Attribute(XmlConstants.DimId).Value),
+	                    Name = p.Attribute(XmlConstants.Name).Value,
+	                    SystemKey = p.Attribute(XmlConstants.CultureSysKey).Value,
+	                    ExternalKey = p.Attribute(XmlConstants.CultureExtKey).Value,
+	                    Active = Boolean.Parse(p.Attribute(XmlConstants.CultureIsActiveAttrib).Value)
+	                }).ToList();
+	        return sDimensions;
+	    }
+
+	    /// <summary>
         /// Maps EAV import messages to 2sxc import messages
         /// </summary>
         /// <param name="importLog"></param>
@@ -566,7 +578,7 @@ namespace ToSic.Eav.Apps.ImportExport
             //var targetDimsRetyped = _targetDimensions.Select(d => new Data.Dimension { DimensionId = d.DimensionId, Key = d.ExternalKey }).ToList();
             //var sourceDimsRetyped = _sourceDimensions.Select(s => new Data.Dimension { DimensionId = s.DimensionId, Key = s.ExternalKey }).ToList();
 
-            var importEntity = XmlToImportEntity.BuildImpEntityFromXml(entityNode, assignmentObjectTypeId,
+            var importEntity = XmlToImportEntity.BuildEntityFromXml(entityNode, assignmentObjectTypeId,
 				_targetDimensions, _sourceDimensions, _sourceDefaultDimensionId, DefaultLanguage, keyNumber, keyGuid, keyString);
 
 			return importEntity;

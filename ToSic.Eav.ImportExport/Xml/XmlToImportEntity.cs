@@ -25,7 +25,7 @@ namespace ToSic.Eav.ImportExport.Xml
 		/// <param name="keyNumber">KeyNumber of the Entity</param>
 		/// <param name="keyGuid">KeyGuid of the Entity</param>
 		/// <param name="keyString">KeyString of the Entity</param>
-		public static Entity BuildImpEntityFromXml(XElement xEntity, int assignmentObjectTypeId, List<Data.Dimension> targetDimensions, List<Data.Dimension> sourceDimensions, int? sourceDefaultDimensionId, string defaultLanguage, int? keyNumber = null, Guid? keyGuid = null, string keyString = null)
+		public static Entity BuildEntityFromXml(XElement xEntity, int assignmentObjectTypeId, List<Dimension> targetDimensions, List<Dimension> sourceDimensions, int? sourceDefaultDimensionId, string defaultLanguage, int? keyNumber = null, Guid? keyGuid = null, string keyString = null)
 		{
 		    var targetValues = new Dictionary<string, IAttribute>();// List<IValue>>();
 
@@ -33,42 +33,49 @@ namespace ToSic.Eav.ImportExport.Xml
 			var valuesGroupedByStaticName = xEntity.Elements(XmlConstants.ValueNode)
 				.GroupBy(v => v.Attribute(XmlConstants.KeyAttr).Value, e => e, (key, e) => new { StaticName = key, Values = e.ToList() });
 
-			// Process each attribute (values grouped by StaticName)
-			foreach (var sourceAttribute in valuesGroupedByStaticName)
+            // todo: prepare language mapper-lists, to later assign in case import/target have different languages
+            // if(targetDimensions == null)
+
+			// This list will contain all source dimensions
+			var sourceLangs = new List<Dimension>();
+
+		    foreach (var targetDimension in targetDimensions.OrderByDescending(p => p.Key == defaultLanguage).ThenBy(p => p.Key))
+		    {
+				// Add exact match source language, if exists
+				var exactMatchSourceDimension = sourceDimensions.FirstOrDefault(p => p.Key == targetDimension.Key);
+				if (exactMatchSourceDimension != null)
+					sourceLangs.Add(exactMatchSourceDimension);
+
+				// Add un-exact match language
+				var unExactMatchSourceDimensions = sourceDimensions.Where(p => p.Key != targetDimension.Key && p.Key.StartsWith(targetDimension.Key.Substring(0, 3)))
+					.OrderByDescending(p => p.Key == defaultLanguage)
+					.ThenByDescending(p => p.Key.Substring(0, 2) == p.Key.Substring(3, 2))
+					.ThenBy(p => p.Key);
+				sourceLangs.AddRange(unExactMatchSourceDimensions);
+
+				// Add primary language, if current target is primary
+                if (targetDimension.Key == defaultLanguage && sourceDefaultDimensionId.HasValue)
+				{
+					var sourcePrimaryLanguage = sourceDimensions.FirstOrDefault(p => p.DimensionId == sourceDefaultDimensionId);
+					if (sourcePrimaryLanguage != null && !sourceLangs.Contains(sourcePrimaryLanguage))
+						sourceLangs.Add(sourcePrimaryLanguage);
+				}
+		    }
+
+
+		    // Process each attribute (values grouped by StaticName)
+            foreach (var sourceAttrib in valuesGroupedByStaticName)
 			{
-				var sourceValues = sourceAttribute.Values;
+				var sourceValues = sourceAttrib.Values;
 				var tempTargetValues = new List<ImportValue>();
 
 				// Process each target's language
 				foreach (var targetDimension in targetDimensions.OrderByDescending(p => p.Key == defaultLanguage).ThenBy(p => p.Key))
 				{
-					// This list will contain all source dimensions
-					var sourceLanguages = new List<Data.Dimension>();
-
-					// Add exact match source language, if exists
-					var exactMatchSourceDimension = sourceDimensions.FirstOrDefault(p => p.Key == targetDimension.Key);
-					if (exactMatchSourceDimension != null)
-						sourceLanguages.Add(exactMatchSourceDimension);
-
-					// Add un-exact match language
-					var unExactMatchSourceDimensions = sourceDimensions.Where(p => p.Key != targetDimension.Key && p.Key.StartsWith(targetDimension.Key.Substring(0, 3)))
-						.OrderByDescending(p => p.Key == defaultLanguage)
-						.ThenByDescending(p => p.Key.Substring(0, 2) == p.Key.Substring(3, 2))
-						.ThenBy(p => p.Key);
-					sourceLanguages.AddRange(unExactMatchSourceDimensions);
-
-					// Add primary language, if current target is primary
-                    if (targetDimension.Key == defaultLanguage && sourceDefaultDimensionId.HasValue)
-					{
-						var sourcePrimaryLanguage = sourceDimensions.FirstOrDefault(p => p.DimensionId == sourceDefaultDimensionId);
-						if (sourcePrimaryLanguage != null && !sourceLanguages.Contains(sourcePrimaryLanguage))
-							sourceLanguages.Add(sourcePrimaryLanguage);
-					}
-
 					XElement sourceValue = null;
 					var readOnly = false;
 
-					foreach (var sourceLanguage in sourceLanguages)
+					foreach (var sourceLanguage in sourceLangs)
 					{
 						sourceValue = sourceValues.FirstOrDefault(p => p.Elements(XmlConstants.ValueDimNode).Any(d => d.Attribute(XmlConstants.DimId).Value == sourceLanguage.DimensionId.ToString()));
 
@@ -117,20 +124,14 @@ namespace ToSic.Eav.ImportExport.Xml
 				            tempImportValue.XmlValue.Attribute(XmlConstants.ValueAttr).Value,
 				            tempImportValue.Dimensions))
                     .ToList();
-			    var newAttr = AttributeBase.CreateTypedAttribute(sourceAttribute.StaticName, tempTargetValues.First().XmlValue.Attribute(XmlConstants.EntityTypeAttribute).Value);
+			    var newAttr = AttributeBase.CreateTypedAttribute(sourceAttrib.StaticName, tempTargetValues.First().XmlValue.Attribute(XmlConstants.EntityTypeAttribute).Value);
 			    newAttr.Values = currentAttributesImportValues;
 
-                targetValues.Add(sourceAttribute.StaticName, newAttr);
+                targetValues.Add(sourceAttrib.StaticName, newAttr);
 			}
-
-            //continue here
-            //    reason is that ATM it prepares IAttributes, but the simple creator can't handle that - expects String,object
-            //    but I need IAttribute, because it contains language information
 
             var targetEntity = new Entity(Guid.Parse(xEntity.Attribute(XmlConstants.GuidNode).Value), xEntity.Attribute(XmlConstants.AttSetStatic).Value, targetValues.ToDictionary(x => x.Key, y => (object)y.Value))
             {
-                //AttributeSetStaticName = xEntity.Attribute(XmlConstants.AttSetStatic).Value,
-                //EntityGuid = Guid.Parse(xEntity.Attribute(XmlConstants.GuidNode).Value),
                 Metadata = new Metadata
                 {
                     TargetType = assignmentObjectTypeId,

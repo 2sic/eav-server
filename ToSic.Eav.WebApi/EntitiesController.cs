@@ -353,11 +353,11 @@ namespace ToSic.Eav.WebApi
         }
 
         [HttpGet]
-        public bool Restore(int appId, int entityId, int changeId, int defaultCultureDimension = 0)
+        public bool Restore(int appId, int entityId, int changeId)
         {
             //throw new Exception("this is not tested yet!");
             SetAppIdAndUser(appId);
-            AppManager.Entities.RestorePrevious(entityId, changeId, defaultCultureDimension); // CurrentContext.Versioning.RestoreEntityVersion(entityId, changeId, DefaultCultureDimension);
+            AppManager.Entities.RestorePrevious(entityId, changeId); // CurrentContext.Versioning.RestoreEntityVersion(entityId, changeId, DefaultCultureDimension);
             return true;
         }
         #endregion
