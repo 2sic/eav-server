@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Logging;
 using ToSic.Eav.ImportExport.Models;
@@ -190,17 +191,17 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     if (value == XmlConstants.Empty /* "[\"\"]" */) //value.IsValueEmpty())
                     {
                         // It is an empty string
-                        ImpEntity.AppendAttributeValue(entity.Attributes, valueName, "", attribute.Type, documentElementLanguage, false,
+                        entity.Attributes.AddValue(valueName, "", attribute.Type, documentElementLanguage, false,
                             _resolveReferenceMode == ImportResourceReferenceMode.Resolve);
                         continue;
                     }
 
-                    var valueReferenceLanguage = value.GetValueReferenceLanguage();
+                    var valueReferenceLanguage = value.GetLanguageInARefTextCode();
                     if (valueReferenceLanguage == null) // It is not a value reference.. it is a normal text
                     {
                         try
                         {
-                            ImpEntity.AppendAttributeValue(entity.Attributes, valueName, value, valueType, documentElementLanguage, false,
+                            entity.Attributes.AddValue(valueName, value, valueType, documentElementLanguage, false,
                                 _resolveReferenceMode == ImportResourceReferenceMode.Resolve);
                         }
                         catch (FormatException)
@@ -220,10 +221,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     }
                     var valueReadOnly = valueReferenceProtection == XmlConstants.ReadOnly /* "ro" */;
 
-                    var entityValue = entity.ImpGetValueItemOfLanguage(valueName, valueReferenceLanguage);
+                    // if this value is just a placeholder/reference to another value,
+                    // then find the master record, and add this language to it's users
+                    var entityValue = entity.Attributes.FindItemOfLanguage(valueName, valueReferenceLanguage);
                     if (entityValue != null)
                     {
-                        //entityValue.AddLanguageReference(documentElementLanguage, valueReadOnly);
                         entityValue.Languages.Add(new Dimension { Key = documentElementLanguage, ReadOnly = valueReadOnly });
                         continue;
                     }
@@ -244,7 +246,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                         continue;
                     }
 
-                    ImpEntity.AppendAttributeValue(entity.Attributes, valueName, dbEntityValue.Value, valueType, valueReferenceLanguage,
+                    entity.Attributes.AddValue(valueName, dbEntityValue.Value, valueType, valueReferenceLanguage,
                             dbEntityValue.IsLanguageReadOnly(valueReferenceLanguage),
                             _resolveReferenceMode == ImportResourceReferenceMode.Resolve)
                         //.AddLanguageReference(documentElementLanguage, valueReadOnly);
@@ -448,7 +450,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Get for example en-US from [ref(en-US,ro)].
         /// </summary>
-        public static string GetValueReferenceLanguage(this string valueString)
+        public static string GetLanguageInARefTextCode(this string valueString)
         {
             var match = Regex.Match(valueString, @"\[ref\((?<language>.+),(?<readOnly>.+)\)\]");
             return match.Success ? match.Groups["language"].Value : null;

@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Script.Serialization;
+using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Implementations.ValueConverter;
 using ToSic.Eav.Interfaces;
-#pragma warning disable 618
 
-// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Data
 {
 	/// <summary>
@@ -96,7 +95,7 @@ namespace ToSic.Eav.Data
 		{
 			EntityId = entityId;
 			Type = new ContentType(contentTypeName);
-			Attributes = GetTypedAttributesSimple(values, titleAttribute);
+			Attributes = values.ConvertToAttributes();
 			try
 			{
 			    if (titleAttribute != null)
@@ -113,10 +112,20 @@ namespace ToSic.Eav.Data
 			Relationships = new RelationshipManager(this, new EntityRelationshipItem[0]);
 		}
 
-		/// <summary>
-		/// Create a new Entity from a data store (usually SQL backend)
-		/// </summary>
-		public Entity(Guid entityGuid, int entityId, int repositoryId, IMetadata isMetadata, IContentType type, bool isPublished, IEnumerable<EntityRelationshipItem> allRelationships, DateTime modified, string owner)
+        /// <summary>
+        /// Create a brand new Entity. 
+        /// Mainly used for entities which are created for later saving
+        /// </summary>
+        public Entity(Guid entityGuid, string contentTypeName, IDictionary<string, object> values) : this(0, contentTypeName, values)
+        {
+            EntityGuid = entityGuid;
+        }
+
+
+        /// <summary>
+        /// Create a new Entity from a data store (usually SQL backend)
+        /// </summary>
+        public Entity(Guid entityGuid, int entityId, int repositoryId, IMetadata isMetadata, IContentType type, bool isPublished, IEnumerable<EntityRelationshipItem> allRelationships, DateTime modified, string owner)
 		{
 			EntityId = entityId;
 			EntityGuid = entityGuid;
@@ -136,74 +145,22 @@ namespace ToSic.Eav.Data
 
 		/// <summary>
 		/// Create a new Entity based on an Entity and Attributes
+		/// Used in the Attribute-Filter, which generates a new entity with less properties
 		/// </summary>
 		public Entity(IEntity entity, Dictionary<string, IAttribute> attributes, IEnumerable<EntityRelationshipItem> allRelationships, string owner)
 		{
 			EntityId = entity.EntityId;
 			EntityGuid = entity.EntityGuid;
 		    Metadata = ((Metadata)entity.Metadata).CloneIsMetadata();
-			//AssignmentObjectTypeId = entity.AssignmentObjectTypeId;
 			Type = entity.Type;
 			Title = entity.Title;
 			IsPublished = entity.IsPublished;
 			Attributes = attributes;
 			RepositoryId = entity.RepositoryId;
 			Relationships = new RelationshipManager(this, allRelationships);
-
             Owner = owner;
         }
 
-        #region Helper to assemble an entity from a dictionary of properties
-        /// <summary>
-        /// Convert a NameValueCollection-Like List to a Dictionary of IAttributes
-        /// </summary>
-        private static Dictionary<string, IAttribute> GetTypedAttributesSimple(IDictionary<string, object> attributes, string titleAttributeName)
-        {
-            var result = new Dictionary<string, IAttribute>(StringComparer.OrdinalIgnoreCase);
-
-            foreach (var attribute in attributes)
-            {
-                // in case the object is already an IAttribute, use that, don't rebuild it
-                if (attribute.Value is IAttribute)
-                    result[attribute.Key] = (IAttribute) attribute.Value;
-                else
-                {
-                    var attributeType = GetAttributeTypeName(attribute.Value);
-                    //var baseModel = new AttributeDefinition(attribute.Key, attributeType, attribute.Key == titleAttributeName, 0, 0);
-                    var attributeModel = AttributeBase.CreateTypedAttribute(attribute.Key, attributeType);//  baseModel.CreateAttribute();
-                    var valuesModelList = new List<IValue>();
-                    if (attribute.Value != null)
-                    {
-                        var valueModel = Value.Build(attributeType, attribute.Value.ToString(), null);
-                        valuesModelList.Add(valueModel);
-                    }
-
-                    attributeModel.Values = valuesModelList;
-
-                    result[attribute.Key] = attributeModel;
-                }
-
-
-            }
-
-            return result;
-
-            // helper to get text-name of the type
-            string GetAttributeTypeName(object value)
-            {
-                if (value is DateTime)
-                    return "DateTime";
-                if (value is decimal || value is int || value is double)
-                    return "Number";
-                if (value is bool)
-                    return "Boolean";
-                if (value is Guid || value is List<Guid> || value is List<Guid?>)
-                    return "Entity";
-                return "String";
-            }
-        }
-
-        #endregion
 
         #endregion
 
@@ -323,6 +280,12 @@ namespace ToSic.Eav.Data
 
             return bestTitle?.ToString();
         }
+
+        #endregion
+
+        #region Save/Update settings - needed when passing this object to the save-layer
+
+        public bool OnSaveForceNoBranching { get; set; }
 
         #endregion
     }

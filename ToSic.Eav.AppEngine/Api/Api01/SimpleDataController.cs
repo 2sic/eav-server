@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport.Models;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repository.Efc;
@@ -162,25 +163,6 @@ namespace ToSic.Eav.Api.Api01
         }
 
 
-
-        //private static ImpEntity CreateImportEntity(string attributeSetStaticName)
-        //{
-        //    return CreateImportEntity(Guid.NewGuid(), attributeSetStaticName);
-        //}
-
-        //private static ImpEntity CreateImportEntity(Guid entityGuid, string attributeSetStaticName)
-        //{
-        //    return new ImpEntity(entityGuid,attributeSetStaticName, new Dictionary<string, object>())
-        //    {
-        //        //EntityGuid = entityGuid,
-        //        //AttributeSetStaticName = attributeSetStaticName,
-        //        //KeyTypeId = Constants.NotMetadata,
-        //        //KeyNumber = null,
-        //        //Attributes = new Dictionary<string, Interfaces.IAttribute>()// new Dictionary<string, List<Interfaces.IValue>>()
-        //    };
-        //}
-
-
         private Dictionary<string, object> ConvertEntityRelations(Dictionary<string, object> values)
         {
             var result = new Dictionary<string, object>();
@@ -230,7 +212,7 @@ namespace ToSic.Eav.Api.Api01
                 // Handle content-type attributes
                 var attribute = attributeSet.AttributeByName(value.Key);
                 if (attribute != null)
-                    ImpEntity.AppendAttributeValue(impEntity.Attributes, attribute.StaticName, value.Value.ToString(), attribute.Type, valuesLanguage, valuesReadOnly, resolveHyperlink);
+                    impEntity.Attributes.AddValue(attribute.StaticName, value.Value.ToString(), attribute.Type, valuesLanguage, valuesReadOnly, resolveHyperlink);
             }
         }
     }

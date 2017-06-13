@@ -85,6 +85,7 @@
     <Compile Include="Data\AppDataPackage.cs" />
     <Compile Include="Data\AttributeDefinition.cs" />
     <Compile Include="Data\AttributeBase.cs" />
+    <Compile Include="Data\Builder\Attributes.cs" />
     <Compile Include="Data\Attribute_ofT.cs" />
     <Compile Include="Data\ContentType.cs" />
     <Compile Include="Data\Metadata.cs" />

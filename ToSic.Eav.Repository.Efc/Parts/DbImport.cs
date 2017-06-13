@@ -327,7 +327,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             #region Another simple case - we have published entities, but are saving unpublished - so we create a new one
 
-            if (!impEntity.IsPublished && dbExistingEntities.Count(e => e.IsPublished == false) == 0 && !impEntity.ForceNoBranch)
+            if (!impEntity.IsPublished && dbExistingEntities.Count(e => e.IsPublished == false) == 0 && !impEntity.OnSaveForceNoBranching)
             {
                 var publishedId = dbExistingEntities.First().EntityId;
                 _context.Entities.AddImportEntity(dbAttrSet.AttributeSetId, impEntity, _importLog, impEntity.IsPublished, publishedId);
@@ -377,7 +377,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             // todo: TestImport - ensure that the EntityId of this is what previously was the RepositoryID
             _context.Entities.SaveEntity(editableVersionOfTheEntity.EntityId/*RepositoryId*/, newValues, /*masterRecord:true,*/ updateLog: _importLog,
-                preserveUndefinedValues: _keepAttributesMissingInImport, isPublished: impEntity.IsPublished, forceNoBranch: impEntity.ForceNoBranch);
+                preserveUndefinedValues: _keepAttributesMissingInImport, isPublished: impEntity.IsPublished, forceNoBranch: impEntity.OnSaveForceNoBranching);
 
             #endregion
         }

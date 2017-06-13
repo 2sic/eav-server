@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Http;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Builder;
 using ToSic.Eav.WebApi.Formats;
 using ToSic.Eav.ImportExport.Models;
 using ToSic.Eav.ImportExport.Versioning;
@@ -21,7 +22,7 @@ namespace ToSic.Eav.WebApi
         { }
 
         #region GetOne GetAll calls
-        public ToSic.Eav.Interfaces.IEntity GetEntityOrThrowError(string contentType, int id)
+        public Interfaces.IEntity GetEntityOrThrowError(string contentType, int id)
         {
             //SetAppIdAndUser(appId);
 
@@ -32,7 +33,7 @@ namespace ToSic.Eav.WebApi
             return found;
         }
 
-        public ToSic.Eav.Interfaces.IEntity GetEntityOrThrowError(string contentType, Guid guid, int? appId = null)
+        public Interfaces.IEntity GetEntityOrThrowError(string contentType, Guid guid, int? appId = null)
         {
             SetAppIdAndUser(appId);
 
@@ -248,7 +249,7 @@ namespace ToSic.Eav.WebApi
                 foreach (var value in attribute.Value.Values)
                 {
                     var stringValue = value.Value;// ImpEntity.ImpConvertValueObjectToString(value.Value);
-                    var importValue = ImpEntity.AppendAttributeValue(attribs, attribute.Key, stringValue, attributeType);
+                    var importValue = attribs.AddValue(attribute.Key, stringValue, attributeType);
 
                     // append languages OR empty language as fallback
                     if (value.Dimensions == null)
@@ -269,7 +270,7 @@ namespace ToSic.Eav.WebApi
 
                 #region Guids, Ids, Published, Content-Types
                 IsPublished = newEntity.IsPublished,
-                ForceNoBranch = !newEntity.IsBranch, // if it's not a branch, it should also force no branch...
+                OnSaveForceNoBranching = !newEntity.IsBranch, // if it's not a branch, it should also force no branch...
                 #endregion
             };
 

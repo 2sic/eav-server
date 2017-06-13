@@ -28,14 +28,12 @@ namespace ToSic.Eav.Data
                 switch (type)
                 {
                     case AttributeTypeEnum.Boolean: 
-                        // old, simpler: typedModel = new Value<bool?>(string.IsNullOrEmpty(stringValue) ? (bool?)null : bool.Parse(stringValue));
                         bool typedBoolean;
                         typedModel = new Value<bool?>(value as bool? ?? (bool.TryParse(stringValue, out typedBoolean) 
                             ? typedBoolean 
                             : new bool?()));
                         break;
                     case AttributeTypeEnum.DateTime: 
-                        // old, simpler: typedModel = new Value<DateTime?>(string.IsNullOrEmpty(stringValue) ? (DateTime?)null : DateTime.Parse(stringValue));
                         DateTime typedDateTime;
                         typedModel = new Value<DateTime?>(value as DateTime? ?? (DateTime.TryParse(stringValue, CultureInfo.InvariantCulture,
                                                      DateTimeStyles.None, out typedDateTime)
@@ -43,8 +41,7 @@ namespace ToSic.Eav.Data
                                                      : new DateTime?()));
                         break;
                     case AttributeTypeEnum.Number:
-                        // old, simpler: typedModel = new Value<decimal?>(string.IsNullOrEmpty(stringValue) ? (decimal?)null : decimal.Parse(stringValue, CultureInfo.InvariantCulture));
-                        decimal? typedDecimalNullable = value as decimal?;
+                        var typedDecimalNullable = value as decimal?;
                         if (typedDecimalNullable == null)
                         {
                             decimal typedDecimal;
@@ -57,9 +54,6 @@ namespace ToSic.Eav.Data
 
                         break;
                     case AttributeTypeEnum.Entity:
-                        // older, simpler
-                        //var entityIds = value as IEnumerable<int?>;
-                        //typedModel = new Value<EntityRelationship>(new EntityRelationship(fullEntityListForLookup, entityIds));
                         var entityIds = value as IEnumerable<int?>;
                         if (entityIds != null)
                             typedModel = new Value<EntityRelationship>(new EntityRelationship(fullEntityListForLookup, entityIds));
@@ -69,17 +63,15 @@ namespace ToSic.Eav.Data
                             if (value is string && !String.IsNullOrEmpty(stringValue))
                                 entityIdEnum = stringValue.Split(',').ToList();
                             // this is the case when we get a CSV-string with GUIDs
-                            var entityGuids = entityIdEnum != null //!String.IsNullOrEmpty(stringValue)
-                                ? /*stringValue.Split(',')*/entityIdEnum.Cast<object>().Select(x =>
-                                {
-                                    var v = x.ToString().Trim();
-                                    // this is the case when an export contains a list with nulls as a special code
-                                    if (v == Constants.EmptyRelationship)
-                                        return new Guid?();
-                                    var guid = Guid.Parse(v);
-                                    return guid == Guid.Empty ? new Guid?() : guid;
-                                }).ToList()
-                                : new List<Guid?>(0);
+                            var entityGuids = entityIdEnum?.Cast<object>().Select(x =>
+                            {
+                                var v = x.ToString().Trim();
+                                // this is the case when an export contains a list with nulls as a special code
+                                if (v == Constants.EmptyRelationship)
+                                    return new Guid?();
+                                var guid = Guid.Parse(v);
+                                return guid == Guid.Empty ? new Guid?() : guid;
+                            }).ToList() ?? new List<Guid?>(0);
                             typedModel = new Value<List<Guid?>>(entityGuids);
                         }
                         break;
@@ -97,7 +89,7 @@ namespace ToSic.Eav.Data
             }
             catch
             {
-                return new Value<string>(stringValue);
+                typedModel = new Value<string>(stringValue);
             }
 
             typedModel.Languages = languages;
