@@ -325,7 +325,7 @@ namespace ToSic.Eav.Persistence.Efc
                         #region Add all Values
                         foreach (var v in a.Values)
                         {
-                            var valueModel = Value.Build(attributeModel.Type, v.Value, v.Languages, null);
+                            var valueModel = Value.Build(attributeModel.Type, v.Value, v.Languages);
                             valuesModelList.Add(valueModel);
                         }
                         #endregion

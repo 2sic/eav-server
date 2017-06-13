@@ -26,7 +26,7 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Id as GUID
         /// </summary>
-		public Guid EntityGuid { get; /*internal*/ set; }
+		public Guid EntityGuid { get; /*protected*/ set; }
         /// <summary>
         /// Offical title of this content-item
         /// </summary>

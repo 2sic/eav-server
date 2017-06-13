@@ -247,7 +247,7 @@ namespace ToSic.Eav.WebApi
 
                 foreach (var value in attribute.Value.Values)
                 {
-                    var stringValue = ImpEntity.ImpConvertValueObjectToString(value.Value);
+                    var stringValue = value.Value;// ImpEntity.ImpConvertValueObjectToString(value.Value);
                     var importValue = ImpEntity.AppendAttributeValue(attribs, attribute.Key, stringValue, attributeType);
 
                     // append languages OR empty language as fallback
@@ -268,13 +268,9 @@ namespace ToSic.Eav.WebApi
             {
 
                 #region Guids, Ids, Published, Content-Types
-                //EntityGuid = newEntity.Guid,
                 IsPublished = newEntity.IsPublished,
                 ForceNoBranch = !newEntity.IsBranch, // if it's not a branch, it should also force no branch...
-                //AttributeSetStaticName = newEntity.Type.StaticName,
                 #endregion
-                // Metadata maybe?
-                //KeyTypeId = Constants.NotMetadata  // default case
             };
 
             #region Metadata if we have any

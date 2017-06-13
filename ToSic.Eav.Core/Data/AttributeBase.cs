@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data
@@ -58,10 +59,14 @@ namespace ToSic.Eav.Data
                 case AttributeTypeEnum.Number:
                     return new Attribute<decimal?>(name, typeName);
                 case AttributeTypeEnum.Entity:
-                    return new Attribute<EntityRelationship>(name, typeName) { Values = new IValue[] { Value.NullRelationship } };
+                    return new Attribute<EntityRelationship>(name, typeName) { Values = new List<IValue> { Value.NullRelationship } };
+                // ReSharper disable RedundantCaseLabel
                 case AttributeTypeEnum.String:
                 case AttributeTypeEnum.Hyperlink:
                 case AttributeTypeEnum.Custom:
+                case AttributeTypeEnum.Undefined:
+                case AttributeTypeEnum.Empty:
+                // ReSharper restore RedundantCaseLabel
                 default:
                     return new Attribute<string>(name, typeName);
             }
