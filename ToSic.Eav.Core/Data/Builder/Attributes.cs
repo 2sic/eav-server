@@ -14,7 +14,7 @@ namespace ToSic.Eav.Data.Builder
         /// <summary>
         /// Convert a NameValueCollection-Like List to a Dictionary of IAttributes
         /// </summary>
-        internal static Dictionary<string, IAttribute> ConvertToAttributes(this IDictionary<string, object> attributes)
+        public static Dictionary<string, IAttribute> ConvertToAttributes(this IDictionary<string, object> attributes)
         {
             var result = new Dictionary<string, IAttribute>(StringComparer.OrdinalIgnoreCase);
 

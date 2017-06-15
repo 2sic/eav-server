@@ -11,6 +11,8 @@ namespace ToSic.Eav.Data
     {
         public T TypedContents { get; internal set; }
 
+
+
         // 2017-06-09 2dm removed, seems unused
         //public string Serialized
         //{
@@ -70,5 +72,6 @@ namespace ToSic.Eav.Data
             TypedContents = typedContents;
         }
 
+        public object UntypedContents => (object)TypedContents;
     }
 }

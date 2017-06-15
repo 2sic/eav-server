@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport.Logging;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Efc.Models;
@@ -115,18 +116,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// Add a new Entity
         /// </summary>
         public ToSicEavEntities AddEntity(int attributeSetId, IDictionary values, 
-            //int? keyNumber = null, Guid? keyGuid = null, string keyString = null, int keyTypeId = Constants.NotMetadata, 
-            IIsMetadata isMetadata = null,
-            int sortOrder = 0, 
+            IIsMetadata isMetadata = null, int sortOrder = 0, 
             Guid? entityGuid = null, ICollection<int> dimensionIds = null, List<ImportLogItem> updateLog = null, 
             bool isPublished = true, int? publishedEntityId = null)
         {
             // note: values is either a dictionary <string, object> or <string, IList<IValue>>
 
-            // moving to IsMetadata
             int? keyNumber = isMetadata?.KeyNumber;
-            Guid? keyGuid = isMetadata?.KeyGuid;
-            string keyString = isMetadata?.KeyString;
             int keyTypeId = isMetadata?.TargetType ?? Constants.NotMetadata;
 
             // var skipCreate = false;
@@ -150,8 +146,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     ConfigurationSet = null, // configurationSet,
                     AssignmentObjectTypeId = keyTypeId,
                     KeyNumber = keyNumber,
-                    KeyGuid = keyGuid,
-                    KeyString = keyString,
+                    KeyGuid = isMetadata?.KeyGuid, //keyGuid,
+                    KeyString = isMetadata?.KeyString, //keyString,
                     SortOrder = sortOrder,
                     ChangeLogCreated = changeId,
                     ChangeLogModified = changeId,
@@ -169,11 +165,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
             }
             #endregion
 
-            return SaveEntity(existingEntityId, values, /*masterRecord: true,*/ dimensionIds: dimensionIds, autoSave: false, updateLog: updateLog, isPublished: isPublished);
+            return SaveEntity(existingEntityId, values, dimensionIds: dimensionIds, autoSave: false, updateLog: updateLog, isPublished: isPublished);
 
-            //DbContext.SqlDb.SaveChanges();
-            //DbContext.Versioning.SaveEntity(updatedEntity.EntityId, updatedEntity.EntityGuid, true);
-            //return updatedEntity;
         }
 
         #endregion
@@ -184,7 +177,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         internal ToSicEavEntities CloneEntity(ToSicEavEntities sourceEntity, bool assignNewEntityGuid = false)
         {
-            // var clone = sourceEntity; // 2017-04-19 todo validate //  DbContext.DbS.CopyEfEntity(sourceEntity);
             var versioningId = DbContext.Versioning.GetChangeLogId();
             var clone = new ToSicEavEntities()
             {
@@ -217,13 +209,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <param name="newValues">new Values of this Entity</param>
         /// <param name="autoSave">auto save Changes to DB</param>
         /// <param name="dimensionIds">DimensionIds for all Values</param>
-        /// <param name="masterRecord">Is this the Master Record/Language</param>
+        ///// <param name="masterRecord">Is this the Master Record/Language</param>
         /// <param name="updateLog">Update/Import Log List</param>
         /// <param name="preserveUndefinedValues">Preserve Values if Attribute is not specifeied in NewValues</param>
         /// <param name="isPublished">Is this Entity Published or a draft</param>
         /// <param name="forceNoBranch">this forces the published-state to be applied to the original, without creating a draft-branhc</param>
         /// <returns>the updated Entity</returns>
-        public ToSicEavEntities SaveEntity(int repositoryId, IDictionary newValues, bool autoSave = true, ICollection<int> dimensionIds = null, /*bool masterRecord = true,*/ List<ImportLogItem> updateLog = null, bool preserveUndefinedValues = true, bool isPublished = true, bool forceNoBranch = false)
+        public ToSicEavEntities SaveEntity(int repositoryId, IDictionary newValues, bool autoSave = true, ICollection<int> dimensionIds = null, List<ImportLogItem> updateLog = null, bool preserveUndefinedValues = true, bool isPublished = true, bool forceNoBranch = false)
         {
             var entity = DbContext.Entities.GetDbEntity(repositoryId);
             var draftEntityId = DbContext.Publishing.GetDraftEntityId(repositoryId);
@@ -271,11 +263,17 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             // Update Values from Import Model
             var newValuesImport = newValues as Dictionary<string, IAttribute>;
+            if (newValuesImport == null) // convert to a Dictionary<string, IAttribute>;
+            {
+                var dicStrObj = (Dictionary<string, object>) newValues;
+                newValuesImport = dicStrObj.ConvertToAttributes();
+            }
+
             if (newValuesImport != null)
-                UpdateEntityFromImportModel(entity, newValuesImport, updateLog, attributes, dbValues, preserveUndefinedValues);
+                UpdateEntityWithIAttributes(entity, newValuesImport, updateLog, attributes, dbValues, preserveUndefinedValues);
             // Update Values from ValueViewModel
-            else
-                UpdateEntityDefault(entity, (Dictionary<string, object>)newValues, dimensionIds/*, masterRecord*/, attributes, dbValues);
+            //else
+            //    UpdateEntityDefault(entity, (Dictionary<string, object>)newValues, dimensionIds/*, masterRecord*/, attributes, dbValues);
 
 
             entity.ChangeLogModified = DbContext.Versioning.GetChangeLogId();
@@ -290,7 +288,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Update an Entity when using the Import
         /// </summary>
-        private void UpdateEntityFromImportModel(ToSicEavEntities currentEntity, Dictionary<string, IAttribute> newValuesImport, List<ImportLogItem> updateLog, List<ToSicEavAttributes> attributeList, List<ToSicEavValues> currentValues, bool keepAttributesMissingInImport)
+        private void UpdateEntityWithIAttributes(ToSicEavEntities currentEntity, Dictionary<string, IAttribute> newValuesImport, List<ImportLogItem> updateLog, List<ToSicEavAttributes> attributeList, List<ToSicEavValues> currentValues, bool keepAttributesMissingInImport)
         {
             if (updateLog == null)
                 throw new ArgumentNullException(nameof(updateLog), "When Calling UpdateEntity() with newValues of Type IValueImportModel updateLog must be set.");
@@ -362,68 +360,57 @@ namespace ToSic.Eav.Repository.Efc.Parts
         }
 
 
+        //continue here - trying to make updateentitydefault unnecessary - but must be sure that it doesn't have important logic which is missing on the other site
 
-
-
-        /// <summary>
-        /// Update an Entity when not using the Import
-        /// </summary>
-        private void UpdateEntityDefault(ToSicEavEntities entity, IDictionary<string, object> newValues, ICollection<int> dimensionIds, /*bool masterRecord,*/ List<ToSicEavAttributes> attributes, List<ToSicEavValues> dbValues)
-        {
-            var newValuesTyped = newValues;// DictionaryToValuesViewModel(newValues);
-            foreach (var newValue in newValuesTyped)
-            {
-                var attribute = attributes.FirstOrDefault(a => a.StaticName == newValue.Key);
-                if(attribute != null)
-                    DbContext.Values.UpdateValue(entity, attribute, /*masterRecord,*/ dbValues, newValue.Value, dimensionIds);
-            }
-
-            #region if Dimensions are specified, purge/remove specified dimensions for Values that are not in newValues
-            if (dimensionIds.Count <= 0) return;
-
-            var attributeMetadataSource = DataSource.GetMetaDataSource(DbContext.ZoneId, DbContext.AppId);
-
-            var keys = newValuesTyped.Keys.ToArray();
-            // Get all Values that are not present in newValues
-            var valuesToPurge = entity.ToSicEavValues
-                .Where(v => !v.ChangeLogDeleted.HasValue
-                            && !keys.Contains(v.Attribute.StaticName)
-                            && v.ToSicEavValuesDimensions.Any(d => dimensionIds.Contains(d.DimensionId)));
-            foreach (var valueToPurge in valuesToPurge)
-            {
-                // Don't touch Value if attribute is not visible in UI
-                var attributeMetadata = attributeMetadataSource.GetAssignedEntities(Constants.MetadataForField, valueToPurge.AttributeId, "@All").FirstOrDefault();
-                var visibleInEditUi = ((Attribute<bool?>) attributeMetadata?["VisibleInEditUI"])?.TypedContents;
-                if (visibleInEditUi == false)
-                    continue;
-
-                // Check if the Value is only used in this supplied dimension (carefull, dont' know what to do if we have multiple dimensions!, must define later)
-                // if yes, delete/invalidate the value
-                if (valueToPurge.ToSicEavValuesDimensions.Count == 1)
-                    valueToPurge.ChangeLogDeleted = DbContext.Versioning.GetChangeLogId();
-
-                // if now, remove dimension from Value
-                else
-                {
-                    foreach (var valueDimension in valueToPurge.ToSicEavValuesDimensions.Where(d => dimensionIds.Contains(d.DimensionId)).ToList())
-                        valueToPurge.ToSicEavValuesDimensions.Remove(valueDimension);
-                }
-            }
-
-            #endregion
-        }
-        #endregion
-
+        // 2017-06 simplifysave 2dm
         ///// <summary>
-        ///// Convert IOrderedDictionary to <see cref="Dictionary{String, ValueViewModel}" /> (for backward capability)
+        ///// Update an Entity when not using the Import
         ///// </summary>
-        //private Dictionary<string, /*ImpValueInside*/ object> DictionaryToValuesViewModel(IDictionary<string, List<IValue>> newValues)
+        //private void UpdateEntityDefault(ToSicEavEntities entity, IDictionary<string, object> newValues, ICollection<int> dimensionIds, /*bool masterRecord,*/ List<ToSicEavAttributes> attributes, List<ToSicEavValues> dbValues)
         //{
-        //    //if (newValues is Dictionary<string, ImpValueInside>)
-        //    //    return (Dictionary<string, ImpValueInside>)newValues;
+        //    var newValuesTyped = newValues;// DictionaryToValuesViewModel(newValues);
+        //    foreach (var newValue in newValuesTyped)
+        //    {
+        //        var attribute = attributes.FirstOrDefault(a => a.StaticName == newValue.Key);
+        //        if(attribute != null)
+        //            DbContext.Values.UpdateValue(entity, attribute, /*masterRecord,*/ dbValues, newValue.Value, dimensionIds);
+        //    }
 
-        //    return newValues.Keys.Cast<object>().ToDictionary(key => key.ToString(), key => /*new ImpValueInside { ReadOnly = false, Value =*/ newValues[key] /*}*/);
+        //    #region if Dimensions are specified, purge/remove specified dimensions for Values that are not in newValues
+        //    if (dimensionIds.Count <= 0) return;
+
+        //    var attributeMetadataSource = DataSource.GetMetaDataSource(DbContext.ZoneId, DbContext.AppId);
+
+        //    var keys = newValuesTyped.Keys.ToArray();
+        //    // Get all Values that are not present in newValues
+        //    var valuesToPurge = entity.ToSicEavValues
+        //        .Where(v => !v.ChangeLogDeleted.HasValue
+        //                    && !keys.Contains(v.Attribute.StaticName)
+        //                    && v.ToSicEavValuesDimensions.Any(d => dimensionIds.Contains(d.DimensionId)));
+        //    foreach (var valueToPurge in valuesToPurge)
+        //    {
+        //        // Don't touch Value if attribute is not visible in UI
+        //        var attributeMetadata = attributeMetadataSource.GetAssignedEntities(Constants.MetadataForField, valueToPurge.AttributeId, "@All").FirstOrDefault();
+        //        var visibleInEditUi = ((Attribute<bool?>) attributeMetadata?["VisibleInEditUI"])?.TypedContents;
+        //        if (visibleInEditUi == false)
+        //            continue;
+
+        //        // Check if the Value is only used in this supplied dimension (carefull, dont' know what to do if we have multiple dimensions!, must define later)
+        //        // if yes, delete/invalidate the value
+        //        if (valueToPurge.ToSicEavValuesDimensions.Count == 1)
+        //            valueToPurge.ChangeLogDeleted = DbContext.Versioning.GetChangeLogId();
+
+        //        // if now, remove dimension from Value
+        //        else
+        //        {
+        //            foreach (var valueDimension in valueToPurge.ToSicEavValuesDimensions.Where(d => dimensionIds.Contains(d.DimensionId)).ToList())
+        //                valueToPurge.ToSicEavValuesDimensions.Remove(valueDimension);
+        //        }
+        //    }
+
+        //    #endregion
         //}
+        #endregion
 
         #region Delete Commands
 

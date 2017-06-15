@@ -112,6 +112,7 @@
     <Compile Include="Interfaces\IAttributeDefinition.cs" />
     <Compile Include="Interfaces\IContentTypeShareable.cs" />
     <Compile Include="Interfaces\HasMetadata.cs" />
+    <Compile Include="Interfaces\IEntityMultilanguage.cs" />
     <Compile Include="Interfaces\IMetadata.cs" />
     <Compile Include="Interfaces\IValue_T.cs" />
     <Compile Include="Interfaces\IValueOfDimension_T.cs" />

@@ -296,15 +296,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
         {
             #region try to get AttributeSet or otherwise cancel & log error
 
-            var dbAttrSet = _context.AttribSet.GetAttributeSet(entity.Type.StaticName);//.AttributeSetStaticName);
+            var dbAttrSet = _context.AttribSet.GetAttributeSet(entity.Type.StaticName);
 
             if (dbAttrSet == null) // AttributeSet not Found
             {
                 _importLog.Add(new ImportLogItem(EventLogEntryType.Error, "AttributeSet not found")
                 {
-                    //ImpEntity = impEntity,
-                    ContentType = new ContentType(entity.Type.StaticName)//.AttributeSetStaticName)// {StaticName = impEntity.AttributeSetStaticName}
-                    
+                    ContentType = new ContentType(entity.Type.StaticName)
                 });
                 return;
             }
@@ -370,13 +368,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
             #endregion
 
             // todo: TestImport - ensure that it correctly skips the existing values
-            var newValues = entity.Attributes;
+            var dicTypedAttributes = entity.Attributes;
             if (_dontUpdateExistingAttributeValues) // Skip values that are already present in existing Entity
-                newValues = newValues.Where(v => editableVersionOfTheEntity.ToSicEavValues.All(ev => ev.Attribute.StaticName != v.Key))
+                dicTypedAttributes = dicTypedAttributes.Where(v => editableVersionOfTheEntity.ToSicEavValues.All(ev => ev.Attribute.StaticName != v.Key))
                     .ToDictionary(v => v.Key, v => v.Value);
 
             // todo: TestImport - ensure that the EntityId of this is what previously was the RepositoryID
-            _context.Entities.SaveEntity(editableVersionOfTheEntity.EntityId/*RepositoryId*/, newValues, /*masterRecord:true,*/ updateLog: _importLog,
+            _context.Entities.SaveEntity(editableVersionOfTheEntity.EntityId/*RepositoryId*/, dicTypedAttributes, updateLog: _importLog,
                 preserveUndefinedValues: _keepAttributesMissingInImport, isPublished: entity.IsPublished, forceNoBranch: entity.OnSaveForceNoBranching);
 
             #endregion

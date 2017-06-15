@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.Data;
 
 namespace ToSic.Eav.Interfaces
 {
@@ -75,7 +74,7 @@ namespace ToSic.Eav.Interfaces
 		/// <param name="resolveHyperlinks"></param>
 		/// <returns>A string, int or even a EntityRelationship</returns>
 		object GetBestValue(string attributeName, bool resolveHyperlinks = false);
-		object GetBestValue(string attributeName, string[] dimensions, bool resolveHyperlinks = false);
+		object GetBestValue(string attributeName, string[] languages, bool resolveHyperlinks = false);
 
         /// <summary>
         /// Best way to get the current entities title

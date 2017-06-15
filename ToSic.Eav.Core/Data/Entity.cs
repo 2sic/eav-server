@@ -199,10 +199,10 @@ namespace ToSic.Eav.Data
 		/// Automatically resolves the language-variations as well based on the list of preferred languages
 		/// </summary>
 		/// <param name="attributeName">Name of the attribute or virtual attribute</param>
-		/// <param name="dimensions">List of languages</param>
+		/// <param name="languages">List of languages</param>
 		/// <param name="resolveHyperlinks"></param>
 		/// <returns>An object OR a null - for example when retrieving the title and no title exists</returns>
-		public object GetBestValue(string attributeName, string[] dimensions, bool resolveHyperlinks = false) 
+		public object GetBestValue(string attributeName, string[] languages, bool resolveHyperlinks = false) 
         {
             object result;
 			IAttribute attribute = null;
@@ -210,14 +210,14 @@ namespace ToSic.Eav.Data
             if (Attributes.ContainsKey(attributeName))
             {
                 attribute = Attributes[attributeName];
-                result = attribute[dimensions];
+                result = attribute[languages];
             }
             else
             {
                 switch (attributeName.ToLower())
                 {
                     case Constants.EntityFieldTitle:
-                        result = Title?[dimensions];
+                        result = Title?[languages];
 		                attribute = Title;
                         break;
                     case Constants.EntityFieldId:

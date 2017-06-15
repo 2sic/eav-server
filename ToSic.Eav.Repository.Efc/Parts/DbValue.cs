@@ -109,16 +109,14 @@ namespace ToSic.Eav.Repository.Efc.Parts
             {
                 // Handle Entity Relationships - they're stored in own tables
                 case "Entity":
+                    // 2017-06 simplifysave 2dm
+                    // todo: mut check if we could also end up with a List<int?> instead of guid...
                     if (newImpValue is Value<List<Guid>> || newImpValue is Value<List<Guid?>>)
                     {
-                        // often the list is not nullable, but sometimes it is - the further processing always expects nullable Guids
                         var guidList = (newImpValue as Value<List<Guid>>)?.TypedContents.Select(p => (Guid?) p) 
                             ?? ((Value<List<Guid?>>)newImpValue).TypedContents.Select(p => p);
                         DbContext.Relationships.AddToQueue(attribute.AttributeId, guidList.ToList(), null, entityInDb.EntityId);
                     }
-                    // old version with less clear code
-                    //if (newImpValue is ImpValue<List<Guid?>>)
-                    //    DbContext.Relationships.UpdateEntityRelationships(attribute.AttributeId, ((ImpValue<List<Guid?>>)newImpValue).Value.Select(p => (Guid?)p).ToList(), null, entityInDb.EntityId);
                     else
                         throw new NotSupportedException("UpdateValue() for Attribute " + attribute.StaticName + " with newValue of type" + newImpValue.GetType() + " not supported. Expected List<Guid>");
 
@@ -126,77 +124,82 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 // Handle simple values in Values-Table
                 default:
                     // masterRecord can be true or false, it's not used when valueDimensions is specified
-                    return UpdateSimpleValue(attribute, entityInDb, null, /*true,*/ GetTypedValue(newImpValue, attribute.Type, attribute.StaticName), null, false, currentValues, /*entityModel: null,*/ newImpValue.Languages);
+                    return UpdateSimpleValue(attribute, entityInDb, null, /*true,*/ newImpValue.UntypedContents /*GetTypedValue(newImpValue, attribute.Type, attribute.StaticName)*/, null, false, currentValues, newImpValue.Languages);
             }
         }
 
-        /// <summary>
-        /// Get typed value from ValueImportModel
-        /// </summary>
-        /// <param name="impValue">Value to convert</param>
-        /// <param name="attributeType">Attribute Type</param>
-        /// <param name="attributeStaticName">Attribute StaticName</param>
-        /// <param name="multiValuesSeparator">Indicates whehter returned value should be convertable to a human readable string - currently only used for GetEntityVersionValues()</param>
-        internal object GetTypedValue(IValue impValue, string attributeType = null, string attributeStaticName = null, string multiValuesSeparator = null)
-        {
-            object typedValue;
+        // 2017-06 simplifysave 2dm
+        ///// <summary>
+        ///// Update a Value 
+        ///// </summary>
+        //internal void UpdateValue(ToSicEavEntities entityInDb, ToSicEavAttributes attribute, List<ToSicEavValues> currentValues, object newValue, ICollection<int> dimensionIds)
+        //{
+        //    switch (attribute.Type)
+        //    {
+        //        // Handle Entity Relationships - they're stored in own tables
+        //        case "Entity":
+        //            var entityIds = newValue as int?[] ?? ((int[])newValue).Select(v => (int?)v).ToArray();
+        //            DbContext.Relationships.UpdateEntityRelationshipsAndSave(attribute.AttributeId, entityIds, entityInDb);
+        //            break;
+        //        // Handle simple values in Values-Table
+        //        default:
+        //            UpdateSimpleValue(attribute, entityInDb, dimensionIds, newValue, null, false, currentValues);
+        //            break;
+        //    }
+        //}
 
-            // make sure we have the right type...
-            var type = AttributeTypeEnum.Undefined;
-            if(attributeType != null && Enum.IsDefined(typeof(AttributeTypeEnum), attributeType))
-                type = (AttributeTypeEnum)Enum.Parse(typeof(AttributeTypeEnum), attributeType);
+        #region old code, commented out
+        ///// <summary>
+        ///// Get typed value from ValueImportModel
+        ///// </summary>
+        ///// <param name="impValue">Value to convert</param>
+        ///// <param name="attributeType">Attribute Type</param>
+        ///// <param name="attributeStaticName">Attribute StaticName</param>
+        ///// <param name="multiValuesSeparator">Indicates whehter returned value should be convertable to a human readable string - currently only used for GetEntityVersionValues()</param>
+        //private object GetTypedValue(IValue impValue, string attributeType = null, string attributeStaticName = null)//, string multiValuesSeparator = null)
+        //{
+        //    object typedValue;
 
-            if ((type == AttributeTypeEnum.Boolean || type == AttributeTypeEnum.Undefined) && impValue is Value<bool?>) 
-                typedValue = ((Value<bool?>)impValue).TypedContents;
-            else if ((type == AttributeTypeEnum.DateTime || type == AttributeTypeEnum.Undefined) && impValue is Value<DateTime?>)
-                typedValue = ((Value<DateTime?>)impValue).TypedContents;
-            else if ((type == AttributeTypeEnum.Number || type == AttributeTypeEnum.Undefined) && impValue is Value<decimal?>)
-                typedValue = ((Value<decimal?>)impValue).TypedContents;
-            else if ((type == AttributeTypeEnum.String
-                || type == AttributeTypeEnum.Hyperlink
-                || type == AttributeTypeEnum.Custom
-                || type == AttributeTypeEnum.Undefined) && impValue is Value<string>) 
-                typedValue = ((Value<string>)impValue).TypedContents;
-            else if (impValue is Value<List<Guid>> && multiValuesSeparator != null)
-            {
-                var entityGuids = ((Value<List<Guid>>)impValue).TypedContents;
-                typedValue = EntityGuidsToString(entityGuids, multiValuesSeparator);
-            }
-            else
-                throw new NotSupportedException($"GetTypedValue() for Attribute {attributeStaticName} (Type: {attributeType}) with newValue of type {impValue.GetType()} not supported.");
-            return typedValue;
-        }
+        //    // make sure we have the right type...
+        //    var type = AttributeTypeEnum.Undefined;
+        //    if(attributeType != null && Enum.IsDefined(typeof(AttributeTypeEnum), attributeType))
+        //        type = (AttributeTypeEnum)Enum.Parse(typeof(AttributeTypeEnum), attributeType);
 
-        private string EntityGuidsToString(IEnumerable<Guid> entityGuids, string separator = ", ", string format = "{0} (EntityId: {1})")
-        {
-            var guidIds = entityGuids.ToDictionary(k => k, v => (int?)null);
-            foreach (var entityGuid in guidIds.ToList())
-            {
-                var firstEntityId = DbContext.Entities.GetEntitiesByGuid(entityGuid.Key).Select(e => (int?)e.EntityId).FirstOrDefault();
-                if (firstEntityId != null)
-                    guidIds[entityGuid.Key] = firstEntityId;
-            }
-            return string.Join(separator, guidIds.Select(e => string.Format(format, e.Key, e.Value)));
-        }
+        //    if ((type == AttributeTypeEnum.Boolean || type == AttributeTypeEnum.Undefined) && impValue is Value<bool?>) 
+        //        typedValue = ((Value<bool?>)impValue).TypedContents;
+        //    else if ((type == AttributeTypeEnum.DateTime || type == AttributeTypeEnum.Undefined) && impValue is Value<DateTime?>)
+        //        typedValue = ((Value<DateTime?>)impValue).TypedContents;
+        //    else if ((type == AttributeTypeEnum.Number || type == AttributeTypeEnum.Undefined) && impValue is Value<decimal?>)
+        //        typedValue = ((Value<decimal?>)impValue).TypedContents;
+        //    else if ((type == AttributeTypeEnum.String
+        //        || type == AttributeTypeEnum.Hyperlink
+        //        || type == AttributeTypeEnum.Custom
+        //        || type == AttributeTypeEnum.Undefined) && impValue is Value<string>) 
+        //        typedValue = ((Value<string>)impValue).TypedContents;
+        //    // 2017-06-14 2dm disabled, as the MultiValueSeparator is always null
+        //    //else if (impValue is Value<List<Guid>> && multiValuesSeparator != null)
+        //    //{
+        //    //    var entityGuids = ((Value<List<Guid>>)impValue).TypedContents;
+        //    //    typedValue = EntityGuidsToString(entityGuids, multiValuesSeparator);
+        //    //}
+        //    else
+        //        throw new NotSupportedException($"GetTypedValue() for Attribute {attributeStaticName} (Type: {attributeType}) with newValue of type {impValue.GetType()} not supported.");
+        //    return typedValue;
+        //}
 
-        /// <summary>
-        /// Update a Value 
-        /// </summary>
-        internal void UpdateValue(ToSicEavEntities currentEntity, ToSicEavAttributes attribute, /*bool masterRecord,*/ List<ToSicEavValues> dbValues, /*ImpValueInside*/ object newValue, ICollection<int> dimensionIds)
-        {
-            switch (attribute.Type)
-            {
-                // Handle Entity Relationships - they're stored in own tables
-                case "Entity":
-                    var entityIds = newValue as int?[] ?? ((int[])newValue).Select(v => (int?)v).ToArray();
-                    DbContext.Relationships.UpdateEntityRelationshipsAndSave(attribute.AttributeId, entityIds, currentEntity);
-                    break;
-                // Handle simple values in Values-Table
-                default:
-                    UpdateSimpleValue(attribute, currentEntity, dimensionIds, /*masterRecord,*/ newValue, /*newValue.ValueId*/null, /*newValue.ReadOnly*/ false, dbValues/*, entityModel*/);
-                    break;
-            }
-        }
+        //private string EntityGuidsToString(IEnumerable<Guid> entityGuids, string separator = ", ", string format = "{0} (EntityId: {1})")
+        //{
+        //    var guidIds = entityGuids.ToDictionary(k => k, v => (int?)null);
+        //    foreach (var entityGuid in guidIds.ToList())
+        //    {
+        //        var firstEntityId = DbContext.Entities.GetEntitiesByGuid(entityGuid.Key).Select(e => (int?)e.EntityId).FirstOrDefault();
+        //        if (firstEntityId != null)
+        //            guidIds[entityGuid.Key] = firstEntityId;
+        //    }
+        //    return string.Join(separator, guidIds.Select(e => string.Format(format, e.Key, e.Value)));
+        //}
+
+        #endregion
 
         /// <summary>
         /// Update a Value in the Values-Table
@@ -256,24 +259,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                 #endregion
 
-                //2017-04-25 cancel all this, masterRecord is always true
-                // Remove current Dimension(s) from other Values
-                //if (!masterRecord)
-                //{
-                //    // Get other Values for current Attribute having all Current Dimensions assigned
-                //    var otherValuesWithCurrentDimensions = currentValues.Where(v => v.AttributeId == attribute.AttributeId && v.ValueId != value.ValueId && dimensionIds.All(d => v.ToSicEavValuesDimensions.Select(vd => vd.DimensionId).Contains(d)));
-                //    foreach (var otherValue in otherValuesWithCurrentDimensions)
-                //    {
-                //        foreach (var valueDimension in otherValue.ToSicEavValuesDimensions.Where(vd => dimensionIds.Contains(vd.DimensionId)).ToList())
-                //        {
-                //            // if only one Dimension assigned, mark this value as deleted
-                //            if (otherValue.ToSicEavValuesDimensions.Count == 1)
-                //                otherValue.ChangeLogDeleted = changeId;
-
-                //            otherValue.ToSicEavValuesDimensions.Remove(valueDimension);
-                //        }
-                //    }
-                //}
             }
             #endregion
 
@@ -285,7 +270,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         private ToSicEavValues GetOrCreateValue(ToSicEavAttributes attribute, ToSicEavEntities entity, /*bool masterRecord,*/ int? valueId, bool readOnly, List<ToSicEavValues> dbValues, /*IEntity entityModel, */string newValueSerialized, int changeId, IEnumerable<ILanguage> valueDimensions)
         {
-            ToSicEavValues value = null;
+            ToSicEavValues value;
             // if Import-Dimension(s) are Specified
             if (valueDimensions != null && valueDimensions.Any())
             {
@@ -293,43 +278,22 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 value = dbValues.FirstOrDefault(v =>
                             v.ChangeLogDeleted == null
                             && v.Attribute.StaticName == attribute.StaticName
-                            && 
-
-                            (v.ToSicEavValuesDimensions.Any(d =>
+                            && v.ToSicEavValuesDimensions.Any(d =>
                                 d.Dimension.ExternalKey.Equals(valueDimensions.First().Key,
-                                    StringComparison.InvariantCultureIgnoreCase))))
+                                    StringComparison.InvariantCultureIgnoreCase)))
                         ?? AddValue(entity, attribute.AttributeId, newValueSerialized, autoSave: false);
             }
             // if ValueId & EntityId is specified, use this Value
             else if (valueId.HasValue && entity.EntityId != 0)
             {
                 value = dbValues.Single(v => v.ValueId == valueId.Value && v.Attribute.StaticName == attribute.StaticName);
-                // If Master, ensure ValueId is from Master!
-
-                // 2017-04-25 deep dependency on an IEntity, slowing down import dramatically, must change
-                // 2017-04-25 the original / old code - I believe it solves an issue which we don't have any more, so I'll just comment it out for now
-                //var attributeModel = (IAttributeManagement)entityModel.Attributes.SingleOrDefault(a => a.Key == attribute.StaticName).Value;
-                //if (/*masterRecord &&*/ value.ValueId != attributeModel.DefaultValue.ValueId)
-                //    throw new Exception("Master Record cannot use a ValueId rather ValueId from Master. Attribute-StaticName: " + attribute.StaticName);
             }
-            // Find Value (if not specified) or create new one
             else
             {
-                //2017-04-25 2dm disabled this, masterRecord is always true
-                // if (masterRecord) // if true, don't create new Value (except no one exists)
-                value = dbValues.Where(v => v.AttributeId == attribute.AttributeId).OrderBy(a => a.ChangeLogCreated).FirstOrDefault();
+                // Find Value (if not specified) or create new one
+                value = dbValues.Where(v => v.AttributeId == attribute.AttributeId).OrderBy(a => a.ChangeLogCreated).FirstOrDefault() 
+                    ?? AddValue(entity, attribute.AttributeId, newValueSerialized, autoSave: false);
 
-                // if no Value found, create new one
-                if (value == null)
-                {
-                    //2017-04-25 2dm disabled this, masterRecord is always true
-                    //if (!masterRecord && currentValues.All(v => v.AttributeId != attribute.AttributeId))
-                    //    // if updating Additional-Entity but Default-Entity doesn't have any atom
-                    //    throw new Exception("Update of a \"" + attribute.StaticName +
-                    //                        "\" is not allowed. You must first updated this Value for the Default-Entity.");
-
-                    value = AddValue(entity, attribute.AttributeId, newValueSerialized, autoSave: false);
-                }
             }
 
             // Update old/existing Value

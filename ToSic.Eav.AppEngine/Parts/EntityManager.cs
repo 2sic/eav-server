@@ -66,7 +66,7 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="values"></param>
         /// <param name="dimensionIds"></param>
         public void Update(int id, Dictionary<string, object> values, ICollection<int> dimensionIds = null)
-            => _appManager.DataController.Entities.SaveEntity(id, values, dimensionIds: dimensionIds /*, masterRecord:true*/);
+            => _appManager.DataController.Entities.SaveEntity(id, values, dimensionIds: dimensionIds);
 
         /// <summary>
         /// Get an entity, or create it with the values provided.
