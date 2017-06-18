@@ -72,6 +72,11 @@ namespace ToSic.Eav.Data
             TypedContents = typedContents;
         }
 
-        public object UntypedContents => (object)TypedContents;
+        public object ObjectContents => TypedContents;
+        public IValue Copy(string type)
+        {
+            return Value.Build(type, ObjectContents,
+                Languages.Select(l => new Dimension() {DimensionId = l.DimensionId, Key = l.Key} as ILanguage).ToList(), null);
+        }
     }
 }

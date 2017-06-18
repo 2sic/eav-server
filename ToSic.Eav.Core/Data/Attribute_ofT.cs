@@ -86,5 +86,7 @@ namespace ToSic.Eav.Data
                 return TypedContents == null ? default(TType) : TypedContents;
             }
         }
+
+        public IAttribute Copy() => new Attribute<TType>(Name, Type) { Values = Values.Select(v => v.Copy(Type)).ToList()};
     }
 }

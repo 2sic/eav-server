@@ -27,7 +27,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Update Relationships of an Entity
         /// </summary>
-        internal void UpdateEntityRelationshipsAndSave(int attributeId, IEnumerable<int?> newValue, ToSicEavEntities currentEntity)
+        private void UpdateEntityRelationshipsAndSave(int attributeId, IEnumerable<int?> newValue, ToSicEavEntities currentEntity)
         {
             // remove existing Relationships that are not in new list
             var newEntityIds = newValue.ToList();
@@ -57,13 +57,27 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Update Relationships of an Entity. Update isn't done until ImportEntityRelationshipsQueue() is called!
         /// </summary>
-        internal void AddToQueue(int attributeId, List<Guid?> newValue, Guid? entityGuid, int? entityId)
+        internal void AddToQueue(int attributeId, List<Guid?> newValue, /*Guid? entityGuid,*/ int? entityId)
         {
             _relationshipToSave.Add(new RelationshipToSave
             {
                 AttributeId = attributeId,
                 ChildEntityGuids = newValue,
-                ParentEntityGuid = entityGuid,
+                //ParentEntityGuid = entityGuid,
+                ParentEntityId = entityId
+            });
+        }
+
+        /// <summary>
+        /// Update Relationships of an Entity. Update isn't done until ImportEntityRelationshipsQueue() is called!
+        /// </summary>
+        internal void AddToQueue(int attributeId, List<int?> newValue, /*Guid? entityGuid,*/ int? entityId)
+        {
+            _relationshipToSave.Add(new RelationshipToSave
+            {
+                AttributeId = attributeId,
+                ChildEntityIds = newValue,
+                //ParentEntityGuid = entityGuid,
                 ParentEntityId = entityId
             });
         }
@@ -75,15 +89,19 @@ namespace ToSic.Eav.Repository.Efc.Parts
         {
             foreach (var relationship in _relationshipToSave)
             {
-                var entity = relationship.ParentEntityGuid.HasValue
-                    ? DbContext.Entities.GetMostCurrentDbEntity(relationship.ParentEntityGuid.Value)
-                    : relationship.ParentEntityId.HasValue
+                var entity = // relationship.ParentEntityGuid.HasValue
+                    //? DbContext.Entities.GetMostCurrentDbEntity(relationship.ParentEntityGuid.Value)
+                    // : 
+                relationship.ParentEntityId.HasValue
                         ? DbContext.Entities.GetDbEntity(relationship.ParentEntityId.Value)
                         : null;
                 if(entity == null)
                     throw new Exception("neither guid nor id provided, can't update relationships");
 
-                var childEntityIds = new List<int?>();
+                // start with the ID list - or if it doesn't exist, a new list
+                var childEntityIds = relationship.ChildEntityIds ?? new List<int?>();
+
+                // if additional / alternative guids were specified, use those
                 foreach (var childGuid in relationship.ChildEntityGuids)
                 {
                     try
@@ -109,11 +127,12 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         #region Internal Helper Classes
 
-        private class RelationshipToSave
+        private struct RelationshipToSave
         {
             public int AttributeId { get; set; }
-            public Guid? ParentEntityGuid { get; set; }
+            //public Guid? ParentEntityGuid { get; set; }
             public List<Guid?> ChildEntityGuids { get; set; }
+            public List<int?> ChildEntityIds { get; set; }
 
             public int? ParentEntityId { get; set; }
         }

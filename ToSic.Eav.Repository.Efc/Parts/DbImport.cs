@@ -20,15 +20,16 @@ namespace ToSic.Eav.Repository.Efc.Parts
         private readonly DbDataController _context;
         private readonly bool _dontUpdateExistingAttributeValues;
         private readonly bool _keepAttributesMissingInImport;
-        private readonly List<ImportLogItem> _importLog = new List<ImportLogItem>();
+        //private readonly List<ImportLogItem> _importLog = new List<ImportLogItem>();
         private readonly bool _largeImport;
         #endregion
 
         #region Properties
+
         /// <summary>
         /// Get the Import Log
         /// </summary>
-        public List<ImportLogItem> ImportLog => _importLog;
+        public List<ImportLogItem> ImportLog => _context.ImportLog;// _importLog;
 
         bool PreventUpdateOnDraftEntities { get; }
         #endregion
@@ -143,16 +144,16 @@ namespace ToSic.Eav.Repository.Efc.Parts
             foreach (AttributeDefinition importAttribute in contentType.Attributes)
             {
                 ToSicEavAttributes destinationAttribute;
-                if(!_context.Attributes.AttributeExistsInSet(destinationSet.AttributeSetId, importAttribute.Name))
+                if(!_context.AttributesDefinition.AttributeExistsInSet(destinationSet.AttributeSetId, importAttribute.Name))
                 {
                     // try to add new Attribute
                     var isTitle = importAttribute.IsTitle;// == impContentType.TitleAttribute;
-                    destinationAttribute = _context.Attributes
+                    destinationAttribute = _context.AttributesDefinition
                         .AppendToEndAndSave(destinationSet, 0, importAttribute.Name, importAttribute.Type, /*importAttribute.InputType, */ isTitle);//, false);
                 }
 				else
                 {
-					_importLog.Add(new ImportLogItem(EventLogEntryType.Warning, "Attribute already exists") { ImpAttribute = importAttribute.Name });
+					ImportLog.Add(new ImportLogItem(EventLogEntryType.Warning, "Attribute already exists") { ImpAttribute = importAttribute.Name });
                     destinationAttribute = destinationSet.ToSicEavAttributesInSets
                         .Single(a => a.Attribute.StaticName == importAttribute.Name).Attribute;
                 }
@@ -179,13 +180,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
             // to use existing attribute Set, do some minimal conflict-checking
             else
             {
-                _importLog.Add(new ImportLogItem(EventLogEntryType.Information, "AttributeSet already exists")
+                ImportLog.Add(new ImportLogItem(EventLogEntryType.Information, "AttributeSet already exists")
                 {
                     ContentType = contentType
                 });
                 if (destinationSet.UsesConfigurationOfAttributeSet.HasValue)
                 {
-                    _importLog.Add(new ImportLogItem(EventLogEntryType.Error,
+                    ImportLog.Add(new ImportLogItem(EventLogEntryType.Error,
                         "Not allowed to import/extend an AttributeSet which uses Configuration of another AttributeSet.")
                     {
                         ContentType = contentType
@@ -226,13 +227,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             if (ghostAttributeSets.Count == 0)
             {
-                _importLog.Add(new ImportLogItem(EventLogEntryType.Warning, "AttributeSet not imported because master set not found: " + contentType.OnSaveUseParentStaticName) {ContentType = contentType});
+                ImportLog.Add(new ImportLogItem(EventLogEntryType.Warning, "AttributeSet not imported because master set not found: " + contentType.OnSaveUseParentStaticName) {ContentType = contentType});
                 return 0;
             }
 
             // If multiple masters are found, use first and add a warning message
             if (ghostAttributeSets.Count > 1)
-                _importLog.Add(new ImportLogItem(EventLogEntryType.Warning, "Multiple potential master AttributeSets found for StaticName: " + contentType.OnSaveUseParentStaticName) {ContentType = contentType});
+                ImportLog.Add(new ImportLogItem(EventLogEntryType.Warning, "Multiple potential master AttributeSets found for StaticName: " + contentType.OnSaveUseParentStaticName) {ContentType = contentType});
             
             // all ok, return id
             return ghostAttributeSets.First().AttributeSetId;
@@ -286,7 +287,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     .IndexOf(contentType.Attributes
                         .First(ia => ia.Name == a.Attribute.StaticName)))
                 .ToList();
-            _context.Attributes.PersistAttributeOrder(attributeList);
+            _context.AttributesDefinition.PersistAttributeOrder(attributeList);
         }
 
         /// <summary>
@@ -300,10 +301,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             if (dbAttrSet == null) // AttributeSet not Found
             {
-                _importLog.Add(new ImportLogItem(EventLogEntryType.Error, "AttributeSet not found")
-                {
-                    ContentType = new ContentType(entity.Type.StaticName)
-                });
+                ImportLog.Add(new ImportLogItem(EventLogEntryType.Error, "AttributeSet not found"){ContentType = new ContentType(entity.Type.StaticName)});
                 return;
             }
 
@@ -317,7 +315,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             #region Simplest case - add (nothing existing to update)
             if (dbExistingEntities == null || !dbExistingEntities.Any())
             {
-                _context.Entities.AddImportEntity(dbAttrSet.AttributeSetId, entity, _importLog, entity.IsPublished, null);
+                _context.Entities.AddImportEntity(dbAttrSet.AttributeSetId, entity, /*_importLog,*/ entity.IsPublished, null);
                 return;
             }
 
@@ -328,7 +326,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             if (!entity.IsPublished && dbExistingEntities.Count(e => e.IsPublished == false) == 0 && !entity.OnSaveForceNoBranching)
             {
                 var publishedId = dbExistingEntities.First().EntityId;
-                _context.Entities.AddImportEntity(dbAttrSet.AttributeSetId, entity, _importLog, entity.IsPublished, publishedId);
+                _context.Entities.AddImportEntity(dbAttrSet.AttributeSetId, entity, /*_importLog,*/ entity.IsPublished, publishedId);
                 return;
             }
 
@@ -340,7 +338,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             // Get existing, published Entity
             var editableVersionOfTheEntity = dbExistingEntities.OrderBy(e => e.IsPublished ? 1 : 0).First(); // get draft first, otherwise the published
-            _importLog.Add(new ImportLogItem(EventLogEntryType.Information, "Entity already exists"/*, impEntity*/));
+            ImportLog.Add(new ImportLogItem(EventLogEntryType.Information, "Entity already exists"/*, impEntity*/));
         
 
             #region ensure we don't save a draft is this is not allowed (usually in the case of xml-import)
@@ -348,7 +346,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             // Prevent updating Draft-Entity - since the initial would be draft if it has one, this would throw
             if (PreventUpdateOnDraftEntities && !editableVersionOfTheEntity.IsPublished)
             {
-                _importLog.Add(new ImportLogItem(EventLogEntryType.Error, "Importing a Draft-Entity is not allowed"/*, impEntity*/));
+                ImportLog.Add(new ImportLogItem(EventLogEntryType.Error, "Importing a Draft-Entity is not allowed"/*, impEntity*/));
                 return;
             }
 
@@ -358,7 +356,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             var editableEntityContentType = _context.AttribSet.GetAttributeSet(editableVersionOfTheEntity.AttributeSetId);
             if (editableEntityContentType.StaticName != entity.Type.StaticName)//.AttributeSetStaticName)
             {
-                _importLog.Add(new ImportLogItem(EventLogEntryType.Error, "Existing entity (which should be updated) has different ContentType"/*, impEntity*/));
+                ImportLog.Add(new ImportLogItem(EventLogEntryType.Error, "Existing entity (which should be updated) has different ContentType"/*, impEntity*/));
                 return;
             }
             #endregion
@@ -374,7 +372,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     .ToDictionary(v => v.Key, v => v.Value);
 
             // todo: TestImport - ensure that the EntityId of this is what previously was the RepositoryID
-            _context.Entities.SaveEntity(editableVersionOfTheEntity.EntityId/*RepositoryId*/, dicTypedAttributes, updateLog: _importLog,
+            _context.Entities.UpdateAttributesAndPublishing(editableVersionOfTheEntity.EntityId/*RepositoryId*/, dicTypedAttributes, /*updateLog: _importLog,*/
                 preserveUndefinedValues: _keepAttributesMissingInImport, isPublished: entity.IsPublished, forceNoBranch: entity.OnSaveForceNoBranching);
 
             #endregion

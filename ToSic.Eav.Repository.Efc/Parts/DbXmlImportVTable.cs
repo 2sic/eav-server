@@ -122,7 +122,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 return;
             }
 
-            AttributesOfType = DbContext.Attributes.GetAttributeDefinitions(contentTypeId).ToList();
+            AttributesOfType = DbContext.AttributesDefinition.GetAttributeDefinitions(contentTypeId).ToList();
             ExistingEntities = DbContext.Entities.GetEntitiesByType(ContentType).ToList();
 
             _languages = languages;

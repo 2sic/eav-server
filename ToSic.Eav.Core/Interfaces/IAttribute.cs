@@ -30,5 +30,7 @@ namespace ToSic.Eav.Interfaces
         /// </summary>
         object this[string[] languageKeys] { get; }
         #endregion
-    }
+
+	    IAttribute Copy();
+	}
 }

@@ -153,7 +153,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 var attributes = new XElement(XmlConstants.Attributes);
 
                 // Add all Attributes to AttributeSet including meta informations
-                foreach (var x in EavAppContext.Attributes.GetAttributesInSet(id))
+                foreach (var x in EavAppContext.AttributesDefinition.GetAttributesInSet(id))
                 {
                     var attribute = new XElement(XmlConstants.Attribute,
                         new XAttribute(XmlConstants.Static, x.Attribute.StaticName),

@@ -62,6 +62,9 @@ namespace ToSic.Eav.Data.Builder
 
         #endregion
 
+        public static Dictionary<string, IAttribute> Copy(this IDictionary<string, IAttribute> attributes) 
+            => attributes.ToDictionary(x => x.Key, x => x.Value.Copy());
+
         #region Helper to add a value with languages to an existing list of Attributes
         /// <summary>
         /// Add a value to the attribute specified. To do so, set the name, type and string of the value, as 

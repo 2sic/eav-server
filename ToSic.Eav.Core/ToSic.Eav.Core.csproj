@@ -90,6 +90,7 @@
     <Compile Include="Data\Attribute_ofT.cs" />
     <Compile Include="Data\Builder\ContentType.cs" />
     <Compile Include="Data\ContentType.cs" />
+    <Compile Include="Data\Entity.cs" />
     <Compile Include="Data\Metadata.cs" />
     <Compile Include="Data\Dimension.cs" />
     <Compile Include="Data\EntityRelationship.cs" />
@@ -100,7 +101,7 @@
     <Compile Include="Data\Value.cs" />
     <Compile Include="Data\Value_ofT.cs" />
     <Compile Include="Data\Zone.cs" />
-    <Compile Include="Data\Entity.cs" />
+    <Compile Include="Data\EntityLight.cs" />
     <Compile Include="Enums\AttributeScope.cs" />
     <Compile Include="Enums\AttributeTypeEnum.cs" />
     <Compile Include="Factory.cs" />
@@ -112,8 +113,9 @@
     <Compile Include="Interfaces\IAttributeDefinition.cs" />
     <Compile Include="Interfaces\IContentTypeShareable.cs" />
     <Compile Include="Interfaces\HasMetadata.cs" />
-    <Compile Include="Interfaces\IEntityMultilanguage.cs" />
+    <Compile Include="Interfaces\IEntity.cs" />
     <Compile Include="Interfaces\IMetadata.cs" />
+    <Compile Include="Interfaces\IPublish_T.cs" />
     <Compile Include="Interfaces\IValue_T.cs" />
     <Compile Include="Interfaces\IValueOfDimension_T.cs" />
     <Compile Include="Interfaces\IAttribute_T.cs" />
@@ -125,7 +127,7 @@
     <Compile Include="Interfaces\ILanguage.cs" />
     <Compile Include="Interfaces\IIsMetadata.cs" />
     <Compile Include="Interfaces\IDimension.cs" />
-    <Compile Include="Interfaces\IEntity.cs" />
+    <Compile Include="Interfaces\IEntityLight.cs" />
     <Compile Include="Interfaces\IRelatedEntities.cs" />
     <Compile Include="Interfaces\IRelationshipManager.cs" />
     <Compile Include="Implementations\UserInformation\IEavUserInformation.cs" />

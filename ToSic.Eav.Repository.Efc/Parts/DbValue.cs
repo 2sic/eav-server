@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Efc.Models;
 
@@ -63,21 +62,17 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Add a new Value
         /// </summary>
-        internal ToSicEavValues AddValue(ToSicEavEntities entity, int attributeId, string value, bool autoSave = true)
+        private ToSicEavValues AddSingleValue(ToSicEavEntities entity, int attributeId, string value)
         {
-            var changeId = DbContext.Versioning.GetChangeLogId();
-
             var newValue = new ToSicEavValues
             {
                 AttributeId = attributeId,
                 Entity = entity,
                 Value = value,
-                ChangeLogCreated = changeId
+                //ChangeLogCreated = DbContext.Versioning.GetChangeLogId()
             };
 
             DbContext.SqlDb.Add(newValue);
-            if (autoSave)
-                DbContext.SqlDb.SaveChanges();
             return newValue;
         }
 
@@ -85,68 +80,73 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Update a Value
         /// </summary>
-        internal void UpdateValue(ToSicEavValues currentValue, string value, int changeId, bool autoSave = true)
+        internal void UpdateSingleValue(ToSicEavValues currentValue, string value)//, int changeId)
         {
             // only if value has changed
             if (currentValue.Value.Equals(value))
                 return;
 
             currentValue.Value = value;
-            currentValue.ChangeLogModified = changeId;
+            //currentValue.ChangeLogModified = changeId;
             currentValue.ChangeLogDeleted = null;
-
-            if (autoSave)
-                DbContext.SqlDb.SaveChanges();
         }
 
         #region Update Values
         /// <summary>
         /// Update a Value when using IValueImportModel. Returns the Updated Value (for simple Values) or null (for Entity-Values)
         /// </summary>
-        internal object UpdateValueByImport(ToSicEavEntities entityInDb, ToSicEavAttributes attribute, List<ToSicEavValues> currentValues, IValue newImpValue)
+        internal object UpdateAttributeValues(ToSicEavEntities entityInDb, ToSicEavAttributes attribute, List<ToSicEavValues> currentValues, IValue newImpValue)
         {
+            var value = newImpValue.ObjectContents;
             switch (attribute.Type)
             {
                 // Handle Entity Relationships - they're stored in own tables
                 case "Entity":
                     // 2017-06 simplifysave 2dm
                     // todo: mut check if we could also end up with a List<int?> instead of guid...
-                    if (newImpValue is Value<List<Guid>> || newImpValue is Value<List<Guid?>>)
+                    if (value is List<Guid> || value is List<Guid?>)
                     {
-                        var guidList = (newImpValue as Value<List<Guid>>)?.TypedContents.Select(p => (Guid?) p) 
-                            ?? ((Value<List<Guid?>>)newImpValue).TypedContents.Select(p => p);
-                        DbContext.Relationships.AddToQueue(attribute.AttributeId, guidList.ToList(), null, entityInDb.EntityId);
+                        var guidList = (value as List<Guid>)?.Select(p => (Guid?) p) ?? ((List<Guid?>)value).Select(p => p);
+                        DbContext.Relationships.AddToQueue(attribute.AttributeId, guidList.ToList(), /*null,*/ entityInDb.EntityId);
+                    }
+                    if (value is List<int> || value is List<int?>)
+                    {
+                        var entityIds = value as List<int?> ?? ((List<int>) value).Select(v => (int?) v).ToList();
+                        DbContext.Relationships.AddToQueue(attribute.AttributeId, entityIds, entityInDb.EntityId);
                     }
                     else
-                        throw new NotSupportedException("UpdateValue() for Attribute " + attribute.StaticName + " with newValue of type" + newImpValue.GetType() + " not supported. Expected List<Guid>");
+                        throw new NotSupportedException("UpdateValue() for Attribute " + attribute.StaticName +
+                                                        " with newValue of type" + newImpValue.GetType() +
+                                                        " not supported. Expected List<Guid?> or List<int?>");
 
                     return null;
                 // Handle simple values in Values-Table
                 default:
                     // masterRecord can be true or false, it's not used when valueDimensions is specified
-                    return UpdateSimpleValue(attribute, entityInDb, null, /*true,*/ newImpValue.UntypedContents /*GetTypedValue(newImpValue, attribute.Type, attribute.StaticName)*/, null, false, currentValues, newImpValue.Languages);
+                    return UpdateSingleValue(attribute, entityInDb, null, newImpValue.ObjectContents, false, currentValues, newImpValue.Languages);
             }
         }
 
         // 2017-06 simplifysave 2dm
-        ///// <summary>
-        ///// Update a Value 
-        ///// </summary>
-        //internal void UpdateValue(ToSicEavEntities entityInDb, ToSicEavAttributes attribute, List<ToSicEavValues> currentValues, object newValue, ICollection<int> dimensionIds)
-        //{
-        //    switch (attribute.Type)
-        //    {
-        //        // Handle Entity Relationships - they're stored in own tables
-        //        case "Entity":
-        //            var entityIds = newValue as int?[] ?? ((int[])newValue).Select(v => (int?)v).ToArray();
-        //            DbContext.Relationships.UpdateEntityRelationshipsAndSave(attribute.AttributeId, entityIds, entityInDb);
-        //            break;
-        //        // Handle simple values in Values-Table
-        //        default:
-        //            UpdateSimpleValue(attribute, entityInDb, dimensionIds, newValue, null, false, currentValues);
-        //            break;
-        //    }
-        //}
+        /// <summary>
+        /// Update a Value 
+        /// </summary>
+        internal void UpdateAttributeValues(ToSicEavEntities entityInDb, ToSicEavAttributes attribute, List<ToSicEavValues> currentValues, object newValue, ICollection<int> dimensionIds)
+        {
+            throw new Exception("code shouldn't run any more");
+            //switch (attribute.Type)
+            //{
+            //    // Handle Entity Relationships - they're stored in own tables
+            //    case "Entity":
+            //        var entityIds = newValue as int?[] ?? ((int[])newValue).Select(v => (int?)v).ToArray();
+            //        DbContext.Relationships.UpdateEntityRelationshipsAndSave(attribute.AttributeId, entityIds, entityInDb);
+            //        break;
+            //    // Handle simple values in Values-Table
+            //    default:
+            //        UpdateSimpleValue(attribute, entityInDb, dimensionIds, newValue, null, false, currentValues);
+            //        break;
+            //}
+        }
 
         #region old code, commented out
         ///// <summary>
@@ -204,13 +204,12 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Update a Value in the Values-Table
         /// </summary>
-        private ToSicEavValues UpdateSimpleValue(ToSicEavAttributes attribute, ToSicEavEntities entity, ICollection<int> dimensionIds, /*bool masterRecord,*/ object newValue, int? valueId, bool readOnly, List<ToSicEavValues> dbValues, /*IEntity entityModel,*/ IEnumerable<ILanguage> valueDimensions = null)
+        private ToSicEavValues UpdateSingleValue(ToSicEavAttributes attribute, ToSicEavEntities entity, ICollection<int> dimensionIds, object newValue, /*int? valueId,*/ bool readOnly, List<ToSicEavValues> dbValues, /*IEntity entityModel,*/ IEnumerable<ILanguage> valueDimensions = null)
         {
             var newValueSerialized = HelpersToRefactor.SerializeValue(newValue);
-            var changeId = DbContext.Versioning.GetChangeLogId();
 
             // Get Value or create new one
-            var value = GetOrCreateValue(attribute, entity, /*masterRecord,*/ valueId, readOnly, dbValues, /*entityModel,*/ newValueSerialized, changeId, valueDimensions);
+            var value = SaveValue(entity, /*valueId, readOnly,*/ attribute, dbValues, newValueSerialized, valueDimensions);
 
             #region Update DimensionIds on this and other values
 
@@ -268,7 +267,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Get an EavValue for specified EntityId etc. or create a new one. Uses different mechanism when running an Import or ValueId is specified.
         /// </summary>
-        private ToSicEavValues GetOrCreateValue(ToSicEavAttributes attribute, ToSicEavEntities entity, /*bool masterRecord,*/ int? valueId, bool readOnly, List<ToSicEavValues> dbValues, /*IEntity entityModel, */string newValueSerialized, int changeId, IEnumerable<ILanguage> valueDimensions)
+        private ToSicEavValues SaveValue(ToSicEavEntities entity, ToSicEavAttributes attribute, List<ToSicEavValues> dbValues, string newValueSerialized, IEnumerable<ILanguage> valueDimensions)
         {
             ToSicEavValues value;
             // if Import-Dimension(s) are Specified
@@ -276,32 +275,28 @@ namespace ToSic.Eav.Repository.Efc.Parts
             {
                 // Get first value having first Dimension or add new value
                 value = dbValues.FirstOrDefault(v =>
-                            v.ChangeLogDeleted == null
-                            && v.Attribute.StaticName == attribute.StaticName
-                            && v.ToSicEavValuesDimensions.Any(d =>
-                                d.Dimension.ExternalKey.Equals(valueDimensions.First().Key,
-                                    StringComparison.InvariantCultureIgnoreCase)))
-                        ?? AddValue(entity, attribute.AttributeId, newValueSerialized, autoSave: false);
+                    v.ChangeLogDeleted == null
+                    && v.Attribute.StaticName == attribute.StaticName
+                    && v.ToSicEavValuesDimensions.Any(d =>
+                        d.Dimension.ExternalKey.Equals(valueDimensions.First().Key,
+                            StringComparison.InvariantCultureIgnoreCase)));
             }
-            // if ValueId & EntityId is specified, use this Value
-            else if (valueId.HasValue && entity.EntityId != 0)
-            {
-                value = dbValues.Single(v => v.ValueId == valueId.Value && v.Attribute.StaticName == attribute.StaticName);
-            }
+            // Find Value (if languages not specified)
             else
-            {
-                // Find Value (if not specified) or create new one
-                value = dbValues.Where(v => v.AttributeId == attribute.AttributeId).OrderBy(a => a.ChangeLogCreated).FirstOrDefault() 
-                    ?? AddValue(entity, attribute.AttributeId, newValueSerialized, autoSave: false);
+                value = dbValues.Where(v => v.AttributeId == attribute.AttributeId)
+                        .OrderBy(a => a.ChangeLogCreated)
+                        .FirstOrDefault();
 
-            }
-
-            // Update old/existing Value
-            if (value.ValueId != 0 || entity.EntityId == 0 || entity.EntityId < 0) //  < 0 is ef-core temp id
-            {
-                if (!readOnly)
-                    UpdateValue(value, newValueSerialized, changeId, false);
-            }
+            if (value == null)
+                value = AddSingleValue(entity, attribute.AttributeId, newValueSerialized);
+            else
+                // Update old/existing Value
+                //if (value.ValueId != 0 || entity.EntityId <= 0) //  < 0 is ef-core temp id, 0 is other "not-defined" id
+                //{
+                // ro is always false
+                //if (!readOnly)
+                UpdateSingleValue(value, newValueSerialized);//, changeId);
+            //}
             return value;
         }
 

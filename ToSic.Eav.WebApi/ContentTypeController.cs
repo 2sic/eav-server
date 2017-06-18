@@ -196,7 +196,7 @@ namespace ToSic.Eav.WebApi
 	    public string[] DataTypes(int appId)
 	    {
             SetAppIdAndUser(appId);
-            return CurrentContext.Attributes.DataTypeNames(appId);
+            return CurrentContext.AttributesDefinition.DataTypeNames(appId);
 	    }
 
 	    [HttpGet]
@@ -217,14 +217,14 @@ namespace ToSic.Eav.WebApi
         public int AddField(int appId, int contentTypeId, string staticName, string type, string inputType, int sortOrder)
 	    {
             SetAppIdAndUser(appId);
-	        return CurrentContext.Attributes.CreateAttributeAndInitializeAndSave(contentTypeId, staticName, type, inputType, sortOrder);//, 1, false, true);
+	        return CurrentContext.AttributesDefinition.CreateAttributeAndInitializeAndSave(contentTypeId, staticName, type, inputType, sortOrder);//, 1, false, true);
 	    }
 
         [HttpGet]
         public bool UpdateInputType(int appId, int attributeId, string inputType)
         {
             SetAppIdAndUser(appId);
-            return CurrentContext.Attributes.UpdateInputType(attributeId, inputType);
+            return CurrentContext.AttributesDefinition.UpdateInputType(attributeId, inputType);
         }
 
         [HttpGet]
@@ -232,21 +232,21 @@ namespace ToSic.Eav.WebApi
 	    public bool DeleteField(int appId, int contentTypeId, int attributeId)
 	    {
             SetAppIdAndUser(appId);
-            return CurrentContext.Attributes.RemoveAttributeAndAllValuesAndSave(attributeId);
+            return CurrentContext.AttributesDefinition.RemoveAttributeAndAllValuesAndSave(attributeId);
 	    }
 
         [HttpGet]
 	    public void SetTitle(int appId, int contentTypeId, int attributeId)
 	    {
             SetAppIdAndUser(appId);
-            CurrentContext.Attributes.SetTitleAttributeAndSave(attributeId, contentTypeId);
+            CurrentContext.AttributesDefinition.SetTitleAttributeAndSave(attributeId, contentTypeId);
 	    }
 
         [HttpGet]
         public bool Rename(int appId, int contentTypeId, int attributeId, string newName)
         {
             SetAppIdAndUser(appId);
-            CurrentContext.Attributes.RenameStaticNameAndSave(attributeId, contentTypeId, newName);
+            CurrentContext.AttributesDefinition.RenameStaticNameAndSave(attributeId, contentTypeId, newName);
             return true;
         }
 

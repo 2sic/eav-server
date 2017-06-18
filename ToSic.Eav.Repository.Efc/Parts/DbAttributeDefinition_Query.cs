@@ -5,7 +5,7 @@ using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
-    public partial class DbAttribute
+    public partial class DbAttributeDefinition
     {
 
         /// <summary>

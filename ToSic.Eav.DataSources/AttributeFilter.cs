@@ -50,9 +50,9 @@ namespace ToSic.Eav.DataSources
 		    attributeNames = (from a in attributeNames select a.Trim()).ToArray();
 
 		    return In[Constants.DefaultStreamName].LightList
-                .Select(entity => new Data.Entity(entity, 
+                .Select(entity => new Entity(entity, 
                     entity.Attributes.Where(a => attributeNames.Contains(a.Key)).ToDictionary(k => k.Key, v => v.Value),
-                    (entity.Relationships as RelationshipManager).AllRelationships, entity.Owner)).Cast<IEntity>().ToList();
+                    (entity.Relationships as RelationshipManager).AllRelationships)).Cast<IEntity>().ToList();
 		}
 
         /// <summary>

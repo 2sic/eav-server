@@ -171,10 +171,6 @@
       <Project>{2bba13d2-f6d2-443b-b7c8-8f4c31432c03}</Project>
       <Name>ToSic.Eav.Repository.Efc</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ToSic.Eav.Tokens\ToSic.Eav.TokenEngine.csproj">
-      <Project>{2A81F269-8CCA-4AFD-A85F-82B1C2343965}</Project>
-      <Name>ToSic.Eav.TokenEngine</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

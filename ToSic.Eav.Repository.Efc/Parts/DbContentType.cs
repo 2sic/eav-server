@@ -126,7 +126,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         
         public void Reorder(int contentTypeId, List<int> newSortOrder)
         {
-            DbContext.Attributes.UpdateAttributeOrder(contentTypeId, newSortOrder);
+            DbContext.AttributesDefinition.UpdateAttributeOrder(contentTypeId, newSortOrder);
         }
     }
 }

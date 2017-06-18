@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data
@@ -9,6 +10,7 @@ namespace ToSic.Eav.Data
     public class RelatedEntities : IRelatedEntities
     {
         private readonly Dictionary<string, IAttribute> _attributes;
+        private readonly Dictionary<string, object> _objects;
 
         /// <summary>
         /// Initializes a new instance of the ChildEntities class.
@@ -20,6 +22,15 @@ namespace ToSic.Eav.Data
         }
 
         /// <summary>
+        /// Initializes a new instance of the ChildEntities class.
+        /// </summary>
+        /// <param name="objects"></param>
+        public RelatedEntities(Dictionary<string, object> objects)
+        {
+            _objects = objects;
+        }
+
+        /// <summary>
         /// Get Children of a specified Attribute Name
         /// </summary>
         /// <param name="attributeName">Attribute Name</param>
@@ -27,17 +38,21 @@ namespace ToSic.Eav.Data
         {
             get
             {
-                Attribute<EntityRelationship> relationship;
                 try
                 {
-                    relationship = _attributes[attributeName] as Attribute<EntityRelationship>;
+                    if (_attributes != null)
+                    {
+                        var relationship = _attributes[attributeName] as Attribute<EntityRelationship>;
+                        return relationship?.TypedContents;
+                    }
+                    var objRelationships = _objects[attributeName] as EntityRelationship;
+                    return objRelationships;
                 }
                 catch (KeyNotFoundException)
                 {
                     return new List<IEntity>();
                 }
 
-                return relationship?.TypedContents;
             }
         }
     }

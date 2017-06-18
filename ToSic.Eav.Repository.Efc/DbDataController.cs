@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 //using Microsoft.Practices.Unity;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.Implementations.UserInformation;
+using ToSic.Eav.ImportExport.Logging;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repository.Efc.Parts;
 
@@ -18,7 +20,7 @@ namespace ToSic.Eav.Repository.Efc
         public DbVersioning Versioning { get; private set; }
         public DbEntity Entities { get; private set; }
         public DbValue Values { get; private set; }
-        public DbAttribute Attributes { get; private set; }
+        public DbAttributeDefinition AttributesDefinition { get; private set; }
         public DbRelationship Relationships { get; private set; }
         public DbAttributeSet AttribSet { get; private set; }
         internal DbPublishing Publishing { get; private set; }
@@ -77,8 +79,11 @@ namespace ToSic.Eav.Repository.Efc
             }}
 
         #endregion
-        
-        
+
+        #region shared logs in case of write commands
+        internal readonly List<ImportLogItem> ImportLog = new List<ImportLogItem>();
+        #endregion
+
         #region new stuff
 
         public EavDbContext SqlDb { get; private set; }
@@ -104,7 +109,7 @@ namespace ToSic.Eav.Repository.Efc
             dc.Versioning = new DbVersioning(dc);
             dc.Entities = new DbEntity(dc);
             dc.Values = new DbValue(dc);
-            dc.Attributes = new DbAttribute(dc);
+            dc.AttributesDefinition = new DbAttributeDefinition(dc);
             dc.Relationships = new DbRelationship(dc);
             dc.AttribSet = new DbAttributeSet(dc);
             dc.Publishing = new DbPublishing(dc);

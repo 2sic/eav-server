@@ -9,18 +9,18 @@ namespace ToSic.Eav.Data
 	/// </summary>
 	public class RelationshipManager: IRelationshipManager
 	{
-		private readonly IEntity _entity;
+		private readonly IEntityLight _entity;
 	    public readonly IEnumerable<EntityRelationshipItem> AllRelationships;
 
 		/// <summary>
 		/// Initializes a new instance of the RelationshipManager class.
 		/// </summary>
 		/// <param name="entity"></param>
-		/// <param name="allAllRelationships"></param>
-		public RelationshipManager(IEntity entity, IEnumerable<EntityRelationshipItem> allAllRelationships)
+		/// <param name="allRelationships"></param>
+		public RelationshipManager(IEntityLight entity, IEnumerable<EntityRelationshipItem> allRelationships)
 		{
 			_entity = entity;
-			AllRelationships = allAllRelationships;
+			AllRelationships = allRelationships;
 		}
 
 		/// <summary>
@@ -36,6 +36,6 @@ namespace ToSic.Eav.Data
 	    /// <summary>
 		/// Get Children of a specified Attribute Name
 		/// </summary>
-		public IRelatedEntities Children => new RelatedEntities(_entity.Attributes);
+		public IRelatedEntities Children => _entity is IEntity ? new RelatedEntities(((IEntity)_entity).Attributes) : new RelatedEntities(_entity.Attributes);
 	}
 }

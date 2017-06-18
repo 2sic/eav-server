@@ -90,7 +90,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             var entList = entities.ToList();
 
             // Get the attribute definitions
-            var attribsOfType = DbContext.Attributes.GetAttributeDefinitions(ContentType.AttributeSetId).ToList();
+            var attribsOfType = DbContext.AttributesDefinition.GetAttributeDefinitions(ContentType.AttributeSetId).ToList();
 
             var dbXml = new DbXmlBuilder(DbContext);
             foreach (var entity in entList)

@@ -12,12 +12,14 @@ namespace ToSic.Eav.Interfaces
         /// </summary>
         IList<ILanguage> Languages { get; }
 
-        object UntypedContents { get; }
+        object ObjectContents { get; }
 
         // 2017-06-09 2dm removed, seems unused
         //string Serialized {get;}
 
         object SerializableObject { get; }
-	}
+
+        IValue Copy(string type);
+    }
 
 }
