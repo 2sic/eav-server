@@ -140,7 +140,6 @@
   <ItemGroup>
     <Compile Include="DependencyInjection.cs" />
     <Compile Include="Configuration.cs" />
-    <Compile Include="InterfacesForBackwardCompatibility.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VersionUpgrade.cs" />
   </ItemGroup>

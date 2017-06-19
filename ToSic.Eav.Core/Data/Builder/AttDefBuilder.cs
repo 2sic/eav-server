@@ -3,24 +3,24 @@ using System.Collections.Generic;
 
 namespace ToSic.Eav.Data.Builder
 {
-    public static class AttributeDefinition
+    public static class AttDefBuilder
     {
 
         /// <summary>
         /// Get an Import-Attribute
         /// </summary>
-        public static Data.AttributeDefinition BooleanAttribute(string staticName, string name, string notes, bool? visibleInEditUi, bool? defaultValue = null)
+        public static AttributeDefinition BooleanAttribute(string staticName, string name, string notes, bool? visibleInEditUi, bool? defaultValue = null)
         {
-            var attribute = new Data.AttributeDefinition(staticName, name, AttributeTypeEnum.Boolean.ToString(), notes, visibleInEditUi, defaultValue);
+            var attribute = new AttributeDefinition(staticName, name, AttributeTypeEnum.Boolean.ToString(), notes, visibleInEditUi, defaultValue);
             return attribute;
         }
 
         /// <summary>
         /// Get an Import-Attribute
         /// </summary>
-        public static Data.AttributeDefinition StringAttribute(string staticName, string niceName, string notes, bool? visibleInEditUi, string inputType = null, int? rowCount = null, string defaultValue = null)
+        public static AttributeDefinition StringAttribute(string staticName, string niceName, string notes, bool? visibleInEditUi, string inputType = null, int? rowCount = null, string defaultValue = null)
         {
-            var attribute = new Data.AttributeDefinition(staticName, niceName, AttributeTypeEnum.String.ToString(), notes, visibleInEditUi, defaultValue);
+            var attribute = new AttributeDefinition(staticName, niceName, AttributeTypeEnum.String.ToString(), notes, visibleInEditUi, defaultValue);
             attribute.InternalAttributeMetaData.Add(CreateStringAttribMetadata(inputType, rowCount));
             return attribute;
         }

@@ -10,7 +10,7 @@ namespace ToSic.Eav.Interfaces
         /// <summary>
         /// Gets the Languages assigned to this Value
         /// </summary>
-        IList<ILanguage> Languages { get; }
+        IList<ILanguage> Languages { get; set; }
 
         object ObjectContents { get; }
 

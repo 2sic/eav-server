@@ -6,7 +6,7 @@ using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data.Builder
 {
-    public static class Attributes
+    public static class AttribBuilder
     {
 
 
@@ -61,6 +61,13 @@ namespace ToSic.Eav.Data.Builder
         }
 
         #endregion
+
+        //public static IAttribute BuildAttribute(string name, object value, Dictionary<ILanguage> langages)
+        //{
+            
+        //}
+
+
 
         public static Dictionary<string, IAttribute> Copy(this IDictionary<string, IAttribute> attributes) 
             => attributes.ToDictionary(x => x.Key, x => x.Value.Copy());

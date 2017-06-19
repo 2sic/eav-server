@@ -32,9 +32,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
             var idProvidingEntity = hasOriginal ? origE : newE;
             #endregion
 
-            #region clean up unwanted attributes - then merge into a final attribute list
+            #region clean up unwanted attributes
 
-            var origAttribs = origE?.Attributes;
+            var origAttribs = origE?.Attributes.Copy();
             var newAttribs = newE.Attributes;
 
             // Optionally remove original values not in the update
@@ -42,22 +42,93 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 origAttribs = KeepOnlyKnownKeys(origAttribs, newE.Attributes.Keys.ToList());
 
             // Optionaly remove unknown - if possible - of both original and new
-            if (saveOptions.RemoveUnknownAttributes && ctToDo != null)
+            if (!saveOptions.PreserveUnknownAttributes && ctToDo != null)
             {
                 var keys = ctToDo.Attributes.Select(a => a.Name).ToList();
                 if(hasOriginal) origAttribs = KeepOnlyKnownKeys(origAttribs, keys);
                 newAttribs = KeepOnlyKnownKeys(newAttribs, keys);
             }
 
-            // now merge into new target
-            var mergedAttribs = hasOriginal ? origAttribs.Copy() : newAttribs; // will become 
-            if (hasOriginal)
-                foreach (var newAttrib in newAttribs)
-                    mergedAttribs[newAttrib.Key] = newAttrib.Value;
+            #endregion
+
+            #region clear languages as needed
+
+            // pre check if languages are properly available for clean-up or merge
+            if(!saveOptions.PreserveUnknownLanguages)
+                if ((!saveOptions.Languages?.Any() ?? true)
+                    || string.IsNullOrWhiteSpace(saveOptions.PrimaryLanguage)
+                    || saveOptions.Languages.All(l => l.Key != saveOptions.PrimaryLanguage))
+                    throw new Exception("primary language must exist in languages, cannot continue preparation to save with unclear language setup");
+
+
+            if (!saveOptions.PreserveUnknownLanguages && (saveOptions.Languages?.Any() ?? false))
+            {
+                if (hasOriginal) StripUnknownLanguages(origAttribs, saveOptions);
+                StripUnknownLanguages(newAttribs, saveOptions);
+            }
 
             #endregion
 
+            // now merge into new target
+            Dictionary<string, IAttribute> mergedAttribs = hasOriginal ? origAttribs : newAttribs; // will become 
+            if(hasOriginal)
+                foreach (var newAttrib in newAttribs)
+                    mergedAttribs[newAttrib.Key] = saveOptions.PreserveExistingLanguages
+                        ? MergeAttribute(mergedAttribs[newAttrib.Key], newAttrib.Value, saveOptions)
+                        : newAttrib.Value;
+
             return new Entity(idProvidingEntity, mergedAttribs, null);
+        }
+
+        /// <summary>
+        /// Will remove all language-information for values which have no language
+        /// </summary>
+        /// <param name="attribs"></param>
+        /// <param name="saveOptions"></param>
+        /// <remarks>
+        /// this expects that saveOptions contain Languages & PrimaryLanguage, and that this is reliable
+        /// </remarks>
+        private static void StripUnknownLanguages(Dictionary<string, IAttribute> attribs, SaveOptions saveOptions)
+        {
+            var languages = saveOptions.Languages;
+
+            foreach (var attribElm in attribs)
+            {
+                var values = new List<IValue>();       // new empty values list
+
+                // when we go through the values, we should always take the primary language first
+                // this is detectable by having either no language, or having the primary language
+                var valuesWithPrimaryFirst = attribElm.Value.Values
+                    .OrderBy(v => 
+                    v.Languages == null || !v.Languages.Any() ? 2 // no language, so it's primary
+                    : v.Languages.Any(l => l.Key == saveOptions.PrimaryLanguage) 
+                        ? 1 // really primary, use this first
+                        : 3); // other, work on these last
+                foreach (var value in valuesWithPrimaryFirst)
+                {
+                    // create filtered list of languages
+                    var newLangs = value.Languages?.Where(l => languages.Any(sysLang => sysLang.Key == l.Key)).ToList();
+                    // only keep this value, if it is either the first (so contains primary or null-language) or that it still has a remaining language assignment
+                    if (!values.Any() || (newLangs?.Any() ?? false))
+                    {
+                        value.Languages = newLangs;
+                        values.Add(value);
+                    }
+                }
+                attribElm.Value.Values = values;
+            }
+        }
+
+        /// <summary>
+        /// Merge two attributes, preserving languages as necessary
+        /// </summary>
+        /// <param name="original"></param>
+        /// <param name="update"></param>
+        /// <param name="saveOptions"></param>
+        /// <returns></returns>
+        private static IAttribute MergeAttribute(IAttribute original, IAttribute update, SaveOptions saveOptions)
+        {
+            return original;
         }
 
         private static Dictionary<string, IAttribute> KeepOnlyKnownKeys(Dictionary<string, IAttribute> orig, List<string> keys)
@@ -73,9 +144,14 @@ namespace ToSic.Eav.Repository.Efc.Parts
     {
         //public SaveTypes Mode = SaveTypes.Update;
         public bool PreserveExistingAttributes = false;
+        public bool PreserveUnknownAttributes = false;
         //public bool PreserveInvisibleAttributes = false;
-        public bool PreserveOtherLanguages = false;
-        public bool RemoveUnknownAttributes = true;
+
+        public string PrimaryLanguage = null;
+        public List<ILanguage> Languages = null;
+        public bool PreserveExistingLanguages = false;
+        public bool PreserveUnknownLanguages = false;
+
     }
 
     //public enum SaveTypes

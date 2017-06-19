@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
@@ -37,7 +36,7 @@ namespace ToSic.Eav.Data
         /// </summary>
         public AttributeDefinition(string name, string niceName, string type, string notes, bool? visibleInEditUi, object defaultValue): this(name, type, false, 0, 0)
         {
-            InternalAttributeMetaData = new List<Entity> { Builder.AttributeDefinition.CreateAttributeMetadata(niceName, notes, visibleInEditUi, HelpersToRefactor.SerializeValue(defaultValue)) };
+            InternalAttributeMetaData = new List<Entity> { AttDefBuilder.CreateAttributeMetadata(niceName, notes, visibleInEditUi, HelpersToRefactor.SerializeValue(defaultValue)) };
         }
 
 

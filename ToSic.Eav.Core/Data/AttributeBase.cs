@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.Implementations.ValueConverter;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data
@@ -49,9 +47,10 @@ namespace ToSic.Eav.Data
         /// Get Attribute for specified Typ
         /// </summary>
         /// <returns><see cref="Attribute{ValueType}"/></returns>
-        public static IAttribute CreateTypedAttribute(string name, AttributeTypeEnum type)
+        public static IAttribute CreateTypedAttribute(string name, AttributeTypeEnum type, List<IValue> values = null)
         {
             var typeName = type.ToString();
+            var result = ((Func<IAttribute>)(() => { 
             switch (type)
             {
                 case AttributeTypeEnum.Boolean:
@@ -72,9 +71,14 @@ namespace ToSic.Eav.Data
                 default:
                     return new Attribute<string>(name, typeName);
             }
+            }))();
+            if (values != null)
+                result.Values = values;
+
+            return result;
         }
 
-        public static IAttribute CreateTypedAttribute(string name, string type) => CreateTypedAttribute(name, ParseToAttributeTypeEnum(type));
+        public static IAttribute CreateTypedAttribute(string name, string type, List<IValue> values = null) => CreateTypedAttribute(name, ParseToAttributeTypeEnum(type), values);
 
 
         

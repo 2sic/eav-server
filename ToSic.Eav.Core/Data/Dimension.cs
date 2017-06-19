@@ -10,5 +10,6 @@ namespace ToSic.Eav.Data
         public int DimensionId { get; set; }
         public bool ReadOnly { get; set; }
         public string Key { get; set; }
+
     }
 }

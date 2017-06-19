@@ -84,7 +84,10 @@ namespace ToSic.Eav.Data
 
         public Entity(int entityId, string contentTypeName, Dictionary<string, object> values, string titleAttribute = null, DateTime? modified = null) : base(entityId, contentTypeName, values, titleAttribute, modified)
         {
-            _useLightModel = true;
+            if (values.All(x => x.Value is IAttribute))
+                Attributes = values.ToDictionary(x => x.Key, x => x.Value as IAttribute);
+            else
+                _useLightModel = true;
         }
 
         /// <summary>
@@ -93,7 +96,10 @@ namespace ToSic.Eav.Data
         /// </summary>
         public Entity(Guid entityGuid, string contentTypeName, Dictionary<string, object> values) : base(entityGuid, contentTypeName, values)
         {
-            _useLightModel = true;
+            if (values.All(x => x.Value is IAttribute))
+                Attributes = values.ToDictionary(x => x.Key, x => x.Value as IAttribute);
+            else
+                _useLightModel = true;
         }
 
         /// <summary>

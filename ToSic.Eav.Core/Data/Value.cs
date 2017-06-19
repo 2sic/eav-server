@@ -12,7 +12,7 @@ namespace ToSic.Eav.Data
     /// </summary>
     public class Value
     {
-        public IList<ILanguage> Languages { get; private set; }
+        public IList<ILanguage> Languages { get; set; }
 
         /// <summary>
         /// Creates a Typed Value Model
