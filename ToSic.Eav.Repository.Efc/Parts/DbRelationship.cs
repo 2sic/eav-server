@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
@@ -160,7 +161,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         public void SaveRelationships(ToSicEavEntities dbEntity, IEntity eToSave, SaveOptions so)
         {
             // some initial error checking
-            if(eToSave.RepositoryId <= 0)
+            if(dbEntity.EntityId <= 0)
                 throw new Exception("can't work on relationships if entity doesn't have a repository id yet");
 
             // todo: put all relationships into queue
@@ -172,12 +173,12 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 if (list is List<Guid> || list is List<Guid?>)
                 {
                     var guidList = (list as List<Guid>)?.Select(p => (Guid?)p) ?? ((List<Guid?>)list).Select(p => p);
-                    AddToQueue(attribId, guidList.ToList(), eToSave.RepositoryId, true);
+                    AddToQueue(attribId, guidList.ToList(), dbEntity.EntityId, true);
                 }
                 if (list is List<int> || list is List<int?>)
                 {
                     var entityIds = list as List<int?> ?? ((List<int>)list).Select(v => (int?)v).ToList();
-                    DbContext.Relationships.AddToQueue(attribId, entityIds, eToSave.RepositoryId, true);
+                    DbContext.Relationships.AddToQueue(attribId, entityIds, dbEntity.EntityId, true);
                 }
             }
 

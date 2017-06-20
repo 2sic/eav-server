@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Persistence;
 using ToSic.Eav.Repository.Efc.Parts;
 
 namespace ToSic.Eav.Repository.Efc.Tests
@@ -196,7 +197,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         [TestMethod]
         public void MergeNoLangIntoNull_EnsureLangsDontGetAdded()
         {
-            var merged = EntitySaver.CreateMergedForSaving(_prodNull, _prodNoLang, _ctNull, _saveDefault);
+            var merged = EntitySaver.CreateMergedForSaving(_prodNull, _prodNoLang, _saveDefault);
 
             Assert.AreEqual(1, merged["Title"].Values.Count, "should only have 1");
             var firstVal = merged["Title"].Values.First();
@@ -207,7 +208,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         [TestMethod]
         public void MergeMlIntoNoLang_MustClearUnknownLang()
         {
-            var merged = EntitySaver.CreateMergedForSaving(_prodNoLang, _prodMl, _ctNull, _saveDefault);
+            var merged = EntitySaver.CreateMergedForSaving(_prodNoLang, _prodMl, _saveDefault);
 
             Assert.AreEqual(2, merged["Title"].Values.Count, "should only have 2, no FR");
             var deVal = merged["Title"].Values.First(v => v.Languages.Any(l => l.Key == langDeDe.Key));
@@ -217,7 +218,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         [TestMethod]
         public void MergeMlIntoNoLang_DontClearUnknownLang()
         {
-            var merged = EntitySaver.CreateMergedForSaving(_prodNoLang, _prodMl, _ctNull, _saveKeepUnknownLangs);
+            var merged = EntitySaver.CreateMergedForSaving(_prodNoLang, _prodMl, _saveKeepUnknownLangs);
 
             Assert.AreEqual(3, merged["Title"].Values.Count, "should have 3, with FR");
             var deVal = merged["Title"].Values.First(v => v.Languages.Any(l => l.Key == langFr.Key));
@@ -228,7 +229,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         [TestMethod]
         public void MergeEnIntoNoLang_ShouldHaveLang()
         {
-            var merged = EntitySaver.CreateMergedForSaving(_prodNoLang, _prodEn, _ctNull, _saveDefault);
+            var merged = EntitySaver.CreateMergedForSaving(_prodNoLang, _prodEn, _saveDefault);
 
             Assert.AreEqual(1, merged["Title"].Values.Count, "should only have 1");
             var firstVal = merged["Title"].Values.First();
@@ -238,7 +239,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         [TestMethod]
         public void MergeEnIntoML_KeepLangs()
         {
-            var merged = EntitySaver.CreateMergedForSaving(_prodMl, _prodEn, _ctNull, _saveKeepExistingLangs);
+            var merged = EntitySaver.CreateMergedForSaving(_prodMl, _prodEn, _saveKeepExistingLangs);
 
             // check the titles as expected
             Assert.AreEqual(2, merged["Title"].Values.Count, "should have 2 titles with languages - EN and a shared DE+CH");
@@ -256,7 +257,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         public void MergeMlIntoEn_KeepLangs()
         {
-            var merged = EntitySaver.CreateMergedForSaving(_prodMl, _prodEn, _ctNull, _saveKeepExistingLangs);
+            var merged = EntitySaver.CreateMergedForSaving(_prodMl, _prodEn, _saveKeepExistingLangs);
 
             // check the titles as expected
             Assert.AreEqual(2, merged["Title"].Values.Count, "should have 2 titles with languages - EN and a shared DE+CH");
@@ -267,7 +268,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         public void MergeMlIntoNoLang_KeepLangs()
         {
             //this test will have to merge ML into the no-lang, and ensure that no-lang is typed correctly!
-            var merged = EntitySaver.CreateMergedForSaving(_prodEn, _prodMl, _ctNull, _saveKeepUnknownLangs);
+            var merged = EntitySaver.CreateMergedForSaving(_prodEn, _prodMl, _saveKeepUnknownLangs);
 
             // todo!
         }
@@ -275,7 +276,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         [TestMethod]
         public void MergeNoLangIntoEn_DefaultNoMerge()
         {
-            var merged = EntitySaver.CreateMergedForSaving(_prodEn, _prodNoLang, _ctNull, _saveDefault);
+            var merged = EntitySaver.CreateMergedForSaving(_prodEn, _prodNoLang, _saveDefault);
 
             Assert.AreEqual(1, merged.Title.Values.Count, "should only have 1");
             var firstVal = merged.Title.Values.First();
@@ -285,7 +286,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         [TestMethod]
         public void MergeNoLangIntoEn_Merge()
         {
-            var merged = EntitySaver.CreateMergedForSaving(_prodEn, _prodNoLang, _ctNull, _saveKeepExistingLangs);
+            var merged = EntitySaver.CreateMergedForSaving(_prodEn, _prodNoLang, _saveKeepExistingLangs);
 
             Assert.AreEqual(1, merged.Title.Values.Count, "should only have 1");
             var firstVal = merged.Title.Values.First();
@@ -295,7 +296,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         [TestMethod]
         public void MergMlintoEnDefault_shouldBeMl()
         {
-            var merged = EntitySaver.CreateMergedForSaving(_prodEn, _prodMl, _ctNull, _saveDefault);
+            var merged = EntitySaver.CreateMergedForSaving(_prodEn, _prodMl, _saveDefault);
             // todo: add some test conditions
         }
 
@@ -306,7 +307,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         [TestMethod]
         public void MergeNullAndMarried()
         {
-            var merged = EntitySaver.CreateMergedForSaving(_origENull, _girlMarried, _ctNull, _saveDefault);
+            var merged = EntitySaver.CreateMergedForSaving(_origENull, _girlMarried, _saveDefault);
             Assert.IsNotNull(merged, "result should never be null");
             Assert.AreEqual(_girlMarried.Attributes.Count, merged.Attributes.Count, "this test case should simply keep all values");
             AssertBasicsInMerge(_origENull, _girlMarried, merged, _girlMarried);
@@ -318,7 +319,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         [TestMethod]
         public void MergeSingleAndMarried()
         {
-            var merged = EntitySaver.CreateMergedForSaving(_girlSingle, _girlMarried, _ctNull, _saveDefault);
+            var merged = EntitySaver.CreateMergedForSaving(_girlSingle, _girlMarried, _saveDefault);
             Assert.IsNotNull(merged, "result should never be null");
             Assert.AreEqual(_girlMarried.Attributes.Count, merged.Attributes.Count, "this test case should simply keep all new values");
             AssertBasicsInMerge(_origENull, _girlMarried, merged, _girlSingle);
@@ -327,7 +328,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             Assert.AreNotEqual(merged.GetBestValue("FullName"), _girlSingle.GetBestValue("FullName"), "full name should be that of married");
 
             // Merge keeping 
-            merged = EntitySaver.CreateMergedForSaving(_girlSingle, _girlMarried, _ctNull, _saveKeepAttribs);
+            merged = EntitySaver.CreateMergedForSaving(_girlSingle, _girlMarried, _saveKeepAttribs);
             Assert.IsNotNull(merged, "result should never be null");
             Assert.AreNotEqual(_girlSingle.Attributes.Count, merged.Attributes.Count, "should have more than original count");
             Assert.AreNotEqual(_girlMarried.Attributes.Count, merged.Attributes.Count, "should have more than new count");
@@ -335,7 +336,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             Assert.AreNotSame(_girlMarried.Attributes, merged.Attributes, "attributes new / merged shouldn't be same object in this case");
 
             // Merge updating only 
-            merged = EntitySaver.CreateMergedForSaving(_girlSingle, _girlMarriedUpdate, _ctNull, _saveKeepAttribs);
+            merged = EntitySaver.CreateMergedForSaving(_girlSingle, _girlMarriedUpdate, _saveKeepAttribs);
             Assert.IsNotNull(merged, "result should never be null");
             Assert.AreNotEqual(_girlSingle.Attributes.Count, merged.Attributes.Count, "should have more than original count");
             Assert.AreNotEqual(_girlMarried.Attributes.Count, merged.Attributes.Count, "should have more than new count");
@@ -346,9 +347,9 @@ namespace ToSic.Eav.Repository.Efc.Tests
         [TestMethod]
         public void MergeSingleAndMarriedFilterCtAttribs()
         {
-            // todo: merge with type definition filter but without type
+            _girlSingle.SetType(_ctPerson);
             // Merge keeping all and remove unknown attributes
-            var merged = EntitySaver.CreateMergedForSaving(_girlSingle, _girlMarried, _ctPerson, _saveKeepAndClean);
+            var merged = EntitySaver.CreateMergedForSaving(_girlSingle, _girlMarried, _saveKeepAndClean);
             var expectedFields = new List<string> { "FullName", "FirstName", "LastName", "Birthday", "Husband" };
             Assert.IsNotNull(merged, "result should never be null");
             Assert.AreEqual(expectedFields.Count, merged.Attributes.Count, "should have only ct-field count except the un-used one");
@@ -356,7 +357,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             AssertBasicsInMerge(_origENull, _girlMarried, merged, _girlSingle);
 
             // Merge keeping all and remove unknown attributes
-            merged = EntitySaver.CreateMergedForSaving(_girlSingle, _girlMarried, _ctPerson, _saveClean);
+            merged = EntitySaver.CreateMergedForSaving(_girlSingle, _girlMarried, _saveClean);
             expectedFields.Remove("Birthday");
             Assert.IsNotNull(merged, "result should never be null");
             Assert.AreEqual(expectedFields.Count, merged.Attributes.Count, "should have only ct-field count except the un-used one");
@@ -367,9 +368,8 @@ namespace ToSic.Eav.Repository.Efc.Tests
         [TestMethod]
         public void MergeSingleAndMarriedFilterUnknownCt()
         {
-            // todo: merge with type definition filter but without type
             // Merge keeping all and remove unknown attributes
-            var merged = EntitySaver.CreateMergedForSaving(_girlSingle, _girlMarried, null, _saveKeepAndClean);
+            var merged = EntitySaver.CreateMergedForSaving(_girlSingle, _girlMarried, _saveKeepAndClean);
             var expectedFields = _girlMarried.Attributes.Keys.Concat(_girlSingle.Attributes.Keys).Distinct().ToList();
             Assert.IsNotNull(merged, "result should never be null");
             Assert.AreEqual(expectedFields.Count, merged.Attributes.Count, "should have only ct-field count except the un-used one");

@@ -21,8 +21,9 @@ namespace ToSic.Eav.Persistence.Efc.Models
         public int? KeyNumber { get; set; }
         public Guid? KeyGuid { get; set; }
         public string KeyString { get; set; }
-        // 2017-06-20 2dm - never used
-        //public int SortOrder { get; set; }
+        // 2017-06-20 2dm - never used - but can't remove yet
+        public int SortOrder { get; set; } = 0;
+
         public int ChangeLogCreated { get; set; }
         public int? ChangeLogDeleted { get; set; }
         public bool IsPublished { get; set; }

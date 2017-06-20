@@ -132,7 +132,6 @@
     <Compile Include="Parts\DbEntity_base.cs" />
     <Compile Include="Parts\DbEntity_read.cs" />
     <Compile Include="Parts\DbEntity_old.cs" />
-    <Compile Include="Parts\EntitySaver.cs" />
     <Compile Include="Parts\DbImport.cs" />
     <Compile Include="Parts\DbPipeline.cs" />
     <Compile Include="Parts\DbPublishing.cs" />
@@ -145,7 +144,6 @@
     <Compile Include="Parts\DbXmlExportTable.cs" />
     <Compile Include="Parts\DbXmlImportVTable.cs" />
     <Compile Include="Parts\DbZone.cs" />
-    <Compile Include="Parts\SaveOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

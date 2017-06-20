@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Efc.Models;
-using ToSic.Eav.Repository.Efc.Parts;
 
 namespace ToSic.Eav.Repository.Efc.Tests
 {
@@ -13,15 +15,10 @@ namespace ToSic.Eav.Repository.Efc.Tests
     public class SaveDataToDbTests
     {
 
-        private EavDbContext _db;
-        private Efc11Loader _loader;
-
         [TestInitialize]
         public void Init()
         {
             Trace.Write("initializing DB & loader");
-            //_db = Factory.Resolve<EavDbContext>();
-            _loader = Factory.Resolve<Efc11Loader>();// new Efc11Loader(_db);
         }
 
         [TestMethod]
@@ -32,21 +29,21 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var dbi = DbDataController.Instance(test.ZoneId, test.AppId);
             dbi.Entities.DebugKeepTransactionOpen = true;
 
-            // todo: load an entity
+            // load an entity
             var loader1 = new Efc11Loader(dbi.SqlDb);
             var app1 = loader1.AppPackage(test.AppId);
             var itm1 = app1.Entities[test.ItemOnHomeId];
 
-            // todo: save it
+            // save it
             dbi.Entities.SaveEntity(itm1, so);
 
-            // todo: re-load it
+            // re-load it
             var loader2 = new Efc11Loader(dbi.SqlDb); // use existing db context because the transaction is still open
             var app2 = loader2.AppPackage(test.AppId);
             var itm2 = app2.Entities[test.ItemOnHomeId];
 
 
-            // todo: validate that they are still the same!
+            // validate that they are still the same!
             Assert.AreEqual(itm1.Attributes.Count, itm2.Attributes.Count, "should have same amount of attributes");
 
             dbi.Entities.DebugTransaction.Rollback();
@@ -70,12 +67,12 @@ namespace ToSic.Eav.Repository.Efc.Tests
             {
                 {"Title", "changed title"}
             });
-            var saveEntity = EntitySaver.CreateMergedForSaving(itm1, itmNewTitle, itm1.Type, so);
+            var saveEntity = EntitySaver.CreateMergedForSaving(itm1, itmNewTitle, so);
 
-            // todo: save it
+            // save it
             dbi.Entities.SaveEntity(saveEntity, so);
 
-            // todo: reload it
+            // reload it
             var loader2 = new Efc11Loader(dbi.SqlDb); // use existing db context because the transaction is still open
             var app2 = loader2.AppPackage(test.AppId);
             var itm2 = app2.Entities[test.ItemOnHomeId];
@@ -91,9 +88,39 @@ namespace ToSic.Eav.Repository.Efc.Tests
         [TestMethod]
         public void CreateNewItemAndSave()
         {
-            
+            var ctName = "Simple Content";
+            var ctTitle = "wonderful new title";
+            var test = new TestValuesOnPc2dm();
+            var so = new SaveOptions() { PreserveExistingAttributes = true, PreserveUnknownLanguages = true };
+            var dbi = DbDataController.Instance(test.ZoneId, test.AppId);
+            dbi.Entities.DebugKeepTransactionOpen = true;
 
-            throw new NotImplementedException();
+            // todo: load a simple, 1 language entity
+            var loader1 = new Efc11Loader(dbi.SqlDb);
+            var app1 = loader1.AppPackage(test.AppId);
+            var ct1 = app1.ContentTypes.Values.First(ct => ct.Name == ctName);
+
+            var newE = new Entity(0, ct1.StaticName, new Dictionary<string, object>()
+            {
+                { "Title", ctTitle }
+            });
+            newE.SetType(ct1);
+
+            var saveEntity = EntitySaver.CreateMergedForSaving(null, newE, so);
+
+            // save it
+            var newId = dbi.Entities.SaveEntity(saveEntity, so);
+
+            // reload it
+            var loader2 = new Efc11Loader(dbi.SqlDb); // use existing db context because the transaction is still open
+            var app2 = loader2.AppPackage(test.AppId);
+            var itm2 = app2.Entities[newId];
+
+            Assert.AreEqual(itm2.GetBestTitle(), ctTitle, "title should be loaded as saved" );
+
+            dbi.Entities.DebugTransaction.Rollback();
+
+
         }
     }
 }

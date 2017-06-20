@@ -135,6 +135,8 @@
     <Compile Include="Implementations\UserInformation\IEavUserInformation.cs" />
     <Compile Include="Interfaces\IRepositoryLoader.cs" />
     <Compile Include="Interfaces\IValue.cs" />
+    <Compile Include="Persistence\EntitySaver.cs" />
+    <Compile Include="Persistence\SaveOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -5,7 +5,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
 
-namespace ToSic.Eav.Repository.Efc.Parts
+namespace ToSic.Eav.Persistence
 {
     public class EntitySaver
     {
@@ -13,38 +13,42 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// Goal: Pass changes into an existing entity so that it can then be saved as a whole, with correct
         /// modifications. 
         /// </summary>
-        /// <param name="origE"></param>
-        /// <param name="newE"></param>
-        /// <param name="ctToDo"></param>
+        /// <param name="original"></param>
+        /// <param name="update"></param>
         /// <param name="saveOptions"></param>
         /// <returns></returns>
-        public static IEntity CreateMergedForSaving(IEntity origE, IEntity newE, IContentType ctToDo, SaveOptions saveOptions)
+        public static IEntity CreateMergedForSaving(IEntity original, IEntity update, SaveOptions saveOptions)
         {
             #region Step 0: initial error checks
-            if(newE == null || newE.Attributes?.Count == 0)
+            if(update == null || update.Attributes?.Count == 0)
                 throw new Exception("can't prepare entities for saving, no new item with attributes provided");
+
+            var ct = (original ?? update).Type;
+            if(ct==null)
+                throw new Exception("unknown content-type");
 
             #endregion
 
             #region Step 1: check if there is an original item
             // only accept original if it's a real object with a valid GUID, otherwise it's not an existing entity
-            bool hasOriginal = !(origE == null || (origE.EntityId == 0 && origE.EntityGuid == Guid.Empty));
-            var idProvidingEntity = hasOriginal ? origE : newE;
+            bool hasOriginal = !(original == null || (original.EntityId == 0 && original.EntityGuid == Guid.Empty));
+            var idProvidingEntity = hasOriginal ? original : update;
             #endregion
 
             #region Step 2: clean up unwanted attributes from both lists
 
-            var origAttribs = origE?.Attributes.Copy();
-            var newAttribs = newE.Attributes.Copy();
+            var origAttribs = original?.Attributes.Copy();
+            var newAttribs = update.Attributes.Copy();
 
             // Optionally remove original values not in the update
             if (hasOriginal && !saveOptions.PreserveExistingAttributes)
-                origAttribs = KeepOnlyKnownKeys(origAttribs, newE.Attributes.Keys.ToList());
+                origAttribs = KeepOnlyKnownKeys(origAttribs, newAttribs.Keys.ToList());
 
             // Optionaly remove unknown - if possible - of both original and new
-            if (!saveOptions.PreserveUnknownAttributes && ctToDo != null)
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            if (!saveOptions.PreserveUnknownAttributes && ct != null)
             {
-                var keys = ctToDo.Attributes.Select(a => a.Name).ToList();
+                var keys = ct.Attributes.Select(a => a.Name).ToList();
                 keys.Add(Constants.EntityFieldGuid);
                 keys.Add(Constants.EntityFieldIsPublished);
 

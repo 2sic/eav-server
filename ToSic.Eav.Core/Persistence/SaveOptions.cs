@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Interfaces;
 
-namespace ToSic.Eav.Repository.Efc.Parts
+namespace ToSic.Eav.Persistence
 {
 
     public class SaveOptions

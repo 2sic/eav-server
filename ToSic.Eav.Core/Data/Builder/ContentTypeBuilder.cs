@@ -15,5 +15,7 @@ namespace ToSic.Eav.Data.Builder
                	Attributes = attributes
             };
 		}
+
+        //public static ContentType UndefinedContentTypeType() => new ContentType("");
     }
 }
