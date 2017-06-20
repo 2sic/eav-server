@@ -35,7 +35,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         }};
         Entity _origENull = null;
 
-        private readonly IEntity _girlSingle = new Entity(999, "", new Dictionary<string, object>
+        private readonly Entity _girlSingle = new Entity(999, "", new Dictionary<string, object>
         {
             {"FullName", "Sandra Unmarried"},
             {"FirstName", "Sandra"},
@@ -43,7 +43,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             {"Birthday", new DateTime(1981, 5, 14) }
         });
 
-        private readonly IEntity _girlMarried = new Entity(0, "", new Dictionary<string, object>
+        private readonly Entity _girlMarried = new Entity(0, "", new Dictionary<string, object>
         {
             {"FullName", "Sandra Unmarried-Married"},
             {"FirstName", "Sandra"},
@@ -53,7 +53,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             {"WeddingDate", DateTime.Today }
         });
 
-        private readonly IEntity _girlMarriedUpdate = new Entity(0, "", new Dictionary<string, object>
+        private readonly Entity _girlMarriedUpdate = new Entity(0, "", new Dictionary<string, object>
         {
             {"FullName", "Sandra Unmarried-Married"},
             //{"FirstName", "Sandra"},

@@ -339,7 +339,7 @@ namespace ToSic.Eav.Persistence.Efc
                 // Special treatment in case there is no title 
                 // sometimes happens if the title-field is re-defined and ol data might no have this
                 // also happens in rare cases, where the title-attrib is an entity-picker
-                if (newEntity.Title == null)
+                if (newEntity.Title == null && titleAttrib != null)
                     newEntity.SetTitleField(titleAttrib.Name);
                 #endregion
 
