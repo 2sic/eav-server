@@ -12,90 +12,10 @@ using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
-    public class DbEntity: BllCommandBase
+    public partial class DbEntity: BllCommandBase
     {
-        public DbEntity(DbDataController cntx) : base(cntx)
-        {
-        }
-
-        public List<ImportLogItem> ImportLog => DbContext.ImportLog;
 
         #region Get Commands
-
-        private IQueryable<ToSicEavEntities> EntityQuery
-            => DbContext.SqlDb.ToSicEavEntities
-                .Include(e => e.RelationshipsWithThisAsParent)
-                .Include(e => e.RelationshipsWithThisAsChild)
-                .Include(e => e.ToSicEavValues)
-                    .ThenInclude(v => v.ToSicEavValuesDimensions)
-                        .ThenInclude(d => d.Dimension);
-            
-
-        private IQueryable<ToSicEavEntities> IncludeMultiple(IQueryable<ToSicEavEntities> origQuery, string additionalTables)
-        {
-            additionalTables.Split(',').ToList().ForEach(a => origQuery = origQuery.Include(a.Trim()));
-            return origQuery;
-        }
-
-        /// <summary>
-        /// Get a single Entity by EntityId
-        /// </summary>
-        /// <returns>Entity or throws InvalidOperationException</returns>
-        internal ToSicEavEntities GetDbEntity(int entityId)
-            =>  EntityQuery.Single(e => e.EntityId == entityId);
-
-        internal ToSicEavEntities GetDbEntity(int entityId, string includes)
-            => IncludeMultiple(EntityQuery, includes).Single(e => e.EntityId == entityId);
-
-        /// <summary>
-        /// Get a single Entity by EntityGuid. Ensure it's not deleted and has context's AppId
-        /// </summary>
-        /// <returns>Entity or throws InvalidOperationException</returns>
-        public ToSicEavEntities GetMostCurrentDbEntity(Guid entityGuid)
-            // GetEntity should never return a draft entity that has a published version
-            => GetEntitiesByGuid(entityGuid).Single(e => !e.PublishedEntityId.HasValue);
-        
-
-
-        internal IQueryable<ToSicEavEntities> GetEntitiesByGuid(Guid entityGuid) 
-            => EntityQuery.Where(e => e.EntityGuid == entityGuid && !e.ChangeLogDeleted.HasValue &&
-                !e.AttributeSet.ChangeLogDeleted.HasValue && e.AttributeSet.AppId == DbContext.AppId);
-
-
-        internal IQueryable<ToSicEavEntities> GetEntitiesByType(ToSicEavAttributeSets set)
-        => EntityQuery.Where(e => e.AttributeSet == set);
-
-
-        /// <summary>
-        /// Test whether Entity exists on current App and is not deleted
-        /// </summary>
-        internal bool EntityExists(Guid entityGuid) => GetEntitiesByGuid(entityGuid).Any();
-
-        
-        /// <summary>
-        /// Get a List of Entities with specified assignmentObjectTypeId and optional Key.
-        /// </summary>
-        internal IQueryable<ToSicEavEntities> GetAssignedEntities(int assignmentObjectTypeId, int? keyNumber = null, Guid? keyGuid = null, string keyString = null, string includes = null)
-        {
-            var origQuery = DbContext.SqlDb.ToSicEavEntities
-                .Where(e => e.AssignmentObjectTypeId == assignmentObjectTypeId
-                   && (keyNumber.HasValue && e.KeyNumber == keyNumber.Value || keyGuid.HasValue && e.KeyGuid == keyGuid.Value || keyString != null && e.KeyString == keyString)
-                   && e.ChangeLogDeleted == null);
-            if (!string.IsNullOrEmpty(includes))
-                origQuery = IncludeMultiple(origQuery, includes);
-            return origQuery;
-        }
-
-        /// <summary>
-        /// Get a Metadata items which enhance existing Entities, 
-        /// and use the GUID to keep reference. This is extra complex, because the Guid can be in use multiple times on various apps
-        /// </summary>
-        internal IQueryable<ToSicEavEntities> GetEntityMetadataByGuid(int appId, Guid keyGuid, string includes = null)
-        {
-            var query = GetAssignedEntities(Constants.MetadataForEntity, keyGuid: keyGuid, includes: includes)
-                .Where(e => e.AttributeSet.AppId == appId);
-            return query;
-        }
 
         #endregion
 
@@ -103,10 +23,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Import a new Entity
         /// </summary>
-        internal ToSicEavEntities AddImportEntity(int attributeSetId, Entity entity, /*List<ImportLogItem> importLog,*/ bool isPublished, int? publishedTarget)
+        internal ToSicEavEntities AddImportEntity(int attributeSetId, Entity entity, bool isPublished, int? publishedTarget)
         {
             return AddEntity(attributeSetId, entity.Attributes, entity.Metadata,
-                0, entity.EntityGuid, null, /*importLog,*/ isPublished, publishedTarget);
+                0, entity.EntityGuid, null, isPublished, publishedTarget);
         }
         
         
@@ -115,8 +35,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         public ToSicEavEntities AddEntity(int attributeSetId, IDictionary values, 
             IIsMetadata isMetadata = null, int sortOrder = 0, 
-            Guid? entityGuid = null, ICollection<int> dimensionIds = null, /*List<ImportLogItem> updateLog = null,*/ 
-            bool isPublished = true, int? publishedEntityId = null)
+            Guid? entityGuid = null, ICollection<int> dimensionIds = null, bool isPublished = true, int? publishedEntityId = null)
         {
             // note: values is either a dictionary <string, object> or <string, IList<IValue>>
 
@@ -168,33 +87,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         #endregion
 
-        #region Clone
-        /// <summary>
-        /// Clone an Entity with all Values
-        /// </summary>
-        internal ToSicEavEntities CloneEntity(ToSicEavEntities sourceEntity)
-        {
-            var versioningId = DbContext.Versioning.GetChangeLogId();
-            var clone = new ToSicEavEntities()
-            {
-                EntityGuid = Guid.NewGuid(),
-                AttributeSet = sourceEntity.AttributeSet,
-                ConfigurationSet = sourceEntity.ConfigurationSet,
-                AssignmentObjectTypeId = sourceEntity.AssignmentObjectTypeId,
-                KeyGuid = sourceEntity.KeyGuid,
-                KeyNumber = sourceEntity.KeyNumber,
-                KeyString = sourceEntity.KeyString,
-                ChangeLogCreated = versioningId,
-                ChangeLogModified = versioningId
-            };
-
-            DbContext.SqlDb.Add(clone);
-
-            DbContext.Values.CloneEntityValues(sourceEntity, clone);
-
-            return clone;
-        }
-        #endregion  
 
         #region Update
         /// <summary>
@@ -204,8 +96,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <param name="newValues">new Values of this Entity</param>
         /// <param name="autoSave">auto save Changes to DB</param>
         /// <param name="dimensionIds">DimensionIds for all Values</param>
-        ///// <param name="masterRecord">Is this the Master Record/Language</param>
-        /// <param name="updateLog">Update/Import Log List</param>
         /// <param name="preserveUndefinedValues">Preserve Values if Attribute is not specifeied in NewValues</param>
         /// <param name="isPublished">Is this Entity Published or a draft</param>
         /// <param name="forceNoBranch">this forces the published-state to be applied to the original, without creating a draft-branhc</param>
@@ -395,128 +285,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             #endregion
         }
         #endregion
-
-        #region Delete Commands
-
-        /// <summary>
-        /// Delete an Entity
-        /// </summary>
-        public bool DeleteEntity(int repositoryId, bool forceRemoveFromParents = false) => DeleteEntity(GetDbEntity(repositoryId), removeFromParents: forceRemoveFromParents);
-
-        /// <summary>
-        /// Delete an Entity
-        /// </summary>
-        public bool DeleteEntity(Guid entityGuid) => DeleteEntity(GetMostCurrentDbEntity(entityGuid));
-
-        /// <summary>
-        /// Delete an Entity
-        /// </summary>
-        internal bool DeleteEntity(ToSicEavEntities entity, bool autoSave = true, bool removeFromParents = false)
-        {
-            if (entity == null)
-                return false;
-
-            // get full entity again to be sure we are deleting everything - otherwise inbound unreliable
-            entity = DbContext.Entities.GetDbEntity(entity.EntityId, "ToSicEavValues,ToSicEavValues.ToSicEavValuesDimensions");
-
-
-            #region Delete Related Records (Values, Value-Dimensions, Relationships)
-            // Delete all Value-Dimensions
-            var valueDimensions = entity.ToSicEavValues.SelectMany(v => v.ToSicEavValuesDimensions).ToList();
-            DbContext.SqlDb.RemoveRange(valueDimensions);
-            // Delete all Values
-            DbContext.SqlDb.RemoveRange(entity.ToSicEavValues.ToList());
-            // Delete all Parent-Relationships
-            entity.RelationshipsWithThisAsParent.Clear();
-            if (removeFromParents)
-                entity.RelationshipsWithThisAsChild.Clear();
-
-            #endregion
-
-            // If entity was Published, set Deleted-Flag
-            if (entity.IsPublished)
-            {
-                entity.ChangeLogDeleted = DbContext.Versioning.GetChangeLogId();
-                // Also delete the Draft (if any)
-                var draftEntityId = DbContext.Publishing.GetDraftEntityId(entity.EntityId);
-                if (draftEntityId.HasValue)
-                    DeleteEntity(draftEntityId.Value);
-            }
-            // If entity was a Draft, really delete that Entity
-            else
-            {
-                // Delete all Child-Relationships
-                entity.RelationshipsWithThisAsChild.Clear();
-                DbContext.SqlDb.Remove(entity);
-            }
-
-            if (autoSave)
-                DbContext.SqlDb.SaveChanges();
-
-            return true;
-        }
-
-
-        public Tuple<bool, string> CanDeleteEntity(int entityId)
-        {
-            var messages = new List<string>();
-            var entity = GetDbEntity(entityId);
-            //var entityModel = new Efc11Loader(DbContext.SqlDb).Entity(DbContext.AppId, entityId);
-            //if (!entityModel.IsPublished && entityModel.GetPublished() == null)	// always allow Deleting Draft-Only Entity 
-
-            if (!entity.IsPublished && entity.PublishedEntityId == null)	// always allow Deleting Draft-Only Entity 
-                return new Tuple<bool, string>(true, null);
-
-            #region check if there are relationships where this is a child
-            var parents = DbContext.SqlDb.ToSicEavEntityRelationships
-                .Where(r => r.ChildEntityId == entityId)
-                .Select(r => new TempEntityAndTypeInfos { EntityId = r.ParentEntityId, TypeId = r.ParentEntity.AttributeSetId} )
-                .ToList();
-            if (parents.Any())
-            {
-                TryToGetMoreInfosAboutDependencies(parents, messages);
-                messages.Add($"found {parents.Count()} relationships where this is a child - the parents are: {string.Join(", ", parents)}.");
-            }
-            #endregion
-
-            var entitiesAssignedToThis = GetAssignedEntities(Constants.MetadataForEntity, entityId)
-                .Select(e => new TempEntityAndTypeInfos() { EntityId = e.EntityId, TypeId = e.AttributeSetId})
-                .ToList();
-            if (entitiesAssignedToThis.Any())
-            {
-                TryToGetMoreInfosAboutDependencies(entitiesAssignedToThis, messages);
-                messages.Add($"found {entitiesAssignedToThis.Count()} entities which are metadata for this, assigned children (like in a pieline) or assigned for other reasons: {string.Join(", ", entitiesAssignedToThis)}.");
-            }
-            return Tuple.Create(!messages.Any(), string.Join(" ", messages));
-        }
-
-        private void TryToGetMoreInfosAboutDependencies(IEnumerable<TempEntityAndTypeInfos> dependencies, List<string> messages)
-        {
-            try
-            {
-                // try to get more infos about the parents
-                foreach (var dependency in dependencies)
-                    dependency.TypeName = DbContext.AttribSet.GetAttributeSet(dependency.TypeId).Name;
-            }
-            catch
-            {
-                messages.Add("Relationships but was not able to look up more details to show a nicer error.");
-            }
-            
-
-        }
-
-        private class TempEntityAndTypeInfos
-        {
-            internal int EntityId;
-            internal int TypeId;
-            internal string TypeName = "";
-
-            public override string ToString() =>  EntityId + " (" + TypeName + ")";
-            
-        }
-
-        #endregion
+        
 
     }
 }

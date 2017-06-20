@@ -126,7 +126,12 @@
     <Compile Include="Parts\DbAttributeDefinition_Sorting.cs" />
     <Compile Include="Parts\DbContentType.cs" />
     <Compile Include="Parts\DbDimensions.cs" />
-    <Compile Include="Parts\DbEntity.cs" />
+    <Compile Include="Parts\DbEntity_delete.cs" />
+    <Compile Include="Parts\DbEntity_metadata.cs" />
+    <Compile Include="Parts\DbEntity_newSave.cs" />
+    <Compile Include="Parts\DbEntity_base.cs" />
+    <Compile Include="Parts\DbEntity_read.cs" />
+    <Compile Include="Parts\DbEntity_old.cs" />
     <Compile Include="Parts\EntitySaver.cs" />
     <Compile Include="Parts\DbImport.cs" />
     <Compile Include="Parts\DbPipeline.cs" />

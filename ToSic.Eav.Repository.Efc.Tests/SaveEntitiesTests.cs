@@ -20,6 +20,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         // --> todo: ensure the guid doesn't update/change the guid! - in the save-layer...
         // handle missing guid in the save layer?
         // implement full save on the efc11 layer
+        // move the special save-setting in the Entity into the SaveOptions...
 
         #region Test Data Person tests
         
