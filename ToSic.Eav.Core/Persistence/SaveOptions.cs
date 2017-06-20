@@ -7,8 +7,10 @@ namespace ToSic.Eav.Persistence
     public class SaveOptions
     {
         //public SaveTypes Mode = SaveTypes.Update;
-        public bool PreserveExistingAttributes = false;
+        public bool PreserveUntouchedAttributes = false;
         public bool PreserveUnknownAttributes = false;
+
+        public bool SkipExistingAttributes = false;
         //public bool PreserveInvisibleAttributes = false;
 
         public string PrimaryLanguage { get { return _priLang; } set { _priLang = value.ToLowerInvariant(); } }

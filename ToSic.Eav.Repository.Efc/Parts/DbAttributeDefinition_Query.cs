@@ -24,7 +24,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
 
 
-
         /// <summary>
         /// Get a list of all Attributes in Set for specified AttributeSetId
         /// </summary>

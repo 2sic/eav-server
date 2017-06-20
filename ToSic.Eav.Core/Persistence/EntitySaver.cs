@@ -41,7 +41,7 @@ namespace ToSic.Eav.Persistence
             var newAttribs = update.Attributes.Copy();
 
             // Optionally remove original values not in the update
-            if (hasOriginal && !saveOptions.PreserveExistingAttributes)
+            if (hasOriginal && (!saveOptions.PreserveUntouchedAttributes || !saveOptions.SkipExistingAttributes))
                 origAttribs = KeepOnlyKnownKeys(origAttribs, newAttribs.Keys.ToList());
 
             // Optionaly remove unknown - if possible - of both original and new
@@ -55,6 +55,12 @@ namespace ToSic.Eav.Persistence
                 if (hasOriginal) origAttribs = KeepOnlyKnownKeys(origAttribs, keys);
                 newAttribs = KeepOnlyKnownKeys(newAttribs, keys);
             }
+
+            // optionally remove new things which already exist
+            if (hasOriginal && saveOptions.SkipExistingAttributes)
+                newAttribs = KeepOnlyKnownKeys(newAttribs, newAttribs.Keys
+                    .Where(k => !origAttribs.Keys.Any(
+                                ok => string.Equals(k, ok, StringComparison.InvariantCultureIgnoreCase))).ToList());
 
             #endregion
 

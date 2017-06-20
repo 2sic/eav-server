@@ -41,6 +41,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             var isNew = eToSave.RepositoryId <= 0;
 
+            var contentTypeId = DbContext.AttribSet.GetAttributeSetIdWithEitherName(eToSave.Type.StaticName);
+            var attributeDefs = DbContext.AttributesDefinition.GetAttributeDefinitions(contentTypeId).ToList();
 
             #endregion Step 2
 
@@ -68,7 +70,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                         IsPublished = eToSave.IsPublished,
                         PublishedEntityId = eToSave.IsPublished ? null : eToSave.GetPublished()?.EntityId,
                         Owner = DbContext.UserName,
-                        AttributeSetId = eToSave.Type.ContentTypeId
+                        AttributeSetId = contentTypeId
                     };
 
                     DbContext.SqlDb.Add(dbEntity);
@@ -125,14 +127,19 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 // first, clean up all existing attributes / values (flush)
                 dbEntity.ToSicEavValues.Clear();
                 DbContext.SqlDb.SaveChanges();  // this is necessary after remove, because otherwise EF state tracking gets messed up
-                foreach (var attribute in eToSave.Attributes.Values.Where(a => a.Type != AttributeTypeEnum.Entity.ToString())) // todo: put in constant
+
+                foreach (var attribute in eToSave.Attributes.Values) // todo: put in constant
                 {
-                    var attribId = eToSave.Type.Attributes.Single(a => string.Equals(a.Name, attribute.Name, StringComparison.InvariantCultureIgnoreCase)).AttributeId;
+                    // find attribute definition
+                    var attribDef = attributeDefs.SingleOrDefault(a => string.Equals(a.StaticName, attribute.Name, StringComparison.InvariantCultureIgnoreCase));
+                    if (attribDef == null)
+                        throw new Exception($"trying to save attribute {attribute.Name} but can\'t find definition in DB");
+                    if(attribDef.Type == AttributeTypeEnum.Entity.ToString()) continue;
+
                     foreach (var value in attribute.Values)
-                    {
                         dbEntity.ToSicEavValues.Add(new ToSicEavValues
                         {
-                            AttributeId = attribId,
+                            AttributeId = attribDef.AttributeId,
                             Value = value.SerializableObject.ToString(),
                             ChangeLogCreated = changeId, // todo: remove some time later
                             ToSicEavValuesDimensions = value.Languages?.Select(l => new ToSicEavValuesDimensions
@@ -141,7 +148,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
                                 ReadOnly = l.ReadOnly
                             }).ToList()
                         });
-                    }
                 }
                 DbContext.SqlDb.SaveChanges(); // save all the values we just added
 
@@ -149,7 +155,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                 #region Step 5: Save / update all relationships
 
-                DbContext.Relationships.SaveRelationships(dbEntity, eToSave, so);
+                DbContext.Relationships.SaveRelationships(eToSave, dbEntity, attributeDefs, so);
 
                 #endregion
 

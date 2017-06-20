@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -7,7 +6,6 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Efc;
-using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Tests
 {
@@ -53,7 +51,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         public void LoadOneChangeABitAndSave()
         {
             var test = new TestValuesOnPc2dm();
-            var so = new SaveOptions(){PreserveExistingAttributes = true, PreserveUnknownLanguages = true};
+            var so = new SaveOptions(){PreserveUntouchedAttributes = true, PreserveUnknownLanguages = true};
             var dbi = DbDataController.Instance(test.ZoneId, test.AppId);
             dbi.Entities.DebugKeepTransactionOpen = true;
 
@@ -91,16 +89,16 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var ctName = "Simple Content";
             var ctTitle = "wonderful new title";
             var test = new TestValuesOnPc2dm();
-            var so = new SaveOptions() { PreserveExistingAttributes = true, PreserveUnknownLanguages = true };
+            var so = new SaveOptions() { PreserveUntouchedAttributes = true, PreserveUnknownLanguages = true };
             var dbi = DbDataController.Instance(test.ZoneId, test.AppId);
             dbi.Entities.DebugKeepTransactionOpen = true;
 
-            // todo: load a simple, 1 language entity
+            // load content type to start creating an item...
             var loader1 = new Efc11Loader(dbi.SqlDb);
             var app1 = loader1.AppPackage(test.AppId);
             var ct1 = app1.ContentTypes.Values.First(ct => ct.Name == ctName);
 
-            var newE = new Entity(0, ct1.StaticName, new Dictionary<string, object>()
+            var newE = new Entity(0, ct1.StaticName, new Dictionary<string, object>
             {
                 { "Title", ctTitle }
             });

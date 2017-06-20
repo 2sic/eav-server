@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport.Logging;
+using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Efc.Models;
 using Entity = ToSic.Eav.Data.Entity;
 
@@ -21,8 +22,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
         private readonly DbDataController _context;
         private readonly bool _dontUpdateExistingAttributeValues;
         private readonly bool _keepAttributesMissingInImport;
-        //private readonly List<ImportLogItem> _importLog = new List<ImportLogItem>();
         private readonly bool _largeImport;
+
+        public SaveOptions SaveOptions = new SaveOptions();
         #endregion
 
         #region Properties
@@ -30,7 +32,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Get the Import Log
         /// </summary>
-        public List<ImportLogItem> ImportLog => _context.ImportLog;// _importLog;
+        public List<ImportLogItem> ImportLog => _context.ImportLog;
 
         bool PreventUpdateOnDraftEntities { get; }
         #endregion
@@ -42,7 +44,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
         {
             _context = DbDataController.Instance(zoneId, appId);
             _dontUpdateExistingAttributeValues = dontUpdateExistingAttributeValues;
+
             _keepAttributesMissingInImport = keepAttributesMissingInImport;
+            SaveOptions.PreserveUntouchedAttributes = keepAttributesMissingInImport;
+            
             PreventUpdateOnDraftEntities = preventUpdateOnDraftEntities;
             _largeImport = largeImport;
         }
@@ -92,15 +97,12 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                 #region import Entities
                 if (newEntities != null)
-                    _context.Versioning.QueueDuringAction(() => // .ActivateQueue();
+                    _context.Versioning.QueueDuringAction(() =>
                     {
                         foreach (var entity in newEntities)
-                            _context.DoAndSave(() => PersistOneImportEntity(entity));
+                            _context.DoAndSave(() => PersistOneEntity(entity));
 
                         _context.Relationships.ImportRelationshipQueueAndSave();
-
-                        // must do this after importing the relationship queue!
-                        //_context.Versioning.ProcessQueue();
                     });
                 #endregion
 
@@ -266,7 +268,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 if (existingMetadata != null)
                     entity.SetGuid(existingMetadata.EntityGuid);
 
-                PersistOneImportEntity(entity);
+                PersistOneEntity(entity);
             }
         }
 
@@ -294,7 +296,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Import an Entity with all values
         /// </summary>
-        private void PersistOneImportEntity(Entity entity)
+        private void PersistOneEntity(Entity entity)
         {
             #region try to get AttributeSet or otherwise cancel & log error
 
@@ -302,7 +304,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             if (dbAttrSet == null) // AttributeSet not Found
             {
-                ImportLog.Add(new ImportLogItem(EventLogEntryType.Error, "AttributeSet not found"){ContentType = new ContentType(entity.Type.StaticName)});
+                ImportLog.Add(new ImportLogItem(EventLogEntryType.Error, "AttributeSet not found: " + entity.Type.StaticName));
                 return;
             }
 
@@ -311,12 +313,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
             // Find existing Enties - meaning both draft and non-draft
             List<ToSicEavEntities> dbExistingEntities = null;
             if (entity.EntityGuid != Guid.Empty)//.HasValue)
-                dbExistingEntities = _context.Entities.GetEntitiesByGuid(entity.EntityGuid/*.Value*/).ToList();
+                dbExistingEntities = _context.Entities.GetEntitiesByGuid(entity.EntityGuid).ToList();
 
             #region Simplest case - add (nothing existing to update)
             if (dbExistingEntities == null || !dbExistingEntities.Any())
             {
-                _context.Entities.AddImportEntity(dbAttrSet.AttributeSetId, entity, /*_importLog,*/ entity.IsPublished, null);
+                _context.Entities.SaveEntity(entity, SaveOptions);
+                //_context.Entities.AddImportEntity(dbAttrSet.AttributeSetId, entity, entity.IsPublished, null);
                 return;
             }
 
@@ -327,7 +330,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             if (!entity.IsPublished && dbExistingEntities.Count(e => e.IsPublished == false) == 0 && !entity.OnSaveForceNoBranching)
             {
                 var publishedId = dbExistingEntities.First().EntityId;
-                _context.Entities.AddImportEntity(dbAttrSet.AttributeSetId, entity, /*_importLog,*/ entity.IsPublished, publishedId);
+                _context.Entities.AddImportEntity(dbAttrSet.AttributeSetId, entity, entity.IsPublished, publishedId);
                 return;
             }
 
@@ -339,7 +342,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             // Get existing, published Entity
             var editableVersionOfTheEntity = dbExistingEntities.OrderBy(e => e.IsPublished ? 1 : 0).First(); // get draft first, otherwise the published
-            ImportLog.Add(new ImportLogItem(EventLogEntryType.Information, "Entity already exists"/*, impEntity*/));
+            ImportLog.Add(new ImportLogItem(EventLogEntryType.Information, "Entity already exists"));
         
 
             #region ensure we don't save a draft is this is not allowed (usually in the case of xml-import)
@@ -347,7 +350,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             // Prevent updating Draft-Entity - since the initial would be draft if it has one, this would throw
             if (PreventUpdateOnDraftEntities && !editableVersionOfTheEntity.IsPublished)
             {
-                ImportLog.Add(new ImportLogItem(EventLogEntryType.Error, "Importing a Draft-Entity is not allowed"/*, impEntity*/));
+                ImportLog.Add(new ImportLogItem(EventLogEntryType.Error, "Importing a Draft-Entity is not allowed"));
                 return;
             }
 
@@ -355,7 +358,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             #region Ensure entity has same AttributeSet (do this after checking for the draft etc.
             var editableEntityContentType = _context.AttribSet.GetAttributeSet(editableVersionOfTheEntity.AttributeSetId);
-            if (editableEntityContentType.StaticName != entity.Type.StaticName)//.AttributeSetStaticName)
+            if (editableEntityContentType.StaticName != entity.Type.StaticName)
             {
                 ImportLog.Add(new ImportLogItem(EventLogEntryType.Error, "Existing entity (which should be updated) has different ContentType"/*, impEntity*/));
                 return;

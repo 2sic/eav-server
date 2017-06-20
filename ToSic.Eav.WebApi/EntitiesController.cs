@@ -274,7 +274,7 @@ namespace ToSic.Eav.WebApi
             };
 
             #region Metadata if we have any
-            // todo: as the objects are of the same type, we can probably remove the Format.Metadata-type soon...
+            // todo: as the objects are of the same type, we can probably remove the type Format.Metadata soon...
             if (metadata != null && metadata.HasMetadata)
                 importEntity.SetMetadata(new Data.Metadata
                 {
@@ -285,8 +285,6 @@ namespace ToSic.Eav.WebApi
                 });
 
             #endregion
-
-
 
             return importEntity;
         }

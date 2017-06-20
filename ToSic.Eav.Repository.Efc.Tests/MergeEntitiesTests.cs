@@ -6,7 +6,6 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence;
-using ToSic.Eav.Repository.Efc.Parts;
 
 namespace ToSic.Eav.Repository.Efc.Tests
 {
@@ -20,7 +19,6 @@ namespace ToSic.Eav.Repository.Efc.Tests
         // handle special properties like ispublished, etc.
         // --> todo: ensure the guid doesn't update/change the guid! - in the save-layer...
         // handle missing guid in the save layer?
-        // implement full save on the efc11 layer
         // move the special save-setting in the Entity into the SaveOptions...
 
         #region Test Data Person tests
@@ -84,22 +82,24 @@ namespace ToSic.Eav.Repository.Efc.Tests
         readonly SaveOptions _saveClean = CreateOptions( PreserveUnknownAttributes: false);
         readonly SaveOptions _saveKeepUnknownLangs = CreateOptions( PreserveUnknownLanguages: true);
         readonly SaveOptions _saveKeepExistingLangs = CreateOptions( PreserveExistingLanguages: true);
-
-        private static SaveOptions CreateOptions(bool? PreserveExistingAttributes = null, bool? PreserveUnknownAttributes = null, bool? PreserveUnknownLanguages = null, bool? PreserveExistingLanguages = null)
+        readonly SaveOptions _saveSkipExisting = CreateOptions(SkipExistingAttributes:true, PreserveUnknownAttributes:true);
+        private static SaveOptions CreateOptions(bool? PreserveExistingAttributes = null, bool? PreserveUnknownAttributes = null, bool? PreserveUnknownLanguages = null, bool? PreserveExistingLanguages = null, bool? SkipExistingAttributes = null)
         {
             var x = new SaveOptions
             {
                 PrimaryLanguage = langEn.Key,
-                Languages = new List<ILanguage> { langEn, langDeDe, langDeCh }
+                Languages = activeLangs
             };
             if (PreserveExistingAttributes != null)
-                x.PreserveExistingAttributes = PreserveExistingAttributes.Value;
+                x.PreserveUntouchedAttributes = PreserveExistingAttributes.Value;
             if (PreserveUnknownAttributes != null)
                 x.PreserveUnknownAttributes = PreserveUnknownAttributes.Value;
             if (PreserveUnknownLanguages != null)
                 x.PreserveUnknownLanguages = PreserveUnknownLanguages.Value;
             if (PreserveExistingLanguages != null)
                 x.PreserveExistingLanguages = PreserveExistingLanguages.Value;
+            if (SkipExistingAttributes != null)
+                x.SkipExistingAttributes = SkipExistingAttributes.Value;
             return x;
         }
 
@@ -125,7 +125,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             { "Image", "file:403" }
         }, "Title");
 
-        private Entity _prodEn = ((Func<Entity>)(() =>
+        private readonly Entity _prodEn = ((Func<Entity>)(() =>
         {
             var title = AttributeBase.CreateTypedAttribute("Title", "String", new List<IValue>
             {
@@ -148,7 +148,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             }, "Title");
         }))();
 
-        private Entity _prodMl  = ((Func<Entity>)(() =>
+        private readonly Entity _prodMl  = ((Func<Entity>)(() =>
         {
             var title = AttributeBase.CreateTypedAttribute("Title", "String", new List<IValue>
             {
@@ -204,7 +204,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             Assert.AreEqual(0, firstVal.Languages.Count, "should still have no languages");
         }
 
-        #region Test for clearing / not clearing unknown languages
+        #region Test Multilanguage - for clearing / not clearing unknown languages
         [TestMethod]
         public void MergeMlIntoNoLang_MustClearUnknownLang()
         {
@@ -226,6 +226,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         }
         #endregion
 
+        #region More Tests Multilanguage
         [TestMethod]
         public void MergeEnIntoNoLang_ShouldHaveLang()
         {
@@ -299,7 +300,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var merged = EntitySaver.CreateMergedForSaving(_prodEn, _prodMl, _saveDefault);
             // todo: add some test conditions
         }
-
+        #endregion
 
         #endregion
 
@@ -365,6 +366,20 @@ namespace ToSic.Eav.Repository.Efc.Tests
             AssertBasicsInMerge(_origENull, _girlMarried, merged, _girlSingle);
 
         }
+
+        [TestMethod]
+        public void Merge_SkipExisting()
+        {
+            _girlSingle.SetType(_ctPerson);
+            // Merge keeping all and remove unknown attributes
+            var merged = EntitySaver.CreateMergedForSaving(_girlSingle, _girlMarried, _saveSkipExisting);
+            // var expectedFields = new List<string> {"FullName", "FirstName", "LastName", "Birthday", "Husband"};
+            Assert.IsNotNull(merged, "result should never be null");
+            Assert.AreEqual(_girlSingle.GetBestValue("FullName"), merged.GetBestValue("FullName"), "should keep single name");
+            Assert.AreEqual(_girlSingle.GetBestValue("LastName"), merged.GetBestValue("LastName"), "should keep single name");
+            Assert.AreEqual(_girlMarried.GetBestValue("Husband"), merged.GetBestValue("Husband"), "should keep single name");
+        }
+
         [TestMethod]
         public void MergeSingleAndMarriedFilterUnknownCt()
         {

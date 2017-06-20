@@ -158,23 +158,29 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         #endregion
 
-        public void SaveRelationships(ToSicEavEntities dbEntity, IEntity eToSave, SaveOptions so)
+        internal void SaveRelationships(IEntity eToSave, ToSicEavEntities dbEntity, List<ToSicEavAttributes> attributeDefs, SaveOptions so)
         {
             // some initial error checking
             if(dbEntity.EntityId <= 0)
                 throw new Exception("can't work on relationships if entity doesn't have a repository id yet");
 
             // todo: put all relationships into queue
-            foreach (var attribute in eToSave.Attributes.Values.Where(a => a.Type == AttributeTypeEnum.Entity.ToString()))
-            {
+            foreach (var attribute in eToSave.Attributes.Values)
+            {                    
+                // find attribute definition
+                var attribDef = attributeDefs.Single(a => string.Equals(a.StaticName, attribute.Name, StringComparison.InvariantCultureIgnoreCase));
+                if (attribDef.Type != AttributeTypeEnum.Entity.ToString()) continue;
+
                 var list = attribute.Values?.FirstOrDefault()?.ObjectContents;
                 if (list == null) continue;
                 var attribId = eToSave.Type.Id(attribute.Name);
+
                 if (list is List<Guid> || list is List<Guid?>)
                 {
                     var guidList = (list as List<Guid>)?.Select(p => (Guid?)p) ?? ((List<Guid?>)list).Select(p => p);
                     AddToQueue(attribId, guidList.ToList(), dbEntity.EntityId, true);
                 }
+
                 if (list is List<int> || list is List<int?>)
                 {
                     var entityIds = list as List<int?> ?? ((List<int>)list).Select(v => (int?)v).ToList();
@@ -182,7 +188,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 }
             }
 
-            // todo: probably parse queue if SO determines so
+            // probably parse queue if SO determines so, or let the outside layer determine this
             if (!so.DelayRelationshipSave)
                 ImportRelationshipQueueAndSave();
         }
