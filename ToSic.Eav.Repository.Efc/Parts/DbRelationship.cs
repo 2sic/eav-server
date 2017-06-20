@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
@@ -57,28 +59,22 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Update Relationships of an Entity. Update isn't done until ImportEntityRelationshipsQueue() is called!
         /// </summary>
-        internal void AddToQueue(int attributeId, List<Guid?> newValue, /*Guid? entityGuid,*/ int? entityId)
+        internal void AddToQueue(int attributeId, List<Guid?> newValue, int entityId, bool flushAll)
         {
             _relationshipToSave.Add(new RelationshipToSave
             {
-                AttributeId = attributeId,
-                ChildEntityGuids = newValue,
-                //ParentEntityGuid = entityGuid,
-                ParentEntityId = entityId
+                AttributeId = attributeId, ChildEntityGuids = newValue, ParentEntityId = entityId
             });
         }
 
         /// <summary>
         /// Update Relationships of an Entity. Update isn't done until ImportEntityRelationshipsQueue() is called!
         /// </summary>
-        internal void AddToQueue(int attributeId, List<int?> newValue, /*Guid? entityGuid,*/ int? entityId)
+        internal void AddToQueue(int attributeId, List<int?> newValue, int entityId, bool flushAll)
         {
             _relationshipToSave.Add(new RelationshipToSave
             {
-                AttributeId = attributeId,
-                ChildEntityIds = newValue,
-                //ParentEntityGuid = entityGuid,
-                ParentEntityId = entityId
+                AttributeId = attributeId, ChildEntityIds = newValue, ParentEntityId = entityId, FlushAllEntityRelationships = flushAll
             });
         }
 
@@ -87,16 +83,35 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         internal void ImportRelationshipQueueAndSave()
         {
+            // todo: if so determines it, clear all existing relationships first
+            var fullFlush = _relationshipToSave
+                .Where(r => r.FlushAllEntityRelationships)
+                .Select(r => r.ParentEntityId)
+                .GroupBy(id => id)
+                .Select(g => g.First())
+                .ToList();
+
+            if (fullFlush.Count > 0)
+            {
+                foreach (var id in fullFlush)
+                {
+                    var ent = DbContext.Entities.GetDbEntity(id);
+
+                    // Delete all existing relationships 
+                    ent.RelationshipsWithThisAsParent.Clear();
+                }
+                DbContext.SqlDb.SaveChanges();
+                    // this is necessary after remove, because otherwise EF state tracking gets messed up
+            }
+
             foreach (var relationship in _relationshipToSave)
             {
-                var entity = // relationship.ParentEntityGuid.HasValue
-                    //? DbContext.Entities.GetMostCurrentDbEntity(relationship.ParentEntityGuid.Value)
-                    // : 
-                relationship.ParentEntityId.HasValue
-                        ? DbContext.Entities.GetDbEntity(relationship.ParentEntityId.Value)
-                        : null;
+                var entity = relationship.ParentEntityId > 0
+                    ? DbContext.Entities.GetDbEntity(relationship.ParentEntityId)
+                    : null;
+
                 if(entity == null)
-                    throw new Exception("neither guid nor id provided, can't update relationships");
+                    throw new Exception("no id provided, can't update relationships");
 
                 // start with the ID list - or if it doesn't exist, a new list
                 var childEntityIds = relationship.ChildEntityIds ?? new List<int?>();
@@ -134,10 +149,42 @@ namespace ToSic.Eav.Repository.Efc.Parts
             public List<Guid?> ChildEntityGuids { get; set; }
             public List<int?> ChildEntityIds { get; set; }
 
-            public int? ParentEntityId { get; set; }
+            public int ParentEntityId { get; set; }
+
+
+            public bool FlushAllEntityRelationships { get; set; }
         }
 
         #endregion
+
+        public void SaveRelationships(ToSicEavEntities dbEntity, IEntity eToSave, SaveOptions so)
+        {
+            // some initial error checking
+            if(eToSave.RepositoryId <= 0)
+                throw new Exception("can't work on relationships if entity doesn't have a repository id yet");
+
+            // todo: put all relationships into queue
+            foreach (var attribute in eToSave.Attributes.Values.Where(a => a.Type == AttributeTypeEnum.Entity.ToString()))
+            {
+                var list = attribute.Values?.FirstOrDefault()?.ObjectContents;
+                if (list == null) continue;
+                var attribId = eToSave.Type.Id(attribute.Name);
+                if (list is List<Guid> || list is List<Guid?>)
+                {
+                    var guidList = (list as List<Guid>)?.Select(p => (Guid?)p) ?? ((List<Guid?>)list).Select(p => p);
+                    AddToQueue(attribId, guidList.ToList(), eToSave.RepositoryId, true);
+                }
+                if (list is List<int> || list is List<int?>)
+                {
+                    var entityIds = list as List<int?> ?? ((List<int>)list).Select(v => (int?)v).ToList();
+                    DbContext.Relationships.AddToQueue(attribId, entityIds, eToSave.RepositoryId, true);
+                }
+            }
+
+            // todo: probably parse queue if SO determines so
+            if (!so.DelayRelationshipSave)
+                ImportRelationshipQueueAndSave();
+        }
     }
 
 

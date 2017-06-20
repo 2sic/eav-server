@@ -16,12 +16,10 @@ namespace ToSic.Eav.Repository.Efc.Tests
     [TestClass]
     class InitializeTests
     {
-        static string conStr = @"Data Source=(local)\SQLEXPRESS;Initial Catalog=""2flex 2Sexy Content"";Integrated Security=True;";
+        static string conStr = ToSic.Eav.Persistence.Efc.Tests.InitializeTests.ConStr;//  @"Data Source=(local)\SQLEXPRESS;Initial Catalog=""2flex 2Sexy Content"";Integrated Security=True;";
         [AssemblyInitialize()]
         public static void AssemblyInit(TestContext context)
         {
-
-            //ConfigureUnityDI();
             ConfigureEfcDi();
             //AddSqlLogger();
             Factory.Debug = true;
@@ -55,16 +53,5 @@ namespace ToSic.Eav.Repository.Efc.Tests
             loggerFactory.AddProvider(new EfCoreLoggerProvider());
         }
 
-        //private static void ConfigureUnityDI()
-        //{
-        //    Configuration.SetConnectionString(conStr);
-        //    var cont = Factory.CreateContainer();//.Container;
-
-        //    cont.RegisterType<IImportExportEnvironment, ImportExportEnvironmentMock>();
-        //    cont.RegisterType<IEavValueConverter, NeutralValueConverter>(new InjectionConstructor());
-        //    cont.RegisterType<IEavUserInformation, NeutralEavUserInformation>(new InjectionConstructor());
-
-        //    new DependencyInjection().ConfigureDefaultMappings(cont);
-        //}
     }
 }

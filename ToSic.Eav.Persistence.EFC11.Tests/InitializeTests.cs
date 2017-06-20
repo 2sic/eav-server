@@ -3,25 +3,23 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Implementations.UserInformation;
 using ToSic.Eav.Implementations.ValueConverter;
 
-namespace ToSic.Eav.UnitTests
+namespace ToSic.Eav.Persistence.Efc.Tests
 {
     [TestClass]
-    class InitializeTests
+    public class InitializeTests
     {
-        static string conStr = @"Data Source=(local)\SQLEXPRESS;Initial Catalog=""2flex 2Sexy Content"";Integrated Security=True;";
+        public static string ConStr = @"Data Source=(local)\SQLEXPRESS;Initial Catalog=""2flex 2Sexy Content"";Integrated Security=True;";
 
         [AssemblyInitialize()]
         public static void AssemblyInit(TestContext context)
         {
-            // new DependencyInjection().ConfigureDefaultMappings(Eav.Factory.Container);
-            //ConfigureDependencyInjection();
             ConfigureEfcDi();
         }
 
         // note: keep in sync w/the Repository.Efc.Tests and Persistence.Efc.Tests
-        private static void ConfigureEfcDi()
+        public static void ConfigureEfcDi()
         {
-            Configuration.SetConnectionString(conStr);
+            Configuration.SetConnectionString(ConStr);
             Factory.ActivateNetCoreDi(sc =>
             {
                 sc.AddTransient<IEavValueConverter, NeutralValueConverter>();//new InjectionConstructor());
@@ -37,24 +35,5 @@ namespace ToSic.Eav.UnitTests
 
         }
 
-
-        //private static void ConfigureDependencyInjection()
-        //{
-        //    var conStr = @"Data Source=(local)\SQLEXPRESS;Initial Catalog=""2flex 2Sexy Content"";Integrated Security=True;";
-        //    Configuration.SetConnectionString(conStr);
-        //    Eav.Factory.ActivateNetCoreDi(sc =>
-        //    {
-
-        //    });
-
-        //    //var container = Eav.Factory.CreateContainer();//.Container;
-        //    //container.RegisterType<EavDbContext>(new HierarchicalLifetimeManager(), new InjectionFactory(
-        //    //    obj =>
-        //    //    {
-        //    //        var opts = new DbContextOptionsBuilder<EavDbContext>();
-        //    //        opts.UseSqlServer(conStr);
-        //    //        return new EavDbContext(opts.Options);
-        //    //    }));
-        //}
     }
 }

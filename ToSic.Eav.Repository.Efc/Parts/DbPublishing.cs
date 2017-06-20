@@ -12,7 +12,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// Publish a Draft-Entity
         /// </summary>
         /// <param name="entityId"></param>
-        /// <param name="autoSave">Call SaveChanges() automatically? Set to false if you want to do further DB changes</param>
         /// <returns>The published Entity</returns>
         public ToSicEavEntities PublishDraftInDbEntity(int entityId)
         {
@@ -39,13 +38,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 publishedEntity = DbContext.Entities.GetDbEntity(unpublishedEntity.PublishedEntityId.Value);
                 DbContext.Values.CloneEntityValues(unpublishedEntity, publishedEntity);
 
-                //DbContext.SqlDb.SaveChanges();
-
                 // delete the Draft Entity
                 DbContext.Entities.DeleteEntity(unpublishedEntity, false);
             }
 
-            //if (autoSave)
             DbContext.SqlDb.SaveChanges();
 
             return publishedEntity;
@@ -60,9 +56,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
         public ToSicEavEntities ClearDraftBranchAndSetPublishedState(int unpublishedEntityId, bool newPublishedState = true)
         {
             var unpublishedEntity = DbContext.Entities.GetDbEntity(unpublishedEntityId);
-            // 2dm 2016-06-29 this should now be allowed, so we turn off the test
-            //if (unpublishedEntity.IsPublished)
-            //    throw new InvalidOperationException(string.Format("EntityId {0} is already published", unpublishedEntityId));
 
             ToSicEavEntities publishedEntity;
 

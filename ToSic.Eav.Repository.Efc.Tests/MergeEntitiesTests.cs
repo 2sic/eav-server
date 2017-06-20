@@ -10,7 +10,7 @@ using ToSic.Eav.Repository.Efc.Parts;
 namespace ToSic.Eav.Repository.Efc.Tests
 {
     [TestClass]
-    public class SaveEntitiesTests
+    public class MergeEntitiesTests
     {
 
         // Todo

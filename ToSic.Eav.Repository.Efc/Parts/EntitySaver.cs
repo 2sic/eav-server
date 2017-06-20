@@ -207,20 +207,5 @@ namespace ToSic.Eav.Repository.Efc.Parts
         }
 
     }
-
-    public class SaveOptions
-    {
-        //public SaveTypes Mode = SaveTypes.Update;
-        public bool PreserveExistingAttributes = false;
-        public bool PreserveUnknownAttributes = false;
-        //public bool PreserveInvisibleAttributes = false;
-
-        public string PrimaryLanguage {get { return _priLang; } set { _priLang = value.ToLowerInvariant(); }} 
-        private string _priLang = null;
-        public List<ILanguage> Languages = null;
-        public bool PreserveExistingLanguages = false;
-        public bool PreserveUnknownLanguages = false;
-
-    }
     
 }

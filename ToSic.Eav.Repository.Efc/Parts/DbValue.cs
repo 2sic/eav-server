@@ -107,12 +107,12 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     if (value is List<Guid> || value is List<Guid?>)
                     {
                         var guidList = (value as List<Guid>)?.Select(p => (Guid?) p) ?? ((List<Guid?>)value).Select(p => p);
-                        DbContext.Relationships.AddToQueue(attribute.AttributeId, guidList.ToList(), /*null,*/ entityInDb.EntityId);
+                        DbContext.Relationships.AddToQueue(attribute.AttributeId, guidList.ToList(), /*null,*/ entityInDb.EntityId, false);
                     }
                     if (value is List<int> || value is List<int?>)
                     {
                         var entityIds = value as List<int?> ?? ((List<int>) value).Select(v => (int?) v).ToList();
-                        DbContext.Relationships.AddToQueue(attribute.AttributeId, entityIds, entityInDb.EntityId);
+                        DbContext.Relationships.AddToQueue(attribute.AttributeId, entityIds, entityInDb.EntityId, false);
                     }
                     else
                         throw new NotSupportedException("UpdateValue() for Attribute " + attribute.StaticName +

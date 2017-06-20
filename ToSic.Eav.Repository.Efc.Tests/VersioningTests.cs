@@ -20,10 +20,8 @@ namespace ToSic.Eav.Repository.Efc.Tests
         private int TestItemWithCa9Changes = 7707;
         private Guid ItemWithCa9Changes = new Guid("3AB334D9-A99C-4C01-AAB7-C29E04274B5C");
 
+        private TestValuesOnPc2dm td = new TestValuesOnPc2dm();
         private int DevPc2dmItemOnHome = 3269;
-        private int DevPc2dmAppId = 2;
-        private int DevPc2dmZoneId = 2;
-        private int DevPc2dmLanguageDefault = 37;
 
         // just a note: this is Portal 54 or something on Daniels test server, change it to your system if you want to run these tests!
         public const int ZoneId = 56;
@@ -38,7 +36,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             var id = DevPc2dmItemOnHome;
             var version = 17;
-            var dc = DbDataController.Instance(DevPc2dmZoneId, DevPc2dmAppId);
+            var dc = DbDataController.Instance(td.ZoneId, td.AppId);
             var all = dc.Versioning.GetHistoryList(id, false);
             var vId = all.First(x => x.VersionNumber == version).ChangeSetId;
             dc.Versioning.RestoreEntity(DevPc2dmItemOnHome, vId);

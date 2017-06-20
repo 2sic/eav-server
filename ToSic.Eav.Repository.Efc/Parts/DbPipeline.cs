@@ -83,7 +83,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             {
                 EntityGuid = Guid.NewGuid(),
                 AttributeSet = sourceEntity.AttributeSet,
-                ConfigurationSet = sourceEntity.ConfigurationSet,
+                //ConfigurationSet = sourceEntity.ConfigurationSet,
                 AssignmentObjectTypeId = sourceEntity.AssignmentObjectTypeId,
                 KeyGuid = sourceEntity.KeyGuid,
                 KeyNumber = sourceEntity.KeyNumber,

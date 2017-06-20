@@ -15,12 +15,14 @@ namespace ToSic.Eav.Persistence.Efc.Models
         public int EntityId { get; set; }
         public Guid EntityGuid { get; set; }
         public int AttributeSetId { get; set; }
-        public int? ConfigurationSet { get; set; }
+        // 2017-06-20 2dm - never used
+        //public int? ConfigurationSet { get; set; }
         public int AssignmentObjectTypeId { get; set; }
         public int? KeyNumber { get; set; }
         public Guid? KeyGuid { get; set; }
         public string KeyString { get; set; }
-        public int SortOrder { get; set; }
+        // 2017-06-20 2dm - never used
+        //public int SortOrder { get; set; }
         public int ChangeLogCreated { get; set; }
         public int? ChangeLogDeleted { get; set; }
         public bool IsPublished { get; set; }
@@ -36,7 +38,7 @@ namespace ToSic.Eav.Persistence.Efc.Models
         public virtual ToSicEavChangeLog ChangeLogCreatedNavigation { get; set; }
         public virtual ToSicEavChangeLog ChangeLogDeletedNavigation { get; set; }
         public virtual ToSicEavChangeLog ChangeLogModifiedNavigation { get; set; }
-        public virtual ToSicEavEntities ConfigurationSetNavigation { get; set; }
-        public virtual ICollection<ToSicEavEntities> InverseConfigurationSetNavigation { get; set; }
+        //public virtual ToSicEavEntities ConfigurationSetNavigation { get; set; }
+        //public virtual ICollection<ToSicEavEntities> InverseConfigurationSetNavigation { get; set; }
     }
 }

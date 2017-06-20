@@ -50,7 +50,7 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// If this entity is draft and there is a published edition, then it can be navigated through PublishedEntity
         /// </summary>
-        public IEntity PublishedEntity { get; set; }
+        public IEntity PublishedEntity { get; internal set; }
         #endregion
 
         #region GetDraft and GetPublished

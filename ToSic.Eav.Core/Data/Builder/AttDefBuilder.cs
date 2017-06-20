@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data.Builder
 {
@@ -47,6 +49,13 @@ namespace ToSic.Eav.Data.Builder
 
             return new Entity(Guid.Empty, "@String", valDic);
 
+        }
+
+        public static int Id(this IContentType ct, string name)
+        {
+            return
+                ct.Attributes.First(a => string.Equals(a.Name, name, StringComparison.InvariantCultureIgnoreCase))
+                    .AttributeId;
         }
     }
 }

@@ -26,7 +26,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         internal ToSicEavEntities AddImportEntity(int attributeSetId, Entity entity, bool isPublished, int? publishedTarget)
         {
             return AddEntity(attributeSetId, entity.Attributes, entity.Metadata,
-                0, entity.EntityGuid, null, isPublished, publishedTarget);
+                /*0,*/ entity.EntityGuid, null, isPublished, publishedTarget);
         }
         
         
@@ -34,7 +34,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// Add a new Entity
         /// </summary>
         public ToSicEavEntities AddEntity(int attributeSetId, IDictionary values, 
-            IIsMetadata isMetadata = null, int sortOrder = 0, 
+            IIsMetadata isMetadata = null, /*int sortOrder = 0, */
             Guid? entityGuid = null, ICollection<int> dimensionIds = null, bool isPublished = true, int? publishedEntityId = null)
         {
             // note: values is either a dictionary <string, object> or <string, IList<IValue>>
@@ -60,12 +60,12 @@ namespace ToSic.Eav.Repository.Efc.Parts
             {
                 var newEntity = new ToSicEavEntities
                 {
-                    ConfigurationSet = null, // configurationSet,
+                    //ConfigurationSet = null, // configurationSet,
                     AssignmentObjectTypeId = keyTypeId,
                     KeyNumber = keyNumber,
                     KeyGuid = isMetadata?.KeyGuid, //keyGuid,
                     KeyString = isMetadata?.KeyString, //keyString,
-                    SortOrder = sortOrder,
+                    //SortOrder = sortOrder,
                     ChangeLogCreated = changeId,
                     ChangeLogModified = changeId,
                     EntityGuid = entityGuid.HasValue && entityGuid.Value != Guid.Empty ? entityGuid.Value : Guid.NewGuid(),

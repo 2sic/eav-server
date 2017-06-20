@@ -362,10 +362,10 @@ namespace ToSic.Eav.Persistence.Efc.Models
                     .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLog_Modified");
 
-                entity.HasOne(d => d.ConfigurationSetNavigation)
-                    .WithMany(p => p.InverseConfigurationSetNavigation)
-                    .HasForeignKey(d => d.ConfigurationSet)
-                    .HasConstraintName("FK_ToSIC_EAV_Entities_ToSIC_EAV_Entities");
+                //entity.HasOne(d => d.ConfigurationSetNavigation)
+                //    .WithMany(p => p.InverseConfigurationSetNavigation)
+                //    .HasForeignKey(d => d.ConfigurationSet)
+                //    .HasConstraintName("FK_ToSIC_EAV_Entities_ToSIC_EAV_Entities");
             });
 
             modelBuilder.Entity<ToSicEavEntityRelationships>(entity =>
@@ -445,7 +445,8 @@ namespace ToSic.Eav.Persistence.Efc.Models
                 entity.HasOne(d => d.Entity)
                     .WithMany(p => p.ToSicEavValues)
                     .HasForeignKey(d => d.EntityId)
-                    .OnDelete(DeleteBehavior.Restrict)
+                    //.OnDelete(DeleteBehavior.Restrict)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_ToSIC_EAV_Values_ToSIC_EAV_Entities");
             });
 

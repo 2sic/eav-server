@@ -145,6 +145,7 @@
     <Compile Include="Parts\DbXmlExportTable.cs" />
     <Compile Include="Parts\DbXmlImportVTable.cs" />
     <Compile Include="Parts\DbZone.cs" />
+    <Compile Include="Parts\SaveOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
