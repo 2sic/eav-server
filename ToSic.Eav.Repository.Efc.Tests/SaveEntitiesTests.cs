@@ -12,6 +12,15 @@ namespace ToSic.Eav.Repository.Efc.Tests
     [TestClass]
     public class SaveEntitiesTests
     {
+
+        // Todo
+        // finish implementing ML-handling and test every possible case
+        // check relationship handling
+        // handle special properties like ispublished, etc.
+        // --> todo: ensure the guid doesn't update/change the guid! - in the save-layer...
+        // handle missing guid in the save layer?
+        // implement full save on the efc11 layer
+
         #region Test Data Person tests
         
         ContentType _ctNull = null;
@@ -71,9 +80,10 @@ namespace ToSic.Eav.Repository.Efc.Tests
         readonly SaveOptions _saveKeepAttribs = CreateOptions(PreserveExistingAttributes: true);
         readonly SaveOptions _saveKeepAndClean = CreateOptions(PreserveExistingAttributes: true, PreserveUnknownAttributes: false);
         readonly SaveOptions _saveClean = CreateOptions( PreserveUnknownAttributes: false);
-        readonly SaveOptions _saveKeepLangs = CreateOptions( PreserveUnknownLanguages: true);
+        readonly SaveOptions _saveKeepUnknownLangs = CreateOptions( PreserveUnknownLanguages: true);
+        readonly SaveOptions _saveKeepExistingLangs = CreateOptions( PreserveExistingLanguages: true);
 
-        private static SaveOptions CreateOptions(bool? PreserveExistingAttributes = null, bool? PreserveUnknownAttributes = null, bool? PreserveUnknownLanguages = null)
+        private static SaveOptions CreateOptions(bool? PreserveExistingAttributes = null, bool? PreserveUnknownAttributes = null, bool? PreserveUnknownLanguages = null, bool? PreserveExistingLanguages = null)
         {
             var x = new SaveOptions
             {
@@ -86,7 +96,8 @@ namespace ToSic.Eav.Repository.Efc.Tests
                 x.PreserveUnknownAttributes = PreserveUnknownAttributes.Value;
             if (PreserveUnknownLanguages != null)
                 x.PreserveUnknownLanguages = PreserveUnknownLanguages.Value;
-
+            if (PreserveExistingLanguages != null)
+                x.PreserveExistingLanguages = PreserveExistingLanguages.Value;
             return x;
         }
 
@@ -124,7 +135,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             });
             var file = AttributeBase.CreateTypedAttribute("File", "String", new List<IValue>
             {
-                Value.Build("String", "Filen EN, lang en + ch RW", new List<ILanguage> {langEn.Copy() }),
+                Value.Build("String", "File EN, lang en + ch RW", new List<ILanguage> {langEn.Copy() }),
             });
 
             return new Entity(3006, "Product", new Dictionary<string, object>
@@ -158,7 +169,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var file = AttributeBase.CreateTypedAttribute("File", "String", new List<IValue>
             {
                 Value.Build("String", "Filen EN, lang en + ch RW", new List<ILanguage> {langEn.Copy(), langDeCh.Copy()}),
-                Value.Build("String", "Filele de de",
+                Value.Build("String", "File de de",
                     new List<ILanguage> {langDeDe.Copy(), langFr.Copy() }),
                 Value.Build("String", "File FR", new List<ILanguage> {langFr.Copy()}),
                 // special test - empty language item
@@ -205,7 +216,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         [TestMethod]
         public void MergeMlIntoNoLang_DontClearUnknownLang()
         {
-            var merged = EntitySaver.CreateMergedForSaving(_prodNoLang, _prodMl, _ctNull, _saveKeepLangs);
+            var merged = EntitySaver.CreateMergedForSaving(_prodNoLang, _prodMl, _ctNull, _saveKeepUnknownLangs);
 
             Assert.AreEqual(3, merged["Title"].Values.Count, "should have 3, with FR");
             var deVal = merged["Title"].Values.First(v => v.Languages.Any(l => l.Key == langFr.Key));
@@ -213,9 +224,8 @@ namespace ToSic.Eav.Repository.Efc.Tests
         }
         #endregion
 
-        // todo
         [TestMethod]
-        public void MergeEnIntoNoLang()
+        public void MergeEnIntoNoLang_ShouldHaveLang()
         {
             var merged = EntitySaver.CreateMergedForSaving(_prodNoLang, _prodEn, _ctNull, _saveDefault);
 
@@ -224,22 +234,68 @@ namespace ToSic.Eav.Repository.Efc.Tests
             Assert.AreEqual(1, firstVal.Languages.Count, "should have 1 language");
         }
 
-        // todo
         [TestMethod]
-        public void MergeNoLangIntoEn()
+        public void MergeEnIntoML_KeepLangs()
+        {
+            var merged = EntitySaver.CreateMergedForSaving(_prodMl, _prodEn, _ctNull, _saveKeepExistingLangs);
+
+            // check the titles as expected
+            Assert.AreEqual(2, merged["Title"].Values.Count, "should have 2 titles with languages - EN and a shared DE+CH");
+            Assert.AreEqual(2, merged["Title"].Values.Single(v => v.Languages.Any(l => l.Key == langDeDe.Key)).Languages.Count, "should have 2 languages on the shared DE+CH");
+            Assert.AreEqual(_prodEn.GetBestValue("Title").ToString(), merged.GetBestValue("Title", new[] { langEn.Key }), "en title should be the en-value");
+            Assert.AreEqual(_prodMl.GetBestValue("Title", new [] {langDeDe.Key}).ToString(), merged.GetBestValue("Title", new[] { langDeDe.Key }), "de title should be the ML-value");
+            Assert.AreEqual(_prodMl.GetBestValue("Title", new [] {langDeCh.Key}).ToString(), merged.GetBestValue("Title", new[] { langDeCh.Key }), "ch title should be the ML-value");
+            Assert.AreNotEqual(_prodEn.GetBestValue("Title", new [] {langDeCh.Key}).ToString(), merged.GetBestValue("Title", new[] { langDeCh.Key }).ToString(), "ch title should be the ML-value");
+            var firstVal = merged["Title"].Values.First();
+            Assert.AreEqual(1, firstVal.Languages.Count, "should have 1 language");
+            Assert.AreEqual(langEn.Key, firstVal.Languages.First().Key, "language should be EN-US");
+
+
+        }
+
+        public void MergeMlIntoEn_KeepLangs()
+        {
+            var merged = EntitySaver.CreateMergedForSaving(_prodMl, _prodEn, _ctNull, _saveKeepExistingLangs);
+
+            // check the titles as expected
+            Assert.AreEqual(2, merged["Title"].Values.Count, "should have 2 titles with languages - EN and a shared DE+CH");
+        }
+
+        // todo!
+        [TestMethod]
+        public void MergeMlIntoNoLang_KeepLangs()
+        {
+            //this test will have to merge ML into the no-lang, and ensure that no-lang is typed correctly!
+            var merged = EntitySaver.CreateMergedForSaving(_prodEn, _prodMl, _ctNull, _saveKeepUnknownLangs);
+
+            // todo!
+        }
+
+        [TestMethod]
+        public void MergeNoLangIntoEn_DefaultNoMerge()
         {
             var merged = EntitySaver.CreateMergedForSaving(_prodEn, _prodNoLang, _ctNull, _saveDefault);
 
             Assert.AreEqual(1, merged.Title.Values.Count, "should only have 1");
             var firstVal = merged.Title.Values.First();
-            Assert.AreEqual(1, firstVal.Languages.Count, "should still have 1 languages");
+            Assert.AreEqual(0, firstVal.Languages.Count, "should not have languages left");
         }
 
         [TestMethod]
-        public void MergeEnIntoNull()
+        public void MergeNoLangIntoEn_Merge()
         {
-            var merged = EntitySaver.CreateMergedForSaving(_prodNull, _prodNoLang, _ctNull, _saveDefault);
-            // note: nothing to test for now, so just leave it at this
+            var merged = EntitySaver.CreateMergedForSaving(_prodEn, _prodNoLang, _ctNull, _saveKeepExistingLangs);
+
+            Assert.AreEqual(1, merged.Title.Values.Count, "should only have 1");
+            var firstVal = merged.Title.Values.First();
+            Assert.AreEqual(0, firstVal.Languages.Count, "should not have languages left");
+        }
+
+        [TestMethod]
+        public void MergMlintoEnDefault_shouldBeMl()
+        {
+            var merged = EntitySaver.CreateMergedForSaving(_prodEn, _prodMl, _ctNull, _saveDefault);
+            // todo: add some test conditions
         }
 
 
@@ -253,7 +309,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             Assert.IsNotNull(merged, "result should never be null");
             Assert.AreEqual(_girlMarried.Attributes.Count, merged.Attributes.Count, "this test case should simply keep all values");
             AssertBasicsInMerge(_origENull, _girlMarried, merged, _girlMarried);
-            Assert.AreSame(_girlMarried.Attributes, merged.Attributes, "attributes new / merged shouldn't be same object in this case");
+            Assert.AreNotSame(_girlMarried.Attributes, merged.Attributes, "attributes new / merged shouldn't be same object in this case");
 
             Assert.AreEqual(merged.GetBestValue("FullName"), _girlMarried.GetBestValue("FullName"), "full name should be that of married");
         }

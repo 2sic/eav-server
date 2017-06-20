@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport.Logging;
 using ToSic.Eav.Persistence.Efc.Models;
 using Entity = ToSic.Eav.Data.Entity;
@@ -263,7 +264,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     .FirstOrDefault(e => e.AttributeSetId == destinationAttributeId);
 
                 if (existingMetadata != null)
-                    entity.EntityGuid = existingMetadata.EntityGuid;
+                    entity.SetGuid(existingMetadata.EntityGuid);
 
                 PersistOneImportEntity(entity);
             }

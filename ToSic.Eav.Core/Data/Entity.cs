@@ -13,7 +13,14 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Offical title of this content-item
         /// </summary>
-        public new IAttribute Title { get; internal set; }
+        public new IAttribute Title {
+            get
+            {
+                if (TitleFieldName == null) return null;
+                return Attributes?.ContainsKey(TitleFieldName) ?? false ? Attributes[TitleFieldName] : null;
+            }
+        }
+
 
         /// <summary>
         /// List of all attributes
@@ -133,7 +140,7 @@ namespace ToSic.Eav.Data
             EntityGuid = entity.EntityGuid;
             Metadata = ((Metadata)entity.Metadata).CloneIsMetadata();
             Type = entity.Type;
-            Title = entity.Title;
+            TitleFieldName = entity.Title?.Name;
             IsPublished = entity.IsPublished;
             Attributes = attributes;
             RepositoryId = entity.RepositoryId;

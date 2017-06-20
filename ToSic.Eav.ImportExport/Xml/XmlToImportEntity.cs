@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.ImportExport.Xml
@@ -130,16 +131,14 @@ namespace ToSic.Eav.ImportExport.Xml
                 targetValues.Add(sourceAttrib.StaticName, newAttr);
 			}
 
-            var targetEntity = new Entity(Guid.Parse(xEntity.Attribute(XmlConstants.GuidNode).Value), xEntity.Attribute(XmlConstants.AttSetStatic).Value, targetValues.ToDictionary(x => x.Key, y => (object)y.Value))
-            {
-                Metadata = new Metadata
+            var targetEntity = new Entity(Guid.Parse(xEntity.Attribute(XmlConstants.GuidNode).Value), xEntity.Attribute(XmlConstants.AttSetStatic).Value, targetValues.ToDictionary(x => x.Key, y => (object)y.Value));
+            targetEntity.SetMetadata(new Metadata
                 {
                     TargetType = assignmentObjectTypeId,
                     KeyNumber = keyNumber,
                     KeyGuid = keyGuid,
                     KeyString = keyString
-                }
-            };
+                });
 
             //targetEntity.Attributes = targetValues;
 

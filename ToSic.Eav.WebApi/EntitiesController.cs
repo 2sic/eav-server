@@ -276,13 +276,13 @@ namespace ToSic.Eav.WebApi
             #region Metadata if we have any
             // todo: as the objects are of the same type, we can probably remove the Format.Metadata-type soon...
             if (metadata != null && metadata.HasMetadata)
-                importEntity.Metadata = new Data.Metadata
+                importEntity.SetMetadata(new Data.Metadata
                 {
                     TargetType = metadata.TargetType,
                     KeyGuid = metadata.KeyGuid,
                     KeyNumber = metadata.KeyNumber,
                     KeyString = metadata.KeyString
-                };
+                });
 
             #endregion
 

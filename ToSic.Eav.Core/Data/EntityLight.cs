@@ -21,12 +21,15 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Id as GUID
         /// </summary>
-		public Guid EntityGuid { get; /*protected*/ set; }
+		public Guid EntityGuid { get; internal set; }
 
         /// <summary>
         /// Offical title of this content-item
         /// </summary>
-		public object Title { get;  internal set; }
+        public object Title => TitleFieldName == null ? null : this[TitleFieldName];
+
+        [ScriptIgnore]
+        internal string TitleFieldName;
 
         /// <summary>
         /// List of all attributes
@@ -49,7 +52,7 @@ namespace ToSic.Eav.Data
 		[ScriptIgnore]
 		public IRelationshipManager Relationships { get; internal set; }
 
-        public IMetadata Metadata { get; set; }
+        public IMetadata Metadata { get; internal set; }
 
         /// <summary>
         /// Owner of this entity
@@ -84,7 +87,8 @@ namespace ToSic.Eav.Data
             try
             {
                 if (titleAttribute != null)
-                    Title = Attributes[titleAttribute];
+                    TitleFieldName = titleAttribute;
+                    //Title = Attributes[titleAttribute];
             }
             catch (KeyNotFoundException)
             {
@@ -201,6 +205,8 @@ namespace ToSic.Eav.Data
 
         #region Save/Update settings - needed when passing this object to the save-layer
 
+
+        // todo: move to save options
         public bool OnSaveForceNoBranching { get; set; }
 
         #endregion

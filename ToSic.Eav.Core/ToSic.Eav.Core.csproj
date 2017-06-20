@@ -90,6 +90,7 @@
     <Compile Include="Data\Attribute_ofT.cs" />
     <Compile Include="Data\Builder\ContentTypeBuilder.cs" />
     <Compile Include="Data\Builder\DimensionBuilder.cs" />
+    <Compile Include="Data\Builder\EntityBuilder.cs" />
     <Compile Include="Data\ContentType.cs" />
     <Compile Include="Data\Entity.cs" />
     <Compile Include="Data\Metadata.cs" />

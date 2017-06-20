@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Efc.Models;
 
@@ -318,8 +319,8 @@ namespace ToSic.Eav.Persistence.Efc
                         {
                             continue;
                         }
-                        if (attributeModel == titleAttrib)// attributeModel.IsTitle)
-                            newEntity.Title = attributeModel;
+                        if (attributeModel == titleAttrib) // attributeModel.IsTitle)
+                            newEntity.SetTitleField(attributeModel.Name);
                         var valuesModelList = new List<IValue>();
 
                         #region Add all Values
@@ -339,7 +340,7 @@ namespace ToSic.Eav.Persistence.Efc
                 // sometimes happens if the title-field is re-defined and ol data might no have this
                 // also happens in rare cases, where the title-attrib is an entity-picker
                 if (newEntity.Title == null)
-                    newEntity.Title = titleAttrib;
+                    newEntity.SetTitleField(titleAttrib.Name);
                 #endregion
 
                 entities.Add(e.EntityId, newEntity);
