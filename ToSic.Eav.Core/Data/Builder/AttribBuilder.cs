@@ -14,30 +14,30 @@ namespace ToSic.Eav.Data.Builder
         /// <summary>
         /// Convert a NameValueCollection-Like List to a Dictionary of IAttributes
         /// </summary>
-        public static Dictionary<string, IAttribute> ConvertToAttributes(this IDictionary<string, object> attributes)
+        public static Dictionary<string, IAttribute> ConvertToAttributes(this IDictionary<string, object> objAttributes)
         {
             var result = new Dictionary<string, IAttribute>(StringComparer.OrdinalIgnoreCase);
 
-            foreach (var attribute in attributes)
+            foreach (var oAttrib in objAttributes)
             {
                 // in case the object is already an IAttribute, use that, don't rebuild it
-                if (attribute.Value is IAttribute)
-                    result[attribute.Key] = (IAttribute)attribute.Value;
+                if (oAttrib.Value is IAttribute)
+                    result[oAttrib.Key] = (IAttribute)oAttrib.Value;
                 else
                 {
-                    var attributeType = GetAttributeTypeName(attribute.Value);
+                    var attributeType = GetAttributeTypeName(oAttrib.Value);
                     //var baseModel = new AttributeDefinition(attribute.Key, attributeType, attribute.Key == titleAttributeName, 0, 0);
-                    var attributeModel = AttributeBase.CreateTypedAttribute(attribute.Key, attributeType);//  baseModel.CreateAttribute();
+                    var attributeModel = AttributeBase.CreateTypedAttribute(oAttrib.Key, attributeType);//  baseModel.CreateAttribute();
                     var valuesModelList = new List<IValue>();
-                    if (attribute.Value != null)
+                    if (oAttrib.Value != null)
                     {
-                        var valueModel = Value.Build(attributeType, attribute.Value.ToString(), null);
+                        var valueModel = Value.Build(attributeType, oAttrib.Value, null);
                         valuesModelList.Add(valueModel);
                     }
 
                     attributeModel.Values = valuesModelList;
 
-                    result[attribute.Key] = attributeModel;
+                    result[oAttrib.Key] = attributeModel;
                 }
 
 
@@ -54,8 +54,10 @@ namespace ToSic.Eav.Data.Builder
                     return "Number";
                 if (value is bool)
                     return "Boolean";
-                if (value is Guid || value is List<Guid> || value is List<Guid?>)
+                if (value is Guid || value is List<Guid> || value is List<Guid?> || value is List<int> || value is List<int?>)
                     return "Entity";
+                if (value is int[] || value is int?[])
+                    throw new Exception("Trying to provide an attribute with a value which is an int-array. This is not allowed - ask the iJungleboy.");
                 return "String";
             }
         }
@@ -116,9 +118,9 @@ namespace ToSic.Eav.Data.Builder
         /// <summary>
         /// Get the value of an attribute in the language specified.
         /// </summary>
-        public static IValue FindItemOfLanguage(this IDictionary<string, IAttribute> Attributes, string key, string language)
+        public static IValue FindItemOfLanguage(this IDictionary<string, IAttribute> attributes, string key, string language)
         {
-            var values = Attributes
+            var values = attributes
                 .Where(item => item.Key == key)
                 .Select(item => item.Value)
                 .FirstOrDefault();

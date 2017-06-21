@@ -2,6 +2,8 @@
 using ToSic.Eav.Apps.Interfaces;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repository.Efc;
 
@@ -62,7 +64,11 @@ namespace ToSic.Eav.Apps
             if (values == null)
                 values = new Dictionary<string, object>();
 
-            DataController.Entities.AddEntity(contentType.AttributeSetId, values, new Metadata { KeyNumber = DataController.AppId, TargetType = appAssignment});
+            var newEnt = new Entity(0, setName, values);
+            newEnt.SetMetadata(new Metadata { KeyNumber = DataController.AppId, TargetType = appAssignment });
+            DataController.Entities.SaveEntity(newEnt, new SaveOptions());
+
+            //DataController.Entities.AddEntity(contentType.AttributeSetId, values, new Metadata { KeyNumber = DataController.AppId, TargetType = appAssignment});
 
             SystemManager.Purge(ZoneId, AppId);
         }

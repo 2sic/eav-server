@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data.Builder
@@ -16,5 +18,17 @@ namespace ToSic.Eav.Data.Builder
         public static void SetMetadata(this Entity entity, Metadata meta) => entity.Metadata = meta;
 
         public static void SetType(this Entity entity, IContentType contentType) => entity.Type = contentType;
+
+        public static int? GetPublishedIdForSaving(this Entity entity) => entity.PublishedEntity?.EntityId ?? entity.PublishedEntityId;
+
+        public static void SetPublishedIdForSaving(this Entity entity, int? publishedId) => entity.PublishedEntityId = publishedId;
+
+        public static List<ILanguage> GetUsedLanguages(this IEntity entity) => entity.Attributes?.Values
+            .SelectMany(v => v.Values)
+            .SelectMany(vl => vl.Languages)
+            .GroupBy(l => l.Key)
+            .Select(g => g.First())
+            .ToList() ?? new List<ILanguage>();
+
     }
 }

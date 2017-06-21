@@ -66,15 +66,17 @@ namespace ToSic.Eav.Persistence
 
             #region Step 3: clear unwanted languages as needed
 
+            var hasLanguages = update.GetUsedLanguages().Count + original.GetUsedLanguages().Count > 0;
+
             // pre check if languages are properly available for clean-up or merge
-            if(!saveOptions.PreserveUnknownLanguages)
+            if (hasLanguages && !saveOptions.PreserveUnknownLanguages)
                 if ((!saveOptions.Languages?.Any() ?? true)
                     || string.IsNullOrWhiteSpace(saveOptions.PrimaryLanguage)
                     || saveOptions.Languages.All(l => l.Key != saveOptions.PrimaryLanguage))
                     throw new Exception("primary language must exist in languages, cannot continue preparation to save with unclear language setup");
 
 
-            if (!saveOptions.PreserveUnknownLanguages && (saveOptions.Languages?.Any() ?? false))
+            if (hasLanguages && !saveOptions.PreserveUnknownLanguages && (saveOptions.Languages?.Any() ?? false))
             {
                 if (hasOriginal) StripUnknownLanguages(origAttribs, saveOptions);
                 StripUnknownLanguages(newAttribs, saveOptions);

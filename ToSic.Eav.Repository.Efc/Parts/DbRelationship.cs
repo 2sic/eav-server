@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Efc.Models;
@@ -98,11 +98,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 {
                     var ent = DbContext.Entities.GetDbEntity(id);
 
-                    // Delete all existing relationships 
-                    ent.RelationshipsWithThisAsParent.Clear();
+                    // Delete all existing relationships - but not the target, just the relationship
+                    // note: can't use .Clear(), as that will try to actually delete the children
+                    foreach (var relationToDelete in ent.RelationshipsWithThisAsParent)
+                        DbContext.SqlDb.ToSicEavEntityRelationships.Remove(relationToDelete);
+
                 }
-                DbContext.SqlDb.SaveChanges();
-                    // this is necessary after remove, because otherwise EF state tracking gets messed up
+                DbContext.SqlDb.SaveChanges(); // this is necessary after remove, because otherwise EF state tracking gets messed up
             }
 
             foreach (var relationship in _relationshipToSave)
@@ -118,19 +120,15 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 var childEntityIds = relationship.ChildEntityIds ?? new List<int?>();
 
                 // if additional / alternative guids were specified, use those
-                foreach (var childGuid in relationship.ChildEntityGuids)
-                {
-                    try
-                    {
-                        childEntityIds.Add(childGuid.HasValue
-                            ? DbContext.Entities.GetMostCurrentDbEntity(childGuid.Value).EntityId
-                            : new int?());
-                    }
-                    catch (InvalidOperationException)
-                    {
-                        // ignore, may occur if the child entity doesn't exist / wasn't created successfully
-                    }
-                }
+                if(childEntityIds.Count == 0 && relationship.ChildEntityGuids != null)
+                    foreach (var childGuid in relationship.ChildEntityGuids)
+                        try
+                        {
+                            childEntityIds.Add(childGuid.HasValue
+                                ? DbContext.Entities.GetMostCurrentDbEntity(childGuid.Value).EntityId
+                                : new int?());
+                        }
+                        catch (InvalidOperationException) { } // ignore, may occur if the child entity doesn't exist / wasn't created successfully
 
                 UpdateEntityRelationshipsAndSave(relationship.AttributeId, childEntityIds, entity);
             }
@@ -173,19 +171,23 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                 var list = attribute.Values?.FirstOrDefault()?.ObjectContents;
                 if (list == null) continue;
-                var attribId = eToSave.Type.Id(attribute.Name);
+                //var attribId = attribDef.AttributeId;
 
+                if (list is Guid) list = new List<Guid> {(Guid) list};
                 if (list is List<Guid> || list is List<Guid?>)
                 {
                     var guidList = (list as List<Guid>)?.Select(p => (Guid?)p) ?? ((List<Guid?>)list).Select(p => p);
-                    AddToQueue(attribId, guidList.ToList(), dbEntity.EntityId, true);
+                    AddToQueue(attribDef.AttributeId, guidList.ToList(), dbEntity.EntityId, true);
                 }
 
+                if (list is int) list = new List<int> {(int) list};
+                if (list is EntityRelationship) list = ((EntityRelationship) list).EntityIds.ToList();
                 if (list is List<int> || list is List<int?>)
                 {
                     var entityIds = list as List<int?> ?? ((List<int>)list).Select(v => (int?)v).ToList();
-                    DbContext.Relationships.AddToQueue(attribId, entityIds, dbEntity.EntityId, true);
+                    DbContext.Relationships.AddToQueue(attribDef.AttributeId, entityIds, dbEntity.EntityId, true);
                 }
+
             }
 
             // probably parse queue if SO determines so, or let the outside layer determine this

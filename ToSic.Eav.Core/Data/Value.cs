@@ -54,9 +54,11 @@ namespace ToSic.Eav.Data
 
                         break;
                     case AttributeTypeEnum.Entity:
-                        var entityIds = value as IEnumerable<int?>;
+                        var entityIds = value as IEnumerable<int?> ?? (value as IEnumerable<int>)?.Select(x => (int?)x).ToList();
                         if (entityIds != null)
                             typedModel = new Value<EntityRelationship>(new EntityRelationship(fullEntityListForLookup, entityIds));
+                        else if (value is EntityRelationship)
+                            typedModel = new Value<EntityRelationship>(new EntityRelationship(fullEntityListForLookup, ((EntityRelationship)value).EntityIds));
                         else
                         {
                             var entityIdEnum = value as IEnumerable; // note: strings are also enum!

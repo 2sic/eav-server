@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Data;
+using ToSic.Eav.Data.Builder;
+using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Versioning;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -51,12 +55,40 @@ namespace ToSic.Eav.Apps.Parts
         public string DeleteHinderance(int entityId) => _appManager.DataController.Entities.CanDeleteEntity(entityId).Item2;
         #endregion
 
+        public void Save(IEntity entity, SaveOptions saveOptions = null) => Save(new List<IEntity> {entity}, saveOptions);
+
+        public void Save(List<IEntity> entities, SaveOptions saveOptions = null)
+        {
+            var env = Factory.Resolve<IImportExportEnvironment>();
+
+            // dry run while testing
+            //_appManager.DataController.Entities.DebugKeepTransactionOpen = true;
+
+            saveOptions = saveOptions ?? new SaveOptions();
+            saveOptions.PrimaryLanguage = saveOptions.PrimaryLanguage ?? env.DefaultLanguage;
+            foreach (var entity in entities)
+                _appManager.DataController.Entities.SaveEntity(entity, saveOptions);
+            _appManager.DataController.Relationships.ImportRelationshipQueueAndSave();
+            
+            // dry run
+            //_appManager.DataController.Entities.DebugTransaction.Rollback();
+
+            SystemManager.Purge(_appManager.AppId);
+
+
+        }
+
 
         public Tuple<int, Guid> Create(string typeName, Dictionary<string, object> values, IIsMetadata isMetadata = null)
         {
-            var contentType = _appManager.Cache.GetContentType(typeName);
-            var ent = _appManager.DataController.Entities.AddEntity(contentType.ContentTypeId, values, isMetadata);
-            return new Tuple<int, Guid>(ent.EntityId, ent.EntityGuid);
+            //var contentType = _appManager.Cache.GetContentType(typeName);
+            //var ent = _appManager.DataController.Entities.AddEntity(contentType.ContentTypeId, values, isMetadata);
+            //return new Tuple<int, Guid>(ent.EntityId, ent.EntityGuid);
+            var newEnt = new Entity(0, typeName, values);
+            if(isMetadata != null )newEnt.SetMetadata(isMetadata as Metadata);
+            var eid = _appManager.DataController.Entities.SaveEntity(newEnt, new SaveOptions());
+
+            return new Tuple<int, Guid>(eid, _appManager.DataController.Entities.TempLastSaveGuid);
         }
 
         /// <summary>
@@ -87,8 +119,11 @@ namespace ToSic.Eav.Apps.Parts
 
                 return existingEnt.EntityId;
             }
-            var contentType = _appManager.Cache.GetContentType(contentTypeName).ContentTypeId;
-            return _appManager.DataController.Entities.AddEntity(contentType, values, entityGuid: newGuid).EntityId;
+            //var contentType = _appManager.Cache.GetContentType(contentTypeName).ContentTypeId;
+            //return _appManager.DataController.Entities.AddEntity(contentType, values, entityGuid: newGuid).EntityId;
+
+            var newE = new Entity(newGuid.Value, contentTypeName, values);
+            return _appManager.DataController.Entities.SaveEntity(newE, new SaveOptions());
         }
 
 

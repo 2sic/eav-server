@@ -20,22 +20,21 @@ namespace ToSic.Eav.Repository.Efc.Parts
         #endregion
 
         #region Add Commands
-        /// <summary>
-        /// Import a new Entity
-        /// </summary>
-        internal ToSicEavEntities AddImportEntity(int attributeSetId, Entity entity, bool isPublished, int? publishedTarget)
-        {
-            return AddEntity(attributeSetId, entity.Attributes, entity.Metadata,
-                /*0,*/ entity.EntityGuid, null, isPublished, publishedTarget);
-        }
+        ///// <summary>
+        ///// Import a new Entity
+        ///// </summary>
+        //internal ToSicEavEntities AddImportEntity(int attributeSetId, Entity entity, bool isPublished, int? publishedTarget)
+        //{
+        //    return AddEntity(attributeSetId, entity.Attributes, entity.Metadata,
+        //        /*0,*/ entity.EntityGuid, null, isPublished, publishedTarget);
+        //}
         
         
         /// <summary>
         /// Add a new Entity
         /// </summary>
         public ToSicEavEntities AddEntity(int attributeSetId, IDictionary values, 
-            IIsMetadata isMetadata = null, /*int sortOrder = 0, */
-            Guid? entityGuid = null, ICollection<int> dimensionIds = null, bool isPublished = true, int? publishedEntityId = null)
+            IIsMetadata isMetadata = null, Guid? entityGuid = null, ICollection<int> dimensionIds = null, bool isPublished = true, int? publishedEntityId = null)
         {
             // note: values is either a dictionary <string, object> or <string, IList<IValue>>
 

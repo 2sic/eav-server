@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
-using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.WebApi.Formats;
 using ToSic.Eav.ImportExport.Versioning;
-using ToSic.Eav.Repository.Efc.Parts;
+using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.WebApi
 {
@@ -185,23 +184,26 @@ namespace ToSic.Eav.WebApi
         {
             SetAppIdAndUser(appId);
 
-            var entitiesToImport = new List<Entity>();
-
             // must move guid from header to entity, because we only transfer it on the header (so no duplicates)
             foreach (var i in items)
                 i.Entity.Guid = i.Header.Guid;
 
-            foreach (var entity in items)
-                if (entity.Header.Group == null || !entity.Header.Group.SlotIsEmpty) // skip the ones which "shouldn't" be saved
-                    entitiesToImport.Add(CreateImportEntity(entity));
+            var entitiesToImport = items
+                .Where(entity => entity.Header.Group == null || !entity.Header.Group.SlotIsEmpty)
+                .Select(CreateEntityFromTransferObject)
+                .Cast<IEntity>()
+                .ToList();
 
             // Create Import-controller & run import
-            var importController = new DbImport(null, appId, dontUpdateExistingAttributeValues: false,
-                keepAttributesMissingInImport: false,
-                preventUpdateOnDraftEntities: false,
-                largeImport: false);
-            importController.ImportIntoDb(null, entitiesToImport.ToArray());
-            SystemManager.Purge(appId);
+            //var importController = new DbImport(null, appId, dontUpdateExistingAttributeValues: false,
+            //    keepAttributesMissingInImport: false,
+            //    preventUpdateOnDraftEntities: false,
+            //    largeImport: false);
+            //importController.ImportIntoDb(null, entitiesToImport.ToArray());
+            //SystemManager.Purge(appId);
+
+            // 2017-06-21 new save 2dm
+            AppManager.Entities.Save(entitiesToImport);
 
             // find / update IDs of items updated to return to client
             var foundItems = items.Select(e =>
@@ -220,13 +222,13 @@ namespace ToSic.Eav.WebApi
         }
 
 
-        private Entity CreateImportEntity(EntityWithHeader editInfo)
+        private Entity CreateEntityFromTransferObject(EntityWithHeader editInfo)
         {
-            var newEntity = editInfo.Entity;
-            var metadata = editInfo.Header.Metadata;
+            var toEntity = editInfo.Entity;
+            var toMetadata = editInfo.Header.Metadata;
 
             #region initial data quality checks
-            if (newEntity.Id == 0 && newEntity.Guid == Guid.Empty)
+            if (toEntity.Id == 0 && toEntity.Guid == Guid.Empty)
                 throw new Exception("Item must have a GUID");
             #endregion
 
@@ -235,13 +237,13 @@ namespace ToSic.Eav.WebApi
             var attribs = new Dictionary<string, Interfaces.IAttribute>();// = new Dictionary<string, List<Interfaces.IValue>>();
 
             // only transfer the fields / values which exist in the content-type definition
-            var attributeSet = AppManager.Read.ContentTypes.Get(newEntity.Type.StaticName);// DataSource.GetCache(null, appId).GetContentType(newEntity.Type.StaticName);
-            foreach (var attribute in newEntity.Attributes)
+            var attributeSet = AppManager.Read.ContentTypes.Get(toEntity.Type.StaticName);// DataSource.GetCache(null, appId).GetContentType(newEntity.Type.StaticName);
+            foreach (var attribute in toEntity.Attributes)
             {
                 var attDef = attributeSet[attribute.Key];
                 var attributeType = attDef.Type;
 
-                // don't save anything of the type empty - this is heading-only
+                // don't save anything of the type empty - this is headings-items-only
                 if (attributeType == AttributeTypeEnum.Empty.ToString())
                     continue;
 
@@ -264,24 +266,24 @@ namespace ToSic.Eav.WebApi
                 }
             }
 
-            var importEntity = new Entity(newEntity.Guid,newEntity.Type.StaticName, attribs.ToDictionary(x => x.Key, y => (object)y.Value))
+            var importEntity = new Entity(toEntity.Guid,toEntity.Type.StaticName, attribs.ToDictionary(x => x.Key, y => (object)y.Value))
             {
 
                 #region Guids, Ids, Published, Content-Types
-                IsPublished = newEntity.IsPublished,
-                OnSaveForceNoBranching = !newEntity.IsBranch, // if it's not a branch, it should also force no branch...
+                IsPublished = toEntity.IsPublished,
+                OnSaveForceNoBranching = !toEntity.IsBranch, // if it's not a branch, it should also force no branch...
                 #endregion
             };
 
             #region Metadata if we have any
             // todo: as the objects are of the same type, we can probably remove the type Format.Metadata soon...
-            if (metadata != null && metadata.HasMetadata)
+            if (toMetadata != null && toMetadata.HasMetadata)
                 importEntity.SetMetadata(new Data.Metadata
                 {
-                    TargetType = metadata.TargetType,
-                    KeyGuid = metadata.KeyGuid,
-                    KeyNumber = metadata.KeyNumber,
-                    KeyString = metadata.KeyString
+                    TargetType = toMetadata.TargetType,
+                    KeyGuid = toMetadata.KeyGuid,
+                    KeyNumber = toMetadata.KeyNumber,
+                    KeyString = toMetadata.KeyString
                 });
 
             #endregion

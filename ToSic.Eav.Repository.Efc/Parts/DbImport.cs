@@ -44,6 +44,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         {
             _context = DbDataController.Instance(zoneId, appId);
             _dontUpdateExistingAttributeValues = dontUpdateExistingAttributeValues;
+            SaveOptions.SkipExistingAttributes = dontUpdateExistingAttributeValues;
 
             _keepAttributesMissingInImport = keepAttributesMissingInImport;
             SaveOptions.PreserveUntouchedAttributes = keepAttributesMissingInImport;
@@ -330,7 +331,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
             if (!entity.IsPublished && dbExistingEntities.Count(e => e.IsPublished == false) == 0 && !entity.OnSaveForceNoBranching)
             {
                 var publishedId = dbExistingEntities.First().EntityId;
-                _context.Entities.AddImportEntity(dbAttrSet.AttributeSetId, entity, entity.IsPublished, publishedId);
+
+                entity.SetPublishedIdForSaving(publishedId);
+                _context.Entities.SaveEntity(entity, SaveOptions);
+                //_context.Entities.AddImportEntity(dbAttrSet.AttributeSetId, entity, entity.IsPublished, publishedId);
                 return;
             }
 

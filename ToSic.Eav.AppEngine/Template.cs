@@ -47,9 +47,9 @@ namespace ToSic.Eav.Apps
         {
             switch (groupPart.ToLower())
             {
-                case Constants.ContentKeyLower:
+                case AppConstants.ContentLower:
                     return ContentTypeStaticName;
-                case Constants.PresentationKeyLower:
+                case AppConstants.PresentationLower:
                     return PresentationTypeStaticName;
                 case "listcontent":
                     return ListContentTypeStaticName;

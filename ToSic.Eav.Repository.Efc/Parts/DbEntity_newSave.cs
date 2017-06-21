@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.EntityFrameworkCore.Storage;
+using ToSic.Eav.Data;
+using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Efc.Models;
@@ -9,7 +11,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 {
     public partial class DbEntity
     {
-        public bool DebugKeepTransactionOpen = true;
+        public bool DebugKeepTransactionOpen = false;
         public IDbContextTransaction DebugTransaction; 
 
         public int SaveEntity(IEntity eToSave, SaveOptions so)
@@ -22,17 +24,21 @@ namespace ToSic.Eav.Repository.Efc.Parts
             if (eToSave.Type == null)
                 throw new Exception("trying to save entity without known content-type, cannot continue");
 
-            var usedLanguages = eToSave.Attributes.Values
-                .SelectMany(v => v.Values)
-                .SelectMany(vl => vl.Languages)
-                .GroupBy(l => l.Key)
-                .Select(g => g.First())
-                .ToList();
+            #region Test what languages are given, and check if they exist in the target system
+            //var usedLanguages = eToSave.Attributes.Values
+            //    .SelectMany(v => v.Values)
+            //    .SelectMany(vl => vl.Languages)
+            //    .GroupBy(l => l.Key)
+            //    .Select(g => g.First())
+            //    .ToList();
+            var usedLanguages = eToSave.GetUsedLanguages();
+
+            var zoneLanguages = DbContext.Dimensions.GetLanguages();
 
             if(usedLanguages.Count > 0)
-                if (!usedLanguages.All(l => so.Languages.Any(sol => sol.Key == l.Key)))
+                if (!usedLanguages.All(l => zoneLanguages.Any(zl => zl.ExternalKey.ToLowerInvariant() == l.Key)))
                     throw new Exception("found languages in save which are not available in environment");
-                
+            #endregion Test languages exist
 
             #endregion Step 1
 
@@ -68,7 +74,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                         ChangeLogModified = changeId,
                         EntityGuid = eToSave.EntityGuid != Guid.Empty ? eToSave.EntityGuid : Guid.NewGuid(),
                         IsPublished = eToSave.IsPublished,
-                        PublishedEntityId = eToSave.IsPublished ? null : eToSave.GetPublished()?.EntityId,
+                        PublishedEntityId = eToSave.IsPublished ? null : ((Entity)eToSave).GetPublishedIdForSaving(),
                         Owner = DbContext.UserName,
                         AttributeSetId = contentTypeId
                     };
@@ -80,6 +86,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 else
                 {
                     #region Step 3b: Check published (only if not new) - make sure we don't have multiple drafts
+
+                    // todo: check if repo-id is always there, may need to use repoid OR entityId
 
                     dbEntity = DbContext.Entities.GetDbEntity(eToSave.RepositoryId);
                     var existingDraftId = DbContext.Publishing.GetDraftEntityId(eToSave.EntityId);
@@ -144,7 +152,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                             ChangeLogCreated = changeId, // todo: remove some time later
                             ToSicEavValuesDimensions = value.Languages?.Select(l => new ToSicEavValuesDimensions
                             {
-                                DimensionId = so.Languages.Single(ol => ol.Key == l.Key).DimensionId,
+                                DimensionId = zoneLanguages.Single(ol => ol.ExternalKey.ToLowerInvariant() == l.Key).DimensionId,
                                 ReadOnly = l.ReadOnly
                             }).ToList()
                         });
@@ -163,6 +171,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 DbContext.Versioning.SaveEntity(dbEntity.EntityId, dbEntity.EntityGuid, useDelayedSerialize: true);
                 #endregion
 
+                #region Workaround for preserving the last guid - temp
+
+                TempLastSaveGuid = dbEntity.EntityGuid;
+                #endregion
+
                 //throw new Exception("test exception, don't want to persist till I'm sure it's pretty stable");
                 // finish transaction - finalize
                 if (DebugKeepTransactionOpen)
@@ -178,6 +191,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             return dbEntity.EntityId;
         }
+
+        public Guid TempLastSaveGuid;
 
     }
 }

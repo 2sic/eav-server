@@ -453,7 +453,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     var presentationTypeStaticName = "";
                     var presentationDemoEntityId = new int?();
                     //if list templateDefaults would have null objects, we would have an exception
-                    var presentationDefault = templateDefaults.FirstOrDefault(t => t.ItemType == Constants.PresentationKey);
+                    var presentationDefault = templateDefaults.FirstOrDefault(t => t.ItemType == AppConstants.Presentation);
                     if (presentationDefault != null)
                     {
                         presentationTypeStaticName = presentationDefault.ContentTypeStaticName;

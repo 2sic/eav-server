@@ -152,17 +152,11 @@ namespace ToSic.Eav
 
         #endregion
 
-        #region Special use cases of entities
-        public const string ContentKey = "Content";
-        public const string ContentKeyLower = "content";
-
-        public const string PresentationKey = "Presentation";
-        public const string PresentationKeyLower = "presentation";
-        #endregion
 
         #region special uses of Apps
         public const string ContentAppName = "Content";
         public const string AppAssignmentName = "App";
+
         #endregion
     }
 }
