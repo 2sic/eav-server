@@ -177,7 +177,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 if (list is List<Guid> || list is List<Guid?>)
                 {
                     var guidList = (list as List<Guid>)?.Select(p => (Guid?)p) ?? ((List<Guid?>)list).Select(p => p);
-                    AddToQueue(attribDef.AttributeId, guidList.ToList(), dbEntity.EntityId, true);
+                    AddToQueue(attribDef.AttributeId, guidList.ToList(), dbEntity.EntityId, !so.PreserveUntouchedAttributes);
                 }
 
                 if (list is int) list = new List<int> {(int) list};
@@ -185,7 +185,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 if (list is List<int> || list is List<int?>)
                 {
                     var entityIds = list as List<int?> ?? ((List<int>)list).Select(v => (int?)v).ToList();
-                    DbContext.Relationships.AddToQueue(attribDef.AttributeId, entityIds, dbEntity.EntityId, true);
+                    DbContext.Relationships.AddToQueue(attribDef.AttributeId, entityIds, dbEntity.EntityId, !so.PreserveUntouchedAttributes);
                 }
 
             }

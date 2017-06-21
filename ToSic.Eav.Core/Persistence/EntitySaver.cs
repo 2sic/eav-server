@@ -40,8 +40,8 @@ namespace ToSic.Eav.Persistence
             var origAttribs = original?.Attributes.Copy();
             var newAttribs = update.Attributes.Copy();
 
-            // Optionally remove original values not in the update
-            if (hasOriginal && (!saveOptions.PreserveUntouchedAttributes || !saveOptions.SkipExistingAttributes))
+            // Optionally remove original values not in the update - but only if no option prevents this
+            if (hasOriginal && !saveOptions.PreserveUntouchedAttributes && !saveOptions.SkipExistingAttributes)
                 origAttribs = KeepOnlyKnownKeys(origAttribs, newAttribs.Keys.ToList());
 
             // Optionaly remove unknown - if possible - of both original and new

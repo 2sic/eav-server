@@ -25,12 +25,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 throw new Exception("trying to save entity without known content-type, cannot continue");
 
             #region Test what languages are given, and check if they exist in the target system
-            //var usedLanguages = eToSave.Attributes.Values
-            //    .SelectMany(v => v.Values)
-            //    .SelectMany(vl => vl.Languages)
-            //    .GroupBy(l => l.Key)
-            //    .Select(g => g.First())
-            //    .ToList();
             var usedLanguages = eToSave.GetUsedLanguages();
 
             var zoneLanguages = DbContext.Dimensions.GetLanguages();
@@ -45,7 +39,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             #region Step 2: check header record - does it already exist, what ID should we use, etc.
 
-            var isNew = eToSave.RepositoryId <= 0;
+            var isNew = eToSave.EntityId <= 0;// eToSave.RepositoryId <= 0;
+            var dbId = eToSave.RepositoryId > 0 ? eToSave.RepositoryId : eToSave.EntityId;
 
             var contentTypeId = DbContext.AttribSet.GetAttributeSetIdWithEitherName(eToSave.Type.StaticName);
             var attributeDefs = DbContext.AttributesDefinition.GetAttributeDefinitions(contentTypeId).ToList();
@@ -89,7 +84,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                     // todo: check if repo-id is always there, may need to use repoid OR entityId
 
-                    dbEntity = DbContext.Entities.GetDbEntity(eToSave.RepositoryId);
+                    dbEntity = DbContext.Entities.GetDbEntity(dbId);
                     var existingDraftId = DbContext.Publishing.GetDraftEntityId(eToSave.EntityId);
 
                     #region Unpublished Save (Draft-Saves) - do some possible error checking
@@ -99,7 +94,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                         // Prevent duplicate Draft
                         throw existingDraftId.HasValue
                             ? new InvalidOperationException(
-                                $"Published EntityId {eToSave.RepositoryId} has already a draft with EntityId {existingDraftId}")
+                                $"Published EntityId {dbId} has already a draft with EntityId {existingDraftId}")
                             : new InvalidOperationException(
                                 "It seems you're trying to update a published entity with a draft - this is not possible - the save should actually try to create a new draft instead without calling update.");
 

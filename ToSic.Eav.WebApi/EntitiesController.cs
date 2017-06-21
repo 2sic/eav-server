@@ -7,6 +7,7 @@ using ToSic.Eav.Data.Builder;
 using ToSic.Eav.WebApi.Formats;
 using ToSic.Eav.ImportExport.Versioning;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.WebApi
 {
@@ -20,7 +21,7 @@ namespace ToSic.Eav.WebApi
         { }
 
         #region GetOne GetAll calls
-        public Interfaces.IEntity GetEntityOrThrowError(string contentType, int id)
+        public IEntity GetEntityOrThrowError(string contentType, int id)
         {
             //SetAppIdAndUser(appId);
 
@@ -31,7 +32,7 @@ namespace ToSic.Eav.WebApi
             return found;
         }
 
-        public Interfaces.IEntity GetEntityOrThrowError(string contentType, Guid guid, int? appId = null)
+        public IEntity GetEntityOrThrowError(string contentType, Guid guid, int? appId = null)
         {
             SetAppIdAndUser(appId);
 
@@ -202,8 +203,13 @@ namespace ToSic.Eav.WebApi
             //importController.ImportIntoDb(null, entitiesToImport.ToArray());
             //SystemManager.Purge(appId);
 
+            // todo: move the OnSaveForceNoBranching into SaveOptions-object
+            var saveOpts = new SaveOptions
+            {
+                ForceNoBranche = items.First().Entity.IsBranch
+            };
             // 2017-06-21 new save 2dm
-            AppManager.Entities.Save(entitiesToImport);
+            AppManager.Entities.Save(entitiesToImport, saveOpts);
 
             // find / update IDs of items updated to return to client
             var foundItems = items.Select(e =>
@@ -229,12 +235,12 @@ namespace ToSic.Eav.WebApi
 
             #region initial data quality checks
             if (toEntity.Id == 0 && toEntity.Guid == Guid.Empty)
-                throw new Exception("Item must have a GUID");
+                throw new Exception("Item must have an ID or a GUID");
             #endregion
 
 
             // Attributes
-            var attribs = new Dictionary<string, Interfaces.IAttribute>();// = new Dictionary<string, List<Interfaces.IValue>>();
+            var attribs = new Dictionary<string, IAttribute>();// = new Dictionary<string, List<Interfaces.IValue>>();
 
             // only transfer the fields / values which exist in the content-type definition
             var attributeSet = AppManager.Read.ContentTypes.Get(toEntity.Type.StaticName);// DataSource.GetCache(null, appId).GetContentType(newEntity.Type.StaticName);
@@ -266,7 +272,7 @@ namespace ToSic.Eav.WebApi
                 }
             }
 
-            var importEntity = new Entity(toEntity.Guid,toEntity.Type.StaticName, attribs.ToDictionary(x => x.Key, y => (object)y.Value))
+            var importEntity = new Entity(toEntity.Id, /*toEntity.Guid,*/ toEntity.Type.StaticName, attribs.ToDictionary(x => x.Key, y => (object)y.Value))
             {
 
                 #region Guids, Ids, Published, Content-Types
@@ -274,6 +280,10 @@ namespace ToSic.Eav.WebApi
                 OnSaveForceNoBranching = !toEntity.IsBranch, // if it's not a branch, it should also force no branch...
                 #endregion
             };
+
+            // just in case we have no ID but we have a valid guid...
+            if (toEntity.Guid != Guid.Empty)
+                importEntity.SetGuid(toEntity.Guid);
 
             #region Metadata if we have any
             // todo: as the objects are of the same type, we can probably remove the type Format.Metadata soon...

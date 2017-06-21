@@ -61,21 +61,35 @@ namespace ToSic.Eav.Apps.Parts
         {
             var env = Factory.Resolve<IImportExportEnvironment>();
 
-            // dry run while testing
-            //_appManager.DataController.Entities.DebugKeepTransactionOpen = true;
-
             saveOptions = saveOptions ?? new SaveOptions();
             saveOptions.PrimaryLanguage = saveOptions.PrimaryLanguage ?? env.DefaultLanguage;
+            foreach (var entity in entities)
+                SetPublishDraftState(entity, saveOptions);
+
             foreach (var entity in entities)
                 _appManager.DataController.Entities.SaveEntity(entity, saveOptions);
             _appManager.DataController.Relationships.ImportRelationshipQueueAndSave();
             
-            // dry run
-            //_appManager.DataController.Entities.DebugTransaction.Rollback();
-
+            // clear cache of this app
             SystemManager.Purge(_appManager.AppId);
+        }
 
+        private void SetPublishDraftState(IEntity entity, SaveOptions saveOptions)
+        {
+            // no guid to use to check / change publication state
+            if (entity.EntityGuid == Guid.Empty) return;
 
+            // see if there is anything existing with this guid (in this app...)
+            var dbExistingEntities = _appManager.Cache.LightList.Where(e => e.EntityGuid == entity.EntityGuid).ToList();
+            if (!dbExistingEntities.Any()) return;
+
+            // if new isn't published, existing is published and we can branch, then specify that
+            if (!entity.IsPublished && dbExistingEntities.Count(e => e.IsPublished == false) == 0 && !saveOptions.ForceNoBranche)// !((Entity)entity).OnSaveForceNoBranching)
+            {
+                var publishedId = dbExistingEntities.First().EntityId; // any one has the right id
+                ((Entity)entity).SetPublishedIdForSaving(publishedId);
+                return;
+            }
         }
 
 
