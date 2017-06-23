@@ -11,7 +11,8 @@ namespace ToSic.Eav.WebApi.Formats
         public int Id;
         [NonSerialized] public Guid Guid;
 
-        [NonSerialized] public int RepoId;
+        // [NonSerialized]
+        public int RepoId;
 
         public Type Type;
         public bool IsPublished;

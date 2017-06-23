@@ -63,8 +63,8 @@ namespace ToSic.Eav.Apps.Parts
 
             saveOptions = saveOptions ?? new SaveOptions();
             saveOptions.PrimaryLanguage = saveOptions.PrimaryLanguage ?? env.DefaultLanguage;
-            foreach (var entity in entities)
-                SetPublishDraftState(entity, saveOptions);
+            //foreach (var entity in entities)
+            //    SetPublishDraftState(entity, saveOptions);
 
             foreach (var entity in entities)
                 _appManager.DataController.Entities.SaveEntity(entity, saveOptions);
@@ -74,23 +74,23 @@ namespace ToSic.Eav.Apps.Parts
             SystemManager.Purge(_appManager.AppId);
         }
 
-        private void SetPublishDraftState(IEntity entity, SaveOptions saveOptions)
-        {
-            // no guid to use to check / change publication state
-            if (entity.EntityGuid == Guid.Empty) return;
+        //private void SetPublishDraftState(IEntity entity, SaveOptions so)
+        //{
+        //    // no guid to use to check / change publication state
+        //    if (entity.EntityGuid == Guid.Empty) return;
 
-            // see if there is anything existing with this guid (in this app...)
-            var dbExistingEntities = _appManager.Cache.LightList.Where(e => e.EntityGuid == entity.EntityGuid).ToList();
-            if (!dbExistingEntities.Any()) return;
+        //    // see if there is anything existing with this guid (in this app...)
+        //    var dbEnts = _appManager.Cache.LightList.Where(e => e.EntityGuid == entity.EntityGuid).ToList();
+        //    if (!dbEnts.Any()) return;
 
-            // if new isn't published, existing is published and we can branch, then specify that
-            if (!entity.IsPublished && dbExistingEntities.Count(e => e.IsPublished == false) == 0 && !saveOptions.ForceNoBranche)// !((Entity)entity).OnSaveForceNoBranching)
-            {
-                var publishedId = dbExistingEntities.First().EntityId; // any one has the right id
-                ((Entity)entity).SetPublishedIdForSaving(publishedId);
-                return;
-            }
-        }
+        //    // if new isn't published, existing is published and we can branch, then specify that
+        //    if (!entity.IsPublished && so.AllowBranching && dbEnts.Count(e => e.IsPublished == false) == 0)// !((Entity)entity).OnSaveForceNoBranching)
+        //    {
+        //        var publishedId = dbEnts.First().EntityId; // any one has the right id
+        //        ((Entity)entity).SetPublishedIdForSaving(publishedId);
+        //        return;
+        //    }
+        //}
 
 
         public Tuple<int, Guid> Create(string typeName, Dictionary<string, object> values, IIsMetadata isMetadata = null)

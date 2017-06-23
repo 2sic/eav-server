@@ -14,18 +14,18 @@ namespace ToSic.Eav.Repository.Efc.Parts
         public bool DebugKeepTransactionOpen = false;
         public IDbContextTransaction DebugTransaction; 
 
-        public int SaveEntity(IEntity eToSave, SaveOptions so)
+        public int SaveEntity(IEntity newEnt, SaveOptions so)
         {
 
             #region Step 1: Do some initial error checking and preparations
-            if (eToSave == null)
-                throw new ArgumentNullException(nameof(eToSave));
+            if (newEnt == null)
+                throw new ArgumentNullException(nameof(newEnt));
 
-            if (eToSave.Type == null)
+            if (newEnt.Type == null)
                 throw new Exception("trying to save entity without known content-type, cannot continue");
 
             #region Test what languages are given, and check if they exist in the target system
-            var usedLanguages = eToSave.GetUsedLanguages();
+            var usedLanguages = newEnt.GetUsedLanguages();
 
             var zoneLanguages = DbContext.Dimensions.GetLanguages();
 
@@ -37,19 +37,36 @@ namespace ToSic.Eav.Repository.Efc.Parts
             #endregion Step 1
 
 
+
             #region Step 2: check header record - does it already exist, what ID should we use, etc.
 
-            var isNew = eToSave.EntityId <= 0;// eToSave.RepositoryId <= 0;
-            var dbId = eToSave.RepositoryId > 0 ? eToSave.RepositoryId : eToSave.EntityId;
+            // If we think we'll update an existing entity...
+            // ...we have to check if we'll actualy update the draft of the entity
+            // ...or create a new draft (branch)
+            int? existingDraftId = null;
+            bool hasAdditionalDraft = false;
+            if (newEnt.EntityId > 0)
+            {
+                existingDraftId = DbContext.Publishing.GetDraftBranchEntityId(newEnt.EntityId);  // find a draft of this - note that it won't find anything, if the item itself is the draft
+                hasAdditionalDraft = existingDraftId != null && existingDraftId.Value != newEnt.EntityId;  // only true, if there is an "attached" draft; false if the item itself is draft
+                if (!newEnt.IsPublished && ((Entity) newEnt).PlaceDraftInBranch)
+                {
+                    ((Entity) newEnt).ChangeIdForSaving(existingDraftId ?? 0);
+                    hasAdditionalDraft = false; // not additional any more, as we're now pointing this as primary
+                }
+            }
+            var isNew = newEnt.EntityId <= 0;   // no remember how we want to work...
 
-            var contentTypeId = DbContext.AttribSet.GetAttributeSetIdWithEitherName(eToSave.Type.StaticName);
+            var contentTypeId = DbContext.AttribSet.GetAttributeSetIdWithEitherName(newEnt.Type.StaticName);
             var attributeDefs = DbContext.AttributesDefinition.GetAttributeDefinitions(contentTypeId).ToList();
 
             #endregion Step 2
 
+
+
+            ToSicEavEntities dbEnt;
             var transaction = DbContext.SqlDb.Database.BeginTransaction();
             var changeId = DbContext.Versioning.GetChangeLogId();
-            ToSicEavEntities dbEntity = null;
             try
             {
 
@@ -59,22 +76,22 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 {
                     #region Step 3a: Create new
 
-                    dbEntity = new ToSicEavEntities
+                    dbEnt = new ToSicEavEntities
                     {
-                        AssignmentObjectTypeId = eToSave.Metadata?.TargetType ?? Constants.NotMetadata,
-                        KeyNumber = eToSave.Metadata?.KeyNumber,
-                        KeyGuid = eToSave.Metadata?.KeyGuid,
-                        KeyString = eToSave.Metadata?.KeyString,
+                        AssignmentObjectTypeId = newEnt.Metadata?.TargetType ?? Constants.NotMetadata,
+                        KeyNumber = newEnt.Metadata?.KeyNumber,
+                        KeyGuid = newEnt.Metadata?.KeyGuid,
+                        KeyString = newEnt.Metadata?.KeyString,
                         ChangeLogCreated = changeId,
                         ChangeLogModified = changeId,
-                        EntityGuid = eToSave.EntityGuid != Guid.Empty ? eToSave.EntityGuid : Guid.NewGuid(),
-                        IsPublished = eToSave.IsPublished,
-                        PublishedEntityId = eToSave.IsPublished ? null : ((Entity)eToSave).GetPublishedIdForSaving(),
+                        EntityGuid = newEnt.EntityGuid != Guid.Empty ? newEnt.EntityGuid : Guid.NewGuid(),
+                        IsPublished = newEnt.IsPublished,
+                        PublishedEntityId = newEnt.IsPublished ? null : ((Entity)newEnt).GetPublishedIdForSaving(),
                         Owner = DbContext.UserName,
                         AttributeSetId = contentTypeId
                     };
 
-                    DbContext.SqlDb.Add(dbEntity);
+                    DbContext.SqlDb.Add(dbEnt);
                     DbContext.SqlDb.SaveChanges();
                     #endregion
                 }
@@ -83,25 +100,32 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     #region Step 3b: Check published (only if not new) - make sure we don't have multiple drafts
 
                     // todo: check if repo-id is always there, may need to use repoid OR entityId
+                    // new: always change the draft if there is one! - it will then either get published, or not...
+                    dbEnt = DbContext.Entities.GetDbEntity(newEnt.EntityId);
 
-                    dbEntity = DbContext.Entities.GetDbEntity(dbId);
-                    var existingDraftId = DbContext.Publishing.GetDraftEntityId(eToSave.EntityId);
-
+                    var publishedStateChangesForThisItem = dbEnt.IsPublished != newEnt.IsPublished;
                     #region Unpublished Save (Draft-Saves) - do some possible error checking
 
-                    // Current Entity is published but Update as a draft
-                    if (dbEntity.IsPublished && !eToSave.IsPublished && !so.ForceNoBranche)
-                        // Prevent duplicate Draft
-                        throw existingDraftId.HasValue
-                            ? new InvalidOperationException(
-                                $"Published EntityId {dbId} has already a draft with EntityId {existingDraftId}")
-                            : new InvalidOperationException(
-                                "It seems you're trying to update a published entity with a draft - this is not possible - the save should actually try to create a new draft instead without calling update.");
+                    #region removed publish/unpublish code
+                    // Prevent editing of Published item if there's a draft
+                    //if (dbEnt.IsPublished && dbEntAttachedDraft.HasValue)
+                    //    throw new Exception($"Update Entity not allowed because a draft exists with EntityId {dbEntAttachedDraft}");
 
-                    // Prevent editing of Published if there's a draft
-                    if (dbEntity.IsPublished && existingDraftId.HasValue)
-                        throw new Exception(
-                            $"Update Entity not allowed because a draft exists with EntityId {existingDraftId}");
+                    // Current Entity is published but Update as a draft
+                    //if (dbEnt.IsPublished && !newEnt.IsPublished && so.AllowBranching)
+                    //    // Prevent duplicate Draft
+                    //    throw existingDraftId.HasValue
+                    //        ? new InvalidOperationException(
+                    //            $"Published EntityId {dbId} has already a draft with EntityId {existingDraftId}")
+                    //        : new InvalidOperationException(
+                    //            "It seems you're trying to update a published entity with a draft - this is not possible - the save should actually try to create a new draft instead without calling update.");
+
+                    // if the published state is going to draft, but there is already a draft, the wrong item was edited
+                    // basically when editing a draft, then this is also the item that should receive the save command
+                    //if (dbEnt.IsPublished && !newEnt.IsPublished && draftItemId.HasValue)
+                    //    throw new InvalidOperationException($"Published EntityId {dbId} already has draft {draftItemId}, so can't create new");
+
+                    #endregion removed
 
                     #endregion
 
@@ -110,13 +134,16 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     // Update as Published but Current Entity is a Draft-Entity
                     // case 1: saved entity is a draft and save wants to publish
                     // case 2: new data is set to not publish, but we don't want a branch
-                    if (!dbEntity.IsPublished && eToSave.IsPublished || !eToSave.IsPublished && so.ForceNoBranche)
+                    if (publishedStateChangesForThisItem || hasAdditionalDraft)
                     {
-                        if (dbEntity.PublishedEntityId.HasValue)
-                            // if Entity has a published Version, add an additional DateTimeline Item for the Update of this Draft-Entity
-                            DbContext.Versioning.SaveEntity(dbEntity.EntityId, dbEntity.EntityGuid, false);
-                        dbEntity = DbContext.Publishing.ClearDraftBranchAndSetPublishedState(eToSave.RepositoryId,
-                            eToSave.IsPublished); // must save intermediate because otherwise we get duplicate IDs
+                        // if Entity has a published Version, add an additional DateTimeline Item for the Update of this Draft-Entity
+                        if (dbEnt.PublishedEntityId.HasValue)
+                            DbContext.Versioning.SaveEntity(dbEnt.EntityId, dbEnt.EntityGuid, false);
+
+                        // now reset the branch/entity-state to properly set the state / purge the draft
+                        dbEnt = DbContext.Publishing.ClearDraftBranchAndSetPublishedState(dbEnt, existingDraftId, newEnt.IsPublished); 
+
+                        ((Entity)newEnt).ChangeIdForSaving(dbEnt.EntityId);   // update ID of the save-entity, as it's used again later on...
                     }
 
                     #endregion
@@ -128,10 +155,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                 #region Step 4: Save all normal values
                 // first, clean up all existing attributes / values (flush)
-                dbEntity.ToSicEavValues.Clear();
+                dbEnt.ToSicEavValues.Clear();
                 DbContext.SqlDb.SaveChanges();  // this is necessary after remove, because otherwise EF state tracking gets messed up
 
-                foreach (var attribute in eToSave.Attributes.Values) // todo: put in constant
+                foreach (var attribute in newEnt.Attributes.Values) // todo: put in constant
                 {
                     // find attribute definition
                     var attribDef = attributeDefs.SingleOrDefault(a => string.Equals(a.StaticName, attribute.Name, StringComparison.InvariantCultureIgnoreCase));
@@ -140,7 +167,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     if(attribDef.Type == AttributeTypeEnum.Entity.ToString()) continue;
 
                     foreach (var value in attribute.Values)
-                        dbEntity.ToSicEavValues.Add(new ToSicEavValues
+                        dbEnt.ToSicEavValues.Add(new ToSicEavValues
                         {
                             AttributeId = attribDef.AttributeId,
                             Value = value.SerializableObject.ToString(),
@@ -156,19 +183,25 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                 #endregion
 
+
+
                 #region Step 5: Save / update all relationships
 
-                DbContext.Relationships.SaveRelationships(eToSave, dbEntity, attributeDefs, so);
+                DbContext.Relationships.SaveRelationships(newEnt, dbEnt, attributeDefs, so);
 
                 #endregion
 
-                #region Ensure versioning
-                DbContext.Versioning.SaveEntity(dbEntity.EntityId, dbEntity.EntityGuid, useDelayedSerialize: true);
+
+
+                #region Step 6: Ensure versioning
+                DbContext.Versioning.SaveEntity(dbEnt.EntityId, dbEnt.EntityGuid, useDelayedSerialize: true);
                 #endregion
+
+
 
                 #region Workaround for preserving the last guid - temp
 
-                TempLastSaveGuid = dbEntity.EntityGuid;
+                TempLastSaveGuid = dbEnt.EntityGuid;
                 #endregion
 
                 //throw new Exception("test exception, don't want to persist till I'm sure it's pretty stable");
@@ -182,9 +215,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
             {
                 // if anything fails, undo everything
                 transaction.Rollback();
+                throw;
             }
 
-            return dbEntity.EntityId;
+            return dbEnt.EntityId;
         }
 
         public Guid TempLastSaveGuid;

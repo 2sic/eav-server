@@ -19,7 +19,7 @@ namespace ToSic.Eav.Persistence
         public bool PreserveExistingLanguages = false;
         public bool PreserveUnknownLanguages = false;
 
-        public bool ForceNoBranche = false;
+        public bool DraftShouldBranch = true;
 
         /// <summary>
         /// Prepare relationships changes, but don't send to DB yet.

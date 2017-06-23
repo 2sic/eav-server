@@ -48,7 +48,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             {
                 entity.ChangeLogDeleted = DbContext.Versioning.GetChangeLogId();
                 // Also delete the Draft (if any)
-                var draftEntityId = DbContext.Publishing.GetDraftEntityId(entity.EntityId);
+                var draftEntityId = DbContext.Publishing.GetDraftBranchEntityId(entity.EntityId);
                 if (draftEntityId.HasValue)
                     DeleteEntity(draftEntityId.Value);
             }

@@ -13,7 +13,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
     {
         
 
-        private readonly List<RelationshipToSave> _relationshipToSave = new List<RelationshipToSave>();
+        private readonly List<RelationshipToSave> _saveQueue = new List<RelationshipToSave>();
 
 
         public DbRelationship(DbDataController cntx) : base(cntx) {}
@@ -62,7 +62,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         internal void AddToQueue(int attributeId, List<Guid?> newValue, int entityId, bool flushAll)
         {
-            _relationshipToSave.Add(new RelationshipToSave
+            _saveQueue.Add(new RelationshipToSave
             {
                 AttributeId = attributeId, ChildEntityGuids = newValue, ParentEntityId = entityId
             });
@@ -73,7 +73,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         internal void AddToQueue(int attributeId, List<int?> newValue, int entityId, bool flushAll)
         {
-            _relationshipToSave.Add(new RelationshipToSave
+            _saveQueue.Add(new RelationshipToSave
             {
                 AttributeId = attributeId, ChildEntityIds = newValue, ParentEntityId = entityId, FlushAllEntityRelationships = flushAll
             });
@@ -85,55 +85,68 @@ namespace ToSic.Eav.Repository.Efc.Parts
         internal void ImportRelationshipQueueAndSave()
         {
             // todo: if so determines it, clear all existing relationships first
-            var fullFlush = _relationshipToSave
+            var fullFlush = _saveQueue
                 .Where(r => r.FlushAllEntityRelationships)
                 .Select(r => r.ParentEntityId)
                 .GroupBy(id => id)
                 .Select(g => g.First())
                 .ToList();
 
-            if (fullFlush.Count > 0)
+            //var transaction = DbContext.SqlDb.Database.BeginTransaction();
+            try
             {
-                foreach (var id in fullFlush)
+                // Delete all existing relationships - but not the target, just the relationship
+                // note: can't use .Clear(), as that will try to actually delete the children
+                if (fullFlush.Count > 0)
                 {
-                    var ent = DbContext.Entities.GetDbEntity(id);
+                    foreach (var id in fullFlush)
+                    {
+                        var ent = DbContext.Entities.GetDbEntity(id);
+                        foreach (var relationToDelete in ent.RelationshipsWithThisAsParent)
+                            DbContext.SqlDb.ToSicEavEntityRelationships.Remove(relationToDelete);
 
-                    // Delete all existing relationships - but not the target, just the relationship
-                    // note: can't use .Clear(), as that will try to actually delete the children
-                    foreach (var relationToDelete in ent.RelationshipsWithThisAsParent)
-                        DbContext.SqlDb.ToSicEavEntityRelationships.Remove(relationToDelete);
-
+                    }
+                    DbContext.SqlDb.SaveChanges(); // necessary after remove, otherwise EF state tracking gets messed up
                 }
-                DbContext.SqlDb.SaveChanges(); // this is necessary after remove, because otherwise EF state tracking gets messed up
-            }
 
-            foreach (var relationship in _relationshipToSave)
+                foreach (var relationship in _saveQueue)
+                {
+                    var entity = relationship.ParentEntityId > 0
+                        ? DbContext.Entities.GetDbEntity(relationship.ParentEntityId)
+                        : null;
+
+                    if (entity == null)
+                        throw new Exception("no id provided, can't update relationships");
+
+                    // start with the ID list - or if it doesn't exist, a new list
+                    var childEntityIds = relationship.ChildEntityIds ?? new List<int?>();
+
+                    // if additional / alternative guids were specified, use those
+                    if (childEntityIds.Count == 0 && relationship.ChildEntityGuids != null)
+                        foreach (var childGuid in relationship.ChildEntityGuids)
+                            try
+                            {
+                                childEntityIds.Add(childGuid.HasValue
+                                    ? DbContext.Entities.GetMostCurrentDbEntity(childGuid.Value).EntityId
+                                    : new int?());
+                            }
+                            catch (InvalidOperationException)
+                            {
+                            } // ignore, may occur if the child entity doesn't exist / wasn't created successfully
+
+                    UpdateEntityRelationshipsAndSave(relationship.AttributeId, childEntityIds, entity);
+                }
+
+                //transaction.Commit();
+            }
+            catch 
             {
-                var entity = relationship.ParentEntityId > 0
-                    ? DbContext.Entities.GetDbEntity(relationship.ParentEntityId)
-                    : null;
-
-                if(entity == null)
-                    throw new Exception("no id provided, can't update relationships");
-
-                // start with the ID list - or if it doesn't exist, a new list
-                var childEntityIds = relationship.ChildEntityIds ?? new List<int?>();
-
-                // if additional / alternative guids were specified, use those
-                if(childEntityIds.Count == 0 && relationship.ChildEntityGuids != null)
-                    foreach (var childGuid in relationship.ChildEntityGuids)
-                        try
-                        {
-                            childEntityIds.Add(childGuid.HasValue
-                                ? DbContext.Entities.GetMostCurrentDbEntity(childGuid.Value).EntityId
-                                : new int?());
-                        }
-                        catch (InvalidOperationException) { } // ignore, may occur if the child entity doesn't exist / wasn't created successfully
-
-                UpdateEntityRelationshipsAndSave(relationship.AttributeId, childEntityIds, entity);
+                //transaction.Rollback();
+                throw;
             }
 
-            _relationshipToSave.Clear();
+
+            _saveQueue.Clear();
         }
 
 

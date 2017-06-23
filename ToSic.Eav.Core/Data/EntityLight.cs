@@ -207,7 +207,7 @@ namespace ToSic.Eav.Data
 
 
         // todo: move to save options
-        public bool OnSaveForceNoBranching { get; set; }
+        public bool PlaceDraftInBranch { get; set; }
 
         #endregion
     }

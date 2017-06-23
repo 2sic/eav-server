@@ -20,6 +20,7 @@ namespace ToSic.Eav.Data.Builder
         public static void SetType(this Entity entity, IContentType contentType) => entity.Type = contentType;
 
         public static int? GetPublishedIdForSaving(this Entity entity) => entity.PublishedEntity?.EntityId ?? entity.PublishedEntityId;
+        public static int? ChangeIdForSaving(this Entity entity, int newId) => entity.EntityId = newId;
 
         public static void SetPublishedIdForSaving(this Entity entity, int? publishedId) => entity.PublishedEntityId = publishedId;
 

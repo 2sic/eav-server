@@ -102,7 +102,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         public ToSicEavEntities UpdateAttributesAndPublishing(int repositoryId, IDictionary newValues, bool autoSave = true, ICollection<int> dimensionIds = null, /*List<ImportLogItem> updateLog = null,*/ bool preserveUndefinedValues = true, bool isPublished = true, bool forceNoBranch = false)
         {
             var entity = DbContext.Entities.GetDbEntity(repositoryId);
-            var draftEntityId = DbContext.Publishing.GetDraftEntityId(repositoryId);
+            var draftEntityId = DbContext.Publishing.GetDraftBranchEntityId(repositoryId);
 
             #region Unpublished Save (Draft-Saves)
             // Current Entity is published but Update as a draft
@@ -126,7 +126,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             {
                 if (entity.PublishedEntityId.HasValue)	// if Entity has a published Version, add an additional DateTimeline Item for the Update of this Draft-Entity
                     DbContext.Versioning.SaveEntity(entity.EntityId, entity.EntityGuid, false);
-                entity = DbContext.Publishing.ClearDraftBranchAndSetPublishedState(repositoryId, isPublished); // must save intermediate because otherwise we get duplicate IDs
+                entity = DbContext.Publishing.OLDClearDraftBranchAndSetPublishedState(repositoryId, isPublished); // must save intermediate because otherwise we get duplicate IDs
             }
             #endregion
 

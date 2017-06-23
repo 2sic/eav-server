@@ -176,7 +176,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             // IMPORTANT : IF THIS IS EVER USED, REMEMBER TO CLEAR THE CACHE afterwards in the calling method
 
             // Delete Draft (if any)
-            var entityDraft = DbContext.Publishing.GetDraftEntityId(entityId);
+            var entityDraft = DbContext.Publishing.GetDraftBranchEntityId(entityId);
             if (entityDraft.HasValue)
                 DbContext.Entities.DeleteEntity(entityDraft.Value);//.RepositoryId);
 

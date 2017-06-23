@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using ToSic.Eav.Data;
+using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
@@ -19,7 +21,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             if (unpublishedEntity.IsPublished)
             {
                 // try to get the draft if it exists
-                var draftId = GetDraftEntityId(entityId);
+                var draftId = GetDraftBranchEntityId(entityId);
                 if (!draftId.HasValue)
                     throw new InvalidOperationException($"EntityId {entityId} is already published");
                 unpublishedEntity = DbContext.Entities.GetDbEntity(draftId.Value);
@@ -53,7 +55,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <param name="unpublishedEntityId"></param>
         /// <param name="newPublishedState"></param>
         /// <returns></returns>
-        public ToSicEavEntities ClearDraftBranchAndSetPublishedState(int unpublishedEntityId, bool newPublishedState = true)
+        public ToSicEavEntities OLDClearDraftBranchAndSetPublishedState(int unpublishedEntityId, bool newPublishedState = true)
         {
             var unpublishedEntity = DbContext.Entities.GetDbEntity(unpublishedEntityId);
 
@@ -78,11 +80,34 @@ namespace ToSic.Eav.Repository.Efc.Parts
             return publishedEntity;
         }
 
+
+        /// <summary>
+        /// Should clean up branches of this item, and set the one and only as published
+        /// </summary>
+        /// <param name="draftId"></param>
+        /// <param name="newPublishedState"></param>
+        /// <param name="publishedEntity"></param>
+        /// <returns></returns>
+        public ToSicEavEntities ClearDraftBranchAndSetPublishedState(ToSicEavEntities publishedEntity, int? draftId = null, bool newPublishedState = true)
+        {
+            // find main Db item and if 
+            //var publishedEntity = DbContext.Entities.GetDbEntity(entityId);
+            var unpublishedEntityId = draftId ?? DbContext.Publishing.GetDraftBranchEntityId(publishedEntity.EntityId);
+
+            // if additional draft exists, must clear that first
+            if (unpublishedEntityId != null)
+                DbContext.Entities.DeleteEntity(unpublishedEntityId.Value);
+
+            publishedEntity.IsPublished = newPublishedState;
+
+            return publishedEntity;
+        }
+
         /// <summary>
         /// Get Draft EntityId of a Published EntityId. Returns null if there's none.
         /// </summary>
         /// <param name="entityId">EntityId of the Published Entity</param>
-        internal int? GetDraftEntityId(int entityId)
+        internal int? GetDraftBranchEntityId(int entityId)
             => DbContext.SqlDb.ToSicEavEntities
                 .Where(e => e.PublishedEntityId == entityId && !e.ChangeLogDeleted.HasValue)
                 .Select(e => (int?) e.EntityId)

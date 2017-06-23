@@ -146,12 +146,9 @@ namespace ToSic.Eav.WebApi
                 var ct = AppManager.Read.ContentTypes.Get(itm.ContentTypeName);// cache.GetContentType(itm.ContentTypeName);
                 if (ct == null)
                 {
-                    if (itm.ContentTypeName.StartsWith("@"))
-                    {
-                        items.Remove(itm);
-                        continue;
-                    }
-                    throw new Exception("Can't find content type " + itm.ContentTypeName);
+                    if (!itm.ContentTypeName.StartsWith("@"))
+                        throw new Exception("Can't find content type " + itm.ContentTypeName);
+                    items.Remove(itm);
                 }
                 if (ct.StaticName != itm.ContentTypeName) // not using the static name...fix
                     itm.ContentTypeName = ct.StaticName;
@@ -204,10 +201,10 @@ namespace ToSic.Eav.WebApi
             //SystemManager.Purge(appId);
 
             // todo: move the OnSaveForceNoBranching into SaveOptions-object
-            var saveOpts = new SaveOptions
-            {
-                ForceNoBranche = items.First().Entity.IsBranch
-            };
+            var saveOpts = new SaveOptions();
+            //{
+            //    AllowBranching = !items.First().Entity.IsBranch   // if it says it's a branch, don't create another one
+            //};
             // 2017-06-21 new save 2dm
             AppManager.Entities.Save(entitiesToImport, saveOpts);
 
@@ -240,10 +237,10 @@ namespace ToSic.Eav.WebApi
 
 
             // Attributes
-            var attribs = new Dictionary<string, IAttribute>();// = new Dictionary<string, List<Interfaces.IValue>>();
+            var attribs = new Dictionary<string, IAttribute>();
 
             // only transfer the fields / values which exist in the content-type definition
-            var attributeSet = AppManager.Read.ContentTypes.Get(toEntity.Type.StaticName);// DataSource.GetCache(null, appId).GetContentType(newEntity.Type.StaticName);
+            var attributeSet = AppManager.Read.ContentTypes.Get(toEntity.Type.StaticName);
             foreach (var attribute in toEntity.Attributes)
             {
                 var attDef = attributeSet[attribute.Key];
@@ -272,18 +269,30 @@ namespace ToSic.Eav.WebApi
                 }
             }
 
-            var importEntity = new Entity(toEntity.Id, /*toEntity.Guid,*/ toEntity.Type.StaticName, attribs.ToDictionary(x => x.Key, y => (object)y.Value))
-            {
+            // figure out EntityId, PublishedId, Branching, etc.
+            //var saveRepoId = toEntity.RepoId;// most common case: we're updating the already existing entity
+            //var hasDraft = toEntity.RepoId != toEntity.Id; // if these don't match, we have a draft
+            //if (toEntity.IsBranch && !hasDraft) // need to branch, but don't have the draft-item yet
+            //    saveRepoId = 0;   //... we should create a new item by setting the id to 0;
+            
+            //if (!toEntity.IsBranch && hasDraft)  // don't want to branch...but are saving into a branch
+            //    saveRepoId = toEntity.Id;        // so save into main item (draft will be cleared)
 
+            if (toEntity.Guid == Guid.Empty)
+                throw new Exception("got empty guid - should never happen");
+
+            var importEntity = new Entity(toEntity.Id, toEntity.Type.StaticName, attribs.ToDictionary(x => x.Key, y => (object)y.Value))
+            {
                 #region Guids, Ids, Published, Content-Types
                 IsPublished = toEntity.IsPublished,
-                OnSaveForceNoBranching = !toEntity.IsBranch, // if it's not a branch, it should also force no branch...
+                PlaceDraftInBranch = toEntity.IsBranch, // if it's not a branch, it should also force no branch...
                 #endregion
             };
 
-            // just in case we have no ID but we have a valid guid...
-            if (toEntity.Guid != Guid.Empty)
-                importEntity.SetGuid(toEntity.Guid);
+            importEntity.SetGuid(toEntity.Guid);
+            if (toEntity.IsBranch)
+                importEntity.SetPublishedIdForSaving(toEntity.Id); 
+
 
             #region Metadata if we have any
             // todo: as the objects are of the same type, we can probably remove the type Format.Metadata soon...
