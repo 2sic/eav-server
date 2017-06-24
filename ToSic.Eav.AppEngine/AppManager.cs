@@ -47,6 +47,8 @@ namespace ToSic.Eav.Apps
         public QueryManager Queries => _queries ?? (_queries = new QueryManager(this));
         private QueryManager _queries;
 
+        public ContentTypeManager ContentTypes => _contentTypes ?? (_contentTypes = new ContentTypeManager(this));
+        private ContentTypeManager  _contentTypes;
 
 
 

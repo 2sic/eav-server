@@ -66,23 +66,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Environment\TennantFileItem.cs" />
-    <Compile Include="Interfaces\IRepositoryImporter.cs" />
     <Compile Include="Json\JsonBuilder.cs" />
     <Compile Include="Serializers\SerializableRelationship.cs" />
     <Compile Include="Serializers\SerializerHelper.cs" />
-    <Compile Include="Logging\ExportImportMessage.cs" />
     <Compile Include="FileManager.cs" />
-    <Compile Include="Interfaces\IImportExportEnvironment.cs" />
-    <Compile Include="Logging\MessageTypes.cs" />
-    <Compile Include="Logging\ImportLogItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Validation\StringExtension.cs" />
     <Compile Include="Versioning\ItemHistory.cs" />
     <Compile Include="Xml\ImportItemGuidManager.cs" />
-    <Compile Include="Logging\ImportError.cs" />
-    <Compile Include="Logging\ImportErrorCode.cs" />
-    <Compile Include="Logging\ImportErrorLog.cs" />
-    <Compile Include="Logging\LocalizedDescriptionAttribute.cs" />
     <Compile Include="Options\ImportDeleteUnmentionedItems.cs" />
     <Compile Include="Options\ExportLanguageResolution.cs" />
     <Compile Include="Options\ExportSelection.cs" />
@@ -94,20 +85,14 @@
     <Compile Include="Xml\XmlToImportEntity.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Logging\ImportErrorCode.de-DE.resx">
-      <DependentUpon>ImportErrorCode.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Logging\ImportErrorCode.resx">
-      <DependentUpon>ImportErrorCode.cs</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj">
       <Project>{82f94588-269b-4cdd-98d1-d5cb14c39090}</Project>
       <Name>ToSic.Eav.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Interfaces\" />
+    <Folder Include="Logging\" />
     <Folder Include="Zip\" />
   </ItemGroup>
   <ItemGroup>

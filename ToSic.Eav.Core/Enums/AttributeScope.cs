@@ -1,4 +1,4 @@
-namespace ToSic.Eav
+namespace ToSic.Eav.Enums
 {
     /// <summary>
     /// Scope of an AttributeSet

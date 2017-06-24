@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Enums;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data.Builder

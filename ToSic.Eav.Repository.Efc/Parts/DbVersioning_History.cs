@@ -5,9 +5,9 @@ using System.Xml.Linq;
 using System.Xml.XPath;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
-using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Versioning;
 using ToSic.Eav.ImportExport.Xml;
+using ToSic.Eav.Persistence.Interfaces;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {

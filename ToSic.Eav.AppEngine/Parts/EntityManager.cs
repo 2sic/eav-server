@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
-using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Versioning;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence;
+using ToSic.Eav.Persistence.Interfaces;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -59,10 +59,7 @@ namespace ToSic.Eav.Apps.Parts
 
         public List<int> Save(List<IEntity> entities, SaveOptions saveOptions = null)
         {
-            var env = Factory.Resolve<IImportExportEnvironment>();
-
             saveOptions = saveOptions ?? new SaveOptions();
-            saveOptions.PrimaryLanguage = saveOptions.PrimaryLanguage ?? env.DefaultLanguage;
             saveOptions.DelayRelationshipSave = true; // save all relationships in one round when ready...
 
             var ids = _appManager.DataController.Entities.SaveEntity(entities, saveOptions);
@@ -90,7 +87,7 @@ namespace ToSic.Eav.Apps.Parts
             // see if a metadata already exists which we would update
             var existingEntity = _appManager.Cache.LightList.FirstOrDefault(e => e.Metadata?.TargetType == target.TargetType && e.Metadata?.KeyNumber == target.KeyNumber);
             if (existingEntity != null)
-                Update(existingEntity.EntityId, values);
+                UpdateParts(existingEntity.EntityId, values);
             else
             {
                 var saveEnt = new Entity(0, typeName, values);
@@ -104,15 +101,18 @@ namespace ToSic.Eav.Apps.Parts
         /// </summary>
         /// <param name="id"></param>
         /// <param name="values"></param>
-        public void Update(int id, Dictionary<string, object> values) //, ICollection<int> dimensionIds = null)
+        public void UpdateParts(int id, Dictionary<string, object> values) //, ICollection<int> dimensionIds = null)
         {
             var saveOptions = new SaveOptions
-                { PreserveUntouchedAttributes = true};
+            {
+                PreserveUntouchedAttributes = true,
+                PreserveUnknownLanguages = true
+            };
 
             var orig = _appManager.Cache.List[id];
             var tempEnt = new Entity(0, "", values);
             var saveEnt = EntitySaver.CreateMergedForSaving(orig, tempEnt, saveOptions);
-            _appManager.DataController.Entities.SaveEntity(saveEnt, saveOptions);
+            Save(saveEnt, saveOptions);
 
             //_appManager.DataController.Entities.UpdateAttributesAndPublishing(id, values); //, dimensionIds: dimensionIds);
         }

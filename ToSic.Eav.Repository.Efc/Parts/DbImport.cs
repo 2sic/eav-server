@@ -6,12 +6,12 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
-using ToSic.Eav.ImportExport.Interfaces;
-using ToSic.Eav.ImportExport.Logging;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Efc.Models;
+using ToSic.Eav.Persistence.Interfaces;
+using ToSic.Eav.Persistence.Logging;
 using Entity = ToSic.Eav.Data.Entity;
 
 namespace ToSic.Eav.Repository.Efc.Parts

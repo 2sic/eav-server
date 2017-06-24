@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.ImportExport.Logging;
+using ToSic.Eav.Persistence.Logging;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {

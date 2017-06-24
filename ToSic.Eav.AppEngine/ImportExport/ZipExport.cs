@@ -7,8 +7,8 @@ using System.Xml.XPath;
 using ICSharpCode.SharpZipLib.Zip;
 //using Microsoft.Practices.Unity;
 using ToSic.Eav.ImportExport;
-using ToSic.Eav.ImportExport.Logging;
 using ToSic.Eav.Interfaces;
+using ExportImportMessage = ToSic.Eav.Persistence.Logging.ExportImportMessage;
 
 // needed for the static Resolve<...>
 

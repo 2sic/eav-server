@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using ToSic.Eav.ImportExport.Logging;
+using ExportImportMessage = ToSic.Eav.Persistence.Logging.ExportImportMessage;
 
 namespace ToSic.Eav.ImportExport
 {

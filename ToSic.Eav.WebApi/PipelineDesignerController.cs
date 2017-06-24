@@ -167,7 +167,7 @@ namespace ToSic.Eav.WebApi
 				// Update existing DataSource
 				var newValues = GetEntityValues(dataSource);
 				if (dataSource.EntityId != null)
-                    appManager.Entities.Update((int)dataSource.EntityId, newValues);
+                    appManager.Entities.UpdateParts((int)dataSource.EntityId, newValues);
 				// Add new DataSource
 				else
 				{
@@ -256,7 +256,7 @@ namespace ToSic.Eav.WebApi
 			//if (pipelineEntity.Title.Values.Any())
 			//	dimensionIds = pipelineEntity.Title.Values.First().Languages.Select(l => l.DimensionId).ToArray();
 
-            appManager.Entities.Update(id.Value, newValues);//, dimensionIds: dimensionIds);
+            appManager.Entities.UpdateParts(id.Value, newValues);//, dimensionIds: dimensionIds);
 		}
 
 		/// <summary>

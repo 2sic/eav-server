@@ -217,14 +217,14 @@ namespace ToSic.Eav.WebApi
         public int AddField(int appId, int contentTypeId, string staticName, string type, string inputType, int sortOrder)
 	    {
             SetAppIdAndUser(appId);
-	        return CurrentContext.AttributesDefinition.CreateAttributeAndInitializeAndSave(contentTypeId, staticName, type, inputType, sortOrder);//, 1, false, true);
+	        return AppManager.ContentTypes.CreateAttributeAndInitializeAndSave(contentTypeId, staticName, type, inputType, sortOrder);
 	    }
 
         [HttpGet]
         public bool UpdateInputType(int appId, int attributeId, string inputType)
         {
             SetAppIdAndUser(appId);
-            return CurrentContext.AttributesDefinition.UpdateInputType(attributeId, inputType);
+            return AppManager.ContentTypes.UpdateInputType(attributeId, inputType);
         }
 
         [HttpGet]
@@ -246,7 +246,7 @@ namespace ToSic.Eav.WebApi
         public bool Rename(int appId, int contentTypeId, int attributeId, string newName)
         {
             SetAppIdAndUser(appId);
-            CurrentContext.AttributesDefinition.RenameStaticName(attributeId, contentTypeId, newName);
+            CurrentContext.AttributesDefinition.RenameAttribute(attributeId, contentTypeId, newName);
             return true;
         }
 

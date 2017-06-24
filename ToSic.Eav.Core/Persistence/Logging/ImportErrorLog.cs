@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ToSic.Eav.ImportExport.Logging
+namespace ToSic.Eav.Persistence.Logging
 {
     public class ImportErrorLog : IEnumerable<ImportError>
     {

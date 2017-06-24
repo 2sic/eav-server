@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using ToSic.Eav.Enums;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data

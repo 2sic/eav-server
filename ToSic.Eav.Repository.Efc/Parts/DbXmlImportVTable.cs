@@ -8,11 +8,11 @@ using System.Xml.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport;
-using ToSic.Eav.ImportExport.Logging;
 using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.ImportExport.Validation;
 using ToSic.Eav.ImportExport.Xml;
 using ToSic.Eav.Persistence.Efc.Models;
+using ToSic.Eav.Persistence.Logging;
 using Entity = ToSic.Eav.Data.Entity;
 
 namespace ToSic.Eav.Repository.Efc.Parts

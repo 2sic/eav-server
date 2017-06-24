@@ -6,13 +6,14 @@ using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
-using ToSic.Eav.ImportExport.Interfaces;
-using ToSic.Eav.ImportExport.Logging;
 using ToSic.Eav.ImportExport.Xml;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Efc.Models;
+using ToSic.Eav.Persistence.Interfaces;
+using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Repository.Efc.Parts;
+using ExportImportMessage = ToSic.Eav.Persistence.Logging.ExportImportMessage;
 
 // 2dm: must disable NullRef warnings, because there a lot of warnings when processing XML, 
 // ...and these are real errors which should blow

@@ -19,7 +19,6 @@ namespace ToSic.Eav.Apps.Parts
         /// </summary>
         public int CreateAttributeAndInitializeAndSave(int attributeSetId, string staticName, string type, string inputType, int sortOrder)//, int attributeGroupId, bool isTitle)
         {
-            // todo: not nice deep-access, improve some time
             var newAttribute = _appManager.DataController.AttributesDefinition.AddAttributeAndSave(null, attributeSetId, staticName, type, sortOrder, 1, false);
 
             // set the nice name and input type, important for newly created attributes
@@ -59,6 +58,8 @@ namespace ToSic.Eav.Apps.Parts
             _appManager.Entities.TempAddMetadata(meta, "@All", newValues); // todo: put "@All" into some constant
             return true;
         }
+
+        
 
     }
 }

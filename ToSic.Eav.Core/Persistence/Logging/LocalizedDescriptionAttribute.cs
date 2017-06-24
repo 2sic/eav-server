@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Resources;
 
-namespace ToSic.Eav.ImportExport.Logging
+namespace ToSic.Eav.Persistence.Logging
 {
     /// <summary>
     /// Attribute to describe and localize enumeration values.

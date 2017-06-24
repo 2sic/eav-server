@@ -4,8 +4,8 @@ using System.Linq;
 //using Microsoft.Practices.Unity;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.Implementations.UserInformation;
-using ToSic.Eav.ImportExport.Logging;
 using ToSic.Eav.Persistence.Efc.Models;
+using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Repository.Efc.Parts;
 
 namespace ToSic.Eav.Repository.Efc

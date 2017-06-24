@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using ToSic.Eav.Data;
-using ToSic.Eav.Data.Builder;
-using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
@@ -12,8 +8,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
     public partial class DbAttributeDefinition: BllCommandBase
     {
         public DbAttributeDefinition(DbDataController cntx) : base(cntx) {}
-
-
 
         /// <summary>
         /// Set an Attribute as Title on an AttributeSet
@@ -35,7 +29,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Set an Attribute as Title on an AttributeSet
         /// </summary>
-        public void RenameStaticName(int attributeId, int attributeSetId, string newName)
+        public void RenameAttribute(int attributeId, int attributeSetId, string newName)
         {
             if(string.IsNullOrWhiteSpace(newName))
                 throw new Exception("can't rename to something empty");
@@ -49,73 +43,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
             DbContext.SqlDb.SaveChanges();
         }
 
-        #region deprecated / disabled code
-
-        ///// <summary>
-        ///// Get a List of all Attributes in specified AttributeSet
-        ///// </summary>
-        ///// <param name="attributeSet">Reference to an AttributeSet</param>
-        ///// <param name="includeTitleAttribute">Specify whether TitleAttribute should be included</param>
-        //public List<Attribute> GetAttributes(AttributeSet attributeSet, bool includeTitleAttribute = true)
-        //{
-        //    var items = Context.SqlDb.AttributesInSets.Where(a => a.AttributeSetId == attributeSet.AttributeSetId);
-        //    if (!includeTitleAttribute)
-        //        items = items.Where(a => !a.IsTitle);
-
-        //    return items.Select(a => a.Attribute).ToList();
-        //}
-        //
-        ///// <summary>
-        ///// Get Title Attribute for specified AttributeSetId
-        ///// </summary>
-        //public Attribute GetTitleAttribute(int attributeSetId)
-        //{
-        //    return Context.SqlDb.AttributesInSets.Single(a => a.AttributeSetId == attributeSetId && a.IsTitle).Attribute;
-        //}
-
-        ///// <summary>
-        ///// Update an Attribute
-        ///// </summary>
-        //public Attribute UpdateAttribute(int attributeId, string staticName)
-        //{
-        //    return UpdateAttribute(attributeId, staticName, null);
-        //}
-        ///// <summary>
-        ///// Update an Attribute
-        ///// </summary>
-        //public Attribute UpdateAttribute(int attributeId, string staticName, int? attributeSetId = null, bool isTitle = false)
-        //{
-        //    var attribute = Context.SqlDb.Attributes.Single(a => a.AttributeId == attributeId);
-        //    Context.SqlDb.SaveChanges();
-
-        //    if (isTitle)
-        //        SetTitleAttribute(attributeId, attributeSetId.Value);
-
-        //    return attribute;
-        //}
-
-        ///// <summary>
-        ///// Append a new Attribute to an AttributeSet
-        ///// </summary>
-        //public Attribute AppendAttribute(int attributeSetId, string staticName, string type, string inputType, bool isTitle = false)
-        //{
-        //    return AppendAttribute(null, attributeSetId, staticName, type, inputType, isTitle, true);
-        //}
-
-
-        ///// <summary>
-        ///// Append a new Attribute to an AttributeSet
-        ///// </summary>
-        //public ToSicEavAttributes AppendAttribute(ToSicEavAttributeSets attributeSet, string staticName, string type, string inputType, bool isTitle = false, bool autoSave = true)
-        //{
-        //    return AppendAttribute(attributeSet, 0, staticName, type, inputType, isTitle, autoSave);
-        //}
-        #endregion
-
         /// <summary>
         /// Append a new Attribute to an AttributeSet
         /// </summary>
-        internal int AppendToEndAndSave(ToSicEavAttributeSets attributeSet, int attributeSetId, string staticName, string type, /*string inputType,*/ bool isTitle)//, bool autoSave)
+        internal int AppendToEndAndSave(ToSicEavAttributeSets attributeSet, int attributeSetId, string staticName, string type, bool isTitle)
         {
             var maxIndex = attributeSet != null
                 ? attributeSet.ToSicEavAttributesInSets
@@ -124,29 +55,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     .Where(a => a.AttributeSetId == attributeSetId)
                     .Max(s => (int?) s.SortOrder);
 
-            if (!maxIndex.HasValue)
-                maxIndex = 0;
-            else
-                maxIndex++;
+            maxIndex = !maxIndex.HasValue ? 0 : maxIndex + 1;
 
-            return AddAttributeAndSave(attributeSet, attributeSetId, staticName, type, /*inputType,*/ maxIndex.Value, 1, isTitle);//, autoSave);
+            return AddAttributeAndSave(attributeSet, attributeSetId, staticName, type, maxIndex.Value, 1, isTitle);
         }
-
-        /// <summary>
-        /// Append a new Attribute to an AttributeSet
-        /// Simple overload returning int so it can be used from outside
-        /// </summary>
-        public int CreateAttributeAndInitializeAndSave(int attributeSetId, string staticName, string type, string inputType, int sortOrder)//, int attributeGroupId, bool isTitle)
-        {
-            var newAttribute = AddAttributeAndSave(null, attributeSetId, staticName, type, sortOrder, 1, false);
-            
-            // set the nice name and input type, important for newly created attributes
-            InitializeNameAndInputType(staticName, inputType, newAttribute);
-
-            return newAttribute;
-        }
-
-
+        
         /// <summary>
         /// Append a new Attribute to an AttributeSet
         /// </summary>
@@ -197,58 +110,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
             DbContext.SqlDb.SaveChanges();
             return newAttribute.AttributeId;
         }
-
-        private void InitializeNameAndInputType(string staticName, string inputType, int newAttribute)
-        {
-            // new: set the inputType - this is a bit tricky because it needs an attached entity of type "@All" to set the value to...
-            var newValues = new Dictionary<string, object>
-            {
-                {"VisibleInEditUI", true},
-                {"Name", staticName},
-                {"InputType", inputType}
-            };
-
-            UpdateAttributeAdditionalProperties(newAttribute, newValues);
-        }
-
-        public bool UpdateInputType(int attributeId, string inputType)
-        {
-            var newValues = new Dictionary<string, object> { { "InputType", inputType } };
-
-            UpdateAttributeAdditionalProperties(attributeId, newValues);
-            return true;
-        }
-
-        /// <summary>
-        /// Update AdditionalProperties of an attribute 
-        /// </summary>
-        public void UpdateAttributeAdditionalProperties(int attributeId, Dictionary<string, object> fieldProperties)
-        {
-            //var isAllProperty = true;
-            var fieldPropertyEntity = DbContext.SqlDb.ToSicEavEntities.FirstOrDefault(e => e.AssignmentObjectTypeId == Constants.MetadataForField && e.KeyNumber == attributeId);
-            if (fieldPropertyEntity != null)
-            {
-                DbContext.Entities.UpdateAttributesAndPublishing(fieldPropertyEntity.EntityId, fieldProperties);
-                return;
-            }
-
-            var metaDataSetName = /*isAllProperty ?*/ "@All";// : "@" + DbContext.SqlDb.ToSicEavAttributes.Single(a => a.AttributeId == attributeId).Type;
-            var systemScope = AttributeScope.System.ToString();
-            var attSetFirst = DbContext.SqlDb.ToSicEavAttributeSets.FirstOrDefault(s => s.StaticName == metaDataSetName && s.Scope == systemScope && s.AppId == DbContext.AppId && !s.ChangeLogDeleted.HasValue /* _appId*/);
-            if(attSetFirst == null)
-                throw new Exception($"Can't continue, couldn't find attrib-set with: {systemScope}:{metaDataSetName} in app {DbContext.AppId}");
-            //var attributeSetId = attSetFirst.AttributeSetId;
-
-            var newEnt = new Entity(0, attSetFirst.StaticName, fieldProperties);
-            newEnt.SetMetadata(new Metadata {KeyNumber = attributeId, TargetType = Constants.MetadataForField});
-
-            DbContext.Entities.SaveEntity(newEnt, new SaveOptions());
-
-            //return DbContext.Entities.AddEntity(attributeSetId, fieldProperties, new Metadata { KeyNumber = attributeId, TargetType = Constants.MetadataForField });
-        }
+        
 
 
-        // todo: add security check if it really is in this app and content-type
         public bool RemoveAttributeAndAllValuesAndSave(int attributeId)
         {
             // Remove values and valueDimensions of this attribute

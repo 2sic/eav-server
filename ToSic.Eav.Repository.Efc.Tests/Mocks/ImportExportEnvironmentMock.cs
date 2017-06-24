@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.ImportExport.Interfaces;
-using ToSic.Eav.ImportExport.Logging;
+using ToSic.Eav.Persistence.Interfaces;
+using ExportImportMessage = ToSic.Eav.Persistence.Logging.ExportImportMessage;
 
 namespace ToSic.Eav.Repository.Efc.Tests.Mocks
 {

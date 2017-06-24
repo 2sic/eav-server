@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Interfaces
+﻿using ToSic.Eav.Enums;
+
+namespace ToSic.Eav.Interfaces
 {
 	/// <summary>
 	/// Represents an Attribute. This is the base for both

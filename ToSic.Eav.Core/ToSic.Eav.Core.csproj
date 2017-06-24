@@ -114,7 +114,7 @@
     <Compile Include="Implementations\ValueConverter\NeutralValueConverter.cs" />
     <Compile Include="Interfaces\IAttributeDefinition.cs" />
     <Compile Include="Interfaces\IContentTypeShareable.cs" />
-    <Compile Include="Interfaces\HasMetadata.cs" />
+    <Compile Include="Interfaces\IHasMetadata.cs" />
     <Compile Include="Interfaces\IEntity.cs" />
     <Compile Include="Interfaces\IMetadata.cs" />
     <Compile Include="Interfaces\IPublish_T.cs" />
@@ -125,7 +125,7 @@
     <Compile Include="Interfaces\IAttribute.cs" />
     <Compile Include="Interfaces\IContentType.cs" />
     <Compile Include="Interfaces\IDeferredEntitiesList.cs" />
-    <Compile Include="Interfaces\IEnvironment.cs" />
+    <Compile Include="Interfaces\ISystemConfiguration.cs" />
     <Compile Include="Interfaces\ILanguage.cs" />
     <Compile Include="Interfaces\IIsMetadata.cs" />
     <Compile Include="Interfaces\IDimension.cs" />
@@ -136,14 +136,29 @@
     <Compile Include="Interfaces\IRepositoryLoader.cs" />
     <Compile Include="Interfaces\IValue.cs" />
     <Compile Include="Persistence\EntitySaver.cs" />
+    <Compile Include="Persistence\Interfaces\IImportExportEnvironment.cs" />
+    <Compile Include="Interfaces\IRepositoryImporter.cs" />
+    <Compile Include="Persistence\Logging\ExportImportMessage.cs" />
+    <Compile Include="Persistence\Logging\ImportError.cs" />
+    <Compile Include="Persistence\Logging\ImportErrorCode.cs" />
+    <Compile Include="Persistence\Logging\ImportErrorLog.cs" />
+    <Compile Include="Persistence\Logging\ImportLogItem.cs" />
+    <Compile Include="Persistence\Logging\LocalizedDescriptionAttribute.cs" />
+    <Compile Include="Persistence\Logging\MessageTypes.cs" />
     <Compile Include="Persistence\SaveOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="DataSources\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Persistence\Logging\ImportErrorCode.de-DE.resx">
+      <DependentUpon>ImportErrorCode.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Persistence\Logging\ImportErrorCode.resx">
+      <DependentUpon>ImportErrorCode.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

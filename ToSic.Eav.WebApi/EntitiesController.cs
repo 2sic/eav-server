@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Http;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Enums;
 using ToSic.Eav.WebApi.Formats;
 using ToSic.Eav.ImportExport.Versioning;
 using ToSic.Eav.Interfaces;

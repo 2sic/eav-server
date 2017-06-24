@@ -8,11 +8,11 @@ using System.Xml;
 using System.Xml.Linq;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Environment;
-using ToSic.Eav.ImportExport.Logging;
 using ToSic.Eav.ImportExport.Xml;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Repository.Efc.Parts;
+using ExportImportMessage = ToSic.Eav.Persistence.Logging.ExportImportMessage;
 
 namespace ToSic.Eav.Apps.ImportExport
 {

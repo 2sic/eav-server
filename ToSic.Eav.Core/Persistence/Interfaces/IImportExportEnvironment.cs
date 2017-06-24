@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using ToSic.Eav.ImportExport.Logging;
+using ExportImportMessage = ToSic.Eav.Persistence.Logging.ExportImportMessage;
 
-namespace ToSic.Eav.ImportExport.Interfaces
+namespace ToSic.Eav.Persistence.Interfaces
 {
     public interface IImportExportEnvironment
     {

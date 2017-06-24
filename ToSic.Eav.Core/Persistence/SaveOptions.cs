@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Persistence.Interfaces;
 
 namespace ToSic.Eav.Persistence
 {
@@ -13,7 +14,18 @@ namespace ToSic.Eav.Persistence
         public bool SkipExistingAttributes = false;
         //public bool PreserveInvisibleAttributes = false;
 
-        public string PrimaryLanguage { get { return _priLang; } set { _priLang = value.ToLowerInvariant(); } }
+        public string PrimaryLanguage
+        {
+            get
+            {
+                return _priLang ?? (_priLang = Factory.Resolve<IImportExportEnvironment>().DefaultLanguage);
+            }
+            set
+            {
+                _priLang = value.ToLowerInvariant();
+            }
+        }
+
         private string _priLang = null;
         public List<ILanguage> Languages = null;
         public bool PreserveExistingLanguages = false;

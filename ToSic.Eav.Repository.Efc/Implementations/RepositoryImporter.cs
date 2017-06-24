@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Data;
-using ToSic.Eav.ImportExport.Interfaces;
+using ToSic.Eav.Interfaces;
 using ToSic.Eav.Repository.Efc.Parts;
 
 namespace ToSic.Eav.Repository.Efc.Implementations

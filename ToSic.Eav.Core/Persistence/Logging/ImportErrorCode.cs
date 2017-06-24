@@ -1,5 +1,5 @@
 ﻿
-namespace ToSic.Eav.ImportExport.Logging
+namespace ToSic.Eav.Persistence.Logging
 {
     public enum ImportErrorCode
     {

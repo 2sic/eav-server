@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Data;
 
-namespace ToSic.Eav.ImportExport.Interfaces
+namespace ToSic.Eav.Interfaces
 {
     public interface IRepositoryImporter
     {
