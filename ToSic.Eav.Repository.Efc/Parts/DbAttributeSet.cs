@@ -11,19 +11,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
     {
         public DbAttributeSet(DbDataController dc) : base(dc) { }
 
-        /// <summary>caches all AttributeSets for each App</summary>
-        internal Dictionary<int, Dictionary<int, IContentType>> ContentTypes = new Dictionary<int, Dictionary<int, IContentType>>();
-
-        #region Testing / Analytics helpers
-        internal void ResetCacheForTesting()
-            => ContentTypes = new Dictionary<int, Dictionary<int, IContentType>>();
-        #endregion
-
 
         /// <summary>
         /// Get a List of all AttributeSets
         /// </summary>
-        public List<ToSicEavAttributeSets> GetAllAttributeSets()
+        public List<ToSicEavAttributeSets> GetDbAttribSets()
             => DbContext.SqlDb.ToSicEavAttributeSets
             .Include(a => a.ToSicEavAttributesInSets)
                 .ThenInclude(a => a.Attribute)
@@ -34,7 +26,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Get a single AttributeSet
         /// </summary>
-        public ToSicEavAttributeSets GetAttributeSet(int attributeSetId)
+        public ToSicEavAttributeSets GetDbAttribSet(int attributeSetId)
             => DbContext.SqlDb.ToSicEavAttributeSets
             .SingleOrDefault(
                 a => a.AttributeSetId == attributeSetId
@@ -44,13 +36,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Get a single AttributeSet
         /// </summary>
-        public ToSicEavAttributeSets GetAttributeSet(string staticName)
+        public ToSicEavAttributeSets GetDbAttribSet(string staticName)
             => DbContext.SqlDb.ToSicEavAttributeSets.SingleOrDefault(
                 a => a.StaticName == staticName
                      && a.AppId == DbContext.AppId
                      && !a.ChangeLogDeleted.HasValue);
 
-        public ToSicEavAttributeSets GetAttributeSetWithEitherName(string name)
+        private ToSicEavAttributeSets GetDbAttribSetWithEitherName(string name)
         {
             var appId = DbContext.AppId;
 
@@ -77,18 +69,17 @@ namespace ToSic.Eav.Repository.Efc.Parts
             }
             catch (InvalidOperationException ex)
             {
-                throw new Exception("Unable to get AttributeSet with StaticName \"" + name + "\" in app " + appId /* + " and Scope \"" + scopeFilter + "\"."*/, ex);
+                throw new Exception($"Unable to get AttributeSet with StaticName \"{name}\" in app {appId}", ex);
             }
         }
 
-        public int GetAttributeSetIdWithEitherName(string name) 
-            => GetAttributeSetWithEitherName(name).AttributeSetId;
+        public int GetIdWithEitherName(string name) => GetDbAttribSetWithEitherName(name).AttributeSetId;
 
 
         /// <summary>
         /// Test whether AttributeSet exists on specified App and is not deleted
         /// </summary>
-        internal bool AttributeSetExists(int appId, string staticName)
+        internal bool DbAttribSetExists(int appId, string staticName)
             => DbContext.SqlDb.ToSicEavAttributeSets.Any(
                 a => !a.ChangeLogDeleted.HasValue
                      && a.AppId == appId
@@ -100,7 +91,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         /// <param name="appId">Filter by AppId</param>
         /// <param name="scope">optional Filter by Scope</param>
-        internal IQueryable<ToSicEavAttributeSets> GetAttributeSets(int appId, AttributeScope? scope)
+        internal IQueryable<ToSicEavAttributeSets> GetDbAttribSets(int appId, AttributeScope? scope)
         {
             var result = DbContext.SqlDb.ToSicEavAttributeSets
                 .Where(a => a.AppId == appId && !a.ChangeLogDeleted.HasValue);
@@ -116,7 +107,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         
 
-        internal ToSicEavAttributeSets PrepareSet(string name, string description, string staticName, string scope, /*bool autoSave,*/ bool skipExisting, int? appId)
+        internal ToSicEavAttributeSets PrepareDbAttribSet(string name, string description, string staticName, string scope, /*bool autoSave,*/ bool skipExisting, int? appId)
         {
             if (string.IsNullOrEmpty(staticName))
                 staticName = Guid.NewGuid().ToString();
@@ -124,7 +115,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             var targetAppId = appId ?? DbContext.AppId;
 
             // ensure AttributeSet with StaticName doesn't exist on App
-            if (DbContext.AttribSet.AttributeSetExists(targetAppId, staticName))
+            if (DbContext.AttribSet.DbAttribSetExists(targetAppId, staticName))
             {
                 if (skipExisting)
                     return null;
@@ -142,12 +133,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
             };
 
             DbContext.SqlDb.Add(newSet);
-
-            if (DbContext.AttribSet.ContentTypes.ContainsKey(DbContext.AppId))
-                DbContext.AttribSet.ContentTypes.Remove(DbContext.AppId);
-
-            //if (autoSave)
-            //    DbContext.SqlDb.SaveChanges();
 
             return newSet;
         }

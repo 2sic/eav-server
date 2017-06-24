@@ -247,16 +247,16 @@ namespace ToSic.Eav.WebApi
 			// Add/Update Entity
 			var newValues = GetEntityValues(pipelineClone);
 
-
+            // 2017-06-24 2dm - disabled dimension IDs, as they were never actually used in the save path
 			// Guess DimensionIDs for the Pipeline-Entity
-			var source = DataSource.GetInitialDataSource(appId: appId);
-			var pipelineEntity = DataPipeline.GetPipelineEntity(id.Value, source);
-			int[] dimensionIds = null;
+			//var source = DataSource.GetInitialDataSource(appId: appId);
+			//var pipelineEntity = DataPipeline.GetPipelineEntity(id.Value, source);
+			//int[] dimensionIds = null;
 
-			if (pipelineEntity.Title.Values.Any())
-				dimensionIds = pipelineEntity.Title.Values.First().Languages.Select(l => l.DimensionId).ToArray();
+			//if (pipelineEntity.Title.Values.Any())
+			//	dimensionIds = pipelineEntity.Title.Values.First().Languages.Select(l => l.DimensionId).ToArray();
 
-            appManager.Entities.Update(id.Value, newValues, dimensionIds: dimensionIds);
+            appManager.Entities.Update(id.Value, newValues);//, dimensionIds: dimensionIds);
 		}
 
 		/// <summary>

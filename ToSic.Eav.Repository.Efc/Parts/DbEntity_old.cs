@@ -30,59 +30,59 @@ namespace ToSic.Eav.Repository.Efc.Parts
         //}
         
         
-        /// <summary>
-        /// Add a new Entity
-        /// </summary>
-        public ToSicEavEntities AddEntity(int attributeSetId, IDictionary values, 
-            IIsMetadata isMetadata = null, Guid? entityGuid = null, ICollection<int> dimensionIds = null, bool isPublished = true, int? publishedEntityId = null)
-        {
-            // note: values is either a dictionary <string, object> or <string, IList<IValue>>
+        ///// <summary>
+        ///// Add a new Entity
+        ///// </summary>
+        //public ToSicEavEntities AddEntity(int attributeSetId, IDictionary values, 
+        //    IIsMetadata isMetadata = null, Guid? entityGuid = null, ICollection<int> dimensionIds = null, bool isPublished = true, int? publishedEntityId = null)
+        //{
+        //    // note: values is either a dictionary <string, object> or <string, IList<IValue>>
 
-            int? keyNumber = isMetadata?.KeyNumber;
-            int keyTypeId = isMetadata?.TargetType ?? Constants.NotMetadata;
+        //    int? keyNumber = isMetadata?.KeyNumber;
+        //    int keyTypeId = isMetadata?.TargetType ?? Constants.NotMetadata;
 
-            // var skipCreate = false;
-            var existingEntityId = 0;
-            // Prevent duplicate add of FieldProperties
-            if (keyTypeId == Constants.MetadataForField && keyNumber.HasValue)
-            {
-                var foundThisMetadata = GetAssignedEntities(Constants.MetadataForField, keyNumber.Value)
-                        .FirstOrDefault(e => e.AttributeSetId == attributeSetId);
-                if (foundThisMetadata != null)
-                    existingEntityId = foundThisMetadata.EntityId;
-            }
+        //    // var skipCreate = false;
+        //    var existingEntityId = 0;
+        //    // Prevent duplicate add of FieldProperties
+        //    if (keyTypeId == Constants.MetadataForField && keyNumber.HasValue)
+        //    {
+        //        var foundThisMetadata = GetAssignedEntities(Constants.MetadataForField, keyNumber.Value)
+        //                .FirstOrDefault(e => e.AttributeSetId == attributeSetId);
+        //        if (foundThisMetadata != null)
+        //            existingEntityId = foundThisMetadata.EntityId;
+        //    }
 
-            var changeId = DbContext.Versioning.GetChangeLogId();
+        //    var changeId = DbContext.Versioning.GetChangeLogId();
 
-            #region generate brand-new entity if non exists yet
-            if (existingEntityId == 0)
-            {
-                var newEntity = new ToSicEavEntities
-                {
-                    //ConfigurationSet = null, // configurationSet,
-                    AssignmentObjectTypeId = keyTypeId,
-                    KeyNumber = keyNumber,
-                    KeyGuid = isMetadata?.KeyGuid, //keyGuid,
-                    KeyString = isMetadata?.KeyString, //keyString,
-                    //SortOrder = sortOrder,
-                    ChangeLogCreated = changeId,
-                    ChangeLogModified = changeId,
-                    EntityGuid = entityGuid.HasValue && entityGuid.Value != Guid.Empty ? entityGuid.Value : Guid.NewGuid(),
-                    IsPublished = isPublished,
-                    PublishedEntityId = isPublished ? null : publishedEntityId,
-                    Owner = DbContext.UserName,
-                    AttributeSetId = attributeSetId
-                };
+        //    #region generate brand-new entity if non exists yet
+        //    if (existingEntityId == 0)
+        //    {
+        //        var newEntity = new ToSicEavEntities
+        //        {
+        //            //ConfigurationSet = null, // configurationSet,
+        //            AssignmentObjectTypeId = keyTypeId,
+        //            KeyNumber = keyNumber,
+        //            KeyGuid = isMetadata?.KeyGuid, //keyGuid,
+        //            KeyString = isMetadata?.KeyString, //keyString,
+        //            //SortOrder = sortOrder,
+        //            ChangeLogCreated = changeId,
+        //            ChangeLogModified = changeId,
+        //            EntityGuid = entityGuid.HasValue && entityGuid.Value != Guid.Empty ? entityGuid.Value : Guid.NewGuid(),
+        //            IsPublished = isPublished,
+        //            PublishedEntityId = isPublished ? null : publishedEntityId,
+        //            Owner = DbContext.UserName,
+        //            AttributeSetId = attributeSetId
+        //        };
 
-                DbContext.SqlDb.Add(newEntity);
-                DbContext.SqlDb.SaveChanges();
-                existingEntityId = newEntity.EntityId;
-            }
-            #endregion
+        //        DbContext.SqlDb.Add(newEntity);
+        //        DbContext.SqlDb.SaveChanges();
+        //        existingEntityId = newEntity.EntityId;
+        //    }
+        //    #endregion
 
-            return UpdateAttributesAndPublishing(existingEntityId, values, dimensionIds: dimensionIds, autoSave: false, /*updateLog: updateLog,*/ isPublished: isPublished);
+        //    return UpdateAttributesAndPublishing(existingEntityId, values, dimensionIds: dimensionIds, autoSave: false, /*updateLog: updateLog,*/ isPublished: isPublished);
 
-        }
+        //}
 
         #endregion
 
@@ -93,14 +93,14 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         /// <param name="repositoryId">EntityId as in the repository (so the draft would have that id)</param>
         /// <param name="newValues">new Values of this Entity</param>
-        /// <param name="autoSave">auto save Changes to DB</param>
-        /// <param name="dimensionIds">DimensionIds for all Values</param>
-        /// <param name="preserveUndefinedValues">Preserve Values if Attribute is not specifeied in NewValues</param>
-        /// <param name="isPublished">Is this Entity Published or a draft</param>
-        /// <param name="forceNoBranch">this forces the published-state to be applied to the original, without creating a draft-branhc</param>
         /// <returns>the updated Entity</returns>
-        public ToSicEavEntities UpdateAttributesAndPublishing(int repositoryId, IDictionary newValues, bool autoSave = true, ICollection<int> dimensionIds = null, /*List<ImportLogItem> updateLog = null,*/ bool preserveUndefinedValues = true, bool isPublished = true, bool forceNoBranch = false)
+        public ToSicEavEntities UpdateAttributesAndPublishing(int repositoryId, IDictionary newValues)//, bool autoSave = true, /*List<ImportLogItem> updateLog = null,*/ bool preserveUndefinedValues = true, bool isPublished = true, bool forceNoBranch = false)
         {
+            #region temp - things that were previously url parameters
+            bool preserveUndefinedValues = true;
+            bool isPublished = true;
+            bool forceNoBranch = false;
+            #endregion
             var entity = DbContext.Entities.GetDbEntity(repositoryId);
             var draftEntityId = DbContext.Publishing.GetDraftBranchEntityId(repositoryId);
 
@@ -130,9 +130,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
             }
             #endregion
 
-
-            if (dimensionIds == null)
-                dimensionIds = new List<int>(0);
 
             // Load all Attributes and current Values - .ToList() to prevent (slow) lazy loading
             var dbValues = entity.EntityId != 0
@@ -171,7 +168,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Update an Entity when using the Import
         /// </summary>
-        private void UpdateEntityWithIAttributes(ToSicEavEntities dbEntity, Dictionary<string, IAttribute> newAttribs, /*List<ToSicEavAttributes> attributeList,*/ List<ToSicEavValues> currentValues, bool keepAttributesMissingInImport)
+        private void UpdateEntityWithIAttributes(ToSicEavEntities dbEntity, Dictionary<string, IAttribute> newAttribs, List<ToSicEavValues> currentValues, bool keepAttributesMissingInImport)
         {
             var attributeList = DbContext.AttributesDefinition.GetAttributeDefinitions(dbEntity.AttributeSetId).ToList();
 

@@ -149,7 +149,7 @@ namespace ToSic.Eav.Apps.ImportExport
             foreach (var attributeSetId in AttributeSetIDs)
             {
                 var id = int.Parse(attributeSetId);
-                var set = EavAppContext.AttribSet.GetAttributeSet(id);
+                var set = EavAppContext.AttribSet.GetDbAttribSet(id);
                 var attributes = new XElement(XmlConstants.Attributes);
 
                 // Add all Attributes to AttributeSet including meta informations
@@ -258,7 +258,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     switch (valueKey)
                     {
                         case XmlConstants.TemplateContentTypeId:
-                            var attributeSet = EavAppContext.AttribSet.GetAllAttributeSets().FirstOrDefault(a => a.AttributeSetId == int.Parse(valueString));
+                            var attributeSet = EavAppContext.AttribSet.GetDbAttribSets().FirstOrDefault(a => a.AttributeSetId == int.Parse(valueString));
                             value.Attribute(XmlConstants.ValueAttr).SetValue(attributeSet != null ? attributeSet.StaticName : string.Empty);
                             break;
                         case XmlConstants.TemplateDemoItemId:

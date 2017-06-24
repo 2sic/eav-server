@@ -106,7 +106,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             {
                 // try to get more infos about the parents
                 foreach (var dependency in dependencies)
-                    dependency.TypeName = DbContext.AttribSet.GetAttributeSet(dependency.TypeId).Name;
+                    dependency.TypeName = DbContext.AttribSet.GetDbAttribSet(dependency.TypeId).Name;
             }
             catch
             {

@@ -27,7 +27,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <param name="contentTypeId">ID of type</param>
         public void Init(int contentTypeId)
         {
-            ContentType = DbContext.AttribSet.GetAttributeSet(contentTypeId);
+            ContentType = DbContext.AttribSet.GetDbAttribSet(contentTypeId);
         }
 
         private ToSicEavAttributeSets ContentType { get; set; }

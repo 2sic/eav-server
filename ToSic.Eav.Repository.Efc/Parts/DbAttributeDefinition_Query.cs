@@ -13,7 +13,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         internal IQueryable<ToSicEavAttributes> GetAttributeDefinitions(int attributeSetId)
         {
-            attributeSetId = DbContext.AttribSet.ResolvePotentialGhostAttributeSetId(attributeSetId);
+            attributeSetId = DbContext.ContentType.ResolvePotentialGhostAttributeSetId(attributeSetId);
 
             return from ais in DbContext.SqlDb.ToSicEavAttributesInSets
                    where ais.AttributeSetId == attributeSetId

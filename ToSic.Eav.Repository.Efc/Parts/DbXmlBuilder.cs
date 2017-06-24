@@ -86,7 +86,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 	    private ToSicEavAttributeSets GetAttributeSetDefinitionFromCache(int attributeSetId)
 	    {
 	        if (!_attrSetCache.ContainsKey(attributeSetId))
-	            _attrSetCache[attributeSetId] = DbContext.AttribSet.GetAttributeSet(attributeSetId);
+	            _attrSetCache[attributeSetId] = DbContext.AttribSet.GetDbAttribSet(attributeSetId);
 	        var attributeSet = _attrSetCache[attributeSetId];
 	        return attributeSet;
 	    }

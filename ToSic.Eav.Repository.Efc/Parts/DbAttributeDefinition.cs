@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
@@ -16,7 +18,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Set an Attribute as Title on an AttributeSet
         /// </summary>
-        public void SetTitleAttributeAndSave(int attributeId, int attributeSetId)
+        public void SetTitleAttribute(int attributeId, int attributeSetId)
         {
             DbContext.SqlDb.ToSicEavAttributesInSets
                 .Single(a => a.AttributeId == attributeId && a.AttributeSetId == attributeSetId).IsTitle = true;
@@ -33,7 +35,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Set an Attribute as Title on an AttributeSet
         /// </summary>
-        public void RenameStaticNameAndSave(int attributeId, int attributeSetId, string newName)
+        public void RenameStaticName(int attributeId, int attributeSetId, string newName)
         {
             if(string.IsNullOrWhiteSpace(newName))
                 throw new Exception("can't rename to something empty");
@@ -113,7 +115,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Append a new Attribute to an AttributeSet
         /// </summary>
-        internal ToSicEavAttributes AppendToEndAndSave(ToSicEavAttributeSets attributeSet, int attributeSetId, string staticName, string type, /*string inputType,*/ bool isTitle)//, bool autoSave)
+        internal int AppendToEndAndSave(ToSicEavAttributeSets attributeSet, int attributeSetId, string staticName, string type, /*string inputType,*/ bool isTitle)//, bool autoSave)
         {
             var maxIndex = attributeSet != null
                 ? attributeSet.ToSicEavAttributesInSets
@@ -136,19 +138,19 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         public int CreateAttributeAndInitializeAndSave(int attributeSetId, string staticName, string type, string inputType, int sortOrder)//, int attributeGroupId, bool isTitle)
         {
-            var newAttribute = AddAttributeAndSave(null, attributeSetId, staticName, type, /*inputType,*/ sortOrder, 1, false);//, true);
+            var newAttribute = AddAttributeAndSave(null, attributeSetId, staticName, type, sortOrder, 1, false);
             
             // set the nice name and input type, important for newly created attributes
             InitializeNameAndInputType(staticName, inputType, newAttribute);
 
-            return newAttribute.AttributeId;
+            return newAttribute;
         }
 
 
         /// <summary>
         /// Append a new Attribute to an AttributeSet
         /// </summary>
-        public ToSicEavAttributes AddAttributeAndSave(ToSicEavAttributeSets attributeSet, int attributeSetId, string staticName, string type, /*string inputType,*/ int sortOrder, int attributeGroupId, bool isTitle)//, bool autoSave)
+        public int AddAttributeAndSave(ToSicEavAttributeSets attributeSet, int attributeSetId, string staticName, string type, /*string inputType,*/ int sortOrder, int attributeGroupId, bool isTitle)//, bool autoSave)
         {
             if (attributeSet == null)
                 attributeSet = DbContext.SqlDb.ToSicEavAttributeSets
@@ -192,16 +194,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     titleField.IsTitle = false;
             }
 
-            // 2017-04-29 new: since it's always new, it will always save
-            // If attribute has not been saved, we must save now to get the id (and assign entities)
-            //if (autoSave || newAttribute.AttributeId == 0 || newAttribute.AttributeId < 0) // < 0 means it's an EF-core new temp-ID
-                DbContext.SqlDb.SaveChanges();
-
-
-            return newAttribute;
+            DbContext.SqlDb.SaveChanges();
+            return newAttribute.AttributeId;
         }
 
-        private void InitializeNameAndInputType(string staticName, string inputType, ToSicEavAttributes newAttribute)
+        private void InitializeNameAndInputType(string staticName, string inputType, int newAttribute)
         {
             // new: set the inputType - this is a bit tricky because it needs an attached entity of type "@All" to set the value to...
             var newValues = new Dictionary<string, object>
@@ -211,38 +208,43 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 {"InputType", inputType}
             };
 
-            UpdateAttributeAdditionalProperties(newAttribute.AttributeId, true, newValues);
+            UpdateAttributeAdditionalProperties(newAttribute, newValues);
         }
 
         public bool UpdateInputType(int attributeId, string inputType)
         {
-            var newValues = new Dictionary<string, object> {
-                { "InputType", inputType }
-            };
+            var newValues = new Dictionary<string, object> { { "InputType", inputType } };
 
-            UpdateAttributeAdditionalProperties(attributeId, true, newValues);
+            UpdateAttributeAdditionalProperties(attributeId, newValues);
             return true;
         }
 
         /// <summary>
         /// Update AdditionalProperties of an attribute 
         /// </summary>
-        public ToSicEavEntities UpdateAttributeAdditionalProperties(int attributeId, bool isAllProperty, Dictionary<string, object> fieldProperties)
+        public void UpdateAttributeAdditionalProperties(int attributeId, Dictionary<string, object> fieldProperties)
         {
+            //var isAllProperty = true;
             var fieldPropertyEntity = DbContext.SqlDb.ToSicEavEntities.FirstOrDefault(e => e.AssignmentObjectTypeId == Constants.MetadataForField && e.KeyNumber == attributeId);
             if (fieldPropertyEntity != null)
-                return DbContext.Entities.UpdateAttributesAndPublishing(fieldPropertyEntity.EntityId, fieldProperties);
+            {
+                DbContext.Entities.UpdateAttributesAndPublishing(fieldPropertyEntity.EntityId, fieldProperties);
+                return;
+            }
 
-            var metaDataSetName = isAllProperty ? "@All" : "@" + DbContext.SqlDb.ToSicEavAttributes.Single(a => a.AttributeId == attributeId).Type;
+            var metaDataSetName = /*isAllProperty ?*/ "@All";// : "@" + DbContext.SqlDb.ToSicEavAttributes.Single(a => a.AttributeId == attributeId).Type;
             var systemScope = AttributeScope.System.ToString();
             var attSetFirst = DbContext.SqlDb.ToSicEavAttributeSets.FirstOrDefault(s => s.StaticName == metaDataSetName && s.Scope == systemScope && s.AppId == DbContext.AppId && !s.ChangeLogDeleted.HasValue /* _appId*/);
             if(attSetFirst == null)
-                throw new Exception("Can't continue, couldn't find attrib-set with: " + systemScope + ":" + metaDataSetName + " in app " + DbContext.AppId);
-            var attributeSetId = attSetFirst.AttributeSetId;
+                throw new Exception($"Can't continue, couldn't find attrib-set with: {systemScope}:{metaDataSetName} in app {DbContext.AppId}");
+            //var attributeSetId = attSetFirst.AttributeSetId;
 
-            
+            var newEnt = new Entity(0, attSetFirst.StaticName, fieldProperties);
+            newEnt.SetMetadata(new Metadata {KeyNumber = attributeId, TargetType = Constants.MetadataForField});
 
-            return DbContext.Entities.AddEntity(attributeSetId, fieldProperties, new Metadata { KeyNumber = attributeId, TargetType = Constants.MetadataForField });
+            DbContext.Entities.SaveEntity(newEnt, new SaveOptions());
+
+            //return DbContext.Entities.AddEntity(attributeSetId, fieldProperties, new Metadata { KeyNumber = attributeId, TargetType = Constants.MetadataForField });
         }
 
 

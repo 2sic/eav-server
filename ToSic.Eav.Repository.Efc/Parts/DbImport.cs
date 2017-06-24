@@ -65,9 +65,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
         {
             _context.PurgeAppCacheOnSave = false;
 
-            // Enhance the SQL timeout for imports
-            _context.SqlDb.Database.SetCommandTimeout(3600);
-
             #region initialize DB connection / transaction
             // Make sure the connection is open - because on multiple calls it's not clear if it was already opened or not
             var con = _context.SqlDb.Database.GetDbConnection();
@@ -100,8 +97,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
                         var nonSysAttribSets = newSetsList.Where(a => !sysAttributeSets.Contains(a)).ToList();
                         if (nonSysAttribSets.Any())
                             ImportSomeAttributeSets(nonSysAttribSets);
-
-                        // reload app with all types again...for next operations
                     });
 
                 #endregion
@@ -113,13 +108,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     entireApp = new Efc11Loader(_context.SqlDb).AppPackage(_context.AppId); // load all entities
                     newEntities = newEntities.Select(PrepareEntityForImport).Where(e => e != null).ToList();
                     _context.Entities.SaveEntity(newEntities.Cast<IEntity>().ToList(), SaveOptions);
-                    //_context.Versioning.QueueDuringAction(() =>
-                    //{
-                    //    foreach (var entity in newEntities)
-                    //        _context.DoAndSave(() => PersistOneEntity(entity));
-
-                    //    _context.Relationships.ImportRelationshipQueueAndSave();
-                    //});
                 }
 
                 #endregion
@@ -162,26 +150,26 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 _context.AttribSet.EnsureSharedAttributeSetsOnEverythingAndSave();
 
             // append all Attributes
-            foreach (AttributeDefinition importAttribute in contentType.Attributes)
+            foreach (AttributeDefinition newAtt in contentType.Attributes)
             {
-                ToSicEavAttributes destinationAttribute;
-                if(!_context.AttributesDefinition.AttributeExistsInSet(destinationSet.AttributeSetId, importAttribute.Name))
+                int destAttribId;
+                if(!_context.AttributesDefinition.AttributeExistsInSet(destinationSet.AttributeSetId, newAtt.Name))
                 {
                     // try to add new Attribute
-                    var isTitle = importAttribute.IsTitle;// == impContentType.TitleAttribute;
-                    destinationAttribute = _context.AttributesDefinition
-                        .AppendToEndAndSave(destinationSet, 0, importAttribute.Name, importAttribute.Type, /*importAttribute.InputType, */ isTitle);//, false);
+                    var isTitle = newAtt.IsTitle;// == impContentType.TitleAttribute;
+                    destAttribId = _context.AttributesDefinition
+                        .AppendToEndAndSave(destinationSet, 0, newAtt.Name, newAtt.Type, /*importAttribute.InputType, */ isTitle);//, false);
                 }
 				else
                 {
-					ImportLog.Add(new ImportLogItem(EventLogEntryType.Warning, "Attribute already exists") { ImpAttribute = importAttribute.Name });
-                    destinationAttribute = destinationSet.ToSicEavAttributesInSets
-                        .Single(a => a.Attribute.StaticName == importAttribute.Name).Attribute;
+					ImportLog.Add(new ImportLogItem(EventLogEntryType.Warning, "Attribute already exists") { ImpAttribute = newAtt.Name });
+                    destAttribId = destinationSet.ToSicEavAttributesInSets
+                        .Single(a => a.Attribute.StaticName == newAtt.Name).Attribute.AttributeId;
                 }
 
                 // save additional entities containing AttributeMetaData for this attribute
-                if (importAttribute.InternalAttributeMetaData != null)
-                    SaveImportedAttributeMetadata(importAttribute.InternalAttributeMetaData, destinationAttribute.AttributeId);
+                if (newAtt.InternalAttributeMetaData != null)
+                    SaveImportedAttributeMetadata(newAtt.InternalAttributeMetaData, destAttribId);
             }
 
             // optionally re-order the attributes if specified in import
@@ -191,11 +179,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         private ToSicEavAttributeSets GetAndCheckIfValidOrCreateDestinationSet(ContentType contentType)
         {
-            var destinationSet = _context.AttribSet.GetAttributeSet(contentType.StaticName);
+            var destinationSet = _context.AttribSet.GetDbAttribSet(contentType.StaticName);
 
             // add new AttributeSet, do basic configuration if possible, then save
             if (destinationSet == null)
-                destinationSet = _context.AttribSet.PrepareSet(contentType.Name, contentType.Description,
+                destinationSet = _context.AttribSet.PrepareDbAttribSet(contentType.Name, contentType.Description,
                     contentType.StaticName, contentType.Scope, false, null);
 
             // to use existing attribute Set, do some minimal conflict-checking
@@ -219,7 +207,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             // If a "Ghost"-content type is specified, try to assign that
             if (!string.IsNullOrEmpty(contentType.OnSaveUseParentStaticName))
             {
-                var ghostParentId = FindCorrectGhostParentId(contentType);
+                var ghostParentId = FindCorrectGhostParentId(contentType.OnSaveUseParentStaticName);
                 if (ghostParentId == 0) return null;
                 destinationSet.UsesConfigurationOfAttributeSet = ghostParentId;
             }
@@ -234,31 +222,24 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Look up the ghost-parent-id
         /// </summary>
-        /// <param name="contentType"></param>
         /// <returns>The parent id as needed, or 0 if not found - which usually indicates an import problem</returns>
-        private int FindCorrectGhostParentId(ContentType contentType)
+        private int FindCorrectGhostParentId(string contentTypeParentName)
         {
-            // Look for a content type with the StaticName, which has no "UsesConfigurationOf..." set (is a master)
-            var ghostAttributeSets = _context.SqlDb.ToSicEavAttributeSets.Where(
-                    a => a.StaticName == contentType.OnSaveUseParentStaticName
-                         && a.ChangeLogDeleted == null
-                         && a.UsesConfigurationOfAttributeSet == null).
-                OrderBy(a => a.AttributeSetId)
-                .ToList();
+            // Look for the potential source of this ghost
+            var ghostAttributeSets = _context.ContentType.FindPotentialGhostSources(contentTypeParentName);
 
-            if (ghostAttributeSets.Count == 0)
-            {
-                ImportLog.Add(new ImportLogItem(EventLogEntryType.Warning, "AttributeSet not imported because master set not found: " + contentType.OnSaveUseParentStaticName) {ContentType = contentType});
-                return 0;
-            }
+            if(ghostAttributeSets.Count == 1)
+                return ghostAttributeSets.First().AttributeSetId;
 
             // If multiple masters are found, use first and add a warning message
             if (ghostAttributeSets.Count > 1)
-                ImportLog.Add(new ImportLogItem(EventLogEntryType.Warning, "Multiple potential master AttributeSets found for StaticName: " + contentType.OnSaveUseParentStaticName) {ContentType = contentType});
+                ImportLog.Add(new ImportLogItem(EventLogEntryType.Warning, $"Multiple potential master AttributeSets found for StaticName: {contentTypeParentName}") );
             
-            // all ok, return id
-            return ghostAttributeSets.First().AttributeSetId;
+            // nothing found - report error
+            ImportLog.Add(new ImportLogItem(EventLogEntryType.Warning, $"AttributeSet not imported because master set not found: {contentTypeParentName}"));
+            return 0;
         }
+
 
         /// <summary>
         /// Save additional entities describing the attribute

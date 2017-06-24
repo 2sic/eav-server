@@ -22,7 +22,7 @@ namespace ToSic.Eav.WebApi
             // todo: continue here!
             //var ct = CurrentContext.AttribSet.GetAttributeSetWithEitherName(contentType);
 
-            var contentTypeId = CurrentContext.AttribSet.GetAttributeSetIdWithEitherName(contentType);// ct.AttributeSetId;// AttributeSetID;
+            var contentTypeId = CurrentContext.AttribSet.GetIdWithEitherName(contentType);// ct.AttributeSetId;// AttributeSetID;
             var contextLanguages = CurrentContext.Dimensions.GetLanguagesExtNames();// GetContextLanguages();
 
             // check if we have an array of ids

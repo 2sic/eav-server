@@ -123,11 +123,12 @@
     <Compile Include="Parts\DbApp.cs" />
     <Compile Include="Parts\DbAttributeDefinition.cs" />
     <Compile Include="Parts\DbAttributeSet.cs" />
-    <Compile Include="Parts\DbAttributeSet_Shared.cs" />
-    <Compile Include="Parts\DbAttributeSet_Ghosts.cs" />
+    <Compile Include="Parts\DbContentType_Shared.cs" />
+    <Compile Include="Parts\DbContentType_Ghosts.cs" />
     <Compile Include="Parts\DbAttributeDefinition_Query.cs" />
     <Compile Include="Parts\DbAttributeDefinition_Sorting.cs" />
-    <Compile Include="Parts\DbContentType.cs" />
+    <Compile Include="Parts\DbContentType_Read.cs" />
+    <Compile Include="Parts\DbContentType_Modify.cs" />
     <Compile Include="Parts\DbDimensions.cs" />
     <Compile Include="Parts\DbEntity_delete.cs" />
     <Compile Include="Parts\DbEntity_metadata.cs" />

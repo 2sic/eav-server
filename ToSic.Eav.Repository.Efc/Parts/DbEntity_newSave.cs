@@ -56,7 +56,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             }
             var isNew = newEnt.EntityId <= 0;   // no remember how we want to work...
 
-            var contentTypeId = DbContext.AttribSet.GetAttributeSetIdWithEitherName(newEnt.Type.StaticName);
+            var contentTypeId = DbContext.AttribSet.GetIdWithEitherName(newEnt.Type.StaticName);
             var attributeDefs = DbContext.AttributesDefinition.GetAttributeDefinitions(contentTypeId).ToList();
 
             #endregion Step 2

@@ -64,7 +64,7 @@ namespace ToSic.Eav.Api.Api01
             values = new Dictionary<string, object>(values, StringComparer.OrdinalIgnoreCase);
 
             // ensure the type really exists
-            var attributeSet = _context.AttribSet.GetAllAttributeSets().FirstOrDefault(item => item.Name == contentTypeName);
+            var attributeSet = _context.AttribSet.GetDbAttribSets().FirstOrDefault(item => item.Name == contentTypeName);
             if (attributeSet == null)
                 throw new ArgumentException("Content type '" + contentTypeName + "' does not exist.");
 
@@ -127,7 +127,7 @@ namespace ToSic.Eav.Api.Api01
 
         private void Update(ToSicEavEntities entity, Dictionary<string, object> values, bool filterUnknownFields = true)
         {
-            var attributeSet = _context.AttribSet.GetAttributeSet(entity.AttributeSetId);
+            var attributeSet = _context.AttribSet.GetDbAttribSet(entity.AttributeSetId);
             var importEntity = new Entity(entity.EntityGuid, attributeSet.StaticName, new Dictionary<string, object>());// CreateImportEntity(entity.EntityGuid, attributeSet.StaticName);
 
             if (filterUnknownFields)

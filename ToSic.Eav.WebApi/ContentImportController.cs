@@ -77,7 +77,7 @@ namespace ToSic.Eav.WebApi
 
         private DbXmlImportVTable GetXmlImport(ContentImportArgs args)
         {
-            var contentTypeId = CurrentContext.AttribSet.GetAttributeSetIdWithEitherName(args.ContentType);//.AttributeSetId;//.AttributeSetID;// GetContentTypeId(args.ContentType);
+            var contentTypeId = CurrentContext.AttribSet.GetIdWithEitherName(args.ContentType);//.AttributeSetId;//.AttributeSetID;// GetContentTypeId(args.ContentType);
             var contextLanguages = GetContextLanguages();
 
             using (var contentSteam = new MemoryStream(Convert.FromBase64String(args.ContentBase64)))

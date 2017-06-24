@@ -115,7 +115,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             _zoneId = zoneId;
             DbContext = DbDataController.Instance(zoneId, appId);
 
-            ContentType = DbContext.AttribSet.GetAttributeSet(contentTypeId);
+            ContentType = DbContext.AttribSet.GetDbAttribSet(contentTypeId);
             if (ContentType == null)
             {
                 ErrorLog.AppendError(ImportErrorCode.InvalidContentType);

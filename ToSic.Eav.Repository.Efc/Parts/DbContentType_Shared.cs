@@ -22,8 +22,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
             if (app.AppId == Constants.MetaDataAppId)
                 return;
 
-            var sharedAttributeSets = _rememberSharedSets ?? (_rememberSharedSets = GetAttributeSets(Constants.MetaDataAppId, null).Where(a => a.AlwaysShareConfiguration).ToList());
-            var currentAppSharedSets = GetAttributeSets(app.AppId, null).Where(a => a.UsesConfigurationOfAttributeSet.HasValue).Select(c => c.UsesConfigurationOfAttributeSet.Value).ToList();
+            var sharedAttributeSets = _rememberSharedSets ?? (_rememberSharedSets = GetDbAttribSets(Constants.MetaDataAppId, null).Where(a => a.AlwaysShareConfiguration).ToList());
+            var currentAppSharedSets = GetDbAttribSets(app.AppId, null).Where(a => a.UsesConfigurationOfAttributeSet.HasValue).Select(c => c.UsesConfigurationOfAttributeSet.Value).ToList();
 
             // test if all sets already exist
             var complete = true;
@@ -35,7 +35,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             foreach (var sharedSet in sharedAttributeSets)
             {
                 // create new AttributeSet - will be null if already exists
-                var newOrNull = PrepareSet(sharedSet.Name, sharedSet.Description, sharedSet.StaticName, sharedSet.Scope, /*false,*/ true, app.AppId);
+                var newOrNull = PrepareDbAttribSet(sharedSet.Name, sharedSet.Description, sharedSet.StaticName, sharedSet.Scope, /*false,*/ true, app.AppId);
                 if (newOrNull != null)
                     newOrNull.UsesConfigurationOfAttributeSet = sharedSet.AttributeSetId;
             }

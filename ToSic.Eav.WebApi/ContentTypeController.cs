@@ -127,7 +127,7 @@ namespace ToSic.Eav.WebApi
             SetAppIdAndUser(appId);
 
             var fields =
-                CurrentContext.ContentType.GetContentTypeConfiguration(staticName)
+                CurrentContext.ContentType.GetTypeConfiguration(staticName)
                     .OrderBy(ct => ct.Item1.SortOrder);
 
             var appInputTypes = new AppRuntime(appId).ContentTypes.GetInputTypes(true).ToList();
@@ -188,7 +188,7 @@ namespace ToSic.Eav.WebApi
             SetAppIdAndUser(appId);
 
             var sortOrderList = newSortOrder.Trim('[', ']').Split(',').Select(int.Parse).ToList();
-            CurrentContext.ContentType.Reorder(contentTypeId, sortOrderList);
+            CurrentContext.ContentType.ReorderAttributes(contentTypeId, sortOrderList);
             return true;
         }
 
@@ -239,14 +239,14 @@ namespace ToSic.Eav.WebApi
 	    public void SetTitle(int appId, int contentTypeId, int attributeId)
 	    {
             SetAppIdAndUser(appId);
-            CurrentContext.AttributesDefinition.SetTitleAttributeAndSave(attributeId, contentTypeId);
+            CurrentContext.AttributesDefinition.SetTitleAttribute(attributeId, contentTypeId);
 	    }
 
         [HttpGet]
         public bool Rename(int appId, int contentTypeId, int attributeId, string newName)
         {
             SetAppIdAndUser(appId);
-            CurrentContext.AttributesDefinition.RenameStaticNameAndSave(attributeId, contentTypeId, newName);
+            CurrentContext.AttributesDefinition.RenameStaticName(attributeId, contentTypeId, newName);
             return true;
         }
 
