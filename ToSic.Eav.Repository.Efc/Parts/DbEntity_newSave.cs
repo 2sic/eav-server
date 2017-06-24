@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using Microsoft.EntityFrameworkCore.Storage;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
@@ -11,8 +11,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
 {
     public partial class DbEntity
     {
-        public bool DebugKeepTransactionOpen = false;
-        public IDbContextTransaction DebugTransaction; 
 
         public int SaveEntity(IEntity newEnt, SaveOptions so)
         {
@@ -51,7 +49,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 hasAdditionalDraft = existingDraftId != null && existingDraftId.Value != newEnt.EntityId;  // only true, if there is an "attached" draft; false if the item itself is draft
                 if (!newEnt.IsPublished && ((Entity) newEnt).PlaceDraftInBranch)
                 {
-                    ((Entity) newEnt).ChangeIdForSaving(existingDraftId ?? 0);
+                    ((Entity)newEnt).SetPublishedIdForSaving(newEnt.EntityId);  // set this, in case we'll create a new one
+                    ((Entity) newEnt).ChangeIdForSaving(existingDraftId ?? 0);  // set to the draft OR 0 = new
                     hasAdditionalDraft = false; // not additional any more, as we're now pointing this as primary
                 }
             }
@@ -65,7 +64,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
 
             ToSicEavEntities dbEnt;
-            var transaction = DbContext.SqlDb.Database.BeginTransaction();
+            // create a transaction, but only if none is already running around it
+            var ownTransaction = DbContext.SqlDb.Database.CurrentTransaction == null ? DbContext.SqlDb.Database.BeginTransaction() : null;
+
             var changeId = DbContext.Versioning.GetChangeLogId();
             try
             {
@@ -170,7 +171,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                         dbEnt.ToSicEavValues.Add(new ToSicEavValues
                         {
                             AttributeId = attribDef.AttributeId,
-                            Value = value.SerializableObject.ToString(),
+                            Value = value.SerializableObject?.ToString() ?? "",
                             ChangeLogCreated = changeId, // todo: remove some time later
                             ToSicEavValuesDimensions = value.Languages?.Select(l => new ToSicEavValuesDimensions
                             {
@@ -206,15 +207,12 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                 //throw new Exception("test exception, don't want to persist till I'm sure it's pretty stable");
                 // finish transaction - finalize
-                if (DebugKeepTransactionOpen)
-                    DebugTransaction = transaction;
-                else
-                    transaction.Commit();
+                ownTransaction?.Commit();
             }
             catch 
             {
                 // if anything fails, undo everything
-                transaction.Rollback();
+                ownTransaction?.Rollback();
                 throw;
             }
 
@@ -223,5 +221,34 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         public Guid TempLastSaveGuid;
 
+
+
+
+        public List<int> SaveEntity(List<IEntity> entities, SaveOptions saveOptions)
+        {
+            var ids = new List<int>();
+            var ownTransaction = DbContext.SqlDb.Database.CurrentTransaction == null ? DbContext.SqlDb.Database.BeginTransaction() : null;
+
+            try
+            {
+                DbContext.Versioning.QueueDuringAction(() =>
+                {
+                    foreach (var entity in entities)
+                        DbContext.DoAndSave(() => ids.Add(SaveEntity(entity, saveOptions)));
+
+                    DbContext.Relationships.ImportRelationshipQueueAndSave();
+                });
+                ownTransaction?.Commit();
+            }
+            catch
+            {
+                ownTransaction?.Rollback();
+                throw;
+            }
+            return ids;
+        }
+
     }
+
+
 }

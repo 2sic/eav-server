@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Repository.Efc.Parts;
@@ -118,8 +119,9 @@ namespace ToSic.Eav
 		    // ReSharper disable once UnusedVariable
 		    var x = cache.LightList.First();
 
-            var import = new DbImport(Constants.DefaultZoneId, Constants.MetaDataAppId/*, _userName*/);
-			import.ImportIntoDb(attributeSets, null);
+            // 2017-06 put dependency in interface, not directly to importer...
+            var importer = Factory.Resolve<IRepositoryImporter>();
+            importer.Import(Constants.DefaultZoneId, Constants.MetaDataAppId, attributeSets, null);
 
 			#region Mark all AttributeSets as shared and ensure they exist on all Apps
 			foreach (var attributeSet in attributeSets)

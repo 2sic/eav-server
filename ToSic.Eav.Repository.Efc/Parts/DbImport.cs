@@ -6,8 +6,11 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.ImportExport.Interfaces;
 using ToSic.Eav.ImportExport.Logging;
+using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence;
+using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Efc.Models;
 using Entity = ToSic.Eav.Data.Entity;
 
@@ -20,9 +23,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
     {
         #region Private Fields
         private readonly DbDataController _context;
-        private readonly bool _dontUpdateExistingAttributeValues;
-        private readonly bool _keepAttributesMissingInImport;
-        private readonly bool _largeImport;
+        private AppDataPackage entireApp;
 
         public SaveOptions SaveOptions = new SaveOptions();
         #endregion
@@ -34,23 +35,27 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         public List<ImportLogItem> ImportLog => _context.ImportLog;
 
-        bool PreventUpdateOnDraftEntities { get; }
         #endregion
 
         /// <summary>
         /// Initializes a new instance of the Import class.
         /// </summary>
-        public DbImport(int? zoneId, int? appId, bool dontUpdateExistingAttributeValues = true, bool keepAttributesMissingInImport = true, bool preventUpdateOnDraftEntities = true, bool largeImport = true)
+        public DbImport(int? zoneId, int? appId, bool dontUpdateExistingAttributeValues = true, bool keepAttributesMissingInImport = true)
         {
+            if(appId == null)
+                throw new Exception("appid is null, can't continue with import");
+
             _context = DbDataController.Instance(zoneId, appId);
-            _dontUpdateExistingAttributeValues = dontUpdateExistingAttributeValues;
+
+            //_dontUpdateExistingAttributeValues = dontUpdateExistingAttributeValues;
             SaveOptions.SkipExistingAttributes = dontUpdateExistingAttributeValues;
 
-            _keepAttributesMissingInImport = keepAttributesMissingInImport;
+            //_keepAttributesMissingInImport = keepAttributesMissingInImport;
             SaveOptions.PreserveUntouchedAttributes = keepAttributesMissingInImport;
-            
-            PreventUpdateOnDraftEntities = preventUpdateOnDraftEntities;
-            _largeImport = largeImport;
+
+            var environment = Factory.Resolve<IImportExportEnvironment>();
+            SaveOptions.Languages = _context.Dimensions.GetLanguageListForImport(environment.DefaultLanguage).Cast<ILanguage>().ToList();
+
         }
 
         /// <summary>
@@ -61,8 +66,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             _context.PurgeAppCacheOnSave = false;
 
             // Enhance the SQL timeout for imports
-            if (_largeImport)
-                _context.SqlDb.Database.SetCommandTimeout(3600);
+            _context.SqlDb.Database.SetCommandTimeout(3600);
 
             #region initialize DB connection / transaction
             // Make sure the connection is open - because on multiple calls it's not clear if it was already opened or not
@@ -72,13 +76,17 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             var transaction = _context.SqlDb.Database.BeginTransaction();
 
+            // get initial data state for further processing, content-typed definitions etc.
+            // important: must always create a new loader, because it will cache content-types which hurts the import
+            entireApp = new Efc11Loader(_context.SqlDb).AppPackage(_context.AppId, new [] {0}); // don't load any entities, just content-types
+
             #endregion
             // run import, but rollback transaction if necessary
-            try 
+            try
             {
                 #region import AttributeSets if any were included
                 if (newAttributeSets != null)
-                    _context.Versioning.QueueDuringAction(() => { // .ActivateQueue();
+                    _context.Versioning.QueueDuringAction(() => {
                         var newSetsList = newAttributeSets.ToList();
                         // first: import the attribute sets in the system scope, as they may be needed by others...
                         // ...and would need a cache-refresh before 
@@ -86,25 +94,34 @@ namespace ToSic.Eav.Repository.Efc.Parts
                         if (sysAttributeSets.Any())
                             ImportSomeAttributeSets(sysAttributeSets);
 
+                        entireApp = new Efc11Loader(_context.SqlDb).AppPackage(_context.AppId, new[] { 0 }); // don't load any entities, just content-types
+
                         // now the remaining attributeSets
                         var nonSysAttribSets = newSetsList.Where(a => !sysAttributeSets.Contains(a)).ToList();
                         if (nonSysAttribSets.Any())
                             ImportSomeAttributeSets(nonSysAttribSets);
 
-                        //_context.Versioning.ProcessQueue();
+                        // reload app with all types again...for next operations
                     });
 
                 #endregion
 
                 #region import Entities
-                if (newEntities != null)
-                    _context.Versioning.QueueDuringAction(() =>
-                    {
-                        foreach (var entity in newEntities)
-                            _context.DoAndSave(() => PersistOneEntity(entity));
 
-                        _context.Relationships.ImportRelationshipQueueAndSave();
-                    });
+                if (newEntities != null)
+                {
+                    entireApp = new Efc11Loader(_context.SqlDb).AppPackage(_context.AppId); // load all entities
+                    newEntities = newEntities.Select(PrepareEntityForImport).Where(e => e != null).ToList();
+                    _context.Entities.SaveEntity(newEntities.Cast<IEntity>().ToList(), SaveOptions);
+                    //_context.Versioning.QueueDuringAction(() =>
+                    //{
+                    //    foreach (var entity in newEntities)
+                    //        _context.DoAndSave(() => PersistOneEntity(entity));
+
+                    //    _context.Relationships.ImportRelationshipQueueAndSave();
+                    //});
+                }
+
                 #endregion
 
                 // Commit DB Transaction
@@ -250,6 +267,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <param name="destinationAttributeId"></param>
         private void SaveImportedAttributeMetadata(List<Entity> attributeMetaData, int destinationAttributeId)
         {
+            var entities = new List<IEntity>();
             foreach (var entity in attributeMetaData)
             {
                 var md = (Metadata) entity.Metadata;
@@ -269,8 +287,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 if (existingMetadata != null)
                     entity.SetGuid(existingMetadata.EntityGuid);
 
-                PersistOneEntity(entity);
+                entities.Add(PrepareEntityForImport(entity));
             }
+            _context.Entities.SaveEntity(entities, new SaveOptions()); // don't use the standard save options, as this is attributes only
         }
 
         /// <summary>
@@ -297,93 +316,58 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Import an Entity with all values
         /// </summary>
-        private void PersistOneEntity(Entity entity)
+        private Entity PrepareEntityForImport(Entity entity)
         {
-            #region try to get AttributeSet or otherwise cancel & log error
+            // no types of Draft-imports allowed
+            if (!entity.IsPublished) // AttributeSet not Found
+            {
+                ImportLog.Add(new ImportLogItem(EventLogEntryType.Error, "Found draft, but can never import draft-items: " + entity.EntityGuid));
+                return null;
+            }
 
-            var dbAttrSet = _context.AttribSet.GetAttributeSet(entity.Type.StaticName);
+           #region try to get AttributeSet or otherwise cancel & log error
+
+            var dbAttrSet = entireApp.ContentTypes.Values
+                .FirstOrDefault(ct => String.Equals(ct.StaticName, entity.Type.StaticName, StringComparison.InvariantCultureIgnoreCase));
 
             if (dbAttrSet == null) // AttributeSet not Found
             {
                 ImportLog.Add(new ImportLogItem(EventLogEntryType.Error, "AttributeSet not found: " + entity.Type.StaticName));
-                return;
+                return null;
             }
 
             #endregion
 
             // Find existing Enties - meaning both draft and non-draft
-            List<ToSicEavEntities> dbExistingEntities = null;
-            if (entity.EntityGuid != Guid.Empty)//.HasValue)
-                dbExistingEntities = _context.Entities.GetEntitiesByGuid(entity.EntityGuid).ToList();
+            List<IEntity> existingEntities = null;
+            if (entity.EntityGuid != Guid.Empty)
+                existingEntities = entireApp.List.Where(e => e.EntityGuid == entity.EntityGuid).ToList(); // _context.Entities.GetEntitiesByGuid(entity.EntityGuid).ToList();
 
-            #region Simplest case - add (nothing existing to update)
-            if (dbExistingEntities == null || !dbExistingEntities.Any())
-            {
-                _context.Entities.SaveEntity(entity, SaveOptions);
-                //_context.Entities.AddImportEntity(dbAttrSet.AttributeSetId, entity, entity.IsPublished, null);
-                return;
-            }
+            #region Simplest case - nothing existing to update: return entity
+
+            if (existingEntities == null || !existingEntities.Any())
+                return entity;// _context.Entities.SaveEntity(entity, SaveOptions);
 
             #endregion
 
-            #region Another simple case - we have published entities, but are saving unpublished - so we create a new one
+            ImportLog.Add(new ImportLogItem(EventLogEntryType.Information, $"FYI: Entity {entity.EntityId} already exists for guid {entity.EntityGuid}"));
 
-            if (!entity.IsPublished && dbExistingEntities.Count(e => e.IsPublished == false) == 0 && entity.PlaceDraftInBranch)
-            {
-                var publishedId = dbExistingEntities.First().EntityId;
-
-                entity.SetPublishedIdForSaving(publishedId);
-                _context.Entities.SaveEntity(entity, SaveOptions);
-                //_context.Entities.AddImportEntity(dbAttrSet.AttributeSetId, entity, entity.IsPublished, publishedId);
-                return;
-            }
-
-            #endregion 
-             
-            #region Update-Scenario - much more complex to decide what to change/update etc.
-
-            #region Do Various Error checking like: Does it really exist, is it not draft, ensure we have the correct Content-Type
-
-            // Get existing, published Entity
-            var editableVersionOfTheEntity = dbExistingEntities.OrderBy(e => e.IsPublished ? 1 : 0).First(); // get draft first, otherwise the published
-            ImportLog.Add(new ImportLogItem(EventLogEntryType.Information, "Entity already exists"));
-        
-
-            #region ensure we don't save a draft is this is not allowed (usually in the case of xml-import)
+            #region ensure we don't save on a draft is this is not allowed (usually in the case of xml-import)
 
             // Prevent updating Draft-Entity - since the initial would be draft if it has one, this would throw
-            if (PreventUpdateOnDraftEntities && !editableVersionOfTheEntity.IsPublished)
+            if (existingEntities.Any(e => !e.IsPublished))
             {
-                ImportLog.Add(new ImportLogItem(EventLogEntryType.Error, "Importing a Draft-Entity is not allowed"));
-                return;
+                ImportLog.Add(new ImportLogItem(EventLogEntryType.Error, $"Importing on Draft-Entity is not allowed - this entity drafts: {entity.EntityGuid}"));
+                return null;
             }
 
             #endregion
 
-            #region Ensure entity has same AttributeSet (do this after checking for the draft etc.
-            var editableEntityContentType = _context.AttribSet.GetAttributeSet(editableVersionOfTheEntity.AttributeSetId);
-            if (editableEntityContentType.StaticName != entity.Type.StaticName)
-            {
-                ImportLog.Add(new ImportLogItem(EventLogEntryType.Error, "Existing entity (which should be updated) has different ContentType"/*, impEntity*/));
-                return;
-            }
-            #endregion
+            // now update (main) entity id from existing - since it already exists
+            var original = existingEntities.First();
+            entity.ChangeIdForSaving(original.EntityId);
+            return EntitySaver.CreateMergedForSaving(original, entity, SaveOptions) as Entity;
 
-
-
-            #endregion
-
-            // todo: TestImport - ensure that it correctly skips the existing values
-            var dicTypedAttributes = entity.Attributes;
-            if (_dontUpdateExistingAttributeValues) // Skip values that are already present in existing Entity
-                dicTypedAttributes = dicTypedAttributes.Where(v => editableVersionOfTheEntity.ToSicEavValues.All(ev => ev.Attribute.StaticName != v.Key))
-                    .ToDictionary(v => v.Key, v => v.Value);
-
-            // todo: TestImport - ensure that the EntityId of this is what previously was the RepositoryID
-            _context.Entities.UpdateAttributesAndPublishing(editableVersionOfTheEntity.EntityId/*RepositoryId*/, dicTypedAttributes, /*updateLog: _importLog,*/
-                preserveUndefinedValues: _keepAttributesMissingInImport, isPublished: entity.IsPublished, forceNoBranch: !entity.PlaceDraftInBranch);
-
-            #endregion
         }
     }
 }

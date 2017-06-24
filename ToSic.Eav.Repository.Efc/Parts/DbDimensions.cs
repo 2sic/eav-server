@@ -121,7 +121,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
 		/// <summary>
 		/// Get all Languages of current Zone and App
 		/// </summary>
-		public List<ToSicEavDimensions> GetLanguages(bool includeInactive = false) => GetDimensionChildren(Constants.CultureSystemKey, includeInactive);
+		public List<ToSicEavDimensions> GetLanguages(bool includeInactive = false) 
+            => GetDimensionChildren(Constants.CultureSystemKey, includeInactive);
 
 
         /// <summary>

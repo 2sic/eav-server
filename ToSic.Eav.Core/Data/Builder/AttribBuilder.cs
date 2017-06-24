@@ -64,11 +64,6 @@ namespace ToSic.Eav.Data.Builder
 
         #endregion
 
-        //public static IAttribute BuildAttribute(string name, object value, Dictionary<ILanguage> langages)
-        //{
-            
-        //}
-
 
 
         public static Dictionary<string, IAttribute> Copy(this IDictionary<string, IAttribute> attributes) 

@@ -57,7 +57,7 @@ namespace ToSic.Eav.Apps.ImportExport
 		    _environment = Factory.Resolve<IImportExportEnvironment>();
 			// Prepare
 			ImportLog = new List<ExportImportMessage>();
-		    DefaultLanguage = defaultLanguage ?? _environment.DefaultLanguage;
+		    DefaultLanguage = (defaultLanguage ?? _environment.DefaultLanguage).ToLowerInvariant();
 			AllowSystemChanges = allowSystemChanges;
         }
 

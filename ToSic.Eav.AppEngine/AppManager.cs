@@ -66,7 +66,7 @@ namespace ToSic.Eav.Apps
 
             var newEnt = new Entity(0, setName, values);
             newEnt.SetMetadata(new Metadata { KeyNumber = DataController.AppId, TargetType = appAssignment });
-            DataController.Entities.SaveEntity(newEnt, new SaveOptions());
+            Entities.Save(newEnt);
 
             //DataController.Entities.AddEntity(contentType.AttributeSetId, values, new Metadata { KeyNumber = DataController.AppId, TargetType = appAssignment});
 

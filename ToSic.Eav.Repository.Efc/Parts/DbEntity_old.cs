@@ -236,53 +236,53 @@ namespace ToSic.Eav.Repository.Efc.Parts
         //continue here - trying to make updateentitydefault unnecessary - but must be sure that it doesn't have important logic which is missing on the other site
 
         // 2017-06 simplifysave 2dm
-        /// <summary>
-        /// Update an Entity when not using the Import
-        /// </summary>
-        private void UpdateEntityDefault(ToSicEavEntities entity, IDictionary<string, object> newValues, ICollection<int> dimensionIds, List<ToSicEavAttributes> attributes, List<ToSicEavValues> dbValues)
-        {
-            var newValuesTyped = newValues;// DictionaryToValuesViewModel(newValues);
-            foreach (var newValue in newValuesTyped)
-            {
-                var attribute = attributes.FirstOrDefault(a => a.StaticName == newValue.Key);
-                if (attribute != null)
-                    DbContext.Values.UpdateAttributeValues(entity, attribute, dbValues, newValue.Value, dimensionIds);
-            }
+        ///// <summary>
+        ///// Update an Entity when not using the Import
+        ///// </summary>
+        //private void UpdateEntityDefault(ToSicEavEntities entity, IDictionary<string, object> newValues, ICollection<int> dimensionIds, List<ToSicEavAttributes> attributes, List<ToSicEavValues> dbValues)
+        //{
+        //    var newValuesTyped = newValues;// DictionaryToValuesViewModel(newValues);
+        //    foreach (var newValue in newValuesTyped)
+        //    {
+        //        var attribute = attributes.FirstOrDefault(a => a.StaticName == newValue.Key);
+        //        if (attribute != null)
+        //            DbContext.Values.UpdateAttributeValues(entity, attribute, dbValues, newValue.Value, dimensionIds);
+        //    }
 
-            #region if Dimensions are specified, purge/remove specified dimensions for Values that are not in newValues
-            if (dimensionIds.Count <= 0) return;
+        //    #region if Dimensions are specified, purge/remove specified dimensions for Values that are not in newValues
+        //    if (dimensionIds.Count <= 0) return;
 
-            var attributeMetadataSource = DataSource.GetMetaDataSource(DbContext.ZoneId, DbContext.AppId);
+        //    var attributeMetadataSource = DataSource.GetMetaDataSource(DbContext.ZoneId, DbContext.AppId);
 
-            var keys = newValuesTyped.Keys.ToArray();
-            // Get all Values that are not present in newValues
-            var valuesToPurge = entity.ToSicEavValues
-                .Where(v => !v.ChangeLogDeleted.HasValue
-                            && !keys.Contains(v.Attribute.StaticName)
-                            && v.ToSicEavValuesDimensions.Any(d => dimensionIds.Contains(d.DimensionId)));
-            foreach (var valueToPurge in valuesToPurge)
-            {
-                // Don't touch Value if attribute is not visible in UI
-                var attributeMetadata = attributeMetadataSource.GetAssignedEntities(Constants.MetadataForField, valueToPurge.AttributeId, "@All").FirstOrDefault();
-                var visibleInEditUi = ((Attribute<bool?>)attributeMetadata?["VisibleInEditUI"])?.TypedContents;
-                if (visibleInEditUi == false)
-                    continue;
+        //    var keys = newValuesTyped.Keys.ToArray();
+        //    // Get all Values that are not present in newValues
+        //    var valuesToPurge = entity.ToSicEavValues
+        //        .Where(v => !v.ChangeLogDeleted.HasValue
+        //                    && !keys.Contains(v.Attribute.StaticName)
+        //                    && v.ToSicEavValuesDimensions.Any(d => dimensionIds.Contains(d.DimensionId)));
+        //    foreach (var valueToPurge in valuesToPurge)
+        //    {
+        //        // Don't touch Value if attribute is not visible in UI
+        //        var attributeMetadata = attributeMetadataSource.GetAssignedEntities(Constants.MetadataForField, valueToPurge.AttributeId, "@All").FirstOrDefault();
+        //        var visibleInEditUi = ((Attribute<bool?>)attributeMetadata?["VisibleInEditUI"])?.TypedContents;
+        //        if (visibleInEditUi == false)
+        //            continue;
 
-                // Check if the Value is only used in this supplied dimension (carefull, dont' know what to do if we have multiple dimensions!, must define later)
-                // if yes, delete/invalidate the value
-                if (valueToPurge.ToSicEavValuesDimensions.Count == 1)
-                    valueToPurge.ChangeLogDeleted = DbContext.Versioning.GetChangeLogId();
+        //        // Check if the Value is only used in this supplied dimension (carefull, dont' know what to do if we have multiple dimensions!, must define later)
+        //        // if yes, delete/invalidate the value
+        //        if (valueToPurge.ToSicEavValuesDimensions.Count == 1)
+        //            valueToPurge.ChangeLogDeleted = DbContext.Versioning.GetChangeLogId();
 
-                // if now, remove dimension from Value
-                else
-                {
-                    foreach (var valueDimension in valueToPurge.ToSicEavValuesDimensions.Where(d => dimensionIds.Contains(d.DimensionId)).ToList())
-                        valueToPurge.ToSicEavValuesDimensions.Remove(valueDimension);
-                }
-            }
+        //        // if now, remove dimension from Value
+        //        else
+        //        {
+        //            foreach (var valueDimension in valueToPurge.ToSicEavValuesDimensions.Where(d => dimensionIds.Contains(d.DimensionId)).ToList())
+        //                valueToPurge.ToSicEavValuesDimensions.Remove(valueDimension);
+        //        }
+        //    }
 
-            #endregion
-        }
+        //    #endregion
+        //}
         #endregion
         
 

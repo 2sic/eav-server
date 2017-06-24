@@ -112,7 +112,7 @@ namespace ToSic.Eav.WebApi
                     {
                         AppId = appId,
                         Id = duplicateFrom.HasValue ? 0 : found.EntityId,
-                        RepoId = duplicateFrom.HasValue ? 0 : found.RepositoryId,
+                        //RepoId = duplicateFrom.HasValue ? 0 : found.RepositoryId,
                         Guid = duplicateFrom.HasValue ? Guid.Empty : found.EntityGuid,
                         Type = new Formats.Type { Name = found.Type.Name, StaticName = found.Type.StaticName },
                         IsPublished = found.IsPublished,
@@ -192,34 +192,16 @@ namespace ToSic.Eav.WebApi
                 .Cast<IEntity>()
                 .ToList();
 
-            // Create Import-controller & run import
-            //var importController = new DbImport(null, appId, dontUpdateExistingAttributeValues: false,
-            //    keepAttributesMissingInImport: false,
-            //    preventUpdateOnDraftEntities: false,
-            //    largeImport: false);
-            //importController.ImportIntoDb(null, entitiesToImport.ToArray());
-            //SystemManager.Purge(appId);
-
-            // todo: move the OnSaveForceNoBranching into SaveOptions-object
-            var saveOpts = new SaveOptions();
-            //{
-            //    AllowBranching = !items.First().Entity.IsBranch   // if it says it's a branch, don't create another one
-            //};
-            // 2017-06-21 new save 2dm
-            AppManager.Entities.Save(entitiesToImport, saveOpts);
+            AppManager.Entities.Save(entitiesToImport);
 
             // find / update IDs of items updated to return to client
-            var foundItems = items.Select(e =>
+            var idList = items.Select(e =>
             {
                 var foundEntity = AppManager.Read.Entities.Get(e.Header.Guid);
-                if (foundEntity == null)
-                    return null;
-                if (foundEntity.GetDraft() != null)
-                    return foundEntity.GetDraft();
-                return foundEntity;
-            }).Where(e => e != null);
-
-            var idList = foundItems.ToDictionary(f => f.EntityGuid, f => f.EntityId);
+                return foundEntity?.GetDraft() ?? foundEntity;  // return the draft (that would be the latest), or the found, or null if not found
+            })
+            .Where(e => e != null)
+            .ToDictionary(f => f.EntityGuid, f => f.EntityId);
 
             return idList;
         }
@@ -229,12 +211,6 @@ namespace ToSic.Eav.WebApi
         {
             var toEntity = editInfo.Entity;
             var toMetadata = editInfo.Header.Metadata;
-
-            #region initial data quality checks
-            if (toEntity.Id == 0 && toEntity.Guid == Guid.Empty)
-                throw new Exception("Item must have an ID or a GUID");
-            #endregion
-
 
             // Attributes
             var attribs = new Dictionary<string, IAttribute>();
@@ -269,15 +245,6 @@ namespace ToSic.Eav.WebApi
                 }
             }
 
-            // figure out EntityId, PublishedId, Branching, etc.
-            //var saveRepoId = toEntity.RepoId;// most common case: we're updating the already existing entity
-            //var hasDraft = toEntity.RepoId != toEntity.Id; // if these don't match, we have a draft
-            //if (toEntity.IsBranch && !hasDraft) // need to branch, but don't have the draft-item yet
-            //    saveRepoId = 0;   //... we should create a new item by setting the id to 0;
-            
-            //if (!toEntity.IsBranch && hasDraft)  // don't want to branch...but are saving into a branch
-            //    saveRepoId = toEntity.Id;        // so save into main item (draft will be cleared)
-
             if (toEntity.Guid == Guid.Empty)
                 throw new Exception("got empty guid - should never happen");
 
@@ -290,8 +257,8 @@ namespace ToSic.Eav.WebApi
             };
 
             importEntity.SetGuid(toEntity.Guid);
-            if (toEntity.IsBranch)
-                importEntity.SetPublishedIdForSaving(toEntity.Id); 
+            //if (toEntity.IsBranch)
+            //    importEntity.SetPublishedIdForSaving(toEntity.Id); 
 
 
             #region Metadata if we have any

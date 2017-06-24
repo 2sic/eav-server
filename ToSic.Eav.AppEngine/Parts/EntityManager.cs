@@ -55,52 +55,29 @@ namespace ToSic.Eav.Apps.Parts
         public string DeleteHinderance(int entityId) => _appManager.DataController.Entities.CanDeleteEntity(entityId).Item2;
         #endregion
 
-        public void Save(IEntity entity, SaveOptions saveOptions = null) => Save(new List<IEntity> {entity}, saveOptions);
+        public int Save(IEntity entity, SaveOptions saveOptions = null) => Save(new List<IEntity> {entity}, saveOptions).FirstOrDefault();
 
-        public void Save(List<IEntity> entities, SaveOptions saveOptions = null)
+        public List<int> Save(List<IEntity> entities, SaveOptions saveOptions = null)
         {
             var env = Factory.Resolve<IImportExportEnvironment>();
 
             saveOptions = saveOptions ?? new SaveOptions();
             saveOptions.PrimaryLanguage = saveOptions.PrimaryLanguage ?? env.DefaultLanguage;
-            //foreach (var entity in entities)
-            //    SetPublishDraftState(entity, saveOptions);
+            saveOptions.DelayRelationshipSave = true; // save all relationships in one round when ready...
 
-            foreach (var entity in entities)
-                _appManager.DataController.Entities.SaveEntity(entity, saveOptions);
-            _appManager.DataController.Relationships.ImportRelationshipQueueAndSave();
-            
+            var ids = _appManager.DataController.Entities.SaveEntity(entities, saveOptions);
+
             // clear cache of this app
             SystemManager.Purge(_appManager.AppId);
+            return ids;
         }
-
-        //private void SetPublishDraftState(IEntity entity, SaveOptions so)
-        //{
-        //    // no guid to use to check / change publication state
-        //    if (entity.EntityGuid == Guid.Empty) return;
-
-        //    // see if there is anything existing with this guid (in this app...)
-        //    var dbEnts = _appManager.Cache.LightList.Where(e => e.EntityGuid == entity.EntityGuid).ToList();
-        //    if (!dbEnts.Any()) return;
-
-        //    // if new isn't published, existing is published and we can branch, then specify that
-        //    if (!entity.IsPublished && so.AllowBranching && dbEnts.Count(e => e.IsPublished == false) == 0)// !((Entity)entity).OnSaveForceNoBranching)
-        //    {
-        //        var publishedId = dbEnts.First().EntityId; // any one has the right id
-        //        ((Entity)entity).SetPublishedIdForSaving(publishedId);
-        //        return;
-        //    }
-        //}
 
 
         public Tuple<int, Guid> Create(string typeName, Dictionary<string, object> values, IIsMetadata isMetadata = null)
         {
-            //var contentType = _appManager.Cache.GetContentType(typeName);
-            //var ent = _appManager.DataController.Entities.AddEntity(contentType.ContentTypeId, values, isMetadata);
-            //return new Tuple<int, Guid>(ent.EntityId, ent.EntityGuid);
             var newEnt = new Entity(0, typeName, values);
-            if(isMetadata != null )newEnt.SetMetadata(isMetadata as Metadata);
-            var eid = _appManager.DataController.Entities.SaveEntity(newEnt, new SaveOptions());
+            if (isMetadata != null) newEnt.SetMetadata(isMetadata as Metadata);
+            var eid = Save(newEnt);
 
             return new Tuple<int, Guid>(eid, _appManager.DataController.Entities.TempLastSaveGuid);
         }
@@ -122,22 +99,20 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="contentTypeName"></param>
         /// <param name="values"></param>
         /// <returns></returns>
-        public int GetOrCreate(Guid? newGuid, string contentTypeName, Dictionary<string, object> values)
+        public int GetOrCreate(Guid newGuid, string contentTypeName, Dictionary<string, object> values)
         {
-            if (newGuid.HasValue && _appManager.DataController.Entities.EntityExists(newGuid.Value))
+            if (_appManager.DataController.Entities.EntityExists(newGuid))
             {
                 // check if it's deleted - if yes, resurrect
-                var existingEnt = _appManager.DataController.Entities.GetEntitiesByGuid(newGuid.Value).First();
+                var existingEnt = _appManager.DataController.Entities.GetEntitiesByGuid(newGuid).First();
                 if (existingEnt.ChangeLogDeleted != null)
                     existingEnt.ChangeLogDeleted = null;
 
                 return existingEnt.EntityId;
             }
-            //var contentType = _appManager.Cache.GetContentType(contentTypeName).ContentTypeId;
-            //return _appManager.DataController.Entities.AddEntity(contentType, values, entityGuid: newGuid).EntityId;
 
-            var newE = new Entity(newGuid.Value, contentTypeName, values);
-            return _appManager.DataController.Entities.SaveEntity(newE, new SaveOptions());
+            var newE = new Entity(newGuid, contentTypeName, values);
+            return Save(newE);
         }
 
 

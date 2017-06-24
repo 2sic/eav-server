@@ -11,6 +11,10 @@ using ToSic.Eav.Repository.Efc.Parts;
 // This is the simple API used to quickly create/edit/delete entities
 // It's in the Apps-project, because we are trying to elliminate the plain ToSic.Eav as it was structured in 2016
 
+    // todo: there is quite a lot of duplicate code here
+    // like code to build attributes, or convert id-relationships to guids
+    // this should be in the AttributeBuilder or similar
+
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Api.Api01
 {
@@ -54,7 +58,7 @@ namespace ToSic.Eav.Api.Api01
         ///     entity ids. 
         /// </param>
         /// <exception cref="ArgumentException">Content-type does not exist, or an attribute in values</exception>
-        public void Create(string contentTypeName, Dictionary<string, object> values)//, bool filterUnknownFields = true)
+        public void Create(string contentTypeName, Dictionary<string, object> values)
         {
             // ensure it's case insensitive...
             values = new Dictionary<string, object>(values, StringComparer.OrdinalIgnoreCase);
@@ -68,7 +72,7 @@ namespace ToSic.Eav.Api.Api01
                 values.Add(Constants.EntityFieldGuid, Guid.NewGuid());
 
             var eGuid = Guid.Parse(values[Constants.EntityFieldGuid].ToString());
-            var importEntity = new Entity(eGuid, attributeSet.StaticName, new Dictionary<string, object>());// CreateImportEntity(eGuid, attributeSet.StaticName);
+            var importEntity = new Entity(eGuid, attributeSet.StaticName, new Dictionary<string, object>());
             AppendAttributeValues(importEntity, attributeSet, ConvertEntityRelations(values), _defaultLanguageCode, false, true);
             ExecuteImport(importEntity);
         }
@@ -189,9 +193,10 @@ namespace ToSic.Eav.Api.Api01
 
         private void ExecuteImport(Entity entity)
         {
-            var import = new DbImport(_zoneId, _appId, false);
-            import.ImportIntoDb(null, new[] { entity });
-            SystemManager.Purge(_zoneId, _appId);
+            new AppManager(_appId).Entities.Save(entity);
+            //var import = new DbImport(_zoneId, _appId, false);
+            //import.ImportIntoDb(null, new[] { entity });
+            //SystemManager.Purge(_zoneId, _appId);
         }
 
         private void AppendAttributeValues(Entity entity, ToSicEavAttributeSets attributeSet, Dictionary<string, object> values, string valuesLanguage, bool valuesReadOnly, bool resolveHyperlink)

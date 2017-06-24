@@ -11,8 +11,7 @@ namespace ToSic.Eav.WebApi.Formats
         public int Id;
         [NonSerialized] public Guid Guid;
 
-        // [NonSerialized]
-        public int RepoId;
+        //[NonSerialized] public int RepoId;
 
         public Type Type;
         public bool IsPublished;
@@ -45,12 +44,9 @@ namespace ToSic.Eav.WebApi.Formats
         /// <summary>
         /// Will return true if a target-type was assigned
         /// </summary>
-        public bool HasMetadata
-        {
-            get { return _targetType != Constants.NotMetadata; }
-        }
+        public bool HasMetadata => _targetType != Constants.NotMetadata;
 
-        private int _targetType = 0;
+        private int _targetType = Constants.NotMetadata;
         /// <summary>
         /// This is the AssignmentObjectTypeId - usually 1 (none), 2 (attribute), 4 (entity)
         /// </summary>
@@ -123,14 +119,6 @@ namespace ToSic.Eav.WebApi.Formats
         /// <summary>
         /// The KeyString is null or the string of the key as stored in "Key"
         /// </summary>
-        public string KeyString
-        {
-            get
-            {
-                if (KeyType != "string")
-                    return null;
-                return Key;
-            }
-        }
+        public string KeyString => KeyType != "string" ? null : Key;
     }
 }

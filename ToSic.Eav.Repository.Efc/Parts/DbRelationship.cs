@@ -92,7 +92,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 .Select(g => g.First())
                 .ToList();
 
-            //var transaction = DbContext.SqlDb.Database.BeginTransaction();
+            var ownTransaction = DbContext.SqlDb.Database.CurrentTransaction == null ? DbContext.SqlDb.Database.BeginTransaction() : null;
             try
             {
                 // Delete all existing relationships - but not the target, just the relationship
@@ -137,11 +137,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     UpdateEntityRelationshipsAndSave(relationship.AttributeId, childEntityIds, entity);
                 }
 
-                //transaction.Commit();
+                ownTransaction?.Commit();
             }
             catch 
             {
-                //transaction.Rollback();
+                ownTransaction?.Rollback();
                 throw;
             }
 

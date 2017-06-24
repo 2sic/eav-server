@@ -25,7 +25,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var test = new TestValuesOnPc2dm();
             var so = new SaveOptions();
             var dbi = DbDataController.Instance(test.ZoneId, test.AppId);
-            dbi.Entities.DebugKeepTransactionOpen = true;
+            var trans = dbi.SqlDb.Database.BeginTransaction();
 
             // load an entity
             var loader1 = new Efc11Loader(dbi.SqlDb);
@@ -44,7 +44,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             // validate that they are still the same!
             Assert.AreEqual(itm1.Attributes.Count, itm2.Attributes.Count, "should have same amount of attributes");
 
-            dbi.Entities.DebugTransaction.Rollback();
+            trans.Rollback();
         }
 
         [TestMethod]
@@ -53,7 +53,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var test = new TestValuesOnPc2dm();
             var so = new SaveOptions(){PreserveUntouchedAttributes = true, PreserveUnknownLanguages = true};
             var dbi = DbDataController.Instance(test.ZoneId, test.AppId);
-            dbi.Entities.DebugKeepTransactionOpen = true;
+            var trans = dbi.SqlDb.Database.BeginTransaction();
 
             // todo: load a simple, 1 language entity
             var loader1 = new Efc11Loader(dbi.SqlDb);
@@ -80,7 +80,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             Assert.AreEqual(itm1.Attributes.Count, itm2.Attributes.Count, "should have same amount of attributes");
             Assert.AreNotEqual(itm1.GetBestTitle(), itm2.GetBestTitle(), "title should have changed");
 
-            dbi.Entities.DebugTransaction.Rollback();
+            trans.Rollback();
         }
 
         [TestMethod]
@@ -91,7 +91,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var test = new TestValuesOnPc2dm();
             var so = new SaveOptions() { PreserveUntouchedAttributes = true, PreserveUnknownLanguages = true };
             var dbi = DbDataController.Instance(test.ZoneId, test.AppId);
-            dbi.Entities.DebugKeepTransactionOpen = true;
+            var trans = dbi.SqlDb.Database.BeginTransaction();
 
             // load content type to start creating an item...
             var loader1 = new Efc11Loader(dbi.SqlDb);
@@ -116,7 +116,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
             Assert.AreEqual(itm2.GetBestTitle(), ctTitle, "title should be loaded as saved" );
 
-            dbi.Entities.DebugTransaction.Rollback();
+            trans.Rollback();
 
 
         }
