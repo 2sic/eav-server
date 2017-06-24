@@ -67,7 +67,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         private XElement GetTimelineItemOrThrowError(int entityId, int changeId)
         {
-// Get Timeline Item
+            // Get Timeline Item
             string timelineItem;
             try
             {

@@ -23,7 +23,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
     {
         #region Private Fields
         private readonly DbDataController _context;
-        private AppDataPackage entireApp;
+        private AppDataPackage _entireApp;
 
         public SaveOptions SaveOptions = new SaveOptions();
         #endregion
@@ -47,10 +47,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             _context = DbDataController.Instance(zoneId, appId);
 
-            //_dontUpdateExistingAttributeValues = dontUpdateExistingAttributeValues;
             SaveOptions.SkipExistingAttributes = dontUpdateExistingAttributeValues;
 
-            //_keepAttributesMissingInImport = keepAttributesMissingInImport;
             SaveOptions.PreserveUntouchedAttributes = keepAttributesMissingInImport;
 
             var environment = Factory.Resolve<IImportExportEnvironment>();
@@ -75,7 +73,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             // get initial data state for further processing, content-typed definitions etc.
             // important: must always create a new loader, because it will cache content-types which hurts the import
-            entireApp = new Efc11Loader(_context.SqlDb).AppPackage(_context.AppId, new [] {0}); // don't load any entities, just content-types
+            _entireApp = new Efc11Loader(_context.SqlDb).AppPackage(_context.AppId, new [] {0}); // don't load any entities, just content-types
 
             #endregion
             // run import, but rollback transaction if necessary
@@ -91,7 +89,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                         if (sysAttributeSets.Any())
                             ImportSomeAttributeSets(sysAttributeSets);
 
-                        entireApp = new Efc11Loader(_context.SqlDb).AppPackage(_context.AppId, new[] { 0 }); // don't load any entities, just content-types
+                        _entireApp = new Efc11Loader(_context.SqlDb).AppPackage(_context.AppId, new[] { 0 }); // don't load any entities, just content-types
 
                         // now the remaining attributeSets
                         var nonSysAttribSets = newSetsList.Where(a => !sysAttributeSets.Contains(a)).ToList();
@@ -105,7 +103,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                 if (newEntities != null)
                 {
-                    entireApp = new Efc11Loader(_context.SqlDb).AppPackage(_context.AppId); // load all entities
+                    _entireApp = new Efc11Loader(_context.SqlDb).AppPackage(_context.AppId); // load all entities
                     newEntities = newEntities.Select(PrepareEntityForImport).Where(e => e != null).ToList();
                     _context.Entities.SaveEntity(newEntities.Cast<IEntity>().ToList(), SaveOptions);
                 }
@@ -158,7 +156,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     // try to add new Attribute
                     var isTitle = newAtt.IsTitle;// == impContentType.TitleAttribute;
                     destAttribId = _context.AttributesDefinition
-                        .AppendToEndAndSave(destinationSet, 0, newAtt.Name, newAtt.Type, /*importAttribute.InputType, */ isTitle);//, false);
+                        .AppendToEndAndSave(destinationSet, 0, newAtt.Name, newAtt.Type, isTitle);
                 }
 				else
                 {
@@ -308,7 +306,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
            #region try to get AttributeSet or otherwise cancel & log error
 
-            var dbAttrSet = entireApp.ContentTypes.Values
+            var dbAttrSet = _entireApp.ContentTypes.Values
                 .FirstOrDefault(ct => String.Equals(ct.StaticName, entity.Type.StaticName, StringComparison.InvariantCultureIgnoreCase));
 
             if (dbAttrSet == null) // AttributeSet not Found
@@ -322,7 +320,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             // Find existing Enties - meaning both draft and non-draft
             List<IEntity> existingEntities = null;
             if (entity.EntityGuid != Guid.Empty)
-                existingEntities = entireApp.List.Where(e => e.EntityGuid == entity.EntityGuid).ToList(); // _context.Entities.GetEntitiesByGuid(entity.EntityGuid).ToList();
+                existingEntities = _entireApp.List.Where(e => e.EntityGuid == entity.EntityGuid).ToList(); // _context.Entities.GetEntitiesByGuid(entity.EntityGuid).ToList();
 
             #region Simplest case - nothing existing to update: return entity
 

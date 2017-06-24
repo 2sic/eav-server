@@ -36,14 +36,14 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <returns></returns>
         public ToSicEavAssignmentObjectTypes GetAssignmentObjectType(string name) => DbContext.SqlDb.ToSicEavAssignmentObjectTypes.Single(a => a.Name == name);
 
-        /// <summary>
-        /// Get all AssignmentObjectTypes with Id and Name
-        /// </summary>
-        public Dictionary<int, string> GetAssignmentObjectTypes()
-        {
-            return (from a in DbContext.SqlDb.ToSicEavAssignmentObjectTypes
-                    select new { a.AssignmentObjectTypeId, a.Name }).ToDictionary(a => a.AssignmentObjectTypeId, a => a.Name);
-        }
+        ///// <summary>
+        ///// Get all AssignmentObjectTypes with Id and Name
+        ///// </summary>
+        //public Dictionary<int, string> GetAssignmentObjectTypes()
+        //{
+        //    return (from a in DbContext.SqlDb.ToSicEavAssignmentObjectTypes
+        //            select new { a.AssignmentObjectTypeId, a.Name }).ToDictionary(a => a.AssignmentObjectTypeId, a => a.Name);
+        //}
 
 
         #endregion

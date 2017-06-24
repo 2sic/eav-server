@@ -9,11 +9,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
 	public class DbDimensions: BllCommandBase
 	{
         public DbDimensions(DbDataController ctx) : base(ctx) { }
+
+        #region Cached Dimensions (just cached for the current set of DB operations)
+
         private static List<ToSicEavDimensions> _cachedDimensions;
-
-        #region Cached Dimensions
-
-
 
 	    internal void EnsureDimensionsCache()
         {
@@ -24,14 +23,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Clear DimensionsCache in current Application Cache
         /// </summary>
-        public void ClearDimensionsCache()
-        {
-            _cachedDimensions = null;
-        }
+        public void ClearDimensionsCache() => _cachedDimensions = null;
 
         #endregion
 
-		internal int GetDimensionId(string systemKey, string externalKey)
+		private int GetDimensionId(string systemKey, string externalKey)
 		{
 			EnsureDimensionsCache();
 
@@ -42,18 +38,18 @@ namespace ToSic.Eav.Repository.Efc.Parts
 		        .Select(d => d.DimensionId).FirstOrDefault();
 		}
 
-		/// <summary>
-		/// Get a single Dimension
-		/// </summary>
-		/// <returns>A Dimension or null</returns>
-		public ToSicEavDimensions GetDimension(int dimensionId) 
-            => DbContext.SqlDb.ToSicEavDimensions.SingleOrDefault(d => d.DimensionId == dimensionId && d.ZoneId == DbContext.ZoneId);
+		///// <summary>
+		///// Get a single Dimension
+		///// </summary>
+		///// <returns>A Dimension or null</returns>
+		//public ToSicEavDimensions GetDimension(int dimensionId) 
+  //          => DbContext.SqlDb.ToSicEavDimensions.SingleOrDefault(d => d.DimensionId == dimensionId && d.ZoneId == DbContext.ZoneId);
 
-	    /// <summary>
-		/// Get Dimensions by Ids
-		/// </summary>
-		internal List<ToSicEavDimensions> GetDimensions(IEnumerable<int> dimensionIds) 
-            => DbContext.SqlDb.ToSicEavDimensions.Where(d => dimensionIds.Contains(d.DimensionId) && d.ZoneId == DbContext.ZoneId).ToList();
+	 //   /// <summary>
+		///// Get Dimensions by Ids
+		///// </summary>
+		//internal List<ToSicEavDimensions> GetDimensions(IEnumerable<int> dimensionIds) 
+  //          => DbContext.SqlDb.ToSicEavDimensions.Where(d => dimensionIds.Contains(d.DimensionId) && d.ZoneId == DbContext.ZoneId).ToList();
 
 	    /// <summary>
 		/// Get a List of Dimensions having specified SystemKey and current ZoneId and AppId

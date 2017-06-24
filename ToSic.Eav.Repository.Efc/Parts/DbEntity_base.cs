@@ -3,7 +3,7 @@ using ToSic.Eav.Persistence.Logging;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
-    public partial class DbEntity
+    public partial class DbEntity: BllCommandBase
     {
         public DbEntity(DbDataController cntx) : base(cntx)
         {
