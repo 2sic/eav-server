@@ -152,7 +152,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 return;
             }
 
-            var valueLanguage = value.ToSicEavValuesDimensions.Select(reference => reference.Dimension.ExternalKey)
+            var valueLanguage = value.ToSicEavValuesDimensions.Select(reference => reference.Dimension.EnvironmentKey)
                                          .FirstOrDefault(l => l == language); // value.GetLanguage(language);
             if (valueLanguage == null)
             {   // If no language is found, serialize the plain value
@@ -224,8 +224,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
         {
             return value.ToSicEavValuesDimensions
                 .Where(reference => !referenceReadWrite || !reference.ReadOnly)
-                .Where(reference => reference.Dimension.ExternalKey != valueLanguage)
-                .Select(reference => reference.Dimension.ExternalKey)
+                .Where(reference => reference.Dimension.EnvironmentKey != valueLanguage)
+                .Select(reference => reference.Dimension.EnvironmentKey)
                 .ToList();
         }
 

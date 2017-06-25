@@ -32,24 +32,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
 			EnsureDimensionsCache();
 
 		    return _cachedDimensions.Where(d =>
-		            string.Equals(d.SystemKey, systemKey, StringComparison.InvariantCultureIgnoreCase)
-		            && string.Equals(d.ExternalKey, externalKey, StringComparison.InvariantCultureIgnoreCase)
+		            string.Equals(d.Key, systemKey, StringComparison.InvariantCultureIgnoreCase)
+		            && string.Equals(d.EnvironmentKey, externalKey, StringComparison.InvariantCultureIgnoreCase)
 		            && d.ZoneId == DbContext.ZoneId)
 		        .Select(d => d.DimensionId).FirstOrDefault();
 		}
-
-		///// <summary>
-		///// Get a single Dimension
-		///// </summary>
-		///// <returns>A Dimension or null</returns>
-		//public ToSicEavDimensions GetDimension(int dimensionId) 
-  //          => DbContext.SqlDb.ToSicEavDimensions.SingleOrDefault(d => d.DimensionId == dimensionId && d.ZoneId == DbContext.ZoneId);
-
-	 //   /// <summary>
-		///// Get Dimensions by Ids
-		///// </summary>
-		//internal List<ToSicEavDimensions> GetDimensions(IEnumerable<int> dimensionIds) 
-  //          => DbContext.SqlDb.ToSicEavDimensions.Where(d => dimensionIds.Contains(d.DimensionId) && d.ZoneId == DbContext.ZoneId).ToList();
 
 	    /// <summary>
 		/// Get a List of Dimensions having specified SystemKey and current ZoneId and AppId
@@ -60,7 +47,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
 		    return _cachedDimensions.Where(d =>
 		        d.Parent.HasValue
-		        && d.ParentNavigation.SystemKey == systemKey
+		        && d.ParentNavigation.Key == systemKey
 		        && d.ZoneId == DbContext.ZoneId
                 && (includeInactive || d.Active)
                 ).ToList();
@@ -81,9 +68,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
 			ClearDimensionsCache();
 		}
 
-        public void AddOrUpdateLanguage(string cultureCode, string cultureText, bool active)
+        internal void AddOrUpdateLanguage(string cultureCode, string cultureText, bool active)
         {
-            var eavLanguage = GetLanguages(true).FirstOrDefault(l => l.ExternalKey == cultureCode);
+            var eavLanguage = GetLanguages(true).FirstOrDefault(l => l.EnvironmentKey == cultureCode);
             // If the language exists in EAV, set the active state, else add it
             if (eavLanguage != null)
                 UpdateDimension(eavLanguage.DimensionId, active);
@@ -97,15 +84,15 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Add a new Dimension
         /// </summary>
-        internal void AddDimension(string systemKey, string name, ToSicEavZones zone, ToSicEavDimensions parent = null)
-		{
+        internal void AddRootDimension(string systemKey, string name, ToSicEavZones zone)
+        {
 			var newDimension = new ToSicEavDimensions
             {
-				SystemKey = systemKey,
+				Key = systemKey,
 				Name = name,
 				Zone = zone,
-				ParentNavigation = parent
-			};
+				ParentNavigation = null
+            };
             DbContext.SqlDb.Add(newDimension);
             DbContext.SqlDb.SaveChanges();
 
@@ -126,21 +113,21 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         /// <param name="defaultLanguage"></param>
         /// <returns></returns>
-	    public List<Dimension> GetLanguageListForImport(string defaultLanguage)
+	    public List<DimensionDefinition> GetLanguageListForImport(string defaultLanguage)
 	    {
             var langs = GetLanguages();
             if (langs.Count == 0)
                 langs.Add(new ToSicEavDimensions
                 {
                     Active = true,
-                    ExternalKey = defaultLanguage,
+                    EnvironmentKey = defaultLanguage,
                     Name = "(added by import System, default language " + defaultLanguage + ")",
-                    SystemKey = Constants.CultureSystemKey
+                    Key = Constants.CultureSystemKey
                 });
-            return langs.Select(d => new Dimension { DimensionId = d.DimensionId, Key = d.ExternalKey }).ToList();
-        }
+	        return langs.Cast<DimensionDefinition>().ToList(); //.Select(d => new Dimension { DimensionId = d.DimensionId, Key = d.EnvironmentKey }).ToList();
+	    }
 
-        public string[] GetLanguagesExtNames() => GetLanguages().Select(language => language.ExternalKey).ToArray();
+        public string[] GetLanguagesExtNames() => GetLanguages().Select(language => language.EnvironmentKey).ToArray();
 
         /// <summary>
         /// Add a new Language to current Zone
@@ -150,7 +137,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 			var newLanguage = new ToSicEavDimensions
             {
 				Name = name,
-				ExternalKey = externalKey,
+				EnvironmentKey = externalKey,
 				Parent = GetDimensionId(Constants.CultureSystemKey, null),
                 ZoneId = DbContext.ZoneId,
                 Active = true

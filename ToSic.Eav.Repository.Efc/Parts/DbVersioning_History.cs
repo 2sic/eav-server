@@ -58,7 +58,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
 
             //var targetDimsRetyped = currentLangs.Select(d => new Dimension { DimensionId = d.DimensionId, Key = d.ExternalKey}).ToList();
-            var sourceDimsRetyped = sourceDimensions.Select(s => new Dimension { DimensionId = s.DimensionId, Key = s.ExternalKey }).ToList();
+            var sourceDimsRetyped = sourceDimensions.Select(s => new Dimension { DimensionId = s.DimensionId, Key = s.EnvironmentKey }).ToList();
             #endregion
 
             // Load Entity from Xml unsing XmlImport

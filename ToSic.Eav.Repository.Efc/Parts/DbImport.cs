@@ -51,8 +51,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             SaveOptions.PreserveUntouchedAttributes = keepAttributesMissingInImport;
 
-            var environment = Factory.Resolve<IImportExportEnvironment>();
-            SaveOptions.Languages = _context.Dimensions.GetLanguageListForImport(environment.DefaultLanguage).Cast<ILanguage>().ToList();
+            SaveOptions.Languages = _context.Dimensions.GetLanguageListForImport(SaveOptions.PrimaryLanguage).ToList();
 
         }
 

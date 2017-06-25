@@ -8,7 +8,7 @@ namespace ToSic.Eav.Apps
 
         #region purge cache stuff
 
-        public static void PurgeEverything() => Purge(0,0,true);
+        public static void PurgeZoneList() => Purge(0,0,true);
 
         public static void Purge(int zoneId, int appId, bool global = false)
         {

@@ -72,7 +72,13 @@ namespace ToSic.Eav.Repository.Efc.Tests
         private static Dimension langDeDe = new Dimension {DimensionId = 42, Key = "de-DE"};
         private static Dimension langDeCh = new Dimension {DimensionId = 39, Key = "de-CH"};
         private static Dimension langFr = new Dimension {DimensionId = 99, Key = "fr-FR"};
-        private static List<ILanguage> activeLangs = new List<ILanguage> {langEn, langDeDe, langDeCh};
+
+        private static DimensionDefinition langEnDef = new DimensionDefinition { DimensionId = 1, EnvironmentKey = "en-US" };
+        private static DimensionDefinition langDeDeDef = new DimensionDefinition { DimensionId = 42, EnvironmentKey = "de-DE" };
+        private static DimensionDefinition langDeChDef = new DimensionDefinition { DimensionId = 39, EnvironmentKey = "de-CH" };
+        private static DimensionDefinition langFrDef = new DimensionDefinition { DimensionId = 99, EnvironmentKey = "fr-FR" };
+        private static List<DimensionDefinition> activeLangs = new List<DimensionDefinition> { langEnDef, langDeDeDef, langDeChDef };
+
         #endregion
 
         #region build SaveOptions as needed

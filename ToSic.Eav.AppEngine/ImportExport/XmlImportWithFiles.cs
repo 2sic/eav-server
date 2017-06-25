@@ -30,7 +30,7 @@ namespace ToSic.Eav.Apps.ImportExport
 		private string _sourceDefaultLanguage;
 		private int? _sourceDefaultDimensionId;
 		//private List<ToSicEavDimensions> _targetDimensions;
-        private List<Dimension> _targetDimensions;
+        private List<DimensionDefinition> _targetDimensions;
         private DbDataController _eavContext;
 		private int _appId;
 		private int _zoneId;
@@ -208,9 +208,9 @@ namespace ToSic.Eav.Apps.ImportExport
             }
 
             _sourceDefaultDimensionId = sDimensions.Any() ?
-                sDimensions.FirstOrDefault(p => p.ExternalKey == _sourceDefaultLanguage)?.DimensionId
+                sDimensions.FirstOrDefault(p => p.EnvironmentKey == _sourceDefaultLanguage)?.DimensionId
 				: new int?();
-            _sourceDimensions = sDimensions.Select(s => new Dimension { DimensionId = s.DimensionId, Key = s.ExternalKey }).ToList();
+            _sourceDimensions = sDimensions.Select(s => new Dimension { DimensionId = s.DimensionId, Key = s.EnvironmentKey }).ToList();
 
             // 2017-06-13 2dm moving to dimensions layer...
             //var langs = _eavContext.Dimensions.GetLanguages();//.GetDimensionChildren(Constants.CultureSystemKey);
@@ -255,8 +255,8 @@ namespace ToSic.Eav.Apps.ImportExport
 	                {
 	                    DimensionId = int.Parse(p.Attribute(XmlConstants.DimId).Value),
 	                    Name = p.Attribute(XmlConstants.Name).Value,
-	                    SystemKey = p.Attribute(XmlConstants.CultureSysKey).Value,
-	                    ExternalKey = p.Attribute(XmlConstants.CultureExtKey).Value,
+	                    Key = p.Attribute(XmlConstants.CultureSysKey).Value,
+	                    EnvironmentKey = p.Attribute(XmlConstants.CultureExtKey).Value,
 	                    Active = Boolean.Parse(p.Attribute(XmlConstants.CultureIsActiveAttrib).Value)
 	                }).ToList();
 	        return sDimensions;

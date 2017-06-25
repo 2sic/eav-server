@@ -284,13 +284,13 @@ namespace ToSic.Eav.Persistence.Efc.Models
 
                 entity.Property(e => e.Active).HasDefaultValueSql("1");
 
-                entity.Property(e => e.ExternalKey).HasMaxLength(100);
+                entity.Property(e => e.EnvironmentKey).HasColumnName("ExternalKey").HasMaxLength(100);
 
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(100);
 
-                entity.Property(e => e.SystemKey).HasMaxLength(100);
+                entity.Property(e => e.Key).HasColumnName("SystemKey").HasMaxLength(100);
 
                 entity.Property(e => e.ZoneId).HasColumnName("ZoneID");
 

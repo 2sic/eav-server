@@ -72,7 +72,7 @@ namespace ToSic.Eav.Persistence
             if (hasLanguages && !saveOptions.PreserveUnknownLanguages)
                 if ((!saveOptions.Languages?.Any() ?? true)
                     || string.IsNullOrWhiteSpace(saveOptions.PrimaryLanguage)
-                    || saveOptions.Languages.All(l => l.Key != saveOptions.PrimaryLanguage))
+                    || saveOptions.Languages.All(l => l.EnvironmentKey != saveOptions.PrimaryLanguage))
                     throw new Exception("primary language must exist in languages, cannot continue preparation to save with unclear language setup");
 
 
@@ -119,7 +119,7 @@ namespace ToSic.Eav.Persistence
                 foreach (var value in orderedValues)
                 {
                     // create filtered list of languages
-                    var newLangs = value.Languages?.Where(l => languages.Any(sysLang => sysLang.Key == l.Key)).ToList();
+                    var newLangs = value.Languages?.Where(l => languages.Any(sysLang => sysLang.EnvironmentKey == l.Key)).ToList();
                     // only keep this value, if it is either the first (so contains primary or null-language) or that it still has a remaining language assignment
                     if (values.Any() && !(newLangs?.Any() ?? false)) continue;
                     value.Languages = newLangs;

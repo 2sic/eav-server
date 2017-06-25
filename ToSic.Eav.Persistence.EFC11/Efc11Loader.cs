@@ -18,9 +18,11 @@ namespace ToSic.Eav.Persistence.Efc
         public Efc11Loader(EavDbContext dbContext)
         {
             _dbContext = dbContext;
+            _mapper = new Efc11Mapper(dbContext);
         }
 
         private readonly EavDbContext _dbContext;
+        private readonly Efc11Mapper _mapper;
 
         #endregion
 
@@ -211,7 +213,7 @@ namespace ToSic.Eav.Persistence.Efc
                                     {
                                         DimensionId = l.DimensionId,
                                         ReadOnly = l.ReadOnly,
-                                        Key = l.Dimension.ExternalKey.ToLower()
+                                        Key = l.Dimension.EnvironmentKey.ToLower()
                                     } as ILanguage).ToList(),
                                 v2.ChangeLogCreated
                             })
@@ -301,9 +303,7 @@ namespace ToSic.Eav.Persistence.Efc
                     var valueModel = Value.Build(attributeModel.Type, r.Childs, null, source);
                     var valuesModelList = new List<IValue> { valueModel };
                     attributeModel.Values = valuesModelList;
-                    // 2017-06-07 2dm disabled, as it seems unnecessary and never used...
-                    //attributeModel.DefaultValue = valuesModelList.FirstOrDefault();
-                    }
+                }
                 #endregion
 
                 #region Add "normal" Attributes (that are not Entity-Relations)
@@ -332,12 +332,10 @@ namespace ToSic.Eav.Persistence.Efc
                         #endregion
 
                         attributeModel.Values = valuesModelList;
-                        // 2017-06-07 2dm disabled, as it seems unnecessary and never used...
-                        //attributeModel.DefaultValue = valuesModelList.FirstOrDefault();
                     }
 
                 // Special treatment in case there is no title 
-                // sometimes happens if the title-field is re-defined and ol data might no have this
+                // sometimes happens if the title-field is re-defined and old data might no have this
                 // also happens in rare cases, where the title-attrib is an entity-picker
                 if (newEntity.Title == null && titleAttrib != null)
                     newEntity.SetTitleField(titleAttrib.Name);
@@ -394,11 +392,16 @@ namespace ToSic.Eav.Persistence.Efc
         public Dictionary<int, string> MetadataTargetTypes() => _dbContext.ToSicEavAssignmentObjectTypes
             .ToDictionary(a => a.AssignmentObjectTypeId, a => a.Name);
 
-        public Dictionary<int, Zone> Zones() => _dbContext.ToSicEavZones
+        public Dictionary<int, Zone> Zones(/*int zoneId = -1*/) => _dbContext.ToSicEavZones
             .Include(z => z.ToSicEavApps)
+            .Include(z => z.ToSicEavDimensions)
+                .ThenInclude(d => d.ParentNavigation)
+            //.Where(z => z.ZoneId == zoneId || zoneId == -1)
             .ToDictionary(z => z.ZoneId, z => new Zone(z.ZoneId,
                 z.ToSicEavApps.FirstOrDefault(a => a.Name == Constants.DefaultAppName)?.AppId ?? -1,
-                z.ToSicEavApps.ToDictionary(a => a.AppId, a => a.Name)));
+                z.ToSicEavApps.ToDictionary(a => a.AppId, a => a.Name),
+                z.ToSicEavDimensions.Where(d => d.ParentNavigation?.Key == Constants.CultureSystemKey)
+                    .Cast<DimensionDefinition>().ToList()));
 
 
     }

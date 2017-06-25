@@ -92,6 +92,7 @@
     <Compile Include="Data\Builder\DimensionBuilder.cs" />
     <Compile Include="Data\Builder\EntityBuilder.cs" />
     <Compile Include="Data\ContentType.cs" />
+    <Compile Include="Data\DimensionDefinition.cs" />
     <Compile Include="Data\Entity.cs" />
     <Compile Include="Data\Metadata.cs" />
     <Compile Include="Data\Dimension.cs" />

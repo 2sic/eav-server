@@ -16,7 +16,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         public ToSicEavApps AddApp(ToSicEavZones zone, string name = Constants.DefaultAppName)
         {
             if (zone == null)
-                zone = DbContext.Zone.GetZone(DbContext.ZoneId);
+                zone = DbContext.SqlDb.ToSicEavZones.SingleOrDefault(z => z.ZoneId == DbContext.ZoneId);// DbContext.Zone.GetZone(DbContext.ZoneId);
 
             var newApp = new ToSicEavApps
             {
@@ -33,51 +33,18 @@ namespace ToSic.Eav.Repository.Efc.Parts
             return newApp;
         }
 
-        // 2017-04-01 2dm remove from this layer...
-        //private void PurgeGlobalCache(int zoneId, int appId)
-        //{
-        //    // todo: bad - don't want any data-source in here!
-        //    DataSource.GetCache(zoneId, appId).PurgeGlobalCache();
-        //}
-
-        ///// <summary>
-        ///// Add a new App to the current Zone
-        ///// </summary>
-        ///// <param name="name">The name of the new App</param>
-        ///// <returns></returns>
-        //public App AddApp(string name)
-        //    => AddApp(Context.Zone.GetZone(Context.ZoneId), name);
-
 
         /// <summary>
         /// Delete an existing App with any Values and Attributes
         /// </summary>
         /// <param name="appId">AppId to delete</param>
-        public void DeleteApp(int appId)
+        internal void DeleteApp(int appId)
         {
-            // 2017-04-06 2dm disabled this check, as of now the context doesn't know the app-id as it's comming from the Zone
-            //if (appId != DbContext.AppId)  // this only happens if there is some kind of id-fallback
-            //    throw new Exception("An app can only be removed inside of it's own context.");
-
-            // enure changelog exists and is set to SQL CONTEXT_INFO variable
-            //if (DbContext.Versioning.MainChangeLogId == 0)
             DbContext.Versioning.GetChangeLogId();
 
             // Delete app using StoredProcedure
             DbContext.SqlDb.Database.ExecuteSqlCommand("ToSIC_EAV_DeleteApp @p0", appId);// .DeleteAppInternal(appId);
-
-            // 2017-04-01 2dm removed from here, must happen at "outer" layer
-            // Remove App from Global Cache
-            // PurgeGlobalCache(Context.ZoneId, Context.AppId);
         }
-
-        /// <summary>
-        /// Get all Apps in the current Zone
-        /// </summary>
-        /// <returns></returns>
-        public List<ToSicEavApps> GetApps()
-            => DbContext.SqlDb.ToSicEavApps.Where(a => a.ZoneId == DbContext.ZoneId).ToList();
-        
 
     }
 }

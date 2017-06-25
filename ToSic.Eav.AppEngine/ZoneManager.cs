@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using ToSic.Eav.Apps.Interfaces;
 using ToSic.Eav.Repository.Efc;
 
@@ -28,7 +26,7 @@ namespace ToSic.Eav.Apps
         {
             var app = DataController.App.AddApp(null, Guid.NewGuid().ToString());
 
-            SystemManager.PurgeEverything();
+            SystemManager.PurgeZoneList();
             return app.AppId;
         }
 
@@ -38,9 +36,8 @@ namespace ToSic.Eav.Apps
 
         public static int CreateZone(string name)
         {
-            //var zoneId = ZoneRepo.Create(name);
-            var zoneId = DbDataController.Instance().Zone.AddZone(name).Item1.ZoneId;
-            SystemManager.PurgeEverything();
+            var zoneId = DbDataController.Instance().Zone.AddZone(name);
+            SystemManager.PurgeZoneList();
             return zoneId;
         }
 
@@ -52,39 +49,36 @@ namespace ToSic.Eav.Apps
         public void SaveLanguage(string cultureCode, string cultureText, bool active)
         {
             DataController.Dimensions.AddOrUpdateLanguage(cultureCode, cultureText, active);
-            LanguageCache.Remove(ZoneId);
+            //LanguageCache.Remove(ZoneId);
+            SystemManager.PurgeZoneList();
         }
 
 
-        private static readonly Dictionary<int, List<ZoneLanguagesTemp>> LanguageCache =
-            new Dictionary<int, List<ZoneLanguagesTemp>>();
+        //private static readonly Dictionary<int, List<DimensionDefinition>> LanguageCache =
+        //    new Dictionary<int, List<DimensionDefinition>>();
 
         // todo: move retrieval to an interface, then move this read to ZoneRuntime!!!
-        public List<ZoneLanguagesTemp> Languages
-        {
-            get
-            {
-                // note: cache at this level (to not instantiate a DB controller !) 
-                if (!LanguageCache.ContainsKey(ZoneId))
-                {
-                    LanguageCache[ZoneId] = DataController.Dimensions.GetLanguages(true)
-                        // ReSharper disable once SuspiciousTypeConversion.Global
-                        .Select(d => new ZoneLanguagesTemp {Active = d.Active, TennantKey = d.ExternalKey})
-                        .ToList();
-                }
-                return LanguageCache[ZoneId];
-            }
-        }
+        // 2017-06-25 old
+        //public List<DimensionDefinition> Languages
+        //{
+        //    get
+        //    {
+        //        // note: cache at this level (to not instantiate a DB controller !) 
+        //        if (!LanguageCache.ContainsKey(ZoneId))
+        //        {
+        //            LanguageCache[ZoneId] = DataController.Dimensions.GetLanguages(true).Cast<DimensionDefinition>()
+        //                // ReSharper disable once SuspiciousTypeConversion.Global
+        //                //.Select(d => new ZoneLanguagesTemp {Active = d.Active, EvironmentKey = d.EnvironmentKey})
+        //                .ToList();
+        //        }
+        //        return LanguageCache[ZoneId];
+        //    }
+        //}
 
 
     #endregion
 
         
     }
-
-    public class ZoneLanguagesTemp
-    {
-        public string TennantKey;
-        public bool Active;
-    }
+    
 }

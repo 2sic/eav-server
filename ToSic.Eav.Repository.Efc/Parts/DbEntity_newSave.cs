@@ -29,7 +29,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             var zoneLanguages = DbContext.Dimensions.GetLanguages();
 
             if(usedLanguages.Count > 0)
-                if (!usedLanguages.All(l => zoneLanguages.Any(zl => zl.ExternalKey.ToLowerInvariant() == l.Key)))
+                if (!usedLanguages.All(l => zoneLanguages.Any(zl => zl.EnvironmentKey.ToLowerInvariant() == l.Key)))
                     throw new Exception("found languages in save which are not available in environment");
             #endregion Test languages exist
 
@@ -176,7 +176,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                             ChangeLogCreated = changeId, // todo: remove some time later
                             ToSicEavValuesDimensions = value.Languages?.Select(l => new ToSicEavValuesDimensions
                             {
-                                DimensionId = zoneLanguages.Single(ol => ol.ExternalKey.ToLowerInvariant() == l.Key).DimensionId,
+                                DimensionId = zoneLanguages.Single(ol => ol.EnvironmentKey.ToLowerInvariant() == l.Key).DimensionId,
                                 ReadOnly = l.ReadOnly
                             }).ToList()
                         });

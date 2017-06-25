@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Interfaces;
 
@@ -27,7 +28,7 @@ namespace ToSic.Eav.Persistence
         }
 
         private string _priLang = null;
-        public List<ILanguage> Languages = null;
+        public List<DimensionDefinition> Languages = null;
         public bool PreserveExistingLanguages = false;
         public bool PreserveUnknownLanguages = false;
 

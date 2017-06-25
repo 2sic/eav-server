@@ -133,8 +133,8 @@ namespace ToSic.Eav.Apps.ImportExport
                 new XElement(XmlConstants.DimensionDefinition, dimensions.Select(d => new XElement(XmlConstants.DimensionDefElement,
                     new XAttribute(XmlConstants.DimId, d.DimensionId),
                     new XAttribute(XmlConstants.Name, d.Name),
-                    new XAttribute(XmlConstants.CultureSysKey, d.SystemKey ?? string.Empty),
-                    new XAttribute(XmlConstants.CultureExtKey, d.ExternalKey ?? string.Empty),
+                    new XAttribute(XmlConstants.CultureSysKey, d.Key ?? string.Empty),
+                    new XAttribute(XmlConstants.CultureExtKey, d.EnvironmentKey ?? string.Empty),
                     new XAttribute(XmlConstants.CultureIsActiveAttrib, d.Active)
                     )))
                 );
