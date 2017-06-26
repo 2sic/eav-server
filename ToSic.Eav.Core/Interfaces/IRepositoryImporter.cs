@@ -5,6 +5,6 @@ namespace ToSic.Eav.Interfaces
 {
     public interface IRepositoryImporter
     {
-        void Import(int? zoneId, int? appId, IEnumerable<ContentType> newAttributeSets, IEnumerable<Entity> newEntities);
+        void Import(int? zoneId, int appId, IEnumerable<ContentType> newAttributeSets, IEnumerable<Entity> newEntities);
     }
 }

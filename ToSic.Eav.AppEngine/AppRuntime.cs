@@ -24,9 +24,10 @@ namespace ToSic.Eav.Apps
         private ContentTypeRuntime _contentTypes; 
 
         public QueryRuntime Queries => _queries ?? (_queries = new QueryRuntime(this));
-        private QueryRuntime _queries; 
+        private QueryRuntime _queries;
 
-
+        public ZoneRuntime Zone => _zone ?? (_zone = new ZoneRuntime(ZoneId));
+        private ZoneRuntime _zone;
 
     }
 }

@@ -12,6 +12,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 {
     public partial class DbEntity
     {
+        private List<DimensionDefinition> zoneLanguages = null;
 
         public int SaveEntity(IEntity newEnt, SaveOptions so)
         {
@@ -26,10 +27,14 @@ namespace ToSic.Eav.Repository.Efc.Parts
             #region Test what languages are given, and check if they exist in the target system
             var usedLanguages = newEnt.GetUsedLanguages();
 
-            var zoneLanguages = DbContext.Dimensions.GetLanguages();
+            // continue here - must ensure that the languages are passed in, cached - or are cached on the DbEntity... for multiple saves
+            if (zoneLanguages == null)
+                zoneLanguages = so.Languages;// DbContext.Dimensions.GetLanguages();
+            if (zoneLanguages == null)
+                throw new Exception("languages missing in save-options. cannot continue");
 
             if(usedLanguages.Count > 0)
-                if (!usedLanguages.All(l => zoneLanguages.Any(zl => zl.EnvironmentKey.ToLowerInvariant() == l.Key)))
+                if (!usedLanguages.All(l => zoneLanguages.Any(zl => zl.Matches(l.Key))))
                     throw new Exception("found languages in save which are not available in environment");
             #endregion Test languages exist
 
@@ -176,7 +181,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                             ChangeLogCreated = changeId, // todo: remove some time later
                             ToSicEavValuesDimensions = value.Languages?.Select(l => new ToSicEavValuesDimensions
                             {
-                                DimensionId = zoneLanguages.Single(ol => ol.EnvironmentKey.ToLowerInvariant() == l.Key).DimensionId,
+                                DimensionId = zoneLanguages.Single(ol => ol.Matches(l.Key)).DimensionId,
                                 ReadOnly = l.ReadOnly
                             }).ToList()
                         });

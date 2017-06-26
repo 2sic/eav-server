@@ -29,7 +29,7 @@ namespace ToSic.Eav.Persistence.Efc.Models
 
             return
                 values.FirstOrDefault(
-                    value => value.ToSicEavValuesDimensions.Any(reference => reference.Dimension.EnvironmentKey == language));
+                    value => value.ToSicEavValuesDimensions.Any(reference => reference.Dimension.Matches(language)));
         }
     }
 }

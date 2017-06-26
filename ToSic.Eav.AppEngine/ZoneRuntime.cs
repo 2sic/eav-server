@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using ToSic.Eav.Apps.Interfaces;
 using ToSic.Eav.Data;
 
@@ -19,7 +20,7 @@ namespace ToSic.Eav.Apps
 
         public string GetName(int appId) => Cache.ZoneApps[ZoneId].Apps[appId];
 
-        public List<DimensionDefinition> Languages => Cache.ZoneApps[ZoneId].Languages;
+        public List<DimensionDefinition> Languages(bool includeInactive = false) => includeInactive ? Cache.ZoneApps[ZoneId].Languages : Cache.ZoneApps[ZoneId].Languages.Where(l => l.Active).ToList();
 
     }
 }

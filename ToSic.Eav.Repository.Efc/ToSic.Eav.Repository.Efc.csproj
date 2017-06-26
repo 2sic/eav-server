@@ -112,9 +112,6 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="ToSic.Eav.Apps">
-      <HintPath>..\..\2SexyContent\Web\DesktopModules\ToSIC_SexyContent\Bin\ToSic.Eav.Apps.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BllCommandBase.cs" />
@@ -145,7 +142,6 @@
     <Compile Include="Parts\DbVersioning.cs" />
     <Compile Include="Parts\DbXmlBuilder.cs" />
     <Compile Include="Parts\DbXmlExportTable.cs" />
-    <Compile Include="Parts\DbXmlImportVTable.cs" />
     <Compile Include="Parts\DbZone.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

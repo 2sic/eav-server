@@ -335,7 +335,7 @@ namespace ToSic.Eav.WebApi
         public List<ItemHistory> History(int appId, int entityId)
         {
             SetAppIdAndUser(appId);
-            var versions = AppManager.Entities.GetHistory(entityId);// CurrentContext.Versioning.GetEntityHistory(entityId);
+            var versions = AppManager.Entities.VersionHistory(entityId);// CurrentContext.Versioning.GetEntityHistory(entityId);
             return versions;
         }
 
@@ -344,7 +344,7 @@ namespace ToSic.Eav.WebApi
         {
             //throw new Exception("this is not tested yet!");
             SetAppIdAndUser(appId);
-            AppManager.Entities.RestorePrevious(entityId, changeId); // CurrentContext.Versioning.RestoreEntityVersion(entityId, changeId, DefaultCultureDimension);
+            AppManager.Entities.VersionRestore(entityId, changeId); // CurrentContext.Versioning.RestoreEntityVersion(entityId, changeId, DefaultCultureDimension);
             return true;
         }
         #endregion

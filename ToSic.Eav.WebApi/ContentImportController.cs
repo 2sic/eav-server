@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Web.Http;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.Repository.Efc.Parts;
 
@@ -75,25 +76,16 @@ namespace ToSic.Eav.WebApi
         }
 
 
-        private DbXmlImportVTable GetXmlImport(ContentImportArgs args)
+        private ToRefactorXmlImportVTable GetXmlImport(ContentImportArgs args)
         {
             var contentTypeId = CurrentContext.AttribSet.GetIdWithEitherName(args.ContentType);//.AttributeSetId;//.AttributeSetID;// GetContentTypeId(args.ContentType);
-            var contextLanguages = GetContextLanguages();
+            var contextLanguages = AppManager.Read.Zone.Languages().Select(l => l.EnvironmentKey).ToArray();// CurrentContext.Dimensions.GetLanguages().Select(language => language.EnvironmentKey).ToArray();
 
             using (var contentSteam = new MemoryStream(Convert.FromBase64String(args.ContentBase64)))
             {
-                return new DbXmlImportVTable(CurrentContext.ZoneId, args.AppId, contentTypeId, contentSteam, contextLanguages, args.DefaultLanguage, args.ClearEntities, args.ImportResourcesReferences);
+                return new ToRefactorXmlImportVTable(CurrentContext.ZoneId, args.AppId, contentTypeId, contentSteam, contextLanguages, args.DefaultLanguage, args.ClearEntities, args.ImportResourcesReferences);
             }
         }
 
-        private string[] GetContextLanguages()
-        {
-            return CurrentContext.Dimensions.GetLanguagesExtNames();//.GetLanguages().Select(language => language.ExternalKey).ToArray();
-        }
-
-        //private int GetContentTypeId(string name)
-        //{
-        //    return CurrentContext.AttribSet.GetAttributeSetId(name, null);
-        //}
     }
 }

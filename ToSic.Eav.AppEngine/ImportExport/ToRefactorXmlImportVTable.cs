@@ -13,9 +13,11 @@ using ToSic.Eav.ImportExport.Validation;
 using ToSic.Eav.ImportExport.Xml;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Persistence.Logging;
+using ToSic.Eav.Repository.Efc;
+using ToSic.Eav.Repository.Efc.Parts;
 using Entity = ToSic.Eav.Data.Entity;
 
-namespace ToSic.Eav.Repository.Efc.Parts
+namespace ToSic.Eav.Apps.ImportExport
 {
 
     // todo:
@@ -28,7 +30,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
     /// <summary>
     /// Import a virtual table of content-items
     /// </summary>
-    public class DbXmlImportVTable
+    public class ToRefactorXmlImportVTable
     {
         #region properties like _appId, Document, etc.
 
@@ -83,13 +85,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
         private Entity AppendEntity(Guid entityGuid)
         {
             var entity = new Entity(entityGuid, ContentType.StaticName, new Dictionary<string, object>());
-            {
-                //AttributeSetStaticName = ContentType.StaticName,
-                
-                //KeyTypeId = Constants.NotMetadata,
-                //KeyNumber = null,
-                //Attributes = new Dictionary<string, IAttribute>()//= new Dictionary<string, List<IValue>>() 
-            };
             ImportEntities.Add(entity);
             return entity;
         }
@@ -106,7 +101,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <param name="documentLanguageFallback">Fallback document language</param>
         /// <param name="deleteSetting">How to handle entities already in the repository</param>
         /// <param name="resolveReferenceMode">How value references to files and pages are handled</param>
-        public DbXmlImportVTable(int zoneId, int appId, int contentTypeId, Stream dataStream, IEnumerable<string> languages, string documentLanguageFallback, ImportDeleteUnmentionedItems deleteSetting, ImportResourceReferenceMode resolveReferenceMode)
+        public ToRefactorXmlImportVTable(int zoneId, int appId, int contentTypeId, Stream dataStream, IEnumerable<string> languages, string documentLanguageFallback, ImportDeleteUnmentionedItems deleteSetting, ImportResourceReferenceMode resolveReferenceMode)
         {
             ImportEntities = new List<Entity>();
             ErrorLog = new ImportErrorLog();

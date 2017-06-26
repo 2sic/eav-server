@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using ToSic.Eav.Apps;
+using ToSic.Eav.Data;
+using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Interfaces;
 using ExportImportMessage = ToSic.Eav.Persistence.Logging.ExportImportMessage;
 
@@ -35,5 +38,7 @@ namespace ToSic.Eav.Repository.Efc.Tests.Mocks
         public void CreateFoldersAndMapToImportIds(Dictionary<int, string> foldersAndPath, Dictionary<int, int> folderIdCorrectionList, List<ExportImportMessage> importLog)
         {
         }
+       
+        public SaveOptions SaveOptions(int zoneId) => new SaveOptions(DefaultLanguage, new ZoneRuntime(zoneId).Languages(true));
     }
 }

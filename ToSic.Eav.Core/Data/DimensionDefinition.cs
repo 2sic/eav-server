@@ -17,7 +17,10 @@ namespace ToSic.Eav.Data
         public string Name { get; set; }
         public string Key { get; set; }
         public string EnvironmentKey { get; set; }
-        public bool Active { get; set; }
+
+        public bool Matches(string environmentKey) => string.Equals(EnvironmentKey, environmentKey, StringComparison.InvariantCultureIgnoreCase);
+
+        public bool Active { get; set; } = true;
 
     }
 }

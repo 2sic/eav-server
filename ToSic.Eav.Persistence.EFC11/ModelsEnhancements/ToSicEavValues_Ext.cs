@@ -11,7 +11,7 @@ namespace ToSic.Eav.Persistence.Efc.Models
         public bool IsLanguageReadOnly(string language)
         {
             var languageReference = ToSicEavValuesDimensions
-                .FirstOrDefault(reference => reference.Dimension.EnvironmentKey == language);
+                .FirstOrDefault(reference => reference.Dimension.Matches(language));
             return languageReference != null && languageReference.ReadOnly;
         }
     }

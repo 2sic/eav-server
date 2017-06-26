@@ -13,7 +13,7 @@ namespace ToSic.Eav.Apps.Parts
     /// <summary>
     /// Manager for entities in an app
     /// </summary>
-    public class EntitiesManager: BaseManager
+    public partial class EntitiesManager: BaseManager
     {
         public EntitiesManager(AppManager app) : base(app)
         {
@@ -59,7 +59,7 @@ namespace ToSic.Eav.Apps.Parts
 
         public List<int> Save(List<IEntity> entities, SaveOptions saveOptions = null)
         {
-            saveOptions = saveOptions ?? new SaveOptions();
+            saveOptions = saveOptions ?? SaveOptions.Build(_appManager.ZoneId);
             saveOptions.DelayRelationshipSave = true; // save all relationships in one round when ready...
 
             var ids = _appManager.DataController.Entities.SaveEntity(entities, saveOptions);
@@ -101,13 +101,12 @@ namespace ToSic.Eav.Apps.Parts
         /// </summary>
         /// <param name="id"></param>
         /// <param name="values"></param>
-        public void UpdateParts(int id, Dictionary<string, object> values) //, ICollection<int> dimensionIds = null)
+        public void UpdateParts(int id, Dictionary<string, object> values)
         {
-            var saveOptions = new SaveOptions
-            {
-                PreserveUntouchedAttributes = true,
-                PreserveUnknownLanguages = true
-            };
+            var saveOptions = SaveOptions.Build(_appManager.ZoneId);
+            saveOptions.PreserveUntouchedAttributes = true;
+            saveOptions.PreserveUnknownLanguages = true;
+            //saveOptions.Languages = _appManager.Read.Zone.Languages(true);
 
             var orig = _appManager.Cache.List[id];
             var tempEnt = new Entity(0, "", values);
@@ -141,10 +140,5 @@ namespace ToSic.Eav.Apps.Parts
             return Save(newE);
         }
 
-
-        public List<ItemHistory> GetHistory(int id) => _appManager.DataController.Versioning.GetHistoryList(id, true);
-
-        public void RestorePrevious(int id, int historyId)
-            => _appManager.DataController.Versioning.RestoreEntity(id, historyId); 
     }
 }

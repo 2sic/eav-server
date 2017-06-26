@@ -37,7 +37,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
         {
             var results = TestLoadApp(2);
 
-            Assert.AreEqual(1072, results.Entities.Count, "tried counting");
+            Assert.AreEqual(1097, results.Entities.Count, "tried counting");
         }
 
         [TestMethod]

@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using ToSic.Eav.Data;
+using ToSic.Eav.Interfaces;
 using ExportImportMessage = ToSic.Eav.Persistence.Logging.ExportImportMessage;
 
 namespace ToSic.Eav.Persistence.Interfaces
@@ -17,8 +19,7 @@ namespace ToSic.Eav.Persistence.Interfaces
         ///// <param name="overwriteFiles"></param>
         ///// <param name="messages"></param>
         ///// <param name="fileIdMapping">The fileIdMapping is needed to re-assign the existing "File:" parameters while importing the content</param>
-        void TransferFilesToTennant(string sourceFolder, string destinationFolder)//, Boolean overwriteFiles, List<ExportImportMessage> messages)
-            ;
+        void TransferFilesToTennant(string sourceFolder, string destinationFolder);
 
         Version TennantVersion { get; }
 
@@ -34,5 +35,7 @@ namespace ToSic.Eav.Persistence.Interfaces
         string TargetPath(string folder);
         void MapExistingFilesToImportSet(Dictionary<int, string> filesAndPaths, Dictionary<int, int> fileIdMap);
         void CreateFoldersAndMapToImportIds(Dictionary<int, string> foldersAndPath, Dictionary<int, int> folderIdCorrectionList, List<ExportImportMessage> importLog);
+
+        SaveOptions SaveOptions(int zoneId);
     }
 }

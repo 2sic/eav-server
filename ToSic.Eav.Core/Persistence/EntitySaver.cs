@@ -46,7 +46,7 @@ namespace ToSic.Eav.Persistence
 
             // Optionaly remove unknown - if possible - of both original and new
             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-            if (!saveOptions.PreserveUnknownAttributes && ct != null)
+            if (!saveOptions.PreserveUnknownAttributes && ct.Attributes != null)
             {
                 var keys = ct.Attributes.Select(a => a.Name).ToList();
                 keys.Add(Constants.EntityFieldGuid);
@@ -66,13 +66,13 @@ namespace ToSic.Eav.Persistence
 
             #region Step 3: clear unwanted languages as needed
 
-            var hasLanguages = update.GetUsedLanguages().Count + original.GetUsedLanguages().Count > 0;
+            var hasLanguages = update.GetUsedLanguages().Count + original?.GetUsedLanguages().Count > 0;
 
             // pre check if languages are properly available for clean-up or merge
             if (hasLanguages && !saveOptions.PreserveUnknownLanguages)
                 if ((!saveOptions.Languages?.Any() ?? true)
                     || string.IsNullOrWhiteSpace(saveOptions.PrimaryLanguage)
-                    || saveOptions.Languages.All(l => l.EnvironmentKey != saveOptions.PrimaryLanguage))
+                    || saveOptions.Languages.All(l => !l.Matches(saveOptions.PrimaryLanguage)))
                     throw new Exception("primary language must exist in languages, cannot continue preparation to save with unclear language setup");
 
 
@@ -119,7 +119,7 @@ namespace ToSic.Eav.Persistence
                 foreach (var value in orderedValues)
                 {
                     // create filtered list of languages
-                    var newLangs = value.Languages?.Where(l => languages.Any(sysLang => sysLang.EnvironmentKey == l.Key)).ToList();
+                    var newLangs = value.Languages?.Where(l => languages.Any(sysLang => sysLang.Matches(l.Key))).ToList();
                     // only keep this value, if it is either the first (so contains primary or null-language) or that it still has a remaining language assignment
                     if (values.Any() && !(newLangs?.Any() ?? false)) continue;
                     value.Languages = newLangs;
@@ -168,8 +168,8 @@ namespace ToSic.Eav.Persistence
                     var valInResults = result.Values.FirstOrDefault(rv => rv.Languages.Any(rvl => rvl.Key == valLang.Key));
                     if (valInResults == null)
                         // special case: if the original set had named languages, and the new set has no language set (undefined = primary)
-                        if (valLang.Key != saveOptions.PrimaryLanguage &&   // make sure it's not the primary language...
-                            result.Values.Any(v => v.Languages?.Count == 0)) // and there already is a result with the primary language, just as "undefined"
+                        // to detect this, we must check if we're on primary, and there may be a "undefined" language assignment
+                        if (!(valLang.Key == saveOptions.PrimaryLanguage && result.Values.Any(v => v.Languages?.Count == 0))) 
                             remainingLanguages.Add(valLang);
                 }
 

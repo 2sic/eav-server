@@ -14,7 +14,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             var newZone = new ToSicEavZones { Name = name };
             DbContext.SqlDb.Add(newZone);
 
-            DbContext.Dimensions.AddRootDimension(Constants.CultureSystemKey, "Culture Root", newZone);
+            DbContext.Dimensions.AddRootCultureNode(Constants.CultureSystemKey, "Culture Root", newZone);
 
             DbContext.App.AddApp(newZone);
 

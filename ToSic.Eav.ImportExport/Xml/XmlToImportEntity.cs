@@ -13,95 +13,100 @@ namespace ToSic.Eav.ImportExport.Xml
 	/// </summary>
 	public class XmlToImportEntity
 	{
+	    public XmlToImportEntity(List<DimensionDefinition> srcLanguages, int? srcDefLang, List<DimensionDefinition> envLanguages, string envDefLang)
+	    {
+	        _envLangs = GenerateDummyDefaultLanguageIfNecessary(envLanguages, envDefLang);
+	        _envDefLang = envDefLang;
+            // prepare language mapper-lists, to later assign in case import/target have different languages
+            _relevantSrcLangsByPriority = ReduceSrcLangsToRelevantSet(srcLanguages, srcDefLang, _envLangs, _envDefLang);
+	    }
 
-		/// <summary>
-		/// Returns an EAV import entity
-		/// </summary>
-		/// <param name="xEntity">xEntity to parse</param>
-		/// <param name="assignmentObjectTypeId">assignmentObjectTypeId of the Entity</param>
-		/// <param name="environmentDimensions">all Dimensions that exist in the Target-App/Zone</param>
-		/// <param name="sourceDimensions">all Dimensions that exist in the Source-App/Zone</param>
-		/// <param name="sourceDefaultDimensionId">Default Dimension ID of the Surce-App/Zone</param>
-		/// <param name="defaultLanguage">Default Language of the Target-App/Zone</param>
-		/// <param name="keyNumber">KeyNumber of the Entity</param>
-		/// <param name="keyGuid">KeyGuid of the Entity</param>
-		/// <param name="keyString">KeyString of the Entity</param>
-		public static Entity BuildEntityFromXml(XElement xEntity, int assignmentObjectTypeId, List<DimensionDefinition> environmentDimensions, List<Dimension> sourceDimensions, int? sourceDefaultDimensionId, string defaultLanguage, int? keyNumber = null, Guid? keyGuid = null, string keyString = null)
+	    private List<DimensionDefinition> GenerateDummyDefaultLanguageIfNecessary(List<DimensionDefinition> envLanguages, string defaultLanguage)
+	    {
+            // if the environment doesn't have languages defined, we'll create a temp-entry for the main language to allow mapping
+            return envLanguages.Any() 
+                ? envLanguages
+                : new List<DimensionDefinition>
+                {
+                    new DimensionDefinition
+                    {
+                        Active = true,
+                        EnvironmentKey = defaultLanguage,
+	                    //Name = "(added by import System, default language " + defaultLanguage + ")",
+	                    //Key = Constants.CultureSystemKey
+	                }
+                };
+
+
+        }
+
+        private readonly List<string> _relevantSrcLangsByPriority;
+	    private readonly List<DimensionDefinition> _envLangs;
+	    private readonly string _envDefLang;
+        
+
+        /// <summary>
+        /// Returns an EAV import entity
+        /// </summary>
+        /// <param name="xEntity">xEntity to parse</param>
+        /// <param name="metadata"></param>
+        public Entity BuildEntityFromXml(XElement xEntity, Metadata metadata)
 		{
-		    var targetValues = new Dictionary<string, IAttribute>();// List<IValue>>();
+		    var targetValues = new Dictionary<string, IAttribute>();
 
 			// Group values by StaticName
 			var valuesGroupedByStaticName = xEntity.Elements(XmlConstants.ValueNode)
-				.GroupBy(v => v.Attribute(XmlConstants.KeyAttr).Value, e => e, (key, e) => new { StaticName = key, Values = e.ToList() });
+				.GroupBy(v => v.Attribute(XmlConstants.KeyAttr)?.Value, e => e, (key, e) => new { StaticName = key, Values = e.ToList() });
 
-            // todo: prepare language mapper-lists, to later assign in case import/target have different languages
-            // if(targetDimensions == null)
 
-			// This list will contain all source dimensions
-			var sourceLangs = new List<Dimension>();
-
-		    foreach (var envDim in environmentDimensions.OrderByDescending(p => p.EnvironmentKey == defaultLanguage).ThenBy(p => p.EnvironmentKey))
-		    {
-				// Add exact match source language, if exists
-				var exactMatchSourceDimension = sourceDimensions.FirstOrDefault(p => p.Key == envDim.EnvironmentKey);
-				if (exactMatchSourceDimension != null)
-					sourceLangs.Add(exactMatchSourceDimension);
-
-				// Add un-exact match language
-				var unExactMatchSourceDimensions = sourceDimensions.Where(sd => sd.Key != envDim.EnvironmentKey && sd.Key.StartsWith(envDim.EnvironmentKey.Substring(0, 3)))
-					.OrderByDescending(p => p.Key == defaultLanguage)
-					.ThenByDescending(p => p.Key.Substring(0, 2) == p.Key.Substring(3, 2))
-					.ThenBy(p => p.Key);
-				sourceLangs.AddRange(unExactMatchSourceDimensions);
-
-				// Add primary language, if current target is primary
-                if (envDim.EnvironmentKey == defaultLanguage && sourceDefaultDimensionId.HasValue)
-				{
-					var sourcePrimaryLanguage = sourceDimensions.FirstOrDefault(p => p.DimensionId == sourceDefaultDimensionId);
-					if (sourcePrimaryLanguage != null && !sourceLangs.Contains(sourcePrimaryLanguage))
-						sourceLangs.Add(sourcePrimaryLanguage);
-				}
-		    }
-
+            var envLangsSortedByPriority = _envLangs
+                .OrderByDescending(p => p.Matches(_envDefLang))
+                .ThenBy(p => p.EnvironmentKey)
+                .ToList();
 
 		    // Process each attribute (values grouped by StaticName)
             foreach (var sourceAttrib in valuesGroupedByStaticName)
 			{
-				var sourceValues = sourceAttrib.Values;
+				var xmlValuesOfAttrib = sourceAttrib.Values;
 				var tempTargetValues = new List<ImportValue>();
 
 				// Process each target's language
-				foreach (var targetDimension in environmentDimensions.OrderByDescending(p => p.EnvironmentKey == defaultLanguage).ThenBy(p => p.EnvironmentKey))
+				foreach (var envLang in envLangsSortedByPriority)
 				{
 					XElement sourceValue = null;
 					var readOnly = false;
 
-					foreach (var sourceLanguage in sourceLangs)
+                    // find the xml-node which best matches the language we want to fill in
+					foreach (var sourceLanguage in _relevantSrcLangsByPriority)
 					{
-						sourceValue = sourceValues.FirstOrDefault(p => p.Elements(XmlConstants.ValueDimNode).Any(d => d.Attribute(XmlConstants.DimId).Value == sourceLanguage.DimensionId.ToString()));
+                        // find a possible match for exactly this language
+						sourceValue = xmlValuesOfAttrib.FirstOrDefault(p => p.Elements(XmlConstants.ValueDimNode).Any(d => d.Attribute(XmlConstants.DimId)?.Value == sourceLanguage));
+						if (sourceValue == null) continue;
 
-						if (sourceValue == null)
-							continue;
+                        // if match found, check what the read/write should be
+					    var textVal = sourceValue.Elements(XmlConstants.ValueDimNode)
+					        .FirstOrDefault(p => p.Attribute(XmlConstants.DimId)?.Value == sourceLanguage)?
+					        .Attribute("ReadOnly")?.Value ?? "false";
 
-						readOnly = Boolean.Parse(sourceValue.Elements(XmlConstants.ValueDimNode).FirstOrDefault(p => p.Attribute(XmlConstants.DimId).Value == sourceLanguage.DimensionId.ToString()).Attribute("ReadOnly").Value);
+                        readOnly = bool.Parse(textVal);
 
 						// Override ReadOnly for primary target language
-						if (targetDimension.EnvironmentKey == defaultLanguage)
+						if (envLang.EnvironmentKey == _envDefLang)
 							readOnly = false;
 
 						break;
 					}
 
 					// Take first value if there is only one value wihtout a dimension (default / fallback value), but only in primary language
-					if (sourceValue == null && sourceValues.Count == 1 && !sourceValues.Elements(XmlConstants.ValueDimNode).Any() && targetDimension.EnvironmentKey == defaultLanguage)
-						sourceValue = sourceValues.First();
+					if (sourceValue == null && xmlValuesOfAttrib.Count == 1 && !xmlValuesOfAttrib.Elements(XmlConstants.ValueDimNode).Any() && envLang.Matches(_envDefLang))
+						sourceValue = xmlValuesOfAttrib.First();
 
 					// Process found value
 					if (sourceValue != null)
 					{
 						var dimensionsToAdd = new List<ILanguage>();
-						if (environmentDimensions.Single(p => p.EnvironmentKey == targetDimension.EnvironmentKey).DimensionId >= 1)
-							dimensionsToAdd.Add(new Dimension { Key = targetDimension.EnvironmentKey, ReadOnly = readOnly });
+						if (_envLangs.Single(p => p.Matches(envLang.EnvironmentKey)).DimensionId >= 1)
+							dimensionsToAdd.Add(new Dimension { Key = envLang.EnvironmentKey, ReadOnly = readOnly });
 
 						// If value has already been added to the list, add just dimension with original ReadOnly state
 						var existingImportValue = tempTargetValues.FirstOrDefault(p => p.XmlValue == sourceValue);
@@ -132,21 +137,56 @@ namespace ToSic.Eav.ImportExport.Xml
 			}
 
             var targetEntity = new Entity(Guid.Parse(xEntity.Attribute(XmlConstants.GuidNode).Value), xEntity.Attribute(XmlConstants.AttSetStatic).Value, targetValues.ToDictionary(x => x.Key, y => (object)y.Value));
-            targetEntity.SetMetadata(new Metadata
-                {
-                    TargetType = assignmentObjectTypeId,
-                    KeyNumber = keyNumber,
-                    KeyGuid = keyGuid,
-                    KeyString = keyString
-                });
-
-            //targetEntity.Attributes = targetValues;
+		    if (metadata != null) targetEntity.SetMetadata(metadata);
 
 			return targetEntity;
 		}
 
+        /// <summary>
+        /// Create a translation for one system with certain languages to another system with other languages. 
+        /// Will first try exact match, then nearest match so that "de-CH" in a source will be the "de-DE" if no exact match exists.
+        /// </summary>
+        /// <param name="srcLangs"></param>
+        /// <param name="srcDefLang"></param>
+        /// <param name="envLangs"></param>
+        /// <param name="envDefLang"></param>
+        /// <returns></returns>
+	    private static List<string> ReduceSrcLangsToRelevantSet(List<DimensionDefinition> srcLangs, int? srcDefLang,
+            List<DimensionDefinition> envLangs, string envDefLang)
+        {
+	        var languageMap = new List<DimensionDefinition>();
 
-        private class ImportValue
+            foreach (var envDim in
+	            envLangs.OrderByDescending(p => p.Matches(envDefLang)).ThenBy(p => p.EnvironmentKey))
+	        {
+	            // Add exact match source language, if exists
+	            var exactMatchSourceDimension = srcLangs.FirstOrDefault(p => envDim.Matches(p.EnvironmentKey));
+	            if (exactMatchSourceDimension != null)
+	                languageMap.Add(exactMatchSourceDimension);
+
+	            // Add un-exact match language
+	            var unExactMatchSourceDimensions = srcLangs.Where(
+	                    sd =>
+	                        !envDim.Matches(sd.EnvironmentKey) &&
+	                        sd.EnvironmentKey.StartsWith(envDim.EnvironmentKey.ToLowerInvariant().Substring(0, 3)))
+	                .OrderByDescending(p => p.EnvironmentKey == envDefLang)
+	                .ThenByDescending(p => p.EnvironmentKey.Substring(0, 2) == p.EnvironmentKey.Substring(3, 2))
+	                .ThenBy(p => p.EnvironmentKey);
+	            languageMap.AddRange(unExactMatchSourceDimensions);
+
+	            // Add primary language, if current target is primary
+	            if (envDim.Matches(envDefLang) && srcDefLang.HasValue)
+	            {
+	                var sourcePrimaryLanguage = srcLangs.FirstOrDefault(p => p.DimensionId == srcDefLang);
+	                if (sourcePrimaryLanguage != null && !languageMap.Contains(sourcePrimaryLanguage))
+	                    languageMap.Add(sourcePrimaryLanguage);
+	            }
+	        }
+	        return languageMap.Select(x => x.DimensionId.ToString()).ToList();
+	    }
+
+
+	    private class ImportValue
         {
             public XElement XmlValue;
             public List<ILanguage> Dimensions;

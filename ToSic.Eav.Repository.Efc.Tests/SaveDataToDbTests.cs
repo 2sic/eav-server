@@ -23,7 +23,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         public void LoadOneAndSaveUnchanged()
         {
             var test = new TestValuesOnPc2dm();
-            var so = new SaveOptions();
+            var so = SaveOptions.Build(test.ZoneId);
             var dbi = DbDataController.Instance(test.ZoneId, test.AppId);
             var trans = dbi.SqlDb.Database.BeginTransaction();
 
@@ -51,7 +51,10 @@ namespace ToSic.Eav.Repository.Efc.Tests
         public void LoadOneChangeABitAndSave()
         {
             var test = new TestValuesOnPc2dm();
-            var so = new SaveOptions(){PreserveUntouchedAttributes = true, PreserveUnknownLanguages = true};
+            var so = SaveOptions.Build(test.ZoneId);
+            so.PreserveUntouchedAttributes = true;
+            so.PreserveUnknownLanguages = true;
+
             var dbi = DbDataController.Instance(test.ZoneId, test.AppId);
             var trans = dbi.SqlDb.Database.BeginTransaction();
 
@@ -89,7 +92,10 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var ctName = "Simple Content";
             var ctTitle = "wonderful new title";
             var test = new TestValuesOnPc2dm();
-            var so = new SaveOptions() { PreserveUntouchedAttributes = true, PreserveUnknownLanguages = true };
+            var so = SaveOptions.Build(test.ZoneId);
+            so.PreserveUntouchedAttributes = true;
+            so.PreserveUnknownLanguages = true;
+
             var dbi = DbDataController.Instance(test.ZoneId, test.AppId);
             var trans = dbi.SqlDb.Database.BeginTransaction();
 

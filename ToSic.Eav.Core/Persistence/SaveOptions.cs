@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Data;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Interfaces;
 
 namespace ToSic.Eav.Persistence
@@ -8,7 +7,18 @@ namespace ToSic.Eav.Persistence
 
     public class SaveOptions
     {
-        //public SaveTypes Mode = SaveTypes.Update;
+        private SaveOptions()
+        {
+        }
+
+        public static SaveOptions Build(int zoneId) => Factory.Resolve<IImportExportEnvironment>().SaveOptions(zoneId);
+
+        public SaveOptions(string primaryLanguage, List<DimensionDefinition> languages)
+        {
+            PrimaryLanguage = primaryLanguage;
+            Languages = languages;
+        }
+
         public bool PreserveUntouchedAttributes = false;
         public bool PreserveUnknownAttributes = false;
 
@@ -27,7 +37,7 @@ namespace ToSic.Eav.Persistence
             }
         }
 
-        private string _priLang = null;
+        private string _priLang;
         public List<DimensionDefinition> Languages = null;
         public bool PreserveExistingLanguages = false;
         public bool PreserveUnknownLanguages = false;

@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using ToSic.Eav.Apps.Interfaces;
+using ToSic.Eav.Data;
+using ToSic.Eav.Persistence;
 using ToSic.Eav.Repository.Efc;
 
 namespace ToSic.Eav.Apps
@@ -49,36 +53,12 @@ namespace ToSic.Eav.Apps
         public void SaveLanguage(string cultureCode, string cultureText, bool active)
         {
             DataController.Dimensions.AddOrUpdateLanguage(cultureCode, cultureText, active);
-            //LanguageCache.Remove(ZoneId);
             SystemManager.PurgeZoneList();
         }
 
-
-        //private static readonly Dictionary<int, List<DimensionDefinition>> LanguageCache =
-        //    new Dictionary<int, List<DimensionDefinition>>();
-
-        // todo: move retrieval to an interface, then move this read to ZoneRuntime!!!
-        // 2017-06-25 old
-        //public List<DimensionDefinition> Languages
-        //{
-        //    get
-        //    {
-        //        // note: cache at this level (to not instantiate a DB controller !) 
-        //        if (!LanguageCache.ContainsKey(ZoneId))
-        //        {
-        //            LanguageCache[ZoneId] = DataController.Dimensions.GetLanguages(true).Cast<DimensionDefinition>()
-        //                // ReSharper disable once SuspiciousTypeConversion.Global
-        //                //.Select(d => new ZoneLanguagesTemp {Active = d.Active, EvironmentKey = d.EnvironmentKey})
-        //                .ToList();
-        //        }
-        //        return LanguageCache[ZoneId];
-        //    }
-        //}
+        #endregion
 
 
-    #endregion
-
-        
     }
-    
+
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Apps;
 using ToSic.Eav.ImportExport.Versioning;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Repository.Efc.Tests.Mocks;
@@ -31,15 +32,18 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         #endregion
 
+        // todo: move tests to tests of ToSic.Eav.Apps
         [TestMethod]
         public void DevPc2dmRestoreV18()
         {
             var id = DevPc2dmItemOnHome;
             var version = 17;
+            var appMan = new AppManager(td.ZoneId, td.AppId);
             var dc = DbDataController.Instance(td.ZoneId, td.AppId);
-            var all = dc.Versioning.GetHistoryList(id, false);
+            var all = appMan.Entities.VersionHistory(id);  dc.Versioning.GetHistoryList(id, false);
             var vId = all.First(x => x.VersionNumber == version).ChangeSetId;
-            dc.Versioning.RestoreEntity(DevPc2dmItemOnHome, vId);
+
+            appMan.Entities.VersionRestore(DevPc2dmItemOnHome, vId);
 
         }
 

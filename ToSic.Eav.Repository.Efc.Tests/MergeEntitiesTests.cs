@@ -91,11 +91,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         readonly SaveOptions _saveSkipExisting = CreateOptions(SkipExistingAttributes:true, PreserveUnknownAttributes:true);
         private static SaveOptions CreateOptions(bool? PreserveExistingAttributes = null, bool? PreserveUnknownAttributes = null, bool? PreserveUnknownLanguages = null, bool? PreserveExistingLanguages = null, bool? SkipExistingAttributes = null)
         {
-            var x = new SaveOptions
-            {
-                PrimaryLanguage = langEn.Key,
-                Languages = activeLangs
-            };
+            var x = new SaveOptions(langEn.Key, activeLangs);
             if (PreserveExistingAttributes != null)
                 x.PreserveUntouchedAttributes = PreserveExistingAttributes.Value;
             if (PreserveUnknownAttributes != null)

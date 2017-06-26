@@ -213,7 +213,7 @@ namespace ToSic.Eav.Persistence.Efc
                                     {
                                         DimensionId = l.DimensionId,
                                         ReadOnly = l.ReadOnly,
-                                        Key = l.Dimension.EnvironmentKey.ToLower()
+                                        Key = l.Dimension.EnvironmentKey.ToLowerInvariant()
                                     } as ILanguage).ToList(),
                                 v2.ChangeLogCreated
                             })

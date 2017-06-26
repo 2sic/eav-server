@@ -25,7 +25,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         private readonly DbDataController _context;
         private AppDataPackage _entireApp;
 
-        public SaveOptions SaveOptions = new SaveOptions();
+        public SaveOptions SaveOptions;// = new SaveOptions();
         #endregion
 
         #region Properties
@@ -40,18 +40,17 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Initializes a new instance of the Import class.
         /// </summary>
-        public DbImport(int? zoneId, int? appId, bool dontUpdateExistingAttributeValues = true, bool keepAttributesMissingInImport = true)
+        public DbImport(int? zoneId, int appId, bool skipExistingAttributes = true, bool preserveUntouchedAttributes = true)
         {
-            if(appId == null)
-                throw new Exception("appid is null, can't continue with import");
-
             _context = DbDataController.Instance(zoneId, appId);
 
-            SaveOptions.SkipExistingAttributes = dontUpdateExistingAttributeValues;
+            SaveOptions = Factory.Resolve<IImportExportEnvironment>().SaveOptions(_context.ZoneId);
 
-            SaveOptions.PreserveUntouchedAttributes = keepAttributesMissingInImport;
+            SaveOptions.SkipExistingAttributes = skipExistingAttributes;
 
-            SaveOptions.Languages = _context.Dimensions.GetLanguageListForImport(SaveOptions.PrimaryLanguage).ToList();
+            SaveOptions.PreserveUntouchedAttributes = preserveUntouchedAttributes;
+
+            //SaveOptions.Languages = _context.Dimensions.GetLanguageListForImport(SaveOptions.PrimaryLanguage).ToList();
 
         }
 
@@ -267,7 +266,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                 entities.Add(PrepareEntityForImport(entity));
             }
-            _context.Entities.SaveEntity(entities, new SaveOptions()); // don't use the standard save options, as this is attributes only
+            _context.Entities.SaveEntity(entities, SaveOptions.Build(_context.ZoneId)); // don't use the standard save options, as this is attributes only
         }
 
         /// <summary>
