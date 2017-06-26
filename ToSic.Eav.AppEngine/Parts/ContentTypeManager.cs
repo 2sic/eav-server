@@ -42,7 +42,7 @@ namespace ToSic.Eav.Apps.Parts
                 TargetType = Constants.MetadataForField,
                 KeyNumber = attributeId
             };
-            _appManager.Entities.TempAddMetadata(meta, "@All", newValues); // todo: put "@All" into some constant
+            _appManager.Entities.SaveMetadata(meta, "@All", newValues); // todo: put "@All" into some constant
         }
 
         public bool UpdateInputType(int attributeId, string inputType)
@@ -55,7 +55,7 @@ namespace ToSic.Eav.Apps.Parts
                 TargetType = Constants.MetadataForField,
                 KeyNumber = attributeId
             };
-            _appManager.Entities.TempAddMetadata(meta, "@All", newValues); // todo: put "@All" into some constant
+            _appManager.Entities.SaveMetadata(meta, "@All", newValues); // todo: put "@All" into some constant
             return true;
         }
 

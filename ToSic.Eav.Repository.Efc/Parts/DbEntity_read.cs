@@ -37,7 +37,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// Get a single Entity by EntityGuid. Ensure it's not deleted and has context's AppId
         /// </summary>
         /// <returns>Entity or throws InvalidOperationException</returns>
-        public ToSicEavEntities GetMostCurrentDbEntity(Guid entityGuid)
+        internal ToSicEavEntities GetMostCurrentDbEntity(Guid entityGuid)
             // GetEntity should never return a draft entity that has a published version
             => GetEntitiesByGuid(entityGuid).Single(e => !e.PublishedEntityId.HasValue);
 

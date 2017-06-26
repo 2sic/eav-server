@@ -88,8 +88,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             var entityModelSerialized = export.XmlEntity(entityId);
             var timelineItem = new ToSicEavDataTimeline
             {
-                SourceTable = EntitiesTableName,// "ToSIC_EAV_Entities",
-                Operation = Constants.DataTimelineEntityStateOperation,
+                SourceTable = EntitiesTableName, Operation = Constants.DataTimelineEntityStateOperation,
                 NewData = entityModelSerialized.ToString(),
                 SourceGuid = entityGuid,
                 SourceId = entityId,

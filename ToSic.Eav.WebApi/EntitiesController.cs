@@ -335,16 +335,15 @@ namespace ToSic.Eav.WebApi
         public List<ItemHistory> History(int appId, int entityId)
         {
             SetAppIdAndUser(appId);
-            var versions = AppManager.Entities.VersionHistory(entityId);// CurrentContext.Versioning.GetEntityHistory(entityId);
+            var versions = AppManager.Entities.VersionHistory(entityId);
             return versions;
         }
 
         [HttpGet]
         public bool Restore(int appId, int entityId, int changeId)
         {
-            //throw new Exception("this is not tested yet!");
             SetAppIdAndUser(appId);
-            AppManager.Entities.VersionRestore(entityId, changeId); // CurrentContext.Versioning.RestoreEntityVersion(entityId, changeId, DefaultCultureDimension);
+            AppManager.Entities.VersionRestore(entityId, changeId);
             return true;
         }
         #endregion

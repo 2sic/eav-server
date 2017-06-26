@@ -12,9 +12,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
 {
     public partial class DbEntity
     {
-        private List<DimensionDefinition> zoneLanguages = null;
+        private List<DimensionDefinition> _zoneLanguages;
 
-        public int SaveEntity(IEntity newEnt, SaveOptions so)
+        internal int SaveEntity(IEntity newEnt, SaveOptions so)
         {
 
             #region Step 1: Do some initial error checking and preparations
@@ -28,13 +28,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
             var usedLanguages = newEnt.GetUsedLanguages();
 
             // continue here - must ensure that the languages are passed in, cached - or are cached on the DbEntity... for multiple saves
-            if (zoneLanguages == null)
-                zoneLanguages = so.Languages;// DbContext.Dimensions.GetLanguages();
-            if (zoneLanguages == null)
+            if (_zoneLanguages == null)
+                _zoneLanguages = so.Languages;// DbContext.Dimensions.GetLanguages();
+            if (_zoneLanguages == null)
                 throw new Exception("languages missing in save-options. cannot continue");
 
             if(usedLanguages.Count > 0)
-                if (!usedLanguages.All(l => zoneLanguages.Any(zl => zl.Matches(l.Key))))
+                if (!usedLanguages.All(l => _zoneLanguages.Any(zl => zl.Matches(l.Key))))
                     throw new Exception("found languages in save which are not available in environment");
             #endregion Test languages exist
 
@@ -181,7 +181,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                             ChangeLogCreated = changeId, // todo: remove some time later
                             ToSicEavValuesDimensions = value.Languages?.Select(l => new ToSicEavValuesDimensions
                             {
-                                DimensionId = zoneLanguages.Single(ol => ol.Matches(l.Key)).DimensionId,
+                                DimensionId = _zoneLanguages.Single(ol => ol.Matches(l.Key)).DimensionId,
                                 ReadOnly = l.ReadOnly
                             }).ToList()
                         });
@@ -230,7 +230,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
 
 
-        public List<int> SaveEntity(List<IEntity> entities, SaveOptions saveOptions)
+        internal List<int> SaveEntity(List<IEntity> entities, SaveOptions saveOptions)
         {
             var ids = new List<int>();
             var ownTransaction = DbContext.SqlDb.Database.CurrentTransaction == null ? DbContext.SqlDb.Database.BeginTransaction() : null;

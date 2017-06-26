@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
-using ToSic.Eav.ImportExport.Versioning;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence;
-using ToSic.Eav.Persistence.Interfaces;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -79,7 +77,7 @@ namespace ToSic.Eav.Apps.Parts
             return new Tuple<int, Guid>(eid, _appManager.DataController.Entities.TempLastSaveGuid);
         }
 
-        public void TempAddMetadata(Metadata target, string typeName, Dictionary<string, object> values)
+        public void SaveMetadata(Metadata target, string typeName, Dictionary<string, object> values)
         {
             if(target.TargetType != Constants.MetadataForField || target.KeyNumber == null || target.KeyNumber == 0)
                 throw new NotImplementedException("atm this command only creates metadata for entities with id-keys");
@@ -106,14 +104,11 @@ namespace ToSic.Eav.Apps.Parts
             var saveOptions = SaveOptions.Build(_appManager.ZoneId);
             saveOptions.PreserveUntouchedAttributes = true;
             saveOptions.PreserveUnknownLanguages = true;
-            //saveOptions.Languages = _appManager.Read.Zone.Languages(true);
 
             var orig = _appManager.Cache.List[id];
             var tempEnt = new Entity(0, "", values);
             var saveEnt = EntitySaver.CreateMergedForSaving(orig, tempEnt, saveOptions);
             Save(saveEnt, saveOptions);
-
-            //_appManager.DataController.Entities.UpdateAttributesAndPublishing(id, values); //, dimensionIds: dimensionIds);
         }
 
         /// <summary>

@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Linq;
-using System.Xml.XPath;
-using ToSic.Eav.Data;
-using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Versioning;
-using ToSic.Eav.ImportExport.Xml;
-using ToSic.Eav.Persistence.Interfaces;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
@@ -27,8 +20,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <remarks>
         /// Must use entity-id, because even though the Guid feels safer, but it's not unique in this DB, as the same GUID can exist in various apps...
         /// </remarks>
-        public ItemHistory GetItem(int entityId, int historyId)
-            => GetItemHistory(entityId, historyId, true).First();
+        public ItemHistory GetItem(int entityId, int historyId) => GetItemHistory(entityId, historyId, true).First();
 
 
         /// <summary>
@@ -40,8 +32,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <remarks>
         /// Must use entity-id, because even though the Guid feels safer, but it's not unique in this DB, as the same GUID can exist in various apps...
         /// </remarks>
-        public List<ItemHistory> GetHistoryList(int entityId, bool includeData)
-            => GetItemHistory(entityId, 0, includeData);
+        public List<ItemHistory> GetHistoryList(int entityId, bool includeData) => GetItemHistory(entityId, 0, includeData);
 
         /// <summary>
         /// Retrieve the history-list of a specific item
