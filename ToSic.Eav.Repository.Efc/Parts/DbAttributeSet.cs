@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Enums;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
@@ -12,36 +11,30 @@ namespace ToSic.Eav.Repository.Efc.Parts
     {
         public DbAttributeSet(DbDataController dc) : base(dc) { }
 
+        private IQueryable<ToSicEavAttributeSets> GetSetCoreQuery()
+            => DbContext.SqlDb.ToSicEavAttributeSets
+                .Include(a => a.ToSicEavAttributesInSets)
+                .ThenInclude(a => a.Attribute)
+                .Where(a => a.AppId == DbContext.AppId && !a.ChangeLogDeleted.HasValue);
 
         /// <summary>
         /// Get a List of all AttributeSets
         /// </summary>
-        public List<ToSicEavAttributeSets> GetDbAttribSets()
-            => DbContext.SqlDb.ToSicEavAttributeSets
-            .Include(a => a.ToSicEavAttributesInSets)
-                .ThenInclude(a => a.Attribute)
-            .Where(a => a.AppId == DbContext.AppId && !a.ChangeLogDeleted.HasValue)
-            .ToList();
+        internal List<ToSicEavAttributeSets> GetDbAttribSets()
+            => GetSetCoreQuery().ToList();
 
 
         /// <summary>
         /// Get a single AttributeSet
         /// </summary>
-        public ToSicEavAttributeSets GetDbAttribSet(int attributeSetId)
-            => DbContext.SqlDb.ToSicEavAttributeSets
-            .SingleOrDefault(
-                a => a.AttributeSetId == attributeSetId
-                     && a.AppId == DbContext.AppId
-                     && !a.ChangeLogDeleted.HasValue);
+        internal ToSicEavAttributeSets GetDbAttribSet(int attributeSetId)
+            => GetSetCoreQuery().SingleOrDefault(a => a.AttributeSetId == attributeSetId);
 
         /// <summary>
         /// Get a single AttributeSet
         /// </summary>
         public ToSicEavAttributeSets GetDbAttribSet(string staticName)
-            => DbContext.SqlDb.ToSicEavAttributeSets.SingleOrDefault(
-                a => a.StaticName == staticName
-                     && a.AppId == DbContext.AppId
-                     && !a.ChangeLogDeleted.HasValue);
+            => GetSetCoreQuery().SingleOrDefault(a => a.StaticName == staticName);
 
 
         private ToSicEavAttributeSets GetDbAttribSetWithEitherName(string name)
@@ -50,18 +43,14 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             try
             {
-                var found = DbContext.SqlDb.ToSicEavAttributeSets.Where(s =>
-                        s.AppId == appId
-                        && s.StaticName == name
-                        && !s.ChangeLogDeleted.HasValue)
+                var found = GetSetCoreQuery()
+                    .Where(s => s.StaticName == name)
                     .ToList();
 
                 // if not found, try the non-static name as fallback
                 if (found.Count == 0)
-                    found = DbContext.SqlDb.ToSicEavAttributeSets.Where(s =>
-                            s.AppId == appId
-                            && s.Name == name
-                            && !s.ChangeLogDeleted.HasValue)
+                    found = GetSetCoreQuery()
+                        .Where(s => s.Name == name)
                         .ToList();
 
                 if (found.Count != 1)
@@ -82,10 +71,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// Test whether AttributeSet exists on specified App and is not deleted
         /// </summary>
         internal bool DbAttribSetExists(int appId, string staticName)
-            => DbContext.SqlDb.ToSicEavAttributeSets.Any(
-                a => !a.ChangeLogDeleted.HasValue
-                     && a.AppId == appId
-                     && a.StaticName == staticName);
+            => GetSetCoreQuery().Any(a => a.StaticName == staticName);
+            //DbContext.SqlDb.ToSicEavAttributeSets.Any(
+            //    a => !a.ChangeLogDeleted.HasValue
+            //         && a.AppId == appId
+            //         && a.StaticName == staticName);
 
 
         /// <summary>

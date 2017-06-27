@@ -58,5 +58,8 @@ namespace ToSic.Eav.Data.Builder
                 ct.Attributes.First(a => string.Equals(a.Name, name, StringComparison.InvariantCultureIgnoreCase))
                     .AttributeId;
         }
+
+        public static void SetSortOrder(this AttributeDefinition attDef, int sortOrder) => attDef.SortOrder = sortOrder;
+
     }
 }

@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Persistence.Logging;
 
@@ -75,33 +76,29 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Append a new Attribute to an AttributeSet
         /// </summary>
-        internal int AppendToEndAndSave(int attributeSetId, AttributeDefinition attributeDefinition)// string staticName, string type, bool isTitle)
+        internal int AppendToEndAndSave(int attributeSetId, AttributeDefinition attributeDefinition)
         {
             var maxIndex = DbContext.SqlDb.ToSicEavAttributesInSets
                 .Where(a => a.AttributeSetId == attributeSetId)
                 .ToList() // important because it otherwise has problems with the next step...
                 .Max(s => (int?) s.SortOrder);
 
-            maxIndex = !maxIndex.HasValue ? 0 : maxIndex + 1;
+            attributeDefinition.SetSortOrder(maxIndex + 1 ?? 0);
 
-            return AddAttributeAndSave(attributeSetId, attributeDefinition);// staticName, type, maxIndex.Value, /*1,*/ isTitle);
+            return AddAttributeAndSave(attributeSetId, attributeDefinition);
         }
         
         /// <summary>
         /// Append a new Attribute to an AttributeSet
         /// </summary>
-        public int AddAttributeAndSave(int attributeSetId, AttributeDefinition attributeDefinition)//string staticName, string type, int sortOrder, /*int attributeGroupId,*/ bool isTitle)//, bool autoSave)
+        public int AddAttributeAndSave(int attributeSetId, AttributeDefinition attributeDefinition)
         {
             var staticName = attributeDefinition.Name;
             var type = attributeDefinition.Type;
             var isTitle = attributeDefinition.IsTitle;
             var sortOrder = attributeDefinition.SortOrder;
 
-            //if (attributeSet == null)
-            var attributeSet = DbContext.SqlDb.ToSicEavAttributeSets
-                .Single(a => a.AttributeSetId == attributeSetId);
-            //else if (attributeSetId != 0)
-            //    throw new Exception("Can only set attributeSet or attributeSetId");
+            var attributeSet = DbContext.AttribSet.GetDbAttribSet(attributeSetId);
 
             if (!Constants.AttributeStaticName.IsMatch(staticName))
                 throw new Exception("Attribute static name \"" + staticName + "\" is invalid. " + Constants.AttributeStaticNameRegExNotes);
