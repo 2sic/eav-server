@@ -9,7 +9,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         {
         }
 
-        public List<ImportLogItem> ImportLog => DbContext.ImportLog;
+        public List<ImportLogItem> Log => DbContext.Log;
 
     }
 }

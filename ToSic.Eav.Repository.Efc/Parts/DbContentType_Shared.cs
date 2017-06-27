@@ -44,7 +44,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Ensure all AttributeSets with AlwaysShareConfiguration=true exist on all Apps an Zones
         /// </summary>
-        public void EnsureSharedAttributeSetsOnEverythingAndSave()
+        public void DistributeSharedContentTypes()
         {
             foreach (var app in DbContext.SqlDb.ToSicEavApps)
                 PrepareMissingSharedAttributesOnApp(app);

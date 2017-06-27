@@ -69,12 +69,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
 
 
-            ToSicEavEntities dbEnt;
-            // create a transaction, but only if none is already running around it
-            var ownTransaction = DbContext.SqlDb.Database.CurrentTransaction == null ? DbContext.SqlDb.Database.BeginTransaction() : null;
+            ToSicEavEntities dbEnt = null;
 
             var changeId = DbContext.Versioning.GetChangeLogId();
-            try
+            DbContext.DoInTransaction(() =>
             {
 
                 #region Step 3: either create a new entity, or if it's an update, do draft/published checks to ensure correct data
@@ -93,13 +91,14 @@ namespace ToSic.Eav.Repository.Efc.Parts
                         ChangeLogModified = changeId,
                         EntityGuid = newEnt.EntityGuid != Guid.Empty ? newEnt.EntityGuid : Guid.NewGuid(),
                         IsPublished = newEnt.IsPublished,
-                        PublishedEntityId = newEnt.IsPublished ? null : ((Entity)newEnt).GetPublishedIdForSaving(),
+                        PublishedEntityId = newEnt.IsPublished ? null : ((Entity) newEnt).GetPublishedIdForSaving(),
                         Owner = DbContext.UserName,
                         AttributeSetId = contentTypeId
                     };
 
                     DbContext.SqlDb.Add(dbEnt);
                     DbContext.SqlDb.SaveChanges();
+
                     #endregion
                 }
                 else
@@ -111,9 +110,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     dbEnt = DbContext.Entities.GetDbEntity(newEnt.EntityId);
 
                     var publishedStateChangesForThisItem = dbEnt.IsPublished != newEnt.IsPublished;
+
                     #region Unpublished Save (Draft-Saves) - do some possible error checking
 
                     #region removed publish/unpublish code
+
                     // Prevent editing of Published item if there's a draft
                     //if (dbEnt.IsPublished && dbEntAttachedDraft.HasValue)
                     //    throw new Exception($"Update Entity not allowed because a draft exists with EntityId {dbEntAttachedDraft}");
@@ -148,9 +149,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
                             DbContext.Versioning.SaveEntity(dbEnt.EntityId, dbEnt.EntityGuid, false);
 
                         // now reset the branch/entity-state to properly set the state / purge the draft
-                        dbEnt = DbContext.Publishing.ClearDraftBranchAndSetPublishedState(dbEnt, existingDraftId, newEnt.IsPublished); 
+                        dbEnt = DbContext.Publishing.ClearDraftBranchAndSetPublishedState(dbEnt, existingDraftId,
+                            newEnt.IsPublished);
 
-                        ((Entity)newEnt).ChangeIdForSaving(dbEnt.EntityId);   // update ID of the save-entity, as it's used again later on...
+                        ((Entity) newEnt).ChangeIdForSaving(dbEnt.EntityId);
+                            // update ID of the save-entity, as it's used again later on...
                     }
 
                     #endregion
@@ -161,17 +164,23 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 #endregion Step 3
 
                 #region Step 4: Save all normal values
+
                 // first, clean up all existing attributes / values (flush)
                 dbEnt.ToSicEavValues.Clear();
-                DbContext.SqlDb.SaveChanges();  // this is necessary after remove, because otherwise EF state tracking gets messed up
+                DbContext.SqlDb.SaveChanges();
+                    // this is necessary after remove, because otherwise EF state tracking gets messed up
 
                 foreach (var attribute in newEnt.Attributes.Values) // todo: put in constant
                 {
                     // find attribute definition
-                    var attribDef = attributeDefs.SingleOrDefault(a => string.Equals(a.StaticName, attribute.Name, StringComparison.InvariantCultureIgnoreCase));
+                    var attribDef =
+                        attributeDefs.SingleOrDefault(
+                            a =>
+                                string.Equals(a.StaticName, attribute.Name, StringComparison.InvariantCultureIgnoreCase));
                     if (attribDef == null)
-                        throw new Exception($"trying to save attribute {attribute.Name} but can\'t find definition in DB");
-                    if(attribDef.Type == AttributeTypeEnum.Entity.ToString()) continue;
+                        throw new Exception(
+                            $"trying to save attribute {attribute.Name} but can\'t find definition in DB");
+                    if (attribDef.Type == AttributeTypeEnum.Entity.ToString()) continue;
 
                     foreach (var value in attribute.Values)
                         dbEnt.ToSicEavValues.Add(new ToSicEavValues
@@ -194,14 +203,18 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                 #region Step 5: Save / update all relationships
 
-                DbContext.Relationships.SaveRelationships(newEnt, dbEnt, attributeDefs, so);
+                DbContext.Relationships.DoWhileQueueingRelationships(() => {
+                    DbContext.Relationships.SaveRelationships(newEnt, dbEnt, attributeDefs, so);
+                });
 
                 #endregion
 
 
 
                 #region Step 6: Ensure versioning
+
                 DbContext.Versioning.SaveEntity(dbEnt.EntityId, dbEnt.EntityGuid, useDelayedSerialize: true);
+
                 #endregion
 
 
@@ -209,18 +222,12 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 #region Workaround for preserving the last guid - temp
 
                 TempLastSaveGuid = dbEnt.EntityGuid;
+
                 #endregion
 
                 //throw new Exception("test exception, don't want to persist till I'm sure it's pretty stable");
                 // finish transaction - finalize
-                ownTransaction?.Commit();
-            }
-            catch 
-            {
-                // if anything fails, undo everything
-                ownTransaction?.Rollback();
-                throw;
-            }
+            });
 
             return dbEnt.EntityId;
         }
@@ -233,24 +240,14 @@ namespace ToSic.Eav.Repository.Efc.Parts
         internal List<int> SaveEntity(List<IEntity> entities, SaveOptions saveOptions)
         {
             var ids = new List<int>();
-            var ownTransaction = DbContext.SqlDb.Database.CurrentTransaction == null ? DbContext.SqlDb.Database.BeginTransaction() : null;
 
-            try
+            DbContext.DoInTransaction(() => DbContext.Versioning.QueueDuringAction(() =>
             {
-                DbContext.Versioning.QueueDuringAction(() =>
-                {
-                    foreach (var entity in entities)
-                        DbContext.DoAndSave(() => ids.Add(SaveEntity(entity, saveOptions)));
+                foreach (var entity in entities)
+                    DbContext.DoAndSave(() => ids.Add(SaveEntity(entity, saveOptions)));
 
-                    DbContext.Relationships.ImportRelationshipQueueAndSave();
-                });
-                ownTransaction?.Commit();
-            }
-            catch
-            {
-                ownTransaction?.Rollback();
-                throw;
-            }
+                DbContext.Relationships.ImportRelationshipQueueAndSave();
+            }));
             return ids;
         }
 

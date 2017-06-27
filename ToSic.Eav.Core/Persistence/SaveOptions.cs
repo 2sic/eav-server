@@ -50,7 +50,7 @@ namespace ToSic.Eav.Persistence
         /// So it will not apply relationships until the end of the transaction
         /// ...but you must remember to correctly trigger the relationship-save
         /// </summary>
-        public bool DelayRelationshipSave = false;
+        //public bool DelayRelationshipSave = false;
 
     }
 }

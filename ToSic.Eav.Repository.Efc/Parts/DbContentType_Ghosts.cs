@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using ToSic.Eav.Persistence.Efc.Models;
+using ToSic.Eav.Persistence.Logging;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
@@ -21,7 +23,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             return usesConfigurationOfAttributeSet ?? attributeSetId;
         }
 
-        public List<ToSicEavAttributeSets> FindPotentialGhostSources(string contentTypeParentName)
+        private List<ToSicEavAttributeSets> FindPotentialGhostSources(string contentTypeParentName)
         {
             var ghostAttributeSets = DbContext.SqlDb.ToSicEavAttributeSets.Where(
                     a => a.StaticName == contentTypeParentName
@@ -70,6 +72,28 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             // save first, to ensure it has an Id
             DbContext.SqlDb.SaveChanges();
+        }
+
+
+        /// <summary>
+        /// Look up the ghost-parent-id
+        /// </summary>
+        /// <returns>The parent id as needed, or 0 if not found - which usually indicates an import problem</returns>
+        private int FindGhostParentIdOrLogWarnings(string contentTypeParentName)
+        {
+            // Look for the potential source of this ghost
+            var ghostAttributeSets = DbContext.ContentType.FindPotentialGhostSources(contentTypeParentName);
+
+            if (ghostAttributeSets.Count == 1)
+                return ghostAttributeSets.First().AttributeSetId;
+
+            // If multiple masters are found, use first and add a warning message
+            if (ghostAttributeSets.Count > 1)
+                DbContext.Log.Add(new ImportLogItem(EventLogEntryType.Warning, $"Multiple potential master AttributeSets found for StaticName: {contentTypeParentName}"));
+
+            // nothing found - report error
+            DbContext.Log.Add(new ImportLogItem(EventLogEntryType.Warning, $"AttributeSet not imported because master set not found: {contentTypeParentName}"));
+            return 0;
         }
 
     }

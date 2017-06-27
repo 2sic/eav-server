@@ -17,12 +17,12 @@ namespace ToSic.Eav.Apps.Parts
         /// Append a new Attribute to an AttributeSet
         /// Simple overload returning int so it can be used from outside
         /// </summary>
-        public int CreateAttributeAndInitializeAndSave(int attributeSetId, string staticName, string type, string inputType, int sortOrder)//, int attributeGroupId, bool isTitle)
+        public int CreateAttributeAndInitializeAndSave(int attributeSetId, AttributeDefinition attDef, /*string staticName, string type,*/ string inputType/*, int sortOrder*/)
         {
-            var newAttribute = _appManager.DataController.AttributesDefinition.AddAttributeAndSave(null, attributeSetId, staticName, type, sortOrder, 1, false);
+            var newAttribute = _appManager.DataController.AttributesDefinition.AddAttributeAndSave(attributeSetId, attDef);// staticName, type, sortOrder, false);
 
             // set the nice name and input type, important for newly created attributes
-            InitializeNameAndInputType(staticName, inputType, newAttribute);
+            InitializeNameAndInputType(/*staticName*/attDef.Name, inputType, newAttribute);
 
             return newAttribute;
         }
@@ -39,7 +39,7 @@ namespace ToSic.Eav.Apps.Parts
             var meta = new Metadata
             {
                 HasMetadata = true,
-                TargetType = Constants.MetadataForField,
+                TargetType = Constants.MetadataForAttribute,
                 KeyNumber = attributeId
             };
             _appManager.Entities.SaveMetadata(meta, "@All", newValues); // todo: put "@All" into some constant
@@ -52,7 +52,7 @@ namespace ToSic.Eav.Apps.Parts
             var meta = new Metadata
             {
                 HasMetadata = true,
-                TargetType = Constants.MetadataForField,
+                TargetType = Constants.MetadataForAttribute,
                 KeyNumber = attributeId
             };
             _appManager.Entities.SaveMetadata(meta, "@All", newValues); // todo: put "@All" into some constant

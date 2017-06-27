@@ -188,7 +188,7 @@ namespace ToSic.Eav.WebApi
             SetAppIdAndUser(appId);
 
             var sortOrderList = newSortOrder.Trim('[', ']').Split(',').Select(int.Parse).ToList();
-            CurrentContext.ContentType.ReorderAttributes(contentTypeId, sortOrderList);
+            CurrentContext.ContentType.SortAttributes(contentTypeId, sortOrderList);
             return true;
         }
 
@@ -217,7 +217,9 @@ namespace ToSic.Eav.WebApi
         public int AddField(int appId, int contentTypeId, string staticName, string type, string inputType, int sortOrder)
 	    {
             SetAppIdAndUser(appId);
-	        return AppManager.ContentTypes.CreateAttributeAndInitializeAndSave(contentTypeId, staticName, type, inputType, sortOrder);
+            var attDef = new AttributeDefinition(staticName, type, false, 0, sortOrder);
+            
+	        return AppManager.ContentTypes.CreateAttributeAndInitializeAndSave(contentTypeId, attDef, /*staticName, type, */inputType/*, sortOrder*/);
 	    }
 
         [HttpGet]

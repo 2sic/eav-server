@@ -116,10 +116,10 @@
   <ItemGroup>
     <Compile Include="BllCommandBase.cs" />
     <Compile Include="DbDataController.cs" />
-    <Compile Include="Implementations\RepositoryImporter.cs" />
     <Compile Include="Parts\DbApp.cs" />
     <Compile Include="Parts\DbAttributeDefinition.cs" />
     <Compile Include="Parts\DbAttributeSet.cs" />
+    <Compile Include="Parts\DbContentType_AttribSorting.cs" />
     <Compile Include="Parts\DbContentType_Shared.cs" />
     <Compile Include="Parts\DbContentType_Ghosts.cs" />
     <Compile Include="Parts\DbAttributeDefinition_Query.cs" />
@@ -132,7 +132,6 @@
     <Compile Include="Parts\DbEntity_newSave.cs" />
     <Compile Include="Parts\DbEntity_base.cs" />
     <Compile Include="Parts\DbEntity_read.cs" />
-    <Compile Include="Parts\DbImport.cs" />
     <Compile Include="Parts\DbPipeline.cs" />
     <Compile Include="Parts\DbPublishing.cs" />
     <Compile Include="Parts\DbRelationship.cs" />
@@ -165,6 +164,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Implementations\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

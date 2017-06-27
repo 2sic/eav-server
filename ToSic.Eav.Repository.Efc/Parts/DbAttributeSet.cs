@@ -43,6 +43,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                      && a.AppId == DbContext.AppId
                      && !a.ChangeLogDeleted.HasValue);
 
+
         private ToSicEavAttributeSets GetDbAttribSetWithEitherName(string name)
         {
             var appId = DbContext.AppId;
@@ -108,7 +109,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         
 
-        internal ToSicEavAttributeSets PrepareDbAttribSet(string name, string description, string staticName, string scope, /*bool autoSave,*/ bool skipExisting, int? appId)
+        internal ToSicEavAttributeSets PrepareDbAttribSet(string name, string description, string staticName, string scope, bool skipExisting, int? appId)
         {
             if (string.IsNullOrEmpty(staticName))
                 staticName = Guid.NewGuid().ToString();

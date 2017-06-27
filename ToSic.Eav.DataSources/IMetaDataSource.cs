@@ -13,14 +13,14 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// Get assigned Entities for specified assignmentObjectTypeId and key
 		/// </summary>
-		IEnumerable<IEntity> GetAssignedEntities(int assignmentObjectTypeId, Guid key, string contentTypeName = null);
+		IEnumerable<IEntity> GetAssignedEntities(int targetType, Guid key, string contentTypeName = null);
 		/// <summary>
 		/// Get assigned Entities for specified assignmentObjectTypeId and key
 		/// </summary>
-		IEnumerable<IEntity> GetAssignedEntities(int assignmentObjectTypeId, string key, string contentTypeName = null);
+		IEnumerable<IEntity> GetAssignedEntities(int targetType, string key, string contentTypeName = null);
 		/// <summary>
 		/// Get assigned Entities for specified assignmentObjectTypeId and key
 		/// </summary>
-		IEnumerable<IEntity> GetAssignedEntities(int assignmentObjectTypeId, int key, string contentTypeName = null);
+		IEnumerable<IEntity> GetAssignedEntities(int targetType, int key, string contentTypeName = null);
 	}
 }

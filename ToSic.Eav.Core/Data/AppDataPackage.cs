@@ -40,25 +40,42 @@ namespace ToSic.Eav.Data
 		/// Gets all ContentTypes in this App
 		/// </summary>
 		public IDictionary<int, IContentType> ContentTypes { get; private set; }
-		/// <summary>
-		/// Gets a Dictionary of AssignmentObjectTypes and assigned Entities having a KeyGuid
-		/// </summary>
-		public IDictionary<int, Dictionary<Guid, IEnumerable<IEntity>>> AssignmentObjectTypesGuid { get; private set; }
+
+        #region Metadata
+        /// <summary>
+        /// Gets a Dictionary of AssignmentObjectTypes and assigned Entities having a KeyGuid
+        /// </summary>
+        public IDictionary<int, Dictionary<Guid, IEnumerable<IEntity>>> MetadataForGuid { get; }
 
 		/// <summary>
 		/// Gets a Dictionary of AssignmentObjectTypes and assigned Entities having a KeyNumber
 		/// </summary>
-		public IDictionary<int, Dictionary<int, IEnumerable<IEntity>>> AssignmentObjectTypesNumber { get; private set; }
+		public IDictionary<int, Dictionary<int, IEnumerable<IEntity>>> MetadataForNumber { get; }
 
 		/// <summary>
 		/// Gets a Dictionary of AssignmentObjectTypes and assigned Entities having a KeyString
 		/// </summary>
-		public IDictionary<int, Dictionary<string, IEnumerable<IEntity>>> AssignmentObjectTypesString { get; private set; }
+		public IDictionary<int, Dictionary<string, IEnumerable<IEntity>>> MetadataForString { get; }
 
-		/// <summary>
-		/// Get all Relationships between Entities
-		/// </summary>
-		public IEnumerable<EntityRelationshipItem> Relationships { get; private set; }
+	    public IEnumerable<IEntity> GetMetadata(int targetType, int key, string contentTypeName = null) => Lookup(MetadataForNumber, targetType, Convert.ToInt32(key), contentTypeName);
+
+	    public IEnumerable<IEntity> GetMetadata(int targetType, string key, string contentTypeName = null) => Lookup(MetadataForString, targetType, key, contentTypeName);
+
+	    public IEnumerable<IEntity> GetMetadata(int targetType, Guid key, string contentTypeName = null) => Lookup(MetadataForGuid, targetType, key, contentTypeName);
+
+	    private IEnumerable<IEntity> Lookup<T>(IDictionary<int, Dictionary<T, IEnumerable<IEntity>>> list, int targetType, T key, string contentTypeName = null)
+        {
+            if (list.TryGetValue(targetType, out Dictionary<T, IEnumerable<IEntity>> keyGuidDictionary))
+                if (keyGuidDictionary.TryGetValue(key, out IEnumerable<IEntity> entities))
+                    return entities.Where(e => contentTypeName == null || e.Type.StaticName == contentTypeName);
+            return new List<IEntity>();
+        }
+        #endregion
+
+        /// <summary>
+        /// Get all Relationships between Entities
+        /// </summary>
+        public IEnumerable<EntityRelationshipItem> Relationships { get; private set; }
 
 		/// <summary>
 		/// Gets the DateTime when this CacheItem was populated
@@ -73,17 +90,17 @@ namespace ToSic.Eav.Data
             IDictionary<int, IEntity> entities, 
             IEnumerable<IEntity> entList,
             IDictionary<int, IContentType> contentTypes,
-			IDictionary<int, Dictionary<Guid, IEnumerable<IEntity>>> assignmentObjectTypesGuid, 
-            IDictionary<int, Dictionary<int, IEnumerable<IEntity>>> assignmentObjectTypesNumber,
-			IDictionary<int, Dictionary<string, IEnumerable<IEntity>>> assignmentObjectTypesString, 
+			IDictionary<int, Dictionary<Guid, IEnumerable<IEntity>>> metadataForGuid, 
+            IDictionary<int, Dictionary<int, IEnumerable<IEntity>>> metadataForNumber,
+			IDictionary<int, Dictionary<string, IEnumerable<IEntity>>> metadataForString, 
             IEnumerable<EntityRelationshipItem> relationships)
 		{
 		    List = entList;
 		    Entities = entities;
 			ContentTypes = contentTypes;
-			AssignmentObjectTypesGuid = assignmentObjectTypesGuid;
-			AssignmentObjectTypesNumber = assignmentObjectTypesNumber;
-			AssignmentObjectTypesString = assignmentObjectTypesString;
+			MetadataForGuid = metadataForGuid;
+			MetadataForNumber = metadataForNumber;
+			MetadataForString = metadataForString;
 			Relationships = relationships;
 
 			LastRefresh = DateTime.Now;

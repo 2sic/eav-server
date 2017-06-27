@@ -56,7 +56,7 @@ namespace ToSic.Eav
         /// </summary>
         [Obsolete("Use MetadataForField instead")]
         public static readonly int AssignmentObjectTypeIdFieldProperties = 2;
-        public static readonly int MetadataForField = 2;
+        public static readonly int MetadataForAttribute = 2;
 
         /// <summary>
         /// AssignmentObjectTypeId for DataPipelines

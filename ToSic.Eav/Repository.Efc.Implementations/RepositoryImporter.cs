@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Repository.Efc.Parts;
@@ -19,7 +20,7 @@ namespace ToSic.Eav.Repository.Efc.Implementations
         /// <param name="newEntities"></param>
         public void Import(int? zoneId, int appId, IEnumerable<ContentType> newAttributeSets, IEnumerable<Entity> newEntities)
         {
-            var import = new DbImport(zoneId, appId);
+            var import = new Import(zoneId, appId);
             import.ImportIntoDb(newAttributeSets, newEntities);
         }
     }

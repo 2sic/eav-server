@@ -336,7 +336,7 @@ namespace ToSic.Eav.Apps.ImportExport
             }
 
             Timer.Start();
-            var import = new DbImport(_zoneId, _appId, false);
+            var import = new Import(_zoneId, _appId, false);
             import.ImportIntoDb(null, ImportEntities);
             // important note: don't purge cache here, but the caller MUST do this!
 

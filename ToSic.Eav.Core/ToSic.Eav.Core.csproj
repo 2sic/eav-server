@@ -139,6 +139,7 @@
     <Compile Include="Persistence\EntitySaver.cs" />
     <Compile Include="Persistence\Interfaces\IImportExportEnvironment.cs" />
     <Compile Include="Interfaces\IRepositoryImporter.cs" />
+    <Compile Include="Persistence\Interfaces\IStorage.cs" />
     <Compile Include="Persistence\Logging\ExportImportMessage.cs" />
     <Compile Include="Persistence\Logging\ImportError.cs" />
     <Compile Include="Persistence\Logging\ImportErrorCode.cs" />

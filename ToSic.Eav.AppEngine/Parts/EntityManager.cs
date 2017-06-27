@@ -58,10 +58,12 @@ namespace ToSic.Eav.Apps.Parts
         public List<int> Save(List<IEntity> entities, SaveOptions saveOptions = null)
         {
             saveOptions = saveOptions ?? SaveOptions.Build(_appManager.ZoneId);
-            saveOptions.DelayRelationshipSave = true; // save all relationships in one round when ready...
-
-            var ids = _appManager.DataController.Entities.SaveEntity(entities, saveOptions);
-
+            //saveOptions.DelayRelationshipSave = true; // save all relationships in one round when ready...
+            List<int> ids = null;
+            _appManager.DataController.DoWhileQueueingRelationships(() =>
+            {
+                ids = _appManager.DataController.Entities.SaveEntity(entities, saveOptions);
+            });
             // clear cache of this app
             SystemManager.Purge(_appManager.AppId);
             return ids;
@@ -79,7 +81,7 @@ namespace ToSic.Eav.Apps.Parts
 
         public void SaveMetadata(Metadata target, string typeName, Dictionary<string, object> values)
         {
-            if(target.TargetType != Constants.MetadataForField || target.KeyNumber == null || target.KeyNumber == 0)
+            if(target.TargetType != Constants.MetadataForAttribute || target.KeyNumber == null || target.KeyNumber == 0)
                 throw new NotImplementedException("atm this command only creates metadata for entities with id-keys");
 
             // see if a metadata already exists which we would update

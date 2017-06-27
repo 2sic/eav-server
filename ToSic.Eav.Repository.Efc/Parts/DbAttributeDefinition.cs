@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using ToSic.Eav.Data;
 using ToSic.Eav.Persistence.Efc.Models;
+using ToSic.Eav.Persistence.Logging;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
@@ -14,8 +17,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         public void SetTitleAttribute(int attributeId, int attributeSetId)
         {
-            DbContext.SqlDb.ToSicEavAttributesInSets
-                .Single(a => a.AttributeId == attributeId && a.AttributeSetId == attributeSetId).IsTitle = true;
+            GetAttribute(attributeSetId, attributeId).IsTitle = true;
 
             // unset other Attributes with isTitle=true
             var oldTitleAttributes = DbContext.SqlDb.ToSicEavAttributesInSets
@@ -25,6 +27,33 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             DbContext.SqlDb.SaveChanges();
         }
+
+        internal int GetOrCreateAttributeDefinition(int contentTypeId, AttributeDefinition newAtt)
+        {
+            int destAttribId;
+            if (!AttributeExistsInSet(contentTypeId, newAtt.Name))
+            {
+                // try to add new Attribute
+                destAttribId = AppendToEndAndSave(contentTypeId, newAtt);
+            }
+            else
+            {
+                DbContext.Log.Add(new ImportLogItem(EventLogEntryType.Information, "Attribute already exists" + newAtt.Name));
+                destAttribId = AttributeId(contentTypeId, newAtt.Name);
+            }
+            return destAttribId;
+        }
+
+
+        private ToSicEavAttributesInSets GetAttribute(int attributeSetId, int attributeId = 0, string name = null)
+            => attributeId != 0
+                ? DbContext.SqlDb.ToSicEavAttributesInSets
+                    .Single(a => a.AttributeId == attributeId && a.AttributeSetId == attributeSetId)
+                : DbContext.SqlDb.ToSicEavAttributesInSets
+                    .Single(a => a.AttributeId == attributeId && a.Attribute.StaticName == name);
+
+
+        public int AttributeId(int setId, string staticName) => GetAttribute(setId, name: staticName).Attribute.AttributeId;
 
         /// <summary>
         /// Set an Attribute as Title on an AttributeSet
@@ -46,30 +75,33 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Append a new Attribute to an AttributeSet
         /// </summary>
-        internal int AppendToEndAndSave(ToSicEavAttributeSets attributeSet, int attributeSetId, string staticName, string type, bool isTitle)
+        internal int AppendToEndAndSave(int attributeSetId, AttributeDefinition attributeDefinition)// string staticName, string type, bool isTitle)
         {
-            var maxIndex = attributeSet != null
-                ? attributeSet.ToSicEavAttributesInSets
-                    .Max(s => (int?) s.SortOrder)
-                : DbContext.SqlDb.ToSicEavAttributesInSets
-                    .Where(a => a.AttributeSetId == attributeSetId)
-                    .Max(s => (int?) s.SortOrder);
+            var maxIndex = DbContext.SqlDb.ToSicEavAttributesInSets
+                .Where(a => a.AttributeSetId == attributeSetId)
+                .ToList() // important because it otherwise has problems with the next step...
+                .Max(s => (int?) s.SortOrder);
 
             maxIndex = !maxIndex.HasValue ? 0 : maxIndex + 1;
 
-            return AddAttributeAndSave(attributeSet, attributeSetId, staticName, type, maxIndex.Value, 1, isTitle);
+            return AddAttributeAndSave(attributeSetId, attributeDefinition);// staticName, type, maxIndex.Value, /*1,*/ isTitle);
         }
         
         /// <summary>
         /// Append a new Attribute to an AttributeSet
         /// </summary>
-        public int AddAttributeAndSave(ToSicEavAttributeSets attributeSet, int attributeSetId, string staticName, string type, /*string inputType,*/ int sortOrder, int attributeGroupId, bool isTitle)//, bool autoSave)
+        public int AddAttributeAndSave(int attributeSetId, AttributeDefinition attributeDefinition)//string staticName, string type, int sortOrder, /*int attributeGroupId,*/ bool isTitle)//, bool autoSave)
         {
-            if (attributeSet == null)
-                attributeSet = DbContext.SqlDb.ToSicEavAttributeSets
-                    .Single(a => a.AttributeSetId == attributeSetId);
-            else if (attributeSetId != 0)
-                throw new Exception("Can only set attributeSet or attributeSetId");
+            var staticName = attributeDefinition.Name;
+            var type = attributeDefinition.Type;
+            var isTitle = attributeDefinition.IsTitle;
+            var sortOrder = attributeDefinition.SortOrder;
+
+            //if (attributeSet == null)
+            var attributeSet = DbContext.SqlDb.ToSicEavAttributeSets
+                .Single(a => a.AttributeSetId == attributeSetId);
+            //else if (attributeSetId != 0)
+            //    throw new Exception("Can only set attributeSet or attributeSetId");
 
             if (!Constants.AttributeStaticName.IsMatch(staticName))
                 throw new Exception("Attribute static name \"" + staticName + "\" is invalid. " + Constants.AttributeStaticNameRegExNotes);
@@ -89,7 +121,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 Attribute = newAttribute,
                 AttributeSet = attributeSet,
                 SortOrder = sortOrder,
-                AttributeGroupId = attributeGroupId,
+                AttributeGroupId = 1, //attributeGroupId,
                 IsTitle = isTitle
             };
             DbContext.SqlDb.Add(newAttribute);

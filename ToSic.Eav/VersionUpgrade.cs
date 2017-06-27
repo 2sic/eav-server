@@ -128,7 +128,7 @@ namespace ToSic.Eav
 
 			_metaDataCtx.SqlDb.SaveChanges();
 
-			_metaDataCtx.AttribSet.EnsureSharedAttributeSetsOnEverythingAndSave();
+			_metaDataCtx.AttribSet.DistributeSharedContentTypes();
 			#endregion
 		}
 	}

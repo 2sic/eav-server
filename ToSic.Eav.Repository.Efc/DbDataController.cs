@@ -4,14 +4,18 @@ using System.Linq;
 //using Microsoft.Practices.Unity;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.Implementations.UserInformation;
+using ToSic.Eav.Interfaces;
+using ToSic.Eav.Persistence;
+using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Efc.Models;
+using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Repository.Efc.Parts;
 
 namespace ToSic.Eav.Repository.Efc
 {
 
-    public class DbDataController
+    public class DbDataController : IStorage
     {
         #region Extracted, now externalized objects with actions and private fields
 
@@ -29,7 +33,7 @@ namespace ToSic.Eav.Repository.Efc
         public DbApp App { get; private set; }
         public DbContentType ContentType { get; private set; }
 
-        public int _appId;
+        private int _appId;
         internal int _zoneId;
         #endregion
 
@@ -81,7 +85,7 @@ namespace ToSic.Eav.Repository.Efc
         #endregion
 
         #region shared logs in case of write commands
-        internal readonly List<ImportLogItem> ImportLog = new List<ImportLogItem>();
+        public List<ImportLogItem> Log { get; }=  new List<ImportLogItem>();
         #endregion
 
         #region new stuff
@@ -180,11 +184,6 @@ namespace ToSic.Eav.Repository.Efc
 
         #region Save and check if to kill cache
 
-        /// <summary>
-        /// Get or seth whether SaveChanges() should automatically purge cache.
-        /// </summary>
-        /// <remarks>Usefull if many changes are made in a batch and Cache should be purged after that batch</remarks>
-       public bool PurgeAppCacheOnSave { get; set; } = true;
 
 
         /// <summary>
@@ -201,14 +200,21 @@ namespace ToSic.Eav.Repository.Efc
             //if (Versioning.MainChangeLogId == 0)
             Versioning.GetChangeLogId();
 
-            var modifiedItems = baseEvent(acceptAllChangesOnSuccess);
+            var modifiedCount = baseEvent(acceptAllChangesOnSuccess);
 
 
-            if (modifiedItems != 0 && PurgeAppCacheOnSave)
-                (_cache ?? (_cache = Factory.Resolve<ICache>())).PurgeCache(ZoneId, AppId);
+            if (modifiedCount != 0) // && PurgeAppCacheOnSave)
+                PurgeAppCacheIfReady();
+                //(_cache ?? (_cache = Factory.Resolve<ICache>())).PurgeCache(ZoneId, AppId);
                 //DataSource.GetCache(ZoneId, AppId).PurgeCache(ZoneId, AppId);
 
-            return modifiedItems;
+            return modifiedCount;
+        }
+
+        private void PurgeAppCacheIfReady()
+        {
+            if(_purgeAppCacheOnSave)
+                (_cache ?? (_cache = Factory.Resolve<ICache>())).PurgeCache(ZoneId, AppId);
         }
 
         private ICache _cache;
@@ -222,6 +228,48 @@ namespace ToSic.Eav.Repository.Efc
             action.Invoke();
             SqlDb.SaveChanges();
         }
+
+
+        public void DoInTransaction(Action action)
+        {
+            var ownTransaction = SqlDb.Database.CurrentTransaction == null ? SqlDb.Database.BeginTransaction() : null;
+
+            try
+            {
+                action.Invoke();
+                ownTransaction?.Commit();
+            }
+            catch
+            {
+                ownTransaction?.Rollback();
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Get or seth whether SaveChanges() should automatically purge cache.
+        /// </summary>
+        /// <remarks>Usefull if many changes are made in a batch and Cache should be purged after that batch</remarks>
+        private bool _purgeAppCacheOnSave = true;
+
+        public void DoWithDelayedCacheInvalidation(Action action)
+        {
+            _purgeAppCacheOnSave = false;
+            action.Invoke();
+
+            _purgeAppCacheOnSave = true;
+            PurgeAppCacheIfReady();
+        }
+
+        public IRepositoryLoader Loader => new Efc11Loader(SqlDb);
+        public void DoWhileQueuingVersioning(Action action) => Versioning.QueueDuringAction(action);
+        public void DoWhileQueueingRelationships(Action action) => Relationships.DoWhileQueueingRelationships(action);
+
+        public List<int> Save(List<IEntity> entities, SaveOptions saveOptions) => Entities.SaveEntity(entities, saveOptions);
+
+        public int Save(IEntity entity, SaveOptions saveOptions) => Entities.SaveEntity(entity, saveOptions);
+        public void Save(List<IContentType> contentTypes, SaveOptions saveOptions) => ContentType.ExtendSaveContentTypes(contentTypes, SaveOptions.Build(ZoneId));
+
         #endregion
     }
 }

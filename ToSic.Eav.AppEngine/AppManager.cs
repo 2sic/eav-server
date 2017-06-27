@@ -5,6 +5,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Efc.Models;
+using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Repository.Efc;
 
 namespace ToSic.Eav.Apps
@@ -31,6 +32,8 @@ namespace ToSic.Eav.Apps
         internal DbDataController DataController => _eavContext ?? (_eavContext = DbDataController.Instance(ZoneId, AppId));
         private DbDataController _eavContext;
 
+
+        internal IStorage Storage => DataController;
 
         /// <summary>
         /// The template management subsystem

@@ -223,11 +223,11 @@ namespace ToSic.Eav.Apps.ImportExport
 		    var importEntities = GetImportEntities(entNodes, Constants.NotMetadata);
 
 
-			var import = new DbImport(_zoneId, _appId, leaveExistingValuesUntouched);
+			var import = new Import(_zoneId, _appId, leaveExistingValuesUntouched);
 			import.ImportIntoDb(importAttributeSets, importEntities);
             SystemManager.Purge(_zoneId, _appId);
 
-			ImportLog.AddRange(GetExportImportMessagesFromImportLog(import.ImportLog));
+			ImportLog.AddRange(GetExportImportMessagesFromImportLog(import.Storage.Log));
 
 			if (xmlSource.Elements(XmlConstants.Templates).Any())
 				ImportXmlTemplates(xmlSource);
@@ -288,7 +288,7 @@ namespace ToSic.Eav.Apps.ImportExport
                             xElementAttribute.Attribute(XmlConstants.EntityTypeAttribute).Value,
                             null, null, null
                         );
-                        attribute.InternalAttributeMetaData = GetImportEntities(xElementAttribute.Elements(XmlConstants.Entity), Constants.MetadataForField);
+                        attribute.InternalAttributeMetaData = GetImportEntities(xElementAttribute.Elements(XmlConstants.Entity), Constants.MetadataForAttribute);
                         attributes.Add(attribute);
 
                         // Set Title Attribute

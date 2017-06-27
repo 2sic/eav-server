@@ -123,7 +123,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             #region Header
 
-            var dimensions = new ZoneRuntime(EavAppContext.AppId).Languages();// EavAppContext.Dimensions.GetLanguages();//.GetDimensionChildren(Constants.CultureSystemKey);
+            var dimensions = new ZoneRuntime(EavAppContext.ZoneId).Languages();// EavAppContext.Dimensions.GetLanguages();//.GetDimensionChildren(Constants.CultureSystemKey);
             var header = new XElement(XmlConstants.Header,
                 _isAppExport && _appStaticName != XmlConstants.AppContentGuid ? new XElement(XmlConstants.App,
                         new XAttribute(XmlConstants.Guid, _appStaticName)
@@ -161,7 +161,7 @@ namespace ToSic.Eav.Apps.ImportExport
                         new XAttribute(XmlConstants.IsTitle, x.IsTitle),
                         // Add Attribute MetaData
                         from c in
-                            EavAppContext.Entities.GetAssignedEntities(Constants.MetadataForField, x.AttributeId).ToList()
+                            EavAppContext.Entities.GetAssignedEntities(Constants.MetadataForAttribute, x.AttributeId).ToList()
                         select GetEntityXElement(c)
                         );
 

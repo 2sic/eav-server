@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Xml.Linq;
+using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Versioning;
 using ToSic.Eav.ImportExport.Xml;
@@ -23,7 +24,7 @@ namespace ToSic.Eav.Apps.Parts
             var newVersion = PrepareRestoreEntity(entityId, changeId);
 
             // Restore Entity
-            var import = new DbImport(_appManager.ZoneId, _appManager.AppId, false, false);
+            var import = new Import(_appManager.ZoneId, _appManager.AppId, false, false);
             import.ImportIntoDb(null, new List<Entity> { newVersion });
 
             // Delete Draft (if any)
