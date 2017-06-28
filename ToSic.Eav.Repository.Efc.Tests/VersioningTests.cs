@@ -21,7 +21,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         private int TestItemWithCa9Changes = 7707;
         private Guid ItemWithCa9Changes = new Guid("3AB334D9-A99C-4C01-AAB7-C29E04274B5C");
 
-        private TestValuesOnPc2dm td = new TestValuesOnPc2dm();
+        private TestValuesOnPc2Dm td = new TestValuesOnPc2Dm();
         private int DevPc2dmItemOnHome = 3269;
 
         // just a note: this is Portal 54 or something on Daniels test server, change it to your system if you want to run these tests!

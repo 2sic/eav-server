@@ -77,7 +77,7 @@ namespace ToSic.Eav.Data
                 var list = x as List<Guid?>;
                 if (list != null)
                     return string.Join(",", list.Select(y => y?.ToString() ?? Constants.EmptyRelationship));
-                return (x as bool?)?.ToString() ?? x?.ToString();
+                return (x as DateTime?)?.ToString("yyyy-MM-ddTHH:mm:ss") ?? (x as bool?)?.ToString() ?? x?.ToString();
             }
         }
 

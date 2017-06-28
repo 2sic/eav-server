@@ -15,7 +15,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         [TestMethod]
         public void SerializeOneXml()
         {
-            var test = new TestValuesOnPc2dm();
+            var test = new TestValuesOnPc2Dm();
             var dbc = DbDataController.Instance(null, test.AppId);
             var xmlbuilder = new DbXmlBuilder(dbc);
 
@@ -37,29 +37,38 @@ namespace ToSic.Eav.Repository.Efc.Tests
         [TestMethod]
         public void CompareAllSerializedEntitiesOfApp()
         {
-            var test = new TestValuesOnPc2dm();
-            var dbc = DbDataController.Instance(null, test.AppId);
+            var test = new TestValuesOnPc2Dm();
+            var appId = test.BlogAppId;
+            var dbc = DbDataController.Instance(null, appId);
             var xmlbuilder = new DbXmlBuilder(dbc);
             var loader = new Efc11Loader(dbc.SqlDb);
-            var app = loader.AppPackage(test.AppId);
+            var app = loader.AppPackage(appId);
             var exBuilder = new XmlPersistence(app);
 
-            var maxCount = 1500;
+            var maxCount = 500;
             var skip = 0;
             var count = 0;
-            foreach (var appEntity in app.Entities.Values)
+            try
             {
-                // maybe skip some
-                if (count++ < skip) continue;
+                foreach (var appEntity in app.Entities.Values)
+                {
+                    // maybe skip some
+                    if (count++ < skip) continue;
 
-                var xml = xmlbuilder.XmlEntity(appEntity.EntityId);
-                var xmlstring = xml.ToString();
-                var xmlEnt = exBuilder.XmlEntity(appEntity.EntityId).ToString();
-                Assert.AreEqual(xmlstring, xmlEnt, $"xml of item {count} strings should be identical - but was not on xmlEnt {appEntity.EntityId}");
+                    var xml = xmlbuilder.XmlEntity(appEntity.EntityId);
+                    var xmlstring = xml.ToString();
+                    var xmlEnt = exBuilder.XmlEntity(appEntity.EntityId).ToString();
+                    Assert.AreEqual(xmlstring, xmlEnt,
+                        $"xml of item {count} strings should be identical - but was not on xmlEnt {appEntity.EntityId}");
 
-                // stop if we ran enough tests
-                if (count >= maxCount)
-                    return;
+                    // stop if we ran enough tests
+                    if (count >= maxCount)
+                        return;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"had issue after count{count}", ex);
             }
 
 
