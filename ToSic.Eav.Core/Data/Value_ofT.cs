@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Interfaces;
@@ -65,6 +66,18 @@ namespace ToSic.Eav.Data
                 }
 
                 return typedObject;
+            }
+        }
+
+        public string Serialized
+        {
+            get
+            {
+                var x = SerializableObject;
+                var list = x as List<Guid?>;
+                if (list != null)
+                    return string.Join(",", list.Select(y => y?.ToString() ?? Constants.EmptyRelationship));
+                return (x as bool?)?.ToString() ?? x?.ToString();
             }
         }
 

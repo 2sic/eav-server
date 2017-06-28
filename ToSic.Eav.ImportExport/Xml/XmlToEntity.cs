@@ -11,10 +11,10 @@ namespace ToSic.Eav.ImportExport.Xml
 	/// <summary>
 	/// Import EAV Data from XML Format
 	/// </summary>
-	public class XmlToImportEntity
+	public class XmlToEntity
 	{
         public int AppId { get; }
-	    public XmlToImportEntity(int appId, List<DimensionDefinition> srcLanguages, int? srcDefLang, List<DimensionDefinition> envLanguages, string envDefLang)
+	    public XmlToEntity(int appId, List<DimensionDefinition> srcLanguages, int? srcDefLang, List<DimensionDefinition> envLanguages, string envDefLang)
 	    {
 	        AppId = appId;
 	        _envLangs = GenerateDummyDefaultLanguageIfNecessary(envLanguages, envDefLang);

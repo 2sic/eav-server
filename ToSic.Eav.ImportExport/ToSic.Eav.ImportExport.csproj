@@ -82,7 +82,7 @@
     <Compile Include="Settings.cs" />
     <Compile Include="XmlConstants.cs" />
     <Compile Include="Xml\XmlBuilder.cs" />
-    <Compile Include="Xml\XmlToImportEntity.cs" />
+    <Compile Include="Xml\XmlToEntity.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj">

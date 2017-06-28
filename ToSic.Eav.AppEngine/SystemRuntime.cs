@@ -8,9 +8,9 @@
         /// </summary>
         /// <param name="typeName"></param>
         /// <returns></returns>
-        public static int GetKeyTypeId(string typeName)
-            => DataSource.GetCache(null).GetAssignmentObjectTypeId(typeName);
+        public static int GetMetadataType(string typeName) => DataSource.GetCache(null).GetMetadataType(typeName);
 
+        public static string GetMetadataType(int typeNumber) => DataSource.GetCache(null).GetMetadataType(typeNumber);
 
     }
 }

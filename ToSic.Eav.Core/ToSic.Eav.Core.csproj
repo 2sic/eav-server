@@ -80,9 +80,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App\AppDataPackageDeferredList.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Constants_Relationships.cs" />
-    <Compile Include="Data\AppDataPackage.cs" />
+    <Compile Include="App\AppDataPackage.cs" />
     <Compile Include="Data\AttributeDefinition.cs" />
     <Compile Include="Data\AttributeBase.cs" />
     <Compile Include="Data\Builder\AttDefBuilder.cs" />

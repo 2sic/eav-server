@@ -58,7 +58,7 @@ namespace ToSic.Eav.WebApi.Formats
             set
             {
                 if(value > 10)
-                    throw new Exception("Unexpected TargetType (AssigmentObjectTypeId) - currently only expecting 1-4, maybe a bit more, got way more");
+                    throw new Exception("Unexpected TargetType (AssigmentObjectTypeId) - currently only expecting 1-4 or 10, got something else");
                 _targetType = value;
             }
         }

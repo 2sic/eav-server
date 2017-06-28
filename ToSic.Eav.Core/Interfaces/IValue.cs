@@ -19,6 +19,8 @@ namespace ToSic.Eav.Interfaces
 
         object SerializableObject { get; }
 
+        string Serialized { get; }
+
         IValue Copy(string type);
     }
 

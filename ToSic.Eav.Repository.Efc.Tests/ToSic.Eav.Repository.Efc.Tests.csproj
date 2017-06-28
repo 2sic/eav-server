@@ -114,6 +114,7 @@
     <Compile Include="MergeEntitiesTests.cs" />
     <Compile Include="SaveDataToDbTests.cs" />
     <Compile Include="TestValuesOnPc2dm.cs" />
+    <Compile Include="XmlSerializationTests.cs" />
     <Compile Include="VersioningTests.cs" />
     <Compile Include="InitializeTests.cs" />
     <Compile Include="Mocks\ImportExportEnvironmentMock.cs" />

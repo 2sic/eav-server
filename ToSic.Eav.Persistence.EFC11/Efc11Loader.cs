@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using ToSic.Eav.App;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
@@ -119,11 +120,14 @@ namespace ToSic.Eav.Persistence.Efc
         /// <summary>Get Data to populate ICache</summary>
         /// <param name="appId">AppId (can be different than the appId on current context (e.g. if something is needed from the default appId, like MetaData)</param>
         /// <param name="entityIds">null or a List of EntitiIds</param>
-        /// <param name="source">DataSource to get child entities</param>
+        /// <param name="source">DataSource to get related entities</param>
         /// <param name="entitiesOnly">If only the CachItem.Entities is needed, this can be set to true to imporove performance</param>
         /// <returns>Item1: EntityModels, Item2: all ContentTypes, Item3: Assignment Object Types</returns>
         public AppDataPackage AppPackage(int appId, int[] entityIds = null, IDeferredEntitiesList source = null, bool entitiesOnly = false)
         {
+            var deferredAppEntities = new AppDataPackageDeferredList();
+            source = source ?? deferredAppEntities; // todo: probably remove source being passed in
+
             var contentTypes = ContentTypes(appId);
 
             var metadataForGuid = new Dictionary<int, Dictionary<Guid, IEnumerable<IEntity>>>();
@@ -374,7 +378,9 @@ namespace ToSic.Eav.Persistence.Efc
 
             #endregion
 
-            return new AppDataPackage(entities, entList, contentTypes, metadataForGuid, metadataForNumber, metadataForString, relationships);
+            var appPack = new AppDataPackage(entities, entList, contentTypes, metadataForGuid, metadataForNumber, metadataForString, relationships);
+            deferredAppEntities.AttachApp(appPack);
+            return appPack;
         }
 
         #endregion

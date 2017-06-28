@@ -36,7 +36,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
         private readonly IImportExportEnvironment _environment;
 
-	    private XmlToImportEntity _xmlBuilder;
+	    private XmlToEntity _xmlBuilder;
 
         /// <summary>
         /// The default language / culture - example: de-DE
@@ -212,7 +212,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
 		    _targetDimensions = new ZoneRuntime(zoneId).Languages(true);
 
-            _xmlBuilder = new XmlToImportEntity(AppId, _sourceDimensions, _sourceDefaultDimensionId, _targetDimensions, DefaultLanguage);
+            _xmlBuilder = new XmlToEntity(AppId, _sourceDimensions, _sourceDefaultDimensionId, _targetDimensions, DefaultLanguage);
             #endregion
 
             var atsNodes = xmlSource.Element(XmlConstants.AttributeSets)?.Elements(XmlConstants.AttributeSet);
@@ -529,7 +529,7 @@ namespace ToSic.Eav.Apps.ImportExport
 				// Special case: App AttributeSets must be assigned to the current app
 				case XmlConstants.App:
 					keyNumber = AppId;
-					assignmentObjectTypeId = SystemRuntime.GetKeyTypeId(Constants.AppAssignmentName);
+					assignmentObjectTypeId = SystemRuntime.GetMetadataType(Constants.AppAssignmentName);
 					break;
                 case XmlConstants.Entity:
 					assignmentObjectTypeId = Constants.MetadataForEntity;

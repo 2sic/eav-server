@@ -56,7 +56,7 @@ namespace ToSic.Eav.Apps.Parts
             #endregion
 
             // Load Entity from Xml unsing XmlImport
-            var xmlBuilder = new XmlToImportEntity(_appManager.AppId, srcLanguages, null, envLanguages, defLanguage);
+            var xmlBuilder = new XmlToEntity(_appManager.AppId, srcLanguages, null, envLanguages, defLanguage);
             return xmlBuilder.BuildEntityFromXml(xEntity, /*envLanguages, srcLanguages, null, defLanguage,*/ null);
         }
 

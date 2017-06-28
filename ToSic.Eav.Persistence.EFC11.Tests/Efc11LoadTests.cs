@@ -21,8 +21,11 @@ namespace ToSic.Eav.Persistence.Efc.Tests
         {
             Trace.Write("initializing DB & loader");
             _db = Factory.Resolve<EavDbContext>();
-            _loader = new Efc11Loader(_db);
+            _loader = NewLoader();
         }
+
+        private Efc11Loader NewLoader() => new Efc11Loader(_db);
+
         #endregion
 
         [TestMethod]
@@ -39,6 +42,21 @@ namespace ToSic.Eav.Persistence.Efc.Tests
 
             Assert.IsTrue(results.Entities.Count > 1097 && results.Entities.Count < 1200, "tried counting entities on the blog-app");
         }
+
+        [TestMethod]
+        public void PerformanceLoading100xBlog()
+        {
+            var loadCount = 25;
+            for (int i = 0; i < loadCount; i++)
+            {
+                _loader = NewLoader();
+                TestLoadApp(2);
+            }
+
+
+            // Assert.IsTrue(results.Entities.Count > 1097 && results.Entities.Count < 1200, "tried counting entities on the blog-app");
+        }
+
 
         [TestMethod]
         public void LoadContentTypesOf2Once()
@@ -105,7 +123,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
 
         private AppDataPackage TestLoadApp(int appId)
         {
-            return _loader.AppPackage(appId, null, null);
+            return _loader.AppPackage(appId);
         }
 
         private IDictionary<int, ToSic.Eav.Interfaces.IContentType> TestLoadCts(int appId)

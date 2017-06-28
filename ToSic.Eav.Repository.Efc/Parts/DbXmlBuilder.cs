@@ -42,14 +42,17 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 .Where(v => v.EntityId == entityId && !v.ChangeLogDeleted.HasValue)
                 .ToList();
 
-            var values = dbValues
+            var values = dbValues.OrderBy(v => v.Attribute.StaticName)
                 .Select(e => new {Key = e.Attribute.StaticName, e.Attribute.TypeNavigation.Type, e.Value, Dimensions = e.ToSicEavValuesDimensions });
-            var valuesXElement = values.Select(v => XmlValue(v.Key, v.Value, v.Type, v.Dimensions));
+            var valuesXElement = values.Select(v => XmlValue(v.Key, v.Value, v.Type, v.Dimensions)).ToList();
 
             // note: minimal duplicate code for guid-serialization w/XmlExport
             var relationships = GetSerializedRelationshipGuids(entityId);
 
-            var relsXElement = relationships.Select(r => XmlValue(r.Key, r.Value, XmlConstants.Entity, null));
+            var relsXElement = relationships.Select(r => XmlValue(r.Key, r.Value, XmlConstants.Entity, null)).ToList();
+
+            // join the lists and sort by key to improve comparability...
+            var xNodes = relsXElement.Concat(valuesXElement).OrderBy(x => x.FirstAttribute.Value).ToList();
 
             // create Entity-XElement
             var entityXElement = new XElement(XmlConstants.Entity,
@@ -57,7 +60,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 new XAttribute(XmlConstants.AttSetStatic, attributeSet.StaticName),
                 new XAttribute(XmlConstants.AttSetNiceName, attributeSet.Name),
                 new XAttribute(XmlConstants.GuidNode, entity.EntityGuid),
-                valuesXElement, relsXElement);
+                xNodes);
 
             // try to add keys - moved to here from xml-exporter
             if (entity.KeyGuid.HasValue)
@@ -109,7 +112,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 new XAttribute(XmlConstants.KeyAttr , attributeStaticname),
                 new XAttribute(XmlConstants.ValueAttr, valueSerialized),
                 !String.IsNullOrEmpty(attributeType) ? new XAttribute(XmlConstants.EntityTypeAttribute /* "Type" */, attributeType) : null,
-                dimensions?.Select(p => new XElement(XmlConstants.ValueDimNode,
+                dimensions?.OrderBy(l => l.Dimension.EnvironmentKey).Select(p => new XElement(XmlConstants.ValueDimNode,
                         new XAttribute(XmlConstants.DimId, p.DimensionId),
                         new XAttribute(XmlConstants.ValueDimRoAttr, p.ReadOnly)
                     ))

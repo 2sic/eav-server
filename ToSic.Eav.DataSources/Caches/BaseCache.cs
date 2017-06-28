@@ -205,12 +205,32 @@ namespace ToSic.Eav.DataSources.Caches
 		/// <summary>
 		/// Get AssignmentObjectTypeId by Name
 		/// </summary>
-		public int GetAssignmentObjectTypeId(string assignmentObjectTypeName)
+		public int GetMetadataType(string typeName)
 		{
-			EnsureCache();
-
-			return AssignmentObjectTypes.SingleOrDefault(a => a.Value == assignmentObjectTypeName).Key;
+		    try
+		    {
+		        EnsureCache();
+		        return AssignmentObjectTypes.SingleOrDefault(a => a.Value == typeName).Key;
+		    }
+            catch (Exception ex)
+            {
+                throw new Exception($"failed to get metadata type for {typeName}", ex);
+            }
 		}
+
+        public string GetMetadataType(int typeId)
+        {
+            try
+            {
+                EnsureCache();
+                return AssignmentObjectTypes[typeId];
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"failed to get metadata type for {typeId}", ex);
+            }
+        }
+
 
         #region GetAssignedEntities by Guid, string and int
         /// <summary>

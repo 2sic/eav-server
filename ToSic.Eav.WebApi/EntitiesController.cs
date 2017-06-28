@@ -119,11 +119,11 @@ namespace ToSic.Eav.WebApi
                         IsPublished = found.IsPublished,
                         IsBranch = (!found.IsPublished && found.GetPublished() != null),
                         TitleAttributeName = found.Title?.Name,
-                        Attributes = found.Attributes.ToDictionary(a => a.Key, a => new Formats.Attribute()
-                        {
+                        Attributes = found.Attributes.ToDictionary(a => a.Key, a => new Formats.Attribute
+                            {
                             Values = a.Value.Values?.Select(v => new ValueSet
                             {
-                                Value = v.SerializableObject,  //v.Serialized, // Data.Value.GetValueModel(a.Value.Type, v., //
+                                Value = v.SerializableObject,  
                                 Dimensions = v.Languages.ToDictionary(l => l.Key, y => y.ReadOnly)
                             }).ToArray() ?? new ValueSet[0]
                         }
