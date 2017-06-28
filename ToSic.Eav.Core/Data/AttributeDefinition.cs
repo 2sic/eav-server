@@ -9,6 +9,7 @@ namespace ToSic.Eav.Data
     /// </summary>
     public class AttributeDefinition : AttributeBase, IAttributeDefinition
     {
+        public int AppId { get; }
         // additional info for the persistence layer
         public int AttributeId { get; set; }
 
@@ -24,8 +25,9 @@ namespace ToSic.Eav.Data
         /// <param name="isTitle"></param>
         /// <param name="attributeId"></param>
         /// <param name="sortOrder"></param>
-        public AttributeDefinition(string name, string type, bool isTitle, int attributeId, int sortOrder): base(name, type/*, isTitle*/)
-		{
+        public AttributeDefinition(int appId, string name, string type, bool isTitle, int attributeId, int sortOrder): base(name, type)
+        {
+            AppId = appId;
             IsTitle = isTitle;
             AttributeId = attributeId;
             SortOrder = sortOrder;
@@ -34,9 +36,9 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Get an Import-Attribute
         /// </summary>
-        public AttributeDefinition(string name, string niceName, string type, string notes, bool? visibleInEditUi, object defaultValue): this(name, type, false, 0, 0)
+        public AttributeDefinition(int appId, string name, string niceName, string type, string notes, bool? visibleInEditUi, object defaultValue): this(appId, name, type, false, 0, 0)
         {
-            InternalAttributeMetaData = new List<Entity> { AttDefBuilder.CreateAttributeMetadata(niceName, notes, visibleInEditUi, HelpersToRefactor.SerializeValue(defaultValue)) };
+            InternalAttributeMetaData = new List<Entity> { AttDefBuilder.CreateAttributeMetadata(appId, niceName, notes, visibleInEditUi, HelpersToRefactor.SerializeValue(defaultValue)) };
         }
 
 

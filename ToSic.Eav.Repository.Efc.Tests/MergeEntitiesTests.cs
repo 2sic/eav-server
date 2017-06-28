@@ -22,20 +22,21 @@ namespace ToSic.Eav.Repository.Efc.Tests
         // move the special save-setting in the Entity into the SaveOptions...
 
         #region Test Data Person tests
-        
+
+        private const int AppId = Constants.TransientAppId;
         ContentType _ctNull = null;
-        ContentType _ctPerson = new ContentType("Person", "Person") {Attributes = new List<IAttributeDefinition>
+        ContentType _ctPerson = new ContentType(AppId, "Person", "Person") {Attributes = new List<IAttributeDefinition>
         {
-            new AttributeDefinition("FullName", "String", true, 0, 0),
-            new AttributeDefinition("FirstName", "String", true, 0, 0),
-            new AttributeDefinition("LastName", "String", true, 0, 0),
-            new AttributeDefinition("Birthday", "DateTime", true, 0, 0),
-            new AttributeDefinition("Husband", "String", true, 0, 0),
-            new AttributeDefinition("UnusedField", "String", true, 0,0)
+            new AttributeDefinition(AppId, "FullName", "String", true, 0, 0),
+            new AttributeDefinition(AppId, "FirstName", "String", true, 0, 0),
+            new AttributeDefinition(AppId, "LastName", "String", true, 0, 0),
+            new AttributeDefinition(AppId, "Birthday", "DateTime", true, 0, 0),
+            new AttributeDefinition(AppId, "Husband", "String", true, 0, 0),
+            new AttributeDefinition(AppId, "UnusedField", "String", true, 0,0)
         }};
         Entity _origENull = null;
 
-        private readonly Entity _girlSingle = new Entity(999, "", new Dictionary<string, object>
+        private readonly Entity _girlSingle = new Entity(AppId, 999, "", new Dictionary<string, object>
         {
             {"FullName", "Sandra Unmarried"},
             {"FirstName", "Sandra"},
@@ -43,7 +44,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             {"Birthday", new DateTime(1981, 5, 14) }
         });
 
-        private readonly Entity _girlMarried = new Entity(0, "", new Dictionary<string, object>
+        private readonly Entity _girlMarried = new Entity(AppId, 0, "", new Dictionary<string, object>
         {
             {"FullName", "Sandra Unmarried-Married"},
             {"FirstName", "Sandra"},
@@ -53,7 +54,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             {"WeddingDate", DateTime.Today }
         });
 
-        private readonly Entity _girlMarriedUpdate = new Entity(0, "", new Dictionary<string, object>
+        private readonly Entity _girlMarriedUpdate = new Entity(AppId, 0, "", new Dictionary<string, object>
         {
             {"FullName", "Sandra Unmarried-Married"},
             //{"FirstName", "Sandra"},
@@ -109,18 +110,18 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         #region Test Data ML
 
-        private ContentType CtMlProduct = new ContentType("Product")
+        private ContentType CtMlProduct = new ContentType(-1, "Product")
         {
             Attributes = new List<IAttributeDefinition>
             {
-                new AttributeDefinition("Title", "String", true, 0, 0),
-                new AttributeDefinition("Teaser", "String", false, 0, 0),
-                new AttributeDefinition("Image", "Hyperlink", false, 0, 0),
+                new AttributeDefinition(AppId, "Title", "String", true, 0, 0),
+                new AttributeDefinition(AppId, "Teaser", "String", false, 0, 0),
+                new AttributeDefinition(AppId, "Image", "Hyperlink", false, 0, 0),
             }
         };
 
         private readonly Entity _prodNull = null;
-        private readonly Entity _prodNoLang = new Entity(3006, "Product", new Dictionary<string, object>()
+        private readonly Entity _prodNoLang = new Entity(AppId, 3006, "Product", new Dictionary<string, object>()
         {
             { "Title", "Original Product No Lang" },
             { "Teaser", "Original Teaser no lang" },
@@ -142,7 +143,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
                 Value.Build("String", "File EN, lang en + ch RW", new List<ILanguage> {langEn.Copy() }),
             });
 
-            return new Entity(3006, "Product", new Dictionary<string, object>
+            return new Entity(AppId, 3006, "Product", new Dictionary<string, object>
             {
                 {title.Name, title},
                 {teaser.Name, teaser},
@@ -181,7 +182,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
                 Value.Build("String", "Filen EN, lang en + ch RW", new List<ILanguage> {langEn.Copy(), langDeCh.Copy()}),
             });
 
-            return new Entity(430, "Product", new Dictionary<string, object>
+            return new Entity(AppId, 430, "Product", new Dictionary<string, object>
             {
                 {title.Name, title},
                 {teaser.Name, teaser},

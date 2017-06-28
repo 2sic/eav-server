@@ -10,6 +10,9 @@ namespace ToSic.Eav.Data
     public class ContentType : IContentType, IContentTypeShareable
     {
         #region simple properties
+
+        public int AppId { get; }
+
         /// <summary>
         /// Name
         /// </summary>
@@ -53,8 +56,9 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Initializes a new instance of the ContentType class.
         /// </summary>
-        public ContentType(string name, string staticName, int attributeSetId, string scope, string description, int? usesConfigurationOfAttributeSet, int configZoneId, int configAppId, bool configurationIsOmnipresent)
+        public ContentType(int appId, string name, string staticName, int attributeSetId, string scope, string description, int? usesConfigurationOfAttributeSet, int configZoneId, int configAppId, bool configurationIsOmnipresent)
         {
+            AppId = appId;
             Name = name;
             StaticName = staticName;
             ContentTypeId = attributeSetId;
@@ -69,10 +73,9 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Overload for in-memory entities
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="staticName"></param>
-        public ContentType(string name, string staticName = null)
+        public ContentType(int appId, string name, string staticName = null)
         {
+            AppId = appId;
             Name = name;
             StaticName = staticName ?? name;
         }

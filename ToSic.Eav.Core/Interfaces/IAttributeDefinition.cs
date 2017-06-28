@@ -7,6 +7,8 @@
 	/// </summary>
 	public interface IAttributeDefinition: IAttributeBase
 	{
+        int AppId { get; }
+
         // additional info for the persistence layer
         int AttributeId { get; }
 

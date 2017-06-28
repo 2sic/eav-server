@@ -64,7 +64,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var itm1 = app1.Entities[test.ItemOnHomeId];
 
             // todo: make some minor changes
-            var itmNewTitle = new Entity(0, "", new Dictionary<string, object>()
+            var itmNewTitle = new Entity(test.AppId, 0, "", new Dictionary<string, object>()
             {
                 {"Title", "changed title"}
             });
@@ -104,7 +104,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var app1 = loader1.AppPackage(test.AppId);
             var ct1 = app1.ContentTypes.Values.First(ct => ct.Name == ctName);
 
-            var newE = new Entity(0, ct1.StaticName, new Dictionary<string, object>
+            var newE = new Entity(test.AppId, 0, ct1.StaticName, new Dictionary<string, object>
             {
                 { "Title", ctTitle }
             });

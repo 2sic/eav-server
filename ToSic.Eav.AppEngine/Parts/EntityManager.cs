@@ -72,7 +72,7 @@ namespace ToSic.Eav.Apps.Parts
 
         public Tuple<int, Guid> Create(string typeName, Dictionary<string, object> values, IIsMetadata isMetadata = null)
         {
-            var newEnt = new Entity(0, typeName, values);
+            var newEnt = new Entity(_appManager.AppId, 0, typeName, values);
             if (isMetadata != null) newEnt.SetMetadata(isMetadata as Metadata);
             var eid = Save(newEnt);
 
@@ -90,7 +90,7 @@ namespace ToSic.Eav.Apps.Parts
                 UpdateParts(existingEntity.EntityId, values);
             else
             {
-                var saveEnt = new Entity(0, typeName, values);
+                var saveEnt = new Entity(_appManager.AppId, 0, typeName, values);
                 saveEnt.SetMetadata(target);
                 Save(saveEnt);
             }
@@ -108,7 +108,7 @@ namespace ToSic.Eav.Apps.Parts
             saveOptions.PreserveUnknownLanguages = true;
 
             var orig = _appManager.Cache.List[id];
-            var tempEnt = new Entity(0, "", values);
+            var tempEnt = new Entity(_appManager.AppId, 0, "", values);
             var saveEnt = EntitySaver.CreateMergedForSaving(orig, tempEnt, saveOptions);
             Save(saveEnt, saveOptions);
         }
@@ -133,7 +133,7 @@ namespace ToSic.Eav.Apps.Parts
                 return existingEnt.EntityId;
             }
 
-            var newE = new Entity(newGuid, contentTypeName, values);
+            var newE = new Entity(_appManager.AppId, newGuid, contentTypeName, values);
             return Save(newE);
         }
 

@@ -127,7 +127,7 @@ namespace ToSic.Eav.DataSources
                         entityValues.Add(parser.FieldHeaders[i], fields[i]);
                     }
 
-                    entityList.Add(new Data.Entity(entityId, ContentType, entityValues, entityTitleName));
+                    entityList.Add(new Data.Entity(Constants.TransientAppId, entityId, ContentType, entityValues, entityTitleName));
                 }
             }
             return entityList;

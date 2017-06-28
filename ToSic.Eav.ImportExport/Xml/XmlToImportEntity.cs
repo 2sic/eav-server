@@ -13,8 +13,10 @@ namespace ToSic.Eav.ImportExport.Xml
 	/// </summary>
 	public class XmlToImportEntity
 	{
-	    public XmlToImportEntity(List<DimensionDefinition> srcLanguages, int? srcDefLang, List<DimensionDefinition> envLanguages, string envDefLang)
+        public int AppId { get; }
+	    public XmlToImportEntity(int appId, List<DimensionDefinition> srcLanguages, int? srcDefLang, List<DimensionDefinition> envLanguages, string envDefLang)
 	    {
+	        AppId = appId;
 	        _envLangs = GenerateDummyDefaultLanguageIfNecessary(envLanguages, envDefLang);
 	        _envDefLang = envDefLang;
             // prepare language mapper-lists, to later assign in case import/target have different languages
@@ -136,7 +138,7 @@ namespace ToSic.Eav.ImportExport.Xml
                 targetValues.Add(sourceAttrib.StaticName, newAttr);
 			}
 
-            var targetEntity = new Entity(Guid.Parse(xEntity.Attribute(XmlConstants.GuidNode).Value), xEntity.Attribute(XmlConstants.AttSetStatic).Value, targetValues.ToDictionary(x => x.Key, y => (object)y.Value));
+            var targetEntity = new Entity(AppId, Guid.Parse(xEntity.Attribute(XmlConstants.GuidNode).Value), xEntity.Attribute(XmlConstants.AttSetStatic).Value, targetValues.ToDictionary(x => x.Key, y => (object)y.Value));
 		    if (metadata != null) targetEntity.SetMetadata(metadata);
 
 			return targetEntity;

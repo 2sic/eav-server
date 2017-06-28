@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Efc.Models;
 
@@ -15,7 +14,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         /// <param name="contentTypeId"></param>
         /// <param name="contentType"></param>
-        internal void SortAttributes(int contentTypeId, IContentType contentType)
+        private void SortAttributes(int contentTypeId, IContentType contentType)
         {
             var attributeList = DbContext.SqlDb.ToSicEavAttributesInSets
                 .Where(a => a.AttributeSetId == contentTypeId)
@@ -47,7 +46,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             PersistAttributeOrder(attributeList);
         }
 
-        internal void PersistAttributeOrder(List<ToSicEavAttributesInSets> attributeList)
+        private void PersistAttributeOrder(List<ToSicEavAttributesInSets> attributeList)
         {
             var index = 0;
             DbContext.DoAndSave(() => attributeList.ForEach(a => a.SortOrder = index++));

@@ -13,7 +13,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// Ensure all AttributeSets with AlwaysShareConfiguration=true exist on specified App. 
         /// App must be saved and have a valid AppId
         /// </summary>
-        internal void PrepareMissingSharedAttributesOnApp(ToSicEavApps app)
+        internal void PrepareMissingSharedAttributesOnApp(ToSicEavApps app, bool cacheMainList = false)
         {
             if (app.AppId == 0 || app.AppId < 0) // < 0 would be ef core un-saved temp-id
                 throw new Exception("App must have a valid AppId");
@@ -22,8 +22,14 @@ namespace ToSic.Eav.Repository.Efc.Parts
             if (app.AppId == Constants.MetaDataAppId)
                 return;
 
-            var sharedAttributeSets = _rememberSharedSets ?? (_rememberSharedSets = GetDbAttribSets(Constants.MetaDataAppId, null).Where(a => a.AlwaysShareConfiguration).ToList());
-            var currentAppSharedSets = GetDbAttribSets(app.AppId, null).Where(a => a.UsesConfigurationOfAttributeSet.HasValue).Select(c => c.UsesConfigurationOfAttributeSet.Value).ToList();
+            var sharedAttributeSets = _rememberSharedSets ?? GetDbAttribSets(Constants.MetaDataAppId, null).Where(a => a.AlwaysShareConfiguration).ToList();
+            if (cacheMainList)
+                _rememberSharedSets = sharedAttributeSets;
+
+            var currentAppSharedSets = GetDbAttribSets(app.AppId, null)
+                .Where(a => a.UsesConfigurationOfAttributeSet.HasValue)
+                .Select(c => c.UsesConfigurationOfAttributeSet.Value)
+                .ToList();
 
             // test if all sets already exist
             var complete = true;
@@ -44,12 +50,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Ensure all AttributeSets with AlwaysShareConfiguration=true exist on all Apps an Zones
         /// </summary>
-        public void DistributeSharedContentTypes()
+        public void DistributeSharedContentTypes() => DbContext.DoAndSave(() =>
         {
             foreach (var app in DbContext.SqlDb.ToSicEavApps)
-                PrepareMissingSharedAttributesOnApp(app);
-
-            DbContext.SqlDb.SaveChanges();
-        }
+                PrepareMissingSharedAttributesOnApp(app, cacheMainList: true);
+        });
     }
 }

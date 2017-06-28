@@ -12,7 +12,7 @@ namespace ToSic.Eav.Interfaces
 
         string GetBestTitle(string[] dimensions);
 
-        new Dictionary<string, IAttribute> Attributes { get; }
+        Dictionary<string, IAttribute> Attributes { get; }
 
         new IAttribute Title { get; }
 

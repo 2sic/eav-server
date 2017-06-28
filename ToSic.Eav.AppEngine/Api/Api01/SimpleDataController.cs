@@ -72,7 +72,7 @@ namespace ToSic.Eav.Api.Api01
                 values.Add(Constants.EntityFieldGuid, Guid.NewGuid());
 
             var eGuid = Guid.Parse(values[Constants.EntityFieldGuid].ToString());
-            var importEntity = new Entity(eGuid, attributeSet.StaticName, new Dictionary<string, object>());
+            var importEntity = new Entity(_appId, eGuid, attributeSet.StaticName, new Dictionary<string, object>());
             AppendAttributeValues(importEntity, attributeSet, ConvertEntityRelations(values), _defaultLanguageCode, false, true);
             ExecuteImport(importEntity);
         }
@@ -128,7 +128,7 @@ namespace ToSic.Eav.Api.Api01
         private void Update(ToSicEavEntities entity, Dictionary<string, object> values, bool filterUnknownFields = true)
         {
             var attributeSet = _context.AttribSet.GetDbAttribSet(entity.AttributeSetId);
-            var importEntity = new Entity(entity.EntityGuid, attributeSet.StaticName, new Dictionary<string, object>());// CreateImportEntity(entity.EntityGuid, attributeSet.StaticName);
+            var importEntity = new Entity(_appId, entity.EntityGuid, attributeSet.StaticName, new Dictionary<string, object>());// CreateImportEntity(entity.EntityGuid, attributeSet.StaticName);
 
             if (filterUnknownFields)
                 values = RemoveUnknownFields(values, attributeSet);

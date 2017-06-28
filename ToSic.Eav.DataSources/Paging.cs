@@ -80,7 +80,7 @@ namespace ToSic.Eav.DataSources
             paging.Add("ItemCount", itemCount);
             paging.Add("PageCount", pageCount);
 
-            var entity = new Data.Entity(0, "Paging", paging, "Title");
+            var entity = new Data.Entity(Constants.TransientAppId, 0, "Paging", paging, "Title");
 
             // Assemble list of this for the stream
             var list = new List<IEntity>();

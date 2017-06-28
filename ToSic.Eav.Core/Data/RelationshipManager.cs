@@ -34,8 +34,10 @@ namespace ToSic.Eav.Data
 		public IEnumerable<IEntity> AllParents => AllRelationships.Where(r => r.Child == _entity).Select(r => r.Parent);
 
 	    /// <summary>
-		/// Get Children of a specified Attribute Name
-		/// </summary>
-		public IRelatedEntities Children => _entity is IEntity ? new RelatedEntities(((IEntity)_entity).Attributes) : new RelatedEntities(_entity.Attributes);
+	    /// Get Children of a specified Attribute Name
+	    /// </summary>
+	    public IRelatedEntities Children 
+            => _entity is IEntity ? new RelatedEntities(((IEntity) _entity).Attributes) : null ; //new RelatedEntities(_entity.Attributes);
+        // special note: ATM everything is an IEntity, so EntityLight is currently not supported
 	}
 }

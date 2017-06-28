@@ -18,11 +18,9 @@ namespace ToSic.Eav.Persistence.Efc
         public Efc11Loader(EavDbContext dbContext)
         {
             _dbContext = dbContext;
-            _mapper = new Efc11Mapper(dbContext);
         }
 
         private readonly EavDbContext _dbContext;
-        private readonly Efc11Mapper _mapper;
 
         #endregion
 
@@ -103,13 +101,13 @@ namespace ToSic.Eav.Persistence.Efc
 
             // Convert to ContentType-Model
             _contentTypes[appId] = contentTypes.ToDictionary(k1 => k1.AttributeSetId,
-                set => (IContentType) new ContentType(set.Name, set.StaticName, set.AttributeSetId, 
+                set => (IContentType) new ContentType(appId, set.Name, set.StaticName, set.AttributeSetId, 
                     set.Scope, set.Description, set.IsGhost, set.ZoneId, set.AppId, set.ConfigIsOmnipresent)
                     {
                         Attributes =  (set.SharedDefinitionId.HasValue
                                 ? sharedAttribs[set.SharedDefinitionId.Value]
                                 : set.Attributes)
-                            .Select(a => new AttributeDefinition(a.StaticName, a.Type, a.IsTitle, a.AttributeId, a.SortOrder) as IAttributeDefinition)
+                            .Select(a => new AttributeDefinition(appId, a.StaticName, a.Type, a.IsTitle, a.AttributeId, a.SortOrder) as IAttributeDefinition)
                             .ToList()
                     }
             );
@@ -228,7 +226,7 @@ namespace ToSic.Eav.Persistence.Efc
             foreach (var e in rawEntities)
             {
                 var contentType = (ContentType)contentTypes[e.AttributeSetId];
-                var newEntity = new Entity(e.EntityGuid, e.EntityId, e.EntityId, e.Metadata, contentType, e.IsPublished, relationships, e.Modified, e.Owner);
+                var newEntity = new Entity(appId, e.EntityGuid, e.EntityId, e.EntityId, e.Metadata, contentType, e.IsPublished, relationships, e.Modified, e.Owner);
 
                 var allAttribsOfThisType = new Dictionary<int, IAttribute>();	// temporary Dictionary to set values later more performant by Dictionary-Key (AttributeId)
                 IAttribute titleAttrib = null;

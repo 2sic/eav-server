@@ -240,7 +240,7 @@ namespace ToSic.Eav.DataSources
 					{
 						var entityId = Convert.ToInt32(reader[EntityIdField]);
 						var values = columNames.Where(c => c != EntityIdField).ToDictionary(c => c, c => reader[c]);
-						var entity = new Data.Entity(entityId, ContentType, values, casedTitle);
+						var entity = new Data.Entity(Constants.TransientAppId, entityId, ContentType, values, casedTitle);
 					    list.Add(entity);
 					    //_entities.Add(entityId, entity);
 					}

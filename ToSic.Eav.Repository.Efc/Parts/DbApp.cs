@@ -15,20 +15,15 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         public ToSicEavApps AddApp(ToSicEavZones zone, string name = Constants.DefaultAppName)
         {
-            if (zone == null)
-                zone = DbContext.SqlDb.ToSicEavZones.SingleOrDefault(z => z.ZoneId == DbContext.ZoneId);// DbContext.Zone.GetZone(DbContext.ZoneId);
+            zone = zone ?? DbContext.SqlDb.ToSicEavZones.SingleOrDefault(z => z.ZoneId == DbContext.ZoneId);
 
-            var newApp = new ToSicEavApps
+            var newApp = new ToSicEavApps 
             {
                 Name = name,
                 Zone = zone
             };
-            DbContext.SqlDb.Add(newApp);
-            DbContext.SqlDb.SaveChanges();	// required to ensure AppId is created - required in EnsureSharedAttributeSets();
-
-            DbContext.AttribSet.PrepareMissingSharedAttributesOnApp(newApp);
-
-            DbContext.SqlDb.SaveChanges();	
+            DbContext.DoAndSave(() => DbContext.SqlDb.Add(newApp)); // save is required to ensure AppId is created - required in EnsureSharedAttributeSets();
+            DbContext.DoAndSave(() => DbContext.AttribSet.PrepareMissingSharedAttributesOnApp(newApp));
 
             return newApp;
         }
@@ -43,7 +38,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             DbContext.Versioning.GetChangeLogId();
 
             // Delete app using StoredProcedure
-            DbContext.SqlDb.Database.ExecuteSqlCommand("ToSIC_EAV_DeleteApp @p0", appId);// .DeleteAppInternal(appId);
+            DbContext.SqlDb.Database.ExecuteSqlCommand("ToSIC_EAV_DeleteApp @p0", appId);
         }
 
     }

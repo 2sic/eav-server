@@ -217,7 +217,7 @@ namespace ToSic.Eav.WebApi
         public int AddField(int appId, int contentTypeId, string staticName, string type, string inputType, int sortOrder)
 	    {
             SetAppIdAndUser(appId);
-            var attDef = new AttributeDefinition(staticName, type, false, 0, sortOrder);
+            var attDef = new AttributeDefinition(appId, staticName, type, false, 0, sortOrder);
             
 	        return AppManager.ContentTypes.CreateAttributeAndInitializeAndSave(contentTypeId, attDef, /*staticName, type, */inputType/*, sortOrder*/);
 	    }

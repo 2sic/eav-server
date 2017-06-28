@@ -69,7 +69,7 @@ namespace ToSic.Eav.Apps
             if (values == null)
                 values = new Dictionary<string, object>();
 
-            var newEnt = new Entity(0, setName, values);
+            var newEnt = new Entity(AppId, 0, setName, values);
             newEnt.SetMetadata(new Metadata { KeyNumber = DataController.AppId, TargetType = appAssignment });
             Entities.Save(newEnt);
 

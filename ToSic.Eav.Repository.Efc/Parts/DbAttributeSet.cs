@@ -11,11 +11,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
     {
         public DbAttributeSet(DbDataController dc) : base(dc) { }
 
-        private IQueryable<ToSicEavAttributeSets> GetSetCoreQuery()
+        private IQueryable<ToSicEavAttributeSets> GetSetCoreQuery(int? appId = null)
             => DbContext.SqlDb.ToSicEavAttributeSets
                 .Include(a => a.ToSicEavAttributesInSets)
                 .ThenInclude(a => a.Attribute)
-                .Where(a => a.AppId == DbContext.AppId && !a.ChangeLogDeleted.HasValue);
+                .Where(a => a.AppId == (appId ?? DbContext.AppId) && !a.ChangeLogDeleted.HasValue);
 
         /// <summary>
         /// Get a List of all AttributeSets
@@ -71,7 +71,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// Test whether AttributeSet exists on specified App and is not deleted
         /// </summary>
         internal bool DbAttribSetExists(int appId, string staticName)
-            => GetSetCoreQuery().Any(a => a.StaticName == staticName);
+            => GetSetCoreQuery(appId).Any(a => a.StaticName == staticName);
             //DbContext.SqlDb.ToSicEavAttributeSets.Any(
             //    a => !a.ChangeLogDeleted.HasValue
             //         && a.AppId == appId

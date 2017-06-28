@@ -8,10 +8,15 @@ namespace ToSic.Eav.Interfaces
 	/// </summary>
 	public interface IEntityLight
 	{
-		/// <summary>
-		/// Gets the EntityId
-		/// </summary>
-		int EntityId { get; }
+        /// <summary>
+        /// New test value - let the entity know where it belongs to, making it complete and allowing further data lookup if necessary...
+        /// </summary>
+        int AppId { get; }
+
+        /// <summary>
+        /// Gets the EntityId
+        /// </summary>
+        int EntityId { get; }
 
 		/// <summary>
 		/// Gets the EntityGuid
@@ -25,10 +30,12 @@ namespace ToSic.Eav.Interfaces
 		//int AssignmentObjectTypeId { get; }
 
         IMetadata Metadata { get; }
-		/// <summary>
-		/// Gets a Dictionary having all Attributes having a value
-		/// </summary>
-		Dictionary<string, object> Attributes { get; }
+
+
+		///// <summary>
+		///// Gets a Dictionary having all Attributes having a value
+		///// </summary>
+		//Dictionary<string, object> Attributes { get; }
 
 		/// <summary>
 		/// Gets the ContentType of this Entity

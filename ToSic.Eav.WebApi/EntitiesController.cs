@@ -249,7 +249,7 @@ namespace ToSic.Eav.WebApi
             if (toEntity.Guid == Guid.Empty)
                 throw new Exception("got empty guid - should never happen");
 
-            var importEntity = new Entity(toEntity.Id, toEntity.Type.StaticName, attribs.ToDictionary(x => x.Key, y => (object)y.Value))
+            var importEntity = new Entity(AppId, toEntity.Id, toEntity.Type.StaticName, attribs.ToDictionary(x => x.Key, y => (object)y.Value))
             {
                 #region Guids, Ids, Published, Content-Types
                 IsPublished = toEntity.IsPublished,

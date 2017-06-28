@@ -158,5 +158,7 @@ namespace ToSic.Eav
         public const string AppAssignmentName = "App";
 
         #endregion
+
+        public const int TransientAppId = -9999;
     }
 }

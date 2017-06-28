@@ -84,7 +84,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
         private Entity AppendEntity(Guid entityGuid)
         {
-            var entity = new Entity(entityGuid, ContentType.StaticName, new Dictionary<string, object>());
+            var entity = new Entity(_appId, entityGuid, ContentType.StaticName, new Dictionary<string, object>());
             ImportEntities.Add(entity);
             return entity;
         }

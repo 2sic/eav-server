@@ -5,14 +5,13 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using ToSic.Eav.Data;
+using ToSic.Eav.DataSources;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Xml;
 using ToSic.Eav.Interfaces;
-using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Repository.Efc;
-using ToSic.Eav.Repository.Efc.Parts;
 using ExportImportMessage = ToSic.Eav.Persistence.Logging.ExportImportMessage;
 
 // 2dm: must disable NullRef warnings, because there a lot of warnings when processing XML, 
@@ -30,8 +29,8 @@ namespace ToSic.Eav.Apps.ImportExport
 		//private int? _sourceDefaultDimensionId;
         private List<DimensionDefinition> _targetDimensions;
         private DbDataController _eavContext;
-		private int _appId;
-		private int _zoneId;
+		public int AppId { get; private set; }
+		public int ZoneId { get; private set; }
 		private readonly Dictionary<int, int> _fileIdCorrectionList = new Dictionary<int, int>();
 	    private readonly Dictionary<int, int> _folderIdCorrectionList = new Dictionary<int, int>();
 
@@ -158,7 +157,7 @@ namespace ToSic.Eav.Apps.ImportExport
 			}
 			else
 			{
-				appId = _appId;
+				appId = AppId;
 			}
 
 			if (appId <= 0)
@@ -178,8 +177,8 @@ namespace ToSic.Eav.Apps.ImportExport
 		{
 		    _eavContext = DbDataController.Instance(zoneId, appId);
             
-			_appId = appId;
-			_zoneId = zoneId;
+			AppId = appId;
+			ZoneId = zoneId;
 
 			if (!IsCompatible(doc))
 			{
@@ -213,7 +212,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
 		    _targetDimensions = new ZoneRuntime(zoneId).Languages(true);
 
-            _xmlBuilder = new XmlToImportEntity(_sourceDimensions, _sourceDefaultDimensionId, _targetDimensions, DefaultLanguage);
+            _xmlBuilder = new XmlToImportEntity(AppId, _sourceDimensions, _sourceDefaultDimensionId, _targetDimensions, DefaultLanguage);
             #endregion
 
             var atsNodes = xmlSource.Element(XmlConstants.AttributeSets)?.Elements(XmlConstants.AttributeSet);
@@ -223,9 +222,9 @@ namespace ToSic.Eav.Apps.ImportExport
 		    var importEntities = GetImportEntities(entNodes, Constants.NotMetadata);
 
 
-			var import = new Import(_zoneId, _appId, leaveExistingValuesUntouched);
+			var import = new Import(ZoneId, AppId, leaveExistingValuesUntouched);
 			import.ImportIntoDb(importAttributeSets, importEntities);
-            SystemManager.Purge(_zoneId, _appId);
+            SystemManager.Purge(ZoneId, AppId);
 
 			ImportLog.AddRange(GetExportImportMessagesFromImportLog(import.Storage.Log));
 
@@ -282,7 +281,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 if (attsetElem != null)
                     foreach (var xElementAttribute in attsetElem.Elements(XmlConstants.Attribute))
                     {
-                        var attribute = new AttributeDefinition(
+                        var attribute = new AttributeDefinition(AppId,
                             xElementAttribute.Attribute(XmlConstants.Static).Value,
                             null,
                             xElementAttribute.Attribute(XmlConstants.EntityTypeAttribute).Value,
@@ -303,7 +302,7 @@ namespace ToSic.Eav.Apps.ImportExport
 			        (attributes.First() as AttributeDefinition).IsTitle = true;
 
 			    // Add AttributeSet
-                var ct = new ContentType(attributeSet.Attribute(XmlConstants.Name).Value)
+                var ct = new ContentType(AppId, attributeSet.Attribute(XmlConstants.Name).Value)
 				{
 					Attributes = attributes,
                     OnSaveUseParentStaticName = attributeSet.Attributes(XmlConstants.AttributeSetParentDef).Any() ? attributeSet.Attribute(XmlConstants.AttributeSetParentDef).Value : "",
@@ -334,7 +333,7 @@ namespace ToSic.Eav.Apps.ImportExport
             var templates = root.Element(XmlConstants.Templates);
             if (templates == null) return;
 
-            var cache = DataSource.GetCache(_zoneId, _appId);
+            var cache = DataSource.GetCache(ZoneId, AppId);
 
             foreach (var template in templates.Elements(XmlConstants.Template))
             {
@@ -529,7 +528,7 @@ namespace ToSic.Eav.Apps.ImportExport
 			{
 				// Special case: App AttributeSets must be assigned to the current app
 				case XmlConstants.App:
-					keyNumber = _appId;
+					keyNumber = AppId;
 					assignmentObjectTypeId = SystemRuntime.GetKeyTypeId(Constants.AppAssignmentName);
 					break;
                 case XmlConstants.Entity:

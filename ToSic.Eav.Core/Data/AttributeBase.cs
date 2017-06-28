@@ -10,6 +10,7 @@ namespace ToSic.Eav.Data
     /// </summary>
     public class AttributeBase : IAttributeBase
     {
+        //public int TempAppId { get; }
         public string Name { get; set; }
         public string Type { get; set; }
 
@@ -36,10 +37,12 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Extended constructor when also storing the persistance ID-Info
         /// </summary>
+        /// <param name="appId"></param>
         /// <param name="name"></param>
         /// <param name="type"></param>
-        public AttributeBase(string name, string type)
+        public AttributeBase(/*int appId,*/ string name, string type)
         {
+            //TempAppId = appId;
             Name = name;
             Type = type;
 		}

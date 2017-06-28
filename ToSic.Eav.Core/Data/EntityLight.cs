@@ -13,6 +13,7 @@ namespace ToSic.Eav.Data
 	public class EntityLight : IEntityLight
     {
 	    #region Basic properties EntityId, EntityGuid, Title, Attributes, Type, Modified, etc.
+        public int AppId { get; internal set; }
         /// <summary>
         /// Id as an int
         /// </summary>
@@ -34,7 +35,7 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// List of all attributes
         /// </summary>
-		public Dictionary<string, object> Attributes { get; set; }
+		protected Dictionary<string, object> LightAttributesForInternalUseOnlyForNow { get; set; }
 
         /// <summary>
         /// Type-definition of this content-item
@@ -66,7 +67,7 @@ namespace ToSic.Eav.Data
         /// </summary>
         /// <param name="attributeName"></param>
         /// <returns></returns>
-        public object this[string attributeName] => Attributes.ContainsKey(attributeName) ? Attributes[attributeName] : null;
+        public object this[string attributeName] => LightAttributesForInternalUseOnlyForNow.ContainsKey(attributeName) ? LightAttributesForInternalUseOnlyForNow[attributeName] : null;
         #endregion
 
         #region various constructors to create entities
@@ -79,11 +80,12 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Create a new Entity. Used to create InMemory Entities that are not persisted to the EAV SqlStore.
         /// </summary>
-        public EntityLight(int entityId, string contentTypeName, Dictionary<string, object> values, string titleAttribute = null, DateTime? modified = null)
+        public EntityLight(int appId, int entityId, string contentTypeName, Dictionary<string, object> values, string titleAttribute = null, DateTime? modified = null)
         {
+            AppId = appId;
             EntityId = entityId;
-            Type = new ContentType(contentTypeName);
-            Attributes = values;//.ConvertToAttributes();
+            Type = new ContentType(appId, contentTypeName);
+            LightAttributesForInternalUseOnlyForNow = values;//.ConvertToAttributes();
             try
             {
                 if (titleAttribute != null)
@@ -105,7 +107,7 @@ namespace ToSic.Eav.Data
         /// Create a brand new Entity. 
         /// Mainly used for entities which are created for later saving
         /// </summary>
-        public EntityLight(Guid entityGuid, string contentTypeName, Dictionary<string, object> values) : this(0, contentTypeName, values)
+        public EntityLight(int appId, Guid entityGuid, string contentTypeName, Dictionary<string, object> values) : this(appId, 0, contentTypeName, values)
         {
             EntityGuid = entityGuid;
         }
@@ -127,8 +129,8 @@ namespace ToSic.Eav.Data
         {
             object result;
 
-            if (Attributes.ContainsKey(attributeName))
-                result = Attributes[attributeName];
+            if (LightAttributesForInternalUseOnlyForNow.ContainsKey(attributeName))
+                result = LightAttributesForInternalUseOnlyForNow[attributeName];
             else switch (attributeName.ToLower())
             {
                 case Constants.EntityFieldTitle:

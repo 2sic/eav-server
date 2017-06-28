@@ -25,8 +25,8 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// List of all attributes
         /// </summary>
-        public new Dictionary<string, IAttribute> Attributes {
-            get { return _attributes ?? (_attributes = ((EntityLight) this).Attributes.ConvertToAttributes()); }
+        public Dictionary<string, IAttribute> Attributes {
+            get { return _attributes ?? (_attributes = LightAttributesForInternalUseOnlyForNow.ConvertToAttributes()); }
             set { _attributes = value; } }
 
         private Dictionary<string, IAttribute> _attributes;
@@ -91,7 +91,7 @@ namespace ToSic.Eav.Data
 
         #endregion
 
-        public Entity(int entityId, string contentTypeName, Dictionary<string, object> values, string titleAttribute = null, DateTime? modified = null) : base(entityId, contentTypeName, values, titleAttribute, modified)
+        public Entity(int appId, int entityId, string contentTypeName, Dictionary<string, object> values, string titleAttribute = null, DateTime? modified = null) : base(appId, entityId, contentTypeName, values, titleAttribute, modified)
         {
             if (values.All(x => x.Value is IAttribute))
                 Attributes = values.ToDictionary(x => x.Key, x => x.Value as IAttribute);
@@ -103,7 +103,7 @@ namespace ToSic.Eav.Data
         /// Create a brand new Entity. 
         /// Mainly used for entities which are created for later saving
         /// </summary>
-        public Entity(Guid entityGuid, string contentTypeName, Dictionary<string, object> values) : base(entityGuid, contentTypeName, values)
+        public Entity(int appId, Guid entityGuid, string contentTypeName, Dictionary<string, object> values) : base(appId, entityGuid, contentTypeName, values)
         {
             if (values.All(x => x.Value is IAttribute))
                 Attributes = values.ToDictionary(x => x.Key, x => x.Value as IAttribute);
@@ -114,8 +114,9 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Create a new Entity from a data store (usually SQL backend)
         /// </summary>
-        public Entity(Guid entityGuid, int entityId, int repositoryId, IMetadata isMetadata, IContentType type, bool isPublished, IEnumerable<EntityRelationshipItem> allRelationships, DateTime modified, string owner)
+        public Entity(int appId, Guid entityGuid, int entityId, int repositoryId, IMetadata isMetadata, IContentType type, bool isPublished, IEnumerable<EntityRelationshipItem> allRelationships, DateTime modified, string owner)
         {
+            AppId = appId;
             EntityId = entityId;
             EntityGuid = entityGuid;
             Metadata = isMetadata;
@@ -138,6 +139,7 @@ namespace ToSic.Eav.Data
         /// </summary>
         public Entity(IEntity entity, Dictionary<string, IAttribute> attributes, IEnumerable<EntityRelationshipItem> allRelationships)
         {
+            AppId = entity.AppId;
             EntityId = entity.EntityId;
             EntityGuid = entity.EntityGuid;
             Metadata = ((Metadata)entity.Metadata).CloneIsMetadata();
