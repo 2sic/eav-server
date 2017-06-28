@@ -37,3 +37,4 @@ using System.Runtime.InteropServices;
 
 [assembly: InternalsVisibleTo("ToSic.Eav.Apps")]
 [assembly: InternalsVisibleTo("ToSic.Eav.Repository.Efc.Tests")]
+[assembly: InternalsVisibleTo("ToSic.Eav.ImportExport.Tests")]

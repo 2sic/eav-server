@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Web.Script.Serialization;
 
 namespace ToSic.Eav.Interfaces
 {
@@ -7,6 +8,7 @@ namespace ToSic.Eav.Interfaces
 	/// </summary>
 	public interface IIsMetadata
 	{
+        [ScriptIgnore]
         bool IsMetadata { get; }
 
         int TargetType { get; }

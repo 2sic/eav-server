@@ -26,7 +26,7 @@ namespace ToSic.Eav.Data
         /// </summary>
         public int TargetType { get; set; } = Constants.NotMetadata;
 
-        public string Key { get; set; }
+        //public string Key { get; set; }
 
         /// <summary>
         /// The Keynumber is null or the int of the key as stored in "Key"
@@ -46,7 +46,7 @@ namespace ToSic.Eav.Data
         public Metadata CloneIsMetadata() => new Metadata
         {
             TargetType = TargetType,
-            Key = Key,
+            //Key = Key,
             KeyString = KeyString,
             KeyNumber = KeyNumber,
             KeyGuid = KeyGuid

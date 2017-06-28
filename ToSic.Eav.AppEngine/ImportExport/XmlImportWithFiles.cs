@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSources;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Xml;
 using ToSic.Eav.Interfaces;
@@ -24,9 +23,6 @@ namespace ToSic.Eav.Apps.ImportExport
 	{
 		public List<ExportImportMessage> ImportLog;
 
-		//private List<DimensionDefinition> _sourceDimensions;
-		//private string _sourceDefaultLanguage;
-		//private int? _sourceDefaultDimensionId;
         private List<DimensionDefinition> _targetDimensions;
         private DbDataController _eavContext;
 		public int AppId { get; private set; }
@@ -197,22 +193,22 @@ namespace ToSic.Eav.Apps.ImportExport
 			PrepareFileIdCorrectionList(xmlSource);
 
             #region Prepare dimensions (languages) based on header...
-            var _sourceDimensions = BuildSourceDimensionsList(xmlSource);
+            var sourceDimensions = BuildSourceDimensionsList(xmlSource);
 
-			var _sourceDefaultLanguage = xmlSource.Element(XmlConstants.Header)?.Element(XmlConstants.Language)?.Attribute(XmlConstants.LangDefault)?.Value;
-		    if (_sourceDimensions == null || _sourceDefaultLanguage == null)
+			var sourceDefaultLanguage = xmlSource.Element(XmlConstants.Header)?.Element(XmlConstants.Language)?.Attribute(XmlConstants.LangDefault)?.Value;
+		    if (sourceDimensions == null || sourceDefaultLanguage == null)
 		    {
                 ImportLog.Add(new ExportImportMessage("Cant find source dimensions or source-default language.", ExportImportMessage.MessageTypes.Error));
                 return false;
             }
 
-            var _sourceDefaultDimensionId = _sourceDimensions.Any() ?
-                _sourceDimensions.FirstOrDefault(p => p.Matches(_sourceDefaultLanguage))?.DimensionId
+            var sourceDefaultDimensionId = sourceDimensions.Any() ?
+                sourceDimensions.FirstOrDefault(p => p.Matches(sourceDefaultLanguage))?.DimensionId
 				: new int?();
 
 		    _targetDimensions = new ZoneRuntime(zoneId).Languages(true);
 
-            _xmlBuilder = new XmlToEntity(AppId, _sourceDimensions, _sourceDefaultDimensionId, _targetDimensions, DefaultLanguage);
+            _xmlBuilder = new XmlToEntity(AppId, sourceDimensions, sourceDefaultDimensionId, _targetDimensions, DefaultLanguage);
             #endregion
 
             var atsNodes = xmlSource.Element(XmlConstants.AttributeSets)?.Elements(XmlConstants.AttributeSet);

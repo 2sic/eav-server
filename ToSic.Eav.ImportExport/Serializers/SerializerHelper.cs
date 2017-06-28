@@ -62,18 +62,14 @@ namespace ToSic.Eav.Serializers
         ///     so even if it looks un-used, it must stay available
         /// </remarks>
         [Obsolete("Try to use the List-overload instead of the dictionary overload")]
-        public IEnumerable<Dictionary<string, object>> Prepare(IDictionary<int, IEntity> list)
-            => list.Select(c => GetDictionaryFromEntity(c.Value));
+        public IEnumerable<Dictionary<string, object>> Prepare(IDictionary<int, IEntity> list) => list.Select(c => GetDictionaryFromEntity(c.Value));
 
-        public IEnumerable<Dictionary<string, object>> Prepare(IEnumerable<IEntity> entities)
-            => entities.Select(GetDictionaryFromEntity);
-
+        public IEnumerable<Dictionary<string, object>> Prepare(IEnumerable<IEntity> entities) => entities.Select(GetDictionaryFromEntity);
 
         /// <summary>
         /// Return an object that represents an IDataStream, but is serializable
         /// </summary>
-        public Dictionary<string, object> Prepare(IEntity entity)
-            => (entity == null) ? null : GetDictionaryFromEntity(entity);
+        public Dictionary<string, object> Prepare(IEntity entity) => (entity == null) ? null : GetDictionaryFromEntity(entity);
         
 
         #endregion

@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Xml;
+using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Repository.Efc.Parts;
+using ToSic.Eav.Repository.Efc.Tests;
 
-namespace ToSic.Eav.Repository.Efc.Tests
+namespace ToSic.Eav.ImportExport.Tests
 {
     [TestClass]
     public class XmlSerializationTests
@@ -13,7 +16,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         private int TestItemId = 0;
 
         [TestMethod]
-        public void SerializeOneXml()
+        public void Xml_SerializeItemOnHome()
         {
             var test = new TestValuesOnPc2Dm();
             var dbc = DbDataController.Instance(null, test.AppId);
@@ -26,10 +29,11 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
             var loader = new Efc11Loader(dbc.SqlDb);
             var app = loader.AppPackage(test.AppId);
-            var exBuilder = new XmlPersistence(app);
-            var xmlEnt = exBuilder.XmlEntity(test.ItemOnHomeId).ToString();
+            var exBuilder = new XmlSerializer();
+            exBuilder.Initialize(app);
+            var xmlEnt = exBuilder.Serialize(test.ItemOnHomeId);
             Assert.IsTrue(xmlEnt.Length > 200, "should get a long xml string");
-
+            Trace.Write(xmlEnt);
             Assert.AreEqual(xmlstring, xmlEnt, "xml strings should be identical");
         }
 
@@ -43,7 +47,8 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var xmlbuilder = new DbXmlBuilder(dbc);
             var loader = new Efc11Loader(dbc.SqlDb);
             var app = loader.AppPackage(appId);
-            var exBuilder = new XmlPersistence(app);
+            var exBuilder = new XmlSerializer();
+            exBuilder.Initialize(app);
 
             var maxCount = 500;
             var skip = 0;
@@ -57,7 +62,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
                     var xml = xmlbuilder.XmlEntity(appEntity.EntityId);
                     var xmlstring = xml.ToString();
-                    var xmlEnt = exBuilder.XmlEntity(appEntity.EntityId).ToString();
+                    var xmlEnt = exBuilder.Serialize(appEntity.EntityId);
                     Assert.AreEqual(xmlstring, xmlEnt,
                         $"xml of item {count} strings should be identical - but was not on xmlEnt {appEntity.EntityId}");
 

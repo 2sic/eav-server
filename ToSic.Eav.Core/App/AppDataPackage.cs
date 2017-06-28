@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
+using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
 
-namespace ToSic.Eav.Data
+namespace ToSic.Eav.App
 {
 	/// <summary>
 	/// Cache Object for a specific App
@@ -45,19 +47,29 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Gets a Dictionary of AssignmentObjectTypes and assigned Entities having a KeyGuid
         /// </summary>
-        public IDictionary<int, Dictionary<Guid, IEnumerable<IEntity>>> MetadataForGuid { get; }
+        private IDictionary<int, Dictionary<Guid, IEnumerable<IEntity>>> MetadataForGuid { get; }
 
 		/// <summary>
 		/// Gets a Dictionary of AssignmentObjectTypes and assigned Entities having a KeyNumber
 		/// </summary>
-		public IDictionary<int, Dictionary<int, IEnumerable<IEntity>>> MetadataForNumber { get; }
+		private IDictionary<int, Dictionary<int, IEnumerable<IEntity>>> MetadataForNumber { get; }
 
 		/// <summary>
 		/// Gets a Dictionary of AssignmentObjectTypes and assigned Entities having a KeyString
 		/// </summary>
-		public IDictionary<int, Dictionary<string, IEnumerable<IEntity>>> MetadataForString { get; }
+		private IDictionary<int, Dictionary<string, IEnumerable<IEntity>>> MetadataForString { get; }
 
-	    public IEnumerable<IEntity> GetMetadata(int targetType, int key, string contentTypeName = null) => Lookup(MetadataForNumber, targetType, Convert.ToInt32(key), contentTypeName);
+        private ImmutableDictionary<int, string> MetadataTypes { get;  }
+
+	    /// <summary>
+	    /// Get AssignmentObjectTypeId by Name
+	    /// </summary>
+	    public int GetMetadataType(string typeName) => MetadataTypes.First(mt => mt.Value == typeName).Key;
+
+	    public string GetMetadataType(int typeId) => MetadataTypes[typeId];
+
+
+        public IEnumerable<IEntity> GetMetadata(int targetType, int key, string contentTypeName = null) => Lookup(MetadataForNumber, targetType, Convert.ToInt32(key), contentTypeName);
 
 	    public IEnumerable<IEntity> GetMetadata(int targetType, string key, string contentTypeName = null) => Lookup(MetadataForString, targetType, key, contentTypeName);
 
@@ -65,6 +77,7 @@ namespace ToSic.Eav.Data
 
 	    private IEnumerable<IEntity> Lookup<T>(IDictionary<int, Dictionary<T, IEnumerable<IEntity>>> list, int targetType, T key, string contentTypeName = null)
         {
+            // ReSharper disable once CollectionNeverUpdated.Local
             if (list.TryGetValue(targetType, out Dictionary<T, IEnumerable<IEntity>> keyGuidDictionary))
                 if (keyGuidDictionary.TryGetValue(key, out IEnumerable<IEntity> entities))
                     return entities.Where(e => contentTypeName == null || e.Type.StaticName == contentTypeName);
@@ -93,6 +106,7 @@ namespace ToSic.Eav.Data
 			IDictionary<int, Dictionary<Guid, IEnumerable<IEntity>>> metadataForGuid, 
             IDictionary<int, Dictionary<int, IEnumerable<IEntity>>> metadataForNumber,
 			IDictionary<int, Dictionary<string, IEnumerable<IEntity>>> metadataForString, 
+            ImmutableDictionary<int, string> metadataTypes,
             IEnumerable<EntityRelationshipItem> relationships)
 		{
 		    List = entList;
@@ -101,6 +115,7 @@ namespace ToSic.Eav.Data
 			MetadataForGuid = metadataForGuid;
 			MetadataForNumber = metadataForNumber;
 			MetadataForString = metadataForString;
+		    MetadataTypes = metadataTypes;
 			Relationships = relationships;
 
 			LastRefresh = DateTime.Now;

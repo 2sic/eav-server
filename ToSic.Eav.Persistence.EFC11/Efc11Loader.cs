@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.App;
@@ -118,6 +119,8 @@ namespace ToSic.Eav.Persistence.Efc
             var metadataForString = new Dictionary<int, Dictionary<string, IEnumerable<IEntity>>>();
 
             var relationships = new List<EntityRelationshipItem>();
+
+            var metadataTypes = _dbContext.ToSicEavAssignmentObjectTypes.ToImmutableDictionary(a => a.AssignmentObjectTypeId, a => a.Name);
 
             #region Prepare & Extend EntityIds
             if (entityIds == null)
@@ -354,7 +357,7 @@ namespace ToSic.Eav.Persistence.Efc
 
             #endregion
 
-            var appPack = new AppDataPackage(entities, entList, contentTypes, metadataForGuid, metadataForNumber, metadataForString, relationships);
+            var appPack = new AppDataPackage(entities, entList, contentTypes, metadataForGuid, metadataForNumber, metadataForString, metadataTypes, relationships);
             source.AttachApp(appPack);
             return appPack;
         }

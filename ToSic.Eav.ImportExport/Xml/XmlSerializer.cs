@@ -1,6 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Linq;
-using ToSic.Eav.Apps;
+//using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.Interfaces;
@@ -8,19 +10,32 @@ using ToSic.Eav.Interfaces;
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Persistence.Xml
 {
-    public class XmlPersistence
+    public class XmlSerializer: SerializerBase
     {
-        public AppDataPackage App;
 
-        public XmlPersistence(AppDataPackage app)
-        {
-            App = app;
-        }
+
+        public Dictionary<int, XElement> XmlEntities(List<int> entityIds) => entityIds.ToDictionary(e => e, XmlEntity);
+        public Dictionary<int, XElement> XmlEntities(List<IEntity> entities) => entities.ToDictionary(e => e.EntityId, XmlEntity);
+
+
+        public override string Serialize(int entityId) => XmlEntity(entityId).ToString();
+        public override Dictionary<int, string> Serialize(List<int> entities) => XmlEntities(entities).ToDictionary(x => x.Key, x => x.Value.ToString());
+
+        public override string Serialize(IEntity entity) => XmlEntity(entity).ToString();
+
+        public override Dictionary<int, string> Serialize(List<IEntity> entities) => entities.ToDictionary(e => e.EntityId, e => XmlEntity(e).ToString());
+
 
         public XElement XmlEntity(int entityId)
         {
-            var entity = App.Entities[entityId];
+            if (App == null)
+                throw new Exception($"Can't serialize entity {entityId} without the app package. Please initialize first, or provide a prepared entity");
 
+            return XmlEntity(App.Entities[entityId]);
+        }
+
+        public XElement XmlEntity(IEntity entity)
+        {
             var valuesXElement = entity.Attributes.Values
                 .Where(a => a.Type != "Entity" || ((a.Values.FirstOrDefault() as IValue<EntityRelationship>)?.TypedContents?.Any() ?? false))
                 .OrderBy(a => a.Name)
@@ -28,7 +43,7 @@ namespace ToSic.Eav.Persistence.Xml
 
             // create Entity-XElement
             var entityXElement = new XElement(XmlConstants.Entity,
-                new XAttribute(XmlConstants.KeyTargetType, SystemRuntime.GetMetadataType(entity.Metadata.TargetType)),
+                new XAttribute(XmlConstants.KeyTargetType, App.GetMetadataType(entity.Metadata.TargetType)),
                 new XAttribute(XmlConstants.AttSetStatic, entity.Type.StaticName),
                 new XAttribute(XmlConstants.AttSetNiceName, entity.Type.Name),
                 new XAttribute(XmlConstants.GuidNode, entity.EntityGuid),
@@ -45,6 +60,7 @@ namespace ToSic.Eav.Persistence.Xml
 
             return entityXElement;
         }
+
 
         /// <summary>
         /// Generate an xml-node containing a value, 
@@ -71,5 +87,7 @@ namespace ToSic.Eav.Persistence.Xml
 
             return valueXElement;
         }
+
     }
+
 }

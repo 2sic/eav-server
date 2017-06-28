@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using ToSic.Eav.Interfaces;
+using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
@@ -71,25 +73,33 @@ namespace ToSic.Eav.Repository.Efc.Parts
             if (useDelayedSerialize)
                 _delaySerialization[entityId] = entityGuid;
             else
-                SerializeEntityAndAddToQueue(entityId, entityGuid);
+                SerializeEntityAndAddToQueue(ImmediateStateSerializer(), entityId, entityGuid);
 
             if(!_useQueue)
                 Save();
         }
 
+        private IThingSerializer ImmediateStateSerializer()
+        {
+            var serializer = Factory.Resolve<IThingSerializer>();
+            var loader = new Efc11Loader(DbContext.SqlDb);
+            var appPackageRightNow = loader.AppPackage(DbContext.AppId);
+            serializer.Initialize(appPackageRightNow);
+            return serializer;
+        }
+
         /// <summary>
         /// Convert an entity to xml and add to saving queue
         /// </summary>
-        /// <param name="entityId"></param>
-        /// <param name="entityGuid"></param>
-        private void SerializeEntityAndAddToQueue(int entityId, Guid entityGuid)
+        private void SerializeEntityAndAddToQueue(IThingSerializer serializer, int entityId, Guid entityGuid)
         {
-            var export = new DbXmlBuilder(DbContext);
-            var entityModelSerialized = export.XmlEntity(entityId);
+            //var export = new DbXmlBuilder(DbContext);
+            //var entityModelSerialized = export.XmlEntity(entityId);
+            var entityModelSerialized = serializer.Serialize(entityId);
             var timelineItem = new ToSicEavDataTimeline
             {
                 SourceTable = EntitiesTableName, Operation = Constants.DataTimelineEntityStateOperation,
-                NewData = entityModelSerialized.ToString(),
+                NewData = entityModelSerialized,
                 SourceGuid = entityGuid,
                 SourceId = entityId,
                 SysLogId = GetChangeLogId(),
@@ -103,8 +113,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         private void Save()
         {
+            var sharedSerializer = ImmediateStateSerializer();
             // now handle the delayed queue, which waited with serializing
-            _delaySerialization.ToList().ForEach(td => SerializeEntityAndAddToQueue(td.Key, td.Value));
+            _delaySerialization.ToList().ForEach(td => SerializeEntityAndAddToQueue(sharedSerializer, td.Key, td.Value));
             _delaySerialization.Clear();
 
             DbContext.SqlDb.ToSicEavDataTimeline.AddRange(_queue);

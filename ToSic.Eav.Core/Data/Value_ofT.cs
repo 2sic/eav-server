@@ -73,11 +73,11 @@ namespace ToSic.Eav.Data
         {
             get
             {
-                var x = SerializableObject;
-                var list = x as List<Guid?>;
+                var obj = SerializableObject;
+                var list = obj as List<Guid?>;
                 if (list != null)
                     return string.Join(",", list.Select(y => y?.ToString() ?? Constants.EmptyRelationship));
-                return (x as DateTime?)?.ToString("yyyy-MM-ddTHH:mm:ss") ?? (x as bool?)?.ToString() ?? x?.ToString();
+                return (obj as DateTime?)?.ToString("yyyy-MM-ddTHH:mm:ss") ?? (obj as bool?)?.ToString() ?? obj?.ToString();
             }
         }
 

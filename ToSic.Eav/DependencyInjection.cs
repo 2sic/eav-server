@@ -9,6 +9,7 @@ using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repository.Efc.Implementations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Eav.Persistence.Xml;
 
 namespace ToSic.Eav
 {
@@ -35,6 +36,8 @@ namespace ToSic.Eav
             serviceCollection.TryAddTransient<ISystemConfiguration, Configuration>();
 
             serviceCollection.TryAddTransient<IRepositoryLoader, Efc11Loader>();
+
+	        serviceCollection.TryAddTransient<IThingSerializer, XmlSerializer>();
 
             var conStr = new Configuration().DbConnectionString;
             if (!conStr.ToLower().Contains("multipleactiveresultsets")) // this is needed to allow querying data while preparing new data on the same DbContext

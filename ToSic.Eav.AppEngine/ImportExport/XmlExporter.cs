@@ -6,9 +6,13 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
+using ToSic.Eav.App;
+using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Environment;
 using ToSic.Eav.ImportExport.Xml;
+using ToSic.Eav.Interfaces;
+using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Repository.Efc.Parts;
@@ -36,22 +40,19 @@ namespace ToSic.Eav.Apps.ImportExport
 
         #region Constructor stuff
 
-        ///// <summary>
-        ///// Initiate the exporter
-        ///// </summary>
-        ///// <param name="zoneId"></param>
-        ///// <param name="appId"></param>
-        //protected XmlExporter(int zoneId, int appId)
-        //{
-        //     EavAppContext = DbDataController.Instance(zoneId, appId); 
-           
-        //}
 
+        public AppDataPackage AppPackage { get; private set; }
+        public IThingSerializer Serializer { get; private set; }
 
         private string _appStaticName = "";
         protected void Constructor(int zoneId, int appId, string appStaticName, bool appExport, string[] attrSetIds, string[] entityIds)
         {
             EavAppContext = DbDataController.Instance(zoneId, appId); 
+            var loader = new Efc11Loader(EavAppContext.SqlDb);
+            AppPackage = loader.AppPackage(appId);
+            Serializer = Factory.Resolve<IThingSerializer>();
+            Serializer.Initialize(AppPackage);
+
             _appStaticName = appStaticName;
             _isAppExport = appExport;
             AttributeSetIDs = attrSetIds;
@@ -119,11 +120,11 @@ namespace ToSic.Eav.Apps.ImportExport
             EnsureThisIsInitialized();
 
             // Create XML document and declaration
-            var doc = _exportDocument = new XmlBuilder().BuildDocument(); // before 2017-06-07 2dm: new XDocument(new XDeclaration("1.0", "UTF-8", "yes"), null);
+            var doc = _exportDocument = new XmlBuilder().BuildDocument();
 
             #region Header
 
-            var dimensions = new ZoneRuntime(EavAppContext.ZoneId).Languages();// EavAppContext.Dimensions.GetLanguages();//.GetDimensionChildren(Constants.CultureSystemKey);
+            var dimensions = new ZoneRuntime(EavAppContext.ZoneId).Languages();
             var header = new XElement(XmlConstants.Header,
                 _isAppExport && _appStaticName != XmlConstants.AppContentGuid ? new XElement(XmlConstants.App,
                         new XAttribute(XmlConstants.Guid, _appStaticName)
@@ -314,7 +315,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             return new XElement(XmlConstants.FileNode,
                 new XAttribute(XmlConstants.FileIdAttr, file.Id),
-                new XAttribute(XmlConstants.FolderNodePath/*"RelativePath"*/, file.RelativePath)
+                new XAttribute(XmlConstants.FolderNodePath, file.RelativePath)
             );
         }
 

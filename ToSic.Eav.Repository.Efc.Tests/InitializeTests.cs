@@ -14,9 +14,9 @@ using ToSic.SexyContent.ImportExport;
 namespace ToSic.Eav.Repository.Efc.Tests
 {
     [TestClass]
-    class InitializeTests
+    public class InitializeTests
     {
-        static string conStr = ToSic.Eav.Persistence.Efc.Tests.InitializeTests.ConStr;//  @"Data Source=(local)\SQLEXPRESS;Initial Catalog=""2flex 2Sexy Content"";Integrated Security=True;";
+        public static readonly string conStr = Persistence.Efc.Tests.InitializeTests.ConStr;
         [AssemblyInitialize()]
         public static void AssemblyInit(TestContext context)
         {
@@ -26,7 +26,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         }
 
         // note: keep in sync w/the Repository.Efc.Tests and Persistence.Efc.Tests
-        private static void ConfigureEfcDi()
+        public static void ConfigureEfcDi()
         {
             Configuration.SetConnectionString(conStr);
             Factory.ActivateNetCoreDi(sc =>
