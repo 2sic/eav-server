@@ -108,7 +108,7 @@ namespace ToSic.Eav.DataSources.Caches
 				var zone = GetZoneAppInternal(ZoneId, AppId);
 				Backend.InitZoneApp(zone.Item1, zone.Item2);
 
-				SetCacheItem(cacheKey, Backend.GetDataForCache(Cache));
+				SetCacheItem(cacheKey, Backend.GetDataForCache());
 			}
 
 			return GetCacheItem(cacheKey);
@@ -236,60 +236,19 @@ namespace ToSic.Eav.DataSources.Caches
         /// <summary>
 		/// Get Entities with specified AssignmentObjectTypeId and Key
 		/// </summary>
-		public IEnumerable<IEntity> GetAssignedEntities(int targetType, Guid key, string contentTypeName = null)
-		{
-            return EnsureCache().GetMetadata(targetType, key, contentTypeName);
-            //var cache = EnsureCache();
+		public IEnumerable<IEntity> GetAssignedEntities(int targetType, Guid key, string contentTypeName = null) => EnsureCache().GetMetadata(targetType, key, contentTypeName);
 
-            //Dictionary<Guid, IEnumerable<IEntity>> keyGuidDictionary;
-            //if (cache.MetadataForGuid.TryGetValue(assignmentObjectTypeId, out keyGuidDictionary))
-            //{ 
-            //	IEnumerable<IEntity> entities;
-            //	if (keyGuidDictionary.TryGetValue(key, out entities))
-            //		return entities.Where(e => contentTypeName == null || e.Type.StaticName == contentTypeName);
-            //}
-
-            //return new List<IEntity>();
-        }
-
-        /// <summary>
+	    /// <summary>
         /// Get Entities with specified AssignmentObjectTypeId and Key
         /// </summary>
-        public IEnumerable<IEntity> GetAssignedEntities(int targetType, string key, string contentTypeName = null)
-		{
-            return EnsureCache().GetMetadata(targetType, key, contentTypeName);
-            //var cache = EnsureCache();
+        public IEnumerable<IEntity> GetAssignedEntities(int targetType, string key, string contentTypeName = null) => EnsureCache().GetMetadata(targetType, key, contentTypeName);
 
-            //Dictionary<string, IEnumerable<IEntity>> keyStringDictionary;
-            //if (cache.MetadataForString.TryGetValue(assignmentObjectTypeId, out keyStringDictionary))
-            //{
-            //	IEnumerable<IEntity> entities;
-            //	if (keyStringDictionary.TryGetValue(key, out entities))
-            //		return entities.Where(e => contentTypeName == null || e.Type.StaticName == contentTypeName);
-            //}
-
-            //return new List<IEntity>();
-        }
-
-        /// <summary>
+	    /// <summary>
         /// Get Entities with specified AssignmentObjectTypeId and Key
         /// </summary>
-        public IEnumerable<IEntity> GetAssignedEntities(int targetType, int key, string contentTypeName = null)
-		{
-		    return EnsureCache().GetMetadata(targetType, key, contentTypeName);
-			//var cache = EnsureCache();
+        public IEnumerable<IEntity> GetAssignedEntities(int targetType, int key, string contentTypeName = null) => EnsureCache().GetMetadata(targetType, key, contentTypeName);
 
-			//Dictionary<int, IEnumerable<IEntity>> keyNumberDictionary;
-			//if (cache.MetadataForNumber.TryGetValue(assignmentObjectTypeId, out keyNumberDictionary))
-			//{
-			//	IEnumerable<IEntity> entities;
-			//	if (keyNumberDictionary.TryGetValue(key, out entities))
-			//		return entities.Where(e => contentTypeName == null || e.Type.StaticName == contentTypeName);
-			//}
-
-			//return new List<IEntity>();
-        }
-        #endregion
+	    #endregion
 
 
         #region Additional Stream Caching
@@ -334,9 +293,6 @@ namespace ToSic.Eav.DataSources.Caches
         /// <summary>
         /// Insert a data-stream to the cache - if it can be found
         /// </summary>
-        /// <param name="key"></param>
-        /// <param name="list"></param>
-        /// <param name="durationInSeconds"></param>
         public void ListSet(string key, IEnumerable<IEntity> list, DateTime sourceRefresh, int durationInSeconds = 0)
         {
             var policy = new CacheItemPolicy();

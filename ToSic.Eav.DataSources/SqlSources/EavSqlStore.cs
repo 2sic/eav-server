@@ -30,7 +30,7 @@ namespace ToSic.Eav.DataSources.SqlSources
 
             // this function will load data as it's needed
             // note: must use the source null (not "this"), as it's only used for internal deferred child-entity lookups and would cause infinite looping
-            IDictionary<int, IEntity> GetEntities() => Loader.AppPackage(AppId, null, null, true).Entities;
+            IDictionary<int, IEntity> GetEntities() => Loader.AppPackage(AppId, null, true).Entities;
         }
 
 		/// <summary>
@@ -45,10 +45,10 @@ namespace ToSic.Eav.DataSources.SqlSources
 
 		public override bool Ready => _ready;
 
-	    public AppDataPackage GetDataForCache(IDeferredEntitiesList targetCacheForDeferredLookups) 
-            => Loader.AppPackage(AppId, null, targetCacheForDeferredLookups);
+	    public AppDataPackage GetDataForCache() 
+            => Loader.AppPackage(AppId);
 
-	    public Dictionary<int, Data.Zone> GetAllZones() => Loader.Zones();
+	    public Dictionary<int, Zone> GetAllZones() => Loader.Zones();
 
 	    public Dictionary<int, string> GetAssignmentObjectTypes() => Loader.MetadataTargetTypes();
 	}

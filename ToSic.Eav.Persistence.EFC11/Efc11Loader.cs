@@ -120,13 +120,11 @@ namespace ToSic.Eav.Persistence.Efc
         /// <summary>Get Data to populate ICache</summary>
         /// <param name="appId">AppId (can be different than the appId on current context (e.g. if something is needed from the default appId, like MetaData)</param>
         /// <param name="entityIds">null or a List of EntitiIds</param>
-        /// <param name="source">DataSource to get related entities</param>
         /// <param name="entitiesOnly">If only the CachItem.Entities is needed, this can be set to true to imporove performance</param>
         /// <returns>Item1: EntityModels, Item2: all ContentTypes, Item3: Assignment Object Types</returns>
-        public AppDataPackage AppPackage(int appId, int[] entityIds = null, IDeferredEntitiesList source = null, bool entitiesOnly = false)
+        public AppDataPackage AppPackage(int appId, int[] entityIds = null, bool entitiesOnly = false)
         {
-            var deferredAppEntities = new AppDataPackageDeferredList();
-            source = source ?? deferredAppEntities; // todo: probably remove source being passed in
+            var source = new AppDataPackageDeferredList();
 
             var contentTypes = ContentTypes(appId);
 
@@ -379,19 +377,20 @@ namespace ToSic.Eav.Persistence.Efc
             #endregion
 
             var appPack = new AppDataPackage(entities, entList, contentTypes, metadataForGuid, metadataForNumber, metadataForString, relationships);
-            deferredAppEntities.AttachApp(appPack);
+            source.AttachApp(appPack);
             return appPack;
         }
 
         #endregion
 
+        // 2017-08-28 2dm disabled for now as not in use
         /// <summary>
         /// Get EntityModel for specified EntityId
         /// </summary>
         /// <returns>A single IEntity or throws InvalidOperationException</returns>
-        public IEntity Entity(int appId, int entityId)
-            => AppPackage(appId, new[] { entityId }, null, true)
-                .Entities.Single(e => e.Key == entityId).Value; // must filter by EntityId again because of Drafts
+        //public IEntity Entity(int appId, int entityId)
+        //    => AppPackage(appId, new[] { entityId }, true)
+        //        .Entities.Single(e => e.Key == entityId).Value; // must filter by EntityId again because of Drafts
 
         public Dictionary<int, string> MetadataTargetTypes() => _dbContext.ToSicEavAssignmentObjectTypes
             .ToDictionary(a => a.AssignmentObjectTypeId, a => a.Name);

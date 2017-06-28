@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Data;
-using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources.RootSources
 {
@@ -12,11 +11,13 @@ namespace ToSic.Eav.DataSources.RootSources
 		/// <summary>
 		/// Get a CacheItem to build Cache for this App
 		/// </summary>
-		AppDataPackage GetDataForCache(IDeferredEntitiesList cacheObjectUsedForDeferredLookups);
+		AppDataPackage GetDataForCache();
+
 		/// <summary>
 		/// Get a Dictionary of all Zones and Apps
 		/// </summary>
-		Dictionary<int, Data.Zone> GetAllZones();
+		Dictionary<int, Zone> GetAllZones();
+
 		/// <summary>
 		/// Get a Dictionary of all AssignmentObjectTypes
 		/// </summary>
@@ -25,8 +26,6 @@ namespace ToSic.Eav.DataSources.RootSources
 	    /// <summary>
 	    /// Initialize a zone/app combination
 	    /// </summary>
-	    /// <param name="zoneId"></param>
-	    /// <param name="appId"></param>
 	    void InitZoneApp(int zoneId, int appId);
 	}
 }

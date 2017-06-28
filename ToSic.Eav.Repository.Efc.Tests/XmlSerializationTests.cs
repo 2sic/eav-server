@@ -32,6 +32,8 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
             Assert.AreEqual(xmlstring, xmlEnt, "xml strings should be identical");
         }
+
+        [Ignore]
         [TestMethod]
         public void CompareAllSerializedEntitiesOfApp()
         {
