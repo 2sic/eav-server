@@ -33,7 +33,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             Assert.AreEqual(xmlstring, xmlEnt, "xml strings should be identical");
         }
 
-        [Ignore]
+        // [Ignore]
         [TestMethod]
         public void CompareAllSerializedEntitiesOfApp()
         {
@@ -44,8 +44,8 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var app = loader.AppPackage(test.AppId);
             var exBuilder = new XmlPersistence(app);
 
-            var maxCount = 500;
-            var skip = 285;
+            var maxCount = 1500;
+            var skip = 0;
             var count = 0;
             foreach (var appEntity in app.Entities.Values)
             {

@@ -52,9 +52,6 @@ namespace ToSic.Eav.Persistence.Efc.Tests
                 _loader = NewLoader();
                 TestLoadApp(2);
             }
-
-
-            // Assert.IsTrue(results.Entities.Count > 1097 && results.Entities.Count < 1200, "tried counting entities on the blog-app");
         }
 
 

@@ -22,6 +22,7 @@ namespace ToSic.Eav.Persistence.Xml
             var entity = App.Entities[entityId];
 
             var valuesXElement = entity.Attributes.Values
+                .Where(a => a.Type != "Entity" || ((a.Values.FirstOrDefault() as IValue<EntityRelationship>)?.TypedContents?.Any() ?? false))
                 .OrderBy(a => a.Name)
                 .SelectMany(a => a.Values.Select(v => XmlValue(a, v)));
 

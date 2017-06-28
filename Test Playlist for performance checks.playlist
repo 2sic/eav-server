@@ -1,0 +1,1 @@
+<Playlist Version="1.0"><Add Test="ToSic.Eav.Persistence.Efc.Tests.Efc11LoadTests.PerformanceLoading100xBlog" /><Add Test="ToSic.Eav.Persistence.Efc.Tests.Efc11LoadTests.GetSomething" /></Playlist>

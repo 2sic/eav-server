@@ -31,8 +31,7 @@ namespace ToSic.Eav.Persistence.Efc
         #endregion
 
         #region Load Content-Types into IContent-Type Dictionary
-        private Dictionary<int, Dictionary<int, IContentType>> _contentTypes 
-            = new Dictionary<int, Dictionary<int, IContentType>>();
+        private Dictionary<int, Dictionary<int, IContentType>> _contentTypes = new Dictionary<int, Dictionary<int, IContentType>>();
 
         /// <summary>
         /// Get all ContentTypes for specified AppId. 
@@ -68,15 +67,7 @@ namespace ToSic.Eav.Persistence.Efc
                         set.Scope,
                         set.Description,
                         Attributes = set.ToSicEavAttributesInSets
-                            .Select(a => new
-                            {
-                                a.AttributeId,
-                                a.Attribute.StaticName,
-                                a.Attribute.Type,
-                                a.IsTitle,
-                                a.SortOrder
-                            })
-                        ,
+                            .Select(a => new AttributeDefinition(appId, a.Attribute.StaticName, a.Attribute.Type, a.IsTitle, a.AttributeId, a.SortOrder)),
                         IsGhost = set.UsesConfigurationOfAttributeSet,
                         SharedDefinitionId = set.UsesConfigurationOfAttributeSet,
                         AppId = set.UsesConfigurationOfAttributeSetNavigation?.AppId ?? set.AppId,
@@ -89,28 +80,22 @@ namespace ToSic.Eav.Persistence.Efc
             var shareids = contentTypes.Select(c => c.SharedDefinitionId).ToList();
             var sharedAttribs = _dbContext.ToSicEavAttributeSets
                 .Include(s => s.ToSicEavAttributesInSets)
-                    .ThenInclude(a => a.Attribute)
+                .ThenInclude(a => a.Attribute)
                 .Where(s => shareids.Contains(s.AttributeSetId))
-                .ToDictionary(s => s.AttributeSetId, s => s.ToSicEavAttributesInSets.Select(a => new
-                {
-                    a.AttributeId,
-                    a.Attribute.StaticName,
-                    a.Attribute.Type,
-                    a.IsTitle,
-                    a.SortOrder
-                }));
+                .ToDictionary(s => s.AttributeSetId, s => s.ToSicEavAttributesInSets.Select(a
+                    => new AttributeDefinition(appId, a.Attribute.StaticName, a.Attribute.Type, a.IsTitle, a.AttributeId, a.SortOrder)));
 
             // Convert to ContentType-Model
             _contentTypes[appId] = contentTypes.ToDictionary(k1 => k1.AttributeSetId,
-                set => (IContentType) new ContentType(appId, set.Name, set.StaticName, set.AttributeSetId, 
+                set => (IContentType) new ContentType(appId, set.Name, set.StaticName, set.AttributeSetId,
                     set.Scope, set.Description, set.IsGhost, set.ZoneId, set.AppId, set.ConfigIsOmnipresent)
-                    {
-                        Attributes =  (set.SharedDefinitionId.HasValue
-                                ? sharedAttribs[set.SharedDefinitionId.Value]
-                                : set.Attributes)
-                            .Select(a => new AttributeDefinition(appId, a.StaticName, a.Type, a.IsTitle, a.AttributeId, a.SortOrder) as IAttributeDefinition)
-                            .ToList()
-                    }
+                {
+                    Attributes = (set.SharedDefinitionId.HasValue
+                            ? sharedAttribs[set.SharedDefinitionId.Value]
+                            : set.Attributes)
+                        .Cast<IAttributeDefinition>()
+                        .ToList()
+                }
             );
         }
 
@@ -206,16 +191,13 @@ namespace ToSic.Eav.Persistence.Efc
                             .OrderBy(v2 => v2.ChangeLogCreated)
                             .Select(v2 => new
                             {
-                                v2.ValueId,
                                 v2.Value,
-                                Languages = v2.ToSicEavValuesDimensions
-                                    .Select(l => new Dimension
+                                Languages = v2.ToSicEavValuesDimensions.Select(l => new Dimension
                                     {
                                         DimensionId = l.DimensionId,
                                         ReadOnly = l.ReadOnly,
                                         Key = l.Dimension.EnvironmentKey.ToLowerInvariant()
                                     } as ILanguage).ToList(),
-                                v2.ChangeLogCreated
                             })
                     }));
 
@@ -367,11 +349,7 @@ namespace ToSic.Eav.Persistence.Efc
                         relationships.Add(new EntityRelationshipItem(entities[relationship.ParentEntityId],
                             relationship.ChildEntityId.HasValue ? entities[relationship.ChildEntityId.Value] : null));
                 }
-                catch (KeyNotFoundException)
-                {
-                    // may occour if not all entities are loaded - edited 2rm 2015-09-29: Should not occur anymore
-                    // ignore
-                }
+                catch (KeyNotFoundException) { /* ignore */ }
             }
 
             #endregion
