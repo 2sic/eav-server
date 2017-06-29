@@ -16,6 +16,7 @@ namespace ToSic.Eav
         /// DataTimeline Operation-Key for Entity-States (Entity-Versioning)
         /// </summary>
         public const string DataTimelineEntityStateOperation = "s";
+        public const string DataTimelineEntityJson = "e";
 
         #region DB Field / Names Constants
 

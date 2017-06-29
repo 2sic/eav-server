@@ -9,17 +9,12 @@ namespace ToSic.Eav.Persistence.Xml
 {
     public class JsonSerializer: SerializerBase
     {
-        public string JsonEntity(int entityId)
-        {
-            if(App == null)
-                throw new Exception($"Can't serialize entity {entityId} without the app package. Please initialize first, or provide a prepared entity");
 
-            return JsonEntity(App.Entities[entityId]);
-        }
+        protected override string SerializeOne(IEntity entity) => JsonEntity(entity);
 
-        public string JsonEntity(IEntity entity)
+        private string JsonEntity(IEntity entity)
         {
-            var header = new {V = "1.0", TS = DateTime.Now, Content = "Entity"};
+            var header = new {V = "1.0", TS = DateTime.Now, Content = "entity"};
 
             object metadata = null;
             if (entity.Metadata.IsMetadata)
@@ -37,26 +32,24 @@ namespace ToSic.Eav.Persistence.Xml
                 metadata = mddic;
             }
 
+            var attributesInUse = entity.Attributes.Values
+                .OrderBy(a => a.Name)
+                .Where(a => a.Values.Any(v => v.SerializableObject != null))
+                .ToList();
+
             var serDic = new Dictionary<string, object>
             {
                 {"_", header},
-                {"id", entity.EntityId},
-                {"guid", entity.EntityGuid},
-                {"type", new {name = entity.Type.Name, id = entity.Type.StaticName}}
+                {"Id", entity.EntityId},
+                {"Guid", entity.EntityGuid},
+                {"Type", new {entity.Type.Name, Id = entity.Type.StaticName, Attributes = attributesInUse.ToDictionary(a => a.Name, a => a.Type)}}
             };
             if (entity.Attributes.Any())
-                serDic.Add("attributes", entity.Attributes.Values
-                    .OrderBy(a => a.Name)
-                    .Where(a => a.Values.Any(v => v.SerializableObject != null))
-                    .ToDictionary(a => a.Name, a => new Dictionary<string, object>
-                    {
-                        {
-                            a.Type, a.Values.ToDictionary(v => v.SerializableObject,
-                                v => v.Languages.ToDictionary(l => l.Key, l => l.ReadOnly))
-                        }
-                    }));
+                serDic.Add("Attributes", attributesInUse
+                    .ToDictionary(a => a.Name, a =>  a.Values.ToDictionary(v => v.SerializableObject,
+                                v => v.Languages.ToDictionary(l => l.Key, l => l.ReadOnly))));
             if(entity.Metadata.IsMetadata)
-                serDic.Add("for", metadata);
+                serDic.Add("For", metadata);
 
             var simple = JsonConvert.SerializeObject(serDic, JsonSerializerSettings());
             return simple;
@@ -72,15 +65,6 @@ namespace ToSic.Eav.Persistence.Xml
             };
             return settings;
         }
-
-
-        public override string Serialize(int entityId) => JsonEntity(entityId);
-        public override Dictionary<int, string> Serialize(List<int> entities) => null;
-
-
-        public override string Serialize(IEntity entity) => JsonEntity(entity).ToString();
-
-        public override Dictionary<int, string> Serialize(List<IEntity> entities) => null;
         
     }
 }

@@ -18,21 +18,11 @@ namespace ToSic.Eav.Persistence.Xml
         public Dictionary<int, XElement> XmlEntities(List<IEntity> entities) => entities.ToDictionary(e => e.EntityId, XmlEntity);
 
 
-        public override string Serialize(int entityId) => XmlEntity(entityId).ToString();
-        public override Dictionary<int, string> Serialize(List<int> entities) => XmlEntities(entities).ToDictionary(x => x.Key, x => x.Value.ToString());
 
-        public override string Serialize(IEntity entity) => XmlEntity(entity).ToString();
+        protected override string SerializeOne(IEntity entity) => XmlEntity(entity).ToString();
 
-        public override Dictionary<int, string> Serialize(List<IEntity> entities) => entities.ToDictionary(e => e.EntityId, e => XmlEntity(e).ToString());
+        public XElement XmlEntity(int entityId) => XmlEntity(Lookup(entityId));
 
-
-        public XElement XmlEntity(int entityId)
-        {
-            if (App == null)
-                throw new Exception($"Can't serialize entity {entityId} without the app package. Please initialize first, or provide a prepared entity");
-
-            return XmlEntity(App.Entities[entityId]);
-        }
 
         public XElement XmlEntity(IEntity entity)
         {

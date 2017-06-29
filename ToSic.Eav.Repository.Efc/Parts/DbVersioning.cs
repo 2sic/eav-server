@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Efc.Models;
+using ToSic.Eav.Persistence.Xml;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
@@ -81,7 +82,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         private IThingSerializer ImmediateStateSerializer()
         {
-            var serializer = Factory.Resolve<IThingSerializer>();
+            var serializer = new XmlSerializer();
             var loader = new Efc11Loader(DbContext.SqlDb);
             var appPackageRightNow = loader.AppPackage(DbContext.AppId);
             serializer.Initialize(appPackageRightNow);
@@ -98,7 +99,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             var entityModelSerialized = serializer.Serialize(entityId);
             var timelineItem = new ToSicEavDataTimeline
             {
-                SourceTable = EntitiesTableName, Operation = Constants.DataTimelineEntityStateOperation,
+                SourceTable = EntitiesTableName, Operation = Constants.DataTimelineEntityJson,
                 NewData = entityModelSerialized,
                 SourceGuid = entityGuid,
                 SourceId = entityId,
