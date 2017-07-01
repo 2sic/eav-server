@@ -35,7 +35,9 @@ namespace ToSic.Eav.Data
             }
         }
 
-        public IValueOfDimension<TType> Typed => new TypedValue<TType>(Values, TypedContents);
+        //public IValueOfDimension<TType> Typed => new TypedValue<TType>(Values, TypedContents);
+        public IList<IValue<TType>> Typed => Values.Cast<IValue<TType>>().ToList();
+
 
         public object this[int languageId] => this[new[] { languageId }];
 

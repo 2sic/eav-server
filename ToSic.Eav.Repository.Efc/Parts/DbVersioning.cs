@@ -82,7 +82,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         private IThingSerializer ImmediateStateSerializer()
         {
-            var serializer = new XmlSerializer();
+            var serializer = new JsonSerializer();
             var loader = new Efc11Loader(DbContext.SqlDb);
             var appPackageRightNow = loader.AppPackage(DbContext.AppId);
             serializer.Initialize(appPackageRightNow);
@@ -100,7 +100,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
             var timelineItem = new ToSicEavDataTimeline
             {
                 SourceTable = EntitiesTableName, Operation = Constants.DataTimelineEntityJson,
-                NewData = entityModelSerialized,
+                NewData = "",
+                Contents=entityModelSerialized,
                 SourceGuid = entityGuid,
                 SourceId = entityId,
                 SysLogId = GetChangeLogId(),

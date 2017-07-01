@@ -123,6 +123,7 @@
     <Compile Include="Interfaces\IEntity.cs" />
     <Compile Include="Interfaces\IMetadata.cs" />
     <Compile Include="Interfaces\IPublish_T.cs" />
+    <Compile Include="Interfaces\IThingDeserializer.cs" />
     <Compile Include="Interfaces\IThingSerializer.cs" />
     <Compile Include="Interfaces\IValue_T.cs" />
     <Compile Include="Interfaces\IValueOfDimension_T.cs" />

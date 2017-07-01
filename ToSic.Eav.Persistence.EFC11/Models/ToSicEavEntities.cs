@@ -41,5 +41,8 @@ namespace ToSic.Eav.Persistence.Efc.Models
         public virtual ToSicEavChangeLog ChangeLogModifiedNavigation { get; set; }
         //public virtual ToSicEavEntities ConfigurationSetNavigation { get; set; }
         //public virtual ICollection<ToSicEavEntities> InverseConfigurationSetNavigation { get; set; }
+
+        public string Json { get; set; }
+
     }
 }

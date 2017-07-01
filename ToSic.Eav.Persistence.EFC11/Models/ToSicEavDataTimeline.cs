@@ -13,5 +13,6 @@ namespace ToSic.Eav.Persistence.Efc.Models
         public DateTime SysCreatedDate { get; set; }
         public int? SysLogId { get; set; }
         public string NewData { get; set; }
+        public string Contents { get; set; }
     }
 }

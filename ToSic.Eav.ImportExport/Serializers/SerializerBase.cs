@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.App;
-using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
 
 // ReSharper disable once CheckNamespace
@@ -26,13 +25,12 @@ namespace ToSic.Eav.Persistence.Xml
             return App.Entities[entityId];
         }
 
-        protected abstract string SerializeOne(IEntity entity);
+        public abstract string Serialize(IEntity entity);
 
-        public string Serialize(int entityId) => SerializeOne(Lookup(entityId));
-        public string Serialize(IEntity entity) => SerializeOne(entity);
+        public string Serialize(int entityId) => Serialize(Lookup(entityId));
 
         public Dictionary<int, string> Serialize(List<int> entities) => entities.ToDictionary(x => x, x => Serialize(Lookup(x)));
 
-        public Dictionary<int, string> Serialize(List<IEntity> entities) => entities.ToDictionary(e => e.EntityId, e => SerializeOne(e).ToString());
+        public Dictionary<int, string> Serialize(List<IEntity> entities) => entities.ToDictionary(e => e.EntityId, Serialize);
     }
 }

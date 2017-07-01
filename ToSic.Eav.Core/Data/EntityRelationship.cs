@@ -41,7 +41,6 @@ namespace ToSic.Eav.Data
         {
             // If necessary, initialize first. Note that it will only add Ids which really exist in the source (the source should be the cache)
             if (_entities == null)
-                //_entities = _source == null ? new List<IEntity>() : _source.Out[Constants.DefaultStreamName].List.Where(l => EntityIds.Contains(l.Key)).Select(l => l.Value).ToList();
                 LoadEntities();
 
             return new EntityEnum(_entities);

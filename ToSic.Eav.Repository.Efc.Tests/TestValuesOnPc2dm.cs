@@ -9,5 +9,6 @@
         public int BlogAppId = 78;
 
         public int ItemOnHomeId = 3269;
+        public int ContentBlockItemWith9Items = 4645;
     }
 }

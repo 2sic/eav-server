@@ -97,6 +97,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Interfaces\" />
+    <Folder Include="Json\Format\" />
     <Folder Include="Logging\" />
     <Folder Include="Zip\" />
   </ItemGroup>

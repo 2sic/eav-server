@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-//using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.Interfaces;
@@ -13,18 +11,15 @@ namespace ToSic.Eav.Persistence.Xml
     public class XmlSerializer: SerializerBase
     {
 
-
-        public Dictionary<int, XElement> XmlEntities(List<int> entityIds) => entityIds.ToDictionary(e => e, XmlEntity);
-        public Dictionary<int, XElement> XmlEntities(List<IEntity> entities) => entities.ToDictionary(e => e.EntityId, XmlEntity);
-
-
-
-        protected override string SerializeOne(IEntity entity) => XmlEntity(entity).ToString();
-
-        public XElement XmlEntity(int entityId) => XmlEntity(Lookup(entityId));
+        public Dictionary<int, XElement> ToXml(List<int> entityIds) => entityIds.ToDictionary(e => e, ToXml);
+        public Dictionary<int, XElement> ToXml(List<IEntity> entities) => entities.ToDictionary(e => e.EntityId, ToXml);
+        public XElement ToXml(int entityId) => ToXml(Lookup(entityId));
 
 
-        public XElement XmlEntity(IEntity entity)
+        public override string Serialize(IEntity entity) => ToXml(entity).ToString();
+
+
+        public XElement ToXml(IEntity entity)
         {
             var valuesXElement = entity.Attributes.Values
                 .Where(a => a.Type != "Entity" || ((a.Values.FirstOrDefault() as IValue<EntityRelationship>)?.TypedContents?.Any() ?? false))

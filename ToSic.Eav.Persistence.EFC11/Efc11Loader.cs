@@ -114,13 +114,22 @@ namespace ToSic.Eav.Persistence.Efc
 
             var contentTypes = ContentTypes(appId);
 
+            var relationships = new List<EntityRelationshipItem>();
+
+            #region prepare metadata lists for relationships etc.
             var metadataForGuid = new Dictionary<int, Dictionary<Guid, IEnumerable<IEntity>>>();
             var metadataForNumber = new Dictionary<int, Dictionary<int, IEnumerable<IEntity>>>();
             var metadataForString = new Dictionary<int, Dictionary<string, IEnumerable<IEntity>>>();
 
-            var relationships = new List<EntityRelationshipItem>();
-
             var metadataTypes = _dbContext.ToSicEavAssignmentObjectTypes.ToImmutableDictionary(a => a.AssignmentObjectTypeId, a => a.Name);
+            foreach (var mdt in metadataTypes.ToList())
+            {
+                metadataForGuid.Add(mdt.Key, new Dictionary<Guid, IEnumerable<IEntity>>());
+                metadataForNumber.Add(mdt.Key, new Dictionary<int, IEnumerable<IEntity>>());
+                metadataForString.Add(mdt.Key, new Dictionary<string, IEnumerable<IEntity>>());
+            }
+
+            #endregion
 
             #region Prepare & Extend EntityIds
             if (entityIds == null)
@@ -221,7 +230,7 @@ namespace ToSic.Eav.Persistence.Efc
                 // Add all Attributes of that Content-Type
                 foreach (var definition in contentType.Attributes)
                 {
-                    var newAttribute = ((AttributeDefinition) definition).CreateAttribute();// AttributeHelperTools.CreateTypedAttribute(definition);
+                    var newAttribute = ((AttributeDefinition) definition).CreateAttribute();
                     newEntity.Attributes.Add(newAttribute.Name, newAttribute);
                     allAttribsOfThisType.Add(definition.AttributeId, newAttribute);
                     if (definition.IsTitle)
@@ -246,8 +255,8 @@ namespace ToSic.Eav.Persistence.Efc
                     if (e.Metadata.KeyGuid.HasValue)
                     {
                         // Ensure that this assignment-Type (like 4 = entity-assignment) already has a dictionary for storage
-                        if (!metadataForGuid.ContainsKey(e.Metadata.TargetType)) // ensure AssignmentObjectTypeID
-                            metadataForGuid.Add(e.Metadata.TargetType, new Dictionary<Guid, IEnumerable<IEntity>>());
+                        //if (!metadataForGuid.ContainsKey(e.Metadata.TargetType)) // ensure AssignmentObjectTypeID
+                        //    metadataForGuid.Add(e.Metadata.TargetType, new Dictionary<Guid, IEnumerable<IEntity>>());
 
                         // Ensure that the assignment type (like 4) the target guid (like a350320-3502-afg0-...) has an empty list of items
                         if (!metadataForGuid[e.Metadata.TargetType].ContainsKey(e.Metadata.KeyGuid.Value)) // ensure Guid
@@ -258,8 +267,8 @@ namespace ToSic.Eav.Persistence.Efc
                     }
                     if (e.Metadata.KeyNumber.HasValue)
                     {
-                        if (!metadataForNumber.ContainsKey(e.Metadata.TargetType)) // ensure AssignmentObjectTypeID
-                            metadataForNumber.Add(e.Metadata.TargetType, new Dictionary<int, IEnumerable<IEntity>>());
+                        //if (!metadataForNumber.ContainsKey(e.Metadata.TargetType)) // ensure AssignmentObjectTypeID
+                        //    metadataForNumber.Add(e.Metadata.TargetType, new Dictionary<int, IEnumerable<IEntity>>());
 
                         if (!metadataForNumber[e.Metadata.TargetType].ContainsKey(e.Metadata.KeyNumber.Value)) // ensure Guid
                             metadataForNumber[e.Metadata.TargetType][e.Metadata.KeyNumber.Value] = new List<IEntity>();
@@ -268,8 +277,8 @@ namespace ToSic.Eav.Persistence.Efc
                     }
                     if (!string.IsNullOrEmpty(e.Metadata.KeyString))
                     {
-                        if (!metadataForString.ContainsKey(e.Metadata.TargetType)) // ensure AssignmentObjectTypeID
-                            metadataForString.Add(e.Metadata.TargetType, new Dictionary<string, IEnumerable<IEntity>>());
+                        //if (!metadataForString.ContainsKey(e.Metadata.TargetType)) // ensure AssignmentObjectTypeID
+                        //    metadataForString.Add(e.Metadata.TargetType, new Dictionary<string, IEnumerable<IEntity>>());
 
                         if (!metadataForString[e.Metadata.TargetType].ContainsKey(e.Metadata.KeyString)) // ensure Guid
                             metadataForString[e.Metadata.TargetType][e.Metadata.KeyString] = new List<IEntity>();
@@ -285,9 +294,7 @@ namespace ToSic.Eav.Persistence.Efc
                 foreach (var r in relatedEntities[e.EntityId])
                 {
                     var attributeModel = allAttribsOfThisType[r.AttributeID];
-                    var valueModel = Value.Build(attributeModel.Type, r.Childs, null, source);
-                    var valuesModelList = new List<IValue> { valueModel };
-                    attributeModel.Values = valuesModelList;
+                    attributeModel.Values = new List<IValue> { Value.Build(attributeModel.Type, r.Childs, null, source) };
                 }
                 #endregion
 
@@ -306,17 +313,10 @@ namespace ToSic.Eav.Persistence.Efc
                         }
                         if (attributeModel == titleAttrib) // attributeModel.IsTitle)
                             newEntity.SetTitleField(attributeModel.Name);
-                        var valuesModelList = new List<IValue>();
 
-                        #region Add all Values
-                        foreach (var v in a.Values)
-                        {
-                            var valueModel = Value.Build(attributeModel.Type, v.Value, v.Languages);
-                            valuesModelList.Add(valueModel);
-                        }
-                        #endregion
+                        attributeModel.Values = a.Values.Select(v => Value.Build(attributeModel.Type, v.Value, v.Languages)).ToList();
 
-                        attributeModel.Values = valuesModelList;
+                        //attributeModel.Values = valuesModelList;
                     }
 
                 // Special treatment in case there is no title 

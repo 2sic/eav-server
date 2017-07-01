@@ -68,9 +68,9 @@ namespace ToSic.Eav.Data
                             // this is the case when we get a CSV-string with GUIDs
                             var entityGuids = entityIdEnum?.Cast<object>().Select(x =>
                             {
-                                var v = x.ToString().Trim();
+                                var v = x?.ToString().Trim();
                                 // this is the case when an export contains a list with nulls as a special code
-                                if (v == Constants.EmptyRelationship)
+                                if (v == null || v == Constants.EmptyRelationship)
                                     return new Guid?();
                                 var guid = Guid.Parse(v);
                                 return guid == Guid.Empty ? new Guid?() : guid;

@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Interfaces;
+﻿using System.Collections.Generic;
+using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav
 {/// <summary>
@@ -14,6 +15,6 @@ namespace ToSic.Eav
 		/// <summary>
 		/// Gets the typed Value
 		/// </summary>
-		IValueOfDimension<T> Typed { get; }
+		IList<IValue<T>> Typed { get; }
 	}
 }
