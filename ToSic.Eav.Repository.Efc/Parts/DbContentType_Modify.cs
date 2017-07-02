@@ -66,10 +66,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
             // to use existing attribute Set, do some minimal conflict-checking
             else
             {
-                DbContext.Log.Add(new ImportLogItem(EventLogEntryType.Information, $"AttributeSet already exists{contentType.StaticName}|{contentType.Name}"));
+                DbContext.Log.Add(new LogItem(EventLogEntryType.Information, $"AttributeSet already exists{contentType.StaticName}|{contentType.Name}"));
                 if (destinationSet.UsesConfigurationOfAttributeSet.HasValue)
                 {
-                    DbContext.Log.Add(new ImportLogItem(EventLogEntryType.Error, "Not allowed to import/extend an AttributeSet which uses Configuration of another AttributeSet: " + contentType.StaticName));
+                    DbContext.Log.Add(new LogItem(EventLogEntryType.Error, "Not allowed to import/extend an AttributeSet which uses Configuration of another AttributeSet: " + contentType.StaticName));
                     return null;
                 }
             }

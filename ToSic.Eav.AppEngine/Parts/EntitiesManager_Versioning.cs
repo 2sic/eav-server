@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Xml.Linq;
 using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Versioning;
-using ToSic.Eav.ImportExport.Xml;
-using ToSic.Eav.Persistence.Interfaces;
-using ToSic.Eav.Repository.Efc.Parts;
+using ToSic.Eav.Interfaces;
+using ToSic.Eav.Persistence.Xml;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -25,7 +23,7 @@ namespace ToSic.Eav.Apps.Parts
 
             // Restore Entity
             var import = new Import(_appManager.ZoneId, _appManager.AppId, false, false);
-            import.ImportIntoDb(null, new List<Entity> { newVersion });
+            import.ImportIntoDb(null, new List<Entity> { newVersion as Entity });
 
             // Delete Draft (if any)
             var entityDraft = _appManager.DataController.Publishing.GetDraftBranchEntityId(entityId);
@@ -42,52 +40,64 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="entityId">EntityId</param>
         /// <param name="changeId">ChangeId to retrieve</param>
         ///// <param name="defaultCultureDimension">Default Language</param>
-        private Entity PrepareRestoreEntity(int entityId, int changeId)
+        private IEntity PrepareRestoreEntity(int entityId, int changeId)
         {
-            var environment = Factory.Resolve<IImportExportEnvironment>();
-            var defLanguage = environment.DefaultLanguage;
+            //var environment = Factory.Resolve<IImportExportEnvironment>();
+            //var defLanguage = environment.DefaultLanguage;
 
-            var xEntity = GetTimelineItemOrThrowError(entityId, changeId);
+            var deserializer = new JsonSerializer();
+            deserializer.Initialize(_appManager.Cache.AppDataPackage);
 
-            #region language detection / assignment temporarily not working yet - going without languages first
-            var envLanguages = new ZoneRuntime(_appManager.ZoneId).Languages(true);
-            var srcLanguages = new ZoneRuntime(_appManager.ZoneId).Languages(true);//_appManager.DataController.Dimensions.GetLanguages(true);
+            var str = GetFromTimelime(entityId, changeId);
+            return deserializer.Deserialize(str);
 
-            #endregion
+            //var xEntity = GetTimelineXmlOrThrowError(entityId, changeId);
 
-            // Load Entity from Xml unsing XmlImport
-            var xmlBuilder = new XmlToEntity(_appManager.AppId, srcLanguages, null, envLanguages, defLanguage);
-            return xmlBuilder.BuildEntityFromXml(xEntity, /*envLanguages, srcLanguages, null, defLanguage,*/ null);
+            //#region language detection / assignment temporarily not working yet - going without languages first
+
+            //var runtime = new ZoneRuntime(_appManager.ZoneId);
+            //var envLanguages = runtime.Languages(true);
+            //var srcLanguages = runtime.Languages(true);
+
+            //#endregion
+
+            //// Load Entity from Xml unsing XmlImport
+            //var xmlBuilder = new XmlToEntity(_appManager.AppId, srcLanguages, null, envLanguages, defLanguage);
+            //return xmlBuilder.BuildEntityFromXml(xEntity, /*envLanguages, srcLanguages, null, defLanguage,*/ null);
         }
 
-        private XElement GetTimelineItemOrThrowError(int entityId, int changeId)
+        //private XElement GetTimelineXmlOrThrowError(int entityId, int changeId)
+        //{
+        //    // Get Timeline Item
+        //    string timelineItem;
+        //    timelineItem = GetFromTimelime(entityId, changeId);
+
+        //    // Parse XML
+        //    try
+        //    {
+        //        var xEntity = XElement.Parse(timelineItem);
+        //        return xEntity;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception("trying to parse history-xml of this entity, but failed", ex);
+        //    }
+        //}
+
+        private string GetFromTimelime(int entityId, int changeId)
         {
-            // Get Timeline Item
-            string timelineItem;
             try
             {
-                timelineItem = _appManager.DataController.Versioning.GetItem(entityId, changeId).Data;
+                var timelineItem = _appManager.DataController.Versioning.GetItem(entityId, changeId).Data;
+                if (timelineItem != null) return timelineItem;
+                throw new InvalidOperationException(
+                    $"EntityId {entityId} with ChangeId {changeId} not found in DataTimeline.");
             }
             catch (InvalidOperationException ex)
             {
                 throw new InvalidOperationException(
                     $"Error getting EntityId {entityId} with ChangeId {changeId} from DataTimeline. {ex.Message}");
             }
-            if (timelineItem == null)
-                throw new InvalidOperationException(
-                    $"EntityId {entityId} with ChangeId {changeId} not found in DataTimeline.");
-
-            // Parse XML
-            try
-            {
-                var xEntity = XElement.Parse(timelineItem);
-                return xEntity;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("trying to parse history-xml of this entity, but failed", ex);
-            }
         }
-
     }
 }

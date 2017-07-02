@@ -26,17 +26,17 @@ namespace ToSic.Eav.DataSources.Caches
 		}
 
         #region Default Streams: All=Default; Published, Draft
-        private IDictionary<int, IEntity> GetEntities() => EnsureCache().Entities;
+        private IDictionary<int, IEntity> GetEntities() => AppDataPackage.Entities;
 
 	    /// <summary>
         /// This retrieves the cached list-only set (without the dictionar)
         /// </summary>
         /// <returns></returns>
-	    private IEnumerable<IEntity> GetList() => EnsureCache().List;
+	    private IEnumerable<IEntity> GetList() => AppDataPackage.List;
 
-	    private IDictionary<int, IEntity> GetPublishedEntities() => EnsureCache().PublishedEntities;
+	    private IDictionary<int, IEntity> GetPublishedEntities() => AppDataPackage.PublishedEntities;
 
-	    private IDictionary<int, IEntity> GetDraftEntities() => EnsureCache().DraftEntities;
+	    private IDictionary<int, IEntity> GetDraftEntities() => AppDataPackage.DraftEntities;
 
 	    #endregion
 
@@ -62,10 +62,10 @@ namespace ToSic.Eav.DataSources.Caches
 		/// </summary>
 		public abstract string CacheKeySchema { get; }
 
-		/// <summary>
-		/// Gets the DateTime when this Cache was populated
-		/// </summary>
-		public DateTime LastRefresh => EnsureCache().LastRefresh;
+		///// <summary>
+		///// Gets the DateTime when this Cache was populated
+		///// </summary>
+		//public DateTime LastRefresh => AppDataPackage.LastRefresh;
 
 	    #region Definition of the abstract Has-Item, Set, Get, Remove
         /// <summary>
@@ -91,29 +91,32 @@ namespace ToSic.Eav.DataSources.Caches
 		/// </summary>
 		protected AppDataPackage EnsureCache()
 		{
-			if (ZoneApps == null || AssignmentObjectTypes == null)
-			{
-				ZoneApps = Backend.GetAllZones();
+            if (ZoneApps == null || AssignmentObjectTypes == null)
+            {
+                ZoneApps = Backend.GetAllZones();
 
-				AssignmentObjectTypes = Backend.GetAssignmentObjectTypes();
-			}
+                AssignmentObjectTypes = Backend.GetAssignmentObjectTypes();
+            }
 
-			if (ZoneId == 0 || AppId == 0)
-				return null;
+            if (ZoneId == 0 || AppId == 0)
+                return null;
 
             var cacheKey = CachePartialKey;
 
-			if (!HasCacheItem(cacheKey))
-			{
-				// Init EavSqlStore once
-				var zone = GetZoneAppInternal(ZoneId, AppId);
-				Backend.InitZoneApp(zone.Item1, zone.Item2);
+            if (!HasCacheItem(cacheKey))
+            {
+                // Init EavSqlStore once
+                var zone = GetZoneAppInternal(ZoneId, AppId);
+                Backend.InitZoneApp(zone.Item1, zone.Item2);
 
-				SetCacheItem(cacheKey, Backend.GetDataForCache());
-			}
+                SetCacheItem(cacheKey, Backend.GetDataForCache());
+            }
 
-			return GetCacheItem(cacheKey);
-		}
+            return GetCacheItem(cacheKey);
+            
+        }
+
+	    public AppDataPackage AppDataPackage => EnsureCache();
 
 		/// <summary>
 		/// Clear Cache for specific Zone/App
@@ -135,7 +138,7 @@ namespace ToSic.Eav.DataSources.Caches
 
         #region Cache-Chain
 
-	    public override DateTime CacheLastRefresh => EnsureCache().LastRefresh;
+	    public override DateTime CacheLastRefresh => AppDataPackage.LastRefresh;
 
 	    private string _cachePartialKey;
 	    public override string CachePartialKey
@@ -158,26 +161,26 @@ namespace ToSic.Eav.DataSources.Caches
 		/// <param name="name">Either StaticName or DisplayName</param>
 		public IContentType GetContentType(string name)
 		{
-			var cache = EnsureCache();
+			var app = AppDataPackage;
 			// Lookup StaticName first
-			var matchByStaticName = cache.ContentTypes.FirstOrDefault(c => c.Value.StaticName.Equals(name));
+			var matchByStaticName = app.ContentTypes.FirstOrDefault(c => c.Value.StaticName.Equals(name));
 			if (matchByStaticName.Value != null)
 				return matchByStaticName.Value;
 
 			// Lookup Name afterward
-			var matchByName = cache.ContentTypes.FirstOrDefault(c => c.Value.Name.Equals(name));
+			var matchByName = app.ContentTypes.FirstOrDefault(c => c.Value.Name.Equals(name));
 		    return matchByName.Value;
 		}
 
 		/// <summary>
 		/// Get a ContentType by Id
 		/// </summary>
-		public IContentType GetContentType(int contentTypeId) => EnsureCache().ContentTypes.FirstOrDefault(c => c.Key == contentTypeId).Value;
+		public IContentType GetContentType(int contentTypeId) => AppDataPackage.ContentTypes.FirstOrDefault(c => c.Key == contentTypeId).Value;
 
 	    /// <summary>
 		/// Get all Content Types
 		/// </summary>
-		public IDictionary<int, IContentType> GetContentTypes() => EnsureCache().ContentTypes;
+		public IDictionary<int, IContentType> GetContentTypes() => AppDataPackage.ContentTypes;
 
 	    /// <summary>
 		/// Get/Resolve ZoneId and AppId for specified ZoneId and/or AppId. If both are null, default ZoneId with it's default App is returned.
@@ -237,17 +240,17 @@ namespace ToSic.Eav.DataSources.Caches
         /// <summary>
 		/// Get Entities with specified AssignmentObjectTypeId and Key
 		/// </summary>
-		public IEnumerable<IEntity> GetAssignedEntities(int targetType, Guid key, string contentTypeName = null) => EnsureCache().GetMetadata(targetType, key, contentTypeName);
+		public IEnumerable<IEntity> GetAssignedEntities(int targetType, Guid key, string contentTypeName = null) => AppDataPackage.GetMetadata(targetType, key, contentTypeName);
 
 	    /// <summary>
         /// Get Entities with specified AssignmentObjectTypeId and Key
         /// </summary>
-        public IEnumerable<IEntity> GetAssignedEntities(int targetType, string key, string contentTypeName = null) => EnsureCache().GetMetadata(targetType, key, contentTypeName);
+        public IEnumerable<IEntity> GetAssignedEntities(int targetType, string key, string contentTypeName = null) => AppDataPackage.GetMetadata(targetType, key, contentTypeName);
 
 	    /// <summary>
         /// Get Entities with specified AssignmentObjectTypeId and Key
         /// </summary>
-        public IEnumerable<IEntity> GetAssignedEntities(int targetType, int key, string contentTypeName = null) => EnsureCache().GetMetadata(targetType, key, contentTypeName);
+        public IEnumerable<IEntity> GetAssignedEntities(int targetType, int key, string contentTypeName = null) => AppDataPackage.GetMetadata(targetType, key, contentTypeName);
 
 	    #endregion
 

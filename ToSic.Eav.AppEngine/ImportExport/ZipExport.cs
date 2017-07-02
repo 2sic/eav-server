@@ -8,7 +8,7 @@ using ICSharpCode.SharpZipLib.Zip;
 //using Microsoft.Practices.Unity;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.Interfaces;
-using ExportImportMessage = ToSic.Eav.Persistence.Logging.ExportImportMessage;
+using ToSic.Eav.Persistence.Logging;
 
 // needed for the static Resolve<...>
 
@@ -60,7 +60,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             #region Copy needed files to temporary directory
 
-            var messages = new List<ExportImportMessage>();
+            var messages = new List<Message>();
             var randomShortFolderName = Guid.NewGuid().ToString().Substring(0, 4);
 
             var temporaryDirectoryPath = HttpContext.Current.Server.MapPath(Path.Combine(Settings.TemporaryDirectory, randomShortFolderName));

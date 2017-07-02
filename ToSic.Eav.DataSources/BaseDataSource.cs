@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSources
     /// The base class, which should always be inherited. Already implements things like Get One / Get many, etc. 
     /// also maintains default User-May-Do-Edit/Sort etc. values
     /// </summary>
-    public abstract class BaseDataSource : IDataSource, IDataTarget //, IDataSourceInternals
+    public abstract class BaseDataSource : IDataSource, IDataTarget
     {
 
         /// <summary>

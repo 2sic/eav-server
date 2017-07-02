@@ -9,6 +9,7 @@ using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
+    // todo: refactor to use AppPackage, then move to Apps (away from Db...)
     /// <summary>
     /// For exporting a content-type into xml, either just the schema or with data
     /// </summary>
@@ -92,18 +93,17 @@ namespace ToSic.Eav.Repository.Efc.Parts
             // Get the attribute definitions
             var attribsOfType = DbContext.AttributesDefinition.GetAttributeDefinitions(ContentType.AttributeSetId).ToList();
 
-            var dbXml = new DbXmlBuilder(DbContext);
+            //var dbXml = new DbXmlBuilder(DbContext);
             foreach (var entity in entList)
             {
-                var relationships = dbXml.GetSerializedRelationshipGuids(entity.EntityId);
+                var relationships = /*dbXml.*/GetSerializedRelationshipGuids(entity.EntityId);
 
                 foreach (var language in languages)
                 {
                     var documentElement = _xBuilder.BuildEntity(entity.EntityGuid, language, ContentType.Name);
                     documentRoot.Add(documentElement);
 
-                    var attributes = attribsOfType;
-                    foreach (var attribute in attributes)
+                    foreach (var attribute in attribsOfType)
                     {
                         if (attribute.Type == XmlConstants.Entity /* "Entity" */) // Special, handle separately
                             AppendEntityReferences(documentElement, attribute.StaticName, relationships.ContainsKey(attribute.StaticName) ? relationships[attribute.StaticName]:"");// entity, attribute);
@@ -119,6 +119,19 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             return documentRoot.Document?.ToString();
         }
+
+        internal Dictionary<string, string> GetSerializedRelationshipGuids(int entityId)
+        {
+            var relationships = DbContext.Relationships.GetRelationshipsOfParent(entityId)
+                .GroupBy(r => r.Attribute.StaticName)
+                .ToDictionary(r => r.Key, r =>
+                            string.Join(",", r
+                                .OrderBy(a => a.SortOrder)
+                                .Select(x => x.ChildEntity?.EntityGuid.ToString() ?? Constants.EmptyRelationship))
+                );
+            return relationships;
+        }
+
 
         #region Helpers to assemble the xml
 
@@ -142,13 +155,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// Append an element to this. The element will get the name of the attribute, and if possible the value will 
         /// be referenced to another language (for example [ref(en-US,ro)].
         /// </summary>
-        private void AppendValueReferenced(XElement element, ToSicEavEntities entity, ToSicEavAttributes attribute, string language, string languageFallback, IEnumerable<string> languageScope, bool referenceParentLanguagesOnly, ExportResourceReferenceMode exportResourceReferenceOption)
+        private void AppendValueReferenced(XElement element, ToSicEavEntities entity, ToSicEavAttributes attribute, string language, string languageFallback, string[] languageScope, bool referenceParentLanguagesOnly, ExportResourceReferenceMode exportResourceReferenceOption)
         {
             var valueName = attribute.StaticName;
             var value = entity.GetValueOfExactLanguage(attribute, language);
             if (value == null)
             {
-                element.Append(valueName, XmlConstants.Null /* "[]" */);
+                element.Append(valueName, XmlConstants.Null);
                 return;
             }
 
@@ -192,13 +205,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
         private void AppendValue(XElement element, XName name, ToSicEavValues value, ExportResourceReferenceMode exportResourceReferenceOption)
         {
             if (value == null)
-                element.Append(name, XmlConstants.Null /* "[]" */);
+                element.Append(name, XmlConstants.Null);
             else if (value.Value == null)
-                element.Append(name, XmlConstants.Null /* "[]" */);
+                element.Append(name, XmlConstants.Null);
             else if (exportResourceReferenceOption == ExportResourceReferenceMode.Resolve)
                 element.Append(name, ResolveHyperlinksFromTennant(value));
             else if (value.Value == string.Empty)
-                element.Append(name, XmlConstants.Empty /* "[\"\"]" */);
+                element.Append(name, XmlConstants.Empty);
             else
                 element.Append(name, value.Value);
         }

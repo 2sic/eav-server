@@ -11,7 +11,6 @@ using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Repository.Efc;
-using ExportImportMessage = ToSic.Eav.Persistence.Logging.ExportImportMessage;
 
 // 2dm: must disable NullRef warnings, because there a lot of warnings when processing XML, 
 // ...and these are real errors which should blow
@@ -21,7 +20,7 @@ namespace ToSic.Eav.Apps.ImportExport
 {
     public class XmlImportWithFiles
 	{
-		public List<ExportImportMessage> ImportLog;
+		public List<Message> ImportLog;
 
         private List<DimensionDefinition> _targetDimensions;
         private DbDataController _eavContext;
@@ -52,7 +51,7 @@ namespace ToSic.Eav.Apps.ImportExport
 		{
 		    _environment = Factory.Resolve<IImportExportEnvironment>();
 			// Prepare
-			ImportLog = new List<ExportImportMessage>();
+			ImportLog = new List<Message>();
 		    DefaultLanguage = (defaultLanguage ?? _environment.DefaultLanguage).ToLowerInvariant();
 			AllowSystemChanges = allowSystemChanges;
         }
@@ -64,13 +63,13 @@ namespace ToSic.Eav.Apps.ImportExport
 			// Return if no Root Node "SexyContent"
 			if (!rns.Any() || rn == null)
 			{
-				ImportLog.Add(new ExportImportMessage("The XML file you specified does not seem to be a 2sxc Export.", ExportImportMessage.MessageTypes.Error));
+				ImportLog.Add(new Message("The XML file you specified does not seem to be a 2sxc Export.", Message.MessageTypes.Error));
 				return false;
 			}
 			// Return if Version does not match
 			if (rn.Attributes().All(a => a.Name != XmlConstants.MinEnvVersion) || new Version(rn.Attribute(XmlConstants.MinEnvVersion).Value) > new Version(_environment.ModuleVersion))
 			{
-				ImportLog.Add(new ExportImportMessage("This template or app requires version " + rn.Attribute(XmlConstants.MinEnvVersion).Value + " in order to work, you have version " + _environment.ModuleVersion + " installed.", ExportImportMessage.MessageTypes.Error));
+				ImportLog.Add(new Message("This template or app requires version " + rn.Attribute(XmlConstants.MinEnvVersion).Value + " in order to work, you have version " + _environment.ModuleVersion + " installed.", Message.MessageTypes.Error));
 				return false;
 			}
 
@@ -122,7 +121,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
 			if (!IsCompatible(doc))
 			{
-				ImportLog.Add(new ExportImportMessage("The import file is not compatible with the installed version of 2sxc.", ExportImportMessage.MessageTypes.Error));
+				ImportLog.Add(new Message("The import file is not compatible with the installed version of 2sxc.", Message.MessageTypes.Error));
 				return false;
 			}
 
@@ -134,7 +133,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             if (appGuid == null)
             {
-                ImportLog.Add(new ExportImportMessage("Something is wrong in the xml structure, can't get an app-guid", ExportImportMessage.MessageTypes.Error));
+                ImportLog.Add(new Message("Something is wrong in the xml structure, can't get an app-guid", Message.MessageTypes.Error));
                 return false;
             }
 
@@ -158,7 +157,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
 			if (appId <= 0)
 			{
-				ImportLog.Add(new ExportImportMessage("App was not created. Please try again or make sure the package you are importing is correct.", ExportImportMessage.MessageTypes.Error));
+				ImportLog.Add(new Message("App was not created. Please try again or make sure the package you are importing is correct.", Message.MessageTypes.Error));
 				return false;
 			}
 
@@ -178,7 +177,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
 			if (!IsCompatible(doc))
 			{
-				ImportLog.Add(new ExportImportMessage("The import file is not compatible with the installed version of 2sxc.", ExportImportMessage.MessageTypes.Error));
+				ImportLog.Add(new Message("The import file is not compatible with the installed version of 2sxc.", Message.MessageTypes.Error));
 				return false;
 			}
 
@@ -186,7 +185,7 @@ namespace ToSic.Eav.Apps.ImportExport
 			var xmlSource = doc.Element(XmlConstants.RootNode);
             if (xmlSource == null)
             {
-                ImportLog.Add(new ExportImportMessage("Xml doesn't have expected root node: " + XmlConstants.RootNode, ExportImportMessage.MessageTypes.Error));
+                ImportLog.Add(new Message("Xml doesn't have expected root node: " + XmlConstants.RootNode, Message.MessageTypes.Error));
                 return false;
             }
             PrepareFolderIdCorrectionListAndCreateMissingFolders(xmlSource);
@@ -198,7 +197,7 @@ namespace ToSic.Eav.Apps.ImportExport
 			var sourceDefaultLanguage = xmlSource.Element(XmlConstants.Header)?.Element(XmlConstants.Language)?.Attribute(XmlConstants.LangDefault)?.Value;
 		    if (sourceDimensions == null || sourceDefaultLanguage == null)
 		    {
-                ImportLog.Add(new ExportImportMessage("Cant find source dimensions or source-default language.", ExportImportMessage.MessageTypes.Error));
+                ImportLog.Add(new Message("Cant find source dimensions or source-default language.", Message.MessageTypes.Error));
                 return false;
             }
 
@@ -252,13 +251,13 @@ namespace ToSic.Eav.Apps.ImportExport
         /// </summary>
         /// <param name="importLog"></param>
         /// <returns></returns>
-        private IEnumerable<ExportImportMessage> GetExportImportMessagesFromImportLog(List<ImportLogItem> importLog)
-            => importLog.Select(l => new ExportImportMessage(l.Message,
+        private IEnumerable<Message> GetExportImportMessagesFromImportLog(List<LogItem> importLog)
+            => importLog.Select(l => new Message(l.Message,
                 l.EntryType == EventLogEntryType.Error
-                    ? ExportImportMessage.MessageTypes.Error
+                    ? Message.MessageTypes.Error
                     : l.EntryType == EventLogEntryType.Information
-                        ? ExportImportMessage.MessageTypes.Information
-                        : ExportImportMessage.MessageTypes.Warning
+                        ? Message.MessageTypes.Information
+                        : Message.MessageTypes.Warning
                 ));
 		
 
@@ -343,8 +342,8 @@ namespace ToSic.Eav.Apps.ImportExport
 
                     if (!String.IsNullOrEmpty(contentTypeStaticName) && cache.GetContentType(contentTypeStaticName) == null)
                     {
-                        ImportLog.Add(new ExportImportMessage($"Content Type for Template \'{name}\' could not be found. The template has not been imported.",
-                                ExportImportMessage.MessageTypes.Warning));
+                        ImportLog.Add(new Message($"Content Type for Template \'{name}\' could not be found. The template has not been imported.",
+                                Message.MessageTypes.Warning));
                         continue;
                     }
 
@@ -357,7 +356,7 @@ namespace ToSic.Eav.Apps.ImportExport
                         if (_eavContext.Entities.EntityExists(entityGuid))
                             demoEntityId = _eavContext.Entities.GetMostCurrentDbEntity(entityGuid).EntityId;
                         else
-                            ImportLog.Add(new ExportImportMessage($"Demo Entity for Template \'{name}\' could not be found. (Guid: {demoEntityGuid})", ExportImportMessage.MessageTypes.Information));
+                            ImportLog.Add(new Message($"Demo Entity for Template \'{name}\' could not be found. (Guid: {demoEntityGuid})", Message.MessageTypes.Information));
 
                     }
 
@@ -384,7 +383,7 @@ namespace ToSic.Eav.Apps.ImportExport
                         if (_eavContext.Entities.EntityExists(entityGuid))
                             pipelineEntityId = _eavContext.Entities.GetMostCurrentDbEntity(entityGuid).EntityId;
                         else
-                            ImportLog.Add(new ExportImportMessage($"Pipeline Entity for Template \'{name}\' could not be found. (Guid: {pipelineEntityGuid.Value})", ExportImportMessage.MessageTypes.Information));
+                            ImportLog.Add(new Message($"Pipeline Entity for Template \'{name}\' could not be found. (Guid: {pipelineEntityGuid.Value})", Message.MessageTypes.Information));
                     }
 
                     var useForList = false;
@@ -410,8 +409,8 @@ namespace ToSic.Eav.Apps.ImportExport
                                 .Value;
                         if (xmlItemType == null || xmlContentTypeStaticName == null || xmlDemoEntityGuidString == null)
                         {
-                            ImportLog.Add(new ExportImportMessage(
-                                $"trouble with template '{name}' - either type, static or guid are null", ExportImportMessage.MessageTypes.Error));
+                            ImportLog.Add(new Message(
+                                $"trouble with template '{name}' - either type, static or guid are null", Message.MessageTypes.Error));
                             return null;
                         }
                         var xmlDemoEntityId = new int?();
@@ -470,14 +469,14 @@ namespace ToSic.Eav.Apps.ImportExport
                         listPresentationTypeStaticName, listPresentationDemoEntityId, type, isHidden, location,
                         useForList, publishData, streamsToPublish, pipelineEntityId, viewNameInUrl);
 
-                    ImportLog.Add(new ExportImportMessage($"Template \'{name}\' successfully imported.",
-                        ExportImportMessage.MessageTypes.Information));
+                    ImportLog.Add(new Message($"Template \'{name}\' successfully imported.",
+                        Message.MessageTypes.Information));
                 }
 
                 catch (Exception)
                 {
-                    ImportLog.Add(new ExportImportMessage($"Import for template \'{name}\' failed.",
-                        ExportImportMessage.MessageTypes.Information));
+                    ImportLog.Add(new Message($"Import for template \'{name}\' failed.",
+                        Message.MessageTypes.Information));
                 }
 
             }

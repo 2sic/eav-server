@@ -34,10 +34,10 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         // todo: move tests to tests of ToSic.Eav.Apps
         [TestMethod]
-        public void DevPc2dmRestoreV18()
+        public void DevPc2dmRestoreV2()
         {
             var id = DevPc2dmItemOnHome;
-            var version = 17;
+            var version = 2;
             var appMan = new AppManager(td.ZoneId, td.AppId);
             var dc = DbDataController.Instance(td.ZoneId, td.AppId);
             var all = appMan.Entities.VersionHistory(id);  dc.Versioning.GetHistoryList(id, false);

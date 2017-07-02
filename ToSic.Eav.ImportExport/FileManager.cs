@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using ExportImportMessage = ToSic.Eav.Persistence.Logging.ExportImportMessage;
+using ToSic.Eav.Persistence.Logging;
 
 namespace ToSic.Eav.ImportExport
 {
@@ -26,7 +26,7 @@ namespace ToSic.Eav.ImportExport
         /// <param name="destinationFolder"></param>
         /// <param name="overwriteFiles"></param>
         /// <param name="messages"></param>
-        public void CopyAllFiles(string destinationFolder, bool overwriteFiles, List<ExportImportMessage> messages)
+        public void CopyAllFiles(string destinationFolder, bool overwriteFiles, List<Message> messages)
         {
             var filteredFiles = AllTransferableFiles;
 
@@ -40,7 +40,7 @@ namespace ToSic.Eav.ImportExport
                 if (!File.Exists(destinationFilePath))
                     File.Copy(file, destinationFilePath, overwriteFiles);
                 else
-                    messages.Add(new ExportImportMessage("File '" + Path.GetFileName(destinationFilePath) + "' not copied because it already exists", ExportImportMessage.MessageTypes.Warning));
+                    messages.Add(new Message("File '" + Path.GetFileName(destinationFilePath) + "' not copied because it already exists", Message.MessageTypes.Warning));
             }
         }
 

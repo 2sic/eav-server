@@ -2,14 +2,14 @@ using System;
 using System.Collections.Generic;
 using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
-using ExportImportMessage = ToSic.Eav.Persistence.Logging.ExportImportMessage;
+using ToSic.Eav.Persistence.Logging;
 
 namespace ToSic.Eav.Persistence.Interfaces
 {
     public interface IImportExportEnvironment
     {
 
-        List<ExportImportMessage> Messages { get; }
+        List<Message> Messages { get; }
 
         /// <summary>
         /// Copy all files from SourceFolder to DestinationFolder
@@ -34,7 +34,7 @@ namespace ToSic.Eav.Persistence.Interfaces
         string TemplatesRoot(int zoneId, int appId);
         string TargetPath(string folder);
         void MapExistingFilesToImportSet(Dictionary<int, string> filesAndPaths, Dictionary<int, int> fileIdMap);
-        void CreateFoldersAndMapToImportIds(Dictionary<int, string> foldersAndPath, Dictionary<int, int> folderIdCorrectionList, List<ExportImportMessage> importLog);
+        void CreateFoldersAndMapToImportIds(Dictionary<int, string> foldersAndPath, Dictionary<int, int> folderIdCorrectionList, List<Message> importLog);
 
         SaveOptions SaveOptions(int zoneId);
     }

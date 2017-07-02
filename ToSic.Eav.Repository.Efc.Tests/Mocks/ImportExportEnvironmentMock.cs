@@ -4,13 +4,13 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Interfaces;
-using ExportImportMessage = ToSic.Eav.Persistence.Logging.ExportImportMessage;
+using ToSic.Eav.Persistence.Logging;
 
 namespace ToSic.Eav.Repository.Efc.Tests.Mocks
 {
     internal class ImportExportEnvironmentMock : IImportExportEnvironment
     {
-        public List<ExportImportMessage> Messages { get; } = new List<ExportImportMessage>();
+        public List<Message> Messages { get; } = new List<Message>();
 
         public string BasePath { get; set; }= @"C:\Projects\eav-server\ToSic.Eav.Repository.Efc.Tests\";
 
@@ -35,7 +35,7 @@ namespace ToSic.Eav.Repository.Efc.Tests.Mocks
         {
         }
 
-        public void CreateFoldersAndMapToImportIds(Dictionary<int, string> foldersAndPath, Dictionary<int, int> folderIdCorrectionList, List<ExportImportMessage> importLog)
+        public void CreateFoldersAndMapToImportIds(Dictionary<int, string> foldersAndPath, Dictionary<int, int> folderIdCorrectionList, List<Message> importLog)
         {
         }
        

@@ -89,10 +89,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             // If multiple masters are found, use first and add a warning message
             if (ghostAttributeSets.Count > 1)
-                DbContext.Log.Add(new ImportLogItem(EventLogEntryType.Warning, $"Multiple potential master AttributeSets found for StaticName: {contentTypeParentName}"));
+                DbContext.Log.Add(new LogItem(EventLogEntryType.Warning, $"Multiple potential master AttributeSets found for StaticName: {contentTypeParentName}"));
 
             // nothing found - report error
-            DbContext.Log.Add(new ImportLogItem(EventLogEntryType.Warning, $"AttributeSet not imported because master set not found: {contentTypeParentName}"));
+            DbContext.Log.Add(new LogItem(EventLogEntryType.Warning, $"AttributeSet not imported because master set not found: {contentTypeParentName}"));
             return 0;
         }
 

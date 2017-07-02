@@ -39,7 +39,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             }
             else
             {
-                DbContext.Log.Add(new ImportLogItem(EventLogEntryType.Information, "Attribute already exists" + newAtt.Name));
+                DbContext.Log.Add(new LogItem(EventLogEntryType.Information, "Attribute already exists" + newAtt.Name));
                 destAttribId = AttributeId(contentTypeId, newAtt.Name);
             }
             return destAttribId;

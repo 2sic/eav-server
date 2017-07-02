@@ -15,7 +15,6 @@ namespace ToSic.Eav
         /// <summary>
         /// DataTimeline Operation-Key for Entity-States (Entity-Versioning)
         /// </summary>
-        public const string DataTimelineEntityStateOperation = "s";
         public const string DataTimelineEntityJson = "e";
 
         #region DB Field / Names Constants
@@ -23,7 +22,6 @@ namespace ToSic.Eav
         /// <summary>
         /// AttributeSet StaticName must match this Regex. Accept Alphanumeric, except the first char must be alphabetic or underscore.
         /// </summary>
-        //public static string AttributeStaticNameRegEx = "^[_a-zA-Z]{1}[_a-zA-Z0-9]*"; // todo now: create static regex...
         public static Regex AttributeStaticName = new Regex("^[_a-zA-Z]{1}[_a-zA-Z0-9]*", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         /// <summary>

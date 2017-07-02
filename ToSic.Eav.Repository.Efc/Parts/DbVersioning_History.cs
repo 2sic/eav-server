@@ -65,7 +65,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     ChangeSetId = d.History.SysLogId.Value,
                     HistoryId = d.History.Id,
                     User = d.Log.User,
-                    Data = includeData ? d.History.NewData : null
+                    Data = includeData ? d.History.Json : null
                 })
                 .ToList();
 

@@ -8,7 +8,7 @@ using System.Xml.Linq;
 using ICSharpCode.SharpZipLib.Zip;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.Persistence.Interfaces;
-using ExportImportMessage = ToSic.Eav.Persistence.Logging.ExportImportMessage;
+using ToSic.Eav.Persistence.Logging;
 
 namespace ToSic.Eav.Apps.ImportExport
 {
@@ -38,7 +38,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <returns></returns>
         public bool ImportZip(Stream zipStream, string temporaryDirectory)//HttpServerUtility server)
         {
-            List<ExportImportMessage> messages = _environment.Messages;
+            List<Message> messages = _environment.Messages;
 
             var success = true;
             Exception finalEx = null;
@@ -159,7 +159,7 @@ namespace ToSic.Eav.Apps.ImportExport
             {
                 finalEx = e; // keep to throw later
                 // Add error message and return false
-                messages.Add(new ExportImportMessage("Could not import the app / package: " + e.Message, ExportImportMessage.MessageTypes.Error));
+                messages.Add(new Message("Could not import the app / package: " + e.Message, Message.MessageTypes.Error));
                 // Exceptions.LogException(e);
                 success = false;
             }

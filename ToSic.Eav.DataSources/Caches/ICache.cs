@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ToSic.Eav.App;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources.Caches
@@ -20,10 +21,10 @@ namespace ToSic.Eav.DataSources.Caches
 		/// </summary>
 		void PurgeGlobalCache();
 
-		/// <summary>
-		/// Gets the DateTime when this CacheItem was populated
-		/// </summary>
-		DateTime LastRefresh { get; }
+		///// <summary>
+		///// Gets the DateTime when this CacheItem was populated
+		///// </summary>
+		//DateTime LastRefresh { get; }
 
 		/// <summary>
 		/// Gets a GeontentType by Name
@@ -111,5 +112,6 @@ namespace ToSic.Eav.DataSources.Caches
         bool ListHas(IDataStream dataStream);
         #endregion
 
+        AppDataPackage AppDataPackage { get; }
 	}
 }

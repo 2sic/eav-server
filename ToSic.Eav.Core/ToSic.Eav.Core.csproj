@@ -146,11 +146,11 @@
     <Compile Include="Persistence\Interfaces\IImportExportEnvironment.cs" />
     <Compile Include="Interfaces\IRepositoryImporter.cs" />
     <Compile Include="Persistence\Interfaces\IStorage.cs" />
-    <Compile Include="Persistence\Logging\ExportImportMessage.cs" />
+    <Compile Include="Persistence\Logging\Message.cs" />
     <Compile Include="Persistence\Logging\ImportError.cs" />
     <Compile Include="Persistence\Logging\ImportErrorCode.cs" />
     <Compile Include="Persistence\Logging\ImportErrorLog.cs" />
-    <Compile Include="Persistence\Logging\ImportLogItem.cs" />
+    <Compile Include="Persistence\Logging\LogItem.cs" />
     <Compile Include="Persistence\Logging\LocalizedDescriptionAttribute.cs" />
     <Compile Include="Persistence\Logging\MessageTypes.cs" />
     <Compile Include="Persistence\SaveOptions.cs" />

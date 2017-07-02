@@ -85,7 +85,7 @@ namespace ToSic.Eav.Repository.Efc
         #endregion
 
         #region shared logs in case of write commands
-        public List<ImportLogItem> Log { get; }=  new List<ImportLogItem>();
+        public List<LogItem> Log { get; }=  new List<LogItem>();
         #endregion
 
         #region new stuff

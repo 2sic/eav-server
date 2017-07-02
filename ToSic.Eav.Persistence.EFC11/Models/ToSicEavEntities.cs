@@ -42,7 +42,7 @@ namespace ToSic.Eav.Persistence.Efc.Models
         //public virtual ToSicEavEntities ConfigurationSetNavigation { get; set; }
         //public virtual ICollection<ToSicEavEntities> InverseConfigurationSetNavigation { get; set; }
 
-        public string Json { get; set; }
+        //public string Json { get; set; }
 
     }
 }

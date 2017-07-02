@@ -49,7 +49,7 @@ namespace ToSic.Eav.Persistence.Interfaces
 
 
         #region Logging 
-        List<ImportLogItem> Log { get; }
+        List<LogItem> Log { get; }
         #endregion
 
 
