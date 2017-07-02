@@ -1,16 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.ImportExport.Versioning;
+using ToSic.Eav.Persistence.Versions;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
     public partial class DbVersioning
     {
-
-        #region Currently still unused versioning stuff!!!
-
-
-
         /// <summary>
         /// Retrieve the history-list of a specific item
         /// </summary>
@@ -65,7 +60,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     ChangeSetId = d.History.SysLogId.Value,
                     HistoryId = d.History.Id,
                     User = d.Log.User,
-                    Data = includeData ? d.History.Json : null
+                    Json = includeData ? d.History.Json : null
                 })
                 .ToList();
 
@@ -76,8 +71,5 @@ namespace ToSic.Eav.Repository.Efc.Parts
             return entityVersions;
         }
 
-
-
-        #endregion
     }
 }

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
-using ToSic.Eav.ImportExport.Versioning;
 using ToSic.Eav.Persistence.Interfaces;
+using ToSic.Eav.Persistence.Versions;
 using ToSic.Eav.Repository.Efc.Tests.Mocks;
 
 namespace ToSic.Eav.Repository.Efc.Tests
@@ -63,7 +63,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var all = DbDataController.Instance(ZoneId).Versioning.GetHistoryList(id, false);
             var vId = all.First(x => x.VersionNumber == version).ChangeSetId;
             var vItem = DbDataController.Instance(ZoneId).Versioning.GetItem(id, vId);
-            Console.Write(vItem.Data);
+            Console.Write(vItem.Json);
         }
 
 

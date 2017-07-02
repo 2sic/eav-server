@@ -1,6 +1,7 @@
-﻿using ToSic.Eav.DataSources.Caches;
+﻿using ToSic.Eav.Apps.Interfaces;
+using ToSic.Eav.DataSources.Caches;
 
-namespace ToSic.Eav.Apps.Interfaces
+namespace ToSic.Eav.Apps.Parts
 {
     public class ZoneBase: IZone
     {

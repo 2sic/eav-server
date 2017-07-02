@@ -14,7 +14,6 @@ using ToSic.Eav.ImportExport.Xml;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Repository.Efc;
-using ToSic.Eav.Repository.Efc.Parts;
 using Entity = ToSic.Eav.Data.Entity;
 
 namespace ToSic.Eav.Apps.ImportExport
@@ -22,8 +21,8 @@ namespace ToSic.Eav.Apps.ImportExport
 
     // todo:
     // if possible, split appart into
-    // 1. xml > import entity
-    // 2. import-entity > db
+    // 1. xml > entity
+    // 2. entity > db
     // core dependencies are the data-structure of the content-type, which is used to build the import-entity
     // it also looks up data in the DB to validate if they already exist - to see if it's a new/update scenario
 

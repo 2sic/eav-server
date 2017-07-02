@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Persistence.Efc.Models;
 
@@ -13,7 +12,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Add a new App
         /// </summary>
-        public ToSicEavApps AddApp(ToSicEavZones zone, string name = Constants.DefaultAppName)
+        internal ToSicEavApps AddApp(ToSicEavZones zone, string name = Constants.DefaultAppName)
         {
             zone = zone ?? DbContext.SqlDb.ToSicEavZones.SingleOrDefault(z => z.ZoneId == DbContext.ZoneId);
 

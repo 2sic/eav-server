@@ -154,6 +154,7 @@
     <Compile Include="Persistence\Logging\LocalizedDescriptionAttribute.cs" />
     <Compile Include="Persistence\Logging\MessageTypes.cs" />
     <Compile Include="Persistence\SaveOptions.cs" />
+    <Compile Include="Persistence\Versions\ItemHistory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

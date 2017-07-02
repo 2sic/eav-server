@@ -11,12 +11,12 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Delete an Entity
         /// </summary>
-        public bool DeleteEntity(int repositoryId, bool forceRemoveFromParents = false) => DeleteEntity(GetDbEntity(repositoryId), removeFromParents: forceRemoveFromParents);
+        internal bool DeleteEntity(int repositoryId, bool forceRemoveFromParents = false) => DeleteEntity(GetDbEntity(repositoryId), removeFromParents: forceRemoveFromParents);
 
         /// <summary>
         /// Delete an Entity
         /// </summary>
-        public bool DeleteEntity(Guid entityGuid) => DeleteEntity(GetMostCurrentDbEntity(entityGuid));
+        internal bool DeleteEntity(Guid entityGuid) => DeleteEntity(GetMostCurrentDbEntity(entityGuid));
 
         /// <summary>
         /// Delete an Entity
@@ -67,7 +67,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         }
 
 
-        public Tuple<bool, string> CanDeleteEntity(int entityId)
+        internal Tuple<bool, string> CanDeleteEntity(int entityId)
         {
             var messages = new List<string>();
             var entity = GetDbEntity(entityId);

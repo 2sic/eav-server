@@ -6,7 +6,7 @@ using ToSic.Eav.DataSources.Caches;
 
 namespace ToSic.Eav.Apps.Parts
 {
-    public class QueryRuntime: BaseRuntime
+    public class QueryRuntime: RuntimeBase
     {
         internal QueryRuntime(AppRuntime app) : base(app) { }
 

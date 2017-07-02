@@ -5,9 +5,9 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Enums;
 using ToSic.Eav.ImportExport.Json.Format;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Persistence.Xml;
 
-// ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Persistence.Xml
+namespace ToSic.Eav.ImportExport.Json
 {
     public partial class JsonSerializer: SerializerBase
     {

@@ -6,21 +6,21 @@ namespace ToSic.Eav.Apps.Parts
     /// <summary>
     /// Manager for entities in an app
     /// </summary>
-    public class ContentTypeRuntime : BaseRuntime
+    public class ContentTypeRuntime : RuntimeBase
     {
         public ContentTypeRuntime(AppRuntime app) : base(app){}
 
-        public IEnumerable<ToSic.Eav.Interfaces.IContentType> All => _app.Cache.GetContentTypes().Select(c => c.Value);
+        public IEnumerable<ToSic.Eav.Interfaces.IContentType> All => App.Cache.GetContentTypes().Select(c => c.Value);
 
         /// <summary>
         /// Gets a GeontentType by Name
         /// </summary>
-        public ToSic.Eav.Interfaces.IContentType Get(string name) => _app.Cache.GetContentType(name);
+        public ToSic.Eav.Interfaces.IContentType Get(string name) => App.Cache.GetContentType(name);
 
         /// <summary>
         /// Gets a ContentType by Id
         /// </summary>
-        public ToSic.Eav.Interfaces.IContentType Get(int contentTypeId) => _app.Cache.GetContentType(contentTypeId);
+        public ToSic.Eav.Interfaces.IContentType Get(int contentTypeId) => App.Cache.GetContentType(contentTypeId);
 
         public IEnumerable<ToSic.Eav.Interfaces.IContentType> FromScope(string scope = null, bool includeAttributeTypes = false)
         {
@@ -35,7 +35,7 @@ namespace ToSic.Eav.Apps.Parts
 
         public IEnumerable<ToSic.Eav.Interfaces.IEntity> GetInputTypes(bool includeGlobalDefinitions)
         {
-            var inputsOfThisApp = _app.Entities.Get(Constants.TypeForInputTypeDefinition).ToList();
+            var inputsOfThisApp = App.Entities.Get(Constants.TypeForInputTypeDefinition).ToList();
 
             if (includeGlobalDefinitions)
             {

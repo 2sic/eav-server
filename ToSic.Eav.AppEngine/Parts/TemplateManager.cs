@@ -5,7 +5,7 @@ namespace ToSic.Eav.Apps.Parts
     /// <summary>
     /// Templates manager for the app engine - in charge of importing / modifying templates at app-level
     /// </summary>
-    public class TemplatesManager: BaseManager
+    public class TemplatesManager: ManagerBase
     {
         public TemplatesManager(AppManager app) : base(app) {}
 

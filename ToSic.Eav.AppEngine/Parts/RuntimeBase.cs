@@ -3,12 +3,12 @@
     /// <summary>
     /// Manager for entities in an app
     /// </summary>
-    public abstract class BaseRuntime
+    public abstract class RuntimeBase
     {
-        internal readonly AppRuntime _app;
-        internal BaseRuntime(AppRuntime app)
+        internal readonly AppRuntime App;
+        internal RuntimeBase(AppRuntime app)
         {
-            _app = app;
+            App = app;
         }
         
 

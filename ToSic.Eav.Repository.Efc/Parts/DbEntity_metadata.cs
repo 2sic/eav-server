@@ -11,7 +11,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Get a List of Entities with specified assignmentObjectTypeId and optional Key.
         /// </summary>
-        internal IQueryable<ToSicEavEntities> GetAssignedEntities(int assignmentObjectTypeId, int? keyNumber = null, Guid? keyGuid = null, string keyString = null, string includes = null)
+        private IQueryable<ToSicEavEntities> GetAssignedEntities(int assignmentObjectTypeId, int? keyNumber = null, Guid? keyGuid = null, string keyString = null, string includes = null)
         {
             var origQuery = DbContext.SqlDb.ToSicEavEntities
                 .Where(e => e.AssignmentObjectTypeId == assignmentObjectTypeId

@@ -18,8 +18,6 @@ using ToSic.Eav.Repository.Efc;
 
 namespace ToSic.Eav.Apps.ImportExport
 {
-
-    // todo: currently a mix of get-data-from-db and get-data-from-cache
     // this has a minimal risk of being different!
     // should all get it from cache only!
 
@@ -31,16 +29,9 @@ namespace ToSic.Eav.Apps.ImportExport
         public List<TennantFileItem> ReferencedFiles = new List<TennantFileItem>();
         private bool _isAppExport;
 
-
         public string[] AttributeSetIDs;
         public string[] EntityIDs;
         public List<Message> Messages = new List<Message>();
-
-
-        #endregion
-
-        #region Constructor stuff
-
 
         public AppDataPackage AppPackage { get; private set; }
         public XmlSerializer Serializer { get; private set; }
@@ -48,12 +39,14 @@ namespace ToSic.Eav.Apps.ImportExport
         public int ZoneId { get; private set; }
 
         private string _appStaticName = "";
+        #endregion
+
+        #region Constructor stuff
+
         protected void Constructor(int zoneId, int appId, string appStaticName, bool appExport, string[] attrSetIds, string[] entityIds)
         {
-            var eavAppContext = DbDataController.Instance(zoneId, appId);
             ZoneId = zoneId;
-            var loader = new Efc11Loader(eavAppContext.SqlDb);
-            AppPackage = loader.AppPackage(appId);
+            AppPackage = new Efc11Loader(DbDataController.Instance(zoneId, appId).SqlDb).AppPackage(appId);
             Serializer = new XmlSerializer();
             Serializer.Initialize(AppPackage);
 
@@ -76,7 +69,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
         private void EnsureThisIsInitialized()
         {
-            if(/*EavAppContext == null ||*/ Serializer == null || string.IsNullOrEmpty(_appStaticName))
+            if(Serializer == null || string.IsNullOrEmpty(_appStaticName))
                 throw new Exception("Xml Exporter is not initialized - this is required before trying to export");
         }
 
@@ -130,9 +123,8 @@ namespace ToSic.Eav.Apps.ImportExport
 
             var dimensions = new ZoneRuntime(ZoneId).Languages();
             var header = new XElement(XmlConstants.Header,
-                _isAppExport && _appStaticName != XmlConstants.AppContentGuid ? new XElement(XmlConstants.App,
-                        new XAttribute(XmlConstants.Guid, _appStaticName)
-                        )
+                _isAppExport && _appStaticName != XmlConstants.AppContentGuid 
+                    ? new XElement(XmlConstants.App, new XAttribute(XmlConstants.Guid, _appStaticName))
                     : null,
                 new XElement(XmlConstants.Language, new XAttribute(XmlConstants.LangDefault, defaultLanguage)),
                 new XElement(XmlConstants.DimensionDefinition, dimensions.Select(d => new XElement(XmlConstants.DimensionDefElement,
@@ -154,11 +146,11 @@ namespace ToSic.Eav.Apps.ImportExport
             foreach (var attributeSetId in AttributeSetIDs)
             {
                 var id = int.Parse(attributeSetId);
-                var set = (ContentType)AppPackage.ContentTypes[id];// EavAppContext.AttribSet.GetDbAttribSet(id);
+                var set = (ContentType)AppPackage.ContentTypes[id];
                 var attributes = new XElement(XmlConstants.Attributes);
 
                 // Add all Attributes to AttributeSet including meta informations
-                foreach (var x in set.Attributes)// EavAppContext.AttributesDefinition.GetAttributesInSet(id))
+                foreach (var x in set.Attributes)
                 {
                     var attribute = new XElement(XmlConstants.Attribute,
                         new XAttribute(XmlConstants.Static, x.Name),
@@ -166,9 +158,8 @@ namespace ToSic.Eav.Apps.ImportExport
                         new XAttribute(XmlConstants.IsTitle, x.IsTitle),
                         // Add Attribute MetaData
                         from c in AppPackage.GetMetadata(Constants.MetadataForAttribute, x.AttributeId).ToList()
-                            //EavAppContext.Entities.GetAssignedEntities(Constants.MetadataForAttribute, x.AttributeId).ToList()
                         select GetEntityXElement(c.EntityId, c.Type.StaticName)
-                        );
+                    );
 
                     attributes.Add(attribute);
                 }
@@ -186,11 +177,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 if (set.ParentConfigurationId.HasValue)
                 {
                     var parentStaticName = AppPackage.ContentTypes[set.ParentConfigurationId.Value].StaticName;
-                    //var parentAttributeSet =
-                    //    EavAppContext.SqlDb.ToSicEavAttributeSets.First(
-                    //        a => a.AttributeSetId == set.ParentConfigurationId.Value &&
-                    //            a.ChangeLogDeleted == null);
-                    attributeSet.Add(new XAttribute(XmlConstants.AttributeSetParentDef, parentStaticName));// parentAttributeSet.StaticName));
+                    attributeSet.Add(new XAttribute(XmlConstants.AttributeSetParentDef, parentStaticName));
                 }
 
                 attributeSets.Add(attributeSet);
@@ -208,14 +195,13 @@ namespace ToSic.Eav.Apps.ImportExport
                 var id = int.Parse(entityId);
 
                 // Get the entity and ContentType from ContentContext add Add it to ContentItems
-                var entity = AppPackage.Entities[id];// EavAppContext.Entities.GetDbEntity(id);
+                var entity = AppPackage.Entities[id];
                 entities.Add(GetEntityXElement(entity.EntityId, entity.Type.StaticName));
             }
 
             #endregion
 
-            // init ADAM files (add to queue)
-            // AddAdamFilesToExportQueue();
+            // init files (add to queue)
             AddFilesToExportQueue();
 
             // Create root node "SexyContent" and add ContentTypes, ContentItems and Templates
@@ -243,7 +229,6 @@ namespace ToSic.Eav.Apps.ImportExport
             XElement entityXElement;
             try
             {
-                //entityXElement = new DbXmlBuilder(EavAppContext).XmlEntity(e.EntityId);
                 entityXElement = Serializer.ToXml(entityId);
             }
             catch (Exception ex)
@@ -260,13 +245,13 @@ namespace ToSic.Eav.Apps.ImportExport
                 if (string.IsNullOrEmpty(valueString)) continue;
 
                 // Special cases for Template ContentTypes
-                if (contentTypeName == XmlConstants.CtTemplate)// && !string.IsNullOrEmpty(valueString))
+                if (contentTypeName == XmlConstants.CtTemplate)
                 {
                     switch (valueKey)
                     {
                         case XmlConstants.TemplateContentTypeId:
                             var eid = int.Parse(valueString);
-                            var attributeSet = AppPackage.ContentTypes[eid];//  EavAppContext.AttribSet.GetDbAttribSets().FirstOrDefault(a => a.AttributeSetId == int.Parse(valueString));
+                            var attributeSet = AppPackage.ContentTypes[eid];
                             value.Attribute(XmlConstants.ValueAttr)?.SetValue(attributeSet != null ? attributeSet.StaticName : string.Empty);
                             break;
                         case XmlConstants.TemplateDemoItemId:

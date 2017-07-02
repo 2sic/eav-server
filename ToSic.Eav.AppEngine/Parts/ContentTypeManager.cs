@@ -7,7 +7,7 @@ using ToSic.Eav.Data;
 
 namespace ToSic.Eav.Apps.Parts
 {
-    public class ContentTypeManager : BaseManager
+    public class ContentTypeManager : ManagerBase
     {
         public ContentTypeManager(AppManager app) : base(app)
         {

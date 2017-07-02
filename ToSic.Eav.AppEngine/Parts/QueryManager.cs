@@ -5,7 +5,7 @@ using ToSic.Eav.Repository.Efc.Parts;
 
 namespace ToSic.Eav.Apps.Parts
 {
-    public class QueryManager: BaseManager
+    public class QueryManager: ManagerBase
     {
         public QueryManager(AppManager app) : base(app) {}
 

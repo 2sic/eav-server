@@ -19,8 +19,6 @@ namespace ToSic.Eav.Repository.Efc
     {
         #region Extracted, now externalized objects with actions and private fields
 
-        public DbShortcuts DbS { get; private set; }
-
         public DbVersioning Versioning { get; private set; }
         public DbEntity Entities { get; private set; }
         public DbValue Values { get; private set; }
@@ -109,7 +107,6 @@ namespace ToSic.Eav.Repository.Efc
         {
             var context = Factory.Resolve<EavDbContext>();
             var dc = new DbDataController {SqlDb = context};
-            dc.DbS = new DbShortcuts(dc);
             dc.Versioning = new DbVersioning(dc);
             dc.Entities = new DbEntity(dc);
             dc.Values = new DbValue(dc);

@@ -7,6 +7,7 @@ using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Persistence.Xml;
+using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
@@ -55,8 +56,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
             ProcessQueue();
         }
 
-        //public void ActivateQueue() => _useQueue = true;
-
         private void ProcessQueue()
         {
             _useQueue = false;
@@ -94,8 +93,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         private void SerializeEntityAndAddToQueue(IThingSerializer serializer, int entityId, Guid entityGuid)
         {
-            //var export = new DbXmlBuilder(DbContext);
-            //var entityModelSerialized = export.XmlEntity(entityId);
             var entityModelSerialized = serializer.Serialize(entityId);
             var timelineItem = new ToSicEavDataTimeline
             {

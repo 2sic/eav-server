@@ -11,7 +11,7 @@ namespace ToSic.Eav.Apps.Parts
     /// <summary>
     /// Manager for entities in an app
     /// </summary>
-    public partial class EntitiesManager: BaseManager
+    public partial class EntitiesManager: ManagerBase
     {
         public EntitiesManager(AppManager app) : base(app)
         {

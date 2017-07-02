@@ -3,10 +3,10 @@
     /// <summary>
     /// Manager for entities in an app
     /// </summary>
-    public abstract class BaseManager
+    public abstract class ManagerBase
     {
         internal readonly AppManager _appManager;
-        internal BaseManager(AppManager app)
+        internal ManagerBase(AppManager app)
         {
             _appManager = app;
         }

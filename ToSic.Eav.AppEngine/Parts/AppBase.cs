@@ -1,7 +1,8 @@
-﻿using ToSic.Eav.DataSources;
+﻿using ToSic.Eav.Apps.Interfaces;
+using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
 
-namespace ToSic.Eav.Apps.Interfaces
+namespace ToSic.Eav.Apps.Parts
 {
     public class AppBase: IApp
     {

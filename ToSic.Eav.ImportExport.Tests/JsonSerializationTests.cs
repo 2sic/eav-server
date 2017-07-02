@@ -5,6 +5,7 @@ using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Xml;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Repository.Efc.Tests;
+using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
 
 namespace ToSic.Eav.ImportExport.Tests
 {
