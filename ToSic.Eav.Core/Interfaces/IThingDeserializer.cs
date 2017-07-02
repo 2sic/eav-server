@@ -5,7 +5,7 @@ namespace ToSic.Eav.Interfaces
 {
     public interface IThingDeserializer
     {
-        IThingDeserializer Initialize(AppDataPackage app);
+        void Initialize(AppDataPackage app);
 
         IEntity Deserialize(string serialized);
 

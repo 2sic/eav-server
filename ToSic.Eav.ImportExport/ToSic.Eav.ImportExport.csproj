@@ -69,8 +69,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Environment\TennantFileItem.cs" />
+    <Compile Include="Json\Format\V1.cs" />
+    <Compile Include="Json\JsonDeserializer.cs" />
     <Compile Include="Json\JsonSerializer.cs" />
     <Compile Include="Serializers\SerializableRelationship.cs" />
+    <Compile Include="Serializers\DeserializerBase.cs" />
     <Compile Include="Serializers\SerializerBase.cs" />
     <Compile Include="Serializers\SerializerHelper.cs" />
     <Compile Include="FileManager.cs" />
@@ -97,7 +100,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Interfaces\" />
-    <Folder Include="Json\Format\" />
     <Folder Include="Logging\" />
     <Folder Include="Zip\" />
   </ItemGroup>

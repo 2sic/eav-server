@@ -11,10 +11,10 @@ namespace ToSic.Eav.Persistence.Xml
     {
         public AppDataPackage App;
 
-        public IThingSerializer Initialize(AppDataPackage app)
+        public void Initialize(AppDataPackage app)
         {
             App = app;
-            return this;
+            //return this;
         }
 
         protected IEntity Lookup(int entityId)
@@ -32,5 +32,7 @@ namespace ToSic.Eav.Persistence.Xml
         public Dictionary<int, string> Serialize(List<int> entities) => entities.ToDictionary(x => x, x => Serialize(Lookup(x)));
 
         public Dictionary<int, string> Serialize(List<IEntity> entities) => entities.ToDictionary(e => e.EntityId, Serialize);
+
+
     }
 }

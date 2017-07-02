@@ -5,7 +5,7 @@ namespace ToSic.Eav.Interfaces
 {
     public interface IThingSerializer
     {
-        IThingSerializer Initialize(AppDataPackage app);
+        void Initialize(AppDataPackage app);
 
         string Serialize(int entityId);
         Dictionary<int, string> Serialize(List<int> entities);
