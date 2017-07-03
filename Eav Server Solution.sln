@@ -25,11 +25,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToSic.Eav.Persistence.Efc",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.Persistence.Efc.Tests", "ToSic.Eav.Persistence.EFC11.Tests\ToSic.Eav.Persistence.Efc.Tests.csproj", "{EB8491A7-4147-4A18-AC74-CD1BE957FF48}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2SexyContent WebApi", "..\2SexyContent\Web\DesktopModules\ToSIC_SexyContent\Sxc WebApi\2SexyContent WebApi.csproj", "{2F0610DE-2518-4FC8-823E-7228DD17C04F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2sxc WebApi", "..\2SexyContent\Web\DesktopModules\ToSIC_SexyContent\Sxc WebApi\2sxc WebApi.csproj", "{2F0610DE-2518-4FC8-823E-7228DD17C04F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2Sexy Content Razor", "..\2SexyContent\Web\DesktopModules\ToSIC_SexyContent\2Sexy Content Razor\2Sexy Content Razor.csproj", "{78A558AF-F274-4E3C-95FE-8DE9226E0EBC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2sxc Razor", "..\2SexyContent\Web\DesktopModules\ToSIC_SexyContent\2Sexy Content Razor\2sxc Razor.csproj", "{78A558AF-F274-4E3C-95FE-8DE9226E0EBC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2Sexy Content", "..\2SexyContent\Web\DesktopModules\ToSIC_SexyContent\2Sexy Content.csproj", "{D4250011-B9BE-4326-9736-4F0122C79802}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2sxc", "..\2SexyContent\Web\DesktopModules\ToSIC_SexyContent\2sxc.csproj", "{D4250011-B9BE-4326-9736-4F0122C79802}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.Repository.Efc", "ToSic.Eav.Repository.Efc\ToSic.Eav.Repository.Efc.csproj", "{2BBA13D2-F6D2-443B-B7C8-8F4C31432C03}"
 EndProject
@@ -38,6 +38,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DnnPackageBuilder - required, but doesn't work yet", "..\2SexyContent\Web\DesktopModules\ToSIC_SexyContent\DnnPackageBuilder\DnnPackageBuilder - required, but doesn't work yet.csproj", "{48BF7477-1B8F-4C2E-ABAA-540500885188}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.ImportExport.Tests", "ToSic.Eav.ImportExport.Tests\ToSic.Eav.ImportExport.Tests.csproj", "{00C8672B-E79E-42D4-A512-6C0ABCCAF046}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2sxc Environment.Dnn9", "..\2SexyContent\Web\DesktopModules\ToSIC_SexyContent\ToSic.Sxc.Environment.Dnn9\2sxc Environment.Dnn9.csproj", "{398D901C-8641-46EC-9065-4515BBC11C75}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -796,6 +798,48 @@ Global
 		{00C8672B-E79E-42D4-A512-6C0ABCCAF046}.Release|Windows-x64.Build.0 = Release|Any CPU
 		{00C8672B-E79E-42D4-A512-6C0ABCCAF046}.Release|Windows-x86.ActiveCfg = Release|Any CPU
 		{00C8672B-E79E-42D4-A512-6C0ABCCAF046}.Release|Windows-x86.Build.0 = Release|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.debug eav only|Android.ActiveCfg = Debug|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.debug eav only|Android.Build.0 = Debug|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.debug eav only|Any CPU.ActiveCfg = Debug|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.debug eav only|Any CPU.Build.0 = Debug|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.debug eav only|DNN.ActiveCfg = Debug|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.debug eav only|DNN.Build.0 = Debug|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.debug eav only|iOS.ActiveCfg = Debug|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.debug eav only|iOS.Build.0 = Debug|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.debug eav only|Windows-ARM.ActiveCfg = Debug|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.debug eav only|Windows-ARM.Build.0 = Debug|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.debug eav only|Windows-x64.ActiveCfg = Debug|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.debug eav only|Windows-x64.Build.0 = Debug|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.debug eav only|Windows-x86.ActiveCfg = Debug|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.debug eav only|Windows-x86.Build.0 = Debug|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.Debug|Android.ActiveCfg = Debug|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.Debug|Android.Build.0 = Debug|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.Debug|DNN.ActiveCfg = Debug|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.Debug|DNN.Build.0 = Debug|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.Debug|iOS.ActiveCfg = Debug|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.Debug|iOS.Build.0 = Debug|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.Debug|Windows-ARM.ActiveCfg = Debug|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.Debug|Windows-ARM.Build.0 = Debug|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.Debug|Windows-x64.ActiveCfg = Debug|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.Debug|Windows-x64.Build.0 = Debug|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.Debug|Windows-x86.ActiveCfg = Debug|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.Debug|Windows-x86.Build.0 = Debug|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.Release|Android.ActiveCfg = Release|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.Release|Android.Build.0 = Release|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.Release|DNN.ActiveCfg = Release|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.Release|DNN.Build.0 = Release|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.Release|iOS.ActiveCfg = Release|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.Release|iOS.Build.0 = Release|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.Release|Windows-ARM.ActiveCfg = Release|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.Release|Windows-ARM.Build.0 = Release|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.Release|Windows-x64.ActiveCfg = Release|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.Release|Windows-x64.Build.0 = Release|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.Release|Windows-x86.ActiveCfg = Release|Any CPU
+		{398D901C-8641-46EC-9065-4515BBC11C75}.Release|Windows-x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

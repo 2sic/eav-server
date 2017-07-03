@@ -126,9 +126,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\2SexyContent\Web\DesktopModules\ToSIC_SexyContent\2Sexy Content.csproj">
+    <ProjectReference Include="..\..\2SexyContent\Web\DesktopModules\ToSIC_SexyContent\2sxc.csproj">
       <Project>{D4250011-B9BE-4326-9736-4F0122C79802}</Project>
-      <Name>2Sexy Content</Name>
+      <Name>2sxc</Name>
     </ProjectReference>
     <ProjectReference Include="..\ToSic.Eav.AppEngine\ToSic.Eav.Apps.csproj">
       <Project>{FA1B4495-6B85-400F-A5E3-0E292CCBFAE2}</Project>
