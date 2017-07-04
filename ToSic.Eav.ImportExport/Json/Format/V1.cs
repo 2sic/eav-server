@@ -27,6 +27,7 @@ namespace ToSic.Eav.ImportExport.Json.Format
     internal class JsonEntity
     {
         public int Id;
+        public int Version;
         public Guid Guid;
         public JsonType Type;
         public JsonAttributes Attributes;

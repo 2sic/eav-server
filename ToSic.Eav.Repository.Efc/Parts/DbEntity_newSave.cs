@@ -93,7 +93,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
                         IsPublished = newEnt.IsPublished,
                         PublishedEntityId = newEnt.IsPublished ? null : ((Entity) newEnt).GetPublishedIdForSaving(),
                         Owner = DbContext.UserName,
-                        AttributeSetId = contentTypeId
+                        AttributeSetId = contentTypeId,
+                        Version = 1
                     };
 
                     DbContext.SqlDb.Add(dbEnt);
@@ -110,32 +111,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     dbEnt = DbContext.Entities.GetDbEntity(newEnt.EntityId);
 
                     var publishedStateChangesForThisItem = dbEnt.IsPublished != newEnt.IsPublished;
-
-                    #region Unpublished Save (Draft-Saves) - do some possible error checking
-
-                    #region removed publish/unpublish code
-
-                    // Prevent editing of Published item if there's a draft
-                    //if (dbEnt.IsPublished && dbEntAttachedDraft.HasValue)
-                    //    throw new Exception($"Update Entity not allowed because a draft exists with EntityId {dbEntAttachedDraft}");
-
-                    // Current Entity is published but Update as a draft
-                    //if (dbEnt.IsPublished && !newEnt.IsPublished && so.AllowBranching)
-                    //    // Prevent duplicate Draft
-                    //    throw existingDraftId.HasValue
-                    //        ? new InvalidOperationException(
-                    //            $"Published EntityId {dbId} has already a draft with EntityId {existingDraftId}")
-                    //        : new InvalidOperationException(
-                    //            "It seems you're trying to update a published entity with a draft - this is not possible - the save should actually try to create a new draft instead without calling update.");
-
-                    // if the published state is going to draft, but there is already a draft, the wrong item was edited
-                    // basically when editing a draft, then this is also the item that should receive the save command
-                    //if (dbEnt.IsPublished && !newEnt.IsPublished && draftItemId.HasValue)
-                    //    throw new InvalidOperationException($"Published EntityId {dbId} already has draft {draftItemId}, so can't create new");
-
-                    #endregion removed
-
-                    #endregion
 
                     #region If draft but should be published, correct what's necessary
 
@@ -158,6 +133,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                     #endregion
 
+                    // increase version
+                    dbEnt.Version++;
+
+                    // first, clean up all existing attributes / values (flush)
+                    // this is necessary after remove, because otherwise EF state tracking gets messed up
+                    DbContext.DoAndSave(() => dbEnt.ToSicEavValues.Clear());
+
                     #endregion Step 3b
                 }
 
@@ -165,10 +147,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                 #region Step 4: Save all normal values
 
-                // first, clean up all existing attributes / values (flush)
-                dbEnt.ToSicEavValues.Clear();
-                DbContext.SqlDb.SaveChanges();
-                    // this is necessary after remove, because otherwise EF state tracking gets messed up
 
                 foreach (var attribute in newEnt.Attributes.Values) // todo: put in constant
                 {

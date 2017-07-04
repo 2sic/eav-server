@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace ToSic.Eav.Interfaces
 {
@@ -22,5 +18,6 @@ namespace ToSic.Eav.Interfaces
         /// <param name="attributeName">StaticName of the Attribute</param>
         new IAttribute this[string attributeName] { get; }
 
+        int Version { get; }
     }
 }

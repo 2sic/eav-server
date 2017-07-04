@@ -163,6 +163,7 @@ namespace ToSic.Eav.Persistence.Efc
                 {
                     e.EntityId,
                     e.EntityGuid,
+                    e.Version,
                     e.AttributeSetId,
                     Metadata = new Metadata
                     {
@@ -222,7 +223,7 @@ namespace ToSic.Eav.Persistence.Efc
             foreach (var e in rawEntities)
             {
                 var contentType = (ContentType)contentTypes[e.AttributeSetId];
-                var newEntity = new Entity(appId, e.EntityGuid, e.EntityId, e.EntityId, e.Metadata, contentType, e.IsPublished, relationships, e.Modified, e.Owner);
+                var newEntity = new Entity(appId, e.EntityGuid, e.EntityId, e.EntityId, e.Metadata, contentType, e.IsPublished, relationships, e.Modified, e.Owner, e.Version);
 
                 var allAttribsOfThisType = new Dictionary<int, IAttribute>();	// temporary Dictionary to set values later more performant by Dictionary-Key (AttributeId)
                 IAttribute titleAttrib = null;

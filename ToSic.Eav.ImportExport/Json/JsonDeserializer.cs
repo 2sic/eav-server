@@ -31,7 +31,7 @@ namespace ToSic.Eav.ImportExport.Json
             JsonFormat jsonObj;
             try
             {
-                jsonObj = JsonConvert.DeserializeObject<JsonFormat>(serialized, JsonSerializer.JsonSerializerSettings());
+                jsonObj = JsonConvert.DeserializeObject<JsonFormat>(serialized, JsonSerializerSettings());
             }
             catch (Exception ex)
             {
@@ -42,7 +42,7 @@ namespace ToSic.Eav.ImportExport.Json
                 throw new ArgumentOutOfRangeException(nameof(serialized), "unexpected format version");
 
             // get type def
-            var contentType = Enumerable.SingleOrDefault<IContentType>(App.ContentTypes.Values, ct => ct.StaticName == jsonObj.Entity.Type.Id);
+            var contentType = App.ContentTypes.Values.SingleOrDefault(ct => ct.StaticName == jsonObj.Entity.Type.Id);
             if(contentType == null)
                 throw new Exception($"type not found for deserialization - cannot continue{jsonObj.Entity.Type.Id}");
 
@@ -59,7 +59,7 @@ namespace ToSic.Eav.ImportExport.Json
 
             // Build entity
             var appId = 0;
-            var newEntity = new Entity(appId, jsonObj.Entity.Guid, jsonObj.Entity.Id, jsonObj.Entity.Id, ismeta, contentType, true, null, DateTime.Now, jsonObj.Entity.Owner);
+            var newEntity = new Entity(appId, jsonObj.Entity.Guid, jsonObj.Entity.Id, jsonObj.Entity.Id, ismeta, contentType, true, null, DateTime.Now, jsonObj.Entity.Owner, jsonObj.Entity.Version);
 
 
             // build attributes
@@ -123,18 +123,18 @@ namespace ToSic.Eav.ImportExport.Json
             return newEntity;
         }
 
-        private List<int?> LookupGuids(List<Guid?> list) => list.Select(g => Enumerable.FirstOrDefault<IEntity>(App.Entities.Values, e => e.EntityGuid == g)?.EntityId).ToList();
+        private List<int?> LookupGuids(List<Guid?> list) => list.Select(g => App.Entities.Values.FirstOrDefault(e => e.EntityGuid == g)?.EntityId).ToList();
 
-        private static List<ILanguage> RecreateLanguageList(string languages) => languages == JsonSerializer.NoLanguage
+        private static List<ILanguage> RecreateLanguageList(string languages) => languages == NoLanguage
             ? new List<ILanguage>()
             : languages.Split(',')
-                .Select(a => new Dimension {Key = a.Replace(JsonSerializer.ReadOnlyMarker, ""), ReadOnly = a.StartsWith(JsonSerializer.ReadOnlyMarker)} as ILanguage)
+                .Select(a => new Dimension {Key = a.Replace(ReadOnlyMarker, ""), ReadOnly = a.StartsWith(ReadOnlyMarker)} as ILanguage)
                 .ToList();
 
 
         private static Dictionary<string, Dictionary<string, T>> ToTypedDictionary<T>(List<IAttribute> attribs) 
             => attribs.Cast<IAttribute<T>>().ToDictionary(a => a.Name,
-            a => a.Typed.ToDictionary(JsonSerializer.LanguageKey, v => v.TypedContents));
+            a => a.Typed.ToDictionary(LanguageKey, v => v.TypedContents));
 
         public List<IEntity> Deserialize(List<string> serialized) => serialized.Select(Deserialize).ToList();
     }

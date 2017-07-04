@@ -74,6 +74,7 @@ namespace ToSic.Eav.ImportExport.Json
                 {
                     Id = entity.EntityId,
                     Guid = entity.EntityGuid,
+                    Version = entity.Version,
                     Type = new JsonType
                     {
                         Name = entity.Type.Name,
