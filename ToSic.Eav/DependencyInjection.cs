@@ -40,7 +40,7 @@ namespace ToSic.Eav
 
 	        serviceCollection.TryAddTransient<IThingSerializer, XmlSerializer>();
 
-	        serviceCollection.TryAddTransient<IEnvironmentVersioning, Apps.Environment.None.Versioning>();
+	        serviceCollection.TryAddTransient<IEnvironmentVersioning, Apps.Environment.Versioning>();
 
             var conStr = new Configuration().DbConnectionString;
             if (!conStr.ToLower().Contains("multipleactiveresultsets")) // this is needed to allow querying data while preparing new data on the same DbContext
