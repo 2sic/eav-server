@@ -10,7 +10,7 @@ namespace ToSic.Eav.App
 	/// <summary>
 	/// Cache Object for a specific App
 	/// </summary>
-	public class AppDataPackage
+	public class AppDataPackage: IMetadataProvider
 	{
 		#region Private Fields
 		private IDictionary<int, IEntity> _publishedEntities;

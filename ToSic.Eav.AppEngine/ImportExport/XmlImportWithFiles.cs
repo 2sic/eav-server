@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Xml;
 using ToSic.Eav.Interfaces;
@@ -218,7 +219,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
 
 			var import = new Import(ZoneId, AppId, leaveExistingValuesUntouched);
-			import.ImportIntoDb(importAttributeSets, importEntities);
+			import.ImportIntoDb(importAttributeSets, importEntities.Cast<Entity>());
             SystemManager.Purge(ZoneId, AppId);
 
 			ImportLog.AddRange(GetExportImportMessagesFromImportLog(import.Storage.Log));
@@ -282,7 +283,7 @@ namespace ToSic.Eav.Apps.ImportExport
                             xElementAttribute.Attribute(XmlConstants.EntityTypeAttribute).Value,
                             null, null, null
                         );
-                        attribute.InternalAttributeMetaData = GetImportEntities(xElementAttribute.Elements(XmlConstants.Entity), Constants.MetadataForAttribute);
+                        attribute.AddItems(GetImportEntities(xElementAttribute.Elements(XmlConstants.Entity), Constants.MetadataForAttribute));
                         attributes.Add(attribute);
 
                         // Set Title Attribute
@@ -492,7 +493,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="entities"></param>
         /// <param name="assignmentObjectTypeId"></param>
         /// <returns></returns>
-        private List<Entity> GetImportEntities(IEnumerable<XElement> entities, int assignmentObjectTypeId)
+        private List<IEntity> GetImportEntities(IEnumerable<XElement> entities, int assignmentObjectTypeId)
             => entities.Select(e => GetImportEntity(e, assignmentObjectTypeId)).ToList();
 		
 
@@ -503,7 +504,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="entityNode">The xml-Element of the entity to import</param>
         /// <param name="assignmentObjectTypeId">assignmentObjectTypeId</param>
         /// <returns></returns>
-        private Entity GetImportEntity(XElement entityNode, int assignmentObjectTypeId)
+        private IEntity GetImportEntity(XElement entityNode, int assignmentObjectTypeId)
 		{
             #region retrieve optional metadata keys in the import - must happen before we apply corrections like AppId
             Guid? keyGuid = null;

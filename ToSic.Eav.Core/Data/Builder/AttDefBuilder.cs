@@ -24,7 +24,7 @@ namespace ToSic.Eav.Data.Builder
         public static AttributeDefinition StringAttribute(int appId, string staticName, string niceName, string notes, bool? visibleInEditUi, string inputType = null, int? rowCount = null, string defaultValue = null)
         {
             var attribute = new AttributeDefinition(appId, staticName, niceName, AttributeTypeEnum.String.ToString(), notes, visibleInEditUi, defaultValue);
-            attribute.InternalAttributeMetaData.Add(CreateStringAttribMetadata(appId, inputType, rowCount));
+            attribute.Items.Add(CreateStringAttribMetadata(appId, inputType, rowCount));
             return attribute;
         }
 
@@ -60,6 +60,8 @@ namespace ToSic.Eav.Data.Builder
         }
 
         public static void SetSortOrder(this AttributeDefinition attDef, int sortOrder) => attDef.SortOrder = sortOrder;
+
+        public static void AddItems(this AttributeDefinition attDef, List<IEntity> items) => attDef._items = items;
 
     }
 }

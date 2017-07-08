@@ -122,6 +122,7 @@
     <Compile Include="Interfaces\IHasMetadata.cs" />
     <Compile Include="Interfaces\IEntity.cs" />
     <Compile Include="Interfaces\IMetadata.cs" />
+    <Compile Include="Interfaces\IMetadataProvider.cs" />
     <Compile Include="Interfaces\IPublish_T.cs" />
     <Compile Include="Interfaces\IThingDeserializer.cs" />
     <Compile Include="Interfaces\IThingSerializer.cs" />

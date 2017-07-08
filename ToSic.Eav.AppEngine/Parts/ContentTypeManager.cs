@@ -38,7 +38,6 @@ namespace ToSic.Eav.Apps.Parts
             };
             var meta = new Metadata
             {
-                HasMetadata = true,
                 TargetType = Constants.MetadataForAttribute,
                 KeyNumber = attributeId
             };
@@ -51,7 +50,6 @@ namespace ToSic.Eav.Apps.Parts
 
             var meta = new Metadata
             {
-                HasMetadata = true,
                 TargetType = Constants.MetadataForAttribute,
                 KeyNumber = attributeId
             };

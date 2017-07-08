@@ -12,7 +12,7 @@ namespace ToSic.Eav.DataSources.Caches
 	/// <summary>
 	/// Represents an abstract Cache DataSource
 	/// </summary>
-	public abstract class BaseCache : BaseDataSource, IMetaDataSource, ICache, IDeferredEntitiesList
+	public abstract class BaseCache : BaseDataSource, IMetaDataSource, ICache//, IDeferredEntitiesList
 	{
 		protected new BaseCache Cache { get; set; }
 
@@ -327,8 +327,8 @@ namespace ToSic.Eav.DataSources.Caches
 
         #endregion
 
-        IDictionary<int, IEntity> IDeferredEntitiesList.List => Out[Constants.DefaultStreamName].List;
+     //   IDictionary<int, IEntity> IDeferredEntitiesList.List => Out[Constants.DefaultStreamName].List;
 
-	    IEnumerable<IEntity> IDeferredEntitiesList.LightList => Out[Constants.DefaultStreamName].LightList;
+	    //IEnumerable<IEntity> IDeferredEntitiesList.LightList => Out[Constants.DefaultStreamName].LightList;
 	}
 }

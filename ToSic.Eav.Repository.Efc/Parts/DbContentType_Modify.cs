@@ -115,8 +115,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 var destAttribId = DbContext.AttributesDefinition.GetOrCreateAttributeDefinition(contentTypeId, newAtt);
 
                 // save additional entities containing AttributeMetaData for this attribute
-                if (newAtt.InternalAttributeMetaData != null)
-                    SaveAttributeMetadata(destAttribId, newAtt.InternalAttributeMetaData, saveOptions);
+                if (newAtt.Items != null)
+                    SaveAttributeMetadata(destAttribId, newAtt.Items, saveOptions);
             }
 
             // optionally re-order the attributes if specified in import
@@ -131,7 +131,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <param name="attributeId"></param>
         /// <param name="metadata"></param>
         /// <param name="saveOptions"></param>
-        private void SaveAttributeMetadata(int attributeId, List<Entity> metadata, SaveOptions saveOptions)
+        private void SaveAttributeMetadata(int attributeId, List<IEntity> metadata, SaveOptions saveOptions)
         {
             var entities = new List<IEntity>();
             foreach (var entity in metadata)
