@@ -31,5 +31,16 @@ namespace ToSic.Eav.Apps.Interfaces
         /// </summary>
         /// <param name="moduleId"></param>
         void PublishLatestVersion(int moduleId);
+
+        /// <summary>
+        /// Delete the latest version of the module data.
+        /// NOTE: Should be called by the business-controller of the module. The controller must implement the IVersionable.
+        /// </summary>
+        /// <param name="moduleId"></param>
+        void DeleteLatestVersion(int moduleId);
+
+        int GetLatestVersion(int moduleId);
+
+        int GetPublishedVersion(int moduleId);
     }
 }

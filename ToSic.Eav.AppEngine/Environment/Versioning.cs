@@ -23,7 +23,22 @@ namespace ToSic.Eav.Apps.Environment
 
         public void PublishLatestVersion(int moduleId)
         {
-            // NOTE: Do nothin`g!
+            // NOTE: Do nothing!
+        }
+
+        public void DeleteLatestVersion(int moduleId)
+        {
+            // NOTE: Do nothing!
+        }
+
+        public int GetLatestVersion(int moduleId)
+        {
+            return 0;
+        }
+
+        public int GetPublishedVersion(int moduleId)
+        {
+            return 0;
         }
     }
 }
