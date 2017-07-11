@@ -21,12 +21,12 @@ namespace ToSic.Eav.Apps.Environment
             action.Invoke(info);
         }
 
-        public void PublishLatestVersion(int moduleId)
+        public void DoInsidePublishLatestVersion(int moduleId, Action<VersioningActionInfo> action)
         {
             // NOTE: Do nothing!
         }
 
-        public void DeleteLatestVersion(int moduleId)
+        public void DoInsideDeleteLatestVersion(int moduleId, Action<VersioningActionInfo> action)
         {
             // NOTE: Do nothing!
         }
