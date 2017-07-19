@@ -40,8 +40,8 @@ namespace ToSic.Eav
 
 	        serviceCollection.TryAddTransient<IThingSerializer, XmlSerializer>();
 
+            // NOTE for 2dm: Switch between DNN7 or DNN9 version of IEnvironmentVersioning
             serviceCollection.TryAddTransient<IEnvironmentVersioning, ToSic.Sxc.Environment.Dnn9.Environment.Versioning>();
-            // NOTE2tk: DNN7 version of IEnvironmentVersioning: 
             // serviceCollection.TryAddTransient<IEnvironmentVersioning, Apps.Environment.Versioning>();
 
             var conStr = new Configuration().DbConnectionString;
