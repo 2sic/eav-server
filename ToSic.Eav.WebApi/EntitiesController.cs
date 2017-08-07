@@ -150,6 +150,7 @@ namespace ToSic.Eav.WebApi
                     if (!itm.ContentTypeName.StartsWith("@"))
                         throw new Exception("Can't find content type " + itm.ContentTypeName);
                     items.Remove(itm);
+                    continue;
                 }
                 if (ct.StaticName != itm.ContentTypeName) // not using the static name...fix
                     itm.ContentTypeName = ct.StaticName;
