@@ -94,8 +94,7 @@ namespace ToSic.Eav.Data.Builder
             var attrExists = target.Where(item => item.Key == attributeName).Select(item => item.Value).FirstOrDefault();
             if (attrExists == null)
             {
-                var newAttr = AttributeBase.CreateTypedAttribute(attributeName, valueType);
-                newAttr.Values.Add(valueWithLanguages);
+                var newAttr = AttributeBase.CreateTypedAttribute(attributeName, valueType, new List<IValue> { valueWithLanguages });
                 target.Add(attributeName, newAttr);
             }
             else
