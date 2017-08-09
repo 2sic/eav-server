@@ -46,6 +46,9 @@ namespace ToSic.Eav.Apps.Parts
             // Delete Pipeline
             dbController.Entities.DeleteEntity(id);
 
+            // flush cache
+            SystemManager.Purge(_appManager.AppId);
+
             return true;
 
         }

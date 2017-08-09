@@ -15,7 +15,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         /// <param name="entityId"></param>
         /// <returns>The published Entity</returns>
-        public ToSicEavEntities PublishDraftInDbEntity(int entityId)
+        internal ToSicEavEntities PublishDraftInDbEntity(int entityId)
         {
             var unpublishedEntity = DbContext.Entities.GetDbEntity(entityId);
             if (unpublishedEntity.IsPublished)
@@ -41,7 +41,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 DbContext.Values.CloneEntityValues(unpublishedEntity, publishedEntity);
 
                 // delete the Draft Entity
-                DbContext.Entities.DeleteEntity(unpublishedEntity, false);
+                DbContext.Entities.DeleteEntity(unpublishedEntity.EntityId, false);
             }
 
             DbContext.SqlDb.SaveChanges();
@@ -49,36 +49,36 @@ namespace ToSic.Eav.Repository.Efc.Parts
             return publishedEntity;
         }
 
-        /// <summary>
-        /// Should clean up branches of this item, and set the one and only as published
-        /// </summary>
-        /// <param name="unpublishedEntityId"></param>
-        /// <param name="newPublishedState"></param>
-        /// <returns></returns>
-        public ToSicEavEntities OLDClearDraftBranchAndSetPublishedState(int unpublishedEntityId, bool newPublishedState = true)
-        {
-            var unpublishedEntity = DbContext.Entities.GetDbEntity(unpublishedEntityId);
+        ///// <summary>
+        ///// Should clean up branches of this item, and set the one and only as published
+        ///// </summary>
+        ///// <param name="unpublishedEntityId"></param>
+        ///// <param name="newPublishedState"></param>
+        ///// <returns></returns>
+        //public ToSicEavEntities OLDClearDraftBranchAndSetPublishedState(int unpublishedEntityId, bool newPublishedState = true)
+        //{
+        //    var unpublishedEntity = DbContext.Entities.GetDbEntity(unpublishedEntityId);
 
-            ToSicEavEntities publishedEntity;
+        //    ToSicEavEntities publishedEntity;
 
-            // Publish Draft-Entity
-            if (!unpublishedEntity.PublishedEntityId.HasValue)
-            {
-                unpublishedEntity.IsPublished = newPublishedState;
-                publishedEntity = unpublishedEntity;
-            }
-            // Replace currently published Entity with draft Entity and delete the draft
-            else
-            {
-                publishedEntity = DbContext.Entities.GetDbEntity(unpublishedEntity.PublishedEntityId.Value);
-                publishedEntity.IsPublished = newPublishedState;
+        //    // Publish Draft-Entity
+        //    if (!unpublishedEntity.PublishedEntityId.HasValue)
+        //    {
+        //        unpublishedEntity.IsPublished = newPublishedState;
+        //        publishedEntity = unpublishedEntity;
+        //    }
+        //    // Replace currently published Entity with draft Entity and delete the draft
+        //    else
+        //    {
+        //        publishedEntity = DbContext.Entities.GetDbEntity(unpublishedEntity.PublishedEntityId.Value);
+        //        publishedEntity.IsPublished = newPublishedState;
 
-                // delete the Draft Entity
-                DbContext.Entities.DeleteEntity(unpublishedEntity, false);
-            }
+        //        // delete the Draft Entity
+        //        DbContext.Entities.DeleteEntity(unpublishedEntity, false);
+        //    }
 
-            return publishedEntity;
-        }
+        //    return publishedEntity;
+        //}
 
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <param name="newPublishedState"></param>
         /// <param name="publishedEntity"></param>
         /// <returns></returns>
-        public ToSicEavEntities ClearDraftBranchAndSetPublishedState(ToSicEavEntities publishedEntity, int? draftId = null, bool newPublishedState = true)
+        internal ToSicEavEntities ClearDraftBranchAndSetPublishedState(ToSicEavEntities publishedEntity, int? draftId = null, bool newPublishedState = true)
         {
             // find main Db item and if 
             //var publishedEntity = DbContext.Entities.GetDbEntity(entityId);

@@ -390,6 +390,7 @@ namespace ToSic.Eav.Persistence.Efc.Models
                 entity.HasOne(d => d.ChildEntity)
                     .WithMany(p => p.RelationshipsWithThisAsChild)
                     .HasForeignKey(d => d.ChildEntityId)
+                    .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_ChildEntities");
 
                 entity.HasOne(d => d.ParentEntity)

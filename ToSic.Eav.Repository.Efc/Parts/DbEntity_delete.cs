@@ -7,39 +7,34 @@ namespace ToSic.Eav.Repository.Efc.Parts
 {
     public partial class DbEntity
     {
-
         /// <summary>
         /// Delete an Entity
         /// </summary>
-        internal bool DeleteEntity(int repositoryId, bool forceRemoveFromParents = false) => DeleteEntity(GetDbEntity(repositoryId), removeFromParents: forceRemoveFromParents);
-
-        /// <summary>
-        /// Delete an Entity
-        /// </summary>
-        internal bool DeleteEntity(Guid entityGuid) => DeleteEntity(GetMostCurrentDbEntity(entityGuid));
-
-        /// <summary>
-        /// Delete an Entity
-        /// </summary>
-        internal bool DeleteEntity(ToSicEavEntities entity, bool autoSave = true, bool removeFromParents = false)
+        internal bool DeleteEntity(int repositoryId, bool autoSave = true, bool removeFromParents = false)
         {
-            if (entity == null)
+            if (repositoryId == 0)
                 return false;
 
             // get full entity again to be sure we are deleting everything - otherwise inbound unreliable
-            entity = DbContext.Entities.GetDbEntity(entity.EntityId, "ToSicEavValues,ToSicEavValues.ToSicEavValuesDimensions");
+            // note that as this is a DB-entity, the EntityId is actually the repositoryId
+            var entity = DbContext.Entities.GetDbEntity(repositoryId, "ToSicEavValues,ToSicEavValues.ToSicEavValuesDimensions");
 
 
             #region Delete Related Records (Values, Value-Dimensions, Relationships)
             // Delete all Value-Dimensions
             var valueDimensions = entity.ToSicEavValues.SelectMany(v => v.ToSicEavValuesDimensions).ToList();
             DbContext.SqlDb.RemoveRange(valueDimensions);
+
             // Delete all Values
             DbContext.SqlDb.RemoveRange(entity.ToSicEavValues.ToList());
+
             // Delete all Parent-Relationships
-            entity.RelationshipsWithThisAsParent.Clear();
+            //entity.RelationshipsWithThisAsParent.Clear();
+            DeleteRelationships(entity.RelationshipsWithThisAsParent);
+            //DbContext.SqlDb.RemoveRange(entity.RelationshipsWithThisAsParent.ToList() /*.Clear()*/);
             if (removeFromParents)
-                entity.RelationshipsWithThisAsChild.Clear();
+                DeleteRelationships(entity.RelationshipsWithThisAsChild);
+                //DbContext.SqlDb.RemoveRange(entity.RelationshipsWithThisAsChild.ToList() /*.Clear()*/);
 
             #endregion
 
@@ -56,7 +51,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
             else
             {
                 // Delete all Child-Relationships
-                entity.RelationshipsWithThisAsChild.Clear();
+                DeleteRelationships(entity.RelationshipsWithThisAsChild);
+                //DbContext.SqlDb.RemoveRange(entity.RelationshipsWithThisAsChild.ToList() /*.Clear()*/);
                 DbContext.SqlDb.Remove(entity);
             }
 
@@ -64,6 +60,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 DbContext.SqlDb.SaveChanges();
 
             return true;
+        }
+
+        private void DeleteRelationships(ICollection<ToSicEavEntityRelationships> relationships)
+        {
+            relationships.ToList().ForEach(r => DbContext.SqlDb.ToSicEavEntityRelationships.Remove(r));
         }
 
 

@@ -162,18 +162,18 @@ namespace ToSic.Eav.DataSources
 
 			// only get those, having a relationship on this name
 			var results = // (ChildOrParent == "child") ?
-				(from e in originals
-				 where e.Relationships.Children[relationship].Any()
-				 select e);
+				from e in originals
+				where e.Relationships.Children[relationship].Any()
+				select e;
 			//: (from e in originals
 			//	where e.Value.Relationships.AllParents.Any(p => p.Type.Name == ParentType)
 			//	select e);
 
 			if (ChildOrParent == "child")
 			{
-				results = (from e in results
-						   where e.Relationships.Children[relationship].Any(x => getStringToCompare(x, compAttr, specAttr).ToLower() == filter)
-						   select e);
+				results = from e in results
+				    where e.Relationships.Children[relationship].Any(x => getStringToCompare(x, compAttr, specAttr)?.ToLower() == filter)
+				    select e;
 			}
 			else
 			{
@@ -191,12 +191,13 @@ namespace ToSic.Eav.DataSources
 			try
 			{
 				// get either the special id or title, if title or normal field, then use language [0] = default
-				return special == 'i' ? e.EntityId.ToString() : (special == 't' ? e.Title : e[a])[0].ToString();
+			    if (e == null) return null;
+				return special == 'i' ? e.EntityId.ToString() : (special == 't' ? e.Title : e[a])?[0]?.ToString();
 			}
 			catch
 			{
-				throw (new Exception(
-					"Error while trying to filter for related entities. Probably comparing an attribute on the related entity that doesn't exist. Was trying to compare the attribute '" + a + "'"));
+				throw new Exception(
+				    $"Error while trying to filter for related entities. Probably comparing an attribute on the related entity that doesn\'t exist. Was trying to compare the attribute \'{a}\'");
 			}
 		}
 	}
