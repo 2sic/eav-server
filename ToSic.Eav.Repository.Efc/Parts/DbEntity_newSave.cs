@@ -156,8 +156,12 @@ namespace ToSic.Eav.Repository.Efc.Parts
                             a =>
                                 string.Equals(a.StaticName, attribute.Name, StringComparison.InvariantCultureIgnoreCase));
                     if (attribDef == null)
+                    {
+                        if (so.DiscardAttributesMissingInSchema)
+                            continue;
                         throw new Exception(
                             $"trying to save attribute {attribute.Name} but can\'t find definition in DB");
+                    }
                     if (attribDef.Type == AttributeTypeEnum.Entity.ToString()) continue;
 
                     foreach (var value in attribute.Values)

@@ -45,6 +45,11 @@ namespace ToSic.Eav.Persistence
         public bool DraftShouldBranch = true;
 
         /// <summary>
+        /// 
+        /// </summary>
+        public bool DiscardAttributesMissingInSchema = false;
+
+        /// <summary>
         /// Prepare relationships changes, but don't send to DB yet.
         /// This is important when saving many entities, as they could referr to each other and not exist yet when the first one is created. 
         /// So it will not apply relationships until the end of the transaction

@@ -109,7 +109,9 @@ namespace ToSic.Eav.Apps.ImportExport
         private void MergeAndSaveContentTypes(List<ContentType> contentTypes)
         {
             contentTypes.ForEach(MergeContentTypeUpdateWithExisting);
-            Storage.Save(contentTypes.Cast<IContentType>().ToList(), SaveOptions.Build(ZoneId));
+            var so = SaveOptions.Build(ZoneId);
+            so.DiscardAttributesMissingInSchema = true;
+            Storage.Save(contentTypes.Cast<IContentType>().ToList(), so);
         }
 
         //private void ExtendSaveContentTypes(IEnumerable<ContentType> contentTypes)

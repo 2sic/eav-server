@@ -72,24 +72,24 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Update Relationships of an Entity. Update isn't done until ImportEntityRelationshipsQueue() is called!
         /// </summary>
-        private void AddToQueue(int attributeId, List<Guid?> newValue, int entityId, bool flushAll)
-        {
-            _saveQueue.Add(new RelationshipToSave
+        private void AddToQueue(int attributeId, List<Guid?> newValue, int entityId, bool flushAll) => _saveQueue.Add(new RelationshipToSave
             {
-                AttributeId = attributeId, ChildEntityGuids = newValue, ParentEntityId = entityId
+                AttributeId = attributeId,
+                ChildEntityGuids = newValue,
+                ParentEntityId = entityId,
+                FlushAllEntityRelationships = flushAll
             });
-        }
 
         /// <summary>
         /// Update Relationships of an Entity. Update isn't done until ImportEntityRelationshipsQueue() is called!
         /// </summary>
-        private void AddToQueue(int attributeId, List<int?> newValue, int entityId, bool flushAll)
-        {
-            _saveQueue.Add(new RelationshipToSave
+        private void AddToQueue(int attributeId, List<int?> newValue, int entityId, bool flushAll) => _saveQueue.Add(new RelationshipToSave
             {
-                AttributeId = attributeId, ChildEntityIds = newValue, ParentEntityId = entityId, FlushAllEntityRelationships = flushAll
+                AttributeId = attributeId,
+                ChildEntityIds = newValue,
+                ParentEntityId = entityId,
+                FlushAllEntityRelationships = flushAll
             });
-        }
 
         /// <summary>
         /// Import Entity Relationships Queue (Populated by UpdateEntityRelationships) and Clear Queue afterward.
@@ -188,24 +188,20 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 // todo: put all relationships into queue
                 foreach (var attribute in eToSave.Attributes.Values)
                 {
-                    // find attribute definition
-                    var attribDef =
-                        attributeDefs.Single(
-                            a =>
+                    // find attribute definition - will be null if the attribute cannot be found - in which case ignore
+                    var attribDef = attributeDefs.SingleOrDefault(a =>
                                 string.Equals(a.StaticName, attribute.Name, StringComparison.InvariantCultureIgnoreCase));
-                    if (attribDef.Type != AttributeTypeEnum.Entity.ToString()) continue;
+                    if (attribDef == null || attribDef.Type != AttributeTypeEnum.Entity.ToString()) continue;
 
                     var list = attribute.Values?.FirstOrDefault()?.ObjectContents;
                     if (list == null) continue;
-                    //var attribId = attribDef.AttributeId;
 
                     if (list is Guid) list = new List<Guid> {(Guid) list};
                     if (list is List<Guid> || list is List<Guid?>)
                     {
                         var guidList = (list as List<Guid>)?.Select(p => (Guid?) p) ??
                                        ((List<Guid?>) list).Select(p => p);
-                        AddToQueue(attribDef.AttributeId, guidList.ToList(), dbEntity.EntityId,
-                            !so.PreserveUntouchedAttributes);
+                        AddToQueue(attribDef.AttributeId, guidList.ToList(), dbEntity.EntityId, !so.PreserveUntouchedAttributes);
                     }
 
                     if (list is int) list = new List<int> {(int) list};
@@ -213,8 +209,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     if (list is List<int> || list is List<int?>)
                     {
                         var entityIds = list as List<int?> ?? ((List<int>) list).Select(v => (int?) v).ToList();
-                        DbContext.Relationships.AddToQueue(attribDef.AttributeId, entityIds, dbEntity.EntityId,
-                            !so.PreserveUntouchedAttributes);
+                        AddToQueue(attribDef.AttributeId, entityIds, dbEntity.EntityId, !so.PreserveUntouchedAttributes);
                     }
 
                 }
