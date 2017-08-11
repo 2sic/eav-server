@@ -45,7 +45,8 @@ namespace ToSic.Eav.Data
                         decimal? newDec = null;
                         try
                         {
-                            newDec = Convert.ToDecimal(value);
+                            if (!(value is string && string.IsNullOrEmpty(value as string))) // don't try to convert if we just got an empty string
+                                newDec = Convert.ToDecimal(value);
                         }
                         catch
                         {
