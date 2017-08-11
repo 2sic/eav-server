@@ -527,6 +527,7 @@ namespace ToSic.Eav.Apps.ImportExport
 					assignmentObjectTypeId = SystemRuntime.GetMetadataType(Constants.AppAssignmentName);
 					break;
                 case XmlConstants.Entity:
+                case "Data Pipeline": // 2dm: this was an old value, 2017-08-11 this was still used in the old Employees directory app v. 1.02
 					assignmentObjectTypeId = Constants.MetadataForEntity;
 					break;
                 case XmlConstants.ContentType:
