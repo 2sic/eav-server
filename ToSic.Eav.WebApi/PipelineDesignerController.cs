@@ -66,7 +66,7 @@ namespace ToSic.Eav.WebApi
 
 				foreach (var dataSource in dataSources.Select(e => EntityToDictionary(e)))// Helpers.GetEntityValues(dataSources))
 				{
-					dataSource["VisualDesignerData"] = JsonConvert.DeserializeObject((string)dataSource["VisualDesignerData"]);
+					dataSource["VisualDesignerData"] = JsonConvert.DeserializeObject((string)dataSource["VisualDesignerData"] ?? "");
 					
                     // Replace ToSic.Eav with ToSic.Eav.DataSources because they moved to a different DLL
                     // Using a trick to add a special EOL-character to ensure we don't replace somethin in the middle
@@ -165,8 +165,12 @@ namespace ToSic.Eav.WebApi
 				if (dataSource.EntityGuid == "Out") continue;
 
 				// Update existing DataSource
-				var newValues = GetEntityValues(dataSource);
-				if (dataSource.EntityId != null)
+				Dictionary<string, object> newValues = GetEntityValues(dataSource);
+			    const string VisualDesignerData = "VisualDesignerData";
+			    if (newValues.ContainsKey(VisualDesignerData))
+			        newValues[VisualDesignerData] = newValues[VisualDesignerData].ToString(); // serialize this JSON into string
+
+                if (dataSource.EntityId != null)
                     appManager.Entities.UpdateParts((int)dataSource.EntityId, newValues);
 				// Add new DataSource
 				else
@@ -267,7 +271,7 @@ namespace ToSic.Eav.WebApi
 		{
 			var newValuesDict = newValues.ToObject<IDictionary<string, object>>();
 
-			var excludeKeysStatic = new[] { "EntityGuid", "EntityId" };
+            var excludeKeysStatic = new[] { "EntityGuid", "EntityId" };
 
 			return newValuesDict.Where(i => !excludeKeysStatic.Contains(i.Key)).ToDictionary(k => k.Key, v => v.Value);
 		}
