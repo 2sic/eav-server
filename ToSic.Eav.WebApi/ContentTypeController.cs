@@ -51,8 +51,8 @@ namespace ToSic.Eav.WebApi
 	            t.StaticName,
 	            t.Scope,
 	            t.Description,
-	            UsesSharedDef = share.ParentConfigurationId != null,
-	            SharedDefId = share.ParentConfigurationId,
+	            UsesSharedDef = share.ParentId != null,
+	            SharedDefId = share.ParentId,
 	            Items = cache.LightList.Count(i => i.Type == t),
 	            Fields = ((ContentType)t).Attributes.Count,
                 Metadata = ser.Prepare(metadata)
@@ -62,9 +62,9 @@ namespace ToSic.Eav.WebApi
 
 	    public ToSic.Eav.Interfaces.IEntity GetMetadata(ContentType ct, ICache cache = null)
 	    {
-	        var metaCache = (cache != null && ct.ParentConfigurationAppId == cache.AppId)
+	        var metaCache = (cache != null && ct.ParentAppId == cache.AppId)
 	            ? cache
-	            : DataSource.GetCache(ct.ParentConfigurationZoneId, ct.ParentConfigurationAppId);
+	            : DataSource.GetCache(ct.ParentZoneId, ct.ParentAppId);
 
             var metaDataSource = (IMetaDataSource)metaCache;
 	        return metaDataSource.GetAssignedEntities(

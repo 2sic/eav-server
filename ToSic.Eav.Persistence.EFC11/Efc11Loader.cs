@@ -34,22 +34,23 @@ namespace ToSic.Eav.Persistence.Efc
         #region Load Content-Types into IContent-Type Dictionary
         private Dictionary<int, Dictionary<int, IContentType>> _contentTypes = new Dictionary<int, Dictionary<int, IContentType>>();
 
+        public IDictionary<int, IContentType> ContentTypes(int appId) => ContentTypes(appId, null);
+
         /// <summary>
         /// Get all ContentTypes for specified AppId. 
         /// If uses temporary caching, so if called multiple times it loads from a private field.
         /// </summary>
-        public IDictionary<int, IContentType> ContentTypes(int appId)
+        public IDictionary<int, IContentType> ContentTypes(int appId, IDeferredEntitiesList source)
         {
             if (!_contentTypes.ContainsKey(appId))
-                LoadContentTypesIntoLocalCache(appId);
+                LoadContentTypesIntoLocalCache(appId, source);
             return _contentTypes[appId];
         }
 
         /// <summary>
         /// Load DB content-types into loader-cache
         /// </summary>
-        /// <param name="appId"></param>
-        private void LoadContentTypesIntoLocalCache(int appId)
+        private void LoadContentTypesIntoLocalCache(int appId, IDeferredEntitiesList source)
         {
             // Load from DB
             var contentTypes = _dbContext.ToSicEavAttributeSets
@@ -68,7 +69,7 @@ namespace ToSic.Eav.Persistence.Efc
                         set.Scope,
                         set.Description,
                         Attributes = set.ToSicEavAttributesInSets
-                            .Select(a => new AttributeDefinition(appId, a.Attribute.StaticName, a.Attribute.Type, a.IsTitle, a.AttributeId, a.SortOrder)),
+                            .Select(a => new AttributeDefinition(appId, a.Attribute.StaticName, a.Attribute.Type, a.IsTitle, a.AttributeId, a.SortOrder, source)),
                         IsGhost = set.UsesConfigurationOfAttributeSet,
                         SharedDefinitionId = set.UsesConfigurationOfAttributeSet,
                         AppId = set.UsesConfigurationOfAttributeSetNavigation?.AppId ?? set.AppId,
@@ -112,7 +113,7 @@ namespace ToSic.Eav.Persistence.Efc
         {
             var source = new AppDataPackageDeferredList();
 
-            var contentTypes = ContentTypes(appId);
+            var contentTypes = ContentTypes(appId, source);
 
             var relationships = new List<EntityRelationshipItem>();
 
@@ -387,7 +388,6 @@ namespace ToSic.Eav.Persistence.Efc
                 z.ToSicEavApps.ToDictionary(a => a.AppId, a => a.Name),
                 z.ToSicEavDimensions.Where(d => d.ParentNavigation?.Key == Constants.CultureSystemKey)
                     .Cast<DimensionDefinition>().ToList()));
-
 
     }
 }

@@ -6,5 +6,7 @@ namespace ToSic.Eav.Interfaces
     {
         IDictionary<int, IEntity> List { get; }
         IEnumerable<IEntity> LightList { get; }  
+
+        IMetadataProvider Metadata { get; }
     }
 }

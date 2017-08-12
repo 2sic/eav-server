@@ -6,13 +6,13 @@
 	public interface IContentTypeShareable
     {
 
-        int ParentConfigurationZoneId { get; }
-        int ParentConfigurationAppId { get; }
+        int ParentZoneId { get; }
+        int ParentAppId { get; }
 
         /// <summary>
         /// Get the id of the source Content Type if configuration is used from another
         /// </summary>
-        int? ParentConfigurationId { get; }
+        int? ParentId { get; }
 
         bool AlwaysShareConfiguration { get; }
 
