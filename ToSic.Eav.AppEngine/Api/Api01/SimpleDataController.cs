@@ -27,7 +27,7 @@ namespace ToSic.Eav.Api.Api01
 
         private readonly AppManager _appManager;
 
-        private readonly string _defaultLanguageCode;
+        private readonly string _defaultLanguageCode = null;
 
         //private readonly int _zoneId;
 

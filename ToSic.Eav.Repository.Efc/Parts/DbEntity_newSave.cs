@@ -35,7 +35,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             if(usedLanguages.Count > 0)
                 if (!usedLanguages.All(l => _zoneLanguages.Any(zl => zl.Matches(l.Key))))
-                    throw new Exception("found languages in save which are not available in environment");
+                    throw new Exception("found languages in save which are not available in environment - used has " + usedLanguages.Count + " target has " + _zoneLanguages.Count + " used-list: '" + string.Join(",", usedLanguages.Select(l => l.Key).ToArray()) + "'");
             #endregion Test languages exist
 
             #endregion Step 1
