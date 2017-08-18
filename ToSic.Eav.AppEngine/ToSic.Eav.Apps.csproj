@@ -19,6 +19,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="DotNetNuke">
+      <HintPath>..\..\2SexyContent\Web\bin\DotNetNuke.dll</HintPath>
+    </Reference>
     <Reference Include="SharpZipLib">
       <HintPath>..\..\2SexyContent\Web\bin\SharpZipLib.dll</HintPath>
     </Reference>
