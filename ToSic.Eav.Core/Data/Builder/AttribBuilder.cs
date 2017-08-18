@@ -86,6 +86,9 @@ namespace ToSic.Eav.Data.Builder
                 value = valueConverter.Convert(ConversionScenario.ConvertFriendlyToData, valueType, (string)value);
             }
 
+            // sometimes language is passed in as an empty string - this would have side effects, so it must be neutralized
+            if (string.IsNullOrWhiteSpace(language)) language = null;
+
             var valueWithLanguages = Value.Build(valueType, value, language == null
                 ? null : new List<ILanguage> { new Dimension { Key = language, ReadOnly = languageReadOnly } });
 
@@ -94,8 +97,7 @@ namespace ToSic.Eav.Data.Builder
             var attrExists = target.Where(item => item.Key == attributeName).Select(item => item.Value).FirstOrDefault();
             if (attrExists == null)
             {
-                var newAttr = AttributeBase.CreateTypedAttribute(attributeName, valueType);
-                newAttr.Values.Add(valueWithLanguages);
+                var newAttr = AttributeBase.CreateTypedAttribute(attributeName, valueType, new List<IValue> { valueWithLanguages });
                 target.Add(attributeName, newAttr);
             }
             else

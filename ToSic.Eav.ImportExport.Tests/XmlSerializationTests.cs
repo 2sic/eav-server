@@ -4,7 +4,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Xml;
 using ToSic.Eav.Repository.Efc;
-using ToSic.Eav.Repository.Efc.Parts;
 using ToSic.Eav.Repository.Efc.Tests;
 
 namespace ToSic.Eav.ImportExport.Tests
@@ -39,12 +38,11 @@ namespace ToSic.Eav.ImportExport.Tests
 
         [Ignore]
         [TestMethod]
-        public void CompareAllSerializedEntitiesOfApp()
+        public void Xml_CompareAllSerializedEntitiesOfApp()
         {
             var test = new TestValuesOnPc2Dm();
             var appId = test.BlogAppId;
             var dbc = DbDataController.Instance(null, appId);
-            //var xmlbuilder = new DbXmlBuilder(dbc);
             var loader = new Efc11Loader(dbc.SqlDb);
             var app = loader.AppPackage(appId);
             var exBuilder = new XmlSerializer();

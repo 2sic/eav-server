@@ -34,9 +34,9 @@ namespace ToSic.Eav.Data
         public int ContentTypeId { get; }
 
         #region Sharing Content Types
-        public int? ParentConfigurationId { get; }
-        public int ParentConfigurationAppId { get; }
-        public int ParentConfigurationZoneId { get; }
+        public int? ParentId { get; }
+        public int ParentAppId { get; }
+        public int ParentZoneId { get; }
 
         public bool AlwaysShareConfiguration { get; protected set; }
         #endregion
@@ -50,7 +50,7 @@ namespace ToSic.Eav.Data
 
         #endregion
 
-        public Metadata Metadata = new Metadata();
+        //public Metadata Metadata = new Metadata();
 
         #region constructors
         /// <summary>
@@ -64,9 +64,9 @@ namespace ToSic.Eav.Data
             ContentTypeId = attributeSetId;
             Description = description;
             Scope = scope;
-            ParentConfigurationId = usesConfigurationOfAttributeSet;
-            ParentConfigurationZoneId = configZoneId;
-            ParentConfigurationAppId = configAppId;
+            ParentId = usesConfigurationOfAttributeSet;
+            ParentZoneId = configZoneId;
+            ParentAppId = configAppId;
             AlwaysShareConfiguration = configurationIsOmnipresent;
         }
 

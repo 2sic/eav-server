@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ToSic.Eav.Data;
+﻿using System.Collections.Generic;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.App
@@ -16,5 +11,7 @@ namespace ToSic.Eav.App
         public IDictionary<int, IEntity> List => _app.Entities;
 
         public IEnumerable<IEntity> LightList => _app.List;
+
+        public IMetadataProvider Metadata => _app;
     }
 }

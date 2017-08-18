@@ -5,7 +5,7 @@
 	/// - attribute definition (in the IContentType)
 	/// - attribute with values-list (in the IEntity)
 	/// </summary>
-	public interface IAttributeDefinition: IAttributeBase
+	public interface IAttributeDefinition: IAttributeBase, IHasMetadata
 	{
         int AppId { get; }
 
@@ -15,6 +15,5 @@
         int SortOrder { get; }
 
         bool IsTitle { get; }
-
-    }
+	}
 }

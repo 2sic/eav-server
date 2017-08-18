@@ -265,7 +265,7 @@ namespace ToSic.Eav.Repository.Efc
         public List<int> Save(List<IEntity> entities, SaveOptions saveOptions) => Entities.SaveEntity(entities, saveOptions);
 
         public int Save(IEntity entity, SaveOptions saveOptions) => Entities.SaveEntity(entity, saveOptions);
-        public void Save(List<IContentType> contentTypes, SaveOptions saveOptions) => ContentType.ExtendSaveContentTypes(contentTypes, SaveOptions.Build(ZoneId));
+        public void Save(List<IContentType> contentTypes, SaveOptions saveOptions) => ContentType.ExtendSaveContentTypes(contentTypes, saveOptions /* SaveOptions.Build(ZoneId)*/);
 
         #endregion
     }

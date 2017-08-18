@@ -26,6 +26,7 @@ namespace ToSic.Eav.Apps.Parts
         public bool Publish(int repositoryId, bool state)
         {
             _appManager.DataController.Publishing.PublishDraftInDbEntity(repositoryId);//, state);
+            SystemManager.Purge(_appManager.AppId);
             return state;
         }
 
@@ -35,22 +36,34 @@ namespace ToSic.Eav.Apps.Parts
         /// delete an entity
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="contentType">optional content-type name to check before deleting</param>
         /// <param name="force"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public bool Delete(int id, bool force = false)
+        public bool Delete(int id, string contentType = null, bool force = false)
         {
+            #region do optional type-check and if necessary, throw error
+            var found = _appManager.Read.Entities.Get(id);
+            if (found.Type.Name != contentType && found.Type.StaticName != contentType)
+                throw new KeyNotFoundException("Can't find " + id + "of type '" + contentType + "', will not delete.");
+            #endregion
+
+            #region check if we can delete, or throw exception
             var canDelete = _appManager.DataController.Entities.CanDeleteEntity(id);
             if (!canDelete.Item1 && !force)
-                throw new Exception(canDelete.Item2);
-            return _appManager.DataController.Entities.DeleteEntity(id);
+                throw new InvalidOperationException($"Item {id} cannot be deleted. It is used by other items: {canDelete.Item2}");
+            #endregion
+
+            var ok = _appManager.DataController.Entities.DeleteEntity(id, true, true);
+            SystemManager.Purge(_appManager.AppId);
+            return ok;
         }
 
-        public bool Delete(Guid guid) => _appManager.DataController.Entities.DeleteEntity(guid);
+        public bool Delete(Guid guid) => _appManager.DataController.Entities.DeleteEntity(_appManager.DataController.Entities.GetMostCurrentDbEntity(guid).EntityId);
 
-        public bool DeletePossible(int entityId) => _appManager.DataController.Entities.CanDeleteEntity(entityId).Item1;
+        //public bool DeletePossible(int entityId) => _appManager.DataController.Entities.CanDeleteEntity(entityId).Item1;
 
-        public string DeleteHinderance(int entityId) => _appManager.DataController.Entities.CanDeleteEntity(entityId).Item2;
+        //public string DeleteHinderance(int entityId) => _appManager.DataController.Entities.CanDeleteEntity(entityId).Item2;
         #endregion
 
         public int Save(IEntity entity, SaveOptions saveOptions = null) => Save(new List<IEntity> {entity}, saveOptions).FirstOrDefault();

@@ -25,9 +25,11 @@ namespace ToSic.Eav.Api.Api01
     {
         private readonly DbDataController _context;
 
-        private readonly string _defaultLanguageCode;
+        private readonly AppManager _appManager;
 
-        private readonly int _zoneId;
+        private readonly string _defaultLanguageCode = null;
+
+        //private readonly int _zoneId;
 
         private readonly int _appId;
 
@@ -40,10 +42,11 @@ namespace ToSic.Eav.Api.Api01
         /// <param name="defaultLanguageCode">Default language of system</param>
         public SimpleDataController(int zoneId, int appId, string defaultLanguageCode)
         {
-            _zoneId = zoneId;
+            //_zoneId = zoneId;
             _appId = appId;
             _defaultLanguageCode = defaultLanguageCode;
             _context = DbDataController.Instance(zoneId, appId);
+            _appManager = new AppManager(zoneId, appId);
         }
 
 
@@ -145,11 +148,12 @@ namespace ToSic.Eav.Api.Api01
         /// <exception cref="InvalidOperationException">Entity cannot be deleted for example when it is referenced by another object</exception>
         public void Delete(int entityId)
         {
-            // todo: refactor to use the eav-api delete
-            if (!_context.Entities.CanDeleteEntity(entityId).Item1)
-                throw new InvalidOperationException("The entity " + entityId +
-                                                    " cannot be deleted because of it is referenced by another object.");
-            _context.Entities.DeleteEntity(entityId);
+            //// todo: refactor to use the eav-api delete
+            //if (!_context.Entities.CanDeleteEntity(entityId).Item1)
+            //    throw new InvalidOperationException("The entity " + entityId +
+            //                                        " cannot be deleted because of it is referenced by another object.");
+            //_context.Entities.DeleteEntity(entityId);
+            _appManager.Entities.Delete(entityId);
         }
 
 

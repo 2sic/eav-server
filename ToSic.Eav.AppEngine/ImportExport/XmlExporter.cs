@@ -174,9 +174,9 @@ namespace ToSic.Eav.Apps.ImportExport
                     attributes);
 
                 // Add Ghost-Info if content type inherits from another content type
-                if (set.ParentConfigurationId.HasValue)
+                if (set.ParentId.HasValue)
                 {
-                    var parentStaticName = AppPackage.ContentTypes[set.ParentConfigurationId.Value].StaticName;
+                    var parentStaticName = AppPackage.ContentTypes[set.ParentId.Value].StaticName;
                     attributeSet.Add(new XAttribute(XmlConstants.AttributeSetParentDef, parentStaticName));
                 }
 

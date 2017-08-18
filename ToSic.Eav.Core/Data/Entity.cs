@@ -114,10 +114,11 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Create a new Entity from a data store (usually SQL backend)
         /// </summary>
-        public Entity(int appId, Guid entityGuid, int entityId, int repositoryId, IMetadata isMetadata, IContentType type, bool isPublished, IEnumerable<EntityRelationshipItem> allRelationships, DateTime modified, string owner)
+        public Entity(int appId, Guid entityGuid, int entityId, int repositoryId, IMetadata isMetadata, IContentType type, bool isPublished, IEnumerable<EntityRelationshipItem> allRelationships, DateTime modified, string owner, int version)
         {
             AppId = appId;
             EntityId = entityId;
+            Version = version;
             EntityGuid = entityGuid;
             Metadata = isMetadata;
             Attributes = new Dictionary<string, IAttribute>(StringComparer.OrdinalIgnoreCase);
@@ -235,5 +236,7 @@ namespace ToSic.Eav.Data
 
             return bestTitle?.ToString();
         }
+
+        public int Version { get; }
     }
 }

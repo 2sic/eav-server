@@ -31,8 +31,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 throw new Exception("Content type " + contentTypeStaticName + " not found.");
 
             // Resolve ZoneId & AppId of the MetaData. If this AttributeSet uses configuration of another AttributeSet, use MetaData-ZoneId & -AppId
-            var metaDataAppId = result.ParentConfigurationAppId;
-            var metaDataZoneId = result.ParentConfigurationZoneId;
+            var metaDataAppId = result.ParentAppId;
+            var metaDataZoneId = result.ParentZoneId;
 
             var metaDataSource = DataSource.GetMetaDataSource(metaDataZoneId, metaDataAppId);
 

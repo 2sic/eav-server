@@ -42,18 +42,30 @@ namespace ToSic.Eav.Data
                                                      : new DateTime?()));
                         break;
                     case AttributeTypeEnum.Number:
-                        var typedDecimalNullable = value as decimal?;
-                        if (typedDecimalNullable == null)
+                        decimal? newDec = null;
+                        try
                         {
-                            decimal typedDecimal;
-                            var isDecimal = decimal.TryParse(stringValue, NumberStyles.Any, CultureInfo.InvariantCulture,
-                                out typedDecimal);
-                            if (isDecimal)
-                                typedDecimalNullable = typedDecimal;
+                            if (!(value is string && string.IsNullOrEmpty(value as string))) // don't try to convert if we just got an empty string
+                                newDec = Convert.ToDecimal(value);
                         }
-                        typedModel = new Value<decimal?>(typedDecimalNullable);
-
+                        catch
+                        {
+                            // ignore
+                        }
+                        typedModel = new Value<decimal?>(newDec);
                         break;
+                        //var typedDecimalNullable = value as decimal?;
+                        //if (typedDecimalNullable == null)
+                        //{
+                        //    decimal typedDecimal;
+                        //    var isDecimal = decimal.TryParse(stringValue, NumberStyles.Any, CultureInfo.InvariantCulture,
+                        //        out typedDecimal);
+                        //    if (isDecimal)
+                        //        typedDecimalNullable = typedDecimal;
+                        //}
+                        //typedModel = new Value<decimal?>(typedDecimalNullable);
+
+                        //break;
                     case AttributeTypeEnum.Entity:
                         var entityIds = value as IEnumerable<int?> ?? (value as IEnumerable<int>)?.Select(x => (int?)x).ToList();
                         if (entityIds != null)

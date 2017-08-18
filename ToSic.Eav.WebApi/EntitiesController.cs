@@ -150,6 +150,7 @@ namespace ToSic.Eav.WebApi
                     if (!itm.ContentTypeName.StartsWith("@"))
                         throw new Exception("Can't find content type " + itm.ContentTypeName);
                     items.Remove(itm);
+                    continue;
                 }
                 if (ct.StaticName != itm.ContentTypeName) // not using the static name...fix
                     itm.ContentTypeName = ct.StaticName;
@@ -296,16 +297,16 @@ namespace ToSic.Eav.WebApi
         {
             SetAppIdAndUser(appId);
 
-            var found = AppManager.Read.Entities.Get(id);
-            if (found.Type.Name != contentType && found.Type.StaticName != contentType)
-                throw new KeyNotFoundException("Can't find " + id + "of type '" + contentType + "'");
+            //var found = AppManager.Read.Entities.Get(id);
+            //if (found.Type.Name != contentType && found.Type.StaticName != contentType)
+            //    throw new KeyNotFoundException("Can't find " + id + "of type '" + contentType + "'");
 
             // check if it has related items or another reason to prevent deleting
-            var deleteControl = AppManager.Entities.DeletePossible(id);
-            if (deleteControl || force)
-                AppManager.Entities.Delete(id, force);
-            else
-                throw new InvalidOperationException($"Item {id} cannot be deleted. It is used by other items: {AppManager.Entities.DeleteHinderance(id)}");
+            //var deleteControl = AppManager.Entities.DeletePossible(id);
+            //if (deleteControl || force)
+                AppManager.Entities.Delete(id, contentType, force);
+            //else
+            //    throw new InvalidOperationException($"Item {id} cannot be deleted. It is used by other items: {AppManager.Entities.DeleteHinderance(id)}");
         }
 
         /// <summary>

@@ -109,7 +109,9 @@ namespace ToSic.Eav.Apps.ImportExport
         private void MergeAndSaveContentTypes(List<ContentType> contentTypes)
         {
             contentTypes.ForEach(MergeContentTypeUpdateWithExisting);
-            Storage.Save(contentTypes.Cast<IContentType>().ToList(), SaveOptions.Build(ZoneId));
+            var so = SaveOptions.Build(ZoneId);
+            so.DiscardAttributesMissingInSchema = true;
+            Storage.Save(contentTypes.Cast<IContentType>().ToList(), so);
         }
 
         //private void ExtendSaveContentTypes(IEnumerable<ContentType> contentTypes)
@@ -188,8 +190,8 @@ namespace ToSic.Eav.Apps.ImportExport
                 var existAttrib = existing.Attributes.FirstOrDefault(a => a.Name == newAttrib.Name);
                 if (existAttrib == null) continue;
 
-                var impMeta = ((AttributeDefinition) newAttrib).InternalAttributeMetaData;
-                var newMetaList = new List<Entity>();
+                var impMeta = ((AttributeDefinition) newAttrib).Items;
+                var newMetaList = new List<IEntity>();
                 foreach (var newMd in impMeta)
                 {
                     var existingMetadata = _entireApp.GetMetadata(Constants.MetadataForAttribute, existAttrib.AttributeId, newMd.Type.StaticName).FirstOrDefault();
@@ -198,7 +200,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     else
                         newMetaList.Add(EntitySaver.CreateMergedForSaving(existingMetadata, newMd, SaveOptions) as Entity);
                 }
-                ((AttributeDefinition) newAttrib).InternalAttributeMetaData = newMetaList;
+                ((AttributeDefinition) newAttrib).AddItems(newMetaList);
             }
         }
 
