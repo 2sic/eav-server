@@ -141,7 +141,7 @@ namespace ToSic.Eav.WebApi
             SetAppIdAndUser(appId);
 
             // clean up content-type names in case it's using the nice-name instead of the static name...
-            //var cache = DataSource.GetCache(null, appId);
+            // var cache = DataSource.GetCache(null, appId);
             foreach (var itm in items.Where(i => !string.IsNullOrEmpty(i.ContentTypeName)).ToArray())
             {
                 var ct = AppManager.Read.ContentTypes.Get(itm.ContentTypeName);// cache.GetContentType(itm.ContentTypeName);
