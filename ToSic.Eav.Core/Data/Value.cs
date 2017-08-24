@@ -46,7 +46,9 @@ namespace ToSic.Eav.Data
                         try
                         {
                             if (!(value is string && string.IsNullOrEmpty(value as string))) // don't try to convert if we just got an empty string
-                                newDec = Convert.ToDecimal(value);
+                                if (decimal.TryParse(stringValue, NumberStyles.Any, CultureInfo.InvariantCulture,
+                                    out decimal typedDecimal))
+                                    newDec = typedDecimal;
                         }
                         catch
                         {
