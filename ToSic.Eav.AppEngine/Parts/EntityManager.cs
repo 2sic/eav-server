@@ -78,7 +78,7 @@ namespace ToSic.Eav.Apps.Parts
 
         //public string DeleteHinderance(int entityId) => _appManager.DataController.Entities.CanDeleteEntity(entityId).Item2;
         #endregion
-
+        
         public int Save(IEntity entity, SaveOptions saveOptions = null) => Save(new List<IEntity> {entity}, saveOptions).FirstOrDefault();
 
         public List<int> Save(List<IEntity> entities, SaveOptions saveOptions = null)
@@ -94,7 +94,6 @@ namespace ToSic.Eav.Apps.Parts
             SystemManager.Purge(_appManager.AppId);
             return ids;
         }
-
 
         public Tuple<int, Guid> Create(string typeName, Dictionary<string, object> values, IIsMetadata isMetadata = null)
         {
