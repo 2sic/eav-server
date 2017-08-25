@@ -9,6 +9,8 @@ using ToSic.Eav.WebApi.Formats;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Versions;
+using ToSic.Eav.Apps.Environment;
+using ToSic.Eav.Apps.Enums;
 
 namespace ToSic.Eav.WebApi
 {
@@ -175,12 +177,9 @@ namespace ToSic.Eav.WebApi
             return list;
         }
 
-
         #endregion
-
-
         [HttpPost]
-        public Dictionary<Guid, int> SaveMany([FromUri] int appId, [FromBody] List<EntityWithHeader> items)
+        public Dictionary<Guid, int> SaveMany([FromUri] int appId, [FromBody] List<EntityWithHeader> items, [FromUri] bool partOfPage = false)
         {
             SetAppIdAndUser(appId);
 

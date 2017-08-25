@@ -19,8 +19,6 @@ namespace ToSic.Eav
 	/// </summary>
 	public class DependencyInjection
 	{
-
-
         #region try to configure the ef-core container
 
 	    /// <summary>
@@ -41,8 +39,9 @@ namespace ToSic.Eav
 	        serviceCollection.TryAddTransient<IThingSerializer, XmlSerializer>();
 
             // NOTE for 2dm: Switch between DNN7 or DNN9 version of IEnvironmentVersioning
-            serviceCollection.TryAddTransient<IEnvironmentVersioning, ToSic.Sxc.Environment.Dnn9.Environment.Versioning>();
+            // serviceCollection.TryAddTransient<IEnvironmentVersioning, ToSic.SexyContent.Environment.Dnn9.Environment.Versioning>();
             // serviceCollection.TryAddTransient<IEnvironmentVersioning, Apps.Environment.Versioning>();
+            // serviceCollection.TryAddTransient<IEnvironmentVersioning, ToSic.Eav.Apps.Environment.Versioning>();
 
             var conStr = new Configuration().DbConnectionString;
             if (!conStr.ToLower().Contains("multipleactiveresultsets")) // this is needed to allow querying data while preparing new data on the same DbContext

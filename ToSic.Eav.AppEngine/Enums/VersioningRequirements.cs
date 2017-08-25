@@ -2,9 +2,7 @@
 {
     public enum VersioningRequirements
     {
-        Disabled,
         DraftOptional,
-        DraftRecommended,
         DraftRequired
     }
 }

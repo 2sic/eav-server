@@ -20,14 +20,27 @@ namespace ToSic.Eav.Apps.Parts
         /// <summary>
         /// Publish an entity 
         /// </summary>
+        /// <param name="entityId"></param>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        public bool Publish(int entityId, bool state)
+        {
+            _appManager.DataController.Publishing.PublishDraftInDbEntity(entityId); //, state);
+            SystemManager.Purge(_appManager.AppId);
+            return state;
+        }
+
+        /// <summary>
+        /// Publish an entity 
+        /// </summary>
         /// <param name="repositoryId"></param>
         /// <param name="state"></param>
         /// <returns></returns>
-        public bool Publish(int repositoryId, bool state)
+        public void Publish(int[] entityIds)
         {
-            _appManager.DataController.Publishing.PublishDraftInDbEntity(repositoryId);//, state);
+            foreach (var eid in entityIds)
+                _appManager.DataController.Publishing.PublishDraftInDbEntity(eid);
             SystemManager.Purge(_appManager.AppId);
-            return state;
         }
 
         #region Delete
