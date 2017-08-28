@@ -168,7 +168,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                         dbEnt.ToSicEavValues.Add(new ToSicEavValues
                         {
                             AttributeId = attribDef.AttributeId,
-                            Value = value.SerializableObject?.ToString() ?? "",
+                            Value = value.Serialized ?? "",//.SerializableObject?.ToString() ?? "",
                             ChangeLogCreated = changeId, // todo: remove some time later
                             ToSicEavValuesDimensions = value.Languages?.Select(l => new ToSicEavValuesDimensions
                             {

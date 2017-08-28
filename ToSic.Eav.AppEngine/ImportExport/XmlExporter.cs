@@ -150,7 +150,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 var attributes = new XElement(XmlConstants.Attributes);
 
                 // Add all Attributes to AttributeSet including meta informations
-                foreach (var x in set.Attributes)
+                foreach (var x in set.Attributes.OrderBy(a => a.SortOrder))
                 {
                     var attribute = new XElement(XmlConstants.Attribute,
                         new XAttribute(XmlConstants.Static, x.Name),

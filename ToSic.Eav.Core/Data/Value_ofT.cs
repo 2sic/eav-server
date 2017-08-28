@@ -77,7 +77,11 @@ namespace ToSic.Eav.Data
                 var list = obj as List<Guid?>;
                 if (list != null)
                     return string.Join(",", list.Select(y => y?.ToString() ?? Constants.EmptyRelationship));
-                return (obj as DateTime?)?.ToString("yyyy-MM-ddTHH:mm:ss") ?? (obj as bool?)?.ToString() ?? obj?.ToString();
+
+                return (obj as DateTime?)?.ToString("yyyy-MM-ddTHH:mm:ss") 
+                    ?? (obj as bool?)?.ToString() 
+                    ?? (obj as decimal?)?.ToString(System.Globalization.CultureInfo.InvariantCulture)
+                    ?? obj?.ToString();
             }
         }
 
