@@ -1,21 +1,19 @@
-﻿using DotNetNuke.Entities.Modules;
-using System;
+﻿using System;
 using ToSic.Eav.Apps.Enums;
 using ToSic.Eav.Apps.Environment;
-using ToSic.Eav.Apps.Parts;
 
 namespace ToSic.Eav.Apps.Interfaces
 {
-    public interface IEnvironmentVersioning
+    public interface IPagePublishing
     {
         bool Supported { get; }
 
         /// <summary>
-        /// Get the current versioning requirements.
+        /// Get the current versioning requirements. - to determine if it's required, optional etc.
         /// </summary>
         /// <param name="moduleId"></param>
         /// <returns></returns>
-        VersioningRequirements Requirements(int moduleId);
+        PublishingMode Requirements(int moduleId);
 
         /// <summary>
         /// Wraps an action and performs pre/post processing related to versioning of the environment.
@@ -23,7 +21,7 @@ namespace ToSic.Eav.Apps.Interfaces
         /// <param name="moduleId"></param>
         /// <param name="userId"></param>
         /// <param name="action"></param>
-        void DoInsideVersioning(int moduleId, int userId, Action<VersioningActionInfo> action);
+        void DoInsidePublishing(int moduleId, int userId, Action<VersioningActionInfo> action);
 
         /// <summary>
         /// Wraps an action inside publish of latest version.

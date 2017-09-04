@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.Apps.Enums
 {
-    public enum VersioningRequirements
+    public enum PublishingMode
     {
         DraftOptional,
         DraftRequired
