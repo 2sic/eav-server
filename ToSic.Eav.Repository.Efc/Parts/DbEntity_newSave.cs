@@ -185,9 +185,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                 #region Step 5: Save / update all relationships
 
-                DbContext.Relationships.DoWhileQueueingRelationships(() => {
+                // 2017-09-06 2dm - disable queue here, as it's already queued inside...
+                //DbContext.Relationships.DoWhileQueueingRelationships(() => {
                     DbContext.Relationships.SaveRelationships(newEnt, dbEnt, attributeDefs, so);
-                });
+                //});
 
                 #endregion
 

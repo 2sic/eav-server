@@ -12,7 +12,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Copy all Values (including Related Entities) from teh Source Entity to the target entity
         /// </summary>
-        internal void CloneEntityValues(ToSicEavEntities source, ToSicEavEntities target)
+        internal void CloneEntitySimpleValues(ToSicEavEntities source, ToSicEavEntities target)
         {
             // Clear values on target (including Dimensions). Must be done in separate steps, would cause unallowed null-Foreign-Keys
             if (target.ToSicEavValues.Any(v => v.ChangeLogDeleted == null))
@@ -40,21 +40,35 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 target.ToSicEavValues.Add(value);
             }
 
-            #region copy relationships
-            // note the related Entities are managed in the EntityParentRelationships. not sure why though
-            target.RelationshipsWithThisAsParent.Clear();
-
-            // Add all Related Entities
-            foreach (var entityParentRelationship in source.RelationshipsWithThisAsParent)
-                target.RelationshipsWithThisAsParent.Add(new ToSicEavEntityRelationships
-                {
-                    AttributeId = entityParentRelationship.AttributeId,
-                    ChildEntityId = entityParentRelationship.ChildEntityId,
-                    SortOrder = entityParentRelationship.SortOrder
-                });
-            #endregion
+            //#region copy relationships
+            //CloneRelationshipsAndSave(source, target);
+            //#endregion
         }
-        
 
+        internal void CloneRelationshipsAndSave(ToSicEavEntities source, ToSicEavEntities target)
+        {
+            DbContext.DoInTransaction(() =>
+            {
+
+                // note the related Entities are managed in the EntityParentRelationships. not sure why though
+                // Delete all existing relationships - but not the target, just the relationship
+                // note: can't use .Clear(), as that will try to actually delete the children
+                //target.RelationshipsWithThisAsParent.Clear();
+                foreach (var relationToDelete in target.RelationshipsWithThisAsParent)
+                    DbContext.SqlDb.ToSicEavEntityRelationships.Remove(relationToDelete);
+                // intermediate save (important) so that EF state tracking works
+                DbContext.SqlDb.SaveChanges();
+
+                // Add all Related Entities
+                foreach (var entityParentRelationship in source.RelationshipsWithThisAsParent)
+                    target.RelationshipsWithThisAsParent.Add(new ToSicEavEntityRelationships
+                    {
+                        AttributeId = entityParentRelationship.AttributeId,
+                        ChildEntityId = entityParentRelationship.ChildEntityId,
+                        SortOrder = entityParentRelationship.SortOrder
+                    });
+                DbContext.SqlDb.SaveChanges();
+            });
+        }
     }
 }

@@ -22,14 +22,14 @@ namespace ToSic.Eav.Repository.Efc.Parts
             var sourcePipelineEntity = DbContext.Entities.GetDbEntity(pipelineEntityId, importantIncludes + ",ToSicEavValues.Attribute");
             if (sourcePipelineEntity.AttributeSet.StaticName != Constants.DataPipelineStaticName) //PipelineAttributeSetStaticName)
                 throw new ArgumentException("Entity is not an DataPipeline Entity", nameof(pipelineEntityId));
-            var pipelineEntityClone = CloneEntity(sourcePipelineEntity);
+            var pipelineEntityClone = CloneEntityForPipelineSimpleValuesOnly(sourcePipelineEntity);
             
             // Copy Pipeline Parts with configuration Entity, assign KeyGuid of the new Pipeline Entity
             var pipelineParts = DbContext.Entities.GetEntityMetadataByGuid(appId, sourcePipelineEntity.EntityGuid, includes: importantIncludes);
             var pipelinePartClones = new Dictionary<string, Guid>();	// track Guids of originals and their clone
             foreach (var pipelinePart in pipelineParts)
             {
-                var pipelinePartClone = CloneEntity(pipelinePart);
+                var pipelinePartClone = CloneEntityForPipelineSimpleValuesOnly(pipelinePart);
                 pipelinePartClone.KeyGuid = pipelineEntityClone.EntityGuid;
                 pipelinePartClones.Add(pipelinePart.EntityGuid.ToString(), pipelinePartClone.EntityGuid);
 
@@ -37,7 +37,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 var configurationEntity = DbContext.Entities.GetEntityMetadataByGuid(appId, pipelinePart.EntityGuid, includes: importantIncludes).SingleOrDefault();
                 if (configurationEntity != null)
                 {
-                    var configurationClone = CloneEntity(configurationEntity);
+                    var configurationClone = CloneEntityForPipelineSimpleValuesOnly(configurationEntity);
                     configurationClone.KeyGuid = pipelinePartClone.EntityGuid;
                 }
             }
@@ -75,11 +75,15 @@ namespace ToSic.Eav.Repository.Efc.Parts
         #region Clone
         /// <summary>
         /// Clone an Entity with all Values
+        /// This is only used for the pipeline
+        /// and DOES NOT clone relationships
+        /// note that we should refactor this soon, as soon as json-serialization etc. works
+        /// with that, we should then clone using serialize/deserialize, and not a DB-level clone
         /// </summary>
-        internal ToSicEavEntities CloneEntity(ToSicEavEntities sourceEntity)
+        internal ToSicEavEntities CloneEntityForPipelineSimpleValuesOnly(ToSicEavEntities sourceEntity)
         {
             var versioningId = DbContext.Versioning.GetChangeLogId();
-            var clone = new ToSicEavEntities()
+            var clone = new ToSicEavEntities
             {
                 EntityGuid = Guid.NewGuid(),
                 AttributeSet = sourceEntity.AttributeSet,
@@ -94,7 +98,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             DbContext.SqlDb.Add(clone);
 
-            DbContext.Values.CloneEntityValues(sourceEntity, clone);
+            DbContext.Values.CloneEntitySimpleValues(sourceEntity, clone);
 
             return clone;
         }

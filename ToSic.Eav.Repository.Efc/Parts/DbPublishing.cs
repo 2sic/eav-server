@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Linq;
-using ToSic.Eav.Data;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
@@ -38,7 +36,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
             else
             {
                 publishedEntity = DbContext.Entities.GetDbEntity(unpublishedEntity.PublishedEntityId.Value);
-                DbContext.Values.CloneEntityValues(unpublishedEntity, publishedEntity);
+                DbContext.Values.CloneRelationshipsAndSave(unpublishedEntity, publishedEntity); // relationships need special treatment and intermediate save!
+                DbContext.Values.CloneEntitySimpleValues(unpublishedEntity, publishedEntity);
 
                 // delete the Draft Entity
                 DbContext.Entities.DeleteEntity(unpublishedEntity.EntityId, false);
@@ -48,39 +47,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             return publishedEntity;
         }
-
-        ///// <summary>
-        ///// Should clean up branches of this item, and set the one and only as published
-        ///// </summary>
-        ///// <param name="unpublishedEntityId"></param>
-        ///// <param name="newPublishedState"></param>
-        ///// <returns></returns>
-        //public ToSicEavEntities OLDClearDraftBranchAndSetPublishedState(int unpublishedEntityId, bool newPublishedState = true)
-        //{
-        //    var unpublishedEntity = DbContext.Entities.GetDbEntity(unpublishedEntityId);
-
-        //    ToSicEavEntities publishedEntity;
-
-        //    // Publish Draft-Entity
-        //    if (!unpublishedEntity.PublishedEntityId.HasValue)
-        //    {
-        //        unpublishedEntity.IsPublished = newPublishedState;
-        //        publishedEntity = unpublishedEntity;
-        //    }
-        //    // Replace currently published Entity with draft Entity and delete the draft
-        //    else
-        //    {
-        //        publishedEntity = DbContext.Entities.GetDbEntity(unpublishedEntity.PublishedEntityId.Value);
-        //        publishedEntity.IsPublished = newPublishedState;
-
-        //        // delete the Draft Entity
-        //        DbContext.Entities.DeleteEntity(unpublishedEntity, false);
-        //    }
-
-        //    return publishedEntity;
-        //}
-
-
+        
         /// <summary>
         /// Should clean up branches of this item, and set the one and only as published
         /// </summary>
