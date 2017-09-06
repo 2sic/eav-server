@@ -23,19 +23,19 @@ namespace ToSic.Eav.Apps.Interfaces
         /// <param name="action"></param>
         void DoInsidePublishing(int moduleId, int userId, Action<VersioningActionInfo> action);
 
-        /// <summary>
-        /// Wraps an action inside publish of latest version.
-        /// NOTE: Should be called by the business-controller of the module. The controller must implement the IVersionable.
-        /// </summary>
-        /// <param name="moduleId"></param>
-        void DoInsidePublishLatestVersion(int moduleId, Action<VersioningActionInfo> action);
+        ///// <summary>
+        ///// Wraps an action inside publish of latest version.
+        ///// NOTE: Should be called by the business-controller of the module. The controller must implement the IVersionable.
+        ///// </summary>
+        ///// <param name="moduleId"></param>
+        //void DoInsidePublishLatestVersion(int moduleId, Action<VersioningActionInfo> action);
 
-        /// <summary>
-        /// Wraps an action inside delete/discard of latest version.
-        /// NOTE: Should be called by the business-controller of the module. The controller must implement the IVersionable.
-        /// </summary>
-        /// <param name="moduleId"></param>
-        void DoInsideDeleteLatestVersion(int moduleId, Action<VersioningActionInfo> action);
+        ///// <summary>
+        ///// Wraps an action inside delete/discard of latest version.
+        ///// NOTE: Should be called by the business-controller of the module. The controller must implement the IVersionable.
+        ///// </summary>
+        ///// <param name="moduleId"></param>
+        //void DoInsideDeleteLatestVersion(int moduleId, Action<VersioningActionInfo> action);
 
         int GetLatestVersion(int moduleId);
 
