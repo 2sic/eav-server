@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
+using Newtonsoft.Json;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Enums;
 using ToSic.Eav.WebApi.Formats;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Versions;
-using ToSic.Eav.Apps.Environment;
-using ToSic.Eav.Apps.Enums;
 
 namespace ToSic.Eav.WebApi
 {
@@ -228,8 +227,18 @@ namespace ToSic.Eav.WebApi
 
                 foreach (var value in attribute.Value.Values)
                 {
-                    var stringValue = value.Value;// ImpEntity.ImpConvertValueObjectToString(value.Value);
-                    var importValue = attribs.AddValue(attribute.Key, stringValue, attributeType);
+                    var objValue = value.Value;// ImpEntity.ImpConvertValueObjectToString(value.Value);
+
+                    // special situation: if it's an array of Guids, mixed with NULLs, then it's not correctly auto-de-serialized
+                    if (attributeType == AttributeTypeEnum.Entity.ToString() && objValue is Newtonsoft.Json.Linq.JArray)
+                    {
+                        // manually de-serialize
+                        var guidArray = JsonConvert.DeserializeObject<Guid?[]>(objValue.ToString());
+                        objValue = guidArray;
+                    }
+
+
+                    var importValue = attribs.AddValue(attribute.Key, objValue, attributeType);
 
                     // append languages OR empty language as fallback
                     if (value.Dimensions == null)
