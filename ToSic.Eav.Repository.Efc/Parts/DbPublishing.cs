@@ -4,7 +4,7 @@ using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
-    internal class DbPublishing: BllCommandBase
+    internal class DbPublishing : BllCommandBase
     {
         public DbPublishing(DbDataController c) : base(c) { }
 
@@ -21,7 +21,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 // try to get the draft if it exists
                 var draftId = GetDraftBranchEntityId(entityId);
                 if (!draftId.HasValue)
-                    throw new InvalidOperationException($"EntityId {entityId} is already published");
+                    throw new EntityAlreadyPublishedException($"EntityId {entityId} is already published");
                 unpublishedEntity = DbContext.Entities.GetDbEntity(draftId.Value);
             }
             ToSicEavEntities publishedEntity;
@@ -47,7 +47,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             return publishedEntity;
         }
-        
+
         /// <summary>
         /// Should clean up branches of this item, and set the one and only as published
         /// </summary>
@@ -77,7 +77,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
         internal int? GetDraftBranchEntityId(int entityId)
             => DbContext.SqlDb.ToSicEavEntities
                 .Where(e => e.PublishedEntityId == entityId && !e.ChangeLogDeleted.HasValue)
-                .Select(e => (int?) e.EntityId)
+                .Select(e => (int?)e.EntityId)
                 .SingleOrDefault();
+    }
+    
+
+    internal class EntityAlreadyPublishedException : Exception {
+        public EntityAlreadyPublishedException(string message): base(message)
+        {}
     }
 }

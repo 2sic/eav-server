@@ -39,7 +39,13 @@ namespace ToSic.Eav.Apps.Parts
         public void Publish(int[] entityIds)
         {
             foreach (var eid in entityIds)
-                _appManager.DataController.Publishing.PublishDraftInDbEntity(eid);
+            {
+                try
+                {
+                    _appManager.DataController.Publishing.PublishDraftInDbEntity(eid);
+                }
+                catch (Repository.Efc.Parts.EntityAlreadyPublishedException) { }
+            }
             SystemManager.Purge(_appManager.AppId);
         }
 
