@@ -63,7 +63,7 @@ namespace ToSic.Eav.Apps.Parts
         {
             #region do optional type-check and if necessary, throw error
             var found = _appManager.Read.Entities.Get(id);
-            if (found.Type.Name != contentType && found.Type.StaticName != contentType)
+            if (contentType != null && found.Type.Name != contentType && found.Type.StaticName != contentType)
                 throw new KeyNotFoundException("Can't find " + id + "of type '" + contentType + "', will not delete.");
             #endregion
 
