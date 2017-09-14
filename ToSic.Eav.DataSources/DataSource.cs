@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-//using Microsoft.Practices.Unity;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.ValueProvider;
@@ -95,21 +94,23 @@ namespace ToSic.Eav
 		}
 
 		private static readonly string[] InitialDataSourcePipeline = { "ToSic.Eav.DataSources.Caches.ICache, ToSic.Eav.DataSources", "ToSic.Eav.DataSources.RootSources.IRootSource, ToSic.Eav.DataSources" };
-		/// <summary>
-		/// Gets a DataSource with Pipeline having PublishingFilter, ICache and IRootSource.
-		/// </summary>
-		/// <param name="zoneId">ZoneId for this DataSource</param>
-		/// <param name="appId">AppId for this DataSource</param>
-		/// <param name="showDrafts">Indicates whehter Draft Entities should be returned</param>
-		/// <returns>A single DataSource</returns>
-		public static IDataSource GetInitialDataSource(int? zoneId = null, int? appId = null, bool showDrafts = false)
-		{
+
+	    /// <summary>
+	    /// Gets a DataSource with Pipeline having PublishingFilter, ICache and IRootSource.
+	    /// </summary>
+	    /// <param name="zoneId">ZoneId for this DataSource</param>
+	    /// <param name="appId">AppId for this DataSource</param>
+	    /// <param name="showDrafts">Indicates whehter Draft Entities should be returned</param>
+	    /// <param name="configProvider"></param>
+	    /// <returns>A single DataSource</returns>
+	    public static IDataSource GetInitialDataSource(int? zoneId = null, int? appId = null, bool showDrafts = false, ValueCollectionProvider configProvider = null)
+        {
 			var zoneAppId = GetZoneAppId(zoneId, appId);
 
-			var valueCollectionProvider = new ValueCollectionProvider();
-			var dataSource = AssembleDataSourceReverse(InitialDataSourcePipeline, zoneAppId.Item1, zoneAppId.Item2, valueCollectionProvider);
+			configProvider = configProvider ?? new ValueCollectionProvider();
+			var dataSource = AssembleDataSourceReverse(InitialDataSourcePipeline, zoneAppId.Item1, zoneAppId.Item2, configProvider);
 
-			var publishingFilter = GetDataSource<PublishingFilter>(zoneAppId.Item1, zoneAppId.Item2, dataSource, valueCollectionProvider);
+			var publishingFilter = GetDataSource<PublishingFilter>(zoneAppId.Item1, zoneAppId.Item2, dataSource, configProvider);
 			publishingFilter.ShowDrafts = showDrafts;
 
 			return publishingFilter;
@@ -167,7 +168,7 @@ namespace ToSic.Eav
 
 	}
 
-    internal static class helper
+    internal static class Helper
     {
         /// <summary>
         /// Get Loadable Types from an assembly
