@@ -148,7 +148,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 #region Step 4: Save all normal values
 
 
-                foreach (var attribute in newEnt.Attributes.Values) // todo: put in constant
+                foreach (var attribute in newEnt.Attributes.Values)
                 {
                     // find attribute definition
                     var attribDef =
@@ -165,17 +165,31 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     if (attribDef.Type == AttributeTypeEnum.Entity.ToString()) continue;
 
                     foreach (var value in attribute.Values)
+                    {
+                        #region prepare languages - has extensive error reporting, to help in case any db-data is bad
+                        List<ToSicEavValuesDimensions> toSicEavValuesDimensions;
+                        try
+                        {
+                            toSicEavValuesDimensions = value.Languages?.Select(l => new ToSicEavValuesDimensions {
+                                DimensionId = _zoneLanguages.Single(ol => ol.Matches(l.Key)).DimensionId,
+                                ReadOnly = l.ReadOnly
+                            }).ToList();
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception("something went wrong building the languages to save - your DB probably has some wrong language information which doesn't match; maybe even a duplicate entry for a language code - see https://github.com/2sic/2sxc/issues/1293", ex);
+                        }
+                        #endregion
+
                         dbEnt.ToSicEavValues.Add(new ToSicEavValues
                         {
                             AttributeId = attribDef.AttributeId,
-                            Value = value.Serialized ?? "",//.SerializableObject?.ToString() ?? "",
+                            Value = value.Serialized ?? "",
                             ChangeLogCreated = changeId, // todo: remove some time later
-                            ToSicEavValuesDimensions = value.Languages?.Select(l => new ToSicEavValuesDimensions
-                            {
-                                DimensionId = _zoneLanguages.Single(ol => ol.Matches(l.Key)).DimensionId,
-                                ReadOnly = l.ReadOnly
-                            }).ToList()
+                            ToSicEavValuesDimensions = toSicEavValuesDimensions
                         });
+
+                    }
                 }
                 DbContext.SqlDb.SaveChanges(); // save all the values we just added
 
@@ -185,10 +199,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                 #region Step 5: Save / update all relationships
 
-                // 2017-09-06 2dm - disable queue here, as it's already queued inside...
-                //DbContext.Relationships.DoWhileQueueingRelationships(() => {
-                    DbContext.Relationships.SaveRelationships(newEnt, dbEnt, attributeDefs, so);
-                //});
+                DbContext.Relationships.SaveRelationships(newEnt, dbEnt, attributeDefs, so);
 
                 #endregion
 
