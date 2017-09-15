@@ -36,6 +36,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             else
             {
                 publishedEntity = DbContext.Entities.GetDbEntity(unpublishedEntity.PublishedEntityId.Value);
+                publishedEntity.ChangeLogModified = unpublishedEntity.ChangeLogModified; // transfer last-modified date (not to today, but to last edit)
                 DbContext.Values.CloneRelationshipsAndSave(unpublishedEntity, publishedEntity); // relationships need special treatment and intermediate save!
                 DbContext.Values.CloneEntitySimpleValues(unpublishedEntity, publishedEntity);
 
