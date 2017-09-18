@@ -244,7 +244,7 @@ namespace ToSic.Eav.DataSources
             var testParameters = ((IAttribute<string>)pipelineEntity["TestParameters"]).TypedContents;
             if (testParameters == null)
                 return null;
-            // todo: dangerous: seems like another token-replace mechanism!
+            // todo: dangerous: seems like another token-replace mechanism! should probably use same token-replace everywhere
             var paramMatches = Regex.Matches(testParameters, @"(?:\[(?<Token>\w+):(?<Property>\w+)\])=(?<Value>[^\r\n]*)");
 
             // Create a list of static Property Accessors

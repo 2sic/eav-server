@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data
@@ -38,21 +37,14 @@ namespace ToSic.Eav.Data
         {
             get
             {
-                try
+                if (_attributes != null)
                 {
-                    if (_attributes != null)
-                    {
-                        var relationship = _attributes[attributeName] as Attribute<EntityRelationship>;
-                        return relationship?.TypedContents;
-                    }
-                    var objRelationships = _objects[attributeName] as EntityRelationship;
-                    return objRelationships;
-                }
-                catch (KeyNotFoundException)
-                {
+                    if (_attributes.ContainsKey(attributeName))
+                        return (_attributes[attributeName] as Attribute<EntityRelationship>)?.TypedContents;
                     return new List<IEntity>();
                 }
-
+                var objRelationships = _objects[attributeName] as EntityRelationship;
+                return objRelationships;
             }
         }
     }

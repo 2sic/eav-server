@@ -122,6 +122,7 @@ namespace ToSic.Eav
 
         public const string EntityFieldTitle = "entitytitle";
         public const string EntityFieldId = "entityid";
+        public const string EntityFieldAutoSelect = "entity-title-id";
         public const string EntityFieldGuid = "entityguid";
         public const string EntityFieldType = "entitytype";
         public const string EntityFieldIsPublished = "ispublished";

@@ -27,8 +27,9 @@ namespace ToSic.Eav.WebApi
         public Serializer Serializer => _serializer ?? (_serializer = Factory.Resolve<Serializer>());
 
 	    #endregion
-		public List<IValueProvider> ValueProviders { get; set; }
+		//public List<IValueProvider> AdditionalValueProviders { get; set; }
 
+        /// <inheritdoc />
         /// <summary>
         /// Default Constructor
         /// </summary>
@@ -36,11 +37,15 @@ namespace ToSic.Eav.WebApi
         /// Constructor
         /// </summary>
         /// <param name="eavConnectionString">optional EAV Connection String</param>
-        public PipelineDesignerController(/*string userName,*/ string eavConnectionString = null)
+        public PipelineDesignerController(string eavConnectionString = null)
 		{
 			// Init empty list of ValueProviders
-			ValueProviders = new List<IValueProvider>();
+			//AdditionalValueProviders = new List<IValueProvider>();
 		}
+
+        #endregion
+
+        #region Additional Value Providers - injectable from outside
 
         #endregion
 
@@ -307,15 +312,16 @@ namespace ToSic.Eav.WebApi
 		}
 
 
-		private static IDataSource ConstructPipeline(int appId, int id, bool showDrafts)
+		private IDataSource ConstructPipeline(int appId, int id, bool showDrafts)
 		{
-			var testValueProviders = DataPipelineFactory.GetTestValueProviders(appId, id);
-			return DataPipelineFactory.GetDataSource(appId, id, testValueProviders, showDrafts:showDrafts);
+			var testValueProviders = DataPipelineFactory.GetTestValueProviders(appId, id).ToList();
+		    //AdditionalValueProviders.ForEach(ap => testValueProviders.Add(ap));
+		    return DataPipelineFactory.GetDataSource(appId, id, testValueProviders, showDrafts:showDrafts);
 		}
 
-		[HttpGet]
-		public dynamic PipelineDebugInfo(int appId, int id)
-		=> new DataSources.Debug.PipelineInfo(ConstructPipeline(appId, id, true));
+        [HttpGet]
+        public dynamic PipelineDebugInfo(int appId, int id)
+            => new DataSources.Debug.PipelineInfo(ConstructPipeline(appId, id, true));
 
 
         /// <summary>
