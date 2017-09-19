@@ -144,24 +144,27 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         public bool RemoveAttributeAndAllValuesAndSave(int attributeId)
         {
-            // Remove values and valueDimensions of this attribute
-            var values = DbContext.SqlDb.ToSicEavValues
-                .Where(a => a.AttributeId == attributeId).ToList();
+            DbContext.DoInTransaction(() =>
+            {
+                // Remove values and valueDimensions of this attribute
+                var values = DbContext.SqlDb.ToSicEavValues
+                    .Include(v => v.ToSicEavValuesDimensions)
+                    .Where(a => a.AttributeId == attributeId).ToList();
 
-            values.ForEach(v => {
-                v.ToSicEavValuesDimensions.ToList().ForEach(vd => {
-                    DbContext.SqlDb.ToSicEavValuesDimensions.Remove(vd);
+                values.ForEach(v =>
+                {
+                    v.ToSicEavValuesDimensions.ToList().ForEach(vd => DbContext.SqlDb.Remove(vd));
+                    DbContext.SqlDb.ToSicEavValues.Remove(v);
                 });
-                DbContext.SqlDb.ToSicEavValues.Remove(v);
+                DbContext.SqlDb.SaveChanges();
+
+                var attr = DbContext.SqlDb.ToSicEavAttributes.FirstOrDefault(a => a.AttributeId == attributeId);
+
+                if (attr != null)
+                    DbContext.SqlDb.ToSicEavAttributes.Remove(attr);
+
+                DbContext.SqlDb.SaveChanges();
             });
-            DbContext.SqlDb.SaveChanges();
-
-            var attr = DbContext.SqlDb.ToSicEavAttributes.FirstOrDefault(a => a.AttributeId == attributeId);
-
-            if (attr != null)
-                DbContext.SqlDb.ToSicEavAttributes.Remove(attr);
-
-            DbContext.SqlDb.SaveChanges();
             return true;
         }
 
