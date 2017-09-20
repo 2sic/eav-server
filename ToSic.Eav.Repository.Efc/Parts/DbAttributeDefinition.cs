@@ -47,11 +47,20 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
 
         private ToSicEavAttributesInSets GetAttribute(int attributeSetId, int attributeId = 0, string name = null)
-            => attributeId != 0
-                ? DbContext.SqlDb.ToSicEavAttributesInSets
-                    .Single(a => a.AttributeId == attributeId && a.AttributeSetId == attributeSetId)
-                : DbContext.SqlDb.ToSicEavAttributesInSets
-                    .Single(a => a.AttributeId == attributeId && a.Attribute.StaticName == name);
+        {
+            try
+            {
+                return attributeId != 0
+                    ? DbContext.SqlDb.ToSicEavAttributesInSets
+                        .Single(a => a.AttributeId == attributeId && a.AttributeSetId == attributeSetId)
+                    : DbContext.SqlDb.ToSicEavAttributesInSets
+                        .Single(a => a.AttributeId == attributeId && a.Attribute.StaticName == name);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("error getting attribute - content-type/setid: " + attributeSetId + "; optional attributeId: " + attributeId + "; optional name: " + name, ex);
+            }
+        }
 
 
         public int AttributeId(int setId, string staticName) => GetAttribute(setId, name: staticName).Attribute.AttributeId;
