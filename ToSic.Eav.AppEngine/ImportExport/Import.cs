@@ -216,7 +216,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             if (dbAttrSet == null) // AttributeSet not Found
             {
-                Storage.Log.Add(new LogItem(EventLogEntryType.Error, "ContentType not found for " + update.Type.StaticName));
+                Storage.ImportLogToBeRefactored.Add(new LogItem(EventLogEntryType.Error, "ContentType not found for " + update.Type.StaticName));
                 return null;
             }
 
@@ -234,7 +234,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             #endregion
 
-            Storage.Log.Add(new LogItem(EventLogEntryType.Information, $"FYI: Entity {update.EntityId} already exists for guid {update.EntityGuid}"));
+            Storage.ImportLogToBeRefactored.Add(new LogItem(EventLogEntryType.Information, $"FYI: Entity {update.EntityId} already exists for guid {update.EntityGuid}"));
 
             // now update (main) entity id from existing - since it already exists
             var original = existingEntities.First();

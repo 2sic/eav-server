@@ -3,6 +3,7 @@ using ToSic.Eav.Apps.Interfaces;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Persistence.Interfaces;
@@ -17,10 +18,15 @@ namespace ToSic.Eav.Apps
     public class AppManager: AppBase
     {
         #region Constructors
-        public AppManager(int zoneId, int appId) : base(zoneId, appId) {}
+        public AppManager(int zoneId, int appId, Log parentLog = null) : base(zoneId, appId, parentLog) { RenameLog();}
 
-        public AppManager(IApp app) : base(app) {}
-        public AppManager(int appId) : base(appId) {}
+        public AppManager(IApp app, Log parentLog = null) : base(app, parentLog) { RenameLog();}
+        public AppManager(int appId, Log parentLog = null) : base(appId, parentLog) { RenameLog();}
+
+        private void RenameLog()
+        {
+            Log.Rename("AppMan");
+        }
         #endregion
 
         #region Access the Runtime
@@ -29,7 +35,7 @@ namespace ToSic.Eav.Apps
         private AppRuntime _runtime;
         #endregion
 
-        internal DbDataController DataController => _eavContext ?? (_eavContext = DbDataController.Instance(ZoneId, AppId));
+        internal DbDataController DataController => _eavContext ?? (_eavContext = DbDataController.Instance(ZoneId, AppId, Log));
         private DbDataController _eavContext;
 
 

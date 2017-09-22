@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Linq;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
     internal class DbPublishing : BllCommandBase
     {
-        public DbPublishing(DbDataController c) : base(c) { }
+        public DbPublishing(DbDataController c, Log parentLog = null) : base(c, parentLog, "DbPubl") { }
 
         /// <summary>
         /// Publish a Draft-Entity

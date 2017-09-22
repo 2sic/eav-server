@@ -1,11 +1,12 @@
 ﻿using System.Linq;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
     public class DbValue : BllCommandBase
     {
-        public DbValue(DbDataController cntx) : base(cntx)
+        public DbValue(DbDataController cntx, Log parentLog = null) : base(cntx, parentLog, "DbVals")
         {
         }
 

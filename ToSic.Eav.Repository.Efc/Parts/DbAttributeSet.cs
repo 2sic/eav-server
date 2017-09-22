@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Enums;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
     public partial class DbAttributeSet : BllCommandBase
     {
-        public DbAttributeSet(DbDataController dc) : base(dc) { }
+        public DbAttributeSet(DbDataController dc, Log parentLog = null) : base(dc, parentLog, "DbAtSt") { }
 
         private IQueryable<ToSicEavAttributeSets> GetSetCoreQuery(int? appId = null)
             => DbContext.SqlDb.ToSicEavAttributeSets

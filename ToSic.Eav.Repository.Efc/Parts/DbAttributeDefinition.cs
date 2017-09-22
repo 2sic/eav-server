@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Persistence.Logging;
 
@@ -11,7 +12,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 {
     public partial class DbAttributeDefinition: BllCommandBase
     {
-        public DbAttributeDefinition(DbDataController cntx) : base(cntx) {}
+        public DbAttributeDefinition(DbDataController cntx, Log parentLog = null) : base(cntx, parentLog, "DbAttr") {}
 
         /// <summary>
         /// Set an Attribute as Title on an AttributeSet
@@ -39,7 +40,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             }
             else
             {
-                DbContext.Log.Add(new LogItem(EventLogEntryType.Information, "Attribute already exists" + newAtt.Name));
+                DbContext.ImportLogToBeRefactored.Add(new LogItem(EventLogEntryType.Information, "Attribute already exists" + newAtt.Name));
                 destAttribId = AttributeId(contentTypeId, newAtt.Name);
             }
             return destAttribId;

@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
 	public class DbDimensions: BllCommandBase
 	{
-        public DbDimensions(DbDataController ctx) : base(ctx) { }
+        public DbDimensions(DbDataController ctx, Log parentLog = null) : base(ctx, parentLog, "DbDims") { }
 
 		private int GetDimensionId(string systemKey, string externalKey)
 		{

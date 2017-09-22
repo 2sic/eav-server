@@ -222,7 +222,7 @@ namespace ToSic.Eav.Apps.ImportExport
 			import.ImportIntoDb(importAttributeSets, importEntities.Cast<Entity>());
             SystemManager.Purge(ZoneId, AppId);
 
-			ImportLog.AddRange(GetExportImportMessagesFromImportLog(import.Storage.Log));
+			ImportLog.AddRange(GetExportImportMessagesFromImportLog(import.Storage.ImportLogToBeRefactored));
 
 			if (xmlSource.Elements(XmlConstants.Templates).Any())
 				ImportXmlTemplates(xmlSource);
