@@ -10,8 +10,10 @@ namespace ToSic.Eav.Logging.Simple
         private readonly string _id = Guid.NewGuid().ToString().Substring(0, 4);
 
         private string _container = "unknwn";
-        private readonly List<Entry> _entries = new List<Entry>();
+        public readonly List<Entry> Entries = new List<Entry>();
         private Log _parent;
+
+        public string Identifier => _container + "(" + _id + ")";
 
         public Log(string container, Log parent = null, string message = null)
         {
@@ -34,9 +36,17 @@ namespace ToSic.Eav.Logging.Simple
         /// <param name="message"></param>
         public void Add(string message)
         {
-            var entry = new Entry(message);
-            _entries.Add(entry);
-            _parent?.Add(Serialize(entry));
+            var entry = new Entry(Identifier, message);
+            Entries.Add(entry);
+            _parent?.Add(entry);
+        }
+
+
+        public void Add(Entry entry)
+        {
+            var newEntry = new Entry(Identifier + entry.Source, entry.Message);
+            Entries.Add(newEntry);
+            _parent?.Add(newEntry);
         }
 
         /// <summary>
@@ -68,16 +78,16 @@ namespace ToSic.Eav.Logging.Simple
         public string Serialize()
         {
             string result = "";
-            _entries.ForEach(e => result += Serialize(e) + "¬\n");
+            Entries.ForEach(e => result += Serialize(e) + "¬\n");
             return result;
         }
 
         private string Serialize(Entry entry)
         {
-            var msg = entry.Serialize();
-            if (msg.IndexOf(Separator, StringComparison.Ordinal) == -1)
-                msg = Separator + msg;
-            return _container + "(" + _id + ")" + msg;
+            return entry.Source + Separator + entry.Message;
+            //if (msg.IndexOf(Separator, StringComparison.Ordinal) == -1)
+            //    msg = Separator + msg;
+            //return Identifier + msg;
         }
 
         public string SerializeTree() => _parent?.SerializeTree() ?? Serialize();

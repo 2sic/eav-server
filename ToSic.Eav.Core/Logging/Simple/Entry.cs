@@ -2,10 +2,12 @@
 {
     public class Entry
     {
+        public string Source { get; set; }
         public string Message { get; set; }
 
-        public Entry(string message)
+        public Entry(string source, string message)
         {
+            Source = source;
             Message = message;
         }
 
