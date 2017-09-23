@@ -40,5 +40,7 @@ namespace ToSic.Eav.Apps.Interfaces
         int GetLatestVersion(int moduleId);
 
         int GetPublishedVersion(int moduleId);
+
+        void Publish(int instanceId, int version);
     }
 }

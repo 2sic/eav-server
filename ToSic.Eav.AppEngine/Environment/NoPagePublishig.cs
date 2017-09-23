@@ -42,5 +42,10 @@ namespace ToSic.Eav.Apps.Environment
         {
             return 0;
         }
+
+        public void Publish(int instanceId, int version)
+        {
+            // ignore
+        }
     }
 }

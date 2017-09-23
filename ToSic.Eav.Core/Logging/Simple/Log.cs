@@ -34,11 +34,12 @@ namespace ToSic.Eav.Logging.Simple
         /// Add a message
         /// </summary>
         /// <param name="message"></param>
-        public void Add(string message)
+        public string Add(string message)
         {
             var entry = new Entry(Identifier, message);
             Entries.Add(entry);
             _parent?.Add(entry);
+            return message;
         }
 
 
