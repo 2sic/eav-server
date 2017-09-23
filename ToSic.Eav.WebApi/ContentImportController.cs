@@ -5,13 +5,18 @@ using System.Web.Http;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.ImportExport.Options;
-using ToSic.Eav.Repository.Efc.Parts;
-
+using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.WebApi
 {
+    /// <inheritdoc />
     public class ContentImportController : Eav3WebApiBase
     {
+        public ContentImportController(Log parentLog = null) : base(parentLog)
+        {
+            Log.Rename("EaCtIm");
+        }
+
         public class ContentImportArgs
         {
             public int AppId;
@@ -25,6 +30,8 @@ namespace ToSic.Eav.WebApi
             public string ContentType;
 
             public string ContentBase64;
+
+            public string DebugInfo => $"app:{AppId} + deflang:{DefaultLanguage}, + ct:{ContentType} + base:{ContentBase64}, impRes:{ImportResourcesReferences}, clear:{ClearEntities}";
         }
 
         public class ContentImportResult
@@ -44,6 +51,7 @@ namespace ToSic.Eav.WebApi
         [HttpPost]
         public ContentImportResult EvaluateContent(ContentImportArgs args)
         {
+            Log.Add("eval content - start" + args.DebugInfo);
             AppId = args.AppId;
 
             var import = GetXmlImport(args);
@@ -64,6 +72,7 @@ namespace ToSic.Eav.WebApi
         [HttpPost]
         public ContentImportResult ImportContent(ContentImportArgs args)
         {
+            Log.Add("import content" + args.DebugInfo);
             AppId = args.AppId;
 
             var import = GetXmlImport(args);
@@ -78,6 +87,7 @@ namespace ToSic.Eav.WebApi
 
         private ToRefactorXmlImportVTable GetXmlImport(ContentImportArgs args)
         {
+            Log.Add("get xml import " + args.DebugInfo);
             var contentTypeId = CurrentContext.AttribSet.GetIdWithEitherName(args.ContentType);//.AttributeSetId;//.AttributeSetID;// GetContentTypeId(args.ContentType);
             var contextLanguages = AppManager.Read.Zone.Languages().Select(l => l.EnvironmentKey).ToArray();// CurrentContext.Dimensions.GetLanguages().Select(language => language.EnvironmentKey).ToArray();
 

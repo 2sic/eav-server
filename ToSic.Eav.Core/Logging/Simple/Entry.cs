@@ -2,12 +2,15 @@
 {
     public class Entry
     {
-        public string Source { get; set; }
         public string Message { get; set; }
 
-        public Entry(string source, string message)
+        private readonly Log _log;
+
+        public string Source => _log.FullIdentifier;
+
+        public Entry(Log log, string message)
         {
-            Source = source;
+            _log = log;
             Message = message;
         }
 

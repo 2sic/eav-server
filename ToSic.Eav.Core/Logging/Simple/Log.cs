@@ -5,19 +5,26 @@ namespace ToSic.Eav.Logging.Simple
 {
     public class Log
     {
-        private const string Separator = " :: ";
         // unique ID of this logger, to not confuse it with other loggers
-        private readonly string _id = Guid.NewGuid().ToString().Substring(0, 4);
+        private readonly string _id = Guid.NewGuid().ToString().Substring(0, 2);
 
-        private string _container = "unknwn";
-        public readonly List<Entry> Entries = new List<Entry>();
+        private string _name = "unknwn";
+        public  List<Entry> Entries { get; } = new List<Entry>();
         private Log _parent;
 
-        public string Identifier => _container + "(" + _id + ")";
+        private string Identifier => _name + "(" + _id + ")";
 
-        public Log(string container, Log parent = null, string initialMessage = null)
+        public string FullIdentifier => _parent?.FullIdentifier + Identifier;
+
+        /// <summary>
+        /// Create a logger and optionally attach it to a parent logger
+        /// </summary>
+        /// <param name="name">name this logger should use</param>
+        /// <param name="parent">optional parrent logger to attach to</param>
+        /// <param name="initialMessage">optional initial message to log</param>
+        public Log(string name, Log parent = null, string initialMessage = null)
         {
-            Rename(container);
+            Rename(name);
             LinkTo(parent);
             if(initialMessage != null)
                 Add(initialMessage);
@@ -27,8 +34,11 @@ namespace ToSic.Eav.Logging.Simple
         /// Rename this logger - usually used when a base-class has a logger, 
         /// but the inherited class needs a different name
         /// </summary>
+        /// <remarks>
+        /// limits the length to 6 chars to make the output readable
+        /// </remarks>
         /// <param name="name"></param>
-        public void Rename(string name) => _container = name.Substring(0, Math.Min(name.Length, 6));
+        public void Rename(string name) => _name = name.Substring(0, Math.Min(name.Length, 6));
 
         /// <summary>
         /// Add a message
@@ -36,18 +46,19 @@ namespace ToSic.Eav.Logging.Simple
         /// <param name="message"></param>
         public string Add(string message)
         {
-            var entry = new Entry(Identifier, message);
-            Entries.Add(entry);
-            _parent?.Add(entry);
+            Add(new Entry(this, message));
             return message;
         }
 
 
-        public void Add(Entry entry)
+        /// <summary>
+        /// add an existing entry of another logger
+        /// </summary>
+        /// <param name="entry"></param>
+        private void Add(Entry entry)
         {
-            var newEntry = new Entry(Identifier + entry.Source, entry.Message);
-            Entries.Add(newEntry);
-            _parent?.Add(newEntry);
+            Entries.Add(entry);
+            _parent?.Add(entry);
         }
 
         /// <summary>
@@ -70,27 +81,6 @@ namespace ToSic.Eav.Logging.Simple
         /// Link this logger to a parent
         /// </summary>
         /// <param name="parent"></param>
-        public void LinkTo(Log parent)
-        {
-            if (parent != null)
-                _parent = parent;
-        }
-
-        public string Serialize()
-        {
-            string result = "";
-            Entries.ForEach(e => result += Serialize(e) + "¬\n");
-            return result;
-        }
-
-        private string Serialize(Entry entry)
-        {
-            return entry.Source + Separator + entry.Message;
-            //if (msg.IndexOf(Separator, StringComparison.Ordinal) == -1)
-            //    msg = Separator + msg;
-            //return Identifier + msg;
-        }
-
-        public string SerializeTree() => _parent?.SerializeTree() ?? Serialize();
+        public void LinkTo(Log parent) => _parent = parent;
     }
 }

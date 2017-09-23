@@ -2,12 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
+using ToSic.Eav.Logging.Simple;
 using static System.String;
 
 namespace ToSic.Eav.WebApi
 {
-    public class EntityPickerController : ApiController
+    public class EntityPickerController : Eav3WebApiBase
     {
+        public EntityPickerController(Log parentLog = null) : base(parentLog)
+        {
+            Log.Rename("EntPck");
+        }
+
         /// <summary>
         /// Returns a list of entities, optionally filtered by AttributeSetId.
         /// </summary>
@@ -15,9 +21,10 @@ namespace ToSic.Eav.WebApi
         [HttpPost]
         public IEnumerable<dynamic> GetAvailableEntities([FromUri]int appId, [FromBody] string[] items, [FromUri] string contentTypeName = null, [FromUri] int? dimensionId = null)
         {
+            Log.Add($"Get entities for a:{appId}, itms-count:{items?.Length}, ct:{contentTypeName}, dims:{dimensionId}");
             var dimensionIds = dimensionId ?? 0;
 
-            ToSic.Eav.Interfaces.IContentType contentType = null;
+            Interfaces.IContentType contentType = null;
             if (!IsNullOrEmpty(contentTypeName))
                 contentType = DataSource.GetCache(null, appId).GetContentType(contentTypeName);
 
@@ -46,7 +53,7 @@ namespace ToSic.Eav.WebApi
             return entities;
         }
 
-        private string GetTitle(ToSic.Eav.Interfaces.IEntity l, int dimensionIds)
+        private string GetTitle(Interfaces.IEntity l, int dimensionIds)
         {
             string title;
 

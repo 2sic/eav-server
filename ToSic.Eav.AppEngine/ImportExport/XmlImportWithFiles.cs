@@ -9,6 +9,7 @@ using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Xml;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Repository.Efc;
@@ -21,6 +22,7 @@ namespace ToSic.Eav.Apps.ImportExport
 {
     public class XmlImportWithFiles
 	{
+        private Log Log { get; }
 		public List<Message> ImportLog;
 
         private List<DimensionDefinition> _targetDimensions;
@@ -48,8 +50,9 @@ namespace ToSic.Eav.Apps.ImportExport
 		/// </summary>
 		/// <param name="defaultLanguage">The portals default language / culture - example: de-DE</param>
 		/// <param name="allowSystemChanges">Specify if the import should be able to change system-wide things like shared attributesets</param>
-		public XmlImportWithFiles(string defaultLanguage = null, bool allowSystemChanges = false)
+		public XmlImportWithFiles(Log parentLog, string defaultLanguage = null, bool allowSystemChanges = false)
 		{
+            Log = new Log("XmlImFl", parentLog);
 		    _environment = Factory.Resolve<IImportExportEnvironment>();
 			// Prepare
 			ImportLog = new List<Message>();
@@ -464,7 +467,7 @@ namespace ToSic.Eav.Apps.ImportExport
                         listPresentationDemoEntityId = listPresentationDefault.DemoEntityId;
                     }
 
-                    new AppManager(_eavContext.ZoneId, _eavContext.AppId).Templates.CreateOrUpdate(
+                    new AppManager(_eavContext.ZoneId, _eavContext.AppId, Log).Templates.CreateOrUpdate(
                         null, name, path, contentTypeStaticName, demoEntityId, presentationTypeStaticName,
                         presentationDemoEntityId, listContentTypeStaticName, listContentDemoEntityId,
                         listPresentationTypeStaticName, listPresentationDemoEntityId, type, isHidden, location,
