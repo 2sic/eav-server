@@ -15,12 +15,12 @@ namespace ToSic.Eav.Logging.Simple
 
         public string Identifier => _container + "(" + _id + ")";
 
-        public Log(string container, Log parent = null, string message = null)
+        public Log(string container, Log parent = null, string initialMessage = null)
         {
             Rename(container);
             LinkTo(parent);
-            if(message != null)
-                Add(message);
+            if(initialMessage != null)
+                Add(initialMessage);
         }
 
         /// <summary>
