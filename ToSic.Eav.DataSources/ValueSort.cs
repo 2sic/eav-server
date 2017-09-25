@@ -11,9 +11,10 @@ namespace ToSic.Eav.DataSources
 	[PipelineDesigner]
 	public sealed class ValueSort : BaseDataSource
 	{
-		#region Configuration-properties
+        #region Configuration-properties
+	    public override string LogId => "DSVlSr";
 
-		private const string AttrKey = "Attributes";
+        private const string AttrKey = "Attributes";
 		private const string DirectionKey = "Value";
 		private const string LangKey = "Language";
         
@@ -22,8 +23,8 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public string Attributes
 		{
-			get { return Configuration[AttrKey]; }
-			set { Configuration[AttrKey] = value; }
+			get => Configuration[AttrKey];
+		    set => Configuration[AttrKey] = value;
 		}
 
 		/// <summary>
@@ -31,8 +32,8 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public string Directions
 		{
-			get { return Configuration[DirectionKey]; }
-			set { Configuration[DirectionKey] = value; }
+			get => Configuration[DirectionKey];
+		    set => Configuration[DirectionKey] = value;
 		}
 
 		/// <summary>
@@ -40,8 +41,8 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public string Languages
 		{
-			get { return Configuration[LangKey]; }
-			set { Configuration[LangKey] = value; }
+			get => Configuration[LangKey];
+		    set => Configuration[LangKey] = value;
 		}
 		#endregion
 

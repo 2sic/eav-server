@@ -12,8 +12,10 @@ namespace ToSic.Eav.DataSources
 	[PipelineDesigner]
 	public class EntityIdFilter : BaseDataSource
 	{
-		#region Configuration-properties
-		private const string EntityIdKey = "EntityIds";
+        #region Configuration-properties
+	    public override string LogId => "DSIdFl";
+
+        private const string EntityIdKey = "EntityIds";
 		//private const string PassThroughOnEmptyEntityIdsKey = "PassThroughOnEmptyEntityIds";
 
 		/// <summary>
@@ -21,8 +23,8 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public string EntityIds
 		{
-			get { return Configuration[EntityIdKey]; }
-			set { Configuration[EntityIdKey] = value; }
+			get => Configuration[EntityIdKey];
+		    set => Configuration[EntityIdKey] = value;
 		}
 
 		#endregion

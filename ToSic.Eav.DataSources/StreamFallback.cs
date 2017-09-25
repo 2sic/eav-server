@@ -10,13 +10,14 @@ namespace ToSic.Eav.DataSources
 	[PipelineDesigner]
 	public sealed class StreamFallback : BaseDataSource
 	{
-		#region Configuration-properties (no config)
+        #region Configuration-properties (no config)
+	    public override string LogId => "DSStFb";
 
-		#endregion
+        #endregion
 
         #region Debug-Properties
 
-	    public string ReturnedStreamName { get; private set; }
+        public string ReturnedStreamName { get; private set; }
         #endregion
 
 

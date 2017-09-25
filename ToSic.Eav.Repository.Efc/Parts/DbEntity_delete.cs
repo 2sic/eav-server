@@ -12,6 +12,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         internal bool DeleteEntity(int repositoryId, bool autoSave = true, bool removeFromParents = false)
         {
+            Log.Add($"delete entity rep-id:{repositoryId}, remove-from-parents:{removeFromParents}, auto-save:{autoSave}");
             if (repositoryId == 0)
                 return false;
 
@@ -29,18 +30,16 @@ namespace ToSic.Eav.Repository.Efc.Parts
             DbContext.SqlDb.RemoveRange(entity.ToSicEavValues.ToList());
 
             // Delete all Parent-Relationships
-            //entity.RelationshipsWithThisAsParent.Clear();
             DeleteRelationships(entity.RelationshipsWithThisAsParent);
-            //DbContext.SqlDb.RemoveRange(entity.RelationshipsWithThisAsParent.ToList() /*.Clear()*/);
             if (removeFromParents)
                 DeleteRelationships(entity.RelationshipsWithThisAsChild);
-                //DbContext.SqlDb.RemoveRange(entity.RelationshipsWithThisAsChild.ToList() /*.Clear()*/);
 
             #endregion
 
             // If entity was Published, set Deleted-Flag
             if (entity.IsPublished)
             {
+                Log.Add("was published, will mark as deleted");
                 entity.ChangeLogDeleted = DbContext.Versioning.GetChangeLogId();
                 // Also delete the Draft (if any)
                 var draftEntityId = DbContext.Publishing.GetDraftBranchEntityId(entity.EntityId);
@@ -50,9 +49,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
             // If entity was a Draft, really delete that Entity
             else
             {
+                Log.Add("was draft, will really delete");
                 // Delete all Child-Relationships
                 DeleteRelationships(entity.RelationshipsWithThisAsChild);
-                //DbContext.SqlDb.RemoveRange(entity.RelationshipsWithThisAsChild.ToList() /*.Clear()*/);
                 DbContext.SqlDb.Remove(entity);
             }
 
@@ -70,10 +69,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         internal Tuple<bool, string> CanDeleteEntity(int entityId)
         {
+            Log.Add($"can delete entity i:{entityId}");
             var messages = new List<string>();
             var entity = GetDbEntity(entityId);
-            //var entityModel = new Efc11Loader(DbContext.SqlDb).Entity(DbContext.AppId, entityId);
-            //if (!entityModel.IsPublished && entityModel.GetPublished() == null)	// always allow Deleting Draft-Only Entity 
 
             if (!entity.IsPublished && entity.PublishedEntityId == null)	// always allow Deleting Draft-Only Entity 
                 return new Tuple<bool, string>(true, null);
@@ -86,17 +84,17 @@ namespace ToSic.Eav.Repository.Efc.Parts
             if (parents.Any())
             {
                 TryToGetMoreInfosAboutDependencies(parents, messages);
-                messages.Add($"found {parents.Count()} relationships where this is a child - the parents are: {string.Join(", ", parents)}.");
+                messages.Add($"found {parents.Count} relationships where this is a child - the parents are: {string.Join(", ", parents)}.");
             }
             #endregion
 
             var entitiesAssignedToThis = GetAssignedEntities(Constants.MetadataForEntity, entityId)
-                .Select(e => new TempEntityAndTypeInfos() { EntityId = e.EntityId, TypeId = e.AttributeSetId })
+                .Select(e => new TempEntityAndTypeInfos { EntityId = e.EntityId, TypeId = e.AttributeSetId })
                 .ToList();
             if (entitiesAssignedToThis.Any())
             {
                 TryToGetMoreInfosAboutDependencies(entitiesAssignedToThis, messages);
-                messages.Add($"found {entitiesAssignedToThis.Count()} entities which are metadata for this, assigned children (like in a pieline) or assigned for other reasons: {string.Join(", ", entitiesAssignedToThis)}.");
+                messages.Add($"found {entitiesAssignedToThis.Count} entities which are metadata for this, assigned children (like in a pieline) or assigned for other reasons: {string.Join(", ", entitiesAssignedToThis)}.");
             }
             return Tuple.Create(!messages.Any(), string.Join(" ", messages));
         }
@@ -113,8 +111,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
             {
                 messages.Add("Relationships but was not able to look up more details to show a nicer error.");
             }
-
-
         }
 
         private class TempEntityAndTypeInfos

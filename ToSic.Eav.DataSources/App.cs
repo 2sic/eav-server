@@ -5,6 +5,7 @@ using static System.Int32;
 
 namespace ToSic.Eav.DataSources
 {
+	/// <inheritdoc />
 	/// <summary>
 	/// Return all Entities from a specific App
 	/// </summary>
@@ -15,13 +16,15 @@ namespace ToSic.Eav.DataSources
 		private const string AppSwitchKey = "AppSwitch";
 		private const string ZoneSwitchKey = "ZoneSwitch";
 
-		/// <summary>
-		/// An alternate app to switch to
-		/// </summary>
-		public int AppSwitch
+	    public override string LogId => "DS-App";
+
+	    /// <summary>
+        /// An alternate app to switch to
+        /// </summary>
+        public int AppSwitch
 		{
-			get { return Parse(Configuration[AppSwitchKey]); }
-			set
+			get => Parse(Configuration[AppSwitchKey]);
+		    set
 			{
 				Configuration[AppSwitchKey] = value.ToString();
 				AppId = value;
@@ -34,8 +37,8 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public int ZoneSwitch
 		{
-			get { return Parse(Configuration[ZoneSwitchKey]); }
-			set
+			get => Parse(Configuration[ZoneSwitchKey]);
+		    set
 			{
 				Configuration[ZoneSwitchKey] = value.ToString();
 				ZoneId = value;
@@ -45,7 +48,10 @@ namespace ToSic.Eav.DataSources
 
 		private readonly IDictionary<string, IDataStream> _out = new Dictionary<string, IDataStream>(StringComparer.OrdinalIgnoreCase);
 		private bool _requiresRebuildOfOut = true;
-		public override IDictionary<string, IDataStream> Out
+
+
+
+	    public override IDictionary<string, IDataStream> Out
 		{
 			get
 			{
@@ -64,6 +70,7 @@ namespace ToSic.Eav.DataSources
 		}
 		#endregion
 
+		/// <inheritdoc />
 		/// <summary>
 		/// Constructs a new App DataSource
 		/// </summary>
@@ -88,11 +95,11 @@ namespace ToSic.Eav.DataSources
 		{
 			// all not-set properties will auto-initialize
 			if (ZoneSwitch != 0)
-				ZoneId = ZoneSwitch; //In[Constants.DefaultStreamName].Source.ZoneId;
-			if (AppSwitch != 0)
-				AppId = AppSwitch; // In[Constants.DefaultStreamName].Source.ZoneId;
+				ZoneId = ZoneSwitch;
+		    if (AppSwitch != 0)
+				AppId = AppSwitch;
 
-			var newDs = DataSource.GetInitialDataSource(ZoneId, AppId);
+		    var newDs = DataSource.GetInitialDataSource(ZoneId, AppId);
 		    if (In.ContainsKey(Constants.DefaultStreamName))
 		        In.Remove(Constants.DefaultStreamName);
 			In.Add(Constants.DefaultStreamName, newDs[Constants.DefaultStreamName]);
@@ -129,7 +136,7 @@ namespace ToSic.Eav.DataSources
 		        var typeName = contentType.Value.Name;
 		        if (typeName != Constants.DefaultStreamName && !typeName.StartsWith("@") && !_out.ContainsKey(typeName))
 		        {
-		            var ds = DataSource.GetDataSource<EntityTypeFilter>(ZoneId, AppId, upstreamDataSource, ConfigurationProvider);
+		            var ds = DataSource.GetDataSource<EntityTypeFilter>(ZoneId, AppId, upstreamDataSource, ConfigurationProvider, parentLog:Log);
 		            ds.TypeName = contentType.Value.Name;
 
 		            ds.Out[Constants.DefaultStreamName].AutoCaching = true; // enable auto-caching 

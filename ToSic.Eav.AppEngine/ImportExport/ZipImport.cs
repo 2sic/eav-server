@@ -22,7 +22,7 @@ namespace ToSic.Eav.Apps.ImportExport
         private readonly IImportExportEnvironment _environment;
         public ZipImport(IImportExportEnvironment environment, int zoneId, int? appId, bool allowRazor, Log parentLog)
         {
-            Log = new Log("ZipImp", parentLog, "constructor");
+            Log = new Log("ZipImp", parentLog);
             _appId = appId;
             _zoneId = zoneId;
             _allowRazor = allowRazor;
@@ -42,6 +42,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <returns></returns>
         public bool ImportZip(Stream zipStream, string temporaryDirectory)
         {
+            Log.Add($"import zip temp-dir:{temporaryDirectory}");
             List<Message> messages = _environment.Messages;
 
             var success = true;
@@ -61,6 +62,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 // Loop through each root-folder. For now only contains the "Apps" folder.
                 foreach (var directoryPath in baseDirectories)
                 {
+                    Log.Add($"folder:{directoryPath}");
                     switch (Path.GetFileName(directoryPath))
                     {
                         // Handle the App folder
@@ -70,7 +72,7 @@ namespace ToSic.Eav.Apps.ImportExport
                             // Loop through each app directory
                             foreach (var appDirectory in Directory.GetDirectories(currentWorkingDir))
                             {
-
+                                Log.Add($"folder:{appDirectory}");
                                 var appId = new int?();
 
                                 // Stores the number of the current xml file to process
@@ -79,21 +81,23 @@ namespace ToSic.Eav.Apps.ImportExport
                                 // Import XML file(s)
                                 foreach (var xmlFileName in Directory.GetFiles(appDirectory, "*.xml"))
                                 {
+                                    Log.Add($"xml file:{xmlFileName}");
                                     var fileContents = File.ReadAllText(Path.Combine(appDirectory, xmlFileName));
 	                                var doc = XDocument.Parse(fileContents);
-                                    var import = new XmlImportWithFiles(Log);//_environment.DefaultLanguage);
+                                    var import = new XmlImportWithFiles(Log);
 
 									if (!import.IsCompatible(doc))
 										throw new Exception("The app / package is not compatible with this version of eav and the 2sxc-host.");
 
 									var isAppImport = doc.Element(XmlConstants.RootNode).Element(XmlConstants.Header).Elements(XmlConstants.App).Any() 
-                                        && doc.Element(XmlConstants.RootNode).Element(XmlConstants.Header).Element(XmlConstants.App).Attribute(XmlConstants.Guid).Value != XmlConstants.AppContentGuid /* "Default" */;
+                                        && doc.Element(XmlConstants.RootNode).Element(XmlConstants.Header).Element(XmlConstants.App).Attribute(XmlConstants.Guid).Value != XmlConstants.AppContentGuid;
 
                                     if (!isAppImport && !_appId.HasValue)
                                         _appId = new ZoneRuntime(_zoneId, Log).DefaultAppId;
 
                                     if (isAppImport)
                                     {
+                                        Log.Add("will do app-import");
                                         var appConfig = XDocument.Parse(fileContents).Element(XmlConstants.RootNode)
                                             .Element(XmlConstants.Entities)
                                             .Elements(XmlConstants.Entity)
@@ -127,6 +131,7 @@ namespace ToSic.Eav.Apps.ImportExport
                                     }
                                     else
                                     {
+                                        Log.Add("will do content import");
                                         appId = _appId.Value;
                                         if (xmlIndex == 0 && import.IsCompatible(doc))
                                         {
@@ -146,7 +151,7 @@ namespace ToSic.Eav.Apps.ImportExport
                                 }
 
                                 // Copy all files in 2sexy folder to (portal file system) 2sexy folder
-                                var templateRoot = _environment.TemplatesRoot(_zoneId, appId.Value);// server.MapPath(Internal.TemplateManager.GetTemplatePathRoot(Settings.TemplateLocations.PortalFileSystem, app));
+                                var templateRoot = _environment.TemplatesRoot(_zoneId, appId.Value);
                                 var appTemplateRoot = Path.Combine(appDirectory, "2sexy");
                                 if (Directory.Exists(appTemplateRoot))
                                     new FileManager(appTemplateRoot).CopyAllFiles(templateRoot, false, messages);
@@ -183,44 +188,53 @@ namespace ToSic.Eav.Apps.ImportExport
             }
 
             if (finalEx != null)
+            {
+                Log.Add("had found errors during import, will throw");
                 throw finalEx; // must throw, to enable logging outside
+            }
 
+            Log.Add("import zip - completed");
             return success;
         }
 
         private void CheckRequiredEnvironmentVersions(string reqVersionNode, string reqVersionNodeDnn)
         {
+            Log.Add($"check version requirements eav:{reqVersionNode}, host:{reqVersionNodeDnn}");
             if (reqVersionNode != null)
             {
-                var vSxc = Version.Parse(_environment.ModuleVersion);// Settings.Version;
-                var reqSxcV = Version.Parse(reqVersionNode);
-                if (reqSxcV.CompareTo(vSxc) == 1) // required is bigger
-                    throw new Exception("this app requires 2sxc version " + reqVersionNode +
-                                        ", installed is " + vSxc + ". cannot continue. see also 2sxc.org/en/help?tag=app");
+                var vEav = Version.Parse(_environment.ModuleVersion);
+                var reqEav = Version.Parse(reqVersionNode);
+                if (reqEav.CompareTo(vEav) == 1) // required is bigger
+                    throw new Exception("this app requires eav/2sxc version " + reqVersionNode +
+                                        ", installed is " + vEav + ". cannot continue. see also 2sxc.org/en/help?tag=app");
             }
 
             if (reqVersionNodeDnn != null)
             {
-                var vDnn = _environment.TennantVersion;
-                var reqDnnV = Version.Parse(reqVersionNodeDnn);
-                if (reqDnnV.CompareTo(vDnn) == 1) // required is bigger
-                    throw new Exception("this app requires dnn version " + reqVersionNodeDnn +
-                                        ", installed is "+vDnn +". cannot continue. see also 2sxc.org/en/help?tag=app");
+                var vHost = _environment.TennantVersion;
+                var reqHost = Version.Parse(reqVersionNodeDnn);
+                if (reqHost.CompareTo(vHost) == 1) // required is bigger
+                    throw new Exception("this app requires host/dnn version " + reqVersionNodeDnn +
+                                        ", installed is "+vHost +". cannot continue. see also 2sxc.org/en/help?tag=app");
             }
+            Log.Add("version check completed");
         }
 
         public bool ImportZipFromUrl(string packageUrl, bool isAppImport)
         {
+            Log.Add($"import zip from url:{packageUrl}, isApp:{isAppImport}");
             var tempDirectory = new DirectoryInfo(HttpContext.Current.Server.MapPath(Settings.TemporaryDirectory));
             if (!tempDirectory.Exists)
                 Directory.CreateDirectory(tempDirectory.FullName);
 
             var destinationPath = Path.Combine(tempDirectory.FullName, Path.GetRandomFileName() + ".zip");
+
             var client = new WebClient();
-            var success = false;
+            bool success;
 
             try
             {
+                Log.Add($"try to download:{packageUrl} to:{destinationPath}");
                 client.DownloadFile(packageUrl, destinationPath);
             }
             catch(WebException e)
@@ -242,8 +256,6 @@ namespace ToSic.Eav.Apps.ImportExport
 
         #region Zip Import Helpers
 
-
-
         /// <summary>
         /// Extracts a Zip (as Stream) to the given OutFolder directory.
         /// </summary>
@@ -251,6 +263,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="outFolder"></param>
         private void ExtractZipFile(Stream zipStream, string outFolder)
         {
+            Log.Add($"extract zip to:{outFolder}");
             var file = new ZipFile(zipStream);
 
             try
@@ -266,7 +279,13 @@ namespace ToSic.Eav.Apps.ImportExport
                     var fullPath = Path.Combine(outFolder, fileName);
                     var directoryName = Path.GetDirectoryName(fullPath);
                     if (!String.IsNullOrEmpty(directoryName))
+                    {
+                        Log.Add($"will create temp dir len:{fullPath.Length} path:{fullPath}");
                         Directory.CreateDirectory(directoryName);
+                    }
+
+                    if (fullPath.Length > 240)
+                        Log.Warn($"file name is very long - could cause trouble:{fullPath}");
 
                     // Unzip File in buffered chunks
                     using (var streamWriter = File.Create(fullPath))

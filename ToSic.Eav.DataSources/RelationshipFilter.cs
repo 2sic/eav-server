@@ -12,9 +12,10 @@ namespace ToSic.Eav.DataSources
 	[PipelineDesigner]
 	public sealed class RelationshipFilter : BaseDataSource
 	{
-		#region Configuration-properties
+        #region Configuration-properties
+	    public override string LogId => "DSRelf";
 
-		private const string RelationshipKey = "Relationship";
+        private const string RelationshipKey = "Relationship";
 		private const string FilterKey = "Filter";
 		private const string CompareAttributeKey = "CompareAttribute";
 		private const string CompareModeKey = "Mode";

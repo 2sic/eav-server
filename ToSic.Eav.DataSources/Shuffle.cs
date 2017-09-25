@@ -12,6 +12,8 @@ namespace ToSic.Eav.DataSources
 	public sealed class Shuffle: BaseDataSource
 	{
         #region Configuration-properties (no config)
+	    public override string LogId => "DSShfl";
+
         private const string TakeKey = "Take";
 
         /// <summary>
@@ -25,7 +27,7 @@ namespace ToSic.Eav.DataSources
                 int.TryParse(Configuration[TakeKey], out tk);
                 return tk;
             }
-            set { Configuration[TakeKey] = value.ToString(); }
+            set => Configuration[TakeKey] = value.ToString();
         }
 
 

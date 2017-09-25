@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.ValueProvider;
 
 namespace ToSic.Eav
@@ -61,28 +62,30 @@ namespace ToSic.Eav
 	    /// <param name="appId">AppId for this DataSource</param>
 	    /// <param name="upstream">In-Connection</param>
 	    /// <param name="valueCollectionProvider">Provides configuration values if needed</param>
+	    /// <param name="parentLog"></param>
 	    /// <returns>A single DataSource</returns>
 	    public static T GetDataSource<T>(int? zoneId = null, int? appId = null, IDataSource upstream = null,
-			IValueCollectionProvider valueCollectionProvider = null)
+			IValueCollectionProvider valueCollectionProvider = null, Log parentLog = null)
 		{
             if(upstream == null && valueCollectionProvider == null)
                     throw new Exception("Trying to GetDataSource<T> but cannot do so if both upstream and ConfigurationProvider are null.");
 			var newDs = (BaseDataSource)Factory.Resolve(typeof(T));
-			ConfigureNewDataSource(newDs, zoneId, appId, upstream, valueCollectionProvider ?? upstream.ConfigurationProvider);
+			ConfigureNewDataSource(newDs, zoneId, appId, upstream, valueCollectionProvider ?? upstream.ConfigurationProvider, parentLog);
 			return (T)Convert.ChangeType(newDs, typeof(T));
 		}
 
-		/// <summary>
-		/// Helper function (internal) to configure a new data source. This code is used multiple times, that's why it's in an own function
-		/// </summary>
-		/// <param name="newDs">The new data source</param>
-		/// <param name="zoneId">optional Zone #</param>
-		/// <param name="appId">optional app #</param>
-		/// <param name="upstream">upstream data source - for auto-attaching</param>
-		/// <param name="valueCollectionProvider">optional configuration provider - for auto-attaching</param>
-		private static void ConfigureNewDataSource(BaseDataSource newDs, int? zoneId = null, int? appId = null,
+	    /// <summary>
+	    /// Helper function (internal) to configure a new data source. This code is used multiple times, that's why it's in an own function
+	    /// </summary>
+	    /// <param name="newDs">The new data source</param>
+	    /// <param name="zoneId">optional Zone #</param>
+	    /// <param name="appId">optional app #</param>
+	    /// <param name="upstream">upstream data source - for auto-attaching</param>
+	    /// <param name="valueCollectionProvider">optional configuration provider - for auto-attaching</param>
+	    /// <param name="parentLog"></param>
+	    private static void ConfigureNewDataSource(BaseDataSource newDs, int? zoneId = null, int? appId = null,
 			IDataSource upstream = null,
-			IValueCollectionProvider valueCollectionProvider = null)
+			IValueCollectionProvider valueCollectionProvider = null, Log parentLog = null)
 		{
 			var zoneAppId = GetZoneAppId(zoneId, appId);
 			newDs.ZoneId = zoneAppId.Item1;
@@ -91,6 +94,9 @@ namespace ToSic.Eav
 				((IDataTarget)newDs).Attach(upstream);
 			if (valueCollectionProvider != null)
 				newDs.ConfigurationProvider = valueCollectionProvider;
+
+            if(parentLog != null)
+                newDs.InitLog(newDs.LogId, parentLog);
 		}
 
 		private static readonly string[] InitialDataSourcePipeline = { "ToSic.Eav.DataSources.Caches.ICache, ToSic.Eav.DataSources", "ToSic.Eav.DataSources.RootSources.IRootSource, ToSic.Eav.DataSources" };
@@ -103,14 +109,14 @@ namespace ToSic.Eav
 	    /// <param name="showDrafts">Indicates whehter Draft Entities should be returned</param>
 	    /// <param name="configProvider"></param>
 	    /// <returns>A single DataSource</returns>
-	    public static IDataSource GetInitialDataSource(int? zoneId = null, int? appId = null, bool showDrafts = false, ValueCollectionProvider configProvider = null)
+	    public static IDataSource GetInitialDataSource(int? zoneId = null, int? appId = null, bool showDrafts = false, ValueCollectionProvider configProvider = null, Log parentLog = null)
         {
 			var zoneAppId = GetZoneAppId(zoneId, appId);
 
 			configProvider = configProvider ?? new ValueCollectionProvider();
 			var dataSource = AssembleDataSourceReverse(InitialDataSourcePipeline, zoneAppId.Item1, zoneAppId.Item2, configProvider);
 
-			var publishingFilter = GetDataSource<PublishingFilter>(zoneAppId.Item1, zoneAppId.Item2, dataSource, configProvider);
+			var publishingFilter = GetDataSource<PublishingFilter>(zoneAppId.Item1, zoneAppId.Item2, dataSource, configProvider, parentLog);
 			publishingFilter.ShowDrafts = showDrafts;
 
 			return publishingFilter;

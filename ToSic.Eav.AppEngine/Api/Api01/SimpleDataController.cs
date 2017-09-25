@@ -4,6 +4,7 @@ using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repository.Efc;
@@ -21,7 +22,7 @@ namespace ToSic.Eav.Api.Api01
     /// <summary>
     /// This is a simple controller with some Create, Update and Delete commands. 
     /// </summary>
-    public class SimpleDataController
+    public class SimpleDataController: HasLog
     {
         private readonly DbDataController _context;
 
@@ -33,21 +34,19 @@ namespace ToSic.Eav.Api.Api01
 
         private readonly int _appId;
 
-        private Log Log { get; }
-
+        ///// <param name="userName">Name of user loged in</param>
         /// <summary>
         /// Create a simple data controller to create, update and delete entities.
         /// </summary>
         /// <param name="zoneId">Zone ID</param>
         /// <param name="appId">App ID</param>
-        ///// <param name="userName">Name of user loged in</param>
         /// <param name="defaultLanguageCode">Default language of system</param>
-        public SimpleDataController(int zoneId, int appId, string defaultLanguageCode, Log parentLog)
+        /// <param name="parentLog"></param>
+        public SimpleDataController(int zoneId, int appId, string defaultLanguageCode, Log parentLog): base("SimpDC", parentLog)
         {
             //_zoneId = zoneId;
             _appId = appId;
             _defaultLanguageCode = defaultLanguageCode;
-            Log = new Log("SimpDC", parentLog);
             _context = DbDataController.Instance(zoneId, appId, Log);
             _appManager = new AppManager(zoneId, appId, Log);
         }
@@ -66,6 +65,7 @@ namespace ToSic.Eav.Api.Api01
         /// <exception cref="ArgumentException">Content-type does not exist, or an attribute in values</exception>
         public void Create(string contentTypeName, Dictionary<string, object> values)
         {
+            Log.Add($"create type:{contentTypeName}");
             // ensure it's case insensitive...
             values = new Dictionary<string, object>(values, StringComparer.OrdinalIgnoreCase);
 
@@ -110,6 +110,7 @@ namespace ToSic.Eav.Api.Api01
         /// <exception cref="ArgumentNullException">Entity does not exist</exception>
         public void Update(int entityId, Dictionary<string, object> values)
         {
+            Log.Add($"update i:{entityId}");
             var entity = _context.Entities.GetDbEntity(entityId);
             Update(entity, values);
         }
@@ -125,14 +126,16 @@ namespace ToSic.Eav.Api.Api01
         /// </param>
         /// <exception cref="ArgumentException">Attribute in values does not exit</exception>
         /// <exception cref="ArgumentNullException">Entity does not exist</exception>
-        public void Update(Guid entityGuid, Dictionary<string, object> values)//, bool filterUnknownFields = true)
+        public void Update(Guid entityGuid, Dictionary<string, object> values)
         {
+            Log.Add($"update i:{entityGuid}");
             var entity = _context.Entities.GetMostCurrentDbEntity(entityGuid);
             Update(entity, values);
         }
 
         private void Update(ToSicEavEntities entity, Dictionary<string, object> values, bool filterUnknownFields = true)
         {
+            Log.Add($"update entity:{entity.EntityId}, vals⋮{values.Count}, filter:{filterUnknownFields}");
             var attributeSet = _context.AttribSet.GetDbAttribSet(entity.AttributeSetId);
             var importEntity = new Entity(_appId, entity.EntityGuid, attributeSet.StaticName, new Dictionary<string, object>());// CreateImportEntity(entity.EntityGuid, attributeSet.StaticName);
 
@@ -149,15 +152,7 @@ namespace ToSic.Eav.Api.Api01
         /// </summary>
         /// <param name="entityId">Entity ID</param>
         /// <exception cref="InvalidOperationException">Entity cannot be deleted for example when it is referenced by another object</exception>
-        public void Delete(int entityId)
-        {
-            //// todo: refactor to use the eav-api delete
-            //if (!_context.Entities.CanDeleteEntity(entityId).Item1)
-            //    throw new InvalidOperationException("The entity " + entityId +
-            //                                        " cannot be deleted because of it is referenced by another object.");
-            //_context.Entities.DeleteEntity(entityId);
-            _appManager.Entities.Delete(entityId);
-        }
+        public void Delete(int entityId) => _appManager.Entities.Delete(entityId);
 
 
         /// <summary>
@@ -166,16 +161,12 @@ namespace ToSic.Eav.Api.Api01
         /// <param name="entityGuid">Entity GUID</param>
         /// <exception cref="ArgumentNullException">Entity does not exist</exception>
         /// <exception cref="InvalidOperationException">Entity cannot be deleted for example when it is referenced by another object</exception>
-        public void Delete(Guid entityGuid)
-        {
-            // todo: refactor to use the eav-api delete
-            var entity = _context.Entities.GetMostCurrentDbEntity(entityGuid);
-            Delete(entity.EntityId);
-        }
+        public void Delete(Guid entityGuid) => Delete(_context.Entities.GetMostCurrentDbEntity(entityGuid).EntityId);
 
 
         private Dictionary<string, object> ConvertEntityRelations(Dictionary<string, object> values)
         {
+            Log.Add("convert entity relations");
             var result = new Dictionary<string, object>();
             foreach (var value in values)
             {
@@ -198,28 +189,27 @@ namespace ToSic.Eav.Api.Api01
             return result;
         }
 
-        private void ExecuteImport(Entity entity)
-        {
-            new AppManager(_appId, Log).Entities.Save(entity);
-            //var import = new DbImport(_zoneId, _appId, false);
-            //import.ImportIntoDb(null, new[] { entity });
-            //SystemManager.Purge(_zoneId, _appId);
-        }
+        private void ExecuteImport(Entity entity) => new AppManager(_appId, Log).Entities.Save(entity);
 
         private void AppendAttributeValues(Entity entity, ToSicEavAttributeSets attributeSet, Dictionary<string, object> values, string valuesLanguage, bool valuesReadOnly, bool resolveHyperlink)
         {
+            Log.Add("append attrib values");
             foreach (var value in values)
             {
                 // Handle special attributes (for example of the system)
                 if (value.Key.ToLower() == Constants.EntityFieldIsPublished)
                 {
                     entity.IsPublished = value.Value as bool? ?? true;
+                    Log.Add($"isPublished: {entity.IsPublished}");
                     continue;
                 }
 
                 // Ignore entity guid - it's already set earlier
                 if (value.Key.ToLower() == Constants.EntityFieldGuid)
+                {
+                    Log.Add("entity-guid, ignore here");
                     continue;
+                }
 
                 // Handle content-type attributes
                 var attribute = attributeSet.AttributeByName(value.Key);

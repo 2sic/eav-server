@@ -49,6 +49,11 @@ namespace ToSic.Eav.Logging.Simple
             Add(new Entry(this, message));
             return message;
         }
+        public string Warn(string message)
+        {
+            Add(new Entry(this, "WARNING: " + message));
+            return message;
+        }
 
 
         /// <summary>

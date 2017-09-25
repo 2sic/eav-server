@@ -59,6 +59,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <returns></returns>
         internal ToSicEavEntities ClearDraftBranchAndSetPublishedState(ToSicEavEntities publishedEntity, int? draftId = null, bool newPublishedState = true)
         {
+            Log.Add($"clear draft branch for i:{publishedEntity.EntityId}, draft:{draftId}, state:{newPublishedState}");
             // find main Db item and if 
             //var publishedEntity = DbContext.Entities.GetDbEntity(entityId);
             var unpublishedEntityId = draftId ?? DbContext.Publishing.GetDraftBranchEntityId(publishedEntity.EntityId);

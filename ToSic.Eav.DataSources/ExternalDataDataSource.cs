@@ -4,6 +4,8 @@ namespace ToSic.Eav.DataSources
 {
     public class ExternalDataDataSource: BaseDataSource
     {
+        public override string LogId => "DS-Ext";
+
         public ExternalDataDataSource(): base()
         {
             // set the creation date to the moment the object is constructed

@@ -9,9 +9,10 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
 	public class DeferredPipelineQuery : BaseDataSource
 	{
-		#region Configuration-properties
+        #region Configuration-properties
+	    public override string LogId => "DSDQry";
 
-	    public IEntity QueryDefinition;
+        public IEntity QueryDefinition;
 
 		private IDictionary<string, IDataStream> _Out = new Dictionary<string, IDataStream>();
 		private bool _requiresRebuildOfOut = true;

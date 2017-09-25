@@ -16,9 +16,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         internal void DoWhileQueueingRelationships(Action action)
         {
+            var randomId = Guid.NewGuid().ToString().Substring(0, 4);
+            Log.Add($"relationship queue:{randomId} start");
+
             var willPurgeQueue = _outermostQueueCall;
             _outermostQueueCall = false;
             action.Invoke();
+            Log.Add($"relationship queue:{randomId} completed");
 
             if (willPurgeQueue)
                 ImportRelationshipQueueAndSave();
@@ -45,12 +49,14 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         private void UpdateEntityRelationshipsAndSave(int attributeId, IEnumerable<int?> newValue, ToSicEavEntities currentEntity)
         {
+            Log.Add(() => $"updating relationships on i:{currentEntity.EntityId}, attrib:{attributeId}, vals:[{string.Join(",", newValue)}]");
             // remove existing Relationships that are not in new list
             var newEntityIds = newValue.ToList();
             var existingRelationships = currentEntity.RelationshipsWithThisAsParent
                 .Where(e => e.AttributeId == attributeId).ToList();
 
             // Delete all existing relationships (important, because the order, which is part of the key, is important afterwards)
+            Log.Add($"found existing rels⋮{existingRelationships.Count}");
             foreach (var relationToDelete in existingRelationships)
                 DbContext.SqlDb.ToSicEavEntityRelationships.Remove(relationToDelete);
             DbContext.SqlDb.SaveChanges();  // this is necessary after remove, because otherwise EF state tracking gets messed up
@@ -73,30 +79,39 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Update Relationships of an Entity. Update isn't done until ImportEntityRelationshipsQueue() is called!
         /// </summary>
-        private void AddToQueue(int attributeId, List<Guid?> newValue, int entityId, bool flushAll) => _saveQueue.Add(new RelationshipToSave
+        private void AddToQueue(int attributeId, List<Guid?> newValue, int entityId, bool flushAll)
+        {
+            Log.Add($"add to queue for i:{entityId}, guids⋮{newValue.Count}");
+            _saveQueue.Add(new RelationshipToSave
             {
                 AttributeId = attributeId,
                 ChildEntityGuids = newValue,
                 ParentEntityId = entityId,
                 FlushAllEntityRelationships = flushAll
             });
+        }
 
         /// <summary>
         /// Update Relationships of an Entity. Update isn't done until ImportEntityRelationshipsQueue() is called!
         /// </summary>
-        private void AddToQueue(int attributeId, List<int?> newValue, int entityId, bool flushAll) => _saveQueue.Add(new RelationshipToSave
+        private void AddToQueue(int attributeId, List<int?> newValue, int entityId, bool flushAll)
+        {
+            Log.Add($"add to int for i:{entityId}, ints⋮{newValue.Count}");
+            _saveQueue.Add(new RelationshipToSave
             {
                 AttributeId = attributeId,
                 ChildEntityIds = newValue,
                 ParentEntityId = entityId,
                 FlushAllEntityRelationships = flushAll
             });
+        }
 
         /// <summary>
         /// Import Entity Relationships Queue (Populated by UpdateEntityRelationships) and Clear Queue afterward.
         /// </summary>
         internal void ImportRelationshipQueueAndSave()
         {
+            Log.Add("import relationship queue");
             // todo: if so determines it, clear all existing relationships first
             var fullFlush = _saveQueue
                 .Where(r => r.FlushAllEntityRelationships)
@@ -111,6 +126,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     // note: can't use .Clear(), as that will try to actually delete the children
                     if (fullFlush.Count > 0)
                     {
+                        Log.Add("found items, will do full-flush");
                         foreach (var id in fullFlush)
                         {
                             var ent = DbContext.Entities.GetDbEntity(id);
@@ -122,6 +138,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                         DbContext.SqlDb.SaveChanges(); 
                     }
 
+                    Log.Add($"will add relationships⋮{_saveQueue.Count}");
                     foreach (var relationship in _saveQueue)
                     {
                         var entity = relationship.ParentEntityId > 0
@@ -184,6 +201,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             if(dbEntity.EntityId <= 0)
                 throw new Exception("can't work on relationships if entity doesn't have a repository id yet");
 
+            Log.Add("save relationships");
             DoWhileQueueingRelationships(() =>
             {
                 // todo: put all relationships into queue

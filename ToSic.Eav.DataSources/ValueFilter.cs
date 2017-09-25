@@ -13,6 +13,7 @@ namespace ToSic.Eav.DataSources
     public sealed class ValueFilter : BaseDataSource
     {
         #region Configuration-properties Attribute, Value, Language, Operator
+        public override string LogId => "DSVlFl";
 
         private const string AttrKey = "Attribute";
         private const string FilterKey = "Value";
@@ -25,17 +26,17 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public string Attribute
 		{
-			get { return Configuration[AttrKey]; }
-			set { Configuration[AttrKey] = value; }
-		}
+			get => Configuration[AttrKey];
+            set => Configuration[AttrKey] = value;
+        }
 
 		/// <summary>
 		/// The filter that will be used - for example "Daniel" when looking for an entity w/the value Daniel
 		/// </summary>
 		public string Value
 		{
-			get { return Configuration[FilterKey]; }
-			set { Configuration[FilterKey] = value; }
+			get => Configuration[FilterKey];
+		    set => Configuration[FilterKey] = value;
 		}
 
 		/// <summary>
@@ -43,8 +44,8 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public string Languages
 		{
-			get { return Configuration[LangKey]; }
-			set { Configuration[LangKey] = value; }
+			get => Configuration[LangKey];
+		    set => Configuration[LangKey] = value;
 		}
 
         /// <summary>
@@ -53,13 +54,13 @@ namespace ToSic.Eav.DataSources
         /// </summary>
 		public string Operator
 		{
-			get { return Configuration[OperatorKey]; }
-			set { Configuration[OperatorKey] = value; }
-		}
+			get => Configuration[OperatorKey];
+            set => Configuration[OperatorKey] = value;
+        }
 		public string Take
 		{
-			get { return Configuration[TakeKey]; }
-			set { Configuration[TakeKey] = value; }
+			get => Configuration[TakeKey];
+		    set => Configuration[TakeKey] = value;
 		}		
         #endregion
 

@@ -14,16 +14,16 @@ namespace ToSic.Eav.DataSources
 	{
 		#region Configuration-properties
 		private const string AttributeNamesKey = "AttributeNames";
+	    public override string LogId => "DS-AtF";
 
-		/// <summary>
-		/// A string containing one or more entity-ids. like "27" or "27,40,3063,30306"
-		/// </summary>
-		public string AttributeNames
+        /// <summary>
+        /// A string containing one or more entity-ids. like "27" or "27,40,3063,30306"
+        /// </summary>
+        public string AttributeNames
 		{
-		    get { return Configuration[AttributeNamesKey]; }
-		    set { Configuration[AttributeNamesKey] = value; }
-
-		}
+		    get => Configuration[AttributeNamesKey];
+            set => Configuration[AttributeNamesKey] = value;
+        }
 
 		#endregion
 

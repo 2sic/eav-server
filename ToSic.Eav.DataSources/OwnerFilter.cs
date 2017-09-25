@@ -10,17 +10,19 @@ namespace ToSic.Eav.DataSources
 	[PipelineDesigner]
 	public class OwnerFilter : BaseDataSource
 	{
-		#region Configuration-properties
-		private const string _identityCode = "IdentityCode";
+        #region Configuration-properties
+	    public override string LogId => "DS-Own";
+
+        private const string _identityCode = "IdentityCode";
 
         /// <summary>
         /// Indicates whether to show drafts or only Published Entities
         /// </summary>
         public string Identity
 		{
-			get { return Configuration[_identityCode]; }
-			set { Configuration[_identityCode] = value; }
-		}
+			get => Configuration[_identityCode];
+            set => Configuration[_identityCode] = value;
+        }
 		#endregion
 
 		/// <summary>

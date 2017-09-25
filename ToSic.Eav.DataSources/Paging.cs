@@ -12,7 +12,9 @@ namespace ToSic.Eav.DataSources
 	[PipelineDesigner]
 	public sealed class Paging: BaseDataSource
 	{
-		#region Configuration-properties (no config)
+        #region Configuration-properties (no config)
+	    public override string LogId => "DSPage";
+
         private const string PageSizeKey = "PageSize";
 	    private const int DefPageSize = 10;
         private const string PageNumberKey = "PageNumber";

@@ -15,8 +15,9 @@ namespace ToSic.Eav.DataSources.Caches
         // Refresh when Source Refreshes ...? todo!
         // Time
         // Reload in BG
+	    public override string LogId => "DS-ChA";
 
-		#region Configuration-properties
+        #region Configuration-properties
         private const string RefreshOnSourceRefreshKey = "RefreshOnSourceRefresh";
         private const string CacheDurationInSecondsKey = "CacheDurationInSeconds";
 	    private const string ReturnCacheWhileRefreshingKey = "ReturnCacheWhileRefreshing";
@@ -27,20 +28,20 @@ namespace ToSic.Eav.DataSources.Caches
 		/// </summary>
         public int CacheDurationInSeconds
 		{
-            get { return Int32.Parse(Configuration[CacheDurationInSecondsKey]); }
-		    set { Configuration[CacheDurationInSecondsKey] = value.ToString(); }
+            get => Int32.Parse(Configuration[CacheDurationInSecondsKey]);
+		    set => Configuration[CacheDurationInSecondsKey] = value.ToString();
 		}
 
         public bool RefreshOnSourceRefresh
 	    {
-            get { return Convert.ToBoolean(Configuration[RefreshOnSourceRefreshKey]); }
-            set { Configuration[RefreshOnSourceRefreshKey] = value.ToString(); }
-	    }
+            get => Convert.ToBoolean(Configuration[RefreshOnSourceRefreshKey]);
+            set => Configuration[RefreshOnSourceRefreshKey] = value.ToString();
+        }
 
         public bool ReturnCacheWhileRefreshing 
         {
-            get { return Convert.ToBoolean(Configuration[ReturnCacheWhileRefreshingKey]); }
-            set { Configuration[ReturnCacheWhileRefreshingKey] = value.ToString(); }
+            get => Convert.ToBoolean(Configuration[ReturnCacheWhileRefreshingKey]);
+            set => Configuration[ReturnCacheWhileRefreshingKey] = value.ToString();
         }
 
 

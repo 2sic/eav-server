@@ -6,10 +6,12 @@
 	[PipelineDesigner]
 	public class PassThrough : BaseDataSource
 	{
-		/// <summary>
-		/// Constructs a new PassThrough DataSources
-		/// </summary>
-		public PassThrough()
+	    public override string LogId => "DS-Pas";
+
+        /// <summary>
+        /// Constructs a new PassThrough DataSources
+        /// </summary>
+        public PassThrough()
 		{
 			Out = In;
 		}

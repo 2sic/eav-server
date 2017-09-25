@@ -10,16 +10,18 @@ namespace ToSic.Eav.DataSources
 	[PipelineDesigner]
 	public class EntityTypeFilter : BaseDataSource
 	{
-		#region Configuration-properties
-		private const string TypeNameKey = "TypeName";
+        #region Configuration-properties
+	    public override string LogId => "DSTyFl";
+
+        private const string TypeNameKey = "TypeName";
 
 		/// <summary>
 		/// The name of the type to filter for. 
 		/// </summary>
 		public string TypeName
 		{
-			get { return Configuration[TypeNameKey]; }
-			set { Configuration[TypeNameKey] = value; }
+			get => Configuration[TypeNameKey];
+		    set => Configuration[TypeNameKey] = value;
 		}
 		#endregion
 

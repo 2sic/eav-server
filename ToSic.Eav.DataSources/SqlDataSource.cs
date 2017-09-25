@@ -40,8 +40,8 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public string ConnectionStringName
 		{
-			get { return Configuration[ConnectionStringNameKey]; }
-			set { Configuration[ConnectionStringNameKey] = value; }
+			get => Configuration[ConnectionStringNameKey];
+		    set => Configuration[ConnectionStringNameKey] = value;
 		}
 
 		/// <summary>
@@ -49,8 +49,8 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public string ConnectionString
 		{
-			get { return Configuration[ConnectionStringKey]; }
-			set { Configuration[ConnectionStringKey] = value; }
+			get => Configuration[ConnectionStringKey];
+		    set => Configuration[ConnectionStringKey] = value;
 		}
 
 		/// <summary>
@@ -58,8 +58,8 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public string SelectCommand
 		{
-			get { return Configuration[SelectCommandKey]; }
-			set { Configuration[SelectCommandKey] = value; }
+			get => Configuration[SelectCommandKey];
+		    set => Configuration[SelectCommandKey] = value;
 		}
 
 		/// <summary>
@@ -67,8 +67,8 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public string ContentType
 		{
-			get { return Configuration[ContentTypeKey]; }
-			set { Configuration[ContentTypeKey] = value; }
+			get => Configuration[ContentTypeKey];
+		    set => Configuration[ContentTypeKey] = value;
 		}
 
 		/// <summary>
@@ -76,8 +76,8 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public string TitleField
 		{
-			get { return Configuration[TitleFieldKey]; }
-			set { Configuration[TitleFieldKey] = value; }
+			get => Configuration[TitleFieldKey];
+		    set => Configuration[TitleFieldKey] = value;
 		}
 
 		/// <summary>
@@ -85,8 +85,8 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public string EntityIdField
 		{
-			get { return Configuration[EntityIdFieldKey]; }
-			set { Configuration[EntityIdFieldKey] = value; }
+			get => Configuration[EntityIdFieldKey];
+		    set => Configuration[EntityIdFieldKey] = value;
 		}
 
 		#endregion

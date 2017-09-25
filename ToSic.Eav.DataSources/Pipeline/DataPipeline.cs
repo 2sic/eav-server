@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.ValueProvider;
 
 namespace ToSic.Eav.DataSources
@@ -56,9 +57,9 @@ namespace ToSic.Eav.DataSources
         /// <param name="appId"></param>
         /// <param name="valuesCollectionProvider"></param>
         /// <returns></returns>
-	    public static Dictionary<string, IDataSource> AllPipelines(int zoneId, int appId, IValueCollectionProvider valuesCollectionProvider)
+	    public static Dictionary<string, IDataSource> AllPipelines(int zoneId, int appId, IValueCollectionProvider valuesCollectionProvider, Log parentLog)
 	    {
-            var source = DataSource.GetInitialDataSource(appId: appId);
+            var source = DataSource.GetInitialDataSource(appId: appId, parentLog:parentLog);
             var typeFilter = DataSource.GetDataSource<EntityTypeFilter>(appId: appId, upstream: source);
             typeFilter.TypeName = Constants.DataPipelineStaticName;
 

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.ValueProvider;
 
 namespace ToSic.Eav.DataSources
@@ -16,6 +15,8 @@ namespace ToSic.Eav.DataSources
     /// </summary>
     public abstract class BaseDataSource : HasLog, IDataSource, IDataTarget
     {
+        public new abstract string LogId { get; }
+
         /// <summary>
         /// Constructor
         /// </summary>

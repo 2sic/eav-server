@@ -10,6 +10,7 @@ namespace ToSic.Eav.DataSources.Caches
     /// </summary>
     public class QuickCache : BaseCache
     {
+        public override string LogId => "DS-QCh";
 
         public QuickCache()
         {
@@ -18,15 +19,15 @@ namespace ToSic.Eav.DataSources.Caches
 
         public override Dictionary<int, Zone> ZoneApps 
         {
-            get { return _zoneApps; }
-            protected set { _zoneApps = value; }
+            get => _zoneApps;
+            protected set => _zoneApps = value;
         }
         private static Dictionary<int, Zone> _zoneApps;
 
         public override Dictionary<int, string> AssignmentObjectTypes
         {
-            get { return _assignmentObjectTypes; }
-            protected set { _assignmentObjectTypes = value; }
+            get => _assignmentObjectTypes;
+            protected set => _assignmentObjectTypes = value;
         }
         private static Dictionary<int, string> _assignmentObjectTypes;
 
