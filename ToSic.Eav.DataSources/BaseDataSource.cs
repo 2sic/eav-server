@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.ValueProvider;
 
@@ -13,28 +14,16 @@ namespace ToSic.Eav.DataSources
     /// The base class, which should always be inherited. Already implements things like Get One / Get many, etc. 
     /// also maintains default User-May-Do-Edit/Sort etc. values
     /// </summary>
-    public abstract class BaseDataSource : IDataSource, IDataTarget
+    public abstract class BaseDataSource : HasLog, IDataSource, IDataTarget
     {
-        protected Log Log { get; set; }
-
         /// <summary>
         /// Constructor
         /// </summary>
-        protected BaseDataSource()
+        protected BaseDataSource() : base("DataSrc")
         {
-            Log = new Log("DataSrc");
-            // CacheRelevantConfigurations = new string[0];
         }
 
-        protected void ReconfigLog(string name, Log parentLog = null)
-        {
-            Log.Rename(name);
-            if (parentLog != null)
-                Log.LinkTo(parentLog);
-        }
-
-        public void LinkLog(Log parentLog) => Log.LinkTo(parentLog);
-
+        /// <inheritdoc />
         /// <summary>
         /// Name of this data source - mainly to aid debugging
         /// </summary>
@@ -106,11 +95,13 @@ namespace ToSic.Eav.DataSources
 
         #endregion
 
+        /// <inheritdoc />
         /// <summary>
         /// The app this data-source is attached to
         /// </summary>
         public virtual int AppId { get; set; }
 
+        /// <inheritdoc />
         /// <summary>
         /// The Zone this data-source is attached to
         /// </summary>
@@ -152,6 +143,7 @@ namespace ToSic.Eav.DataSources
             _configurationIsLoaded = true;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Attach specified DataSource to In
         /// </summary>

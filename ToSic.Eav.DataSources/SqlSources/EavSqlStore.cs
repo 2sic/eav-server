@@ -29,7 +29,7 @@ namespace ToSic.Eav.DataSources.SqlSources
 		/// </summary>
 		public EavSqlStore()
 		{
-            ReconfigLog("EaSqDS");
+            Log.Rename("EaSqDS");
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntities));
 
             // this function will load data as it's needed
