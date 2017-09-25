@@ -16,7 +16,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
     {
         private const string EntitiesTableName = "ToSIC_EAV_Entities";
 
-        internal DbVersioning(DbDataController cntx, Log parentLog = null) : base(cntx, parentLog, "DbVers") { }
+        internal DbVersioning(DbDataController cntx) : base(cntx, "DbVers") { }
 
         #region Change-Log ID
         private int _mainChangeLogId;
@@ -84,7 +84,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         {
             var serializer = new JsonSerializer();
             var loader = new Efc11Loader(DbContext.SqlDb);
-            var appPackageRightNow = loader.AppPackage(DbContext.AppId);
+            var appPackageRightNow = loader.AppPackage(DbContext.AppId, parentLog:Log);
             serializer.Initialize(appPackageRightNow);
             return serializer;
         }

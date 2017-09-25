@@ -44,19 +44,19 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// The template management subsystem
         /// </summary>
-        public TemplatesManager Templates => _templates ?? (_templates = new TemplatesManager(this));
+        public TemplatesManager Templates => _templates ?? (_templates = new TemplatesManager(this, Log));
         private TemplatesManager _templates;
 
         /// <summary>
         /// The entity-management subsystem
         /// </summary>
-        public EntitiesManager Entities => _entities ?? (_entities = new EntitiesManager(this));
+        public EntitiesManager Entities => _entities ?? (_entities = new EntitiesManager(this, Log));
         private EntitiesManager _entities;
 
-        public QueryManager Queries => _queries ?? (_queries = new QueryManager(this));
+        public QueryManager Queries => _queries ?? (_queries = new QueryManager(this, Log));
         private QueryManager _queries;
 
-        public ContentTypeManager ContentTypes => _contentTypes ?? (_contentTypes = new ContentTypeManager(this));
+        public ContentTypeManager ContentTypes => _contentTypes ?? (_contentTypes = new ContentTypeManager(this, Log));
         private ContentTypeManager  _contentTypes;
 
 

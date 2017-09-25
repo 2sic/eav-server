@@ -9,7 +9,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 {
     public class DbPipeline: BllCommandBase
     {
-        public DbPipeline(DbDataController c, Log parentLog = null) : base(c, parentLog, "DbPipe") { }
+        public DbPipeline(DbDataController c) : base(c, "DbPipe") { }
 
         /// <summary>
         /// Copy an existing DataPipeline by copying all Entities and uptdate their GUIDs

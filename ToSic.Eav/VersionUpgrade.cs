@@ -2,8 +2,8 @@
 using System.Linq;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Repository.Efc;
-using ToSic.Eav.Repository.Efc.Parts;
 
 namespace ToSic.Eav
 {
@@ -12,16 +12,19 @@ namespace ToSic.Eav
 	/// </summary>
 	public class VersionUpgrade
 	{
-		private readonly DbDataController _metaDataCtx = DbDataController.Instance(Constants.DefaultZoneId, Constants.MetaDataAppId);
-		//private readonly DbDataController _metaDataCtx = DbDataController.Instance(Constants.DefaultZoneId, Constants.MetaDataAppId);
+	    private static Log Log;
+
+        private readonly DbDataController _metaDataCtx = DbDataController.Instance(Constants.DefaultZoneId, Constants.MetaDataAppId, Log);
+
 		private readonly string _userName;
 
-		/// <summary>
-		/// Constructor
-		/// </summary>
-		public VersionUpgrade(string userName)
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public VersionUpgrade(string userName, Log parentLog)
 		{
 			_userName = userName;
+            Log = new Log("VerUpg", parentLog);
 		}
 
 		/// <summary>

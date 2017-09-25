@@ -7,7 +7,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 {
     internal class DbPublishing : BllCommandBase
     {
-        public DbPublishing(DbDataController c, Log parentLog = null) : base(c, parentLog, "DbPubl") { }
+        public DbPublishing(DbDataController c) : base(c, "DbPubl") { }
 
         /// <summary>
         /// Publish a Draft-Entity

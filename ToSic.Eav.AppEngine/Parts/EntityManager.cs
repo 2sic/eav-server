@@ -15,9 +15,8 @@ namespace ToSic.Eav.Apps.Parts
     /// </summary>
     public partial class EntitiesManager: ManagerBase
     {
-        public EntitiesManager(AppManager app, Log parentLog = null) : base(app, parentLog)
+        public EntitiesManager(AppManager app, Log parentLog = null) : base(app, parentLog, "EntMan")
         {
-            Log.Rename("EntMan");
         }
 
         /// <summary>
@@ -37,12 +36,10 @@ namespace ToSic.Eav.Apps.Parts
         /// <summary>
         /// Publish an entity 
         /// </summary>
-        /// <param name="repositoryId"></param>
-        /// <param name="state"></param>
         /// <returns></returns>
         public void Publish(int[] entityIds)
         {
-            Log.Add("publish many:" + entityIds.Length + " items");
+            Log.Add(() => "publish many:" + entityIds.Length + " items [" + string.Join(",", entityIds) + "]");
             foreach (var eid in entityIds)
             {
                 try
@@ -86,7 +83,12 @@ namespace ToSic.Eav.Apps.Parts
             return ok;
         }
 
-        public bool Delete(Guid guid) => _appManager.DataController.Entities.DeleteEntity(_appManager.DataController.Entities.GetMostCurrentDbEntity(guid).EntityId);
+        public bool Delete(Guid guid)
+        {
+            Log.Add($"delete guid:{guid}");
+            return _appManager.DataController.Entities.DeleteEntity(_appManager.DataController.Entities
+                .GetMostCurrentDbEntity(guid).EntityId);
+        }
 
         #endregion
         
@@ -109,6 +111,7 @@ namespace ToSic.Eav.Apps.Parts
 
         public Tuple<int, Guid> Create(string typeName, Dictionary<string, object> values, IIsMetadata isMetadata = null)
         {
+            Log.Add($"create type:{typeName}, meta:{isMetadata}, val-count:{values.Count}");
             var newEnt = new Entity(_appManager.AppId, 0, typeName, values);
             if (isMetadata != null) newEnt.SetMetadata(isMetadata as Metadata);
             var eid = Save(newEnt);
@@ -162,6 +165,7 @@ namespace ToSic.Eav.Apps.Parts
         /// <returns></returns>
         public int GetOrCreate(Guid newGuid, string contentTypeName, Dictionary<string, object> values)
         {
+            Log.Add($"get or create guid:{newGuid}, type:{contentTypeName}, val-count:{values.Count}");
             if (_appManager.DataController.Entities.EntityExists(newGuid))
             {
                 // check if it's deleted - if yes, resurrect

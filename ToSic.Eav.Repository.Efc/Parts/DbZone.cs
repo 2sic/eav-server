@@ -5,7 +5,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 {
     public class DbZone: BllCommandBase
     {
-        public DbZone(DbDataController cntx, Log parentLog = null) : base(cntx, parentLog, "DbZone") {}
+        public DbZone(DbDataController cntx) : base(cntx, "DbZone") {}
        
         /// <summary>
         /// Creates a new Zone with a default App and Culture-Root-Dimension

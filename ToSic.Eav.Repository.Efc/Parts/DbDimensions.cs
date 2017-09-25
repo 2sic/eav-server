@@ -9,7 +9,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 {
 	public class DbDimensions: BllCommandBase
 	{
-        public DbDimensions(DbDataController ctx, Log parentLog = null) : base(ctx, parentLog, "DbDims") { }
+        public DbDimensions(DbDataController ctx) : base(ctx, "DbDims") { }
 
 		private int GetDimensionId(string systemKey, string externalKey)
 		{

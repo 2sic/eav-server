@@ -42,7 +42,7 @@ namespace ToSic.Eav.WebApi
         internal IMetaDataSource MetaDs => DataSource.GetMetaDataSource(appId: AppId);
 
         private DbDataController _dbContext;
-	    internal DbDataController CurrentContext => _dbContext ?? (_dbContext = DbDataController.Instance(appId: AppId));
+	    internal DbDataController CurrentContext => _dbContext ?? (_dbContext = DbDataController.Instance(appId: AppId, parentLog: Log));
 
         // I must keep the serializer so it can be configured from outside if necessary
 	    private Serializer _serializer;

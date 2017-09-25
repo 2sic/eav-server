@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Versions;
 using ToSic.Eav.Repository.Efc.Tests.Mocks;
@@ -12,6 +13,8 @@ namespace ToSic.Eav.Repository.Efc.Tests
     [TestClass]
     public class VersioningTests
     {
+        public static Log Log = new Log("TstVer");
+
         #region Test Data
 
         private int TestItemWithCa20Changes = 3893;
@@ -39,7 +42,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var id = DevPc2dmItemOnHome;
             var version = 2;
             var appMan = new AppManager(td.ZoneId, td.AppId);
-            var dc = DbDataController.Instance(td.ZoneId, td.AppId);
+            var dc = DbDataController.Instance(td.ZoneId, td.AppId, Log);
             var all = appMan.Entities.VersionHistory(id);  dc.Versioning.GetHistoryList(id, false);
             var vId = all.First(x => x.VersionNumber == version).ChangeSetId;
 
@@ -60,9 +63,9 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             var id = TestItemWithCa20Changes;
             var version = 6;
-            var all = DbDataController.Instance(ZoneId).Versioning.GetHistoryList(id, false);
+            var all = DbDataController.Instance(ZoneId, parentLog:Log).Versioning.GetHistoryList(id, false);
             var vId = all.First(x => x.VersionNumber == version).ChangeSetId;
-            var vItem = DbDataController.Instance(ZoneId).Versioning.GetItem(id, vId);
+            var vItem = DbDataController.Instance(ZoneId, parentLog:Log).Versioning.GetItem(id, vId);
             Console.Write(vItem.Json);
         }
 
@@ -71,7 +74,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         private List<ItemHistory> GetHistoryTest(int entityId, int expectedCount)
         {
-            var history = DbDataController.Instance(ZoneId).Versioning.GetHistoryList(entityId, true);
+            var history = DbDataController.Instance(ZoneId, parentLog:Log).Versioning.GetHistoryList(entityId, true);
             Assert.AreEqual(expectedCount, history.Count, "should have 20 items in history for this one");
             return history;
         }

@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.ImportExport;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Repository.Efc.Tests.Mocks;
 
 namespace ToSic.Eav.Repository.Efc.Tests
@@ -12,6 +13,8 @@ namespace ToSic.Eav.Repository.Efc.Tests
     [TestClass]
     public class ImportAppTests
     {
+        public static Log Log = new Log("TstImA");
+
         //public const string BaseTestPath = @"C:\Projects\eav-server\ToSic.Eav.Repository.Efc.Tests\";
         #region Test Data
 
@@ -83,10 +86,10 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         public void DeleteAnApp(string appGuid)
         {
-            var applist = DbDataController.Instance(ZoneId).SqlDb.ToSicEavApps.Where(a => a.ZoneId == ZoneId).ToList();
+            var applist = DbDataController.Instance(ZoneId, parentLog: Log).SqlDb.ToSicEavApps.Where(a => a.ZoneId == ZoneId).ToList();
             var appId = applist.FirstOrDefault(a => a.Name == appGuid)?.AppId ?? 0;
             if (appId > 0)
-                new ZoneManager(ZoneId).DeleteApp(appId);
+                new ZoneManager(ZoneId, Log).DeleteApp(appId);
 
         }
     }

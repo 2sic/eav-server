@@ -234,6 +234,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         internal List<int> SaveEntity(List<IEntity> entities, SaveOptions saveOptions)
         {
+            Log.Add($"save many count:{entities?.Count}");
             var ids = new List<int>();
 
             DbContext.DoInTransaction(() => DbContext.Versioning.QueueDuringAction(() =>

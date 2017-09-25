@@ -2,24 +2,38 @@
 using System.Collections.Generic;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.ValueProvider;
 
 namespace ToSic.Eav.DataSources
 {
+    /// <inheritdoc cref="IDataSource" />
+    /// <inheritdoc cref="IDataTarget" />
     /// <summary>
     /// The base class, which should always be inherited. Already implements things like Get One / Get many, etc. 
     /// also maintains default User-May-Do-Edit/Sort etc. values
     /// </summary>
     public abstract class BaseDataSource : IDataSource, IDataTarget
     {
+        protected Log Log { get; set; }
 
         /// <summary>
         /// Constructor
         /// </summary>
         protected BaseDataSource()
         {
+            Log = new Log("DataSrc");
             // CacheRelevantConfigurations = new string[0];
         }
+
+        protected void ReconfigLog(string name, Log parentLog = null)
+        {
+            Log.Rename(name);
+            if (parentLog != null)
+                Log.LinkTo(parentLog);
+        }
+
+        public void LinkLog(Log parentLog) => Log.LinkTo(parentLog);
 
         /// <summary>
         /// Name of this data source - mainly to aid debugging

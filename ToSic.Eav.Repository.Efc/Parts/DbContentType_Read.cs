@@ -10,7 +10,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 {
     public partial class DbContentType: BllCommandBase
     {
-        public DbContentType(DbDataController cntx, Log parentLog = null) : base(cntx, parentLog, "DbCtyp") {}
+        public DbContentType(DbDataController cntx) : base(cntx, "DbCtyp") {}
 
 
         private ToSicEavAttributeSets GetTypeByStaticName(string staticName)

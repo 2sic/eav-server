@@ -81,6 +81,6 @@ namespace ToSic.Eav.Logging.Simple
         /// Link this logger to a parent
         /// </summary>
         /// <param name="parent"></param>
-        public void LinkTo(Log parent) => _parent = parent;
+        public void LinkTo(Log parent) => _parent = parent ?? _parent; // if new parent isn't defined, don't replace
     }
 }

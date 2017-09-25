@@ -29,7 +29,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         private readonly List<RelationshipToSave> _saveQueue = new List<RelationshipToSave>();
 
 
-        public DbRelationship(DbDataController cntx, Log parentLog = null) : base(cntx, parentLog, "DbRels") {}
+        public DbRelationship(DbDataController cntx) : base(cntx, "DbRels") {}
 
         internal ICollection<ToSicEavEntityRelationships> GetRelationshipsOfParent(int parentId)
         {

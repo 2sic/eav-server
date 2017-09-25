@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.Apps.Interfaces;
 using ToSic.Eav.Apps.Parts;
-using ToSic.Eav.Data;
-using ToSic.Eav.Persistence;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Repository.Efc;
 
 namespace ToSic.Eav.Apps
@@ -13,11 +9,9 @@ namespace ToSic.Eav.Apps
     {
         #region Constructor and simple properties
 
-        public ZoneManager(int zoneId) : base(zoneId)
-        {
-        }
+        public ZoneManager(int zoneId, Log parentLog) : base(zoneId, parentLog, "ZoneMg") {}
 
-        internal DbDataController DataController => _eavContext ?? (_eavContext = DbDataController.Instance(ZoneId));
+        internal DbDataController DataController => _eavContext ?? (_eavContext = DbDataController.Instance(ZoneId, parentLog: Log));
         private DbDataController _eavContext;
 
         #endregion
@@ -29,9 +23,12 @@ namespace ToSic.Eav.Apps
 
         public int CreateApp()
         {
-            var app = DataController.App.AddApp(null, Guid.NewGuid().ToString());
+            Log.Add("create new app");
+            var appGuid = Guid.NewGuid().ToString();
+            var app = DataController.App.AddApp(null, appGuid);
 
             SystemManager.PurgeZoneList();
+            Log.Add($"app created a:{app.AppId}, guid:{appGuid}");
             return app.AppId;
         }
 
@@ -39,9 +36,10 @@ namespace ToSic.Eav.Apps
 
         #region Zone Management
 
-        public static int CreateZone(string name)
+        public static int CreateZone(string name, Log parentLog)
         {
-            var zoneId = DbDataController.Instance().Zone.AddZone(name);
+            var log = new Log("ZoneMg", parentLog, $"create zone z:{name}");
+            var zoneId = DbDataController.Instance(parentLog:parentLog).Zone.AddZone(name);
             SystemManager.PurgeZoneList();
             return zoneId;
         }
@@ -53,6 +51,7 @@ namespace ToSic.Eav.Apps
 
         public void SaveLanguage(string cultureCode, string cultureText, bool active)
         {
+            Log.Add($"save langs code:{cultureCode}, txt:{cultureText}, act:{active}");
             DataController.Dimensions.AddOrUpdateLanguage(cultureCode, cultureText, active);
             SystemManager.PurgeZoneList();
         }

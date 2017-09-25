@@ -22,7 +22,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// 
         /// </summary>
         /// <param name="dataController"></param>
-        public DbXmlExportTable(DbDataController dataController, Log parentLog = null) : base(dataController, parentLog, "DbXmEx")
+        public DbXmlExportTable(DbDataController dataController) : base(dataController, "DbXmEx")
         {
         }
 

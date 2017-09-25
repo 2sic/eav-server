@@ -40,7 +40,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="zipStream"></param>
         /// <param name="temporaryDirectory"></param>
         /// <returns></returns>
-        public bool ImportZip(Stream zipStream, string temporaryDirectory)//HttpServerUtility server)
+        public bool ImportZip(Stream zipStream, string temporaryDirectory)
         {
             List<Message> messages = _environment.Messages;
 
@@ -90,7 +90,7 @@ namespace ToSic.Eav.Apps.ImportExport
                                         && doc.Element(XmlConstants.RootNode).Element(XmlConstants.Header).Element(XmlConstants.App).Attribute(XmlConstants.Guid).Value != XmlConstants.AppContentGuid /* "Default" */;
 
                                     if (!isAppImport && !_appId.HasValue)
-                                        _appId = new ZoneRuntime(_zoneId).DefaultAppId;
+                                        _appId = new ZoneRuntime(_zoneId, Log).DefaultAppId;
 
                                     if (isAppImport)
                                     {

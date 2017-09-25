@@ -47,9 +47,9 @@ namespace ToSic.Eav.Api.Api01
             //_zoneId = zoneId;
             _appId = appId;
             _defaultLanguageCode = defaultLanguageCode;
-            _context = DbDataController.Instance(zoneId, appId);
-            _appManager = new AppManager(zoneId, appId, Log);
             Log = new Log("SimpDC", parentLog);
+            _context = DbDataController.Instance(zoneId, appId, Log);
+            _appManager = new AppManager(zoneId, appId, Log);
         }
 
 

@@ -6,7 +6,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 {
     public class DbValue : BllCommandBase
     {
-        public DbValue(DbDataController cntx, Log parentLog = null) : base(cntx, parentLog, "DbVals")
+        public DbValue(DbDataController cntx) : base(cntx, "DbVals")
         {
         }
 

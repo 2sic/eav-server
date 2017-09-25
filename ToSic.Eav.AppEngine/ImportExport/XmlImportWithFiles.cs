@@ -54,6 +54,7 @@ namespace ToSic.Eav.Apps.ImportExport
 		{
             Log = new Log("XmlImFl", parentLog);
 		    _environment = Factory.Resolve<IImportExportEnvironment>();
+            _environment.LinkLog(Log);
 			// Prepare
 			ImportLog = new List<Message>();
 		    DefaultLanguage = (defaultLanguage ?? _environment.DefaultLanguage).ToLowerInvariant();
@@ -148,7 +149,7 @@ namespace ToSic.Eav.Apps.ImportExport
 					appGuid = Guid.NewGuid().ToString();
 
 				// Adding app to EAV
-                var eavDc = DbDataController.Instance(zoneId);
+                var eavDc = DbDataController.Instance(zoneId, parentLog:Log);
 			    var app = eavDc.App.AddApp(null, appGuid);
 				eavDc.SqlDb.SaveChanges();
 
@@ -174,7 +175,7 @@ namespace ToSic.Eav.Apps.ImportExport
 		/// </summary>
 		public bool ImportXml(int zoneId, int appId, XDocument doc, bool leaveExistingValuesUntouched = true)
 		{
-		    _eavContext = DbDataController.Instance(zoneId, appId);
+		    _eavContext = DbDataController.Instance(zoneId, appId, Log);
             
 			AppId = appId;
 			ZoneId = zoneId;
@@ -209,7 +210,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 sourceDimensions.FirstOrDefault(p => p.Matches(sourceDefaultLanguage))?.DimensionId
 				: new int?();
 
-		    _targetDimensions = new ZoneRuntime(zoneId).Languages(true);
+		    _targetDimensions = new ZoneRuntime(zoneId, Log).Languages(true);
 
             _xmlBuilder = new XmlToEntity(AppId, sourceDimensions, sourceDefaultDimensionId, _targetDimensions, DefaultLanguage);
             #endregion

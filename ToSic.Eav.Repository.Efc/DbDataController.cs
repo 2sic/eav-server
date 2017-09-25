@@ -228,17 +228,17 @@ namespace ToSic.Eav.Repository.Efc
 
         internal void DoAndSave(Action action)
         {
-            Log.Add("do and save - start");
+            Log.Add("DB do and save - start");
             action.Invoke();
             SqlDb.SaveChanges();
-            Log.Add("do and save - completed");
+            Log.Add("DB do and save - completed");
         }
 
 
         public void DoInTransaction(Action action)
         {
             var ownTransaction = SqlDb.Database.CurrentTransaction == null ? SqlDb.Database.BeginTransaction() : null;
-            Log.Add("do in trans - create own trans:" + (ownTransaction != null));
+            Log.Add("DB do in trans - create own trans:" + (ownTransaction != null));
             try
             {
                 action.Invoke();
@@ -248,7 +248,7 @@ namespace ToSic.Eav.Repository.Efc
             catch
             {
                 ownTransaction?.Rollback();
-                Log.Add("do in trans - failed / rollback");
+                Log.Add("DB do in trans - failed / rollback");
                 throw;
             }
         }
@@ -261,13 +261,13 @@ namespace ToSic.Eav.Repository.Efc
 
         public void DoWithDelayedCacheInvalidation(Action action)
         {
-            Log.Add("do with delayed cache invalidation - start");
+            Log.Add("DB do with delayed cache invalidation - start");
             _purgeAppCacheOnSave = false;
             action.Invoke();
 
             _purgeAppCacheOnSave = true;
             PurgeAppCacheIfReady();
-            Log.Add("do with delayed cache invalidation - completed");
+            Log.Add("DB do with delayed cache invalidation - completed");
         }
 
         public IRepositoryLoader Loader => new Efc11Loader(SqlDb);

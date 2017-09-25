@@ -6,10 +6,10 @@ namespace ToSic.Eav.Repository.Efc
     {
         protected DbDataController DbContext { get; }
 
-        internal BllCommandBase(DbDataController dataController, Log parentLog = null, string name = "BllBse")
+        internal BllCommandBase(DbDataController dataController, string logName)
         {
             DbContext = dataController;
-            Log = new Log(name, parentLog);
+            Log = new Log(logName, dataController.Log);// parentLog);
         }
 
         #region Logging

@@ -12,7 +12,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 {
     public partial class DbAttributeDefinition: BllCommandBase
     {
-        public DbAttributeDefinition(DbDataController cntx, Log parentLog = null) : base(cntx, parentLog, "DbAttr") {}
+        public DbAttributeDefinition(DbDataController cntx) : base(cntx, "DbAttr") {}
 
         /// <summary>
         /// Set an Attribute as Title on an AttributeSet
