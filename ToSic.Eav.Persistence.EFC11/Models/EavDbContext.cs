@@ -467,13 +467,13 @@ namespace ToSic.Eav.Persistence.Efc.Models
                 entity.HasOne(d => d.Dimension)
                     .WithMany(p => p.ToSicEavValuesDimensions)
                     .HasForeignKey(d => d.DimensionId)
-                    .OnDelete(DeleteBehavior.Restrict)
+                    .OnDelete(DeleteBehavior.Cascade)// DeleteBehavior.Restrict)
                     .HasConstraintName("FK_ToSIC_EAV_ValuesDimensions_ToSIC_EAV_Dimensions");
 
                 entity.HasOne(d => d.Value)
                     .WithMany(p => p.ToSicEavValuesDimensions)
                     .HasForeignKey(d => d.ValueId)
-                    .OnDelete(DeleteBehavior.Restrict)
+                    .OnDelete(DeleteBehavior.Cascade)// DeleteBehavior.Restrict)
                     .HasConstraintName("FK_ToSIC_EAV_ValuesDimensions_ToSIC_EAV_Values");
             });
 
