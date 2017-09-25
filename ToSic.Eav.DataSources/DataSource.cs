@@ -14,6 +14,7 @@ namespace ToSic.Eav
 	/// </summary>
 	public class DataSource
 	{
+	    private const string LogKey = "DS.Factry";
 
 		/// <summary>
 		/// Assemble a DataSource with specified Type/Interface-Chain in reversed order.
@@ -43,7 +44,7 @@ namespace ToSic.Eav
 		/// <param name="upstream">In-Connection</param>
 		/// <param name="valueCollectionProvider">Provides configuration values if needed</param>
 		/// <returns>A single DataSource</returns>
-		public static IDataSource GetDataSource(string sourceName, int? zoneId = null, int? appId = null, IDataSource upstream = null, IValueCollectionProvider valueCollectionProvider = null)
+		public static IDataSource GetDataSource(string sourceName, int? zoneId = null, int? appId = null, IDataSource upstream = null, IValueCollectionProvider valueCollectionProvider = null, Log parentLog = null)
 		{
 			var type = Type.GetType(sourceName);
 			if (type == null)
@@ -51,7 +52,7 @@ namespace ToSic.Eav
 				throw new Exception("DataSource not installed on Server: " + sourceName);
 			}
 			var newDs = (BaseDataSource)Factory.Resolve(type);
-			ConfigureNewDataSource(newDs, zoneId, appId, upstream, valueCollectionProvider);
+			ConfigureNewDataSource(newDs, zoneId, appId, upstream, valueCollectionProvider, parentLog);
 			return newDs;
 		}
 
@@ -85,7 +86,8 @@ namespace ToSic.Eav
 	    /// <param name="parentLog"></param>
 	    private static void ConfigureNewDataSource(BaseDataSource newDs, int? zoneId = null, int? appId = null,
 			IDataSource upstream = null,
-			IValueCollectionProvider valueCollectionProvider = null, Log parentLog = null)
+			IValueCollectionProvider valueCollectionProvider = null, 
+            Log parentLog = null)
 		{
 			var zoneAppId = GetZoneAppId(zoneId, appId);
 			newDs.ZoneId = zoneAppId.Item1;
@@ -110,8 +112,9 @@ namespace ToSic.Eav
 	    /// <param name="configProvider"></param>
 	    /// <returns>A single DataSource</returns>
 	    public static IDataSource GetInitialDataSource(int? zoneId = null, int? appId = null, bool showDrafts = false, ValueCollectionProvider configProvider = null, Log parentLog = null)
-        {
-			var zoneAppId = GetZoneAppId(zoneId, appId);
+	    {
+            parentLog?.AddChild(LogKey, $"get init #{zoneId}/{appId}, draft:{showDrafts}, config:{configProvider != null}");
+	        var zoneAppId = GetZoneAppId(zoneId, appId);
 
 			configProvider = configProvider ?? new ValueCollectionProvider();
 			var dataSource = AssembleDataSourceReverse(InitialDataSourcePipeline, zoneAppId.Item1, zoneAppId.Item2, configProvider);

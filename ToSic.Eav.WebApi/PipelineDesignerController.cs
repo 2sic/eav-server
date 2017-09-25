@@ -52,7 +52,7 @@ namespace ToSic.Eav.WebApi
         [HttpGet]
 		public Dictionary<string, object> GetPipeline(int appId, int? id = null)
         {
-            Log.Add($"get pipe a:{appId}, id:{id}");
+            Log.Add($"get pipe a#{appId}, id:{id}");
 			Dictionary<string, object> pipelineJson = null;
 			var dataSourcesJson = new List<Dictionary<string, object>>();
 
@@ -67,7 +67,7 @@ namespace ToSic.Eav.WebApi
 				pipelineJson = EntityToDictionary(pipelineEntity);
 				pipelineJson[Constants.DataPipelineStreamWiringStaticName] = DataPipelineWiring.Deserialize((string)pipelineJson[Constants.DataPipelineStreamWiringStaticName]);
 
-				foreach (var dataSource in dataSources.Select(e => EntityToDictionary(e)))// Helpers.GetEntityValues(dataSources))
+				foreach (var dataSource in dataSources.Select(EntityToDictionary))
 				{
 					dataSource["VisualDesignerData"] = JsonConvert.DeserializeObject((string)dataSource["VisualDesignerData"] ?? "");
 					
@@ -81,7 +81,7 @@ namespace ToSic.Eav.WebApi
 				#endregion
 			}
 
-            Tuple<Dictionary<string, object>, List<Dictionary<string, object>>> set = new Tuple<Dictionary<string, object>, List<Dictionary<string, object>>>(pipelineJson, dataSourcesJson);
+            var set = new Tuple<Dictionary<string, object>, List<Dictionary<string, object>>>(pipelineJson, dataSourcesJson);
 		    
 
 
@@ -118,7 +118,7 @@ namespace ToSic.Eav.WebApi
 		/// <param name="id">PipelineEntityId</param>
 		public Dictionary<string, object> SavePipeline([FromBody] dynamic data, int appId, int? id = null)
 		{
-		    Log.Add($"save pipe: a:{appId}, id:{id}");
+		    Log.Add($"save pipe: a#{appId}, id#{id}");
             var appManager = new AppManager(appId, Log);
 
 			//_context.UserName = _userName;
@@ -194,7 +194,7 @@ namespace ToSic.Eav.WebApi
 		/// </summary>
 		private void DeletedRemovedPipelineParts(IEnumerable<JToken> dataSources, Dictionary<string, Guid> newDataSources, Guid pipelineEntityGuid, int zoneId, int appId, AppManager appManager)//, DbDataController _context)
 		{
-		    Log.Add($"delete part z:{zoneId}, a:{appId}, pipe:{pipelineEntityGuid}");
+		    Log.Add($"delete part z#{zoneId}, a#{appId}, pipe:{pipelineEntityGuid}");
 			// Get EntityGuids currently stored in EAV
 			var existingEntityGuids = DataPipeline.GetPipelineParts(zoneId, appId, pipelineEntityGuid).Select(e => e.EntityGuid);
 
@@ -216,7 +216,7 @@ namespace ToSic.Eav.WebApi
         /// <param name="appManager"></param>
         private void SavePipelineEntity(int? id, int appId, dynamic pipeline, IDictionary<string, Guid> newDataSources, AppManager appManager)
         {
-            Log.Add($"save pipe a:{appId}, pipe:{id}");
+            Log.Add($"save pipe a#{appId}, pipe:{id}");
             #region prevent save without pipeline ID
             if (!id.HasValue)
             {
@@ -290,7 +290,7 @@ namespace ToSic.Eav.WebApi
 		[HttpGet]
 		public dynamic QueryPipeline(int appId, int id)
 		{
-		    Log.Add($"queryy pipe: a:{appId}, id:{id}");
+		    Log.Add($"queryy pipe: a#{appId}, id:{id}");
             // Get the query, run it and track how much time this took
 			var outStreams = ConstructPipeline(appId, id, true);
 		    var timer = new Stopwatch();
@@ -317,10 +317,10 @@ namespace ToSic.Eav.WebApi
 
 		private IDataSource ConstructPipeline(int appId, int id, bool showDrafts)
 		{
-		    Log.Add($"construct pipe a:{appId}, pipe:{id}, drafts:{showDrafts}");
-			var testValueProviders = DataPipelineFactory.GetTestValueProviders(appId, id).ToList();
+		    Log.Add($"construct pipe a#{appId}, pipe:{id}, drafts:{showDrafts}");
+			var testValueProviders = new DataPipelineFactory(Log).GetTestValueProviders(appId, id).ToList();
 		    //AdditionalValueProviders.ForEach(ap => testValueProviders.Add(ap));
-		    return DataPipelineFactory.GetDataSource(appId, id, testValueProviders, showDrafts:showDrafts);
+		    return new DataPipelineFactory(Log).GetDataSource(appId, id, testValueProviders, showDrafts:showDrafts);
 		}
 
         [HttpGet]
@@ -342,7 +342,7 @@ namespace ToSic.Eav.WebApi
 		[HttpGet]
 		public object DeletePipeline(int appId, int id)
 		{
-		    Log.Add($"delete a:{appId}, id:{id}");
+		    Log.Add($"delete a#{appId}, id:{id}");
 		    new AppManager(appId, Log).Queries.Delete(id);
 			return new { Result = "Success" };
 		}

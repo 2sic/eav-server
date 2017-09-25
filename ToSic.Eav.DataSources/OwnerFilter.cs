@@ -4,6 +4,7 @@ using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
 {
+	/// <inheritdoc />
 	/// <summary>
 	/// Filter entities to show Drafts or only Published Entities
 	/// </summary>
@@ -11,7 +12,7 @@ namespace ToSic.Eav.DataSources
 	public class OwnerFilter : BaseDataSource
 	{
         #region Configuration-properties
-	    public override string LogId => "DS-Own";
+	    public override string LogId => "DS.OwnrF";
 
         private const string _identityCode = "IdentityCode";
 
@@ -25,6 +26,7 @@ namespace ToSic.Eav.DataSources
         }
 		#endregion
 
+		/// <inheritdoc />
 		/// <summary>
 		/// Constructs a new PublishingFilter
 		/// </summary>
@@ -40,8 +42,8 @@ namespace ToSic.Eav.DataSources
         {
             EnsureConfigurationIsLoaded();
 
-            if (string.IsNullOrWhiteSpace(Identity))
-                return new List<IEntity>();
+            Log.Add($"get for identity:{Identity}");
+            if (string.IsNullOrWhiteSpace(Identity)) return new List<IEntity>();
 
             return In["Default"].LightList.Where(e => e.Owner == Identity);
         }

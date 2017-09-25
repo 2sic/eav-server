@@ -28,7 +28,7 @@ namespace ToSic.Eav.WebApi
         [HttpGet]
 	    public IEnumerable<dynamic> Get(int appId, string scope = null, bool withStatistics = false)
         {
-            Log.Add($"get a:{appId}, scope:{scope}, stats:{withStatistics}");
+            Log.Add($"get a#{appId}, scope:{scope}, stats:{withStatistics}");
             // scope can be null (eav) or alternatives would be "System", "2SexyContent-System", "2SexyContent-App", "2SexyContent"
             var cache = (BaseCache)DataSource.GetCache(null, appId);
             var allTypes = cache.GetContentTypes().Select(t => t.Value);
@@ -85,7 +85,7 @@ namespace ToSic.Eav.WebApi
         [HttpGet]
 	    public dynamic GetSingle(int appId, string contentTypeStaticName, string scope = null)
 	    {
-	        Log.Add($"get single a:{appId}, type:{contentTypeStaticName}, scope:{scope}");
+	        Log.Add($"get single a#{appId}, type:{contentTypeStaticName}, scope:{scope}");
             SetAppIdAndUser(appId);
             // var source = InitialDS;
             var cache = DataSource.GetCache(null, appId);
@@ -97,7 +97,7 @@ namespace ToSic.Eav.WebApi
 	    [HttpDelete]
 	    public bool Delete(int appId, string staticName)
 	    {
-	        Log.Add($"delete a:{appId}, name:{staticName}");
+	        Log.Add($"delete a#{appId}, name:{staticName}");
             SetAppIdAndUser(appId);
             CurrentContext.ContentType.Delete(staticName);
 	        return true;
@@ -106,7 +106,7 @@ namespace ToSic.Eav.WebApi
 	    [HttpPost]
 	    public bool Save(int appId, Dictionary<string, string> item)
 	    {
-	        Log.Add($"save a:{appId}, item count:{item.Count}");
+	        Log.Add($"save a#{appId}, item count:{item.Count}");
             SetAppIdAndUser(appId);
 	        bool.TryParse(item["ChangeStaticName"], out var changeStaticName);
             CurrentContext.ContentType.AddOrUpdate(
@@ -124,7 +124,7 @@ namespace ToSic.Eav.WebApi
         [HttpGet]
 	    public bool CreateGhost(int appId, string sourceStaticName)
 	    {
-	        Log.Add($"create ghost a:{appId}, type:{sourceStaticName}");
+	        Log.Add($"create ghost a#{appId}, type:{sourceStaticName}");
             SetAppIdAndUser(appId);
             CurrentContext.ContentType.CreateGhost(sourceStaticName);
             return true;
@@ -137,7 +137,7 @@ namespace ToSic.Eav.WebApi
         [HttpGet]
         public IEnumerable<dynamic> GetFields(int appId, string staticName)
         {
-            Log.Add($"get fields a:{appId}, type:{staticName}");
+            Log.Add($"get fields a#{appId}, type:{staticName}");
             SetAppIdAndUser(appId);
 
             var fields =
@@ -199,7 +199,7 @@ namespace ToSic.Eav.WebApi
         [HttpGet]
         public bool Reorder(int appId, int contentTypeId, string newSortOrder)
         {
-            Log.Add($"reorder a:{appId}, type:{contentTypeId}, order:{newSortOrder}");
+            Log.Add($"reorder a#{appId}, type#{contentTypeId}, order:{newSortOrder}");
             SetAppIdAndUser(appId);
 
             var sortOrderList = newSortOrder.Trim('[', ']').Split(',').Select(int.Parse).ToList();
@@ -210,7 +210,7 @@ namespace ToSic.Eav.WebApi
 	    [HttpGet]
 	    public string[] DataTypes(int appId)
 	    {
-	        Log.Add($"get data types a:{appId}");
+	        Log.Add($"get data types a#{appId}");
             SetAppIdAndUser(appId);
             return CurrentContext.AttributesDefinition.DataTypeNames(appId);
 	    }
@@ -219,7 +219,7 @@ namespace ToSic.Eav.WebApi
 	    // public IEnumerable<Dictionary<string, object>> InputTypes(int appId)
 	    public IEnumerable<Dictionary<string, object>> InputTypes(int appId)
 	    {
-	        Log.Add($"get input types a:{appId}");
+	        Log.Add($"get input types a#{appId}");
             SetAppIdAndUser(appId);
 	        var appInputTypes = new AppRuntime(appId).ContentTypes.GetInputTypes(true).ToList(); // appDef.GetInputTypes(true).ToList();
             
@@ -233,7 +233,7 @@ namespace ToSic.Eav.WebApi
         [SuppressMessage("ReSharper", "RedundantArgumentDefaultValue")]
         public int AddField(int appId, int contentTypeId, string staticName, string type, string inputType, int sortOrder)
 	    {
-	        Log.Add($"add field a:{appId}, type:{contentTypeId}, name:{staticName}, type:{type}, input:{inputType}, order:{sortOrder}");
+	        Log.Add($"add field a#{appId}, type#{contentTypeId}, name:{staticName}, type:{type}, input:{inputType}, order:{sortOrder}");
             SetAppIdAndUser(appId);
             var attDef = new AttributeDefinition(appId, staticName, type, false, 0, sortOrder);
             
@@ -243,7 +243,7 @@ namespace ToSic.Eav.WebApi
         [HttpGet]
         public bool UpdateInputType(int appId, int attributeId, string inputType)
         {
-            Log.Add($"update input type a:{appId}, attrib:{attributeId}, input:{inputType}");
+            Log.Add($"update input type a#{appId}, attrib:{attributeId}, input:{inputType}");
             SetAppIdAndUser(appId);
             return AppManager.ContentTypes.UpdateInputType(attributeId, inputType);
         }
@@ -252,7 +252,7 @@ namespace ToSic.Eav.WebApi
         [HttpDelete]
 	    public bool DeleteField(int appId, int contentTypeId, int attributeId)
 	    {
-	        Log.Add($"delete field a:{appId}, type:{contentTypeId}, attrib:{attributeId}");
+	        Log.Add($"delete field a#{appId}, type#{contentTypeId}, attrib:{attributeId}");
             SetAppIdAndUser(appId);
             return CurrentContext.AttributesDefinition.RemoveAttributeAndAllValuesAndSave(attributeId);
 	    }
@@ -260,7 +260,7 @@ namespace ToSic.Eav.WebApi
         [HttpGet]
 	    public void SetTitle(int appId, int contentTypeId, int attributeId)
 	    {
-	        Log.Add($"set title a:{appId}, type:{contentTypeId}, attrib:{attributeId}");
+	        Log.Add($"set title a#{appId}, type#{contentTypeId}, attrib:{attributeId}");
             SetAppIdAndUser(appId);
             CurrentContext.AttributesDefinition.SetTitleAttribute(attributeId, contentTypeId);
 	    }
@@ -268,7 +268,7 @@ namespace ToSic.Eav.WebApi
         [HttpGet]
         public bool Rename(int appId, int contentTypeId, int attributeId, string newName)
         {
-            Log.Add($"rename attribute a:{appId}, type:{contentTypeId}, attrib:{attributeId}, name:{newName}");
+            Log.Add($"rename attribute a#{appId}, type#{contentTypeId}, attrib:{attributeId}, name:{newName}");
             SetAppIdAndUser(appId);
             CurrentContext.AttributesDefinition.RenameAttribute(attributeId, contentTypeId, newName);
             return true;

@@ -140,13 +140,14 @@ namespace ToSic.Eav.WebApi
         [HttpPost]
         public List<EntityWithHeader> GetManyForEditing([FromUri]int appId, [FromBody]List<ItemIdentifier> items)
         {
+            Log.Add($"get many for editing a#{appId}, items⋮{items.Count}");
             SetAppIdAndUser(appId);
 
             // clean up content-type names in case it's using the nice-name instead of the static name...
             // var cache = DataSource.GetCache(null, appId);
             foreach (var itm in items.Where(i => !string.IsNullOrEmpty(i.ContentTypeName)).ToArray())
             {
-                var ct = AppManager.Read.ContentTypes.Get(itm.ContentTypeName);// cache.GetContentType(itm.ContentTypeName);
+                var ct = AppManager.Read.ContentTypes.Get(itm.ContentTypeName);
                 if (ct == null)
                 {
                     if (!itm.ContentTypeName.StartsWith("@"))
@@ -167,13 +168,14 @@ namespace ToSic.Eav.WebApi
             // make sure the header has the right "new" guid as well - as this is the primary one to work with
             // it is really important to use the header guid, because sometimes the entity does not exist - so it doesn't have a guid either
             foreach (var i in list.Where(i => i.Header.Guid == Guid.Empty).ToArray()) // must do toarray, to prevent re-checking after setting the guid
-                i.Header.Guid = (i.Entity != null && i.Entity.Guid != Guid.Empty)
+                i.Header.Guid = i.Entity != null && i.Entity.Guid != Guid.Empty
                     ? i.Entity.Guid
                     : Guid.NewGuid();
 
             foreach (var itm in list.Where(i => i.Header.ContentTypeName == null && i.Entity != null))
                 itm.Header.ContentTypeName = itm.Entity.Type.StaticName;
 
+            Log.Add($"will return items⋮{list.Count}");
             return list;
         }
 

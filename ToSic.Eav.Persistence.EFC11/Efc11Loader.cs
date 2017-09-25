@@ -115,7 +115,7 @@ namespace ToSic.Eav.Persistence.Efc
         /// <returns>Item1: EntityModels, Item2: all ContentTypes, Item3: Assignment Object Types</returns>
         public AppDataPackage AppPackage(int appId, int[] entityIds = null, bool entitiesOnly = false, Log parentLog = null)
         {
-            Log = new Log("EFLoad", parentLog, $"get app data package for a:{appId}, ids only:{entityIds != null}, entities-only:{entitiesOnly}");
+            Log = new Log("EFLoad", parentLog, $"get app data package for a#{appId}, ids only:{entityIds != null}, entities-only:{entitiesOnly}");
             var source = new AppDataPackageDeferredList();
 
             var contentTypes = ContentTypes(appId, source);

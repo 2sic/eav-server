@@ -121,7 +121,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <returns>AppId of the new imported app</returns>
         public bool ImportApp(int zoneId, XDocument doc, out int? appId)
         {
-            Log.Add($"import app z:{zoneId}");
+            Log.Add($"import app z#{zoneId}");
 			// Increase script timeout to prevent timeouts
 			//HttpContext.Current.Server.ScriptTimeout = 300;
 
@@ -179,7 +179,7 @@ namespace ToSic.Eav.Apps.ImportExport
 		/// </summary>
 		public bool ImportXml(int zoneId, int appId, XDocument doc, bool leaveExistingValuesUntouched = true)
 		{
-		    Log.Add($"import xml z:{zoneId}, a:{appId}, leaveExisting:{leaveExistingValuesUntouched}");
+		    Log.Add($"import xml z#{zoneId}, a#{appId}, leaveExisting:{leaveExistingValuesUntouched}");
 		    _eavContext = DbDataController.Instance(zoneId, appId, Log);
             
 			AppId = appId;

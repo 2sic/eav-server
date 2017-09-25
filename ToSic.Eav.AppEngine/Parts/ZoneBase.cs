@@ -14,7 +14,7 @@ namespace ToSic.Eav.Apps.Parts
         public ZoneBase(int zoneId, Log parentLog, string logName)
         {
             ZoneId = zoneId;
-            Log = new Log(logName, parentLog, $"zone base for z:{zoneId}");
+            Log = new Log(logName, parentLog, $"zone base for z#{zoneId}");
         }
 
         internal BaseCache Cache => _cache ?? (_cache = (BaseCache)DataSource.GetCache(ZoneId));

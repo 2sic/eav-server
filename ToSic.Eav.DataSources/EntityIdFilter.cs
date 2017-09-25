@@ -6,6 +6,7 @@ using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
 {
+	/// <inheritdoc />
 	/// <summary>
 	/// A DataSource that filters Entities by Ids
 	/// </summary>
@@ -13,7 +14,7 @@ namespace ToSic.Eav.DataSources
 	public class EntityIdFilter : BaseDataSource
 	{
         #region Configuration-properties
-	    public override string LogId => "DSIdFl";
+	    public override string LogId => "DS.EntIdF";
 
         private const string EntityIdKey = "EntityIds";
 		//private const string PassThroughOnEmptyEntityIdsKey = "PassThroughOnEmptyEntityIds";
@@ -49,7 +50,10 @@ namespace ToSic.Eav.DataSources
 
 		    var originals = In[Constants.DefaultStreamName].List;
 
-			return entityIds.Where(originals.ContainsKey).ToDictionary(id => id, id => originals[id]);
+			var result = entityIds.Where(originals.ContainsKey).ToDictionary(id => id, id => originals[id]);
+
+		    Log.Add(() => $"get ids:[{string.Join(",",_cleanedIds)}] found:{result.Count}");
+		    return result;
 		}
 
 	    private IEnumerable<int> _cleanedIds;

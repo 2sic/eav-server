@@ -6,6 +6,7 @@ using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
 {
+    /// <inheritdoc />
     /// <summary>
     /// Return only Entities having a specific value in an Attribute
     /// </summary>
@@ -13,7 +14,7 @@ namespace ToSic.Eav.DataSources
     public sealed class ValueFilter : BaseDataSource
     {
         #region Configuration-properties Attribute, Value, Language, Operator
-        public override string LogId => "DSVlFl";
+        public override string LogId => "DS.ValueF";
 
         private const string AttrKey = "Attribute";
         private const string FilterKey = "Value";
@@ -64,6 +65,7 @@ namespace ToSic.Eav.DataSources
 		}		
         #endregion
 
+		/// <inheritdoc />
 		/// <summary>
 		/// Constructs a new ValueFilter
 		/// </summary>
@@ -84,8 +86,12 @@ namespace ToSic.Eav.DataSources
             var res = GetEntities();
             // ReSharper disable PossibleMultipleEnumeration
             if (!res.Any())
-                if (In.ContainsKey(Constants.FallbackStreamName) && In[Constants.FallbackStreamName] != null && In[Constants.FallbackStreamName].LightList.Any())
+                if (In.ContainsKey(Constants.FallbackStreamName) && In[Constants.FallbackStreamName] != null &&
+                    In[Constants.FallbackStreamName].LightList.Any())
+                {
+                    Log.Add("will return fallback stream");
                     res = In[Constants.FallbackStreamName].LightList;
+                }
             
             return res;
             // ReSharper restore PossibleMultipleEnumeration
@@ -97,6 +103,7 @@ namespace ToSic.Eav.DataSources
 			// todo: maybe do something about languages?
 			EnsureConfigurationIsLoaded();
 
+		    Log.Add("applying value filter...");
 			_initializedAttrName = Attribute;
 
             #region do language checks and finish initialization
@@ -429,8 +436,7 @@ namespace ToSic.Eav.DataSources
                             select e);
                         break;
                 }
-	            int tk;
-	            if (int.TryParse(Take, out tk))
+                if (int.TryParse(Take, out var tk))
 	                results = results.Take(tk);
 	            return results;
 	        }

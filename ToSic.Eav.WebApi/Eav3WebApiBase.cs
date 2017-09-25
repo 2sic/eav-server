@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Web.Http;
-//using Microsoft.Practices.Unity;
 using ToSic.Eav.Apps;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Logging.Simple;
@@ -35,7 +34,6 @@ namespace ToSic.Eav.WebApi
         #endregion
 
         #region Helpers
-        //internal IDataSource InitialDS => DataSource.GetInitialDataSource(appId: AppId);
 
         internal AppManager AppManager => new AppManager(AppId, Log);
 
@@ -74,7 +72,7 @@ namespace ToSic.Eav.WebApi
                     throw new Exception("AppId not initialized");
 	            return _appId;
 	        }
-	        set { _appId = value; }
+	        set => _appId = value;
 	    }
 
 	    #endregion

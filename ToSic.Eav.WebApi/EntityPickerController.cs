@@ -21,7 +21,7 @@ namespace ToSic.Eav.WebApi
         [HttpPost]
         public IEnumerable<dynamic> GetAvailableEntities([FromUri]int appId, [FromBody] string[] items, [FromUri] string contentTypeName = null, [FromUri] int? dimensionId = null)
         {
-            Log.Add($"Get entities for a:{appId}, itms-count:{items?.Length}, ct:{contentTypeName}, dims:{dimensionId}");
+            Log.Add($"Get entities for a#{appId}, itms⋮{items?.Length}, type:{contentTypeName}, lang#{dimensionId}");
             var dimensionIds = dimensionId ?? 0;
 
             Interfaces.IContentType contentType = null;
@@ -33,23 +33,32 @@ namespace ToSic.Eav.WebApi
 
             // optionally filter by type
             if (contentType != null)
+            {
+                Log.Add($"filter by type:{contentType.Name}");
                 temp = temp.Where(l => l.Type == contentType);
+            }
+            else
+                Log.Add("won't filter by type");
 
             // optionally filter by IDs
             if (items != null && items.Length > 0)
             {
+                Log.Add("filter by ids");
                 var guids = items.Select(Guid.Parse);
                 temp = temp.Where(e => guids.Contains(e.EntityGuid));
             }
+            else
+                Log.Add("won't filter by IDs");
 
             var entities = (from l in temp
                            select new
                            {
                                Id = l.EntityId,
                                Value = l.EntityGuid,
-                               Text = GetTitle(l, dimensionIds) // l.Title?[dimensionIds] == null || IsNullOrWhiteSpace(l.Title[dimensionIds].ToString()) ? "(no Title, " + l.EntityId + ")" : l.Title[dimensionIds]
+                               Text = GetTitle(l, dimensionIds)
                            }).OrderBy(l => l.Text.ToString()).ToList();
 
+            Log.Add($"found⋮{entities.Count}");
             return entities;
         }
 

@@ -6,15 +6,18 @@ using ToSic.Eav.App;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.RootSources;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.DataSources.Caches
 {
-	/// <summary>
-	/// Represents an abstract Cache DataSource
-	/// </summary>
-	public abstract class BaseCache : BaseDataSource, IMetaDataSource, ICache//, IDeferredEntitiesList
+    /// <inheritdoc cref="BaseDataSource" />
+    /// <summary>
+    /// Represents an abstract Cache DataSource
+    /// </summary>
+    public abstract class BaseCache : BaseDataSource, IMetaDataSource, ICache
 	{
-		protected new BaseCache Cache { get; set; }
+
+        protected new BaseCache Cache { get; set; }
 
 		protected BaseCache()
 		{
@@ -118,25 +121,19 @@ namespace ToSic.Eav.DataSources.Caches
 
 	    public AppDataPackage AppDataPackage => EnsureCache();
 
+		/// <inheritdoc />
 		/// <summary>
 		/// Clear Cache for specific Zone/App
 		/// </summary>
-		public void PurgeCache(int zoneId, int appId)
-		{
-			var cacheKey = string.Format(CacheKeySchema, zoneId, appId);
+		public void PurgeCache(int zoneId, int appId) => RemoveCacheItem(string.Format(CacheKeySchema, zoneId, appId));
 
-			RemoveCacheItem(cacheKey);
-		}
-
+	    /// <inheritdoc />
 		/// <summary>
 		/// Clear Zones/Apps List
 		/// </summary>
-		public void PurgeGlobalCache()
-		{
-			ZoneApps = null;
-		}
+		public void PurgeGlobalCache() => ZoneApps = null;
 
-        #region Cache-Chain
+	    #region Cache-Chain
 
 	    public override DateTime CacheLastRefresh => AppDataPackage.LastRefresh;
 
@@ -155,10 +152,11 @@ namespace ToSic.Eav.DataSources.Caches
 
 	    #endregion
 
+        /// <inheritdoc />
         /// <summary>
-		/// Get a ContentType by StaticName if found of DisplayName if not
-		/// </summary>
-		/// <param name="name">Either StaticName or DisplayName</param>
+        /// Get a ContentType by StaticName if found of DisplayName if not
+        /// </summary>
+        /// <param name="name">Either StaticName or DisplayName</param>
 		public IContentType GetContentType(string name)
 		{
 			var app = AppDataPackage;
@@ -172,6 +170,7 @@ namespace ToSic.Eav.DataSources.Caches
 		    return matchByName.Value;
 		}
 
+		/// <inheritdoc />
 		/// <summary>
 		/// Get a ContentType by Id
 		/// </summary>
@@ -182,14 +181,14 @@ namespace ToSic.Eav.DataSources.Caches
 		/// </summary>
 		public IDictionary<int, IContentType> GetContentTypes() => AppDataPackage.ContentTypes;
 
+	    /// <inheritdoc />
 	    /// <summary>
-		/// Get/Resolve ZoneId and AppId for specified ZoneId and/or AppId. If both are null, default ZoneId with it's default App is returned.
-		/// </summary>
-		/// <returns>Item1 = ZoneId, Item2 = AppId</returns>
+	    /// Get/Resolve ZoneId and AppId for specified ZoneId and/or AppId. If both are null, default ZoneId with it's default App is returned.
+	    /// </summary>
+	    /// <returns>Item1 = ZoneId, Item2 = AppId</returns>
 		public Tuple<int, int> GetZoneAppId(int? zoneId = null, int? appId = null)
 		{
 			EnsureCache();
-
 			return GetZoneAppInternal(zoneId, appId);
 		}
 
@@ -206,6 +205,7 @@ namespace ToSic.Eav.DataSources.Caches
 			return Tuple.Create(resultZoneId, resultAppId);
 		}
 
+		/// <inheritdoc />
 		/// <summary>
 		/// Get AssignmentObjectTypeId by Name
 		/// </summary>
@@ -327,8 +327,9 @@ namespace ToSic.Eav.DataSources.Caches
 
         #endregion
 
-     //   IDictionary<int, IEntity> IDeferredEntitiesList.List => Out[Constants.DefaultStreamName].List;
-
-	    //IEnumerable<IEntity> IDeferredEntitiesList.LightList => Out[Constants.DefaultStreamName].LightList;
+	    public override void InitLog(string name, Log parentLog = null, string initialMessage = null)
+	    {
+	        // ignore
+	    }
 	}
 }

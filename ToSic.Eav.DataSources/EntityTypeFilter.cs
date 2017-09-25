@@ -4,6 +4,7 @@ using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
 {
+	/// <inheritdoc />
 	/// <summary>
 	/// Return only entities of a specific type
 	/// </summary>
@@ -11,7 +12,7 @@ namespace ToSic.Eav.DataSources
 	public class EntityTypeFilter : BaseDataSource
 	{
         #region Configuration-properties
-	    public override string LogId => "DSTyFl";
+	    public override string LogId => "DS.TypeF";
 
         private const string TypeNameKey = "TypeName";
 
@@ -25,6 +26,7 @@ namespace ToSic.Eav.DataSources
 		}
 		#endregion
 
+		/// <inheritdoc />
 		/// <summary>
 		/// Constructs a new EntityTypeFilter
 		/// </summary>
@@ -39,9 +41,8 @@ namespace ToSic.Eav.DataSources
 	    private IEnumerable<IEntity> GetList()
 	    {
 	        EnsureConfigurationIsLoaded();
+	        Log.Add($"get list with type:{TypeName}");
 
-            // 2015-04-24 had to deactivate cache-method, because not available during testing
-            //// Try to use real cache-id if it has a cache - probably faster and more precise
 	        try
 	        {
 	            var cache = DataSource.GetCache(ZoneId, AppId);
@@ -51,10 +52,7 @@ namespace ToSic.Eav.DataSources
 	                    where e.Type == foundType
 	                    select e);
 	        }
-	        // ReSharper disable once EmptyGeneralCatchClause
-	        catch
-	        {
-	        }
+	        catch { /* ignore */ }
 
             // This is the fallback, probably slower. In this case, it tries to match the name instead of the real type
             // Reason is that many dynamically created content-types won't be known to the cache, so they cannot be found the previous way

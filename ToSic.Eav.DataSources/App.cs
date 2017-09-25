@@ -16,7 +16,7 @@ namespace ToSic.Eav.DataSources
 		private const string AppSwitchKey = "AppSwitch";
 		private const string ZoneSwitchKey = "ZoneSwitch";
 
-	    public override string LogId => "DS-App";
+	    public override string LogId => "DS.EavApp";
 
 	    /// <summary>
         /// An alternate app to switch to

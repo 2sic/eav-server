@@ -13,7 +13,7 @@ namespace ToSic.Eav.DataSources
 	public sealed class Paging: BaseDataSource
 	{
         #region Configuration-properties (no config)
-	    public override string LogId => "DSPage";
+	    public override string LogId => "DS.Page";
 
         private const string PageSizeKey = "PageSize";
 	    private const int DefPageSize = 10;
@@ -72,10 +72,11 @@ namespace ToSic.Eav.DataSources
 	    private IEnumerable<IEntity> GetList()
 	    {
 	        EnsureConfigurationIsLoaded();
-
 		    var itemsToSkip = (PageNumber - 1)*PageSize;
 
-	        return In["Default"].LightList.Skip(itemsToSkip).Take(PageSize).ToList();
+	        var result = In["Default"].LightList.Skip(itemsToSkip).Take(PageSize).ToList();
+	        Log.Add($"get page:{PageNumber} with size{PageSize} found:{result.Count}");
+            return result;
 	    }
 
         private IEnumerable<IEntity> GetPaging()

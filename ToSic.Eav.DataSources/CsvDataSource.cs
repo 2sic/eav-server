@@ -16,8 +16,8 @@ namespace ToSic.Eav.DataSources
 
         public string FilePath
         {
-            get { return Configuration[FilePathKey]; }
-            set { Configuration[FilePathKey] = value; }
+            get => Configuration[FilePathKey];
+            set => Configuration[FilePathKey] = value;
         }
 
 
@@ -28,8 +28,8 @@ namespace ToSic.Eav.DataSources
 
         public string Delimiter
         {
-            get { return Configuration[DelimiterKey]; }
-            set { Configuration[DelimiterKey] = value; }
+            get => Configuration[DelimiterKey];
+            set => Configuration[DelimiterKey] = value;
         }
 
 
@@ -37,8 +37,8 @@ namespace ToSic.Eav.DataSources
 
         public string ContentType
         {
-            get { return Configuration[ContentTypeKey]; }
-            set { Configuration[ContentTypeKey] = value; }
+            get => Configuration[ContentTypeKey];
+            set => Configuration[ContentTypeKey] = value;
         }
 
 
@@ -46,8 +46,8 @@ namespace ToSic.Eav.DataSources
 
         public string IdColumnName
         {
-            get { return Configuration[IdColumnNameKey]; }
-            set { Configuration[IdColumnNameKey] = value; }               
+            get => Configuration[IdColumnNameKey];
+            set => Configuration[IdColumnNameKey] = value;
         }
 
 
@@ -55,8 +55,8 @@ namespace ToSic.Eav.DataSources
 
         public string TitleColumnName
         {
-            get { return Configuration[TitleColumnNameKey]; }
-            set { Configuration[TitleColumnNameKey] = value; }
+            get => Configuration[TitleColumnNameKey];
+            set => Configuration[TitleColumnNameKey] = value;
         }
 
 
@@ -79,6 +79,7 @@ namespace ToSic.Eav.DataSources
 
             var entityList = new List<IEntity>();
 
+            Log.Add($"load csv:{ServerFilePath}, delimit:'{Delimiter}'");
             using (var stream = new StreamReader(ServerFilePath))
             using (var parser = new CsvReader(stream))
             {
@@ -130,6 +131,7 @@ namespace ToSic.Eav.DataSources
                     entityList.Add(new Data.Entity(Constants.TransientAppId, entityId, ContentType, entityValues, entityTitleName));
                 }
             }
+            Log.Add($"found:{entityList.Count}");
             return entityList;
         }
     }

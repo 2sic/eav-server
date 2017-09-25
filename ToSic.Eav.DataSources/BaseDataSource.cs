@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Constructor
         /// </summary>
-        protected BaseDataSource() : base("DataSrc")
+        protected BaseDataSource() : base("DS.Base")
         {
         }
 

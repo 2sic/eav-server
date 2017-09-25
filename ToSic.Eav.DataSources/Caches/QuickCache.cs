@@ -5,12 +5,13 @@ using ToSic.Eav.Data;
 
 namespace ToSic.Eav.DataSources.Caches
 {
+    /// <inheritdoc />
     /// <summary>
     /// simple, quick cache using static variables to store the cache
     /// </summary>
     public class QuickCache : BaseCache
     {
-        public override string LogId => "DS-QCh";
+        public override string LogId => "DS.QCache";
 
         public QuickCache()
         {

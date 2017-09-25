@@ -13,7 +13,7 @@ namespace ToSic.Eav.DataSources
 	public sealed class RelationshipFilter : BaseDataSource
 	{
         #region Configuration-properties
-	    public override string LogId => "DSRelf";
+	    public override string LogId => "DS.RelatF";
 
         private const string RelationshipKey = "Relationship";
 		private const string FilterKey = "Filter";
@@ -147,7 +147,7 @@ namespace ToSic.Eav.DataSources
 			//if (lang == "default") lang = ""; // no language is automatically the default language
 
 		    var lowAttribName = compAttr.ToLower();
-
+		    Log.Add($"get related on attr:{compAttr}, filter:{filter}, mode:{mode}, child/parent:{childParent}");
             //var specAttr = lowAttribName == Constants.EntityFieldAutoSelect ? 'a' : lowAttribName == Constants.EntityFieldId ? 'i' : lowAttribName == Constants.EntityFieldTitle ? 't' : 'x';
 
 			var originals = In[Constants.DefaultStreamName].LightList;

@@ -9,10 +9,13 @@ namespace ToSic.Eav.Logging.Simple
         private readonly string _id = Guid.NewGuid().ToString().Substring(0, 2);
 
         private string _name = "unknwn";
+        private string _scope = "tdo";
+        private const int MaxScopeLen = 3;
+        private const int MaxNameLen = 6;
         public  List<Entry> Entries { get; } = new List<Entry>();
         private Log _parent;
 
-        private string Identifier => _name + "(" + _id + ")";
+        private string Identifier => $"{_scope}{_name}({_id})";
 
         public string FullIdentifier => _parent?.FullIdentifier + Identifier;
 
@@ -30,6 +33,8 @@ namespace ToSic.Eav.Logging.Simple
                 Add(initialMessage);
         }
 
+        public Log AddChild(string name, string message) => new Log(name, this, message);
+
         /// <summary>
         /// Rename this logger - usually used when a base-class has a logger, 
         /// but the inherited class needs a different name
@@ -38,7 +43,18 @@ namespace ToSic.Eav.Logging.Simple
         /// limits the length to 6 chars to make the output readable
         /// </remarks>
         /// <param name="name"></param>
-        public void Rename(string name) => _name = name.Substring(0, Math.Min(name.Length, 6));
+        public void Rename(string name)
+        {
+            try
+            {
+                var dot = name.IndexOf(".", StringComparison.Ordinal);
+                _scope = dot > 0 ? name.Substring(0, Math.Min(dot, MaxScopeLen)) + "." : "";
+
+                _name = dot > 0 ? name.Substring(dot + 1, 6) : name;
+                _name = _name.Substring(0, Math.Min(_name.Length, MaxNameLen));
+            }
+            catch { /* ignore */ }
+        }
 
         /// <summary>
         /// Add a message

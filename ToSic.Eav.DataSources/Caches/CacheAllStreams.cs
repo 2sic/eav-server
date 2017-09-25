@@ -4,6 +4,7 @@ using System.Linq;
 
 namespace ToSic.Eav.DataSources.Caches
 {
+	/// <inheritdoc />
 	/// <summary>
 	/// Return all Entities from a specific App
 	/// </summary>
@@ -15,7 +16,7 @@ namespace ToSic.Eav.DataSources.Caches
         // Refresh when Source Refreshes ...? todo!
         // Time
         // Reload in BG
-	    public override string LogId => "DS-ChA";
+	    public override string LogId => "DS.CachAl";
 
         #region Configuration-properties
         private const string RefreshOnSourceRefreshKey = "RefreshOnSourceRefresh";

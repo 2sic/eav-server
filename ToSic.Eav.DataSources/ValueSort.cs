@@ -5,6 +5,7 @@ using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
 {
+	/// <inheritdoc />
 	/// <summary>
 	/// Sort Entity by values in specified Attributes
 	/// </summary>
@@ -12,7 +13,7 @@ namespace ToSic.Eav.DataSources
 	public sealed class ValueSort : BaseDataSource
 	{
         #region Configuration-properties
-	    public override string LogId => "DSVlSr";
+	    public override string LogId => "DS.ValueS";
 
         private const string AttrKey = "Attributes";
 		private const string DirectionKey = "Value";
@@ -46,6 +47,7 @@ namespace ToSic.Eav.DataSources
 		}
 		#endregion
 
+		/// <inheritdoc />
 		/// <summary>
 		/// Constructs a new ValueSort
 		/// </summary>
@@ -69,6 +71,8 @@ namespace ToSic.Eav.DataSources
 			// todo: test datetime & decimal types
 
 			EnsureConfigurationIsLoaded();
+
+		    Log.Add("will apply value-sort");
 			var attr = Attributes.Split(',').Select(s => s.Trim()).ToArray();
 			var directions = Directions.Split(',').Select(s => s.Trim()).ToArray();
 			var descendingCodes = new[] { "desc","d","0",">" };

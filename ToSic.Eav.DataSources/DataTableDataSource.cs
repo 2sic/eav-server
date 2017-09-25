@@ -14,7 +14,7 @@ namespace ToSic.Eav.DataSources
 	{
         #region Configuration-properties
 
-	    public override string LogId => "DSDTbl";
+	    public override string LogId => "DS.DtaTbl";
 
         private const string TitleFieldKey = "TitleField";
 		private const string EntityIdFieldKey = "EntityIdField";
@@ -87,6 +87,7 @@ namespace ToSic.Eav.DataSources
             CacheRelevantConfigurations = new[] { ContentTypeKey };
         }
 
+		/// <inheritdoc />
 		/// <summary>
 		/// Initializes a new instance of the DataTableDataSource class
 		/// </summary>
@@ -105,7 +106,9 @@ namespace ToSic.Eav.DataSources
 		{
 			EnsureConfigurationIsLoaded();
 
-            return ConvertToEntityDictionary(Source, ContentType, EntityIdField, TitleField, ModifiedField);
+            var result = ConvertToEntityDictionary(Source, ContentType, EntityIdField, TitleField, ModifiedField);
+		    Log.Add($"get type:{ContentType}, id:{EntityIdField}, title:{TitleField}, modified:{ModifiedField}");
+		    return result;
 		}
 
 		/// <summary>

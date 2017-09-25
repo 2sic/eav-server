@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSources.SqlSources
     public sealed class EavSqlStore : BaseDataSource, IRootSource
 	{
         // deferred IRepositoryLoader as needed...
-	    public override string LogId => "DSEaSq";
+	    public override string LogId => "DS.EavSql";
 
         private IRepositoryLoader Loader => _ldr ?? (_ldr = Factory.Resolve<IRepositoryLoader>());
 	    private IRepositoryLoader _ldr;

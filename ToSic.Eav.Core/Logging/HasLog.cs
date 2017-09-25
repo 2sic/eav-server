@@ -9,12 +9,22 @@ namespace ToSic.Eav.Logging
         protected Log Log { get; private set; }
 
 
-        public HasLog(string name, Log parentLog = null, string initialMessage = null)
+        public HasLog(string logName, Log parentLog = null, string initialMessage = null)
         {
-            InitLog(name, parentLog, initialMessage);
+            InitLogInternal(logName, parentLog, initialMessage);
         }
 
-        public void InitLog(string name, Log parentLog = null, string initialMessage = null)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <remarks>this one can be overridden by outside sources, like the cache which should never allow attaching logs at runtime</remarks>
+        /// <param name="name"></param>
+        /// <param name="parentLog"></param>
+        /// <param name="initialMessage"></param>
+        public virtual void InitLog(string name, Log parentLog = null, string initialMessage = null) 
+            => InitLogInternal(name, parentLog, initialMessage);
+
+        private void InitLogInternal(string name, Log parentLog, string initialMessage)
         {
             if (Log == null)
                 // standard & most common case: just create log

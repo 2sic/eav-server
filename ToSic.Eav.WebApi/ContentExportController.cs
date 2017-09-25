@@ -22,7 +22,7 @@ namespace ToSic.Eav.WebApi
             ExportSelection exportSelection, ExportResourceReferenceMode exportResourcesReferences,
             ExportLanguageResolution exportLanguageReferences, string selectedIds = null)
         {
-            Log.Add($"export content a:{appId}, lang:{language}, deflang:{defaultLanguage}, ct:{contentType}, ids:{selectedIds}");
+            Log.Add($"export content a#{appId}, lang:{language}, deflang:{defaultLanguage}, ct:{contentType}, ids:{selectedIds}");
             AppId = appId;
 
             // todo: continue here!

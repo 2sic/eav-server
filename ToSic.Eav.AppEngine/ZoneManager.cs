@@ -38,7 +38,7 @@ namespace ToSic.Eav.Apps
 
         public static int CreateZone(string name, Log parentLog)
         {
-            var log = new Log("ZoneMg", parentLog, $"create zone z:{name}");
+            var log = new Log("ZoneMg", parentLog, $"create zone:{name}");
             var zoneId = DbDataController.Instance(parentLog:parentLog).Zone.AddZone(name);
             SystemManager.PurgeZoneList();
             return zoneId;
