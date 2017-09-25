@@ -11,6 +11,7 @@ using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.ImportExport.Validation;
 using ToSic.Eav.ImportExport.Xml;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Repository.Efc;
@@ -31,6 +32,7 @@ namespace ToSic.Eav.Apps.ImportExport
     /// </summary>
     public class ToRefactorXmlImportVTable
     {
+
         #region properties like _appId, Document, etc.
 
         #region Timing / Debuging infos
@@ -43,6 +45,8 @@ namespace ToSic.Eav.Apps.ImportExport
         public long TimeForMemorySetup;
         public long TimeForDbImport;
         #endregion
+
+        private Log Log { get; }
 
         private readonly int _appId;
         private readonly int _zoneId;
@@ -100,14 +104,15 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="documentLanguageFallback">Fallback document language</param>
         /// <param name="deleteSetting">How to handle entities already in the repository</param>
         /// <param name="resolveReferenceMode">How value references to files and pages are handled</param>
-        public ToRefactorXmlImportVTable(int zoneId, int appId, int contentTypeId, Stream dataStream, IEnumerable<string> languages, string documentLanguageFallback, ImportDeleteUnmentionedItems deleteSetting, ImportResourceReferenceMode resolveReferenceMode)
+        public ToRefactorXmlImportVTable(int zoneId, int appId, int contentTypeId, Stream dataStream, IEnumerable<string> languages, string documentLanguageFallback, ImportDeleteUnmentionedItems deleteSetting, ImportResourceReferenceMode resolveReferenceMode, Log parentLog)
         {
+            Log = new Log("XmlIVT", parentLog, "building xml vtable import");
             ImportEntities = new List<Entity>();
             ErrorLog = new ImportErrorLog();
 
             _appId = appId;
             _zoneId = zoneId;
-            DbContext = DbDataController.Instance(zoneId, appId);
+            DbContext = DbDataController.Instance(zoneId, appId, Log);
 
             ContentType = DbContext.AttribSet.GetDbAttribSet(contentTypeId);
             if (ContentType == null)
@@ -142,7 +147,7 @@ namespace ToSic.Eav.Apps.ImportExport
             TimeForMemorySetup = Timer.ElapsedMilliseconds;
         }
         private DbDataController DbContext { get; }
-        private List<ToSicEavAttributes> AttributesOfType { get; set; }
+        private List<ToSicEavAttributes> AttributesOfType { get; }
         private List<ToSicEavEntities> ExistingEntities { get; }
 
         private ToSicEavEntities FindInExisting(Guid guid)

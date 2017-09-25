@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Apps.Interfaces;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
+using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -19,35 +20,31 @@ namespace ToSic.Eav.Apps.Parts
         public int AppId { get; }
         #endregion
 
+        #region logging
+
+        protected Log Log = new Log("AppBas");
+        #endregion
 
         /// <summary>
         /// Create an app manager for this specific app
         /// </summary>
         /// <param name="zoneId"></param>
         /// <param name="appId"></param>
-        public AppBase(int zoneId, int appId)
+        /// <param name="parentLog"></param>
+        public AppBase(int zoneId, int appId, Log parentLog = null)
         {
             ZoneId = zoneId;
             AppId = appId;
+            Log.LinkTo(parentLog);
         }
 
-        public AppBase(IApp app)
-        {
-            ZoneId = app.ZoneId;
-            AppId = app.AppId;
-        }
+        public AppBase(IApp app, Log parentLog = null) : this(app.ZoneId, app.AppId, parentLog) { }
 
-        public AppBase(int appId)
-        {
-            AppId = appId;
-            ZoneId = ((BaseCache) DataSource.GetCache(null)).GetZoneAppId(appId: appId).Item1;
-        }
+        public AppBase(int appId, Log parentLog = null) : this(((BaseCache) DataSource.GetCache(null)).GetZoneAppId(appId: appId).Item1, appId, parentLog) { }
 
-        internal AppBase(IDataSource data)
+        internal AppBase(IDataSource data, Log parentLog = null) : this(data.ZoneId, data.AppId, parentLog)
         {
             _data = data;
-            AppId = _data.AppId;
-            ZoneId = _data.ZoneId;
         }
 
 

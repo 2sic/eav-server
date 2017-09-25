@@ -7,6 +7,7 @@ using ToSic.Eav.App;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Persistence.Efc
@@ -103,14 +104,18 @@ namespace ToSic.Eav.Persistence.Efc
 
         #endregion
 
+        private Log Log { get; set; }
+
         #region AppPackage
+        /// <inheritdoc />
         /// <summary>Get Data to populate ICache</summary>
         /// <param name="appId">AppId (can be different than the appId on current context (e.g. if something is needed from the default appId, like MetaData)</param>
         /// <param name="entityIds">null or a List of EntitiIds</param>
         /// <param name="entitiesOnly">If only the CachItem.Entities is needed, this can be set to true to imporove performance</param>
         /// <returns>Item1: EntityModels, Item2: all ContentTypes, Item3: Assignment Object Types</returns>
-        public AppDataPackage AppPackage(int appId, int[] entityIds = null, bool entitiesOnly = false)
+        public AppDataPackage AppPackage(int appId, int[] entityIds = null, bool entitiesOnly = false, Log parentLog = null)
         {
+            Log = new Log("EFLoad", parentLog, $"get app data package for a:{appId}, ids only:{entityIds != null}, entities-only:{entitiesOnly}");
             var source = new AppDataPackageDeferredList();
 
             var contentTypes = ContentTypes(appId, source);

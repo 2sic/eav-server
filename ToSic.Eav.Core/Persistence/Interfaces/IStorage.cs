@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Logging;
 
 namespace ToSic.Eav.Persistence.Interfaces
@@ -48,10 +49,15 @@ namespace ToSic.Eav.Persistence.Interfaces
         #endregion
 
 
-        #region Logging 
-        List<LogItem> Log { get; }
+        #region Logging (old / import)
+        List<LogItem> ImportLogToBeRefactored { get; }
         #endregion
 
+        #region Logging new
+
+        Log Log { get; }
+
+        #endregion
 
         #region Relationship Import / Queue
 

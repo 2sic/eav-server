@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Linq;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Repository.Efc.Parts;
 
 namespace ToSic.Eav.Apps.Parts
 {
+    /// <inheritdoc />
+    /// <summary>
+    /// query manager to work with queries
+    /// </summary>
     public class QueryManager: ManagerBase
     {
-        public QueryManager(AppManager app) : base(app) {}
+        public QueryManager(AppManager app, Log parentLog) : base(app, parentLog, "QryMng") {}
 
         public int Clone(int id)
         {

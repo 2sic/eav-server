@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
     public class DbPipeline: BllCommandBase
     {
-        public DbPipeline(DbDataController c) : base(c) { }
+        public DbPipeline(DbDataController c) : base(c, "DbPipe") { }
 
         /// <summary>
         /// Copy an existing DataPipeline by copying all Entities and uptdate their GUIDs

@@ -1,15 +1,11 @@
-﻿using System.Collections.Generic;
-using ToSic.Eav.Persistence.Logging;
+﻿using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
     public partial class DbEntity: BllCommandBase
     {
-        public DbEntity(DbDataController cntx) : base(cntx)
+        public DbEntity(DbDataController cntx) : base(cntx, "DbEnty")
         {
         }
-
-        public List<LogItem> Log => DbContext.Log;
-
     }
 }

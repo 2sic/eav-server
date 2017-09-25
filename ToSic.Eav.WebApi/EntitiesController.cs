@@ -8,18 +8,20 @@ using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Enums;
 using ToSic.Eav.WebApi.Formats;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Versions;
 
 namespace ToSic.Eav.WebApi
 {
+    /// <inheritdoc />
     /// <summary>
     /// Web API Controller for various actions
     /// </summary>
     public class EntitiesController : Eav3WebApiBase
     {
         public EntitiesController(int appId) : base(appId) { }
-        public EntitiesController()
-        { }
+        public EntitiesController(Log parentLog) : base(parentLog) { }
+       public EntitiesController() { }
 
         #region GetOne GetAll calls
         public IEntity GetEntityOrThrowError(string contentType, int id)
@@ -179,6 +181,7 @@ namespace ToSic.Eav.WebApi
         [HttpPost]
         public Dictionary<Guid, int> SaveMany([FromUri] int appId, [FromBody] List<EntityWithHeader> items, [FromUri] bool partOfPage = false)
         {
+            var myLog = new Log("ESavM", Log, "start");
             SetAppIdAndUser(appId);
 
             // must move guid from header to entity, because we only transfer it on the header (so no duplicates)
@@ -191,6 +194,7 @@ namespace ToSic.Eav.WebApi
                 .Cast<IEntity>()
                 .ToList();
 
+            myLog.Add("will save " + entitiesToImport.Count + " items");
             AppManager.Entities.Save(entitiesToImport);
 
             // find / update IDs of items updated to return to client

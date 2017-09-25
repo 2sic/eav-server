@@ -4,9 +4,9 @@ using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repository.Efc;
-using ToSic.Eav.Repository.Efc.Parts;
 
 // This is the simple API used to quickly create/edit/delete entities
 // It's in the Apps-project, because we are trying to elliminate the plain ToSic.Eav as it was structured in 2016
@@ -33,6 +33,8 @@ namespace ToSic.Eav.Api.Api01
 
         private readonly int _appId;
 
+        private Log Log { get; }
+
         /// <summary>
         /// Create a simple data controller to create, update and delete entities.
         /// </summary>
@@ -40,13 +42,14 @@ namespace ToSic.Eav.Api.Api01
         /// <param name="appId">App ID</param>
         ///// <param name="userName">Name of user loged in</param>
         /// <param name="defaultLanguageCode">Default language of system</param>
-        public SimpleDataController(int zoneId, int appId, string defaultLanguageCode)
+        public SimpleDataController(int zoneId, int appId, string defaultLanguageCode, Log parentLog)
         {
             //_zoneId = zoneId;
             _appId = appId;
             _defaultLanguageCode = defaultLanguageCode;
-            _context = DbDataController.Instance(zoneId, appId);
-            _appManager = new AppManager(zoneId, appId);
+            Log = new Log("SimpDC", parentLog);
+            _context = DbDataController.Instance(zoneId, appId, Log);
+            _appManager = new AppManager(zoneId, appId, Log);
         }
 
 
@@ -197,7 +200,7 @@ namespace ToSic.Eav.Api.Api01
 
         private void ExecuteImport(Entity entity)
         {
-            new AppManager(_appId).Entities.Save(entity);
+            new AppManager(_appId, Log).Entities.Save(entity);
             //var import = new DbImport(_zoneId, _appId, false);
             //import.ImportIntoDb(null, new[] { entity });
             //SystemManager.Purge(_zoneId, _appId);

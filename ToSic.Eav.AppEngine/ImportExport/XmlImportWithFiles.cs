@@ -9,6 +9,7 @@ using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Xml;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Repository.Efc;
@@ -21,6 +22,7 @@ namespace ToSic.Eav.Apps.ImportExport
 {
     public class XmlImportWithFiles
 	{
+        private Log Log { get; }
 		public List<Message> ImportLog;
 
         private List<DimensionDefinition> _targetDimensions;
@@ -48,9 +50,11 @@ namespace ToSic.Eav.Apps.ImportExport
 		/// </summary>
 		/// <param name="defaultLanguage">The portals default language / culture - example: de-DE</param>
 		/// <param name="allowSystemChanges">Specify if the import should be able to change system-wide things like shared attributesets</param>
-		public XmlImportWithFiles(string defaultLanguage = null, bool allowSystemChanges = false)
+		public XmlImportWithFiles(Log parentLog, string defaultLanguage = null, bool allowSystemChanges = false)
 		{
+            Log = new Log("XmlImFl", parentLog);
 		    _environment = Factory.Resolve<IImportExportEnvironment>();
+            _environment.LinkLog(Log);
 			// Prepare
 			ImportLog = new List<Message>();
 		    DefaultLanguage = (defaultLanguage ?? _environment.DefaultLanguage).ToLowerInvariant();
@@ -145,7 +149,7 @@ namespace ToSic.Eav.Apps.ImportExport
 					appGuid = Guid.NewGuid().ToString();
 
 				// Adding app to EAV
-                var eavDc = DbDataController.Instance(zoneId);
+                var eavDc = DbDataController.Instance(zoneId, parentLog:Log);
 			    var app = eavDc.App.AddApp(null, appGuid);
 				eavDc.SqlDb.SaveChanges();
 
@@ -171,7 +175,7 @@ namespace ToSic.Eav.Apps.ImportExport
 		/// </summary>
 		public bool ImportXml(int zoneId, int appId, XDocument doc, bool leaveExistingValuesUntouched = true)
 		{
-		    _eavContext = DbDataController.Instance(zoneId, appId);
+		    _eavContext = DbDataController.Instance(zoneId, appId, Log);
             
 			AppId = appId;
 			ZoneId = zoneId;
@@ -206,7 +210,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 sourceDimensions.FirstOrDefault(p => p.Matches(sourceDefaultLanguage))?.DimensionId
 				: new int?();
 
-		    _targetDimensions = new ZoneRuntime(zoneId).Languages(true);
+		    _targetDimensions = new ZoneRuntime(zoneId, Log).Languages(true);
 
             _xmlBuilder = new XmlToEntity(AppId, sourceDimensions, sourceDefaultDimensionId, _targetDimensions, DefaultLanguage);
             #endregion
@@ -222,7 +226,7 @@ namespace ToSic.Eav.Apps.ImportExport
 			import.ImportIntoDb(importAttributeSets, importEntities.Cast<Entity>());
             SystemManager.Purge(ZoneId, AppId);
 
-			ImportLog.AddRange(GetExportImportMessagesFromImportLog(import.Storage.Log));
+			ImportLog.AddRange(GetExportImportMessagesFromImportLog(import.Storage.ImportLogToBeRefactored));
 
 			if (xmlSource.Elements(XmlConstants.Templates).Any())
 				ImportXmlTemplates(xmlSource);
@@ -464,7 +468,7 @@ namespace ToSic.Eav.Apps.ImportExport
                         listPresentationDemoEntityId = listPresentationDefault.DemoEntityId;
                     }
 
-                    new AppManager(_eavContext.ZoneId, _eavContext.AppId).Templates.CreateOrUpdate(
+                    new AppManager(_eavContext.ZoneId, _eavContext.AppId, Log).Templates.CreateOrUpdate(
                         null, name, path, contentTypeStaticName, demoEntityId, presentationTypeStaticName,
                         presentationDemoEntityId, listContentTypeStaticName, listContentDemoEntityId,
                         listPresentationTypeStaticName, listPresentationDemoEntityId, type, isHidden, location,

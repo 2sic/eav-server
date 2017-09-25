@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Xml;
 using ToSic.Eav.Repository.Efc;
@@ -11,6 +12,7 @@ namespace ToSic.Eav.ImportExport.Tests
     [TestClass]
     public class XmlSerializationTests
     {
+        public static Log Log = new Log("TstXml");
         private int AppId = 2;
         private int TestItemId = 0;
 
@@ -18,7 +20,7 @@ namespace ToSic.Eav.ImportExport.Tests
         public void Xml_SerializeItemOnHome()
         {
             var test = new TestValuesOnPc2Dm();
-            var dbc = DbDataController.Instance(null, test.AppId);
+            var dbc = DbDataController.Instance(null, test.AppId, Log);
             //var xmlbuilder = new DbXmlBuilder(dbc);
 
             //var xml = xmlbuilder.XmlEntity(test.ItemOnHomeId);
@@ -42,7 +44,7 @@ namespace ToSic.Eav.ImportExport.Tests
         {
             var test = new TestValuesOnPc2Dm();
             var appId = test.BlogAppId;
-            var dbc = DbDataController.Instance(null, appId);
+            var dbc = DbDataController.Instance(null, appId, Log);
             var loader = new Efc11Loader(dbc.SqlDb);
             var app = loader.AppPackage(appId);
             var exBuilder = new XmlSerializer();

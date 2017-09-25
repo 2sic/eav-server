@@ -16,7 +16,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         internal int SaveEntity(IEntity newEnt, SaveOptions so)
         {
-
+            Log.Add("save start for id:" + newEnt?.EntityId + "/" + newEnt?.EntityGuid);
             #region Step 1: Do some initial error checking and preparations
             if (newEnt == null)
                 throw new ArgumentNullException(nameof(newEnt));
@@ -223,6 +223,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 // finish transaction - finalize
             });
 
+            Log.Add("save done for id:" + dbEnt?.EntityId);
             return dbEnt.EntityId;
         }
 
@@ -233,6 +234,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         internal List<int> SaveEntity(List<IEntity> entities, SaveOptions saveOptions)
         {
+            Log.Add($"save many count:{entities?.Count}");
             var ids = new List<int>();
 
             DbContext.DoInTransaction(() => DbContext.Versioning.QueueDuringAction(() =>

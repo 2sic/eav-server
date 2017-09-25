@@ -1,13 +1,15 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Apps.Parts
 {
+    /// <inheritdoc />
     /// <summary>
     /// Templates manager for the app engine - in charge of importing / modifying templates at app-level
     /// </summary>
     public class TemplatesManager: ManagerBase
     {
-        public TemplatesManager(AppManager app) : base(app) {}
+        public TemplatesManager(AppManager app, Log parentLog) : base(app, parentLog, "TplMng") {}
 
         #region Template
 

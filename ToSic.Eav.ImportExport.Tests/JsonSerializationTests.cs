@@ -2,8 +2,8 @@
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc;
-using ToSic.Eav.Persistence.Xml;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Repository.Efc.Tests;
 using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
@@ -13,6 +13,8 @@ namespace ToSic.Eav.ImportExport.Tests
     [TestClass]
     public class JsonSerializationTests
     {
+        public static Log Log { get; set; } = new Log("TstJsn");
+
         [TestMethod]
         public void Json_ExportItemOnHome()
         {
@@ -97,7 +99,7 @@ namespace ToSic.Eav.ImportExport.Tests
 
         private static JsonSerializer SerializerOfApp(int appId)
         {
-            var dbc = DbDataController.Instance(null, appId);
+            var dbc = DbDataController.Instance(null, appId, Log);
             var loader = new Efc11Loader(dbc.SqlDb);
             var app = loader.AppPackage(appId);
             var exBuilder = new JsonSerializer();
@@ -127,7 +129,7 @@ namespace ToSic.Eav.ImportExport.Tests
 
         private static void Test_ExportAllOfAnApp(int appId)
         {
-            var dbc = DbDataController.Instance(null, appId);
+            var dbc = DbDataController.Instance(null, appId, Log);
 
             var loader = new Efc11Loader(dbc.SqlDb);
             var app = loader.AppPackage(appId);
@@ -160,7 +162,7 @@ namespace ToSic.Eav.ImportExport.Tests
 
         private static void Test_DoubleExportAllOfAnApp(int appId)
         {
-            var dbc = DbDataController.Instance(null, appId);
+            var dbc = DbDataController.Instance(null, appId, Log);
 
             var loader = new Efc11Loader(dbc.SqlDb);
             var app = loader.AppPackage(appId);

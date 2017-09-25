@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using ToSic.Eav.App;
 using ToSic.Eav.Data;
+using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Interfaces
 {
@@ -16,14 +17,13 @@ namespace ToSic.Eav.Interfaces
         /// Get EntityModel for specified EntityId
         /// </summary>
         /// <returns>A single IEntity or throws InvalidOperationException</returns>
-        //IEntity Entity(int appId, int entityId);
-
         /// <summary>Get Data to populate ICache</summary>
         /// <param name="appId">AppId (can be different than the appId on current context (e.g. if something is needed from the default appId, like MetaData)</param>
         /// <param name="entityIds">null or a List of EntitiIds</param>
         /// <param name="entitiesOnly">If only the CachItem.Entities is needed, this can be set to true to imporove performance</param>
+        /// <param name="parentLog">parent logger</param>
         /// <returns>An object with everything which an app has, usually for caching</returns>
-        AppDataPackage AppPackage(int appId, int[] entityIds = null, bool entitiesOnly = false);
+        AppDataPackage AppPackage(int appId, int[] entityIds = null, bool entitiesOnly = false, Log parentLog = null);
 
         Dictionary<int, string> MetadataTargetTypes();
 

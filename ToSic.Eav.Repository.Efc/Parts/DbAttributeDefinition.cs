@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Persistence.Logging;
 
@@ -11,7 +12,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 {
     public partial class DbAttributeDefinition: BllCommandBase
     {
-        public DbAttributeDefinition(DbDataController cntx) : base(cntx) {}
+        public DbAttributeDefinition(DbDataController cntx) : base(cntx, "DbAttr") {}
 
         /// <summary>
         /// Set an Attribute as Title on an AttributeSet
@@ -39,7 +40,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             }
             else
             {
-                DbContext.Log.Add(new LogItem(EventLogEntryType.Information, "Attribute already exists" + newAtt.Name));
+                DbContext.ImportLogToBeRefactored.Add(new LogItem(EventLogEntryType.Information, "Attribute already exists" + newAtt.Name));
                 destAttribId = AttributeId(contentTypeId, newAtt.Name);
             }
             return destAttribId;
@@ -47,11 +48,20 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
 
         private ToSicEavAttributesInSets GetAttribute(int attributeSetId, int attributeId = 0, string name = null)
-            => attributeId != 0
-                ? DbContext.SqlDb.ToSicEavAttributesInSets
-                    .Single(a => a.AttributeId == attributeId && a.AttributeSetId == attributeSetId)
-                : DbContext.SqlDb.ToSicEavAttributesInSets
-                    .Single(a => a.AttributeId == attributeId && a.Attribute.StaticName == name);
+        {
+            try
+            {
+                return attributeId != 0
+                    ? DbContext.SqlDb.ToSicEavAttributesInSets
+                        .Single(a => a.AttributeId == attributeId && a.AttributeSetId == attributeSetId)
+                    : DbContext.SqlDb.ToSicEavAttributesInSets
+                        .Single(a => a.AttributeId == attributeId && a.Attribute.StaticName == name);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("error getting attribute - content-type/setid: " + attributeSetId + "; optional attributeId: " + attributeId + "; optional name: " + name, ex);
+            }
+        }
 
 
         public int AttributeId(int setId, string staticName) => GetAttribute(setId, name: staticName).Attribute.AttributeId;

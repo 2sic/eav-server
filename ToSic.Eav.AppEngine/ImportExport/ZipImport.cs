@@ -7,6 +7,7 @@ using System.Web;
 using System.Xml.Linq;
 using ICSharpCode.SharpZipLib.Zip;
 using ToSic.Eav.ImportExport;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
 
@@ -19,14 +20,17 @@ namespace ToSic.Eav.Apps.ImportExport
         // ReSharper disable once NotAccessedField.Local
         private bool _allowRazor; // note: not used yet, but will be important in the future 
         private readonly IImportExportEnvironment _environment;
-        public ZipImport(IImportExportEnvironment environment, int zoneId, int? appId, bool allowRazor)
+        public ZipImport(IImportExportEnvironment environment, int zoneId, int? appId, bool allowRazor, Log parentLog)
         {
+            Log = new Log("ZipImp", parentLog, "constructor");
             _appId = appId;
             _zoneId = zoneId;
             _allowRazor = allowRazor;
             _environment = environment;
 
         }
+
+        private Log Log { get; }
 
         //public List<ExportImportMessage> Messages => _environment.Messages;
 
@@ -36,7 +40,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="zipStream"></param>
         /// <param name="temporaryDirectory"></param>
         /// <returns></returns>
-        public bool ImportZip(Stream zipStream, string temporaryDirectory)//HttpServerUtility server)
+        public bool ImportZip(Stream zipStream, string temporaryDirectory)
         {
             List<Message> messages = _environment.Messages;
 
@@ -77,7 +81,7 @@ namespace ToSic.Eav.Apps.ImportExport
                                 {
                                     var fileContents = File.ReadAllText(Path.Combine(appDirectory, xmlFileName));
 	                                var doc = XDocument.Parse(fileContents);
-                                    var import = new XmlImportWithFiles();//_environment.DefaultLanguage);
+                                    var import = new XmlImportWithFiles(Log);//_environment.DefaultLanguage);
 
 									if (!import.IsCompatible(doc))
 										throw new Exception("The app / package is not compatible with this version of eav and the 2sxc-host.");
@@ -86,7 +90,7 @@ namespace ToSic.Eav.Apps.ImportExport
                                         && doc.Element(XmlConstants.RootNode).Element(XmlConstants.Header).Element(XmlConstants.App).Attribute(XmlConstants.Guid).Value != XmlConstants.AppContentGuid /* "Default" */;
 
                                     if (!isAppImport && !_appId.HasValue)
-                                        _appId = new ZoneRuntime(_zoneId).DefaultAppId;
+                                        _appId = new ZoneRuntime(_zoneId, Log).DefaultAppId;
 
                                     if (isAppImport)
                                     {

@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
     public partial class DbContentType: BllCommandBase
     {
-        public DbContentType(DbDataController cntx) : base(cntx) {}
+        public DbContentType(DbDataController cntx) : base(cntx, "DbCtyp") {}
 
 
         private ToSicEavAttributeSets GetTypeByStaticName(string staticName)
