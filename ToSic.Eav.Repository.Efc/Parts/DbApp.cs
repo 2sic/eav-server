@@ -1,13 +1,12 @@
 ﻿using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
     public class DbApp: BllCommandBase
     {
-        public DbApp(DbDataController cntx) : base(cntx, "DbApp") {}
+        public DbApp(DbDataController cntx) : base(cntx, "Db.App") {}
 
 
         /// <summary>

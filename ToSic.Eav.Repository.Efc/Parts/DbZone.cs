@@ -1,11 +1,10 @@
-﻿using ToSic.Eav.Logging.Simple;
-using ToSic.Eav.Persistence.Efc.Models;
+﻿using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
     public class DbZone: BllCommandBase
     {
-        public DbZone(DbDataController cntx) : base(cntx, "DbZone") {}
+        public DbZone(DbDataController cntx) : base(cntx, "Db.Zone") {}
        
         /// <summary>
         /// Creates a new Zone with a default App and Culture-Root-Dimension

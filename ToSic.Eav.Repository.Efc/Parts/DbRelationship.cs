@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Data;
 using ToSic.Eav.Enums;
 using ToSic.Eav.Interfaces;
-using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Efc.Models;
 
@@ -33,7 +32,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         private readonly List<RelationshipToSave> _saveQueue = new List<RelationshipToSave>();
 
 
-        public DbRelationship(DbDataController cntx) : base(cntx, "DbRels") {}
+        public DbRelationship(DbDataController cntx) : base(cntx, "Db.Rels") {}
 
         internal ICollection<ToSicEavEntityRelationships> GetRelationshipsOfParent(int parentId)
         {

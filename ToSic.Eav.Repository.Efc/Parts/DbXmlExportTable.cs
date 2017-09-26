@@ -5,7 +5,6 @@ using ToSic.Eav.Implementations.ValueConverter;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.ImportExport.Xml;
-using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
@@ -22,7 +21,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// 
         /// </summary>
         /// <param name="dataController"></param>
-        public DbXmlExportTable(DbDataController dataController) : base(dataController, "DbXmEx")
+        public DbXmlExportTable(DbDataController dataController) : base(dataController, "Db.XmEx")
         {
         }
 

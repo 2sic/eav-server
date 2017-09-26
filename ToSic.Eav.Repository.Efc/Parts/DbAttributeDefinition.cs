@@ -4,7 +4,6 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
-using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Persistence.Logging;
 
@@ -12,7 +11,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 {
     public partial class DbAttributeDefinition: BllCommandBase
     {
-        public DbAttributeDefinition(DbDataController cntx) : base(cntx, "DbAttr") {}
+        public DbAttributeDefinition(DbDataController cntx) : base(cntx, "Db.AttDef") {}
 
         /// <summary>
         /// Set an Attribute as Title on an AttributeSet

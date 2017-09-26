@@ -49,8 +49,8 @@ namespace ToSic.Eav.Logging.Simple
             {
                 var dot = name.IndexOf(".", StringComparison.Ordinal);
                 _scope = dot > 0 ? name.Substring(0, Math.Min(dot, MaxScopeLen)) + "." : "";
-
-                _name = dot > 0 ? name.Substring(dot + 1, 6) : name;
+                var rest = dot > 0 ? name.Substring(dot + 1) : name;
+                _name = rest.Substring(0, Math.Min(rest.Length, MaxNameLen));
                 _name = _name.Substring(0, Math.Min(_name.Length, MaxNameLen));
             }
             catch { /* ignore */ }
