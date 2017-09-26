@@ -47,5 +47,10 @@ namespace ToSic.Eav.Apps.Environment
         {
             // ignore
         }
+
+        public bool IsEnabled(int instanceId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

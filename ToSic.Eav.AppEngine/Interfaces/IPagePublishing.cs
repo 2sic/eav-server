@@ -42,5 +42,7 @@ namespace ToSic.Eav.Apps.Interfaces
         int GetPublishedVersion(int moduleId);
 
         void Publish(int instanceId, int version);
+
+        bool IsEnabled(int instanceId);
     }
 }
