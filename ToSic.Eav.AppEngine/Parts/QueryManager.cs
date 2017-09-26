@@ -12,7 +12,7 @@ namespace ToSic.Eav.Apps.Parts
     /// </summary>
     public class QueryManager: ManagerBase
     {
-        public QueryManager(AppManager app, Log parentLog) : base(app, parentLog, "QryMng") {}
+        public QueryManager(AppManager app, Log parentLog) : base(app, parentLog, "App.QryMng") {}
 
         public int Clone(int id)
         {

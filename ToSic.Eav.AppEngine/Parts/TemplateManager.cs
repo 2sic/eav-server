@@ -9,7 +9,7 @@ namespace ToSic.Eav.Apps.Parts
     /// </summary>
     public class TemplatesManager: ManagerBase
     {
-        public TemplatesManager(AppManager app, Log parentLog) : base(app, parentLog, "TplMng") {}
+        public TemplatesManager(AppManager app, Log parentLog) : base(app, parentLog, "App.TplMng") {}
 
         #region Template
 

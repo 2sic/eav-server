@@ -24,7 +24,7 @@ namespace ToSic.Eav
         public VersionUpgrade(string userName, Log parentLog)
 		{
 			_userName = userName;
-            Log = new Log("VerUpg", parentLog);
+            Log = new Log("Upg.Versio", parentLog);
 		}
 
 		/// <summary>

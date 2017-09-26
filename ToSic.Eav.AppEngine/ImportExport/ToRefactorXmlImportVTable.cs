@@ -11,6 +11,7 @@ using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.ImportExport.Validation;
 using ToSic.Eav.ImportExport.Xml;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Persistence.Logging;
@@ -30,7 +31,7 @@ namespace ToSic.Eav.Apps.ImportExport
     /// <summary>
     /// Import a virtual table of content-items
     /// </summary>
-    public class ToRefactorXmlImportVTable
+    public class ToRefactorXmlImportVTable: HasLog
     {
 
         #region properties like _appId, Document, etc.
@@ -104,9 +105,12 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="documentLanguageFallback">Fallback document language</param>
         /// <param name="deleteSetting">How to handle entities already in the repository</param>
         /// <param name="resolveReferenceMode">How value references to files and pages are handled</param>
-        public ToRefactorXmlImportVTable(int zoneId, int appId, int contentTypeId, Stream dataStream, IEnumerable<string> languages, string documentLanguageFallback, ImportDeleteUnmentionedItems deleteSetting, ImportResourceReferenceMode resolveReferenceMode, Log parentLog)
+        public ToRefactorXmlImportVTable(int zoneId, int appId, int contentTypeId, 
+            Stream dataStream, IEnumerable<string> languages, string documentLanguageFallback, 
+            ImportDeleteUnmentionedItems deleteSetting, 
+            ImportResourceReferenceMode resolveReferenceMode, 
+            Log parentLog): base("Xml.ImpVT", parentLog, "building xml vtable import")
         {
-            Log = new Log("XmlIVT", parentLog, "building xml vtable import");
             ImportEntities = new List<Entity>();
             ErrorLog = new ImportErrorLog();
 

@@ -15,7 +15,7 @@ namespace ToSic.Eav.Apps.Parts
     /// </summary>
     public partial class EntitiesManager: ManagerBase
     {
-        public EntitiesManager(AppManager app, Log parentLog = null) : base(app, parentLog, "EntMan")
+        public EntitiesManager(AppManager app, Log parentLog = null) : base(app, parentLog, "App.EntMan")
         {
         }
 

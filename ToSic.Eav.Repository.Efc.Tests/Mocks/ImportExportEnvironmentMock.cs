@@ -12,7 +12,7 @@ namespace ToSic.Eav.Repository.Efc.Tests.Mocks
 {
     internal class ImportExportEnvironmentMock : HasLog, IImportExportEnvironment
     {
-        public ImportExportEnvironmentMock(Log parentLog = null) : base("IExMck", parentLog)
+        public ImportExportEnvironmentMock(Log parentLog = null) : base("Mck.ImpExp", parentLog)
         {
         }
 

@@ -183,7 +183,7 @@ namespace ToSic.Eav.WebApi
         [HttpPost]
         public Dictionary<Guid, int> SaveMany([FromUri] int appId, [FromBody] List<EntityWithHeader> items, [FromUri] bool partOfPage = false)
         {
-            var myLog = new Log("ESavM", Log, "start");
+            var myLog = new Log("Eav.SavMny", Log, "start");
             SetAppIdAndUser(appId);
 
             // must move guid from header to entity, because we only transfer it on the header (so no duplicates)

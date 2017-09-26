@@ -22,7 +22,7 @@ namespace ToSic.Eav.Apps.Parts
 
         #region logging
 
-        protected Log Log = new Log("AppBas");
+        protected Log Log = new Log("App.Base");
         #endregion
 
         /// <summary>

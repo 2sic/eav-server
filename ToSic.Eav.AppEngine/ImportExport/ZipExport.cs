@@ -38,7 +38,7 @@ namespace ToSic.Eav.Apps.ImportExport
             _zoneId = zoneId;
             _appFolder = appFolder;
             _physicalAppPath = physicalAppPath;
-            Log = new Log("ZipExp", parentLog);
+            Log = new Log("Zip.Exp", parentLog);
             FileManager = new FileManager(_physicalAppPath);
         }
 

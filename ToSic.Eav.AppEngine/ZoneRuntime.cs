@@ -10,7 +10,7 @@ namespace ToSic.Eav.Apps
     {
         #region Constructor and simple properties
 
-        public ZoneRuntime(int zoneId, Log parentLog) : base(zoneId, parentLog, "ZoneRT") {}
+        public ZoneRuntime(int zoneId, Log parentLog) : base(zoneId, parentLog, "App.Zone") {}
 
         #endregion
 

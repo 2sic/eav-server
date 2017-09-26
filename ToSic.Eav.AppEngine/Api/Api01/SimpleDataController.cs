@@ -42,7 +42,7 @@ namespace ToSic.Eav.Api.Api01
         /// <param name="appId">App ID</param>
         /// <param name="defaultLanguageCode">Default language of system</param>
         /// <param name="parentLog"></param>
-        public SimpleDataController(int zoneId, int appId, string defaultLanguageCode, Log parentLog): base("SimpDC", parentLog)
+        public SimpleDataController(int zoneId, int appId, string defaultLanguageCode, Log parentLog): base("Dta.Simple", parentLog)
         {
             //_zoneId = zoneId;
             _appId = appId;

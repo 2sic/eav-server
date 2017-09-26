@@ -6,6 +6,7 @@ using ToSic.Eav.App;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Interfaces;
@@ -18,7 +19,7 @@ namespace ToSic.Eav.Apps.ImportExport
     /// <summary>
     /// Import Schema and Entities to the EAV SqlStore
     /// </summary>
-    public class Import
+    public class Import: HasLog
     {
         private Log Log { get; }
         #region Private Fields
@@ -37,9 +38,8 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <summary>
         /// Initializes a new instance of the Import class.
         /// </summary>
-        public Import(int? zoneId, int appId, bool skipExistingAttributes = true, bool preserveUntouchedAttributes = true, Log parentLog = null)
+        public Import(int? zoneId, int appId, bool skipExistingAttributes = true, bool preserveUntouchedAttributes = true, Log parentLog = null): base("Eav.Import", parentLog, "constructor")
         {
-            Log = new Log("EaImpo", parentLog, "constructor");
             App = zoneId.HasValue ? new AppManager(zoneId.Value, appId) : new AppManager(appId, Log);
             Storage = App.Storage;
             //_dbDeepAccess = App.DataController;// DbDataController.Instance(zoneId, appId);

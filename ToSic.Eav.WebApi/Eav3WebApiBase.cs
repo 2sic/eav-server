@@ -15,7 +15,7 @@ namespace ToSic.Eav.WebApi
     public class Eav3WebApiBase : ApiController
     {
         #region Logging
-        protected Log Log = new Log("EaApiC");
+        protected Log Log = new Log("Eav.ApiCon");
         #endregion
 
 

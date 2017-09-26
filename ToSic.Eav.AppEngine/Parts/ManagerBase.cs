@@ -7,7 +7,7 @@ namespace ToSic.Eav.Apps.Parts
     /// </summary>
     public abstract class ManagerBase
     {
-        protected Log Log = new Log("ManBas");
+        protected Log Log = new Log("App.MBase");
 
         internal readonly AppManager _appManager;
         internal ManagerBase(AppManager app, Log parentLog, string logRename = null)

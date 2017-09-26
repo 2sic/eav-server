@@ -11,7 +11,7 @@ namespace ToSic.Eav.Apps
     {
         private readonly IEntity _templateEntity;
 
-        public Template(IEntity templateEntity, Log parentLog): base("Templt", parentLog)
+        public Template(IEntity templateEntity, Log parentLog): base("App.Templt", parentLog)
         {
             _templateEntity = templateEntity ?? throw new Exception("Template entity is null");
         }

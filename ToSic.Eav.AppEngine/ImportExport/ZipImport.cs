@@ -22,7 +22,7 @@ namespace ToSic.Eav.Apps.ImportExport
         private readonly IImportExportEnvironment _environment;
         public ZipImport(IImportExportEnvironment environment, int zoneId, int? appId, bool allowRazor, Log parentLog)
         {
-            Log = new Log("ZipImp", parentLog);
+            Log = new Log("Zip.Imp", parentLog);
             _appId = appId;
             _zoneId = zoneId;
             _allowRazor = allowRazor;

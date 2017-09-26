@@ -6,7 +6,7 @@ namespace ToSic.Eav.Apps.Parts
 {
     public class ContentTypeManager : ManagerBase
     {
-        public ContentTypeManager(AppManager app, Log parentLog) : base(app, parentLog, "CTMngr")
+        public ContentTypeManager(AppManager app, Log parentLog) : base(app, parentLog, "App.TypMng")
         {
         }
 

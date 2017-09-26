@@ -11,6 +11,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Environment;
 using ToSic.Eav.ImportExport.Xml;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Logging;
@@ -22,7 +23,7 @@ namespace ToSic.Eav.Apps.ImportExport
     // this has a minimal risk of being different!
     // should all get it from cache only!
 
-    public abstract class XmlExporter
+    public abstract class XmlExporter: IHasLog
     {
         #region simple properties
         protected readonly List<int> ReferencedFileIds = new List<int>();
@@ -42,14 +43,14 @@ namespace ToSic.Eav.Apps.ImportExport
         private string _appStaticName = "";
         #endregion
 
-        protected Log Log = new Log("XmlExp");
+        protected Log Log = new Log("Xml.Exp");
 
         #region Constructor stuff
 
         protected void Constructor(int zoneId, int appId, string appStaticName, bool appExport, string[] attrSetIds, string[] entityIds, Log parentLog)
         {
             ZoneId = zoneId;
-            Log = new Log("XmlExp", parentLog, "start XML exporter");
+            Log = new Log("Xml.Exp", parentLog, "start XML exporter");
             AppPackage = new Efc11Loader(DbDataController.Instance(zoneId, appId, Log).SqlDb).AppPackage(appId, parentLog: Log);
             Serializer = new XmlSerializer();
             Serializer.Initialize(AppPackage);
@@ -340,5 +341,7 @@ namespace ToSic.Eav.Apps.ImportExport
         {
             public override Encoding Encoding => Encoding.UTF8;
         }
+
+        public void LinkLog(Log parentLog) => Log.LinkTo(parentLog);
     }
 }

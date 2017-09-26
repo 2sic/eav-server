@@ -113,7 +113,7 @@ namespace ToSic.Eav.Repository.Efc
             var dc = new DbDataController
             {
                 SqlDb = context,
-                Log = new Log("DbData")
+                Log = new Log("Db.Data")
             };
             dc.Versioning = new DbVersioning(dc);
             dc.Entities = new DbEntity(dc);

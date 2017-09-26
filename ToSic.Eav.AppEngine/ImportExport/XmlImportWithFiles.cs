@@ -51,7 +51,7 @@ namespace ToSic.Eav.Apps.ImportExport
 	    /// <param name="parentLog"></param>
 	    /// <param name="defaultLanguage">The portals default language / culture - example: de-DE</param>
 	    /// <param name="allowSystemChanges">Specify if the import should be able to change system-wide things like shared attributesets</param>
-	    public XmlImportWithFiles(Log parentLog, string defaultLanguage = null, bool allowSystemChanges = false): base("XmlImFl", parentLog)
+	    public XmlImportWithFiles(Log parentLog, string defaultLanguage = null, bool allowSystemChanges = false): base("Xml.ImpFil", parentLog)
 		{
 		    _environment = Factory.Resolve<IImportExportEnvironment>();
             _environment.LinkLog(Log);
