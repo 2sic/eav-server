@@ -115,7 +115,7 @@ namespace ToSic.Eav.Apps.ImportExport
         {
             contentTypes.ForEach(MergeContentTypeUpdateWithExisting);
             var so = SaveOptions.Build(ZoneId);
-            so.DiscardAttributesMissingInSchema = true;
+            so.DiscardattributesNotInType = true;
             Storage.Save(contentTypes.Cast<IContentType>().ToList(), so);
         }
 
@@ -203,7 +203,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     if (existingMetadata == null)
                         newMetaList.Add(newMd);
                     else
-                        newMetaList.Add(EntitySaver.CreateMergedForSaving(existingMetadata, newMd, SaveOptions) as Entity);
+                        newMetaList.Add(new EntitySaver(Log).CreateMergedForSaving(existingMetadata, newMd, SaveOptions) as Entity);
                 }
                 ((AttributeDefinition) newAttrib).AddItems(newMetaList);
             }
@@ -244,7 +244,7 @@ namespace ToSic.Eav.Apps.ImportExport
             // now update (main) entity id from existing - since it already exists
             var original = existingEntities.First();
             update.ChangeIdForSaving(original.EntityId);
-            return EntitySaver.CreateMergedForSaving(original, update, saveOptions) as Entity;
+            return new EntitySaver(Log).CreateMergedForSaving(original, update, saveOptions) as Entity;
 
         }
     }

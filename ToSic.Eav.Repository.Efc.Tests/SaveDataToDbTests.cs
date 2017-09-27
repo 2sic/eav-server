@@ -70,7 +70,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             {
                 {"Title", "changed title"}
             });
-            var saveEntity = EntitySaver.CreateMergedForSaving(itm1, itmNewTitle, so);
+            var saveEntity = new EntitySaver(new Log("Tst.Merge")).CreateMergedForSaving(itm1, itmNewTitle, so);
 
             // save it
             dbi.Entities.SaveEntity(saveEntity, so);
@@ -112,7 +112,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             });
             newE.SetType(ct1);
 
-            var saveEntity = EntitySaver.CreateMergedForSaving(null, newE, so);
+            var saveEntity = new EntitySaver(new Log("Tst.Merge")).CreateMergedForSaving(null, newE, so);
 
             // save it
             var newId = dbi.Entities.SaveEntity(saveEntity, so);

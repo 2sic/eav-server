@@ -10,7 +10,6 @@ using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repository.Efc;
 
 // This is the simple API used to quickly create/edit/delete entities
-// It's in the Apps-project, because we are trying to elliminate the plain ToSic.Eav as it was structured in 2016
 
     // todo: there is quite a lot of duplicate code here
     // like code to build attributes, or convert id-relationships to guids
@@ -80,21 +79,23 @@ namespace ToSic.Eav.Api.Api01
             var eGuid = Guid.Parse(values[Constants.EntityFieldGuid].ToString());
             var importEntity = new Entity(_appId, eGuid, attributeSet.StaticName, new Dictionary<string, object>());
             AppendAttributeValues(importEntity, attributeSet, ConvertEntityRelations(values), _defaultLanguageCode, false, true);
-            ExecuteImport(importEntity);
+
+            _appManager.Entities.Save(importEntity/*, so */);
+            //ExecuteImport(importEntity);
         }
 
-        private static Dictionary<string, object> RemoveUnknownFields(Dictionary<string, object> values, ToSicEavAttributeSets attributeSet)
-        {
-            // todo: ensure things like IsPublished and EntityGuid don't get filtered...
-            // part of https://github.com/2sic/2sxc/issues/1173
-            var listAllowed = attributeSet.GetAttributes();
-            var allowedNames = listAllowed.Select(a => a.StaticName.ToLower()).ToList();
-            allowedNames.Add(Constants.EntityFieldGuid);
-            allowedNames.Add(Constants.EntityFieldIsPublished);
-            values = values.Where(x => allowedNames.Any(y => y == x.Key.ToLower()))
-                .ToDictionary(x => x.Key, y => y.Value);
-            return values;
-        }
+        //private static Dictionary<string, object> RemoveUnknownFields(Dictionary<string, object> values, ToSicEavAttributeSets attributeSet)
+        //{
+        //    // todo: ensure things like IsPublished and EntityGuid don't get filtered...
+        //    // part of https://github.com/2sic/2sxc/issues/1173
+        //    var listAllowed = attributeSet.GetAttributes();
+        //    var allowedNames = listAllowed.Select(a => a.StaticName.ToLower()).ToList();
+        //    allowedNames.Add(Constants.EntityFieldGuid);
+        //    allowedNames.Add(Constants.EntityFieldIsPublished);
+        //    values = values.Where(x => allowedNames.Any(y => y == x.Key.ToLower()))
+        //        .ToDictionary(x => x.Key, y => y.Value);
+        //    return values;
+        //}
 
 
         /// <summary>
@@ -111,40 +112,46 @@ namespace ToSic.Eav.Api.Api01
         public void Update(int entityId, Dictionary<string, object> values)
         {
             Log.Add($"update i:{entityId}");
-            var entity = _context.Entities.GetDbEntity(entityId);
-            Update(entity, values);
+            //var entity = _context.Entities.GetDbEntity(entityId);
+            _appManager.Entities.UpdateParts(entityId, values);
+            //Update(entity, values);
         }
 
-        /// <summary>
-        /// Update an entity specified by GUID.
-        /// </summary>
-        /// <param name="entityGuid">Entity GUID</param>param>
-        /// <param name="values">
-        ///     Values to be set collected in a dictionary. Each dictionary item is a pair of attribute 
-        ///     name and value. To set references to other entities, set the attribute value to a list of 
-        ///     entity ids. 
-        /// </param>
-        /// <exception cref="ArgumentException">Attribute in values does not exit</exception>
-        /// <exception cref="ArgumentNullException">Entity does not exist</exception>
-        public void Update(Guid entityGuid, Dictionary<string, object> values)
-        {
-            Log.Add($"update i:{entityGuid}");
-            var entity = _context.Entities.GetMostCurrentDbEntity(entityGuid);
-            Update(entity, values);
-        }
+        // 2017-09-27 2dm seems unused
+        ///// <summary>
+        ///// Update an entity specified by GUID.
+        ///// </summary>
+        ///// <param name="entityGuid">Entity GUID</param>param>
+        ///// <param name="values">
+        /////     Values to be set collected in a dictionary. Each dictionary item is a pair of attribute 
+        /////     name and value. To set references to other entities, set the attribute value to a list of 
+        /////     entity ids. 
+        ///// </param>
+        ///// <exception cref="ArgumentException">Attribute in values does not exit</exception>
+        ///// <exception cref="ArgumentNullException">Entity does not exist</exception>
+        //public void Update(Guid entityGuid, Dictionary<string, object> values)
+        //{
+        //    Log.Add($"update i:{entityGuid}");
+        //    var entity = _context.Entities.GetMostCurrentDbEntity(entityGuid);
+        //    Update(entity, values);
+        //}
 
-        private void Update(ToSicEavEntities entity, Dictionary<string, object> values, bool filterUnknownFields = true)
-        {
-            Log.Add($"update entity:{entity.EntityId}, vals⋮{values.Count}, filter:{filterUnknownFields}");
-            var attributeSet = _context.AttribSet.GetDbAttribSet(entity.AttributeSetId);
-            var importEntity = new Entity(_appId, entity.EntityGuid, attributeSet.StaticName, new Dictionary<string, object>());// CreateImportEntity(entity.EntityGuid, attributeSet.StaticName);
+        //private void Update(ToSicEavEntities entity, Dictionary<string, object> values, bool filterUnknownFields = true)
+        //{
+        //    Log.Add($"update entity:{entity.EntityId}, vals⋮{values.Count}, filter:{filterUnknownFields}");
+        //    var attributeSet = _context.AttribSet.GetDbAttribSet(entity.AttributeSetId);
+        //    var importEntity = new Entity(_appId, /*entity.EntityGuid, */entity.EntityId, attributeSet.StaticName, new Dictionary<string, object>());
 
-            if (filterUnknownFields)
-                values = RemoveUnknownFields(values, attributeSet);
+        //    if (filterUnknownFields)
+        //        values = RemoveUnknownFields(values, attributeSet);
 
-            AppendAttributeValues(importEntity, attributeSet, ConvertEntityRelations(values), _defaultLanguageCode, false, true);
-            ExecuteImport(importEntity);
-        }
+        //    AppendAttributeValues(importEntity, attributeSet, ConvertEntityRelations(values), _defaultLanguageCode, false, true);
+        //    var so = SaveOptions.Build(_appManager.ZoneId);
+        //    so.PreserveUntouchedAttributes = true;
+        //    so.PreserveExistingLanguages = true;
+        //    _appManager.Entities.Save(importEntity, so);
+        //    //ExecuteImport(importEntity, so);
+        //}
 
 
         /// <summary>
@@ -159,8 +166,6 @@ namespace ToSic.Eav.Api.Api01
         /// Delete the entity specified by GUID.
         /// </summary>
         /// <param name="entityGuid">Entity GUID</param>
-        /// <exception cref="ArgumentNullException">Entity does not exist</exception>
-        /// <exception cref="InvalidOperationException">Entity cannot be deleted for example when it is referenced by another object</exception>
         public void Delete(Guid entityGuid) => Delete(_context.Entities.GetMostCurrentDbEntity(entityGuid).EntityId);
 
 
@@ -169,27 +174,20 @@ namespace ToSic.Eav.Api.Api01
             Log.Add("convert entity relations");
             var result = new Dictionary<string, object>();
             foreach (var value in values)
-            {
-                var ids = value.Value as IEnumerable<int>;
-                if (ids != null)
-                {   // The value has entity ids. For import, these must be converted to a string of guids.
-                    var guids = new List<Guid>();
-                    foreach (var id in ids)
-                    {
-                        var entity = _context.Entities.GetDbEntity(id);
-                        guids.Add(entity.EntityGuid);
-                    }
+                if (value.Value is IEnumerable<int> ids)
+                {
+                    // The value has entity ids. For import, these must be converted to a string of guids.
+                    var guids = ids.Select(id => _context.Entities.GetDbEntity(id))
+                        .Select(entity => entity.EntityGuid).ToList();
                     result.Add(value.Key, string.Join(",", guids));
                 }
                 else
-                {
                     result.Add(value.Key, value.Value);
-                }
-            }
             return result;
         }
 
-        private void ExecuteImport(Entity entity) => new AppManager(_appId, Log).Entities.Save(entity);
+        //private void ExecuteImport(Entity entity, SaveOptions so = null) 
+        //    => _appManager.Entities.Save(entity, so);
 
         private void AppendAttributeValues(Entity entity, ToSicEavAttributeSets attributeSet, Dictionary<string, object> values, string valuesLanguage, bool valuesReadOnly, bool resolveHyperlink)
         {

@@ -151,7 +151,7 @@ namespace ToSic.Eav.Apps.Parts
 
             var orig = _appManager.Cache.List[id];
             var tempEnt = new Entity(_appManager.AppId, 0, "", values);
-            var saveEnt = EntitySaver.CreateMergedForSaving(orig, tempEnt, saveOptions);
+            var saveEnt = new EntitySaver(Log).CreateMergedForSaving(orig, tempEnt, saveOptions);
             Save(saveEnt, saveOptions);
         }
 
