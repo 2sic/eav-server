@@ -14,11 +14,13 @@ namespace ToSic.Eav.Serializers
     {
         #region Configuration
         public bool IncludeGuid { get; set; }
-        public bool IncludePublishingInfo { get; set; }
+        protected bool IncludePublishingInfo { get; private set; }
 
-        public bool IncludeMetadata { get; set; }
+        protected bool IncludeMetadata { get; private set; }
 
-        public bool IncludeAllEditingInfos { get; set; }
+        public bool IncludeAllEditingInfos { get; private set; }
+
+        protected bool ProvideIdentityTitle { get; private set; }
 
         /// <summary>
         /// ensure all settings are so it includes guids etc.
@@ -28,6 +30,7 @@ namespace ToSic.Eav.Serializers
             IncludeGuid = true;
             IncludePublishingInfo = true;
             IncludeMetadata = true;
+            ProvideIdentityTitle = true;
         }
 
         #endregion
@@ -45,8 +48,8 @@ namespace ToSic.Eav.Serializers
 
         public string[] Languages
         {
-            get { return _langs ?? (_langs = new[] { Thread.CurrentThread.CurrentCulture.Name }); }
-            set { _langs = value; }
+            get => _langs ?? (_langs = new[] { Thread.CurrentThread.CurrentCulture.Name });
+            set => _langs = value;
         }
         #endregion
 
@@ -62,14 +65,17 @@ namespace ToSic.Eav.Serializers
         ///     so even if it looks un-used, it must stay available
         /// </remarks>
         [Obsolete("Try to use the List-overload instead of the dictionary overload")]
-        public IEnumerable<Dictionary<string, object>> Prepare(IDictionary<int, IEntity> list) => list.Select(c => GetDictionaryFromEntity(c.Value));
+        public IEnumerable<Dictionary<string, object>> Prepare(IDictionary<int, IEntity> list) 
+            => list.Select(c => GetDictionaryFromEntity(c.Value));
 
-        public IEnumerable<Dictionary<string, object>> Prepare(IEnumerable<IEntity> entities) => entities.Select(GetDictionaryFromEntity);
+        public IEnumerable<Dictionary<string, object>> Prepare(IEnumerable<IEntity> entities) 
+            => entities.Select(GetDictionaryFromEntity);
 
         /// <summary>
         /// Return an object that represents an IDataStream, but is serializable
         /// </summary>
-        public Dictionary<string, object> Prepare(IEntity entity) => (entity == null) ? null : GetDictionaryFromEntity(entity);
+        public Dictionary<string, object> Prepare(IEntity entity) 
+            => entity == null ? null : GetDictionaryFromEntity(entity);
         
 
         #endregion
@@ -135,21 +141,20 @@ namespace ToSic.Eav.Serializers
                 }
             }
 
-            if (IncludeMetadata)
-            {
-                if(entity.Metadata.IsMetadata)
-                    entityValues.Add("Metadata", entity.Metadata);
-            }
+            if (IncludeMetadata && entity.Metadata.IsMetadata)
+                entityValues.Add("Metadata", entity.Metadata);
 
+            if(ProvideIdentityTitle)
+                try { entityValues.Add("_Title", entity.GetBestTitle(Languages)); }
+                catch { /* ignore */ }
+
+            // todo: unclear if this is still needed, but it would be risky to remove, without analyzing all scripts
             if (!entityValues.ContainsKey("Title"))
                 try // there are strange cases where the title is missing, then just ignore this
                 {
                     entityValues.Add("Title", entity.GetBestTitle(Languages));
                 }
-                catch
-                {
-                    // ignore
-                }
+                catch { /* ignore */ }
 
             return entityValues;
         }

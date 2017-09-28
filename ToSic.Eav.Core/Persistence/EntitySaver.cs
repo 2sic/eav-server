@@ -114,8 +114,9 @@ namespace ToSic.Eav.Persistence
         /// <remarks>
         /// this expects that saveOptions contain Languages & PrimaryLanguage, and that this is reliable
         /// </remarks>
-        private static void StripUnknownLanguages(Dictionary<string, IAttribute> attribs, SaveOptions saveOptions)
+        private void StripUnknownLanguages(Dictionary<string, IAttribute> attribs, SaveOptions saveOptions)
         {
+            Log.Add("strip unknown langs");
             var languages = saveOptions.Languages;
 
             foreach (var attribElm in attribs)
@@ -144,8 +145,7 @@ namespace ToSic.Eav.Persistence
                 .OrderBy(v =>
                 {
                     if(v.Languages == null || !v.Languages.Any()) return 2; // possible primary as no language specified, but not certainly
-                    if(v.Languages.Any(l => l.Key == saveOptions.PrimaryLanguage)) return 1; // really primary and marked as such, process this first
-                    return 3; // other, work on these last
+                    return v.Languages.Any(l => l.Key == saveOptions.PrimaryLanguage) ? 1 : 3; // really primary and marked as such, process this first
                 });
 
             // now sort the language definitions to ensure correct handling
@@ -211,9 +211,9 @@ namespace ToSic.Eav.Persistence
             {
                 newE.Attributes.Remove(Constants.EntityFieldIsPublished);
 
-                if(isPublished is bool)
-                    newE.IsPublished = (bool) isPublished;
-                else if (isPublished is string && bool.TryParse(isPublished as string, out bool boolPublished))
+                if(isPublished is bool b)
+                    newE.IsPublished = b;
+                else if (isPublished is string && bool.TryParse(isPublished as string, out var boolPublished))
                     newE.IsPublished = boolPublished;
             }
 
