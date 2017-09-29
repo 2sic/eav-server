@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-//using Microsoft.Practices.Unity;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.Implementations.UserInformation;
 using ToSic.Eav.Interfaces;
@@ -33,7 +32,7 @@ namespace ToSic.Eav.Repository.Efc
         public DbContentType ContentType { get; private set; }
 
         private int _appId;
-        internal int _zoneId;
+        private int _zoneId;
         #endregion
 
         #region Properties like AppId, ZoneId, UserName etc.
@@ -43,8 +42,8 @@ namespace ToSic.Eav.Repository.Efc
         /// </summary>
         public int AppId
         {
-            get { return _appId == 0 ? Constants.MetaDataAppId : _appId; }
-            set { _appId = value; }
+            get => _appId == 0 ? Constants.MetaDataAppId : _appId;
+            set => _appId = value;
         }
 
         /// <summary>
@@ -52,8 +51,8 @@ namespace ToSic.Eav.Repository.Efc
         /// </summary>
         public int ZoneId
         {
-            get { return _zoneId == 0 ? Constants.DefaultZoneId : _zoneId; }
-            set { _zoneId = value; }
+            get => _zoneId == 0 ? Constants.DefaultZoneId : _zoneId;
+            set => _zoneId = value;
         }
 
         private string _userName;
@@ -76,10 +75,8 @@ namespace ToSic.Eav.Repository.Efc
                 }
                 return _userName;
             }
-            set
-            {
-                _userName = value;
-            }}
+            set => _userName = value;
+        }
 
         #endregion
 
@@ -135,6 +132,7 @@ namespace ToSic.Eav.Repository.Efc
         /// <summary>
         /// Returns a new instace of the Eav Context on specified ZoneId and/or AppId
         /// </summary>
+        // ReSharper disable once MethodOverloadWithOptionalParameter
         public static DbDataController Instance(int? zoneId = null, int? appId = null, Log parentLog = null)
         {
             var context = Instance();

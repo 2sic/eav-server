@@ -52,9 +52,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
             {
                 return attributeId != 0
                     ? DbContext.SqlDb.ToSicEavAttributesInSets
-                        .Single(a => a.AttributeId == attributeId && a.AttributeSetId == attributeSetId)
+                        .Single(a =>a.AttributeSetId == attributeSetId && a.AttributeId == attributeId)
                     : DbContext.SqlDb.ToSicEavAttributesInSets
-                        .Single(a => a.AttributeId == attributeId && a.Attribute.StaticName == name);
+                        .Single(a => a.AttributeSetId == attributeSetId && a.Attribute.StaticName == name);
             }
             catch (Exception ex)
             {
@@ -63,7 +63,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         }
 
 
-        public int AttributeId(int setId, string staticName) => GetAttribute(setId, name: staticName).Attribute.AttributeId;
+        private int AttributeId(int setId, string staticName) => GetAttribute(setId, name: staticName).Attribute.AttributeId;
 
         /// <summary>
         /// Set an Attribute as Title on an AttributeSet

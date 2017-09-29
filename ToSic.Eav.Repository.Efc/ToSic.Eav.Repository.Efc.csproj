@@ -123,7 +123,6 @@
     <Compile Include="Parts\DbContentType_Shared.cs" />
     <Compile Include="Parts\DbContentType_Ghosts.cs" />
     <Compile Include="Parts\DbAttributeDefinition_Query.cs" />
-    <Compile Include="Parts\DbAttributeDefinition_Sorting.cs" />
     <Compile Include="Parts\DbContentType_Read.cs" />
     <Compile Include="Parts\DbContentType_Modify.cs" />
     <Compile Include="Parts\DbDimensions.cs" />
