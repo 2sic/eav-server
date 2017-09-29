@@ -18,7 +18,7 @@ namespace ToSic.Eav.Serializers
 
         protected bool IncludeMetadata { get; private set; }
 
-        public bool IncludeAllEditingInfos { get; private set; }
+        public bool IncludeAllEditingInfos { get; set; }
 
         protected bool ProvideIdentityTitle { get; private set; }
 
@@ -35,13 +35,13 @@ namespace ToSic.Eav.Serializers
 
         #endregion
 
-        public SerializerHelper()
-        {
+        //public SerializerHelper()
+        //{
             // Ensure that date-times are sent in the Zulu-time format (UTC) and not with offsets which causes many problems during round-trips
             // 2017-06-07 2dm: can't use this setting outside of web...
             // must find a solution... GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
             //GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-        }
+        //}
 
         #region Language
         private string[] _langs;
@@ -117,8 +117,8 @@ namespace ToSic.Eav.Serializers
 
             if (IncludePublishingInfo)
             {
-                entityValues.Add("RepositoryId", entity.RepositoryId);
-                entityValues.Add("IsPublished", entity.IsPublished);
+                entityValues.Add(Constants.RepoIdInternalField, entity.RepositoryId);
+                entityValues.Add(Constants.IsPublishedField, entity.IsPublished);
                 if (entity.IsPublished && entity.GetDraft() != null)
                 {
                     // do a check if there was a field called Published, which we must remove for this to work
