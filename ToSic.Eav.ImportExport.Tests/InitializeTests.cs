@@ -5,10 +5,10 @@ namespace ToSic.Eav.ImportExport.Tests
     [TestClass]
     class InitializeTests
     {
-        [AssemblyInitialize()]
+        [AssemblyInitialize]
         public static void AssemblyInit(TestContext context)
         {
-             Repository.Efc.Tests.InitializeTests.ConfigureEfcDi();
+            Testing.Shared.InitializeTests.ConfigureEfcDi();
         }
         
     }

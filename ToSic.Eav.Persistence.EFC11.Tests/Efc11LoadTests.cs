@@ -1,38 +1,18 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-//using Microsoft.Practices.Unity;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.App;
-using ToSic.Eav.Data;
-using ToSic.Eav.Persistence.Efc.Models;
+using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Persistence.Efc.Tests
 {
     [TestClass]
-    public class Efc11LoadTests
+    public class Efc11LoadTests : Efc11TestBase
     {
-        #region test preparations
-
-        private EavDbContext _db;
-        private Efc11Loader _loader;
-
-        [TestInitialize]
-        public void Init()
-        {
-            Trace.Write("initializing DB & loader");
-            _db = Factory.Resolve<EavDbContext>();
-            _loader = NewLoader();
-        }
-
-        private Efc11Loader NewLoader() => new Efc11Loader(_db);
-
-        #endregion
-
         [TestMethod]
         public void GetSomething()
         {
-            var results = _db.ToSicEavZones.Single(z => z.ZoneId == 1);
+            var results = Db.ToSicEavZones.Single(z => z.ZoneId == 1);
             Assert.IsTrue(results.ZoneId == 1, "zone doesn't fit - it is " + results.ZoneId);
         }
 
@@ -45,12 +25,12 @@ namespace ToSic.Eav.Persistence.Efc.Tests
         }
 
         [TestMethod]
-        public void PerformanceLoading100xBlog()
+        public void PerformanceLoading100XBlog()
         {
             var loadCount = 25;
             for (int i = 0; i < loadCount; i++)
             {
-                _loader = NewLoader();
+                Loader = NewLoader();
                 TestLoadApp(2);
             }
         }
@@ -66,7 +46,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
         [TestMethod]
         public void LoadContentTypesOf2TenXCached()
         {
-            _loader.ResetCacheForTesting();
+            Loader.ResetCacheForTesting();
             var results = TestLoadCts(2);
             for (var x = 0; x < 9; x++)
                 results = TestLoadCts(2);
@@ -80,7 +60,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
             for (var x = 0; x < 9; x++)
             {
                 results = TestLoadCts(2);
-                _loader.ResetCacheForTesting();
+                Loader.ResetCacheForTesting();
             }
             // var str = results.ToString();
             Assert.AreEqual(61, results.Count, "dummy test: ");
@@ -89,7 +69,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
         [TestMethod]
         public void TestMetadataTargetTypes()
         {
-            var types = _loader.MetadataTargetTypes();
+            var types = Loader.MetadataTargetTypes();
 
             Assert.AreEqual(100, types.Count);
             Assert.IsTrue(types[Constants.NotMetadata] == "Default");
@@ -98,7 +78,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
         [TestMethod]
         public void TestZonesLoader_WithLanguageDef()
         {
-            var zones = _loader.Zones();
+            var zones = Loader.Zones();
             var defapp = zones.First().Value.DefaultAppId;
             var apps = zones[2].Apps;
 
@@ -121,12 +101,12 @@ namespace ToSic.Eav.Persistence.Efc.Tests
 
         private AppDataPackage TestLoadApp(int appId)
         {
-            return _loader.AppPackage(appId);
+            return Loader.AppPackage(appId);
         }
 
-        private IDictionary<int, ToSic.Eav.Interfaces.IContentType> TestLoadCts(int appId)
+        private IDictionary<int, IContentType> TestLoadCts(int appId)
         {
-            return _loader.ContentTypes(appId);
+            return Loader.ContentTypes(appId);
         }
 
     }

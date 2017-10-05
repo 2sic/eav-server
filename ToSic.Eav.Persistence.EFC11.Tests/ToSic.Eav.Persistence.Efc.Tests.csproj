@@ -127,7 +127,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Efc11LoadTests.cs" />
+    <Compile Include="Efc11TestBase.cs" />
     <Compile Include="InitializeTests.cs" />
+    <Compile Include="json\GenerateJsonForApps.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ZoneTests.cs" />
   </ItemGroup>
@@ -146,6 +148,10 @@
     <ProjectReference Include="..\ToSic.Eav\ToSic.Eav.csproj">
       <Project>{cf3b9349-8c66-4901-8edb-a4ec1d75326b}</Project>
       <Name>ToSic.Eav</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ToSic.Testing.Shared\ToSic.Testing.Shared.csproj">
+      <Project>{41243c6d-2d10-4285-8af2-719497ae00db}</Project>
+      <Name>ToSic.Testing.Shared</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
