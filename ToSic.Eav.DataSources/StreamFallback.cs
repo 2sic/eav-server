@@ -4,25 +4,28 @@ using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
 {
+	/// <inheritdoc />
 	/// <summary>
 	/// A DataSource that filters Entities by Ids
 	/// </summary>
 	[PipelineDesigner]
 	public sealed class StreamFallback : BaseDataSource
 	{
-		#region Configuration-properties (no config)
+        #region Configuration-properties (no config)
+	    public override string LogId => "DS.Fallbk";
 
-		#endregion
+        #endregion
 
         #region Debug-Properties
 
-	    public string ReturnedStreamName { get; private set; }
+        public string ReturnedStreamName { get; private set; }
         #endregion
 
 
+        /// <inheritdoc />
         /// <summary>
-		/// Constructs a new EntityIdFilter
-		/// </summary>
+        /// Constructs a new EntityIdFilter
+        /// </summary>
 		public StreamFallback()
 		{
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntities, GetList));
@@ -49,7 +52,10 @@ namespace ToSic.Eav.DataSources
 
             // Check if there is a default-stream in with content - if yes, try to return that
 	        if (In.ContainsKey(Constants.DefaultStreamName) && In[Constants.DefaultStreamName].List.Any())
+	        {
+	            Log.Add("found default, will return that");
 	            return In[Constants.DefaultStreamName];
+	        }
 
 	        // Otherwise alphabetically assemble the remaining in-streams, try to return those that have content
 	        var streamList = In.Where(x => x.Key != Constants.DefaultStreamName).OrderBy(x => x.Key);
@@ -57,8 +63,11 @@ namespace ToSic.Eav.DataSources
 	            if (stream.Value.List.Any())
 	            {
 	                ReturnedStreamName = stream.Key;
+	                Log.Add($"will return stream:{ReturnedStreamName}");
 	                return stream.Value;
 	            }
+
+	        Log.Add("didn't find any stream, will return empty");
 	        return null;
 	    }
 	}

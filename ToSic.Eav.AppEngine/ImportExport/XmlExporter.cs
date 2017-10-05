@@ -11,6 +11,8 @@ using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Environment;
 using ToSic.Eav.ImportExport.Xml;
+using ToSic.Eav.Logging;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Persistence.Xml;
@@ -21,7 +23,7 @@ namespace ToSic.Eav.Apps.ImportExport
     // this has a minimal risk of being different!
     // should all get it from cache only!
 
-    public abstract class XmlExporter
+    public abstract class XmlExporter: IHasLog
     {
         #region simple properties
         protected readonly List<int> ReferencedFileIds = new List<int>();
@@ -41,12 +43,15 @@ namespace ToSic.Eav.Apps.ImportExport
         private string _appStaticName = "";
         #endregion
 
+        protected Log Log = new Log("Xml.Exp");
+
         #region Constructor stuff
 
-        protected void Constructor(int zoneId, int appId, string appStaticName, bool appExport, string[] attrSetIds, string[] entityIds)
+        protected void Constructor(int zoneId, int appId, string appStaticName, bool appExport, string[] attrSetIds, string[] entityIds, Log parentLog)
         {
             ZoneId = zoneId;
-            AppPackage = new Efc11Loader(DbDataController.Instance(zoneId, appId).SqlDb).AppPackage(appId);
+            Log = new Log("Xml.Exp", parentLog, "start XML exporter");
+            AppPackage = new Efc11Loader(DbDataController.Instance(zoneId, appId, Log).SqlDb).AppPackage(appId, parentLog: Log);
             Serializer = new XmlSerializer();
             Serializer.Initialize(AppPackage);
 
@@ -65,7 +70,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="attrSetIds"></param>
         /// <param name="entityIds"></param>
         /// <returns></returns>
-        public abstract XmlExporter Init(int zoneId, int appId, bool appExport, string[] attrSetIds, string[] entityIds);
+        public abstract XmlExporter Init(int zoneId, int appId, bool appExport, string[] attrSetIds, string[] entityIds, Log parentLog);
 
         private void EnsureThisIsInitialized()
         {
@@ -121,7 +126,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             #region Header
 
-            var dimensions = new ZoneRuntime(ZoneId).Languages();
+            var dimensions = new ZoneRuntime(ZoneId, Log).Languages();
             var header = new XElement(XmlConstants.Header,
                 _isAppExport && _appStaticName != XmlConstants.AppContentGuid 
                     ? new XElement(XmlConstants.App, new XAttribute(XmlConstants.Guid, _appStaticName))
@@ -150,7 +155,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 var attributes = new XElement(XmlConstants.Attributes);
 
                 // Add all Attributes to AttributeSet including meta informations
-                foreach (var x in set.Attributes)
+                foreach (var x in set.Attributes.OrderBy(a => a.SortOrder))
                 {
                     var attribute = new XElement(XmlConstants.Attribute,
                         new XAttribute(XmlConstants.Static, x.Name),
@@ -336,5 +341,7 @@ namespace ToSic.Eav.Apps.ImportExport
         {
             public override Encoding Encoding => Encoding.UTF8;
         }
+
+        public void LinkLog(Log parentLog) => Log.LinkTo(parentLog);
     }
 }

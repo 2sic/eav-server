@@ -5,6 +5,7 @@ using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
 {
+	/// <inheritdoc />
 	/// <summary>
 	/// DataSource to only pass through configured AttributeNames
 	/// </summary>
@@ -14,19 +15,20 @@ namespace ToSic.Eav.DataSources
 	{
 		#region Configuration-properties
 		private const string AttributeNamesKey = "AttributeNames";
+	    public override string LogId => "DS.AtribF";
 
-		/// <summary>
-		/// A string containing one or more entity-ids. like "27" or "27,40,3063,30306"
-		/// </summary>
-		public string AttributeNames
+        /// <summary>
+        /// A string containing one or more entity-ids. like "27" or "27,40,3063,30306"
+        /// </summary>
+        public string AttributeNames
 		{
-		    get { return Configuration[AttributeNamesKey]; }
-		    set { Configuration[AttributeNamesKey] = value; }
-
-		}
+		    get => Configuration[AttributeNamesKey];
+            set => Configuration[AttributeNamesKey] = value;
+        }
 
 		#endregion
 
+		/// <inheritdoc />
 		/// <summary>
 		/// Constructs a new AttributeFilter DataSource
 		/// </summary>
@@ -49,12 +51,16 @@ namespace ToSic.Eav.DataSources
 		    var attributeNames = AttributeNames.Split(',');
 		    attributeNames = (from a in attributeNames select a.Trim()).ToArray();
 
-		    return In[Constants.DefaultStreamName].LightList
+		    var result = In[Constants.DefaultStreamName].LightList
                 .Select(entity => new Entity(entity, 
                     entity.Attributes.Where(a => attributeNames.Contains(a.Key)).ToDictionary(k => k.Key, v => v.Value),
                     (entity.Relationships as RelationshipManager).AllRelationships)).Cast<IEntity>().ToList();
+
+		    Log.Add($"attrib filter names:[{string.Join(",", attributeNames)}] found:{result.Count}");
+		    return result;
 		}
 
+        /// <inheritdoc />
         /// <summary>
         /// Load configuration and normalize parameters AttributeNames
         /// </summary>

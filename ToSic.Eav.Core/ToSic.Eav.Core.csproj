@@ -143,6 +143,10 @@
     <Compile Include="Implementations\UserInformation\IEavUserInformation.cs" />
     <Compile Include="Interfaces\IRepositoryLoader.cs" />
     <Compile Include="Interfaces\IValue.cs" />
+    <Compile Include="Logging\HasLog.cs" />
+    <Compile Include="Logging\IHasLog.cs" />
+    <Compile Include="Logging\Simple\Entry.cs" />
+    <Compile Include="Logging\Simple\Log.cs" />
     <Compile Include="Persistence\EntitySaver.cs" />
     <Compile Include="Persistence\Interfaces\IImportExportEnvironment.cs" />
     <Compile Include="Interfaces\IRepositoryImporter.cs" />

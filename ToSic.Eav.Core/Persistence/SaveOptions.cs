@@ -7,9 +7,12 @@ namespace ToSic.Eav.Persistence
 
     public class SaveOptions
     {
-        private SaveOptions()
-        {
-        }
+        /// <summary>
+        /// This makes sure that SaveOptions cannot be built directly, without
+        /// understanding the consequences
+        /// </summary>
+        // ReSharper disable once UnusedMember.Local
+        private SaveOptions() { }
 
         public static SaveOptions Build(int zoneId) => Factory.Resolve<IImportExportEnvironment>().SaveOptions(zoneId);
 
@@ -23,18 +26,11 @@ namespace ToSic.Eav.Persistence
         public bool PreserveUnknownAttributes = false;
 
         public bool SkipExistingAttributes = false;
-        //public bool PreserveInvisibleAttributes = false;
 
         public string PrimaryLanguage
         {
-            get
-            {
-                return _priLang ?? (_priLang = Factory.Resolve<IImportExportEnvironment>().DefaultLanguage);
-            }
-            set
-            {
-                _priLang = value.ToLowerInvariant();
-            }
+            get => _priLang ?? (_priLang = Factory.Resolve<IImportExportEnvironment>().DefaultLanguage);
+            set => _priLang = value.ToLowerInvariant();
         }
 
         private string _priLang;
@@ -45,12 +41,16 @@ namespace ToSic.Eav.Persistence
         public bool DraftShouldBranch = true;
 
         /// <summary>
-        /// Prepare relationships changes, but don't send to DB yet.
-        /// This is important when saving many entities, as they could referr to each other and not exist yet when the first one is created. 
-        /// So it will not apply relationships until the end of the transaction
-        /// ...but you must remember to correctly trigger the relationship-save
+        /// 
         /// </summary>
-        //public bool DelayRelationshipSave = false;
+        public bool DiscardattributesNotInType = false;
 
+        public string LogInfo => $"save opts PUntouchedAt:{PreserveUntouchedAttributes}, " +
+                                 $"PUnknownAt:{PreserveUnknownAttributes}, " +
+                                 $"SkipExstAt:{SkipExistingAttributes}" +
+                                 $"ExistLangs:{PreserveExistingLanguages}, " +
+                                 $"UnknownLangs:{PreserveUnknownLanguages}, " +
+                                 $"draft-branch:{DraftShouldBranch}, Lang1:{_priLang}, langs⋮{Languages?.Count}, " +
+                                 $"DiscardAttsNotInType:{DiscardattributesNotInType}";
     }
 }

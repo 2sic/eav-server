@@ -14,7 +14,7 @@ namespace ToSic.Eav.ValueProvider
         #region Sub-Token analysis and splitting
         // this is needed by some property accesses which support sub-properties like Content:Publisher:Location:City...
         // todo: should optimize to use named matches, to ensure that reg-ex changes doesn't change numbering...
-        private static readonly Regex SubProperties = new Regex("([a-z]+):([a-z]+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private static readonly Regex SubProperties = new Regex("([a-z]+):([a-z:]+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         /// <summary>
         /// Check if it has sub-tokens and split up the material for further use
         /// </summary>

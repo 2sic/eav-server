@@ -16,7 +16,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         internal int SaveEntity(IEntity newEnt, SaveOptions so)
         {
-
+            Log.Add($"save start for id:{newEnt?.EntityId}/{newEnt?.EntityGuid}");
             #region Step 1: Do some initial error checking and preparations
             if (newEnt == null)
                 throw new ArgumentNullException(nameof(newEnt));
@@ -29,13 +29,15 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             // continue here - must ensure that the languages are passed in, cached - or are cached on the DbEntity... for multiple saves
             if (_zoneLanguages == null)
-                _zoneLanguages = so.Languages;// DbContext.Dimensions.GetLanguages();
+                _zoneLanguages = so.Languages;
             if (_zoneLanguages == null)
                 throw new Exception("languages missing in save-options. cannot continue");
 
             if(usedLanguages.Count > 0)
                 if (!usedLanguages.All(l => _zoneLanguages.Any(zl => zl.Matches(l.Key))))
-                    throw new Exception("found languages in save which are not available in environment");
+                    throw new Exception("found languages in save which are not available in environment - used has " + usedLanguages.Count + " target has " + _zoneLanguages.Count + " used-list: '" + string.Join(",", usedLanguages.Select(l => l.Key).ToArray()) + "'");
+            Log.Add($"lang checks - zone language⋮{_zoneLanguages.Count}, usedLanguages⋮{usedLanguages.Count}");
+            Log.Add(() => $"langs zone:[{string.Join(",", _zoneLanguages.Select(z => z.EnvironmentKey))}] used:[{string.Join(",", usedLanguages.Select(u => u.Key))}]");
             #endregion Test languages exist
 
             #endregion Step 1
@@ -48,11 +50,12 @@ namespace ToSic.Eav.Repository.Efc.Parts
             // ...we have to check if we'll actualy update the draft of the entity
             // ...or create a new draft (branch)
             int? existingDraftId = null;
-            bool hasAdditionalDraft = false;
+            var hasAdditionalDraft = false;
             if (newEnt.EntityId > 0)
             {
                 existingDraftId = DbContext.Publishing.GetDraftBranchEntityId(newEnt.EntityId);  // find a draft of this - note that it won't find anything, if the item itself is the draft
                 hasAdditionalDraft = existingDraftId != null && existingDraftId.Value != newEnt.EntityId;  // only true, if there is an "attached" draft; false if the item itself is draft
+                Log.Add($"draft check: existing:{existingDraftId}, hasAdd:{hasAdditionalDraft}");
                 if (!newEnt.IsPublished && ((Entity) newEnt).PlaceDraftInBranch)
                 {
                     ((Entity)newEnt).SetPublishedIdForSaving(newEnt.EntityId);  // set this, in case we'll create a new one
@@ -64,7 +67,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             var contentTypeId = DbContext.AttribSet.GetIdWithEitherName(newEnt.Type.StaticName);
             var attributeDefs = DbContext.AttributesDefinition.GetAttributeDefinitions(contentTypeId).ToList();
-
+            Log.Add($"header checked type:{contentTypeId}, attribDefs⋮{attributeDefs.Count}");
+            Log.Add(() => $"attribs: [{string.Join(",", attributeDefs.Select(a => a.AttributeId + ":" + a.StaticName))}]");
             #endregion Step 2
 
 
@@ -81,6 +85,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 {
                     #region Step 3a: Create new
 
+                    Log.Add("create new...");
                     dbEnt = new ToSicEavEntities
                     {
                         AssignmentObjectTypeId = newEnt.Metadata?.TargetType ?? Constants.NotMetadata,
@@ -99,6 +104,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                     DbContext.SqlDb.Add(dbEnt);
                     DbContext.SqlDb.SaveChanges();
+                    Log.Add($"create new i:{dbEnt.EntityId}, guid:{dbEnt.EntityGuid}");
 
                     #endregion
                 }
@@ -110,14 +116,15 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     // new: always change the draft if there is one! - it will then either get published, or not...
                     dbEnt = DbContext.Entities.GetDbEntity(newEnt.EntityId);
 
-                    var publishedStateChangesForThisItem = dbEnt.IsPublished != newEnt.IsPublished;
+                    var stateChanged = dbEnt.IsPublished != newEnt.IsPublished;
+                    Log.Add($"used existing i:{dbEnt.EntityId}, guid:{dbEnt.EntityGuid}, newstate:{newEnt.IsPublished}, state-changed:{stateChanged}, has-additional-draft:{hasAdditionalDraft}");
 
                     #region If draft but should be published, correct what's necessary
 
                     // Update as Published but Current Entity is a Draft-Entity
                     // case 1: saved entity is a draft and save wants to publish
                     // case 2: new data is set to not publish, but we don't want a branch
-                    if (publishedStateChangesForThisItem || hasAdditionalDraft)
+                    if (stateChanged || hasAdditionalDraft)
                     {
                         // if Entity has a published Version, add an additional DateTimeline Item for the Update of this Draft-Entity
                         if (dbEnt.PublishedEntityId.HasValue)
@@ -148,30 +155,54 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 #region Step 4: Save all normal values
 
 
-                foreach (var attribute in newEnt.Attributes.Values) // todo: put in constant
+                foreach (var attribute in newEnt.Attributes.Values)
                 {
+                    Log.Add($"add attrib:{attribute.Name}");
                     // find attribute definition
                     var attribDef =
                         attributeDefs.SingleOrDefault(
-                            a =>
-                                string.Equals(a.StaticName, attribute.Name, StringComparison.InvariantCultureIgnoreCase));
+                            a => string.Equals(a.StaticName, attribute.Name, StringComparison.InvariantCultureIgnoreCase));
                     if (attribDef == null)
-                        throw new Exception(
-                            $"trying to save attribute {attribute.Name} but can\'t find definition in DB");
-                    if (attribDef.Type == AttributeTypeEnum.Entity.ToString()) continue;
+                    {
+                        if (!so.DiscardattributesNotInType)
+                            throw new Exception(
+                                $"trying to save attribute {attribute.Name} but can\'t find definition in DB");
+                        Log.Add("attribute not found, will skip according to save-options");
+                        continue;
+                    }
+                    if (attribDef.Type == AttributeTypeEnum.Entity.ToString())
+                    {
+                        Log.Add("type is entity, skip for now as relationships are processed later");
+                        continue;
+                    }
 
                     foreach (var value in attribute.Values)
+                    {
+                        #region prepare languages - has extensive error reporting, to help in case any db-data is bad
+                        List<ToSicEavValuesDimensions> toSicEavValuesDimensions;
+                        try
+                        {
+                            toSicEavValuesDimensions = value.Languages?.Select(l => new ToSicEavValuesDimensions {
+                                DimensionId = _zoneLanguages.Single(ol => ol.Matches(l.Key)).DimensionId,
+                                ReadOnly = l.ReadOnly
+                            }).ToList();
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception("something went wrong building the languages to save - your DB probably has some wrong language information which doesn't match; maybe even a duplicate entry for a language code - see https://github.com/2sic/2sxc/issues/1293", ex);
+                        }
+                        #endregion
+                        Log.Add(() => $"add attrib:{attribDef.AttributeId}/{attribDef.StaticName} vals⋮{attribute.Values?.Count}, dim⋮{toSicEavValuesDimensions?.Count}");
+
                         dbEnt.ToSicEavValues.Add(new ToSicEavValues
                         {
                             AttributeId = attribDef.AttributeId,
-                            Value = value.SerializableObject?.ToString() ?? "",
+                            Value = value.Serialized ?? "",
                             ChangeLogCreated = changeId, // todo: remove some time later
-                            ToSicEavValuesDimensions = value.Languages?.Select(l => new ToSicEavValuesDimensions
-                            {
-                                DimensionId = _zoneLanguages.Single(ol => ol.Matches(l.Key)).DimensionId,
-                                ReadOnly = l.ReadOnly
-                            }).ToList()
+                            ToSicEavValuesDimensions = toSicEavValuesDimensions
                         });
+
+                    }
                 }
                 DbContext.SqlDb.SaveChanges(); // save all the values we just added
 
@@ -181,9 +212,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                 #region Step 5: Save / update all relationships
 
-                DbContext.Relationships.DoWhileQueueingRelationships(() => {
-                    DbContext.Relationships.SaveRelationships(newEnt, dbEnt, attributeDefs, so);
-                });
+                DbContext.Relationships.SaveRelationships(newEnt, dbEnt, attributeDefs, so);
 
                 #endregion
 
@@ -207,6 +236,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 // finish transaction - finalize
             });
 
+            Log.Add("save done for id:" + dbEnt?.EntityId);
             return dbEnt.EntityId;
         }
 
@@ -217,6 +247,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         internal List<int> SaveEntity(List<IEntity> entities, SaveOptions saveOptions)
         {
+            Log.Add($"save many count:{entities?.Count}");
             var ids = new List<int>();
 
             DbContext.DoInTransaction(() => DbContext.Versioning.QueueDuringAction(() =>

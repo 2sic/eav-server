@@ -7,6 +7,7 @@ using ToSic.Eav.App;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Persistence.Efc
@@ -103,14 +104,20 @@ namespace ToSic.Eav.Persistence.Efc
 
         #endregion
 
+        private Log Log { get; set; }
+
         #region AppPackage
+
+        /// <inheritdoc />
         /// <summary>Get Data to populate ICache</summary>
         /// <param name="appId">AppId (can be different than the appId on current context (e.g. if something is needed from the default appId, like MetaData)</param>
         /// <param name="entityIds">null or a List of EntitiIds</param>
         /// <param name="entitiesOnly">If only the CachItem.Entities is needed, this can be set to true to imporove performance</param>
+        /// <param name="parentLog"></param>
         /// <returns>Item1: EntityModels, Item2: all ContentTypes, Item3: Assignment Object Types</returns>
-        public AppDataPackage AppPackage(int appId, int[] entityIds = null, bool entitiesOnly = false)
+        public AppDataPackage AppPackage(int appId, int[] entityIds = null, bool entitiesOnly = false, Log parentLog = null)
         {
+            Log = new Log("DB.EFLoad", parentLog, $"get app data package for a#{appId}, ids only:{entityIds != null}, entities-only:{entitiesOnly}");
             var source = new AppDataPackageDeferredList();
 
             var contentTypes = ContentTypes(appId, source);
@@ -232,11 +239,11 @@ namespace ToSic.Eav.Persistence.Efc
                 // Add all Attributes of that Content-Type
                 foreach (var definition in contentType.Attributes)
                 {
-                    var newAttribute = ((AttributeDefinition) definition).CreateAttribute();
-                    newEntity.Attributes.Add(newAttribute.Name, newAttribute);
-                    allAttribsOfThisType.Add(definition.AttributeId, newAttribute);
+                    var entityAttribute = ((AttributeDefinition) definition).CreateAttribute();
+                    newEntity.Attributes.Add(entityAttribute.Name, entityAttribute);
+                    allAttribsOfThisType.Add(definition.AttributeId, entityAttribute);
                     if (definition.IsTitle)
-                        titleAttrib = newAttribute;
+                        titleAttrib = entityAttribute;
                 }
 
                 // If entity is a draft, add references to Published Entity
@@ -293,32 +300,44 @@ namespace ToSic.Eav.Persistence.Efc
 
                 #region add Related-Entities Attributes to the entity
                 if(relatedEntities.ContainsKey(e.EntityId))
-                foreach (var r in relatedEntities[e.EntityId])
-                {
-                    var attributeModel = allAttribsOfThisType[r.AttributeID];
-                    attributeModel.Values = new List<IValue> { Value.Build(attributeModel.Type, r.Childs, null, source) };
-                }
+                    foreach (var r in relatedEntities[e.EntityId])
+                    {
+                        var attrib = allAttribsOfThisType[r.AttributeID];
+                        attrib.Values = new List<IValue> { Value.Build(attrib.Type, r.Childs, null, source) };
+                    }
                 #endregion
 
                 #region Add "normal" Attributes (that are not Entity-Relations)
                 if (attributes.ContainsKey(e.EntityId))
                     foreach (var a in attributes[e.EntityId])// e.Attributes)
                     {
-                        IAttribute attributeModel;
+                        IAttribute attrib;
                         try
                         {
-                            attributeModel = allAttribsOfThisType[a.AttributeID];
+                            attrib = allAttribsOfThisType[a.AttributeID];
                         }
                         catch (KeyNotFoundException)
                         {
                             continue;
                         }
-                        if (attributeModel == titleAttrib) // attributeModel.IsTitle)
-                            newEntity.SetTitleField(attributeModel.Name);
+                        if (attrib == titleAttrib)
+                            newEntity.SetTitleField(attrib.Name);
 
-                        attributeModel.Values = a.Values.Select(v => Value.Build(attributeModel.Type, v.Value, v.Languages)).ToList();
+                        attrib.Values = a.Values.Select(v => Value.Build(attrib.Type, v.Value, v.Languages)).ToList();
 
-                        //attributeModel.Values = valuesModelList;
+                        #region issue fix faulty data dimensions
+                        // Background: there are rare cases, where data was stored incorrectly
+                        // this happens when a attribute has multiple values, but some don't have languages assigned
+                        // that would be invalid, as any property with a language code must have all the values (for that property) with language codes
+                        if (attrib.Values.Count > 1 && attrib.Values.Any(v => !v.Languages.Any()))
+                        {
+                            var badValuesWithoutLanguage = attrib.Values.Where(v => !v.Languages.Any()).ToList();
+                            if (badValuesWithoutLanguage.Any())
+                                badValuesWithoutLanguage.ForEach(badValue =>
+                                    attrib.Values.Remove(badValue));
+                        }
+
+                        #endregion
                     }
 
                 // Special treatment in case there is no title 

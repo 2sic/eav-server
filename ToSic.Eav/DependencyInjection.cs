@@ -9,7 +9,6 @@ using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repository.Efc.Implementations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Eav.Apps.Interfaces;
 using ToSic.Eav.Persistence.Xml;
 
 namespace ToSic.Eav
@@ -19,8 +18,6 @@ namespace ToSic.Eav
 	/// </summary>
 	public class DependencyInjection
 	{
-
-
         #region try to configure the ef-core container
 
 	    /// <summary>
@@ -40,7 +37,10 @@ namespace ToSic.Eav
 
 	        serviceCollection.TryAddTransient<IThingSerializer, XmlSerializer>();
 
-	        serviceCollection.TryAddTransient<IEnvironmentVersioning, Apps.Environment.None.Versioning>();
+            // NOTE for 2dm: Switch between DNN7 or DNN9 version of IEnvironmentVersioning
+            // serviceCollection.TryAddTransient<IEnvironmentVersioning, ToSic.SexyContent.Environment.Dnn9.Environment.Versioning>();
+            // serviceCollection.TryAddTransient<IEnvironmentVersioning, Apps.Environment.Versioning>();
+            // serviceCollection.TryAddTransient<IEnvironmentVersioning, ToSic.Eav.Apps.Environment.Versioning>();
 
             var conStr = new Configuration().DbConnectionString;
             if (!conStr.ToLower().Contains("multipleactiveresultsets")) // this is needed to allow querying data while preparing new data on the same DbContext

@@ -7,45 +7,39 @@ namespace ToSic.Eav.Repository.Efc.Parts
 {
     public partial class DbEntity
     {
-
         /// <summary>
         /// Delete an Entity
         /// </summary>
-        internal bool DeleteEntity(int repositoryId, bool forceRemoveFromParents = false) => DeleteEntity(GetDbEntity(repositoryId), removeFromParents: forceRemoveFromParents);
-
-        /// <summary>
-        /// Delete an Entity
-        /// </summary>
-        internal bool DeleteEntity(Guid entityGuid) => DeleteEntity(GetMostCurrentDbEntity(entityGuid));
-
-        /// <summary>
-        /// Delete an Entity
-        /// </summary>
-        internal bool DeleteEntity(ToSicEavEntities entity, bool autoSave = true, bool removeFromParents = false)
+        internal bool DeleteEntity(int repositoryId, bool autoSave = true, bool removeFromParents = false)
         {
-            if (entity == null)
+            Log.Add($"delete entity rep-id:{repositoryId}, remove-from-parents:{removeFromParents}, auto-save:{autoSave}");
+            if (repositoryId == 0)
                 return false;
 
             // get full entity again to be sure we are deleting everything - otherwise inbound unreliable
-            entity = DbContext.Entities.GetDbEntity(entity.EntityId, "ToSicEavValues,ToSicEavValues.ToSicEavValuesDimensions");
+            // note that as this is a DB-entity, the EntityId is actually the repositoryId
+            var entity = DbContext.Entities.GetDbEntity(repositoryId, "ToSicEavValues,ToSicEavValues.ToSicEavValuesDimensions");
 
 
             #region Delete Related Records (Values, Value-Dimensions, Relationships)
             // Delete all Value-Dimensions
             var valueDimensions = entity.ToSicEavValues.SelectMany(v => v.ToSicEavValuesDimensions).ToList();
             DbContext.SqlDb.RemoveRange(valueDimensions);
+
             // Delete all Values
             DbContext.SqlDb.RemoveRange(entity.ToSicEavValues.ToList());
+
             // Delete all Parent-Relationships
-            entity.RelationshipsWithThisAsParent.Clear();
+            DeleteRelationships(entity.RelationshipsWithThisAsParent);
             if (removeFromParents)
-                entity.RelationshipsWithThisAsChild.Clear();
+                DeleteRelationships(entity.RelationshipsWithThisAsChild);
 
             #endregion
 
             // If entity was Published, set Deleted-Flag
             if (entity.IsPublished)
             {
+                Log.Add("was published, will mark as deleted");
                 entity.ChangeLogDeleted = DbContext.Versioning.GetChangeLogId();
                 // Also delete the Draft (if any)
                 var draftEntityId = DbContext.Publishing.GetDraftBranchEntityId(entity.EntityId);
@@ -55,8 +49,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
             // If entity was a Draft, really delete that Entity
             else
             {
+                Log.Add("was draft, will really delete");
                 // Delete all Child-Relationships
-                entity.RelationshipsWithThisAsChild.Clear();
+                DeleteRelationships(entity.RelationshipsWithThisAsChild);
                 DbContext.SqlDb.Remove(entity);
             }
 
@@ -66,13 +61,17 @@ namespace ToSic.Eav.Repository.Efc.Parts
             return true;
         }
 
+        private void DeleteRelationships(ICollection<ToSicEavEntityRelationships> relationships)
+        {
+            relationships.ToList().ForEach(r => DbContext.SqlDb.ToSicEavEntityRelationships.Remove(r));
+        }
+
 
         internal Tuple<bool, string> CanDeleteEntity(int entityId)
         {
+            Log.Add($"can delete entity i:{entityId}");
             var messages = new List<string>();
             var entity = GetDbEntity(entityId);
-            //var entityModel = new Efc11Loader(DbContext.SqlDb).Entity(DbContext.AppId, entityId);
-            //if (!entityModel.IsPublished && entityModel.GetPublished() == null)	// always allow Deleting Draft-Only Entity 
 
             if (!entity.IsPublished && entity.PublishedEntityId == null)	// always allow Deleting Draft-Only Entity 
                 return new Tuple<bool, string>(true, null);
@@ -85,17 +84,17 @@ namespace ToSic.Eav.Repository.Efc.Parts
             if (parents.Any())
             {
                 TryToGetMoreInfosAboutDependencies(parents, messages);
-                messages.Add($"found {parents.Count()} relationships where this is a child - the parents are: {string.Join(", ", parents)}.");
+                messages.Add($"found {parents.Count} relationships where this is a child - the parents are: {string.Join(", ", parents)}.");
             }
             #endregion
 
             var entitiesAssignedToThis = GetAssignedEntities(Constants.MetadataForEntity, entityId)
-                .Select(e => new TempEntityAndTypeInfos() { EntityId = e.EntityId, TypeId = e.AttributeSetId })
+                .Select(e => new TempEntityAndTypeInfos { EntityId = e.EntityId, TypeId = e.AttributeSetId })
                 .ToList();
             if (entitiesAssignedToThis.Any())
             {
                 TryToGetMoreInfosAboutDependencies(entitiesAssignedToThis, messages);
-                messages.Add($"found {entitiesAssignedToThis.Count()} entities which are metadata for this, assigned children (like in a pieline) or assigned for other reasons: {string.Join(", ", entitiesAssignedToThis)}.");
+                messages.Add($"found {entitiesAssignedToThis.Count} entities which are metadata for this, assigned children (like in a pieline) or assigned for other reasons: {string.Join(", ", entitiesAssignedToThis)}.");
             }
             return Tuple.Create(!messages.Any(), string.Join(" ", messages));
         }
@@ -112,8 +111,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
             {
                 messages.Add("Relationships but was not able to look up more details to show a nicer error.");
             }
-
-
         }
 
         private class TempEntityAndTypeInfos

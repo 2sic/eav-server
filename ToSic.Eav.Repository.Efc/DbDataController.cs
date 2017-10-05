@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-//using Microsoft.Practices.Unity;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.Implementations.UserInformation;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Efc.Models;
@@ -32,7 +32,7 @@ namespace ToSic.Eav.Repository.Efc
         public DbContentType ContentType { get; private set; }
 
         private int _appId;
-        internal int _zoneId;
+        private int _zoneId;
         #endregion
 
         #region Properties like AppId, ZoneId, UserName etc.
@@ -42,8 +42,8 @@ namespace ToSic.Eav.Repository.Efc
         /// </summary>
         public int AppId
         {
-            get { return _appId == 0 ? Constants.MetaDataAppId : _appId; }
-            set { _appId = value; }
+            get => _appId == 0 ? Constants.MetaDataAppId : _appId;
+            set => _appId = value;
         }
 
         /// <summary>
@@ -51,8 +51,8 @@ namespace ToSic.Eav.Repository.Efc
         /// </summary>
         public int ZoneId
         {
-            get { return _zoneId == 0 ? Constants.DefaultZoneId : _zoneId; }
-            set { _zoneId = value; }
+            get => _zoneId == 0 ? Constants.DefaultZoneId : _zoneId;
+            set => _zoneId = value;
         }
 
         private string _userName;
@@ -75,15 +75,16 @@ namespace ToSic.Eav.Repository.Efc
                 }
                 return _userName;
             }
-            set
-            {
-                _userName = value;
-            }}
+            set => _userName = value;
+        }
 
         #endregion
 
         #region shared logs in case of write commands
-        public List<LogItem> Log { get; }=  new List<LogItem>();
+        public List<LogItem> ImportLogToBeRefactored { get; }=  new List<LogItem>();
+
+        public Log Log { get; private set; }
+
         #endregion
 
         #region new stuff
@@ -106,7 +107,11 @@ namespace ToSic.Eav.Repository.Efc
         private static DbDataController Instance()
         {
             var context = Factory.Resolve<EavDbContext>();
-            var dc = new DbDataController {SqlDb = context};
+            var dc = new DbDataController
+            {
+                SqlDb = context,
+                Log = new Log("Db.Data")
+            };
             dc.Versioning = new DbVersioning(dc);
             dc.Entities = new DbEntity(dc);
             dc.Values = new DbValue(dc);
@@ -127,11 +132,12 @@ namespace ToSic.Eav.Repository.Efc
         /// <summary>
         /// Returns a new instace of the Eav Context on specified ZoneId and/or AppId
         /// </summary>
-        public static DbDataController Instance(int? zoneId = null, int? appId = null)
+        // ReSharper disable once MethodOverloadWithOptionalParameter
+        public static DbDataController Instance(int? zoneId = null, int? appId = null, Log parentLog = null)
         {
             var context = Instance();
             context.InitZoneApp(zoneId, appId);
-
+            context.Log.LinkTo(parentLog);
             return context;
         }
 
@@ -200,10 +206,8 @@ namespace ToSic.Eav.Repository.Efc
             var modifiedCount = baseEvent(acceptAllChangesOnSuccess);
 
 
-            if (modifiedCount != 0) // && PurgeAppCacheOnSave)
+            if (modifiedCount != 0)
                 PurgeAppCacheIfReady();
-                //(_cache ?? (_cache = Factory.Resolve<ICache>())).PurgeCache(ZoneId, AppId);
-                //DataSource.GetCache(ZoneId, AppId).PurgeCache(ZoneId, AppId);
 
             return modifiedCount;
         }
@@ -222,23 +226,28 @@ namespace ToSic.Eav.Repository.Efc
 
         internal void DoAndSave(Action action)
         {
+            Log.Add("DB do and save - start");
             action.Invoke();
             SqlDb.SaveChanges();
+            Log.Add("DB do and save - completed");
         }
 
 
         public void DoInTransaction(Action action)
         {
+            var randomId = Guid.NewGuid().ToString().Substring(0, 4);
             var ownTransaction = SqlDb.Database.CurrentTransaction == null ? SqlDb.Database.BeginTransaction() : null;
-
+            Log.Add($"DB do in trans:{randomId} - create new trans:{ownTransaction != null}");
             try
             {
                 action.Invoke();
                 ownTransaction?.Commit();
+                Log.Add($"do in trans:{randomId} - completed");
             }
             catch
             {
                 ownTransaction?.Rollback();
+                Log.Add($"DB do in trans:{randomId} - failed / rollback");
                 throw;
             }
         }
@@ -251,11 +260,13 @@ namespace ToSic.Eav.Repository.Efc
 
         public void DoWithDelayedCacheInvalidation(Action action)
         {
+            Log.Add("DB do with delayed cache invalidation - start");
             _purgeAppCacheOnSave = false;
             action.Invoke();
 
             _purgeAppCacheOnSave = true;
             PurgeAppCacheIfReady();
+            Log.Add("DB do with delayed cache invalidation - completed");
         }
 
         public IRepositoryLoader Loader => new Efc11Loader(SqlDb);
@@ -265,7 +276,7 @@ namespace ToSic.Eav.Repository.Efc
         public List<int> Save(List<IEntity> entities, SaveOptions saveOptions) => Entities.SaveEntity(entities, saveOptions);
 
         public int Save(IEntity entity, SaveOptions saveOptions) => Entities.SaveEntity(entity, saveOptions);
-        public void Save(List<IContentType> contentTypes, SaveOptions saveOptions) => ContentType.ExtendSaveContentTypes(contentTypes, SaveOptions.Build(ZoneId));
+        public void Save(List<IContentType> contentTypes, SaveOptions saveOptions) => ContentType.ExtendSaveContentTypes(contentTypes, saveOptions /* SaveOptions.Build(ZoneId)*/);
 
         #endregion
     }

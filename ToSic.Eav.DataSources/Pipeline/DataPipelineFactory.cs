@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.ValueProvider;
 
 // ReSharper disable once CheckNamespace
@@ -11,8 +13,10 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// Factory to create a Data Pipeline
 	/// </summary>
-	public class DataPipelineFactory
+	public class DataPipelineFactory: HasLog
 	{
+	    public DataPipelineFactory(Log parentLog) : base("DS.PipeFt", parentLog) {}
+
 	    /// <summary>
 	    /// Creates a DataSource from a PipelineEntity for specified Zone and App
 	    /// </summary>
@@ -22,10 +26,8 @@ namespace ToSic.Eav.DataSources
 	    /// <param name="outSource">DataSource to attach the Out-Streams</param>
 	    /// <param name="showDrafts"></param>
 	    /// <returns>A single DataSource Out with wirings and configurations loaded, ready to use</returns>
-	    public static IDataSource GetDataSource(int appId, int pipelineEntityId, ValueCollectionProvider valueCollection, IDataSource outSource = null, bool showDrafts = false)
-		{
-			return GetDataSource(appId, pipelineEntityId, valueCollection.Sources.Select(s => s.Value), outSource, showDrafts);
-		}
+	    public IDataSource GetDataSource(int appId, int pipelineEntityId, ValueCollectionProvider valueCollection, IDataSource outSource = null, bool showDrafts = false) 
+            => GetDataSource(appId, pipelineEntityId, valueCollection.Sources.Select(s => s.Value), outSource, showDrafts);
 
 	    /// <summary>
 	    /// Creates a DataSource from a PipelineEntity for specified Zone and App
@@ -36,15 +38,16 @@ namespace ToSic.Eav.DataSources
 	    /// <param name="outSource">DataSource to attach the Out-Streams</param>
 	    /// <param name="showDrafts"></param>
 	    /// <returns>A single DataSource Out with wirings and configurations loaded, ready to use</returns>
-	    public static IDataSource GetDataSource(int appId, int pipelineEntityId, IEnumerable<IValueProvider> configurationPropertyAccesses, IDataSource outSource = null, bool showDrafts = false)
+	    public IDataSource GetDataSource(int appId, int pipelineEntityId, IEnumerable<IValueProvider> configurationPropertyAccesses, IDataSource outSource = null, bool showDrafts = false)
 		{
+            Log.Add($"build pipe#{pipelineEntityId} for a#{appId}, draft:{showDrafts}");
             if(outSource == null)
                 outSource = new PassThrough();
 			#region Load Pipeline Entity and Pipeline Parts
-			var source = DataSource.GetInitialDataSource(appId: appId);
-			var metaDataSource = DataSource.GetMetaDataSource(source.ZoneId, source.AppId);	// ToDo: Validate change/extension with zoneId and appId Parameter
+			var source = DataSource.GetInitialDataSource(appId: appId, parentLog:Log);
+			var metaDataSource = DataSource.GetMetaDataSource(source.ZoneId, source.AppId);
 
-			var appEntities = source[Constants.DefaultStreamName].List;
+		    var appEntities = source[Constants.DefaultStreamName].List;
 			IEntity dataPipeline;
 			try
 			{
@@ -67,6 +70,8 @@ namespace ToSic.Eav.DataSources
 
 
             #region init all DataPipelineParts
+
+		    Log.Add($"add parts to pipe#{dataPipeline.EntityId} ");
             var dataSources = new Dictionary<string, IDataSource>();
 		    foreach (var dataPipelinePart in dataPipelineParts)
 		    {
@@ -79,7 +84,7 @@ namespace ToSic.Eav.DataSources
                 // if show-draft in overridden, add that to the settings
                 if (showDrafts)
                     configurationProvider.Sources[itemSettings] = new OverrideValueProvider(itemSettings,
-		                new StaticValueProvider(itemSettings, new Dictionary<string, string>()
+		                new StaticValueProvider(itemSettings, new Dictionary<string, string>
 		                {
 		                    {"ShowDrafts", true.ToString()}
 		                }), configurationProvider.Sources[itemSettings]);
@@ -117,10 +122,12 @@ namespace ToSic.Eav.DataSources
 		            assemblyAndType = assemblyAndType.Replace(Constants.V3To4DataSourceDllOld, Constants.V3To4DataSourceDllNew);
 
 		        var dataSource = DataSource.GetDataSource(assemblyAndType,
-		            source.ZoneId, source.AppId, valueCollectionProvider: configurationProvider);
+		            source.ZoneId, source.AppId, valueCollectionProvider: configurationProvider, parentLog:Log);
 		        dataSource.DataSourceGuid = dataPipelinePart.EntityGuid;
 		        //ConfigurationProvider.configList = dataSource.Configuration;
 
+		        Log.Add($"add '{assemblyAndType}' as " +
+		                $"part#{dataPipelinePart.EntityId}({dataPipelinePart.EntityGuid.ToString().Substring(0, 6)}...)");
 		        dataSources.Add(dataPipelinePart.EntityGuid.ToString(), dataSource);
 
 		    }
@@ -135,11 +142,12 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// Init Stream Wirings between Pipeline-Parts (Buttom-Up)
 		/// </summary>
-		private static void InitWirings(IEntity dataPipeline, IDictionary<string, IDataSource> dataSources)
+		private void InitWirings(IEntity dataPipeline, IDictionary<string, IDataSource> dataSources)
 		{
 			// Init
 			var wirings = DataPipelineWiring.Deserialize((string)dataPipeline[Constants.DataPipelineStreamWiringStaticName][0]).ToList();
 			var initializedWirings = new List<WireInfo>();
+		    Log.Add($"init wirings⋮{wirings.Count}");
 
 			// 1. wire Out-Streams of DataSources with no In-Streams
 			var dataSourcesWithNoInStreams = dataSources.Where(d => wirings.All(w => w.To != d.Key));
@@ -151,13 +159,11 @@ namespace ToSic.Eav.DataSources
 		    while (true)
 			{
 				var dataSourcesWithInitializedInStreams = dataSources.Where(d => initializedWirings.Any(w => w.To == d.Key));
-			    //var previousWiringsCount = initializedWirings.Count;    // count connections before binding more items
 
 				var connectionsCreated = ConnectOutStreams(dataSourcesWithInitializedInStreams, dataSources, wirings, initializedWirings);
-			    //var newWiringCount = initializedWirings.Count;          // count again afterwards, nowe ones should have been created
 
-				if (!connectionsCreated)// || previousWiringsCount == newWiringCount)
-					break;
+				if (!connectionsCreated)
+				    break;
 			}
 
 			// 3. Test all Wirings were created
@@ -204,29 +210,6 @@ namespace ToSic.Eav.DataSources
 			return wiringsCreated;
 		}
 
-		/// <summary>
-		/// Find a DataSource of a specific Type in a DataPipeline
-		/// </summary>
-		/// <typeparam name="T">Type of the DataSource to find</typeparam>
-		/// <param name="rootDataSource">DataSource to look for In-Connections</param>
-		/// <returns>DataSource of specified Type or null</returns>
-		public static T FindDataSource<T>(IDataTarget rootDataSource) where T : IDataSource
-		{
-			foreach (var stream in rootDataSource.In)
-			{
-				// If type matches, return this DataSource
-				if (stream.Value.Source.GetType() == typeof(T))
-					return (T)stream.Value.Source;
-
-				// Find recursive in In-Streams of this DataSource (if any)
-				var dataTarget = stream.Value.Source as IDataTarget;
-				if (dataTarget != null)
-					return FindDataSource<T>(dataTarget);
-			}
-
-			return default(T);
-		}
-
         /// <summary>
         /// Retrieve test values to test a specific pipeline. 
         /// The specs are found in the pipeline definition, but the must be converted to a source
@@ -234,7 +217,7 @@ namespace ToSic.Eav.DataSources
         /// <param name="appId"></param>
         /// <param name="pipelineEntityId"></param>
         /// <returns></returns>
-        public static IEnumerable<IValueProvider> GetTestValueProviders(int appId, int pipelineEntityId)
+        public IEnumerable<IValueProvider> GetTestValueProviders(int appId, int pipelineEntityId)
         {
             // Get the Entity describing the Pipeline
             var source = DataSource.GetInitialDataSource(appId: appId);
@@ -244,7 +227,7 @@ namespace ToSic.Eav.DataSources
             var testParameters = ((IAttribute<string>)pipelineEntity["TestParameters"]).TypedContents;
             if (testParameters == null)
                 return null;
-            // todo: dangerous: seems like another token-replace mechanism!
+            // todo: dangerous: seems like another token-replace mechanism! should probably use same token-replace everywhere
             var paramMatches = Regex.Matches(testParameters, @"(?:\[(?<Token>\w+):(?<Property>\w+)\])=(?<Value>[^\r\n]*)");
 
             // Create a list of static Property Accessors
@@ -254,8 +237,7 @@ namespace ToSic.Eav.DataSources
                 var token = testParam.Groups["Token"].Value.ToLower();
 
                 // Ensure a PropertyAccess exists
-                var propertyAccess = result.FirstOrDefault(i => i.Name == token) as StaticValueProvider;
-                if (propertyAccess == null)
+                if (!(result.FirstOrDefault(i => i.Name == token) is StaticValueProvider propertyAccess))
                 {
                     propertyAccess = new StaticValueProvider(token);
                     result.Add(propertyAccess);

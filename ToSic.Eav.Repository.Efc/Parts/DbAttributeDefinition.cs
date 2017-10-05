@@ -11,7 +11,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 {
     public partial class DbAttributeDefinition: BllCommandBase
     {
-        public DbAttributeDefinition(DbDataController cntx) : base(cntx) {}
+        public DbAttributeDefinition(DbDataController cntx) : base(cntx, "Db.AttDef") {}
 
         /// <summary>
         /// Set an Attribute as Title on an AttributeSet
@@ -39,7 +39,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             }
             else
             {
-                DbContext.Log.Add(new LogItem(EventLogEntryType.Information, "Attribute already exists" + newAtt.Name));
+                DbContext.ImportLogToBeRefactored.Add(new LogItem(EventLogEntryType.Information, "Attribute already exists" + newAtt.Name));
                 destAttribId = AttributeId(contentTypeId, newAtt.Name);
             }
             return destAttribId;
@@ -47,14 +47,23 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
 
         private ToSicEavAttributesInSets GetAttribute(int attributeSetId, int attributeId = 0, string name = null)
-            => attributeId != 0
-                ? DbContext.SqlDb.ToSicEavAttributesInSets
-                    .Single(a => a.AttributeId == attributeId && a.AttributeSetId == attributeSetId)
-                : DbContext.SqlDb.ToSicEavAttributesInSets
-                    .Single(a => a.AttributeId == attributeId && a.Attribute.StaticName == name);
+        {
+            try
+            {
+                return attributeId != 0
+                    ? DbContext.SqlDb.ToSicEavAttributesInSets
+                        .Single(a =>a.AttributeSetId == attributeSetId && a.AttributeId == attributeId)
+                    : DbContext.SqlDb.ToSicEavAttributesInSets
+                        .Single(a => a.AttributeSetId == attributeSetId && a.Attribute.StaticName == name);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("error getting attribute - content-type/setid: " + attributeSetId + "; optional attributeId: " + attributeId + "; optional name: " + name, ex);
+            }
+        }
 
 
-        public int AttributeId(int setId, string staticName) => GetAttribute(setId, name: staticName).Attribute.AttributeId;
+        private int AttributeId(int setId, string staticName) => GetAttribute(setId, name: staticName).Attribute.AttributeId;
 
         /// <summary>
         /// Set an Attribute as Title on an AttributeSet
@@ -144,24 +153,27 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         public bool RemoveAttributeAndAllValuesAndSave(int attributeId)
         {
-            // Remove values and valueDimensions of this attribute
-            var values = DbContext.SqlDb.ToSicEavValues
-                .Where(a => a.AttributeId == attributeId).ToList();
+            DbContext.DoInTransaction(() =>
+            {
+                // Remove values and valueDimensions of this attribute
+                var values = DbContext.SqlDb.ToSicEavValues
+                    .Include(v => v.ToSicEavValuesDimensions)
+                    .Where(a => a.AttributeId == attributeId).ToList();
 
-            values.ForEach(v => {
-                v.ToSicEavValuesDimensions.ToList().ForEach(vd => {
-                    DbContext.SqlDb.ToSicEavValuesDimensions.Remove(vd);
+                values.ForEach(v =>
+                {
+                    v.ToSicEavValuesDimensions.ToList().ForEach(vd => DbContext.SqlDb.Remove(vd));
+                    DbContext.SqlDb.ToSicEavValues.Remove(v);
                 });
-                DbContext.SqlDb.ToSicEavValues.Remove(v);
+                DbContext.SqlDb.SaveChanges();
+
+                var attr = DbContext.SqlDb.ToSicEavAttributes.FirstOrDefault(a => a.AttributeId == attributeId);
+
+                if (attr != null)
+                    DbContext.SqlDb.ToSicEavAttributes.Remove(attr);
+
+                DbContext.SqlDb.SaveChanges();
             });
-            DbContext.SqlDb.SaveChanges();
-
-            var attr = DbContext.SqlDb.ToSicEavAttributes.FirstOrDefault(a => a.AttributeId == attributeId);
-
-            if (attr != null)
-                DbContext.SqlDb.ToSicEavAttributes.Remove(attr);
-
-            DbContext.SqlDb.SaveChanges();
             return true;
         }
 

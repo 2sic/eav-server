@@ -100,6 +100,8 @@ namespace ToSic.Eav
         /// <summary>Draft-Entities Stream Name</summary>
         public const string DraftsStreamName = "Drafts";
 
+        public const string RepoIdInternalField = "_RepositoryId";
+        public const string IsPublishedField = "IsPublished";
         public const string PublishedEntityField = "PublishedEntity";
         public const string DraftEntityField = "DraftEntity";
 
@@ -122,6 +124,7 @@ namespace ToSic.Eav
 
         public const string EntityFieldTitle = "entitytitle";
         public const string EntityFieldId = "entityid";
+        public const string EntityFieldAutoSelect = "entity-title-id";
         public const string EntityFieldGuid = "entityguid";
         public const string EntityFieldType = "entitytype";
         public const string EntityFieldIsPublished = "ispublished";

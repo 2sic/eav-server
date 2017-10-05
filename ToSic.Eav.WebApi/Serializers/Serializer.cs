@@ -7,6 +7,7 @@ using ToSic.Eav.DataSources;
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Serializers
 {
+    /// <inheritdoc />
     /// <summary>
     /// A helper to serialize various combinations of entities, lists of entities etc
     /// </summary>

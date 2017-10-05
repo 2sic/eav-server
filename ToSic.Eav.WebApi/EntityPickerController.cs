@@ -2,12 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
+using ToSic.Eav.Logging.Simple;
 using static System.String;
 
 namespace ToSic.Eav.WebApi
 {
-    public class EntityPickerController : ApiController
+    public class EntityPickerController : Eav3WebApiBase
     {
+        public EntityPickerController(Log parentLog = null) : base(parentLog)
+        {
+            Log.Rename("EntPck");
+        }
+
         /// <summary>
         /// Returns a list of entities, optionally filtered by AttributeSetId.
         /// </summary>
@@ -15,9 +21,10 @@ namespace ToSic.Eav.WebApi
         [HttpPost]
         public IEnumerable<dynamic> GetAvailableEntities([FromUri]int appId, [FromBody] string[] items, [FromUri] string contentTypeName = null, [FromUri] int? dimensionId = null)
         {
+            Log.Add($"Get entities for a#{appId}, itms⋮{items?.Length}, type:{contentTypeName}, lang#{dimensionId}");
             var dimensionIds = dimensionId ?? 0;
 
-            ToSic.Eav.Interfaces.IContentType contentType = null;
+            Interfaces.IContentType contentType = null;
             if (!IsNullOrEmpty(contentTypeName))
                 contentType = DataSource.GetCache(null, appId).GetContentType(contentTypeName);
 
@@ -26,27 +33,36 @@ namespace ToSic.Eav.WebApi
 
             // optionally filter by type
             if (contentType != null)
+            {
+                Log.Add($"filter by type:{contentType.Name}");
                 temp = temp.Where(l => l.Type == contentType);
+            }
+            else
+                Log.Add("won't filter by type");
 
             // optionally filter by IDs
             if (items != null && items.Length > 0)
             {
+                Log.Add("filter by ids");
                 var guids = items.Select(Guid.Parse);
                 temp = temp.Where(e => guids.Contains(e.EntityGuid));
             }
+            else
+                Log.Add("won't filter by IDs");
 
             var entities = (from l in temp
                            select new
                            {
                                Id = l.EntityId,
                                Value = l.EntityGuid,
-                               Text = GetTitle(l, dimensionIds) // l.Title?[dimensionIds] == null || IsNullOrWhiteSpace(l.Title[dimensionIds].ToString()) ? "(no Title, " + l.EntityId + ")" : l.Title[dimensionIds]
+                               Text = GetTitle(l, dimensionIds)
                            }).OrderBy(l => l.Text.ToString()).ToList();
 
+            Log.Add($"found⋮{entities.Count}");
             return entities;
         }
 
-        private string GetTitle(ToSic.Eav.Interfaces.IEntity l, int dimensionIds)
+        private string GetTitle(Interfaces.IEntity l, int dimensionIds)
         {
             string title;
 

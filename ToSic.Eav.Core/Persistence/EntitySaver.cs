@@ -4,11 +4,15 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging;
+using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Persistence
 {
-    public class EntitySaver
+    public class EntitySaver :HasLog
     {
+        public EntitySaver(Log parentLog = null) : base("Dta.Saver", parentLog) { }
+
         /// <summary>
         /// Goal: Pass changes into an existing entity so that it can then be saved as a whole, with correct
         /// modifications. 
@@ -17,8 +21,11 @@ namespace ToSic.Eav.Persistence
         /// <param name="update"></param>
         /// <param name="saveOptions"></param>
         /// <returns></returns>
-        public static IEntity CreateMergedForSaving(IEntity original, IEntity update, SaveOptions saveOptions)
+        public IEntity CreateMergedForSaving(IEntity original, IEntity update, SaveOptions saveOptions)
         {
+            Log.Add($"merge upgrade entity#{original?.EntityId} update#{update?.EntityId} with options:{saveOptions != null}" );
+            if (saveOptions == null) throw new ArgumentNullException(nameof(saveOptions));
+            Log.Add(() => "opts " + saveOptions?.LogInfo);
             #region Step 0: initial error checks
             if(update == null || update.Attributes?.Count == 0)
                 throw new Exception("can't prepare entities for saving, no new item with attributes provided");
@@ -31,7 +38,7 @@ namespace ToSic.Eav.Persistence
 
             #region Step 1: check if there is an original item
             // only accept original if it's a real object with a valid GUID, otherwise it's not an existing entity
-            bool hasOriginal = !(original == null || (original.EntityId == 0 && original.EntityGuid == Guid.Empty));
+            var hasOriginal = !(original == null || (original.EntityId == 0 && original.EntityGuid == Guid.Empty));
             var idProvidingEntity = hasOriginal ? original : update;
             #endregion
 
@@ -39,6 +46,8 @@ namespace ToSic.Eav.Persistence
 
             var origAttribs = original?.Attributes.Copy();
             var newAttribs = update.Attributes.Copy();
+
+            Log.Add($"has orig:{hasOriginal}, origAtts⋮{origAttribs?.Count}, newAtts⋮{newAttribs.Count}");
 
             // Optionally remove original values not in the update - but only if no option prevents this
             if (hasOriginal && !saveOptions.PreserveUntouchedAttributes && !saveOptions.SkipExistingAttributes)
@@ -105,8 +114,9 @@ namespace ToSic.Eav.Persistence
         /// <remarks>
         /// this expects that saveOptions contain Languages & PrimaryLanguage, and that this is reliable
         /// </remarks>
-        private static void StripUnknownLanguages(Dictionary<string, IAttribute> attribs, SaveOptions saveOptions)
+        private void StripUnknownLanguages(Dictionary<string, IAttribute> attribs, SaveOptions saveOptions)
         {
+            Log.Add("strip unknown langs");
             var languages = saveOptions.Languages;
 
             foreach (var attribElm in attribs)
@@ -135,8 +145,7 @@ namespace ToSic.Eav.Persistence
                 .OrderBy(v =>
                 {
                     if(v.Languages == null || !v.Languages.Any()) return 2; // possible primary as no language specified, but not certainly
-                    if(v.Languages.Any(l => l.Key == saveOptions.PrimaryLanguage)) return 1; // really primary and marked as such, process this first
-                    return 3; // other, work on these last
+                    return v.Languages.Any(l => l.Key == saveOptions.PrimaryLanguage) ? 1 : 3; // really primary and marked as such, process this first
                 });
 
             // now sort the language definitions to ensure correct handling
@@ -155,8 +164,9 @@ namespace ToSic.Eav.Persistence
         /// <param name="update"></param>
         /// <param name="saveOptions"></param>
         /// <returns></returns>
-        private static IAttribute MergeAttribute(IAttribute original, IAttribute update, SaveOptions saveOptions)
+        private IAttribute MergeAttribute(IAttribute original, IAttribute update, SaveOptions saveOptions)
         {
+            Log.Add("merge attribs");
             // everything in the update will be kept, and optionally some stuff in the original may be preserved
             var result = update;
             foreach (var orgVal in ValuesOrderedForProcessing(original, saveOptions))
@@ -184,24 +194,26 @@ namespace ToSic.Eav.Persistence
             return result;
         }
 
-        private static Dictionary<string, IAttribute> KeepOnlyKnownKeys(Dictionary<string, IAttribute> orig, List<string> keys)
+        private Dictionary<string, IAttribute> KeepOnlyKnownKeys(Dictionary<string, IAttribute> orig, List<string> keys)
         {
+            Log.Add("keep only known keys");
             var lowerKeys = keys.Select(k => k.ToLowerInvariant()).ToList();
             return orig.Where(a => lowerKeys.Contains(a.Key.ToLowerInvariant()))
                 .ToDictionary(a => a.Key, a => a.Value);
         }
 
-        private static void ImportKnownProperties(Entity newE)
+        private void ImportKnownProperties(Entity newE)
         {
+            Log.Add("import know props");
             // check isPublished
             var isPublished = newE.GetBestValue(Constants.EntityFieldIsPublished);
             if (isPublished != null)
             {
                 newE.Attributes.Remove(Constants.EntityFieldIsPublished);
 
-                if(isPublished is bool)
-                    newE.IsPublished = (bool) isPublished;
-                else if (isPublished is string && bool.TryParse(isPublished as string, out bool boolPublished))
+                if(isPublished is bool b)
+                    newE.IsPublished = b;
+                else if (isPublished is string && bool.TryParse(isPublished as string, out var boolPublished))
                     newE.IsPublished = boolPublished;
             }
 

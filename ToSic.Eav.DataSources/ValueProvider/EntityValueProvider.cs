@@ -5,13 +5,14 @@ using ToSic.Eav.Interfaces;
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.ValueProvider
 {
+	/// <inheritdoc />
 	/// <summary>
 	/// Get Values from Assigned Entities
 	/// </summary>
 	public class EntityValueProvider : BaseValueProvider
     {
         protected IEntity Entity;
-	    private readonly string[] _dimensions = new string[] {""};
+	    private readonly string[] _dimensions = {""};
 
 	    public EntityValueProvider()
 	    {
@@ -43,7 +44,7 @@ namespace ToSic.Eav.ValueProvider
 
             // bool propertyNotFound;
             var valueObject = Entity.GetBestValue(property, _dimensions);//, out propertyNotFound);
-            propertyNotFound = (valueObject == null);
+            propertyNotFound = valueObject == null;
 
             if (!propertyNotFound && valueObject != null)
             {
@@ -60,41 +61,37 @@ namespace ToSic.Eav.ValueProvider
                     case TypeCode.Int32: // "Int32":
                     case TypeCode.Int64: // "Int64":
                     case TypeCode.Decimal: // "Decimal":
-                        return (((IFormattable)valueObject).ToString(outputFormat, formatProvider));
+                        return ((IFormattable)valueObject).ToString(outputFormat, formatProvider);
                     default:
                         return FormatString(valueObject.ToString(), format);
                 }
             }
-            else
+
+            #region Not found yet, so check for Navigation-Property (e.g. Manager:Name)
+
+            var subTokens = CheckAndGetSubToken(property);
+            if (subTokens.HasSubtoken)
             {
-                #region Check for Navigation-Property (e.g. Manager:Name)
+                valueObject = Entity.GetBestValue(subTokens.Source, _dimensions);
 
-                var subTokens = CheckAndGetSubToken(property);
-                if (subTokens.HasSubtoken)
+                if (valueObject != null)
                 {
-                    valueObject = Entity.GetBestValue(subTokens.Source, _dimensions);
+                    #region Handle child-Entity-Field (sorted list of related entities)
+                    var relationshipList = valueObject as Data.EntityRelationship;
+                    if (relationshipList != null)
+                        return !relationshipList.Any()
+                            ? string.Empty
+                            : new EntityValueProvider(relationshipList.First())
+                                .Get(subTokens.Rest, format, formatProvider, ref propertyNotFound);
 
-                    if (valueObject != null)
-                    {
-                        #region Handle child-Entity-Field (sorted list of related entities)
-                        var relationshipList = valueObject as Data.EntityRelationship;
-                        if (relationshipList != null)
-                        {
-                            if (!relationshipList.Any())
-                                return string.Empty;
-                            else
-                                return new EntityValueProvider(relationshipList.First())
-                                    .Get(subTokens.Rest, format, formatProvider, ref propertyNotFound);
-                        }
-                        #endregion
-                    }
-                    
+                    #endregion
                 }
-                #endregion
-
-                propertyNotFound = true;
-                return string.Empty;
+                    
             }
+            #endregion
+
+            propertyNotFound = true;
+            return string.Empty;
         }
 
 

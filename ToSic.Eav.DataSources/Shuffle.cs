@@ -5,6 +5,7 @@ using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
 {
+	/// <inheritdoc />
 	/// <summary>
 	/// A DataSource that filters Entities by Ids
 	/// </summary>
@@ -12,6 +13,8 @@ namespace ToSic.Eav.DataSources
 	public sealed class Shuffle: BaseDataSource
 	{
         #region Configuration-properties (no config)
+	    public override string LogId => "DS.Shuffl";
+
         private const string TakeKey = "Take";
 
         /// <summary>
@@ -21,11 +24,10 @@ namespace ToSic.Eav.DataSources
         {
             get
             {
-                int tk;
-                int.TryParse(Configuration[TakeKey], out tk);
+                int.TryParse(Configuration[TakeKey], out var tk);
                 return tk;
             }
-            set { Configuration[TakeKey] = value.ToString(); }
+            set => Configuration[TakeKey] = value.ToString();
         }
 
 
@@ -33,6 +35,7 @@ namespace ToSic.Eav.DataSources
 
 
 
+        /// <inheritdoc />
         /// <summary>
         /// Constructs a new EntityIdFilter
         /// </summary>
@@ -49,6 +52,7 @@ namespace ToSic.Eav.DataSources
 	    {
 	        EnsureConfigurationIsLoaded();
 
+	        Log.Add($"will shuffle and take:{Take}");
             return ShuffleInternal(In["Default"].LightList, Take);
 
 	        //   return In["Default"].LightList.Skip(itemsToSkip).Take(PageSize).ToList();

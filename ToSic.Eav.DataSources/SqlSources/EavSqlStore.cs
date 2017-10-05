@@ -10,29 +10,36 @@ using ToSic.Eav.Interfaces;
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataSources.SqlSources
 {
-	/// <summary>
-	/// A DataSource that uses SQL Server as Backend
-	/// </summary>
-	public sealed class EavSqlStore : BaseDataSource, IRootSource
+    /// <inheritdoc cref="BaseDataSource" />
+    /// <summary>
+    /// A DataSource that uses SQL Server as Backend
+    /// </summary>
+    public sealed class EavSqlStore : BaseDataSource, IRootSource
 	{
         // deferred IRepositoryLoader as needed...
-	    private IRepositoryLoader Loader => _ldr ?? (_ldr = Factory.Resolve<IRepositoryLoader>());
+	    public override string LogId => "DS.EavSql";
+
+        private IRepositoryLoader Loader => _ldr ?? (_ldr = Factory.Resolve<IRepositoryLoader>());
 	    private IRepositoryLoader _ldr;
 
 	    private bool _ready;
 
 
+		/// <inheritdoc />
 		/// <summary>
 		/// Constructs a new EavSqlStore DataSource
 		/// </summary>
 		public EavSqlStore()
 		{
+            Log.Rename("EaSqDS");
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntities));
 
             // this function will load data as it's needed
             // note: must use the source null (not "this"), as it's only used for internal deferred child-entity lookups and would cause infinite looping
-            IDictionary<int, IEntity> GetEntities() => Loader.AppPackage(AppId, null, true).Entities;
+            IDictionary<int, IEntity> GetEntities() => Loader.AppPackage(AppId, null, true, Log).Entities;
         }
+
+
 
 		/// <summary>
 		/// Set Zone and App for this DataSource
@@ -47,7 +54,7 @@ namespace ToSic.Eav.DataSources.SqlSources
 		public override bool Ready => _ready;
 
 	    public AppDataPackage GetDataForCache() 
-            => Loader.AppPackage(AppId);
+            => Loader.AppPackage(AppId, parentLog: Log);
 
 	    public Dictionary<int, Zone> GetAllZones() => Loader.Zones();
 

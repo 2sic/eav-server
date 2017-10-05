@@ -1,20 +1,23 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
+using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging;
+using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Apps
 {
-    public class Template
+    public class Template: HasLog
     {
-        private readonly ToSic.Eav.Interfaces.IEntity _templateEntity;
+        private readonly IEntity _templateEntity;
 
-        public Template(ToSic.Eav.Interfaces.IEntity templateEntity)
+        public Template(IEntity templateEntity, Log parentLog): base("App.Templt", parentLog)
         {
             _templateEntity = templateEntity ?? throw new Exception("Template entity is null");
         }
 
         private string GetBestString(string key) => (string) _templateEntity.GetBestValue(key);
-        private ToSic.Eav.Interfaces.IEntity GetBestRelationship(string key) => ((Data.EntityRelationship)_templateEntity.Attributes[key][0]).FirstOrDefault();
+        private IEntity GetBestRelationship(string key) => ((Data.EntityRelationship)_templateEntity.Attributes[key][0]).FirstOrDefault();
         private bool GetBestBool(string key) => (bool)(_templateEntity.GetBestValue(key) ?? false);
 
 
@@ -26,19 +29,19 @@ namespace ToSic.Eav.Apps
 
         public string ContentTypeStaticName => GetBestString(AppConstants.TemplateContentType);
 
-        public ToSic.Eav.Interfaces.IEntity ContentDemoEntity => GetBestRelationship(AppConstants.TemplateContentDemo);
+        public IEntity ContentDemoEntity => GetBestRelationship(AppConstants.TemplateContentDemo);
 
         public string PresentationTypeStaticName => GetBestString(AppConstants.TemplatePresentationType);
 
-        public ToSic.Eav.Interfaces.IEntity PresentationDemoEntity => GetBestRelationship(AppConstants.TemplatePresentationDemo);
+        public IEntity PresentationDemoEntity => GetBestRelationship(AppConstants.TemplatePresentationDemo);
 
         public string ListContentTypeStaticName => GetBestString(AppConstants.TemplateListContentType);
 
-        public ToSic.Eav.Interfaces.IEntity ListContentDemoEntity => GetBestRelationship(AppConstants.TemplateListContentDemo);
+        public IEntity ListContentDemoEntity => GetBestRelationship(AppConstants.TemplateListContentDemo);
 
         public string ListPresentationTypeStaticName => GetBestString(AppConstants.TemplateListPresentationType);
 
-        public ToSic.Eav.Interfaces.IEntity ListPresentationDemoEntity => GetBestRelationship(AppConstants.TemplateListPresentationDemo);
+        public IEntity ListPresentationDemoEntity => GetBestRelationship(AppConstants.TemplateListPresentationDemo);
 
         public string Type => GetBestString(AppConstants.TemplateType);
         public Guid Guid => _templateEntity.EntityGuid;
@@ -68,7 +71,7 @@ namespace ToSic.Eav.Apps
         public string StreamsToPublish => GetBestString(AppConstants.TemplatePublishStreams);
 
 
-        public ToSic.Eav.Interfaces.IEntity Pipeline => ((Data.EntityRelationship)_templateEntity.Attributes["Pipeline"][0]).FirstOrDefault();
+        public IEntity Pipeline => ((Data.EntityRelationship)_templateEntity.Attributes["Pipeline"][0]).FirstOrDefault();
         public string ViewNameInUrl => GetBestString(AppConstants.TemplateViewName);
 
         /// <summary>

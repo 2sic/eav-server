@@ -9,7 +9,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 {
     public partial class DbAttributeSet : BllCommandBase
     {
-        public DbAttributeSet(DbDataController dc) : base(dc) { }
+        public DbAttributeSet(DbDataController dc) : base(dc, "Db.AttSet") { }
 
         private IQueryable<ToSicEavAttributeSets> GetSetCoreQuery(int? appId = null)
             => DbContext.SqlDb.ToSicEavAttributeSets

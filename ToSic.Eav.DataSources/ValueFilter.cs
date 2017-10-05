@@ -6,6 +6,7 @@ using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
 {
+    /// <inheritdoc />
     /// <summary>
     /// Return only Entities having a specific value in an Attribute
     /// </summary>
@@ -13,6 +14,7 @@ namespace ToSic.Eav.DataSources
     public sealed class ValueFilter : BaseDataSource
     {
         #region Configuration-properties Attribute, Value, Language, Operator
+        public override string LogId => "DS.ValueF";
 
         private const string AttrKey = "Attribute";
         private const string FilterKey = "Value";
@@ -25,17 +27,17 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public string Attribute
 		{
-			get { return Configuration[AttrKey]; }
-			set { Configuration[AttrKey] = value; }
-		}
+			get => Configuration[AttrKey];
+            set => Configuration[AttrKey] = value;
+        }
 
 		/// <summary>
 		/// The filter that will be used - for example "Daniel" when looking for an entity w/the value Daniel
 		/// </summary>
 		public string Value
 		{
-			get { return Configuration[FilterKey]; }
-			set { Configuration[FilterKey] = value; }
+			get => Configuration[FilterKey];
+		    set => Configuration[FilterKey] = value;
 		}
 
 		/// <summary>
@@ -43,8 +45,8 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public string Languages
 		{
-			get { return Configuration[LangKey]; }
-			set { Configuration[LangKey] = value; }
+			get => Configuration[LangKey];
+		    set => Configuration[LangKey] = value;
 		}
 
         /// <summary>
@@ -53,16 +55,17 @@ namespace ToSic.Eav.DataSources
         /// </summary>
 		public string Operator
 		{
-			get { return Configuration[OperatorKey]; }
-			set { Configuration[OperatorKey] = value; }
-		}
+			get => Configuration[OperatorKey];
+            set => Configuration[OperatorKey] = value;
+        }
 		public string Take
 		{
-			get { return Configuration[TakeKey]; }
-			set { Configuration[TakeKey] = value; }
+			get => Configuration[TakeKey];
+		    set => Configuration[TakeKey] = value;
 		}		
         #endregion
 
+		/// <inheritdoc />
 		/// <summary>
 		/// Constructs a new ValueFilter
 		/// </summary>
@@ -83,8 +86,12 @@ namespace ToSic.Eav.DataSources
             var res = GetEntities();
             // ReSharper disable PossibleMultipleEnumeration
             if (!res.Any())
-                if (In.ContainsKey(Constants.FallbackStreamName) && In[Constants.FallbackStreamName] != null && In[Constants.FallbackStreamName].LightList.Any())
+                if (In.ContainsKey(Constants.FallbackStreamName) && In[Constants.FallbackStreamName] != null &&
+                    In[Constants.FallbackStreamName].LightList.Any())
+                {
+                    Log.Add("will return fallback stream");
                     res = In[Constants.FallbackStreamName].LightList;
+                }
             
             return res;
             // ReSharper restore PossibleMultipleEnumeration
@@ -96,6 +103,7 @@ namespace ToSic.Eav.DataSources
 			// todo: maybe do something about languages?
 			EnsureConfigurationIsLoaded();
 
+		    Log.Add("applying value filter...");
 			_initializedAttrName = Attribute;
 
             #region do language checks and finish initialization
@@ -428,8 +436,7 @@ namespace ToSic.Eav.DataSources
                             select e);
                         break;
                 }
-	            int tk;
-	            if (int.TryParse(Take, out tk))
+                if (int.TryParse(Take, out var tk))
 	                results = results.Take(tk);
 	            return results;
 	        }

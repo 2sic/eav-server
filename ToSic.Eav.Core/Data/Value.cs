@@ -41,19 +41,36 @@ namespace ToSic.Eav.Data
                                                      ? typedDateTime
                                                      : new DateTime?()));
                         break;
-                    case AttributeTypeEnum.Number:
-                        var typedDecimalNullable = value as decimal?;
-                        if (typedDecimalNullable == null)
-                        {
-                            decimal typedDecimal;
-                            var isDecimal = decimal.TryParse(stringValue, NumberStyles.Any, CultureInfo.InvariantCulture,
-                                out typedDecimal);
-                            if (isDecimal)
-                                typedDecimalNullable = typedDecimal;
-                        }
-                        typedModel = new Value<decimal?>(typedDecimalNullable);
 
+                    case AttributeTypeEnum.Number:
+                        decimal? newDec = null;
+                        if (!(value is string && string.IsNullOrEmpty(value as string))) // only try converting if it's not an empty string
+                        {
+                            try
+                            {
+                                newDec = Convert.ToDecimal(value, CultureInfo.InvariantCulture);
+                            }
+                            catch 
+                            {
+                                // ignored
+                            }
+
+                            // if it's still blank, try another method
+                            // note: 2dm added this 2017-08-29 after a few bugs, but it may not be necessary any more, as the bug was something else
+                            if(newDec == null)
+                            try
+                            {
+                                if (decimal.TryParse(stringValue, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal typedDecimal))
+                                    newDec = typedDecimal;
+                            }
+                            catch
+                            {
+                                // ignored
+                            }
+                        }
+                        typedModel = new Value<decimal?>(newDec);
                         break;
+
                     case AttributeTypeEnum.Entity:
                         var entityIds = value as IEnumerable<int?> ?? (value as IEnumerable<int>)?.Select(x => (int?)x).ToList();
                         if (entityIds != null)

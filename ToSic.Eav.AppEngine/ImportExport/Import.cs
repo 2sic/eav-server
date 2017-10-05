@@ -6,6 +6,8 @@ using ToSic.Eav.App;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
@@ -17,8 +19,9 @@ namespace ToSic.Eav.Apps.ImportExport
     /// <summary>
     /// Import Schema and Entities to the EAV SqlStore
     /// </summary>
-    public class Import
+    public class Import: HasLog
     {
+        private Log Log { get; }
         #region Private Fields
         //private readonly DbDataController _dbDeepAccess;
         private AppDataPackage _entireApp;
@@ -35,15 +38,17 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <summary>
         /// Initializes a new instance of the Import class.
         /// </summary>
-        public Import(int? zoneId, int appId, bool skipExistingAttributes = true, bool preserveUntouchedAttributes = true)
+        public Import(int? zoneId, int appId, bool skipExistingAttributes = true, bool preserveUntouchedAttributes = true, Log parentLog = null): base("Eav.Import", parentLog, "constructor")
         {
-            App = zoneId.HasValue ? new AppManager(zoneId.Value, appId) : new AppManager(appId);
+            App = zoneId.HasValue ? new AppManager(zoneId.Value, appId) : new AppManager(appId, Log);
             Storage = App.Storage;
             //_dbDeepAccess = App.DataController;// DbDataController.Instance(zoneId, appId);
             // now save the resolved zone/app IDs
             AppId = appId;
             ZoneId = App.ZoneId;// DbDeepAccess.ZoneId;
-            SaveOptions = Factory.Resolve<IImportExportEnvironment>().SaveOptions(ZoneId);
+            var iex = Factory.Resolve<IImportExportEnvironment>();
+            iex.LinkLog(Log);
+            SaveOptions = iex.SaveOptions(ZoneId);
 
             SaveOptions.SkipExistingAttributes = skipExistingAttributes;
 
@@ -71,7 +76,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     if (newAttributeSets != null)
                         Storage.DoWhileQueuingVersioning(() =>
                         {
-                            _entireApp = Storage.Loader.AppPackage(AppId); // load everything, as content-type metadata is normal entities
+                            _entireApp = Storage.Loader.AppPackage(AppId, parentLog:Log); // load everything, as content-type metadata is normal entities
                             var newSetsList = newAttributeSets.ToList();
                             // first: import the attribute sets in the system scope, as they may be needed by others...
                             // ...and would need a cache-refresh before 
@@ -79,7 +84,7 @@ namespace ToSic.Eav.Apps.ImportExport
                             if (sysAttributeSets.Any())
                                 MergeAndSaveContentTypes(sysAttributeSets);
 
-                            _entireApp = Storage.Loader.AppPackage(AppId); // load everything, as content-type metadata is normal entities
+                            _entireApp = Storage.Loader.AppPackage(AppId, parentLog: Log); // load everything, as content-type metadata is normal entities
 
                             // now the remaining attributeSets
                             var nonSysAttribSets = newSetsList.Where(a => !sysAttributeSets.Contains(a)).ToList();
@@ -93,7 +98,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
                     if (newEntities != null)
                     {
-                        _entireApp = Storage.Loader.AppPackage(AppId); // load all entities
+                        _entireApp = Storage.Loader.AppPackage(AppId, parentLog: Log); // load all entities
                         newEntities = newEntities
                             .Select(entity => CreateMergedForSaving(entity, _entireApp, SaveOptions))
                             .Where(e => e != null).ToList();
@@ -109,7 +114,9 @@ namespace ToSic.Eav.Apps.ImportExport
         private void MergeAndSaveContentTypes(List<ContentType> contentTypes)
         {
             contentTypes.ForEach(MergeContentTypeUpdateWithExisting);
-            Storage.Save(contentTypes.Cast<IContentType>().ToList(), SaveOptions.Build(ZoneId));
+            var so = SaveOptions.Build(ZoneId);
+            so.DiscardattributesNotInType = true;
+            Storage.Save(contentTypes.Cast<IContentType>().ToList(), so);
         }
 
         //private void ExtendSaveContentTypes(IEnumerable<ContentType> contentTypes)
@@ -196,7 +203,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     if (existingMetadata == null)
                         newMetaList.Add(newMd);
                     else
-                        newMetaList.Add(EntitySaver.CreateMergedForSaving(existingMetadata, newMd, SaveOptions) as Entity);
+                        newMetaList.Add(new EntitySaver(Log).CreateMergedForSaving(existingMetadata, newMd, SaveOptions) as Entity);
                 }
                 ((AttributeDefinition) newAttrib).AddItems(newMetaList);
             }
@@ -214,7 +221,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             if (dbAttrSet == null) // AttributeSet not Found
             {
-                Storage.Log.Add(new LogItem(EventLogEntryType.Error, "ContentType not found for " + update.Type.StaticName));
+                Storage.ImportLogToBeRefactored.Add(new LogItem(EventLogEntryType.Error, "ContentType not found for " + update.Type.StaticName));
                 return null;
             }
 
@@ -232,12 +239,12 @@ namespace ToSic.Eav.Apps.ImportExport
 
             #endregion
 
-            Storage.Log.Add(new LogItem(EventLogEntryType.Information, $"FYI: Entity {update.EntityId} already exists for guid {update.EntityGuid}"));
+            Storage.ImportLogToBeRefactored.Add(new LogItem(EventLogEntryType.Information, $"FYI: Entity {update.EntityId} already exists for guid {update.EntityGuid}"));
 
             // now update (main) entity id from existing - since it already exists
             var original = existingEntities.First();
             update.ChangeIdForSaving(original.EntityId);
-            return EntitySaver.CreateMergedForSaving(original, update, saveOptions) as Entity;
+            return new EntitySaver(Log).CreateMergedForSaving(original, update, saveOptions) as Entity;
 
         }
     }

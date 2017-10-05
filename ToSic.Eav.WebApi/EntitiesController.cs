@@ -2,24 +2,26 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
+using Newtonsoft.Json;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Enums;
 using ToSic.Eav.WebApi.Formats;
 using ToSic.Eav.Interfaces;
-using ToSic.Eav.Persistence;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Versions;
 
 namespace ToSic.Eav.WebApi
 {
+    /// <inheritdoc />
     /// <summary>
     /// Web API Controller for various actions
     /// </summary>
     public class EntitiesController : Eav3WebApiBase
     {
         public EntitiesController(int appId) : base(appId) { }
-        public EntitiesController()
-        { }
+        public EntitiesController(Log parentLog) : base(parentLog) { }
+       public EntitiesController() { }
 
         #region GetOne GetAll calls
         public IEntity GetEntityOrThrowError(string contentType, int id)
@@ -138,18 +140,20 @@ namespace ToSic.Eav.WebApi
         [HttpPost]
         public List<EntityWithHeader> GetManyForEditing([FromUri]int appId, [FromBody]List<ItemIdentifier> items)
         {
+            Log.Add($"get many for editing a#{appId}, items⋮{items.Count}");
             SetAppIdAndUser(appId);
 
             // clean up content-type names in case it's using the nice-name instead of the static name...
-            //var cache = DataSource.GetCache(null, appId);
+            // var cache = DataSource.GetCache(null, appId);
             foreach (var itm in items.Where(i => !string.IsNullOrEmpty(i.ContentTypeName)).ToArray())
             {
-                var ct = AppManager.Read.ContentTypes.Get(itm.ContentTypeName);// cache.GetContentType(itm.ContentTypeName);
+                var ct = AppManager.Read.ContentTypes.Get(itm.ContentTypeName);
                 if (ct == null)
                 {
                     if (!itm.ContentTypeName.StartsWith("@"))
                         throw new Exception("Can't find content type " + itm.ContentTypeName);
                     items.Remove(itm);
+                    continue;
                 }
                 if (ct.StaticName != itm.ContentTypeName) // not using the static name...fix
                     itm.ContentTypeName = ct.StaticName;
@@ -164,23 +168,22 @@ namespace ToSic.Eav.WebApi
             // make sure the header has the right "new" guid as well - as this is the primary one to work with
             // it is really important to use the header guid, because sometimes the entity does not exist - so it doesn't have a guid either
             foreach (var i in list.Where(i => i.Header.Guid == Guid.Empty).ToArray()) // must do toarray, to prevent re-checking after setting the guid
-                i.Header.Guid = (i.Entity != null && i.Entity.Guid != Guid.Empty)
+                i.Header.Guid = i.Entity != null && i.Entity.Guid != Guid.Empty
                     ? i.Entity.Guid
                     : Guid.NewGuid();
 
             foreach (var itm in list.Where(i => i.Header.ContentTypeName == null && i.Entity != null))
                 itm.Header.ContentTypeName = itm.Entity.Type.StaticName;
 
+            Log.Add($"will return items⋮{list.Count}");
             return list;
         }
 
-
         #endregion
-
-
         [HttpPost]
-        public Dictionary<Guid, int> SaveMany([FromUri] int appId, [FromBody] List<EntityWithHeader> items)
+        public Dictionary<Guid, int> SaveMany([FromUri] int appId, [FromBody] List<EntityWithHeader> items, [FromUri] bool partOfPage = false)
         {
+            var myLog = new Log("Eav.SavMny", Log, "start");
             SetAppIdAndUser(appId);
 
             // must move guid from header to entity, because we only transfer it on the header (so no duplicates)
@@ -193,6 +196,7 @@ namespace ToSic.Eav.WebApi
                 .Cast<IEntity>()
                 .ToList();
 
+            myLog.Add("will save " + entitiesToImport.Count + " items");
             AppManager.Entities.Save(entitiesToImport);
 
             // find / update IDs of items updated to return to client
@@ -229,8 +233,18 @@ namespace ToSic.Eav.WebApi
 
                 foreach (var value in attribute.Value.Values)
                 {
-                    var stringValue = value.Value;// ImpEntity.ImpConvertValueObjectToString(value.Value);
-                    var importValue = attribs.AddValue(attribute.Key, stringValue, attributeType);
+                    var objValue = value.Value;// ImpEntity.ImpConvertValueObjectToString(value.Value);
+
+                    // special situation: if it's an array of Guids, mixed with NULLs, then it's not correctly auto-de-serialized
+                    if (attributeType == AttributeTypeEnum.Entity.ToString() && objValue is Newtonsoft.Json.Linq.JArray)
+                    {
+                        // manually de-serialize
+                        var guidArray = JsonConvert.DeserializeObject<Guid?[]>(objValue.ToString());
+                        objValue = guidArray;
+                    }
+
+
+                    var importValue = attribs.AddValue(attribute.Key, objValue, attributeType);
 
                     // append languages OR empty language as fallback
                     if (value.Dimensions == null)
@@ -296,16 +310,16 @@ namespace ToSic.Eav.WebApi
         {
             SetAppIdAndUser(appId);
 
-            var found = AppManager.Read.Entities.Get(id);
-            if (found.Type.Name != contentType && found.Type.StaticName != contentType)
-                throw new KeyNotFoundException("Can't find " + id + "of type '" + contentType + "'");
+            //var found = AppManager.Read.Entities.Get(id);
+            //if (found.Type.Name != contentType && found.Type.StaticName != contentType)
+            //    throw new KeyNotFoundException("Can't find " + id + "of type '" + contentType + "'");
 
             // check if it has related items or another reason to prevent deleting
-            var deleteControl = AppManager.Entities.DeletePossible(id);
-            if (deleteControl || force)
-                AppManager.Entities.Delete(id, force);
-            else
-                throw new InvalidOperationException($"Item {id} cannot be deleted. It is used by other items: {AppManager.Entities.DeleteHinderance(id)}");
+            //var deleteControl = AppManager.Entities.DeletePossible(id);
+            //if (deleteControl || force)
+                AppManager.Entities.Delete(id, contentType, force);
+            //else
+            //    throw new InvalidOperationException($"Item {id} cannot be deleted. It is used by other items: {AppManager.Entities.DeleteHinderance(id)}");
         }
 
         /// <summary>

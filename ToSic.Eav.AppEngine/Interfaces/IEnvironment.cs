@@ -7,5 +7,7 @@
         IZoneMapper ZoneMapper { get; }
 
         IUser User { get; }
+
+        IPagePublishing PagePublishing { get; }
     }
 }

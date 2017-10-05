@@ -4,14 +4,16 @@ using ToSic.Eav.ValueProvider;
 
 namespace ToSic.Eav.DataSources
 {
+	/// <inheritdoc />
 	/// <summary>
 	/// Provides a data-source to a query (pipeline), but won't assemble the pipeline unless accessed
 	/// </summary>
 	public class DeferredPipelineQuery : BaseDataSource
 	{
-		#region Configuration-properties
+        #region Configuration-properties
+	    public override string LogId => "DS.DefQry";
 
-	    public IEntity QueryDefinition;
+        public IEntity QueryDefinition;
 
 		private IDictionary<string, IDataStream> _Out = new Dictionary<string, IDataStream>();
 		private bool _requiresRebuildOfOut = true;
@@ -52,7 +54,7 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		private void CreateOutWithAllStreams()
 		{
-		    var pipeln = DataPipelineFactory.GetDataSource(AppId, QueryDefinition.EntityId, ConfigurationProvider as ValueCollectionProvider);
+		    var pipeln = new DataPipelineFactory(Log).GetDataSource(AppId, QueryDefinition.EntityId, ConfigurationProvider as ValueCollectionProvider);
 		    _Out = pipeln.Out;
 		}
 	}

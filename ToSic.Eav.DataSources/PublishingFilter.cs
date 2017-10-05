@@ -3,25 +3,29 @@ using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
 {
+	/// <inheritdoc />
 	/// <summary>
 	/// Filter entities to show Drafts or only Published Entities
 	/// </summary>
 	[PipelineDesigner]
 	public class PublishingFilter : BaseDataSource
 	{
-		#region Configuration-properties
-		private const string ShowDraftsKey = "ShowDrafts";
+        #region Configuration-properties
+	    public override string LogId => "DS.Publsh";
+
+        private const string ShowDraftsKey = "ShowDrafts";
 
 		/// <summary>
 		/// Indicates whether to show drafts or only Published Entities
 		/// </summary>
 		public bool ShowDrafts
 		{
-			get { return bool.Parse(Configuration[ShowDraftsKey]); }
-			set { Configuration[ShowDraftsKey] = value.ToString(); }
+			get => bool.Parse(Configuration[ShowDraftsKey]);
+		    set => Configuration[ShowDraftsKey] = value.ToString();
 		}
 		#endregion
 
+		/// <inheritdoc />
 		/// <summary>
 		/// Constructs a new PublishingFilter
 		/// </summary>
@@ -33,20 +37,14 @@ namespace ToSic.Eav.DataSources
             CacheRelevantConfigurations = new[] { ShowDraftsKey };
         }
 
-		private IDictionary<int, IEntity> GetEntities()
-		{
-		    return DataStream().List;
-		}
+		private IDictionary<int, IEntity> GetEntities() => DataStream().List;
 
-        private IEnumerable<IEntity> GetList()
-        {
-            return DataStream().LightList;
-        }
+	    private IEnumerable<IEntity> GetList() => DataStream().LightList;
 
 	    private IDataStream DataStream()
 	    {
 	        EnsureConfigurationIsLoaded();
-
+	        Log.Add($"get incl. draft:{ShowDrafts}");
 	        var outStreamName = ShowDrafts ? Constants.DraftsStreamName : Constants.PublishedStreamName;
 	        return In[outStreamName];
 	    }

@@ -5,15 +5,17 @@ using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
 {
+	/// <inheritdoc />
 	/// <summary>
 	/// Sort Entity by values in specified Attributes
 	/// </summary>
 	[PipelineDesigner]
 	public sealed class ValueSort : BaseDataSource
 	{
-		#region Configuration-properties
+        #region Configuration-properties
+	    public override string LogId => "DS.ValueS";
 
-		private const string AttrKey = "Attributes";
+        private const string AttrKey = "Attributes";
 		private const string DirectionKey = "Value";
 		private const string LangKey = "Language";
         
@@ -22,8 +24,8 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public string Attributes
 		{
-			get { return Configuration[AttrKey]; }
-			set { Configuration[AttrKey] = value; }
+			get => Configuration[AttrKey];
+		    set => Configuration[AttrKey] = value;
 		}
 
 		/// <summary>
@@ -31,8 +33,8 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public string Directions
 		{
-			get { return Configuration[DirectionKey]; }
-			set { Configuration[DirectionKey] = value; }
+			get => Configuration[DirectionKey];
+		    set => Configuration[DirectionKey] = value;
 		}
 
 		/// <summary>
@@ -40,11 +42,12 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public string Languages
 		{
-			get { return Configuration[LangKey]; }
-			set { Configuration[LangKey] = value; }
+			get => Configuration[LangKey];
+		    set => Configuration[LangKey] = value;
 		}
 		#endregion
 
+		/// <inheritdoc />
 		/// <summary>
 		/// Constructs a new ValueSort
 		/// </summary>
@@ -68,6 +71,8 @@ namespace ToSic.Eav.DataSources
 			// todo: test datetime & decimal types
 
 			EnsureConfigurationIsLoaded();
+
+		    Log.Add("will apply value-sort");
 			var attr = Attributes.Split(',').Select(s => s.Trim()).ToArray();
 			var directions = Directions.Split(',').Select(s => s.Trim()).ToArray();
 			var descendingCodes = new[] { "desc","d","0",">" };

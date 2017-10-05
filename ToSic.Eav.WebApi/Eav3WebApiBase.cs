@@ -1,28 +1,46 @@
 ﻿using System;
 using System.Web.Http;
-//using Microsoft.Practices.Unity;
 using ToSic.Eav.Apps;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Serializers;
 
 namespace ToSic.Eav.WebApi
 {
+    /// <inheritdoc />
     /// <summary>
     /// Web API Controller for the Pipeline Designer UI
     /// </summary>
     public class Eav3WebApiBase : ApiController
     {
+        #region Logging
+        protected Log Log = new Log("Eav.ApiCon");
+        #endregion
+
+
+        #region Constructors
+
+        public Eav3WebApiBase(Log parentLog = null)
+        {
+            Log.LinkTo(parentLog);
+        }
+
+        public Eav3WebApiBase(int appId, Log parentLog = null): this(parentLog)
+        {
+            _appId = appId;
+        }
+
+        #endregion
 
         #region Helpers
-        //internal IDataSource InitialDS => DataSource.GetInitialDataSource(appId: AppId);
 
-        internal AppManager AppManager => new AppManager(AppId);
+        internal AppManager AppManager => new AppManager(AppId, Log);
 
         internal IMetaDataSource MetaDs => DataSource.GetMetaDataSource(appId: AppId);
 
         private DbDataController _dbContext;
-	    internal DbDataController CurrentContext => _dbContext ?? (_dbContext = DbDataController.Instance(appId: AppId));
+	    internal DbDataController CurrentContext => _dbContext ?? (_dbContext = DbDataController.Instance(appId: AppId, parentLog: Log));
 
         // I must keep the serializer so it can be configured from outside if necessary
 	    private Serializer _serializer;
@@ -54,45 +72,17 @@ namespace ToSic.Eav.WebApi
                     throw new Exception("AppId not initialized");
 	            return _appId;
 	        }
-	        set { _appId = value; }
+	        set => _appId = value;
 	    }
 
 	    #endregion
 
-        #region Constructors
-
-	    public Eav3WebApiBase()
-	    {
-	        
-	    }
-
-	    public Eav3WebApiBase(int appId)
-	    {
-	        _appId = appId;
-	    }
-        #endregion
 
         public void SetAppIdAndUser(int? appId)
         {
-            //_appId = appId;
             if (appId.HasValue)
                 AppId = appId.Value;
-
-            //if (string.IsNullOrWhiteSpace(CurrentContext.UserName))
-            //    SetUser(UserIdentityToken);
         }
-
-        //private string _userTokenOverride = null;
-        //public void SetUser(string userIdentityToken)
-        //{
-        //    _userTokenOverride = userIdentityToken; // save for later
-
-        //    // if the context is already initialized, then set it directly (otherwise this will be called later)
-        //    if (_appId != EmptyAppId) // already initialized
-        //        CurrentContext.UserName = userIdentityToken;
-        //}
-
-        //internal string UserIdentityToken => _userTokenOverride ?? System.Web.HttpContext.Current.User.Identity.Name;
-
+        
     }
 }

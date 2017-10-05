@@ -21,7 +21,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// 
         /// </summary>
         /// <param name="dataController"></param>
-        public DbXmlExportTable(DbDataController dataController) : base(dataController)
+        public DbXmlExportTable(DbDataController dataController) : base(dataController, "Db.XmEx")
         {
         }
 
@@ -85,7 +85,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             var documentRoot = _xBuilder.BuildDocumentWithRoot();
 
             // Query all entities, or just the ones with specified IDs
-            var entities = DbContext.Entities.GetEntitiesByType(ContentType);
+            var entities = DbContext.Entities.GetEntitiesByType(ContentType).Where(e => e.ChangeLogDeleted == null);
             if (selectedIds != null && selectedIds.Length > 0)
                 entities = entities.Where(e => selectedIds.Contains(e.EntityId));
             var entList = entities.ToList();
@@ -96,7 +96,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             //var dbXml = new DbXmlBuilder(DbContext);
             foreach (var entity in entList)
             {
-                var relationships = /*dbXml.*/GetSerializedRelationshipGuids(entity.EntityId);
+                var relationships = GetSerializedRelationshipGuids(entity.EntityId);
 
                 foreach (var language in languages)
                 {
@@ -105,7 +105,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                     foreach (var attribute in attribsOfType)
                     {
-                        if (attribute.Type == XmlConstants.Entity /* "Entity" */) // Special, handle separately
+                        if (attribute.Type == XmlConstants.Entity) // Special, handle separately
                             AppendEntityReferences(documentElement, attribute.StaticName, relationships.ContainsKey(attribute.StaticName) ? relationships[attribute.StaticName]:"");// entity, attribute);
                         else if (exportLanguageReference == ExportLanguageResolution.Resolve)
                             AppendValueResolved(documentElement, entity, attribute, language, languageFallback,

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
+﻿using System.Linq;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
@@ -22,21 +20,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
         }
 
 
-
-
-        /// <summary>
-        /// Get a list of all Attributes in Set for specified AttributeSetId
-        /// </summary>
-        public List<ToSicEavAttributesInSets> GetAttributesInSet(int attributeSetId)
-        {
-            return DbContext.SqlDb.ToSicEavAttributesInSets
-                .Include(ais => ais.Attribute)
-                .Where(a => a.AttributeSetId == attributeSetId)
-                .OrderBy(a => a.SortOrder)
-                .ToList();
-        }
-
-
         /// <summary>
         /// Check if a valid, undeleted attribute-set exists
         /// </summary>
@@ -44,22 +27,17 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <param name="staticName"></param>
         /// <returns></returns>
         internal bool AttributeExistsInSet(int attributeSetId, string staticName)
-        {
-            return DbContext.SqlDb.ToSicEavAttributesInSets.Any(s =>
+            => DbContext.SqlDb.ToSicEavAttributesInSets.Any(s =>
                 s.Attribute.StaticName == staticName
                 && !s.Attribute.ChangeLogDeleted.HasValue
                 && s.AttributeSetId == attributeSetId
                 && s.AttributeSet.AppId == DbContext.AppId);
-        }
-
 
 
         // new parts
         public string[] DataTypeNames(int appId)
-        {
-            return DbContext.SqlDb.ToSicEavAttributeTypes.OrderBy(a => a.Type).Select(a => a.Type).ToArray();
-        }
-
-
+            => DbContext.SqlDb.ToSicEavAttributeTypes.OrderBy(a => a.Type)
+            .Select(a => a.Type)
+            .ToArray();
     }
 }

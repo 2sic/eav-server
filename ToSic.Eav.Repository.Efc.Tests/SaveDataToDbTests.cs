@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Efc;
 
@@ -12,6 +13,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
     [TestClass]
     public class SaveDataToDbTests
     {
+        public static Log Log = new Log("TstSav");
 
         [TestInitialize]
         public void Init()
@@ -24,7 +26,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             var test = new TestValuesOnPc2Dm();
             var so = SaveOptions.Build(test.ZoneId);
-            var dbi = DbDataController.Instance(test.ZoneId, test.AppId);
+            var dbi = DbDataController.Instance(test.ZoneId, test.AppId, Log);
             var trans = dbi.SqlDb.Database.BeginTransaction();
 
             // load an entity
@@ -55,7 +57,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             so.PreserveUntouchedAttributes = true;
             so.PreserveUnknownLanguages = true;
 
-            var dbi = DbDataController.Instance(test.ZoneId, test.AppId);
+            var dbi = DbDataController.Instance(test.ZoneId, test.AppId, Log);
             var trans = dbi.SqlDb.Database.BeginTransaction();
 
             // todo: load a simple, 1 language entity
@@ -68,7 +70,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             {
                 {"Title", "changed title"}
             });
-            var saveEntity = EntitySaver.CreateMergedForSaving(itm1, itmNewTitle, so);
+            var saveEntity = new EntitySaver(new Log("Tst.Merge")).CreateMergedForSaving(itm1, itmNewTitle, so);
 
             // save it
             dbi.Entities.SaveEntity(saveEntity, so);
@@ -96,7 +98,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             so.PreserveUntouchedAttributes = true;
             so.PreserveUnknownLanguages = true;
 
-            var dbi = DbDataController.Instance(test.ZoneId, test.AppId);
+            var dbi = DbDataController.Instance(test.ZoneId, test.AppId, Log);
             var trans = dbi.SqlDb.Database.BeginTransaction();
 
             // load content type to start creating an item...
@@ -110,7 +112,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             });
             newE.SetType(ct1);
 
-            var saveEntity = EntitySaver.CreateMergedForSaving(null, newE, so);
+            var saveEntity = new EntitySaver(new Log("Tst.Merge")).CreateMergedForSaving(null, newE, so);
 
             // save it
             var newId = dbi.Entities.SaveEntity(saveEntity, so);

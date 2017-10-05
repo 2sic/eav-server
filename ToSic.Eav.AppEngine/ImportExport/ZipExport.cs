@@ -5,9 +5,9 @@ using System.Linq;
 using System.Web;
 using System.Xml.XPath;
 using ICSharpCode.SharpZipLib.Zip;
-//using Microsoft.Practices.Unity;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Logging;
 
 // needed for the static Resolve<...>
@@ -30,13 +30,15 @@ namespace ToSic.Eav.Apps.ImportExport
         private readonly string _physicalAppPath;
         private readonly string _appFolder;
 
-        public ZipExport(int zoneId, int appId, string appFolder, string physicalAppPath)
+        protected Log Log;
+
+        public ZipExport(int zoneId, int appId, string appFolder, string physicalAppPath, Log parentLog)
         {
             _appId = appId;
             _zoneId = zoneId;
             _appFolder = appFolder;
             _physicalAppPath = physicalAppPath;
-
+            Log = new Log("Zip.Exp", parentLog);
             FileManager = new FileManager(_physicalAppPath);
         }
 
@@ -144,7 +146,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 .Select(e => e.Value.EntityId.ToString()).ToArray();
 
             var xmlExport = Factory.Resolve<XmlExporter>()
-                .Init(_zoneId, _appId, true, attributeSetIds, entityIds);
+                .Init(_zoneId, _appId, true, attributeSetIds, entityIds, Log);
             // var xmlExport = Factory.Container.Resolve<XmlExporter>(new ParameterOverrides { { "zoneId", _zoneId }, { "appId", _appId}, {"appExport", true}, { "contentTypeIds", attributeSetIds }, {"entityIds", entityIds} });
             // new ToSxcXmlExporter(_zoneId, _appId, true, attributeSetIds, entityIds);
 

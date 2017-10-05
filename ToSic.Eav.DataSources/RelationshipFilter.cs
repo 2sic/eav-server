@@ -5,15 +5,17 @@ using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
 {
+	/// <inheritdoc />
 	/// <summary>
 	/// Filter Entities by Value in a Related Entity
 	/// </summary>
 	[PipelineDesigner]
 	public sealed class RelationshipFilter : BaseDataSource
 	{
-		#region Configuration-properties
+        #region Configuration-properties
+	    public override string LogId => "DS.RelatF";
 
-		private const string RelationshipKey = "Relationship";
+        private const string RelationshipKey = "Relationship";
 		private const string FilterKey = "Filter";
 		private const string CompareAttributeKey = "CompareAttribute";
 		private const string CompareModeKey = "Mode";
@@ -23,14 +25,17 @@ namespace ToSic.Eav.DataSources
 		//private const string ParentTypeKey = "ParentType";
 		//private const string PassThroughOnEmptyFilterKey = "PassThroughOnEmptyFilter";
 
+
+	    private enum CompareType { Any, Id, Title, Auto }
+
 		//private const string LangKey = "Language";
 		/// <summary>
 		/// The attribute whoose value will be filtered
 		/// </summary>
 		public string Relationship
 		{
-			get { return Configuration[RelationshipKey]; }
-			set { Configuration[RelationshipKey] = value; }
+			get => Configuration[RelationshipKey];
+		    set => Configuration[RelationshipKey] = value;
 		}
 
 		/// <summary>
@@ -38,14 +43,14 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public string Filter
 		{
-			get { return Configuration[FilterKey]; }
-			set { Configuration[FilterKey] = value; }
+			get => Configuration[FilterKey];
+		    set => Configuration[FilterKey] = value;
 		}
 
 		public string CompareAttribute
 		{
-			get { return Configuration[CompareAttributeKey]; }
-			set { Configuration[CompareAttributeKey] = value; }
+			get => Configuration[CompareAttributeKey];
+		    set => Configuration[CompareAttributeKey] = value;
 		}
 
 		//2dm maybe a feature for the future, not sure
@@ -62,8 +67,8 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public string CompareMode
 		{
-			get { return Configuration[CompareModeKey]; }
-			set
+			get => Configuration[CompareModeKey];
+		    set
 			{
 				if (_compareModeValues.Contains(value.ToLower()))
 					Configuration[CompareModeKey] = value.ToLower();
@@ -75,8 +80,8 @@ namespace ToSic.Eav.DataSources
 
 		public string ChildOrParent
 		{
-			get { return Configuration[ChildOrParentKey]; }
-			set
+			get => Configuration[ChildOrParentKey];
+		    set
 			{
 				if (_childOrParentPossibleValues.Contains(value.ToLower()))
 					Configuration[ChildOrParentKey] = value.ToLower();
@@ -85,29 +90,16 @@ namespace ToSic.Eav.DataSources
 			}
 		}
 
-		/// <summary>
-		/// Language to filter for. At the moment it is not used, or it is trying to find "any"
-		/// </summary>
-		//public string Languages
-		//{
-		//	get { return Configuration[LangKey]; }
-		//	set { Configuration[LangKey] = value; }
-		//}
+        #endregion
 
-		///// <summary>
-		///// Pass throught all Entities if Filter is empty
-		///// </summary>
-		//public bool PassThroughOnEmptyFilter
-		//{
-		//	get { return bool.Parse(Configuration[PassThroughOnEmptyFilterKey]); }
-		//	set { Configuration[PassThroughOnEmptyFilterKey] = value.ToString(); }
-		//}
-		#endregion
-
-		/// <summary>
-		/// Constructs a new RelationshipFilter
-		/// </summary>
-		public RelationshipFilter()
+        /// <inheritdoc />
+        /// <summary>
+        /// Language to filter for. At the moment it is not used, or it is trying to find "any"
+        /// </summary>
+        /// <summary>
+        /// Constructs a new RelationshipFilter
+        /// </summary>
+        public RelationshipFilter()
 		{
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, null, GetEntitiesOrFallback));
 			Configuration.Add(RelationshipKey, "[Settings:Relationship]");
@@ -138,6 +130,7 @@ namespace ToSic.Eav.DataSources
 			// todo: maybe do something about languages?
 
 			EnsureConfigurationIsLoaded();
+
 			var relationship = Relationship;
 			var compAttr = CompareAttribute;
 			var filter = Filter.ToLower(); // new: make case insensitive
@@ -153,50 +146,75 @@ namespace ToSic.Eav.DataSources
 			//	throw new Exception("Can't filter for languages other than 'default'");
 			//if (lang == "default") lang = ""; // no language is automatically the default language
 
-			var specAttr = compAttr.ToLower() == "entityid" ? 'i' : compAttr.ToLower() == Constants.EntityFieldTitle ? 't' : 'x';
+		    var lowAttribName = compAttr.ToLower();
+		    Log.Add($"get related on attr:{compAttr}, filter:{filter}, mode:{mode}, child/parent:{childParent}");
+            //var specAttr = lowAttribName == Constants.EntityFieldAutoSelect ? 'a' : lowAttribName == Constants.EntityFieldId ? 'i' : lowAttribName == Constants.EntityFieldTitle ? 't' : 'x';
 
 			var originals = In[Constants.DefaultStreamName].LightList;
 
-			//if (string.IsNullOrWhiteSpace(_filter) && PassThroughOnEmptyFilter)
-			//	return originals;
+            var compType = lowAttribName == Constants.EntityFieldAutoSelect ? CompareType.Auto : lowAttribName == Constants.EntityFieldId ? CompareType.Id : lowAttribName == Constants.EntityFieldTitle ? CompareType.Title : CompareType.Any;
 
-			// only get those, having a relationship on this name
-			var results = // (ChildOrParent == "child") ?
-				(from e in originals
-				 where e.Relationships.Children[relationship].Any()
-				 select e);
+            //if (string.IsNullOrWhiteSpace(_filter) && PassThroughOnEmptyFilter)
+            //	return originals;
+
+            // only get those, having a relationship on this name
+            var results = // (ChildOrParent == "child") ?
+				from e in originals
+				where e.Relationships.Children[relationship].Any()
+				select e;
 			//: (from e in originals
 			//	where e.Value.Relationships.AllParents.Any(p => p.Type.Name == ParentType)
 			//	select e);
 
 			if (ChildOrParent == "child")
 			{
-				results = (from e in results
-						   where e.Relationships.Children[relationship].Any(x => getStringToCompare(x, compAttr, specAttr).ToLower() == filter)
-						   select e);
+			    if (compType == CompareType.Auto)
+			        results = results
+			            .Where(e => e.Relationships.Children[relationship]
+			                .Any(x => getStringToCompare(x, compAttr, CompareType.Id)?.ToLower() == filter
+			                          || getStringToCompare(x, compAttr, CompareType.Title)?.ToLower() == filter));
+			    else
+			        results = results.Where(e =>
+			            e.Relationships.Children[relationship]
+			                .Any(x => getStringToCompare(x, compAttr, compType)?.ToLower() == filter));
 			}
 			else
 			{
-				throw (new NotImplementedException("using 'parent' not supported yet, use 'child' to filter'"));
+				throw new NotImplementedException("using 'parent' not supported yet, use 'child' to filter'");
 				//results = (from e in results
 				//		   where e.Value.Relationships.AllParents.Any(x => getStringToCompare(x, compAttr, specAttr) == _filter)
 				//		   select e);
 			}
 
-			return results;// .ToDictionary(x => x.Key, y => y.Value);
+			return results;
 		}
 
-		private string getStringToCompare(IEntity e, string a, char special)
+		//private string getStringToCompare(IEntity e, string a, char special)
+		//{
+		//	try
+		//	{
+		//		// get either the special id or title, if title or normal field, then use language [0] = default
+		//	    if (e == null) return null;
+		//		return special == 'i' ? e.EntityId.ToString() : (special == 't' ? e.Title : e[a])?[0]?.ToString();
+		//	}
+		//	catch
+		//	{
+		//		throw new Exception(
+		//		    $"Error while trying to filter for related entities. Probably comparing an attribute on the related entity that doesn\'t exist. Was trying to compare the attribute \'{a}\'");
+		//	}
+		//}
+		private string getStringToCompare(IEntity e, string a, CompareType special)
 		{
 			try
 			{
 				// get either the special id or title, if title or normal field, then use language [0] = default
-				return special == 'i' ? e.EntityId.ToString() : (special == 't' ? e.Title : e[a])[0].ToString();
+			    if (e == null) return null;
+				return special == CompareType.Id ? e.EntityId.ToString() : (special == CompareType.Title ? e.Title : e[a])?[0]?.ToString();
 			}
 			catch
 			{
-				throw (new Exception(
-					"Error while trying to filter for related entities. Probably comparing an attribute on the related entity that doesn't exist. Was trying to compare the attribute '" + a + "'"));
+				throw new Exception(
+				    $"Error while trying to filter for related entities. Probably comparing an attribute on the related entity that doesn\'t exist. Was trying to compare the attribute \'{a}\'");
 			}
 		}
 	}

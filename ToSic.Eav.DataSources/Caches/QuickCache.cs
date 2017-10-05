@@ -5,11 +5,13 @@ using ToSic.Eav.Data;
 
 namespace ToSic.Eav.DataSources.Caches
 {
+    /// <inheritdoc />
     /// <summary>
     /// simple, quick cache using static variables to store the cache
     /// </summary>
     public class QuickCache : BaseCache
     {
+        public override string LogId => "DS.QCache";
 
         public QuickCache()
         {
@@ -18,15 +20,15 @@ namespace ToSic.Eav.DataSources.Caches
 
         public override Dictionary<int, Zone> ZoneApps 
         {
-            get { return _zoneApps; }
-            protected set { _zoneApps = value; }
+            get => _zoneApps;
+            protected set => _zoneApps = value;
         }
         private static Dictionary<int, Zone> _zoneApps;
 
         public override Dictionary<int, string> AssignmentObjectTypes
         {
-            get { return _assignmentObjectTypes; }
-            protected set { _assignmentObjectTypes = value; }
+            get => _assignmentObjectTypes;
+            protected set => _assignmentObjectTypes = value;
         }
         private static Dictionary<int, string> _assignmentObjectTypes;
 

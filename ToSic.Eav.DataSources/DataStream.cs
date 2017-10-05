@@ -16,6 +16,7 @@ namespace ToSic.Eav.DataSources
     /// <returns></returns>
     public delegate IEnumerable<IEntity> GetIEnumerableDelegate(); 
 
+	/// <inheritdoc />
 	/// <summary>
 	/// A DataStream to get Entities when needed
 	/// </summary>
@@ -26,22 +27,26 @@ namespace ToSic.Eav.DataSources
 
 
         #region Self-Caching and Results-Persistence Properties / Features
+        /// <inheritdoc />
         /// <summary>
         /// This one will return the original result if queried again - as long as this object exists
         /// </summary>
         public bool KeepResultsAfterFirstQuery { get; set; }
 
+        /// <inheritdoc />
         /// <summary>
         /// Place the stream in the cache if wanted, by default not
         /// </summary>
         public bool AutoCaching { get; set; }
 
+        /// <inheritdoc />
         /// <summary>
         /// Default cache duration is 3600
         /// </summary>
         public int CacheDurationInSeconds { get; set; }
 
 
+        /// <inheritdoc />
         /// <summary>
         /// Kill the cache if the source data is newer than the cache-stamped data
         /// </summary>
@@ -162,26 +167,13 @@ namespace ToSic.Eav.DataSources
         #endregion
 
 
-        # region commented out 2015-06-19 as I don't see that it's in use anywhere
-        ///// <summary>
-        ///// Get Entities based on a list of Ids
-        ///// </summary>
-        ///// <param name="entityIds">Array of EntityIds</param>
-        //public IDictionary<int, IEntity> GetEntities(int[] entityIds)
-        //{
-        //    if (!Source.Ready)
-        //        throw new Exception("Data Source Not Ready");
-
-        //    var originals = List;
-        //    return entityIds.Distinct().Where(originals.ContainsKey).ToDictionary(id => id, id => originals[id]);
-        //}
-        #endregion
-
+        /// <inheritdoc />
         /// <summary>
         /// The source which holds this stream
         /// </summary>
 		public IDataSource Source { get; set; }
 
+        /// <inheritdoc />
         /// <summary>
         /// Name - usually the name within the Out-dictionary of the source. For identification and for use in caching-IDs and similar
         /// </summary>

@@ -5,25 +5,31 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Web.Http;
 using ToSic.Eav.ImportExport.Options;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Repository.Efc.Parts;
 
 namespace ToSic.Eav.WebApi
 {
     public class ContentExportController : Eav3WebApiBase
     {
+        public ContentExportController(Log parentLog = null) : base(parentLog)
+        {
+            Log.Rename("EaCtEx");
+        }
 
         [HttpGet]
         public HttpResponseMessage ExportContent(int appId, string language, string defaultLanguage, string contentType,
             ExportSelection exportSelection, ExportResourceReferenceMode exportResourcesReferences,
             ExportLanguageResolution exportLanguageReferences, string selectedIds = null)
         {
+            Log.Add($"export content a#{appId}, lang:{language}, deflang:{defaultLanguage}, ct:{contentType}, ids:{selectedIds}");
             AppId = appId;
 
             // todo: continue here!
             //var ct = CurrentContext.AttribSet.GetAttributeSetWithEitherName(contentType);
             
-            var contentTypeId = CurrentContext.AttribSet.GetIdWithEitherName(contentType);// ct.AttributeSetId;// AttributeSetID;
-            var contextLanguages = AppManager.Read.Zone.Languages().Select(l => l.EnvironmentKey).ToArray();// CurrentContext.Dimensions.GetLanguages().Select(l => l.EnvironmentKey).ToArray();// .GetLanguagesExtNames();// GetContextLanguages();
+            var contentTypeId = CurrentContext.AttribSet.GetIdWithEitherName(contentType);
+            var contextLanguages = AppManager.Read.Zone.Languages().Select(l => l.EnvironmentKey).ToArray();
 
             // check if we have an array of ids
             int[] ids = null;
@@ -57,8 +63,6 @@ namespace ToSic.Eav.WebApi
             return response;
         }
 
-        //private string[] GetContextLanguages()
-        //    => /*AppManager.Read.*/ CurrentContext.Dimensions.GetLanguages().Select(language => language.ExternalKey).ToArray();
 
     }
 }

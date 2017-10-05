@@ -10,11 +10,13 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// Provide Entities from a System.Data.DataTable
 	/// </summary>
-	public sealed class DataTableDataSource : ExternalDataDataSource// BaseDataSource
+	public sealed class DataTableDataSource : ExternalDataDataSource
 	{
-		#region Configuration-properties
+        #region Configuration-properties
 
-		private const string TitleFieldKey = "TitleField";
+	    public override string LogId => "DS.DtaTbl";
+
+        private const string TitleFieldKey = "TitleField";
 		private const string EntityIdFieldKey = "EntityIdField";
 		private const string ContentTypeKey = "ContentType";
 	    private const string ModifiedFieldKey = "ModifiedField";
@@ -39,8 +41,8 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public string ContentType
 		{
-			get { return Configuration[ContentTypeKey]; }
-			set { Configuration[ContentTypeKey] = value; }
+			get => Configuration[ContentTypeKey];
+		    set => Configuration[ContentTypeKey] = value;
 		}
 
 		/// <summary>
@@ -48,8 +50,8 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public string TitleField
 		{
-			get { return Configuration[TitleFieldKey]; }
-			set { Configuration[TitleFieldKey] = value; }
+			get => Configuration[TitleFieldKey];
+		    set => Configuration[TitleFieldKey] = value;
 		}
 
 		/// <summary>
@@ -57,19 +59,15 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public string EntityIdField
 		{
-			get { return Configuration[EntityIdFieldKey]; }
-			set { Configuration[EntityIdFieldKey] = value; }
+			get => Configuration[EntityIdFieldKey];
+		    set => Configuration[EntityIdFieldKey] = value;
 		}
 
 	    // private bool _hasModifiedField;
 		public string ModifiedField
 		{
-			get { return Configuration[ModifiedFieldKey]; }
-		    set
-		    {
-		        Configuration[ModifiedFieldKey] = value;
-		        // _hasModifiedField = !string.IsNullOrWhiteSpace(value);
-		    }
+			get => Configuration[ModifiedFieldKey];
+		    set => Configuration[ModifiedFieldKey] = value;
 		}
         #endregion
 
@@ -89,6 +87,7 @@ namespace ToSic.Eav.DataSources
             CacheRelevantConfigurations = new[] { ContentTypeKey };
         }
 
+		/// <inheritdoc />
 		/// <summary>
 		/// Initializes a new instance of the DataTableDataSource class
 		/// </summary>
@@ -107,7 +106,9 @@ namespace ToSic.Eav.DataSources
 		{
 			EnsureConfigurationIsLoaded();
 
-            return ConvertToEntityDictionary(Source, ContentType, EntityIdField, TitleField, ModifiedField);
+            var result = ConvertToEntityDictionary(Source, ContentType, EntityIdField, TitleField, ModifiedField);
+		    Log.Add($"get type:{ContentType}, id:{EntityIdField}, title:{TitleField}, modified:{ModifiedField}");
+		    return result;
 		}
 
 		/// <summary>

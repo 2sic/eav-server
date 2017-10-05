@@ -5,23 +5,32 @@ using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
 {
+	/// <inheritdoc />
 	/// <summary>
 	/// A DataSource that filters Entities by Ids
 	/// </summary>
 	[PipelineDesigner]
 	public sealed class Paging: BaseDataSource
 	{
-		#region Configuration-properties (no config)
+        #region Configuration-properties (no config)
+	    public override string LogId => "DS.Page";
+
         private const string PageSizeKey = "PageSize";
+	    private const int DefPageSize = 10;
         private const string PageNumberKey = "PageNumber";
+	    private const int DefPageNum = 1;
 
         /// <summary>
         /// The attribute whoose value will be filtered
         /// </summary>
         public int PageSize
         {
-            get { return int.Parse(Configuration[PageSizeKey]); }
-            set { Configuration[PageSizeKey] = value.ToString(); }
+            get
+            {
+                var ps = int.Parse(Configuration[PageSizeKey]);
+                return ps > 0 ? ps : DefPageSize;
+            }
+            set => Configuration[PageSizeKey] = value.ToString();
         }
 
         /// <summary>
@@ -29,8 +38,12 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         public int PageNumber
         {
-            get { return int.Parse(Configuration[PageNumberKey]); }
-            set { Configuration[PageNumberKey] = value.ToString(); }
+            get
+            {
+                var pn = int.Parse(Configuration[PageNumberKey]);
+                return pn > 0 ? pn : DefPageNum;
+            }
+            set => Configuration[PageNumberKey] = value.ToString();
         }
 
 		#endregion
@@ -41,15 +54,16 @@ namespace ToSic.Eav.DataSources
         #endregion
 
 
+        /// <inheritdoc />
         /// <summary>
-		/// Constructs a new EntityIdFilter
-		/// </summary>
+        /// Constructs a new EntityIdFilter
+        /// </summary>
 		public Paging()
 		{
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, null, GetList));
             Out.Add("Paging", new DataStream(this, "Paging", null, GetPaging));
-            Configuration.Add(PageSizeKey, "[Settings:" + PageSizeKey + "||10]");
-            Configuration.Add(PageNumberKey, "[Settings:" + PageNumberKey + "||1]");
+            Configuration.Add(PageSizeKey, "[Settings:" + PageSizeKey + "||" + DefPageSize + "]");
+            Configuration.Add(PageNumberKey, "[Settings:" + PageNumberKey + "||" + DefPageNum + "]");
 
             CacheRelevantConfigurations = new[] {PageSizeKey, PageNumberKey};
 		}
@@ -58,10 +72,11 @@ namespace ToSic.Eav.DataSources
 	    private IEnumerable<IEntity> GetList()
 	    {
 	        EnsureConfigurationIsLoaded();
-
 		    var itemsToSkip = (PageNumber - 1)*PageSize;
 
-	        return In["Default"].LightList.Skip(itemsToSkip).Take(PageSize).ToList();
+	        var result = In["Default"].LightList.Skip(itemsToSkip).Take(PageSize).ToList();
+	        Log.Add($"get page:{PageNumber} with size{PageSize} found:{result.Count}");
+            return result;
 	    }
 
         private IEnumerable<IEntity> GetPaging()
@@ -73,18 +88,19 @@ namespace ToSic.Eav.DataSources
             var pageCount = Math.Ceiling((decimal) itemCount / PageSize);
 
             // Assemble the entity
-            var paging = new Dictionary<string, object>();
-            paging.Add("Title", "Paging Information");
-            paging.Add("PageSize", PageSize);
-            paging.Add("PageNumber", PageNumber);
-            paging.Add("ItemCount", itemCount);
-            paging.Add("PageCount", pageCount);
+            var paging = new Dictionary<string, object>
+            {
+                {"Title", "Paging Information"},
+                {"PageSize", PageSize},
+                {"PageNumber", PageNumber},
+                {"ItemCount", itemCount},
+                {"PageCount", pageCount}
+            };
 
             var entity = new Data.Entity(Constants.TransientAppId, 0, "Paging", paging, "Title");
 
             // Assemble list of this for the stream
-            var list = new List<IEntity>();
-            list.Add(entity);
+            var list = new List<IEntity> {entity};
             return list;
         }
 

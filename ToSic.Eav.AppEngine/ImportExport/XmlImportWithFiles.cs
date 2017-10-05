@@ -9,6 +9,8 @@ using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Xml;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Repository.Efc;
@@ -19,7 +21,7 @@ using ToSic.Eav.Repository.Efc;
 
 namespace ToSic.Eav.Apps.ImportExport
 {
-    public class XmlImportWithFiles
+    public class XmlImportWithFiles: HasLog
 	{
 		public List<Message> ImportLog;
 
@@ -43,14 +45,16 @@ namespace ToSic.Eav.Apps.ImportExport
 
 		#region Prerequisites
 
-		/// <summary>
-		/// Create a new xmlImport instance
-		/// </summary>
-		/// <param name="defaultLanguage">The portals default language / culture - example: de-DE</param>
-		/// <param name="allowSystemChanges">Specify if the import should be able to change system-wide things like shared attributesets</param>
-		public XmlImportWithFiles(string defaultLanguage = null, bool allowSystemChanges = false)
+	    /// <summary>
+	    /// Create a new xmlImport instance
+	    /// </summary>
+	    /// <param name="parentLog"></param>
+	    /// <param name="defaultLanguage">The portals default language / culture - example: de-DE</param>
+	    /// <param name="allowSystemChanges">Specify if the import should be able to change system-wide things like shared attributesets</param>
+	    public XmlImportWithFiles(Log parentLog, string defaultLanguage = null, bool allowSystemChanges = false): base("Xml.ImpFil", parentLog)
 		{
 		    _environment = Factory.Resolve<IImportExportEnvironment>();
+            _environment.LinkLog(Log);
 			// Prepare
 			ImportLog = new List<Message>();
 		    DefaultLanguage = (defaultLanguage ?? _environment.DefaultLanguage).ToLowerInvariant();
@@ -59,6 +63,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
 		public bool IsCompatible(XDocument doc)
 		{
+		    Log.Add("is compatible check");
 		    var rns = doc.Elements(XmlConstants.RootNode);
 		    var rn = doc.Element(XmlConstants.RootNode);
 			// Return if no Root Node "SexyContent"
@@ -74,7 +79,8 @@ namespace ToSic.Eav.Apps.ImportExport
 				return false;
 			}
 
-			return true;
+		    Log.Add("is compatible completed");
+            return true;
 		}
 
 		private void PrepareFileIdCorrectionList(XElement sexyContentNode)
@@ -114,7 +120,8 @@ namespace ToSic.Eav.Apps.ImportExport
         /// </summary>
         /// <returns>AppId of the new imported app</returns>
         public bool ImportApp(int zoneId, XDocument doc, out int? appId)
-		{
+        {
+            Log.Add($"import app z#{zoneId}");
 			// Increase script timeout to prevent timeouts
 			//HttpContext.Current.Server.ScriptTimeout = 300;
 
@@ -145,7 +152,7 @@ namespace ToSic.Eav.Apps.ImportExport
 					appGuid = Guid.NewGuid().ToString();
 
 				// Adding app to EAV
-                var eavDc = DbDataController.Instance(zoneId);
+                var eavDc = DbDataController.Instance(zoneId, parentLog:Log);
 			    var app = eavDc.App.AddApp(null, appGuid);
 				eavDc.SqlDb.SaveChanges();
 
@@ -163,6 +170,7 @@ namespace ToSic.Eav.Apps.ImportExport
 			}
 
             DataSource.GetCache(null).PurgeGlobalCache();   // must do this, to ensure that the app-id exists now 
+            Log.Add("import app completed");
 			return ImportXml(zoneId, appId.Value, doc);
 		}
 
@@ -171,7 +179,8 @@ namespace ToSic.Eav.Apps.ImportExport
 		/// </summary>
 		public bool ImportXml(int zoneId, int appId, XDocument doc, bool leaveExistingValuesUntouched = true)
 		{
-		    _eavContext = DbDataController.Instance(zoneId, appId);
+		    Log.Add($"import xml z#{zoneId}, a#{appId}, leaveExisting:{leaveExistingValuesUntouched}");
+		    _eavContext = DbDataController.Instance(zoneId, appId, Log);
             
 			AppId = appId;
 			ZoneId = zoneId;
@@ -194,8 +203,9 @@ namespace ToSic.Eav.Apps.ImportExport
 
             #region Prepare dimensions (languages) based on header...
             var sourceDimensions = BuildSourceDimensionsList(xmlSource);
+		    Log.Add($"build source dims list⋮{sourceDimensions?.Count}");
 
-			var sourceDefaultLanguage = xmlSource.Element(XmlConstants.Header)?.Element(XmlConstants.Language)?.Attribute(XmlConstants.LangDefault)?.Value;
+            var sourceDefaultLanguage = xmlSource.Element(XmlConstants.Header)?.Element(XmlConstants.Language)?.Attribute(XmlConstants.LangDefault)?.Value;
 		    if (sourceDimensions == null || sourceDefaultLanguage == null)
 		    {
                 ImportLog.Add(new Message("Cant find source dimensions or source-default language.", Message.MessageTypes.Error));
@@ -206,7 +216,9 @@ namespace ToSic.Eav.Apps.ImportExport
                 sourceDimensions.FirstOrDefault(p => p.Matches(sourceDefaultLanguage))?.DimensionId
 				: new int?();
 
-		    _targetDimensions = new ZoneRuntime(zoneId).Languages(true);
+		    Log.Add($"source def dim:{sourceDefaultDimensionId}");
+
+            _targetDimensions = new ZoneRuntime(zoneId, Log).Languages(true);
 
             _xmlBuilder = new XmlToEntity(AppId, sourceDimensions, sourceDefaultDimensionId, _targetDimensions, DefaultLanguage);
             #endregion
@@ -222,11 +234,12 @@ namespace ToSic.Eav.Apps.ImportExport
 			import.ImportIntoDb(importAttributeSets, importEntities.Cast<Entity>());
             SystemManager.Purge(ZoneId, AppId);
 
-			ImportLog.AddRange(GetExportImportMessagesFromImportLog(import.Storage.Log));
+			ImportLog.AddRange(GetExportImportMessagesFromImportLog(import.Storage.ImportLogToBeRefactored));
 
 			if (xmlSource.Elements(XmlConstants.Templates).Any())
 				ImportXmlTemplates(xmlSource);
 
+		    Log.Add("import xml completed");
 			return true;
 		}
 
@@ -266,13 +279,13 @@ namespace ToSic.Eav.Apps.ImportExport
 
 		private List<ContentType> GetImportAttributeSets(IEnumerable<XElement> xAttributeSets)
 		{
+		    Log.Add("get imp attrib sets");
             var importAttributeSets = new List<ContentType>();
 
 			// Loop through AttributeSets
 			foreach (var attributeSet in xAttributeSets)
 			{
 				var attributes = new List<IAttributeDefinition>();
-                //ImpAttribDefinition titleAttribute = null;// = new ImpAttribute();
 			    var attsetElem = attributeSet.Element(XmlConstants.Attributes);
                 if (attsetElem != null)
                     foreach (var xElementAttribute in attsetElem.Elements(XmlConstants.Attribute))
@@ -326,6 +339,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
         private void ImportXmlTemplates(XElement root)
         {
+            Log.Add("import xml templates");
             var templates = root.Element(XmlConstants.Templates);
             if (templates == null) return;
 
@@ -340,6 +354,8 @@ namespace ToSic.Eav.Apps.ImportExport
                     var path = template.Attribute(AppConstants.TemplatePath).Value;
 
                     var contentTypeStaticName = template.Attribute(XmlConstants.AttSetStatic).Value;
+
+                    Log.Add($"template:{name}, type:{contentTypeStaticName}, path:{path}");
 
                     if (!String.IsNullOrEmpty(contentTypeStaticName) && cache.GetContentType(contentTypeStaticName) == null)
                     {
@@ -395,23 +411,27 @@ namespace ToSic.Eav.Apps.ImportExport
                     {
                         var xmlItemType =
                             e.Elements(XmlConstants.ValueNode)
-                                .FirstOrDefault(v => v.Attribute(XmlConstants.KeyAttr).Value == XmlConstants.TemplateItemType)?
+                                .FirstOrDefault(v =>
+                                    v.Attribute(XmlConstants.KeyAttr).Value == XmlConstants.TemplateItemType)?
                                 .Attribute(XmlConstants.ValueAttr)
                                 .Value;
                         var xmlContentTypeStaticName =
                             e.Elements(XmlConstants.ValueNode)
-                                .FirstOrDefault(v => v.Attribute(XmlConstants.KeyAttr).Value == XmlConstants.TemplateContentTypeId)?
+                                .FirstOrDefault(v =>
+                                    v.Attribute(XmlConstants.KeyAttr).Value == XmlConstants.TemplateContentTypeId)?
                                 .Attribute(XmlConstants.ValueAttr)
                                 .Value;
                         var xmlDemoEntityGuidString =
                             e.Elements(XmlConstants.ValueNode)
-                                .FirstOrDefault(v => v.Attribute(XmlConstants.KeyAttr).Value == XmlConstants.TemplateDemoItemId)?
+                                .FirstOrDefault(v =>
+                                    v.Attribute(XmlConstants.KeyAttr).Value == XmlConstants.TemplateDemoItemId)?
                                 .Attribute(XmlConstants.ValueAttr)
                                 .Value;
                         if (xmlItemType == null || xmlContentTypeStaticName == null || xmlDemoEntityGuidString == null)
                         {
                             ImportLog.Add(new Message(
-                                $"trouble with template '{name}' - either type, static or guid are null", Message.MessageTypes.Error));
+                                $"trouble with template '{name}' - either type, static or guid are null",
+                                Message.MessageTypes.Error));
                             return null;
                         }
                         var xmlDemoEntityId = new int?();
@@ -419,7 +439,8 @@ namespace ToSic.Eav.Apps.ImportExport
                         {
                             var xmlDemoEntityGuid = Guid.Parse(xmlDemoEntityGuidString);
                             if (_eavContext.Entities.EntityExists(xmlDemoEntityGuid))
-                                xmlDemoEntityId = _eavContext.Entities.GetMostCurrentDbEntity(xmlDemoEntityGuid).EntityId;
+                                xmlDemoEntityId = _eavContext.Entities.GetMostCurrentDbEntity(xmlDemoEntityGuid)
+                                    .EntityId;
                         }
 
                         return new TemplateDefault
@@ -464,7 +485,7 @@ namespace ToSic.Eav.Apps.ImportExport
                         listPresentationDemoEntityId = listPresentationDefault.DemoEntityId;
                     }
 
-                    new AppManager(_eavContext.ZoneId, _eavContext.AppId).Templates.CreateOrUpdate(
+                    new AppManager(_eavContext.ZoneId, _eavContext.AppId, Log).Templates.CreateOrUpdate(
                         null, name, path, contentTypeStaticName, demoEntityId, presentationTypeStaticName,
                         presentationDemoEntityId, listContentTypeStaticName, listContentDemoEntityId,
                         listPresentationTypeStaticName, listPresentationDemoEntityId, type, isHidden, location,
@@ -481,6 +502,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 }
 
             }
+            Log.Add("import xml templates - completed");
         }
 
         #endregion
@@ -528,6 +550,7 @@ namespace ToSic.Eav.Apps.ImportExport
 					assignmentObjectTypeId = SystemRuntime.GetMetadataType(Constants.AppAssignmentName);
 					break;
                 case XmlConstants.Entity:
+                case "Data Pipeline": // 2dm: this was an old value, 2017-08-11 this was still used in the old Employees directory app v. 1.02
 					assignmentObjectTypeId = Constants.MetadataForEntity;
 					break;
                 case XmlConstants.ContentType:

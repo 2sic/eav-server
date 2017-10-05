@@ -3,44 +3,46 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Web.Http;
-//using Microsoft.Practices.Unity;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.Serializers;
-using ToSic.Eav.ValueProvider;
+using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.WebApi
 {
+	/// <inheritdoc />
 	/// <summary>
 	/// Web API Controller for the Pipeline Designer UI
 	/// </summary>
-	public class PipelineDesignerController : ApiController
+	public class PipelineDesignerController : Eav3WebApiBase
     {
         #region initializers etc. - work on later
         #region Helpers
         // I must keep the serializer so it can be configured from outside if necessary
-        private Serializer _serializer;
-        public Serializer Serializer => _serializer ?? (_serializer = Factory.Resolve<Serializer>());
+        //private Serializer _serializer;
+        //public Serializer Serializer => _serializer ?? (_serializer = Factory.Resolve<Serializer>());
 
 	    #endregion
-		public List<IValueProvider> ValueProviders { get; set; }
+		//public List<IValueProvider> AdditionalValueProviders { get; set; }
 
+        /// <inheritdoc />
         /// <summary>
         /// Default Constructor
         /// </summary>
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="eavConnectionString">optional EAV Connection String</param>
-        public PipelineDesignerController(/*string userName,*/ string eavConnectionString = null)
+        public PipelineDesignerController(Log parentLog): base(parentLog)
 		{
-			// Init empty list of ValueProviders
-			ValueProviders = new List<IValueProvider>();
+            Log.Rename("EaPipe");
 		}
+
+        #endregion
+
+        #region Additional Value Providers - injectable from outside
 
         #endregion
 
@@ -49,7 +51,8 @@ namespace ToSic.Eav.WebApi
         /// </summary>
         [HttpGet]
 		public Dictionary<string, object> GetPipeline(int appId, int? id = null)
-		{
+        {
+            Log.Add($"get pipe a#{appId}, id:{id}");
 			Dictionary<string, object> pipelineJson = null;
 			var dataSourcesJson = new List<Dictionary<string, object>>();
 
@@ -64,9 +67,9 @@ namespace ToSic.Eav.WebApi
 				pipelineJson = EntityToDictionary(pipelineEntity);
 				pipelineJson[Constants.DataPipelineStreamWiringStaticName] = DataPipelineWiring.Deserialize((string)pipelineJson[Constants.DataPipelineStreamWiringStaticName]);
 
-				foreach (var dataSource in dataSources.Select(e => EntityToDictionary(e)))// Helpers.GetEntityValues(dataSources))
+				foreach (var dataSource in dataSources.Select(EntityToDictionary))
 				{
-					dataSource["VisualDesignerData"] = JsonConvert.DeserializeObject((string)dataSource["VisualDesignerData"]);
+					dataSource["VisualDesignerData"] = JsonConvert.DeserializeObject((string)dataSource["VisualDesignerData"] ?? "");
 					
                     // Replace ToSic.Eav with ToSic.Eav.DataSources because they moved to a different DLL
                     // Using a trick to add a special EOL-character to ensure we don't replace somethin in the middle
@@ -78,7 +81,7 @@ namespace ToSic.Eav.WebApi
 				#endregion
 			}
 
-            Tuple<Dictionary<string, object>, List<Dictionary<string, object>>> set = new Tuple<Dictionary<string, object>, List<Dictionary<string, object>>>(pipelineJson, dataSourcesJson);
+            var set = new Tuple<Dictionary<string, object>, List<Dictionary<string, object>>>(pipelineJson, dataSourcesJson);
 		    
 
 
@@ -89,7 +92,7 @@ namespace ToSic.Eav.WebApi
 				{"DataSources", set.Item2}
 			};
 
-            Dictionary<string, object> EntityToDictionary(ToSic.Eav.Interfaces.IEntity entity)
+            Dictionary<string, object> EntityToDictionary(Interfaces.IEntity entity)
             {
                 var attributes = entity.Attributes.ToDictionary(k => k.Value.Name, v =>  v.Value[0]);
                 attributes.Add("EntityId", entity.EntityId);
@@ -115,7 +118,8 @@ namespace ToSic.Eav.WebApi
 		/// <param name="id">PipelineEntityId</param>
 		public Dictionary<string, object> SavePipeline([FromBody] dynamic data, int appId, int? id = null)
 		{
-            var appManager = new AppManager(appId);
+		    Log.Add($"save pipe: a#{appId}, id#{id}");
+            var appManager = new AppManager(appId, Log);
 
 			//_context.UserName = _userName;
 			var source = DataSource.GetInitialDataSource(appId: appId);
@@ -155,8 +159,9 @@ namespace ToSic.Eav.WebApi
         /// <param name="pipelineEntityGuid">EngityGuid of the Pipeline-Entity</param>
         /// <param name="pipelinePartAttributeSetId">AttributeSetId of PipelineParts</param>
         /// <param name="appManager"></param>
-        private Dictionary<string, Guid> SavePipelineParts(dynamic dataSources, Guid pipelineEntityGuid, /*int*/string pipelinePartAttributeSetId, AppManager appManager)//, DbDataController _context)
-		{
+        private Dictionary<string, Guid> SavePipelineParts(dynamic dataSources, Guid pipelineEntityGuid, string pipelinePartAttributeSetId, AppManager appManager)
+        {
+            Log.Add($"save parts guid:{pipelineEntityGuid}, partSetId:{pipelinePartAttributeSetId}");
 			var newDataSources = new Dictionary<string, Guid>();
 
 			foreach (var dataSource in dataSources)
@@ -165,8 +170,12 @@ namespace ToSic.Eav.WebApi
 				if (dataSource.EntityGuid == "Out") continue;
 
 				// Update existing DataSource
-				var newValues = GetEntityValues(dataSource);
-				if (dataSource.EntityId != null)
+				Dictionary<string, object> newValues = GetEntityValues(dataSource);
+			    const string visualDesignerData = "VisualDesignerData";
+			    if (newValues.ContainsKey(visualDesignerData))
+			        newValues[visualDesignerData] = newValues[visualDesignerData].ToString(); // serialize this JSON into string
+
+                if (dataSource.EntityId != null)
                     appManager.Entities.UpdateParts((int)dataSource.EntityId, newValues);
 				// Add new DataSource
 				else
@@ -185,6 +194,7 @@ namespace ToSic.Eav.WebApi
 		/// </summary>
 		private void DeletedRemovedPipelineParts(IEnumerable<JToken> dataSources, Dictionary<string, Guid> newDataSources, Guid pipelineEntityGuid, int zoneId, int appId, AppManager appManager)//, DbDataController _context)
 		{
+		    Log.Add($"delete part z#{zoneId}, a#{appId}, pipe:{pipelineEntityGuid}");
 			// Get EntityGuids currently stored in EAV
 			var existingEntityGuids = DataPipeline.GetPipelineParts(zoneId, appId, pipelineEntityGuid).Select(e => e.EntityGuid);
 
@@ -204,8 +214,9 @@ namespace ToSic.Eav.WebApi
         /// <param name="pipeline">JSON with the new Entity-Values</param>
         /// <param name="newDataSources">Array with new DataSources and the unsavedName and final EntityGuid</param>
         /// <param name="appManager"></param>
-        private void SavePipelineEntity(int? id, int appId, dynamic pipeline, IDictionary<string, Guid> newDataSources, AppManager appManager)//, DbDataController _context)
-		{
+        private void SavePipelineEntity(int? id, int appId, dynamic pipeline, IDictionary<string, Guid> newDataSources, AppManager appManager)
+        {
+            Log.Add($"save pipe a#{appId}, pipe:{id}");
             #region prevent save without pipeline ID
             if (!id.HasValue)
             {
@@ -267,7 +278,7 @@ namespace ToSic.Eav.WebApi
 		{
 			var newValuesDict = newValues.ToObject<IDictionary<string, object>>();
 
-			var excludeKeysStatic = new[] { "EntityGuid", "EntityId" };
+            var excludeKeysStatic = new[] { "EntityGuid", "EntityId" };
 
 			return newValuesDict.Where(i => !excludeKeysStatic.Contains(i.Key)).ToDictionary(k => k.Key, v => v.Value);
 		}
@@ -279,6 +290,7 @@ namespace ToSic.Eav.WebApi
 		[HttpGet]
 		public dynamic QueryPipeline(int appId, int id)
 		{
+		    Log.Add($"queryy pipe: a#{appId}, id:{id}");
             // Get the query, run it and track how much time this took
 			var outStreams = ConstructPipeline(appId, id, true);
 		    var timer = new Stopwatch();
@@ -303,15 +315,17 @@ namespace ToSic.Eav.WebApi
 		}
 
 
-		private static IDataSource ConstructPipeline(int appId, int id, bool showDrafts)
+		private IDataSource ConstructPipeline(int appId, int id, bool showDrafts)
 		{
-			var testValueProviders = DataPipelineFactory.GetTestValueProviders(appId, id);
-			return DataPipelineFactory.GetDataSource(appId, id, testValueProviders, showDrafts:showDrafts);
+		    Log.Add($"construct pipe a#{appId}, pipe:{id}, drafts:{showDrafts}");
+			var testValueProviders = new DataPipelineFactory(Log).GetTestValueProviders(appId, id).ToList();
+		    //AdditionalValueProviders.ForEach(ap => testValueProviders.Add(ap));
+		    return new DataPipelineFactory(Log).GetDataSource(appId, id, testValueProviders, showDrafts:showDrafts);
 		}
 
-		[HttpGet]
-		public dynamic PipelineDebugInfo(int appId, int id)
-		=> new DataSources.Debug.PipelineInfo(ConstructPipeline(appId, id, true));
+        [HttpGet]
+        public dynamic PipelineDebugInfo(int appId, int id)
+            => new DataSources.Debug.PipelineInfo(ConstructPipeline(appId, id, true));
 
 
         /// <summary>
@@ -319,7 +333,7 @@ namespace ToSic.Eav.WebApi
         /// </summary>
         [HttpGet]
         public object ClonePipeline(int appId, int id)
-            => new { EntityId = new AppManager(appId).Queries.Clone(id) };
+            => new { EntityId = new AppManager(appId, Log).Queries.Clone(id) };
 		
 
 		/// <summary>
@@ -328,7 +342,8 @@ namespace ToSic.Eav.WebApi
 		[HttpGet]
 		public object DeletePipeline(int appId, int id)
 		{
-		    new AppManager(appId).Queries.Delete(id);
+		    Log.Add($"delete a#{appId}, id:{id}");
+		    new AppManager(appId, Log).Queries.Delete(id);
 			return new { Result = "Success" };
 		}
 	}

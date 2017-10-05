@@ -1,21 +1,19 @@
 ﻿using System;
 using System.Linq;
-using ToSic.Eav.Data;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
-    internal class DbPublishing: BllCommandBase
+    internal class DbPublishing : BllCommandBase
     {
-        public DbPublishing(DbDataController c) : base(c) { }
+        public DbPublishing(DbDataController c) : base(c, "Db.Publ") { }
 
         /// <summary>
         /// Publish a Draft-Entity
         /// </summary>
         /// <param name="entityId"></param>
         /// <returns>The published Entity</returns>
-        public ToSicEavEntities PublishDraftInDbEntity(int entityId)
+        internal ToSicEavEntities PublishDraftInDbEntity(int entityId)
         {
             var unpublishedEntity = DbContext.Entities.GetDbEntity(entityId);
             if (unpublishedEntity.IsPublished)
@@ -23,7 +21,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 // try to get the draft if it exists
                 var draftId = GetDraftBranchEntityId(entityId);
                 if (!draftId.HasValue)
-                    throw new InvalidOperationException($"EntityId {entityId} is already published");
+                    throw new EntityAlreadyPublishedException($"EntityId {entityId} is already published");
                 unpublishedEntity = DbContext.Entities.GetDbEntity(draftId.Value);
             }
             ToSicEavEntities publishedEntity;
@@ -38,10 +36,12 @@ namespace ToSic.Eav.Repository.Efc.Parts
             else
             {
                 publishedEntity = DbContext.Entities.GetDbEntity(unpublishedEntity.PublishedEntityId.Value);
-                DbContext.Values.CloneEntityValues(unpublishedEntity, publishedEntity);
+                publishedEntity.ChangeLogModified = unpublishedEntity.ChangeLogModified; // transfer last-modified date (not to today, but to last edit)
+                DbContext.Values.CloneRelationshipsAndSave(unpublishedEntity, publishedEntity); // relationships need special treatment and intermediate save!
+                DbContext.Values.CloneEntitySimpleValues(unpublishedEntity, publishedEntity);
 
                 // delete the Draft Entity
-                DbContext.Entities.DeleteEntity(unpublishedEntity, false);
+                DbContext.Entities.DeleteEntity(unpublishedEntity.EntityId, false);
             }
 
             DbContext.SqlDb.SaveChanges();
@@ -52,44 +52,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Should clean up branches of this item, and set the one and only as published
         /// </summary>
-        /// <param name="unpublishedEntityId"></param>
-        /// <param name="newPublishedState"></param>
-        /// <returns></returns>
-        public ToSicEavEntities OLDClearDraftBranchAndSetPublishedState(int unpublishedEntityId, bool newPublishedState = true)
-        {
-            var unpublishedEntity = DbContext.Entities.GetDbEntity(unpublishedEntityId);
-
-            ToSicEavEntities publishedEntity;
-
-            // Publish Draft-Entity
-            if (!unpublishedEntity.PublishedEntityId.HasValue)
-            {
-                unpublishedEntity.IsPublished = newPublishedState;
-                publishedEntity = unpublishedEntity;
-            }
-            // Replace currently published Entity with draft Entity and delete the draft
-            else
-            {
-                publishedEntity = DbContext.Entities.GetDbEntity(unpublishedEntity.PublishedEntityId.Value);
-                publishedEntity.IsPublished = newPublishedState;
-
-                // delete the Draft Entity
-                DbContext.Entities.DeleteEntity(unpublishedEntity, false);
-            }
-
-            return publishedEntity;
-        }
-
-
-        /// <summary>
-        /// Should clean up branches of this item, and set the one and only as published
-        /// </summary>
         /// <param name="draftId"></param>
         /// <param name="newPublishedState"></param>
         /// <param name="publishedEntity"></param>
         /// <returns></returns>
-        public ToSicEavEntities ClearDraftBranchAndSetPublishedState(ToSicEavEntities publishedEntity, int? draftId = null, bool newPublishedState = true)
+        internal ToSicEavEntities ClearDraftBranchAndSetPublishedState(ToSicEavEntities publishedEntity, int? draftId = null, bool newPublishedState = true)
         {
+            Log.Add($"clear draft branch for i:{publishedEntity.EntityId}, draft:{draftId}, state:{newPublishedState}");
             // find main Db item and if 
             //var publishedEntity = DbContext.Entities.GetDbEntity(entityId);
             var unpublishedEntityId = draftId ?? DbContext.Publishing.GetDraftBranchEntityId(publishedEntity.EntityId);
@@ -110,7 +79,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
         internal int? GetDraftBranchEntityId(int entityId)
             => DbContext.SqlDb.ToSicEavEntities
                 .Where(e => e.PublishedEntityId == entityId && !e.ChangeLogDeleted.HasValue)
-                .Select(e => (int?) e.EntityId)
+                .Select(e => (int?)e.EntityId)
                 .SingleOrDefault();
+    }
+    
+
+    internal class EntityAlreadyPublishedException : Exception {
+        public EntityAlreadyPublishedException(string message): base(message)
+        {}
     }
 }
