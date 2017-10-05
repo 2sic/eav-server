@@ -33,3 +33,4 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyFileVersion("4.5.0.*")]
 
 [assembly: InternalsVisibleTo("ToSic.Eav.Persistence.Efc.Tests")]
+[assembly: InternalsVisibleTo("ToSic.Testing.Performance")]

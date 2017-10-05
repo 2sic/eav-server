@@ -42,7 +42,7 @@ namespace ToSic.Eav.ImportExport.Json
                 throw new ArgumentOutOfRangeException(nameof(serialized), "unexpected format version");
 
             // get type def
-            var contentType = App.ContentTypes.Values.SingleOrDefault(ct => ct.StaticName == jsonObj.Entity.Type.Id);
+            var contentType = App?.ContentTypes?.Values.SingleOrDefault(ct => ct.StaticName == jsonObj.Entity.Type.Id);
             if(contentType == null)
                 throw new Exception($"type not found for deserialization - cannot continue{jsonObj.Entity.Type.Id}");
 

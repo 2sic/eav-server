@@ -9,7 +9,12 @@ namespace ToSic.Eav.Persistence.Xml
 {
     public abstract class SerializerBase: IThingSerializer
     {
-        public AppDataPackage App;
+        public AppDataPackage App
+        {
+            get => _app ?? throw new Exception("cannot use app in serializer without initializing it first, make sure you call Initialize(...)");
+            set => _app = value;
+        }
+        private AppDataPackage _app;
 
         public void Initialize(AppDataPackage app)
         {

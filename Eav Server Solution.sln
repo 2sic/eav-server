@@ -41,6 +41,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.ImportExport.Test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Testing.Shared", "ToSic.Testing.Shared\ToSic.Testing.Shared.csproj", "{41243C6D-2D10-4285-8AF2-719497AE00DB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Testing.Performance", "ToSic.Testing.Performance\ToSic.Testing.Performance.csproj", "{6735DC37-2849-45DB-BA76-C5663B6FFB1F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		debug eav only|Android = debug eav only|Android
@@ -839,12 +841,54 @@ Global
 		{41243C6D-2D10-4285-8AF2-719497AE00DB}.Release|Windows-x64.Build.0 = Release|Any CPU
 		{41243C6D-2D10-4285-8AF2-719497AE00DB}.Release|Windows-x86.ActiveCfg = Release|Any CPU
 		{41243C6D-2D10-4285-8AF2-719497AE00DB}.Release|Windows-x86.Build.0 = Release|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.debug eav only|Android.ActiveCfg = Debug|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.debug eav only|Android.Build.0 = Debug|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.debug eav only|Any CPU.ActiveCfg = Debug|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.debug eav only|Any CPU.Build.0 = Debug|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.debug eav only|DNN.ActiveCfg = Debug|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.debug eav only|DNN.Build.0 = Debug|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.debug eav only|iOS.ActiveCfg = Debug|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.debug eav only|iOS.Build.0 = Debug|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.debug eav only|Windows-ARM.ActiveCfg = Debug|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.debug eav only|Windows-ARM.Build.0 = Debug|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.debug eav only|Windows-x64.ActiveCfg = Debug|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.debug eav only|Windows-x64.Build.0 = Debug|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.debug eav only|Windows-x86.ActiveCfg = Debug|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.debug eav only|Windows-x86.Build.0 = Debug|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.Debug|Android.ActiveCfg = Debug|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.Debug|Android.Build.0 = Debug|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.Debug|DNN.ActiveCfg = Debug|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.Debug|DNN.Build.0 = Debug|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.Debug|iOS.ActiveCfg = Debug|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.Debug|iOS.Build.0 = Debug|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.Debug|Windows-ARM.ActiveCfg = Debug|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.Debug|Windows-ARM.Build.0 = Debug|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.Debug|Windows-x64.ActiveCfg = Debug|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.Debug|Windows-x64.Build.0 = Debug|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.Debug|Windows-x86.ActiveCfg = Debug|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.Debug|Windows-x86.Build.0 = Debug|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.Release|Android.ActiveCfg = Release|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.Release|Android.Build.0 = Release|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.Release|DNN.ActiveCfg = Release|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.Release|DNN.Build.0 = Release|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.Release|iOS.ActiveCfg = Release|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.Release|iOS.Build.0 = Release|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.Release|Windows-ARM.ActiveCfg = Release|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.Release|Windows-ARM.Build.0 = Release|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.Release|Windows-x64.ActiveCfg = Release|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.Release|Windows-x64.Build.0 = Release|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.Release|Windows-x86.ActiveCfg = Release|Any CPU
+		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.Release|Windows-x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {705647E1-B5B1-4D94-888C-1D918095554C}
 		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35;packages\Unity.2.1.505.0\lib\NET35
+		SolutionGuid = {705647E1-B5B1-4D94-888C-1D918095554C}
 	EndGlobalSection
 EndGlobal
