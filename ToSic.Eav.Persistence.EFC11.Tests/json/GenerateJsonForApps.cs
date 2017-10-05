@@ -7,12 +7,16 @@ namespace ToSic.Eav.Persistence.Efc.Tests.json
     public class GenerateJsonForApps:Efc11TestBase
     {
         [TestMethod]
-        [Ignore]
+        [Ignore("this is just to generate test-data, single use only")]
         public void GenerateJsonForApp261()
         {
             GenerateJsonForAllEntitiesOfApp(261);
         }
 
+        /// <summary>
+        /// places json-data into all entities of an app, with the own data stored inside
+        /// </summary>
+        /// <param name="appid"></param>
         private void GenerateJsonForAllEntitiesOfApp(int appid)
         {
             var package = Loader.AppPackage(appid);
@@ -27,7 +31,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests.json
             }
 
             Db.UpdateRange(dbEnts);
-            Db.SaveChanges();
+            Db.SaveChanges("testingOnly", true);
         }
     }
 }
