@@ -83,12 +83,12 @@ namespace ToSic.Eav.Persistence.Efc.Tests
             var apps = zones[2].Apps;
 
             Assert.AreEqual(1, defapp, "def app on first zone");
-            Assert.AreEqual(69, zones.Count, "zone count - often changes, as new test-portals are made");
+            Assert.AreEqual(71, zones.Count, "zone count - often changes, as new test-portals are made");
             Assert.AreEqual(24, apps.Count, "app count on second zone");
 
             // ML Checks
             var mlZones = zones.Values.Where(z => z.Languages.Count > 1).ToList();
-            Assert.AreEqual(8, mlZones.Count, "should have 7 ml zones");
+            Assert.AreEqual(9, mlZones.Count, "should have 9 ml zones");
             var firstMl = mlZones.First();
             Assert.AreEqual(2, firstMl.Languages.Count, "think that first zone with ML should have 2 languages");
             Assert.AreEqual(2, firstMl.Languages.Count(l => l.Active = true), "two are active");

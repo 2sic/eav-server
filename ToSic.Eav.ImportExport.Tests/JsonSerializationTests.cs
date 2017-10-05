@@ -11,7 +11,7 @@ using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
 namespace ToSic.Eav.ImportExport.Tests
 {
     [TestClass]
-    public class JsonSerializationTests
+    public class JsonSerializationTests: Persistence.Efc.Tests.Efc11TestBase
     {
         public static Log Log { get; set; } = new Log("TstJsn");
 
@@ -102,9 +102,10 @@ namespace ToSic.Eav.ImportExport.Tests
             var dbc = DbDataController.Instance(null, appId, Log);
             var loader = new Efc11Loader(dbc.SqlDb);
             var app = loader.AppPackage(appId);
-            var exBuilder = new JsonSerializer();
-            exBuilder.Initialize(app);
-            return exBuilder;
+            //var exBuilder = new JsonSerializer();
+            //exBuilder.Initialize(app);
+            //return exBuilder;
+            return SerializerOfApp(app);
         }
 
 
