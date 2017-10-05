@@ -192,7 +192,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                             throw new Exception("something went wrong building the languages to save - your DB probably has some wrong language information which doesn't match; maybe even a duplicate entry for a language code - see https://github.com/2sic/2sxc/issues/1293", ex);
                         }
                         #endregion
-                        Log.Add(() => $"add attrib:{attribDef.AttributeId}/{attribDef.StaticName} vals⋮{attribute.Values.Count}, dim⋮{toSicEavValuesDimensions?.Count}");
+                        Log.Add(() => $"add attrib:{attribDef.AttributeId}/{attribDef.StaticName} vals⋮{attribute.Values?.Count}, dim⋮{toSicEavValuesDimensions?.Count}");
 
                         dbEnt.ToSicEavValues.Add(new ToSicEavValues
                         {
