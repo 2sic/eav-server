@@ -82,6 +82,7 @@ namespace ToSic.Eav.Data
 
         #region simple direct accessors
 
+        /// <inheritdoc />
         /// <summary>
         /// Shorhand accessor to retrieve an attribute
         /// </summary>
@@ -99,6 +100,7 @@ namespace ToSic.Eav.Data
                 _useLightModel = true;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Create a brand new Entity. 
         /// Mainly used for entities which are created for later saving

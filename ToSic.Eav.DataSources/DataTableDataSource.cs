@@ -96,7 +96,7 @@ namespace ToSic.Eav.DataSources
 		{
 			Source = source;
 			ContentType = contentType;
-			TitleField = titleField;
+			TitleField = titleField ?? Constants.EntityFieldTitle;
 			EntityIdField = entityIdField ?? EntityIdDefaultColumnName;
 			TitleField = titleField ?? EntityTitleDefaultColumnName;
 		    ModifiedField = modifiedField ?? "";
@@ -128,6 +128,7 @@ namespace ToSic.Eav.DataSources
 			{
 				var entityId = Convert.ToInt32(row[entityIdField]);
 				var values = row.Table.Columns.Cast<DataColumn>().Where(c => c.ColumnName != entityIdField).ToDictionary(c => c.ColumnName, c => row.Field<object>(c.ColumnName));
+                values = new Dictionary<string, object>(values, StringComparer.OrdinalIgnoreCase); // recast to ensure case-insensitive
 			    var mod = string.IsNullOrEmpty(modifiedField) ? null : values[modifiedField] as DateTime?;
 				var entity = new Entity(Constants.TransientAppId, entityId, contentType, values, titleField, mod);
 				result.Add(entity.EntityId, entity);

@@ -8,6 +8,8 @@ namespace ToSic.Eav.UnitTests.Data
     [TestClass]
     public class EntityTest
     {
+        const int AppIdX = -1;
+
         [TestMethod]
         public void Entity_CreateSimpleUnpersistedEntity()
         {
@@ -51,7 +53,7 @@ namespace ToSic.Eav.UnitTests.Data
                 {"Phone", "+41 81 750 67 70"},
                 {"Age", 37}
             };
-            var entDaniel = new Eav.Data.Entity(1, "TestType", valDaniel, "FirstName");
+            var entDaniel = new Eav.Data.Entity(AppIdX, 1, "TestType", valDaniel, "FirstName");
             return entDaniel;
         }
 
@@ -65,7 +67,7 @@ namespace ToSic.Eav.UnitTests.Data
                 {"Age", 6}
             };
 
-            var entLeonie = new Eav.Data.Entity(2, "TestType", valLeonie, "FirstName");
+            var entLeonie = new Eav.Data.Entity(AppIdX, 2, "TestType", valLeonie, "FirstName");
             return entLeonie;
         }
         public ToSic.Eav.Interfaces.IEntity TestEntityPet(int petNumber)
@@ -78,7 +80,7 @@ namespace ToSic.Eav.UnitTests.Data
                 {"Age", petNumber}
             };
 
-            var entPet = new Eav.Data.Entity(1000+petNumber, "Pet", valsPet, "FirstName");
+            var entPet = new Eav.Data.Entity(AppIdX, 1000 + petNumber, "Pet", valsPet, "FirstName");
             return entPet;
         }
         #endregion

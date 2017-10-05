@@ -7,6 +7,8 @@ namespace ToSic.Eav.UnitTests.ValueProvider
     [TestClass]
     public class ValueCollectionProvider_Test
     {
+        private const int AppIdX = -1;
+
         #region Important Values which will be checked when resolved
         public string OriginalSettingDefaultCat = "[AppSettings:DefaultCategoryName]";
         private readonly string ResolvedSettingDefaultCat = "All";
@@ -71,7 +73,7 @@ namespace ToSic.Eav.UnitTests.ValueProvider
                 {"PicsPerRow", "3"}
             };
 
-            var ent = new ToSic.Eav.Data.Entity(305200, "AppSettings", vals, "Title");
+            var ent = new ToSic.Eav.Data.Entity(AppIdX, 305200, "AppSettings", vals, "Title");
             return ent;
         }
 
@@ -83,7 +85,7 @@ namespace ToSic.Eav.UnitTests.ValueProvider
                 {"Greeting", "Hello there!"},
                 {"Introduction", "Welcome to this"}
             };
-            var ent = new Eav.Data.Entity(305200, "AppResources", vals, "Title");
+            var ent = new Eav.Data.Entity(AppIdX, 305200, "AppResources", vals, "Title");
             return ent;
         }
     }

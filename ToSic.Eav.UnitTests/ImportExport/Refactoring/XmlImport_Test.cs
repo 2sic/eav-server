@@ -285,19 +285,19 @@ On all your devices.</PreviewContent>
             // Run 5: 9.76 seconds
         }
 
-        private void Do1ImportWith20ContentItems()
-        {
-            var fileImport = new DbXmlImportVTable(ZoneId, AppId, ContentTypeSimpleContent,
-                GenerateStreamFromString(FullExportOfSimpleContentAll), new List<string>(), "", ImportDeleteUnmentionedItems.None,
-                ImportResourceReferenceMode.Keep);
+        //private void Do1ImportWith20ContentItems()
+        //{
+        //    var fileImport = new DbXmlImportVTable(ZoneId, AppId, ContentTypeSimpleContent,
+        //        GenerateStreamFromString(FullExportOfSimpleContentAll), new List<string>(), "", ImportDeleteUnmentionedItems.None,
+        //        ImportResourceReferenceMode.Keep);
 
-            var entity31d9 = fileImport.ImportEntities.First(e => e.EntityGuid == new Guid("31d93b03-cfb3-483b-8134-e08bbee9cd2c"));
-            var previewContent = entity31d9.Attributes["PreviewContent"][0];
-            Assert.AreEqual("Easy and immediate separation of concerns.", (previewContent as Interfaces.IValue).ToString());
+        //    var entity31d9 = fileImport.ImportEntities.First(e => e.EntityGuid == new Guid("31d93b03-cfb3-483b-8134-e08bbee9cd2c"));
+        //    var previewContent = entity31d9.Attributes["PreviewContent"][0];
+        //    Assert.AreEqual("Easy and immediate separation of concerns.", (previewContent as Interfaces.IValue).ToString());
 
-            throw new Exception("Cant finish testing import yet - there is still a large bug creating much too much data!");
-            //var fileImported = fileImport.PersistImportToRepository(UserNameOfTestingScript);
-        }
+        //    throw new Exception("Cant finish testing import yet - there is still a large bug creating much too much data!");
+        //    //var fileImported = fileImport.PersistImportToRepository(UserNameOfTestingScript);
+        //}
 
 
 

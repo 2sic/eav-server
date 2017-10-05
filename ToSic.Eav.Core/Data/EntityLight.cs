@@ -103,6 +103,7 @@ namespace ToSic.Eav.Data
             Relationships = new RelationshipManager(this, new EntityRelationshipItem[0]);
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Create a brand new Entity. 
         /// Mainly used for entities which are created for later saving
@@ -118,6 +119,7 @@ namespace ToSic.Eav.Data
         #region GetBestValue and GetTitle
 
 
+        /// <inheritdoc />
         /// <summary>
         /// Retrieves the best possible value for an attribute or virtual attribute (like EntityTitle)
         /// Automatically resolves the language-variations as well based on the list of preferred languages
@@ -142,6 +144,18 @@ namespace ToSic.Eav.Data
 
             if (resolveHyperlinks)
                 result = TryToResolveLink(result);
+
+            // map any kind of number to the one format used in other code-checks: decimal
+            if (result is short
+                || result is ushort
+                || result is int
+                || result is uint
+                || result is long
+                || result is ulong
+                || result is float
+                || result is double
+                || result is decimal)
+                return Convert.ToDecimal(result);
 
             return result;
         }
