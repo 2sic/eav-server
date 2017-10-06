@@ -18,6 +18,9 @@ namespace ToSic.Eav.Interfaces
         /// <param name="attributeName">StaticName of the Attribute</param>
         new IAttribute this[string attributeName] { get; }
 
+        /// <summary>
+        /// version of this entity in the repository
+        /// </summary>
         int Version { get; }
     }
 }

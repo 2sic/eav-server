@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace ToSic.Eav.Interfaces
 {
 	/// <summary>
-	/// Represents an Entity
+	/// Represents a light Entity
 	/// </summary>
 	public interface IEntityLight
 	{
@@ -23,28 +22,20 @@ namespace ToSic.Eav.Interfaces
 		/// </summary>
 		Guid EntityGuid { get; }
 
-        // 2017-06-13 2dm - try to disable this - I assume it's only used internally
-		///// <summary>
-		///// Gets the AssignmentObjectTypeId
-		///// </summary>
-		//int AssignmentObjectTypeId { get; }
 
         IMetadata Metadata { get; }
 
-
-		///// <summary>
-		///// Gets a Dictionary having all Attributes having a value
-		///// </summary>
-		//Dictionary<string, object> Attributes { get; }
 
 		/// <summary>
 		/// Gets the ContentType of this Entity
 		/// </summary>
 		IContentType Type { get; }
+
 		/// <summary>
-		/// Gets the Title-Attribute
+		/// Gets the "official" Title-Attribute
 		/// </summary>
 		object Title { get; }
+
 		/// <summary>
 		/// Gets the Last Modified DateTime
 		/// </summary>
@@ -56,17 +47,21 @@ namespace ToSic.Eav.Interfaces
 		/// <param name="attributeName">StaticName of the Attribute</param>
 		object this[string attributeName] { get; }
 
-		/// <summary>
-		/// Get Related entities
+        /// <summary>
+        /// Relationship-helper object, important to navigate to children and parents
 		/// </summary>
-		IRelationshipManager Relationships { get; }
+        IRelationshipManager Relationships { get; }
 
-		/// <summary>
-		/// Helper method to retrieve the most applicable value based on criteria like current language etc.
-		/// </summary>
-		/// <param name="attributeName"></param>
-		/// <param name="resolveHyperlinks"></param>
-		/// <returns>A string, int or even a EntityRelationship</returns>
+	    /// <summary>
+	    /// Retrieves the best possible value for an attribute or virtual attribute (like EntityTitle)
+	    /// Automatically resolves the language-variations as well based on the list of preferred languages
+	    /// </summary>
+	    /// <param name="attributeName">Name of the attribute or virtual attribute</param>
+	    /// <param name="resolveHyperlinks"></param>
+	    /// <returns>
+	    /// An object OR a null - for example when retrieving the title and no title exists
+		/// the object is string, int or even a EntityRelationship
+		/// </returns>
 		object GetBestValue(string attributeName, bool resolveHyperlinks = false);
 
         /// <summary>

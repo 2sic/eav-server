@@ -28,7 +28,7 @@ namespace ToSic.Testing.Performance.json
 
         public void LoadApp()
         {
-            Package = Loader.AppPackage(TestAppId);   
+            Package = Loader.AppPackage(TestAppId, parentLog: Log);   
         }
 
         internal AppDataPackage Package;
@@ -73,7 +73,6 @@ namespace ToSic.Testing.Performance.json
             }
 
             Db.UpdateRange(dbEnts);
-            //Db.SaveChanges();
             Db.SaveChanges("testingOnly", true);
         }
 

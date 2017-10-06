@@ -5,6 +5,7 @@ using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data
 {
+    /// <inheritdoc />
     /// <summary>
     /// Represents an Attribute with Values of a Generic Type
     /// </summary>
@@ -18,12 +19,10 @@ namespace ToSic.Eav.Data
 
         public AttributeTypeEnum ControlledType
         {
-            get {
-                return _controlledType != AttributeTypeEnum.Undefined 
-                    ? _controlledType
-                    : _controlledType = ParseToAttributeTypeEnum(Type);
-            }
-            internal set { _controlledType = value; }
+            get => _controlledType != AttributeTypeEnum.Undefined 
+                ? _controlledType
+                : _controlledType = ParseToAttributeTypeEnum(Type);
+            internal set => _controlledType = value;
         }
 
         private static AttributeTypeEnum ParseToAttributeTypeEnum(string typeName)
@@ -37,12 +36,10 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Extended constructor when also storing the persistance ID-Info
         /// </summary>
-        /// <param name="appId"></param>
         /// <param name="name"></param>
         /// <param name="type"></param>
-        public AttributeBase(/*int appId,*/ string name, string type)
+        public AttributeBase(string name, string type)
         {
-            //TempAppId = appId;
             Name = name;
             Type = type;
 		}
@@ -82,7 +79,8 @@ namespace ToSic.Eav.Data
             return result;
         }
 
-        public static IAttribute CreateTypedAttribute(string name, string type, List<IValue> values = null) => CreateTypedAttribute(name, ParseToAttributeTypeEnum(type), values);
+        public static IAttribute CreateTypedAttribute(string name, string type, List<IValue> values = null) 
+            => CreateTypedAttribute(name, ParseToAttributeTypeEnum(type), values);
 
 
         

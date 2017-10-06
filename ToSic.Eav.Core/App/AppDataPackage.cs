@@ -18,6 +18,11 @@ namespace ToSic.Eav.App
 		#endregion
 
 		#region Properties
+        /// <summary>
+        /// App ID
+        /// </summary>
+        public int AppId { get; }
+
 		/// <summary>
 		/// Gets all Entities in this App
 		/// </summary>
@@ -100,6 +105,7 @@ namespace ToSic.Eav.App
 		/// Construct a new CacheItem with all required Items
 		/// </summary>
 		public AppDataPackage(
+            int appId,
             IDictionary<int, IEntity> entities, 
             IEnumerable<IEntity> entList,
             IDictionary<int, IContentType> contentTypes,
@@ -109,6 +115,7 @@ namespace ToSic.Eav.App
             ImmutableDictionary<int, string> metadataTypes,
             IEnumerable<EntityRelationshipItem> relationships)
 		{
+		    AppId = appId;
 		    List = entList;
 		    Entities = entities;
 			ContentTypes = contentTypes;

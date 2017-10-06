@@ -18,26 +18,30 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Creates a Typed Value Model
         /// </summary>
-        public static IValue Build(string attributeType, object value, List<ILanguage> languages, IDeferredEntitiesList fullEntityListForLookup = null)
+        public static IValue Build(string attributeType, object value, List<ILanguage> languages,
+            IDeferredEntitiesList fullEntityListForLookup = null) 
+            => Build((AttributeTypeEnum)Enum.Parse(typeof(AttributeTypeEnum), attributeType), value, languages, fullEntityListForLookup);
+
+        /// <summary>
+        /// Creates a Typed Value Model
+        /// </summary>
+        public static IValue Build(AttributeTypeEnum type, object value, List<ILanguage> languages, IDeferredEntitiesList fullEntityListForLookup = null)
         {
             if (languages == null) languages = new List<ILanguage>();
             Value typedModel;
             var stringValue = value as string;
             try
             {
-                var type = (AttributeTypeEnum)Enum.Parse(typeof(AttributeTypeEnum), attributeType);
                 switch (type)
                 {
-                    case AttributeTypeEnum.Boolean: 
-                        bool typedBoolean;
-                        typedModel = new Value<bool?>(value as bool? ?? (bool.TryParse(stringValue, out typedBoolean) 
+                    case AttributeTypeEnum.Boolean:
+                        typedModel = new Value<bool?>(value as bool? ?? (bool.TryParse(stringValue, out var typedBoolean) 
                             ? typedBoolean 
                             : new bool?()));
                         break;
-                    case AttributeTypeEnum.DateTime: 
-                        DateTime typedDateTime;
+                    case AttributeTypeEnum.DateTime:
                         typedModel = new Value<DateTime?>(value as DateTime? ?? (DateTime.TryParse(stringValue, CultureInfo.InvariantCulture,
-                                                     DateTimeStyles.None, out typedDateTime)
+                                                     DateTimeStyles.None, out var typedDateTime)
                                                      ? typedDateTime
                                                      : new DateTime?()));
                         break;

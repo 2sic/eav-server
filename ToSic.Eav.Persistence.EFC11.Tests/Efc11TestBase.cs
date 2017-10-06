@@ -1,19 +1,25 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.App;
 using ToSic.Eav.ImportExport.Json;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Persistence.Efc.Tests
 {
     [TestClass]
-    public class Efc11TestBase
+    public class Efc11TestBase: HasLog
     {
         #region test preparations
 
         
         public EavDbContext Db;
         public Efc11Loader Loader;
+
+        /// <inheritdoc />
+        public Efc11TestBase() : base("efc11test") { }
 
         [TestInitialize]
         public void Init()
@@ -32,7 +38,16 @@ namespace ToSic.Eav.Persistence.Efc.Tests
             exBuilder.Initialize(app);
             return exBuilder;
         }
+
+        protected JsonSerializer SerializerOfApp(int appId)
+        {
+            var app = Loader.AppPackage(appId);
+            return SerializerOfApp(app);
+        }
+
         #endregion
 
+
+        public IEnumerable<string> LogItems => Log.Entries.Select(e => e.Source + ">" + e.Message);
     }
 }

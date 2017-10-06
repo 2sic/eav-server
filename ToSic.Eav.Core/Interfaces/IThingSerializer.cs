@@ -13,5 +13,7 @@ namespace ToSic.Eav.Interfaces
         string Serialize(IEntity entity);
 
         Dictionary<int, string> Serialize(List<IEntity> entities);
+
+
     }
 }

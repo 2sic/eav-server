@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using ToSic.Eav.Persistence.Efc.Tests;
 using ToSic.Testing.Performance.json;
 
@@ -34,6 +35,8 @@ namespace ToSic.Testing.Performance
             Console.WriteLine($"app time:{appTime.Elapsed}");
             Console.WriteLine($"sql time:{sqlTime1.Elapsed}");
             Console.WriteLine($"ser time: {serTime.Elapsed} for {count} items");
+            Console.WriteLine();
+            tester.LogItems.ToList().ForEach(Console.WriteLine);
             Console.ReadKey();
         }
     }

@@ -26,7 +26,7 @@ namespace ToSic.Eav.ImportExport.Json
         }
         private AppDataPackageDeferredList _relList;
 
-        public IEntity Deserialize(string serialized)
+        public IEntity Deserialize(string serialized, bool allowDynamic = false)
         {
             JsonFormat jsonObj;
             try
@@ -42,9 +42,13 @@ namespace ToSic.Eav.ImportExport.Json
                 throw new ArgumentOutOfRangeException(nameof(serialized), "unexpected format version");
 
             // get type def
-            var contentType = App?.ContentTypes?.Values.SingleOrDefault(ct => ct.StaticName == jsonObj.Entity.Type.Id);
-            if(contentType == null)
-                throw new Exception($"type not found for deserialization - cannot continue{jsonObj.Entity.Type.Id}");
+            var contentType = App.ContentTypes?.Values.SingleOrDefault(ct => ct.StaticName == jsonObj.Entity.Type.Id)
+                              ?? (allowDynamic
+                                  ? ContentTypeBuilder.DynamicContentType(App.AppId)
+                                  : throw new FormatException(
+                                      "type not found for deserialization and dynamic not allowed " +
+                                      $"- cannot continue with {jsonObj.Entity.Type.Id}")
+                              );
 
             // Metadata
             var ismeta = new Metadata();
@@ -58,56 +62,99 @@ namespace ToSic.Eav.ImportExport.Json
             }
 
             // Build entity
-            var appId = 0;
+            var appId = App.AppId;
             var newEntity = new Entity(appId, jsonObj.Entity.Guid, jsonObj.Entity.Id, jsonObj.Entity.Id, ismeta, contentType, true, null, DateTime.Now, jsonObj.Entity.Owner, jsonObj.Entity.Version);
 
 
-            // build attributes
+            // build attributes - based on type definition
+            if (contentType.Name == Constants.DynamicType)
+                BuildAttribsOfUnknownContentType(jsonObj, newEntity);
+            else
+                BuildAttribsOfKnownType(jsonObj, contentType, newEntity);
+
+            return newEntity;
+        }
+
+        private void BuildAttribsOfUnknownContentType(JsonFormat jsonObj, Entity newEntity)
+        {
+            BuildAttrib(jsonObj.Entity.Attributes.DateTime, AttributeTypeEnum.DateTime, newEntity);
+            BuildAttrib(jsonObj.Entity.Attributes.Boolean, AttributeTypeEnum.Boolean, newEntity);
+            BuildAttrib(jsonObj.Entity.Attributes.Custom, AttributeTypeEnum.Custom, newEntity);
+            BuildAttrib(jsonObj.Entity.Attributes.Entity, AttributeTypeEnum.Entity, newEntity);
+            BuildAttrib(jsonObj.Entity.Attributes.Hyperlink, AttributeTypeEnum.Hyperlink, newEntity);
+            BuildAttrib(jsonObj.Entity.Attributes.Number, AttributeTypeEnum.Number, newEntity);
+            BuildAttrib(jsonObj.Entity.Attributes.String, AttributeTypeEnum.String, newEntity);
+
+            // todo: decide what to do with title!
+
+        }
+
+        private void BuildAttrib<T>(Dictionary<string, Dictionary<string, T>> list, AttributeTypeEnum type, Entity newEntity)
+        {
+            if (list == null) return;
+
+            foreach (var attrib in list)
+            {
+                var newAtt = AttributeBase.CreateTypedAttribute(attrib.Key, type, attrib.Value
+                    .Select(v => Value.Build(type, v.Value, RecreateLanguageList(v.Key))).ToList());
+                newEntity.Attributes.Add(newAtt.Name, newAtt);
+            }
+        }
+
+        private void BuildAttribsOfKnownType(JsonFormat jsonObj, IContentType contentType, Entity newEntity)
+        {
             var jAtts = jsonObj.Entity.Attributes;
             foreach (var definition in contentType.Attributes)
             {
-                var newAtt = ((AttributeDefinition)definition).CreateAttribute();
+                var newAtt = ((AttributeDefinition) definition).CreateAttribute();
                 switch (definition.ControlledType)
                 {
                     case AttributeTypeEnum.Boolean:
-                        if(!jAtts.Boolean?.ContainsKey(definition.Name) ?? true) continue;
-                        newAtt.Values = jAtts.Boolean[definition.Name]
-                            .Select(v => Value.Build(definition.Type, v.Value, RecreateLanguageList(v.Key))).ToList();
+                        BuildValues(jAtts.Boolean, definition, newAtt);
+                        //if (!jAtts.Boolean?.ContainsKey(definition.Name) ?? true) continue;
+                        //newAtt.Values = jAtts.Boolean[definition.Name]
+                        //    .Select(v => Value.Build(definition.Type, v.Value, RecreateLanguageList(v.Key))).ToList();
                         break;
                     case AttributeTypeEnum.DateTime:
-                        if(!jAtts.DateTime?.ContainsKey(definition.Name) ?? true) continue;
-                        newAtt.Values = jAtts.DateTime[definition.Name]
-                            .Select(v => Value.Build(definition.Type, v.Value, RecreateLanguageList(v.Key))).ToList();
+                        BuildValues(jAtts.DateTime, definition, newAtt);
+                        //if (!jAtts.DateTime?.ContainsKey(definition.Name) ?? true) continue;
+                        //newAtt.Values = jAtts.DateTime[definition.Name]
+                        //    .Select(v => Value.Build(definition.Type, v.Value, RecreateLanguageList(v.Key))).ToList();
                         break;
                     case AttributeTypeEnum.Entity:
-                        if(!jAtts.Entity?.ContainsKey(definition.Name) ?? true) continue;
+                        if (!jAtts.Entity?.ContainsKey(definition.Name) ?? true) continue;
                         newAtt.Values = jAtts.Entity[definition.Name]
-                            .Select(v => Value.Build(definition.Type, LookupGuids(v.Value), RecreateLanguageList(v.Key), RelLookupList)).ToList();
+                            .Select(v => Value.Build(definition.Type, LookupGuids(v.Value), RecreateLanguageList(v.Key),
+                                RelLookupList)).ToList();
                         break;
                     case AttributeTypeEnum.Hyperlink:
-                        if(!jAtts.Hyperlink?.ContainsKey(definition.Name) ?? true) continue;
-                        newAtt.Values = jAtts.Hyperlink[definition.Name]
-                            .Select(v => Value.Build(definition.Type, v.Value, RecreateLanguageList(v.Key))).ToList();
+                        BuildValues(jAtts.Hyperlink, definition,newAtt);
+                        //if (!jAtts.Hyperlink?.ContainsKey(definition.Name) ?? true) continue;
+                        //newAtt.Values = jAtts.Hyperlink[definition.Name]
+                        //    .Select(v => Value.Build(definition.Type, v.Value, RecreateLanguageList(v.Key))).ToList();
                         break;
                     case AttributeTypeEnum.Number:
-                        if (!jAtts.Number?.ContainsKey(definition.Name) ?? true) continue;
-                        newAtt.Values = jAtts.Number[definition.Name]
-                            .Select(v => Value.Build(definition.Type, v.Value, RecreateLanguageList(v.Key))).ToList();
+                        BuildValues(jAtts.Number, definition, newAtt);
+                        //if (!jAtts.Number?.ContainsKey(definition.Name) ?? true) continue;
+                        //newAtt.Values = jAtts.Number[definition.Name]
+                        //    .Select(v => Value.Build(definition.Type, v.Value, RecreateLanguageList(v.Key))).ToList();
                         break;
                     case AttributeTypeEnum.String:
-                        if (!jAtts.String?.ContainsKey(definition.Name) ?? true) continue;
-                        newAtt.Values = jAtts.String[definition.Name]
-                            .Select(v => Value.Build(definition.Type, v.Value, RecreateLanguageList(v.Key))).ToList();
+                        BuildValues(jAtts.String, definition, newAtt);
+                        //if (!jAtts.String?.ContainsKey(definition.Name) ?? true) continue;
+                        //newAtt.Values = jAtts.String[definition.Name]
+                        //    .Select(v => Value.Build(definition.Type, v.Value, RecreateLanguageList(v.Key))).ToList();
                         break;
                     case AttributeTypeEnum.Custom:
-                        if (!jAtts.Custom?.ContainsKey(definition.Name) ?? true) continue;
-                        newAtt.Values = jAtts.Custom[definition.Name]
-                            .Select(v => Value.Build(definition.Type, v.Value, RecreateLanguageList(v.Key))).ToList();
+                        BuildValues(jAtts.Custom, definition, newAtt);
+                        //if (!jAtts.Custom?.ContainsKey(definition.Name) ?? true) continue;
+                        //newAtt.Values = jAtts.Custom[definition.Name]
+                        //    .Select(v => Value.Build(definition.Type, v.Value, RecreateLanguageList(v.Key))).ToList();
                         break;
                     // ReSharper disable RedundantCaseLabel
                     case AttributeTypeEnum.Empty:
                     case AttributeTypeEnum.Undefined:
-                    // ReSharper restore RedundantCaseLabel
+                        // ReSharper restore RedundantCaseLabel
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -119,24 +166,37 @@ namespace ToSic.Eav.ImportExport.Json
                 if (definition.IsTitle)
                     newEntity.SetTitleField(definition.Name);
             }
-
-            return newEntity;
         }
 
-        private List<int?> LookupGuids(List<Guid?> list) => list.Select(g => App.Entities.Values.FirstOrDefault(e => e.EntityGuid == g)?.EntityId).ToList();
+        private void BuildValues<T>(Dictionary<string, Dictionary<string, T>> list, IAttributeDefinition attrDef, IAttribute target)
+        {
+            if (!list?.ContainsKey(attrDef.Name) ?? true) return;
+            target.Values = list[attrDef.Name]
+                .Select(v => Value.Build(attrDef.Type, v.Value, RecreateLanguageList(v.Key))).ToList();
 
-        private static List<ILanguage> RecreateLanguageList(string languages) => languages == NoLanguage
+        }
+
+        private List<int?> LookupGuids(List<Guid?> list)
+            => list.Select(g => App.Entities.Values.FirstOrDefault(e => e.EntityGuid == g)?.EntityId)
+                .ToList();
+
+        private static List<ILanguage> RecreateLanguageList(string languages) 
+            => languages == NoLanguage
             ? new List<ILanguage>()
             : languages.Split(',')
                 .Select(a => new Dimension {Key = a.Replace(ReadOnlyMarker, ""), ReadOnly = a.StartsWith(ReadOnlyMarker)} as ILanguage)
                 .ToList();
 
 
-        private static Dictionary<string, Dictionary<string, T>> ToTypedDictionary<T>(List<IAttribute> attribs) 
-            => attribs.Cast<IAttribute<T>>().ToDictionary(a => a.Name,
-            a => a.Typed.ToDictionary(LanguageKey, v => v.TypedContents));
+        private static Dictionary<string, Dictionary<string, T>> ToTypedDictionary<T>(List<IAttribute> attribs)
+            => attribs.Cast<IAttribute<T>>()
+                .ToDictionary(
+                    a => a.Name,
+                    a => a.Typed.ToDictionary(LanguageKey, v => v.TypedContents)
+                );
 
-        public List<IEntity> Deserialize(List<string> serialized) => serialized.Select(Deserialize).ToList();
+        public List<IEntity> Deserialize(List<string> serialized, bool allowDynamic = false) 
+            => serialized.Select(s => Deserialize(s, allowDynamic)).ToList();
     }
 
 }

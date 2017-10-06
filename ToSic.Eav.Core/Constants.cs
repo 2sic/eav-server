@@ -161,6 +161,8 @@ namespace ToSic.Eav
 
         #endregion
 
+        public const string DynamicType = "dynamic";
+
         public const int TransientAppId = -9999;
     }
 }

@@ -13,28 +13,23 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Offical title of this content-item
         /// </summary>
-        public new IAttribute Title {
-            get
-            {
-                if (TitleFieldName == null) return null;
-                return Attributes?.ContainsKey(TitleFieldName) ?? false ? Attributes[TitleFieldName] : null;
-            }
-        }
+        public new IAttribute Title => TitleFieldName == null
+            ? null
+            : (Attributes?.ContainsKey(TitleFieldName) ?? false ? Attributes[TitleFieldName] : null);
 
 
         /// <summary>
         /// List of all attributes
         /// </summary>
         public Dictionary<string, IAttribute> Attributes {
-            get { return _attributes ?? (_attributes = LightAttributesForInternalUseOnlyForNow.ConvertToAttributes()); }
-            set { _attributes = value; } }
+            get => _attributes ?? (_attributes = LightAttributesForInternalUseOnlyForNow.ConvertToAttributes());
+            set => _attributes = value;
+        }
 
         private Dictionary<string, IAttribute> _attributes;
 
         #region IsPublished, DratEntity, PublishedEntity
-        /// <summary>
-        /// Id of this item inside the repository. Can be different than the real Id, because it may be a temporary version of this content-item
-        /// </summary>
+        /// <inheritdoc />
         public int RepositoryId { get; internal set; }
 
         /// <summary>
@@ -56,16 +51,10 @@ namespace ToSic.Eav.Data
         #endregion
 
         #region GetDraft and GetPublished
-        /// <summary>
-        /// The draft entity fitting this published entity
-        /// </summary>
-        /// <returns></returns>
+        /// <inheritdoc />
         public IEntity GetDraft() => DraftEntity;
 
-        /// <summary>
-        /// The published entity of this draft entity
-        /// </summary>
-        /// <returns></returns>
+        /// <inheritdoc />
         public IEntity GetPublished() => PublishedEntity;
 
         #endregion
@@ -113,6 +102,7 @@ namespace ToSic.Eav.Data
                 _useLightModel = true;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Create a new Entity from a data store (usually SQL backend)
         /// </summary>
@@ -136,6 +126,7 @@ namespace ToSic.Eav.Data
             Owner = owner;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Create a new Entity based on an Entity and Attributes
         /// Used in the Attribute-Filter, which generates a new entity with less properties
@@ -155,13 +146,7 @@ namespace ToSic.Eav.Data
             Owner = entity.Owner;
         }
 
-        /// <summary>
-        /// Retrieves the best possible value for an attribute or virtual attribute (like EntityTitle)
-        /// Assumes default preferred language
-        /// </summary>
-        /// <param name="attributeName">Name of the attribute or virtual attribute</param>
-        /// <param name="resolveHyperlinks"></param>
-        /// <returns></returns>
+        /// <inheritdoc />
         public new object GetBestValue(string attributeName, bool resolveHyperlinks = false)
             => GetBestValue(attributeName, new string[0], resolveHyperlinks);
 
@@ -208,12 +193,10 @@ namespace ToSic.Eav.Data
             return result;
         }
 
-        /// <summary>
-        /// Best way to get the current entities title
-        /// </summary>
-        /// <returns>The entity title as a string</returns>
+        /// <inheritdoc />
         public new string GetBestTitle() => GetBestTitle(null, 0);
 
+        /// <inheritdoc />
         public string GetBestTitle(string[] dimensions) => GetBestTitle(dimensions, 0);
 
 
@@ -239,6 +222,7 @@ namespace ToSic.Eav.Data
             return bestTitle?.ToString();
         }
 
+        /// <inheritdoc />
         public int Version { get; }
     }
 }

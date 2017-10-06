@@ -7,26 +7,18 @@ using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data
 {
-	/// <summary>
-	/// Represents an Entity
-	/// </summary>
+	/// <inheritdoc />
 	public class EntityLight : IEntityLight
     {
 	    #region Basic properties EntityId, EntityGuid, Title, Attributes, Type, Modified, etc.
         public int AppId { get; internal set; }
-        /// <summary>
-        /// Id as an int
-        /// </summary>
+        /// <inheritdoc />
 		public int EntityId { get; internal set; } 
 
-        /// <summary>
-        /// Id as GUID
-        /// </summary>
+        /// <inheritdoc />
 		public Guid EntityGuid { get; internal set; }
 
-        /// <summary>
-        /// Offical title of this content-item
-        /// </summary>
+        /// <inheritdoc />
         public object Title => TitleFieldName == null ? null : this[TitleFieldName];
 
         [ScriptIgnore]
@@ -37,44 +29,36 @@ namespace ToSic.Eav.Data
         /// </summary>
 		protected Dictionary<string, object> LightAttributesForInternalUseOnlyForNow { get; set; }
 
-        /// <summary>
-        /// Type-definition of this content-item
-        /// </summary>
+        /// <inheritdoc />
 		public IContentType Type { get; internal set; }
 
-        /// <summary>
-        /// Modified date/time
-        /// </summary>
+        /// <inheritdoc />
 		public DateTime Modified { get; internal set; }
 
-        /// <summary>
-        /// Relationship-helper object, important to navigate to children and parents
-        /// </summary>
+        /// <inheritdoc />
 		[ScriptIgnore]
 		public IRelationshipManager Relationships { get; internal set; }
 
         public IMetadata Metadata { get; internal set; }
 
-        /// <summary>
-        /// Owner of this entity
-        /// </summary>
+        /// <inheritdoc />
         public string Owner { get; internal set; }
         #endregion
 
         #region direct attribute accessor using this[...]
-        /// <summary>
-        /// Shorhand accessor to retrieve an attribute
-        /// </summary>
-        /// <param name="attributeName"></param>
-        /// <returns></returns>
-        public object this[string attributeName] => LightAttributesForInternalUseOnlyForNow.ContainsKey(attributeName) ? LightAttributesForInternalUseOnlyForNow[attributeName] : null;
+
+        /// <inheritdoc />
+        public object this[string attributeName]
+            => LightAttributesForInternalUseOnlyForNow.ContainsKey(attributeName)
+                ? LightAttributesForInternalUseOnlyForNow[attributeName]
+                : null;
         #endregion
 
         #region various constructors to create entities
 
-        /// <summary>
+        /// <remarks>
         /// Empty constructor for inheriting objects who need to build an Entity-Object
-        /// </summary>
+        /// </remarks>
         protected EntityLight() { }
 
         /// <summary>
@@ -90,14 +74,12 @@ namespace ToSic.Eav.Data
             {
                 if (titleAttribute != null)
                     TitleFieldName = titleAttribute;
-                    //Title = Attributes[titleAttribute];
             }
             catch (KeyNotFoundException)
             {
                 throw new KeyNotFoundException($"The Title Attribute with Name \"{titleAttribute}\" doesn't exist in the Entity-Attributes.");
             }
             Metadata = new Metadata();
-            //IsPublished = true;
             if (modified.HasValue)
                 Modified = modified.Value;
             Relationships = new RelationshipManager(this, new EntityRelationshipItem[0]);
@@ -120,13 +102,6 @@ namespace ToSic.Eav.Data
 
 
         /// <inheritdoc />
-        /// <summary>
-        /// Retrieves the best possible value for an attribute or virtual attribute (like EntityTitle)
-        /// Automatically resolves the language-variations as well based on the list of preferred languages
-        /// </summary>
-        /// <param name="attributeName">Name of the attribute or virtual attribute</param>
-        /// <param name="resolveHyperlinks"></param>
-        /// <returns>An object OR a null - for example when retrieving the title and no title exists</returns>
         public object GetBestValue(string attributeName, bool resolveHyperlinks = false)
         {
             object result;
@@ -193,13 +168,10 @@ namespace ToSic.Eav.Data
         }
 
 
-        /// <summary>
-        /// Best way to get the current entities title
-        /// </summary>
-        /// <returns>The entity title as a string</returns>
+        /// <inheritdoc />
 	    public string GetBestTitle() => GetBestTitle(0);
 
-        public string GetBestTitle(int recursionCount)
+        private string GetBestTitle(int recursionCount)
         {
             var bestTitle = GetBestValue(Constants.EntityFieldTitle);
 

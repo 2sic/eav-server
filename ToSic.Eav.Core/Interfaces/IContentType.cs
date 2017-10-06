@@ -7,28 +7,33 @@ namespace ToSic.Eav.Interfaces
 	/// </summary>
 	public interface IContentType
 	{
-
+        /// <summary>
+        /// The app to which this content type belongs
+        /// </summary>
         int AppId { get; }
 
         /// <summary>
         /// Gets the Display Name of the Content Type
         /// </summary>
         string Name { get; }
-		/// <summary>
-		/// Gets the Static Name of the Content Type
+
+        /// <summary>
+        /// Static name - can be a GUID or a system-term for special types
 		/// </summary>
-		string StaticName { get; }
+        string StaticName { get; }
 
         /// <summary>
         /// The content-type description
         /// </summary>
         string Description { get; }
+
         /// <summary>
         /// Get the scope of the Content Type
         /// </summary>
         string Scope { get; }
+
         /// <summary>
-        /// Get the id of the Content Type (AttributeSet)
+        /// Get the id of the Content Type (AttributeSet) - you usually don't need this!
         /// </summary>
         int ContentTypeId { get; }
 
@@ -37,7 +42,11 @@ namespace ToSic.Eav.Interfaces
         /// </summary>
         IList<IAttributeDefinition> Attributes { get; set; }
 
-        // A simple indexer to get an attribute
+        /// <summary>
+        /// A simple indexer to get an attribute
+        /// </summary>
+        /// <param name="fieldName"></param>
+        /// <returns></returns>
         IAttributeDefinition this[string fieldName] { get; }
 
     }

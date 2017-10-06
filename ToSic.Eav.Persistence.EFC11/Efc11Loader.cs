@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.App;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc.Models;
 
@@ -15,7 +17,7 @@ namespace ToSic.Eav.Persistence.Efc
     /// <summary>
     /// 
     /// </summary>
-    public class Efc11Loader: IRepositoryLoader
+    public class Efc11Loader: IRepositoryLoader, IHasLog
     {
         #region constructor and private vars
         public Efc11Loader(EavDbContext dbContext)
@@ -48,12 +50,14 @@ namespace ToSic.Eav.Persistence.Efc
             return _contentTypes[appId];
         }
 
+        private TimeSpan _sqlTotalTime = new TimeSpan(0);
         /// <summary>
         /// Load DB content-types into loader-cache
         /// </summary>
         private void LoadContentTypesIntoLocalCache(int appId, IDeferredEntitiesList source)
         {
             // Load from DB
+            var sqlTime = Stopwatch.StartNew();
             var contentTypes = _dbContext.ToSicEavAttributeSets
                     .Where(set => set.AppId == appId && set.ChangeLogDeleted == null)
                     .Include(set => set.ToSicEavAttributesInSets)
@@ -79,14 +83,18 @@ namespace ToSic.Eav.Persistence.Efc
                         set.UsesConfigurationOfAttributeSetNavigation?.AlwaysShareConfiguration ?? set.AlwaysShareConfiguration,
                     })
                 .ToList();
+            sqlTime.Stop();
 
             var shareids = contentTypes.Select(c => c.SharedDefinitionId).ToList();
+            sqlTime.Start();
             var sharedAttribs = _dbContext.ToSicEavAttributeSets
                 .Include(s => s.ToSicEavAttributesInSets)
                 .ThenInclude(a => a.Attribute)
                 .Where(s => shareids.Contains(s.AttributeSetId))
                 .ToDictionary(s => s.AttributeSetId, s => s.ToSicEavAttributesInSets.Select(a
-                    => new AttributeDefinition(appId, a.Attribute.StaticName, a.Attribute.Type, a.IsTitle, a.AttributeId, a.SortOrder)));
+                    => new AttributeDefinition(appId, a.Attribute.StaticName, a.Attribute.Type, a.IsTitle,
+                        a.AttributeId, a.SortOrder)));
+            sqlTime.Stop();
 
             // Convert to ContentType-Model
             _contentTypes[appId] = contentTypes.ToDictionary(k1 => k1.AttributeSetId,
@@ -96,10 +104,13 @@ namespace ToSic.Eav.Persistence.Efc
                     Attributes = (set.SharedDefinitionId.HasValue
                             ? sharedAttribs[set.SharedDefinitionId.Value]
                             : set.Attributes)
+                        // ReSharper disable once RedundantEnumerableCastCall
                         .Cast<IAttributeDefinition>()
                         .ToList()
                 }
             );
+
+            _sqlTotalTime = _sqlTotalTime.Add(sqlTime.Elapsed);
         }
 
         #endregion
@@ -120,7 +131,11 @@ namespace ToSic.Eav.Persistence.Efc
             Log = new Log("DB.EFLoad", parentLog, $"get app data package for a#{appId}, ids only:{entityIds != null}, entities-only:{entitiesOnly}");
             var source = new AppDataPackageDeferredList();
 
+            #region prepare content-types
+            var typeTimer = Stopwatch.StartNew();
             var contentTypes = ContentTypes(appId, source);
+            typeTimer.Stop();
+            #endregion
 
             var relationships = new List<EntityRelationshipItem>();
 
@@ -129,7 +144,10 @@ namespace ToSic.Eav.Persistence.Efc
             var metadataForNumber = new Dictionary<int, Dictionary<int, IEnumerable<IEntity>>>();
             var metadataForString = new Dictionary<int, Dictionary<string, IEnumerable<IEntity>>>();
 
+            var sqlTime = Stopwatch.StartNew();
             var metadataTypes = _dbContext.ToSicEavAssignmentObjectTypes.ToImmutableDictionary(a => a.AssignmentObjectTypeId, a => a.Name);
+            sqlTime.Stop();
+
             foreach (var mdt in metadataTypes.ToList())
             {
                 metadataForGuid.Add(mdt.Key, new Dictionary<Guid, IEnumerable<IEntity>>());
@@ -146,14 +164,17 @@ namespace ToSic.Eav.Persistence.Efc
             var filterByEntityIds = entityIds.Any();
 
             // Ensure published Versions of Drafts are also loaded (if filtered by EntityId, otherwise all Entities from the app are loaded anyway)
+            sqlTime.Start();
             if (filterByEntityIds)
                 entityIds = entityIds.Union(from e in _dbContext.ToSicEavEntities
                                             where e.PublishedEntityId.HasValue && !e.IsPublished && entityIds.Contains(e.EntityId) && !entityIds.Contains(e.PublishedEntityId.Value) && e.ChangeLogDeleted == null
                                             select e.PublishedEntityId.Value).ToArray();
+            sqlTime.Stop();
             #endregion
 
             #region Get Entities with Attribute-Values from Database
 
+            sqlTime.Start();
             var rawEntities = _dbContext.ToSicEavEntities
                 .Include(e => e.AttributeSet)
                 .Include(e => e.ToSicEavValues)
@@ -186,8 +207,10 @@ namespace ToSic.Eav.Persistence.Efc
                     Modified = e.ChangeLogModifiedNavigation.Timestamp, 
 
                 }).ToList();
+            sqlTime.Stop();
             var eIds = rawEntities.Select(e => e.EntityId).ToList();
 
+            sqlTime.Start();
             var relatedEntities = _dbContext.ToSicEavEntityRelationships
                 .Where(r => eIds.Contains(r.ParentEntityId))
                 .GroupBy(g => g.ParentEntityId)
@@ -221,13 +244,14 @@ namespace ToSic.Eav.Persistence.Efc
                                     } as ILanguage).ToList(),
                             })
                     }));
-
+            sqlTime.Stop();
             #endregion
 
             #region Build EntityModels
             var entities = new Dictionary<int, IEntity>();
             var entList = new List<IEntity>();
 
+            var entityTimer = Stopwatch.StartNew();
             foreach (var e in rawEntities)
             {
                 var contentType = (ContentType)contentTypes[e.AttributeSetId];
@@ -350,10 +374,12 @@ namespace ToSic.Eav.Persistence.Efc
                 entities.Add(e.EntityId, newEntity);
                 entList.Add(newEntity);
             }
+            entityTimer.Stop();
             #endregion
 
             #region Populate Entity-Relationships (after all Entitys are created)
 
+            var relTimer = Stopwatch.StartNew();
             var relationshipQuery = _dbContext.ToSicEavEntityRelationships
                 .Include(er => er.Attribute.ToSicEavAttributesInSets)
                 .Where(r => r.Attribute.ToSicEavAttributesInSets.Any(s => s.AttributeSet.AppId == appId))
@@ -375,24 +401,18 @@ namespace ToSic.Eav.Persistence.Efc
                 }
                 catch (KeyNotFoundException) { /* ignore */ }
             }
-
+            relTimer.Stop();
             #endregion
 
-            var appPack = new AppDataPackage(entities, entList, contentTypes, metadataForGuid, metadataForNumber, metadataForString, metadataTypes, relationships);
+            var appPack = new AppDataPackage(appId, entities, entList, contentTypes, metadataForGuid, metadataForNumber, metadataForString, metadataTypes, relationships);
             source.AttachApp(appPack);
+            _sqlTotalTime = _sqlTotalTime.Add(sqlTime.Elapsed);
+            Log.Add($"timers types&typesql:{typeTimer.Elapsed} sqlAll:{_sqlTotalTime}, entities:{entityTimer.Elapsed}, relationship:{relTimer.Elapsed}");
             return appPack;
         }
 
         #endregion
 
-        // 2017-08-28 2dm disabled for now as not in use
-        /// <summary>
-        /// Get EntityModel for specified EntityId
-        /// </summary>
-        /// <returns>A single IEntity or throws InvalidOperationException</returns>
-        //public IEntity Entity(int appId, int entityId)
-        //    => AppPackage(appId, new[] { entityId }, true)
-        //        .Entities.Single(e => e.Key == entityId).Value; // must filter by EntityId again because of Drafts
 
         public Dictionary<int, string> MetadataTargetTypes() => _dbContext.ToSicEavAssignmentObjectTypes
             .ToDictionary(a => a.AssignmentObjectTypeId, a => a.Name);
@@ -406,7 +426,11 @@ namespace ToSic.Eav.Persistence.Efc
                 z.ToSicEavApps.FirstOrDefault(a => a.Name == Constants.DefaultAppName)?.AppId ?? -1,
                 z.ToSicEavApps.ToDictionary(a => a.AppId, a => a.Name),
                 z.ToSicEavDimensions.Where(d => d.ParentNavigation?.Key == Constants.CultureSystemKey)
+                    // ReSharper disable once RedundantEnumerableCastCall
                     .Cast<DimensionDefinition>().ToList()));
 
+        #region IHasLog interface
+        public void LinkLog(Log parentLog) => Log.LinkTo(parentLog);
+        #endregion
     }
 }

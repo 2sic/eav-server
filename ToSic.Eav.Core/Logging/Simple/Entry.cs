@@ -2,7 +2,7 @@
 {
     public class Entry
     {
-        public string Message { get; set; }
+        public string Message { get; }
 
         private readonly Log _log;
 
@@ -14,6 +14,6 @@
             Message = message;
         }
 
-        public string Serialize() => Message;
+        //public string Serialize() => Message;
     }
 }
