@@ -27,7 +27,7 @@ namespace ToSic.Eav.Persistence
             if (saveOptions == null) throw new ArgumentNullException(nameof(saveOptions));
             Log.Add(() => "opts " + saveOptions?.LogInfo);
             #region Step 0: initial error checks
-            if(update == null || update.Attributes?.Count == 0)
+            if(update == null) // 2017-10-06 2rm removed condition  || update.Attributes?.Count == 0
                 throw new Exception("can't prepare entities for saving, no new item with attributes provided");
 
             var ct = (original ?? update).Type;
