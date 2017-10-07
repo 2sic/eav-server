@@ -84,9 +84,6 @@ namespace ToSic.Eav.ImportExport.Json
             BuildAttrib(jsonObj.Entity.Attributes.Hyperlink, AttributeTypeEnum.Hyperlink, newEntity);
             BuildAttrib(jsonObj.Entity.Attributes.Number, AttributeTypeEnum.Number, newEntity);
             BuildAttrib(jsonObj.Entity.Attributes.String, AttributeTypeEnum.String, newEntity);
-
-            // todo: decide what to do with title!
-
         }
 
         private void BuildAttrib<T>(Dictionary<string, Dictionary<string, T>> list, AttributeTypeEnum type, Entity newEntity)

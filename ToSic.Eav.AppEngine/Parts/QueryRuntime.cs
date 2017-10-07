@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
 
@@ -13,8 +12,8 @@ namespace ToSic.Eav.Apps.Parts
         public static IEnumerable<QueryInfoTemp> GetInstalledDataSources()
         {
             var result = new List<QueryInfoTemp>();
-            var installedDataSources = DataSource.GetInstalledDataSources();
-            foreach (var dataSource in installedDataSources.Where(d => d.GetCustomAttributes(typeof(PipelineDesignerAttribute), false).Any()))
+            var installedDataSources = DataSource.GetInstalledDataSources(true);
+            foreach (var dataSource in installedDataSources)
             {
                 #region Create Instance of DataSource to get In- and Out-Streams
                 ICollection<string> outStreamNames = new string[0];
@@ -34,7 +33,7 @@ namespace ToSic.Eav.Apps.Parts
                             outStreamNames = null;
                         }
                 }
-                // Handle Interfaces (currently only ICache) with Unity
+                // Handle Interfaces (currently only on ICache)
                 else if (dataSource.IsInterface)
                 {
                     var dataSourceInstance = (IDataSource)Factory.Resolve(dataSource);

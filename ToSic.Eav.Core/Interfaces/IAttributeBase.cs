@@ -13,10 +13,15 @@ namespace ToSic.Eav.Interfaces
 		/// Name of the Attribute
 		/// </summary>
 		string Name { get; }
+
 		/// <summary>
 		/// Type of the Attribute
 		/// </summary>
 		string Type { get; }
+
+        /// <summary>
+        /// The officialy type, as a controlled value
+        /// </summary>
         AttributeTypeEnum ControlledType { get; }
 
     }

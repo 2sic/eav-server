@@ -47,8 +47,6 @@ namespace ToSic.Eav.Apps.ImportExport
         public long TimeForDbImport;
         #endregion
 
-        private Log Log { get; }
-
         private readonly int _appId;
         private readonly int _zoneId;
 

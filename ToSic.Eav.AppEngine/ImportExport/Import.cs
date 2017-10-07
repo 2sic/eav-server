@@ -21,7 +21,6 @@ namespace ToSic.Eav.Apps.ImportExport
     /// </summary>
     public class Import: HasLog
     {
-        private Log Log { get; }
         #region Private Fields
         //private readonly DbDataController _dbDeepAccess;
         private AppDataPackage _entireApp;

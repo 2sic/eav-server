@@ -294,7 +294,7 @@ namespace ToSic.Eav.Apps.ImportExport
                             xElementAttribute.Attribute(XmlConstants.Static).Value,
                             null,
                             xElementAttribute.Attribute(XmlConstants.EntityTypeAttribute).Value,
-                            null, null, null
+                            null, null, null, null
                         );
                         attribute.AddItems(GetImportEntities(xElementAttribute.Elements(XmlConstants.Entity), Constants.MetadataForAttribute));
                         attributes.Add(attribute);
