@@ -2,6 +2,10 @@
 
 namespace ToSic.Eav.DataSources
 {
+    /// <inheritdoc />
+    /// <summary>
+    /// Data source base class for providing data from external systems
+    /// </summary>
     public class ExternalDataDataSource: BaseDataSource
     {
         public override string LogId => "DS.Extern";

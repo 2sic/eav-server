@@ -11,7 +11,8 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// Provide Entities from a SQL Server
 	/// </summary>
-	public class SqlDataSource : ExternalDataDataSource // BaseDataSource
+	// ReSharper disable once InheritdocConsiderUsage
+	public class SqlDataSource : ExternalDataDataSource
 	{
         // Note: of the standard SQL-terms, I will only allow exec|execute|select
         // Everything else shouldn't be allowed
@@ -24,16 +25,6 @@ namespace ToSic.Eav.DataSources
 		protected const string ConnectionStringKey = "ConnectionString";
 		protected const string ConnectionStringNameKey = "ConnectionStringName";
 		protected const string ConnectionStringDefault = "[Settings:ConnectionString]";
-
-		/// <summary>
-		/// Default Name of the EntityId Column
-		/// </summary>
-		public static readonly string EntityIdDefaultColumnName = "EntityId"; // note: if I ever use a constant, remember to check case-sensitivity
-
-	    /// <summary>
-	    /// Default Name of the EntityTitle Column
-	    /// </summary>
-	    public static readonly string EntityTitleDefaultColumnName = Constants.EntityFieldTitle;
 
 		/// <summary>
 		/// Gets or sets the name of the ConnectionString in the Application.Config to use
@@ -93,8 +84,6 @@ namespace ToSic.Eav.DataSources
 
         #region Special SQL specific properties to prevent SQL Injection
 
-	    // private string originalUnsafeSql;
-        //private Dictionary<string, string> sqlParams = new Dictionary<string, string>();
 	    public const string ExtractedParamPrefix = "AutoExtractedParam";
 
         #endregion
@@ -108,8 +97,8 @@ namespace ToSic.Eav.DataSources
 		{
             // ReSharper disable once DoNotCallOverridableMethodsInConstructor
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, null, GetList));
-			Configuration.Add(TitleFieldKey, EntityTitleDefaultColumnName);
-			Configuration.Add(EntityIdFieldKey, EntityIdDefaultColumnName);
+			Configuration.Add(TitleFieldKey, Constants.EntityFieldTitle);
+		    Configuration.Add(EntityIdFieldKey, Constants.EntityFieldId);// EntityIdDefaultColumnName);
 			Configuration.Add(ContentTypeKey, "[Settings:ContentType||SqlData]");
 			Configuration.Add(SelectCommandKey, "[Settings:SelectCommand]");
 			Configuration.Add(ConnectionStringKey, ConnectionStringDefault);
@@ -128,8 +117,8 @@ namespace ToSic.Eav.DataSources
 			ConnectionString = connectionString;
 			SelectCommand = selectCommand;
 			ContentType = contentType;
-			EntityIdField = entityIdField ?? EntityIdDefaultColumnName;
-			TitleField = titleField ?? EntityTitleDefaultColumnName;
+		    EntityIdField = entityIdField ?? Constants.EntityFieldId;// EntityIdDefaultColumnName;
+			TitleField = titleField ?? Constants.EntityFieldTitle;
 		}
 
 
@@ -199,9 +188,17 @@ namespace ToSic.Eav.DataSources
 
 		    // Load ConnectionString by Name (if specified)
 			if (!string.IsNullOrEmpty(ConnectionStringName) && (string.IsNullOrEmpty(ConnectionString) || ConnectionString == ConnectionStringDefault))
-				ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings[ConnectionStringName].ConnectionString;
+			    try
+			    {
+			        ConnectionString = System.Configuration.ConfigurationManager
+                        .ConnectionStrings[ConnectionStringName].ConnectionString;
+			    }
+			    catch (Exception ex)
+			    {
+			        throw new Exception("error trying to load exception string", ex);
+			    }
 
-			using (var connection = new SqlConnection(ConnectionString))
+		    using (var connection = new SqlConnection(ConnectionString))
 			{
 				var command = new SqlCommand(SelectCommand, connection);
 
@@ -213,6 +210,7 @@ namespace ToSic.Eav.DataSources
 				var reader = command.ExecuteReader();
 
 			    var casedTitle = TitleField;
+			    var casedEntityId = EntityIdField;
 				try
 				{
 					#region Get the SQL Column List and validate it
@@ -220,16 +218,24 @@ namespace ToSic.Eav.DataSources
 					for (var i = 0; i < reader.FieldCount; i++)
 						columNames[i] = reader.GetName(i);
 
-					if (!columNames.Contains(EntityIdField))
-						throw new Exception(
-						    $"SQL Result doesn't contain an EntityId Column with Name \"{EntityIdField}\". Ideally use something like Select ID As EntityId...");
+					if (!columNames.Contains(casedEntityId))
+					{
+                        // try alternate casing
+                        casedEntityId = columNames.FirstOrDefault(c => string.Equals(c, casedEntityId, StringComparison.InvariantCultureIgnoreCase));
+					    if (casedEntityId == null)
+					        throw new Exception(
+					            $"SQL Result doesn't contain an EntityId Column with Name '{EntityIdField}'. " +
+					            "Ideally use something like Select ID As EntityId...");
+					}
+
 				    if (!columNames.Contains(casedTitle))
 				    {
                         // try alternate casing
-				        casedTitle = columNames.FirstOrDefault(c => c.ToLower() == casedTitle);
+				        casedTitle = columNames.FirstOrDefault(c => string.Equals(c, casedTitle, StringComparison.InvariantCultureIgnoreCase));
 				        if (casedTitle == null)
 				            throw new Exception(
-				                $"SQL Result doesn't contain an EntityTitle Column with Name \"{TitleField}\". Ideally use something like Select FullName As EntityTitle...");
+				                $"SQL Result doesn't contain an EntityTitle Column with Name '{TitleField}'. " +
+				                "Ideally use something like Select FullName As EntityTitle...");
 				    }
 
 				    #endregion
@@ -237,11 +243,10 @@ namespace ToSic.Eav.DataSources
 					#region Read all Rows from SQL Server
 					while (reader.Read())
 					{
-						var entityId = Convert.ToInt32(reader[EntityIdField]);
-						var values = columNames.Where(c => c != EntityIdField).ToDictionary(c => c, c => reader[c]);
+						var entityId = Convert.ToInt32(reader[casedEntityId]);
+						var values = columNames.Where(c => c != casedEntityId).ToDictionary(c => c, c => reader[c]);
 						var entity = new Data.Entity(Constants.TransientAppId, entityId, ContentType, values, casedTitle);
 					    list.Add(entity);
-					    //_entities.Add(entityId, entity);
 					}
 					#endregion
 				}

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources;
 
@@ -7,22 +8,15 @@ namespace ToSic.Eav.UnitTests
     [TestClass]
     public class SqlDataSource_Test
     {
-        private const string Connection = "";
+        private const string ConnectionDummy = "";
+        private const string ConnectionName = "Data Source=.\\SQLExpress;Initial Catalog=2flex 2Sexy Content;Integrated Security=True";
         private const string ContentTypeName = "SqlData";
-
-        private readonly string[] _illegalSql = {
-            "Insert something into something",
-            "Select * from table; Insert something",
-            " Insert something into something",
-            "Drop tablename",
-            "Select * from Products; Drop tablename"
-        };
 
         [TestMethod]
         public void SqlDataSource_NoConfigChangesIfNotNecessary()
         {
             var initQuery = "Select * From Products";
-            var sql = GenerateSqlDataSource(Connection, initQuery, ContentTypeName);
+            var sql = GenerateSqlDataSource(ConnectionDummy, initQuery, ContentTypeName);
             var configCountBefore = sql.Configuration.Count;
             sql.EnsureConfigurationIsLoaded();
 
@@ -30,12 +24,13 @@ namespace ToSic.Eav.UnitTests
             Assert.AreEqual(initQuery, sql.SelectCommand);
         }
 
+        #region test parameter injection
         [TestMethod]
         public void SqlDataSource_SqlInjectionProtection()
         {
             var initQuery = "Select * From Products Where ProductId = [QueryString:Id]";
             var expectedQuery = "Select * From Products Where ProductId = @" + SqlDataSource.ExtractedParamPrefix + "1";
-            var sql = GenerateSqlDataSource(Connection, initQuery, ContentTypeName);
+            var sql = GenerateSqlDataSource(ConnectionDummy, initQuery, ContentTypeName);
             var configCountBefore = sql.Configuration.Count;
             sql.EnsureConfigurationIsLoaded();
 
@@ -56,7 +51,7 @@ From Products
 Where CatName = @" + SqlDataSource.ExtractedParamPrefix + @"2 
 And ProductSort = @" + SqlDataSource.ExtractedParamPrefix + @"3";
 
-            var sql = GenerateSqlDataSource(Connection, initQuery, ContentTypeName);
+            var sql = GenerateSqlDataSource(ConnectionDummy, initQuery, ContentTypeName);
             var configCountBefore = sql.Configuration.Count;
             sql.EnsureConfigurationIsLoaded();
 
@@ -67,32 +62,51 @@ And ProductSort = @" + SqlDataSource.ExtractedParamPrefix + @"3";
             Assert.AreEqual("CorrectlyDefaulted", sql.Configuration["@" + SqlDataSource.ExtractedParamPrefix + "3"]);
         }
 
-        [TestMethod]
-        public void TestInvalidSqls()
-        {
-            for (var c = 0; c < _illegalSql.Length; c++)
+        #endregion
 
-                try
-                {
-                    var sql = GenerateSqlDataSource(Connection, _illegalSql[c], ContentTypeName);
-                    var x = sql.List; // try to access list, should raise error      
-                    // If it doesn't raise an error, raise one
-                    Assert.Fail("Invalid SQL not detected, should have raised an error: '" + _illegalSql[c] + "'");
-                }
-                catch (InvalidOperationException)
-                {
-                    // all ok
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
+        #region test bad sql statements like insert / drop etc.
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void SqlDataSource_BadSqlInsert() 
+            => GenerateSqlDataSource(ConnectionDummy, "Insert something into something", ContentTypeName).List.Any();
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void SqlDataSource_BadSqlSelectInsert() 
+            => GenerateSqlDataSource(ConnectionDummy, "Select * from table; Insert something", ContentTypeName).List.Any();
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void SqlDataSource_BadSqlSpaceInsert() 
+            => GenerateSqlDataSource(ConnectionDummy, " Insert something into something", ContentTypeName).List.Any();
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void SqlDataSource_BadSqlDropInsert() 
+            => GenerateSqlDataSource(ConnectionDummy, "Drop tablename", ContentTypeName).List.Any();
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void SqlDataSource_BadSqlSelectDrop() 
+            => GenerateSqlDataSource(ConnectionDummy, "Select * from Products; Drop tablename", ContentTypeName).List.Any();
+
+        #endregion
+
+
+        #region test title / entityid fields with casing
+
+        [TestMethod]
+        public void SqlDataSource_TitleCasing()
+        {
+            var select = "SELECT [PortalID] as entityId, HomeDirectory As entityTitle, " +
+                         "[AdministratorId],[GUID],[HomeDirectory],[PortalGroupID] " +
+                         "FROM [Portals]";
+            var sql = GenerateSqlDataSource(ConnectionName, select, ContentTypeName);
+            var list = sql.LightList;
+            Assert.IsTrue(list.Any(), "found some");
         }
 
-     
-        
-        
-        
+        #endregion
 
         public static SqlDataSource GenerateSqlDataSource(string connection, string query, string typeName)
         {
