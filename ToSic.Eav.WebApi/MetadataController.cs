@@ -39,11 +39,11 @@ namespace ToSic.Eav.WebApi
             if (keyType == "guid")
             {
                 var guidkey = Guid.Parse(key);
-                entityList = MetaDs.GetAssignedEntities(assignmentObjectTypeId, guidkey, contentType);                
+                entityList = MetaDs.GetMetadata(assignmentObjectTypeId, guidkey, contentType);                
             }
             else if (keyType == "string")
             {
-                entityList = MetaDs.GetAssignedEntities(assignmentObjectTypeId, key, contentType);                
+                entityList = MetaDs.GetMetadata(assignmentObjectTypeId, key, contentType);                
             }
             else
             {

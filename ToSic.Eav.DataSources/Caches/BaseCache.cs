@@ -14,7 +14,7 @@ namespace ToSic.Eav.DataSources.Caches
     /// <summary>
     /// Represents an abstract Cache DataSource
     /// </summary>
-    public abstract class BaseCache : BaseDataSource, IMetaDataSource, ICache
+    public abstract class BaseCache : BaseDataSource, IMetadataProvider, ICache
 	{
 
         protected new BaseCache Cache { get; set; }
@@ -240,17 +240,17 @@ namespace ToSic.Eav.DataSources.Caches
         /// <summary>
 		/// Get Entities with specified AssignmentObjectTypeId and Key
 		/// </summary>
-		public IEnumerable<IEntity> GetAssignedEntities(int targetType, Guid key, string contentTypeName = null) => AppDataPackage.GetMetadata(targetType, key, contentTypeName);
+		public IEnumerable<IEntity> GetMetadata(int targetType, Guid key, string contentTypeName = null) => AppDataPackage.GetMetadata(targetType, key, contentTypeName);
 
 	    /// <summary>
         /// Get Entities with specified AssignmentObjectTypeId and Key
         /// </summary>
-        public IEnumerable<IEntity> GetAssignedEntities(int targetType, string key, string contentTypeName = null) => AppDataPackage.GetMetadata(targetType, key, contentTypeName);
+        public IEnumerable<IEntity> GetMetadata(int targetType, string key, string contentTypeName = null) => AppDataPackage.GetMetadata(targetType, key, contentTypeName);
 
 	    /// <summary>
         /// Get Entities with specified AssignmentObjectTypeId and Key
         /// </summary>
-        public IEnumerable<IEntity> GetAssignedEntities(int targetType, int key, string contentTypeName = null) => AppDataPackage.GetMetadata(targetType, key, contentTypeName);
+        public IEnumerable<IEntity> GetMetadata(int targetType, int key, string contentTypeName = null) => AppDataPackage.GetMetadata(targetType, key, contentTypeName);
 
 	    #endregion
 

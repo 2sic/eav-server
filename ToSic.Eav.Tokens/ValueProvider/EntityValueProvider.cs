@@ -43,8 +43,9 @@ namespace ToSic.Eav.ValueProvider
 
             // bool propertyNotFound;
             var valueObject = Entity.GetBestValue(property, _dimensions);
+            propertyNotFound = valueObject == null; // this is used multiple times
 
-            if (valueObject != null)
+            if (!propertyNotFound)
             {
                 switch (Type.GetTypeCode(valueObject.GetType()))
                 {

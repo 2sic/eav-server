@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
+using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.ValueProvider;
 
@@ -155,10 +156,10 @@ namespace ToSic.Eav
 		/// Get DataSource having common MetaData, like Field MetaData
 		/// </summary>
 		/// <returns>IMetaDataSource (from ICache)</returns>
-		public static IMetaDataSource GetMetaDataSource(int? zoneId = null, int? appId = null)
+		public static IMetadataProvider GetMetaDataSource(int? zoneId = null, int? appId = null)
 		{
 			var zoneAppId = GetZoneAppId(zoneId, appId);
-			return (IMetaDataSource)GetCache(zoneAppId.Item1, zoneAppId.Item2);
+			return (IMetadataProvider)GetCache(zoneAppId.Item1, zoneAppId.Item2);
 		}
 
 	    /// <summary>

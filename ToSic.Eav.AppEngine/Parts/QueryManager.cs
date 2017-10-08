@@ -41,7 +41,7 @@ namespace ToSic.Eav.Apps.Parts
             foreach (var dataSource in dataSources)
             {
                 // Delete Configuration Entities (if any)
-                var dataSourceConfig = metaDataSource.GetAssignedEntities(Constants.MetadataForEntity /* .AssignmentObjectTypeEntity*/, dataSource.EntityGuid).FirstOrDefault();
+                var dataSourceConfig = metaDataSource.GetMetadata(Constants.MetadataForEntity /* .AssignmentObjectTypeEntity*/, dataSource.EntityGuid).FirstOrDefault();
                 if (dataSourceConfig != null)
                     dbController.Entities.DeleteEntity(dataSourceConfig.EntityId);
 

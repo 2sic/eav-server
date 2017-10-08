@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using ToSic.Eav.DataSources;
+using ToSic.Eav.Interfaces;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.ValueProvider
@@ -11,7 +11,7 @@ namespace ToSic.Eav.ValueProvider
 	/// </summary>
 	public class AssignedEntityValueProvider : EntityValueProvider
 	{
-	    private readonly IMetaDataSource _metaDataSource;
+	    private readonly IMetadataProvider _metaDataSource;
 		private readonly Guid _objectToProvideSettingsTo;
 		private bool _entityLoaded;
 
@@ -25,7 +25,7 @@ namespace ToSic.Eav.ValueProvider
 		/// <param name="name">Name of the PropertyAccess, e.g. pipelinesettings</param>
 		/// <param name="objectId">EntityGuid of the Entity to get assigned Entities of</param>
 		/// <param name="metaDataSource">DataSource that provides MetaData</param>
-		public AssignedEntityValueProvider(string name, Guid objectId, IMetaDataSource metaDataSource)
+		public AssignedEntityValueProvider(string name, Guid objectId, IMetadataProvider metaDataSource)
 		{
 			Name = name;
 			_objectToProvideSettingsTo = objectId;
@@ -37,7 +37,7 @@ namespace ToSic.Eav.ValueProvider
         /// </summary>
 		protected void LoadEntity()
 		{
-			var assignedEntities = _metaDataSource.GetAssignedEntities(Constants.MetadataForEntity, _objectToProvideSettingsTo);
+			var assignedEntities = _metaDataSource.GetMetadata(Constants.MetadataForEntity, _objectToProvideSettingsTo);
 			Entity = assignedEntities.FirstOrDefault(e => e.Type.StaticName != Constants.DataPipelinePartStaticName);
 			_entityLoaded = true;
 		}

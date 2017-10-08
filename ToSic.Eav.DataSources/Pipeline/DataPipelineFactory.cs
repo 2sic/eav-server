@@ -57,7 +57,7 @@ namespace ToSic.Eav.DataSources
 			{
 				throw new Exception("PipelineEntity not found with ID " + pipelineEntityId + " on AppId " + appId);
 			}
-			var dataPipelineParts = metaDataSource.GetAssignedEntities(Constants.MetadataForEntity, dataPipeline.EntityGuid, Constants.DataPipelinePartStaticName);
+			var dataPipelineParts = metaDataSource.GetMetadata(Constants.MetadataForEntity, dataPipeline.EntityGuid, Constants.DataPipelinePartStaticName);
             #endregion
 
             #region prepare shared / global value providers

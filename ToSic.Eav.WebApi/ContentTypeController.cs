@@ -5,7 +5,6 @@ using System.Linq;
 using System.Web.Http;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging.Simple;
@@ -76,8 +75,8 @@ namespace ToSic.Eav.WebApi
 	            ? cache
 	            : DataSource.GetCache(ct.ParentZoneId, ct.ParentAppId);
 
-            var metaDataSource = (IMetaDataSource)metaCache;
-	        return metaDataSource.GetAssignedEntities(
+            var metaDataSource = (IMetadataProvider)metaCache;
+	        return metaDataSource.GetMetadata(
 	            Constants.MetadataForContentType, ct.StaticName)
 	            .FirstOrDefault();
 	    }

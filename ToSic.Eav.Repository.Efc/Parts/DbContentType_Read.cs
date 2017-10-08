@@ -40,7 +40,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             {
                 Attribute = a,
                 Metadata = metaDataSource
-                    .GetAssignedEntities(Constants.MetadataForAttribute, a.AttributeId)
+                    .GetMetadata(Constants.MetadataForAttribute, a.AttributeId)
                     .ToDictionary(e => e.Type.StaticName.TrimStart('@'), e => e)
             });
 

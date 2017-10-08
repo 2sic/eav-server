@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.DataSources.Caches;
+using ToSic.Eav.Interfaces;
 using static System.Int32;
 
 namespace ToSic.Eav.DataSources
@@ -146,9 +147,9 @@ namespace ToSic.Eav.DataSources
 		    }
 		}
 
-	    private IMetaDataSource _metadata;
+	    private IMetadataProvider _metadata;
 
-	    public IMetaDataSource Metadata => _metadata ?? (_metadata = DataSource.GetMetaDataSource(ZoneId, AppId));
+	    public IMetadataProvider Metadata => _metadata ?? (_metadata = DataSource.GetMetaDataSource(ZoneId, AppId));
 	}
 
 }
