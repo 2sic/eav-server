@@ -2,7 +2,6 @@
 using System.Linq;
 using ToSic.Eav.Interfaces;
 
-// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.ValueProvider
 {
 	/// <inheritdoc />
@@ -43,24 +42,23 @@ namespace ToSic.Eav.ValueProvider
             var outputFormat = format == string.Empty ? "g" : format;
 
             // bool propertyNotFound;
-            var valueObject = Entity.GetBestValue(property, _dimensions);//, out propertyNotFound);
-            propertyNotFound = valueObject == null;
+            var valueObject = Entity.GetBestValue(property, _dimensions);
 
-            if (!propertyNotFound && valueObject != null)
+            if (valueObject != null)
             {
-                switch (Type.GetTypeCode(valueObject.GetType()))// (valueObject.GetType().Name)
+                switch (Type.GetTypeCode(valueObject.GetType()))
                 {
-                    case TypeCode.String: // "String": 
+                    case TypeCode.String:
                         return FormatString((string)valueObject, format);
-                    case TypeCode.Boolean:// "Boolean": 
+                    case TypeCode.Boolean:
                         return ((bool)valueObject).ToString(formatProvider).ToLower();
-                    case TypeCode.DateTime:// "DateTime": 
-                    case TypeCode.Double: // "Double":
-                    case TypeCode.Single: // "Single":
-                    case TypeCode.Int16:  //
-                    case TypeCode.Int32: // "Int32":
-                    case TypeCode.Int64: // "Int64":
-                    case TypeCode.Decimal: // "Decimal":
+                    case TypeCode.DateTime:
+                    case TypeCode.Double:
+                    case TypeCode.Single:
+                    case TypeCode.Int16:
+                    case TypeCode.Int32:
+                    case TypeCode.Int64:
+                    case TypeCode.Decimal:
                         return ((IFormattable)valueObject).ToString(outputFormat, formatProvider);
                     default:
                         return FormatString(valueObject.ToString(), format);

@@ -63,11 +63,18 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tokens\TokenReplace.cs" />
     <Compile Include="ValueProvider\BaseValueProvider.cs" />
+    <Compile Include="ValueProvider\EntityValueProvider.cs" />
     <Compile Include="ValueProvider\IValueCollectionProvider.cs" />
     <Compile Include="ValueProvider\IValueProvider.cs" />
     <Compile Include="ValueProvider\OverrideValueProvider.cs" />
     <Compile Include="ValueProvider\StaticValueProvider.cs" />
     <Compile Include="ValueProvider\ValueCollectionProvider.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj">
+      <Project>{82F94588-269B-4CDD-98D1-D5CB14C39090}</Project>
+      <Name>ToSic.Eav.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

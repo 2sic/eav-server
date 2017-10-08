@@ -5,14 +5,14 @@ using ToSic.Eav.DataSources;
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.ValueProvider
 {
+	/// <inheritdoc />
 	/// <summary>
 	/// Get Values from Assigned Entities
 	/// </summary>
-	public class AssignedEntityValueProvider : EntityValueProvider // IValueProvider
+	public class AssignedEntityValueProvider : EntityValueProvider
 	{
 	    private readonly IMetaDataSource _metaDataSource;
 		private readonly Guid _objectToProvideSettingsTo;
-		//private IEntity _assignedEntity;
 		private bool _entityLoaded;
 
 		public new string Name { get; }
@@ -37,7 +37,7 @@ namespace ToSic.Eav.ValueProvider
         /// </summary>
 		protected void LoadEntity()
 		{
-			var assignedEntities = _metaDataSource.GetAssignedEntities(Constants.MetadataForEntity /*.AssignmentObjectTypeEntity*/, _objectToProvideSettingsTo);
+			var assignedEntities = _metaDataSource.GetAssignedEntities(Constants.MetadataForEntity, _objectToProvideSettingsTo);
 			Entity = assignedEntities.FirstOrDefault(e => e.Type.StaticName != Constants.DataPipelinePartStaticName);
 			_entityLoaded = true;
 		}
@@ -53,17 +53,7 @@ namespace ToSic.Eav.ValueProvider
             if (!_entityLoaded)
                 LoadEntity();
 
-            
             return base.Get(property, format, ref propertyNotFound);
-            //try
-            //{
-            //    return _assignedEntity[property][0].ToString();
-            //}
-            //catch
-            //{
-            //    propertyNotFound = true;
-            //    return string.Empty;
-            //}
         }
 	}
 }
