@@ -108,7 +108,6 @@
     <Compile Include="SqlSources\EavSqlStore.cs" />
     <Compile Include="StreamFallback.cs" />
     <Compile Include="ValueFilter.cs" />
-    <Compile Include="ValueProvider\AssignedEntityValueProvider.cs" />
     <Compile Include="ValueProvider\DataTargetValueProvider.cs" />
     <Compile Include="ValueSort.cs" />
   </ItemGroup>

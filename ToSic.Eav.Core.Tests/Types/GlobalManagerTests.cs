@@ -15,5 +15,13 @@ namespace ToSic.Eav.Core.Tests.Types
             var globTypes = Eav.Types.Global.SystemTypes();
             Assert.AreEqual(ProvidedTypesCount, globTypes.Count(), "expect a fixed about of types at dev time");
         }
+
+        [TestMethod]
+        public void CheckDefaultScope()
+        {
+            var globTypes = Eav.Types.Global.SystemTypes();
+            Assert.AreEqual(ProvidedTypesCount, globTypes.Count(), "expect a fixed about of types at dev time");
+        }
+
     }
 }

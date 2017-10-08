@@ -62,6 +62,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tokens\TokenReplace.cs" />
+    <Compile Include="ValueProvider\AssignedEntityValueProvider.cs" />
     <Compile Include="ValueProvider\BaseValueProvider.cs" />
     <Compile Include="ValueProvider\EntityValueProvider.cs" />
     <Compile Include="ValueProvider\IValueCollectionProvider.cs" />

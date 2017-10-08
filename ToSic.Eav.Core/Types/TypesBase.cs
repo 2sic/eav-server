@@ -13,10 +13,11 @@ namespace ToSic.Eav.Types
         protected const AttributeTypeEnum Ent = AttributeTypeEnum.Entity;
 
         protected const string DefInp = "default";
+        public const string UnknownScope = "Undefined";
 
-        protected TypesBase(string name, string staticName) : base(0, name, staticName)
+        protected TypesBase(string name, string staticName, string scope = UnknownScope) : base(0, name, staticName)
         {
-            Scope = "assembly";
+            Scope = scope;
             Description = "todo";
         }
 
