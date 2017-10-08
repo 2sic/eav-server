@@ -18,7 +18,7 @@ namespace ToSic.Eav.Plumbing
         public static IEnumerable<Type> FindClassesWithAttribute(Type type, Type attribType, bool includeInherited)
             => FindInherited(type).Where(d => d.GetCustomAttributes(attribType, includeInherited).Any());
 
-        public static IEnumerable<Type> Types
+        private static IEnumerable<Type> Types
             => _typeCache ?? (_typeCache = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(GetLoadableTypes));
         private static IEnumerable<Type> _typeCache;

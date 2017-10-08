@@ -1,9 +1,9 @@
 ﻿using ToSic.Eav.Data;
 using ToSic.Eav.Enums;
 
-namespace ToSic.Eav.DataSources.ContentTypes
+namespace ToSic.Eav.Types
 {
-    public class TypesBase: ContentType
+    public abstract class TypesBase: ContentType
     {
         protected const AttributeTypeEnum Str = AttributeTypeEnum.String;
         protected const AttributeTypeEnum Bln = AttributeTypeEnum.Boolean;
@@ -14,7 +14,7 @@ namespace ToSic.Eav.DataSources.ContentTypes
 
         protected const string DefInp = "default";
 
-        public TypesBase(string name, string staticName) : base(0, name, staticName)
+        protected TypesBase(string name, string staticName) : base(0, name, staticName)
         {
             Scope = "assembly";
             Description = "todo";

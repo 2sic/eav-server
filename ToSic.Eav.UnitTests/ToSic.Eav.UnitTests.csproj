@@ -109,8 +109,6 @@
     <Compile Include="DataSources\EntityTypeFilter_Test.cs" />
     <Compile Include="DataSources\StreamFallback_Test.cs" />
     <Compile Include="DataSources\Paging_Test.cs" />
-    <Compile Include="Data\ContentType_Test.cs" />
-    <Compile Include="Data\Entity_Test.cs" />
     <Compile Include="ImportExport\Refactoring\XmlExport_Test.cs" />
     <Compile Include="ImportExport\Refactoring\XmlImport_Test.cs" />
     <Compile Include="InitializeTests.cs" />
@@ -118,7 +116,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ValueProvider\DataTargetValueProvider_Test.cs" />
     <Compile Include="ValueProvider\ValueCollectionProvider_Test.cs" />
-    <Compile Include="ValueProvider\ValueProviders_Test.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

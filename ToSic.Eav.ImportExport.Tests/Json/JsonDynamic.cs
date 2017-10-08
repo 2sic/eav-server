@@ -6,7 +6,7 @@ using ToSic.Eav.Repository.Efc.Tests;
 namespace ToSic.Eav.ImportExport.Tests.json
 {
     [TestClass]
-    public class JsonDynamicAndNormal : JsonTestBase
+    public class JsonDynamic : JsonTestBase
     {
         [TestMethod]
         [ExpectedException(typeof(FormatException))]

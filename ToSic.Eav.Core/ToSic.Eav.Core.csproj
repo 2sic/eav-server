@@ -89,7 +89,7 @@
     <Compile Include="App\AppDataPackage.cs" />
     <Compile Include="Data\AttributeDefinition.cs" />
     <Compile Include="Data\AttributeBase.cs" />
-    <Compile Include="Data\Beta_TypeSystem\ContentTypeDefinition.cs" />
+    <Compile Include="Types\Attributes\ContentTypeDefinition.cs" />
     <Compile Include="Data\Builder\AttDefBuilder.cs" />
     <Compile Include="Data\Builder\AttribBuilder.cs" />
     <Compile Include="Data\Attribute_ofT.cs" />
@@ -163,6 +163,9 @@
     <Compile Include="Persistence\Versions\ItemHistory.cs" />
     <Compile Include="Plumbing\AssemblyHandling.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Types\Builder\String.cs" />
+    <Compile Include="Types\Global.cs" />
+    <Compile Include="Types\TypesBase.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

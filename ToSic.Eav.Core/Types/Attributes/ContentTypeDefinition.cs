@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ToSic.Eav.Data.Beta_TypeSystem
+namespace ToSic.Eav.Types.Attributes
 {
 	/// <inheritdoc />
 	/// <summary>

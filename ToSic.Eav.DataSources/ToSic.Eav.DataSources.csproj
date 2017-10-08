@@ -74,8 +74,6 @@
     <Compile Include="Caches\ICache.cs" />
     <Compile Include="Caches\ListCacheItem.cs" />
     <Compile Include="Caches\QuickCache.cs" />
-    <Compile Include="ContentTypes\StringAttribsHelpers.cs" />
-    <Compile Include="ContentTypes\TypesBase.cs" />
     <Compile Include="ContentTypes\SqlDataSourceType.cs" />
     <Compile Include="CsvDataSource.cs" />
     <Compile Include="DataSource.cs" />
@@ -113,7 +111,6 @@
     <Compile Include="ValueFilter.cs" />
     <Compile Include="ValueProvider\AssignedEntityValueProvider.cs" />
     <Compile Include="ValueProvider\DataTargetValueProvider.cs" />
-    <Compile Include="ValueProvider\EntityValueProvider.cs" />
     <Compile Include="ValueSort.cs" />
   </ItemGroup>
   <ItemGroup>

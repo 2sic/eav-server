@@ -1,17 +1,16 @@
-﻿using ToSic.Eav.Data;
-using ToSic.Eav.Types;
+﻿using ToSic.Eav.Types;
 using ToSic.Eav.Types.Attributes;
 using ToSic.Eav.Types.Builder;
 
-namespace ToSic.Eav.DataSources.ContentTypes
+namespace ToSic.Eav.Core.Tests.Types
 {
     [ContentTypeDefinition(CTypeName)]
-    public class SqlDataSourceType: TypesBase
+    public class DemoType: TypesBase
     {
-        private const string CName = "SqlDataSource-Type";
-        private const string CTypeName = "|Test.DS.SqlDataSource";
+        private const string CName = "Demo-Type";
+        private const string CTypeName = "Testing:Demo.Type.Example";
 
-        public SqlDataSourceType() : base(CName, CTypeName)
+        public DemoType() : base(CName, CTypeName)
         {
             Add(AttDef(Grp, DefInp, "ConsGrp", "Connection Information", "How to connect to the DB"));
             {
