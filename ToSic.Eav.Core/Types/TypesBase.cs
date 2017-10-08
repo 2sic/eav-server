@@ -1,5 +1,7 @@
-﻿using ToSic.Eav.Data;
+﻿using System.Collections.Generic;
+using ToSic.Eav.Data;
 using ToSic.Eav.Enums;
+using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Types
 {
@@ -13,12 +15,13 @@ namespace ToSic.Eav.Types
         protected const AttributeTypeEnum Ent = AttributeTypeEnum.Entity;
 
         protected const string DefInp = "default";
-        public const string UnknownScope = "Undefined";
+        public const string UndefinedScope = "Undefined";
 
-        protected TypesBase(string name, string staticName, string scope = UnknownScope) : base(0, name, staticName)
+        protected TypesBase(string name, string staticName, string scope = UndefinedScope) : base(0, name, staticName)
         {
             Scope = scope;
             Description = "todo";
+            Attributes = new List<IAttributeDefinition>();
         }
 
         protected AttributeDefinition Add(AttributeDefinition attDef)

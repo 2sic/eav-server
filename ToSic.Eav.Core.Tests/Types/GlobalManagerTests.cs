@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Types;
 
 namespace ToSic.Eav.Core.Tests.Types
 {
@@ -19,8 +20,12 @@ namespace ToSic.Eav.Core.Tests.Types
         [TestMethod]
         public void CheckDefaultScope()
         {
-            var globTypes = Eav.Types.Global.SystemTypes();
-            Assert.AreEqual(ProvidedTypesCount, globTypes.Count(), "expect a fixed about of types at dev time");
+            var testType = Global.InstanceOf(DemoType.CTypeName);
+            //var globTypes = Eav.Types.Global.SystemTypes();
+            //var demoTypeDef = globTypes.First();
+            //var testType = (DemoType)Activator.CreateInstance(demoTypeDef);
+
+            Assert.AreEqual(TypesBase.UndefinedScope, testType.Scope, "scope should be undefined");
         }
 
     }

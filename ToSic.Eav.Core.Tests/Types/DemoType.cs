@@ -7,8 +7,8 @@ namespace ToSic.Eav.Core.Tests.Types
     [ContentTypeDefinition(CTypeName)]
     public class DemoType: TypesBase
     {
-        private const string CName = "Demo-Type";
-        private const string CTypeName = "Testing:Demo.Type.Example";
+        public const string CName = "Demo-Type";
+        public const string CTypeName = "Testing:Demo.Type.Example";
 
         public DemoType() : base(CName, CTypeName)
         {

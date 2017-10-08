@@ -10,13 +10,15 @@ namespace ToSic.Eav.Types.Attributes
 	[AttributeUsage(AttributeTargets.Class)]
 	public class ContentTypeDefinition : Attribute
 	{
-	    // ReSharper disable once InconsistentNaming
+        public string StaticName { get;  }
+
+	    // ReSharper disable once InconsistentNaming - required to ensure it's large case and still required in the attribute itself
 	    public ContentTypeDefinition(string StaticName)
 	    {
-	        _staticName = StaticName;
+	        this.StaticName = StaticName;
 	    }
 
-	    private string _staticName;
+	    //private string _staticName;
 
 	}
 }
