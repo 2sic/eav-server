@@ -36,6 +36,8 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         public IAttributeDefinition this[string fieldName] => Attributes.FirstOrDefault(a => a.Name == fieldName);
 
+        public bool IsInstalledInPrimaryStorage { get; protected set; } = true;
+
         #endregion
 
         #region Sharing Content Types

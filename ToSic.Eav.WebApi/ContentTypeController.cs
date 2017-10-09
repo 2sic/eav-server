@@ -30,7 +30,7 @@ namespace ToSic.Eav.WebApi
             Log.Add($"get a#{appId}, scope:{scope}, stats:{withStatistics}");
             // scope can be null (eav) or alternatives would be "System", "2SexyContent-System", "2SexyContent-App", "2SexyContent"
             var cache = (BaseCache)DataSource.GetCache(null, appId);
-            var allTypes = cache.GetContentTypes().Select(t => t.Value);
+            var allTypes = cache.GetContentTypes();//.Values;//.Select(t => t.Value);
 
             var filteredType = allTypes.Where(t => t.Scope == scope)
                 .OrderBy(t => t.Name)

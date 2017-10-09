@@ -104,7 +104,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             // load content type to start creating an item...
             var loader1 = new Efc11Loader(dbi.SqlDb);
             var app1 = loader1.AppPackage(test.AppId);
-            var ct1 = app1.ContentTypes.Values.First(ct => ct.Name == ctName);
+            var ct1 = app1.GetContentType(ctName);//.ContentTypes.Values.First(ct => ct.Name == ctName);
 
             var newE = new Entity(test.AppId, 0, ct1.StaticName, new Dictionary<string, object>
             {

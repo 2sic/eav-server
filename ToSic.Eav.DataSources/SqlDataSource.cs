@@ -5,13 +5,16 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Types.Attributes;
 
 namespace ToSic.Eav.DataSources
 {
+	/// <inheritdoc />
 	/// <summary>
 	/// Provide Entities from a SQL Server
 	/// </summary>
-	// ReSharper disable once InheritdocConsiderUsage
+	[PipelineDesigner]
+    [ExpectsDataOfType(ContentTypes.SqlDataSourceType.StaticTypeName)]
 	public class SqlDataSource : ExternalDataDataSource
 	{
         // Note: of the standard SQL-terms, I will only allow exec|execute|select

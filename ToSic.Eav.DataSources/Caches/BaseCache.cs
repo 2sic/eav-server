@@ -152,34 +152,34 @@ namespace ToSic.Eav.DataSources.Caches
 
 	    #endregion
 
-        /// <inheritdoc />
-        /// <summary>
-        /// Get a ContentType by StaticName if found of DisplayName if not
-        /// </summary>
-        /// <param name="name">Either StaticName or DisplayName</param>
-		public IContentType GetContentType(string name)
-		{
-			var app = AppDataPackage;
-			// Lookup StaticName first
-			var matchByStaticName = app.ContentTypes.FirstOrDefault(c => c.Value.StaticName.Equals(name));
-			if (matchByStaticName.Value != null)
-				return matchByStaticName.Value;
+	    /// <inheritdoc />
+	    /// <summary>
+	    /// Get a ContentType by StaticName if found of DisplayName if not
+	    /// </summary>
+	    /// <param name="name">Either StaticName or DisplayName</param>
+	    public IContentType GetContentType(string name) => AppDataPackage.GetContentType(name);
+        //{
+			//var app = AppDataPackage;
+			//// Lookup StaticName first
+			//var matchByStaticName = app.ContentTypes.FirstOrDefault(c => c.Value.StaticName.Equals(name));
+			//if (matchByStaticName.Value != null)
+			//	return matchByStaticName.Value;
 
-			// Lookup Name afterward
-			var matchByName = app.ContentTypes.FirstOrDefault(c => c.Value.Name.Equals(name));
-		    return matchByName.Value;
-		}
+			//// Lookup Name afterward
+			//var matchByName = app.ContentTypes.FirstOrDefault(c => c.Value.Name.Equals(name));
+		 //   return matchByName.Value;
+		//}
 
 		/// <inheritdoc />
 		/// <summary>
 		/// Get a ContentType by Id
 		/// </summary>
-		public IContentType GetContentType(int contentTypeId) => AppDataPackage.ContentTypes.FirstOrDefault(c => c.Key == contentTypeId).Value;
+		public IContentType GetContentType(int contentTypeId) => AppDataPackage.GetContentType(contentTypeId);// => AppDataPackage.ContentTypes.FirstOrDefault(c => c.Key == contentTypeId).Value;
 
 	    /// <summary>
 		/// Get all Content Types
 		/// </summary>
-		public IDictionary<int, IContentType> GetContentTypes() => AppDataPackage.ContentTypes;
+		public IEnumerable<IContentType> GetContentTypes() => AppDataPackage.ContentTypes;
 
 	    /// <inheritdoc />
 	    /// <summary>

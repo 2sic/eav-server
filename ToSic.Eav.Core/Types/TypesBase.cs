@@ -22,6 +22,7 @@ namespace ToSic.Eav.Types
             Scope = scope;
             Description = "todo";
             Attributes = new List<IAttributeDefinition>();
+            IsInstalledInPrimaryStorage = false;
         }
 
         protected AttributeDefinition Add(AttributeDefinition attDef)

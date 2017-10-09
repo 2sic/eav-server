@@ -5,14 +5,16 @@ using ToSic.Eav.Types.Builder;
 
 namespace ToSic.Eav.DataSources.ContentTypes
 {
-    [ContentTypeDefinition(CTypeName)]
+    [ContentTypeDefinition(StaticTypeName)]
     public class SqlDataSourceType: TypesBase
     {
         private const string CName = "SqlDataSource-Type";
-        private const string CTypeName = "|Test.DS.SqlDataSource";
+        internal const string StaticTypeName = "|Config ToSic.SexyContent.DataSources.SqlDataSource ";
 
-        public SqlDataSourceType() : base(CName, CTypeName)
+        public SqlDataSourceType() : base(CName, StaticTypeName, Constants.ScopeSystem)
         {
+            Add(AttDef(Str, DefInp, "Title", "Title", "Just a nice name so you remember what it's for", "Sql Query")
+                .MakeTitle());
             Add(AttDef(Grp, DefInp, "ConsGrp", "Connection Information", "How to connect to the DB"));
             {
                 Add(AttDef(Str, DefInp, "ConnectionStringName", "Connection Name (preferred)", "Use connection names from the web.config", "SiteSqlServer"));

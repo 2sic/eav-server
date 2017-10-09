@@ -107,7 +107,7 @@ namespace ToSic.Eav.WebApi
         /// Get installed DataSources from .NET Runtime but only those with [PipelineDesigner Attribute]
         /// </summary>
         [HttpGet]
-		public IEnumerable<QueryRuntime.QueryInfoTemp> GetInstalledDataSources()
+		public IEnumerable<QueryRuntime.DataSourceInfo> GetInstalledDataSources()
 		    => QueryRuntime.GetInstalledDataSources();
 
 		/// <summary>

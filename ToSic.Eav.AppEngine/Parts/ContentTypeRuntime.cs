@@ -6,23 +6,24 @@ namespace ToSic.Eav.Apps.Parts
     /// <summary>
     /// Manager for entities in an app
     /// </summary>
+    // ReSharper disable once InheritdocConsiderUsage
     public class ContentTypeRuntime : RuntimeBase
     {
         public ContentTypeRuntime(AppRuntime app) : base(app){}
 
-        public IEnumerable<ToSic.Eav.Interfaces.IContentType> All => App.Cache.GetContentTypes().Select(c => c.Value);
+        public IEnumerable<Eav.Interfaces.IContentType> All => App.Cache.GetContentTypes();//.Values;//.Select(c => c.Value);
 
         /// <summary>
         /// Gets a GeontentType by Name
         /// </summary>
-        public ToSic.Eav.Interfaces.IContentType Get(string name) => App.Cache.GetContentType(name);
+        public Eav.Interfaces.IContentType Get(string name) => App.Cache.GetContentType(name);
 
         /// <summary>
         /// Gets a ContentType by Id
         /// </summary>
-        public ToSic.Eav.Interfaces.IContentType Get(int contentTypeId) => App.Cache.GetContentType(contentTypeId);
+        public Eav.Interfaces.IContentType Get(int contentTypeId) => App.Cache.GetContentType(contentTypeId);
 
-        public IEnumerable<ToSic.Eav.Interfaces.IContentType> FromScope(string scope = null, bool includeAttributeTypes = false)
+        public IEnumerable<Eav.Interfaces.IContentType> FromScope(string scope = null, bool includeAttributeTypes = false)
         {
             //var contentTypes = Cache.GetContentTypes();
             var set = All 
@@ -33,7 +34,7 @@ namespace ToSic.Eav.Apps.Parts
         }
 
 
-        public IEnumerable<ToSic.Eav.Interfaces.IEntity> GetInputTypes(bool includeGlobalDefinitions)
+        public IEnumerable<Eav.Interfaces.IEntity> GetInputTypes(bool includeGlobalDefinitions)
         {
             var inputsOfThisApp = App.Entities.Get(Constants.TypeForInputTypeDefinition).ToList();
 

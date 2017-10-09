@@ -7,10 +7,11 @@ using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.App
 {
+	/// <inheritdoc />
 	/// <summary>
 	/// Cache Object for a specific App
 	/// </summary>
-	public class AppDataPackage: IMetadataProvider
+	public partial class AppDataPackage: IMetadataProvider
 	{
 		#region Private Fields
 		private IDictionary<int, IEntity> _publishedEntities;
@@ -31,7 +32,7 @@ namespace ToSic.Eav.App
         /// <summary>
         /// The simple list of entities, used in many pipeline parts
         /// </summary>
-        public IEnumerable<IEntity> List { get; private set; } 
+        public IEnumerable<IEntity> List { get; } 
 
 		/// <summary>
 		/// Get all Published Entities in this App (excluding Drafts)
@@ -43,10 +44,6 @@ namespace ToSic.Eav.App
 		/// </summary>
 		public IDictionary<int, IEntity> DraftEntities => _draftEntities ?? (_draftEntities = Entities.Where(e => e.Value.GetDraft() == null).ToDictionary(k => k.Value.EntityId, v => v.Value));
 
-	    /// <summary>
-		/// Gets all ContentTypes in this App
-		/// </summary>
-		public IDictionary<int, IContentType> ContentTypes { get; private set; }
 
         #region Metadata
         /// <summary>
@@ -93,12 +90,12 @@ namespace ToSic.Eav.App
         /// <summary>
         /// Get all Relationships between Entities
         /// </summary>
-        public IEnumerable<EntityRelationshipItem> Relationships { get; private set; }
+        public IEnumerable<EntityRelationshipItem> Relationships { get; }
 
 		/// <summary>
 		/// Gets the DateTime when this CacheItem was populated
 		/// </summary>
-		public DateTime LastRefresh { get; private set; }
+		public DateTime LastRefresh { get; }
 		#endregion
 
 		/// <summary>
@@ -118,14 +115,19 @@ namespace ToSic.Eav.App
 		    AppId = appId;
 		    List = entList;
 		    Entities = entities;
-			ContentTypes = contentTypes;
-			MetadataForGuid = metadataForGuid;
+			//ContentTypes = contentTypes;
+		    _appTypesFromRepository = contentTypes;
+            MetadataForGuid = metadataForGuid;
 			MetadataForNumber = metadataForNumber;
 			MetadataForString = metadataForString;
 		    MetadataTypes = metadataTypes;
 			Relationships = relationships;
 
 			LastRefresh = DateTime.Now;
+
+            // build types by name
+            BuildTypesByNameCache(contentTypes);
 		}
+
 	}
 }

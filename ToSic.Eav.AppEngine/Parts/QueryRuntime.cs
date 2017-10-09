@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
+using ToSic.Eav.Types.Attributes;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -9,9 +11,9 @@ namespace ToSic.Eav.Apps.Parts
     {
         internal QueryRuntime(AppRuntime app) : base(app) { }
 
-        public static IEnumerable<QueryInfoTemp> GetInstalledDataSources()
+        public static IEnumerable<DataSourceInfo> GetInstalledDataSources()
         {
-            var result = new List<QueryInfoTemp>();
+            var result = new List<DataSourceInfo>();
             var installedDataSources = DataSource.GetInstalledDataSources(true);
             foreach (var dataSource in installedDataSources)
             {
@@ -43,24 +45,27 @@ namespace ToSic.Eav.Apps.Parts
                 }
                 #endregion
 
-                result.Add(new QueryInfoTemp
+                result.Add(new DataSourceInfo
                 {
                     PartAssemblyAndType = dataSource.FullName + ", " + dataSource.Assembly.GetName().Name,
                     ClassName = dataSource.Name,
                     In = inStreamNames,
-                    Out = outStreamNames
+                    Out = outStreamNames,
+                    ContentType = (dataSource.GetCustomAttributes(typeof(ExpectsDataOfType), true).FirstOrDefault() as ExpectsDataOfType)
+                        ?.StaticName
                 });
             }
 
             return result;
         }
 
-        public class QueryInfoTemp
+        public class DataSourceInfo
         {
             public string PartAssemblyAndType;
             public string ClassName;
             public ICollection<string> In;
             public ICollection<string> Out;
+            public string ContentType;
         }
     }
 }

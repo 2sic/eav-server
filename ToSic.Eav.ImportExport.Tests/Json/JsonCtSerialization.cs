@@ -41,7 +41,7 @@ namespace ToSic.Eav.ImportExport.Tests.json
         private string GetJsonOfContentType(int appId, string typeName, JsonSerializer ser = null)
         {
             var exBuilder = ser ?? SerializerOfApp(appId);
-            var type = exBuilder.App.ContentTypes.Values.Single(x => x.StaticName == typeName || x.Name == typeName);
+            var type = exBuilder.App.GetContentType(typeName);//.ContentTypes.Values.Single(x => x.StaticName == typeName || x.Name == typeName);
             var xmlEnt = exBuilder.Serialize(type);
             return xmlEnt;
         }

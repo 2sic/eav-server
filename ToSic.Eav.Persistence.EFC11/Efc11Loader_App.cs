@@ -8,16 +8,15 @@ using ToSic.Eav.App;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
-using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Persistence.Efc
 {
     /// <summary>
-    /// 
+    /// Will load all DB data into the memory data model using Entity Framework Core 1.1
     /// </summary>
-    public class Efc11Loader: IRepositoryLoader, IHasLog
+    public partial class Efc11Loader: IRepositoryLoader
     {
         #region constructor and private vars
         public Efc11Loader(EavDbContext dbContext)
@@ -29,93 +28,6 @@ namespace ToSic.Eav.Persistence.Efc
 
         #endregion
 
-        #region Testing / Analytics helpers
-        internal void ResetCacheForTesting()
-        => _contentTypes = new Dictionary<int, Dictionary<int, IContentType>>();
-        #endregion
-
-        #region Load Content-Types into IContent-Type Dictionary
-        private Dictionary<int, Dictionary<int, IContentType>> _contentTypes = new Dictionary<int, Dictionary<int, IContentType>>();
-
-        public IDictionary<int, IContentType> ContentTypes(int appId) => ContentTypes(appId, null);
-
-        /// <summary>
-        /// Get all ContentTypes for specified AppId. 
-        /// If uses temporary caching, so if called multiple times it loads from a private field.
-        /// </summary>
-        public IDictionary<int, IContentType> ContentTypes(int appId, IDeferredEntitiesList source)
-        {
-            if (!_contentTypes.ContainsKey(appId))
-                LoadContentTypesIntoLocalCache(appId, source);
-            return _contentTypes[appId];
-        }
-
-        private TimeSpan _sqlTotalTime = new TimeSpan(0);
-        /// <summary>
-        /// Load DB content-types into loader-cache
-        /// </summary>
-        private void LoadContentTypesIntoLocalCache(int appId, IDeferredEntitiesList source)
-        {
-            // Load from DB
-            var sqlTime = Stopwatch.StartNew();
-            var contentTypes = _dbContext.ToSicEavAttributeSets
-                    .Where(set => set.AppId == appId && set.ChangeLogDeleted == null)
-                    .Include(set => set.ToSicEavAttributesInSets)
-                        .ThenInclude(attrs => attrs.Attribute)
-                    .Include(set => set.App)
-                    .Include(set => set.UsesConfigurationOfAttributeSetNavigation)
-                        .ThenInclude(master => master.App)
-                    .ToList()
-                    .Select(set => new
-                    {
-                        set.AttributeSetId,
-                        set.Name,
-                        set.StaticName,
-                        set.Scope,
-                        set.Description,
-                        Attributes = set.ToSicEavAttributesInSets
-                            .Select(a => new AttributeDefinition(appId, a.Attribute.StaticName, a.Attribute.Type, a.IsTitle, a.AttributeId, a.SortOrder, source)),
-                        IsGhost = set.UsesConfigurationOfAttributeSet,
-                        SharedDefinitionId = set.UsesConfigurationOfAttributeSet,
-                        AppId = set.UsesConfigurationOfAttributeSetNavigation?.AppId ?? set.AppId,
-                        ZoneId = set.UsesConfigurationOfAttributeSetNavigation?.App?.ZoneId ?? set.App.ZoneId,
-                        ConfigIsOmnipresent =
-                        set.UsesConfigurationOfAttributeSetNavigation?.AlwaysShareConfiguration ?? set.AlwaysShareConfiguration,
-                    })
-                .ToList();
-            sqlTime.Stop();
-
-            var shareids = contentTypes.Select(c => c.SharedDefinitionId).ToList();
-            sqlTime.Start();
-            var sharedAttribs = _dbContext.ToSicEavAttributeSets
-                .Include(s => s.ToSicEavAttributesInSets)
-                .ThenInclude(a => a.Attribute)
-                .Where(s => shareids.Contains(s.AttributeSetId))
-                .ToDictionary(s => s.AttributeSetId, s => s.ToSicEavAttributesInSets.Select(a
-                    => new AttributeDefinition(appId, a.Attribute.StaticName, a.Attribute.Type, a.IsTitle,
-                        a.AttributeId, a.SortOrder)));
-            sqlTime.Stop();
-
-            // Convert to ContentType-Model
-            _contentTypes[appId] = contentTypes.ToDictionary(k1 => k1.AttributeSetId,
-                set => (IContentType) new ContentType(appId, set.Name, set.StaticName, set.AttributeSetId,
-                    set.Scope, set.Description, set.IsGhost, set.ZoneId, set.AppId, set.ConfigIsOmnipresent)
-                {
-                    Attributes = (set.SharedDefinitionId.HasValue
-                            ? sharedAttribs[set.SharedDefinitionId.Value]
-                            : set.Attributes)
-                        // ReSharper disable once RedundantEnumerableCastCall
-                        .Cast<IAttributeDefinition>()
-                        .ToList()
-                }
-            );
-
-            _sqlTotalTime = _sqlTotalTime.Add(sqlTime.Elapsed);
-        }
-
-        #endregion
-
-        private Log Log { get; set; }
 
         #region AppPackage
 
@@ -429,8 +341,5 @@ namespace ToSic.Eav.Persistence.Efc
                     // ReSharper disable once RedundantEnumerableCastCall
                     .Cast<DimensionDefinition>().ToList()));
 
-        #region IHasLog interface
-        public void LinkLog(Log parentLog) => Log.LinkTo(parentLog);
-        #endregion
     }
 }

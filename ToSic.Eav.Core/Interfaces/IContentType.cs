@@ -49,5 +49,7 @@ namespace ToSic.Eav.Interfaces
         /// <returns></returns>
         IAttributeDefinition this[string fieldName] { get; }
 
+
+        bool IsInstalledInPrimaryStorage { get; }
     }
 }

@@ -151,7 +151,7 @@ namespace ToSic.Eav.Apps.ImportExport
             foreach (var attributeSetId in AttributeSetIDs)
             {
                 var id = int.Parse(attributeSetId);
-                var set = (ContentType)AppPackage.ContentTypes[id];
+                var set = (ContentType)AppPackage.GetContentType(id);//.ContentTypes[id];
                 var attributes = new XElement(XmlConstants.Attributes);
 
                 // Add all Attributes to AttributeSet including meta informations
@@ -181,7 +181,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 // Add Ghost-Info if content type inherits from another content type
                 if (set.ParentId.HasValue)
                 {
-                    var parentStaticName = AppPackage.ContentTypes[set.ParentId.Value].StaticName;
+                    var parentStaticName = AppPackage.GetContentType(set.ParentId.Value).StaticName;//.ContentTypes[set.ParentId.Value].StaticName;
                     attributeSet.Add(new XAttribute(XmlConstants.AttributeSetParentDef, parentStaticName));
                 }
 
@@ -256,7 +256,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     {
                         case XmlConstants.TemplateContentTypeId:
                             var eid = int.Parse(valueString);
-                            var attributeSet = AppPackage.ContentTypes[eid];
+                            var attributeSet = AppPackage.GetContentType(eid);//.ContentTypes[eid];
                             value.Attribute(XmlConstants.ValueAttr)?.SetValue(attributeSet != null ? attributeSet.StaticName : string.Empty);
                             break;
                         case XmlConstants.TemplateDemoItemId:

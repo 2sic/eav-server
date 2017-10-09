@@ -186,7 +186,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
         private void MergeContentTypeUpdateWithExisting(IContentType contentType)
         {
-            var existing = _entireApp.ContentTypes.Values.FirstOrDefault(ct => ct.StaticName == contentType.StaticName);
+            var existing = _entireApp.GetContentType(contentType.StaticName);//.ContentTypes.Values.FirstOrDefault(ct => ct.StaticName == contentType.StaticName);
             if (existing == null) return;
 
             foreach (var newAttrib in contentType.Attributes)
@@ -215,8 +215,8 @@ namespace ToSic.Eav.Apps.ImportExport
         {
            #region try to get AttributeSet or otherwise cancel & log error
 
-            var dbAttrSet = appDataPackage.ContentTypes.Values
-                .FirstOrDefault(ct => String.Equals(ct.StaticName, update.Type.StaticName, StringComparison.InvariantCultureIgnoreCase));
+            var dbAttrSet = appDataPackage.GetContentType(update.Type.StaticName); 
+            // .ContentTypes.Values.FirstOrDefault(ct => String.Equals(ct.StaticName, update.Type.StaticName, StringComparison.InvariantCultureIgnoreCase));
 
             if (dbAttrSet == null) // AttributeSet not Found
             {
