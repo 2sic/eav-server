@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Interfaces;
@@ -62,7 +63,7 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Initializes a new instance of the ContentType class.
         /// </summary>
-        public ContentType(int appId, string name, string staticName, int attributeSetId, string scope, string description, int? usesConfigurationOfAttributeSet, int configZoneId, int configAppId, bool configurationIsOmnipresent)
+        public ContentType(int appId, string name, string staticName, int attributeSetId, string scope, string description, int? usesConfigurationOfAttributeSet, int configZoneId, int configAppId, bool configurationIsOmnipresent, IDeferredEntitiesList metaSource)
         {
             AppId = appId;
             Name = name;
@@ -74,6 +75,7 @@ namespace ToSic.Eav.Data
             ParentZoneId = configZoneId;
             ParentAppId = configAppId;
             AlwaysShareConfiguration = configurationIsOmnipresent;
+            _metadataSource = metaSource;
         }
 
         /// <summary>
@@ -104,5 +106,17 @@ namespace ToSic.Eav.Data
 
 
         #endregion
+
+        private readonly IDeferredEntitiesList _metadataSource;
+
+        public List<IEntity> Items => _items ?? (_items = _metadataSource?.Metadata.GetMetadata(Constants.MetadataForContentType, StaticName).ToList() ?? new List<IEntity>());
+
+        private List<IEntity> _items;
+
+        public bool HasMetadata => _items != null && _items.Any();
+
+        public void AddMetadata(string type, Dictionary<string, object> values)
+            => Items.Add(new Entity(AppId, Guid.Empty, type, values));
+
     }
 }

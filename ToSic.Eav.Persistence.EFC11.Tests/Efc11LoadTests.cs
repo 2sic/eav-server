@@ -106,7 +106,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
 
         private IDictionary<int, IContentType> TestLoadCts(int appId)
         {
-            return Loader.ContentTypes(appId);
+            return Loader.ContentTypes(appId, null);
         }
 
     }

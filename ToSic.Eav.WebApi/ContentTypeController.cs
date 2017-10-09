@@ -42,7 +42,7 @@ namespace ToSic.Eav.WebApi
 	    private dynamic ContentTypeForJson(IContentType t, ICache cache)
 	    {
 	        Log.Add($"for json a:{t.AppId}, type:{t.Name}");
-	        var metadata = GetMetadata((ContentType)t, cache);
+	        var metadata = t.Items.FirstOrDefault();// GetMetadata((ContentType)t, cache);
 
 	        var nameOverride = metadata?.GetBestValue(Constants.ContentTypeMetadataLabel).ToString();
 	        if (string.IsNullOrEmpty(nameOverride))
@@ -68,18 +68,18 @@ namespace ToSic.Eav.WebApi
 	        return jsonReady;
 	    }
 
-	    public IEntity GetMetadata(ContentType ct, ICache cache = null)
-	    {
-	        Log.Add($"get metadata a:{ct.AppId}, type:{ct.StaticName}");
-	        var metaCache = (cache != null && ct.ParentAppId == cache.AppId)
-	            ? cache
-	            : DataSource.GetCache(ct.ParentZoneId, ct.ParentAppId);
+	    //public IEntity GetMetadata(ContentType ct, ICache cache = null)
+	    //{
+	    //    Log.Add($"get metadata a:{ct.AppId}, type:{ct.StaticName}");
+	    //    var metaCache = (cache != null && ct.ParentAppId == cache.AppId)
+	    //        ? cache
+	    //        : DataSource.GetCache(ct.ParentZoneId, ct.ParentAppId);
 
-            var metaDataSource = (IMetadataProvider)metaCache;
-	        return metaDataSource.GetMetadata(
-	            Constants.MetadataForContentType, ct.StaticName)
-	            .FirstOrDefault();
-	    }
+     //       var metaDataSource = (IMetadataProvider)metaCache;
+	    //    return metaDataSource.GetMetadata(
+	    //        Constants.MetadataForContentType, ct.StaticName)
+	    //        .FirstOrDefault();
+	    //}
 
         [HttpGet]
 	    public dynamic GetSingle(int appId, string contentTypeStaticName, string scope = null)

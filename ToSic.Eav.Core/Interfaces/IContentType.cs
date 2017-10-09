@@ -2,11 +2,12 @@
 
 namespace ToSic.Eav.Interfaces
 {
+	/// <inheritdoc />
 	/// <summary>
 	/// Represents a Content Type
 	/// </summary>
-	public interface IContentType
-	{
+	public interface IContentType: IHasMetadata
+    {
         /// <summary>
         /// The app to which this content type belongs
         /// </summary>

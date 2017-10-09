@@ -10,7 +10,7 @@ namespace ToSic.Eav.Interfaces
         /// <summary>
         /// Get all ContentTypes for specified AppId. If called multiple times it loads from a private field.
         /// </summary>
-        IDictionary<int, IContentType> ContentTypes(int appId);
+        IDictionary<int, IContentType> ContentTypes(int appId, IDeferredEntitiesList source);
 
         // 2017-06-08 disabled for now, as not in use...
         /// <summary>

@@ -17,7 +17,7 @@ namespace ToSic.Eav.Persistence.Efc
         #region Load Content-Types into IContent-Type Dictionary
         private Dictionary<int, Dictionary<int, IContentType>> _contentTypes = new Dictionary<int, Dictionary<int, IContentType>>();
 
-        public IDictionary<int, IContentType> ContentTypes(int appId) => ContentTypes(appId, null);
+        // public IDictionary<int, IContentType> ContentTypes(int appId) => ContentTypes(appId, null);
 
         /// <summary>
         /// Get all ContentTypes for specified AppId. 
@@ -78,7 +78,7 @@ namespace ToSic.Eav.Persistence.Efc
             // Convert to ContentType-Model
             _contentTypes[appId] = contentTypes.ToDictionary(k1 => k1.AttributeSetId,
                 set => (IContentType) new ContentType(appId, set.Name, set.StaticName, set.AttributeSetId,
-                    set.Scope, set.Description, set.IsGhost, set.ZoneId, set.AppId, set.ConfigIsOmnipresent)
+                    set.Scope, set.Description, set.IsGhost, set.ZoneId, set.AppId, set.ConfigIsOmnipresent, source)
                 {
                     Attributes = (set.SharedDefinitionId.HasValue
                             ? sharedAttribs[set.SharedDefinitionId.Value]

@@ -9,7 +9,7 @@ namespace ToSic.Eav.DataSources.ContentTypes
     public class SqlDataSourceType: TypesBase
     {
         private const string CName = "SqlDataSource-Type";
-        internal const string StaticTypeName = "|Config ToSic.SexyContent.DataSources.SqlDataSource ";
+        internal const string StaticTypeName = "|Config ToSic.Eav.DataSources.SqlDataSource";
 
         public SqlDataSourceType() : base(CName, StaticTypeName, Constants.ScopeSystem)
         {
@@ -30,6 +30,8 @@ namespace ToSic.Eav.DataSources.ContentTypes
                 Add(AttDef(Str, DefInp, "TitleField", "Title Field", $"Name of the title field, if blank, defaults to {Constants.EntityFieldTitle}"));
                 Add(AttDef(Str, DefInp, "IdField", "Id Field", $"Name of the ID field, if blank, defaults to {Constants.EntityFieldId}"));
             }
+
+            this.ContentTypeMetadata("SQL DataSource", "todo description", null, null, null, "some instructions");
         }
     }
 }

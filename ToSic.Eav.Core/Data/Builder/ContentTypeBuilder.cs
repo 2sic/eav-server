@@ -11,7 +11,7 @@ namespace ToSic.Eav.Data.Builder
         public static ContentType SystemAttributeSet(int appId, string staticName, string description,
             List<IAttributeDefinition> attributes, bool alwaysShareConfiguration = false)
             => new ContentType(appId, staticName, staticName, 0, "System", description, null, 0, 0,
-                alwaysShareConfiguration)
+                alwaysShareConfiguration, null)
             {
                 Attributes = attributes
             };
@@ -22,7 +22,7 @@ namespace ToSic.Eav.Data.Builder
 
         public static ContentType DynamicContentType(int appId, string scope = DynTypeDefScope)
             => new ContentType(appId, Constants.DynamicType, Constants.DynamicType, DynTypeId, scope, DynTypeDefDescription, null, 0, 0,
-                false)
+                false, null)
             {
                 Attributes = new List<IAttributeDefinition>()
             };
