@@ -11,7 +11,7 @@ namespace ToSic.Eav.Data
     /// <summary>
     /// Represents an Attribute with Values of a Generic Type
     /// </summary>
-    public class AttributeDefinition : AttributeBase, IAttributeDefinition
+    public partial class AttributeDefinition : AttributeBase, IAttributeDefinition
     {
         public int AppId { get; }
         // additional info for the persistence layer
@@ -21,21 +21,27 @@ namespace ToSic.Eav.Data
 
         public bool IsTitle { get; set; }
 
-        private readonly IDeferredEntitiesList _metadataSource;
+        private readonly IDeferredEntitiesList _appMetadataProvider;
 
         /// <inheritdoc />
         /// <summary>
         /// Extended constructor when also storing the persistance ID-Info
         /// </summary>
-        public AttributeDefinition(int appId, string name, string type, bool isTitle, int attributeId, int sortOrder, IDeferredEntitiesList metaSource = null) : base(name, type)
+        public AttributeDefinition(int appId, string name, string type, bool isTitle, int attributeId, int sortOrder, IDeferredEntitiesList metaProvider = null, int parentApp = 0/*, int parentId = 0*/) : base(name, type)
         {
             AppId = appId;
             IsTitle = isTitle;
             AttributeId = attributeId;
             SortOrder = sortOrder;
-            _metadataSource = metaSource;
+            _appMetadataProvider = metaProvider;
+            _isShared = parentApp != 0;
+            _parentAppId = parentApp;
+            //_parentId = parentId;
         }
 
+        private readonly bool _isShared;
+        private readonly int _parentAppId;
+        //private readonly int _parentId;
 
         /// <inheritdoc />
         public AttributeDefinition(int appId, string name, string niceName, AttributeTypeEnum type, string inputType, string notes, bool? visibleInEditUi, object defaultValue) 
@@ -68,8 +74,25 @@ namespace ToSic.Eav.Data
         /// <remarks>
         /// will auto-initialize from metadata source if not pre-initialied
         /// </remarks>
-        public List<IEntity> Items => _items ?? (_items = _metadataSource?.Metadata.GetMetadata(Constants.MetadataForAttribute, AttributeId).ToList() ?? new List<IEntity>());
+        //public List<IEntity> Items => _items ?? (_items = _appMetadataProvider?.Metadata.GetMetadata(Constants.MetadataForAttribute, AttributeId).ToList() ?? new List<IEntity>());
 
+        public List<IEntity> Items
+        {
+            get
+            {
+                if (_items != null) return _items;
+
+                var metadataProvider = _isShared
+                    ? Factory.Resolve<IRemoteMetadataProvider>()?.OfApp(_parentAppId)
+                    : _appMetadataProvider?.Metadata;
+
+                _items = metadataProvider?.GetMetadata(
+                             Constants.MetadataForAttribute, AttributeId).ToList()
+                         ?? new List<IEntity>();
+
+                return _items;
+            }
+        }
         // ReSharper disable once InconsistentNaming
         internal List<IEntity> _items;
 
@@ -79,5 +102,6 @@ namespace ToSic.Eav.Data
             => Items.Add(new Entity(AppId, Guid.Empty, type, values));
 
         #endregion
+        
     }
 }

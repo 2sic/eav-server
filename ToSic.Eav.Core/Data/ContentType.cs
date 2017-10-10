@@ -9,9 +9,10 @@ namespace ToSic.Eav.Data
     /// <summary>
     /// Represents a Content Type
     /// </summary>
-    public class ContentType : IContentType, IContentTypeShareable
+    public class ContentType : IContentType, IUsesSharedDefinition
     {
         #region simple properties
+
         /// <inheritdoc />
         public int AppId { get; }
 
@@ -22,7 +23,7 @@ namespace ToSic.Eav.Data
         public string StaticName { get; protected set; }
 
         /// <inheritdoc />
-        public string Description { get; protected set;  }
+        public string Description { get; protected set; }
 
         /// <inheritdoc />
         public string Scope { get; protected set; }
@@ -54,16 +55,20 @@ namespace ToSic.Eav.Data
 
         /// <inheritdoc />
         public bool AlwaysShareConfiguration { get; protected set; }
+
         #endregion
 
 
         //public Metadata Metadata = new Metadata();
 
         #region constructors
+
         /// <summary>
         /// Initializes a new instance of the ContentType class.
         /// </summary>
-        public ContentType(int appId, string name, string staticName, int attributeSetId, string scope, string description, int? usesConfigurationOfAttributeSet, int configZoneId, int configAppId, bool configurationIsOmnipresent, IDeferredEntitiesList metaSource)
+        public ContentType(int appId, string name, string staticName, int attributeSetId, string scope,
+            string description, int? usesConfigurationOfAttributeSet, int configZoneId, int configAppId,
+            bool configurationIsOmnipresent, IDeferredEntitiesList metaProvider)
         {
             AppId = appId;
             Name = name;
@@ -75,7 +80,7 @@ namespace ToSic.Eav.Data
             ParentZoneId = configZoneId;
             ParentAppId = configAppId;
             AlwaysShareConfiguration = configurationIsOmnipresent;
-            _metadataSource = metaSource;
+            _appMetadataProvider = metaProvider;
         }
 
         /// <summary>
@@ -87,29 +92,50 @@ namespace ToSic.Eav.Data
             Name = name;
             StaticName = staticName ?? name;
         }
+
         #endregion
 
 
         #region Helpers just for creating ContentTypes which will be imported
+
         public void SetImportParameters(string scope, string staticName, string description, bool alwaysShareDef)
-	    {
-	        Scope = scope;
-	        StaticName = staticName;
-	        Description = description;
+        {
+            Scope = scope;
+            StaticName = staticName;
+            Description = description;
             AlwaysShareConfiguration = alwaysShareDef;
         }
 
         // special values just needed for import / save 
         // todo: try to place in a sub-object to un-clutter this ContentType object
         public bool OnSaveSortAttributes { get; set; } = false;
+
         public string OnSaveUseParentStaticName { get; set; }
 
 
         #endregion
 
-        private readonly IDeferredEntitiesList _metadataSource;
+        #region Metadata
 
-        public List<IEntity> Items => _items ?? (_items = _metadataSource?.Metadata.GetMetadata(Constants.MetadataForContentType, StaticName).ToList() ?? new List<IEntity>());
+        private readonly IDeferredEntitiesList _appMetadataProvider;
+
+        public List<IEntity> Items
+        {
+            get
+            {
+                if (_items != null) return _items;
+
+                var metadataProvider = AppId != ParentAppId
+                    ? Factory.Resolve<IRemoteMetadataProvider>()?.OfZoneAndApp(ParentZoneId, ParentAppId)
+                    : _appMetadataProvider?.Metadata;
+
+                _items = metadataProvider?.GetMetadata(
+                             Constants.MetadataForContentType, StaticName).ToList()
+                         ?? new List<IEntity>();
+
+                return _items;
+            }
+        }
 
         private List<IEntity> _items;
 
@@ -118,5 +144,6 @@ namespace ToSic.Eav.Data
         public void AddMetadata(string type, Dictionary<string, object> values)
             => Items.Add(new Entity(AppId, Guid.Empty, type, values));
 
+        #endregion
     }
 }

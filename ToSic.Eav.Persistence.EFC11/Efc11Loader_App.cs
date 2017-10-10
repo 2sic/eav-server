@@ -329,11 +329,10 @@ namespace ToSic.Eav.Persistence.Efc
         public Dictionary<int, string> MetadataTargetTypes() => _dbContext.ToSicEavAssignmentObjectTypes
             .ToDictionary(a => a.AssignmentObjectTypeId, a => a.Name);
 
-        public Dictionary<int, Zone> Zones(/*int zoneId = -1*/) => _dbContext.ToSicEavZones
+        public Dictionary<int, Zone> Zones() => _dbContext.ToSicEavZones
             .Include(z => z.ToSicEavApps)
             .Include(z => z.ToSicEavDimensions)
                 .ThenInclude(d => d.ParentNavigation)
-            //.Where(z => z.ZoneId == zoneId || zoneId == -1)
             .ToDictionary(z => z.ZoneId, z => new Zone(z.ZoneId,
                 z.ToSicEavApps.FirstOrDefault(a => a.Name == Constants.DefaultAppName)?.AppId ?? -1,
                 z.ToSicEavApps.ToDictionary(a => a.AppId, a => a.Name),

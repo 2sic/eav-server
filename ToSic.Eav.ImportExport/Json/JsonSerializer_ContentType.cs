@@ -19,7 +19,7 @@ namespace ToSic.Eav.ImportExport.Json
 
         private JsonContentType ToJson(IContentType contentType)
         {
-            var sharableCt = contentType as IContentTypeShareable;
+            var sharableCt = contentType as IUsesSharedDefinition;
             JsonContentTypeShareable jctShare = null;
 
             var attribs = contentType.Attributes.OrderBy(a => a.SortOrder).Select(attrib => new JsonAttributeDefinition

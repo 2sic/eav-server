@@ -90,6 +90,8 @@
     <Compile Include="App\AppDataPackage.cs" />
     <Compile Include="Data\AttributeDefinition.cs" />
     <Compile Include="Data\AttributeBase.cs" />
+    <Compile Include="Data\AttributeDefinition_Shared.cs" />
+    <Compile Include="Interfaces\IRemoteMetadataProvider.cs" />
     <Compile Include="Types\Attributes\ExpectsDataOfType.cs" />
     <Compile Include="Types\Attributes\ContentTypeDefinition.cs" />
     <Compile Include="Data\Builder\AttDefBuilder.cs" />
@@ -121,7 +123,7 @@
     <Compile Include="Implementations\ValueConverter\IEavValueConverter.cs" />
     <Compile Include="Implementations\ValueConverter\NeutralValueConverter.cs" />
     <Compile Include="Interfaces\IAttributeDefinition.cs" />
-    <Compile Include="Interfaces\IContentTypeShareable.cs" />
+    <Compile Include="Interfaces\IUsesSharedDefinition.cs" />
     <Compile Include="Interfaces\IHasMetadata.cs" />
     <Compile Include="Interfaces\IEntity.cs" />
     <Compile Include="Interfaces\IMetadata.cs" />

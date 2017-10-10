@@ -49,7 +49,7 @@ namespace ToSic.Eav.WebApi
 	            nameOverride = t.Name;
             var ser = new Serializer();
 
-	        var share = (IContentTypeShareable) t;
+	        var share = (IUsesSharedDefinition) t;
 
             var jsonReady = new
 	        {
@@ -126,7 +126,10 @@ namespace ToSic.Eav.WebApi
             SetAppIdAndUser(appId);
 
             SetAppIdAndUser(appId);
-            var fields = DataSource.GetCache(null, appId).GetContentType(staticName).Attributes;
+            var fields = DataSource.GetCache(null, appId)
+                .GetContentType(staticName)
+                .Attributes
+                .OrderBy(a => a.SortOrder);
 
 
             var appInputTypes = new AppRuntime(appId).ContentTypes.GetInputTypes(true).ToList();

@@ -72,7 +72,7 @@ namespace ToSic.Eav.Persistence.Efc
                 .Where(s => shareids.Contains(s.AttributeSetId))
                 .ToDictionary(s => s.AttributeSetId, s => s.ToSicEavAttributesInSets.Select(a
                     => new AttributeDefinition(appId, a.Attribute.StaticName, a.Attribute.Type, a.IsTitle,
-                        a.AttributeId, a.SortOrder)));
+                        a.AttributeId, a.SortOrder, parentApp: s.AppId)));
             sqlTime.Stop();
 
             // Convert to ContentType-Model

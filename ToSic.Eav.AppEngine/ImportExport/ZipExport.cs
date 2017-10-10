@@ -130,7 +130,7 @@ namespace ToSic.Eav.Apps.ImportExport
         {
             // Get Export XML
             var attributeSets = new AppRuntime(_zoneId, _appId).ContentTypes.FromScope(includeAttributeTypes: true);
-            attributeSets = attributeSets.Where(a => !((IContentTypeShareable)a).AlwaysShareConfiguration);
+            attributeSets = attributeSets.Where(a => !((IUsesSharedDefinition)a).AlwaysShareConfiguration);
 
             var attributeSetIds = attributeSets.Select(p => p.ContentTypeId.ToString()).ToArray();
             var templateTypeId = SystemRuntime.GetMetadataType(Settings.TemplateContentType);

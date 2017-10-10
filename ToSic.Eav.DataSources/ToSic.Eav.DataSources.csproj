@@ -92,6 +92,7 @@
     <Compile Include="IDataStream.cs" />
     <Compile Include="IDataTarget.cs" />
     <Compile Include="IDeferredDataSource.cs" />
+    <Compile Include="Metadata\MetadataFromDataSource.cs" />
     <Compile Include="Shuffle.cs" />
     <Compile Include="Paging.cs" />
     <Compile Include="PassThrough.cs" />
