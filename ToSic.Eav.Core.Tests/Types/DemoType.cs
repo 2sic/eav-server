@@ -12,6 +12,8 @@ namespace ToSic.Eav.Core.Tests.Types
 
         public DemoType() : base(CName, CTypeName)
         {
+            Add(AttDef(Str, DefInp, "Title", "Title", "Just a nice name so you remember what it's for", "Sql Query")
+                .MakeTitle());
             Add(AttDef(Grp, DefInp, "ConsGrp", "Connection Information", "How to connect to the DB"));
             {
                 Add(AttDef(Str, DefInp, "ConnectionStringName", "Connection Name (preferred)", "Use connection names from the web.config", "SiteSqlServer"));

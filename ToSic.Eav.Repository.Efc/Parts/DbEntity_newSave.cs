@@ -88,6 +88,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     Log.Add("create new...");
                     dbEnt = new ToSicEavEntities
                     {
+                        AppId = DbContext.AppId,
                         AssignmentObjectTypeId = newEnt.Metadata?.TargetType ?? Constants.NotMetadata,
                         KeyNumber = newEnt.Metadata?.KeyNumber,
                         KeyGuid = newEnt.Metadata?.KeyGuid,

@@ -12,6 +12,8 @@ namespace ToSic.Eav.Persistence.Efc.Models
             ToSicEavValues = new HashSet<ToSicEavValues>();
         }
 
+        public int AppId { get; set; }
+
         public int EntityId { get; set; }
         public Guid EntityGuid { get; set; }
         public int AttributeSetId { get; set; }
@@ -39,6 +41,9 @@ namespace ToSic.Eav.Persistence.Efc.Models
         public virtual ToSicEavChangeLog ChangeLogCreatedNavigation { get; set; }
         public virtual ToSicEavChangeLog ChangeLogDeletedNavigation { get; set; }
         public virtual ToSicEavChangeLog ChangeLogModifiedNavigation { get; set; }
+
+        // 2017-10-10 2dm new with entity > app mapping
+        public virtual ToSicEavApps App { get; set; }
         //public virtual ToSicEavEntities ConfigurationSetNavigation { get; set; }
         //public virtual ICollection<ToSicEavEntities> InverseConfigurationSetNavigation { get; set; }
 
