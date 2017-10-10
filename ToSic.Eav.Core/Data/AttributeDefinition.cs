@@ -76,7 +76,7 @@ namespace ToSic.Eav.Data
         /// </remarks>
         //public List<IEntity> Items => _items ?? (_items = _appMetadataProvider?.Metadata.GetMetadata(Constants.MetadataForAttribute, AttributeId).ToList() ?? new List<IEntity>());
 
-        public List<IEntity> Items
+        public List<IEntity> MetadataItems
         {
             get
             {
@@ -99,7 +99,7 @@ namespace ToSic.Eav.Data
         public bool HasMetadata => _items != null && _items.Any();
 
         public void AddMetadata(string type, Dictionary<string, object> values)
-            => Items.Add(new Entity(AppId, Guid.Empty, type, values));
+            => MetadataItems.Add(new Entity(AppId, Guid.Empty, type, values));
 
         #endregion
         

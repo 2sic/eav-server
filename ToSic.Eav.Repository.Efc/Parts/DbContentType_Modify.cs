@@ -115,8 +115,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 var destAttribId = DbContext.AttributesDefinition.GetOrCreateAttributeDefinition(contentTypeId, newAtt);
 
                 // save additional entities containing AttributeMetaData for this attribute
-                if (newAtt.Items != null)
-                    SaveAttributeMetadata(destAttribId, newAtt.Items, saveOptions);
+                if (newAtt.MetadataItems != null)
+                    SaveAttributeMetadata(destAttribId, newAtt.MetadataItems, saveOptions);
             }
 
             // optionally re-order the attributes if specified in import

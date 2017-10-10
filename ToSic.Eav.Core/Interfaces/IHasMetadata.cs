@@ -9,7 +9,7 @@ namespace ToSic.Eav.Interfaces
 	{
         bool HasMetadata { get; }
 
-        List<IEntity> Items { get; }
+        List<IEntity> MetadataItems { get; }
 
     }
 

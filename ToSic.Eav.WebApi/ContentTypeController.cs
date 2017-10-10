@@ -42,7 +42,7 @@ namespace ToSic.Eav.WebApi
 	    private dynamic ContentTypeForJson(IContentType t, ICache cache)
 	    {
 	        Log.Add($"for json a:{t.AppId}, type:{t.Name}");
-	        var metadata = t.Items.FirstOrDefault();
+	        var metadata = t.MetadataItems.FirstOrDefault();
 
 	        var nameOverride = metadata?.GetBestValue(Constants.ContentTypeMetadataLabel).ToString();
 	        if (string.IsNullOrEmpty(nameOverride))
@@ -153,7 +153,7 @@ namespace ToSic.Eav.WebApi
             var ser = new Serializer();
             return fields.Select(a =>
             {
-                var inputtype = FindInputType(a.Items);
+                var inputtype = FindInputType(a.MetadataItems);
                 return new
                 {
                     Id = a.AttributeId,
@@ -163,7 +163,7 @@ namespace ToSic.Eav.WebApi
                     StaticName = a.Name,
                     a.IsTitle,
                     a.AttributeId,
-                    Metadata = a.Items.ToDictionary(e => e.Type.StaticName.TrimStart('@'), e => ser.Prepare(e)),
+                    Metadata = a.MetadataItems.ToDictionary(e => e.Type.StaticName.TrimStart('@'), e => ser.Prepare(e)),
                     InputTypeConfig = inputTypesDic.ContainsKey(inputtype) 
                         ? ser.Prepare(inputTypesDic[inputtype]) : null
                 };

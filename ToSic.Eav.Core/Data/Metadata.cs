@@ -4,18 +4,8 @@ using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data
 {
-    /// <summary>
-    /// Represents a Dimension Assignment
-    /// </summary>
     public class Metadata : IMetadata, IHasMetadata
     {
-        // 2017-06-11 try to disable this completely, I'm assuming we only used it internally
-        ///// <summary>
-        ///// Will return true if a target-type was assigned
-        ///// </summary>
-        //[Obsolete("don't use this any more, it's a wrong name - should be IsMetadata")]
-        //public bool HasMetadata => TargetType != Constants.NotMetadata;
-
         /// <summary>
         /// Will return true if a target-type was assigned
         /// </summary>
@@ -46,7 +36,6 @@ namespace ToSic.Eav.Data
         public Metadata CloneIsMetadata() => new Metadata
         {
             TargetType = TargetType,
-            //Key = Key,
             KeyString = KeyString,
             KeyNumber = KeyNumber,
             KeyGuid = KeyGuid
@@ -57,7 +46,7 @@ namespace ToSic.Eav.Data
         public bool HasMetadata { get; set; } = false;
 
 
-        public List<IEntity> Items { get; set; } = null;
+        public List<IEntity> MetadataItems { get; set; } = null;
         #endregion
     }
 }

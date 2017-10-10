@@ -119,7 +119,7 @@ namespace ToSic.Eav.Data
 
         private readonly IDeferredEntitiesList _appMetadataProvider;
 
-        public List<IEntity> Items
+        public List<IEntity> MetadataItems
         {
             get
             {
@@ -142,7 +142,7 @@ namespace ToSic.Eav.Data
         public bool HasMetadata => _items != null && _items.Any();
 
         public void AddMetadata(string type, Dictionary<string, object> values)
-            => Items.Add(new Entity(AppId, Guid.Empty, type, values));
+            => MetadataItems.Add(new Entity(AppId, Guid.Empty, type, values));
 
         #endregion
     }

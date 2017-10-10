@@ -25,7 +25,7 @@ namespace ToSic.Eav.Data.Builder
         {
             // todo 2017-10-07 2dm must test, added input-type here! might affect upgrades!
             var attribute = new AttributeDefinition(appId, staticName, niceName, AttributeTypeEnum.String, inputType, notes, visibleInEditUi, defaultValue);
-            attribute.Items.Add(CreateV7And8StringAttribMetadata(appId, inputType, rowCount));
+            attribute.MetadataItems.Add(CreateV7And8StringAttribMetadata(appId, inputType, rowCount));
             return attribute;
         }
 

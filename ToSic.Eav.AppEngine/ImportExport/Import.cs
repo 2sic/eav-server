@@ -194,7 +194,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 var existAttrib = existing.Attributes.FirstOrDefault(a => a.Name == newAttrib.Name);
                 if (existAttrib == null) continue;
 
-                var impMeta = ((AttributeDefinition) newAttrib).Items;
+                var impMeta = ((AttributeDefinition) newAttrib).MetadataItems;
                 var newMetaList = new List<IEntity>();
                 foreach (var newMd in impMeta)
                 {
