@@ -7,8 +7,9 @@ namespace ToSic.Eav.DataSources.Tests
     public class DataSourcTests
     {
         public const int StandardInstalledDSCount = 22;
-        public const int StandardInstalledPipeLineDS = 16;
+        public const int StandardInstalledPipeLineDS = 17;
         public const string SqlFullName = "ToSic.Eav.DataSources.SqlDataSource";
+        public const string DeferredFullName = "ToSic.Eav.DataSources.DeferredPipelineQuery";
 
         [TestMethod]
         public void AutoFindAllDataSources()
@@ -27,7 +28,10 @@ namespace ToSic.Eav.DataSources.Tests
             Assert.AreEqual(StandardInstalledPipeLineDS, dsList.Count(), "expect a correct number of DSs");
 
             var hasSqlDs = dsList.FirstOrDefault(c => c.FullName == SqlFullName);
-            Assert.IsNull(hasSqlDs, "should NOT find sql-data source");
+            Assert.IsNotNull(hasSqlDs, "should NOT find sql-data source");
+
+            var shouldNotFind = dsList.FirstOrDefault(c => c.FullName == DeferredFullName);
+            Assert.IsNull(shouldNotFind, "should NOT find sql-data source");
         }
 
     }
