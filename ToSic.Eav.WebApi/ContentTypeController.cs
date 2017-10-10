@@ -30,7 +30,7 @@ namespace ToSic.Eav.WebApi
             Log.Add($"get a#{appId}, scope:{scope}, stats:{withStatistics}");
             // scope can be null (eav) or alternatives would be "System", "2SexyContent-System", "2SexyContent-App", "2SexyContent"
             var cache = (BaseCache)DataSource.GetCache(null, appId);
-            var allTypes = cache.GetContentTypes();//.Values;//.Select(t => t.Value);
+            var allTypes = cache.GetContentTypes();
 
             var filteredType = allTypes.Where(t => t.Scope == scope)
                 .OrderBy(t => t.Name)
@@ -42,7 +42,7 @@ namespace ToSic.Eav.WebApi
 	    private dynamic ContentTypeForJson(IContentType t, ICache cache)
 	    {
 	        Log.Add($"for json a:{t.AppId}, type:{t.Name}");
-	        var metadata = t.Items.FirstOrDefault();// GetMetadata((ContentType)t, cache);
+	        var metadata = t.Items.FirstOrDefault();
 
 	        var nameOverride = metadata?.GetBestValue(Constants.ContentTypeMetadataLabel).ToString();
 	        if (string.IsNullOrEmpty(nameOverride))
@@ -68,25 +68,11 @@ namespace ToSic.Eav.WebApi
 	        return jsonReady;
 	    }
 
-	    //public IEntity GetMetadata(ContentType ct, ICache cache = null)
-	    //{
-	    //    Log.Add($"get metadata a:{ct.AppId}, type:{ct.StaticName}");
-	    //    var metaCache = (cache != null && ct.ParentAppId == cache.AppId)
-	    //        ? cache
-	    //        : DataSource.GetCache(ct.ParentZoneId, ct.ParentAppId);
-
-     //       var metaDataSource = (IMetadataProvider)metaCache;
-	    //    return metaDataSource.GetMetadata(
-	    //        Constants.MetadataForContentType, ct.StaticName)
-	    //        .FirstOrDefault();
-	    //}
-
         [HttpGet]
 	    public dynamic GetSingle(int appId, string contentTypeStaticName, string scope = null)
 	    {
 	        Log.Add($"get single a#{appId}, type:{contentTypeStaticName}, scope:{scope}");
             SetAppIdAndUser(appId);
-            // var source = InitialDS;
             var cache = DataSource.GetCache(null, appId);
             var ct = cache.GetContentType(contentTypeStaticName);
             return ContentTypeForJson(ct, cache);
@@ -139,9 +125,9 @@ namespace ToSic.Eav.WebApi
             Log.Add($"get fields a#{appId}, type:{staticName}");
             SetAppIdAndUser(appId);
 
-            var fields =
-                CurrentContext.ContentType.GetTypeConfiguration(staticName)
-                    .OrderBy(ct => ct.Item1.SortOrder);
+            SetAppIdAndUser(appId);
+            var fields = DataSource.GetCache(null, appId).GetContentType(staticName).Attributes;
+
 
             var appInputTypes = new AppRuntime(appId).ContentTypes.GetInputTypes(true).ToList();
             var noTitleCount = 0;
@@ -164,35 +150,29 @@ namespace ToSic.Eav.WebApi
             var ser = new Serializer();
             return fields.Select(a =>
             {
-                var inputtype = findInputType(a.Item2);
+                var inputtype = FindInputType(a.Items);
                 return new
                 {
-                    Id = a.Item1.AttributeId,
-                    a.Item1.SortOrder,
-                    a.Item1.Type,
+                    Id = a.AttributeId,
+                    a.SortOrder,
+                    a.Type,
                     InputType = inputtype,
-                    StaticName = a.Item1.Name,
-                    a.Item1.IsTitle,
-                    a.Item1.AttributeId,
-                    Metadata = a.Item2.ToDictionary(e => e.Key, e => ser.Prepare(e.Value)),
-                    InputTypeConfig =
-                        inputTypesDic.ContainsKey(inputtype) ? ser.Prepare(inputTypesDic[inputtype]) : null
+                    StaticName = a.Name,
+                    a.IsTitle,
+                    a.AttributeId,
+                    Metadata = a.Items.ToDictionary(e => e.Type.StaticName.TrimStart('@'), e => ser.Prepare(e)),
+                    InputTypeConfig = inputTypesDic.ContainsKey(inputtype) 
+                        ? ser.Prepare(inputTypesDic[inputtype]) : null
                 };
             });
         }
 
-	    private string findInputType(Dictionary<string, IEntity> definitions)
+	    private static string FindInputType(List<IEntity> definitions)
 	    {
-	        if (!definitions.ContainsKey("All"))
-	            return "unknown";
+	        var inputType = definitions.FirstOrDefault(d => d.Type.StaticName == "@All")
+                ?.GetBestValue("InputType");
 
-	        var inputType = definitions["All"]?.GetBestValue("InputType");
-
-	        if (string.IsNullOrEmpty(inputType as string))
-	            return "unknown";
-	        return inputType.ToString();
-
-
+	        return string.IsNullOrEmpty(inputType as string) ? "unknown" : inputType.ToString();
 	    }
 
         [HttpGet]

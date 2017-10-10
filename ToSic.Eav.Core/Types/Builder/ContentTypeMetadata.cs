@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.Data;
+using System.Linq;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Types.Builder
@@ -25,11 +25,11 @@ namespace ToSic.Eav.Types.Builder
             };
 
             // clear unused values
-            foreach (var pair in values)
-                if (pair.Value == null)
-                    values.Remove(pair.Key);
+            values.Where(v => v.Value == null)
+                .Select(v => v.Key).ToList()
+                .ForEach(k => values.Remove(k));
 
-            type.AddMetadata("ContentType", values);
+            (type as Data.ContentType)?.AddMetadata("ContentType", values);
             return type; // for chaining...
         }
     }
