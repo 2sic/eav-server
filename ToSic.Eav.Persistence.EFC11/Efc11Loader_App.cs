@@ -175,7 +175,9 @@ namespace ToSic.Eav.Persistence.Efc
                 
                 var contentType = (ContentType)contentTypes[e.AttributeSetId];
                 if (useJson)
+#pragma warning disable 1717
                     useJson = useJson; // just to stop in debugger
+#pragma warning restore 1717
 
                 var newEntity = useJson
                     ? serializer.Deserialize(e.Json) as Entity
