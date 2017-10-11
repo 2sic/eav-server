@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using ToSic.Eav.App;
 using ToSic.Eav.Data;
 
@@ -25,12 +26,12 @@ namespace ToSic.Eav.DataSources.Caches
         }
         private static Dictionary<int, Zone> _zoneApps;
 
-        public override Dictionary<int, string> AssignmentObjectTypes
+        public override ImmutableDictionary<int, string> AssignmentObjectTypes
         {
             get => _assignmentObjectTypes;
             protected set => _assignmentObjectTypes = value;
         }
-        private static Dictionary<int, string> _assignmentObjectTypes;
+        private static ImmutableDictionary<int, string> _assignmentObjectTypes;
 
 
 

@@ -64,11 +64,11 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Create a new Entity. Used to create InMemory Entities that are not persisted to the EAV SqlStore.
         /// </summary>
-        public EntityLight(int appId, int entityId, string contentTypeName, Dictionary<string, object> values, string titleAttribute = null, DateTime? modified = null)
+        public EntityLight(int appId, int entityId, object contentType, Dictionary<string, object> values, string titleAttribute = null, DateTime? modified = null)
         {
             AppId = appId;
             EntityId = entityId;
-            Type = new ContentType(appId, contentTypeName);
+            SetContentTypeFromNameOrObject(appId, contentType);
             LightAttributesForInternalUseOnlyForNow = values;//.ConvertToAttributes();
             try
             {
@@ -83,6 +83,22 @@ namespace ToSic.Eav.Data
             if (modified.HasValue)
                 Modified = modified.Value;
             Relationships = new RelationshipManager(this, new EntityRelationshipItem[0]);
+        }
+
+        private void SetContentTypeFromNameOrObject(int appId, object contentType)
+        {
+            switch (contentType)
+            {
+                case IContentType _:
+                    Type = contentType as IContentType;
+                    break;
+                case string _:
+                    Type = new ContentType(appId, contentType as string);
+                    break;
+                default:
+                    throw new Exception(
+                        $"content type should be string or of type IContentType - it's {contentType.GetType().FullName}");
+            }
         }
 
         /// <inheritdoc />

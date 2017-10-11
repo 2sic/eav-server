@@ -133,7 +133,7 @@ namespace ToSic.Eav.Apps.ImportExport
             attributeSets = attributeSets.Where(a => !((IUsesSharedDefinition)a).AlwaysShareConfiguration);
 
             var attributeSetIds = attributeSets.Select(p => p.ContentTypeId.ToString()).ToArray();
-            var templateTypeId = SystemRuntime.GetMetadataType(Settings.TemplateContentType);
+            var templateTypeId = SystemRuntime.MetadataType(Settings.TemplateContentType);
             var entities =
                 DataSource.GetInitialDataSource(_zoneId, _appId).Out["Default"].List.Where(
                     e => e.Value.Metadata.TargetType != templateTypeId

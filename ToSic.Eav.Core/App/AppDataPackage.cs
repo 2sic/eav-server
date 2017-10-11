@@ -61,14 +61,14 @@ namespace ToSic.Eav.App
 		/// </summary>
 		private IDictionary<int, Dictionary<string, IEnumerable<IEntity>>> MetadataForString { get; }
 
-        private ImmutableDictionary<int, string> MetadataTypes { get;  }
+        //private ImmutableDictionary<int, string> MetadataTypes { get;  }
 
 	    /// <summary>
 	    /// Get AssignmentObjectTypeId by Name
 	    /// </summary>
-	    public int GetMetadataType(string typeName) => MetadataTypes.First(mt => mt.Value == typeName).Key;
+	    //public int GetMetadataType(string typeName) => MetadataTypes.First(mt => mt.Value == typeName).Key;
 
-	    public string GetMetadataType(int typeId) => MetadataTypes[typeId];
+	    //public string GetMetadataType(int typeId) => MetadataTypes[typeId];
 
 
         public IEnumerable<IEntity> GetMetadata(int targetType, int key, string contentTypeName = null) => Lookup(MetadataForNumber, targetType, Convert.ToInt32(key), contentTypeName);
@@ -120,7 +120,7 @@ namespace ToSic.Eav.App
             MetadataForGuid = metadataForGuid;
 			MetadataForNumber = metadataForNumber;
 			MetadataForString = metadataForString;
-		    MetadataTypes = metadataTypes;
+		    //MetadataTypes = metadataTypes;
 			Relationships = relationships;
 
 			LastRefresh = DateTime.Now;

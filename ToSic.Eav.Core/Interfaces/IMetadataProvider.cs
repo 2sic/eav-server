@@ -24,5 +24,9 @@ namespace ToSic.Eav.Interfaces
         /// </summary>
         IEnumerable<IEntity> GetMetadata(int targetType, Guid key, string contentTypeName = null);
 
+        //int GetMetadataType(string typeName);
+
+        //string GetMetadataType(int typeId);
+
     }
 }

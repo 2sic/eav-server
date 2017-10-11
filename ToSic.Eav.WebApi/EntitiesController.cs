@@ -221,10 +221,10 @@ namespace ToSic.Eav.WebApi
             var attribs = new Dictionary<string, IAttribute>();
 
             // only transfer the fields / values which exist in the content-type definition
-            var attributeSet = AppManager.Read.ContentTypes.Get(toEntity.Type.StaticName);
+            var type = AppManager.Read.ContentTypes.Get(toEntity.Type.StaticName);
             foreach (var attribute in toEntity.Attributes)
             {
-                var attDef = attributeSet[attribute.Key];
+                var attDef = type[attribute.Key];
                 var attributeType = attDef.Type;
 
                 // don't save anything of the type empty - this is headings-items-only
@@ -263,7 +263,7 @@ namespace ToSic.Eav.WebApi
             if (toEntity.Guid == Guid.Empty)
                 throw new Exception("got empty guid - should never happen");
 
-            var importEntity = new Entity(AppId, toEntity.Id, toEntity.Type.StaticName, attribs.ToDictionary(x => x.Key, y => (object)y.Value))
+            var importEntity = new Entity(AppId, toEntity.Id, type, attribs.ToDictionary(x => x.Key, y => (object)y.Value))
             {
                 #region Guids, Ids, Published, Content-Types
                 IsPublished = toEntity.IsPublished,

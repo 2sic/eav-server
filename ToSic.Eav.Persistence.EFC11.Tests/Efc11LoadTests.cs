@@ -69,7 +69,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
         [TestMethod]
         public void TestMetadataTargetTypes()
         {
-            var types = Loader.MetadataTargetTypes();
+            var types = Factory.Resolve<IGlobalMetadataProvider>().TargetTypes;// Loader.MetadataTargetTypes();
 
             Assert.AreEqual(100, types.Count);
             Assert.IsTrue(types[Constants.NotMetadata] == "Default");

@@ -547,7 +547,7 @@ namespace ToSic.Eav.Apps.ImportExport
 				// Special case: App AttributeSets must be assigned to the current app
 				case XmlConstants.App:
 					keyNumber = AppId;
-					assignmentObjectTypeId = SystemRuntime.GetMetadataType(Constants.AppAssignmentName);
+					assignmentObjectTypeId = SystemRuntime.MetadataType(Constants.AppAssignmentName);
 					break;
                 case XmlConstants.Entity:
                 case "Data Pipeline": // 2dm: this was an old value, 2017-08-11 this was still used in the old Employees directory app v. 1.02

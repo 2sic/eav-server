@@ -15,9 +15,6 @@ namespace ToSic.Eav.App
 	    /// <summary>
 	    /// Gets all ContentTypes in this App
 	    /// </summary>
-	    //public IDictionary<int, IContentType> ContentTypes { get; }
-
-	    // todo: try replace all access to "ContentTypes" to this, and then rename to ContentTypes
 	    public IEnumerable<IContentType> ContentTypes => _appTypesFromRepository.Values.Union(Global.SystemContentTypes().Values);
 
 	    private void BuildTypesByNameCache(IDictionary<int, IContentType> allTypes)

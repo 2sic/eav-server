@@ -42,9 +42,9 @@ namespace ToSic.Eav.ImportExport.Json
                 throw new ArgumentOutOfRangeException(nameof(serialized), "unexpected format version");
 
             // get type def
-            var contentType = App.GetContentType(jsonObj.Entity.Type.Id) //.ContentTypes?.Values.SingleOrDefault(ct => ct.StaticName == jsonObj.Entity.Type.Id)
+            var contentType = GetContentType(jsonObj.Entity.Type.Id)
                               ?? (allowDynamic
-                                  ? ContentTypeBuilder.DynamicContentType(App.AppId)
+                                  ? ContentTypeBuilder.DynamicContentType(AppId)
                                   : throw new FormatException(
                                       "type not found for deserialization and dynamic not allowed " +
                                       $"- cannot continue with {jsonObj.Entity.Type.Id}")
@@ -55,15 +55,13 @@ namespace ToSic.Eav.ImportExport.Json
             if (jsonObj.Entity.For != null)
             {
                 var md = jsonObj.Entity.For;
-                ismeta.TargetType = App.GetMetadataType(md.Target);
+                ismeta.TargetType = Factory.Resolve<IGlobalMetadataProvider>().GetType(md.Target);
                 ismeta.KeyGuid = md.Guid;
                 ismeta.KeyNumber = md.Number;
                 ismeta.KeyString = md.String;
             }
 
-            // Build entity
-            var appId = App.AppId;
-            var newEntity = new Entity(appId, jsonObj.Entity.Guid, jsonObj.Entity.Id, jsonObj.Entity.Id, ismeta, contentType, true, null, DateTime.Now, jsonObj.Entity.Owner, jsonObj.Entity.Version);
+            var newEntity = new Entity(AppId, jsonObj.Entity.Guid, jsonObj.Entity.Id, jsonObj.Entity.Id, ismeta, contentType, true, null, DateTime.Now, jsonObj.Entity.Owner, jsonObj.Entity.Version);
 
 
             // build attributes - based on type definition

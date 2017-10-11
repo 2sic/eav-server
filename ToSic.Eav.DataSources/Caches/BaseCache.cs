@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.Caching;
 using ToSic.Eav.App;
@@ -58,7 +59,7 @@ namespace ToSic.Eav.DataSources.Caches
 		/// <summary>
 		/// Gets or sets the Dictionary of all AssignmentObjectTypes
 		/// </summary>
-		public abstract Dictionary<int, string> AssignmentObjectTypes { get; protected set; }
+		public abstract ImmutableDictionary<int, string> AssignmentObjectTypes { get; protected set; }
 
 		/// <summary>
 		/// Gets the KeySchema used to store values for a specific Zone and App. Must contain {0} for ZoneId and {1} for AppId
@@ -98,7 +99,7 @@ namespace ToSic.Eav.DataSources.Caches
             {
                 ZoneApps = Backend.GetAllZones();
 
-                AssignmentObjectTypes = Backend.GetAssignmentObjectTypes();
+                AssignmentObjectTypes = Factory.Resolve<IGlobalMetadataProvider>().TargetTypes;// Backend.GetAssignmentObjectTypes();
             }
 
             if (ZoneId == 0 || AppId == 0)
@@ -209,31 +210,31 @@ namespace ToSic.Eav.DataSources.Caches
 		/// <summary>
 		/// Get AssignmentObjectTypeId by Name
 		/// </summary>
-		public int GetMetadataType(string typeName)
-		{
-		    try
-		    {
-		        EnsureCache();
-		        return AssignmentObjectTypes.SingleOrDefault(a => a.Value == typeName).Key;
-		    }
-            catch (Exception ex)
-            {
-                throw new Exception($"failed to get metadata type for {typeName}", ex);
-            }
-		}
+		//public int GetMetadataType(string typeName)
+		//{
+		//    try
+		//    {
+		//        EnsureCache();
+		//        return AssignmentObjectTypes.SingleOrDefault(a => a.Value == typeName).Key;
+		//    }
+  //          catch (Exception ex)
+  //          {
+  //              throw new Exception($"failed to get metadata type for {typeName}", ex);
+  //          }
+		//}
 
-        public string GetMetadataType(int typeId)
-        {
-            try
-            {
-                EnsureCache();
-                return AssignmentObjectTypes[typeId];
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"failed to get metadata type for {typeId}", ex);
-            }
-        }
+  //      public string GetMetadataType(int typeId)
+  //      {
+  //          try
+  //          {
+  //              EnsureCache();
+  //              return AssignmentObjectTypes[typeId];
+  //          }
+  //          catch (Exception ex)
+  //          {
+  //              throw new Exception($"failed to get metadata type for {typeId}", ex);
+  //          }
+  //      }
 
 
         #region GetAssignedEntities by Guid, string and int

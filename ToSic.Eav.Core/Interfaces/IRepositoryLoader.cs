@@ -25,7 +25,7 @@ namespace ToSic.Eav.Interfaces
         /// <returns>An object with everything which an app has, usually for caching</returns>
         AppDataPackage AppPackage(int appId, int[] entityIds = null, bool entitiesOnly = false, Log parentLog = null);
 
-        Dictionary<int, string> MetadataTargetTypes();
+        //Dictionary<int, string> MetadataTargetTypes();
 
 
         Dictionary<int, Zone> Zones();

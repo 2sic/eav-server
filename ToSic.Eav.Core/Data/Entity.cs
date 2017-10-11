@@ -81,7 +81,7 @@ namespace ToSic.Eav.Data
 
         #endregion
 
-        public Entity(int appId, int entityId, string contentTypeName, Dictionary<string, object> values, string titleAttribute = null, DateTime? modified = null) : base(appId, entityId, contentTypeName, values, titleAttribute, modified)
+        public Entity(int appId, int entityId, object contentType, Dictionary<string, object> values, string titleAttribute = null, DateTime? modified = null) : base(appId, entityId, contentType, values, titleAttribute, modified)
         {
             if (values.All(x => x.Value is IAttribute))
                 Attributes = values.ToDictionary(x => x.Key, x => x.Value as IAttribute);

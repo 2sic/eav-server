@@ -7,6 +7,8 @@ namespace ToSic.Eav.Interfaces
     {
         void Initialize(AppDataPackage app);
 
+        //void Initialize(int appId, IEnumerable<IContentType> types);
+
         string Serialize(int entityId);
         Dictionary<int, string> Serialize(List<int> entities);
 

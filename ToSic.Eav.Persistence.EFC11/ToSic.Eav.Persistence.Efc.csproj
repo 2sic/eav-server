@@ -38,4 +38,10 @@
     <Folder Include="Repository\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="ToSic.Eav.Repository.Efc">
+      <HintPath>..\..\2SexyContent\Web\DesktopModules\ToSIC_SexyContent\Bin\ToSic.Eav.Repository.Efc.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

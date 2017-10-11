@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.App;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Types;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Persistence.Xml
@@ -16,19 +17,27 @@ namespace ToSic.Eav.Persistence.Xml
         }
         private AppDataPackage _app;
 
+        public IContentType GetContentType(string staticName)
+            => Global.SystemContentType(staticName) // note: will return null if not found
+               ?? (_types != null
+                   ? _types.FirstOrDefault(t => t.StaticName == staticName)
+                   : App.GetContentType(staticName)); // only use the App if really necessary...
+
         public void Initialize(AppDataPackage app)
         {
             App = app;
-            //return this;
+            AppId = app.AppId;
         }
 
-        protected IEntity Lookup(int entityId)
+        protected int AppId;
+        private IEnumerable<IContentType> _types;
+        public void Initialize(int appId, IEnumerable<IContentType> types)
         {
-            if (App == null)
-                throw new Exception($"Can't serialize entity {entityId} without the app package. Please initialize first, or provide a prepared entity");
-
-            return App.Entities[entityId];
+            AppId = appId;
+            _types = types;
         }
+
+        protected IEntity Lookup(int entityId) => App.Entities[entityId];
 
         public abstract string Serialize(IEntity entity);
 

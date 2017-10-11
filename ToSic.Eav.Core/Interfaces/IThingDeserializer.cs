@@ -7,6 +7,8 @@ namespace ToSic.Eav.Interfaces
     {
         void Initialize(AppDataPackage app);
 
+        void Initialize(int appId, IEnumerable<IContentType> types);
+
         IEntity Deserialize(string serialized, bool allowDynamic = false);
 
         List<IEntity> Deserialize(List<string> serialized, bool allowDynamic = false);

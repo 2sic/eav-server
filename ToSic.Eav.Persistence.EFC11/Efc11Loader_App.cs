@@ -46,6 +46,8 @@ namespace ToSic.Eav.Persistence.Efc
             #region prepare content-types
             var typeTimer = Stopwatch.StartNew();
             var contentTypes = ContentTypes(appId, source);
+            // var sysTypes = Global.SystemContentTypes().Values;
+            
             typeTimer.Stop();
             #endregion
 
@@ -117,7 +119,7 @@ namespace ToSic.Eav.Persistence.Efc
                     e.PublishedEntityId,
                     e.Owner, 
                     Modified = e.ChangeLogModifiedNavigation.Timestamp, 
-
+                    e.Json
                 }).ToList();
             sqlTime.Stop();
             var eIds = rawEntities.Select(e => e.EntityId).ToList();
@@ -163,26 +165,96 @@ namespace ToSic.Eav.Persistence.Efc
             var entities = new Dictionary<int, IEntity>();
             var entList = new List<IEntity>();
 
+            var serializer = Factory.Resolve<IThingDeserializer>();
+            serializer.Initialize(appId, contentTypes.Values);
+
             var entityTimer = Stopwatch.StartNew();
             foreach (var e in rawEntities)
             {
+                var useJson = e.Json != null;
+                
                 var contentType = (ContentType)contentTypes[e.AttributeSetId];
-                var newEntity = new Entity(appId, e.EntityGuid, e.EntityId, e.EntityId, e.Metadata, contentType, e.IsPublished, relationships, e.Modified, e.Owner, e.Version);
+                if (useJson)
+                    useJson = useJson; // just to stop in debugger
 
-                var allAttribsOfThisType = new Dictionary<int, IAttribute>();	// temporary Dictionary to set values later more performant by Dictionary-Key (AttributeId)
-                IAttribute titleAttrib = null;
+                var newEntity = useJson
+                    ? serializer.Deserialize(e.Json) as Entity
+                    : new Entity(appId, e.EntityGuid, e.EntityId, e.EntityId, e.Metadata, contentType, e.IsPublished, relationships, e.Modified, e.Owner, e.Version);
 
-                // Add all Attributes of that Content-Type
-                foreach (var definition in contentType.Attributes)
+                if (!useJson)
                 {
-                    var entityAttribute = ((AttributeDefinition) definition).CreateAttribute();
-                    newEntity.Attributes.Add(entityAttribute.Name, entityAttribute);
-                    allAttribsOfThisType.Add(definition.AttributeId, entityAttribute);
-                    if (definition.IsTitle)
-                        titleAttrib = entityAttribute;
+                    var allAttribsOfThisType =
+                        new Dictionary<int, IAttribute>(); // temporary Dictionary to set values later more performant by Dictionary-Key (AttributeId)
+                    IAttribute titleAttrib = null;
+
+                    // Add all Attributes of that Content-Type
+                    foreach (var definition in contentType.Attributes)
+                    {
+                        var entityAttribute = ((AttributeDefinition) definition).CreateAttribute();
+                        newEntity.Attributes.Add(entityAttribute.Name, entityAttribute);
+                        allAttribsOfThisType.Add(definition.AttributeId, entityAttribute);
+                        if (definition.IsTitle)
+                            titleAttrib = entityAttribute;
+                    }
+
+
+                    #region add Related-Entities Attributes to the entity
+
+                    if (relatedEntities.ContainsKey(e.EntityId))
+                        foreach (var r in relatedEntities[e.EntityId])
+                        {
+                            var attrib = allAttribsOfThisType[r.AttributeID];
+                            attrib.Values = new List<IValue> {Value.Build(attrib.Type, r.Childs, null, source)};
+                        }
+
+                    #endregion
+
+                    #region Add "normal" Attributes (that are not Entity-Relations)
+
+                    if (attributes.ContainsKey(e.EntityId))
+                        foreach (var a in attributes[e.EntityId]) // e.Attributes)
+                        {
+                            IAttribute attrib;
+                            try
+                            {
+                                attrib = allAttribsOfThisType[a.AttributeID];
+                            }
+                            catch (KeyNotFoundException)
+                            {
+                                continue;
+                            }
+                            if (attrib == titleAttrib)
+                                newEntity.SetTitleField(attrib.Name);
+
+                            attrib.Values = a.Values.Select(v => Value.Build(attrib.Type, v.Value, v.Languages))
+                                .ToList();
+
+                            #region issue fix faulty data dimensions
+
+                            // Background: there are rare cases, where data was stored incorrectly
+                            // this happens when a attribute has multiple values, but some don't have languages assigned
+                            // that would be invalid, as any property with a language code must have all the values (for that property) with language codes
+                            if (attrib.Values.Count > 1 && attrib.Values.Any(v => !v.Languages.Any()))
+                            {
+                                var badValuesWithoutLanguage = attrib.Values.Where(v => !v.Languages.Any()).ToList();
+                                if (badValuesWithoutLanguage.Any())
+                                    badValuesWithoutLanguage.ForEach(badValue =>
+                                        attrib.Values.Remove(badValue));
+                            }
+
+                            #endregion
+                        }
+
+                    // Special treatment in case there is no title 
+                    // sometimes happens if the title-field is re-defined and old data might no have this
+                    // also happens in rare cases, where the title-attrib is an entity-picker
+                    if (newEntity.Title == null && titleAttrib != null)
+                        newEntity.SetTitleField(titleAttrib.Name);
+
+                    #endregion
                 }
 
-                // If entity is a draft, add references to Published Entity
+                #region If entity is a draft, add references to Published Entity
                 if (!e.IsPublished && e.PublishedEntityId.HasValue)
                 {
                     // Published Entity is already in the Entities-List as EntityIds is validated/extended before and Draft-EntityID is always higher as Published EntityId
@@ -190,97 +262,21 @@ namespace ToSic.Eav.Persistence.Efc
                     ((Entity)newEntity.PublishedEntity).DraftEntity = newEntity;
                     newEntity.EntityId = e.PublishedEntityId.Value;
                 }
+                #endregion
 
                 #region Add metadata-lists based on AssignmentObjectTypes
 
-                // unclear why #1 is handled in a special way - why should this not be cached? I believe 1 means no specific assignment
                 if (e.Metadata.IsMetadata && !entitiesOnly)
                 {
                     // Try guid first. Note that an item can be assigned to both a guid, string and an int if necessary, though not commonly used
                     if (e.Metadata.KeyGuid.HasValue)
-                    {
-                        // Ensure that this assignment-Type (like 4 = entity-assignment) already has a dictionary for storage
-                        //if (!metadataForGuid.ContainsKey(e.Metadata.TargetType)) // ensure AssignmentObjectTypeID
-                        //    metadataForGuid.Add(e.Metadata.TargetType, new Dictionary<Guid, IEnumerable<IEntity>>());
-
-                        // Ensure that the assignment type (like 4) the target guid (like a350320-3502-afg0-...) has an empty list of items
-                        if (!metadataForGuid[e.Metadata.TargetType].ContainsKey(e.Metadata.KeyGuid.Value)) // ensure Guid
-                            metadataForGuid[e.Metadata.TargetType][e.Metadata.KeyGuid.Value] = new List<IEntity>();
-
-                        // Now all containers must exist, add this item
-                        ((List<IEntity>)metadataForGuid[e.Metadata.TargetType][e.Metadata.KeyGuid.Value]).Add(newEntity);
-                    }
+                        AddToMetaDic(metadataForGuid, e.Metadata.TargetType, e.Metadata.KeyGuid.Value, newEntity);
                     if (e.Metadata.KeyNumber.HasValue)
-                    {
-                        //if (!metadataForNumber.ContainsKey(e.Metadata.TargetType)) // ensure AssignmentObjectTypeID
-                        //    metadataForNumber.Add(e.Metadata.TargetType, new Dictionary<int, IEnumerable<IEntity>>());
-
-                        if (!metadataForNumber[e.Metadata.TargetType].ContainsKey(e.Metadata.KeyNumber.Value)) // ensure Guid
-                            metadataForNumber[e.Metadata.TargetType][e.Metadata.KeyNumber.Value] = new List<IEntity>();
-
-                        ((List<IEntity>)metadataForNumber[e.Metadata.TargetType][e.Metadata.KeyNumber.Value]).Add(newEntity);
-                    }
+                        AddToMetaDic(metadataForNumber, e.Metadata.TargetType, e.Metadata.KeyNumber.Value, newEntity);
                     if (!string.IsNullOrEmpty(e.Metadata.KeyString))
-                    {
-                        //if (!metadataForString.ContainsKey(e.Metadata.TargetType)) // ensure AssignmentObjectTypeID
-                        //    metadataForString.Add(e.Metadata.TargetType, new Dictionary<string, IEnumerable<IEntity>>());
-
-                        if (!metadataForString[e.Metadata.TargetType].ContainsKey(e.Metadata.KeyString)) // ensure Guid
-                            metadataForString[e.Metadata.TargetType][e.Metadata.KeyString] = new List<IEntity>();
-
-                        ((List<IEntity>)metadataForString[e.Metadata.TargetType][e.Metadata.KeyString]).Add(newEntity);
-                    }
+                        AddToMetaDic(metadataForString, e.Metadata.TargetType, e.Metadata.KeyString, newEntity);
                 }
 
-                #endregion
-
-                #region add Related-Entities Attributes to the entity
-                if(relatedEntities.ContainsKey(e.EntityId))
-                    foreach (var r in relatedEntities[e.EntityId])
-                    {
-                        var attrib = allAttribsOfThisType[r.AttributeID];
-                        attrib.Values = new List<IValue> { Value.Build(attrib.Type, r.Childs, null, source) };
-                    }
-                #endregion
-
-                #region Add "normal" Attributes (that are not Entity-Relations)
-                if (attributes.ContainsKey(e.EntityId))
-                    foreach (var a in attributes[e.EntityId])// e.Attributes)
-                    {
-                        IAttribute attrib;
-                        try
-                        {
-                            attrib = allAttribsOfThisType[a.AttributeID];
-                        }
-                        catch (KeyNotFoundException)
-                        {
-                            continue;
-                        }
-                        if (attrib == titleAttrib)
-                            newEntity.SetTitleField(attrib.Name);
-
-                        attrib.Values = a.Values.Select(v => Value.Build(attrib.Type, v.Value, v.Languages)).ToList();
-
-                        #region issue fix faulty data dimensions
-                        // Background: there are rare cases, where data was stored incorrectly
-                        // this happens when a attribute has multiple values, but some don't have languages assigned
-                        // that would be invalid, as any property with a language code must have all the values (for that property) with language codes
-                        if (attrib.Values.Count > 1 && attrib.Values.Any(v => !v.Languages.Any()))
-                        {
-                            var badValuesWithoutLanguage = attrib.Values.Where(v => !v.Languages.Any()).ToList();
-                            if (badValuesWithoutLanguage.Any())
-                                badValuesWithoutLanguage.ForEach(badValue =>
-                                    attrib.Values.Remove(badValue));
-                        }
-
-                        #endregion
-                    }
-
-                // Special treatment in case there is no title 
-                // sometimes happens if the title-field is re-defined and old data might no have this
-                // also happens in rare cases, where the title-attrib is an entity-picker
-                if (newEntity.Title == null && titleAttrib != null)
-                    newEntity.SetTitleField(titleAttrib.Name);
                 #endregion
 
                 entities.Add(e.EntityId, newEntity);
@@ -323,11 +319,21 @@ namespace ToSic.Eav.Persistence.Efc
             return appPack;
         }
 
+        private static void AddToMetaDic<T>(Dictionary<int, Dictionary<T, IEnumerable<IEntity>>> metadataForGuid, int mdTargetType, T mdValue, Entity newEntity)
+        {
+            // Ensure that the assignment type (like 4) the target guid (like a350320-3502-afg0-...) has an empty list of items
+            if (!metadataForGuid[mdTargetType].ContainsKey(mdValue)) // ensure target list exists
+                metadataForGuid[mdTargetType][mdValue] = new List<IEntity>();
+
+            // Now all containers must exist, add this item
+            ((List<IEntity>) metadataForGuid[mdTargetType][mdValue]).Add(newEntity);
+        }
+
         #endregion
 
 
-        public Dictionary<int, string> MetadataTargetTypes() => _dbContext.ToSicEavAssignmentObjectTypes
-            .ToDictionary(a => a.AssignmentObjectTypeId, a => a.Name);
+        //public Dictionary<int, string> MetadataTargetTypes() => _dbContext.ToSicEavAssignmentObjectTypes
+        //    .ToDictionary(a => a.AssignmentObjectTypeId, a => a.Name);
 
         public Dictionary<int, Zone> Zones() => _dbContext.ToSicEavZones
             .Include(z => z.ToSicEavApps)

@@ -1,14 +1,17 @@
-﻿
+﻿using System.Collections.Immutable;
+
 namespace ToSic.Eav.Interfaces
 {
     /// <summary>
     /// This interface allows objects to provid metadata from "remote" systems
     /// meaning from apps / sources which the original source doesn't know about
     /// </summary>
-    public interface IRemoteMetadataProvider
+    public interface IGlobalMetadataProvider
     {
-        IMetadataProvider OfZoneAndApp(int zoneId, int appId);
+        int GetType(string typeName);
 
-        IMetadataProvider OfApp(int appId);
+        string GetType(int typeId);
+
+        ImmutableDictionary<int, string> TargetTypes { get; }
     }
 }

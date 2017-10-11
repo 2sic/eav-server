@@ -10,6 +10,7 @@ using ToSic.Eav.Repository.Efc.Implementations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.DataSources.Metadata;
+using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Persistence.Xml;
 
 namespace ToSic.Eav
@@ -30,6 +31,7 @@ namespace ToSic.Eav
             serviceCollection.TryAddTransient<ICache, QuickCache>();
             serviceCollection.TryAddTransient<IRootSource, EavSqlStore>();
 	        serviceCollection.TryAddTransient<IRemoteMetadataProvider, MetadataFromDataSource>();
+	        serviceCollection.TryAddTransient<IGlobalMetadataProvider, GlobalMetadataProvider>();
 
             serviceCollection.TryAddTransient<IRepositoryImporter, RepositoryImporter>();
 
@@ -37,7 +39,8 @@ namespace ToSic.Eav
 
             serviceCollection.TryAddTransient<IRepositoryLoader, Efc11Loader>();
 
-	        serviceCollection.TryAddTransient<IThingSerializer, XmlSerializer>();
+	        serviceCollection.TryAddTransient<IThingSerializer, JsonSerializer>();
+	        serviceCollection.TryAddTransient<IThingDeserializer, JsonSerializer>();
 
             // NOTE for 2dm: Switch between DNN7 or DNN9 version of IEnvironmentVersioning
             // serviceCollection.TryAddTransient<IEnvironmentVersioning, ToSic.SexyContent.Environment.Dnn9.Environment.Versioning>();

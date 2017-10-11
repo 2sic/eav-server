@@ -44,9 +44,9 @@ namespace ToSic.Eav.DataSources.Caches
 		/// <summary>
 		/// Get AssignmentObjectTypeId by Name
 		/// </summary>
-		int GetMetadataType(string typeName);
+		//int GetMetadataType(string typeName);
 
-		string GetMetadataType(int typeId);
+		//string GetMetadataType(int typeId);
 
         #region Interfaces for the List-Cache
 
