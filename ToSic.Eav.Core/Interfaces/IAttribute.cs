@@ -2,6 +2,7 @@
 
 namespace ToSic.Eav.Interfaces
 {
+    /// <inheritdoc />
     /// <summary>
     /// Represents an Attribute with Values
     /// </summary>
