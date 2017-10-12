@@ -94,7 +94,8 @@ namespace ToSic.Eav.Persistence.Efc
                 .Include(e => e.ToSicEavValues)
                     .ThenInclude(v => v.ToSicEavValuesDimensions)
                 .Where(e => !e.ChangeLogDeleted.HasValue &&
-                            e.AttributeSet.AppId == appId &&
+                            e.AppId == appId &&
+                            //e.AttributeSet.AppId == appId &&
                             e.AttributeSet.ChangeLogDeleted == null &&
                             ( 
                                 // filter by EntityIds (if set)
@@ -102,6 +103,7 @@ namespace ToSic.Eav.Persistence.Efc
                                 e.PublishedEntityId.HasValue && entityIds.Contains(e.PublishedEntityId.Value)
                                 // also load Drafts
                             ))
+                .OrderBy(e => e.EntityId) // order to ensure drafts are processed after draft-parents
                 .Select(e => new
                 {
                     e.EntityId,
@@ -120,7 +122,8 @@ namespace ToSic.Eav.Persistence.Efc
                     e.Owner, 
                     Modified = e.ChangeLogModifiedNavigation.Timestamp, 
                     e.Json
-                }).ToList();
+                })
+                .ToList();
             sqlTime.Stop();
             var eIds = rawEntities.Select(e => e.EntityId).ToList();
 
@@ -171,20 +174,18 @@ namespace ToSic.Eav.Persistence.Efc
             var entityTimer = Stopwatch.StartNew();
             foreach (var e in rawEntities)
             {
+                Entity newEntity;
+
                 var useJson = e.Json != null;
                 
-                var contentType = (ContentType)contentTypes[e.AttributeSetId];
-                if (useJson)
-#pragma warning disable 1717
-                    useJson = useJson; // just to stop in debugger
-#pragma warning restore 1717
+                if(useJson)
+                    newEntity = serializer.Deserialize(e.Json) as Entity;
 
-                var newEntity = useJson
-                    ? serializer.Deserialize(e.Json) as Entity
-                    : new Entity(appId, e.EntityGuid, e.EntityId, e.EntityId, e.Metadata, contentType, e.IsPublished, relationships, e.Modified, e.Owner, e.Version);
-
-                if (!useJson)
+                else
                 {
+                    var contentType = (ContentType)contentTypes[e.AttributeSetId];
+                    newEntity = new Entity(appId, e.EntityGuid, e.EntityId, e.EntityId, e.Metadata, contentType, e.IsPublished, relationships, e.Modified, e.Owner, e.Version);
+
                     var allAttribsOfThisType =
                         new Dictionary<int, IAttribute>(); // temporary Dictionary to set values later more performant by Dictionary-Key (AttributeId)
                     IAttribute titleAttrib = null;

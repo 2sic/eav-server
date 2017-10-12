@@ -23,6 +23,7 @@ namespace ToSic.Eav.Types
             Description = "todo";
             Attributes = new List<IAttributeDefinition>();
             IsInstalledInPrimaryStorage = false;
+            ParentId = -999;  // important so the GUI regards this as a ghost, and doesn't provide editing features
         }
 
         protected AttributeDefinition Add(AttributeDefinition attDef)
@@ -33,7 +34,7 @@ namespace ToSic.Eav.Types
 
         protected AttributeDefinition AttDef(AttributeTypeEnum type, string input, string name, string niceName, string description, string defaultValue = null)
         {
-            var correctedInput = "@" + type.ToString().ToLowerInvariant() + "-" + input;
+            var correctedInput = type.ToString().ToLowerInvariant() + "-" + input;
             var attDef = new AttributeDefinition(AppId, name, niceName, type, correctedInput, description, true, defaultValue);
             return attDef;
         }

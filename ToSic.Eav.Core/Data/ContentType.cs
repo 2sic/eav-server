@@ -45,7 +45,7 @@ namespace ToSic.Eav.Data
         #region Sharing Content Types
 
         /// <inheritdoc />
-        public int? ParentId { get; }
+        public int? ParentId { get; protected set; }
 
         /// <inheritdoc />
         public int ParentAppId { get; }

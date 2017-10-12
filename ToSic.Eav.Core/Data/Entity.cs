@@ -223,6 +223,6 @@ namespace ToSic.Eav.Data
         }
 
         /// <inheritdoc />
-        public int Version { get; }
+        public int Version { get; internal set; } = 1;
     }
 }

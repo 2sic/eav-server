@@ -17,6 +17,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         private List<DimensionDefinition> _zoneLanguages;
 
+        private readonly JsonSerializer _jsonifier = new JsonSerializer();
+
         internal int SaveEntity(IEntity newEnt, SaveOptions so)
         {
             Log.Add($"save start for id:{newEnt?.EntityId}/{newEnt?.EntityGuid}");
@@ -46,8 +48,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             // check if saving should be with db-type or with the plain json
             var saveJson = !newEnt.Type.IsInstalledInPrimaryStorage;
-            var json = saveJson ? new JsonSerializer().Serialize(newEnt) : null;
-            Log.Add($"save json:{saveJson} with {json?.Substring(0, 100)}...");
+            Log.Add($"save json:{saveJson}");
             #endregion Step 1
 
 
@@ -114,11 +115,18 @@ namespace ToSic.Eav.Repository.Efc.Parts
                         Owner = DbContext.UserName,
                         AttributeSetId = contentTypeId,
                         Version = 1,
-                        Json = json
+                        Json = null // use null, as we must wait to serialize till we have the entityId
                     };
 
                     DbContext.SqlDb.Add(dbEnt);
                     DbContext.SqlDb.SaveChanges();
+
+                    if (saveJson)
+                    {
+                        newEnt.ChangeIdForSaving(dbEnt.EntityId); // update this, as it was only just generated
+                        dbEnt.Json = _jsonifier.Serialize(newEnt);
+                        DbContext.SqlDb.SaveChanges();
+                    }
                     Log.Add($"create new i:{dbEnt.EntityId}, guid:{dbEnt.EntityGuid}");
 
                     #endregion
@@ -157,7 +165,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                     // increase version
                     dbEnt.Version++;
-                    dbEnt.Json = json;
+                    (newEnt as Entity)?.VersionIncrease();
+                    dbEnt.Json = saveJson ? _jsonifier.Serialize(newEnt) : null;
 
                     // first, clean up all existing attributes / values (flush)
                     // this is necessary after remove, because otherwise EF state tracking gets messed up
@@ -196,7 +205,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 #region Step 6: Ensure versioning
 
                 if (saveJson)
-                    DbContext.Versioning.SaveEntity(dbEnt.EntityId, dbEnt.EntityGuid, json);
+                    DbContext.Versioning.SaveEntity(dbEnt.EntityId, dbEnt.EntityGuid, dbEnt.Json);
                 else
                     DbContext.Versioning.SaveEntity(dbEnt.EntityId, dbEnt.EntityGuid, useDelayedSerialize: true);
 

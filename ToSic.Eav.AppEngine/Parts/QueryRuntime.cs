@@ -45,14 +45,16 @@ namespace ToSic.Eav.Apps.Parts
                 }
                 #endregion
 
+                var expectDataAttrib = dataSource.GetCustomAttributes(typeof(ExpectsDataOfType), true)
+                    .FirstOrDefault() as ExpectsDataOfType;
+                var configType = expectDataAttrib ?.StaticName;
                 result.Add(new DataSourceInfo
                 {
                     PartAssemblyAndType = dataSource.FullName + ", " + dataSource.Assembly.GetName().Name,
                     ClassName = dataSource.Name,
                     In = inStreamNames,
                     Out = outStreamNames,
-                    ContentType = (dataSource.GetCustomAttributes(typeof(ExpectsDataOfType), true).FirstOrDefault() as ExpectsDataOfType)
-                        ?.StaticName
+                    ContentType = configType
                 });
             }
 
