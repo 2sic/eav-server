@@ -9,7 +9,7 @@ namespace ToSic.Eav.Data
     /// <summary>
     /// Represents a Content Type
     /// </summary>
-    public class ContentType : IContentType, IUsesSharedDefinition
+    public class ContentType : IContentType, IUsesSharedDefinition, IHasExternalI18n
     {
         #region simple properties
 
@@ -144,6 +144,10 @@ namespace ToSic.Eav.Data
         public void AddMetadata(string type, Dictionary<string, object> values)
             => MetadataItems.Add(new Entity(AppId, Guid.Empty, type, values));
 
+        #endregion
+
+        #region external i18n
+        public string I18nKey { get; protected set; } = null;
         #endregion
     }
 }

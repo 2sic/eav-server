@@ -9,6 +9,7 @@ using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Serializers;
+using ToSic.Eav.WebApi.Formats;
 
 namespace ToSic.Eav.WebApi
 {
@@ -25,7 +26,7 @@ namespace ToSic.Eav.WebApi
 
         #region Content-Type Get, Delete, Save
         [HttpGet]
-	    public IEnumerable<dynamic> Get(int appId, string scope = null, bool withStatistics = false)
+	    public IEnumerable<ContentTypeInfo> Get(int appId, string scope = null, bool withStatistics = false)
         {
             Log.Add($"get a#{appId}, scope:{scope}, stats:{withStatistics}");
             // scope can be null (eav) or alternatives would be "System", "2SexyContent-System", "2SexyContent-App", "2SexyContent"
@@ -34,12 +35,12 @@ namespace ToSic.Eav.WebApi
 
             var filteredType = allTypes.Where(t => t.Scope == scope)
                 .OrderBy(t => t.Name)
-                .Select(t => ContentTypeForJson(t, cache));
+                .Select(t => ContentTypeForJson(t as ContentType, cache));
 
             return filteredType;
 	    }
 
-	    private dynamic ContentTypeForJson(IContentType t, ICache cache)
+        private ContentTypeInfo ContentTypeForJson(ContentType t, ICache cache)
 	    {
 	        Log.Add($"for json a:{t.AppId}, type:{t.Name}");
 	        var metadata = t.MetadataItems.FirstOrDefault();
@@ -51,31 +52,32 @@ namespace ToSic.Eav.WebApi
 
 	        var share = (IUsesSharedDefinition) t;
 
-            var jsonReady = new
+	        var jsonReady = new ContentTypeInfo
 	        {
 	            Id = t.ContentTypeId,
-                t.Name,
-                Label = nameOverride,
-	            t.StaticName,
-	            t.Scope,
-	            t.Description,
+	            Name = t.Name,
+	            Label = nameOverride,
+	            StaticName = t.StaticName,
+	            Scope = t.Scope,
+	            Description = t.Description,
 	            UsesSharedDef = share.ParentId != null,
 	            SharedDefId = share.ParentId,
-	            Items = cache.LightList.Count(i => i.Type == t),
-	            Fields = ((ContentType)t).Attributes.Count,
-                Metadata = ser.Prepare(metadata)
+	            Items = cache?.LightList.Count(i => i.Type == t) ?? -1, // only count if cache provided
+	            Fields = t.Attributes.Count,
+	            Metadata = ser.Prepare(metadata),
+                I18nKey = t.I18nKey
 	        };
 	        return jsonReady;
 	    }
 
         [HttpGet]
-	    public dynamic GetSingle(int appId, string contentTypeStaticName, string scope = null)
+	    public ContentTypeInfo GetSingle(int appId, string contentTypeStaticName, string scope = null)
 	    {
 	        Log.Add($"get single a#{appId}, type:{contentTypeStaticName}, scope:{scope}");
             SetAppIdAndUser(appId);
             var cache = DataSource.GetCache(null, appId);
             var ct = cache.GetContentType(contentTypeStaticName);
-            return ContentTypeForJson(ct, cache);
+            return ContentTypeForJson(ct as ContentType, null);
 	    }
 
         [HttpGet]

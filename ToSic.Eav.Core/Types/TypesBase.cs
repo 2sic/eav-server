@@ -17,13 +17,14 @@ namespace ToSic.Eav.Types
         protected const string DefInp = "default";
         public const string UndefinedScope = "Undefined";
 
-        protected TypesBase(string name, string staticName, string scope = UndefinedScope) : base(0, name, staticName)
+        protected TypesBase(string name, string staticName, string scope = UndefinedScope, string i18nKey = null) : base(0, name, staticName)
         {
             Scope = scope;
             Description = "todo";
             Attributes = new List<IAttributeDefinition>();
             IsInstalledInPrimaryStorage = false;
-            ParentId = -999;  // important so the GUI regards this as a ghost, and doesn't provide editing features
+            ParentId = -999;  // important that parentid is different, so the GUI regards this as a ghost, and doesn't provide editing features
+            I18nKey = i18nKey;
         }
 
         protected AttributeDefinition Add(AttributeDefinition attDef)

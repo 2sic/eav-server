@@ -79,6 +79,7 @@
     <Compile Include="ContentExportController.cs" />
     <Compile Include="ContentImportController.cs" />
     <Compile Include="ContentTypeController.cs" />
+    <Compile Include="Formats\ContentTypeInfo.cs" />
     <Compile Include="EntityPickerController.cs" />
     <Compile Include="Formats\CompleteEntity.cs" />
     <Compile Include="Formats\ItemIdentifiers.cs" />

@@ -92,6 +92,7 @@
     <Compile Include="Data\AttributeBase.cs" />
     <Compile Include="Data\AttributeDefinition_Shared.cs" />
     <Compile Include="Interfaces\IGlobalMetadataProvider.cs" />
+    <Compile Include="Interfaces\IHasExternalI18n.cs" />
     <Compile Include="Interfaces\IRemoteMetadataProvider.cs" />
     <Compile Include="Types\Attributes\ExpectsDataOfType.cs" />
     <Compile Include="Types\Attributes\ContentTypeDefinition.cs" />

@@ -1,28 +1,27 @@
-﻿using ToSic.Eav.Data;
-using ToSic.Eav.Types;
+﻿using ToSic.Eav.Types;
 using ToSic.Eav.Types.Attributes;
 using ToSic.Eav.Types.Builder;
 
 namespace ToSic.Eav.DataSources.ContentTypes
 {
     [ContentTypeDefinition(StaticTypeName)]
-    public class SqlDataSourceType: TypesBase
+    public class ConfigSqlDataSource: TypesBase
     {
-        private const string CName = "SqlDataSource-Type";
+        //private const string CName = "ToSic.Eav.DataSources.SqlDataSource";
         internal const string StaticTypeName = "|Config ToSic.Eav.DataSources.SqlDataSource";
 
-        public SqlDataSourceType() : base(CName, StaticTypeName, Constants.ScopeSystem)
+        public ConfigSqlDataSource() : base(StaticTypeName, StaticTypeName, Constants.ScopeSystem, StaticTypeName.ToLowerInvariant().TrimStart('|'))
         {
             Add(AttDef(Str, DefInp, "Title", "Title", "Just a nice name so you remember what it's for", "Sql Query")
                 .MakeTitle());
-            Add(AttDef(Grp, DefInp, "ConsGrp", "Connection Information", "How to connect to the DB"));
+            Add(AttDef(Grp, DefInp, "ConnectionGroup", "Connection Information", "How to connect to the DB"));
             {
                 Add(AttDef(Str, DefInp, "ConnectionStringName", "Connection Name (preferred)", "Use connection names from the web.config", "SiteSqlServer"));
                 Add(AttDef(Str, DefInp, "ConnectionString", "Connection String", "Alternative: the string instead of the connection name"))
                     .StringDefault(3);
             }
 
-            Add(AttDef(Grp, DefInp, "QryGrp", "Query", "What do you want to query, and how to treat the result"));
+            Add(AttDef(Grp, DefInp, "QueryGroup", "Query", "What do you want to query, and how to treat the result"));
             { 
                 Add(AttDef(Str, DefInp, "SelectCommand", "Sql Select", "Sql select command", "Select * From ..."))
                     .StringDefault(10);

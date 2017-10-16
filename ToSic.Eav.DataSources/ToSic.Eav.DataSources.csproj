@@ -77,7 +77,7 @@
     <Compile Include="Caches\ICache.cs" />
     <Compile Include="Caches\ListCacheItem.cs" />
     <Compile Include="Caches\QuickCache.cs" />
-    <Compile Include="ContentTypes\SqlDataSourceType.cs" />
+    <Compile Include="ContentTypes\ConfigSqlDataSource.cs" />
     <Compile Include="CsvDataSource.cs" />
     <Compile Include="DataSource.cs" />
     <Compile Include="DataStream.cs" />
