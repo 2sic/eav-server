@@ -118,20 +118,19 @@ namespace ToSic.Eav.WebApi
 	    }
 
         #region Fields - Get, Reorder, Data-Types (for dropdown), etc.
+
         /// <summary>
         /// Returns the configuration for a content type
         /// </summary>
         [HttpGet]
-        public IEnumerable<dynamic> GetFields(int appId, string staticName)
+        public IEnumerable<ContentTypeFieldInfo> GetFields(int appId, string staticName)
         {
             Log.Add($"get fields a#{appId}, type:{staticName}");
             SetAppIdAndUser(appId);
 
             SetAppIdAndUser(appId);
-            var fields = DataSource.GetCache(null, appId)
-                .GetContentType(staticName)
-                .Attributes
-                .OrderBy(a => a.SortOrder);
+            var type = DataSource.GetCache(null, appId).GetContentType(staticName) as ContentType;
+            var fields = type.Attributes.OrderBy(a => a.SortOrder);
 
 
             var appInputTypes = new AppRuntime(appId).ContentTypes.GetInputTypes(true).ToList();
@@ -156,18 +155,20 @@ namespace ToSic.Eav.WebApi
             return fields.Select(a =>
             {
                 var inputtype = FindInputType(a.MetadataItems);
-                return new
+                return new ContentTypeFieldInfo
                 {
                     Id = a.AttributeId,
-                    a.SortOrder,
-                    a.Type,
+                    SortOrder = a.SortOrder,
+                    Type = a.Type,
                     InputType = inputtype,
                     StaticName = a.Name,
-                    a.IsTitle,
-                    a.AttributeId,
+                    IsTitle = a.IsTitle,
+                    AttributeId = a.AttributeId,
                     Metadata = a.MetadataItems.ToDictionary(e => e.Type.StaticName.TrimStart('@'), e => ser.Prepare(e)),
-                    InputTypeConfig = inputTypesDic.ContainsKey(inputtype) 
-                        ? ser.Prepare(inputTypesDic[inputtype]) : null
+                    InputTypeConfig = inputTypesDic.ContainsKey(inputtype)
+                        ? ser.Prepare(inputTypesDic[inputtype])
+                        : null,
+                    I18nKey = type.I18nKey
                 };
             });
         }
@@ -262,4 +263,6 @@ namespace ToSic.Eav.WebApi
         #endregion
 
     }
+
+
 }

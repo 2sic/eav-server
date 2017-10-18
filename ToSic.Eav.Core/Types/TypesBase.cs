@@ -33,7 +33,7 @@ namespace ToSic.Eav.Types
             return attDef;
         }
 
-        protected AttributeDefinition AttDef(AttributeTypeEnum type, string input, string name, string niceName, string description, string defaultValue = null)
+        protected AttributeDefinition AttDef(AttributeTypeEnum type, string input, string name, string niceName = null, string description = null, string defaultValue = null)
         {
             var correctedInput = type.ToString().ToLowerInvariant() + "-" + input;
             var attDef = new AttributeDefinition(AppId, name, niceName, type, correctedInput, description, true, defaultValue);

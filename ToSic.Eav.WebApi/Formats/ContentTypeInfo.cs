@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.WebApi.Formats
 {
-    public class ContentTypeInfo
+    public class ContentTypeInfo: IHasExternalI18n
     {
         public int Id { get; set; }
         public string Name { get; set; }
