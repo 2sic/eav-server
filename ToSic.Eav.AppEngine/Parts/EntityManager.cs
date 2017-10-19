@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence;
@@ -186,5 +188,18 @@ namespace ToSic.Eav.Apps.Parts
             => new ExportListXml(_appManager.Cache.AppDataPackage, contentType, Log);
         public ExportListXml Exporter(string contentType) 
             => new ExportListXml(_appManager.Cache.AppDataPackage, _appManager.Read.ContentTypes.Get(contentType), Log);
+
+        public ImportListXmlRefactoring Importer(int contentTypeId,
+            Stream dataStream,
+            IEnumerable<string> languages,
+            string documentLanguageFallback,
+            ImportDeleteUnmentionedItems deleteSetting,
+            ImportResourceReferenceMode resolveReferenceMode)
+        {
+            var ct = _appManager.Read.ContentTypes.Get(contentTypeId);
+            return new ImportListXmlRefactoring(_appManager.Cache.AppDataPackage, ct, 
+                dataStream, languages, documentLanguageFallback, 
+                deleteSetting, resolveReferenceMode, Log);
+        }
     }
 }

@@ -145,10 +145,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 return XmlConstants.Null;
 
             // now try to find the exact value-item for this language
-            var valueItem = string.IsNullOrEmpty(language)
-                ?  attrib.Values.FirstOrDefault(v => v.Languages.Any(l => l.Key == languageFallback)) // use default (fallback)
-                  ?? attrib.Values.FirstOrDefault(v => !v.Languages.Any())  // or the node without any languages
-                : attrib.Values.FirstOrDefault(v => v.Languages.Any(l => l.Key == language)); // otherwise really exact match
+            var valueItem = GetExactAssignedValue(attrib, language, languageFallback);
 
             if (valueItem == null)
                 return XmlConstants.Null;
@@ -185,6 +182,14 @@ namespace ToSic.Eav.Apps.ImportExport
                 : ResolveValue(attribute.Type, valueItem.Serialized, resolveLinks);
         }
 
+        public static IValue GetExactAssignedValue(IAttribute attrib, string language, string languageFallback)
+        {
+            var valueItem = string.IsNullOrEmpty(language)
+                ? attrib.Values.FirstOrDefault(v => v.Languages.Any(l => l.Key == languageFallback)) // use default (fallback)
+                  ?? attrib.Values.FirstOrDefault(v => !v.Languages.Any()) // or the node without any languages
+                : attrib.Values.FirstOrDefault(v => v.Languages.Any(l => l.Key == language)); // otherwise really exact match
+            return valueItem;
+        }
 
 
         /// <summary>

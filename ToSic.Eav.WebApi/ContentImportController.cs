@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Web.Http;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.ImportExport;
+using ToSic.Eav.Apps.ImportExport.removing;
 using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.Logging.Simple;
 
@@ -84,16 +84,22 @@ namespace ToSic.Eav.WebApi
             return new ContentImportResult(!import.ErrorLog.HasErrors, null);
         }
 
-
-        private ToRefactorXmlImportVTable GetXmlImport(ContentImportArgs args)
+        private const bool UseOldImporter = true;
+        private IImportListTemp GetXmlImport(ContentImportArgs args)
         {
             Log.Add("get xml import " + args.DebugInfo);
-            var contentTypeId = CurrentContext.AttribSet.GetIdWithEitherName(args.ContentType);//.AttributeSetId;//.AttributeSetID;// GetContentTypeId(args.ContentType);
-            var contextLanguages = AppManager.Read.Zone.Languages().Select(l => l.EnvironmentKey).ToArray();// CurrentContext.Dimensions.GetLanguages().Select(language => language.EnvironmentKey).ToArray();
+            var contentTypeId = CurrentContext.AttribSet.GetIdWithEitherName(args.ContentType);
+            var contextLanguages = AppManager.Read.Zone.Languages().Select(l => l.EnvironmentKey).ToArray();
 
             using (var contentSteam = new MemoryStream(Convert.FromBase64String(args.ContentBase64)))
             {
-                return new ToRefactorXmlImportVTable(CurrentContext.ZoneId, args.AppId, contentTypeId, contentSteam, contextLanguages, args.DefaultLanguage, args.ClearEntities, args.ImportResourcesReferences, Log);
+                return UseOldImporter
+                    ? new ToRefactorXmlImportVTable(CurrentContext.ZoneId, args.AppId, contentTypeId, contentSteam,
+                        contextLanguages, args.DefaultLanguage,
+                        args.ClearEntities, args.ImportResourcesReferences, Log) as IImportListTemp
+                    : AppManager.Entities.Importer(contentTypeId, contentSteam,
+                        contextLanguages, args.DefaultLanguage,
+                        args.ClearEntities, args.ImportResourcesReferences);
             }
         }
 

@@ -18,7 +18,7 @@ using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Repository.Efc;
 using Entity = ToSic.Eav.Data.Entity;
 
-namespace ToSic.Eav.Apps.ImportExport
+namespace ToSic.Eav.Apps.ImportExport.removing
 {
 
     // todo:
@@ -31,7 +31,7 @@ namespace ToSic.Eav.Apps.ImportExport
     /// <summary>
     /// Import a virtual table of content-items
     /// </summary>
-    public class ToRefactorXmlImportVTable: HasLog
+    public class ToRefactorXmlImportVTable: HasLog, IImportListTemp
     {
 
         #region properties like _appId, Document, etc.

@@ -11,7 +11,6 @@ using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
-using ToSic.Eav.Repository.Efc;
 using Entity = ToSic.Eav.Data.Entity;
 
 namespace ToSic.Eav.Apps.ImportExport
@@ -41,10 +40,10 @@ namespace ToSic.Eav.Apps.ImportExport
         {
             App = zoneId.HasValue ? new AppManager(zoneId.Value, appId) : new AppManager(appId, Log);
             Storage = App.Storage;
-            //_dbDeepAccess = App.DataController;// DbDataController.Instance(zoneId, appId);
+
             // now save the resolved zone/app IDs
             AppId = appId;
-            ZoneId = App.ZoneId;// DbDeepAccess.ZoneId;
+            ZoneId = App.ZoneId;
             var iex = Factory.Resolve<IImportExportEnvironment>();
             iex.LinkLog(Log);
             SaveOptions = iex.SaveOptions(ZoneId);
@@ -61,10 +60,6 @@ namespace ToSic.Eav.Apps.ImportExport
         {
             Storage.DoWithDelayedCacheInvalidation(() =>
             {
-                #region initialize DB connection / transaction
-
-                #endregion
-
                 // run import, but rollback transaction if necessary
                 Storage.DoInTransaction(() =>
                 {

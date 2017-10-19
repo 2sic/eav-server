@@ -103,6 +103,13 @@
     <Compile Include="Interfaces\IGlobalMetadataProvider.cs" />
     <Compile Include="Interfaces\IHasExternalI18n.cs" />
     <Compile Include="Interfaces\IRemoteMetadataProvider.cs" />
+    <Compile Include="Persistence\Logging\ImportError.cs" />
+    <Compile Include="Persistence\Logging\ImportErrorCode.cs" />
+    <Compile Include="Persistence\Logging\ImportErrorLog.cs" />
+    <Compile Include="Persistence\Logging\LocalizedDescriptionAttribute.cs" />
+    <Compile Include="Persistence\Logging\LogItem.cs" />
+    <Compile Include="Persistence\Logging\Message.cs" />
+    <Compile Include="Persistence\Logging\MessageTypes.cs" />
     <Compile Include="Types\Attributes\ExpectsDataOfType.cs" />
     <Compile Include="Types\Attributes\ContentTypeDefinition.cs" />
     <Compile Include="Data\Builder\AttDefBuilder.cs" />
@@ -167,13 +174,6 @@
     <Compile Include="Persistence\Interfaces\IImportExportEnvironment.cs" />
     <Compile Include="Interfaces\IRepositoryImporter.cs" />
     <Compile Include="Persistence\Interfaces\IStorage.cs" />
-    <Compile Include="Persistence\Logging\Message.cs" />
-    <Compile Include="Persistence\Logging\ImportError.cs" />
-    <Compile Include="Persistence\Logging\ImportErrorCode.cs" />
-    <Compile Include="Persistence\Logging\ImportErrorLog.cs" />
-    <Compile Include="Persistence\Logging\LogItem.cs" />
-    <Compile Include="Persistence\Logging\LocalizedDescriptionAttribute.cs" />
-    <Compile Include="Persistence\Logging\MessageTypes.cs" />
     <Compile Include="Persistence\SaveOptions.cs" />
     <Compile Include="Persistence\Versions\ItemHistory.cs" />
     <Compile Include="Plumbing\AssemblyHandling.cs" />
@@ -184,7 +184,9 @@
     <Compile Include="Types\Global.cs" />
     <Compile Include="Types\TypesBase.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Logging\Import\" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
