@@ -38,7 +38,7 @@ SELECT TOP (1000) PortalId as EntityId, HomeDirectory as EntityTitle
                 Add(AttDef(Str, DefInp, "EntityTitleField"));
             }
 
-            this.ContentTypeMetadata("SQL DataSource");
+            // this.ContentTypeMetadata("SQL DataSource");
         }
     }
 }

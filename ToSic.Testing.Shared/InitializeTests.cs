@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav;
+using ToSic.Eav.Core.Tests.Mocks;
 using ToSic.Eav.Implementations.UserInformation;
 using ToSic.Eav.Implementations.ValueConverter;
 using ToSic.Eav.Persistence.Efc.Diagnostics;
@@ -29,9 +30,9 @@ namespace ToSic.Testing.Shared
             Configuration.SetConnectionString(TestConstants.ConStr);
             Factory.ActivateNetCoreDi(sc =>
             {
-                sc.AddTransient<IEavValueConverter, NeutralValueConverter>();//new InjectionConstructor());
-                sc.AddTransient<IEavUserInformation, NeutralEavUserInformation>();//new InjectionConstructor());
-                sc.AddTransient<IEavUserInformation, NeutralEavUserInformation>();//new InjectionConstructor());
+                sc.AddTransient<IEavValueConverter, MockValueConverter>();
+                sc.AddTransient<IEavUserInformation, NeutralEavUserInformation>();
+                sc.AddTransient<IEavUserInformation, NeutralEavUserInformation>();
 
                 configure.Invoke(sc);
 

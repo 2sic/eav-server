@@ -191,7 +191,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 valueLanguageReferenced = valueLanguagesReferenced.First();// If one language is serialized, do not serialize read-write values as references
 
             if (valueLanguageReferenced != null)
-                element.Append(valueName, $"[ref({valueLanguageReferenced},{(valueLanguageReadOnly ? XmlConstants.ReadOnly /* "ro" */ : XmlConstants.ReadWrite /* "rw" */)})]");
+                element.Append(valueName, $"[ref({valueLanguageReferenced},{(valueLanguageReadOnly ? XmlConstants.ReadOnly : XmlConstants.ReadWrite)})]");
             else
                 AppendValue(element, valueName, value, exportResourceReferenceOption);
         }
