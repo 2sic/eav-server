@@ -22,8 +22,8 @@ namespace ToSic.Eav.WebApi
             ExportSelection exportSelection, ExportResourceReferenceMode exportResourcesReferences,
             ExportLanguageResolution exportLanguageReferences, string selectedIds = null)
         {
-            return ExportContentOld(appId, language, defaultLanguage, contentType, exportSelection, exportResourcesReferences, exportLanguageReferences, selectedIds);
-            //return ExportContentNew(appId, language, defaultLanguage, contentType, exportSelection, exportResourcesReferences, exportLanguageReferences, selectedIds);
+            // return ExportContentOld(appId, language, defaultLanguage, contentType, exportSelection, exportResourcesReferences, exportLanguageReferences, selectedIds);
+            return ExportContentNew(appId, language, defaultLanguage, contentType, exportSelection, exportResourcesReferences, exportLanguageReferences, selectedIds);
         }
 
         private HttpResponseMessage ExportContentNew(int appId, string language, string defaultLanguage, string contentType,
@@ -53,7 +53,7 @@ namespace ToSic.Eav.WebApi
             var tableExporter = AppManager.Entities.Exporter(contentType);
             var fileContent = exportSelection == ExportSelection.Blank
                 ? tableExporter.EmptySchemaXml()
-                : tableExporter.TableXmlFromDb(language ?? "", defaultLanguage, contextLanguages, exportLanguageReferences,
+                : tableExporter.GenerateXml(language ?? "", defaultLanguage, contextLanguages, exportLanguageReferences,
                     exportResourcesReferences, ids);
 
             var contentTypeName = tableExporter.ContentType.Name; // 2017-04-23 2dm check! ct.Name;

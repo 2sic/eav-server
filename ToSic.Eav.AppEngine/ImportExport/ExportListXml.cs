@@ -67,9 +67,15 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="exportResourceReference">How value references to files and pages are handled</param>
         /// <param name="selectedIds">array of IDs to export only these</param>
         /// <returns>A string containing the xml data</returns>
-        public string TableXmlFromDb(string languageSelected, string languageFallback, string[] sysLanguages, ExportLanguageResolution exportLanguageReference, ExportResourceReferenceMode exportResourceReference, int[] selectedIds)
+        public string GenerateXml(string languageSelected, string languageFallback, string[] sysLanguages, ExportLanguageResolution exportLanguageReference, ExportResourceReferenceMode exportResourceReference, int[] selectedIds)
         {
+            Log.Add("start export");
             if (ContentType == null) return null;
+
+            // neutralize languages
+            languageSelected = languageSelected.ToLowerInvariant();
+            languageFallback = languageFallback.ToLowerInvariant();
+            sysLanguages = sysLanguages.Select(l => l.ToLowerInvariant()).ToArray();
 
             var languages = new List<string>();
             if (!string.IsNullOrEmpty(languageSelected))// only selected language
@@ -93,7 +99,6 @@ namespace ToSic.Eav.Apps.ImportExport
             var resolveLinks = exportResourceReference == ExportResourceReferenceMode.Resolve;
 
             foreach (var entity in entList)
-            {
                 foreach (var language in languages)
                 {
                     var xmlEntity = _xBuilder.BuildEntity(entity.EntityGuid, language, ContentType.Name);
@@ -113,7 +118,6 @@ namespace ToSic.Eav.Apps.ImportExport
                         xmlEntity.Append(attribute.Name, value);
                     }
                 }
-            }
 
             return documentRoot.Document?.ToString();
         }
@@ -150,40 +154,12 @@ namespace ToSic.Eav.Apps.ImportExport
                   ?? attrib.Values.FirstOrDefault(v => !v.Languages.Any())  // or the node without any languages
                 : attrib.Values.FirstOrDefault(v => v.Languages.Any(l => l.Key == language)); // otherwise really exact match
 
+            if (valueItem == null)
+                return XmlConstants.Null;
+
             // Option 2: Exact match (non-shared) on no other languages
-            if(valueItem?.Languages.Count == 0 || valueItem?.Languages.Count == 1)
+            if (valueItem.Languages.Count == 0 || valueItem.Languages.Count == 1)
                 return ResolveValue(attribute.Type, valueItem.Serialized, resolveLinks);
-
-            #region code that didn't work...
-            // Option 2: default (language is fallback-language, there is 1 value, and no languages are assigned any where)
-            //if (language == languageFallback
-            //    && attrib.Values.Count == 1 
-            //    && attrib.Values.FirstOrDefault()?.Languages.Count == 0)
-            //    return ResolveValue(attribute.Type, attrib.Values.FirstOrDefault()?.Serialized, resolveLinks);
-
-            // Option 3: unassigned (attribute is defined, but this language isn't assigned on any value)
-            // in this case, it's like a null-entry
-            //var valueLanguage = value.ToSicEavValuesDimensions.Select(reference => reference.Dimension.EnvironmentKey)
-            //                             .FirstOrDefault(l => l == language); // value.GetLanguage(language);
-            //if (valueLanguage == null)
-            //var valueItem = attrib.Values.FirstOrDefault(v => v.Languages.Any(l => l.Key == language));
-            //if (valueItem == null)
-            //{   // If no language is found, serialize the plain value
-            //    //AppendValue(element, attribute.Name, value, exportResourceReferenceOption);
-            //    //element.Append(attribute.Name, XmlConstants.Null);
-            //    return ;
-            //}
-
-            //// Option 4 - no languages are assigned, but the current language would be the primary
-            //var valueLanguagesReferenced = GetLanguagesReferenced(value, language, true)
-            //                                    .OrderBy(lang => lang != languageFallback)
-            //                                    .ThenBy(lan => lan);
-            //if (!valueLanguagesReferenced.Any())
-            //{   // If the value is a head value, serialize the plain value
-            //    AppendValue(element, attribute.Name, value, exportResourceReferenceOption);
-            //    return;
-            //}
-            #endregion
 
             // Option 4 - language is assigned - either shared or Read-only
             var sharedParentLanguages = valueItem.Languages
