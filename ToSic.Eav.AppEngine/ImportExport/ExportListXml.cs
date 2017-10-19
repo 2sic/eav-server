@@ -12,7 +12,6 @@ using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Apps.ImportExport
 {
-    // todo: refactoring to use AppPackage, then move to Apps (away from Db...)
     /// <summary>
     /// For exporting a content-type into xml, either just the schema or with data
     /// </summary>
@@ -20,7 +19,7 @@ namespace ToSic.Eav.Apps.ImportExport
     {
         private readonly XmlBuilder _xBuilder = new XmlBuilder();
 
-        public AppDataPackage App { get; }
+        private AppDataPackage App { get; }
         public IContentType ContentType { get; }
 
         public ExportListXml(AppDataPackage app, IContentType contentType, Log parentLog): base("App.LstExp", parentLog)
@@ -29,14 +28,12 @@ namespace ToSic.Eav.Apps.ImportExport
             ContentType = contentType;
         }
 
-        //public string NiceContentTypeName => ContentType.Name; 
-
 
         /// <summary>
         /// Create a blank xml scheme for data of one content-type
         /// </summary>
         /// <returns>A string containing the blank xml scheme</returns>
-        public string EmptySchemaXml()
+        public string EmptyListTemplate()
         {
             Log.Add("export schema xml");
             if (ContentType == null) 
@@ -64,18 +61,19 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="languageFallback">Language fallback of the system</param>
         /// <param name="sysLanguages">Languages supported of the system</param>
         /// <param name="exportLanguageReference">How value references to other languages are handled</param>
-        /// <param name="exportResourceReference">How value references to files and pages are handled</param>
+        /// <param name="resolveLinks">How value references to files and pages are handled</param>
         /// <param name="selectedIds">array of IDs to export only these</param>
         /// <returns>A string containing the xml data</returns>
-        public string GenerateXml(string languageSelected, string languageFallback, string[] sysLanguages, ExportLanguageResolution exportLanguageReference, ExportResourceReferenceMode exportResourceReference, int[] selectedIds)
+        public string GenerateXml(string languageSelected, string languageFallback, string[] sysLanguages, ExportLanguageResolution exportLanguageReference, bool resolveLinks, int[] selectedIds)
         {
-            Log.Add("start export");
             if (ContentType == null) return null;
 
             // neutralize languages
             languageSelected = languageSelected.ToLowerInvariant();
             languageFallback = languageFallback.ToLowerInvariant();
             sysLanguages = sysLanguages.Select(l => l.ToLowerInvariant()).ToArray();
+
+            Log.Add($"start export lang selected:{languageSelected} with fallback:{languageFallback} and type:{ContentType.Name}");
 
             var languages = new List<string>();
             if (!string.IsNullOrEmpty(languageSelected))// only selected language
@@ -95,8 +93,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             // Get the attribute definitions
             var attribsOfType = ContentType.Attributes;
-
-            var resolveLinks = exportResourceReference == ExportResourceReferenceMode.Resolve;
+            Log.Add($"will export {entList.Count} entities X {attribsOfType.Count} attribs");
 
             foreach (var entity in entList)
                 foreach (var language in languages)
@@ -140,7 +137,6 @@ namespace ToSic.Eav.Apps.ImportExport
         /// </summary>
         private string ValueOrLookupCode(IEntity entity, IAttributeDefinition attribute, string language, string languageFallback, string[] sysLanguages, bool useRefToParentLanguage, bool resolveLinks)
         {
-            //var value = entity.GetBestValue(attribute.Name, new []{language});//.GetValueOfExactLanguage(attribute, language);
             var attrib = entity.Attributes[attribute.Name];
 
             // Option 1: nothing (no value found at all)
@@ -171,15 +167,12 @@ namespace ToSic.Eav.Apps.ImportExport
                 .ToList(); // then a-z
 
             // Option 4a - no other parent languages assigned
-            if (!sharedParentLanguages.Any())
-            {   // If the value is a head value, serialize the plain value
+            if (!sharedParentLanguages.Any()) 
                 return ResolveValue(attribute.Type, valueItem.Serialized, resolveLinks);
-                //return;
-            }
 
             var langsOfValue = valueItem.Languages;
             string primaryLanguageRef = null;
-            //var valueLanguageReadOnly = value.IsLanguageReadOnly(language);
+
             var valueLanguageReadOnly = langsOfValue.First(l => l.Key == language).ReadOnly;
             if (useRefToParentLanguage)
                 primaryLanguageRef = sharedParentLanguages
@@ -187,11 +180,9 @@ namespace ToSic.Eav.Apps.ImportExport
             else if (valueLanguageReadOnly)
                 primaryLanguageRef = sharedParentLanguages.First();// If one language is serialized, do not serialize read-write values as references
 
-            if (primaryLanguageRef != null)
-                // element.Append(attribute.Name, $"[ref({primaryLanguageRef},{(valueLanguageReadOnly ? XmlConstants.ReadOnly : XmlConstants.ReadWrite)})]");
-                return $"[ref({primaryLanguageRef},{(valueLanguageReadOnly ? XmlConstants.ReadOnly : XmlConstants.ReadWrite)})]";
-            else
-                return ResolveValue(attribute.Type, valueItem.Serialized, resolveLinks);
+            return primaryLanguageRef != null 
+                ? $"[ref({primaryLanguageRef},{(valueLanguageReadOnly ? XmlConstants.ReadOnly : XmlConstants.ReadWrite)})]" 
+                : ResolveValue(attribute.Type, valueItem.Serialized, resolveLinks);
         }
 
 
