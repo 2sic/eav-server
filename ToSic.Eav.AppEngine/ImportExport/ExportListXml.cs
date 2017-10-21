@@ -218,7 +218,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// File:4711 to Content/file4711.jpg. If the reference cannot be reoslved, 
         /// the original value will be returned. 
         /// </summary>
-        internal static string ResolveHyperlinksFromTennant(string attrType, string value,
+        internal static string ResolveHyperlinksFromTennant(string value, string attrType,
             IEavValueConverter resolver)
             => attrType != Constants.Hyperlink
                 ? value
