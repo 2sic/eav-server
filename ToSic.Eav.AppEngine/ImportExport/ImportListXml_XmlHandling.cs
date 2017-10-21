@@ -8,7 +8,7 @@ using ToSic.Eav.Persistence.Logging;
 
 namespace ToSic.Eav.Apps.ImportExport
 {
-    public partial class ImportListXmlRefactoring
+    public partial class ImportListXml
     {
 
         private bool RunDocumentValidityChecks()
@@ -24,22 +24,20 @@ namespace ToSic.Eav.Apps.ImportExport
 
             var documentElementLanguagesAll = DocumentElements
                 .GroupBy(element => element.Element(XmlConstants.EntityGuid)?.Value)
-                .Select(group => @group
-                    .Select(element => element.Element(XmlConstants.EntityLanguage)?.Value)
+                .Select(group => group
+                    .Select(element => element.Element(XmlConstants.EntityLanguage)?.Value.ToLowerInvariant())
                     .ToList())
                 .ToList();
 
             var documentElementLanguagesCount = documentElementLanguagesAll.Select(item => item.Count);
 
-            if (documentElementLanguagesCount.Any(count => count != 1))
-                // It is an all language import, so check if all languages are specified for all entities
-                if (documentElementLanguagesAll.Any(lang => _languages.Except(lang).Any()))
-                {
-                    ErrorLog.AppendError(ImportErrorCode.MissingElementLanguage,
-                        "Langs=" + string.Join(", ", _languages));
-                    return false;
-                }
-            return true;
+            if (documentElementLanguagesCount.All(count => count == 1)) return true;
+
+            if (!documentElementLanguagesAll.Any(lang => _languages.Except(lang).Any())) return true;
+
+            ErrorLog.AppendError(ImportErrorCode.MissingElementLanguage,
+                "Langs=" + string.Join(", ", _languages));
+            return false;
         }
 
         private bool LoadStreamIntoDocumentElement(Stream dataStream)

@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Web.Http;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.ImportExport.removing;
+using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.Logging.Simple;
 
@@ -58,14 +58,14 @@ namespace ToSic.Eav.WebApi
             return import.ErrorLog.HasErrors 
                 ? new ContentImportResult(!import.ErrorLog.HasErrors, import.ErrorLog.Errors) 
                 : new ContentImportResult(!import.ErrorLog.HasErrors, new {
-                    import.AmountOfEntitiesCreated,
-                    import.AmountOfEntitiesDeleted,
-                    import.AmountOfEntitiesUpdated,
-                    import.AttributeNamesInDocument,
-                    import.AttributeNamesInContentType,
-                    import.AttributeNamesNotImported,
+                    AmountOfEntitiesCreated = import.Info_AmountOfEntitiesCreated,
+                    AmountOfEntitiesDeleted = import.Info_AmountOfEntitiesDeleted,
+                    AmountOfEntitiesUpdated = import.Info_AmountOfEntitiesUpdated,
+                    AttributeNamesInDocument = import.Info_AttributeNamesInDocument,
+                    AttributeNamesInContentType = import.Info_AttributeNamesInContentType,
+                    AttributeNamesNotImported = import.Info_AttributeNamesNotImported,
                     DocumentElementsCount = import.DocumentElements.Count(),
-                    LanguagesInDocumentCount = import.LanguagesInDocument.Count()
+                    LanguagesInDocumentCount = import.Info_LanguagesInDocument.Count()
                 });
         }
 
@@ -84,8 +84,8 @@ namespace ToSic.Eav.WebApi
             return new ContentImportResult(!import.ErrorLog.HasErrors, null);
         }
 
-        private const bool UseOldImporter = true;
-        private IImportListTemp GetXmlImport(ContentImportArgs args)
+        //private const bool UseOldImporter = false;
+        private ImportListXml GetXmlImport(ContentImportArgs args)
         {
             Log.Add("get xml import " + args.DebugInfo);
             var contentTypeId = CurrentContext.AttribSet.GetIdWithEitherName(args.ContentType);
@@ -93,11 +93,12 @@ namespace ToSic.Eav.WebApi
 
             using (var contentSteam = new MemoryStream(Convert.FromBase64String(args.ContentBase64)))
             {
-                return UseOldImporter
-                    ? new ToRefactorXmlImportVTable(CurrentContext.ZoneId, args.AppId, contentTypeId, contentSteam,
-                        contextLanguages, args.DefaultLanguage,
-                        args.ClearEntities, args.ImportResourcesReferences, Log) as IImportListTemp
-                    : AppManager.Entities.Importer(contentTypeId, contentSteam,
+                return 
+                    //UseOldImporter
+                    //? new ToRefactorXmlImportVTable(CurrentContext.ZoneId, args.AppId, contentTypeId, contentSteam,
+                    //    contextLanguages, args.DefaultLanguage,
+                    //    args.ClearEntities, args.ImportResourcesReferences, Log) as IImportListTemp
+                    AppManager.Entities.Importer(contentTypeId, contentSteam,
                         contextLanguages, args.DefaultLanguage,
                         args.ClearEntities, args.ImportResourcesReferences);
             }

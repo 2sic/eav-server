@@ -45,9 +45,9 @@ namespace ToSic.Eav.Apps.Parts
             };
 
             if (templateId.HasValue)
-                _appManager.Entities.UpdateParts(templateId.Value, values);
+                AppManager.Entities.UpdateParts(templateId.Value, values);
             else
-                _appManager.Entities.Create(Configuration.TemplateContentType, values);
+                AppManager.Entities.Create(Configuration.TemplateContentType, values);
         }
 
 

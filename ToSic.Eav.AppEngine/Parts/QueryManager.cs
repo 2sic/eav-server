@@ -16,15 +16,15 @@ namespace ToSic.Eav.Apps.Parts
 
         public int Clone(int id)
         {
-            var eavCt = _appManager.DataController;// DbDataController.Instance(appId: appId);
-            var clonedId = new DbPipeline(eavCt).CopyDataPipeline(_appManager.AppId, id, "");// _userName);
+            var eavCt = AppManager.DataController;// DbDataController.Instance(appId: appId);
+            var clonedId = new DbPipeline(eavCt).CopyDataPipeline(AppManager.AppId, id, "");// _userName);
             return clonedId;
         }
 
         public bool Delete(int id)
         {
             //if (_context == null)
-            var dbController = _appManager.DataController;//.Instance(appId: appId);
+            var dbController = AppManager.DataController;//.Instance(appId: appId);
 
             var canDeleteResult = (dbController.Entities.CanDeleteEntity(id));// _context.EntCommands.CanDeleteEntity(id);
             if (!canDeleteResult.Item1)
@@ -33,9 +33,9 @@ namespace ToSic.Eav.Apps.Parts
 
             // Get the Entity describing the Pipeline and Pipeline Parts (DataSources)
             // var source = DataSource.GetInitialDataSource(appId: appId);
-            var pipelineEntity = DataPipeline.GetPipelineEntity(id, _appManager.Cache);
-            var dataSources = DataPipeline.GetPipelineParts(_appManager.ZoneId, _appManager.AppId, pipelineEntity.EntityGuid);
-            var metaDataSource = DataSource.GetMetaDataSource(appId: _appManager.AppId);
+            var pipelineEntity = DataPipeline.GetPipelineEntity(id, AppManager.Cache);
+            var dataSources = DataPipeline.GetPipelineParts(AppManager.ZoneId, AppManager.AppId, pipelineEntity.EntityGuid);
+            var metaDataSource = DataSource.GetMetaDataSource(appId: AppManager.AppId);
 
             // Delete Pipeline Parts
             foreach (var dataSource in dataSources)
@@ -52,7 +52,7 @@ namespace ToSic.Eav.Apps.Parts
             dbController.Entities.DeleteEntity(id);
 
             // flush cache
-            SystemManager.Purge(_appManager.AppId);
+            SystemManager.Purge(AppManager.AppId);
 
             return true;
 

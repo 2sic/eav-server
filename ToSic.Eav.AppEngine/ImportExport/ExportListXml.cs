@@ -68,13 +68,11 @@ namespace ToSic.Eav.Apps.ImportExport
         {
             if (ContentType == null) return null;
 
-            // neutralize languages
-            languageSelected = languageSelected.ToLowerInvariant();
-            languageFallback = languageFallback.ToLowerInvariant();
-            sysLanguages = sysLanguages.Select(l => l.ToLowerInvariant()).ToArray();
-
             Log.Add($"start export lang selected:{languageSelected} with fallback:{languageFallback} and type:{ContentType.Name}");
 
+            #region build languages-list, but this must still be case-sensitive
+            // note: reason for case-sensitive is that older imports need the en-US or will fail
+            // newer imports would work correctly, but we want to be sure we can still re-import in older eav-systems
             var languages = new List<string>();
             if (!string.IsNullOrEmpty(languageSelected))// only selected language
                 languages.Add(languageSelected);    
@@ -82,6 +80,11 @@ namespace ToSic.Eav.Apps.ImportExport
                 languages.AddRange(sysLanguages);// Export all languages
             else
                 languages.Add(string.Empty); // default
+            #endregion
+
+            // neutralize languages AFTER creating the languages list, as that may not be lower-invariant!
+            languageFallback = languageFallback.ToLowerInvariant();
+            sysLanguages = sysLanguages.Select(l => l.ToLowerInvariant()).ToArray();
 
             var documentRoot = _xBuilder.BuildDocumentWithRoot();
 
@@ -95,10 +98,13 @@ namespace ToSic.Eav.Apps.ImportExport
             var attribsOfType = ContentType.Attributes;
             Log.Add($"will export {entList.Count} entities X {attribsOfType.Count} attribs");
 
+            var resolver = Factory.Resolve<IEavValueConverter>();
+
             foreach (var entity in entList)
                 foreach (var language in languages)
                 {
                     var xmlEntity = _xBuilder.BuildEntity(entity.EntityGuid, language, ContentType.Name);
+                    var langLow = language.ToLowerInvariant();
                     documentRoot.Add(xmlEntity);
 
                     foreach (var attribute in attribsOfType)
@@ -108,9 +114,9 @@ namespace ToSic.Eav.Apps.ImportExport
                             value = entity.Attributes[attribute.Name].Values.FirstOrDefault()?.Serialized;
                         else
                             value = exportLanguageReference == ExportLanguageResolution.Resolve
-                                ? ValueWithFullFallback(entity, attribute, language, languageFallback, resolveLinks)
-                                : ValueOrLookupCode(entity, attribute, language, languageFallback,
-                                    sysLanguages, languages.Count > 1, resolveLinks);
+                                ? ValueWithFullFallback(entity, attribute, langLow, languageFallback, resolveLinks, resolver)
+                                : ValueOrLookupCode(entity, attribute, langLow, languageFallback,
+                                    sysLanguages, languages.Count > 1, resolveLinks, resolver);
 
                         xmlEntity.Append(attribute.Name, value);
                     }
@@ -125,17 +131,17 @@ namespace ToSic.Eav.Apps.ImportExport
         /// Append an element to this. If the attribute is named xxx and the value is 4711 in the language specified, 
         /// the element appended will be <xxx>4711</xxx>. File and page references can be resolved optionally.
         /// </summary>
-        private string ValueWithFullFallback(IEntity entity, IAttributeDefinition attribute, string language, string languageFallback, bool resolveLinks)
+        private static string ValueWithFullFallback(IEntity entity, IAttributeDefinition attribute, string language, string languageFallback, bool resolveLinks, IEavValueConverter resolver)
         {
             var value = entity.GetBestValue(attribute.Name, new []{ language, languageFallback } ).ToString();
-            return ResolveValue(attribute.Type, value, resolveLinks);
+            return ResolveValue(attribute.Type, value, resolveLinks, resolver);
         }
 
         /// <summary>
         /// Append an element to this. The element will get the name of the attribute, and if possible the value will 
         /// be referenced to another language (for example [ref(en-US,ro)].
         /// </summary>
-        private string ValueOrLookupCode(IEntity entity, IAttributeDefinition attribute, string language, string languageFallback, string[] sysLanguages, bool useRefToParentLanguage, bool resolveLinks)
+        private static string ValueOrLookupCode(IEntity entity, IAttributeDefinition attribute, string language, string languageFallback, string[] sysLanguages, bool useRefToParentLanguage, bool resolveLinks, IEavValueConverter resolver)
         {
             var attrib = entity.Attributes[attribute.Name];
 
@@ -152,7 +158,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             // Option 2: Exact match (non-shared) on no other languages
             if (valueItem.Languages.Count == 0 || valueItem.Languages.Count == 1)
-                return ResolveValue(attribute.Type, valueItem.Serialized, resolveLinks);
+                return ResolveValue(attribute.Type, valueItem.Serialized, resolveLinks, resolver);
 
             // Option 4 - language is assigned - either shared or Read-only
             var sharedParentLanguages = valueItem.Languages
@@ -165,7 +171,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             // Option 4a - no other parent languages assigned
             if (!sharedParentLanguages.Any()) 
-                return ResolveValue(attribute.Type, valueItem.Serialized, resolveLinks);
+                return ResolveValue(attribute.Type, valueItem.Serialized, resolveLinks, resolver);
 
             var langsOfValue = valueItem.Languages;
             string primaryLanguageRef = null;
@@ -179,10 +185,10 @@ namespace ToSic.Eav.Apps.ImportExport
 
             return primaryLanguageRef != null 
                 ? $"[ref({primaryLanguageRef},{(valueLanguageReadOnly ? XmlConstants.ReadOnly : XmlConstants.ReadWrite)})]" 
-                : ResolveValue(attribute.Type, valueItem.Serialized, resolveLinks);
+                : ResolveValue(attribute.Type, valueItem.Serialized, resolveLinks, resolver);
         }
 
-        public static IValue GetExactAssignedValue(IAttribute attrib, string language, string languageFallback)
+        internal static IValue GetExactAssignedValue(IAttribute attrib, string language, string languageFallback)
         {
             var valueItem = string.IsNullOrEmpty(language)
                 ? attrib.Values.FirstOrDefault(v => v.Languages.Any(l => l.Key == languageFallback)) // use default (fallback)
@@ -196,14 +202,14 @@ namespace ToSic.Eav.Apps.ImportExport
         /// Append an element to this. The element will have the value of the EavValue. File and page references 
         /// can optionally be resolved.
         /// </summary>
-        internal string ResolveValue(string attrType, string value, bool resolveLinks)// ExportResourceReferenceMode expOption)
+        internal static string ResolveValue(string attrType, string value, bool resolveLinks, IEavValueConverter resolver)
         {
             if (value == null)
                 return XmlConstants.Null;
             if (value == string.Empty)
                 return XmlConstants.Empty;
-            if (resolveLinks)// (expOption == ExportResourceReferenceMode.Resolve)
-                return ResolveHyperlinksFromTennant(attrType, value);
+            if (resolveLinks)
+                return ResolveHyperlinksFromTennant(value, attrType, resolver);
             return value;
         }
 
@@ -212,13 +218,11 @@ namespace ToSic.Eav.Apps.ImportExport
         /// File:4711 to Content/file4711.jpg. If the reference cannot be reoslved, 
         /// the original value will be returned. 
         /// </summary>
-        internal string ResolveHyperlinksFromTennant(string attrType, string value)
+        internal static string ResolveHyperlinksFromTennant(string attrType, string value,
+            IEavValueConverter resolver)
             => attrType != Constants.Hyperlink
                 ? value
-                : _valueConverter.Convert(ConversionScenario.GetFriendlyValue, Constants.Hyperlink, value);
-
-        private readonly IEavValueConverter _valueConverter = Factory.Resolve<IEavValueConverter>();
-
+                : resolver.Convert(ConversionScenario.GetFriendlyValue, Constants.Hyperlink, value);
 
         #endregion
 

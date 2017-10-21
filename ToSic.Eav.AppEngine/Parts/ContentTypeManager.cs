@@ -17,7 +17,7 @@ namespace ToSic.Eav.Apps.Parts
         public int CreateAttributeAndInitializeAndSave(int attributeSetId, AttributeDefinition attDef, /*string staticName, string type,*/ string inputType/*, int sortOrder*/)
         {
             Log.Add($"create attrib+init+save type:{attributeSetId}, input:{inputType}");
-            var newAttribute = _appManager.DataController.AttributesDefinition.AddAttributeAndSave(attributeSetId, attDef);// staticName, type, sortOrder, false);
+            var newAttribute = AppManager.DataController.AttributesDefinition.AddAttributeAndSave(attributeSetId, attDef);// staticName, type, sortOrder, false);
 
             // set the nice name and input type, important for newly created attributes
             InitializeNameAndInputType(/*staticName*/attDef.Name, inputType, newAttribute);
@@ -40,7 +40,7 @@ namespace ToSic.Eav.Apps.Parts
                 TargetType = Constants.MetadataForAttribute,
                 KeyNumber = attributeId
             };
-            _appManager.Entities.SaveMetadata(meta, "@All", newValues); // todo: put "@All" into some constant
+            AppManager.Entities.SaveMetadata(meta, "@All", newValues); // todo: put "@All" into some constant
         }
 
         public bool UpdateInputType(int attributeId, string inputType)
@@ -53,7 +53,7 @@ namespace ToSic.Eav.Apps.Parts
                 TargetType = Constants.MetadataForAttribute,
                 KeyNumber = attributeId
             };
-            _appManager.Entities.SaveMetadata(meta, "@All", newValues); // todo: put "@All" into some constant
+            AppManager.Entities.SaveMetadata(meta, "@All", newValues); // todo: put "@All" into some constant
             return true;
         }
 

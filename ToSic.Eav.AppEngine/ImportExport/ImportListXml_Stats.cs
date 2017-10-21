@@ -6,25 +6,25 @@ using ToSic.Eav.ImportExport.Options;
 
 namespace ToSic.Eav.Apps.ImportExport
 {
-    public partial class ImportListXmlRefactoring
+    public partial class ImportListXml
     {
 
         /// <summary>
         /// Get the languages found in the xml document.
         /// </summary>
-        public IEnumerable<string> LanguagesInDocument => DocumentElements
+        public IEnumerable<string> Info_LanguagesInDocument => DocumentElements
             .Select(element => element.Element(XmlConstants.EntityLanguage)?.Value)
             .Distinct();
 
         /// <summary>
         /// Get the attributes not imported (ignored) from the document to the repository.
         /// </summary>
-        public IEnumerable<string> AttributeNamesNotImported
+        public IEnumerable<string> Info_AttributeNamesNotImported
         {
             get
             {
-                var existingAttributes = AttributeNamesInContentType;
-                var creatdAttributes = AttributeNamesInDocument;
+                var existingAttributes = Info_AttributeNamesInContentType;
+                var creatdAttributes = Info_AttributeNamesInDocument;
                 return existingAttributes.Except(creatdAttributes);
             }
         }
@@ -33,7 +33,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <summary>
         /// The amount of enities created in the repository on data import.
         /// </summary>
-        public int AmountOfEntitiesCreated
+        public int Info_AmountOfEntitiesCreated
         {
             get
             {
@@ -46,7 +46,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <summary>
         /// The amount of enities updated in the repository on data import.
         /// </summary>
-        public int AmountOfEntitiesUpdated
+        public int Info_AmountOfEntitiesUpdated
         {
             get
             {
@@ -66,8 +66,24 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <summary>
         /// The amount of enities deleted in the repository on data import.
         /// </summary>
-        public int AmountOfEntitiesDeleted => _deleteSetting == ImportDeleteUnmentionedItems.None ? 0 : GetEntityDeleteGuids().Count;
+        public int Info_AmountOfEntitiesDeleted => _deleteSetting == ImportDeleteUnmentionedItems.None ? 0 : GetEntityDeleteGuids().Count;
 
+        #region Deserialize statistics methods
+        private List<Guid> GetExistingEntityGuids()
+        {
+            var existingGuids = ExistingEntities
+                .Select(entity => entity.EntityGuid).ToList();
+            return existingGuids;
+        }
+
+
+        /// <summary>
+        /// Get the attribute names in the content type.
+        /// </summary>
+        public IEnumerable<string> Info_AttributeNamesInContentType
+            => ContentType.Attributes.Select(item => item.Name).ToList();
+
+        #endregion Deserialize statistics methods
 
 
     }

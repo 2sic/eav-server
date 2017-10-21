@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Options;
-using ToSic.Eav.ImportExport.Validation;
+using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Logging;
 
 namespace ToSic.Eav.Apps.ImportExport
 {
-    public partial class ImportListXmlRefactoring
+    public partial class ImportListXml
     {
 
         #region Timing / Debuging infos
@@ -27,7 +27,7 @@ namespace ToSic.Eav.Apps.ImportExport
         #endregion
 
         private readonly int _appId;
-        private readonly int _zoneId;
+        //private readonly int _zoneId;
 
 
 
@@ -83,14 +83,41 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <summary>
         /// Get the attribute names in the xml document.
         /// </summary>
-        public IEnumerable<string> AttributeNamesInDocument => DocumentElements.SelectMany(element => element.Elements())
+        public IEnumerable<string> Info_AttributeNamesInDocument => DocumentElements.SelectMany(element => element.Elements())
             .GroupBy(attribute => attribute.Name.LocalName)
-            .Select(group => @group.Key)
+            .Select(group => group.Key)
             .Where(name => name != XmlConstants.EntityGuid && name != XmlConstants.EntityLanguage)
             .ToList();
 
 
+        private IEntity FindInExisting(Guid guid)
+            => ExistingEntities.FirstOrDefault(e => e.EntityGuid == guid);
 
+
+
+    }
+
+
+
+    internal static class StringExtension
+    {
+        /// <summary>
+        /// Get for example en-US from [ref(en-US,ro)].
+        /// </summary>
+        public static string GetLanguageInARefTextCode(this string valueString)
+        {
+            var match = Regex.Match(valueString, @"\[ref\((?<language>.+),(?<readOnly>.+)\)\]");
+            return match.Success ? match.Groups["language"].Value : null;
+        }
+
+        /// <summary>
+        /// Get for example ro from [ref(en-US,ro)].
+        /// </summary>
+        public static string GetValueReferenceProtection(this string valueString, string defaultValue = "")
+        {
+            var match = Regex.Match(valueString, @"\[ref\((?<language>.+),(?<readOnly>.+)\)\]");
+            return match.Success ? match.Groups["readOnly"].Value : defaultValue;
+        }
 
     }
 }
