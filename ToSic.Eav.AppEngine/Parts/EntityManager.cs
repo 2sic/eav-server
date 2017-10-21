@@ -199,14 +199,14 @@ namespace ToSic.Eav.Apps.Parts
             => new ExportListXml(AppManager.Cache.AppDataPackage, AppManager.Read.ContentTypes.Get(contentType), Log);
 
         public ImportListXml Importer(
-            int contentTypeId,
+            string contentTypeName,
             Stream dataStream,
             IEnumerable<string> languages,
             string documentLanguageFallback,
             ImportDeleteUnmentionedItems deleteSetting,
             ImportResourceReferenceMode resolveReferenceMode)
         {
-            var ct = AppManager.Read.ContentTypes.Get(contentTypeId);
+            var ct = AppManager.Read.ContentTypes.Get(contentTypeName);
             return new ImportListXml(AppManager, ct, 
                 dataStream, languages, documentLanguageFallback, 
                 deleteSetting, resolveReferenceMode, Log);

@@ -19,7 +19,7 @@ namespace ToSic.Eav.Apps.ImportExport
     /// <summary>
     /// Import a virtual table of content-items
     /// </summary>
-    public partial class ImportListXml: HasLog //, removing.IImportListTemp
+    public partial class ImportListXml: HasLog 
     {
         private IContentType ContentType { get; }
         private List<IEntity> ExistingEntities { get; }
@@ -61,10 +61,11 @@ namespace ToSic.Eav.Apps.ImportExport
 
             ExistingEntities = App.Entities.Values.Where(e => e.Type == contentType).ToList();
 
+            _languages = languages;
             if (_languages == null || !_languages.Any())
                 _languages = new[] { string.Empty };
 
-            _languages = languages.Select(l => l.ToLowerInvariant());
+            _languages = _languages.Select(l => l.ToLowerInvariant());
 
             _documentLanguageFallback = documentLanguageFallback.ToLowerInvariant();
             _deleteSetting = deleteSetting;

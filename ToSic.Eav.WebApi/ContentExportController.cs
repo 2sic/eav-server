@@ -6,7 +6,6 @@ using System.Net.Http.Headers;
 using System.Web.Http;
 using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.Logging.Simple;
-using ToSic.Eav.Repository.Efc.Parts;
 
 namespace ToSic.Eav.WebApi
 {

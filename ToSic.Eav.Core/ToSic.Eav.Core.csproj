@@ -100,6 +100,7 @@
     <Compile Include="Data\AttributeDefinition.cs" />
     <Compile Include="Data\AttributeBase.cs" />
     <Compile Include="Data\AttributeDefinition_Shared.cs" />
+    <Compile Include="Data\Builder\EntityBuilder.cs" />
     <Compile Include="Interfaces\IGlobalMetadataProvider.cs" />
     <Compile Include="Interfaces\IHasExternalI18n.cs" />
     <Compile Include="Interfaces\IRemoteMetadataProvider.cs" />
@@ -117,7 +118,7 @@
     <Compile Include="Data\Attribute_ofT.cs" />
     <Compile Include="Data\Builder\ContentTypeBuilder.cs" />
     <Compile Include="Data\Builder\DimensionBuilder.cs" />
-    <Compile Include="Data\Builder\EntityBuilder.cs" />
+    <Compile Include="Data\Builder\EntityModifier.cs" />
     <Compile Include="Data\ContentType.cs" />
     <Compile Include="Data\DimensionDefinition.cs" />
     <Compile Include="Data\Entity.cs" />

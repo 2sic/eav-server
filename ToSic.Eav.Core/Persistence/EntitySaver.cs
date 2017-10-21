@@ -101,7 +101,7 @@ namespace ToSic.Eav.Persistence
                         ? MergeAttribute(mergedAttribs[newAttrib.Key], newAttrib.Value, saveOptions)
                         : newAttrib.Value;
 
-            var result = new Entity(idProvidingEntity, mergedAttribs, null);
+            var result = EntityBuilder.FullClone(idProvidingEntity, mergedAttribs, null);
             ImportKnownProperties(result);
             return result;
         }

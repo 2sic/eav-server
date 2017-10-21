@@ -184,7 +184,7 @@ namespace ToSic.Eav.Persistence.Efc
                 else
                 {
                     var contentType = (ContentType)contentTypes[e.AttributeSetId];
-                    newEntity = new Entity(appId, e.EntityGuid, e.EntityId, e.EntityId, e.Metadata, contentType, e.IsPublished, relationships, e.Modified, e.Owner, e.Version);
+                    newEntity = EntityBuilder.EntityFromRepository(appId, e.EntityGuid, e.EntityId, e.EntityId, e.Metadata, contentType, e.IsPublished, relationships, e.Modified, e.Owner, e.Version);
 
                     var allAttribsOfThisType =
                         new Dictionary<int, IAttribute>(); // temporary Dictionary to set values later more performant by Dictionary-Key (AttributeId)

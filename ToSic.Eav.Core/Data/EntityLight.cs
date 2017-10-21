@@ -106,7 +106,7 @@ namespace ToSic.Eav.Data
         /// Create a brand new Entity. 
         /// Mainly used for entities which are created for later saving
         /// </summary>
-        public EntityLight(int appId, Guid entityGuid, string contentTypeName, Dictionary<string, object> values) : this(appId, 0, contentTypeName, values)
+        public EntityLight(int appId, Guid entityGuid, object contentType, Dictionary<string, object> values) : this(appId, 0, contentType, values)
         {
             EntityGuid = entityGuid;
         }

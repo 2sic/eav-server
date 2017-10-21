@@ -4,8 +4,8 @@ using System.Linq;
 using System.Web.Http;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.ImportExport;
-using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.WebApi.Formats;
 
 namespace ToSic.Eav.WebApi
 {
@@ -15,36 +15,6 @@ namespace ToSic.Eav.WebApi
         public ContentImportController(Log parentLog = null) : base(parentLog)
         {
             Log.Rename("EaCtIm");
-        }
-
-        public class ContentImportArgs
-        {
-            public int AppId;
-
-            public string DefaultLanguage;
-
-            public ImportResourceReferenceMode ImportResourcesReferences;
-
-            public ImportDeleteUnmentionedItems ClearEntities;
-
-            public string ContentType;
-
-            public string ContentBase64;
-
-            public string DebugInfo => $"app:{AppId} + deflang:{DefaultLanguage}, + ct:{ContentType} + base:{ContentBase64}, impRes:{ImportResourcesReferences}, clear:{ClearEntities}";
-        }
-
-        public class ContentImportResult
-        {
-            public bool Succeeded;
-
-            public dynamic Detail;
-
-            public ContentImportResult(bool succeeded, dynamic detail)
-            {
-                Succeeded = succeeded;
-                Detail = detail;
-            }
         }
 
 
@@ -88,7 +58,7 @@ namespace ToSic.Eav.WebApi
         private ImportListXml GetXmlImport(ContentImportArgs args)
         {
             Log.Add("get xml import " + args.DebugInfo);
-            var contentTypeId = CurrentContext.AttribSet.GetIdWithEitherName(args.ContentType);
+            //var contentTypeId = CurrentContext.AttribSet.GetIdWithEitherName(args.ContentType);
             var contextLanguages = AppManager.Read.Zone.Languages().Select(l => l.EnvironmentKey).ToArray();
 
             using (var contentSteam = new MemoryStream(Convert.FromBase64String(args.ContentBase64)))
@@ -98,11 +68,19 @@ namespace ToSic.Eav.WebApi
                     //? new ToRefactorXmlImportVTable(CurrentContext.ZoneId, args.AppId, contentTypeId, contentSteam,
                     //    contextLanguages, args.DefaultLanguage,
                     //    args.ClearEntities, args.ImportResourcesReferences, Log) as IImportListTemp
-                    AppManager.Entities.Importer(contentTypeId, contentSteam,
+                    AppManager.Entities.Importer(args.ContentType, contentSteam,
                         contextLanguages, args.DefaultLanguage,
                         args.ClearEntities, args.ImportResourcesReferences);
             }
         }
 
     }
+
+
+
+
+
+
+
+
 }

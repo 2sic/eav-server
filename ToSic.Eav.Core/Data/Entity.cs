@@ -32,6 +32,7 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         public int RepositoryId { get; internal set; }
 
+        /// <inheritdoc />
         /// <summary>
         /// Published/Draft status. If not published, it may be invisble, but there may also be another item visible ATM
         /// </summary>
@@ -81,6 +82,12 @@ namespace ToSic.Eav.Data
 
         #endregion
 
+        /// <inheritdoc />
+        /// <summary>
+        /// special blank constructor for entity-builders
+        /// </summary>
+        internal Entity() { }
+
         public Entity(int appId, int entityId, object contentType, Dictionary<string, object> values, string titleAttribute = null, DateTime? modified = null) : base(appId, entityId, contentType, values, titleAttribute, modified)
         {
             if (values.All(x => x.Value is IAttribute))
@@ -94,7 +101,7 @@ namespace ToSic.Eav.Data
         /// Create a brand new Entity. 
         /// Mainly used for entities which are created for later saving
         /// </summary>
-        public Entity(int appId, Guid entityGuid, string contentTypeName, Dictionary<string, object> values) : base(appId, entityGuid, contentTypeName, values)
+        public Entity(int appId, Guid entityGuid, object contentType, Dictionary<string, object> values) : base(appId, entityGuid, contentType, values)
         {
             if (values.All(x => x.Value is IAttribute))
                 Attributes = values.ToDictionary(x => x.Key, x => x.Value as IAttribute);
@@ -102,49 +109,52 @@ namespace ToSic.Eav.Data
                 _useLightModel = true;
         }
 
-        /// <inheritdoc />
-        /// <summary>
-        /// Create a new Entity from a data store (usually SQL backend)
-        /// </summary>
-        public Entity(int appId, Guid entityGuid, int entityId, int repositoryId, IMetadata isMetadata, IContentType type, bool isPublished, IEnumerable<EntityRelationshipItem> allRelationships, DateTime modified, string owner, int version)
-        {
-            AppId = appId;
-            EntityId = entityId;
-            Version = version;
-            EntityGuid = entityGuid;
-            Metadata = isMetadata;
-            Attributes = new Dictionary<string, IAttribute>(StringComparer.OrdinalIgnoreCase);
-            Type = type;
-            IsPublished = isPublished;
-            RepositoryId = repositoryId;
-            Modified = modified;
+        // 2017-10-21 2dm moved to EntityBuilder.EntityFromRepository
+        ///// <inheritdoc />
+        ///// <summary>
+        ///// Create a new Entity from a data store (usually SQL backend)
+        ///// </summary>
+        //public Entity(int appId, Guid entityGuid, int entityId, int repositoryId, IMetadata isMetadata, IContentType type, bool isPublished, IEnumerable<EntityRelationshipItem> allRelationships, DateTime modified, string owner, int version)
+        //{
+        //    AppId = appId;
+        //    EntityId = entityId;
+        //    Version = version;
+        //    EntityGuid = entityGuid;
+        //    Metadata = isMetadata;
+        //    Attributes = new Dictionary<string, IAttribute>(StringComparer.OrdinalIgnoreCase);
+        //    Type = type;
+        //    IsPublished = isPublished;
+        //    RepositoryId = repositoryId;
+        //    Modified = modified;
 
-            if (allRelationships == null)
-                allRelationships = new List<EntityRelationshipItem>();
-            Relationships = new RelationshipManager(this, allRelationships);
+        //    if (allRelationships == null)
+        //        allRelationships = new List<EntityRelationshipItem>();
+        //    Relationships = new RelationshipManager(this, allRelationships);
 
-            Owner = owner;
-        }
+        //    Owner = owner;
+        //}
 
-        /// <inheritdoc />
-        /// <summary>
-        /// Create a new Entity based on an Entity and Attributes
-        /// Used in the Attribute-Filter, which generates a new entity with less properties
-        /// </summary>
-        public Entity(IEntity entity, Dictionary<string, IAttribute> attributes, IEnumerable<EntityRelationshipItem> allRelationships)
-        {
-            AppId = entity.AppId;
-            EntityId = entity.EntityId;
-            EntityGuid = entity.EntityGuid;
-            Metadata = ((Metadata)entity.Metadata).CloneIsMetadata();
-            Type = entity.Type;
-            TitleFieldName = entity.Title?.Name;
-            IsPublished = entity.IsPublished;
-            Attributes = attributes;
-            RepositoryId = entity.RepositoryId;
-            Relationships = new RelationshipManager(this, allRelationships);
-            Owner = entity.Owner;
-        }
+
+        // 2017-10-21 2dm moved to EntityBuilder.EntityFromRepository
+        ///// <inheritdoc />
+        ///// <summary>
+        ///// Create a new Entity based on an Entity and Attributes
+        ///// Used in the Attribute-Filter, which generates a new entity with less properties
+        ///// </summary>
+        //public Entity(IEntity entity, Dictionary<string, IAttribute> attributes, IEnumerable<EntityRelationshipItem> allRelationships)
+        //{
+        //    AppId = entity.AppId;
+        //    EntityId = entity.EntityId;
+        //    EntityGuid = entity.EntityGuid;
+        //    Metadata = ((Metadata)entity.Metadata).CloneIsMetadata();
+        //    Type = entity.Type;
+        //    TitleFieldName = entity.Title?.Name;
+        //    IsPublished = entity.IsPublished;
+        //    Attributes = attributes;
+        //    RepositoryId = entity.RepositoryId;
+        //    Relationships = new RelationshipManager(this, allRelationships);
+        //    Owner = entity.Owner;
+        //}
 
         /// <inheritdoc />
         public new object GetBestValue(string attributeName, bool resolveHyperlinks = false)

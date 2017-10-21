@@ -61,7 +61,7 @@ namespace ToSic.Eav.ImportExport.Json
                 ismeta.KeyString = md.String;
             }
 
-            var newEntity = new Entity(AppId, jsonObj.Entity.Guid, jsonObj.Entity.Id, jsonObj.Entity.Id, ismeta, contentType, true, null, DateTime.Now, jsonObj.Entity.Owner, jsonObj.Entity.Version);
+            var newEntity = EntityBuilder.EntityFromRepository(AppId, jsonObj.Entity.Guid, jsonObj.Entity.Id, jsonObj.Entity.Id, ismeta, contentType, true, null, DateTime.Now, jsonObj.Entity.Owner, jsonObj.Entity.Version);
 
 
             // build attributes - based on type definition
