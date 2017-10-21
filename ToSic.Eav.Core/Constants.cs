@@ -159,6 +159,8 @@ namespace ToSic.Eav
         public const string ContentAppName = "Content";
         public const string AppAssignmentName = "App";
 
+        public const string AppConfigContentType = "2SexyContent-App";
+
         #endregion
 
         public const string DynamicType = "dynamic";

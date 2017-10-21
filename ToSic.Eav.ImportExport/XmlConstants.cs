@@ -25,6 +25,7 @@
 
 
         public const string RootNode = "SexyContent";
+        public const string RootNode97 = "EavContent";
         public const string Header = "Header";
         public const string FileVersion = "FileVersion";
         public const string ExportDate = "ExportDate";

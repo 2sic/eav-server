@@ -14,7 +14,10 @@ namespace ToSic.Eav.Data.Builder
         /// <summary>
         /// Create a new Entity from a data store (usually SQL backend)
         /// </summary>
-        public static Entity EntityFromRepository(int appId, Guid entityGuid, int entityId, int repositoryId, IMetadata isMetadata, IContentType type, bool isPublished, IEnumerable<EntityRelationshipItem> allRelationships, DateTime modified, string owner, int version)
+        public static Entity EntityFromRepository(int appId, Guid entityGuid, int entityId, 
+            int repositoryId, IMetadata isMetadata, IContentType type, 
+            bool isPublished, IEnumerable<EntityRelationshipItem> allRelationships, 
+            DateTime modified, string owner, int version)
         {
             var e = EntityWithAllIdsAndType(appId, entityGuid, entityId, repositoryId,
                 type, isPublished, modified, owner, version);
@@ -29,7 +32,10 @@ namespace ToSic.Eav.Data.Builder
             return e;
         }
 
-        private static Entity EntityWithAllIdsAndType(int appId, Guid entityGuid, int entityId, int repositoryId, IContentType type, bool isPublished, DateTime modified, string owner, int version) => new Entity
+        private static Entity EntityWithAllIdsAndType(int appId, Guid entityGuid, int entityId, 
+            int repositoryId, IContentType type, bool isPublished, 
+            DateTime modified, string owner, int version) 
+            => new Entity
         {
             AppId = appId,
             EntityId = entityId,
@@ -46,7 +52,8 @@ namespace ToSic.Eav.Data.Builder
         /// Create a new Entity based on an Entity and Attributes
         /// Used in the Attribute-Filter, which generates a new entity with less properties
         /// </summary>
-        public static Entity FullClone(IEntity entity, Dictionary<string, IAttribute> attributes, IEnumerable<EntityRelationshipItem> allRelationships)
+        public static Entity FullClone(IEntity entity, Dictionary<string, IAttribute> attributes, 
+            IEnumerable<EntityRelationshipItem> allRelationships)
         {
             var e = EntityWithAllIdsAndType(entity.AppId, entity.EntityGuid, entity.EntityId, entity.RepositoryId, entity.Type, 
                 entity.IsPublished, entity.Modified, entity.Owner, entity.Version);

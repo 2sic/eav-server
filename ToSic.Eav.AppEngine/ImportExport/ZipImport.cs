@@ -73,7 +73,6 @@ namespace ToSic.Eav.Apps.ImportExport
                             foreach (var appDirectory in Directory.GetDirectories(currentWorkingDir))
                             {
                                 Log.Add($"folder:{appDirectory}");
-                                var appId = new int?();
 
                                 // Stores the number of the current xml file to process
                                 var xmlIndex = 0;
@@ -82,15 +81,22 @@ namespace ToSic.Eav.Apps.ImportExport
                                 foreach (var xmlFileName in Directory.GetFiles(appDirectory, "*.xml"))
                                 {
                                     Log.Add($"xml file:{xmlFileName}");
+                                    //var appId = new int?();
+                                    int appId;
                                     var fileContents = File.ReadAllText(Path.Combine(appDirectory, xmlFileName));
-	                                var doc = XDocument.Parse(fileContents);
+	                                var xdoc = XDocument.Parse(fileContents);
                                     var import = new XmlImportWithFiles(Log);
 
-									if (!import.IsCompatible(doc))
+									if (!import.IsCompatible(xdoc))
 										throw new Exception("The app / package is not compatible with this version of eav and the 2sxc-host.");
 
-									var isAppImport = doc.Element(XmlConstants.RootNode).Element(XmlConstants.Header).Elements(XmlConstants.App).Any() 
-                                        && doc.Element(XmlConstants.RootNode).Element(XmlConstants.Header).Element(XmlConstants.App).Attribute(XmlConstants.Guid).Value != XmlConstants.AppContentGuid;
+                                    var rootNode = xdoc.Element(XmlConstants.RootNode);
+                                    if(rootNode == null) throw new NullReferenceException("xml root node couldn't be found");
+                                    var headNode = rootNode.Element(XmlConstants.Header);
+                                    if(headNode == null) throw new NullReferenceException("xml header node couldn't be found");
+
+                                    var isAppImport = headNode.Elements(XmlConstants.App).Any() 
+                                        && headNode.Element(XmlConstants.App)?.Attribute(XmlConstants.Guid)?.Value != XmlConstants.AppContentGuid;
 
                                     if (!isAppImport && !_appId.HasValue)
                                         _appId = new ZoneRuntime(_zoneId, Log).DefaultAppId;
@@ -98,26 +104,32 @@ namespace ToSic.Eav.Apps.ImportExport
                                     if (isAppImport)
                                     {
                                         Log.Add("will do app-import");
-                                        var appConfig = XDocument.Parse(fileContents).Element(XmlConstants.RootNode)
-                                            .Element(XmlConstants.Entities)
+                                        var appConfig = rootNode
+                                            .Element(XmlConstants.Entities)?
                                             .Elements(XmlConstants.Entity)
-                                            .Single(e => e.Attribute(XmlConstants.AttSetStatic).Value == "2SexyContent-App");
+                                            .Single(e => e.Attribute(XmlConstants.AttSetStatic)?.Value == Constants.AppConfigContentType);
+
+                                        if(appConfig == null)
+                                            throw new NullReferenceException("app config node not found in xml, cannot continue");
 
                                         #region Version Checks (new in 08.03.03)
-                                        var reqVersionNode = appConfig.Elements(XmlConstants.ValueNode)?.FirstOrDefault(v => v.Attribute(XmlConstants.KeyAttr).Value == "RequiredVersion")?.Attribute(XmlConstants.ValueAttr)?.Value;
-                                        var reqVersionNodeDnn = appConfig.Elements(XmlConstants.ValueNode)?.FirstOrDefault(v => v.Attribute(XmlConstants.KeyAttr).Value == "RequiredDnnVersion")?.Attribute(XmlConstants.ValueAttr)?.Value;
+                                        var reqVersionNode = appConfig.Elements(XmlConstants.ValueNode).FirstOrDefault(v => v.Attribute(XmlConstants.KeyAttr)?.Value == "RequiredVersion")?.Attribute(XmlConstants.ValueAttr)?.Value;
+                                        var reqVersionNodeDnn = appConfig.Elements(XmlConstants.ValueNode).FirstOrDefault(v => v.Attribute(XmlConstants.KeyAttr)?.Value == "RequiredDnnVersion")?.Attribute(XmlConstants.ValueAttr)?.Value;
 
                                         CheckRequiredEnvironmentVersions(reqVersionNode, reqVersionNodeDnn);
                                         #endregion
 
-                                        var folder = appConfig.Elements(XmlConstants.ValueNode).First(v => v.Attribute(XmlConstants.KeyAttr).Value == "Folder").Attribute(XmlConstants.ValueAttr).Value;
+                                        var folder = appConfig.Elements(XmlConstants.ValueNode).First(v => v.Attribute(XmlConstants.KeyAttr)?.Value == "Folder").Attribute(XmlConstants.ValueAttr)?.Value;
+
+                                        if(folder == null)
+                                            throw new NullReferenceException("can't determine folder from xml, cannot continue");
 
                                         // Do not import (throw error) if the app directory already exists
                                         var appPath = _environment.TargetPath(folder);
                                         if (Directory.Exists(appPath))
-                                        {
-                                            throw new Exception("The app could not be installed because the app-folder '" + appPath + "' already exists. Please remove or rename the folder in the [portals]/2sxc and install the app again.");
-                                        }
+                                            throw new Exception(
+                                                "The app could not be installed because the app-folder '" + appPath +
+                                                "' already exists. Please remove or rename the folder in the [portals]/2sxc and install the app again.");
 
                                         if (xmlIndex == 0)
                                         {
@@ -127,13 +139,13 @@ namespace ToSic.Eav.Apps.ImportExport
                                                 _environment.TransferFilesToTennant(portalTempRoot, "");
                                         }
 
-                                        import.ImportApp(_zoneId, doc, out appId);
+                                        import.ImportApp(_zoneId, xdoc, out appId);
                                     }
                                     else
                                     {
                                         Log.Add("will do content import");
                                         appId = _appId.Value;
-                                        if (xmlIndex == 0 && import.IsCompatible(doc))
+                                        if (xmlIndex == 0 && import.IsCompatible(xdoc))
                                         {
                                             // Handle PortalFiles folder
                                             var portalTempRoot = Path.Combine(appDirectory, XmlConstants.PortalFiles);
@@ -141,20 +153,21 @@ namespace ToSic.Eav.Apps.ImportExport
                                                 _environment.TransferFilesToTennant(portalTempRoot, "");
                                         }
 
-                                        import.ImportXml(_zoneId, appId.Value, doc);
+                                        import.ImportXml(_zoneId, appId/*.Value*/, xdoc);
                                     }
 
                                     
-                                    messages.AddRange(import.ImportLog);
+                                    messages.AddRange(import.Messages);
 
                                     xmlIndex++;
-                                }
 
-                                // Copy all files in 2sexy folder to (portal file system) 2sexy folder
-                                var templateRoot = _environment.TemplatesRoot(_zoneId, appId.Value);
-                                var appTemplateRoot = Path.Combine(appDirectory, "2sexy");
-                                if (Directory.Exists(appTemplateRoot))
-                                    new FileManager(appTemplateRoot).CopyAllFiles(templateRoot, false, messages);
+
+                                    // Copy all files in 2sexy folder to (portal file system) 2sexy folder
+                                    var templateRoot = _environment.TemplatesRoot(_zoneId, appId/*.Value*/);
+                                    var appTemplateRoot = Path.Combine(appDirectory, "2sexy");
+                                    if (Directory.Exists(appTemplateRoot))
+                                        new FileManager(appTemplateRoot).CopyAllFiles(templateRoot, false, messages);
+                                }
 
                             }
 
@@ -223,7 +236,11 @@ namespace ToSic.Eav.Apps.ImportExport
         public bool ImportZipFromUrl(string packageUrl, bool isAppImport)
         {
             Log.Add($"import zip from url:{packageUrl}, isApp:{isAppImport}");
-            var tempDirectory = new DirectoryInfo(HttpContext.Current.Server.MapPath(Settings.TemporaryDirectory));
+            var path = HttpContext.Current.Server.MapPath(Settings.TemporaryDirectory);
+            if(path == null)
+                throw new NullReferenceException("path for temporary is null - this won't work");
+
+            var tempDirectory = new DirectoryInfo(path);
             if (!tempDirectory.Exists)
                 Directory.CreateDirectory(tempDirectory.FullName);
 
@@ -296,8 +313,7 @@ namespace ToSic.Eav.Apps.ImportExport
             }
             finally
             {
-                if (file != null)
-                    file.Close();
+                file.Close();
             }
         }
 
