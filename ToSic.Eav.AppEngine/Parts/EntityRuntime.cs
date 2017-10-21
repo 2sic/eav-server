@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -10,7 +11,7 @@ namespace ToSic.Eav.Apps.Parts
     /// </summary>
     public class EntityRuntime: RuntimeBase
     {
-        internal EntityRuntime(AppRuntime app): base (app) { }
+        internal EntityRuntime(AppRuntime app, Log parentLog): base (app, parentLog) { }
 
         #region Get
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -9,7 +10,7 @@ namespace ToSic.Eav.Apps.Parts
     // ReSharper disable once InheritdocConsiderUsage
     public class ContentTypeRuntime : RuntimeBase
     {
-        public ContentTypeRuntime(AppRuntime app) : base(app){}
+        public ContentTypeRuntime(AppRuntime app, Log parentLog) : base(app, parentLog){}
 
         public IEnumerable<Eav.Interfaces.IContentType> All => App.Cache.GetContentTypes();//.Values;//.Select(c => c.Value);
 
@@ -40,7 +41,7 @@ namespace ToSic.Eav.Apps.Parts
 
             if (includeGlobalDefinitions)
             {
-                var systemDef = new AppRuntime(Constants.MetaDataAppId);
+                var systemDef = new AppRuntime(Constants.MetaDataAppId, Log);
                 var systemInputTypes = systemDef.ContentTypes.GetInputTypes(false).ToList();
 
                 systemInputTypes.ForEach(sit => {

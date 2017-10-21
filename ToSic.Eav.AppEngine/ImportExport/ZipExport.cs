@@ -129,10 +129,11 @@ namespace ToSic.Eav.Apps.ImportExport
         private XmlExporter GenerateExportXml(bool includeContentGroups, bool resetAppGuid)
         {
             // Get Export XML
-            var attributeSets = new AppRuntime(_zoneId, _appId).ContentTypes.FromScope(includeAttributeTypes: true);
-            attributeSets = attributeSets.Where(a => !((IUsesSharedDefinition)a).AlwaysShareConfiguration);
+            var runtime = new AppRuntime(_zoneId, _appId, Log);
+            var attributeSets = runtime.ContentTypes.FromScope(includeAttributeTypes: true);
+            attributeSets = attributeSets.Where(a => !((a as IUsesSharedDefinition)?.AlwaysShareConfiguration ?? false));
 
-            var attributeSetIds = attributeSets.Select(p => p.ContentTypeId.ToString()).ToArray();
+            var contentTypeNames = attributeSets.Select(p => p.StaticName).ToArray();
             var templateTypeId = SystemRuntime.MetadataType(Settings.TemplateContentType);
             var entities =
                 DataSource.GetInitialDataSource(_zoneId, _appId).Out["Default"].List.Where(
@@ -145,8 +146,9 @@ namespace ToSic.Eav.Apps.ImportExport
             var entityIds = entities
                 .Select(e => e.Value.EntityId.ToString()).ToArray();
 
+
             var xmlExport = Factory.Resolve<XmlExporter>()
-                .Init(_zoneId, _appId, true, attributeSetIds, entityIds, Log);
+                .Init(_zoneId, _appId, runtime, true, contentTypeNames, entityIds, Log);
             // var xmlExport = Factory.Container.Resolve<XmlExporter>(new ParameterOverrides { { "zoneId", _zoneId }, { "appId", _appId}, {"appExport", true}, { "contentTypeIds", attributeSetIds }, {"entityIds", entityIds} });
             // new ToSxcXmlExporter(_zoneId, _appId, true, attributeSetIds, entityIds);
 

@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Types.Attributes;
 
 namespace ToSic.Eav.Apps.Parts
 {
     public class QueryRuntime: RuntimeBase
     {
-        internal QueryRuntime(AppRuntime app) : base(app) { }
+        internal QueryRuntime(AppRuntime app, Log parentLog) : base(app, parentLog) { }
 
         public static IEnumerable<DataSourceInfo> GetInstalledDataSources()
         {

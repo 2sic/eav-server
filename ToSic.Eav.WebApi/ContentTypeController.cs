@@ -133,7 +133,7 @@ namespace ToSic.Eav.WebApi
             var fields = type.Attributes.OrderBy(a => a.SortOrder);
 
 
-            var appInputTypes = new AppRuntime(appId).ContentTypes.GetInputTypes(true).ToList();
+            var appInputTypes = new AppRuntime(appId, Log).ContentTypes.GetInputTypes(true).ToList();
             var noTitleCount = 0;
             var fldName = "";
 
@@ -206,7 +206,7 @@ namespace ToSic.Eav.WebApi
 	    {
 	        Log.Add($"get input types a#{appId}");
             SetAppIdAndUser(appId);
-	        var appInputTypes = new AppRuntime(appId).ContentTypes.GetInputTypes(true).ToList(); // appDef.GetInputTypes(true).ToList();
+	        var appInputTypes = new AppRuntime(appId, Log).ContentTypes.GetInputTypes(true).ToList(); // appDef.GetInputTypes(true).ToList();
             
 	        return Serializer.Prepare(appInputTypes);
 

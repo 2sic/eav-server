@@ -23,7 +23,7 @@ namespace ToSic.Eav.Types
             Description = "todo";
             Attributes = new List<IAttributeDefinition>();
             IsInstalledInPrimaryStorage = false;
-            ParentId = -999;  // important that parentid is different, so the GUI regards this as a ghost, and doesn't provide editing features
+            ParentId = Constants.SystemContentTypeFakeParent;  // important that parentid is different, so the GUI regards this as a ghost, and doesn't provide editing features
             I18nKey = i18nKey;
         }
 

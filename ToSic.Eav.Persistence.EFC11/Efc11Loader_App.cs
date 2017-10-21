@@ -95,7 +95,7 @@ namespace ToSic.Eav.Persistence.Efc
                     .ThenInclude(v => v.ToSicEavValuesDimensions)
                 .Where(e => !e.ChangeLogDeleted.HasValue &&
                             e.AppId == appId &&
-                            //e.AttributeSet.AppId == appId &&
+                            // 2017-10 2dm previously was: e.AttributeSet.AppId == appId &&
                             e.AttributeSet.ChangeLogDeleted == null &&
                             ( 
                                 // filter by EntityIds (if set)
