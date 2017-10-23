@@ -29,9 +29,15 @@ namespace ToSic.Eav.WebApi
 	    public IEnumerable<ContentTypeInfo> Get(int appId, string scope = null, bool withStatistics = false)
         {
             Log.Add($"get a#{appId}, scope:{scope}, stats:{withStatistics}");
+
+            // 2017-10-23 new - should use app-manager and return each type 1x only
+            var appMan = new AppManager(appId, Log);
+            var allTypes = appMan.Read.ContentTypes.FromScope(scope, true);
+
+            // 2017-10-23 old...
             // scope can be null (eav) or alternatives would be "System", "2SexyContent-System", "2SexyContent-App", "2SexyContent"
-            var cache = (BaseCache)DataSource.GetCache(null, appId);
-            var allTypes = cache.GetContentTypes();
+            var cache = (BaseCache)DataSource.GetCache(null, appId); // needed to count items
+            //var allTypes = cache.GetContentTypes();
 
             var filteredType = allTypes.Where(t => t.Scope == scope)
                 .OrderBy(t => t.Name)
@@ -130,6 +136,7 @@ namespace ToSic.Eav.WebApi
 
             SetAppIdAndUser(appId);
             var type = DataSource.GetCache(null, appId).GetContentType(staticName) as ContentType;
+            if(type == null) throw new Exception("type should be a ContentType - something broke");
             var fields = type.Attributes.OrderBy(a => a.SortOrder);
 
 

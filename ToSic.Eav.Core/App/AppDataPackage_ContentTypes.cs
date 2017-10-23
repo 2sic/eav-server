@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Types;
@@ -15,23 +16,32 @@ namespace ToSic.Eav.App
 	    /// <summary>
 	    /// Gets all ContentTypes in this App
 	    /// </summary>
-	    public IEnumerable<IContentType> ContentTypes => _appTypesFromRepository.Values.Union(Global.SystemContentTypes().Values);
+	    public IEnumerable<IContentType> ContentTypes => _appTypesFromRepository.Values
+	        .Union(Global.SystemContentTypes().Values);
 
-	    private void BuildTypesByNameCache(IDictionary<int, IContentType> allTypes)
+	    private void BuildCacheForTypesByName(IDictionary<int, IContentType> allTypes)
 	    {
 	        _appTypesByName = new Dictionary<string, IContentType>(StringComparer.InvariantCultureIgnoreCase);
 
+	        var keepTypes = allTypes.Values;
+
 	        // add with static name - as the primary key
-	        foreach (var type in allTypes)
-	            if (!_appTypesByName.ContainsKey(type.Value.StaticName))
-	                _appTypesByName.Add(type.Value.StaticName, type.Value);
+	        foreach (var type in keepTypes)
+	            if (!_appTypesByName.ContainsKey(type.StaticName))
+	                _appTypesByName.Add(type.StaticName, type);
 
 	        // add with nice name, if not already added
-	        foreach (var type in allTypes)
-	            if (!_appTypesByName.ContainsKey(type.Value.Name))
-	                _appTypesByName.Add(type.Value.Name, type.Value);
+	        foreach (var type in keepTypes)
+	            if (!_appTypesByName.ContainsKey(type.Name))
+	                _appTypesByName.Add(type.Name, type);
 	    }
 
+	    private static ImmutableDictionary<int, IContentType> RemoveAliasesForGlobalTypes(IDictionary<int, IContentType> allTypes)
+	    {
+	        var globTypeNames = Global.SystemContentTypes().Keys;
+	        return allTypes.Where(t => !globTypeNames.Contains(t.Value.StaticName))
+                .ToImmutableDictionary(p => p.Key, p => p.Value);
+	    }
 
 
 	    private IDictionary<string, IContentType> _appTypesByName;

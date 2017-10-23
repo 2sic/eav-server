@@ -10,6 +10,7 @@ using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc.Models;
+using ToSic.Eav.Types;
 
 namespace ToSic.Eav.Persistence.Efc
 {
@@ -46,7 +47,7 @@ namespace ToSic.Eav.Persistence.Efc
             #region prepare content-types
             var typeTimer = Stopwatch.StartNew();
             var contentTypes = ContentTypes(appId, source);
-            // var sysTypes = Global.SystemContentTypes().Values;
+            var sysTypes = Global.SystemContentTypes();
             
             typeTimer.Stop();
             #endregion
@@ -129,16 +130,19 @@ namespace ToSic.Eav.Persistence.Efc
 
             sqlTime.Start();
             var relatedEntities = _dbContext.ToSicEavEntityRelationships
+                .Include(rel => rel.Attribute)
                 .Where(r => eIds.Contains(r.ParentEntityId))
                 .GroupBy(g => g.ParentEntityId)
                 .ToDictionary(g => g.Key, g => g.GroupBy(r => r.AttributeId)
                     .Select(rg => new
                     {
                         AttributeID = rg.Key,
+                        Name = rg.First().Attribute.StaticName,
                         Childs = rg.OrderBy(c => c.SortOrder).Select(c => c.ChildEntityId)
                     }));
 
             var attributes = _dbContext.ToSicEavValues
+                .Include(v => v.Attribute)
                 .Include(v => v.ToSicEavValuesDimensions)
                     .ThenInclude(d => d.Dimension)
                 .Where(r => eIds.Contains(r.EntityId))
@@ -148,6 +152,7 @@ namespace ToSic.Eav.Persistence.Efc
                     .Select(vg => new
                     {
                         AttributeID = vg.Key,
+                        Name = vg.First().Attribute.StaticName,
                         Values = vg
                             .OrderBy(v2 => v2.ChangeLogCreated)
                             .Select(v2 => new
@@ -184,10 +189,14 @@ namespace ToSic.Eav.Persistence.Efc
                 else
                 {
                     var contentType = (ContentType)contentTypes[e.AttributeSetId];
+                    
+                    // test if there is a global code-type overriding this type
+                    if (sysTypes.ContainsKey(contentType.StaticName))
+                        contentType = (ContentType)sysTypes[contentType.StaticName];
+
                     newEntity = EntityBuilder.EntityFromRepository(appId, e.EntityGuid, e.EntityId, e.EntityId, e.Metadata, contentType, e.IsPublished, relationships, e.Modified, e.Owner, e.Version);
 
-                    var allAttribsOfThisType =
-                        new Dictionary<int, IAttribute>(); // temporary Dictionary to set values later more performant by Dictionary-Key (AttributeId)
+                    //var allAttribsOfThisType = new Dictionary<string, IAttribute>(); // temporary Dictionary to set values later more performant by Dictionary-Key (AttributeId)
                     IAttribute titleAttrib = null;
 
                     // Add all Attributes of that Content-Type
@@ -195,7 +204,7 @@ namespace ToSic.Eav.Persistence.Efc
                     {
                         var entityAttribute = ((AttributeDefinition) definition).CreateAttribute();
                         newEntity.Attributes.Add(entityAttribute.Name, entityAttribute);
-                        allAttribsOfThisType.Add(definition.AttributeId, entityAttribute);
+                        //allAttribsOfThisType.Add(definition.Name, entityAttribute);
                         if (definition.IsTitle)
                             titleAttrib = entityAttribute;
                     }
@@ -206,7 +215,7 @@ namespace ToSic.Eav.Persistence.Efc
                     if (relatedEntities.ContainsKey(e.EntityId))
                         foreach (var r in relatedEntities[e.EntityId])
                         {
-                            var attrib = allAttribsOfThisType[r.AttributeID];
+                            var attrib = newEntity.Attributes[r.Name];//  allAttribsOfThisType[r.Name];//r.AttributeID];
                             attrib.Values = new List<IValue> {Value.Build(attrib.Type, r.Childs, null, source)};
                         }
 
@@ -220,7 +229,7 @@ namespace ToSic.Eav.Persistence.Efc
                             IAttribute attrib;
                             try
                             {
-                                attrib = allAttribsOfThisType[a.AttributeID];
+                                attrib = newEntity.Attributes[a.Name];// allAttribsOfThisType[a.Name];// a.AttributeID];
                             }
                             catch (KeyNotFoundException)
                             {
@@ -315,7 +324,7 @@ namespace ToSic.Eav.Persistence.Efc
             relTimer.Stop();
             #endregion
 
-            var appPack = new AppDataPackage(appId, entities, entList, contentTypes, metadataForGuid, metadataForNumber, metadataForString, metadataTypes, relationships);
+            var appPack = new AppDataPackage(appId, entities, entList, contentTypes, metadataForGuid, metadataForNumber, metadataForString, relationships);
             source.AttachApp(appPack);
             _sqlTotalTime = _sqlTotalTime.Add(sqlTime.Elapsed);
             Log.Add($"timers types&typesql:{typeTimer.Elapsed} sqlAll:{_sqlTotalTime}, entities:{entityTimer.Elapsed}, relationship:{relTimer.Elapsed}");

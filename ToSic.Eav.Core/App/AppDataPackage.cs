@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
@@ -109,24 +108,24 @@ namespace ToSic.Eav.App
 			IDictionary<int, Dictionary<Guid, IEnumerable<IEntity>>> metadataForGuid, 
             IDictionary<int, Dictionary<int, IEnumerable<IEntity>>> metadataForNumber,
 			IDictionary<int, Dictionary<string, IEnumerable<IEntity>>> metadataForString, 
-            ImmutableDictionary<int, string> metadataTypes,
             IEnumerable<EntityRelationshipItem> relationships)
 		{
 		    AppId = appId;
 		    List = entList;
 		    Entities = entities;
 			//ContentTypes = contentTypes;
-		    _appTypesFromRepository = contentTypes;
+		    _appTypesFromRepository = RemoveAliasesForGlobalTypes(contentTypes);
+
             MetadataForGuid = metadataForGuid;
 			MetadataForNumber = metadataForNumber;
 			MetadataForString = metadataForString;
-		    //MetadataTypes = metadataTypes;
+
 			Relationships = relationships;
 
 			LastRefresh = DateTime.Now;
 
             // build types by name
-            BuildTypesByNameCache(contentTypes);
+            BuildCacheForTypesByName(_appTypesFromRepository);
 		}
 
 	}
