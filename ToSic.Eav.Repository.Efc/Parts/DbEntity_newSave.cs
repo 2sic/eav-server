@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Enums;
@@ -180,12 +181,16 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 #region Step 4: Save all normal values
 
                 if (!saveJson)
-                {
-                    SaveAttributesInDbModel(newEnt, so, attributeDefs, dbEnt, changeId);
-                    DbContext.SqlDb.SaveChanges(); // save all the values we just added
-                }
+                    DbContext.DoAndSave(() =>
+                        SaveAttributesInDbModel(newEnt, so, attributeDefs, dbEnt, changeId)
+                    ); // save all the values we just added
                 else
-                    Log.Add("won't save properties in db model as it's json");
+                {
+                    if (isNew)
+                        Log.Add("won't save properties in db model as it's json");
+                    else
+                        ClearAttributesInDbModel(newEnt.EntityId);
+                }
 
                 #endregion
 
@@ -196,7 +201,12 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 if (!saveJson)
                     DbContext.Relationships.SaveRelationships(newEnt, dbEnt, attributeDefs, so);
                 else
-                    Log.Add("won't save relationships in db model as it's json");
+                {
+                    if (isNew)
+                        Log.Add("won't save relationships in db model as it's json");
+                    else
+                        DbContext.Relationships.FlushChildrenRelationships(new List<int>() {newEnt.EntityId});
+                }
 
                 #endregion
 
@@ -223,6 +233,25 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             Log.Add("save done for id:" + dbEnt?.EntityId);
             return dbEnt.EntityId;
+        }
+
+        /// <summary>
+        /// Remove values and attached dimensions of these values from the DB
+        /// Important when updating json-entities, to ensure we don't keep trash around
+        /// </summary>
+        /// <param name="entityId"></param>
+        private void ClearAttributesInDbModel(int entityId)
+        {
+            var val = DbContext.SqlDb.ToSicEavValues
+                .Include(v => v.ToSicEavValuesDimensions)
+                .Where(v => v.EntityId == entityId)
+                .ToList();
+
+            if (val.Count == 0) return;
+
+            var dims = val.SelectMany(v => v.ToSicEavValuesDimensions);
+            DbContext.DoAndSave(() => DbContext.SqlDb.RemoveRange(dims));
+            DbContext.DoAndSave(() => DbContext.SqlDb.RemoveRange(val));
         }
 
         private void SaveAttributesInDbModel(IEntity newEnt, 
@@ -291,11 +320,22 @@ namespace ToSic.Eav.Repository.Efc.Parts
             }
         }
 
+
+        /// <summary>
+        /// Temp helper to provide the last guid to the caller
+        /// this is a messy workaround, must find a better way someday...
+        /// </summary>
         public Guid TempLastSaveGuid;
 
 
 
 
+        /// <summary>
+        /// Save a list of entities in one large go
+        /// </summary>
+        /// <param name="entities"></param>
+        /// <param name="saveOptions"></param>
+        /// <returns></returns>
         internal List<int> SaveEntity(List<IEntity> entities, SaveOptions saveOptions)
         {
             Log.Add($"save many count:{entities?.Count}");

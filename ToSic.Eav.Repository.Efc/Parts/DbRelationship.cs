@@ -111,31 +111,17 @@ namespace ToSic.Eav.Repository.Efc.Parts
         internal void ImportRelationshipQueueAndSave()
         {
             Log.Add("import relationship queue");
-            // todo: if so determines it, clear all existing relationships first
+            // if SaveOptions determines it, clear all existing relationships first
             var fullFlush = _saveQueue
                 .Where(r => r.FlushAllEntityRelationships)
                 .Select(r => r.ParentEntityId)
                 .GroupBy(id => id)
                 .Select(g => g.First())
-                .ToList();
+                .ToList<int>();
 
             DbContext.DoInTransaction(() =>
                 {
-                    // Delete all existing relationships - but not the target, just the relationship
-                    // note: can't use .Clear(), as that will try to actually delete the children
-                    if (fullFlush.Count > 0)
-                    {
-                        Log.Add("found items, will do full-flush");
-                        foreach (var id in fullFlush)
-                        {
-                            var ent = DbContext.Entities.GetDbEntity(id);
-                            foreach (var relationToDelete in ent.RelationshipsWithThisAsParent)
-                                DbContext.SqlDb.ToSicEavEntityRelationships.Remove(relationToDelete);
-
-                        }
-                        // intermediate save (important) so that EF state tracking works
-                        DbContext.SqlDb.SaveChanges(); 
-                    }
+                    FlushChildrenRelationships(fullFlush);
 
                     Log.Add($"will add relationships⋮{_saveQueue.Count}");
                     foreach (var relationship in _saveQueue)
@@ -174,7 +160,22 @@ namespace ToSic.Eav.Repository.Efc.Parts
             _saveQueue.Clear();
         }
 
+        internal void FlushChildrenRelationships(List<int> parentIds)
+        {
+            // Delete all existing relationships - but not the target, just the relationship
+            // note: can't use .Clear(), as that will try to actually delete the children
+            if (parentIds == null || parentIds.Count <= 0) return;
 
+            Log.Add($"found {parentIds.Count} items, will do full-flush");
+            foreach (var id in parentIds)
+            {
+                var ent = DbContext.Entities.GetDbEntity(id);
+                foreach (var relationToDelete in ent.RelationshipsWithThisAsParent)
+                    DbContext.SqlDb.ToSicEavEntityRelationships.Remove(relationToDelete);
+            }
+            // intermediate save (important) so that EF state tracking works
+            DbContext.SqlDb.SaveChanges();
+        }
 
 
         #region Internal Helper Classes

@@ -86,6 +86,7 @@
     <Compile Include="Caches\ICache.cs" />
     <Compile Include="Caches\ListCacheItem.cs" />
     <Compile Include="Caches\QuickCache.cs" />
+    <Compile Include="ContentTypes\JsonTest.cs" />
     <Compile Include="ContentTypes\ConfigSqlDataSource.cs" />
     <Compile Include="CsvDataSource.cs" />
     <Compile Include="DataSource.cs" />
