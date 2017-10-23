@@ -39,5 +39,8 @@ namespace ToSic.Eav.Types
             var attDef = new AttributeDefinition(AppId, name, niceName, type, correctedInput, description, true, defaultValue);
             return attDef;
         }
+
+        protected AttributeDefinition AttGrp(string name, string niceName = null, string description = null) 
+            => AttDef(Grp, DefInp, name, niceName, description);
     }
 }
