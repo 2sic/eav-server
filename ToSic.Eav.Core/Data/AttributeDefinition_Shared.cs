@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Interfaces;
-
-namespace ToSic.Eav.Data
+﻿namespace ToSic.Eav.Data
 {
     public partial class AttributeDefinition // : IUsesSharedDefinition
     {

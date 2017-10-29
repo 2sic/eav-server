@@ -29,6 +29,7 @@ namespace ToSic.Eav.Data
             _objects = objects;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Get Children of a specified Attribute Name
         /// </summary>

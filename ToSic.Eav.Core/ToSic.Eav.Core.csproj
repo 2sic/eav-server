@@ -87,9 +87,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="ToSic.Eav">
-      <HintPath>..\..\2SexyContent\Web\DesktopModules\ToSIC_SexyContent\Bin\ToSic.Eav.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App\AppDataPackage_DeferredList.cs" />
@@ -130,7 +127,6 @@
     <Compile Include="Data\EntityRelationshipItem.cs" />
     <Compile Include="Data\RelatedEntities.cs" />
     <Compile Include="Data\RelationshipManager.cs" />
-    <Compile Include="Data\TypedValue_ofT.cs" />
     <Compile Include="Data\Value.cs" />
     <Compile Include="Data\Value_ofT.cs" />
     <Compile Include="Data\Zone.cs" />

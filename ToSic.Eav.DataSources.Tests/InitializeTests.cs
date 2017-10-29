@@ -3,7 +3,7 @@
 namespace ToSic.Eav.UnitTests
 {
     [TestClass]
-    class InitializeTests
+    public class InitializeTests
     {
         [AssemblyInitialize()]
         public static void AssemblyInit(TestContext context) => Testing.Shared.InitializeTests.ConfigureEfcDi();

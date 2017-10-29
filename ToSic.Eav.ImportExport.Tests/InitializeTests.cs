@@ -3,7 +3,7 @@
 namespace ToSic.Eav.ImportExport.Tests
 {
     [TestClass]
-    class InitializeTests
+    public class InitializeTests
     {
         [AssemblyInitialize]
         public static void AssemblyInit(TestContext context)

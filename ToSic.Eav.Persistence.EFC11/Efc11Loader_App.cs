@@ -196,7 +196,6 @@ namespace ToSic.Eav.Persistence.Efc
 
                     newEntity = EntityBuilder.EntityFromRepository(appId, e.EntityGuid, e.EntityId, e.EntityId, e.Metadata, contentType, e.IsPublished, relationships, e.Modified, e.Owner, e.Version);
 
-                    //var allAttribsOfThisType = new Dictionary<string, IAttribute>(); // temporary Dictionary to set values later more performant by Dictionary-Key (AttributeId)
                     IAttribute titleAttrib = null;
 
                     // Add all Attributes of that Content-Type
@@ -204,7 +203,6 @@ namespace ToSic.Eav.Persistence.Efc
                     {
                         var entityAttribute = ((AttributeDefinition) definition).CreateAttribute();
                         newEntity.Attributes.Add(entityAttribute.Name, entityAttribute);
-                        //allAttribsOfThisType.Add(definition.Name, entityAttribute);
                         if (definition.IsTitle)
                             titleAttrib = entityAttribute;
                     }
@@ -215,7 +213,7 @@ namespace ToSic.Eav.Persistence.Efc
                     if (relatedEntities.ContainsKey(e.EntityId))
                         foreach (var r in relatedEntities[e.EntityId])
                         {
-                            var attrib = newEntity.Attributes[r.Name];//  allAttribsOfThisType[r.Name];//r.AttributeID];
+                            var attrib = newEntity.Attributes[r.Name];
                             attrib.Values = new List<IValue> {Value.Build(attrib.Type, r.Childs, null, source)};
                         }
 
@@ -224,12 +222,12 @@ namespace ToSic.Eav.Persistence.Efc
                     #region Add "normal" Attributes (that are not Entity-Relations)
 
                     if (attributes.ContainsKey(e.EntityId))
-                        foreach (var a in attributes[e.EntityId]) // e.Attributes)
+                        foreach (var a in attributes[e.EntityId])
                         {
                             IAttribute attrib;
                             try
                             {
-                                attrib = newEntity.Attributes[a.Name];// allAttribsOfThisType[a.Name];// a.AttributeID];
+                                attrib = newEntity.Attributes[a.Name];
                             }
                             catch (KeyNotFoundException)
                             {
@@ -343,9 +341,6 @@ namespace ToSic.Eav.Persistence.Efc
 
         #endregion
 
-
-        //public Dictionary<int, string> MetadataTargetTypes() => _dbContext.ToSicEavAssignmentObjectTypes
-        //    .ToDictionary(a => a.AssignmentObjectTypeId, a => a.Name);
 
         public Dictionary<int, Zone> Zones() => _dbContext.ToSicEavZones
             .Include(z => z.ToSicEavApps)

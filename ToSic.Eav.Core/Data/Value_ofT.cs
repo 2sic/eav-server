@@ -5,6 +5,7 @@ using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data
 {
+    /// <inheritdoc cref="IValue{T}" />
     /// <summary>
     /// Represents a Value
     /// </summary>
@@ -12,44 +13,6 @@ namespace ToSic.Eav.Data
     public class Value<T> : Value, IValue<T>
     {
         public T TypedContents { get; internal set; }
-
-
-
-        // 2017-06-09 2dm removed, seems unused
-        //public string Serialized
-        //{
-        //    get
-        //    {
-        //        // todo: I moved this from somewhere else - but this class knows what <T> is...
-        //        // ...so I should refactor it to not do all this casting, but just check what type T is
-
-        //        var value = this;
-        //        var stringValue = value as Value<string>;
-        //        if (stringValue != null)
-        //            return stringValue.TypedContents;
-
-        //        var relationshipValue = value as Value<EntityRelationship>;
-        //        if (relationshipValue != null)
-        //        {
-        //            var entityGuids = relationshipValue.TypedContents.Select(e => e?.EntityGuid.ToString() ?? Constants.EmptyRelationship);                    //var entityGuids = relationshipValue.TypedContents.EntityIds.Select(entityId => entityId.HasValue ? Context.Entities.GetEntity(entityId.Value).EntityGUID : Guid.Empty);
-        //            return string.Join(",", entityGuids);
-        //        }
-
-        //        var boolValue = value as Value<bool?>;
-        //        if (boolValue != null)
-        //            return boolValue.TypedContents.ToString();
-
-        //        var dateTimeValue = value as Value<DateTime?>;
-        //        if (dateTimeValue != null)
-        //            return dateTimeValue.TypedContents?.ToString("s") ?? "";
-
-        //        var decimalValue = value as Value<decimal?>;
-        //        if (decimalValue != null)
-        //            return decimalValue.TypedContents?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "";
-
-        //        throw new NotSupportedException("Can't serialize Value");
-        //    }
-        //}
 
         public object SerializableObject
         {
@@ -61,7 +24,7 @@ namespace ToSic.Eav.Data
                 var maybeRelationshipList = typedObject as EntityRelationship;
                 if (maybeRelationshipList != null)
                 {
-                    var entityGuids = maybeRelationshipList.Select(e => e?.EntityGuid);                    //var entityGuids = relationshipValue.TypedContents.EntityIds.Select(entityId => entityId.HasValue ? Context.Entities.GetEntity(entityId.Value).EntityGUID : Guid.Empty);
+                    var entityGuids = maybeRelationshipList.Select(e => e?.EntityGuid);
                     return entityGuids.ToList();
                 }
 
@@ -74,8 +37,7 @@ namespace ToSic.Eav.Data
             get
             {
                 var obj = SerializableObject;
-                var list = obj as List<Guid?>;
-                if (list != null)
+                if (obj is List<Guid?> list)
                     return string.Join(",", list.Select(y => y?.ToString() ?? Constants.EmptyRelationship));
 
                 return (obj as DateTime?)?.ToString("yyyy-MM-ddTHH:mm:ss") 
@@ -91,11 +53,7 @@ namespace ToSic.Eav.Data
         }
 
         public object ObjectContents => TypedContents;
-        public IValue Copy(string type)
-        {
-            return Value.Build(type, ObjectContents,
-                Languages.Select(l => new Dimension() {DimensionId = l.DimensionId, Key = l.Key} as ILanguage).ToList(), null);
-        }
-
+        public IValue Copy(string type) => Build(type, ObjectContents,
+            Languages.Select(l => new Dimension {DimensionId = l.DimensionId, Key = l.Key} as ILanguage).ToList(), null);
     }
 }
