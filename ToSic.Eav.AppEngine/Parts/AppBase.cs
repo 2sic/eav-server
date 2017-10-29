@@ -57,7 +57,7 @@ namespace ToSic.Eav.Apps.Parts
         /// <summary>
         /// The cache-package if needed (mainly for export/import, where the full data is necessary)
         /// </summary>
-        internal AppDataPackage Package => Cache.AppDataPackage;
+        public AppDataPackage Package => Cache.AppDataPackage;
 
 
         #endregion

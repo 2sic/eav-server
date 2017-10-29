@@ -10,14 +10,14 @@ namespace ToSic.Eav.App
 	/// <summary>
 	/// Cache Object for a specific App
 	/// </summary>
-	public partial class AppDataPackage: IMetadataProvider
+	public partial class AppDataPackage
 	{
-		#region Private Fields
+		#region private entities lists
 		private IDictionary<int, IEntity> _publishedEntities;
 		private IDictionary<int, IEntity> _draftEntities;
 		#endregion
 
-		#region Properties
+		#region public properties like AppId, Entities, List, Publisheentities, DraftEntities, 
         /// <summary>
         /// App ID
         /// </summary>
@@ -44,48 +44,6 @@ namespace ToSic.Eav.App
 		public IDictionary<int, IEntity> DraftEntities => _draftEntities ?? (_draftEntities = Entities.Where(e => e.Value.GetDraft() == null).ToDictionary(k => k.Value.EntityId, v => v.Value));
 
 
-        #region Metadata
-        /// <summary>
-        /// Gets a Dictionary of AssignmentObjectTypes and assigned Entities having a KeyGuid
-        /// </summary>
-        private IDictionary<int, Dictionary<Guid, IEnumerable<IEntity>>> MetadataForGuid { get; }
-
-		/// <summary>
-		/// Gets a Dictionary of AssignmentObjectTypes and assigned Entities having a KeyNumber
-		/// </summary>
-		private IDictionary<int, Dictionary<int, IEnumerable<IEntity>>> MetadataForNumber { get; }
-
-		/// <summary>
-		/// Gets a Dictionary of AssignmentObjectTypes and assigned Entities having a KeyString
-		/// </summary>
-		private IDictionary<int, Dictionary<string, IEnumerable<IEntity>>> MetadataForString { get; }
-
-        //private ImmutableDictionary<int, string> MetadataTypes { get;  }
-
-	    /// <summary>
-	    /// Get AssignmentObjectTypeId by Name
-	    /// </summary>
-	    //public int GetMetadataType(string typeName) => MetadataTypes.First(mt => mt.Value == typeName).Key;
-
-	    //public string GetMetadataType(int typeId) => MetadataTypes[typeId];
-
-
-        public IEnumerable<IEntity> GetMetadata(int targetType, int key, string contentTypeName = null) => Lookup(MetadataForNumber, targetType, Convert.ToInt32(key), contentTypeName);
-
-	    public IEnumerable<IEntity> GetMetadata(int targetType, string key, string contentTypeName = null) => Lookup(MetadataForString, targetType, key, contentTypeName);
-
-	    public IEnumerable<IEntity> GetMetadata(int targetType, Guid key, string contentTypeName = null) => Lookup(MetadataForGuid, targetType, key, contentTypeName);
-
-	    private IEnumerable<IEntity> Lookup<T>(IDictionary<int, Dictionary<T, IEnumerable<IEntity>>> list, int targetType, T key, string contentTypeName = null)
-        {
-            // ReSharper disable once CollectionNeverUpdated.Local
-            if (list.TryGetValue(targetType, out Dictionary<T, IEnumerable<IEntity>> keyGuidDictionary))
-                if (keyGuidDictionary.TryGetValue(key, out IEnumerable<IEntity> entities))
-                    return entities.Where(e => contentTypeName == null || e.Type.StaticName == contentTypeName);
-            return new List<IEntity>();
-        }
-        #endregion
-
         /// <summary>
         /// Get all Relationships between Entities
         /// </summary>
@@ -108,7 +66,8 @@ namespace ToSic.Eav.App
 			IDictionary<int, Dictionary<Guid, IEnumerable<IEntity>>> metadataForGuid, 
             IDictionary<int, Dictionary<int, IEnumerable<IEntity>>> metadataForNumber,
 			IDictionary<int, Dictionary<string, IEnumerable<IEntity>>> metadataForString, 
-            IEnumerable<EntityRelationshipItem> relationships)
+            IEnumerable<EntityRelationshipItem> relationships,
+            AppDataPackageDeferredList selfDeferredEntitiesList)
 		{
 		    AppId = appId;
 		    List = entList;
@@ -126,7 +85,11 @@ namespace ToSic.Eav.App
 
             // build types by name
             BuildCacheForTypesByName(_appTypesFromRepository);
-		}
 
-	}
+            // ensure that the previously built entities can look up relationships
+		    selfDeferredEntitiesList.AttachApp(this);
+		    BetaDeferredEntitiesList = selfDeferredEntitiesList;
+        }
+
+    }
 }

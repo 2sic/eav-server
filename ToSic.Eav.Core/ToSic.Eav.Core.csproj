@@ -92,6 +92,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App\AppDataPackage_DeferredList.cs" />
+    <Compile Include="App\AppDataPackage_Metadata.cs" />
     <Compile Include="App\AppDataPackage_ContentTypes.cs" />
     <Compile Include="App\AppDataPackageDeferredList.cs" />
     <Compile Include="Constants.cs" />

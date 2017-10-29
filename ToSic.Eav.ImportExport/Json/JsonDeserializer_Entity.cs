@@ -14,18 +14,6 @@ namespace ToSic.Eav.ImportExport.Json
     public partial class JsonSerializer: IThingDeserializer
     {
 
-        private AppDataPackageDeferredList RelLookupList
-        {
-            get
-            {
-                if (_relList != null) return _relList;
-                _relList = new AppDataPackageDeferredList();
-                _relList.AttachApp(App);
-                return _relList;
-            }
-        }
-        private AppDataPackageDeferredList _relList;
-
         public IEntity Deserialize(string serialized, bool allowDynamic = false)
         {
             JsonFormat jsonObj;
@@ -106,45 +94,27 @@ namespace ToSic.Eav.ImportExport.Json
                 {
                     case AttributeTypeEnum.Boolean:
                         BuildValues(jAtts.Boolean, definition, newAtt);
-                        //if (!jAtts.Boolean?.ContainsKey(definition.Name) ?? true) continue;
-                        //newAtt.Values = jAtts.Boolean[definition.Name]
-                        //    .Select(v => Value.Build(definition.Type, v.Value, RecreateLanguageList(v.Key))).ToList();
                         break;
                     case AttributeTypeEnum.DateTime:
                         BuildValues(jAtts.DateTime, definition, newAtt);
-                        //if (!jAtts.DateTime?.ContainsKey(definition.Name) ?? true) continue;
-                        //newAtt.Values = jAtts.DateTime[definition.Name]
-                        //    .Select(v => Value.Build(definition.Type, v.Value, RecreateLanguageList(v.Key))).ToList();
                         break;
                     case AttributeTypeEnum.Entity:
                         if (!jAtts.Entity?.ContainsKey(definition.Name) ?? true) continue;
                         newAtt.Values = jAtts.Entity[definition.Name]
-                            .Select(v => Value.Build(definition.Type, LookupGuids(v.Value), RecreateLanguageList(v.Key),
+                            .Select(v => Value.Build(definition.Type, v.Value /*LookupGuids(v.Value)*/, RecreateLanguageList(v.Key),
                                 RelLookupList)).ToList();
                         break;
                     case AttributeTypeEnum.Hyperlink:
                         BuildValues(jAtts.Hyperlink, definition,newAtt);
-                        //if (!jAtts.Hyperlink?.ContainsKey(definition.Name) ?? true) continue;
-                        //newAtt.Values = jAtts.Hyperlink[definition.Name]
-                        //    .Select(v => Value.Build(definition.Type, v.Value, RecreateLanguageList(v.Key))).ToList();
                         break;
                     case AttributeTypeEnum.Number:
                         BuildValues(jAtts.Number, definition, newAtt);
-                        //if (!jAtts.Number?.ContainsKey(definition.Name) ?? true) continue;
-                        //newAtt.Values = jAtts.Number[definition.Name]
-                        //    .Select(v => Value.Build(definition.Type, v.Value, RecreateLanguageList(v.Key))).ToList();
                         break;
                     case AttributeTypeEnum.String:
                         BuildValues(jAtts.String, definition, newAtt);
-                        //if (!jAtts.String?.ContainsKey(definition.Name) ?? true) continue;
-                        //newAtt.Values = jAtts.String[definition.Name]
-                        //    .Select(v => Value.Build(definition.Type, v.Value, RecreateLanguageList(v.Key))).ToList();
                         break;
                     case AttributeTypeEnum.Custom:
                         BuildValues(jAtts.Custom, definition, newAtt);
-                        //if (!jAtts.Custom?.ContainsKey(definition.Name) ?? true) continue;
-                        //newAtt.Values = jAtts.Custom[definition.Name]
-                        //    .Select(v => Value.Build(definition.Type, v.Value, RecreateLanguageList(v.Key))).ToList();
                         break;
                     // ReSharper disable RedundantCaseLabel
                     case AttributeTypeEnum.Empty:

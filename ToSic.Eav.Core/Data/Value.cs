@@ -77,27 +77,16 @@ namespace ToSic.Eav.Data
 
                     case AttributeTypeEnum.Entity:
                         var entityIds = value as IEnumerable<int?> ?? (value as IEnumerable<int>)?.Select(x => (int?)x).ToList();
+                        EntityRelationship rel;
                         if (entityIds != null)
-                            typedModel = new Value<EntityRelationship>(new EntityRelationship(fullEntityListForLookup, entityIds));
+                            rel = new EntityRelationship(fullEntityListForLookup, entityIds);
                         else if (value is EntityRelationship)
-                            typedModel = new Value<EntityRelationship>(new EntityRelationship(fullEntityListForLookup, ((EntityRelationship)value).EntityIds));
+                            rel = new EntityRelationship(fullEntityListForLookup, ((EntityRelationship) value).EntityIds);
+                        else if (value is List<Guid?>)
+                            rel = new EntityRelationship(fullEntityListForLookup, (List<Guid?>) value);
                         else
-                        {
-                            var entityIdEnum = value as IEnumerable; // note: strings are also enum!
-                            if (value is string && !String.IsNullOrEmpty(stringValue))
-                                entityIdEnum = stringValue.Split(',').ToList();
-                            // this is the case when we get a CSV-string with GUIDs
-                            var entityGuids = entityIdEnum?.Cast<object>().Select(x =>
-                            {
-                                var v = x?.ToString().Trim();
-                                // this is the case when an export contains a list with nulls as a special code
-                                if (v == null || v == Constants.EmptyRelationship)
-                                    return new Guid?();
-                                var guid = Guid.Parse(v);
-                                return guid == Guid.Empty ? new Guid?() : guid;
-                            }).ToList() ?? new List<Guid?>(0);
-                            typedModel = new Value<List<Guid?>>(entityGuids);
-                        }
+                            rel = new EntityRelationship(fullEntityListForLookup, GuidCsvToList(value)); // new Value<List<Guid?>>(entityGuids);
+                        typedModel = new Value<EntityRelationship>(rel);
                         break;
                     // ReSharper disable RedundantCaseLabel
                     case AttributeTypeEnum.String:  // most common case
@@ -121,8 +110,27 @@ namespace ToSic.Eav.Data
             return (IValue)typedModel;
         }
 
+        private static List<Guid?> GuidCsvToList(object value)
+        {
+            var stringValue = value as string;
+            var entityIdEnum = value as IEnumerable; // note: strings are also enum!
+            if (value is string && !String.IsNullOrEmpty(stringValue))
+                entityIdEnum = stringValue.Split(',').ToList();
+            // this is the case when we get a CSV-string with GUIDs
+            var entityGuids = entityIdEnum?.Cast<object>().Select(x =>
+            {
+                var v = x?.ToString().Trim();
+                // this is the case when an export contains a list with nulls as a special code
+                if (v == null || v == Constants.EmptyRelationship)
+                    return new Guid?();
+                var guid = Guid.Parse(v);
+                return guid == Guid.Empty ? new Guid?() : guid;
+            }).ToList() ?? new List<Guid?>(0);
+            return entityGuids;
+        }
 
-        internal static readonly Value<EntityRelationship> NullRelationship = new Value<EntityRelationship>(new EntityRelationship(null))
+
+        internal static readonly Value<EntityRelationship> NullRelationship = new Value<EntityRelationship>(new EntityRelationship(null, entityIds: null))
         {
             Languages = new List<ILanguage>()
         };

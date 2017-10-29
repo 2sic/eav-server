@@ -174,7 +174,7 @@ namespace ToSic.Eav.Persistence.Efc
             var entList = new List<IEntity>();
 
             var serializer = Factory.Resolve<IThingDeserializer>();
-            serializer.Initialize(appId, contentTypes.Values);
+            serializer.Initialize(appId, contentTypes.Values, source);
 
             var entityTimer = Stopwatch.StartNew();
             foreach (var e in rawEntities)
@@ -324,10 +324,10 @@ namespace ToSic.Eav.Persistence.Efc
             relTimer.Stop();
             #endregion
 
-            var appPack = new AppDataPackage(appId, entities, entList, contentTypes, metadataForGuid, metadataForNumber, metadataForString, relationships);
-            source.AttachApp(appPack);
             _sqlTotalTime = _sqlTotalTime.Add(sqlTime.Elapsed);
             Log.Add($"timers types&typesql:{typeTimer.Elapsed} sqlAll:{_sqlTotalTime}, entities:{entityTimer.Elapsed}, relationship:{relTimer.Elapsed}");
+
+            var appPack = new AppDataPackage(appId, entities, entList, contentTypes, metadataForGuid, metadataForNumber, metadataForString, relationships, source);
             return appPack;
         }
 

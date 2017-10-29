@@ -31,10 +31,11 @@ namespace ToSic.Eav.Persistence.Xml
 
         protected int AppId;
         private IEnumerable<IContentType> _types;
-        public void Initialize(int appId, IEnumerable<IContentType> types)
+        public void Initialize(int appId, IEnumerable<IContentType> types, IDeferredEntitiesList allEntities)
         {
             AppId = appId;
             _types = types;
+            _relList = allEntities;
         }
 
         protected IEntity Lookup(int entityId) => App.Entities[entityId];
@@ -46,6 +47,21 @@ namespace ToSic.Eav.Persistence.Xml
         public Dictionary<int, string> Serialize(List<int> entities) => entities.ToDictionary(x => x, x => Serialize(Lookup(x)));
 
         public Dictionary<int, string> Serialize(List<IEntity> entities) => entities.ToDictionary(e => e.EntityId, Serialize);
+
+
+
+        protected IDeferredEntitiesList RelLookupList
+        {
+            get
+            {
+                if (_relList != null) return _relList;
+                var appList = new AppDataPackageDeferredList();
+                appList.AttachApp(App);
+                _relList = appList;
+                return _relList;
+            }
+        }
+        private IDeferredEntitiesList _relList;
 
 
     }
