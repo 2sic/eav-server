@@ -168,4 +168,4 @@ ToSic.Eav.ManagementUI/.grunt/
 ToSic.Eav.ManagementUI/bower_components/
 ToSic.Eav.ManagementUI/tmp/
 /ToSic.Eav.Repository.Efc.Tests/Destination
-/.vs/Eav Server Solution/v15/sqlite3
+/.vs/

@@ -126,6 +126,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     {
                         newEnt.ChangeIdForSaving(dbEnt.EntityId); // update this, as it was only just generated
                         dbEnt.Json = _jsonifier.Serialize(newEnt);
+                        dbEnt.ContentType = newEnt.Type.StaticName;
                         DbContext.SqlDb.SaveChanges();
                     }
                     Log.Add($"create new i:{dbEnt.EntityId}, guid:{dbEnt.EntityGuid}");

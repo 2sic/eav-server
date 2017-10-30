@@ -130,7 +130,7 @@ namespace ToSic.Eav.ImportExport.Xml
 
                 // construct value elements
 			    var currentAttributesImportValues = tempTargetValues.Select(tempImportValue
-			            => Value.Build(tempImportValue.XmlValue.Attribute(
+			            => ValueBuilder.Build(tempImportValue.XmlValue.Attribute(
 			                               XmlConstants.EntityTypeAttribute)?.Value ??
 			                           throw new NullReferenceException("cant' build attribute with unknown value-type"),
 			                tempImportValue.XmlValue.Attribute(XmlConstants.ValueAttr)?.Value ??

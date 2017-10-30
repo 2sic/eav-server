@@ -79,7 +79,7 @@ namespace ToSic.Eav.ImportExport.Json
             foreach (var attrib in list)
             {
                 var newAtt = AttributeBase.CreateTypedAttribute(attrib.Key, type, attrib.Value
-                    .Select(v => Value.Build(type, v.Value, RecreateLanguageList(v.Key))).ToList());
+                    .Select(v => ValueBuilder.Build(type, v.Value, RecreateLanguageList(v.Key))).ToList());
                 newEntity.Attributes.Add(newAtt.Name, newAtt);
             }
         }
@@ -101,7 +101,7 @@ namespace ToSic.Eav.ImportExport.Json
                     case AttributeTypeEnum.Entity:
                         if (!jAtts.Entity?.ContainsKey(definition.Name) ?? true) continue;
                         newAtt.Values = jAtts.Entity[definition.Name]
-                            .Select(v => Value.Build(definition.Type, v.Value /*LookupGuids(v.Value)*/, RecreateLanguageList(v.Key),
+                            .Select(v => ValueBuilder.Build(definition.Type, v.Value /*LookupGuids(v.Value)*/, RecreateLanguageList(v.Key),
                                 RelLookupList)).ToList();
                         break;
                     case AttributeTypeEnum.Hyperlink:
@@ -137,7 +137,7 @@ namespace ToSic.Eav.ImportExport.Json
         {
             if (!list?.ContainsKey(attrDef.Name) ?? true) return;
             target.Values = list[attrDef.Name]
-                .Select(v => Value.Build(attrDef.Type, v.Value, RecreateLanguageList(v.Key))).ToList();
+                .Select(v => ValueBuilder.Build(attrDef.Type, v.Value, RecreateLanguageList(v.Key))).ToList();
 
         }
 

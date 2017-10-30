@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data
@@ -53,7 +54,7 @@ namespace ToSic.Eav.Data
         }
 
         public object ObjectContents => TypedContents;
-        public IValue Copy(string type) => Build(type, ObjectContents,
+        public IValue Copy(string type) => ValueBuilder.Build(type, ObjectContents,
             Languages.Select(l => new Dimension {DimensionId = l.DimensionId, Key = l.Key} as ILanguage).ToList(), null);
     }
 }

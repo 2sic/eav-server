@@ -122,7 +122,8 @@ namespace ToSic.Eav.Persistence.Efc
                     e.PublishedEntityId,
                     e.Owner, 
                     Modified = e.ChangeLogModifiedNavigation.Timestamp, 
-                    e.Json
+                    e.Json,
+                    e.ContentType
                 })
                 .ToList();
             sqlTime.Stop();
@@ -214,7 +215,7 @@ namespace ToSic.Eav.Persistence.Efc
                         foreach (var r in relatedEntities[e.EntityId])
                         {
                             var attrib = newEntity.Attributes[r.Name];
-                            attrib.Values = new List<IValue> {Value.Build(attrib.Type, r.Childs, null, source)};
+                            attrib.Values = new List<IValue> {ValueBuilder.Build(attrib.Type, r.Childs, null, source)};
                         }
 
                     #endregion
@@ -236,7 +237,7 @@ namespace ToSic.Eav.Persistence.Efc
                             if (attrib == titleAttrib)
                                 newEntity.SetTitleField(attrib.Name);
 
-                            attrib.Values = a.Values.Select(v => Value.Build(attrib.Type, v.Value, v.Languages))
+                            attrib.Values = a.Values.Select(v => ValueBuilder.Build(attrib.Type, v.Value, v.Languages))
                                 .ToList();
 
                             #region issue fix faulty data dimensions

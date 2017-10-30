@@ -333,6 +333,8 @@ namespace ToSic.Eav.Persistence.Efc.Models
 
                 entity.Property(e => e.Owner).HasMaxLength(250);
 
+                entity.Property(e => e.ContentType).HasMaxLength(250);
+
                 // 2017-10-10 2dm new with entity > app mapping
                 entity.HasOne(d => d.App)
                     .WithMany(p => p.ToSicEavEntities)

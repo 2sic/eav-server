@@ -33,6 +33,8 @@ namespace ToSic.Eav.Persistence.Efc.Models
         public int ChangeLogModified { get; set; }
         public string Owner { get; set; }
 
+        public string ContentType { get; set; }
+
         public virtual ICollection<ToSicEavEntityRelationships> RelationshipsWithThisAsChild { get; set; }
         public virtual ICollection<ToSicEavEntityRelationships> RelationshipsWithThisAsParent { get; set; }
         public virtual ICollection<ToSicEavValues> ToSicEavValues { get; set; }

@@ -32,7 +32,7 @@ namespace ToSic.Eav.Data.Builder
                     var valuesModelList = new List<IValue>();
                     if (oAttrib.Value != null)
                     {
-                        var valueModel = Value.Build(attributeType, oAttrib.Value, null);
+                        var valueModel = ValueBuilder.Build(attributeType, oAttrib.Value, null);
                         valuesModelList.Add(valueModel);
                     }
 
@@ -89,7 +89,7 @@ namespace ToSic.Eav.Data.Builder
             // sometimes language is passed in as an empty string - this would have side effects, so it must be neutralized
             if (string.IsNullOrWhiteSpace(language)) language = null;
 
-            var valueWithLanguages = Value.Build(valueType, value, language == null
+            var valueWithLanguages = ValueBuilder.Build(valueType, value, language == null
                 ? null : new List<ILanguage> { new Dimension { Key = language, ReadOnly = languageReadOnly } }, allEntitiesForRelationships);
 
 
