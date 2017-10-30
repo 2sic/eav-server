@@ -2,12 +2,11 @@
 using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
-using ToSic.Eav.Repository.Efc.Parts;
 
 namespace ToSic.Eav.Repository.Efc.Implementations
 {
     /// <summary>
-    /// The primary importer for EF4 implementation
+    /// The primary importer - important to keep importing decoupled from Eav.Core
     /// </summary>
     public class RepositoryImporter:IRepositoryImporter
     {

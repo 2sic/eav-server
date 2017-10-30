@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Types.Builder
 {
-    public static class ContentType
+    public static class ContentTypeBuilder
     {
         public static IContentType ContentTypeMetadata(this IContentType type, 
             string label, 
@@ -29,8 +30,13 @@ namespace ToSic.Eav.Types.Builder
                 .Select(v => v.Key).ToList()
                 .ForEach(k => values.Remove(k));
 
-            (type as Data.ContentType)?.AddMetadata("ContentType", values);
+            (type as ContentType)?.AddMetadata("ContentType", values);
             return type; // for chaining...
+        }
+
+        public static void AttachMetadata(this ContentType type, List<IEntity> items)
+        {
+            type.MetadataItems = items;
         }
     }
 }

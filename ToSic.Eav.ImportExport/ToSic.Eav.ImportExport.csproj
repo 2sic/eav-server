@@ -78,6 +78,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Environment\TennantFileItem.cs" />
+    <Compile Include="Json\JsonDeserializer_ContentType.cs" />
     <Compile Include="Json\JsonSerializer_Entity.cs" />
     <Compile Include="Json\JsonSerializer_ContentType.cs" />
     <Compile Include="Json\Format\V1.cs" />

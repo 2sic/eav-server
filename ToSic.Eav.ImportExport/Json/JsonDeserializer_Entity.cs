@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
-using ToSic.Eav.App;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Enums;
@@ -16,6 +15,13 @@ namespace ToSic.Eav.ImportExport.Json
 
         public IEntity Deserialize(string serialized, bool allowDynamic = false)
         {
+            var jsonObj = UnpackAndTestGenericJsonV1(serialized);
+            return Deserialize(jsonObj.Entity, allowDynamic);
+        }
+
+
+        private static JsonFormat UnpackAndTestGenericJsonV1(string serialized)
+        {
             JsonFormat jsonObj;
             try
             {
@@ -26,50 +32,55 @@ namespace ToSic.Eav.ImportExport.Json
                 throw new FormatException("cannot deserialize json - bad format", ex);
             }
 
-            if(jsonObj._.V != 1)
+            if (jsonObj._.V != 1)
                 throw new ArgumentOutOfRangeException(nameof(serialized), "unexpected format version");
+            return jsonObj;
+        }
 
+        private IEntity Deserialize(JsonEntity jEnt, bool allowDynamic)
+        {
             // get type def
-            var contentType = GetContentType(jsonObj.Entity.Type.Id)
+            var contentType = GetContentType(jEnt.Type.Id)
                               ?? (allowDynamic
                                   ? ContentTypeBuilder.DynamicContentType(AppId)
                                   : throw new FormatException(
                                       "type not found for deserialization and dynamic not allowed " +
-                                      $"- cannot continue with {jsonObj.Entity.Type.Id}")
+                                      $"- cannot continue with {jEnt.Type.Id}")
                               );
 
             // Metadata
             var ismeta = new Metadata();
-            if (jsonObj.Entity.For != null)
+            if (jEnt.For != null)
             {
-                var md = jsonObj.Entity.For;
+                var md = jEnt.For;
                 ismeta.TargetType = Factory.Resolve<IGlobalMetadataProvider>().GetType(md.Target);
                 ismeta.KeyGuid = md.Guid;
                 ismeta.KeyNumber = md.Number;
                 ismeta.KeyString = md.String;
             }
 
-            var newEntity = EntityBuilder.EntityFromRepository(AppId, jsonObj.Entity.Guid, jsonObj.Entity.Id, jsonObj.Entity.Id, ismeta, contentType, true, null, DateTime.Now, jsonObj.Entity.Owner, jsonObj.Entity.Version);
+            var newEntity = EntityBuilder.EntityFromRepository(AppId, jEnt.Guid, jEnt.Id, jEnt.Id, ismeta, contentType, true,
+                null, DateTime.Now, jEnt.Owner, jEnt.Version);
 
 
             // build attributes - based on type definition
             if (contentType.Name == Constants.DynamicType)
-                BuildAttribsOfUnknownContentType(jsonObj, newEntity);
+                BuildAttribsOfUnknownContentType(jEnt.Attributes, newEntity);
             else
-                BuildAttribsOfKnownType(jsonObj, contentType, newEntity);
+                BuildAttribsOfKnownType(jEnt.Attributes, contentType, newEntity);
 
             return newEntity;
         }
 
-        private void BuildAttribsOfUnknownContentType(JsonFormat jsonObj, Entity newEntity)
+        private void BuildAttribsOfUnknownContentType(JsonAttributes jAtts, Entity newEntity)
         {
-            BuildAttrib(jsonObj.Entity.Attributes.DateTime, AttributeTypeEnum.DateTime, newEntity);
-            BuildAttrib(jsonObj.Entity.Attributes.Boolean, AttributeTypeEnum.Boolean, newEntity);
-            BuildAttrib(jsonObj.Entity.Attributes.Custom, AttributeTypeEnum.Custom, newEntity);
-            BuildAttrib(jsonObj.Entity.Attributes.Entity, AttributeTypeEnum.Entity, newEntity);
-            BuildAttrib(jsonObj.Entity.Attributes.Hyperlink, AttributeTypeEnum.Hyperlink, newEntity);
-            BuildAttrib(jsonObj.Entity.Attributes.Number, AttributeTypeEnum.Number, newEntity);
-            BuildAttrib(jsonObj.Entity.Attributes.String, AttributeTypeEnum.String, newEntity);
+            BuildAttrib(jAtts.DateTime, AttributeTypeEnum.DateTime, newEntity);
+            BuildAttrib(jAtts.Boolean, AttributeTypeEnum.Boolean, newEntity);
+            BuildAttrib(jAtts.Custom, AttributeTypeEnum.Custom, newEntity);
+            BuildAttrib(jAtts.Entity, AttributeTypeEnum.Entity, newEntity);
+            BuildAttrib(jAtts.Hyperlink, AttributeTypeEnum.Hyperlink, newEntity);
+            BuildAttrib(jAtts.Number, AttributeTypeEnum.Number, newEntity);
+            BuildAttrib(jAtts.String, AttributeTypeEnum.String, newEntity);
         }
 
         private void BuildAttrib<T>(Dictionary<string, Dictionary<string, T>> list, AttributeTypeEnum type, Entity newEntity)
@@ -84,9 +95,8 @@ namespace ToSic.Eav.ImportExport.Json
             }
         }
 
-        private void BuildAttribsOfKnownType(JsonFormat jsonObj, IContentType contentType, Entity newEntity)
+        private void BuildAttribsOfKnownType(JsonAttributes jAtts, IContentType contentType, Entity newEntity)
         {
-            var jAtts = jsonObj.Entity.Attributes;
             foreach (var definition in contentType.Attributes)
             {
                 var newAtt = ((AttributeDefinition) definition).CreateAttribute();
@@ -101,7 +111,7 @@ namespace ToSic.Eav.ImportExport.Json
                     case AttributeTypeEnum.Entity:
                         if (!jAtts.Entity?.ContainsKey(definition.Name) ?? true) continue;
                         newAtt.Values = jAtts.Entity[definition.Name]
-                            .Select(v => ValueBuilder.Build(definition.Type, v.Value /*LookupGuids(v.Value)*/, RecreateLanguageList(v.Key),
+                            .Select(v => ValueBuilder.Build(definition.Type, v.Value, RecreateLanguageList(v.Key),
                                 RelLookupList)).ToList();
                         break;
                     case AttributeTypeEnum.Hyperlink:
@@ -141,9 +151,9 @@ namespace ToSic.Eav.ImportExport.Json
 
         }
 
-        private List<int?> LookupGuids(List<Guid?> list)
-            => list.Select(g => App.Entities.Values.FirstOrDefault(e => e.EntityGuid == g)?.EntityId)
-                .ToList();
+        //private List<int?> LookupGuids(List<Guid?> list)
+        //    => list.Select(g => App.Entities.Values.FirstOrDefault(e => e.EntityGuid == g)?.EntityId)
+        //        .ToList();
 
         private static List<ILanguage> RecreateLanguageList(string languages) 
             => languages == NoLanguage

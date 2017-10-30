@@ -199,7 +199,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     else
                         newMetaList.Add(new EntitySaver(Log).CreateMergedForSaving(existingMetadata, newMd, SaveOptions) as Entity);
                 }
-                ((AttributeDefinition) newAttrib).AddItems(newMetaList);
+                ((AttributeDefinition) newAttrib).AddMetadata(newMetaList);
             }
         }
 

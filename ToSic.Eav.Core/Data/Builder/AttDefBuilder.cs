@@ -65,7 +65,7 @@ namespace ToSic.Eav.Data.Builder
 
         public static void SetSortOrder(this AttributeDefinition attDef, int sortOrder) => attDef.SortOrder = sortOrder;
 
-        public static void AddItems(this AttributeDefinition attDef, List<IEntity> items) => attDef._items = items;
+        public static void AddMetadata(this AttributeDefinition attDef, List<IEntity> items) => attDef.MetadataItems = items;
 
     }
 }

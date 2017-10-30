@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Newtonsoft.Json;
-using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Json.Format;
 using ToSic.Eav.Interfaces;
 
@@ -27,13 +25,13 @@ namespace ToSic.Eav.ImportExport.Json
                 Name = attrib.Name,
                 Type = attrib.Type,
                 IsTitle = attrib.IsTitle,
-                Items = attrib.MetadataItems?.Select(ToJson).ToList()
+                Metadata = attrib.MetadataItems?.Select(ToJson).ToList()
             }).ToList();
 
             // clean up metadata info on this metadata list, as it's already packed inside something it's related to
-            attribs.Where(a => a.Items != null).SelectMany(a => a.Items).ToList().ForEach(e => e.For = null);
+            attribs.Where(a => a.Metadata != null).SelectMany(a => a.Metadata).ToList().ForEach(e => e.For = null);
 
-            if (sharableCt != null && (sharableCt.AlwaysShareConfiguration || sharableCt.ParentId.HasValue))
+            if (sharableCt != null && (sharableCt.AlwaysShareConfiguration || sharableCt.ParentId.HasValue && sharableCt.ParentId != Constants.SystemContentTypeFakeParent))
             {
                 // if it's a shared type, flush definition as we won't include it
                 if (sharableCt.ParentId.HasValue)
@@ -43,7 +41,8 @@ namespace ToSic.Eav.ImportExport.Json
                 {
                     AlwaysShare = sharableCt.AlwaysShareConfiguration,
                     ParentAppId = sharableCt.ParentAppId,
-                    ParentZoneId = sharableCt.ParentZoneId
+                    ParentZoneId = sharableCt.ParentZoneId,
+                    ParentId = sharableCt.ParentId
                 };
             }
             var package = new JsonContentType
@@ -53,7 +52,8 @@ namespace ToSic.Eav.ImportExport.Json
                 Scope = contentType.Scope,
                 Description = contentType.Description,
                 Attributes = attribs,
-                Sharing = jctShare
+                Sharing = jctShare,
+                Metadata = contentType.MetadataItems.Select(ToJson).ToList()
             };
             return package;
         }

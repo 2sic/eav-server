@@ -123,23 +123,24 @@ namespace ToSic.Eav.Data
         {
             get
             {
-                if (_items != null) return _items;
+                if (_metaItems != null) return _metaItems;
 
                 var metadataProvider = AppId != ParentAppId
                     ? Factory.Resolve<IRemoteMetadataProvider>()?.OfZoneAndApp(ParentZoneId, ParentAppId)
                     : _appMetadataProvider?.Metadata;
 
-                _items = metadataProvider?.GetMetadata(
+                _metaItems = metadataProvider?.GetMetadata(
                              Constants.MetadataForContentType, StaticName).ToList()
                          ?? new List<IEntity>();
 
-                return _items;
+                return _metaItems;
             }
+            internal set => _metaItems = value;
         }
 
-        private List<IEntity> _items;
+        private List<IEntity> _metaItems;
 
-        public bool HasMetadata => _items != null && _items.Any();
+        public bool HasMetadata => _metaItems != null && _metaItems.Any();
 
         public void AddMetadata(string type, Dictionary<string, object> values)
             => MetadataItems.Add(new Entity(AppId, Guid.Empty, type, values));

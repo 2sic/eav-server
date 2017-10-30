@@ -36,12 +36,10 @@ namespace ToSic.Eav.Data
             _appMetadataProvider = metaProvider;
             _isShared = parentApp != 0;
             _parentAppId = parentApp;
-            //_parentId = parentId;
         }
 
         private readonly bool _isShared;
         private readonly int _parentAppId;
-        //private readonly int _parentId;
 
         /// <inheritdoc />
         public AttributeDefinition(int appId, string name, string niceName, AttributeTypeEnum type, string inputType, string notes, bool? visibleInEditUi, object defaultValue) 
@@ -54,7 +52,7 @@ namespace ToSic.Eav.Data
         // ReSharper disable once InheritdocConsiderUsage
         public AttributeDefinition(int appId, string name, string niceName, string type, string inputType, string notes, bool? visibleInEditUi, object defaultValue): this(appId, name, type, false, 0, 0)
         {
-            _items = new List<IEntity> { AttDefBuilder.CreateAttributeMetadata(appId, niceName, notes, visibleInEditUi, HelpersToRefactor.SerializeValue(defaultValue), inputType) };
+            _metaItems = new List<IEntity> { AttDefBuilder.CreateAttributeMetadata(appId, niceName, notes, visibleInEditUi, HelpersToRefactor.SerializeValue(defaultValue), inputType) };
         }
 
 
@@ -68,35 +66,28 @@ namespace ToSic.Eav.Data
 
         #region material for defining/creating attributes / defining them for import
 
-        /// <summary>
-        /// Metadata items configuring / describing this attribute
-        /// </summary>
-        /// <remarks>
-        /// will auto-initialize from metadata source if not pre-initialied
-        /// </remarks>
-        //public List<IEntity> Items => _items ?? (_items = _appMetadataProvider?.Metadata.GetMetadata(Constants.MetadataForAttribute, AttributeId).ToList() ?? new List<IEntity>());
-
         public List<IEntity> MetadataItems
         {
             get
             {
-                if (_items != null) return _items;
+                if (_metaItems != null) return _metaItems;
 
                 var metadataProvider = _isShared
                     ? Factory.Resolve<IRemoteMetadataProvider>()?.OfApp(_parentAppId)
                     : _appMetadataProvider?.Metadata;
 
-                _items = metadataProvider?.GetMetadata(
+                _metaItems = metadataProvider?.GetMetadata(
                              Constants.MetadataForAttribute, AttributeId).ToList()
                          ?? new List<IEntity>();
 
-                return _items;
+                return _metaItems;
             }
+            internal set => _metaItems = value;
         }
         // ReSharper disable once InconsistentNaming
-        internal List<IEntity> _items;
+        private List<IEntity> _metaItems;
 
-        public bool HasMetadata => _items != null && _items.Any();
+        public bool HasMetadata => _metaItems != null && _metaItems.Any();
 
         public void AddMetadata(string type, Dictionary<string, object> values)
             => MetadataItems.Add(new Entity(AppId, Guid.Empty, type, values));

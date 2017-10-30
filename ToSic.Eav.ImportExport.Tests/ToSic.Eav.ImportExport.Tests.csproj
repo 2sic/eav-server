@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="InitializeTests.cs" />
+    <Compile Include="Json\JsonCtDeSerialization.cs" />
     <Compile Include="Json\JsonReSerialization.cs" />
     <Compile Include="Json\JsonCtSerialization.cs" />
     <Compile Include="Json\JsonEntitySerialization.cs" />
@@ -72,6 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <Content Include="Json\ContentTypes\System.Config ToSic.Eav.DataSources.SqlDataSource.json" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
