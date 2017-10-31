@@ -175,7 +175,7 @@ namespace ToSic.Eav.Persistence.Efc
             var entList = new List<IEntity>();
 
             var serializer = Factory.Resolve<IThingDeserializer>();
-            serializer.Initialize(appId, contentTypes.Values, source);
+            serializer.Initialize(appId, contentTypes, source);
 
             var entityTimer = Stopwatch.StartNew();
             foreach (var e in rawEntities)
@@ -189,7 +189,8 @@ namespace ToSic.Eav.Persistence.Efc
 
                 else
                 {
-                    var contentType = (ContentType)contentTypes[e.AttributeSetId];
+                    var contentType = (ContentType)contentTypes.SingleOrDefault(ct => ct.ContentTypeId == e.AttributeSetId);
+                    if(contentType == null) throw new NullReferenceException("content type is not found for type " + e.AttributeSetId);
                     
                     // test if there is a global code-type overriding this type
                     if (sysTypes.ContainsKey(contentType.StaticName))

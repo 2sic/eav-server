@@ -16,14 +16,13 @@ namespace ToSic.Eav.App
 	    /// <summary>
 	    /// Gets all ContentTypes in this App
 	    /// </summary>
-	    public IEnumerable<IContentType> ContentTypes => _appTypesFromRepository.Values
-	        .Union(Global.SystemContentTypes().Values);
+	    public IEnumerable<IContentType> ContentTypes => _appTypesFromRepository.Union(Global.SystemContentTypes().Values);
 
-	    private void BuildCacheForTypesByName(IDictionary<int, IContentType> allTypes)
+	    private void BuildCacheForTypesByName(IList<IContentType> allTypes)
 	    {
 	        _appTypesByName = new Dictionary<string, IContentType>(StringComparer.InvariantCultureIgnoreCase);
 
-	        var keepTypes = allTypes.Values;
+	        var keepTypes = allTypes;
 
 	        // add with static name - as the primary key
 	        foreach (var type in keepTypes)
@@ -36,16 +35,16 @@ namespace ToSic.Eav.App
 	                _appTypesByName.Add(type.Name, type);
 	    }
 
-	    private static ImmutableDictionary<int, IContentType> RemoveAliasesForGlobalTypes(IDictionary<int, IContentType> allTypes)
+	    private static ImmutableList<IContentType> RemoveAliasesForGlobalTypes(IList<IContentType> allTypes)
 	    {
 	        var globTypeNames = Global.SystemContentTypes().Keys;
-	        return allTypes.Where(t => !globTypeNames.Contains(t.Value.StaticName))
-                .ToImmutableDictionary(p => p.Key, p => p.Value);
+	        return allTypes.Where(t => !globTypeNames.Contains(t.StaticName))
+                .ToImmutableList();
 	    }
 
 
 	    private IDictionary<string, IContentType> _appTypesByName;
-	    private readonly IDictionary<int, IContentType> _appTypesFromRepository;
+	    private readonly ImmutableList<IContentType> _appTypesFromRepository;
 
         /// <summary>
         /// Get a content-type by name
@@ -62,6 +61,6 @@ namespace ToSic.Eav.App
         /// </summary>
         /// <param name="contentTypeId">id of the type as stored in the repository</param>
         /// <returns>a type object or null if not found</returns>
-	    public IContentType GetContentType(int contentTypeId) => _appTypesFromRepository.FirstOrDefault(c => c.Key == contentTypeId).Value;
+	    public IContentType GetContentType(int contentTypeId) => _appTypesFromRepository.FirstOrDefault(c => c.ContentTypeId == contentTypeId);
     }
 }

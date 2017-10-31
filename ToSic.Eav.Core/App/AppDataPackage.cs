@@ -62,7 +62,7 @@ namespace ToSic.Eav.App
             int appId,
             IDictionary<int, IEntity> entities, 
             IEnumerable<IEntity> entList,
-            IDictionary<int, IContentType> contentTypes,
+            IList<IContentType> contentTypes,
 			IDictionary<int, Dictionary<Guid, IEnumerable<IEntity>>> metadataForGuid, 
             IDictionary<int, Dictionary<int, IEnumerable<IEntity>>> metadataForNumber,
 			IDictionary<int, Dictionary<string, IEnumerable<IEntity>>> metadataForString, 
@@ -72,7 +72,7 @@ namespace ToSic.Eav.App
 		    AppId = appId;
 		    List = entList;
 		    Entities = entities;
-			//ContentTypes = contentTypes;
+
 		    _appTypesFromRepository = RemoveAliasesForGlobalTypes(contentTypes);
 
             MetadataForGuid = metadataForGuid;

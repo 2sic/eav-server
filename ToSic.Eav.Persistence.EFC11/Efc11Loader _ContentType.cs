@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
@@ -10,20 +11,21 @@ namespace ToSic.Eav.Persistence.Efc
     public partial class Efc11Loader
     {
         #region Testing / Analytics helpers
+
         internal void ResetCacheForTesting()
-        => _contentTypes = new Dictionary<int, Dictionary<int, IContentType>>();
+            => _contentTypes = new Dictionary<int, IList<IContentType>>();
         #endregion
 
         #region Load Content-Types into IContent-Type Dictionary
-        private Dictionary<int, Dictionary<int, IContentType>> _contentTypes = new Dictionary<int, Dictionary<int, IContentType>>();
 
-        // public IDictionary<int, IContentType> ContentTypes(int appId) => ContentTypes(appId, null);
+        private Dictionary<int, IList<IContentType>> _contentTypes = new Dictionary<int, IList<IContentType>>();
 
+        /// <inheritdoc />
         /// <summary>
         /// Get all ContentTypes for specified AppId. 
         /// If uses temporary caching, so if called multiple times it loads from a private field.
         /// </summary>
-        public IDictionary<int, IContentType> ContentTypes(int appId, IDeferredEntitiesList source)
+        public IList<IContentType> ContentTypes(int appId, IDeferredEntitiesList source)
         {
             if (!_contentTypes.ContainsKey(appId))
                 LoadContentTypesIntoLocalCache(appId, source);
@@ -76,8 +78,7 @@ namespace ToSic.Eav.Persistence.Efc
             sqlTime.Stop();
 
             // Convert to ContentType-Model
-            _contentTypes[appId] = contentTypes.ToDictionary(k1 => k1.AttributeSetId,
-                set => (IContentType) new ContentType(appId, set.Name, set.StaticName, set.AttributeSetId,
+            _contentTypes[appId] = contentTypes.Select(set => (IContentType) new ContentType(appId, set.Name, set.StaticName, set.AttributeSetId,
                     set.Scope, set.Description, set.IsGhost, set.ZoneId, set.AppId, set.ConfigIsOmnipresent, source)
                 {
                     Attributes = (set.SharedDefinitionId.HasValue
@@ -87,7 +88,7 @@ namespace ToSic.Eav.Persistence.Efc
                         .Cast<IAttributeDefinition>()
                         .ToList()
                 }
-            );
+            ).ToImmutableList();
 
             _sqlTotalTime = _sqlTotalTime.Add(sqlTime.Elapsed);
         }
