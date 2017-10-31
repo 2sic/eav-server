@@ -68,6 +68,7 @@
     <Compile Include="Json\JsonEntitySerialization.cs" />
     <Compile Include="Json\JsonDynamic.cs" />
     <Compile Include="Json\JsonTestBase.cs" />
+    <Compile Include="Persistence.File\PersistenceFile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="XmlSerializationTests.cs" />
   </ItemGroup>
@@ -75,6 +76,9 @@
     <None Include="app.config" />
     <Content Include="Json\ContentTypes\System.Config ToSic.Eav.DataSources.SqlDataSource.json" />
     <None Include="packages.config" />
+    <Content Include="Persistence.File\.data\ContentTypes\System.Config ToSic.Eav.DataSources.SqlDataSource.json" />
+    <Content Include="Persistence.File\.data\ContentTypes\System.Whatever.json" />
+    <Content Include="Persistence.File\.data\ContentTypes\Default.Something.json" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj">

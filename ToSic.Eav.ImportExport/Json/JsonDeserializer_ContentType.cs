@@ -9,6 +9,8 @@ namespace ToSic.Eav.ImportExport.Json
 {
     public partial class JsonSerializer
     {
+        public bool AssumeUnknownTypesAreDynamic { get; set; } = false;
+
         public IContentType DeserializeContentType(string serialized)
         {
             var jsonObj = UnpackAndTestGenericJsonV1(serialized);
@@ -23,13 +25,13 @@ namespace ToSic.Eav.ImportExport.Json
                 jsonType.Sharing?.AlwaysShare ?? false, 
                 null);
 
-            var ctMeta = jsonType.Metadata?.Select(je => Deserialize(je, false)).ToList() ?? new List<IEntity>();
+            var ctMeta = jsonType.Metadata?.Select(je => Deserialize(je, AssumeUnknownTypesAreDynamic)).ToList() ?? new List<IEntity>();
             type.AttachMetadata(ctMeta);
 
             var attribs = jsonType.Attributes.Select((attr, pos) =>
             {
                 var attDef = new AttributeDefinition(AppId, attr.Name, attr.Type, attr.IsTitle, 0, pos) ;
-                var md = attr.Metadata?.Select(m => Deserialize(m, false)).ToList() ?? new List<IEntity>();
+                var md = attr.Metadata?.Select(m => Deserialize(m, AssumeUnknownTypesAreDynamic)).ToList() ?? new List<IEntity>();
                 attDef.AddMetadata(md);
                 return (IAttributeDefinition) attDef;
             }).ToList();

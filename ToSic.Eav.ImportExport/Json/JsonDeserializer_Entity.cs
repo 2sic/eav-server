@@ -151,10 +151,6 @@ namespace ToSic.Eav.ImportExport.Json
 
         }
 
-        //private List<int?> LookupGuids(List<Guid?> list)
-        //    => list.Select(g => App.Entities.Values.FirstOrDefault(e => e.EntityGuid == g)?.EntityId)
-        //        .ToList();
-
         private static List<ILanguage> RecreateLanguageList(string languages) 
             => languages == NoLanguage
             ? new List<ILanguage>()
