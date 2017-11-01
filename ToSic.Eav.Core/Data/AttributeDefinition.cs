@@ -21,7 +21,7 @@ namespace ToSic.Eav.Data
 
         public bool IsTitle { get; set; }
 
-        private readonly IDeferredEntitiesList _appMetadataProvider;
+        private readonly IDeferredEntitiesList _metaOfThisApp;
 
         /// <inheritdoc />
         /// <summary>
@@ -33,7 +33,7 @@ namespace ToSic.Eav.Data
             IsTitle = isTitle;
             AttributeId = attributeId;
             SortOrder = sortOrder;
-            _appMetadataProvider = metaProvider;
+            _metaOfThisApp = metaProvider;
             _isShared = parentApp != 0;
             _parentAppId = parentApp;
         }
@@ -50,11 +50,14 @@ namespace ToSic.Eav.Data
         /// import-scenarios and code-created attribute definitions
         /// </summary>
         // ReSharper disable once InheritdocConsiderUsage
-        public AttributeDefinition(int appId, string name, string niceName, string type, string inputType, string notes, bool? visibleInEditUi, object defaultValue): this(appId, name, type, false, 0, 0)
-        {
-            _metaItems = new List<IEntity> { AttDefBuilder.CreateAttributeMetadata(appId, niceName, notes, visibleInEditUi, HelpersToRefactor.SerializeValue(defaultValue), inputType) };
-        }
-
+        public AttributeDefinition(int appId, string name, string niceName, string type, string inputType, string notes,
+            bool? visibleInEditUi, object defaultValue)
+            : this(appId, name, type, false, 0, 0)
+            => Metadata.Use(new List<IEntity>
+            {
+                AttDefBuilder.CreateAttributeMetadata(appId, niceName, notes, visibleInEditUi,
+                    HelpersToRefactor.SerializeValue(defaultValue), inputType)
+            });
 
 
         /// <summary>
@@ -65,34 +68,40 @@ namespace ToSic.Eav.Data
 
 
         #region material for defining/creating attributes / defining them for import
+        public IMetadataOfItem Metadata
+            => _metadata ?? (_metadata = !_isShared
+                   ? new OfMetadataOfItem<int>(Constants.MetadataForAttribute, AttributeId, _metaOfThisApp)
+                   : new OfMetadataOfItem<int>(Constants.MetadataForAttribute, AttributeId, 0, _parentAppId)
+               );
+        private IMetadataOfItem _metadata;
 
-        public List<IEntity> MetadataItems
-        {
-            get
-            {
-                if (_metaItems != null) return _metaItems;
+        //public List<IEntity> MetadataItems
+        //{
+        //    get
+        //    {
+        //        if (_metaItems != null) return _metaItems;
 
-                var metadataProvider = _isShared
-                    ? Factory.Resolve<IRemoteMetadataProvider>()?.OfApp(_parentAppId)
-                    : _appMetadataProvider?.Metadata;
+        //        var metadataProvider = _isShared
+        //            ? Factory.Resolve<IRemoteMetadataProvider>()?.OfApp(_parentAppId)
+        //            : _appMetadataProvider?.Metadata;
 
-                _metaItems = metadataProvider?.GetMetadata(
-                             Constants.MetadataForAttribute, AttributeId).ToList()
-                         ?? new List<IEntity>();
+        //        _metaItems = metadataProvider?.GetMetadata(
+        //                     Constants.MetadataForAttribute, AttributeId).ToList()
+        //                 ?? new List<IEntity>();
 
-                return _metaItems;
-            }
-            internal set => _metaItems = value;
-        }
-        // ReSharper disable once InconsistentNaming
-        private List<IEntity> _metaItems;
+        //        return _metaItems;
+        //    }
+        //    internal set => _metaItems = value;
+        //}
+        //// ReSharper disable once InconsistentNaming
+        //private List<IEntity> _metaItems;
 
-        public bool HasMetadata => _metaItems != null && _metaItems.Any();
+        //public bool HasMetadata => _metaItems != null && _metaItems.Any();
 
-        public void AddMetadata(string type, Dictionary<string, object> values)
-            => MetadataItems.Add(new Entity(AppId, Guid.Empty, type, values));
+        //public void AddMetadata(string type, Dictionary<string, object> values)
+        //    => MetadataItems.Add(new Entity(AppId, Guid.Empty, type, values));
 
         #endregion
-        
+
     }
 }

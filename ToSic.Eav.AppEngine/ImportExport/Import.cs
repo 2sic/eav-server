@@ -189,7 +189,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 var existAttrib = existing.Attributes.FirstOrDefault(a => a.Name == newAttrib.Name);
                 if (existAttrib == null) continue;
 
-                var impMeta = ((AttributeDefinition) newAttrib).MetadataItems;
+                var impMeta = ((AttributeDefinition) newAttrib).Metadata;
                 var newMetaList = new List<IEntity>();
                 foreach (var newMd in impMeta)
                 {
@@ -199,7 +199,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     else
                         newMetaList.Add(new EntitySaver(Log).CreateMergedForSaving(existingMetadata, newMd, SaveOptions) as Entity);
                 }
-                ((AttributeDefinition) newAttrib).AddMetadata(newMetaList);
+                ((AttributeDefinition) newAttrib).Metadata.Use(newMetaList);
             }
         }
 

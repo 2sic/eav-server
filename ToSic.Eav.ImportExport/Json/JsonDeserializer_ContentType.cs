@@ -32,7 +32,7 @@ namespace ToSic.Eav.ImportExport.Json
             {
                 var attDef = new AttributeDefinition(AppId, attr.Name, attr.Type, attr.IsTitle, 0, pos) ;
                 var md = attr.Metadata?.Select(m => Deserialize(m, AssumeUnknownTypesAreDynamic)).ToList() ?? new List<IEntity>();
-                attDef.AddMetadata(md);
+                attDef.Metadata.Use(md);
                 return (IAttributeDefinition) attDef;
             }).ToList();
 

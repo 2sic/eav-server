@@ -50,7 +50,9 @@ namespace ToSic.Eav.Data
         private void LoadFromProvider()
         {
             var metadataProvider = _remoteAppId != 0
-                ? Factory.Resolve<IRemoteMetadataProvider>()?.OfZoneAndApp(_remoteZoneId, _remoteAppId)
+                ? (_remoteZoneId != 0 
+                  ? Factory.Resolve<IRemoteMetadataProvider>()?.OfZoneAndApp(_remoteZoneId, _remoteAppId)
+                  : Factory.Resolve<IRemoteMetadataProvider>()?.OfApp(_remoteAppId))
                 : _appMetadataProvider?.Metadata;
 
             _entities = metadataProvider?.GetMetadata(_itemType, _key).ToList()
@@ -59,7 +61,11 @@ namespace ToSic.Eav.Data
 
 
         public void Add(string type, Dictionary<string, object> values)
-            => (_entities ?? (_entities = new List<IEntity>())).Add(new Entity(AppId, Guid.Empty, type, values));
+            => Add(new Entity(AppId, Guid.Empty, type, values));
+
+        public void Add(IEntity additionalItem)
+            => (_entities ?? (_entities = new List<IEntity>())).Add(additionalItem);
+
 
         public void Use(List<IEntity> items) => _entities = items;
 

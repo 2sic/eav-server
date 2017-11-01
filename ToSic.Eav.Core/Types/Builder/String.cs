@@ -7,7 +7,7 @@ namespace ToSic.Eav.Types.Builder
     {
         public static AttributeDefinition StringDefault(this AttributeDefinition attDef, int rowCount)
         {
-            attDef.AddMetadata("@string-default", new Dictionary<string, object> { { "RowCount", rowCount } });
+            attDef.Metadata.Add("@string-default", new Dictionary<string, object> { { "RowCount", rowCount } });
             return attDef; // for chaining...
         }
     }

@@ -52,8 +52,8 @@ namespace ToSic.Eav.Persistence.File.Tests
             var title = sqlType.Attributes.FirstOrDefault(a => a.IsTitle);
             Assert.IsNotNull(title, "should find title field");
 
-            var conMeta = conStr.MetadataItems;
-            Assert.AreEqual(2, conMeta.Count, "constr should have 2 meta-items");
+            var conMeta = conStr.Metadata;
+            Assert.AreEqual(2, conMeta.Count(), "constr should have 2 meta-items");
 
             var conMetaAll = conMeta.FirstOrDefault(e => e.Type.Name == "@All");
             Assert.IsNotNull(conMetaAll, "should have @all metadata");

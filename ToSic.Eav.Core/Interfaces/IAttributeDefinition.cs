@@ -6,7 +6,7 @@
     /// - attribute definition (in the IContentType)
     /// - attribute with values-list (in the IEntity)
     /// </summary>
-    public interface IAttributeDefinition: IAttributeBase, IHasMetadata
+    public interface IAttributeDefinition: IAttributeBase//, IHasMetadata
 	{
         /// <summary>
         /// AppId
@@ -27,5 +27,7 @@
         /// tells us if this attribute is the title
         /// </summary>
         bool IsTitle { get; }
+
+        IMetadataOfItem Metadata { get; }
 	}
 }

@@ -1,10 +1,9 @@
 using System;
-using System.Collections.Generic;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data
 {
-    public class Metadata : IMetadata, IHasMetadata
+    public class Metadata : IMetadata
     {
         /// <summary>
         /// Will return true if a target-type was assigned
@@ -15,8 +14,6 @@ namespace ToSic.Eav.Data
         /// This is the AssignmentObjectTypeId - usually 1 (none), 2 (attribute), 4 (entity)
         /// </summary>
         public int TargetType { get; set; } = Constants.NotMetadata;
-
-        //public string Key { get; set; }
 
         /// <summary>
         /// The Keynumber is null or the int of the key as stored in "Key"
@@ -41,12 +38,5 @@ namespace ToSic.Eav.Data
             KeyGuid = KeyGuid
         };
 
-
-        #region HasMetadata
-        public bool HasMetadata { get; set; } = false;
-
-
-        public List<IEntity> MetadataItems { get; set; } = null;
-        #endregion
     }
 }

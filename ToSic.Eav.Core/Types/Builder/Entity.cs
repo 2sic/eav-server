@@ -8,7 +8,7 @@ namespace ToSic.Eav.Types.Builder
         public static AttributeDefinition EntityDefault(this AttributeDefinition attDef, string entityType, 
             bool allowMulti = false, bool enableAdd = true, bool enableCreate = true, bool enableEdit = true, bool enableRemove = true, bool enableDelete = false)
         {
-            attDef.AddMetadata("@entity-default", new Dictionary<string, object>
+            attDef.Metadata.Add("@entity-default", new Dictionary<string, object>
             {
                 {"EntityType", entityType},
                 {"AllowMultiValue", allowMulti},

@@ -25,7 +25,7 @@ namespace ToSic.Eav.ImportExport.Json
                 Name = attrib.Name,
                 Type = attrib.Type,
                 IsTitle = attrib.IsTitle,
-                Metadata = attrib.MetadataItems?.Select(ToJson).ToList()
+                Metadata = attrib.Metadata?.Select(ToJson).ToList()
             }).ToList();
 
             // clean up metadata info on this metadata list, as it's already packed inside something it's related to

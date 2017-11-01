@@ -25,7 +25,7 @@ namespace ToSic.Eav.Data.Builder
         {
             // todo 2017-10-07 2dm must test, added input-type here! might affect upgrades!
             var attribute = new AttributeDefinition(appId, staticName, niceName, AttributeTypeEnum.String, inputType, notes, visibleInEditUi, defaultValue);
-            attribute.MetadataItems.Add(CreateV7And8StringAttribMetadata(appId, inputType, rowCount));
+            attribute.Metadata.Add(CreateV7And8StringAttribMetadata(appId, inputType, rowCount));
             return attribute;
         }
 
@@ -65,7 +65,7 @@ namespace ToSic.Eav.Data.Builder
 
         public static void SetSortOrder(this AttributeDefinition attDef, int sortOrder) => attDef.SortOrder = sortOrder;
 
-        public static void AddMetadata(this AttributeDefinition attDef, List<IEntity> items) => attDef.MetadataItems = items;
+        //public static void AddMetadata(this AttributeDefinition attDef, List<IEntity> items) => attDef.MetadataItems = items;
 
     }
 }

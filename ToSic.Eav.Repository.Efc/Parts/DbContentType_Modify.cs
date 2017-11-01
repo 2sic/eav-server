@@ -115,8 +115,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 var destAttribId = DbContext.AttributesDefinition.GetOrCreateAttributeDefinition(contentTypeId, newAtt);
 
                 // save additional entities containing AttributeMetaData for this attribute
-                if (newAtt.MetadataItems != null)
-                    SaveAttributeMetadata(destAttribId, newAtt.MetadataItems, saveOptions);
+                if (newAtt.Metadata != null)
+                    SaveAttributeMetadata(destAttribId, newAtt.Metadata, saveOptions);
             }
 
             // optionally re-order the attributes if specified in import
@@ -131,7 +131,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <param name="attributeId"></param>
         /// <param name="metadata"></param>
         /// <param name="saveOptions"></param>
-        private void SaveAttributeMetadata(int attributeId, List<IEntity> metadata, SaveOptions saveOptions)
+        private void SaveAttributeMetadata(int attributeId, IEnumerable<IEntity> metadata, SaveOptions saveOptions)
         {
             var entities = new List<IEntity>();
             foreach (var entity in metadata)
@@ -142,19 +142,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                 // Set KeyNumber
                 if (attributeId == 0 || attributeId < 0) // < 0 is ef-core temp id
-                    throw new Exception($"trying to add metadata to attribute {attributeId} but attribute isn't saved yet");//_dbDeepAccess.SqlDb.SaveChanges();
+                    throw new Exception($"trying to add metadata to attribute {attributeId} but attribute isn't saved yet");
 
                 md.KeyNumber = attributeId;
 
-                //// Get guid of previously existing assignment - if it exists
-                //var existingMetadata = _dbDeepAccess.Entities
-                //    .GetAssignedEntities(Constants.MetadataForAttribute, keyNumber: attributeId)
-                //    .FirstOrDefault(e => e.AttributeSetId == attributeId);
-
-                //if (existingMetadata != null)
-                //    entity.SetGuid(existingMetadata.EntityGuid);
-
-                //entities.Add(CreateMergedForSaving(entity, _entireApp, SaveOptions));
                 entities.Add(entity);
             }
             DbContext.Save(entities, saveOptions); // don't use the standard save options, as this is attributes only

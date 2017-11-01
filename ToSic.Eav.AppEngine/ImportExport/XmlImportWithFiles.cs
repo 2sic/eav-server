@@ -295,7 +295,7 @@ namespace ToSic.Eav.Apps.ImportExport
                             xElementAttribute.Attribute(XmlConstants.EntityTypeAttribute).Value,
                             null, null, null, null
                         );
-                        attribute.AddMetadata(GetImportEntities(xElementAttribute.Elements(XmlConstants.Entity), Constants.MetadataForAttribute));
+                        attribute.Metadata.Use(GetImportEntities(xElementAttribute.Elements(XmlConstants.Entity), Constants.MetadataForAttribute));
                         attributes.Add(attribute);
 
                         // Set Title Attribute

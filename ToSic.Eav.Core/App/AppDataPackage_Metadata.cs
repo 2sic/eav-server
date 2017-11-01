@@ -40,13 +40,11 @@ namespace ToSic.Eav.App
 	            case TypeCode.String:
 	                return Lookup(MetadataForString, targetType, key as string, contentTypeName);
 	            default:
-	                // ReSharper disable once NotResolvedInText
-	                throw new ArgumentOutOfRangeException("TMetadataKey",
-	                    "Metadata key type should be int, string or guid");
-	        }
+	                return Lookup(MetadataForString, targetType, key.ToString(), contentTypeName);
+            }
 	    }
 
-	    private IEnumerable<IEntity> Lookup<T>(IDictionary<int, Dictionary<T, IEnumerable<IEntity>>> list, int targetType, T key, string contentTypeName = null)
+	    private static IEnumerable<IEntity> Lookup<T>(IDictionary<int, Dictionary<T, IEnumerable<IEntity>>> list, int targetType, T key, string contentTypeName = null)
         {
             // ReSharper disable once CollectionNeverUpdated.Local
             if (list.TryGetValue(targetType, out Dictionary<T, IEnumerable<IEntity>> keyDict))
