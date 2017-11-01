@@ -53,7 +53,7 @@ namespace ToSic.Eav.ImportExport.Json
                 Description = contentType.Description,
                 Attributes = attribs,
                 Sharing = jctShare,
-                Metadata = contentType.MetadataItems.Select(ToJson).ToList()
+                Metadata = contentType.Metadata.Select(ToJson).ToList()
             };
             return package;
         }

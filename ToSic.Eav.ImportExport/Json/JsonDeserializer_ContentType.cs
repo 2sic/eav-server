@@ -26,7 +26,7 @@ namespace ToSic.Eav.ImportExport.Json
                 null);
 
             var ctMeta = jsonType.Metadata?.Select(je => Deserialize(je, AssumeUnknownTypesAreDynamic)).ToList() ?? new List<IEntity>();
-            type.AttachMetadata(ctMeta);
+            type.Metadata.Use(ctMeta);
 
             var attribs = jsonType.Attributes.Select((attr, pos) =>
             {

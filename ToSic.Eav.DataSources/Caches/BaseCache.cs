@@ -214,7 +214,7 @@ namespace ToSic.Eav.DataSources.Caches
         ///// </summary>
         //public IEnumerable<IEntity> GetMetadata(int targetType, int key, string contentTypeName = null) => AppDataPackage.GetMetadata(targetType, key, contentTypeName);
 
-        public IEnumerable<IEntity> GetMetadata<T>(int targetType, T key, string contentTypeName = null) => AppDataPackage.GetMetadata(targetType, key, contentTypeName);
+        public IEnumerable<IEntity> GetMdGeneric<T>(int targetType, T key, string contentTypeName = null) => AppDataPackage.GetMdGeneric(targetType, key, contentTypeName);
 	    #endregion
 
 

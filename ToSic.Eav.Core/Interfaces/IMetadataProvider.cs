@@ -26,7 +26,7 @@ namespace ToSic.Eav.Interfaces
         //IEnumerable<IEntity> GetMetadata(int targetType, Guid key, string contentTypeName = null);
 
 
-        IEnumerable<IEntity> GetMetadata<T>(int targetType, T key, string contentTypeName = null);
+        IEnumerable<IEntity> GetMdGeneric<T>(int targetType, T key, string contentTypeName = null);
 
     }
 }

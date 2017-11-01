@@ -53,13 +53,15 @@ namespace ToSic.Eav.Data
                 ? Factory.Resolve<IRemoteMetadataProvider>()?.OfZoneAndApp(_remoteZoneId, _remoteAppId)
                 : _appMetadataProvider?.Metadata;
 
-            _entities = metadataProvider?.GetMetadata(_itemType, _key).ToList()
+            _entities = metadataProvider?.GetMdGeneric(_itemType, _key).ToList()
                         ?? new List<IEntity>();
         }
 
 
         public void Add(string type, Dictionary<string, object> values)
             => (_entities ?? (_entities = new List<IEntity>())).Add(new Entity(AppId, Guid.Empty, type, values));
+
+        public void Use(List<IEntity> items) => _entities = items;
 
         #region enumerator
 

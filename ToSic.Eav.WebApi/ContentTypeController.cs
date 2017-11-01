@@ -49,7 +49,7 @@ namespace ToSic.Eav.WebApi
         private ContentTypeInfo ContentTypeForJson(ContentType t, ICache cache)
 	    {
 	        Log.Add($"for json a:{t.AppId}, type:{t.Name}");
-	        var metadata = t.MetadataItems.FirstOrDefault();
+	        var metadata = t.Metadata.FirstOrDefault();
 
 	        var nameOverride = metadata?.GetBestValue(Constants.ContentTypeMetadataLabel).ToString();
 	        if (string.IsNullOrEmpty(nameOverride))

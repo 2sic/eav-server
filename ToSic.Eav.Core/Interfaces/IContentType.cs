@@ -2,11 +2,10 @@
 
 namespace ToSic.Eav.Interfaces
 {
-	/// <inheritdoc />
 	/// <summary>
 	/// Represents a Content Type
 	/// </summary>
-	public interface IContentType: IHasMetadata
+	public interface IContentType//: IHasMetadata
     {
         /// <summary>
         /// The app to which this content type belongs
@@ -54,5 +53,7 @@ namespace ToSic.Eav.Interfaces
         bool IsInstalledInPrimaryStorage { get; }
 
         bool IsDynamic { get; }
+
+        IItemMetadata Metadata { get; }
     }
 }

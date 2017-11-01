@@ -38,7 +38,7 @@ namespace ToSic.Eav.App
 
 
 
-	    public IEnumerable<IEntity> GetMetadata<TMetadataKey>(int targetType, TMetadataKey key, string contentTypeName = null)
+	    public IEnumerable<IEntity> GetMdGeneric<TMetadataKey>(int targetType, TMetadataKey key, string contentTypeName = null)
 	    {
 	        if (typeof(TMetadataKey) == typeof(Guid))
 	            return Lookup(MetadataForGuid, targetType, key as Guid? ?? Guid.Empty, contentTypeName);

@@ -75,8 +75,8 @@ namespace ToSic.Eav.Persistence.File.Tests
             Assert.AreEqual(9, sqlType.Attributes.Count, "sql type should have x attributes");
             
 
-            var meta = sqlType.MetadataItems;
-            Assert.AreEqual(2, meta.Count, "should have 2 meta-items");
+            var meta = sqlType.Metadata;
+            Assert.AreEqual(2, meta.Count(), "should have 2 meta-items");
 
             var conMetaAll = meta.FirstOrDefault(e => e.Type.Name == "Basics");
             Assert.IsNotNull(conMetaAll, "should have Basics metadata");

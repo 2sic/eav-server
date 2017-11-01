@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Interfaces;
@@ -61,8 +60,6 @@ namespace ToSic.Eav.Data
         #endregion
 
 
-        //public Metadata Metadata = new Metadata();
-
         #region constructors
 
         /// <summary>
@@ -70,7 +67,7 @@ namespace ToSic.Eav.Data
         /// </summary>
         public ContentType(int appId, string name, string staticName, int attributeSetId, string scope,
             string description, int? usesConfigurationOfAttributeSet, int configZoneId, int configAppId,
-            bool configurationIsOmnipresent, IDeferredEntitiesList metaProvider)
+            bool configurationIsOmnipresent, IDeferredEntitiesList metaProviderOfThisApp)
         {
             AppId = appId;
             Name = name;
@@ -82,12 +79,9 @@ namespace ToSic.Eav.Data
             ParentZoneId = configZoneId;
             ParentAppId = configAppId;
             AlwaysShareConfiguration = configurationIsOmnipresent;
-            _appMetadataProvider = metaProvider;
+            //_appMetadataProvider = metaProvider;
+            _metaProviderOfThisApp = metaProviderOfThisApp;
 
-            // The metadata is either from the same app, or from a remote app
-            Metadata = configAppId == appId
-                ? new MetadataOfItem<string>(Constants.MetadataForContentType, staticName, metaProvider)
-                : new MetadataOfItem<string>(Constants.MetadataForContentType, staticName, configZoneId, configAppId);
         }
 
         /// <summary>
@@ -124,35 +118,16 @@ namespace ToSic.Eav.Data
 
         #region Metadata TODO - TRYING TO MOVE INTO A SEPARATE SUB OBJECT FOR BETTER RE-USE
 
-        public IItemMetadata Metadata { get; }
-
-        private readonly IDeferredEntitiesList _appMetadataProvider;
-
-        public List<IEntity> MetadataItems
-        {
-            get
-            {
-                if (_metaItems != null) return _metaItems;
-
-                var metadataProvider = AppId != ParentAppId
-                    ? Factory.Resolve<IRemoteMetadataProvider>()?.OfZoneAndApp(ParentZoneId, ParentAppId)
-                    : _appMetadataProvider?.Metadata;
-
-                _metaItems = metadataProvider?.GetMetadata(
-                             Constants.MetadataForContentType, StaticName).ToList()
-                         ?? new List<IEntity>();
-
-                return _metaItems;
-            }
-            internal set => _metaItems = value;
-        }
-
-        private List<IEntity> _metaItems;
-
-        public bool HasMetadata => _metaItems != null && _metaItems.Any();
-
-        public void AddMetadata(string type, Dictionary<string, object> values)
-            => MetadataItems.Add(new Entity(AppId, Guid.Empty, type, values));
+        // The metadata is either from the same app, or from a remote app
+        public IItemMetadata Metadata => _metadata ?? (_metadata =
+                                             ParentAppId == AppId
+                                                 ? new MetadataOfItem<string>(Constants.MetadataForContentType,
+                                                     StaticName, _metaProviderOfThisApp)
+                                                 : new MetadataOfItem<string>(Constants.MetadataForContentType,
+                                                     StaticName, ParentZoneId, ParentAppId)
+                                         );
+        private IItemMetadata _metadata;
+        private readonly IDeferredEntitiesList _metaProviderOfThisApp;
 
         #endregion
 
