@@ -83,6 +83,11 @@ namespace ToSic.Eav.Data
             ParentAppId = configAppId;
             AlwaysShareConfiguration = configurationIsOmnipresent;
             _appMetadataProvider = metaProvider;
+
+            // The metadata is either from the same app, or from a remote app
+            Metadata = configAppId == appId
+                ? new MetadataOfItem<string>(Constants.MetadataForContentType, staticName, metaProvider)
+                : new MetadataOfItem<string>(Constants.MetadataForContentType, staticName, configZoneId, configAppId);
         }
 
         /// <summary>
@@ -117,7 +122,9 @@ namespace ToSic.Eav.Data
 
         #endregion
 
-        #region Metadata
+        #region Metadata TODO - TRYING TO MOVE INTO A SEPARATE SUB OBJECT FOR BETTER RE-USE
+
+        public IItemMetadata Metadata { get; }
 
         private readonly IDeferredEntitiesList _appMetadataProvider;
 

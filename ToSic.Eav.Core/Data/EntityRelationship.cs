@@ -65,8 +65,9 @@ namespace ToSic.Eav.Data
             if (_entities == null)
                 LoadEntities();
 
-            return new EntityEnum(_entities);
+            return new EntityEnumerator(_entities);
         }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         private void LoadEntities()
         {
@@ -83,45 +84,5 @@ namespace ToSic.Eav.Data
                         : null)).ToList();
         }
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-        /// <remarks>Source: http://msdn.microsoft.com/en-us/library/system.collections.ienumerable.getenumerator.aspx </remarks>
-        class EntityEnum : IEnumerator<IEntity>
-        {
-            private readonly List<IEntity> _entities;
-            private int _position = -1;
-
-            public EntityEnum(List<IEntity> entities)
-            {
-                _entities = entities;
-            }
-
-            public void Dispose() { }
-
-            public bool MoveNext()
-            {
-                _position++;
-                return _position < _entities.Count;
-            }
-
-            public void Reset() => _position = -1;
-
-            public IEntity Current
-            {
-                get
-                {
-                    try
-                    {
-                        return _entities[_position];
-                    }
-                    catch (IndexOutOfRangeException)
-                    {
-                        throw new InvalidOperationException();
-                    }
-                }
-            }
-
-            object IEnumerator.Current => Current;
-        }
     }
 }

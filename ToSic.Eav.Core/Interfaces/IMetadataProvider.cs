@@ -9,24 +9,24 @@ namespace ToSic.Eav.Interfaces
     /// </summary>
     public interface IMetadataProvider
     {
-        /// <summary>
-        /// Get assigned Entities for specified assignmentObjectTypeId and key
-        /// </summary>
-        IEnumerable<IEntity> GetMetadata(int targetType, int key, string contentTypeName = null);
+        // 2017-11-01 2dm - moving GetMetadata to a generic interface, instead of many overloads
+        ///// <summary>
+        ///// Get assigned Entities for specified assignmentObjectTypeId and key
+        ///// </summary>
+        //IEnumerable<IEntity> GetMetadata(int targetType, int key, string contentTypeName = null);
 
-        /// <summary>
-        /// Get assigned Entities for specified assignmentObjectTypeId and key
-        /// </summary>
-        IEnumerable<IEntity> GetMetadata(int targetType, string key, string contentTypeName = null);
+        ///// <summary>
+        ///// Get assigned Entities for specified assignmentObjectTypeId and key
+        ///// </summary>
+        //IEnumerable<IEntity> GetMetadata(int targetType, string key, string contentTypeName = null);
 
-        /// <summary>
-        /// Get assigned Entities for specified assignmentObjectTypeId and key
-        /// </summary>
-        IEnumerable<IEntity> GetMetadata(int targetType, Guid key, string contentTypeName = null);
+        ///// <summary>
+        ///// Get assigned Entities for specified assignmentObjectTypeId and key
+        ///// </summary>
+        //IEnumerable<IEntity> GetMetadata(int targetType, Guid key, string contentTypeName = null);
 
-        //int GetMetadataType(string typeName);
 
-        //string GetMetadataType(int typeId);
+        IEnumerable<IEntity> GetMetadata<T>(int targetType, T key, string contentTypeName = null);
 
     }
 }

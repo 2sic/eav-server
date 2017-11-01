@@ -159,23 +159,12 @@ namespace ToSic.Eav.DataSources.Caches
 	    /// </summary>
 	    /// <param name="name">Either StaticName or DisplayName</param>
 	    public IContentType GetContentType(string name) => AppDataPackage.GetContentType(name);
-        //{
-			//var app = AppDataPackage;
-			//// Lookup StaticName first
-			//var matchByStaticName = app.ContentTypes.FirstOrDefault(c => c.Value.StaticName.Equals(name));
-			//if (matchByStaticName.Value != null)
-			//	return matchByStaticName.Value;
-
-			//// Lookup Name afterward
-			//var matchByName = app.ContentTypes.FirstOrDefault(c => c.Value.Name.Equals(name));
-		 //   return matchByName.Value;
-		//}
 
 		/// <inheritdoc />
 		/// <summary>
 		/// Get a ContentType by Id
 		/// </summary>
-		public IContentType GetContentType(int contentTypeId) => AppDataPackage.GetContentType(contentTypeId);// => AppDataPackage.ContentTypes.FirstOrDefault(c => c.Key == contentTypeId).Value;
+		public IContentType GetContentType(int contentTypeId) => AppDataPackage.GetContentType(contentTypeId);
 
 	    /// <summary>
 		/// Get all Content Types
@@ -206,53 +195,26 @@ namespace ToSic.Eav.DataSources.Caches
 			return Tuple.Create(resultZoneId, resultAppId);
 		}
 
-		/// <inheritdoc />
-		/// <summary>
-		/// Get AssignmentObjectTypeId by Name
-		/// </summary>
-		//public int GetMetadataType(string typeName)
-		//{
-		//    try
-		//    {
-		//        EnsureCache();
-		//        return AssignmentObjectTypes.SingleOrDefault(a => a.Value == typeName).Key;
-		//    }
-  //          catch (Exception ex)
-  //          {
-  //              throw new Exception($"failed to get metadata type for {typeName}", ex);
-  //          }
-		//}
-
-  //      public string GetMetadataType(int typeId)
-  //      {
-  //          try
-  //          {
-  //              EnsureCache();
-  //              return AssignmentObjectTypes[typeId];
-  //          }
-  //          catch (Exception ex)
-  //          {
-  //              throw new Exception($"failed to get metadata type for {typeId}", ex);
-  //          }
-  //      }
-
 
         #region GetAssignedEntities by Guid, string and int
-        /// <summary>
-		/// Get Entities with specified AssignmentObjectTypeId and Key
-		/// </summary>
-		public IEnumerable<IEntity> GetMetadata(int targetType, Guid key, string contentTypeName = null) => AppDataPackage.GetMetadata(targetType, key, contentTypeName);
+        // 2017-11-01 2dm - moving GetMetadata to a generic interface, instead of many overloads
+        ///// <summary>
+        ///// Get Entities with specified AssignmentObjectTypeId and Key
+        ///// </summary>
+        //public IEnumerable<IEntity> GetMetadata(int targetType, Guid key, string contentTypeName = null) => AppDataPackage.GetMetadata(targetType, key, contentTypeName);
 
-	    /// <summary>
-        /// Get Entities with specified AssignmentObjectTypeId and Key
-        /// </summary>
-        public IEnumerable<IEntity> GetMetadata(int targetType, string key, string contentTypeName = null) => AppDataPackage.GetMetadata(targetType, key, contentTypeName);
 
-	    /// <summary>
-        /// Get Entities with specified AssignmentObjectTypeId and Key
-        /// </summary>
-        public IEnumerable<IEntity> GetMetadata(int targetType, int key, string contentTypeName = null) => AppDataPackage.GetMetadata(targetType, key, contentTypeName);
+        ///// <summary>
+        ///// Get Entities with specified AssignmentObjectTypeId and Key
+        ///// </summary>
+        //public IEnumerable<IEntity> GetMetadata(int targetType, string key, string contentTypeName = null) => AppDataPackage.GetMetadata(targetType, key, contentTypeName);
 
+        ///// <summary>
+        ///// Get Entities with specified AssignmentObjectTypeId and Key
+        ///// </summary>
+        //public IEnumerable<IEntity> GetMetadata(int targetType, int key, string contentTypeName = null) => AppDataPackage.GetMetadata(targetType, key, contentTypeName);
+
+        public IEnumerable<IEntity> GetMetadata<T>(int targetType, T key, string contentTypeName = null) => AppDataPackage.GetMetadata(targetType, key, contentTypeName);
 	    #endregion
 
 

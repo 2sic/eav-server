@@ -101,8 +101,11 @@
     <Compile Include="Data\AttributeDefinition_Shared.cs" />
     <Compile Include="Data\Builder\EntityBuilder.cs" />
     <Compile Include="Data\Builder\ValueBuilder.cs" />
+    <Compile Include="Data\EntityEnumerator.cs" />
+    <Compile Include="Data\MetadataOfItem.cs" />
     <Compile Include="Interfaces\IGlobalMetadataProvider.cs" />
     <Compile Include="Interfaces\IHasExternalI18n.cs" />
+    <Compile Include="Interfaces\IItemMetadata.cs" />
     <Compile Include="Interfaces\IRemoteMetadataProvider.cs" />
     <Compile Include="Persistence\Logging\ImportError.cs" />
     <Compile Include="Persistence\Logging\ImportErrorCode.cs" />
