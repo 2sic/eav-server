@@ -40,6 +40,8 @@ namespace ToSic.Eav.Data
 
         public bool IsInstalledInPrimaryStorage { get; protected set; } = true;
 
+        public bool IsDynamic { get; internal set; }
+
         #endregion
 
         #region Sharing Content Types

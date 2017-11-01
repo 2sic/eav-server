@@ -20,11 +20,12 @@ namespace ToSic.Eav.Data.Builder
         public const string DynTypeDefScope = Constants.ScopeSystem;
         public const string DynTypeDefDescription = "Dynamic content type";
 
-        public static ContentType DynamicContentType(int appId, string scope = DynTypeDefScope)
-            => new ContentType(appId, Constants.DynamicType, Constants.DynamicType, DynTypeId, scope, DynTypeDefDescription, null, 0, 0,
+        public static ContentType DynamicContentType(int appId, string typeName, string scope = DynTypeDefScope)
+            => new ContentType(appId, typeName, typeName, DynTypeId, scope, DynTypeDefDescription, null, 0, 0,
                 false, null)
             {
-                Attributes = new List<IAttributeDefinition>()
+                Attributes = new List<IAttributeDefinition>(),
+                IsDynamic = true
             };
 
     }

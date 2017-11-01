@@ -52,5 +52,7 @@ namespace ToSic.Eav.Interfaces
 
 
         bool IsInstalledInPrimaryStorage { get; }
+
+        bool IsDynamic { get; }
     }
 }

@@ -42,7 +42,7 @@ namespace ToSic.Eav.ImportExport.Json
             // get type def
             var contentType = GetContentType(jEnt.Type.Id)
                               ?? (allowDynamic
-                                  ? ContentTypeBuilder.DynamicContentType(AppId)
+                                  ? ContentTypeBuilder.DynamicContentType(AppId, jEnt.Type.Id)
                                   : throw new FormatException(
                                       "type not found for deserialization and dynamic not allowed " +
                                       $"- cannot continue with {jEnt.Type.Id}")
@@ -64,7 +64,7 @@ namespace ToSic.Eav.ImportExport.Json
 
 
             // build attributes - based on type definition
-            if (contentType.Name == Constants.DynamicType)
+            if (contentType.IsDynamic)
                 BuildAttribsOfUnknownContentType(jEnt.Attributes, newEntity);
             else
                 BuildAttribsOfKnownType(jEnt.Attributes, contentType, newEntity);

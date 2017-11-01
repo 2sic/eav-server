@@ -68,7 +68,7 @@
     <Compile Include="Json\JsonEntitySerialization.cs" />
     <Compile Include="Json\JsonDynamic.cs" />
     <Compile Include="Json\JsonTestBase.cs" />
-    <Compile Include="Persistence.File\PersistenceFile.cs" />
+    <Compile Include="Persistence.File\FileLoaderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="XmlSerializationTests.cs" />
   </ItemGroup>

@@ -17,7 +17,7 @@ namespace ToSic.Eav.Persistence.File
     {
         private const string ContentTypeFolder = "ContentTypes\\";
 
-        public FileSystemLoader(string path, bool ignoreMissing, Log parentLog): base("FSL.Loadr", parentLog, "init")
+        public FileSystemLoader(string path, bool ignoreMissing, Log parentLog): base("FSL.Loadr", parentLog, $"init with path:{path} ignore:{ignoreMissing}")
         {
             Path = path + (path.EndsWith("\\") ? "" : "\\");
             Path = path;
@@ -90,6 +90,11 @@ namespace ToSic.Eav.Persistence.File
             }
         }
 
+        /// <summary>
+        /// Check if a path exists - if missing path is forbidden, will raise error
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         private bool CheckPathExists(string path)
         {
             Log.Add("path: check exists '" + path + "'");
@@ -100,6 +105,8 @@ namespace ToSic.Eav.Persistence.File
             return false;
         }
 
+
+        #region not implemented stuff
         public AppDataPackage AppPackage(int appId, int[] entityIds = null, bool entitiesOnly = false, Log parentLog = null)
         {
             throw new NotImplementedException();
@@ -109,5 +116,6 @@ namespace ToSic.Eav.Persistence.File
         {
             throw new NotImplementedException();
         }
+        #endregion
     }
 }

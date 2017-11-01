@@ -19,7 +19,7 @@ namespace ToSic.Eav.ImportExport.Tests.json
 
             serializer.Deserialize(json); // should work
 
-            var jsonDynamic = ChangeTypeOfJson(json);
+            var jsonDynamic = ChangeTypeOfJson(json, "something-dynamic");
             serializer.Deserialize(jsonDynamic); // should fail
         }
 
@@ -34,9 +34,10 @@ namespace ToSic.Eav.ImportExport.Tests.json
             var ent = serializer.Deserialize(json); // should work
             Assert.AreEqual(4, ent.Attributes.Count, "orig has 4 attribs");
 
-            var jsonDynamic = ChangeTypeOfJson(json);
+            var jsonDynamic = ChangeTypeOfJson(json, "something-dynamic");
             ent = serializer.Deserialize(jsonDynamic, true); // should work too
-            Assert.AreEqual(Constants.DynamicType, ent.Type.Name, "name should be dynamic");
+            Assert.IsTrue(ent.Type.IsDynamic, "should be dynamic");
+            Assert.AreEqual("something-dynamic", ent.Type.Name, "name should be dynamic");
             Assert.AreEqual(4, ent.Attributes.Count, "dynamic entity should also have 4 attribs");
 
             jsonDynamic = Add2FieldsToJson(jsonDynamic);
@@ -49,8 +50,8 @@ namespace ToSic.Eav.ImportExport.Tests.json
         }
 
 
-        private static string ChangeTypeOfJson(string json)
-            => json.Replace("\"Id\":\"7eae404c-0ba9-48d3-8cc8-2cba9d48ca0d\"", "\"Id\":\"something-dynamic\"");
+        private static string ChangeTypeOfJson(string json, string newType)
+            => json.Replace("\"Id\":\"7eae404c-0ba9-48d3-8cc8-2cba9d48ca0d\"", "\"Id\":\"" + newType + "\"");
 
 
 
