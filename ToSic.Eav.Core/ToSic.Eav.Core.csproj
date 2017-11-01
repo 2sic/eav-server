@@ -125,7 +125,7 @@
     <Compile Include="Data\ContentType.cs" />
     <Compile Include="Data\DimensionDefinition.cs" />
     <Compile Include="Data\Entity.cs" />
-    <Compile Include="Data\Metadata.cs" />
+    <Compile Include="Data\MetadataFor.cs" />
     <Compile Include="Data\Dimension.cs" />
     <Compile Include="Data\EntityRelationship.cs" />
     <Compile Include="Data\EntityRelationshipItem.cs" />
@@ -146,7 +146,6 @@
     <Compile Include="Interfaces\IAttributeDefinition.cs" />
     <Compile Include="Interfaces\IUsesSharedDefinition.cs" />
     <Compile Include="Interfaces\IEntity.cs" />
-    <Compile Include="Interfaces\IMetadata.cs" />
     <Compile Include="Interfaces\IMetadataProvider.cs" />
     <Compile Include="Interfaces\IPublish_T.cs" />
     <Compile Include="Interfaces\IThingDeserializer.cs" />
@@ -160,7 +159,7 @@
     <Compile Include="Interfaces\IDeferredEntitiesList.cs" />
     <Compile Include="Interfaces\ISystemConfiguration.cs" />
     <Compile Include="Interfaces\ILanguage.cs" />
-    <Compile Include="Interfaces\IIsMetadata.cs" />
+    <Compile Include="Interfaces\IMetadataFor.cs" />
     <Compile Include="Interfaces\IDimension.cs" />
     <Compile Include="Interfaces\IEntityLight.cs" />
     <Compile Include="Interfaces\IRelatedEntities.cs" />

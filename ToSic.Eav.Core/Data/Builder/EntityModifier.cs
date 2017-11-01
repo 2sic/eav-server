@@ -15,7 +15,7 @@ namespace ToSic.Eav.Data.Builder
 
         public static void SetTitleField(this Entity entity, string name) => entity.TitleFieldName = name;
 
-        public static void SetMetadata(this Entity entity, Metadata meta) => entity.Metadata = meta;
+        public static void SetMetadata(this Entity entity, MetadataFor meta) => entity.MetadataFor = meta;
 
         public static void SetType(this Entity entity, IContentType contentType) => entity.Type = contentType;
 

@@ -52,8 +52,8 @@ namespace ToSic.Eav.ImportExport.Xml
         /// Returns an EAV import entity
         /// </summary>
         /// <param name="xEntity">xEntity to parse</param>
-        /// <param name="metadata"></param>
-        public Entity BuildEntityFromXml(XElement xEntity, Metadata metadata)
+        /// <param name="metadataForFor"></param>
+        public Entity BuildEntityFromXml(XElement xEntity, MetadataFor metadataForFor)
 		{
 		    var finalAttributes = new Dictionary<string, IAttribute>();
 
@@ -158,7 +158,7 @@ namespace ToSic.Eav.ImportExport.Xml
                 Guid.Parse(xEntity.Attribute(XmlConstants.GuidNode)?.Value ?? throw new NullReferenceException("can't import an entity without a guid identifier")), 
                 contentType, 
                 finalAttributes.ToDictionary(x => x.Key, y => (object)y.Value));
-		    if (metadata != null) targetEntity.SetMetadata(metadata);
+		    if (metadataForFor != null) targetEntity.SetMetadata(metadataForFor);
 
 			return targetEntity;
 		}

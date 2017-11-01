@@ -73,7 +73,7 @@ namespace ToSic.Eav.Apps
                 values = new Dictionary<string, object>();
 
             var newEnt = new Entity(AppId, 0, setName, values);
-            newEnt.SetMetadata(new Metadata { KeyNumber = DataController.AppId, TargetType = appAssignment });
+            newEnt.SetMetadata(new MetadataFor { KeyNumber = DataController.AppId, TargetType = appAssignment });
             Entities.Save(newEnt);
 
             SystemManager.Purge(ZoneId, AppId);

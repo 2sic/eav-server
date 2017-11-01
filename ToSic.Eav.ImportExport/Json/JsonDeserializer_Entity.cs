@@ -49,7 +49,7 @@ namespace ToSic.Eav.ImportExport.Json
                               );
 
             // Metadata
-            var ismeta = new Metadata();
+            var ismeta = new MetadataFor();
             if (jEnt.For != null)
             {
                 var md = jEnt.For;

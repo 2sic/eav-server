@@ -35,7 +35,7 @@ namespace ToSic.Eav.Apps.Parts
                 {"Name", staticName},
                 {"InputType", inputType}
             };
-            var meta = new Metadata
+            var meta = new MetadataFor
             {
                 TargetType = Constants.MetadataForAttribute,
                 KeyNumber = attributeId
@@ -48,7 +48,7 @@ namespace ToSic.Eav.Apps.Parts
             Log.Add($"update input type attrib:{attributeId}, input:{inputType}");
             var newValues = new Dictionary<string, object> { { "InputType", inputType } };
 
-            var meta = new Metadata
+            var meta = new MetadataFor
             {
                 TargetType = Constants.MetadataForAttribute,
                 KeyNumber = attributeId

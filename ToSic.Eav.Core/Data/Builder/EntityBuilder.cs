@@ -15,14 +15,14 @@ namespace ToSic.Eav.Data.Builder
         /// Create a new Entity from a data store (usually SQL backend)
         /// </summary>
         public static Entity EntityFromRepository(int appId, Guid entityGuid, int entityId, 
-            int repositoryId, IMetadata isMetadata, IContentType type, 
+            int repositoryId, IMetadataFor metadataFor, IContentType type, 
             bool isPublished, IEnumerable<EntityRelationshipItem> allRelationships, 
             DateTime modified, string owner, int version)
         {
             var e = EntityWithAllIdsAndType(appId, entityGuid, entityId, repositoryId,
                 type, isPublished, modified, owner, version);
 
-            e.Metadata = isMetadata;
+            e.MetadataFor = metadataFor;
             e.Attributes = new Dictionary<string, IAttribute>(StringComparer.OrdinalIgnoreCase);
 
             if (allRelationships == null)
@@ -61,7 +61,7 @@ namespace ToSic.Eav.Data.Builder
             e.Attributes = attributes;
             e.Relationships = new RelationshipManager(e, allRelationships);
 
-            e.Metadata = ((Metadata)entity.Metadata).CloneIsMetadata();
+            e.MetadataFor = ((MetadataFor)entity.MetadataFor).CloneIsMetadata();
             return e;
         }
     }

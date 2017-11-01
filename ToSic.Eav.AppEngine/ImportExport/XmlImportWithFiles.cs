@@ -580,7 +580,7 @@ namespace ToSic.Eav.Apps.ImportExport
 			    }
 			}
 
-            var importEntity = _xmlBuilder.BuildEntityFromXml(entityNode, new Metadata
+            var importEntity = _xmlBuilder.BuildEntityFromXml(entityNode, new MetadataFor
                 {
                     TargetType = assignmentObjectTypeId,
                     KeyNumber = keyNumber,

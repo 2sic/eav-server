@@ -111,7 +111,7 @@ namespace ToSic.Eav.Persistence.Efc
                     e.EntityGuid,
                     e.Version,
                     e.AttributeSetId,
-                    Metadata = new Metadata
+                    Metadata = new MetadataFor
                     {
                         TargetType = e.AssignmentObjectTypeId,
                         KeyGuid = e.KeyGuid,

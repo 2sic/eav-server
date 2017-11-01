@@ -39,7 +39,7 @@ namespace ToSic.Eav.Data
 		[ScriptIgnore]
 		public IRelationshipManager Relationships { get; internal set; }
 
-        public IMetadata Metadata { get; internal set; }
+        public IMetadataFor MetadataFor { get; internal set; }
 
         /// <inheritdoc />
         public string Owner { get; internal set; }
@@ -79,7 +79,7 @@ namespace ToSic.Eav.Data
             {
                 throw new KeyNotFoundException($"The Title Attribute with Name \"{titleAttribute}\" doesn't exist in the Entity-Attributes.");
             }
-            Metadata = new Metadata();
+            MetadataFor = new MetadataFor();
             if (modified.HasValue)
                 Modified = modified.Value;
             Relationships = new RelationshipManager(this, new EntityRelationshipItem[0]);

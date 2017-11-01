@@ -141,8 +141,8 @@ namespace ToSic.Eav.Serializers
                 }
             }
 
-            if (IncludeMetadata && entity.Metadata.IsMetadata)
-                entityValues.Add("Metadata", entity.Metadata);
+            if (IncludeMetadata && entity.MetadataFor.IsMetadata)
+                entityValues.Add("Metadata", entity.MetadataFor);
 
             if(ProvideIdentityTitle)
                 try { entityValues.Add("_Title", entity.GetBestTitle(Languages)); }

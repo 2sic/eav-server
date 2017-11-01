@@ -121,17 +121,17 @@ namespace ToSic.Eav.Apps.Parts
             return ids;
         }
 
-        public Tuple<int, Guid> Create(string typeName, Dictionary<string, object> values, IIsMetadata isMetadata = null)
+        public Tuple<int, Guid> Create(string typeName, Dictionary<string, object> values, IMetadataFor metadataFor = null)
         {
-            Log.Add($"create type:{typeName}, meta:{isMetadata}, val-count:{values.Count}");
+            Log.Add($"create type:{typeName}, meta:{metadataFor}, val-count:{values.Count}");
             var newEnt = new Entity(AppManager.AppId, 0, typeName, values);
-            if (isMetadata != null) newEnt.SetMetadata(isMetadata as Metadata);
+            if (metadataFor != null) newEnt.SetMetadata(metadataFor as MetadataFor);
             var eid = Save(newEnt);
 
             return new Tuple<int, Guid>(eid, AppManager.DataController.Entities.TempLastSaveGuid);
         }
 
-        public void SaveMetadata(Metadata target, string typeName, Dictionary<string, object> values)
+        public void SaveMetadata(MetadataFor target, string typeName, Dictionary<string, object> values)
         {
             Log.Add("save metadata target:" + target.KeyNumber + "/" + target.KeyGuid + ", values count:" + values.Count);
 
@@ -139,7 +139,7 @@ namespace ToSic.Eav.Apps.Parts
                 throw new NotImplementedException("atm this command only creates metadata for entities with id-keys");
 
             // see if a metadata already exists which we would update
-            var existingEntity = AppManager.Cache.LightList.FirstOrDefault(e => e.Metadata?.TargetType == target.TargetType && e.Metadata?.KeyNumber == target.KeyNumber);
+            var existingEntity = AppManager.Cache.LightList.FirstOrDefault(e => e.MetadataFor?.TargetType == target.TargetType && e.MetadataFor?.KeyNumber == target.KeyNumber);
             if (existingEntity != null)
                 UpdateParts(existingEntity.EntityId, values);
             else

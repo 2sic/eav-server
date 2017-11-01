@@ -271,7 +271,7 @@ namespace ToSic.Eav.WebApi
             #region Metadata if we have any
             // todo: as the objects are of the same type, we can probably remove the type Format.Metadata soon...
             if (toMetadata != null && toMetadata.HasMetadata)
-                importEntity.SetMetadata(new Data.Metadata
+                importEntity.SetMetadata(new Data.MetadataFor
                 {
                     TargetType = toMetadata.TargetType,
                     KeyGuid = toMetadata.KeyGuid,

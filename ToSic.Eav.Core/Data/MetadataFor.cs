@@ -3,7 +3,7 @@ using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data
 {
-    public class Metadata : IMetadata
+    public class MetadataFor : IMetadataFor
     {
         /// <summary>
         /// Will return true if a target-type was assigned
@@ -30,7 +30,7 @@ namespace ToSic.Eav.Data
         /// </summary>
         public string KeyString { get; set; }
 
-        public Metadata CloneIsMetadata() => new Metadata
+        public MetadataFor CloneIsMetadata() => new MetadataFor
         {
             TargetType = TargetType,
             KeyString = KeyString,

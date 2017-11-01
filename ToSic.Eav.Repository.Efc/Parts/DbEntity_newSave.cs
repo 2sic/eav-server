@@ -104,10 +104,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     dbEnt = new ToSicEavEntities
                     {
                         AppId = DbContext.AppId,
-                        AssignmentObjectTypeId = newEnt.Metadata?.TargetType ?? Constants.NotMetadata,
-                        KeyNumber = newEnt.Metadata?.KeyNumber,
-                        KeyGuid = newEnt.Metadata?.KeyGuid,
-                        KeyString = newEnt.Metadata?.KeyString,
+                        AssignmentObjectTypeId = newEnt.MetadataFor?.TargetType ?? Constants.NotMetadata,
+                        KeyNumber = newEnt.MetadataFor?.KeyNumber,
+                        KeyGuid = newEnt.MetadataFor?.KeyGuid,
+                        KeyString = newEnt.MetadataFor?.KeyString,
                         ChangeLogCreated = changeId,
                         ChangeLogModified = changeId,
                         EntityGuid = newEnt.EntityGuid != Guid.Empty ? newEnt.EntityGuid : Guid.NewGuid(),

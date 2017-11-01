@@ -112,76 +112,13 @@ namespace ToSic.Eav.Apps.ImportExport
             so.DiscardattributesNotInType = true;
             Storage.Save(contentTypes.Cast<IContentType>().ToList(), so);
         }
-
-        //private void ExtendSaveContentTypes(IEnumerable<ContentType> contentTypes)
-        //    => Storage.DoWhileQueueingRelationships(() => contentTypes.ToList().ForEach(ExtendSaveContentTypes));
-
-        ///// <summary>
-        ///// Import an AttributeSet with all Attributes and AttributeMetaData
-        ///// </summary>
-        //private void ExtendSaveContentTypes(ContentType contentType)
-        //{
-        //    // initialize destinationSet - create or test existing if ok
-        //    var foundSet = _dbDeepAccess.ContentType.GetOrCreateContentType(contentType);
-        //    if (foundSet == null) // something went wrong, skip this import
-        //        return;
-        //    var contentTypeId = foundSet.Value;
-
-        //    // append all Attributes
-        //    foreach (var newAtt in contentType.Attributes.Cast<AttributeDefinition>())
-        //    {
-        //        var destAttribId = _dbDeepAccess.AttributesDefinition.GetOrCreateAttributeDefinition(contentTypeId, newAtt);
-
-        //        // save additional entities containing AttributeMetaData for this attribute
-        //        if (newAtt.InternalAttributeMetaData != null)
-        //            SaveAttributeMetadata(destAttribId, newAtt.InternalAttributeMetaData);
-        //    }
-
-        //    // optionally re-order the attributes if specified in import
-        //    if (contentType.OnSaveSortAttributes)
-        //        _dbDeepAccess.ContentType.SortAttributes(contentTypeId, contentType);
-        //}
-
-
-        ///// <summary>
-        ///// Save additional entities describing the attribute
-        ///// </summary>
-        ///// <param name="attributeId"></param>
-        ///// <param name="metadata"></param>
-        //private void SaveAttributeMetadata(int attributeId, List<Entity> metadata)
-        //{
-        //    var entities = new List<IEntity>();
-        //    foreach (var entity in metadata)
-        //    {
-        //        var md = (Metadata) entity.Metadata;
-        //        // Validate Entity
-        //        md.TargetType = Constants.MetadataForAttribute;
-
-        //        // Set KeyNumber
-        //        if (attributeId == 0 || attributeId < 0) // < 0 is ef-core temp id
-        //            throw new Exception($"trying to add metadata to attribute {attributeId} but attribute isn't saved yet");//_dbDeepAccess.SqlDb.SaveChanges();
-
-        //        md.KeyNumber = attributeId;
-
-        //        //// Get guid of previously existing assignment - if it exists
-        //        //var existingMetadata = _dbDeepAccess.Entities
-        //        //    .GetAssignedEntities(Constants.MetadataForAttribute, keyNumber: attributeId)
-        //        //    .FirstOrDefault(e => e.AttributeSetId == attributeId);
-
-        //        //if (existingMetadata != null)
-        //        //    entity.SetGuid(existingMetadata.EntityGuid);
-
-        //        //entities.Add(CreateMergedForSaving(entity, _entireApp, SaveOptions));
-        //        entities.Add(entity);
-        //    }
-        //    Storage.Save(entities, SaveOptions.Build(ZoneId)); // don't use the standard save options, as this is attributes only
-        //}
+        
         
 
 
         private void MergeContentTypeUpdateWithExisting(IContentType contentType)
         {
-            var existing = _entireApp.GetContentType(contentType.StaticName);//.ContentTypes.Values.FirstOrDefault(ct => ct.StaticName == contentType.StaticName);
+            var existing = _entireApp.GetContentType(contentType.StaticName);
             if (existing == null) return;
 
             foreach (var newAttrib in contentType.Attributes)

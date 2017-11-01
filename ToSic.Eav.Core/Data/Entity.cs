@@ -110,53 +110,7 @@ namespace ToSic.Eav.Data
             else
                 _useLightModel = true;
         }
-
-        // 2017-10-21 2dm moved to EntityBuilder.EntityFromRepository
-        ///// <inheritdoc />
-        ///// <summary>
-        ///// Create a new Entity from a data store (usually SQL backend)
-        ///// </summary>
-        //public Entity(int appId, Guid entityGuid, int entityId, int repositoryId, IMetadata isMetadata, IContentType type, bool isPublished, IEnumerable<EntityRelationshipItem> allRelationships, DateTime modified, string owner, int version)
-        //{
-        //    AppId = appId;
-        //    EntityId = entityId;
-        //    Version = version;
-        //    EntityGuid = entityGuid;
-        //    Metadata = isMetadata;
-        //    Attributes = new Dictionary<string, IAttribute>(StringComparer.OrdinalIgnoreCase);
-        //    Type = type;
-        //    IsPublished = isPublished;
-        //    RepositoryId = repositoryId;
-        //    Modified = modified;
-
-        //    if (allRelationships == null)
-        //        allRelationships = new List<EntityRelationshipItem>();
-        //    Relationships = new RelationshipManager(this, allRelationships);
-
-        //    Owner = owner;
-        //}
-
-
-        // 2017-10-21 2dm moved to EntityBuilder.EntityFromRepository
-        ///// <inheritdoc />
-        ///// <summary>
-        ///// Create a new Entity based on an Entity and Attributes
-        ///// Used in the Attribute-Filter, which generates a new entity with less properties
-        ///// </summary>
-        //public Entity(IEntity entity, Dictionary<string, IAttribute> attributes, IEnumerable<EntityRelationshipItem> allRelationships)
-        //{
-        //    AppId = entity.AppId;
-        //    EntityId = entity.EntityId;
-        //    EntityGuid = entity.EntityGuid;
-        //    Metadata = ((Metadata)entity.Metadata).CloneIsMetadata();
-        //    Type = entity.Type;
-        //    TitleFieldName = entity.Title?.Name;
-        //    IsPublished = entity.IsPublished;
-        //    Attributes = attributes;
-        //    RepositoryId = entity.RepositoryId;
-        //    Relationships = new RelationshipManager(this, allRelationships);
-        //    Owner = entity.Owner;
-        //}
+        
 
         /// <inheritdoc />
         public new object GetBestValue(string attributeName, bool resolveHyperlinks = false)

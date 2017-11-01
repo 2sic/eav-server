@@ -6,7 +6,7 @@ namespace ToSic.Eav.Interfaces
 	/// <summary>
 	/// Represents an object which is metadata for some other object
 	/// </summary>
-	public interface IIsMetadata
+	public interface IMetadataFor
 	{
         [ScriptIgnore]
         bool IsMetadata { get; }
