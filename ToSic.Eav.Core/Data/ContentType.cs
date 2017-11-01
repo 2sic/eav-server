@@ -12,49 +12,26 @@ namespace ToSic.Eav.Data
     {
         #region simple properties
 
-        /// <inheritdoc />
         public int AppId { get; }
-
-        /// <inheritdoc />
         public string Name { get; protected set; }
-
-        /// <inheritdoc />
         public string StaticName { get; protected set; }
-
-        /// <inheritdoc />
         public string Description { get; protected set; }
-
-        /// <inheritdoc />
         public string Scope { get; protected set; }
-
-        /// <inheritdoc />
         public int ContentTypeId { get; }
-
-
-        /// <inheritdoc />
         public IList<IAttributeDefinition> Attributes { get; set; }
+        public bool IsInstalledInPrimaryStorage { get; protected set; } = true;
+        public bool IsDynamic { get; internal set; }
 
         /// <inheritdoc />
         public IAttributeDefinition this[string fieldName] => Attributes.FirstOrDefault(a => a.Name == fieldName);
 
-        public bool IsInstalledInPrimaryStorage { get; protected set; } = true;
-
-        public bool IsDynamic { get; internal set; }
 
         #endregion
 
         #region Sharing Content Types
-
-        /// <inheritdoc />
         public int? ParentId { get; protected set; }
-
-        /// <inheritdoc />
         public int ParentAppId { get; }
-
-        /// <inheritdoc />
         public int ParentZoneId { get; }
-
-        /// <inheritdoc />
         public bool AlwaysShareConfiguration { get; protected set; }
 
         #endregion
@@ -62,16 +39,14 @@ namespace ToSic.Eav.Data
 
         #region constructors
 
+        /// <inheritdoc />
         /// <summary>
         /// Initializes a new instance of the ContentType class.
         /// </summary>
         public ContentType(int appId, string name, string staticName, int attributeSetId, string scope,
             string description, int? usesConfigurationOfAttributeSet, int configZoneId, int configAppId,
-            bool configurationIsOmnipresent, IDeferredEntitiesList metaProviderOfThisApp)
+            bool configurationIsOmnipresent, IDeferredEntitiesList metaProviderOfThisApp): this(appId, name, staticName)
         {
-            AppId = appId;
-            Name = name;
-            StaticName = staticName;
             ContentTypeId = attributeSetId;
             Description = description;
             Scope = scope;
@@ -79,14 +54,16 @@ namespace ToSic.Eav.Data
             ParentZoneId = configZoneId;
             ParentAppId = configAppId;
             AlwaysShareConfiguration = configurationIsOmnipresent;
-            //_appMetadataProvider = metaProvider;
-            _metaProviderOfThisApp = metaProviderOfThisApp;
+            _metaOfThisApp = metaProviderOfThisApp;
 
         }
 
         /// <summary>
-        /// Overload for in-memory entities
+        /// Basic initializer of ContentType class
         /// </summary>
+        /// <remarks>
+        /// Overload for in-memory entities
+        /// </remarks>
         public ContentType(int appId, string name, string staticName = null)
         {
             AppId = appId;
@@ -116,18 +93,15 @@ namespace ToSic.Eav.Data
 
         #endregion
 
-        #region Metadata TODO - TRYING TO MOVE INTO A SEPARATE SUB OBJECT FOR BETTER RE-USE
+        #region Metadata
 
-        // The metadata is either from the same app, or from a remote app
-        public IItemMetadata Metadata => _metadata ?? (_metadata =
-                                             ParentAppId == AppId
-                                                 ? new MetadataOfItem<string>(Constants.MetadataForContentType,
-                                                     StaticName, _metaProviderOfThisApp)
-                                                 : new MetadataOfItem<string>(Constants.MetadataForContentType,
-                                                     StaticName, ParentZoneId, ParentAppId)
-                                         );
-        private IItemMetadata _metadata;
-        private readonly IDeferredEntitiesList _metaProviderOfThisApp;
+        public IMetadataOfItem Metadata
+            => _metadata ?? (_metadata = ParentAppId == AppId
+                   ? new OfMetadataOfItem<string>(Constants.MetadataForContentType, StaticName, _metaOfThisApp)
+                   : new OfMetadataOfItem<string>(Constants.MetadataForContentType, StaticName, ParentZoneId, ParentAppId)
+               );
+        private IMetadataOfItem _metadata;
+        private readonly IDeferredEntitiesList _metaOfThisApp;
 
         #endregion
 

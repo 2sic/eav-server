@@ -5,8 +5,8 @@ namespace ToSic.Eav.Interfaces
 	/// <summary>
 	/// Represents a Content Type
 	/// </summary>
-	public interface IContentType//: IHasMetadata
-    {
+	public interface IContentType
+	{
         /// <summary>
         /// The app to which this content type belongs
         /// </summary>
@@ -54,6 +54,12 @@ namespace ToSic.Eav.Interfaces
 
         bool IsDynamic { get; }
 
-        IItemMetadata Metadata { get; }
+        /// <summary>
+        /// Get the metadata for this content-type
+        /// </summary>
+        /// <remarks>
+        /// The metadata is either already prepared, from the same app, or from a remote app
+        /// </remarks>
+        IMetadataOfItem Metadata { get; }
     }
 }

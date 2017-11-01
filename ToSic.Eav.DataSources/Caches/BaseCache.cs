@@ -197,24 +197,8 @@ namespace ToSic.Eav.DataSources.Caches
 
 
         #region GetAssignedEntities by Guid, string and int
-        // 2017-11-01 2dm - moving GetMetadata to a generic interface, instead of many overloads
-        ///// <summary>
-        ///// Get Entities with specified AssignmentObjectTypeId and Key
-        ///// </summary>
-        //public IEnumerable<IEntity> GetMetadata(int targetType, Guid key, string contentTypeName = null) => AppDataPackage.GetMetadata(targetType, key, contentTypeName);
 
-
-        ///// <summary>
-        ///// Get Entities with specified AssignmentObjectTypeId and Key
-        ///// </summary>
-        //public IEnumerable<IEntity> GetMetadata(int targetType, string key, string contentTypeName = null) => AppDataPackage.GetMetadata(targetType, key, contentTypeName);
-
-        ///// <summary>
-        ///// Get Entities with specified AssignmentObjectTypeId and Key
-        ///// </summary>
-        //public IEnumerable<IEntity> GetMetadata(int targetType, int key, string contentTypeName = null) => AppDataPackage.GetMetadata(targetType, key, contentTypeName);
-
-        public IEnumerable<IEntity> GetMdGeneric<T>(int targetType, T key, string contentTypeName = null) => AppDataPackage.GetMdGeneric(targetType, key, contentTypeName);
+        public IEnumerable<IEntity> GetMetadata<T>(int targetType, T key, string contentTypeName = null) => AppDataPackage.GetMetadata(targetType, key, contentTypeName);
 	    #endregion
 
 

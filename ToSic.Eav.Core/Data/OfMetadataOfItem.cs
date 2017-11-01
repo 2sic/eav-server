@@ -11,12 +11,12 @@ namespace ToSic.Eav.Data
     /// Metadata entities of an item (a content-type or another entity)
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class MetadataOfItem<T> : IItemMetadata
+    public class OfMetadataOfItem<T> : IMetadataOfItem
     {
         /// <summary>
         /// initialize using a prepared metadata provider
         /// </summary>
-        public MetadataOfItem(int itemType, T key, IDeferredEntitiesList metaProvider) : this(itemType, key)
+        public OfMetadataOfItem(int itemType, T key, IDeferredEntitiesList metaProvider) : this(itemType, key)
         {
             _appMetadataProvider = metaProvider;
         }
@@ -24,13 +24,13 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// initialize using keys to the metadata-environment, for lazy retrieval
         /// </summary>
-        public MetadataOfItem(int itemType, T key, int remoteZoneId, int remoteAppId): this(itemType, key)
+        public OfMetadataOfItem(int itemType, T key, int remoteZoneId, int remoteAppId): this(itemType, key)
         {
             _remoteZoneId = remoteZoneId;
             _remoteAppId = remoteAppId;
         }
 
-        private MetadataOfItem(int itemType, T key)
+        private OfMetadataOfItem(int itemType, T key)
         {
             _itemType = itemType;
             _key = key;
@@ -53,7 +53,7 @@ namespace ToSic.Eav.Data
                 ? Factory.Resolve<IRemoteMetadataProvider>()?.OfZoneAndApp(_remoteZoneId, _remoteAppId)
                 : _appMetadataProvider?.Metadata;
 
-            _entities = metadataProvider?.GetMdGeneric(_itemType, _key).ToList()
+            _entities = metadataProvider?.GetMetadata(_itemType, _key).ToList()
                         ?? new List<IEntity>();
         }
 

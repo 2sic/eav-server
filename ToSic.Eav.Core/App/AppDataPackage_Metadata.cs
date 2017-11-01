@@ -28,17 +28,7 @@ namespace ToSic.Eav.App
 		/// </summary>
 		private IDictionary<int, Dictionary<string, IEnumerable<IEntity>>> MetadataForString { get; }
     
-
-        // 2017-11-01 2dm - moving GetMetadata to a generic interface, instead of many overloads
-        //public IEnumerable<IEntity> GetMetadata(int targetType, int key, string contentTypeName = null) => Lookup(MetadataForNumber, targetType, Convert.ToInt32(key), contentTypeName);
-
-	    //public IEnumerable<IEntity> GetMetadata(int targetType, string key, string contentTypeName = null) => Lookup(MetadataForString, targetType, key, contentTypeName);
-
-	    //public IEnumerable<IEntity> GetMetadata(int targetType, Guid key, string contentTypeName = null) => Lookup(MetadataForGuid, targetType, key, contentTypeName);
-
-
-
-	    public IEnumerable<IEntity> GetMdGeneric<TMetadataKey>(int targetType, TMetadataKey key, string contentTypeName = null)
+	    public IEnumerable<IEntity> GetMetadata<TMetadataKey>(int targetType, TMetadataKey key, string contentTypeName = null)
 	    {
 	        if (typeof(TMetadataKey) == typeof(Guid))
 	            return Lookup(MetadataForGuid, targetType, key as Guid? ?? Guid.Empty, contentTypeName);
@@ -53,7 +43,6 @@ namespace ToSic.Eav.App
 	                // ReSharper disable once NotResolvedInText
 	                throw new ArgumentOutOfRangeException("TMetadataKey",
 	                    "Metadata key type should be int, string or guid");
-
 	        }
 	    }
 

@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Interfaces
 {
-    public interface IItemMetadata: IEnumerable<IEntity>
+    public interface IMetadataOfItem: IEnumerable<IEntity>
     {
         void Add(string type, Dictionary<string, object> values);
         void Use(List<IEntity> items);

@@ -193,7 +193,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 var newMetaList = new List<IEntity>();
                 foreach (var newMd in impMeta)
                 {
-                    var existingMetadata = _entireApp.GetMdGeneric(Constants.MetadataForAttribute, existAttrib.AttributeId, newMd.Type.StaticName).FirstOrDefault();
+                    var existingMetadata = _entireApp.GetMetadata(Constants.MetadataForAttribute, existAttrib.AttributeId, newMd.Type.StaticName).FirstOrDefault();
                     if (existingMetadata == null)
                         newMetaList.Add(newMd);
                     else

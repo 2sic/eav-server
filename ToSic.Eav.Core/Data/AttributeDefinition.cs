@@ -76,7 +76,7 @@ namespace ToSic.Eav.Data
                     ? Factory.Resolve<IRemoteMetadataProvider>()?.OfApp(_parentAppId)
                     : _appMetadataProvider?.Metadata;
 
-                _metaItems = metadataProvider?.GetMdGeneric(
+                _metaItems = metadataProvider?.GetMetadata(
                              Constants.MetadataForAttribute, AttributeId).ToList()
                          ?? new List<IEntity>();
 
