@@ -61,10 +61,43 @@ namespace ToSic.Eav.Persistence.File.Tests
             var conMetaStr = conMeta.FirstOrDefault(e => e.Type.Name == "@string-default");
             Assert.IsNotNull(conMetaStr, "should have string metadata");
 
-            // todo: test values in the conmetastr
             var lines = (decimal)conMetaStr.GetBestValue("RowCount");
             Assert.AreEqual(3, lines);
         }
+
+
+
+        [TestMethod]
+        public void FLoader_CheckTypeMetadata()
+        {
+            var cts = LoadAllTypes();
+            var sqlType = cts.First(ct => ct.StaticName.Contains("Sql"));
+            Assert.AreEqual(9, sqlType.Attributes.Count, "sql type should have x attributes");
+            
+
+            var meta = sqlType.MetadataItems;
+            Assert.AreEqual(2, meta.Count, "should have 2 meta-items");
+
+            var conMetaAll = meta.FirstOrDefault(e => e.Type.Name == "Basics");
+            Assert.IsNotNull(conMetaAll, "should have Basics metadata");
+
+            var niceName = (string)conMetaAll.GetBestValue("NiceName");
+            Assert.AreEqual("sql content type", niceName);
+            var active = (bool)conMetaAll.GetBestValue("Active");
+            Assert.IsTrue(active, "should have an active-info");
+
+
+            var conMetaStr = meta.FirstOrDefault(e => e.Type.Name == "Enhancements");
+            Assert.IsNotNull(conMetaStr, "should have Enhancements metadata");
+
+            var icon = (string)conMetaStr.GetBestValue("Icon");
+            Assert.AreEqual("icon.png", icon);
+        }
+
+
+
+
+
 
         private IList<IContentType> LoadAllTypes()
         {

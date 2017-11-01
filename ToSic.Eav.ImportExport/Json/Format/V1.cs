@@ -32,10 +32,9 @@ namespace ToSic.Eav.ImportExport.Json.Format
         public Guid Guid;
         public JsonType Type;
         public JsonAttributes Attributes;
-        public string Owner;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public string Owner;
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public JsonMetadataFor For;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public JsonMetadataFor For;
     }
 
     internal class JsonAttributes

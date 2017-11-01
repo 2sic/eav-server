@@ -25,8 +25,7 @@
                 "InputType": { "*": "string-default" }
               },
               "Boolean": { "VisibleInEditUI": { "*": true } }
-            },
-            "Owner": null
+            }
           }
         ]
       },
@@ -49,8 +48,7 @@
                 "InputType": { "*": "empty-default" }
               },
               "Boolean": { "VisibleInEditUI": { "*": true } }
-            },
-            "Owner": null
+            }
           }
         ]
       },
@@ -73,8 +71,7 @@
                 "InputType": { "*": "string-default" }
               },
               "Boolean": { "VisibleInEditUI": { "*": true } }
-            },
-            "Owner": null
+            }
           }
         ]
       },
@@ -97,8 +94,7 @@
                 "InputType": { "*": "string-default" }
               },
               "Boolean": { "VisibleInEditUI": { "*": true } }
-            },
-            "Owner": null
+            }
           },
           {
             "Id": 0,
@@ -108,8 +104,7 @@
               "Name": "@string-default",
               "Id": "@string-default"
             },
-            "Attributes": { "Number": { "RowCount": { "*": 3.0 } } },
-            "Owner": null
+            "Attributes": { "Number": { "RowCount": { "*": 3.0 } } }
           }
         ]
       },
@@ -133,8 +128,7 @@
                 "Name": { "*": "Query" }
               },
               "Boolean": { "VisibleInEditUI": { "*": true } }
-            },
-            "Owner": null
+            }
           }
         ]
       },
@@ -157,8 +151,7 @@
                 "InputType": { "*": "string-default" }
               },
               "Boolean": { "VisibleInEditUI": { "*": true } }
-            },
-            "Owner": null
+            }
           },
           {
             "Id": 0,
@@ -168,8 +161,7 @@
               "Name": "@string-default",
               "Id": "@string-default"
             },
-            "Attributes": { "Number": { "RowCount": { "*": 10.0 } } },
-            "Owner": null
+            "Attributes": { "Number": { "RowCount": { "*": 10.0 } } }
           }
         ]
       },
@@ -192,8 +184,7 @@
                 "InputType": { "*": "string-default" }
               },
               "Boolean": { "VisibleInEditUI": { "*": true } }
-            },
-            "Owner": null
+            }
           }
         ]
       },
@@ -216,8 +207,7 @@
                 "InputType": { "*": "string-default" }
               },
               "Boolean": { "VisibleInEditUI": { "*": true } }
-            },
-            "Owner": null
+            }
           }
         ]
       },
@@ -240,8 +230,7 @@
                 "InputType": { "*": "string-default" }
               },
               "Boolean": { "VisibleInEditUI": { "*": true } }
-            },
-            "Owner": null
+            }
           }
         ]
       }
@@ -252,34 +241,30 @@
         "Version": 1,
         "Guid": "00000000-0000-0000-0000-000000000000",
         "Type": {
-          "Name": "@All",
-          "Id": "@All"
+          "Name": "Basics",
+          "Id": "Basics"
         },
         "Attributes": {
           "String": {
-            "DefaultValue": { "*": "Sql Query" },
-            "InputType": { "*": "string-default" }
+            "NiceName": { "*": "sql content type" }
           },
-          "Boolean": { "VisibleInEditUI": { "*": true } }
-        },
-        "Owner": null
+          "Boolean": { "Active": { "*": true } }
+        }
       },
       {
         "Id": 0,
         "Version": 1,
         "Guid": "00000000-0000-0000-0000-000000000000",
         "Type": {
-          "Name": "@All",
-          "Id": "@All"
+          "Name": "Enhancements",
+          "Id": "Enhancements"
         },
         "Attributes": {
           "String": {
-            "DefaultValue": { "*": "Sql Query" },
-            "InputType": { "*": "string-default" }
-          },
-          "Boolean": { "VisibleInEditUI": { "*": true } }
-        },
-        "Owner": null
+            "Icon": { "*": "icon.png" },
+            "Color": { "*": "#ff0000" }
+          }
+        }
       }
     ]
   }

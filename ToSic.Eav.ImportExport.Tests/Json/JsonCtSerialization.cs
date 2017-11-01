@@ -28,8 +28,8 @@ namespace ToSic.Eav.ImportExport.Tests.json
             Assert.IsTrue(json.Length > 200, "should get a long json string");
         }
 
-        // [TestMethod]
-        public void Json_OfSqlDataSource()
+        [TestMethod]
+        public void Json_OfCodeType_ConfigSqlDataSource()
         {
             var test = new TestValuesOnPc2Dm();
             var json = JsonOfContentType(test.BlogAppId, "|Config ToSic.Eav.DataSources.SqlDataSource");
