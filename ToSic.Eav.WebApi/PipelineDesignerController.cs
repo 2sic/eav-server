@@ -107,7 +107,7 @@ namespace ToSic.Eav.WebApi
         /// Get installed DataSources from .NET Runtime but only those with [PipelineDesigner Attribute]
         /// </summary>
         [HttpGet]
-		public IEnumerable<QueryRuntime.QueryInfoTemp> GetInstalledDataSources()
+		public IEnumerable<QueryRuntime.DataSourceInfo> GetInstalledDataSources()
 		    => QueryRuntime.GetInstalledDataSources();
 
 		/// <summary>
@@ -181,7 +181,7 @@ namespace ToSic.Eav.WebApi
 				else
 				{
 
-                    Tuple<int, Guid> entity = appManager.Entities.Create(pipelinePartAttributeSetId, newValues, new Metadata { TargetType = Constants.MetadataForEntity, KeyGuid = pipelineEntityGuid});
+                    Tuple<int, Guid> entity = appManager.Entities.Create(pipelinePartAttributeSetId, newValues, new MetadataFor { TargetType = Constants.MetadataForEntity, KeyGuid = pipelineEntityGuid});
                     newDataSources.Add((string)dataSource.EntityGuid, entity.Item2);
 				}
 			}

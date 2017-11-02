@@ -50,11 +50,23 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dbg Testing|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Dbg Testing\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="CsvHelper">
       <HintPath>..\packages\CsvHelper.2.13.1.0\lib\net35-client\CsvHelper.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Collections.Immutable, Version=1.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Collections.Immutable.1.3.0\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+    </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Caching" />
@@ -74,6 +86,8 @@
     <Compile Include="Caches\ICache.cs" />
     <Compile Include="Caches\ListCacheItem.cs" />
     <Compile Include="Caches\QuickCache.cs" />
+    <Compile Include="ContentTypes\JsonTest.cs" />
+    <Compile Include="ContentTypes\ConfigSqlDataSource.cs" />
     <Compile Include="CsvDataSource.cs" />
     <Compile Include="DataSource.cs" />
     <Compile Include="DataStream.cs" />
@@ -91,7 +105,7 @@
     <Compile Include="IDataStream.cs" />
     <Compile Include="IDataTarget.cs" />
     <Compile Include="IDeferredDataSource.cs" />
-    <Compile Include="IMetaDataSource.cs" />
+    <Compile Include="Metadata\MetadataFromDataSource.cs" />
     <Compile Include="Shuffle.cs" />
     <Compile Include="Paging.cs" />
     <Compile Include="PassThrough.cs" />
@@ -108,9 +122,7 @@
     <Compile Include="SqlSources\EavSqlStore.cs" />
     <Compile Include="StreamFallback.cs" />
     <Compile Include="ValueFilter.cs" />
-    <Compile Include="ValueProvider\AssignedEntityValueProvider.cs" />
     <Compile Include="ValueProvider\DataTargetValueProvider.cs" />
-    <Compile Include="ValueProvider\EntityValueProvider.cs" />
     <Compile Include="ValueSort.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -125,6 +137,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

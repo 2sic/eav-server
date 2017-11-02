@@ -21,7 +21,7 @@ namespace ToSic.Eav.WebApi
     {
         public EntitiesController(int appId) : base(appId) { }
         public EntitiesController(Log parentLog) : base(parentLog) { }
-       public EntitiesController() { }
+        public EntitiesController() { }
 
         #region GetOne GetAll calls
         public IEntity GetEntityOrThrowError(string contentType, int id)
@@ -90,8 +90,7 @@ namespace ToSic.Eav.WebApi
 
         internal object TruncateIfString(object value, int length)
         {
-            var asTxt = value as string;
-            if (asTxt == null)
+            if (!(value is string asTxt))
                 return value;
 
             if (asTxt.Length > length)
@@ -190,9 +189,11 @@ namespace ToSic.Eav.WebApi
             foreach (var i in items)
                 i.Entity.Guid = i.Header.Guid;
 
+            IDeferredEntitiesList appPack = AppManager.Package.BetaDeferredEntitiesList;
+
             var entitiesToImport = items
                 .Where(entity => entity.Header.Group == null || !entity.Header.Group.SlotIsEmpty)
-                .Select(CreateEntityFromTransferObject)
+                .Select(e => CreateEntityFromTransferObject(e, appPack))
                 .Cast<IEntity>()
                 .ToList();
 
@@ -212,7 +213,7 @@ namespace ToSic.Eav.WebApi
         }
 
 
-        private Entity CreateEntityFromTransferObject(EntityWithHeader editInfo)
+        private Entity CreateEntityFromTransferObject(EntityWithHeader editInfo, IDeferredEntitiesList allEntitiesForRelationships)
         {
             var toEntity = editInfo.Entity;
             var toMetadata = editInfo.Header.Metadata;
@@ -221,10 +222,10 @@ namespace ToSic.Eav.WebApi
             var attribs = new Dictionary<string, IAttribute>();
 
             // only transfer the fields / values which exist in the content-type definition
-            var attributeSet = AppManager.Read.ContentTypes.Get(toEntity.Type.StaticName);
+            var type = AppManager.Read.ContentTypes.Get(toEntity.Type.StaticName);
             foreach (var attribute in toEntity.Attributes)
             {
-                var attDef = attributeSet[attribute.Key];
+                var attDef = type[attribute.Key];
                 var attributeType = attDef.Type;
 
                 // don't save anything of the type empty - this is headings-items-only
@@ -233,29 +234,20 @@ namespace ToSic.Eav.WebApi
 
                 foreach (var value in attribute.Value.Values)
                 {
-                    var objValue = value.Value;// ImpEntity.ImpConvertValueObjectToString(value.Value);
+                    var objValue = value.Value;
 
                     // special situation: if it's an array of Guids, mixed with NULLs, then it's not correctly auto-de-serialized
                     if (attributeType == AttributeTypeEnum.Entity.ToString() && objValue is Newtonsoft.Json.Linq.JArray)
-                    {
                         // manually de-serialize
-                        var guidArray = JsonConvert.DeserializeObject<Guid?[]>(objValue.ToString());
-                        objValue = guidArray;
-                    }
+                        objValue = JsonConvert.DeserializeObject<Guid?[]>(objValue.ToString());
 
 
-                    var importValue = attribs.AddValue(attribute.Key, objValue, attributeType);
+                    var importValue = attribs.AddValue(attribute.Key, objValue, attributeType, allEntitiesForRelationships: allEntitiesForRelationships);
 
                     // append languages OR empty language as fallback
-                    if (value.Dimensions == null)
-                    {
-                        // 2017-06-12 2dm - AFAIK this never added anything, because key was "", so just comment ount
-                        // Must this be done to save entities
-                        //importValue.AddLanguageReference("", false);
-                        continue;
-                    }
-                    foreach (var dimension in value.Dimensions)
-                        importValue.Languages.Add(new Dimension { Key = dimension.Key, ReadOnly = dimension.Value });//.AddLanguageReference(dimension.Key, dimension.Value);
+                    if (value.Dimensions != null)
+                        foreach (var dimension in value.Dimensions)
+                            importValue.Languages.Add(new Dimension { Key = dimension.Key, ReadOnly = dimension.Value });
 
                 }
             }
@@ -263,7 +255,7 @@ namespace ToSic.Eav.WebApi
             if (toEntity.Guid == Guid.Empty)
                 throw new Exception("got empty guid - should never happen");
 
-            var importEntity = new Entity(AppId, toEntity.Id, toEntity.Type.StaticName, attribs.ToDictionary(x => x.Key, y => (object)y.Value))
+            var importEntity = new Entity(AppId, toEntity.Id, type, attribs.ToDictionary(x => x.Key, y => (object)y.Value))
             {
                 #region Guids, Ids, Published, Content-Types
                 IsPublished = toEntity.IsPublished,
@@ -279,7 +271,7 @@ namespace ToSic.Eav.WebApi
             #region Metadata if we have any
             // todo: as the objects are of the same type, we can probably remove the type Format.Metadata soon...
             if (toMetadata != null && toMetadata.HasMetadata)
-                importEntity.SetMetadata(new Data.Metadata
+                importEntity.SetMetadata(new Data.MetadataFor
                 {
                     TargetType = toMetadata.TargetType,
                     KeyGuid = toMetadata.KeyGuid,

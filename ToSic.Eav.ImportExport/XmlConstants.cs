@@ -4,6 +4,7 @@
     {
         // nodes which are actually 2sxc-specific, and should be refactored some time
         public const string Root = "SexyContentData";
+        public const string Root97 = "ContentData"; // import supports new name in 2sxc 9.7, but we won't export it with this name yet
         public const string CtTemplate = "2SexyContent-Template-ContentTypes";
 
         public const string EntityGuid = "Guid";
@@ -24,6 +25,7 @@
 
 
         public const string RootNode = "SexyContent";
+        public const string RootNode97 = "EavContent";
         public const string Header = "Header";
         public const string FileVersion = "FileVersion";
         public const string ExportDate = "ExportDate";

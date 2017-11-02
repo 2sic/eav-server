@@ -39,7 +39,7 @@ namespace ToSic.Eav.Data
 		[ScriptIgnore]
 		public IRelationshipManager Relationships { get; internal set; }
 
-        public IMetadata Metadata { get; internal set; }
+        public IMetadataFor MetadataFor { get; internal set; }
 
         /// <inheritdoc />
         public string Owner { get; internal set; }
@@ -64,11 +64,11 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Create a new Entity. Used to create InMemory Entities that are not persisted to the EAV SqlStore.
         /// </summary>
-        public EntityLight(int appId, int entityId, string contentTypeName, Dictionary<string, object> values, string titleAttribute = null, DateTime? modified = null)
+        public EntityLight(int appId, int entityId, object contentType, Dictionary<string, object> values, string titleAttribute = null, DateTime? modified = null)
         {
             AppId = appId;
             EntityId = entityId;
-            Type = new ContentType(appId, contentTypeName);
+            SetContentTypeFromNameOrObject(appId, contentType);
             LightAttributesForInternalUseOnlyForNow = values;//.ConvertToAttributes();
             try
             {
@@ -79,10 +79,26 @@ namespace ToSic.Eav.Data
             {
                 throw new KeyNotFoundException($"The Title Attribute with Name \"{titleAttribute}\" doesn't exist in the Entity-Attributes.");
             }
-            Metadata = new Metadata();
+            MetadataFor = new MetadataFor();
             if (modified.HasValue)
                 Modified = modified.Value;
             Relationships = new RelationshipManager(this, new EntityRelationshipItem[0]);
+        }
+
+        private void SetContentTypeFromNameOrObject(int appId, object contentType)
+        {
+            switch (contentType)
+            {
+                case IContentType _:
+                    Type = contentType as IContentType;
+                    break;
+                case string _:
+                    Type = new ContentType(appId, contentType as string);
+                    break;
+                default:
+                    throw new Exception(
+                        $"content type should be string or of type IContentType - it's {contentType.GetType().FullName}");
+            }
         }
 
         /// <inheritdoc />
@@ -90,7 +106,7 @@ namespace ToSic.Eav.Data
         /// Create a brand new Entity. 
         /// Mainly used for entities which are created for later saving
         /// </summary>
-        public EntityLight(int appId, Guid entityGuid, string contentTypeName, Dictionary<string, object> values) : this(appId, 0, contentTypeName, values)
+        public EntityLight(int appId, Guid entityGuid, object contentType, Dictionary<string, object> values) : this(appId, 0, contentType, values)
         {
             EntityGuid = entityGuid;
         }

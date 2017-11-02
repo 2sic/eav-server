@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.Caching;
 using ToSic.Eav.App;
@@ -14,7 +15,7 @@ namespace ToSic.Eav.DataSources.Caches
     /// <summary>
     /// Represents an abstract Cache DataSource
     /// </summary>
-    public abstract class BaseCache : BaseDataSource, IMetaDataSource, ICache
+    public abstract class BaseCache : BaseDataSource, IMetadataProvider, ICache
 	{
 
         protected new BaseCache Cache { get; set; }
@@ -58,7 +59,7 @@ namespace ToSic.Eav.DataSources.Caches
 		/// <summary>
 		/// Gets or sets the Dictionary of all AssignmentObjectTypes
 		/// </summary>
-		public abstract Dictionary<int, string> AssignmentObjectTypes { get; protected set; }
+		public abstract ImmutableDictionary<int, string> AssignmentObjectTypes { get; protected set; }
 
 		/// <summary>
 		/// Gets the KeySchema used to store values for a specific Zone and App. Must contain {0} for ZoneId and {1} for AppId
@@ -98,7 +99,7 @@ namespace ToSic.Eav.DataSources.Caches
             {
                 ZoneApps = Backend.GetAllZones();
 
-                AssignmentObjectTypes = Backend.GetAssignmentObjectTypes();
+                AssignmentObjectTypes = Factory.Resolve<IGlobalMetadataProvider>().TargetTypes;// Backend.GetAssignmentObjectTypes();
             }
 
             if (ZoneId == 0 || AppId == 0)
@@ -152,34 +153,23 @@ namespace ToSic.Eav.DataSources.Caches
 
 	    #endregion
 
-        /// <inheritdoc />
-        /// <summary>
-        /// Get a ContentType by StaticName if found of DisplayName if not
-        /// </summary>
-        /// <param name="name">Either StaticName or DisplayName</param>
-		public IContentType GetContentType(string name)
-		{
-			var app = AppDataPackage;
-			// Lookup StaticName first
-			var matchByStaticName = app.ContentTypes.FirstOrDefault(c => c.Value.StaticName.Equals(name));
-			if (matchByStaticName.Value != null)
-				return matchByStaticName.Value;
-
-			// Lookup Name afterward
-			var matchByName = app.ContentTypes.FirstOrDefault(c => c.Value.Name.Equals(name));
-		    return matchByName.Value;
-		}
+	    /// <inheritdoc />
+	    /// <summary>
+	    /// Get a ContentType by StaticName if found of DisplayName if not
+	    /// </summary>
+	    /// <param name="name">Either StaticName or DisplayName</param>
+	    public IContentType GetContentType(string name) => AppDataPackage.GetContentType(name);
 
 		/// <inheritdoc />
 		/// <summary>
 		/// Get a ContentType by Id
 		/// </summary>
-		public IContentType GetContentType(int contentTypeId) => AppDataPackage.ContentTypes.FirstOrDefault(c => c.Key == contentTypeId).Value;
+		public IContentType GetContentType(int contentTypeId) => AppDataPackage.GetContentType(contentTypeId);
 
 	    /// <summary>
 		/// Get all Content Types
 		/// </summary>
-		public IDictionary<int, IContentType> GetContentTypes() => AppDataPackage.ContentTypes;
+		public IEnumerable<IContentType> GetContentTypes() => AppDataPackage.ContentTypes;
 
 	    /// <inheritdoc />
 	    /// <summary>
@@ -205,53 +195,10 @@ namespace ToSic.Eav.DataSources.Caches
 			return Tuple.Create(resultZoneId, resultAppId);
 		}
 
-		/// <inheritdoc />
-		/// <summary>
-		/// Get AssignmentObjectTypeId by Name
-		/// </summary>
-		public int GetMetadataType(string typeName)
-		{
-		    try
-		    {
-		        EnsureCache();
-		        return AssignmentObjectTypes.SingleOrDefault(a => a.Value == typeName).Key;
-		    }
-            catch (Exception ex)
-            {
-                throw new Exception($"failed to get metadata type for {typeName}", ex);
-            }
-		}
-
-        public string GetMetadataType(int typeId)
-        {
-            try
-            {
-                EnsureCache();
-                return AssignmentObjectTypes[typeId];
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"failed to get metadata type for {typeId}", ex);
-            }
-        }
-
 
         #region GetAssignedEntities by Guid, string and int
-        /// <summary>
-		/// Get Entities with specified AssignmentObjectTypeId and Key
-		/// </summary>
-		public IEnumerable<IEntity> GetAssignedEntities(int targetType, Guid key, string contentTypeName = null) => AppDataPackage.GetMetadata(targetType, key, contentTypeName);
 
-	    /// <summary>
-        /// Get Entities with specified AssignmentObjectTypeId and Key
-        /// </summary>
-        public IEnumerable<IEntity> GetAssignedEntities(int targetType, string key, string contentTypeName = null) => AppDataPackage.GetMetadata(targetType, key, contentTypeName);
-
-	    /// <summary>
-        /// Get Entities with specified AssignmentObjectTypeId and Key
-        /// </summary>
-        public IEnumerable<IEntity> GetAssignedEntities(int targetType, int key, string contentTypeName = null) => AppDataPackage.GetMetadata(targetType, key, contentTypeName);
-
+        public IEnumerable<IEntity> GetMetadata<T>(int targetType, T key, string contentTypeName = null) => AppDataPackage.GetMetadata(targetType, key, contentTypeName);
 	    #endregion
 
 

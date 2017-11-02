@@ -6,6 +6,7 @@ using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data
 {
+    /// <inheritdoc />
     /// <summary>
     /// Represents Relationships to Child Entities
     /// </summary>
@@ -16,10 +17,17 @@ namespace ToSic.Eav.Data
         /// </summary>
         private static readonly int?[] EntityIdsEmpty = new int?[0];
 
+        private readonly bool _useGuid;
+
         /// <summary>
         /// List of Child EntityIds
         /// </summary>
-        public IEnumerable<int?> EntityIds { get; }
+        public IEnumerable<int?> EntityIds 
+            => _entityIds ?? (_entityIds = this.Select(e => e?.EntityId).ToList());
+
+        private IEnumerable<int?> _entityIds;
+
+        private List<Guid?> Guids { get; }
 
         private readonly IDeferredEntitiesList _fullEntityList;
         private List<IEntity> _entities;
@@ -27,13 +35,27 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Initializes a new instance of the EntityRelationship class.
         /// </summary>
-        /// <param name="fullEntitiesListForLookup">DataSource to retrieve child entities</param>
+        /// <param name="allEntities">DataSource to retrieve child entities</param>
         /// <param name="entityIds">List of IDs to initialize with</param>
-        public EntityRelationship(IDeferredEntitiesList fullEntitiesListForLookup, IEnumerable<int?> entityIds = null)
+        public EntityRelationship(IDeferredEntitiesList allEntities, IEnumerable<int?> entityIds)
         {
-            EntityIds = entityIds ?? EntityIdsEmpty;
-            _fullEntityList = fullEntitiesListForLookup; 
+            _useGuid = false;
+            _entityIds = entityIds ?? EntityIdsEmpty;
+            _fullEntityList = allEntities; 
         }
+
+        /// <summary>
+        /// Initializes a new instance of the EntityRelationship class.
+        /// </summary>
+        /// <param name="allEntities">DataSource to retrieve child entities</param>
+        /// <param name="entityGuids">List of IDs to initialize with</param>
+        public EntityRelationship(IDeferredEntitiesList allEntities, List<Guid?> entityGuids)
+        {
+            _useGuid = true;
+            Guids = entityGuids;
+            _fullEntityList = allEntities;
+        }
+
 
         public override string ToString() => EntityIds == null ? string.Empty : string.Join(",", EntityIds.Select(e => e));
 
@@ -43,61 +65,24 @@ namespace ToSic.Eav.Data
             if (_entities == null)
                 LoadEntities();
 
-            return new EntityEnum(_entities);
+            return new EntityEnumerator(_entities);
         }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         private void LoadEntities()
         {
             _entities = _fullEntityList == null
                 ? new List<IEntity>()
-                : EntityIds.Select(l => l.HasValue
-                    ? (_fullEntityList.List.ContainsKey(l.Value) ? _fullEntityList.List[l.Value] : null)
-                    // special: in rare cases, the entity has been deleted and is therefor missing
-                    : null).ToList();
+                : (_useGuid
+                    ? Guids.Select(l => !l.HasValue
+                        ? null
+                        // special: in some cases, the entity cannot be found because it has been deleted or something
+                        : _fullEntityList.LightList.FirstOrDefault(e => e.EntityGuid == l))
+                    : EntityIds.Select(l => l.HasValue
+                        ? (_fullEntityList.List.ContainsKey(l.Value) ? _fullEntityList.List[l.Value] : null)
+                        // special: in some cases, the entity cannot be found because it has been deleted or something
+                        : null)).ToList();
         }
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-        /// <remarks>Source: http://msdn.microsoft.com/en-us/library/system.collections.ienumerable.getenumerator.aspx </remarks>
-        class EntityEnum : IEnumerator<IEntity>
-        {
-            private readonly List<IEntity> _entities;
-            private int _position = -1;
-
-            public EntityEnum(List<IEntity> entities)
-            {
-                _entities = entities;
-            }
-
-            public void Dispose() { }
-
-            public bool MoveNext()
-            {
-                _position++;
-                return (_position < _entities.Count);
-            }
-
-            public void Reset()
-            {
-                _position = -1;
-            }
-
-            public IEntity Current
-            {
-                get
-                {
-                    try
-                    {
-                        return _entities[_position];
-                    }
-                    catch (IndexOutOfRangeException)
-                    {
-                        throw new InvalidOperationException();
-                    }
-                }
-            }
-
-            object IEnumerator.Current => Current;
-        }
     }
 }

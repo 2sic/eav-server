@@ -37,7 +37,18 @@ namespace ToSic.Eav.Repository.Efc.Parts
             DbContext.Versioning.GetChangeLogId();
 
             // Delete app using StoredProcedure
-            DbContext.SqlDb.Database.ExecuteSqlCommand("ToSIC_EAV_DeleteApp @p0", appId);
+            DbContext.DoInTransaction(() =>
+                {
+                    // remove all "new" entities, which won't be handled by the SP
+                    DbContext.DoAndSave(() =>
+                        DbContext.SqlDb.RemoveRange(
+                            DbContext.SqlDb.ToSicEavEntities.Where(e =>
+                                e.AttributeSetId == DbEntity.RepoIdForJsonEntities && e.AppId == appId)
+                        )
+                    );
+                    DbContext.SqlDb.Database.ExecuteSqlCommand("ToSIC_EAV_DeleteApp @p0", appId);
+                }
+            );
         }
 
     }

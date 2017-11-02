@@ -238,7 +238,7 @@ namespace ToSic.Eav.DataSources.Tests
         public static  ValueFilter CreateValueFilterForTesting(int testItemsInRootSource)
         {
             var ds = DataTableDataSourceTest.GeneratePersonSourceWithDemoData(testItemsInRootSource, 1001);
-            var filtered = DataSource.GetDataSource<ValueFilter>(1, 1, ds);
+            var filtered = Eav.DataSource.GetDataSource<ValueFilter>(1, 1, ds);
             return filtered;
         }
     }

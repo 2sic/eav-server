@@ -5,6 +5,7 @@ using System.Xml.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Types;
 
 namespace ToSic.Eav.ImportExport.Xml
 {
@@ -51,10 +52,10 @@ namespace ToSic.Eav.ImportExport.Xml
         /// Returns an EAV import entity
         /// </summary>
         /// <param name="xEntity">xEntity to parse</param>
-        /// <param name="metadata"></param>
-        public Entity BuildEntityFromXml(XElement xEntity, Metadata metadata)
+        /// <param name="metadataForFor"></param>
+        public Entity BuildEntityFromXml(XElement xEntity, MetadataFor metadataForFor)
 		{
-		    var targetValues = new Dictionary<string, IAttribute>();
+		    var finalAttributes = new Dictionary<string, IAttribute>();
 
 			// Group values by StaticName
 			var valuesGroupedByStaticName = xEntity.Elements(XmlConstants.ValueNode)
@@ -127,19 +128,37 @@ namespace ToSic.Eav.ImportExport.Xml
 
 				}
 
-				var currentAttributesImportValues = tempTargetValues.Select(tempImportValue
-				        => Value.Build(tempImportValue.XmlValue.Attribute(XmlConstants.EntityTypeAttribute).Value,
-				            tempImportValue.XmlValue.Attribute(XmlConstants.ValueAttr).Value,
-				            tempImportValue.Dimensions))
-                    .ToList();
-			    var newAttr = AttributeBase.CreateTypedAttribute(sourceAttrib.StaticName, tempTargetValues.First().XmlValue.Attribute(XmlConstants.EntityTypeAttribute).Value);
-			    newAttr.Values = currentAttributesImportValues;
+                // construct value elements
+			    var currentAttributesImportValues = tempTargetValues.Select(tempImportValue
+			            => ValueBuilder.Build(tempImportValue.XmlValue.Attribute(
+			                               XmlConstants.EntityTypeAttribute)?.Value ??
+			                           throw new NullReferenceException("cant' build attribute with unknown value-type"),
+			                tempImportValue.XmlValue.Attribute(XmlConstants.ValueAttr)?.Value ??
+			                throw new NullReferenceException("can't build attribute without value"),
+			                tempImportValue.Dimensions))
+			        .ToList();
 
-                targetValues.Add(sourceAttrib.StaticName, newAttr);
+                // construct the attribute with these value elements
+			    var newAttr = AttributeBase.CreateTypedAttribute(sourceAttrib.StaticName, 
+                    tempTargetValues.First().XmlValue.Attribute(XmlConstants.EntityTypeAttribute)?.Value,
+			        currentAttributesImportValues);
+
+                // attach to attributes-list
+                finalAttributes.Add(sourceAttrib.StaticName, newAttr);
 			}
 
-            var targetEntity = new Entity(AppId, Guid.Parse(xEntity.Attribute(XmlConstants.GuidNode).Value), xEntity.Attribute(XmlConstants.AttSetStatic).Value, targetValues.ToDictionary(x => x.Key, y => (object)y.Value));
-		    if (metadata != null) targetEntity.SetMetadata(metadata);
+		    var typeName = xEntity.Attribute(XmlConstants.AttSetStatic)?.Value;
+            if(typeName == null)
+                throw new NullReferenceException("trying to import an xml entity but type is null - " + xEntity);
+		    
+            // find out if it's a system type, and use that if it exists
+            var contentType = Global.FindContentType(typeName) as object ?? typeName;
+
+            var targetEntity = new Entity(AppId, 
+                Guid.Parse(xEntity.Attribute(XmlConstants.GuidNode)?.Value ?? throw new NullReferenceException("can't import an entity without a guid identifier")), 
+                contentType, 
+                finalAttributes.ToDictionary(x => x.Key, y => (object)y.Value));
+		    if (metadataForFor != null) targetEntity.SetMetadata(metadataForFor);
 
 			return targetEntity;
 		}

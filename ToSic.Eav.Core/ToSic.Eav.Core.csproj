@@ -50,6 +50,15 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dbg Testing|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Dbg Testing\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Extensions.DependencyInjection, Version=1.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.1.1.0\lib\netstandard1.1\Microsoft.Extensions.DependencyInjection.dll</HintPath>
@@ -78,33 +87,54 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="ToSic.Eav">
-      <HintPath>..\..\2SexyContent\Web\DesktopModules\ToSIC_SexyContent\Bin\ToSic.Eav.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App\AppDataPackage_DeferredList.cs" />
+    <Compile Include="App\AppDataPackage_Metadata.cs" />
+    <Compile Include="App\AppDataPackage_ContentTypes.cs" />
     <Compile Include="App\AppDataPackageDeferredList.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Constants_Relationships.cs" />
     <Compile Include="App\AppDataPackage.cs" />
     <Compile Include="Data\AttributeDefinition.cs" />
     <Compile Include="Data\AttributeBase.cs" />
+    <Compile Include="Data\AttributeDefinition_Shared.cs" />
+    <Compile Include="Data\Builder\EntityBuilder.cs" />
+    <Compile Include="Data\Builder\ValueBuilder.cs" />
+    <Compile Include="Data\EntityEnumerator.cs" />
+    <Compile Include="Data\OfMetadataOfItem.cs" />
+    <Compile Include="Enums\Repositories.cs" />
+    <Compile Include="Implementations\Runtime\NeutralRuntime.cs" />
+    <Compile Include="Interfaces\IGlobalMetadataProvider.cs" />
+    <Compile Include="Interfaces\IHasExternalI18n.cs" />
+    <Compile Include="Interfaces\IMetadataOfItem.cs" />
+    <Compile Include="Interfaces\IRemoteMetadataProvider.cs" />
+    <Compile Include="Interfaces\IRepositorySaver.cs" />
+    <Compile Include="Interfaces\IRuntime.cs" />
+    <Compile Include="Persistence\Logging\ImportError.cs" />
+    <Compile Include="Persistence\Logging\ImportErrorCode.cs" />
+    <Compile Include="Persistence\Logging\ImportErrorLog.cs" />
+    <Compile Include="Persistence\Logging\LocalizedDescriptionAttribute.cs" />
+    <Compile Include="Persistence\Logging\LogItem.cs" />
+    <Compile Include="Persistence\Logging\Message.cs" />
+    <Compile Include="Persistence\Logging\MessageTypes.cs" />
+    <Compile Include="Types\Attributes\ExpectsDataOfType.cs" />
+    <Compile Include="Types\Attributes\ContentTypeDefinition.cs" />
     <Compile Include="Data\Builder\AttDefBuilder.cs" />
     <Compile Include="Data\Builder\AttribBuilder.cs" />
     <Compile Include="Data\Attribute_ofT.cs" />
     <Compile Include="Data\Builder\ContentTypeBuilder.cs" />
     <Compile Include="Data\Builder\DimensionBuilder.cs" />
-    <Compile Include="Data\Builder\EntityBuilder.cs" />
+    <Compile Include="Data\Builder\EntityModifier.cs" />
     <Compile Include="Data\ContentType.cs" />
     <Compile Include="Data\DimensionDefinition.cs" />
     <Compile Include="Data\Entity.cs" />
-    <Compile Include="Data\Metadata.cs" />
+    <Compile Include="Data\MetadataFor.cs" />
     <Compile Include="Data\Dimension.cs" />
     <Compile Include="Data\EntityRelationship.cs" />
     <Compile Include="Data\EntityRelationshipItem.cs" />
     <Compile Include="Data\RelatedEntities.cs" />
     <Compile Include="Data\RelationshipManager.cs" />
-    <Compile Include="Data\TypedValue_ofT.cs" />
     <Compile Include="Data\Value.cs" />
     <Compile Include="Data\Value_ofT.cs" />
     <Compile Include="Data\Zone.cs" />
@@ -118,10 +148,8 @@
     <Compile Include="Implementations\ValueConverter\IEavValueConverter.cs" />
     <Compile Include="Implementations\ValueConverter\NeutralValueConverter.cs" />
     <Compile Include="Interfaces\IAttributeDefinition.cs" />
-    <Compile Include="Interfaces\IContentTypeShareable.cs" />
-    <Compile Include="Interfaces\IHasMetadata.cs" />
+    <Compile Include="Interfaces\IUsesSharedDefinition.cs" />
     <Compile Include="Interfaces\IEntity.cs" />
-    <Compile Include="Interfaces\IMetadata.cs" />
     <Compile Include="Interfaces\IMetadataProvider.cs" />
     <Compile Include="Interfaces\IPublish_T.cs" />
     <Compile Include="Interfaces\IThingDeserializer.cs" />
@@ -135,7 +163,7 @@
     <Compile Include="Interfaces\IDeferredEntitiesList.cs" />
     <Compile Include="Interfaces\ISystemConfiguration.cs" />
     <Compile Include="Interfaces\ILanguage.cs" />
-    <Compile Include="Interfaces\IIsMetadata.cs" />
+    <Compile Include="Interfaces\IMetadataFor.cs" />
     <Compile Include="Interfaces\IDimension.cs" />
     <Compile Include="Interfaces\IEntityLight.cs" />
     <Compile Include="Interfaces\IRelatedEntities.cs" />
@@ -151,18 +179,22 @@
     <Compile Include="Persistence\Interfaces\IImportExportEnvironment.cs" />
     <Compile Include="Interfaces\IRepositoryImporter.cs" />
     <Compile Include="Persistence\Interfaces\IStorage.cs" />
-    <Compile Include="Persistence\Logging\Message.cs" />
-    <Compile Include="Persistence\Logging\ImportError.cs" />
-    <Compile Include="Persistence\Logging\ImportErrorCode.cs" />
-    <Compile Include="Persistence\Logging\ImportErrorLog.cs" />
-    <Compile Include="Persistence\Logging\LogItem.cs" />
-    <Compile Include="Persistence\Logging\LocalizedDescriptionAttribute.cs" />
-    <Compile Include="Persistence\Logging\MessageTypes.cs" />
     <Compile Include="Persistence\SaveOptions.cs" />
     <Compile Include="Persistence\Versions\ItemHistory.cs" />
+    <Compile Include="Plumbing\AssemblyHandling.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Types\Builder\Settings.cs" />
+    <Compile Include="Types\Builder\ContentTypeMetadata.cs" />
+    <Compile Include="Types\Builder\Entity.cs" />
+    <Compile Include="Types\Builder\String.cs" />
+    <Compile Include="Types\Global.cs" />
+    <Compile Include="Types\Global_Code.cs" />
+    <Compile Include="Types\Global_Runtime.cs" />
+    <Compile Include="Types\TypesBase.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Logging\Import\" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>

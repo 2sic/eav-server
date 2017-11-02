@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence;
@@ -28,8 +31,8 @@ namespace ToSic.Eav.Apps.Parts
         public bool Publish(int entityId, bool state)
         {
             Log.Add("publish id:" + entityId + ", state:" + state);
-            _appManager.DataController.Publishing.PublishDraftInDbEntity(entityId); 
-            SystemManager.Purge(_appManager.AppId);
+            AppManager.DataController.Publishing.PublishDraftInDbEntity(entityId); 
+            SystemManager.Purge(AppManager.AppId);
             return state;
         }
 
@@ -45,11 +48,11 @@ namespace ToSic.Eav.Apps.Parts
                 try
                 {
                     Log.Add("publish id:" + eid);
-                    _appManager.DataController.Publishing.PublishDraftInDbEntity(eid);
+                    AppManager.DataController.Publishing.PublishDraftInDbEntity(eid);
                 }
                 catch (Repository.Efc.Parts.EntityAlreadyPublishedException) { }
             }
-            SystemManager.Purge(_appManager.AppId);
+            SystemManager.Purge(AppManager.AppId);
         }
 
         #region Delete
@@ -59,67 +62,76 @@ namespace ToSic.Eav.Apps.Parts
         /// </summary>
         /// <param name="id"></param>
         /// <param name="contentType">optional content-type name to check before deleting</param>
-        /// <param name="force"></param>
+        /// <param name="force">force delete even if there are relationships, resulting in removal of the relationships</param>
+        /// <param name="skipIfCant">skip deleting if relationships exist and force is false</param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public bool Delete(int id, string contentType = null, bool force = false)
+        public bool Delete(int id, string contentType = null, bool force = false, bool skipIfCant = false)
         {
             Log.Add("delete id:" + id + ", type:" + contentType + ", force:" + force);
 
             #region do optional type-check and if necessary, throw error
-            var found = _appManager.Read.Entities.Get(id);
+            var found = AppManager.Read.Entities.Get(id);
             if (contentType != null && found.Type.Name != contentType && found.Type.StaticName != contentType)
                 throw new KeyNotFoundException("Can't find " + id + "of type '" + contentType + "', will not delete.");
             #endregion
 
             #region check if we can delete, or throw exception
-            var canDelete = _appManager.DataController.Entities.CanDeleteEntity(id);
-            if (!canDelete.Item1 && !force)
+            var canDelete = AppManager.DataController.Entities.CanDeleteEntity(id);
+            if (!canDelete.Item1 && !force && !skipIfCant)
                 throw new InvalidOperationException($"Item {id} cannot be deleted. It is used by other items: {canDelete.Item2}");
             #endregion
 
-            var ok = _appManager.DataController.Entities.DeleteEntity(id, true, true);
-            SystemManager.Purge(_appManager.AppId);
+            var ok = AppManager.DataController.Entities.DeleteEntity(id, true, true);
+            SystemManager.Purge(AppManager.AppId);
             return ok;
         }
 
         public bool Delete(Guid guid)
         {
             Log.Add($"delete guid:{guid}");
-            return _appManager.DataController.Entities.DeleteEntity(_appManager.DataController.Entities
-                .GetMostCurrentDbEntity(guid).EntityId);
+            // todo: check if getmostcurrentdb... can't be in the app-layer
+            return Delete(AppManager.DataController.Entities.GetMostCurrentDbEntity(guid).EntityId);
+            //return AppManager.DataController.Entities.DeleteEntity(AppManager.DataController.Entities
+            //    .GetMostCurrentDbEntity(guid).EntityId);
+        }
+
+        public bool Delete(List<int> ids)
+        {
+            Log.Add($"delete many:{ids.Count}");
+            return ids.Aggregate(true, (current, entityId) => current && Delete(entityId, null, false, true));
         }
 
         #endregion
-        
+
         public int Save(IEntity entity, SaveOptions saveOptions = null) => Save(new List<IEntity> {entity}, saveOptions).FirstOrDefault();
 
         public List<int> Save(List<IEntity> entities, SaveOptions saveOptions = null)
         {
             Log.Add("save count:" + entities.Count + ", with Options:" + (saveOptions != null));
-            saveOptions = saveOptions ?? SaveOptions.Build(_appManager.ZoneId);
+            saveOptions = saveOptions ?? SaveOptions.Build(AppManager.ZoneId);
             //saveOptions.DelayRelationshipSave = true; // save all relationships in one round when ready...
             List<int> ids = null;
-            _appManager.DataController.DoWhileQueueingRelationships(() =>
+            AppManager.DataController.DoWhileQueueingRelationships(() =>
             {
-                ids = _appManager.DataController.Entities.SaveEntity(entities, saveOptions);
+                ids = AppManager.DataController.Entities.SaveEntity(entities, saveOptions);
             });
             // clear cache of this app
-            SystemManager.Purge(_appManager.AppId);
+            SystemManager.Purge(AppManager.AppId);
             return ids;
         }
 
-        public Tuple<int, Guid> Create(string typeName, Dictionary<string, object> values, IIsMetadata isMetadata = null)
+        public Tuple<int, Guid> Create(string typeName, Dictionary<string, object> values, IMetadataFor metadataFor = null)
         {
-            Log.Add($"create type:{typeName}, meta:{isMetadata}, val-count:{values.Count}");
-            var newEnt = new Entity(_appManager.AppId, 0, typeName, values);
-            if (isMetadata != null) newEnt.SetMetadata(isMetadata as Metadata);
+            Log.Add($"create type:{typeName}, meta:{metadataFor}, val-count:{values.Count}");
+            var newEnt = new Entity(AppManager.AppId, 0, typeName, values);
+            if (metadataFor != null) newEnt.SetMetadata(metadataFor as MetadataFor);
             var eid = Save(newEnt);
 
-            return new Tuple<int, Guid>(eid, _appManager.DataController.Entities.TempLastSaveGuid);
+            return new Tuple<int, Guid>(eid, AppManager.DataController.Entities.TempLastSaveGuid);
         }
 
-        public void SaveMetadata(Metadata target, string typeName, Dictionary<string, object> values)
+        public void SaveMetadata(MetadataFor target, string typeName, Dictionary<string, object> values)
         {
             Log.Add("save metadata target:" + target.KeyNumber + "/" + target.KeyGuid + ", values count:" + values.Count);
 
@@ -127,12 +139,12 @@ namespace ToSic.Eav.Apps.Parts
                 throw new NotImplementedException("atm this command only creates metadata for entities with id-keys");
 
             // see if a metadata already exists which we would update
-            var existingEntity = _appManager.Cache.LightList.FirstOrDefault(e => e.Metadata?.TargetType == target.TargetType && e.Metadata?.KeyNumber == target.KeyNumber);
+            var existingEntity = AppManager.Cache.LightList.FirstOrDefault(e => e.MetadataFor?.TargetType == target.TargetType && e.MetadataFor?.KeyNumber == target.KeyNumber);
             if (existingEntity != null)
                 UpdateParts(existingEntity.EntityId, values);
             else
             {
-                var saveEnt = new Entity(_appManager.AppId, 0, typeName, values);
+                var saveEnt = new Entity(AppManager.AppId, 0, typeName, values);
                 saveEnt.SetMetadata(target);
                 Save(saveEnt);
             }
@@ -145,12 +157,12 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="values"></param>
         public void UpdateParts(int id, Dictionary<string, object> values)
         {
-            var saveOptions = SaveOptions.Build(_appManager.ZoneId);
+            var saveOptions = SaveOptions.Build(AppManager.ZoneId);
             saveOptions.PreserveUntouchedAttributes = true;
             saveOptions.PreserveUnknownLanguages = true;
 
-            var orig = _appManager.Cache.List[id];
-            var tempEnt = new Entity(_appManager.AppId, 0, "", values);
+            var orig = AppManager.Cache.List[id];
+            var tempEnt = new Entity(AppManager.AppId, 0, "", values);
             var saveEnt = new EntitySaver(Log).CreateMergedForSaving(orig, tempEnt, saveOptions);
             Save(saveEnt, saveOptions);
         }
@@ -166,19 +178,38 @@ namespace ToSic.Eav.Apps.Parts
         public int GetOrCreate(Guid newGuid, string contentTypeName, Dictionary<string, object> values)
         {
             Log.Add($"get or create guid:{newGuid}, type:{contentTypeName}, val-count:{values.Count}");
-            if (_appManager.DataController.Entities.EntityExists(newGuid))
+            if (AppManager.DataController.Entities.EntityExists(newGuid))
             {
                 // check if it's deleted - if yes, resurrect
-                var existingEnt = _appManager.DataController.Entities.GetEntitiesByGuid(newGuid).First();
+                var existingEnt = AppManager.DataController.Entities.GetEntitiesByGuid(newGuid).First();
                 if (existingEnt.ChangeLogDeleted != null)
                     existingEnt.ChangeLogDeleted = null;
 
                 return existingEnt.EntityId;
             }
 
-            var newE = new Entity(_appManager.AppId, newGuid, contentTypeName, values);
+            var newE = new Entity(AppManager.AppId, newGuid, contentTypeName, values);
             return Save(newE);
         }
 
+
+        public ExportListXml Exporter(IContentType contentType) 
+            => new ExportListXml(AppManager.Cache.AppDataPackage, contentType, Log);
+        public ExportListXml Exporter(string contentType) 
+            => new ExportListXml(AppManager.Cache.AppDataPackage, AppManager.Read.ContentTypes.Get(contentType), Log);
+
+        public ImportListXml Importer(
+            string contentTypeName,
+            Stream dataStream,
+            IEnumerable<string> languages,
+            string documentLanguageFallback,
+            ImportDeleteUnmentionedItems deleteSetting,
+            ImportResourceReferenceMode resolveReferenceMode)
+        {
+            var ct = AppManager.Read.ContentTypes.Get(contentTypeName);
+            return new ImportListXml(AppManager, ct, 
+                dataStream, languages, documentLanguageFallback, 
+                deleteSetting, resolveReferenceMode, Log);
+        }
     }
 }

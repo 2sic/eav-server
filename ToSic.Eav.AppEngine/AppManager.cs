@@ -4,7 +4,6 @@ using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Logging.Simple;
-using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Repository.Efc;
@@ -23,15 +22,13 @@ namespace ToSic.Eav.Apps
         public AppManager(IApp app, Log parentLog) : base(app, parentLog) { RenameLog();}
         public AppManager(int appId, Log parentLog) : base(appId, parentLog) { RenameLog();}
 
-        private void RenameLog()
-        {
-            Log.Rename("AppMan");
-        }
+        private void RenameLog() => Log.Rename("AppMan");
+
         #endregion
 
         #region Access the Runtime
 
-        public AppRuntime Read => _runtime ?? (_runtime = new AppRuntime(Data));
+        public AppRuntime Read => _runtime ?? (_runtime = new AppRuntime(Data, Log));
         private AppRuntime _runtime;
         #endregion
 
@@ -68,7 +65,7 @@ namespace ToSic.Eav.Apps
                 contentType = DataController.AttribSet.GetDbAttribSet(setName);
             else
             {
-                contentType = DataController.AttribSet.PrepareDbAttribSet(setName, label, setName, scope, /*true,*/ false, null);
+                contentType = DataController.AttribSet.PrepareDbAttribSet(setName, label, setName, scope, false, null);
                 DataController.SqlDb.SaveChanges();
             }
 
@@ -76,10 +73,8 @@ namespace ToSic.Eav.Apps
                 values = new Dictionary<string, object>();
 
             var newEnt = new Entity(AppId, 0, setName, values);
-            newEnt.SetMetadata(new Metadata { KeyNumber = DataController.AppId, TargetType = appAssignment });
+            newEnt.SetMetadata(new MetadataFor { KeyNumber = DataController.AppId, TargetType = appAssignment });
             Entities.Save(newEnt);
-
-            //DataController.Entities.AddEntity(contentType.AttributeSetId, values, new Metadata { KeyNumber = DataController.AppId, TargetType = appAssignment});
 
             SystemManager.Purge(ZoneId, AppId);
         }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Enums;
 using ToSic.Eav.Interfaces;
 
@@ -61,7 +62,7 @@ namespace ToSic.Eav.Data
                 case AttributeTypeEnum.Number:
                     return new Attribute<decimal?>(name, typeName);
                 case AttributeTypeEnum.Entity:
-                    return new Attribute<EntityRelationship>(name, typeName) { Values = new List<IValue> { Value.NullRelationship } };
+                    return new Attribute<EntityRelationship>(name, typeName) { Values = new List<IValue> { ValueBuilder.NullRelationship } };
                 // ReSharper disable RedundantCaseLabel
                 case AttributeTypeEnum.String:
                 case AttributeTypeEnum.Hyperlink:

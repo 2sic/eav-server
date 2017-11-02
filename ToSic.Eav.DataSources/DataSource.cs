@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
+using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.ValueProvider;
 
+// ReSharper disable once CheckNamespace
 namespace ToSic.Eav
 {
 	/// <summary>
@@ -35,16 +36,17 @@ namespace ToSic.Eav
 			return newSource;
 		}
 
-		/// <summary>
-		/// Get DataSource for specified sourceName/Type using Unity.
-		/// </summary>
-		/// <param name="sourceName">Full Qualified Type/Interface Name</param>
-		/// <param name="zoneId">ZoneId for this DataSource</param>
-		/// <param name="appId">AppId for this DataSource</param>
-		/// <param name="upstream">In-Connection</param>
-		/// <param name="valueCollectionProvider">Provides configuration values if needed</param>
-		/// <returns>A single DataSource</returns>
-		public static IDataSource GetDataSource(string sourceName, int? zoneId = null, int? appId = null, IDataSource upstream = null, IValueCollectionProvider valueCollectionProvider = null, Log parentLog = null)
+	    /// <summary>
+	    /// Get DataSource for specified sourceName/Type using Unity.
+	    /// </summary>
+	    /// <param name="sourceName">Full Qualified Type/Interface Name</param>
+	    /// <param name="zoneId">ZoneId for this DataSource</param>
+	    /// <param name="appId">AppId for this DataSource</param>
+	    /// <param name="upstream">In-Connection</param>
+	    /// <param name="valueCollectionProvider">Provides configuration values if needed</param>
+	    /// <param name="parentLog"></param>
+	    /// <returns>A single DataSource</returns>
+	    public static IDataSource GetDataSource(string sourceName, int? zoneId = null, int? appId = null, IDataSource upstream = null, IValueCollectionProvider valueCollectionProvider = null, Log parentLog = null)
 		{
 			var type = Type.GetType(sourceName);
 			if (type == null)
@@ -110,6 +112,7 @@ namespace ToSic.Eav
 	    /// <param name="appId">AppId for this DataSource</param>
 	    /// <param name="showDrafts">Indicates whehter Draft Entities should be returned</param>
 	    /// <param name="configProvider"></param>
+	    /// <param name="parentLog"></param>
 	    /// <returns>A single DataSource</returns>
 	    public static IDataSource GetInitialDataSource(int? zoneId = null, int? appId = null, bool showDrafts = false, ValueCollectionProvider configProvider = null, Log parentLog = null)
 	    {
@@ -153,46 +156,25 @@ namespace ToSic.Eav
 		/// Get DataSource having common MetaData, like Field MetaData
 		/// </summary>
 		/// <returns>IMetaDataSource (from ICache)</returns>
-		public static IMetaDataSource GetMetaDataSource(int? zoneId = null, int? appId = null)
+		public static IMetadataProvider GetMetaDataSource(int? zoneId = null, int? appId = null)
 		{
 			var zoneAppId = GetZoneAppId(zoneId, appId);
-			return (IMetaDataSource)GetCache(zoneAppId.Item1, zoneAppId.Item2);
+			return (IMetadataProvider)GetCache(zoneAppId.Item1, zoneAppId.Item2);
 		}
 
-		/// <summary>
-		/// Get all Installed DataSources
-		/// </summary>
-		/// <remarks>Objects that implement IDataSource</remarks>
-		public static IEnumerable<Type> GetInstalledDataSources()
-		{
-			var type = typeof(IDataSource);
-			var types = AppDomain.CurrentDomain.GetAssemblies()
-				.SelectMany(a => a.GetLoadableTypes())
-				.Where(t => type.IsAssignableFrom(t) && (!t.IsAbstract || t.IsInterface) && t != type);
-
-			return types;
-		}
+	    /// <summary>
+	    /// Get all Installed DataSources
+	    /// </summary>
+	    /// <remarks>Objects that implement IDataSource</remarks>
+	    public static IEnumerable<Type> GetInstalledDataSources(bool onlyForDesigner)
+	        => onlyForDesigner
+	            ? Plumbing.AssemblyHandling.FindClassesWithAttribute(
+                    typeof(IDataSource),
+	                typeof(PipelineDesignerAttribute), false)
+	            : Plumbing.AssemblyHandling.FindInherited(typeof(IDataSource));
 
 
 
 	}
 
-    internal static class Helper
-    {
-        /// <summary>
-        /// Get Loadable Types from an assembly
-        /// </summary>
-        /// <remarks>Source: http://stackoverflow.com/questions/7889228/how-to-prevent-reflectiontypeloadexception-when-calling-assembly-gettypes </remarks>
-        public static IEnumerable<Type> GetLoadableTypes(this Assembly assembly)
-        {
-            try
-            {
-                return assembly.GetTypes();
-            }
-            catch (ReflectionTypeLoadException e)
-            {
-                return e.Types.Where(t => t != null);
-            }
-        }
-    }
 }

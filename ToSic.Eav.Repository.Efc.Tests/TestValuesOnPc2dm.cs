@@ -2,6 +2,7 @@
 {
     public class TestValuesOnPc2Dm
     {
+        public int RootAppId = 1;
         public int AppId = 2;
         public int ZoneId = 2;
         public int LanguageId = 0; // 37 is also an option...

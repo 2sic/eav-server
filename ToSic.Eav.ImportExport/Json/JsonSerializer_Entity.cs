@@ -18,13 +18,13 @@ namespace ToSic.Eav.ImportExport.Json
         private JsonEntity ToJson(IEntity entity)
         {
             JsonMetadataFor mddic = null;
-            if (entity.Metadata.IsMetadata)
+            if (entity.MetadataFor.IsMetadata)
                 mddic = new JsonMetadataFor
                 {
-                    Target = App.GetMetadataType(entity.Metadata.TargetType),
-                    Guid = entity.Metadata.KeyGuid,
-                    Number = entity.Metadata.KeyNumber,
-                    String = entity.Metadata.KeyString
+                    Target = Factory.Resolve<IGlobalMetadataProvider>().GetType(entity.MetadataFor.TargetType),
+                    Guid = entity.MetadataFor.KeyGuid,
+                    Number = entity.MetadataFor.KeyNumber,
+                    String = entity.MetadataFor.KeyString
                 };
 
             var attributesInUse = entity.Attributes.Values

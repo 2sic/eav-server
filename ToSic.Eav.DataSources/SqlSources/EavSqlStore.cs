@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using ToSic.Eav.App;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.RootSources;
@@ -58,6 +59,6 @@ namespace ToSic.Eav.DataSources.SqlSources
 
 	    public Dictionary<int, Zone> GetAllZones() => Loader.Zones();
 
-	    public Dictionary<int, string> GetAssignmentObjectTypes() => Loader.MetadataTargetTypes();
+	    //public ImmutableDictionary<int, string> GetAssignmentObjectTypes() => Factory.Resolve<IGlobalMetadataProvider>().TargetTypes; // Loader.MetadataTargetTypes();
 	}
 }

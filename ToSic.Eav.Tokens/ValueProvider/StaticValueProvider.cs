@@ -3,10 +3,11 @@ using System.Collections.Generic;
 
 namespace ToSic.Eav.ValueProvider
 {
+	/// <inheritdoc />
 	/// <summary>
 	/// Property Accessor to test a Pipeline with Static Values
 	/// </summary>
-	public class StaticValueProvider : BaseValueProvider// IValueProvider
+	public class StaticValueProvider : BaseValueProvider
 	{
 		/// <summary>
 		/// List with static properties and Test-Values

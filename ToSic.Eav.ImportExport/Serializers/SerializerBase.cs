@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.App;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Types;
 
-// ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Persistence.Xml
+namespace ToSic.Eav.ImportExport.Serializers
 {
     public abstract class SerializerBase: IThingSerializer
     {
@@ -16,19 +16,28 @@ namespace ToSic.Eav.Persistence.Xml
         }
         private AppDataPackage _app;
 
+        public IContentType GetContentType(string staticName)
+            => Global.FindContentType(staticName) // note: will return null if not found
+               ?? (_types != null
+                   ? _types.FirstOrDefault(t => t.StaticName == staticName)
+                   : App.GetContentType(staticName)); // only use the App if really necessary...
+
         public void Initialize(AppDataPackage app)
         {
             App = app;
-            //return this;
+            AppId = app.AppId;
         }
 
-        protected IEntity Lookup(int entityId)
+        protected int AppId;
+        private IEnumerable<IContentType> _types;
+        public void Initialize(int appId, IEnumerable<IContentType> types, IDeferredEntitiesList allEntities)
         {
-            if (App == null)
-                throw new Exception($"Can't serialize entity {entityId} without the app package. Please initialize first, or provide a prepared entity");
-
-            return App.Entities[entityId];
+            AppId = appId;
+            _types = types;
+            _relList = allEntities;
         }
+
+        protected IEntity Lookup(int entityId) => App.Entities[entityId];
 
         public abstract string Serialize(IEntity entity);
 
@@ -37,6 +46,21 @@ namespace ToSic.Eav.Persistence.Xml
         public Dictionary<int, string> Serialize(List<int> entities) => entities.ToDictionary(x => x, x => Serialize(Lookup(x)));
 
         public Dictionary<int, string> Serialize(List<IEntity> entities) => entities.ToDictionary(e => e.EntityId, Serialize);
+
+
+
+        protected IDeferredEntitiesList RelLookupList
+        {
+            get
+            {
+                if (_relList != null) return _relList;
+                var appList = new AppDataPackageDeferredList();
+                appList.AttachApp(App);
+                _relList = appList;
+                return _relList;
+            }
+        }
+        private IDeferredEntitiesList _relList;
 
 
     }

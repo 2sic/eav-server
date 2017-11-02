@@ -1,35 +1,68 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data.Builder
 {
     /// <summary>
-    /// Helper commands to build an entity
-    /// Should only be used by internal system data handlers - not for "public" use
+    /// This is a helper environment to build entities based on different needs
+    /// It's basically different kinds of constructors, just to keep the primary 
+    /// Entity object lean and clear
     /// </summary>
     public static class EntityBuilder
     {
-        public static void SetGuid(this Entity entity, Guid newGuid) => entity.EntityGuid = newGuid;
+        /// <summary>
+        /// Create a new Entity from a data store (usually SQL backend)
+        /// </summary>
+        public static Entity EntityFromRepository(int appId, Guid entityGuid, int entityId, 
+            int repositoryId, IMetadataFor metadataFor, IContentType type, 
+            bool isPublished, IEnumerable<EntityRelationshipItem> allRelationships, 
+            DateTime modified, string owner, int version)
+        {
+            var e = EntityWithAllIdsAndType(appId, entityGuid, entityId, repositoryId,
+                type, isPublished, modified, owner, version);
 
-        public static void SetTitleField(this Entity entity, string name) => entity.TitleFieldName = name;
+            e.MetadataFor = metadataFor;
+            e.Attributes = new Dictionary<string, IAttribute>(StringComparer.OrdinalIgnoreCase);
 
-        public static void SetMetadata(this Entity entity, Metadata meta) => entity.Metadata = meta;
+            if (allRelationships == null)
+                allRelationships = new List<EntityRelationshipItem>();
+            e.Relationships = new RelationshipManager(e, allRelationships);
 
-        public static void SetType(this Entity entity, IContentType contentType) => entity.Type = contentType;
+            return e;
+        }
 
-        public static int? GetPublishedIdForSaving(this Entity entity) => entity.PublishedEntity?.EntityId ?? entity.PublishedEntityId;
-        public static int? ChangeIdForSaving(this Entity entity, int newId) => entity.EntityId = newId;
+        private static Entity EntityWithAllIdsAndType(int appId, Guid entityGuid, int entityId, 
+            int repositoryId, IContentType type, bool isPublished, 
+            DateTime modified, string owner, int version) 
+            => new Entity
+        {
+            AppId = appId,
+            EntityId = entityId,
+            Version = version,
+            EntityGuid = entityGuid,
+            Type = type,
+            IsPublished = isPublished,
+            RepositoryId = repositoryId,
+            Modified = modified,
+            Owner = owner
+        };
 
-        public static void SetPublishedIdForSaving(this Entity entity, int? publishedId) => entity.PublishedEntityId = publishedId;
+        /// <summary>
+        /// Create a new Entity based on an Entity and Attributes
+        /// Used in the Attribute-Filter, which generates a new entity with less properties
+        /// </summary>
+        public static Entity FullClone(IEntity entity, Dictionary<string, IAttribute> attributes, 
+            IEnumerable<EntityRelationshipItem> allRelationships)
+        {
+            var e = EntityWithAllIdsAndType(entity.AppId, entity.EntityGuid, entity.EntityId, entity.RepositoryId, entity.Type, 
+                entity.IsPublished, entity.Modified, entity.Owner, entity.Version);
+            e.TitleFieldName = entity.Title?.Name;
+            e.Attributes = attributes;
+            e.Relationships = new RelationshipManager(e, allRelationships);
 
-        public static List<ILanguage> GetUsedLanguages(this IEntity entity) => entity.Attributes?.Values
-            .SelectMany(v => v.Values)
-            .SelectMany(vl => vl.Languages)
-            .GroupBy(l => l.Key)
-            .Select(g => g.First())
-            .ToList() ?? new List<ILanguage>();
-
+            e.MetadataFor = ((MetadataFor)entity.MetadataFor).CloneIsMetadata();
+            return e;
+        }
     }
 }

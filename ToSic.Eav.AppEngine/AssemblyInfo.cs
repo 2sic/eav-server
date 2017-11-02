@@ -20,3 +20,4 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyFileVersion("4.5.0.*")]
 
 [assembly: InternalsVisibleTo("ToSic.Sxc.WebApi")]
+[assembly: InternalsVisibleTo("ToSic.Eav.Apps.Tests")]

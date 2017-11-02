@@ -1,14 +1,16 @@
 ﻿using System.Linq;
 using ToSic.Eav.DataSources;
 
+// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.ValueProvider
 {
+	/// <inheritdoc />
 	/// <summary>
 	/// Property Accessor to test a Pipeline with Static Values
 	/// </summary>
-	public class DataTargetValueProvider : BaseValueProvider// IPropertyAccess
+	public class DataTargetValueProvider : BaseValueProvider
 	{
-	    public IDataTarget _dataTarget;
+	    private readonly IDataTarget _dataTarget;
 
 		/// <summary>
 		/// List with static properties and Test-Values

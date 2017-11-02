@@ -7,8 +7,8 @@ namespace ToSic.Eav.UnitTests.ImportExport.Refactoring
     {
         #region TestValues
 
-        private int ZoneId = 1;
-        private int AppId = 1;
+        //private int ZoneId = 1;
+        //private int AppId = 1;
         #endregion
 
         #region Expected Blank Template Values

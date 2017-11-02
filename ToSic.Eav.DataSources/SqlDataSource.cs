@@ -5,13 +5,16 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Types.Attributes;
 
 namespace ToSic.Eav.DataSources
 {
+	/// <inheritdoc />
 	/// <summary>
 	/// Provide Entities from a SQL Server
 	/// </summary>
-	// ReSharper disable once InheritdocConsiderUsage
+	//[PipelineDesigner]
+    [ExpectsDataOfType(ContentTypes.ConfigSqlDataSource.StaticTypeName)]
 	public class SqlDataSource : ExternalDataDataSource
 	{
         // Note: of the standard SQL-terms, I will only allow exec|execute|select
@@ -97,9 +100,11 @@ namespace ToSic.Eav.DataSources
 		{
             // ReSharper disable once DoNotCallOverridableMethodsInConstructor
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, null, GetList));
-			Configuration.Add(TitleFieldKey, Constants.EntityFieldTitle);
-		    Configuration.Add(EntityIdFieldKey, Constants.EntityFieldId);// EntityIdDefaultColumnName);
-			Configuration.Add(ContentTypeKey, "[Settings:ContentType||SqlData]");
+			Configuration.Add(TitleFieldKey, "[Settings:EntityTitleField||" + Constants.EntityFieldTitle + "]");
+
+            Configuration.Add(EntityIdFieldKey, "[Settings:EntityIdField||" + Constants.EntityFieldId + "]");// EntityIdDefaultColumnName);
+
+            Configuration.Add(ContentTypeKey, "[Settings:ContentType||SqlData]");
 			Configuration.Add(SelectCommandKey, "[Settings:SelectCommand]");
 			Configuration.Add(ConnectionStringKey, ConnectionStringDefault);
 			Configuration.Add(ConnectionStringNameKey, "[Settings:ConnectionStringName]");
@@ -182,7 +187,7 @@ namespace ToSic.Eav.DataSources
 
             // Check if SQL contains forbidden terms
             if(ForbiddenTermsInSelect.IsMatch(SelectCommand))
-                throw new InvalidOperationException("Found forbidden words in the select-command. Cannot continue.");
+                throw new InvalidOperationException($"{GetType().Name} - Found forbidden words in the select-command. Cannot continue.");
 
 	        var list = new List<IEntity>();
 
@@ -198,7 +203,11 @@ namespace ToSic.Eav.DataSources
 			        throw new Exception("error trying to load exception string", ex);
 			    }
 
-		    using (var connection = new SqlConnection(ConnectionString))
+            // make sure we have one - often it's empty, if the query hasn't been configured yet
+            if (string.IsNullOrWhiteSpace(ConnectionString))
+		        throw new Exception($"{GetType().Name} - The ConnectionString property has not been initialized");
+
+            using (var connection = new SqlConnection(ConnectionString))
 			{
 				var command = new SqlCommand(SelectCommand, connection);
 
@@ -224,7 +233,7 @@ namespace ToSic.Eav.DataSources
                         casedEntityId = columNames.FirstOrDefault(c => string.Equals(c, casedEntityId, StringComparison.InvariantCultureIgnoreCase));
 					    if (casedEntityId == null)
 					        throw new Exception(
-					            $"SQL Result doesn't contain an EntityId Column with Name '{EntityIdField}'. " +
+					            $"{GetType().Name} - SQL Result doesn't contain an EntityId Column with Name '{EntityIdField}'. " +
 					            "Ideally use something like Select ID As EntityId...");
 					}
 
@@ -234,7 +243,7 @@ namespace ToSic.Eav.DataSources
 				        casedTitle = columNames.FirstOrDefault(c => string.Equals(c, casedTitle, StringComparison.InvariantCultureIgnoreCase));
 				        if (casedTitle == null)
 				            throw new Exception(
-				                $"SQL Result doesn't contain an EntityTitle Column with Name '{TitleField}'. " +
+				                $"{GetType().Name} - SQL Result doesn't contain an EntityTitle Column with Name '{TitleField}'. " +
 				                "Ideally use something like Select FullName As EntityTitle...");
 				    }
 

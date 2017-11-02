@@ -13,10 +13,8 @@ using ToSic.Eav.ImportExport.Environment;
 using ToSic.Eav.ImportExport.Xml;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
-using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Persistence.Xml;
-using ToSic.Eav.Repository.Efc;
 
 namespace ToSic.Eav.Apps.ImportExport
 {
@@ -31,7 +29,7 @@ namespace ToSic.Eav.Apps.ImportExport
         public List<TennantFileItem> ReferencedFiles = new List<TennantFileItem>();
         private bool _isAppExport;
 
-        public string[] AttributeSetIDs;
+        public string[] AttributeSetNamesOrIds;
         public string[] EntityIDs;
         public List<Message> Messages = new List<Message>();
 
@@ -47,30 +45,40 @@ namespace ToSic.Eav.Apps.ImportExport
 
         #region Constructor stuff
 
-        protected void Constructor(int zoneId, int appId, string appStaticName, bool appExport, string[] attrSetIds, string[] entityIds, Log parentLog)
+        //protected void Constructor(int zoneId, int appId, string appStaticName, bool appExport, string[] attrSetIds, string[] entityIds, Log parentLog)
+        //{
+        //    ZoneId = zoneId;
+        //    Log = new Log("Xml.Exp", parentLog, "start XML exporter");
+        //    AppPackage = new Efc11Loader(DbDataController.Instance(zoneId, appId, Log).SqlDb).AppPackage(appId, parentLog: Log);
+        //    Serializer = new XmlSerializer();
+        //    Serializer.Initialize(AppPackage);
+
+        //    _appStaticName = appStaticName;
+        //    _isAppExport = appExport;
+        //    AttributeSetIDs = attrSetIds;
+        //    EntityIDs = entityIds;
+        //}
+
+        protected void Constructor(int zoneId, AppRuntime app, string appStaticName, bool appExport, string[] typeNamesOrIds, string[] entityIds, Log parentLog)
         {
             ZoneId = zoneId;
-            Log = new Log("Xml.Exp", parentLog, "start XML exporter");
-            AppPackage = new Efc11Loader(DbDataController.Instance(zoneId, appId, Log).SqlDb).AppPackage(appId, parentLog: Log);
+            Log = new Log("Xml.Exp", parentLog, "start XML exporter using app-package");
+            AppPackage = app.Package;
             Serializer = new XmlSerializer();
             Serializer.Initialize(AppPackage);
 
             _appStaticName = appStaticName;
             _isAppExport = appExport;
-            AttributeSetIDs = attrSetIds;
+            AttributeSetNamesOrIds = typeNamesOrIds;
             EntityIDs = entityIds;
         }
+
 
         /// <summary>
         /// Not that the overload of this must take care of creating the EavAppContext and calling the Constructor
         /// </summary>
-        /// <param name="zoneId"></param>
-        /// <param name="appId"></param>
-        /// <param name="appExport"></param>
-        /// <param name="attrSetIds"></param>
-        /// <param name="entityIds"></param>
         /// <returns></returns>
-        public abstract XmlExporter Init(int zoneId, int appId, bool appExport, string[] attrSetIds, string[] entityIds, Log parentLog);
+        public abstract XmlExporter Init(int zoneId, int appId, AppRuntime appRuntime, bool appExport, string[] attrSetIds, string[] entityIds, Log parentLog);
 
         private void EnsureThisIsInitialized()
         {
@@ -148,10 +156,17 @@ namespace ToSic.Eav.Apps.ImportExport
             var attributeSets = new XElement(XmlConstants.AttributeSets);
 
             // Go through each AttributeSetID
-            foreach (var attributeSetId in AttributeSetIDs)
+            foreach (var attributeSetId in AttributeSetNamesOrIds)
             {
-                var id = int.Parse(attributeSetId);
-                var set = (ContentType)AppPackage.ContentTypes[id];
+                //var id = int.Parse(attributeSetId);
+                var set = int.TryParse(attributeSetId, out var id)
+                    ? (ContentType) AppPackage.GetContentType(id)
+                    : (ContentType) AppPackage.GetContentType(attributeSetId);  // in case it's the name, not the number
+
+                // skip system/code-types
+                if((set.ParentId ?? 0) == Constants.SystemContentTypeFakeParent)
+                    continue;
+
                 var attributes = new XElement(XmlConstants.Attributes);
 
                 // Add all Attributes to AttributeSet including meta informations
@@ -181,7 +196,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 // Add Ghost-Info if content type inherits from another content type
                 if (set.ParentId.HasValue)
                 {
-                    var parentStaticName = AppPackage.ContentTypes[set.ParentId.Value].StaticName;
+                    var parentStaticName = set.StaticName;// AppPackage.GetContentType(set.ParentId.Value).StaticName;
                     attributeSet.Add(new XAttribute(XmlConstants.AttributeSetParentDef, parentStaticName));
                 }
 
@@ -256,7 +271,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     {
                         case XmlConstants.TemplateContentTypeId:
                             var eid = int.Parse(valueString);
-                            var attributeSet = AppPackage.ContentTypes[eid];
+                            var attributeSet = AppPackage.GetContentType(eid);//.ContentTypes[eid];
                             value.Attribute(XmlConstants.ValueAttr)?.SetValue(attributeSet != null ? attributeSet.StaticName : string.Empty);
                             break;
                         case XmlConstants.TemplateDemoItemId:

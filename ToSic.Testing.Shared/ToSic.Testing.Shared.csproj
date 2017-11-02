@@ -37,6 +37,15 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dbg Testing|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Dbg Testing\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.EntityFrameworkCore, Version=1.1.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.EntityFrameworkCore.1.1.1\lib\net451\Microsoft.EntityFrameworkCore.dll</HintPath>
@@ -106,13 +115,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\2SexyContent\Web\DesktopModules\ToSIC_SexyContent\2sxc.csproj">
-      <Project>{d4250011-b9be-4326-9736-4f0122c79802}</Project>
-      <Name>2sxc</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ToSic.Eav.AppEngine\ToSic.Eav.Apps.csproj">
       <Project>{fa1b4495-6b85-400f-a5e3-0e292ccbfae2}</Project>
       <Name>ToSic.Eav.Apps</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ToSic.Eav.Core.Tests\ToSic.Eav.Core.Tests.csproj">
+      <Project>{afed35b5-8e43-4f46-8e4d-fc3f07244d8b}</Project>
+      <Name>ToSic.Eav.Core.Tests</Name>
     </ProjectReference>
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj">
       <Project>{82f94588-269b-4cdd-98d1-d5cb14c39090}</Project>

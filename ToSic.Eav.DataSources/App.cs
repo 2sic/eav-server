@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.DataSources.Caches;
+using ToSic.Eav.Interfaces;
 using static System.Int32;
 
 namespace ToSic.Eav.DataSources
@@ -130,25 +131,25 @@ namespace ToSic.Eav.DataSources
 			// now provide all data streams for all data types; only need the cache for the content-types list, don't use it as the source...
 			// because the "real" source already applies filters like published
 			var cache = (BaseCache)DataSource.GetCache(zoneId: ZoneId, appId: AppId);
-			var listOfTypes = cache.GetContentTypes();
+			var listOfTypes = cache.GetContentTypes();//.Values;
 		    foreach (var contentType in listOfTypes)
 		    {
-		        var typeName = contentType.Value.Name;
+		        var typeName = contentType.Name;
 		        if (typeName != Constants.DefaultStreamName && !typeName.StartsWith("@") && !_out.ContainsKey(typeName))
 		        {
 		            var ds = DataSource.GetDataSource<EntityTypeFilter>(ZoneId, AppId, upstreamDataSource, ConfigurationProvider, parentLog:Log);
-		            ds.TypeName = contentType.Value.Name;
+		            ds.TypeName = contentType.Name;
 
 		            ds.Out[Constants.DefaultStreamName].AutoCaching = true; // enable auto-caching 
 
-		            _out.Add(contentType.Value.Name, ds.Out[Constants.DefaultStreamName]);
+		            _out.Add(contentType.Name, ds.Out[Constants.DefaultStreamName]);
 		        }
 		    }
 		}
 
-	    private IMetaDataSource _metadata;
+	    private IMetadataProvider _metadata;
 
-	    public IMetaDataSource Metadata => _metadata ?? (_metadata = DataSource.GetMetaDataSource(ZoneId, AppId));
+	    public IMetadataProvider Metadata => _metadata ?? (_metadata = DataSource.GetMetaDataSource(ZoneId, AppId));
 	}
 
 }

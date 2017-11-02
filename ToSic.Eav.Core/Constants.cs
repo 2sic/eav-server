@@ -159,10 +159,13 @@ namespace ToSic.Eav
         public const string ContentAppName = "Content";
         public const string AppAssignmentName = "App";
 
+        public const string AppConfigContentType = "2SexyContent-App";
+
         #endregion
 
         public const string DynamicType = "dynamic";
 
         public const int TransientAppId = -9999;
+        public const int SystemContentTypeFakeParent = -9203503; // just a very strange, dummy number
     }
 }

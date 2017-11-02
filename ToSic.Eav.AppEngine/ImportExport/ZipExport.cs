@@ -129,15 +129,16 @@ namespace ToSic.Eav.Apps.ImportExport
         private XmlExporter GenerateExportXml(bool includeContentGroups, bool resetAppGuid)
         {
             // Get Export XML
-            var attributeSets = new AppRuntime(_zoneId, _appId).ContentTypes.FromScope(includeAttributeTypes: true);
-            attributeSets = attributeSets.Where(a => !((IContentTypeShareable)a).AlwaysShareConfiguration);
+            var runtime = new AppRuntime(_zoneId, _appId, Log);
+            var attributeSets = runtime.ContentTypes.FromScope(includeAttributeTypes: true);
+            attributeSets = attributeSets.Where(a => !((a as IUsesSharedDefinition)?.AlwaysShareConfiguration ?? false));
 
-            var attributeSetIds = attributeSets.Select(p => p.ContentTypeId.ToString()).ToArray();
-            var templateTypeId = SystemRuntime.GetMetadataType(Settings.TemplateContentType);
+            var contentTypeNames = attributeSets.Select(p => p.StaticName).ToArray();
+            var templateTypeId = SystemRuntime.MetadataType(Settings.TemplateContentType);
             var entities =
                 DataSource.GetInitialDataSource(_zoneId, _appId).Out["Default"].List.Where(
-                    e => e.Value.Metadata.TargetType != templateTypeId
-                         && e.Value.Metadata.TargetType != Constants.MetadataForAttribute).ToList();
+                    e => e.Value.MetadataFor.TargetType != templateTypeId
+                         && e.Value.MetadataFor.TargetType != Constants.MetadataForAttribute).ToList();
 
             if (!includeContentGroups)
                 entities = entities.Where(p => p.Value.Type.StaticName != _sexycontentContentgroupName).ToList();
@@ -145,8 +146,9 @@ namespace ToSic.Eav.Apps.ImportExport
             var entityIds = entities
                 .Select(e => e.Value.EntityId.ToString()).ToArray();
 
+
             var xmlExport = Factory.Resolve<XmlExporter>()
-                .Init(_zoneId, _appId, true, attributeSetIds, entityIds, Log);
+                .Init(_zoneId, _appId, runtime, true, contentTypeNames, entityIds, Log);
             // var xmlExport = Factory.Container.Resolve<XmlExporter>(new ParameterOverrides { { "zoneId", _zoneId }, { "appId", _appId}, {"appExport", true}, { "contentTypeIds", attributeSetIds }, {"entityIds", entityIds} });
             // new ToSxcXmlExporter(_zoneId, _appId, true, attributeSetIds, entityIds);
 
@@ -169,7 +171,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="targetPath"></param>
         private void AddInstructionsToPackageFolder(string targetPath)
         {
-            var srcPath = HttpContext.Current.Server.MapPath(Path.Combine(Settings.ToSexyDirectory, "SexyContent\\ImportExport\\Instructions"));
+            var srcPath = HttpContext.Current.Server.MapPath(Path.Combine(Settings.ModuleDirectory, "SexyContent\\ImportExport\\Instructions"));
 
             foreach (var file in Directory.GetFiles(srcPath))
                 File.Copy(file, Path.Combine(targetPath, Path.GetFileName(file)));

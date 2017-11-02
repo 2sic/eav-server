@@ -28,6 +28,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <NoWarn>0414</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -36,6 +37,16 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dbg Testing|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Dbg Testing\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <NoWarn>0414</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.EntityFrameworkCore, Version=1.1.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
@@ -141,10 +152,6 @@
     <ProjectReference Include="..\ToSic.Eav.ImportExport\ToSic.Eav.ImportExport.csproj">
       <Project>{5A75CD35-99F4-4CF0-944A-DC0F5D68B430}</Project>
       <Name>ToSic.Eav.ImportExport</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ToSic.Eav.Persistence.EFC11.Tests\ToSic.Eav.Persistence.Efc.Tests.csproj">
-      <Project>{eb8491a7-4147-4a18-ac74-cd1be957ff48}</Project>
-      <Name>ToSic.Eav.Persistence.Efc.Tests</Name>
     </ProjectReference>
     <ProjectReference Include="..\ToSic.Eav.Persistence.EFC11\ToSic.Eav.Persistence.Efc.csproj">
       <Project>{0b6f21c6-e066-419e-9a6b-c34ffd668a16}</Project>

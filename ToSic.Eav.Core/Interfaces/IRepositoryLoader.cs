@@ -10,7 +10,7 @@ namespace ToSic.Eav.Interfaces
         /// <summary>
         /// Get all ContentTypes for specified AppId. If called multiple times it loads from a private field.
         /// </summary>
-        IDictionary<int, IContentType> ContentTypes(int appId);
+        IList<IContentType> ContentTypes(int appId, IDeferredEntitiesList source);
 
         // 2017-06-08 disabled for now, as not in use...
         /// <summary>
@@ -24,8 +24,6 @@ namespace ToSic.Eav.Interfaces
         /// <param name="parentLog">parent logger</param>
         /// <returns>An object with everything which an app has, usually for caching</returns>
         AppDataPackage AppPackage(int appId, int[] entityIds = null, bool entitiesOnly = false, Log parentLog = null);
-
-        Dictionary<int, string> MetadataTargetTypes();
 
 
         Dictionary<int, Zone> Zones();

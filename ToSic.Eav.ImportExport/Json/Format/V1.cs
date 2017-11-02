@@ -32,10 +32,9 @@ namespace ToSic.Eav.ImportExport.Json.Format
         public Guid Guid;
         public JsonType Type;
         public JsonAttributes Attributes;
-        public string Owner;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public string Owner;
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public JsonMetadataFor For;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public JsonMetadataFor For;
     }
 
     internal class JsonAttributes
@@ -63,6 +62,7 @@ namespace ToSic.Eav.ImportExport.Json.Format
         public string Description;
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public List<JsonAttributeDefinition> Attributes;
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public JsonContentTypeShareable Sharing;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public List<JsonEntity> Metadata;
     }
 
     internal class JsonContentTypeShareable
@@ -70,6 +70,8 @@ namespace ToSic.Eav.ImportExport.Json.Format
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)] public bool AlwaysShare;
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)] public int ParentZoneId;
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)] public int ParentAppId;
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore, 
+            NullValueHandling = NullValueHandling.Ignore)] public int? ParentId;
     }
 
     internal class JsonAttributeDefinition
@@ -77,7 +79,7 @@ namespace ToSic.Eav.ImportExport.Json.Format
         public string Name;
         public string Type;
         public bool IsTitle;
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public List<JsonEntity> Items;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public List<JsonEntity> Metadata;
     }
 
 }

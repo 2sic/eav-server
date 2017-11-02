@@ -62,7 +62,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         }
 
         /// <summary>
-        /// Persist modified Entity to DataTimeline
+        /// Persist Entity to DataTimeline - but look up the entity either now, or place it in queue (to serialize it after changes are saved)
         /// </summary>
         internal void SaveEntity(int entityId, Guid entityGuid, bool useDelayedSerialize)
         {
@@ -90,21 +90,23 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Convert an entity to xml and add to saving queue
         /// </summary>
-        private void SerializeEntityAndAddToQueue(IThingSerializer serializer, int entityId, Guid entityGuid)
-        {
-            var entityModelSerialized = serializer.Serialize(entityId);
-            var timelineItem = new ToSicEavDataTimeline
+        private void SerializeEntityAndAddToQueue(IThingSerializer serializer, int entityId, Guid entityGuid) => SaveEntity(entityId, entityGuid, serializer.Serialize(entityId));
+
+        /// <summary>
+        /// Save an entity to versioning, which is already serialized
+        /// </summary>
+        public void SaveEntity(int entityId, Guid entityGuid, string serialized)
+            => _queue.Add(new ToSicEavDataTimeline
             {
-                SourceTable = EntitiesTableName, Operation = Constants.DataTimelineEntityJson,
+                SourceTable = EntitiesTableName,
+                Operation = Constants.DataTimelineEntityJson,
                 NewData = "",
-                Json=entityModelSerialized,
+                Json = serialized,
                 SourceGuid = entityGuid,
                 SourceId = entityId,
                 SysLogId = GetChangeLogId(),
                 SysCreatedDate = DateTime.Now
-            };
-            _queue.Add(timelineItem);
-        }
+            });
 
         /// <summary>
         /// Persist items is queue

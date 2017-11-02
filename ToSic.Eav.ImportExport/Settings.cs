@@ -14,8 +14,8 @@
             ".data"
         };
 
-        public static readonly string TemporaryDirectory = "~/DesktopModules/ToSIC_SexyContent/_";
-        public static readonly string ToSexyDirectory = "~/DesktopModules/ToSIC_SexyContent";
+        public static readonly string ModuleDirectory = "~/desktopmodules/tosic_sexycontent";
+        public static readonly string TemporaryDirectory =  ModuleDirectory + "_";
         public const string TemplateContentType = "2SexyContent-Template";
     }
 }

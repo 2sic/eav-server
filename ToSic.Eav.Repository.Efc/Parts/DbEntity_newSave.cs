@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Enums;
+using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Efc.Models;
@@ -12,7 +14,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
 {
     public partial class DbEntity
     {
+        public const int RepoIdForJsonEntities = 1;
+
         private List<DimensionDefinition> _zoneLanguages;
+
+        private readonly JsonSerializer _jsonifier = new JsonSerializer();
 
         internal int SaveEntity(IEntity newEnt, SaveOptions so)
         {
@@ -38,8 +44,12 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     throw new Exception("found languages in save which are not available in environment - used has " + usedLanguages.Count + " target has " + _zoneLanguages.Count + " used-list: '" + string.Join(",", usedLanguages.Select(l => l.Key).ToArray()) + "'");
             Log.Add($"lang checks - zone language⋮{_zoneLanguages.Count}, usedLanguages⋮{usedLanguages.Count}");
             Log.Add(() => $"langs zone:[{string.Join(",", _zoneLanguages.Select(z => z.EnvironmentKey))}] used:[{string.Join(",", usedLanguages.Select(u => u.Key))}]");
+            
             #endregion Test languages exist
 
+            // check if saving should be with db-type or with the plain json
+            var saveJson = newEnt.Type.Source != Repositories.Sql;
+            Log.Add($"save json:{saveJson}");
             #endregion Step 1
 
 
@@ -65,10 +75,15 @@ namespace ToSic.Eav.Repository.Efc.Parts
             }
             var isNew = newEnt.EntityId <= 0;   // no remember how we want to work...
 
-            var contentTypeId = DbContext.AttribSet.GetIdWithEitherName(newEnt.Type.StaticName);
-            var attributeDefs = DbContext.AttributesDefinition.GetAttributeDefinitions(contentTypeId).ToList();
-            Log.Add($"header checked type:{contentTypeId}, attribDefs⋮{attributeDefs.Count}");
-            Log.Add(() => $"attribs: [{string.Join(",", attributeDefs.Select(a => a.AttributeId + ":" + a.StaticName))}]");
+            var contentTypeId = saveJson 
+                ? RepoIdForJsonEntities 
+                : DbContext.AttribSet.GetIdWithEitherName(newEnt.Type.StaticName);
+            var attributeDefs = saveJson
+                ? null
+                : DbContext.AttributesDefinition.GetAttributeDefinitions(contentTypeId).ToList();
+            Log.Add($"header checked type:{contentTypeId}, attribDefs⋮{attributeDefs?.Count}");
+            if (attributeDefs != null)
+                Log.Add(() => $"attribs: [{string.Join(",", attributeDefs.Select(a => a.AttributeId + ":" + a.StaticName))}]");
             #endregion Step 2
 
 
@@ -88,10 +103,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     Log.Add("create new...");
                     dbEnt = new ToSicEavEntities
                     {
-                        AssignmentObjectTypeId = newEnt.Metadata?.TargetType ?? Constants.NotMetadata,
-                        KeyNumber = newEnt.Metadata?.KeyNumber,
-                        KeyGuid = newEnt.Metadata?.KeyGuid,
-                        KeyString = newEnt.Metadata?.KeyString,
+                        AppId = DbContext.AppId,
+                        AssignmentObjectTypeId = newEnt.MetadataFor?.TargetType ?? Constants.NotMetadata,
+                        KeyNumber = newEnt.MetadataFor?.KeyNumber,
+                        KeyGuid = newEnt.MetadataFor?.KeyGuid,
+                        KeyString = newEnt.MetadataFor?.KeyString,
                         ChangeLogCreated = changeId,
                         ChangeLogModified = changeId,
                         EntityGuid = newEnt.EntityGuid != Guid.Empty ? newEnt.EntityGuid : Guid.NewGuid(),
@@ -99,11 +115,20 @@ namespace ToSic.Eav.Repository.Efc.Parts
                         PublishedEntityId = newEnt.IsPublished ? null : ((Entity) newEnt).GetPublishedIdForSaving(),
                         Owner = DbContext.UserName,
                         AttributeSetId = contentTypeId,
-                        Version = 1
+                        Version = 1,
+                        Json = null // use null, as we must wait to serialize till we have the entityId
                     };
 
                     DbContext.SqlDb.Add(dbEnt);
                     DbContext.SqlDb.SaveChanges();
+
+                    if (saveJson)
+                    {
+                        newEnt.ChangeIdForSaving(dbEnt.EntityId); // update this, as it was only just generated
+                        dbEnt.Json = _jsonifier.Serialize(newEnt);
+                        dbEnt.ContentType = newEnt.Type.StaticName;
+                        DbContext.SqlDb.SaveChanges();
+                    }
                     Log.Add($"create new i:{dbEnt.EntityId}, guid:{dbEnt.EntityGuid}");
 
                     #endregion
@@ -142,6 +167,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                     // increase version
                     dbEnt.Version++;
+                    (newEnt as Entity)?.VersionIncrease();
+                    dbEnt.Json = saveJson ? _jsonifier.Serialize(newEnt) : null;
 
                     // first, clean up all existing attributes / values (flush)
                     // this is necessary after remove, because otherwise EF state tracking gets messed up
@@ -154,57 +181,17 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                 #region Step 4: Save all normal values
 
-
-                foreach (var attribute in newEnt.Attributes.Values)
+                if (!saveJson)
+                    DbContext.DoAndSave(() =>
+                        SaveAttributesInDbModel(newEnt, so, attributeDefs, dbEnt, changeId)
+                    ); // save all the values we just added
+                else
                 {
-                    Log.Add($"add attrib:{attribute.Name}");
-                    // find attribute definition
-                    var attribDef =
-                        attributeDefs.SingleOrDefault(
-                            a => string.Equals(a.StaticName, attribute.Name, StringComparison.InvariantCultureIgnoreCase));
-                    if (attribDef == null)
-                    {
-                        if (!so.DiscardattributesNotInType)
-                            throw new Exception(
-                                $"trying to save attribute {attribute.Name} but can\'t find definition in DB");
-                        Log.Add("attribute not found, will skip according to save-options");
-                        continue;
-                    }
-                    if (attribDef.Type == AttributeTypeEnum.Entity.ToString())
-                    {
-                        Log.Add("type is entity, skip for now as relationships are processed later");
-                        continue;
-                    }
-
-                    foreach (var value in attribute.Values)
-                    {
-                        #region prepare languages - has extensive error reporting, to help in case any db-data is bad
-                        List<ToSicEavValuesDimensions> toSicEavValuesDimensions;
-                        try
-                        {
-                            toSicEavValuesDimensions = value.Languages?.Select(l => new ToSicEavValuesDimensions {
-                                DimensionId = _zoneLanguages.Single(ol => ol.Matches(l.Key)).DimensionId,
-                                ReadOnly = l.ReadOnly
-                            }).ToList();
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new Exception("something went wrong building the languages to save - your DB probably has some wrong language information which doesn't match; maybe even a duplicate entry for a language code - see https://github.com/2sic/2sxc/issues/1293", ex);
-                        }
-                        #endregion
-                        Log.Add(() => $"add attrib:{attribDef.AttributeId}/{attribDef.StaticName} vals⋮{attribute.Values?.Count}, dim⋮{toSicEavValuesDimensions?.Count}");
-
-                        dbEnt.ToSicEavValues.Add(new ToSicEavValues
-                        {
-                            AttributeId = attribDef.AttributeId,
-                            Value = value.Serialized ?? "",
-                            ChangeLogCreated = changeId, // todo: remove some time later
-                            ToSicEavValuesDimensions = toSicEavValuesDimensions
-                        });
-
-                    }
+                    if (isNew)
+                        Log.Add("won't save properties in db model as it's json");
+                    else
+                        ClearAttributesInDbModel(newEnt.EntityId);
                 }
-                DbContext.SqlDb.SaveChanges(); // save all the values we just added
 
                 #endregion
 
@@ -212,7 +199,15 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                 #region Step 5: Save / update all relationships
 
-                DbContext.Relationships.SaveRelationships(newEnt, dbEnt, attributeDefs, so);
+                if (!saveJson)
+                    DbContext.Relationships.SaveRelationships(newEnt, dbEnt, attributeDefs, so);
+                else
+                {
+                    if (isNew)
+                        Log.Add("won't save relationships in db model as it's json");
+                    else
+                        DbContext.Relationships.FlushChildrenRelationships(new List<int>() {newEnt.EntityId});
+                }
 
                 #endregion
 
@@ -220,7 +215,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                 #region Step 6: Ensure versioning
 
-                DbContext.Versioning.SaveEntity(dbEnt.EntityId, dbEnt.EntityGuid, useDelayedSerialize: true);
+                if (saveJson)
+                    DbContext.Versioning.SaveEntity(dbEnt.EntityId, dbEnt.EntityGuid, dbEnt.Json);
+                else
+                    DbContext.Versioning.SaveEntity(dbEnt.EntityId, dbEnt.EntityGuid, useDelayedSerialize: true);
 
                 #endregion
 
@@ -232,31 +230,125 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                 #endregion
 
-                //throw new Exception("test exception, don't want to persist till I'm sure it's pretty stable");
-                // finish transaction - finalize
             });
 
             Log.Add("save done for id:" + dbEnt?.EntityId);
             return dbEnt.EntityId;
         }
 
+        /// <summary>
+        /// Remove values and attached dimensions of these values from the DB
+        /// Important when updating json-entities, to ensure we don't keep trash around
+        /// </summary>
+        /// <param name="entityId"></param>
+        private void ClearAttributesInDbModel(int entityId)
+        {
+            var val = DbContext.SqlDb.ToSicEavValues
+                .Include(v => v.ToSicEavValuesDimensions)
+                .Where(v => v.EntityId == entityId)
+                .ToList();
+
+            if (val.Count == 0) return;
+
+            var dims = val.SelectMany(v => v.ToSicEavValuesDimensions);
+            DbContext.DoAndSave(() => DbContext.SqlDb.RemoveRange(dims));
+            DbContext.DoAndSave(() => DbContext.SqlDb.RemoveRange(val));
+        }
+
+        private void SaveAttributesInDbModel(IEntity newEnt, 
+            SaveOptions so, 
+            List<ToSicEavAttributes> attributeDefs, 
+            ToSicEavEntities dbEnt,
+            int changeId)
+        {
+            foreach (var attribute in newEnt.Attributes.Values)
+            {
+                Log.Add($"add attrib:{attribute.Name}");
+                // find attribute definition
+                var attribDef =
+                    attributeDefs.SingleOrDefault(
+                        a => string.Equals(a.StaticName, attribute.Name, StringComparison.InvariantCultureIgnoreCase));
+                if (attribDef == null)
+                {
+                    if (!so.DiscardattributesNotInType)
+                        throw new Exception(
+                            $"trying to save attribute {attribute.Name} but can\'t find definition in DB");
+                    Log.Add("attribute not found, will skip according to save-options");
+                    continue;
+                }
+                if (attribDef.Type == AttributeTypeEnum.Entity.ToString())
+                {
+                    Log.Add("type is entity, skip for now as relationships are processed later");
+                    continue;
+                }
+
+                foreach (var value in attribute.Values)
+                {
+                    #region prepare languages - has extensive error reporting, to help in case any db-data is bad
+
+                    List<ToSicEavValuesDimensions> toSicEavValuesDimensions;
+                    try
+                    {
+                        toSicEavValuesDimensions = value.Languages?.Select(l => new ToSicEavValuesDimensions
+                        {
+                            DimensionId = _zoneLanguages.Single(ol => ol.Matches(l.Key)).DimensionId,
+                            ReadOnly = l.ReadOnly
+                        }).ToList();
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(
+                            "something went wrong building the languages to save - " +
+                            "your DB probably has some wrong language information which doesn't match; " +
+                            "maybe even a duplicate entry for a language code" +
+                            " - see https://github.com/2sic/2sxc/issues/1293",
+                            ex);
+                    }
+
+                    #endregion
+
+                    Log.Add(() =>
+                        $"add attrib:{attribDef.AttributeId}/{attribDef.StaticName} vals⋮{attribute.Values?.Count}, dim⋮{toSicEavValuesDimensions?.Count}");
+
+                    dbEnt.ToSicEavValues.Add(new ToSicEavValues
+                    {
+                        AttributeId = attribDef.AttributeId,
+                        Value = value.Serialized ?? "",
+                        ChangeLogCreated = changeId, // todo: remove some time later
+                        ToSicEavValuesDimensions = toSicEavValuesDimensions
+                    });
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Temp helper to provide the last guid to the caller
+        /// this is a messy workaround, must find a better way someday...
+        /// </summary>
         public Guid TempLastSaveGuid;
 
 
 
 
+        /// <summary>
+        /// Save a list of entities in one large go
+        /// </summary>
+        /// <param name="entities"></param>
+        /// <param name="saveOptions"></param>
+        /// <returns></returns>
         internal List<int> SaveEntity(List<IEntity> entities, SaveOptions saveOptions)
         {
             Log.Add($"save many count:{entities?.Count}");
             var ids = new List<int>();
 
-            DbContext.DoInTransaction(() => DbContext.Versioning.QueueDuringAction(() =>
-            {
-                foreach (var entity in entities)
-                    DbContext.DoAndSave(() => ids.Add(SaveEntity(entity, saveOptions)));
-
-                DbContext.Relationships.ImportRelationshipQueueAndSave();
-            }));
+            DbContext.DoInTransaction(()
+                => DbContext.Versioning.QueueDuringAction(()
+                    =>
+                {
+                    entities?.ForEach(e => DbContext.DoAndSave(() => ids.Add(SaveEntity(e, saveOptions))));
+                    DbContext.Relationships.ImportRelationshipQueueAndSave();
+                }));
             return ids;
         }
 

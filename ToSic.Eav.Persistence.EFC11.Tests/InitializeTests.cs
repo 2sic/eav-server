@@ -5,7 +5,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
     [TestClass]
     public class InitializeTests
     {
-        [AssemblyInitialize()]
+        [AssemblyInitialize]
         public static void AssemblyInit(TestContext context)
         {
             Testing.Shared.InitializeTests.ConfigureEfcDi(sc => { });

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
@@ -52,7 +53,7 @@ namespace ToSic.Eav.DataSources
 		    attributeNames = (from a in attributeNames select a.Trim()).ToArray();
 
 		    var result = In[Constants.DefaultStreamName].LightList
-                .Select(entity => new Entity(entity, 
+                .Select(entity => EntityBuilder.FullClone(entity, 
                     entity.Attributes.Where(a => attributeNames.Contains(a.Key)).ToDictionary(k => k.Key, v => v.Value),
                     (entity.Relationships as RelationshipManager).AllRelationships)).Cast<IEntity>().ToList();
 

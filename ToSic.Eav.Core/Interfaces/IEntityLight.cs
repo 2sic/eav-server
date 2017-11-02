@@ -23,7 +23,7 @@ namespace ToSic.Eav.Interfaces
 		Guid EntityGuid { get; }
 
 
-        IMetadata Metadata { get; }
+        IMetadataFor MetadataFor { get; }
 
 
 		/// <summary>

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Enums;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data.Builder
@@ -11,21 +12,27 @@ namespace ToSic.Eav.Data.Builder
         public static ContentType SystemAttributeSet(int appId, string staticName, string description,
             List<IAttributeDefinition> attributes, bool alwaysShareConfiguration = false)
             => new ContentType(appId, staticName, staticName, 0, "System", description, null, 0, 0,
-                alwaysShareConfiguration)
+                alwaysShareConfiguration, null)
             {
                 Attributes = attributes
             };
 
         public const int DynTypeId = 1;
-        public const string DynTypeDefScope = "System";
+        public const string DynTypeDefScope = Constants.ScopeSystem;
         public const string DynTypeDefDescription = "Dynamic content type";
 
-        public static ContentType DynamicContentType(int appId, string scope = DynTypeDefScope)
-            => new ContentType(appId, Constants.DynamicType, Constants.DynamicType, DynTypeId, scope, DynTypeDefDescription, null, 0, 0,
-                false)
+        public static ContentType DynamicContentType(int appId, string typeName, string scope = DynTypeDefScope)
+            => new ContentType(appId, typeName, typeName, DynTypeId, scope, DynTypeDefDescription, null, 0, 0,
+                false, null)
             {
-                Attributes = new List<IAttributeDefinition>()
+                Attributes = new List<IAttributeDefinition>(),
+                IsDynamic = true
             };
 
+        public static void SetSourceAndParent(this ContentType type, Repositories source, int parentId)
+        {
+            type.Source = source;
+            type.ParentId = parentId;
+        }
     }
 }

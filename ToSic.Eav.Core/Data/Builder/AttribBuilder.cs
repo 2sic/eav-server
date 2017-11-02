@@ -32,7 +32,7 @@ namespace ToSic.Eav.Data.Builder
                     var valuesModelList = new List<IValue>();
                     if (oAttrib.Value != null)
                     {
-                        var valueModel = Value.Build(attributeType, oAttrib.Value, null);
+                        var valueModel = ValueBuilder.Build(attributeType, oAttrib.Value, null);
                         valuesModelList.Add(valueModel);
                     }
 
@@ -77,7 +77,7 @@ namespace ToSic.Eav.Data.Builder
         /// </summary>
         public static IValue AddValue(this Dictionary<string, IAttribute> target, string attributeName,
             object value, string valueType, string language = null, bool languageReadOnly = false,
-            bool resolveHyperlink = false)
+            bool resolveHyperlink = false, IDeferredEntitiesList allEntitiesForRelationships = null)
         {
             // pre-convert links if necessary...
             if (resolveHyperlink && valueType == AttributeTypeEnum.Hyperlink.ToString())
@@ -89,8 +89,8 @@ namespace ToSic.Eav.Data.Builder
             // sometimes language is passed in as an empty string - this would have side effects, so it must be neutralized
             if (string.IsNullOrWhiteSpace(language)) language = null;
 
-            var valueWithLanguages = Value.Build(valueType, value, language == null
-                ? null : new List<ILanguage> { new Dimension { Key = language, ReadOnly = languageReadOnly } });
+            var valueWithLanguages = ValueBuilder.Build(valueType, value, language == null
+                ? null : new List<ILanguage> { new Dimension { Key = language, ReadOnly = languageReadOnly } }, allEntitiesForRelationships);
 
 
             // add or replace to the collection

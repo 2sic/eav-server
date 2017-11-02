@@ -4,6 +4,7 @@
     <TargetFramework>net451</TargetFramework>
     <AssemblyName>ToSic.Eav.Persistence.Efc</AssemblyName>
     <RootNamespace>ToSic.Eav.Persistence.Efc</RootNamespace>
+    <Configurations>Debug;Release;Dbg Testing</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='efc and WebApi|AnyCPU'" />

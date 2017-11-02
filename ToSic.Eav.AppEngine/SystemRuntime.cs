@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Apps
+﻿using ToSic.Eav.Interfaces;
+
+namespace ToSic.Eav.Apps
 {
     public class SystemRuntime
     {
@@ -8,9 +10,9 @@
         /// </summary>
         /// <param name="typeName"></param>
         /// <returns></returns>
-        public static int GetMetadataType(string typeName) => DataSource.GetCache(null).GetMetadataType(typeName);
+        public static int MetadataType(string typeName) => Factory.Resolve<IGlobalMetadataProvider>().GetType(typeName);
 
-        public static string GetMetadataType(int typeNumber) => DataSource.GetCache(null).GetMetadataType(typeNumber);
+        public static string MetadataType(int typeNumber) => Factory.Resolve<IGlobalMetadataProvider>().GetType(typeNumber);
 
     }
 }

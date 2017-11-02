@@ -38,3 +38,4 @@ using System.Runtime.InteropServices;
 
 [assembly: InternalsVisibleTo("ToSic.Eav.Repository.EF4")]
 [assembly: InternalsVisibleTo("ToSic.Eav.Persistence.Efc")]
+[assembly: InternalsVisibleTo("ToSic.Eav.Core.Tests")]

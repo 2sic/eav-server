@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Web.Http;
 using ToSic.Eav.Apps;
-using ToSic.Eav.DataSources;
+using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Serializers;
@@ -37,7 +37,7 @@ namespace ToSic.Eav.WebApi
 
         internal AppManager AppManager => new AppManager(AppId, Log);
 
-        internal IMetaDataSource MetaDs => DataSource.GetMetaDataSource(appId: AppId);
+        internal IMetadataProvider MetaDs => DataSource.GetMetaDataSource(appId: AppId);
 
         private DbDataController _dbContext;
 	    internal DbDataController CurrentContext => _dbContext ?? (_dbContext = DbDataController.Instance(appId: AppId, parentLog: Log));

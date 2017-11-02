@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Enums;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence;
@@ -26,6 +27,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         private const int AppId = Constants.TransientAppId;
         ContentType _ctNull = null;
+
         ContentType _ctPerson = new ContentType(AppId, "Person", "Person") {Attributes = new List<IAttributeDefinition>
         {
             new AttributeDefinition(AppId, "FullName", "String", true, 0, 0),
@@ -133,15 +135,15 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             var title = AttributeBase.CreateTypedAttribute("Title", "String", new List<IValue>
             {
-                Value.Build("String", "TitleEn, language En", new List<ILanguage> {langEn.Copy()}),
+                ValueBuilder.Build(AttributeTypeEnum.String, "TitleEn, language En", new List<ILanguage> {langEn.Copy()}),
             });
             var teaser = AttributeBase.CreateTypedAttribute("Teaser", "String", new List<IValue>
             {
-                Value.Build("String", "Teaser EN, lang en", new List<ILanguage> {langEn.Copy()}),
+                ValueBuilder.Build(AttributeTypeEnum.String, "Teaser EN, lang en", new List<ILanguage> {langEn.Copy()}),
             });
             var file = AttributeBase.CreateTypedAttribute("File", "String", new List<IValue>
             {
-                Value.Build("String", "File EN, lang en + ch RW", new List<ILanguage> {langEn.Copy() }),
+                ValueBuilder.Build(AttributeTypeEnum.String, "File EN, lang en + ch RW", new List<ILanguage> {langEn.Copy() }),
             });
 
             return new Entity(AppId, 3006, "Product", new Dictionary<string, object>
@@ -156,31 +158,31 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             var title = AttributeBase.CreateTypedAttribute("Title", "String", new List<IValue>
             {
-                Value.Build("String", "TitleEn, language En", new List<ILanguage> {langEn.Copy()}),
-                Value.Build("String", "Title DE",
+                ValueBuilder.Build(AttributeTypeEnum.String, "TitleEn, language En", new List<ILanguage> {langEn.Copy()}),
+                ValueBuilder.Build(AttributeTypeEnum.String, "Title DE",
                     new List<ILanguage> {langDeDe.Copy(), langDeCh.Copy(readOnly: true)}),
-                Value.Build("String", "titre FR", new List<ILanguage> {langFr.Copy()})
+                ValueBuilder.Build(AttributeTypeEnum.String, "titre FR", new List<ILanguage> {langFr.Copy()})
             });
 
             var teaser = AttributeBase.CreateTypedAttribute("Teaser", "String", new List<IValue>
             {
-                Value.Build("String", "teaser de de",
+                ValueBuilder.Build(AttributeTypeEnum.String, "teaser de de",
                     new List<ILanguage> {langDeDe.Copy() }),
-                Value.Build("String", "teaser de CH",
+                ValueBuilder.Build(AttributeTypeEnum.String, "teaser de CH",
                     new List<ILanguage> {langDeCh.Copy()}),
-                Value.Build("String", "teaser FR", new List<ILanguage> {langFr.Copy( readOnly:true)}),
+                ValueBuilder.Build(AttributeTypeEnum.String, "teaser FR", new List<ILanguage> {langFr.Copy( readOnly:true)}),
                 // special test: leave EN (primary) at end of list, as this could happen in real life
-                Value.Build("String", "Teaser EN, lang en", new List<ILanguage> {langEn.Copy()}),
+                ValueBuilder.Build(AttributeTypeEnum.String, "Teaser EN, lang en", new List<ILanguage> {langEn.Copy()}),
             });
             var file = AttributeBase.CreateTypedAttribute("File", "String", new List<IValue>
             {
-                Value.Build("String", "Filen EN, lang en + ch RW", new List<ILanguage> {langEn.Copy(), langDeCh.Copy()}),
-                Value.Build("String", "File de de",
+                ValueBuilder.Build(AttributeTypeEnum.String, "Filen EN, lang en + ch RW", new List<ILanguage> {langEn.Copy(), langDeCh.Copy()}),
+                ValueBuilder.Build(AttributeTypeEnum.String, "File de de",
                     new List<ILanguage> {langDeDe.Copy(), langFr.Copy() }),
-                Value.Build("String", "File FR", new List<ILanguage> {langFr.Copy()}),
+                ValueBuilder.Build(AttributeTypeEnum.String, "File FR", new List<ILanguage> {langFr.Copy()}),
                 // special test - empty language item
-                Value.Build("String", "File without language!", new List<ILanguage>()),
-                Value.Build("String", "Filen EN, lang en + ch RW", new List<ILanguage> {langEn.Copy(), langDeCh.Copy()}),
+                ValueBuilder.Build(AttributeTypeEnum.String, "File without language!", new List<ILanguage>()),
+                ValueBuilder.Build(AttributeTypeEnum.String, "Filen EN, lang en + ch RW", new List<ILanguage> {langEn.Copy(), langDeCh.Copy()}),
             });
 
             return new Entity(AppId, 430, "Product", new Dictionary<string, object>

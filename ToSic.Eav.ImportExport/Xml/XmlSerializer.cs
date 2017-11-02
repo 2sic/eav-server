@@ -3,6 +3,7 @@ using System.Linq;
 using System.Xml.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
+using ToSic.Eav.ImportExport.Serializers;
 using ToSic.Eav.Interfaces;
 
 // ReSharper disable once CheckNamespace
@@ -28,19 +29,19 @@ namespace ToSic.Eav.Persistence.Xml
 
             // create Entity-XElement
             var entityXElement = new XElement(XmlConstants.Entity,
-                new XAttribute(XmlConstants.KeyTargetType, App.GetMetadataType(entity.Metadata.TargetType)),
+                new XAttribute(XmlConstants.KeyTargetType, Factory.Resolve<IGlobalMetadataProvider>().GetType(entity.MetadataFor.TargetType)),
                 new XAttribute(XmlConstants.AttSetStatic, entity.Type.StaticName),
                 new XAttribute(XmlConstants.AttSetNiceName, entity.Type.Name),
                 new XAttribute(XmlConstants.GuidNode, entity.EntityGuid),
                 valuesXElement);
 
             // try to add keys - moved to here from xml-exporter
-            if (entity.Metadata.KeyGuid.HasValue)
-                entityXElement.Add(new XAttribute(XmlConstants.KeyGuid, entity.Metadata.KeyGuid));
-            if (entity.Metadata.KeyNumber.HasValue)
-                entityXElement.Add(new XAttribute(XmlConstants.KeyNumber, entity.Metadata.KeyNumber));
-            if (!string.IsNullOrEmpty(entity.Metadata.KeyString))
-                entityXElement.Add(new XAttribute(XmlConstants.KeyString, entity.Metadata.KeyString));
+            if (entity.MetadataFor.KeyGuid.HasValue)
+                entityXElement.Add(new XAttribute(XmlConstants.KeyGuid, entity.MetadataFor.KeyGuid));
+            if (entity.MetadataFor.KeyNumber.HasValue)
+                entityXElement.Add(new XAttribute(XmlConstants.KeyNumber, entity.MetadataFor.KeyNumber));
+            if (!string.IsNullOrEmpty(entity.MetadataFor.KeyString))
+                entityXElement.Add(new XAttribute(XmlConstants.KeyString, entity.MetadataFor.KeyString));
 
 
             return entityXElement;

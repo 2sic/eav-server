@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace ToSic.Eav.Logging.Simple
 {
@@ -103,5 +104,13 @@ namespace ToSic.Eav.Logging.Simple
         /// </summary>
         /// <param name="parent"></param>
         public void LinkTo(Log parent) => _parent = parent ?? _parent; // if new parent isn't defined, don't replace
+
+        public string Dump(string separator = " - ", string start = "", string end = "")
+        {
+            var lg = new StringBuilder(start);
+            Entries.ForEach(e => lg.AppendLine(e.Source + separator + e.Message));
+            lg.Append(end);
+            return lg.ToString();
+        }
     }
 }
