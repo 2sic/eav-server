@@ -6,11 +6,11 @@ using ToSic.Eav.Types;
 namespace ToSic.Eav.ImportExport.Tests.Persistence.File
 {
     [TestClass]
-    
     public class RuntimeLoaderTest:PersistenceTestsBase
     {
         private int expectedTypesSysAndJson = 5;
         [TestMethod]
+        [DeploymentItem("..\\..\\" + PathWith3Types, TestingPath3)]
         public void TestWith3FileTypes()
         {
             // set loader root path, based on test environment
@@ -31,6 +31,7 @@ namespace ToSic.Eav.ImportExport.Tests.Persistence.File
         }
 
         [TestMethod]
+        [DeploymentItem("..\\..\\" + PathWith40Types, TestingPath40)]
         public void TestWith40FileTypes()
         {
             // set loader root path, based on test environment

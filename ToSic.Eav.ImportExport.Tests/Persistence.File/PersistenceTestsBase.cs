@@ -4,7 +4,6 @@ using ToSic.Eav.Logging;
 namespace ToSic.Eav.ImportExport.Tests.Persistence.File
 {
     [DeploymentItem("..\\..\\" + PathWith3Types, TestingPath3)]
-    [DeploymentItem("..\\..\\" + PathWith40Types, TestingPath40)]
     public class PersistenceTestsBase : HasLog
     {
         public TestContext TestContext { get; set; }

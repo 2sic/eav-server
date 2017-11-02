@@ -13,7 +13,7 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// Provide Entities from a SQL Server
 	/// </summary>
-	[PipelineDesigner]
+	//[PipelineDesigner]
     [ExpectsDataOfType(ContentTypes.ConfigSqlDataSource.StaticTypeName)]
 	public class SqlDataSource : ExternalDataDataSource
 	{
