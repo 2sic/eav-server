@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Enums;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data
@@ -19,7 +20,9 @@ namespace ToSic.Eav.Data
         public string Scope { get; protected set; }
         public int ContentTypeId { get; }
         public IList<IAttributeDefinition> Attributes { get; set; }
-        public bool IsInstalledInPrimaryStorage { get; protected set; } = true;
+        //public bool IsInstalledInPrimaryStorage { get; protected set; } = true;
+        public Repositories Source { get; internal set; } = Repositories.Sql;
+
         public bool IsDynamic { get; internal set; }
 
         /// <inheritdoc />
@@ -29,7 +32,7 @@ namespace ToSic.Eav.Data
         #endregion
 
         #region Sharing Content Types
-        public int? ParentId { get; protected set; }
+        public int? ParentId { get; internal set; }
         public int ParentAppId { get; }
         public int ParentZoneId { get; }
         public bool AlwaysShareConfiguration { get; protected set; }

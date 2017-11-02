@@ -8,7 +8,7 @@ using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
 namespace ToSic.Eav.ImportExport.Tests.json
 {
     [TestClass]
-    public class JsonReSerialization: Persistence.Efc.Tests.Efc11TestBase
+    public class JsonReSerialization: Eav.Persistence.Efc.Tests.Efc11TestBase
     {
 
         [TestMethod]

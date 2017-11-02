@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.12
+VisualStudioVersion = 15.0.27004.2005
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav", "ToSic.Eav\ToSic.Eav.csproj", "{CF3B9349-8C66-4901-8EDB-A4EC1D75326B}"
 EndProject
@@ -928,7 +928,6 @@ Global
 		{F989FE10-C84A-4B18-AAA7-4665EC85B059}.Debug|Android.ActiveCfg = Debug|Any CPU
 		{F989FE10-C84A-4B18-AAA7-4665EC85B059}.Debug|Android.Build.0 = Debug|Any CPU
 		{F989FE10-C84A-4B18-AAA7-4665EC85B059}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F989FE10-C84A-4B18-AAA7-4665EC85B059}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F989FE10-C84A-4B18-AAA7-4665EC85B059}.Debug|DNN.ActiveCfg = Debug|Any CPU
 		{F989FE10-C84A-4B18-AAA7-4665EC85B059}.Debug|iOS.ActiveCfg = Debug|Any CPU
 		{F989FE10-C84A-4B18-AAA7-4665EC85B059}.Debug|iOS.Build.0 = Debug|Any CPU
@@ -1144,7 +1143,6 @@ Global
 		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.Debug|Android.ActiveCfg = Debug|Any CPU
 		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.Debug|Android.Build.0 = Debug|Any CPU
 		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.Debug|DNN.ActiveCfg = Debug|Any CPU
 		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.Debug|DNN.Build.0 = Debug|Any CPU
 		{6735DC37-2849-45DB-BA76-C5663B6FFB1F}.Debug|iOS.ActiveCfg = Debug|Any CPU
@@ -1338,7 +1336,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {705647E1-B5B1-4D94-888C-1D918095554C}
 		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35;packages\Unity.2.1.505.0\lib\NET35
+		SolutionGuid = {705647E1-B5B1-4D94-888C-1D918095554C}
 	EndGlobalSection
 EndGlobal

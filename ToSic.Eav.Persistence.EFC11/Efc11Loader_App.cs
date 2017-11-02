@@ -47,7 +47,7 @@ namespace ToSic.Eav.Persistence.Efc
             #region prepare content-types
             var typeTimer = Stopwatch.StartNew();
             var contentTypes = ContentTypes(appId, source);
-            var sysTypes = Global.SystemContentTypes();
+            var sysTypes = Global.AllContentTypes();
             
             typeTimer.Stop();
             #endregion

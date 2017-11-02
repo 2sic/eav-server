@@ -4,8 +4,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav;
 using ToSic.Eav.Core.Tests.Mocks;
+using ToSic.Eav.Implementations.Runtime;
 using ToSic.Eav.Implementations.UserInformation;
 using ToSic.Eav.Implementations.ValueConverter;
+using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Efc.Diagnostics;
 using ToSic.Eav.Persistence.Efc.Models;
 
@@ -17,14 +19,13 @@ namespace ToSic.Testing.Shared
         [AssemblyInitialize]
         public static void AssemblyInit(TestContext context)
         {
-            ConfigureEfcDi(sc => { });
+            ConfigureEfcDi();
             //AddSqlLogger();
             Factory.Debug = true;
         }
 
         public static void ConfigureEfcDi() => ConfigureEfcDi(sc => { });
 
-        // note: keep in sync w/the Repository.Efc.Tests and Persistence.Efc.Tests
         public static void ConfigureEfcDi(Factory.ServiceConfigurator configure)
         {
             Configuration.SetConnectionString(TestConstants.ConStr);
@@ -33,6 +34,7 @@ namespace ToSic.Testing.Shared
                 sc.AddTransient<IEavValueConverter, MockValueConverter>();
                 sc.AddTransient<IEavUserInformation, NeutralEavUserInformation>();
                 sc.AddTransient<IEavUserInformation, NeutralEavUserInformation>();
+                sc.AddTransient<IRuntime, NeutralRuntime>();
 
                 configure.Invoke(sc);
 

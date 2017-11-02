@@ -48,7 +48,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             #endregion Test languages exist
 
             // check if saving should be with db-type or with the plain json
-            var saveJson = !newEnt.Type.IsInstalledInPrimaryStorage;
+            var saveJson = newEnt.Type.Source != Repositories.Sql;
             Log.Add($"save json:{saveJson}");
             #endregion Step 1
 

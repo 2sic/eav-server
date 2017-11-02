@@ -10,7 +10,7 @@ using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
 namespace ToSic.Eav.ImportExport.Tests.json
 {
     [TestClass]
-    public class JsonCtDeSerialization: Persistence.Efc.Tests.Efc11TestBase
+    public class JsonCtDeSerialization: Eav.Persistence.Efc.Tests.Efc11TestBase
     {
         public TestContext TestContext { get; set; }
 

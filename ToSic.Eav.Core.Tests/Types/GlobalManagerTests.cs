@@ -19,7 +19,7 @@ namespace ToSic.Eav.Core.Tests.Types
         [TestMethod]
         public void TestGlobalCache()
         {
-            var all = Global.SystemContentTypes();
+            var all = Global.AllContentTypes();
             Assert.AreEqual(ProvidedTypesCount, all.Count);
             var dummy = all.First();
             Assert.AreEqual(DemoType.CTypeName, dummy.Key);
@@ -28,14 +28,14 @@ namespace ToSic.Eav.Core.Tests.Types
         [TestMethod]
         public void TestInstanceInGlobalCache()
         {
-            var dummy = Global.SystemContentType(DemoType.CTypeName);
+            var dummy = Global.FindContentType(DemoType.CTypeName);
             Assert.AreEqual(DemoType.CTypeName, dummy.StaticName);
         }
 
         [TestMethod]
         public void CheckDefaultScope()
         {
-            var testType = Global.SystemContentType(DemoType.CTypeName);
+            var testType = Global.FindContentType(DemoType.CTypeName);
             Assert.AreEqual(TypesBase.UndefinedScope, testType.Scope, "scope should be undefined");
         }
 

@@ -85,6 +85,8 @@
     <Compile Include="Json\JsonDeserializer_Entity.cs" />
     <Compile Include="Json\JsonSerializer.cs" />
     <Compile Include="Persistence.File\FileSystemLoader.cs" />
+    <Compile Include="Persistence.File\FileSystemLoader_Save.cs" />
+    <Compile Include="Persistence.File\Runtime.cs" />
     <Compile Include="Serializers\SerializableRelationship.cs" />
     <Compile Include="Serializers\SerializerBase.cs" />
     <Compile Include="Serializers\SerializerHelper.cs" />

@@ -103,10 +103,14 @@
     <Compile Include="Data\Builder\ValueBuilder.cs" />
     <Compile Include="Data\EntityEnumerator.cs" />
     <Compile Include="Data\OfMetadataOfItem.cs" />
+    <Compile Include="Enums\Repositories.cs" />
+    <Compile Include="Implementations\Runtime\NeutralRuntime.cs" />
     <Compile Include="Interfaces\IGlobalMetadataProvider.cs" />
     <Compile Include="Interfaces\IHasExternalI18n.cs" />
     <Compile Include="Interfaces\IMetadataOfItem.cs" />
     <Compile Include="Interfaces\IRemoteMetadataProvider.cs" />
+    <Compile Include="Interfaces\IRepositorySaver.cs" />
+    <Compile Include="Interfaces\IRuntime.cs" />
     <Compile Include="Persistence\Logging\ImportError.cs" />
     <Compile Include="Persistence\Logging\ImportErrorCode.cs" />
     <Compile Include="Persistence\Logging\ImportErrorLog.cs" />
@@ -184,6 +188,8 @@
     <Compile Include="Types\Builder\Entity.cs" />
     <Compile Include="Types\Builder\String.cs" />
     <Compile Include="Types\Global.cs" />
+    <Compile Include="Types\Global_Code.cs" />
+    <Compile Include="Types\Global_Runtime.cs" />
     <Compile Include="Types\TypesBase.cs" />
   </ItemGroup>
   <ItemGroup>

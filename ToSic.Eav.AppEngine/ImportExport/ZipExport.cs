@@ -171,7 +171,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="targetPath"></param>
         private void AddInstructionsToPackageFolder(string targetPath)
         {
-            var srcPath = HttpContext.Current.Server.MapPath(Path.Combine(Settings.ToSexyDirectory, "SexyContent\\ImportExport\\Instructions"));
+            var srcPath = HttpContext.Current.Server.MapPath(Path.Combine(Settings.ModuleDirectory, "SexyContent\\ImportExport\\Instructions"));
 
             foreach (var file in Directory.GetFiles(srcPath))
                 File.Copy(file, Path.Combine(targetPath, Path.GetFileName(file)));

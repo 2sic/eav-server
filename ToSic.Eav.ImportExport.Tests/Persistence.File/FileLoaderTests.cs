@@ -2,22 +2,16 @@
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Enums;
+using ToSic.Eav.ImportExport.Tests.Persistence.File;
 using ToSic.Eav.Interfaces;
-using ToSic.Eav.Logging;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Persistence.File.Tests
 {
     [TestClass]
-    [DeploymentItem("..\\..\\" + OrigPath, TestingPath)]
-    public class FileLoaderTests: HasLog //: Efc11TestBase
+    public class FileLoaderTests: PersistenceTestsBase
     {
-        public TestContext TestContext { get; set; }
-
-        private const string OrigPath = "Persistence.File\\.data\\";
-        private const string TestingPath = "testApp";
-        public FileLoaderTests() : base("Tst.FSLoad") { }
-
 
         [TestMethod]
         public void FLoader_LoadAllAndCount()
@@ -101,8 +95,7 @@ namespace ToSic.Eav.Persistence.File.Tests
 
         private IList<IContentType> LoadAllTypes()
         {
-            var root = TestContext.DeploymentDirectory + "\\" + TestingPath + "\\";
-            var loader = new FileSystemLoader(root, false, Log);
+            var loader = new FileSystemLoader(TestStorageRoot, Repositories.TestFiles, false, Log);
             IList<IContentType> cts;
             try
             {

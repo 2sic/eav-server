@@ -1,53 +1,48 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
-using ToSic.Eav.Types.Attributes;
 
 namespace ToSic.Eav.Types
 {
-    public class Global
+    public partial class Global
     {
-        private static IEnumerable<Type> _typeCache;
-
-        internal static IEnumerable<Type> ContentTypesInReflection()
-            => _typeCache ?? (_typeCache =
-                   //Plumbing.AssemblyHandling.FindInherited(typeof(ContentType));
-                   Plumbing.AssemblyHandling.FindClassesWithAttribute(typeof(IContentType),
-                       typeof(ContentTypeDefinition), true));
-
-        private static Dictionary<string, IContentType> _contentTypeCache;
-
-        public static Dictionary<string, IContentType> SystemContentTypes()
+        /// <summary>
+        /// Dictionary of code-provided content-types, caches after first scan
+        /// </summary>
+        /// <returns></returns>
+        public static Dictionary<string, IContentType> AllContentTypes()
         {
-            if (_contentTypeCache != null) return _contentTypeCache;
-            _contentTypeCache = ContentTypesInReflection()
-                .Select(type => new
-                {
-                    Name = (type.GetCustomAttributes(typeof(ContentTypeDefinition), true)
-                        .FirstOrDefault() as ContentTypeDefinition)?.StaticName,
-                    Obj = (IContentType) Activator.CreateInstance(type)
-                })
-                .ToDictionary(t => t.Name, t => t.Obj);
-            _contentTypeCache = new Dictionary<string, IContentType>(_contentTypeCache, StringComparer.OrdinalIgnoreCase);
-            return _contentTypeCache;
+            if (_globalContentTypesCache != null) return _globalContentTypesCache;
+
+            // copy the code-types dictionary...
+            var codeTypes = new Dictionary<string, IContentType>(CodeContentTypes(), StringComparer.OrdinalIgnoreCase);
+
+            // add runtime stuff
+            var runtimeType = ContentTypesInRuntime().ToList();
+
+            // merge lists, preferences is code-types
+            runtimeType.ForEach(t =>
+            {
+                if (!codeTypes.ContainsKey(t.StaticName))
+                    codeTypes.Add(t.StaticName, t);
+            });
+
+            // make sure it's case insensitive...
+            _globalContentTypesCache = codeTypes;
+            return _globalContentTypesCache;
         }
+        private static Dictionary<string, IContentType> _globalContentTypesCache;
 
-        public static IContentType SystemContentType(string name)
+
+
+        public static IContentType FindContentType(string name)
         {
-            var types = SystemContentTypes();
+            // use the types which have been loaded
+            // this is to enable lookup of system types, while in the background we're still building the json-types
+            // this is important, because the deserializer for json will also call this
+            var types = _globalContentTypesCache != null ? AllContentTypes() : CodeContentTypes();
             return types.ContainsKey(name) ? types[name] : null;
-        }
-
-        public static ContentType InstanceOf(string name)
-        {
-            var type = ContentTypesInReflection()
-                .FirstOrDefault(t =>
-                    (t.GetCustomAttributes(typeof(ContentTypeDefinition), true).FirstOrDefault() as ContentTypeDefinition)
-                    ?.StaticName == name);
-
-            return type == null ? null : (ContentType) Activator.CreateInstance(type);
         }
     }
 }

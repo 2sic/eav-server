@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using ToSic.Eav.App;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Enums;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
@@ -13,14 +15,15 @@ using ToSic.Eav.Types;
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Persistence.File
 {
-    public class FileSystemLoader: HasLog, IRepositoryLoader
+    public partial class FileSystemLoader: HasLog, IRepositoryLoader
     {
-        private const string ContentTypeFolder = "ContentTypes\\";
+        private const string ContentTypeFolder = "contenttypes\\";
+        private const string ItemFolder = "items\\";
 
-        public FileSystemLoader(string path, bool ignoreMissing, Log parentLog): base("FSL.Loadr", parentLog, $"init with path:{path} ignore:{ignoreMissing}")
+        public FileSystemLoader(string path, Repositories source, bool ignoreMissing, Log parentLog): base("FSL.Loadr", parentLog, $"init with path:{path} ignore:{ignoreMissing}")
         {
             Path = path + (path.EndsWith("\\") ? "" : "\\");
-            Path = path;
+            Source = source;
             IgnoreMissingStuff = ignoreMissing;
         }
 
@@ -28,17 +31,17 @@ namespace ToSic.Eav.Persistence.File
 
         private bool IgnoreMissingStuff { get; }
 
+        private Repositories Source { get; }
+
         public IList<IContentType> ContentTypes(int appId, IDeferredEntitiesList source)
         {
             if(appId != 0)
                 throw new ArgumentOutOfRangeException(nameof(appId), appId, "appid should only be 0 for now");
 
-
-
             #region #1. check that folder exists
 
             if (!CheckPathExists(Path)) return null;
-            var pathCt = Path + ContentTypeFolder;
+            var pathCt = ContentTypePath;
             if (!CheckPathExists(pathCt)) return null;
 
             #endregion
@@ -52,17 +55,31 @@ namespace ToSic.Eav.Persistence.File
 
             #region #3 load content-types from folder
 
-            var ser = new JsonSerializer();
-            ser.Initialize(0, Global.SystemContentTypes().Values, null);
-            ser.AssumeUnknownTypesAreDynamic = true;
 
-            var cts = jsons.Select(json => LoadAndBuildCt(ser, json)).Where(ct => ct != null).ToList();
+            var cts = jsons.Select(json => LoadAndBuildCt(Serializer, json)).Where(ct => ct != null).ToList();
 
             #endregion
 
             return cts;
         }
 
+        private JsonSerializer Serializer
+        {
+            get
+            {
+                if (_ser != null) return _ser;
+                _ser = new JsonSerializer();
+                _ser.Initialize(0, Global.CodeContentTypes().Values, null);
+                _ser.AssumeUnknownTypesAreDynamic = true;
+                return _ser;
+            }
+        }
+
+        private JsonSerializer _ser;
+
+        private string ContentTypePath => Path + ContentTypeFolder;
+
+        private string ItemPath => Path + ItemFolder;
 
         /// <summary>
         /// Try to load a content-type file, but if anything fails, just return a null
@@ -76,7 +93,9 @@ namespace ToSic.Eav.Persistence.File
             try
             {
                 var json = System.IO.File.ReadAllText(path);
-                return ser.DeserializeContentType(json);
+                var ct = ser.DeserializeContentType(json);
+                (ct as ContentType).SetSourceAndParent(Source, Constants.SystemContentTypeFakeParent);
+                return ct;
             }
             catch (IOException e)
             {

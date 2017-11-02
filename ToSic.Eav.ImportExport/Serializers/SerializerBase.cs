@@ -5,8 +5,7 @@ using ToSic.Eav.App;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Types;
 
-// ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Persistence.Xml
+namespace ToSic.Eav.ImportExport.Serializers
 {
     public abstract class SerializerBase: IThingSerializer
     {
@@ -18,7 +17,7 @@ namespace ToSic.Eav.Persistence.Xml
         private AppDataPackage _app;
 
         public IContentType GetContentType(string staticName)
-            => Global.SystemContentType(staticName) // note: will return null if not found
+            => Global.FindContentType(staticName) // note: will return null if not found
                ?? (_types != null
                    ? _types.FirstOrDefault(t => t.StaticName == staticName)
                    : App.GetContentType(staticName)); // only use the App if really necessary...

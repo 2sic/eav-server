@@ -3,6 +3,7 @@ using System.Linq;
 using System.Xml.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
+using ToSic.Eav.ImportExport.Serializers;
 using ToSic.Eav.Interfaces;
 
 // ReSharper disable once CheckNamespace

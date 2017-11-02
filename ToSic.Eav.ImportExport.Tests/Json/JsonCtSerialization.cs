@@ -7,7 +7,7 @@ using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
 namespace ToSic.Eav.ImportExport.Tests.json
 {
     [TestClass]
-    public class JsonCtSerialization: Persistence.Efc.Tests.Efc11TestBase
+    public class JsonCtSerialization: Eav.Persistence.Efc.Tests.Efc11TestBase
     {
 
         [TestMethod]
@@ -29,12 +29,19 @@ namespace ToSic.Eav.ImportExport.Tests.json
         }
 
         [TestMethod]
-        public void Json_OfCodeType_ConfigSqlDataSource()
+        public void Json_Export_OfType_ConfigSqlDataSource()
         {
             var test = new TestValuesOnPc2Dm();
             var json = JsonOfContentType(test.BlogAppId, "|Config ToSic.Eav.DataSources.SqlDataSource");
             Trace.Write(json);
-            
+        }
+
+        [TestMethod]
+        public void Json_Export_OfType_JsonTest()
+        {
+            var test = new TestValuesOnPc2Dm();
+            var json = JsonOfContentType(test.BlogAppId, "x48d849d6-b83d-4001-96e5-79da0833e84e");
+            Trace.Write(json);
         }
 
         private string GetJsonOfContentTypeOfItem(int appId, int eId)

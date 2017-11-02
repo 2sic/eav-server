@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Enums;
 
 namespace ToSic.Eav.Interfaces
 {
@@ -50,7 +51,8 @@ namespace ToSic.Eav.Interfaces
         IAttributeDefinition this[string fieldName] { get; }
 
 
-        bool IsInstalledInPrimaryStorage { get; }
+        //bool IsInstalledInPrimaryStorage { get; }
+        Repositories Source { get; }
 
         bool IsDynamic { get; }
 

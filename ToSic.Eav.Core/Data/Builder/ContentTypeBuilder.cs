@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Enums;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data.Builder
@@ -28,5 +29,10 @@ namespace ToSic.Eav.Data.Builder
                 IsDynamic = true
             };
 
+        public static void SetSourceAndParent(this ContentType type, Repositories source, int parentId)
+        {
+            type.Source = source;
+            type.ParentId = parentId;
+        }
     }
 }

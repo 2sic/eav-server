@@ -16,6 +16,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
             Assert.IsTrue(results.ZoneId == 1, "zone doesn't fit - it is " + results.ZoneId);
         }
 
+        [Ignore]
         [TestMethod]
         public void TestLoadXAppBlog()
         {
@@ -24,6 +25,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
             Assert.IsTrue(results.Entities.Count > 1097 && results.Entities.Count < 1200, "tried counting entities on the blog-app");
         }
 
+        [Ignore]
         [TestMethod]
         public void PerformanceLoading100XBlog()
         {
