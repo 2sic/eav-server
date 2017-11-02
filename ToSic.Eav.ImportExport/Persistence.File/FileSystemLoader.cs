@@ -33,6 +33,8 @@ namespace ToSic.Eav.Persistence.File
 
         private Repositories Source { get; }
 
+        private const string JsonExtension = ".json";
+
         public IList<IContentType> ContentTypes(int appId, IDeferredEntitiesList source)
         {
             if(appId != 0)
@@ -49,7 +51,7 @@ namespace ToSic.Eav.Persistence.File
 
             #region #2 find all content-type files in folder
 
-            var jsons = Directory.GetFiles(pathCt, "*.json").OrderBy(f => f);
+            var jsons = Directory.GetFiles(pathCt, "*" + JsonExtension).OrderBy(f => f);
 
             #endregion
 

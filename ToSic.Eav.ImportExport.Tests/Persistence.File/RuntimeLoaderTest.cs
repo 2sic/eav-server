@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Diagnostics;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Types;
 
@@ -10,7 +11,7 @@ namespace ToSic.Eav.ImportExport.Tests.Persistence.File
     {
         private int expectedTypesSysAndJson = 5;
         [TestMethod]
-        public void GlobalsContainsExpectedTypes()
+        public void TestWith3FileTypes()
         {
             // set loader root path, based on test environment
             DemoRuntime.PathToUse = TestStorageRoot;
@@ -27,7 +28,38 @@ namespace ToSic.Eav.ImportExport.Tests.Persistence.File
             Assert.IsNotNull(whateverType, "should find whatever type from json");
             //var dummy = all.First();
             //Assert.AreEqual(DemoType.CTypeName, dummy.Key);
-
         }
+
+        [TestMethod]
+        public void TestWith40FileTypes()
+        {
+            // set loader root path, based on test environment
+            DemoRuntime.PathToUse = TestingPath40;
+
+            var time = Stopwatch.StartNew();
+            var all = Global.AllContentTypes();
+            time.Stop();
+            
+            Assert.AreEqual(43, all.Count);
+            Trace.WriteLine("time used: " + time.Elapsed);
+        }
+
+        [TestMethod]
+        public void TestWith400FileTypes()
+        {
+            // set loader root path, based on test environment
+            DemoRuntime.PathToUse = TestingPath40;
+            var loader = new DemoRuntime();
+            var time = Stopwatch.StartNew();
+            for (var i = 0; i < 10; i++)
+            {
+                loader.Loader.ContentTypes(0, null);
+                Trace.WriteLine($"time after cycle {i} was {time.Elapsed}");
+            }
+            time.Stop();
+
+            Trace.WriteLine("time used to load 400 with debug/testing overhead: " + time.Elapsed);
+        }
+
     }
 }

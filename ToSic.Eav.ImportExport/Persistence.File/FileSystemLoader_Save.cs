@@ -16,7 +16,7 @@ namespace ToSic.Eav.Persistence.File
 
             System.IO.Directory.CreateDirectory(ContentTypePath);
 
-            var fileName = ContentTypePath + cleanName;
+            var fileName = ContentTypePath + cleanName + JsonExtension;
 
             System.IO.File.WriteAllText(fileName, json);
         }

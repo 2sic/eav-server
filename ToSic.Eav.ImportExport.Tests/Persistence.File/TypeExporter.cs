@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Diagnostics;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
 using ToSic.Eav.Enums;
@@ -22,7 +23,7 @@ namespace ToSic.Eav.Persistence.File.Tests
 
 
             var loader = new Efc11Loader(dbc.SqlDb);
-            var app = loader.AppPackage(test.AppId);
+            var app = loader.AppPackage(test.RootAppId);
 
 
             var cts = app.ContentTypes;
@@ -30,8 +31,12 @@ namespace ToSic.Eav.Persistence.File.Tests
 
             var fileSysLoader = new FileSystemLoader(ExportStorageRoot, Repositories.TestFiles, true, Log);
 
+            var time = Stopwatch.StartNew();
             sharedCts.ForEach(ct => fileSysLoader.SaveContentType(ct));
+            time.Stop();
 
+            Trace.WriteLine("created " + sharedCts.Count + "items and put into " + ExportStorageRoot);
+            Trace.WriteLine("elapsed: " + time.Elapsed);
         }
 
 
