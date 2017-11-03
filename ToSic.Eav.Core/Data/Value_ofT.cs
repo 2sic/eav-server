@@ -54,6 +54,8 @@ namespace ToSic.Eav.Data
         }
 
         public object ObjectContents => TypedContents;
+
+
         public IValue Copy(string type) => ValueBuilder.Build(type, ObjectContents,
             Languages.Select(l => new Dimension {DimensionId = l.DimensionId, Key = l.Key} as ILanguage).ToList(), null);
     }

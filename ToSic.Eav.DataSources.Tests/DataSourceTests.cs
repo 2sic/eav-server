@@ -7,7 +7,10 @@ namespace ToSic.Eav.DataSources.Tests
     public class DataSourcTests
     {
         public const int StandardInstalledDSCount = 22;
-        public const int StandardInstalledPipeLineDS = 17;
+
+        public const int StandardInstalledPipeLineDS =
+            16; // without sql
+            // 17; // this is with the sql
         public const string SqlFullName = "ToSic.Eav.DataSources.SqlDataSource";
         public const string DeferredFullName = "ToSic.Eav.DataSources.DeferredPipelineQuery";
 

@@ -212,10 +212,26 @@ namespace ToSic.Eav.Repository.Efc.Parts
                                 string.Equals(a.StaticName, attribute.Name, StringComparison.InvariantCultureIgnoreCase));
                     if (attribDef == null || attribDef.Type != AttributeTypeEnum.Entity.ToString()) continue;
 
+                    // check if there is anything at all (type doesn't matter yet)
                     var list = attribute.Values?.FirstOrDefault()?.ObjectContents;
-                    if (list == null) continue;
+                    switch (list)
+                    {
+                        case null:
+                            continue;
+                        case EntityRelationship _:
+                            list = ((EntityRelationship) list).Identifiers;
+                            break;
+                        case Guid _:
+                            list = new List<Guid> {(Guid) list};
+                            break;
+                        case int _:
+                            list = new List<int> {(int) list};
+                            break;
+                    }
 
-                    if (list is Guid) list = new List<Guid> {(Guid) list};
+                    //if (list is Guid) list = new List<Guid> {(Guid) list};
+                    //if (list is int) list = new List<int> {(int) list};
+
                     if (list is List<Guid> || list is List<Guid?>)
                     {
                         var guidList = (list as List<Guid>)?.Select(p => (Guid?) p) ??
@@ -223,8 +239,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                         AddToQueue(attribDef.AttributeId, guidList.ToList(), dbEntity.EntityId, !so.PreserveUntouchedAttributes);
                     }
 
-                    if (list is int) list = new List<int> {(int) list};
-                    if (list is EntityRelationship) list = ((EntityRelationship) list).EntityIds.ToList();
+
                     if (list is List<int> || list is List<int?>)
                     {
                         var entityIds = list as List<int?> ?? ((List<int>) list).Select(v => (int?) v).ToList();

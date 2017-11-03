@@ -75,9 +75,11 @@ namespace ToSic.Eav.Data.Builder
                         var entityIds = value as IEnumerable<int?> ?? (value as IEnumerable<int>)?.Select(x => (int?)x).ToList();
                         EntityRelationship rel;
                         if (entityIds != null)
-                            rel = new EntityRelationship(fullEntityListForLookup, entityIds);
+                            rel = new EntityRelationship(fullEntityListForLookup, entityIds.ToList());
                         else if (value is EntityRelationship)
-                            rel = new EntityRelationship(fullEntityListForLookup, ((EntityRelationship)value).EntityIds);
+                            rel = ((EntityRelationship)value).Guids != null
+                                ? new EntityRelationship(fullEntityListForLookup, ((EntityRelationship)value).Guids)
+                                : new EntityRelationship(fullEntityListForLookup, ((EntityRelationship)value).EntityIds);
                         else if (value is List<Guid?>)
                             rel = new EntityRelationship(fullEntityListForLookup, (List<Guid?>)value);
                         else
@@ -128,7 +130,7 @@ namespace ToSic.Eav.Data.Builder
 
 
 
-        internal static readonly Value<EntityRelationship> NullRelationship = new Value<EntityRelationship>(new EntityRelationship(null, entityIds: null))
+        internal static readonly Value<EntityRelationship> NullRelationship = new Value<EntityRelationship>(new EntityRelationship(null, identifiers: null))
         {
             Languages = new List<ILanguage>()
         };
