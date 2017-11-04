@@ -4,16 +4,19 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using ToSic.Eav.DataSources.Attributes;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Types.Attributes;
 
 namespace ToSic.Eav.DataSources
 {
-	/// <inheritdoc />
-	/// <summary>
-	/// Provide Entities from a SQL Server
-	/// </summary>
-	//[PipelineDesigner]
+    /// <inheritdoc />
+    /// <summary>
+    /// Provide Entities from a SQL Server
+    /// </summary>
+    //[PipelineDesigner]
+    [DataSourceProperties(Type = DataSourceType.Source)]
+
     [ExpectsDataOfType(ContentTypes.ConfigSqlDataSource.StaticTypeName)]
 	public class SqlDataSource : ExternalDataDataSource
 	{

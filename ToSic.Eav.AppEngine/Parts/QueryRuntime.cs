@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.DataSources.Attributes;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Types.Attributes;
@@ -48,14 +49,17 @@ namespace ToSic.Eav.Apps.Parts
 
                 var expectDataAttrib = dataSource.GetCustomAttributes(typeof(ExpectsDataOfType), true)
                     .FirstOrDefault() as ExpectsDataOfType;
-                var configType = expectDataAttrib ?.StaticName;
+                var configType = expectDataAttrib?.StaticName;
+                var dsInfo = dataSource.GetCustomAttributes(typeof(DataSourceProperties), true).FirstOrDefault() as DataSourceProperties;
+                var primaryType = dsInfo?.Type.ToString();
                 result.Add(new DataSourceInfo
                 {
                     PartAssemblyAndType = dataSource.FullName + ", " + dataSource.Assembly.GetName().Name,
                     ClassName = dataSource.Name,
                     In = inStreamNames,
                     Out = outStreamNames,
-                    ContentType = configType
+                    ContentType = configType,
+                    PrimaryType = primaryType
                 });
             }
 
@@ -69,6 +73,7 @@ namespace ToSic.Eav.Apps.Parts
             public ICollection<string> In;
             public ICollection<string> Out;
             public string ContentType;
+            public string PrimaryType;
         }
     }
 }

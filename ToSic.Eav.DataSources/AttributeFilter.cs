@@ -2,6 +2,7 @@
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.DataSources.Attributes;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
@@ -12,7 +13,9 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
 	/// <remarks>Uses Configuration "AttributeNames"</remarks>
 	[PipelineDesigner]
-	public class AttributeFilter : BaseDataSource
+	[DataSourceProperties(Type = DataSourceType.Modify)]
+
+    public class AttributeFilter : BaseDataSource
 	{
 		#region Configuration-properties
 		private const string AttributeNamesKey = "AttributeNames";

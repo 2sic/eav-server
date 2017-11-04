@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.DataSources.Attributes;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
@@ -10,7 +11,9 @@ namespace ToSic.Eav.DataSources
 	/// Sort Entity by values in specified Attributes
 	/// </summary>
 	[PipelineDesigner]
-	public sealed class ValueSort : BaseDataSource
+	[DataSourceProperties(Type = DataSourceType.Sort)]
+
+    public sealed class ValueSort : BaseDataSource
 	{
         #region Configuration-properties
 	    public override string LogId => "DS.ValueS";

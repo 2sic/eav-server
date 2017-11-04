@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ToSic.Eav.DataSources.Attributes;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.Interfaces;
 using static System.Int32;
@@ -11,7 +12,9 @@ namespace ToSic.Eav.DataSources
 	/// Return all Entities from a specific App
 	/// </summary>
 	[PipelineDesigner]
-	public class App : BaseDataSource
+	[DataSourceProperties(Type = DataSourceType.Source)]
+
+    public class App : BaseDataSource
 	{
 		#region Configuration-properties
 		private const string AppSwitchKey = "AppSwitch";

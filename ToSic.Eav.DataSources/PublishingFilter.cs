@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.DataSources.Attributes;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
@@ -8,7 +9,9 @@ namespace ToSic.Eav.DataSources
 	/// Filter entities to show Drafts or only Published Entities
 	/// </summary>
 	[PipelineDesigner]
-	public class PublishingFilter : BaseDataSource
+	[DataSourceProperties(Type = DataSourceType.Security)]
+
+    public class PublishingFilter : BaseDataSource
 	{
         #region Configuration-properties
 	    public override string LogId => "DS.Publsh";

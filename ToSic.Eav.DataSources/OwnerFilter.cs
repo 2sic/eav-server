@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.DataSources.Attributes;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
@@ -9,7 +10,9 @@ namespace ToSic.Eav.DataSources
 	/// Filter entities to show Drafts or only Published Entities
 	/// </summary>
 	[PipelineDesigner]
-	public class OwnerFilter : BaseDataSource
+	[DataSourceProperties(Type = DataSourceType.Security)]
+
+    public class OwnerFilter : BaseDataSource
 	{
         #region Configuration-properties
 	    public override string LogId => "DS.OwnrF";

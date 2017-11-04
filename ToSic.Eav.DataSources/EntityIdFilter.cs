@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 // using System.Data.EntityClient;
 using System.Linq;
+using ToSic.Eav.DataSources.Attributes;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
@@ -11,7 +12,9 @@ namespace ToSic.Eav.DataSources
 	/// A DataSource that filters Entities by Ids
 	/// </summary>
 	[PipelineDesigner]
-	public class EntityIdFilter : BaseDataSource
+	[DataSourceProperties(Type = DataSourceType.Filter)]
+
+    public class EntityIdFilter : BaseDataSource
 	{
         #region Configuration-properties
 	    public override string LogId => "DS.EntIdF";

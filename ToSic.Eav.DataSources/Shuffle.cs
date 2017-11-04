@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.DataSources.Attributes;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
@@ -10,6 +11,7 @@ namespace ToSic.Eav.DataSources
 	/// A DataSource that filters Entities by Ids
 	/// </summary>
 	[PipelineDesigner]
+    [DataSourceProperties(Type = DataSourceType.Sort)]
 	public sealed class Shuffle: BaseDataSource
 	{
         #region Configuration-properties (no config)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.DataSources.Attributes;
 using ToSic.Eav.DataSources.Exceptions;
 using ToSic.Eav.Interfaces;
 
@@ -11,6 +12,8 @@ namespace ToSic.Eav.DataSources
     /// Return only Entities having a specific value in an Attribute
     /// </summary>
     [PipelineDesigner]
+    [DataSourceProperties(Type = DataSourceType.Filter)]
+
     public sealed class ValueFilter : BaseDataSource
     {
         #region Configuration-properties Attribute, Value, Language, Operator

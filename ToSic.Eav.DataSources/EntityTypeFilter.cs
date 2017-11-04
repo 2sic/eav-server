@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.DataSources.Attributes;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
@@ -9,7 +10,9 @@ namespace ToSic.Eav.DataSources
 	/// Return only entities of a specific type
 	/// </summary>
 	[PipelineDesigner]
-	public class EntityTypeFilter : BaseDataSource
+	[DataSourceProperties(Type = DataSourceType.Filter)]
+
+    public class EntityTypeFilter : BaseDataSource
 	{
         #region Configuration-properties
 	    public override string LogId => "DS.TypeF";
