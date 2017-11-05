@@ -53,6 +53,7 @@ namespace ToSic.Eav.Apps.Parts
                 var dsInfo = dataSource.GetCustomAttributes(typeof(DataSourceProperties), true).FirstOrDefault() as DataSourceProperties;
                 var primaryType = dsInfo?.Type.ToString();
                 var icon = dsInfo?.Icon;
+                inStreamNames = dsInfo?.In;
                 result.Add(new DataSourceInfo
                 {
                     PartAssemblyAndType = dataSource.FullName + ", " + dataSource.Assembly.GetName().Name,

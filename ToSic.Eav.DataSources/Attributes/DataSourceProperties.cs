@@ -14,6 +14,6 @@ namespace ToSic.Eav.DataSources.Attributes
 
         public string Icon { get; set; }
 
-        public string[] In { get; set; }
+	    public string[] In { get; set; } = new string[0];
 	}
 }

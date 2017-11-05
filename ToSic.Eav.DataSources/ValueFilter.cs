@@ -12,7 +12,7 @@ namespace ToSic.Eav.DataSources
     /// Return only Entities having a specific value in an Attribute
     /// </summary>
     [PipelineDesigner]
-    [DataSourceProperties(Type = DataSourceType.Filter)]
+    [DataSourceProperties(Type = DataSourceType.Filter, In = new[] { Constants.DefaultStreamName, Constants.FallbackStreamName })]
 
     public sealed class ValueFilter : BaseDataSource
     {

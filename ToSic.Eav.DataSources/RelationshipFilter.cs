@@ -11,8 +11,7 @@ namespace ToSic.Eav.DataSources
 	/// Filter Entities by Value in a Related Entity
 	/// </summary>
 	[PipelineDesigner]
-	[DataSourceProperties(Type = DataSourceType.Lookup)]
-
+	[DataSourceProperties(Type = DataSourceType.Lookup, In = new[] { Constants.DefaultStreamName, Constants.FallbackStreamName })]
     public sealed class RelationshipFilter : BaseDataSource
 	{
         #region Configuration-properties
