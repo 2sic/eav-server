@@ -12,7 +12,7 @@ namespace ToSic.Eav.DataSources
 	/// Return all Entities from a specific App
 	/// </summary>
 	[PipelineDesigner]
-	[DataSourceProperties(Type = DataSourceType.Source)]
+	[DataSourceProperties(Type = DataSourceType.Source, Icon = "app")]
 
     public class App : BaseDataSource
 	{

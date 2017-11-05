@@ -12,6 +12,8 @@ namespace ToSic.Eav.DataSources.Attributes
 	{
 	    public DataSourceType Type { get; set; }
 
+        public string Icon { get; set; }
+
         public string[] In { get; set; }
 	}
 }

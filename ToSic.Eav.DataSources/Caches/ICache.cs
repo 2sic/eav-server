@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.App;
+using ToSic.Eav.DataSources.Attributes;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources.Caches
 {
+	/// <inheritdoc />
 	/// <summary>
 	/// Caching interface for standard Eav Cache
 	/// </summary>
 	[PipelineDesigner]
-	public interface ICache : IDataSource
+	[DataSourceProperties(Type = DataSourceType.Source)]
+    public interface ICache : IDataSource
 	{
 		/// <summary>
 		/// Clean cache for specific Zone and App

@@ -52,6 +52,7 @@ namespace ToSic.Eav.Apps.Parts
                 var configType = expectDataAttrib?.StaticName;
                 var dsInfo = dataSource.GetCustomAttributes(typeof(DataSourceProperties), true).FirstOrDefault() as DataSourceProperties;
                 var primaryType = dsInfo?.Type.ToString();
+                var icon = dsInfo?.Icon;
                 result.Add(new DataSourceInfo
                 {
                     PartAssemblyAndType = dataSource.FullName + ", " + dataSource.Assembly.GetName().Name,
@@ -59,7 +60,8 @@ namespace ToSic.Eav.Apps.Parts
                     In = inStreamNames,
                     Out = outStreamNames,
                     ContentType = configType,
-                    PrimaryType = primaryType
+                    PrimaryType = primaryType,
+                    Icon = icon
                 });
             }
 
@@ -74,6 +76,7 @@ namespace ToSic.Eav.Apps.Parts
             public ICollection<string> Out;
             public string ContentType;
             public string PrimaryType;
+            public string Icon;
         }
     }
 }

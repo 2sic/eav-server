@@ -2,12 +2,13 @@
 {
     public enum DataSourceType
     {
-        Source,
         Filter,
-        Modify,
-        Sort,
-        Security,
+        Logic,
         Lookup,
-        Logic
+        Modify,
+        Security,
+        Sort,
+        Source,
+        Target
     }
 }
