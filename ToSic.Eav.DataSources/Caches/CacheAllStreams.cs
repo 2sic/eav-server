@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.DataSources.Attributes;
 
 namespace ToSic.Eav.DataSources.Caches
 {
@@ -9,6 +10,7 @@ namespace ToSic.Eav.DataSources.Caches
 	/// Return all Entities from a specific App
 	/// </summary>
 	[PipelineDesigner]
+    [DataSourceProperties(Type = DataSourceType.Cache)]
 	public class CacheAllStreams : BaseDataSource, IDeferredDataSource
 	{
 

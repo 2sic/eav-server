@@ -2,6 +2,7 @@
 {
     public enum DataSourceType
     {
+        Cache,
         Filter,
         Logic,
         Lookup,
