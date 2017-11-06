@@ -141,11 +141,15 @@ namespace ToSic.Eav.DataSources
 		        if (typeName != Constants.DefaultStreamName && !typeName.StartsWith("@") && !_out.ContainsKey(typeName))
 		        {
 		            var ds = DataSource.GetDataSource<EntityTypeFilter>(ZoneId, AppId, upstreamDataSource, ConfigurationProvider, parentLog:Log);
-		            ds.TypeName = contentType.Name;
+		            ds.TypeName = typeName;
+		            ds.DataSourceGuid = DataSourceGuid; // tell the inner source that it has the same ID as this one, as we're pretending it's the same source
 
-		            ds.Out[Constants.DefaultStreamName].AutoCaching = true; // enable auto-caching 
+		            if (typeName != Constants.DefaultStreamName)
+		                ds.AddNamedStream(typeName);
+		            var typeOut = ds.Out[typeName];// ds.RenamedStream(typeName);
+		            typeOut.AutoCaching = true; // enable auto-caching 
 
-		            _out.Add(contentType.Name, ds.Out[Constants.DefaultStreamName]);
+		            _out.Add(typeName, typeOut);
 		        }
 		    }
 		}

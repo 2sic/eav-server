@@ -17,5 +17,7 @@ namespace ToSic.Eav.DataSources.Attributes
 	    public string[] In { get; set; } = new string[0];
 
         public bool DynamicOut { get; set; } = false;
+
+	    public string HelpLink { get; set; } = "";
 	}
 }

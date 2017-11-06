@@ -41,6 +41,9 @@ namespace ToSic.Eav.DataSources
             CacheRelevantConfigurations = new[] { TypeNameKey };
         }
 
+        // special alternately named stream for use in the App data-source
+        internal void AddNamedStream(string otherName) => Out.Add(otherName, new DataStream(this, otherName, null, GetList));
+
 	    private IEnumerable<IEntity> GetList()
 	    {
 	        EnsureConfigurationIsLoaded();

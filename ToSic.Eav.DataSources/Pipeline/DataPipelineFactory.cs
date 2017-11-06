@@ -57,6 +57,11 @@ namespace ToSic.Eav.DataSources
 			{
 				throw new Exception("PipelineEntity not found with ID " + pipelineEntityId + " on AppId " + appId);
 			}
+
+            // tell the primary-out that it has this guid, for better debugging
+		    if (outSource.DataSourceGuid == Guid.Empty)
+		        outSource.DataSourceGuid = dataPipeline.EntityGuid;
+
 			var dataPipelineParts = metaDataSource.GetMetadata(Constants.MetadataForEntity, dataPipeline.EntityGuid, Constants.DataPipelinePartStaticName);
             #endregion
 

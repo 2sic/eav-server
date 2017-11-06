@@ -16,8 +16,6 @@ namespace ToSic.Eav.DataSources.Debug
         /// <summary>
         /// Provide an array of infos related to a stream and data source
         /// </summary>
-        /// <param name="source"></param>
-        /// <param name="statsList"></param>
         public static void GetStreamInfosRecursive(IDataTarget source, ref List<StreamInfo> statsList, ref Dictionary<Guid, DataSourceInfo> dsStats)
         {
             // ReSharper disable EmptyGeneralCatchClause
