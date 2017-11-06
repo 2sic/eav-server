@@ -11,7 +11,7 @@ namespace ToSic.Eav.DataSources
 	/// A DataSource that filters Entities by Ids
 	/// </summary>
 	[PipelineDesigner]
-    [DataSourceProperties(Type = DataSourceType.Sort)]
+    [DataSourceProperties(Type = DataSourceType.Sort, DynamicOut = false)]
 	public sealed class Shuffle: BaseDataSource
 	{
         #region Configuration-properties (no config)

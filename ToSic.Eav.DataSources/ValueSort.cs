@@ -11,7 +11,7 @@ namespace ToSic.Eav.DataSources
 	/// Sort Entity by values in specified Attributes
 	/// </summary>
 	[PipelineDesigner]
-	[DataSourceProperties(Type = DataSourceType.Sort)]
+	[DataSourceProperties(Type = DataSourceType.Sort, DynamicOut = false)]
 
     public sealed class ValueSort : BaseDataSource
 	{

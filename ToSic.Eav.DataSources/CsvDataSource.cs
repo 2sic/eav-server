@@ -11,7 +11,7 @@ using ToSic.Eav.Interfaces;
 namespace ToSic.Eav.DataSources
 {
     [PipelineDesigner]
-    [DataSourceProperties(Type = DataSourceType.Source)]
+    [DataSourceProperties(Type = DataSourceType.Source, DynamicOut = false)]
     public class CsvDataSource : ExternalDataDataSource
     {
         private const string FilePathKey = "FilePath";

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Attributes;
-using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Types.Attributes;
 
@@ -21,7 +20,6 @@ namespace ToSic.Eav.Apps.Parts
             {
                 #region Create Instance of DataSource to get In- and Out-Streams
                 ICollection<string> outStreamNames = new string[0];
-                ICollection<string> inStreamNames = new string[0];
                 if (!dataSource.IsInterface && !dataSource.IsAbstract)
                 {
                     var dataSourceInstance = (IDataSource)Activator.CreateInstance(dataSource);
@@ -42,8 +40,8 @@ namespace ToSic.Eav.Apps.Parts
                 {
                     var dataSourceInstance = (IDataSource)Factory.Resolve(dataSource);
                     outStreamNames = dataSourceInstance.Out.Keys;
-                    if (dataSourceInstance is ICache)
-                        inStreamNames = null;
+                    //if (dataSourceInstance is ICache)
+                    //    inStreamNames = null;
                 }
                 #endregion
 
@@ -51,9 +49,7 @@ namespace ToSic.Eav.Apps.Parts
                     .FirstOrDefault() as ExpectsDataOfType;
                 var configType = expectDataAttrib?.StaticName;
                 var dsInfo = dataSource.GetCustomAttributes(typeof(DataSourceProperties), true).FirstOrDefault() as DataSourceProperties;
-                var primaryType = dsInfo?.Type.ToString();
-                var icon = dsInfo?.Icon;
-                inStreamNames = dsInfo?.In;
+                ICollection<string> inStreamNames = dsInfo?.In;
                 result.Add(new DataSourceInfo
                 {
                     PartAssemblyAndType = dataSource.FullName + ", " + dataSource.Assembly.GetName().Name,
@@ -61,8 +57,9 @@ namespace ToSic.Eav.Apps.Parts
                     In = inStreamNames,
                     Out = outStreamNames,
                     ContentType = configType,
-                    PrimaryType = primaryType,
-                    Icon = icon
+                    PrimaryType = dsInfo?.Type.ToString(),
+                    Icon = dsInfo?.Icon,
+                    DynamicOut = dsInfo?.DynamicOut ?? true
                 });
             }
 
@@ -78,6 +75,7 @@ namespace ToSic.Eav.Apps.Parts
             public string ContentType;
             public string PrimaryType;
             public string Icon;
+            public bool DynamicOut;
         }
     }
 }

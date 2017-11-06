@@ -12,7 +12,7 @@ namespace ToSic.Eav.DataSources
 	/// A DataSource that filters Entities by Ids
 	/// </summary>
 	[PipelineDesigner]
-	[DataSourceProperties(Type = DataSourceType.Filter)]
+	[DataSourceProperties(Type = DataSourceType.Filter, DynamicOut = false)]
 
     public class EntityIdFilter : BaseDataSource
 	{

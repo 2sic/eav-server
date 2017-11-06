@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.DataSources.Attributes;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
@@ -10,7 +11,9 @@ namespace ToSic.Eav.DataSources
 	/// A DataSource that filters Entities by Ids
 	/// </summary>
 	[PipelineDesigner]
-	public sealed class Paging: BaseDataSource
+	[DataSourceProperties(Type = DataSourceType.Source, DynamicOut = false)]
+
+    public sealed class Paging: BaseDataSource
 	{
         #region Configuration-properties (no config)
 	    public override string LogId => "DS.Page";
