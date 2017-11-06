@@ -13,6 +13,7 @@ namespace ToSic.Eav.DataSources
 	{
 	    public override string LogId => "DS.Passth";
 
+        /// <inheritdoc />
         /// <summary>
         /// Constructs a new PassThrough DataSources
         /// </summary>
@@ -20,5 +21,13 @@ namespace ToSic.Eav.DataSources
 		{
 			Out = In;
 		}
+
+        /// <summary>
+        /// provide a static cachekey - as there is nothing dynamic on this source to modify the cache
+        /// </summary>
+        /// <remarks>
+        /// if the key is not static (like the default setup) it will always cause errors
+        /// </remarks>
+	    public override string CachePartialKey => "PassThrough";
 	}
 }
