@@ -12,7 +12,8 @@ namespace ToSic.Eav.DataSources
 	/// Return all Entities from a specific App
 	/// </summary>
 	[PipelineDesigner]
-	[DataSourceProperties(Type = DataSourceType.Source, Icon = "app", DynamicOut = true)]
+	[DataSourceProperties(Type = DataSourceType.Source, Icon = "app", DynamicOut = true,
+        HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-App")]
 
     public class App : BaseDataSource
 	{

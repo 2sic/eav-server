@@ -59,6 +59,7 @@ namespace ToSic.Eav.Apps.Parts
                     ContentType = configType,
                     PrimaryType = dsInfo?.Type.ToString(),
                     Icon = dsInfo?.Icon,
+                    HelpLink = dsInfo?.HelpLink,
                     DynamicOut = dsInfo?.DynamicOut ?? true
                 });
             }
@@ -76,6 +77,7 @@ namespace ToSic.Eav.Apps.Parts
             public string PrimaryType;
             public string Icon;
             public bool DynamicOut;
+            public string HelpLink;
         }
     }
 }

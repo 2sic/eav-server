@@ -13,7 +13,8 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
 	/// <remarks>Uses Configuration "AttributeNames"</remarks>
 	[PipelineDesigner]
-	[DataSourceProperties(Type = DataSourceType.Modify, DynamicOut = false)]
+	[DataSourceProperties(Type = DataSourceType.Modify, DynamicOut = false,
+        HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-AttributeFilter")]
 
     public class AttributeFilter : BaseDataSource
 	{
