@@ -15,7 +15,9 @@ namespace ToSic.Eav.DataSources
     /// </summary>
     [PipelineDesigner]
     [DataSourceProperties(Type = DataSourceType.Source, DynamicOut = false,
-        ExpectsDataOfType = "c76901b5-0345-4866-9fa3-6208de7f8543" /*ContentTypes.ConfigSqlDataSource.StaticTypeName*/)]
+        Icon = "database",
+        ExpectsDataOfType = "c76901b5-0345-4866-9fa3-6208de7f8543",
+        HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-SqlDataSource")]
 
 	public class SqlDataSource : ExternalDataDataSource
 	{
@@ -211,60 +213,72 @@ namespace ToSic.Eav.DataSources
 
             using (var connection = new SqlConnection(ConnectionString))
 			{
-				var command = new SqlCommand(SelectCommand, connection);
-
-                // Add all items in Configuration starting with an @, as this should be an SQL parameter
-				foreach (var sqlParameter in Configuration.Where(k => k.Key.StartsWith("@"))) 
-					command.Parameters.AddWithValue(sqlParameter.Key, sqlParameter.Value);
-
 				connection.Open();
-				var reader = command.ExecuteReader();
+                // create a fake transaction, to ensure no changes can be made
+			    using (var trans = connection.BeginTransaction())
+			    {
+				    var command = new SqlCommand(SelectCommand, connection, trans);
 
-			    var casedTitle = TitleField;
-			    var casedEntityId = EntityIdField;
-				try
-				{
-					#region Get the SQL Column List and validate it
-					var columNames = new string[reader.FieldCount];
-					for (var i = 0; i < reader.FieldCount; i++)
-						columNames[i] = reader.GetName(i);
+                    // Add all items in Configuration starting with an @, as this should be an SQL parameter
+				    foreach (var sqlParameter in Configuration.Where(k => k.Key.StartsWith("@"))) 
+					    command.Parameters.AddWithValue(sqlParameter.Key, sqlParameter.Value);
 
-					if (!columNames.Contains(casedEntityId))
-					{
-                        // try alternate casing
-                        casedEntityId = columNames.FirstOrDefault(c => string.Equals(c, casedEntityId, StringComparison.InvariantCultureIgnoreCase));
-					    if (casedEntityId == null)
-					        throw new Exception(
-					            $"{GetType().Name} - SQL Result doesn't contain an EntityId Column with Name '{EntityIdField}'. " +
-					            "Ideally use something like Select ID As EntityId...");
-					}
+			        var reader = command.ExecuteReader();
 
-				    if (!columNames.Contains(casedTitle))
-				    {
-                        // try alternate casing
-				        casedTitle = columNames.FirstOrDefault(c => string.Equals(c, casedTitle, StringComparison.InvariantCultureIgnoreCase));
-				        if (casedTitle == null)
-				            throw new Exception(
-				                $"{GetType().Name} - SQL Result doesn't contain an EntityTitle Column with Name '{TitleField}'. " +
-				                "Ideally use something like Select FullName As EntityTitle...");
-				    }
 
-				    #endregion
+			        var casedTitle = TitleField;
+			        var casedEntityId = EntityIdField;
+			        try
+			        {
+			            #region Get the SQL Column List and validate it
 
-					#region Read all Rows from SQL Server
-					while (reader.Read())
-					{
-						var entityId = Convert.ToInt32(reader[casedEntityId]);
-						var values = columNames.Where(c => c != casedEntityId).ToDictionary(c => c, c => reader[c]);
-						var entity = new Data.Entity(Constants.TransientAppId, entityId, ContentType, values, casedTitle);
-					    list.Add(entity);
-					}
-					#endregion
-				}
-				finally
-				{
-					reader.Close();
-				}
+			            var columNames = new string[reader.FieldCount];
+			            for (var i = 0; i < reader.FieldCount; i++)
+			                columNames[i] = reader.GetName(i);
+
+			            if (!columNames.Contains(casedEntityId))
+			            {
+			                // try alternate casing
+			                casedEntityId = columNames.FirstOrDefault(c =>
+			                    string.Equals(c, casedEntityId, StringComparison.InvariantCultureIgnoreCase));
+			                if (casedEntityId == null)
+			                    throw new Exception(
+			                        $"{GetType().Name} - SQL Result doesn't contain an EntityId Column with Name '{EntityIdField}'. " +
+			                        "Ideally use something like Select ID As EntityId...");
+			            }
+
+			            if (!columNames.Contains(casedTitle))
+			            {
+			                // try alternate casing
+			                casedTitle = columNames.FirstOrDefault(c =>
+			                    string.Equals(c, casedTitle, StringComparison.InvariantCultureIgnoreCase));
+			                if (casedTitle == null)
+			                    throw new Exception(
+			                        $"{GetType().Name} - SQL Result doesn't contain an EntityTitle Column with Name '{TitleField}'. " +
+			                        "Ideally use something like Select FullName As EntityTitle...");
+			            }
+
+			            #endregion
+
+			            #region Read all Rows from SQL Server
+
+			            while (reader.Read())
+			            {
+			                var entityId = Convert.ToInt32(reader[casedEntityId]);
+			                var values = columNames.Where(c => c != casedEntityId).ToDictionary(c => c, c => reader[c]);
+			                var entity = new Data.Entity(Constants.TransientAppId, entityId, ContentType, values, casedTitle);
+			                list.Add(entity);
+			            }
+
+			            #endregion
+			        }
+			        finally
+			        {
+			            reader.Close();
+			            // cause transaction rollback, in case there was a change made by naughty sql
+			            trans.Rollback();
+			        }
+			    }
 			}
 
 		    Log.Add($"found:{list.Count}");
