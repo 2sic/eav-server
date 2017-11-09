@@ -106,7 +106,7 @@ namespace ToSic.Eav.DataSources
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, null, GetList));
 			Configuration.Add(TitleFieldKey, "[Settings:EntityTitleField||" + Constants.EntityFieldTitle + "]");
 
-            Configuration.Add(EntityIdFieldKey, "[Settings:EntityIdField||" + Constants.EntityFieldId + "]");// EntityIdDefaultColumnName);
+            Configuration.Add(EntityIdFieldKey, "[Settings:EntityIdField||" + Constants.EntityFieldId + "]");
 
             Configuration.Add(ContentTypeKey, "[Settings:ContentType||SqlData]");
 			Configuration.Add(SelectCommandKey, "[Settings:SelectCommand]");
@@ -130,7 +130,10 @@ namespace ToSic.Eav.DataSources
 			TitleField = titleField ?? Constants.EntityFieldTitle;
 		}
 
-
+        /// <inheritdoc />
+        /// <summary>
+        /// Replace original EnsureConfigurationIsLoaded to handle the SQL in a special way
+        /// </summary>
 	    protected internal override void EnsureConfigurationIsLoaded()
 	    {
 	        if (_configurationIsLoaded)
