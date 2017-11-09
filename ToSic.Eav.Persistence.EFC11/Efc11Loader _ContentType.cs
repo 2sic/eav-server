@@ -55,6 +55,7 @@ namespace ToSic.Eav.Persistence.Efc
                         set.Scope,
                         set.Description,
                         Attributes = set.ToSicEavAttributesInSets
+                            .Where(a => a.Attribute.ChangeLogDeleted == null) // only not-deleted attributes!
                             .Select(a => new AttributeDefinition(appId, a.Attribute.StaticName, a.Attribute.Type, a.IsTitle, a.AttributeId, a.SortOrder, source)),
                         IsGhost = set.UsesConfigurationOfAttributeSet,
                         SharedDefinitionId = set.UsesConfigurationOfAttributeSet,
