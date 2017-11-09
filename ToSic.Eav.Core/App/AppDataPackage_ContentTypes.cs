@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Types;
 
@@ -38,8 +39,11 @@ namespace ToSic.Eav.App
 	    private static ImmutableList<IContentType> RemoveAliasesForGlobalTypes(IList<IContentType> allTypes)
 	    {
 	        var globTypeNames = Global.AllContentTypes().Keys;
-	        return allTypes.Where(t => !globTypeNames.Contains(t.StaticName))
-                .ToImmutableList();
+	        return allTypes.Where(t =>
+	                !((ContentType) t).AlwaysShareConfiguration // keep all locally defined types
+	                || !globTypeNames.Contains(t.StaticName)    // for non-local: keep all which globally are not overwritten
+	            )
+	            .ToImmutableList();
 	    }
 
 
