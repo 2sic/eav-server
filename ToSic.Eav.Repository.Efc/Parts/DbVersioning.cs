@@ -80,10 +80,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         private IThingSerializer ImmediateStateSerializer()
         {
-            var serializer = new JsonSerializer();
             var loader = new Efc11Loader(DbContext.SqlDb);
             var appPackageRightNow = loader.AppPackage(DbContext.AppId, parentLog:Log);
-            serializer.Initialize(appPackageRightNow);
+            var serializer = new JsonSerializer(appPackageRightNow, Log);
             return serializer;
         }
 

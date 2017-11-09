@@ -1,7 +1,7 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using ToSic.Eav.App;
 using ToSic.Eav.ImportExport.Serializers;
-using ToSic.Eav.Persistence.Xml;
+using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.ImportExport.Json
 {
@@ -10,25 +10,27 @@ namespace ToSic.Eav.ImportExport.Json
         public const string ReadOnlyMarker = "~";
         public const string NoLanguage = "*";
 
+        /// <summary>
+        /// Initialize with the correct logger name
+        /// </summary>
+        public JsonSerializer() : base("Jsn.Serlzr") {}
+
+        public JsonSerializer(AppDataPackage package, Log parentLog): this()
+        {
+            Initialize(package, parentLog);
+        }
 
         private static JsonSerializerSettings JsonSerializerSettings()
-        {
-            var settings = new JsonSerializerSettings
+            => new JsonSerializerSettings
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
                 DateTimeZoneHandling = DateTimeZoneHandling.Utc
             };
-            return settings;
-        }
 
-
-
-
- 
     }
 
     internal static class StringHelpers
     {
-        public static string EmptyAlternative(this string s, string alternative) => String.IsNullOrEmpty(s) ? alternative : s;
+        public static string EmptyAlternative(this string s, string alternative) => string.IsNullOrEmpty(s) ? alternative : s;
     }
 }

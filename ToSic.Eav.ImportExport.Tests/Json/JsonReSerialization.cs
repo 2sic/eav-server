@@ -61,8 +61,7 @@ namespace ToSic.Eav.ImportExport.Tests.json
 
             var loader = new Efc11Loader(dbc.SqlDb);
             var app = loader.AppPackage(appId);
-            var exBuilder = new JsonSerializer();
-            exBuilder.Initialize(app);
+            var exBuilder = new JsonSerializer(app, Log);
 
             var maxCount = 1000;
             var skip = 0;

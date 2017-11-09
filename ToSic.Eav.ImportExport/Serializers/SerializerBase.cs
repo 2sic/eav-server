@@ -3,12 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.App;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Types;
 
 namespace ToSic.Eav.ImportExport.Serializers
 {
-    public abstract class SerializerBase: IThingSerializer
+    public abstract class SerializerBase: HasLog, IThingSerializer
     {
+        protected SerializerBase(string name): base(name) { }
+
+        protected SerializerBase() : this("Srl.Default") { }
+
         public AppDataPackage App
         {
             get => _app ?? throw new Exception("cannot use app in serializer without initializing it first, make sure you call Initialize(...)");
@@ -22,19 +28,21 @@ namespace ToSic.Eav.ImportExport.Serializers
                    ? _types.FirstOrDefault(t => t.StaticName == staticName)
                    : App.GetContentType(staticName)); // only use the App if really necessary...
 
-        public void Initialize(AppDataPackage app)
+        public void Initialize(AppDataPackage app, Log parentLog)
         {
             App = app;
             AppId = app.AppId;
+            Log.LinkTo(parentLog);
         }
 
         protected int AppId;
         private IEnumerable<IContentType> _types;
-        public void Initialize(int appId, IEnumerable<IContentType> types, IDeferredEntitiesList allEntities)
+        public void Initialize(int appId, IEnumerable<IContentType> types, IDeferredEntitiesList allEntities, Log parentLog)
         {
             AppId = appId;
             _types = types;
             _relList = allEntities;
+            Log.LinkTo(parentLog);
         }
 
         protected IEntity Lookup(int entityId) => App.Entities[entityId];

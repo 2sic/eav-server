@@ -175,7 +175,7 @@ namespace ToSic.Eav.Persistence.Efc
             var entList = new List<IEntity>();
 
             var serializer = Factory.Resolve<IThingDeserializer>();
-            serializer.Initialize(appId, contentTypes, source);
+            serializer.Initialize(appId, contentTypes, source, Log);
 
             var entityTimer = Stopwatch.StartNew();
             foreach (var e in rawEntities)
@@ -185,7 +185,7 @@ namespace ToSic.Eav.Persistence.Efc
                 var useJson = e.Json != null;
                 
                 if(useJson)
-                    newEntity = serializer.Deserialize(e.Json) as Entity;
+                    newEntity = serializer.Deserialize(e.Json, false, true) as Entity;
 
                 else
                 {
@@ -327,7 +327,10 @@ namespace ToSic.Eav.Persistence.Efc
             _sqlTotalTime = _sqlTotalTime.Add(sqlTime.Elapsed);
             Log.Add($"timers types&typesql:{typeTimer.Elapsed} sqlAll:{_sqlTotalTime}, entities:{entityTimer.Elapsed}, relationship:{relTimer.Elapsed}");
 
-            var appPack = new AppDataPackage(appId, entities, entList, contentTypes, metadataForGuid, metadataForNumber, metadataForString, relationships, source);
+            var appPack = new AppDataPackage(appId, entities, entList, contentTypes, 
+                metadataForGuid, metadataForNumber, metadataForString, 
+                relationships, source,
+                Log);
             return appPack;
         }
 

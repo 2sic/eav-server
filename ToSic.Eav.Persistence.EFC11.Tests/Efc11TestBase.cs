@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.App;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.Efc.Models;
@@ -32,17 +31,10 @@ namespace ToSic.Eav.Persistence.Efc.Tests
         public Efc11Loader NewLoader() => new Efc11Loader(Db);
 
 
-        public static JsonSerializer SerializerOfApp(AppDataPackage app)
-        {
-            var exBuilder = new JsonSerializer();
-            exBuilder.Initialize(app);
-            return exBuilder;
-        }
-
         protected JsonSerializer SerializerOfApp(int appId)
         {
             var app = Loader.AppPackage(appId);
-            return SerializerOfApp(app);
+            return new JsonSerializer(app, Log);
         }
 
         #endregion

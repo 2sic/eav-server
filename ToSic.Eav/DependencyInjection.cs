@@ -42,11 +42,6 @@ namespace ToSic.Eav
 	        serviceCollection.TryAddTransient<IThingSerializer, JsonSerializer>();
 	        serviceCollection.TryAddTransient<IThingDeserializer, JsonSerializer>();
 
-            // NOTE for 2dm: Switch between DNN7 or DNN9 version of IEnvironmentVersioning
-            // serviceCollection.TryAddTransient<IEnvironmentVersioning, ToSic.SexyContent.Environment.Dnn9.Environment.Versioning>();
-            // serviceCollection.TryAddTransient<IEnvironmentVersioning, Apps.Environment.Versioning>();
-            // serviceCollection.TryAddTransient<IEnvironmentVersioning, ToSic.Eav.Apps.Environment.Versioning>();
-
             var conStr = new Configuration().DbConnectionString;
             if (!conStr.ToLower().Contains("multipleactiveresultsets")) // this is needed to allow querying data while preparing new data on the same DbContext
                 conStr += ";MultipleActiveResultSets=True";

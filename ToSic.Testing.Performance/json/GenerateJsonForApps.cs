@@ -34,12 +34,7 @@ namespace ToSic.Testing.Performance.json
         internal AppDataPackage Package;
         internal List<string> EntitiesAsJson;
 
-        internal JsonSerializer GetSerializer()
-        {
-            var ser = new JsonSerializer();
-            ser.Initialize(Package);
-            return ser;
-        }
+        internal JsonSerializer GetSerializer() => new JsonSerializer(Package, Log);
 
         public int SerializeAll(int repeat)
         {
@@ -62,7 +57,7 @@ namespace ToSic.Testing.Performance.json
         private void GenerateJsonForAllEntitiesOfApp(int appid)
         {
             var package = Loader.AppPackage(appid);
-            var ser = SerializerOfApp(package);
+            var ser = new JsonSerializer(package, Log);
             var upd = package.List.ToDictionary(e => e.EntityId, e => ser.Serialize(e));
 
             var dbEnts = Db.ToSicEavEntities.Where(e => e.AttributeSet.AppId == appid).ToList();

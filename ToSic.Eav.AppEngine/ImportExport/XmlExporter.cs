@@ -65,7 +65,7 @@ namespace ToSic.Eav.Apps.ImportExport
             Log = new Log("Xml.Exp", parentLog, "start XML exporter using app-package");
             AppPackage = app.Package;
             Serializer = new XmlSerializer();
-            Serializer.Initialize(AppPackage);
+            Serializer.Initialize(AppPackage, Log);
 
             _appStaticName = appStaticName;
             _isAppExport = appExport;

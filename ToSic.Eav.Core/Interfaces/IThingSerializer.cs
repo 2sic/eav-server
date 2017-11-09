@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.App;
+using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Interfaces
 {
     public interface IThingSerializer
     {
-        void Initialize(AppDataPackage app);
+        void Initialize(AppDataPackage app, Log parentLog);
 
         //void Initialize(int appId, IEnumerable<IContentType> types);
 

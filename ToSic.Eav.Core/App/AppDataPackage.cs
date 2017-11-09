@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging;
+using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.App
 {
@@ -10,7 +12,7 @@ namespace ToSic.Eav.App
 	/// <summary>
 	/// Cache Object for a specific App
 	/// </summary>
-	public partial class AppDataPackage
+	public partial class AppDataPackage: HasLog
 	{
 		#region private entities lists
 		private IDictionary<int, IEntity> _publishedEntities;
@@ -67,7 +69,7 @@ namespace ToSic.Eav.App
             IDictionary<int, Dictionary<int, IEnumerable<IEntity>>> metadataForNumber,
 			IDictionary<int, Dictionary<string, IEnumerable<IEntity>>> metadataForString, 
             IEnumerable<EntityRelationshipItem> relationships,
-            AppDataPackageDeferredList selfDeferredEntitiesList)
+            AppDataPackageDeferredList selfDeferredEntitiesList, Log parentLog): base("App.Packge", parentLog)
 		{
 		    AppId = appId;
 		    List = entList;

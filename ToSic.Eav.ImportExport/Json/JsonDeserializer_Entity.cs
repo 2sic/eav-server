@@ -13,10 +13,10 @@ namespace ToSic.Eav.ImportExport.Json
     public partial class JsonSerializer: IThingDeserializer
     {
 
-        public IEntity Deserialize(string serialized, bool allowDynamic = false)
+        public IEntity Deserialize(string serialized, bool allowDynamic = false, bool skipUnknownType = false)
         {
             var jsonObj = UnpackAndTestGenericJsonV1(serialized);
-            return Deserialize(jsonObj.Entity, allowDynamic);
+            return Deserialize(jsonObj.Entity, allowDynamic, skipUnknownType);
         }
 
 
@@ -37,16 +37,18 @@ namespace ToSic.Eav.ImportExport.Json
             return jsonObj;
         }
 
-        private IEntity Deserialize(JsonEntity jEnt, bool allowDynamic)
+        private IEntity Deserialize(JsonEntity jEnt, bool allowDynamic, bool skipUnknownType)
         {
-            // get type def
-            var contentType = GetContentType(jEnt.Type.Id)
-                              ?? (allowDynamic
-                                  ? ContentTypeBuilder.DynamicContentType(AppId, jEnt.Type.Id)
-                                  : throw new FormatException(
-                                      "type not found for deserialization and dynamic not allowed " +
-                                      $"- cannot continue with {jEnt.Type.Id}")
-                              );
+            Log.Add($"deserializing {jEnt.Guid} with allowDyn:{allowDynamic} skipUnknown:{skipUnknownType}");
+
+            // get type def - use dynamic if dynamic is allowed OR if we'll skip unknown types
+            IContentType contentType = GetContentType(jEnt.Type.Id)
+                                       ?? (allowDynamic || skipUnknownType
+                                           ? ContentTypeBuilder.DynamicContentType(AppId, jEnt.Type.Id)
+                                           : throw new FormatException(
+                                               "type not found for deserialization and dynamic not allowed " +
+                                               $"- cannot continue with {jEnt.Type.Id}")
+                                       );
 
             // Metadata
             var ismeta = new MetadataFor();
@@ -65,7 +67,12 @@ namespace ToSic.Eav.ImportExport.Json
 
             // build attributes - based on type definition
             if (contentType.IsDynamic)
-                BuildAttribsOfUnknownContentType(jEnt.Attributes, newEntity);
+            {
+                if (allowDynamic)
+                    BuildAttribsOfUnknownContentType(jEnt.Attributes, newEntity);
+                else
+                    Log.Add("will not resolve attributes because dynamic not allowed, but skip was ok");
+            }
             else
                 BuildAttribsOfKnownType(jEnt.Attributes, contentType, newEntity);
 
