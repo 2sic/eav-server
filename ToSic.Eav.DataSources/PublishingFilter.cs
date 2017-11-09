@@ -9,7 +9,7 @@ namespace ToSic.Eav.DataSources
 	/// Filter entities to show Drafts or only Published Entities
 	/// </summary>
 	[PipelineDesigner]
-	[DataSourceProperties(Type = DataSourceType.Security, Icon = "eye", DynamicOut = false)]
+	[DataSourceProperties(Type = DataSourceType.Security, Icon = "eye", DynamicOut = false, EnableConfig = false)]
 
     public class PublishingFilter : BaseDataSource
 	{

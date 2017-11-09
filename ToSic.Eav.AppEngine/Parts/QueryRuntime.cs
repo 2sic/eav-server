@@ -4,7 +4,6 @@ using System.Linq;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Attributes;
 using ToSic.Eav.Logging.Simple;
-using ToSic.Eav.Types.Attributes;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -45,22 +44,22 @@ namespace ToSic.Eav.Apps.Parts
                 }
                 #endregion
 
-                var expectDataAttrib = dataSource.GetCustomAttributes(typeof(ExpectsDataOfType), true)
-                    .FirstOrDefault() as ExpectsDataOfType;
-                var configType = expectDataAttrib?.StaticName;
+                //var expectDataAttrib = dataSource.GetCustomAttributes(typeof(ExpectsDataOfType), true)
+                //    .FirstOrDefault() as ExpectsDataOfType;
+                //var configType = expectDataAttrib?.StaticName;
                 var dsInfo = dataSource.GetCustomAttributes(typeof(DataSourceProperties), true).FirstOrDefault() as DataSourceProperties;
-                ICollection<string> inStreamNames = dsInfo?.In;
-                result.Add(new DataSourceInfo
+                result.Add(new DataSourceInfo(dsInfo)
                 {
                     PartAssemblyAndType = dataSource.FullName + ", " + dataSource.Assembly.GetName().Name,
                     ClassName = dataSource.Name,
-                    In = inStreamNames,
                     Out = outStreamNames,
-                    ContentType = configType,
-                    PrimaryType = dsInfo?.Type.ToString(),
-                    Icon = dsInfo?.Icon,
-                    HelpLink = dsInfo?.HelpLink,
-                    DynamicOut = dsInfo?.DynamicOut ?? true
+                    //ContentType = configType,
+                    //In = dsInfo?.In,
+                    //PrimaryType = dsInfo?.Type.ToString(),
+                    //Icon = dsInfo?.Icon,
+                    //HelpLink = dsInfo?.HelpLink,
+                    //DynamicOut = dsInfo?.DynamicOut ?? true,
+                    //EnableConfig = dsInfo?.EnableConfig ?? true
                 });
             }
 
@@ -78,6 +77,19 @@ namespace ToSic.Eav.Apps.Parts
             public string Icon;
             public bool DynamicOut;
             public string HelpLink;
+            public bool EnableConfig;
+
+            public DataSourceInfo(DataSourceProperties dsInfo)
+            {
+                if (dsInfo == null) return;
+                PrimaryType = dsInfo.Type.ToString();
+                Icon = dsInfo.Icon;
+                HelpLink = dsInfo.HelpLink;
+                In = dsInfo.In;
+                DynamicOut = dsInfo.DynamicOut ;
+                EnableConfig = dsInfo.EnableConfig;
+                ContentType = dsInfo.ExpectsDataOfType;
+            }
         }
     }
 }

@@ -11,7 +11,7 @@ namespace ToSic.Eav.DataSources.Caches
 	/// Caching interface for standard Eav Cache
 	/// </summary>
 	[PipelineDesigner]
-	[DataSourceProperties(Type = DataSourceType.Source)]
+	[DataSourceProperties(Type = DataSourceType.Source, EnableConfig = false)]
     public interface ICache : IDataSource
 	{
 		/// <summary>
@@ -23,11 +23,6 @@ namespace ToSic.Eav.DataSources.Caches
 		/// Clean global cache (currently contains List of Zones and Apps)
 		/// </summary>
 		void PurgeGlobalCache();
-
-		///// <summary>
-		///// Gets the DateTime when this CacheItem was populated
-		///// </summary>
-		//DateTime LastRefresh { get; }
 
 		/// <summary>
 		/// Gets a GeontentType by Name
@@ -44,12 +39,6 @@ namespace ToSic.Eav.DataSources.Caches
 		/// <returns>Item1 = ZoneId, Item2 = AppId</returns>
 		Tuple<int, int> GetZoneAppId(int? zoneId = null, int? appId = null);
 
-		/// <summary>
-		/// Get AssignmentObjectTypeId by Name
-		/// </summary>
-		//int GetMetadataType(string typeName);
-
-		//string GetMetadataType(int typeId);
 
         #region Interfaces for the List-Cache
 

@@ -6,7 +6,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using ToSic.Eav.DataSources.Attributes;
 using ToSic.Eav.Interfaces;
-using ToSic.Eav.Types.Attributes;
 
 namespace ToSic.Eav.DataSources
 {
@@ -14,10 +13,10 @@ namespace ToSic.Eav.DataSources
     /// <summary>
     /// Provide Entities from a SQL Server
     /// </summary>
-    //[PipelineDesigner]
-    [DataSourceProperties(Type = DataSourceType.Source, DynamicOut = false)]
+    [PipelineDesigner]
+    [DataSourceProperties(Type = DataSourceType.Source, DynamicOut = false,
+        ExpectsDataOfType = "c76901b5-0345-4866-9fa3-6208de7f8543" /*ContentTypes.ConfigSqlDataSource.StaticTypeName*/)]
 
-    [ExpectsDataOfType(ContentTypes.ConfigSqlDataSource.StaticTypeName)]
 	public class SqlDataSource : ExternalDataDataSource
 	{
         // Note: of the standard SQL-terms, I will only allow exec|execute|select

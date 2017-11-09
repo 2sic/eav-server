@@ -118,7 +118,6 @@
     <Compile Include="Persistence\Logging\LogItem.cs" />
     <Compile Include="Persistence\Logging\Message.cs" />
     <Compile Include="Persistence\Logging\MessageTypes.cs" />
-    <Compile Include="Types\Attributes\ExpectsDataOfType.cs" />
     <Compile Include="Types\Attributes\ContentTypeDefinition.cs" />
     <Compile Include="Data\Builder\AttDefBuilder.cs" />
     <Compile Include="Data\Builder\AttribBuilder.cs" />
