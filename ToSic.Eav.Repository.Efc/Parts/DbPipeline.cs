@@ -15,61 +15,74 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         public int CopyDataPipeline(int appId, int pipelineEntityId, string userName)
         {
-            DbContext.UserName = userName;
+            int returnId = 0;
 
-            // Clone Pipeline Entity with a new new Guid
-            string importantIncludes = "AttributeSet,ToSicEavValues,ToSicEavValues.ToSicEavValuesDimensions";
-            var sourcePipelineEntity = DbContext.Entities.GetDbEntity(pipelineEntityId, importantIncludes + ",ToSicEavValues.Attribute");
-            if (sourcePipelineEntity.AttributeSet.StaticName != Constants.DataPipelineStaticName) //PipelineAttributeSetStaticName)
-                throw new ArgumentException("Entity is not an DataPipeline Entity", nameof(pipelineEntityId));
-            var pipelineEntityClone = CloneEntityForPipelineSimpleValuesOnly(sourcePipelineEntity);
-            
-            // Copy Pipeline Parts with configuration Entity, assign KeyGuid of the new Pipeline Entity
-            var pipelineParts = DbContext.Entities.GetEntityMetadataByGuid(appId, sourcePipelineEntity.EntityGuid, includes: importantIncludes);
-            var pipelinePartClones = new Dictionary<string, Guid>();	// track Guids of originals and their clone
-            foreach (var pipelinePart in pipelineParts)
+            DbContext.DoInTransaction(() =>
             {
-                var pipelinePartClone = CloneEntityForPipelineSimpleValuesOnly(pipelinePart);
-                pipelinePartClone.KeyGuid = pipelineEntityClone.EntityGuid;
-                pipelinePartClones.Add(pipelinePart.EntityGuid.ToString(), pipelinePartClone.EntityGuid);
+                // DbContext.UserName = userName;
 
-                // Copy Configuration Entity, assign KeyGuid of the Clone
-                var configurationEntity = DbContext.Entities.GetEntityMetadataByGuid(appId, pipelinePart.EntityGuid, includes: importantIncludes).SingleOrDefault();
-                if (configurationEntity != null)
+                // Clone Pipeline Entity with a new new Guid
+                string importantIncludes = "AttributeSet,ToSicEavValues,ToSicEavValues.ToSicEavValuesDimensions";
+                var sourcePipelineEntity =
+                    DbContext.Entities.GetDbEntity(pipelineEntityId, importantIncludes + ",ToSicEavValues.Attribute");
+                if (sourcePipelineEntity.AttributeSet.StaticName != Constants.DataPipelineStaticName)
+                    throw new ArgumentException("Entity is not an DataPipeline Entity", nameof(pipelineEntityId));
+                var pipelineEntityClone = CloneEntityForPipelineSimpleValuesOnly(sourcePipelineEntity);
+                DbContext.SqlDb.SaveChanges(); // do this to ensure we have new IDs
+
+                // Copy Pipeline Parts with configuration Entity, assign KeyGuid of the new Pipeline Entity
+                var pipelineParts = DbContext.Entities.GetEntityMetadataByGuid(appId, sourcePipelineEntity.EntityGuid,
+                    includes: importantIncludes);
+
+                var pipelinePartClones = new Dictionary<string, Guid>(); // track Guids of originals and their clone
+                foreach (var pipelinePart in pipelineParts)
                 {
-                    var configurationClone = CloneEntityForPipelineSimpleValuesOnly(configurationEntity);
-                    configurationClone.KeyGuid = pipelinePartClone.EntityGuid;
+                    var pipelinePartClone = CloneEntityForPipelineSimpleValuesOnly(pipelinePart);
+                    pipelinePartClone.KeyGuid = pipelineEntityClone.EntityGuid;
+                    pipelinePartClones.Add(pipelinePart.EntityGuid.ToString(), pipelinePartClone.EntityGuid);
+
+                    // Copy Configuration Entity, assign KeyGuid of the Clone
+                    var configurationEntity = DbContext.Entities
+                        .GetEntityMetadataByGuid(appId, pipelinePart.EntityGuid, includes: importantIncludes)
+                        .SingleOrDefault();
+                    if (configurationEntity != null)
+                    {
+                        var configurationClone = CloneEntityForPipelineSimpleValuesOnly(configurationEntity);
+                        configurationClone.KeyGuid = pipelinePartClone.EntityGuid;
+                    }
                 }
-            }
+                DbContext.SqlDb.SaveChanges();
 
-            #region Update Stream-Wirings
+                #region Update Stream-Wirings
 
-            // need the wiring attribute id for later, as I can't detect it on the unsaved clone
-            var wiringAttributeId = sourcePipelineEntity.ToSicEavValues.Single(v => v.Attribute.StaticName == Constants.DataPipelineStreamWiringStaticName).AttributeId;
+                // need the wiring attribute id for later, as I can't detect it on the unsaved clone
+                var wiringAttributeId = sourcePipelineEntity.ToSicEavValues
+                    .Single(v => v.Attribute.StaticName == Constants.DataPipelineStreamWiringStaticName)
+                    .AttributeId;
 
-            var streamWiring = pipelineEntityClone.ToSicEavValues.Single(v => v.AttributeId == wiringAttributeId /*v.Attribute.StaticName == Constants.DataPipelineStreamWiringStaticName*/);// StreamWiringAttributeName);
-            var wiringsClone = new List<WireInfo>();
-            var wiringsSource = DataPipelineWiring.Deserialize(streamWiring.Value);
-            if (wiringsSource != null)
-            {
-                foreach (var wireInfo in wiringsSource)
-                {
-                    var wireInfoClone = wireInfo; // creates a clone of the Struct
-                    if (pipelinePartClones.ContainsKey(wireInfo.From))
-                        wireInfoClone.From = pipelinePartClones[wireInfo.From].ToString();
-                    if (pipelinePartClones.ContainsKey(wireInfo.To))
-                        wireInfoClone.To = pipelinePartClones[wireInfo.To].ToString();
+                var streamWiring = pipelineEntityClone.ToSicEavValues.Single(v => v.AttributeId == wiringAttributeId);
+                var wiringsClone = new List<WireInfo>();
+                var wiringsSource = DataPipelineWiring.Deserialize(streamWiring.Value);
+                if (wiringsSource != null)
+                    foreach (var wireInfo in wiringsSource)
+                    {
+                        var wireInfoClone = wireInfo; // creates a clone of the Struct
+                        if (pipelinePartClones.ContainsKey(wireInfo.From))
+                            wireInfoClone.From = pipelinePartClones[wireInfo.From].ToString();
+                        if (pipelinePartClones.ContainsKey(wireInfo.To))
+                            wireInfoClone.To = pipelinePartClones[wireInfo.To].ToString();
 
-                    wiringsClone.Add(wireInfoClone);
-                }
-            }
+                        wiringsClone.Add(wireInfoClone);
+                    }
 
-            streamWiring.Value = DataPipelineWiring.Serialize(wiringsClone);
-            #endregion
+                streamWiring.Value = DataPipelineWiring.Serialize(wiringsClone);
 
-            DbContext.SqlDb.SaveChanges();
+                #endregion
 
-            return pipelineEntityClone.EntityId;
+                DbContext.SqlDb.SaveChanges();
+                returnId = pipelineEntityClone.EntityId;
+            });
+            return returnId;
         }
 
         #region Clone
@@ -87,13 +100,19 @@ namespace ToSic.Eav.Repository.Efc.Parts
             {
                 EntityGuid = Guid.NewGuid(),
                 AttributeSet = sourceEntity.AttributeSet,
-                //ConfigurationSet = sourceEntity.ConfigurationSet,
                 AssignmentObjectTypeId = sourceEntity.AssignmentObjectTypeId,
                 KeyGuid = sourceEntity.KeyGuid,
                 KeyNumber = sourceEntity.KeyNumber,
                 KeyString = sourceEntity.KeyString,
                 ChangeLogCreated = versioningId,
-                ChangeLogModified = versioningId
+                ChangeLogModified = versioningId,
+                Owner = sourceEntity.Owner,
+                IsPublished = sourceEntity.IsPublished,
+                SortOrder = sourceEntity.SortOrder,
+                AppId = sourceEntity.AppId,
+                ContentType = sourceEntity.ContentType,
+                Json = sourceEntity.Json,
+                Version = 1 // start over with numbering
             };
 
             DbContext.SqlDb.Add(clone);
