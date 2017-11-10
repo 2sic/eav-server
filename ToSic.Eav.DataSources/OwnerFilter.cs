@@ -10,22 +10,23 @@ namespace ToSic.Eav.DataSources
 	/// Filter entities to show Drafts or only Published Entities
 	/// </summary>
 	[PipelineDesigner]
-	[DataSourceProperties(Type = DataSourceType.Security, DynamicOut = false)]
+	[DataSourceProperties(Type = DataSourceType.Security, DynamicOut = false,
+        HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-OwnerFilter")]
 
     public class OwnerFilter : BaseDataSource
 	{
         #region Configuration-properties
 	    public override string LogId => "DS.OwnrF";
 
-        private const string _identityCode = "IdentityCode";
+        private const string IdentityCode = "IdentityCode";
 
         /// <summary>
         /// Indicates whether to show drafts or only Published Entities
         /// </summary>
         public string Identity
 		{
-			get => Configuration[_identityCode];
-            set => Configuration[_identityCode] = value;
+			get => Configuration[IdentityCode];
+            set => Configuration[IdentityCode] = value;
         }
 		#endregion
 
@@ -36,9 +37,9 @@ namespace ToSic.Eav.DataSources
 		public OwnerFilter()
 		{
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, null, GetList));
-			Configuration.Add(_identityCode, "[Settings:" + _identityCode + "]"); 
+			Configuration.Add(IdentityCode, "[Settings:" + IdentityCode + "]"); 
 
-            CacheRelevantConfigurations = new[] { _identityCode };
+            CacheRelevantConfigurations = new[] { IdentityCode };
         }
 
         private IEnumerable<IEntity> GetList()

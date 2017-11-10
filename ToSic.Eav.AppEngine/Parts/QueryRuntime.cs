@@ -46,15 +46,7 @@ namespace ToSic.Eav.Apps.Parts
                 result.Add(new DataSourceInfo(dataSource.Name, dsInfo)
                 {
                     PartAssemblyAndType = dataSource.FullName + ", " + dataSource.Assembly.GetName().Name,
-                    ClassName = dataSource.Name,
-                    Out = outStreamNames,
-                    //ContentType = configType,
-                    //In = dsInfo?.In,
-                    //PrimaryType = dsInfo?.Type.ToString(),
-                    //Icon = dsInfo?.Icon,
-                    //HelpLink = dsInfo?.HelpLink,
-                    //DynamicOut = dsInfo?.DynamicOut ?? true,
-                    //EnableConfig = dsInfo?.EnableConfig ?? true
+                    Out = outStreamNames
                 });
             }
 
