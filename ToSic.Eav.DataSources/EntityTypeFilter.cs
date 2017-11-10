@@ -11,7 +11,8 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
 	[PipelineDesigner]
 	[DataSourceProperties(Type = DataSourceType.Filter, DynamicOut = false,
-        NiceName = "ContentTypeFilter")]
+        NiceName = "ContentTypeFilter",
+        HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-ContentTypeFilter")]
 
     public class EntityTypeFilter : BaseDataSource
 	{

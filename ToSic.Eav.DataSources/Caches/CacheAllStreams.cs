@@ -10,7 +10,8 @@ namespace ToSic.Eav.DataSources.Caches
 	/// Return all Entities from a specific App
 	/// </summary>
 	[PipelineDesigner]
-    [DataSourceProperties(Type = DataSourceType.Cache, DynamicOut = true)]
+    [DataSourceProperties(Type = DataSourceType.Cache, DynamicOut = true,
+        HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-CacheAllStreams")]
 	public class CacheAllStreams : BaseDataSource, IDeferredDataSource
 	{
 

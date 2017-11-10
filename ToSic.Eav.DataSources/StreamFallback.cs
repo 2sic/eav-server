@@ -10,7 +10,9 @@ namespace ToSic.Eav.DataSources
 	/// A DataSource that filters Entities by Ids
 	/// </summary>
 	[PipelineDesigner]
-	[DataSourceProperties(Type = DataSourceType.Logic, DynamicOut = false)]
+	[DataSourceProperties(Type = DataSourceType.Logic, DynamicOut = false, 
+        EnableConfig = false,
+	    HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-StreamFallback")]
 
     public sealed class StreamFallback : BaseDataSource
 	{
