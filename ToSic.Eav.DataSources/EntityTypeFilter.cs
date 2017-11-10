@@ -10,7 +10,8 @@ namespace ToSic.Eav.DataSources
 	/// Return only entities of a specific type
 	/// </summary>
 	[PipelineDesigner]
-	[DataSourceProperties(Type = DataSourceType.Filter, DynamicOut = false)]
+	[DataSourceProperties(Type = DataSourceType.Filter, DynamicOut = false,
+        NiceName = "ContentTypeFilter")]
 
     public class EntityTypeFilter : BaseDataSource
 	{

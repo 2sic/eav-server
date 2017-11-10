@@ -39,16 +39,11 @@ namespace ToSic.Eav.Apps.Parts
                 {
                     var dataSourceInstance = (IDataSource)Factory.Resolve(dataSource);
                     outStreamNames = dataSourceInstance.Out.Keys;
-                    //if (dataSourceInstance is ICache)
-                    //    inStreamNames = null;
                 }
                 #endregion
 
-                //var expectDataAttrib = dataSource.GetCustomAttributes(typeof(ExpectsDataOfType), true)
-                //    .FirstOrDefault() as ExpectsDataOfType;
-                //var configType = expectDataAttrib?.StaticName;
                 var dsInfo = dataSource.GetCustomAttributes(typeof(DataSourceProperties), true).FirstOrDefault() as DataSourceProperties;
-                result.Add(new DataSourceInfo(dsInfo)
+                result.Add(new DataSourceInfo(dataSource.Name, dsInfo)
                 {
                     PartAssemblyAndType = dataSource.FullName + ", " + dataSource.Assembly.GetName().Name,
                     ClassName = dataSource.Name,
@@ -78,9 +73,11 @@ namespace ToSic.Eav.Apps.Parts
             public bool DynamicOut;
             public string HelpLink;
             public bool EnableConfig;
+            public string Name;
 
-            public DataSourceInfo(DataSourceProperties dsInfo)
+            public DataSourceInfo(string fallbackName, DataSourceProperties dsInfo)
             {
+                Name = fallbackName; // will override afterwards if possible
                 if (dsInfo == null) return;
                 PrimaryType = dsInfo.Type.ToString();
                 Icon = dsInfo.Icon;
@@ -89,6 +86,8 @@ namespace ToSic.Eav.Apps.Parts
                 DynamicOut = dsInfo.DynamicOut ;
                 EnableConfig = dsInfo.EnableConfig;
                 ContentType = dsInfo.ExpectsDataOfType;
+                if (!string.IsNullOrEmpty(dsInfo.NiceName))
+                    Name = dsInfo.NiceName;
             }
         }
     }

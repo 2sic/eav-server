@@ -43,5 +43,12 @@ namespace ToSic.Eav.DataSources.Attributes
         /// </summary>
         public string ExpectsDataOfType { get; set; }
 
+
+        /// <summary>
+        /// a nice name - usually an override to an internal class-name which shouldn't change any more
+        /// but is not correct from the current wording - like ContentTypeFilter instead of EntityTypeFilter
+        /// </summary>
+        public string NiceName { get; set; }
+
     }
 }
