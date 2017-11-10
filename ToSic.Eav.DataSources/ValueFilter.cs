@@ -15,7 +15,8 @@ namespace ToSic.Eav.DataSources
     [DataSourceProperties(
         Type = DataSourceType.Filter, 
         In = new[] { Constants.DefaultStreamName, Constants.FallbackStreamName },
-        DynamicOut = false)]
+        DynamicOut = false,
+        HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-ValueFilter")]
 
     public sealed class ValueFilter : BaseDataSource
     {

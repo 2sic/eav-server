@@ -12,7 +12,9 @@ namespace ToSic.Eav.DataSources
 	/// A DataSource that filters Entities by Ids
 	/// </summary>
 	[PipelineDesigner]
-	[DataSourceProperties(Type = DataSourceType.Filter, DynamicOut = false)]
+	[DataSourceProperties(Type = DataSourceType.Filter, DynamicOut = false,
+        NiceName = "ItemIdFilter",
+	    HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-ItemIdFilter")]
 
     public class EntityIdFilter : BaseDataSource
 	{
@@ -40,8 +42,6 @@ namespace ToSic.Eav.DataSources
 		{
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntities));
 			Configuration.Add(EntityIdKey, "[Settings:EntityIds]");
-			//Configuration.Add(PassThroughOnEmptyEntityIdsKey, "[Settings:PassThroughOnEmptyEntityIds||false]");
-
             CacheRelevantConfigurations = new[] { EntityIdKey };
 		}
 
