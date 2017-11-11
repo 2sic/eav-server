@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Data.Query;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Logging.Simple;
 
@@ -17,7 +18,7 @@ namespace ToSic.Eav.Apps.Parts
 
         public IEnumerable<ToSic.Eav.Interfaces.IEntity> All => App.Cache.LightList;
 
-        public ToSic.Eav.Interfaces.IEntity Get(int entityId) => App.Cache.List[entityId];
+        public ToSic.Eav.Interfaces.IEntity Get(int entityId) => App.Cache.LightList.One(entityId);
 
         public ToSic.Eav.Interfaces.IEntity Get(Guid entityGuid) => App.Cache.LightList.FirstOrDefault(e => e.EntityGuid == entityGuid);
 

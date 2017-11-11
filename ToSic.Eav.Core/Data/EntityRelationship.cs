@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Data.Query;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data
@@ -107,9 +108,9 @@ namespace ToSic.Eav.Data
                     ? Guids.Select(l => !l.HasValue
                         ? null
                         // special: in some cases, the entity cannot be found because it has been deleted or something
-                        : _lookupList.LightList.FirstOrDefault(e => e.EntityGuid == l))
+                        : _lookupList.Entities.FirstOrDefault(e => e.EntityGuid == l))
                     : EntityIds.Select(l => l.HasValue
-                        ? (_lookupList.List.ContainsKey(l.Value) ? _lookupList.List[l.Value] : null)
+                        ? _lookupList.Entities.One(l.Value)// (_lookupList.List.ContainsKey(l.Value) ? _lookupList.List[l.Value] : null)
                         // special: in some cases, the entity cannot be found because it has been deleted or something
                         : null)).ToList();
         }

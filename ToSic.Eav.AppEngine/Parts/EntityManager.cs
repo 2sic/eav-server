@@ -161,7 +161,7 @@ namespace ToSic.Eav.Apps.Parts
             saveOptions.PreserveUntouchedAttributes = true;
             saveOptions.PreserveUnknownLanguages = true;
 
-            var orig = AppManager.Cache.List[id];
+            var orig = Data.Query.Entity.One(AppManager.Cache.LightList,id);//[id];
             var tempEnt = new Entity(AppManager.AppId, 0, "", values);
             var saveEnt = new EntitySaver(Log).CreateMergedForSaving(orig, tempEnt, saveOptions);
             Save(saveEnt, saveOptions);

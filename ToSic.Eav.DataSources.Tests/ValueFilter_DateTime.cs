@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Linq;
 
 namespace ToSic.Eav.DataSources.Tests
 {
@@ -82,7 +83,7 @@ namespace ToSic.Eav.DataSources.Tests
             vf.Value = value;
             if (operation != null)
                 vf.Operator = operation;
-            Assert.AreEqual(expected, vf.List.Count, "Should find exactly " + expected + " amount people");
+            Assert.AreEqual(expected, vf.LightList.Count(), "Should find exactly " + expected + " amount people");
         }
 
         #endregion

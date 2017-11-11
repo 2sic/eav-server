@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Linq;
 using ToSic.Eav.UnitTests.DataSources;
 
 namespace ToSic.Eav.DataSources.Tests
@@ -24,7 +25,7 @@ namespace ToSic.Eav.DataSources.Tests
             var vf = ValueFilterString.CreateValueFilterForTesting(populationRoot * DataTableDataSourceTest.IsMaleForEveryX); // only every 3rd is male in the demo data
             vf.Attribute = "IsMale";
             vf.Value = compareValue;
-            var found = vf.List.Count;
+            var found = vf.LightList.Count();
             Assert.AreEqual(desiredFinds, found, "Should find exactly this amount people");
         }
 

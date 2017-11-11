@@ -8,6 +8,7 @@ using System.Xml;
 using System.Xml.Linq;
 using ToSic.Eav.App;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Query;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Environment;
 using ToSic.Eav.ImportExport.Xml;
@@ -215,7 +216,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 var id = int.Parse(entityId);
 
                 // Get the entity and ContentType from ContentContext add Add it to ContentItems
-                var entity = AppPackage.Entities[id];
+                var entity = AppPackage.Entities.Values.One(id);// [id];
                 entities.Add(GetEntityXElement(entity.EntityId, entity.Type.StaticName));
             }
 
@@ -276,7 +277,7 @@ namespace ToSic.Eav.Apps.ImportExport
                             break;
                         case XmlConstants.TemplateDemoItemId:
                             eid = int.Parse(valueString);
-                            var demoEntity = AppPackage.Entities[eid];// EavAppContext.SqlDb.ToSicEavEntities.FirstOrDefault(en => en.EntityId == eid);
+                            var demoEntity = AppPackage.Entities.Values.One(eid);//[eid];// EavAppContext.SqlDb.ToSicEavEntities.FirstOrDefault(en => en.EntityId == eid);
                             value.Attribute(XmlConstants.ValueAttr)?.SetValue(demoEntity?.EntityGuid.ToString() ?? string.Empty);
                             break;
                     }

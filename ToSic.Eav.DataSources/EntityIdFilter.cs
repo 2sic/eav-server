@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 // using System.Data.EntityClient;
 using System.Linq;
+using ToSic.Eav.Data.Query;
 using ToSic.Eav.DataSources.Attributes;
 using ToSic.Eav.Interfaces;
 
@@ -40,22 +41,23 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public EntityIdFilter()
 		{
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntities));
+			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, null, GetEntities));
 			Configuration.Add(EntityIdKey, "[Settings:EntityIds]");
             CacheRelevantConfigurations = new[] { EntityIdKey };
 		}
 
-		private IDictionary<int, IEntity> GetEntities()
+		private IEnumerable<IEntity> GetEntities()
 		{
             EnsureConfigurationIsLoaded();
 
 		    var entityIds = _cleanedIds;
 
-		    var originals = In[Constants.DefaultStreamName].List;
+		    var originals = In[Constants.DefaultStreamName].LightList;
 
-			var result = entityIds.Where(originals.ContainsKey).ToDictionary(id => id, id => originals[id]);
+			//var result = entityIds.Where(originals.ContainsKey).ToDictionary(id => id, id => originals[id]);
+		    var result = entityIds.Select(originals.One).Where(e => e != null);
 
-		    Log.Add(() => $"get ids:[{string.Join(",",_cleanedIds)}] found:{result.Count}");
+		    Log.Add(() => $"get ids:[{string.Join(",",_cleanedIds)}] found:{result.Count()}");
 		    return result;
 		}
 

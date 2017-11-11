@@ -78,7 +78,7 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         public DataTableDataSource()
 		{
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntities));
+			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, null, GetEntities));
 			Configuration.Add(TitleFieldKey, EntityTitleDefaultColumnName);
 			Configuration.Add(EntityIdFieldKey, EntityIdDefaultColumnName);
 			Configuration.Add(ModifiedFieldKey, "");
@@ -102,7 +102,7 @@ namespace ToSic.Eav.DataSources
 		    ModifiedField = modifiedField ?? "";
 		}
 
-		private IDictionary<int, IEntity> GetEntities()
+		private IEnumerable<IEntity> GetEntities()
 		{
 			EnsureConfigurationIsLoaded();
 
@@ -114,7 +114,7 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// Convert a DataTable to a Dictionary of EntityModels
 		/// </summary>
-		private static Dictionary<int, IEntity> ConvertToEntityDictionary(DataTable source, string contentType, string entityIdField, string titleField, string modifiedField = null)
+		private static IEnumerable<IEntity> ConvertToEntityDictionary(DataTable source, string contentType, string entityIdField, string titleField, string modifiedField = null)
 		{
 			// Validate Columns
 			if (!source.Columns.Contains(entityIdField))
@@ -123,7 +123,7 @@ namespace ToSic.Eav.DataSources
 				throw new Exception($"DataTable doesn't contain an EntityTitle Column with Name \"{titleField}\"");
 
 			// Pupulate a new Dictionary with EntityModels
-			var result = new Dictionary<int, IEntity>();
+			var result = new List<IEntity>();
 			foreach (DataRow row in source.Rows)
 			{
 				var entityId = Convert.ToInt32(row[entityIdField]);
@@ -131,7 +131,7 @@ namespace ToSic.Eav.DataSources
                 values = new Dictionary<string, object>(values, StringComparer.OrdinalIgnoreCase); // recast to ensure case-insensitive
 			    var mod = string.IsNullOrEmpty(modifiedField) ? null : values[modifiedField] as DateTime?;
 				var entity = new Entity(Constants.TransientAppId, entityId, contentType, values, titleField, mod);
-				result.Add(entity.EntityId, entity);
+				result.Add(entity);
 			}
 			return result;
 		}

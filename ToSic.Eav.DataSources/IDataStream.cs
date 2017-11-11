@@ -11,7 +11,7 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// Dictionary of Entites in this Stream
 		/// </summary>
-		IDictionary<int, IEntity> List { get; }
+		//IDictionary<int, IEntity> List { get; }
         IEnumerable<IEntity> LightList { get; }
         
         /// <summary>

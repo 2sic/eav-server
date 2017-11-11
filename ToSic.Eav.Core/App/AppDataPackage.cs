@@ -8,15 +8,15 @@ using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.App
 {
-	/// <inheritdoc />
-	/// <summary>
-	/// Cache Object for a specific App
-	/// </summary>
-	public partial class AppDataPackage: HasLog
+    /// <inheritdoc cref="HasLog" />
+    /// <summary>
+    /// Cache Object for a specific App
+    /// </summary>
+    public partial class AppDataPackage: HasLog
 	{
 		#region private entities lists
-		private IDictionary<int, IEntity> _publishedEntities;
-		private IDictionary<int, IEntity> _draftEntities;
+		private IEnumerable<IEntity> _publishedEntities;
+		private IEnumerable<IEntity> _draftEntities;
 		#endregion
 
 		#region public properties like AppId, Entities, List, Publisheentities, DraftEntities, 
@@ -38,12 +38,12 @@ namespace ToSic.Eav.App
 		/// <summary>
 		/// Get all Published Entities in this App (excluding Drafts)
 		/// </summary>
-		public IDictionary<int, IEntity> PublishedEntities => _publishedEntities ?? (_publishedEntities = Entities.Where(e => e.Value.IsPublished).ToDictionary(k => k.Key, v => v.Value));
+		public IEnumerable<IEntity> PublishedEntities => _publishedEntities ?? (_publishedEntities = Entities.Where(e => e.Value.IsPublished).Select(v => v.Value));//.ToDictionary(k => k.Key, v => v.Value));
 
 	    /// <summary>
 		/// Get all Entities not having a Draft (Entities that are Published (not having a draft) or draft itself)
 		/// </summary>
-		public IDictionary<int, IEntity> DraftEntities => _draftEntities ?? (_draftEntities = Entities.Where(e => e.Value.GetDraft() == null).ToDictionary(k => k.Value.EntityId, v => v.Value));
+		public IEnumerable<IEntity> DraftEntities => _draftEntities ?? (_draftEntities = Entities.Where(e => e.Value.GetDraft() == null).Select(v => v.Value));//.ToDictionary(k => k.Value.EntityId, v => v.Value));
 
 
         /// <summary>

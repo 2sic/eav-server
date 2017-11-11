@@ -33,7 +33,7 @@ namespace ToSic.Eav.UnitTests.DataSources
                 Assert.Fail("Access to another out should fail");
             }
             catch { }
-            Assert.IsTrue(defaultOut.List.Count == itemsToGenerate);
+            Assert.IsTrue(defaultOut.LightList.Count() == itemsToGenerate);
         }
 
         [TestMethod]

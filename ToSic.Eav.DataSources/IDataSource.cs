@@ -37,11 +37,12 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		IDataStream this[string outName] { get; }
 
-		/// <summary>
-		/// Get's the default list of Out["Default"]
-		/// This is just a shorthand, because the Default-List is the most commonly used
-		/// </summary>
-		IDictionary<int, IEntity> List { get; }
+        // 2017-11-11 2dm disabling dictionary-access
+		///// <summary>
+		///// Get's the default list of Out["Default"]
+		///// This is just a shorthand, because the Default-List is the most commonly used
+		///// </summary>
+		//IDictionary<int, IEntity> List { get; }
 
         IEnumerable<IEntity> LightList { get; }
             

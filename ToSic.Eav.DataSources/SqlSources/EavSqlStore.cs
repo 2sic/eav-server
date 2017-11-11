@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using ToSic.Eav.App;
 using ToSic.Eav.Data;
@@ -33,12 +34,13 @@ namespace ToSic.Eav.DataSources.SqlSources
 		public EavSqlStore()
 		{
             Log.Rename("EaSqDS");
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntities));
+			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, /*GetEntities*/null, GetItems));
 
             // this function will load data as it's needed
             // note: must use the source null (not "this"), as it's only used for internal deferred child-entity lookups and would cause infinite looping
-            IDictionary<int, IEntity> GetEntities() => Loader.AppPackage(AppId, null, true, Log).Entities;
-        }
+            //IDictionary<int, IEntity> GetEntities() => Loader.AppPackage(AppId, null, true, Log).Entities;
+            IEnumerable<IEntity> GetItems() => Loader.AppPackage(AppId, null, true, Log).Entities.Values;
+		}
 
 
 

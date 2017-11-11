@@ -28,6 +28,7 @@ namespace ToSic.Eav.ImportExport.Tests.json
             Assert.IsTrue(json.Length > 200, "should get a long json string");
         }
 
+        [Ignore("can't test as currently the text-file for this isn't in the test setup")]
         [TestMethod]
         public void Json_Export_OfType_ConfigSqlDataSource()
         {
