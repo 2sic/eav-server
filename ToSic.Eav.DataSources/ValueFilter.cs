@@ -78,7 +78,7 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public ValueFilter()
 		{
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, null, GetEntitiesOrFallback));
+			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntitiesOrFallback));
 			Configuration.Add(AttrKey, "[Settings:Attribute]");
 			Configuration.Add(FilterKey, "[Settings:Value]");
             Configuration.Add(OperatorKey, "[Settings:Operator||==]");
@@ -454,6 +454,7 @@ namespace ToSic.Eav.DataSources
 	                ex);
 	        }
 	    }
+
 
 	    /// <summary>
 	    /// A helper function to apply the filter without LINQ - ideal when trying to debug exactly what value crashed

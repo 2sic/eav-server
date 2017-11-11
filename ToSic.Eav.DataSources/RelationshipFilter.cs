@@ -107,7 +107,7 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         public RelationshipFilter()
 		{
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, null, GetEntitiesOrFallback));
+			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntitiesOrFallback));
 			Configuration.Add(RelationshipKey, "[Settings:Relationship]");
 			Configuration.Add(FilterKey, "[Settings:Filter]");
 		    Configuration.Add(CompareAttributeKey, Constants.EntityFieldTitle);

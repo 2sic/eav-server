@@ -71,7 +71,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
         [TestMethod]
         public void TestMetadataTargetTypes()
         {
-            var types = Factory.Resolve<IGlobalMetadataProvider>().TargetTypes;// Loader.MetadataTargetTypes();
+            var types = Factory.Resolve<IGlobalMetadataProvider>().TargetTypes;
 
             Assert.AreEqual(100, types.Count);
             Assert.IsTrue(types[Constants.NotMetadata] == "Default");
@@ -101,15 +101,8 @@ namespace ToSic.Eav.Persistence.Efc.Tests
 
         }
 
-        private AppDataPackage TestLoadApp(int appId)
-        {
-            return Loader.AppPackage(appId);
-        }
+        private AppDataPackage TestLoadApp(int appId) => Loader.AppPackage(appId);
 
-        private IList<IContentType> /*IDictionary<int, IContentType>*/ TestLoadCts(int appId)
-        {
-            return Loader.ContentTypes(appId, null);
-        }
-
+        private IList<IContentType> TestLoadCts(int appId) => Loader.ContentTypes(appId, null);
     }
 }

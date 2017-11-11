@@ -115,8 +115,6 @@ namespace ToSic.Eav.DataSources
 
         public IDataStream this[string outName] => Out[outName];
 
-        //public IDictionary<int, IEntity> List => Out[Constants.DefaultStreamName].List;
-
         public IEnumerable<IEntity> LightList => Out[Constants.DefaultStreamName].LightList;
 
         public IValueCollectionProvider ConfigurationProvider { get; protected internal set; }

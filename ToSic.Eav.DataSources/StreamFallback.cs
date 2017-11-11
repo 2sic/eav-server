@@ -33,16 +33,8 @@ namespace ToSic.Eav.DataSources
         /// </summary>
 		public StreamFallback()
 		{
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, /*GetEntities*/null, GetList));
+			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
 		}
-
-		//private IDictionary<int, IEntity> GetEntities()
-		//{
-		//    var foundStream = FindIdealFallbackStream();
-
-		//    return foundStream != null ? foundStream.List : new Dictionary<int, IEntity>();
-		//}
-
 
         private IEnumerable<IEntity> GetList()
         {

@@ -57,7 +57,7 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public ValueSort()
 		{
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, null, GetList));
+			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
 			Configuration.Add(AttrKey, "[Settings:Attributes]");
 			Configuration.Add(DirectionKey, "[Settings:Directions]");
 			Configuration.Add(LangKey, "Default"); // "[Settings:Language|Default]"); // use setting, but by default, expect "any"
@@ -65,10 +65,6 @@ namespace ToSic.Eav.DataSources
             CacheRelevantConfigurations = new[] { AttrKey, DirectionKey, LangKey };
         }
 
-        //private IDictionary<int, IEntity> GetEntities()
-        //{
-        //    return GetList().ToDictionary(x => x.EntityId, y => y);
-        //}
 		private IEnumerable<IEntity> GetList()
 		{
 			// todo: maybe do something about languages?

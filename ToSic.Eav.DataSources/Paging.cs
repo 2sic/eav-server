@@ -64,8 +64,8 @@ namespace ToSic.Eav.DataSources
         /// </summary>
 		public Paging()
 		{
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, null, GetList));
-            Out.Add("Paging", new DataStream(this, "Paging", null, GetPaging));
+			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
+            Out.Add("Paging", new DataStream(this, "Paging", GetPaging));
             Configuration.Add(PageSizeKey, "[Settings:" + PageSizeKey + "||" + DefPageSize + "]");
             Configuration.Add(PageNumberKey, "[Settings:" + PageNumberKey + "||" + DefPageNum + "]");
 

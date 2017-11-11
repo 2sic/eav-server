@@ -41,7 +41,7 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public EntityIdFilter()
 		{
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, null, GetEntities));
+			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntities));
 			Configuration.Add(EntityIdKey, "[Settings:EntityIds]");
             CacheRelevantConfigurations = new[] { EntityIdKey };
 		}

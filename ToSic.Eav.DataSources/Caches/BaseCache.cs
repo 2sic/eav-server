@@ -22,14 +22,13 @@ namespace ToSic.Eav.DataSources.Caches
 
 		protected BaseCache()
 		{
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, /*GetEntities*/null, GetList));
-			Out.Add(Constants.PublishedStreamName, new DataStream(this, Constants.PublishedStreamName, null, GetPublishedEntities));
-			Out.Add(Constants.DraftsStreamName, new DataStream(this, Constants.DraftsStreamName, null, GetDraftEntities));
+			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName,  GetList));
+			Out.Add(Constants.PublishedStreamName, new DataStream(this, Constants.PublishedStreamName,  GetPublishedEntities));
+			Out.Add(Constants.DraftsStreamName, new DataStream(this, Constants.DraftsStreamName, GetDraftEntities));
 
             ListDefaultRetentionTimeInSeconds = 60 * 60;
 
 
-            //IDictionary<int, IEntity> GetEntities() => AppDataPackage.Entities;
 	        IEnumerable<IEntity> GetList() => AppDataPackage.List;
 	        IEnumerable<IEntity> GetPublishedEntities() => AppDataPackage.PublishedEntities;
 	        IEnumerable<IEntity> GetDraftEntities() => AppDataPackage.DraftEntities;

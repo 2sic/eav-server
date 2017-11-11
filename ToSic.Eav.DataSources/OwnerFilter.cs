@@ -36,7 +36,7 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public OwnerFilter()
 		{
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, null, GetList));
+			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
 			Configuration.Add(IdentityCode, "[Settings:" + IdentityCode + "]"); 
 
             CacheRelevantConfigurations = new[] { IdentityCode };
