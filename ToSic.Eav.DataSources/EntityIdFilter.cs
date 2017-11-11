@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 // using System.Data.EntityClient;
 using System.Linq;
+using ToSic.Eav.Data.Query;
 using ToSic.Eav.DataSources.Attributes;
 using ToSic.Eav.Interfaces;
 
@@ -45,7 +46,7 @@ namespace ToSic.Eav.DataSources
             CacheRelevantConfigurations = new[] { EntityIdKey };
 		}
 
-		private IDictionary<int, IEntity> GetEntities()
+		private IEnumerable<IEntity> GetEntities()
 		{
             EnsureConfigurationIsLoaded();
 
@@ -53,9 +54,10 @@ namespace ToSic.Eav.DataSources
 
 		    var originals = In[Constants.DefaultStreamName].List;
 
-			var result = entityIds.Where(originals.ContainsKey).ToDictionary(id => id, id => originals[id]);
+			//var result = entityIds.Where(originals.ContainsKey).ToDictionary(id => id, id => originals[id]);
+		    var result = entityIds.Select(originals.One).Where(e => e != null);
 
-		    Log.Add(() => $"get ids:[{string.Join(",",_cleanedIds)}] found:{result.Count}");
+		    Log.Add(() => $"get ids:[{string.Join(",",_cleanedIds)}] found:{result.Count()}");
 		    return result;
 		}
 

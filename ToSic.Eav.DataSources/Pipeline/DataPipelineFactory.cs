@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using ToSic.Eav.Data.Query;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
@@ -51,7 +52,7 @@ namespace ToSic.Eav.DataSources
 			IEntity dataPipeline;
 			try
 			{
-				dataPipeline = appEntities[pipelineEntityId];
+				dataPipeline = appEntities.One(pipelineEntityId);// [pipelineEntityId];
 			}
 			catch (KeyNotFoundException)
 			{

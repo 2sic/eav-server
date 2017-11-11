@@ -78,7 +78,7 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public ValueFilter()
 		{
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, null, GetEntitiesOrFallback));
+			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntitiesOrFallback));
 			Configuration.Add(AttrKey, "[Settings:Attribute]");
 			Configuration.Add(FilterKey, "[Settings:Value]");
             Configuration.Add(OperatorKey, "[Settings:Operator||==]");
@@ -94,10 +94,10 @@ namespace ToSic.Eav.DataSources
             // ReSharper disable PossibleMultipleEnumeration
             if (!res.Any())
                 if (In.ContainsKey(Constants.FallbackStreamName) && In[Constants.FallbackStreamName] != null &&
-                    In[Constants.FallbackStreamName].LightList.Any())
+                    In[Constants.FallbackStreamName].List.Any())
                 {
                     Log.Add("will return fallback stream");
-                    res = In[Constants.FallbackStreamName].LightList;
+                    res = In[Constants.FallbackStreamName].List;
                 }
             
             return res;
@@ -124,7 +124,7 @@ namespace ToSic.Eav.DataSources
 		    _initializedLangs = new[] { lang };
             #endregion
 
-            var originals = In[Constants.DefaultStreamName].LightList.ToList();
+            var originals = In[Constants.DefaultStreamName].List.ToList();
 
             #region stop if the list is empty
             if (!originals.Any()) 
@@ -455,6 +455,7 @@ namespace ToSic.Eav.DataSources
 	        }
 	    }
 
+
 	    /// <summary>
 	    /// A helper function to apply the filter without LINQ - ideal when trying to debug exactly what value crashed
 	    /// </summary>
@@ -464,16 +465,16 @@ namespace ToSic.Eav.DataSources
 	    /// <param name="filter"></param>
 	    /// <returns></returns>
 	    // ReSharper disable once UnusedMember.Local
-	    private IDictionary<int, IEntity> GetFilteredWithLoop(IDictionary<int, IEntity> inList, string attr, string lang, string filter)
+	    private IEnumerable<IEntity> GetFilteredWithLoop(IEnumerable<IEntity> inList, string attr, string lang, string filter)
 	    {
-            var result = new Dictionary<int, IEntity>();
+            var result = new List<IEntity>();
             var langArr = new[] { lang };
             foreach (var res in inList)
                 //try
                 //{
                     //if (res.Value[attr][lang].ToString() == filter)
-                    if ((res.Value.GetBestValue(attr, langArr) ?? "").ToString() == filter)
-                        result.Add(res.Key, res.Value);
+                    if ((res.GetBestValue(attr, langArr) ?? "").ToString() == filter)
+                        result.Add(res);
                 //}
                 //catch { }
 	        return result;

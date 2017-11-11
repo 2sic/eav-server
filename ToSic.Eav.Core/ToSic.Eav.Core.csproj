@@ -103,6 +103,7 @@
     <Compile Include="Data\Builder\ValueBuilder.cs" />
     <Compile Include="Data\EntityEnumerator.cs" />
     <Compile Include="Data\OfMetadataOfItem.cs" />
+    <Compile Include="Data\Query\Entity.cs" />
     <Compile Include="Enums\Repositories.cs" />
     <Compile Include="Implementations\Runtime\NeutralRuntime.cs" />
     <Compile Include="Interfaces\IGlobalMetadataProvider.cs" />

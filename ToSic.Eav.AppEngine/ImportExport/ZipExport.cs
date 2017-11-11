@@ -137,14 +137,14 @@ namespace ToSic.Eav.Apps.ImportExport
             var templateTypeId = SystemRuntime.MetadataType(Settings.TemplateContentType);
             var entities =
                 DataSource.GetInitialDataSource(_zoneId, _appId).Out["Default"].List.Where(
-                    e => e.Value.MetadataFor.TargetType != templateTypeId
-                         && e.Value.MetadataFor.TargetType != Constants.MetadataForAttribute).ToList();
+                    e => e.MetadataFor.TargetType != templateTypeId
+                         && e.MetadataFor.TargetType != Constants.MetadataForAttribute).ToList();
 
             if (!includeContentGroups)
-                entities = entities.Where(p => p.Value.Type.StaticName != _sexycontentContentgroupName).ToList();
+                entities = entities.Where(p => p.Type.StaticName != _sexycontentContentgroupName).ToList();
 
             var entityIds = entities
-                .Select(e => e.Value.EntityId.ToString()).ToArray();
+                .Select(e => e.EntityId.ToString()).ToArray();
 
 
             var xmlExport = Factory.Resolve<XmlExporter>()

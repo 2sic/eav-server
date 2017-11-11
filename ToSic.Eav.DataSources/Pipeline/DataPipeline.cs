@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ToSic.Eav.Data.Query;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.ValueProvider;
@@ -23,9 +24,9 @@ namespace ToSic.Eav.DataSources
 			IEntity pipelineEntity;
 			try
 			{
-				pipelineEntity = entities[entityId];
-                if (pipelineEntity.Type.StaticName != Constants.DataPipelineStaticName)//PipelineAttributeSetStaticName)
-					throw new ArgumentException("Entity is not an DataPipeline Entity", nameof(entityId));
+				pipelineEntity = entities.One(entityId);//[entityId];
+                if (pipelineEntity.Type.StaticName != Constants.DataPipelineStaticName)
+                    throw new ArgumentException("Entity is not an DataPipeline Entity", nameof(entityId));
 			}
 			catch (Exception)
 			{
@@ -64,10 +65,10 @@ namespace ToSic.Eav.DataSources
             typeFilter.TypeName = Constants.DataPipelineStaticName;
 
 	        var dict = new Dictionary<string, IDataSource>(StringComparer.OrdinalIgnoreCase);
-	        foreach (var entQuery in typeFilter.List)
+	        foreach (var entQuery in typeFilter.LightList)
 	        {
-	            var delayedQuery = new DeferredPipelineQuery(zoneId, appId, entQuery.Value, valuesCollectionProvider);
-                dict.Add(entQuery.Value.Title[0].ToString(), delayedQuery);
+	            var delayedQuery = new DeferredPipelineQuery(zoneId, appId, entQuery, valuesCollectionProvider);
+                dict.Add(entQuery.Title[0].ToString(), delayedQuery);
 	        }
 	        return dict;
 	    }

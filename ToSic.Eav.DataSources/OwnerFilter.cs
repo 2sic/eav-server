@@ -36,7 +36,7 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public OwnerFilter()
 		{
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, null, GetList));
+			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
 			Configuration.Add(IdentityCode, "[Settings:" + IdentityCode + "]"); 
 
             CacheRelevantConfigurations = new[] { IdentityCode };
@@ -49,7 +49,7 @@ namespace ToSic.Eav.DataSources
             Log.Add($"get for identity:{Identity}");
             if (string.IsNullOrWhiteSpace(Identity)) return new List<IEntity>();
 
-            return In["Default"].LightList.Where(e => e.Owner == Identity);
+            return In["Default"].List.Where(e => e.Owner == Identity);
         }
 
 	}

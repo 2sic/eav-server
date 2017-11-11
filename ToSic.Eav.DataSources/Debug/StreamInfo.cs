@@ -23,7 +23,7 @@ namespace ToSic.Eav.DataSources.Debug
                     if (outStm.Value == strm)
                         SourceOut = outStm.Key;
 
-                Count = strm.LightList.Count();
+                Count = strm.List.Count();
             }
             catch
             {

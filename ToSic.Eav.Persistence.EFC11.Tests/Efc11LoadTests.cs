@@ -22,7 +22,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
         {
             var results = TestLoadApp(2);
 
-            Assert.IsTrue(results.Entities.Count > 1097 && results.Entities.Count < 1200, "tried counting entities on the blog-app");
+            Assert.IsTrue(results.List.Count() > 1097 && results.List.Count() < 1200, "tried counting entities on the blog-app");
         }
 
         [Ignore]
@@ -71,7 +71,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
         [TestMethod]
         public void TestMetadataTargetTypes()
         {
-            var types = Factory.Resolve<IGlobalMetadataProvider>().TargetTypes;// Loader.MetadataTargetTypes();
+            var types = Factory.Resolve<IGlobalMetadataProvider>().TargetTypes;
 
             Assert.AreEqual(100, types.Count);
             Assert.IsTrue(types[Constants.NotMetadata] == "Default");
@@ -85,7 +85,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
             var apps = zones[2].Apps;
 
             Assert.AreEqual(1, defapp, "def app on first zone");
-            Assert.AreEqual(71, zones.Count, "zone count - often changes, as new test-portals are made");
+            Assert.AreEqual(73, zones.Count, "zone count - often changes, as new test-portals are made");
             Assert.AreEqual(24, apps.Count, "app count on second zone");
 
             // ML Checks
@@ -101,15 +101,8 @@ namespace ToSic.Eav.Persistence.Efc.Tests
 
         }
 
-        private AppDataPackage TestLoadApp(int appId)
-        {
-            return Loader.AppPackage(appId);
-        }
+        private AppDataPackage TestLoadApp(int appId) => Loader.AppPackage(appId);
 
-        private IList<IContentType> /*IDictionary<int, IContentType>*/ TestLoadCts(int appId)
-        {
-            return Loader.ContentTypes(appId, null);
-        }
-
+        private IList<IContentType> TestLoadCts(int appId) => Loader.ContentTypes(appId, null);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Data.Query;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Repository.Efc.Tests;
 using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
@@ -28,6 +29,7 @@ namespace ToSic.Eav.ImportExport.Tests.json
             Assert.IsTrue(json.Length > 200, "should get a long json string");
         }
 
+        [Ignore("can't test as currently the text-file for this isn't in the test setup")]
         [TestMethod]
         public void Json_Export_OfType_ConfigSqlDataSource()
         {
@@ -49,7 +51,7 @@ namespace ToSic.Eav.ImportExport.Tests.json
 
         internal static string GetJsonOfContentTypeOfItem(int eId, JsonSerializer ser)
         {
-            var x = ser.App.Entities[eId];
+            var x = ser.App.List.One(eId);
             var xmlEnt = ser.Serialize(x.Type);
             return xmlEnt;
         }

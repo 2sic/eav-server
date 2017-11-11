@@ -22,27 +22,17 @@ namespace ToSic.Eav.DataSources.Caches
 
 		protected BaseCache()
 		{
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntities, GetList));
-			Out.Add(Constants.PublishedStreamName, new DataStream(this, Constants.PublishedStreamName, GetPublishedEntities));
+			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName,  GetList));
+			Out.Add(Constants.PublishedStreamName, new DataStream(this, Constants.PublishedStreamName,  GetPublishedEntities));
 			Out.Add(Constants.DraftsStreamName, new DataStream(this, Constants.DraftsStreamName, GetDraftEntities));
 
             ListDefaultRetentionTimeInSeconds = 60 * 60;
+
+
+	        IEnumerable<IEntity> GetList() => AppDataPackage.List;
+	        IEnumerable<IEntity> GetPublishedEntities() => AppDataPackage.PublishedEntities;
+	        IEnumerable<IEntity> GetDraftEntities() => AppDataPackage.DraftEntities;
 		}
-
-        #region Default Streams: All=Default; Published, Draft
-        private IDictionary<int, IEntity> GetEntities() => AppDataPackage.Entities;
-
-	    /// <summary>
-        /// This retrieves the cached list-only set (without the dictionar)
-        /// </summary>
-        /// <returns></returns>
-	    private IEnumerable<IEntity> GetList() => AppDataPackage.List;
-
-	    private IDictionary<int, IEntity> GetPublishedEntities() => AppDataPackage.PublishedEntities;
-
-	    private IDictionary<int, IEntity> GetDraftEntities() => AppDataPackage.DraftEntities;
-
-	    #endregion
 
         /// <summary>
 		/// The root DataSource
@@ -66,10 +56,6 @@ namespace ToSic.Eav.DataSources.Caches
 		/// </summary>
 		public abstract string CacheKeySchema { get; }
 
-		///// <summary>
-		///// Gets the DateTime when this Cache was populated
-		///// </summary>
-		//public DateTime LastRefresh => AppDataPackage.LastRefresh;
 
 	    #region Definition of the abstract Has-Item, Set, Get, Remove
         /// <summary>
@@ -99,7 +85,7 @@ namespace ToSic.Eav.DataSources.Caches
             {
                 ZoneApps = Backend.GetAllZones();
 
-                AssignmentObjectTypes = Factory.Resolve<IGlobalMetadataProvider>().TargetTypes;// Backend.GetAssignmentObjectTypes();
+                AssignmentObjectTypes = Factory.Resolve<IGlobalMetadataProvider>().TargetTypes;
             }
 
             if (ZoneId == 0 || AppId == 0)
@@ -255,7 +241,7 @@ namespace ToSic.Eav.DataSources.Caches
 
         public void ListSet(IDataStream dataStream, int durationInSeconds = 0)
         {
-            ListSet(dataStream.Source.CacheFullKey + "|" + dataStream.Name, dataStream.LightList, dataStream.Source.CacheLastRefresh, durationInSeconds);
+            ListSet(dataStream.Source.CacheFullKey + "|" + dataStream.Name, dataStream.List, dataStream.Source.CacheLastRefresh, durationInSeconds);
         }
         #endregion
 

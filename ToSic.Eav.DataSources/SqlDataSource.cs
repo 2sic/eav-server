@@ -103,7 +103,7 @@ namespace ToSic.Eav.DataSources
 		public SqlDataSource()
 		{
             // ReSharper disable once DoNotCallOverridableMethodsInConstructor
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, null, GetList));
+			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
 			Configuration.Add(TitleFieldKey, "[Settings:EntityTitleField||" + Constants.EntityFieldTitle + "]");
 
             Configuration.Add(EntityIdFieldKey, "[Settings:EntityIdField||" + Constants.EntityFieldId + "]");

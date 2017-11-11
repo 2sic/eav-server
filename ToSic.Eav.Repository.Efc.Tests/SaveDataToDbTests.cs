@@ -32,7 +32,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             // load an entity
             var loader1 = new Efc11Loader(dbi.SqlDb);
             var app1 = loader1.AppPackage(test.AppId);
-            var itm1 = app1.Entities[test.ItemOnHomeId];
+            var itm1 = Data.Query.Entity.One(app1.List, test.ItemOnHomeId);
 
             // save it
             dbi.Entities.SaveEntity(itm1, so);
@@ -40,7 +40,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             // re-load it
             var loader2 = new Efc11Loader(dbi.SqlDb); // use existing db context because the transaction is still open
             var app2 = loader2.AppPackage(test.AppId);
-            var itm2 = app2.Entities[test.ItemOnHomeId];
+            var itm2 = Data.Query.Entity.One(app2.List, test.ItemOnHomeId);
 
 
             // validate that they are still the same!
@@ -63,7 +63,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             // todo: load a simple, 1 language entity
             var loader1 = new Efc11Loader(dbi.SqlDb);
             var app1 = loader1.AppPackage(test.AppId);
-            var itm1 = app1.Entities[test.ItemOnHomeId];
+            var itm1 = Data.Query.Entity.One(app1.List, test.ItemOnHomeId);
 
             // todo: make some minor changes
             var itmNewTitle = new Entity(test.AppId, 0, "", new Dictionary<string, object>()
@@ -78,7 +78,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             // reload it
             var loader2 = new Efc11Loader(dbi.SqlDb); // use existing db context because the transaction is still open
             var app2 = loader2.AppPackage(test.AppId);
-            var itm2 = app2.Entities[test.ItemOnHomeId];
+            var itm2 = Data.Query.Entity.One(app2.List, test.ItemOnHomeId);
 
 
             // todo: validate that they are almost the same, but clearly different
@@ -120,7 +120,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             // reload it
             var loader2 = new Efc11Loader(dbi.SqlDb); // use existing db context because the transaction is still open
             var app2 = loader2.AppPackage(test.AppId);
-            var itm2 = app2.Entities[newId];
+            var itm2 = Data.Query.Entity.One(app2.List, newId);
 
             Assert.AreEqual(itm2.GetBestTitle(), ctTitle, "title should be loaded as saved" );
 

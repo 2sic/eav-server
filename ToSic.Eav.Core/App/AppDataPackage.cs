@@ -8,15 +8,15 @@ using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.App
 {
-	/// <inheritdoc />
-	/// <summary>
-	/// Cache Object for a specific App
-	/// </summary>
-	public partial class AppDataPackage: HasLog
+    /// <inheritdoc cref="HasLog" />
+    /// <summary>
+    /// Cache Object for a specific App
+    /// </summary>
+    public partial class AppDataPackage: HasLog
 	{
 		#region private entities lists
-		private IDictionary<int, IEntity> _publishedEntities;
-		private IDictionary<int, IEntity> _draftEntities;
+		private IEnumerable<IEntity> _publishedEntities;
+		private IEnumerable<IEntity> _draftEntities;
 		#endregion
 
 		#region public properties like AppId, Entities, List, Publisheentities, DraftEntities, 
@@ -25,10 +25,10 @@ namespace ToSic.Eav.App
         /// </summary>
         public int AppId { get; }
 
-		/// <summary>
-		/// Gets all Entities in this App
-		/// </summary>
-		public IDictionary<int, IEntity> Entities { get; }
+        /// <summary>
+        /// Gets all Entities in this App
+        /// </summary>
+        //public IDictionary<int, IEntity> Entities { get; }
 
         /// <summary>
         /// The simple list of entities, used in many pipeline parts
@@ -38,12 +38,12 @@ namespace ToSic.Eav.App
 		/// <summary>
 		/// Get all Published Entities in this App (excluding Drafts)
 		/// </summary>
-		public IDictionary<int, IEntity> PublishedEntities => _publishedEntities ?? (_publishedEntities = Entities.Where(e => e.Value.IsPublished).ToDictionary(k => k.Key, v => v.Value));
+		public IEnumerable<IEntity> PublishedEntities => _publishedEntities ?? (_publishedEntities = List.Where(e => e.IsPublished));//.ToDictionary(k => k.Key, v => v.Value));
 
 	    /// <summary>
 		/// Get all Entities not having a Draft (Entities that are Published (not having a draft) or draft itself)
 		/// </summary>
-		public IDictionary<int, IEntity> DraftEntities => _draftEntities ?? (_draftEntities = Entities.Where(e => e.Value.GetDraft() == null).ToDictionary(k => k.Value.EntityId, v => v.Value));
+		public IEnumerable<IEntity> DraftEntities => _draftEntities ?? (_draftEntities = List.Where(e => e.GetDraft() == null));//.ToDictionary(k => k.Value.EntityId, v => v.Value));
 
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace ToSic.Eav.App
 		/// </summary>
 		public AppDataPackage(
             int appId,
-            IDictionary<int, IEntity> entities, 
+            //IDictionary<int, IEntity> entities, 
             IEnumerable<IEntity> entList,
             IList<IContentType> contentTypes,
 			IDictionary<int, Dictionary<Guid, IEnumerable<IEntity>>> metadataForGuid, 
@@ -73,7 +73,7 @@ namespace ToSic.Eav.App
 		{
 		    AppId = appId;
 		    List = entList;
-		    Entities = entities;
+		    //Entities = entities;
 
 		    _appTypesFromRepository = RemoveAliasesForGlobalTypes(contentTypes);
 

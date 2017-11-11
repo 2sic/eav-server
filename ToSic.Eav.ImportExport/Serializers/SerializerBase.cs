@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.App;
+using ToSic.Eav.Data.Query;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
@@ -45,7 +46,7 @@ namespace ToSic.Eav.ImportExport.Serializers
             Log.LinkTo(parentLog);
         }
 
-        protected IEntity Lookup(int entityId) => App.Entities[entityId];
+        protected IEntity Lookup(int entityId) => App.List.One(entityId);
 
         public abstract string Serialize(IEntity entity);
 

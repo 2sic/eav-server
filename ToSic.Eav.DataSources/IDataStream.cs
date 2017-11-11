@@ -8,11 +8,7 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
 	public interface IDataStream
 	{
-		/// <summary>
-		/// Dictionary of Entites in this Stream
-		/// </summary>
-		IDictionary<int, IEntity> List { get; }
-        IEnumerable<IEntity> LightList { get; }
+        IEnumerable<IEntity> List { get; }
         
         /// <summary>
 		/// DataSource providing the Entities

@@ -49,6 +49,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     {
                         var configurationClone = CloneEntityForPipelineSimpleValuesOnly(configurationEntity);
                         configurationClone.KeyGuid = pipelinePartClone.EntityGuid;
+
+                        // todo: json-metadata-for...
+                        // must switch entity-id
+                        // must also switch guid
                     }
                 }
                 DbContext.SqlDb.SaveChanges();

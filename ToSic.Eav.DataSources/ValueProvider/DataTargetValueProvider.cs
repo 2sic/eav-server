@@ -60,7 +60,7 @@ namespace ToSic.Eav.ValueProvider
             }
 
             // Create an EntityValueProvider based on the first item, return its Get
-		    var first = entityStream.List.First().Value;
+		    var first = entityStream.List.First();
 		    return new EntityValueProvider(first).Get(subTokens.Rest, format, ref propertyNotFound);
 
 		}

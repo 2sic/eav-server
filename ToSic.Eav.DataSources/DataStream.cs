@@ -1,15 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
 {
-	/// <summary>
-	/// Delegate to get Entities when needed
-	/// </summary>
-	public delegate IDictionary<int, IEntity> GetDictionaryDelegate();
-
     /// <summary>
     /// The light list for the series of items returned
     /// </summary>
@@ -22,7 +16,6 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
 	public class DataStream : IDataStream
 	{
-		private readonly GetDictionaryDelegate _dictionaryDelegate;
 	    private readonly GetIEnumerableDelegate _lightListDelegate;
 
 
@@ -53,17 +46,18 @@ namespace ToSic.Eav.DataSources
         public bool CacheRefreshOnSourceRefresh { get; set; }
 
         #endregion
-		/// <summary>
-		/// Constructs a new DataStream
-		/// </summary>
-		/// <param name="source">The DataSource providing Entities when needed</param>
-		/// <param name="name">Name of this Stream</param>
-		/// <param name="dictionaryDelegate">Function which gets Entities</param>
-		public DataStream(IDataSource source, string name, GetDictionaryDelegate dictionaryDelegate, GetIEnumerableDelegate lightListDelegate = null, bool enableAutoCaching = false)
+
+	    /// <summary>
+	    /// Constructs a new DataStream
+	    /// </summary>
+	    /// <param name="source">The DataSource providing Entities when needed</param>
+	    /// <param name="name">Name of this Stream</param>
+	    /// <param name="lightListDelegate">Function which gets Entities</param>
+	    /// <param name="enableAutoCaching"></param>
+	    public DataStream(IDataSource source, string name, GetIEnumerableDelegate lightListDelegate = null, bool enableAutoCaching = false)
 		{
 			Source = source;
 			Name = name;
-			_dictionaryDelegate = dictionaryDelegate;
 		    _lightListDelegate = lightListDelegate;
 		    AutoCaching = enableAutoCaching;
             
@@ -74,40 +68,9 @@ namespace ToSic.Eav.DataSources
 		}
 
         #region Get Dictionary and Get List
-        private IDictionary<int, IEntity> _dicList; 
-		public IDictionary<int, IEntity> List
-		{
-			get
-			{
-                // already retrieved? then return last result to be faster
-                if (_dicList != null && KeepResultsAfterFirstQuery)
-                    return _dicList;
-
-			    // new version to build upon the simple list, if a simple list was provided instead Tag:PureEntitiesList
-			    if (_dictionaryDelegate == null && _lightListDelegate != null)
-			        return _dicList = LightList.ToDictionary(e => e.EntityId, e => e);
-
-			    try
-			    {
-			        var getList = new GetDictionaryDelegate(_dictionaryDelegate);
-			        _dicList = getList();
-
-			        return _dicList;
-			    }
-			    catch (InvalidOperationException)
-			    {
-			        // this is a special exeption - for example when using SQL. Pass it on to enable proper testing
-			        throw;
-			    }
-				catch (Exception ex)
-				{
-					throw new Exception($"Error getting List of Stream.\nStream Name: {Name}\nDataSource Name: {Source.Name}", ex);
-				}
-			}
-		}
 
 	    private IEnumerable<IEntity> _lightList; 
-        public IEnumerable<IEntity> LightList
+        public IEnumerable<IEntity> List
 	    {
             get
             {
@@ -131,8 +94,10 @@ namespace ToSic.Eav.DataSources
 
                 #region Assemble the list - either from the DictionaryDelegate or from the LightListDelegate
                 // try to use the built-in Entities-Delegate, but if not defined, use other delegate; just make sure we test both, to prevent infinite loops
-                if (_lightListDelegate == null && _dictionaryDelegate != null)
-                    _lightList = List.Select(x => x.Value);
+                //if (_lightListDelegate == null && _dictionaryDelegate != null)
+                //    _lightList = LightList;//.Select(x => x.Value);
+                if(_lightListDelegate == null)
+                    throw new Exception("can't load stream - no delegate found to supply it");
                 else
                 {
                     try
