@@ -16,7 +16,6 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
 	public class DataStream : IDataStream
 	{
-		//private readonly GetDictionaryDelegate _dictionaryDelegate;
 	    private readonly GetIEnumerableDelegate _lightListDelegate;
 
 
@@ -71,7 +70,7 @@ namespace ToSic.Eav.DataSources
         #region Get Dictionary and Get List
 
 	    private IEnumerable<IEntity> _lightList; 
-        public IEnumerable<IEntity> LightList
+        public IEnumerable<IEntity> List
 	    {
             get
             {

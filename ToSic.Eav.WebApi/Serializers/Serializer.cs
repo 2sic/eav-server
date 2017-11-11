@@ -31,7 +31,7 @@ namespace ToSic.Eav.Serializers
                 streamsToPublish = source.Out.Select(p => p.Key);
 
             var y = streamsToPublish.Where(k => source.Out.ContainsKey(k))
-                .ToDictionary(k => k, s => source.Out[s].LightList.Select(GetDictionaryFromEntity)
+                .ToDictionary(k => k, s => source.Out[s].List.Select(GetDictionaryFromEntity)
             );
 
             return y;
@@ -55,7 +55,7 @@ namespace ToSic.Eav.Serializers
         ///     so even if it looks un-used, it must stay available
         /// </remarks>
         public IEnumerable<Dictionary<string, object>> Prepare(IDataStream stream)
-            => Prepare(stream.LightList);
+            => Prepare(stream.List);
         
         
         #endregion

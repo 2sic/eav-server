@@ -59,7 +59,7 @@ namespace ToSic.Eav.DataSources.Tests
             // now the IDs shouldn't be incrementing one after another
             var seqConsistent = true;
             var lastId = 0;
-            foreach (var itm in sf.LightList)
+            foreach (var itm in sf.List)
             {
                 var newId = itm.EntityId;
                 if (newId < lastId)

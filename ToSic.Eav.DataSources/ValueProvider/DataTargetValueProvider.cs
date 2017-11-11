@@ -53,14 +53,14 @@ namespace ToSic.Eav.ValueProvider
 
             // check if any entities exist in this specific in-stream
             var entityStream = _dataTarget.In[subTokens.Source];
-            if (!entityStream.LightList.Any())
+            if (!entityStream.List.Any())
 		    {
                 propertyNotFound = true;
                 return string.Empty;
             }
 
             // Create an EntityValueProvider based on the first item, return its Get
-		    var first = entityStream.LightList.First();
+		    var first = entityStream.List.First();
 		    return new EntityValueProvider(first).Get(subTokens.Rest, format, ref propertyNotFound);
 
 		}

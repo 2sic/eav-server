@@ -58,7 +58,7 @@ namespace ToSic.Eav.DataSources
 	        EnsureConfigurationIsLoaded();
 
 	        Log.Add($"will shuffle and take:{Take}");
-            return ShuffleInternal(In["Default"].LightList, Take);
+            return ShuffleInternal(In["Default"].List, Take);
 	    }
 
         #region Experiment based on http://stackoverflow.com/questions/375351/most-efficient-way-to-randomly-sort-shuffle-a-list-of-integers-in-c-sharp/375446#375446

@@ -52,7 +52,7 @@ namespace ToSic.Eav.DataSources
 
 		    var entityIds = _cleanedIds;
 
-		    var originals = In[Constants.DefaultStreamName].LightList;
+		    var originals = In[Constants.DefaultStreamName].List;
 
 			//var result = entityIds.Where(originals.ContainsKey).ToDictionary(id => id, id => originals[id]);
 		    var result = entityIds.Select(originals.One).Where(e => e != null);

@@ -29,7 +29,7 @@ namespace ToSic.Eav.WebApi
                 contentType = DataSource.GetCache(null, appId).GetContentType(contentTypeName);
 
             var dsrc = DataSource.GetInitialDataSource(null, appId);
-            var temp = dsrc["Default"].LightList;
+            var temp = dsrc["Default"].List;
 
             // optionally filter by type
             if (contentType != null)

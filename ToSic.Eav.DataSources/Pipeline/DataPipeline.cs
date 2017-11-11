@@ -19,7 +19,7 @@ namespace ToSic.Eav.DataSources
 		/// <param name="dataSource">DataSource to load Entity from</param>
 		public static IEntity GetPipelineEntity(int entityId, IDataSource dataSource)
 		{
-			var entities = dataSource[Constants.DefaultStreamName].LightList;
+			var entities = dataSource[Constants.DefaultStreamName].List;
 
 			IEntity pipelineEntity;
 			try

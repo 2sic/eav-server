@@ -42,7 +42,7 @@ namespace ToSic.Eav.DataSources
 
             CacheRelevantConfigurations = new[] { ShowDraftsKey };
 
- 	        IEnumerable<IEntity> GetList() => DataStream().LightList;
+ 	        IEnumerable<IEntity> GetList() => DataStream().List;
        }
 
 

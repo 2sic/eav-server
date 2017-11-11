@@ -98,7 +98,7 @@ namespace ToSic.Eav.UnitTests.DataSources
                 "Should not be in because the previous test added a shorter key");
 
             // Get first list from direct query and from cache - compare. Should be same
-            var originalList = cacher[Constants.DefaultStreamName].LightList;
+            var originalList = cacher[Constants.DefaultStreamName].List;
             var listFromCache1 = cacher.Cache.ListGet(cacher.Out[Constants.DefaultStreamName]).LightList;
             Assert.AreEqual(listFromCache1, originalList, "Should be same list - right now");
 
@@ -107,7 +107,7 @@ namespace ToSic.Eav.UnitTests.DataSources
 
             var laterTimeIdenticalData = CreateFilterForTesting(100, uniqueIdsForThisTest, false);
             var cache2 = CreateCacheDS(laterTimeIdenticalData);
-            var listFromCache2 = cache2[Constants.DefaultStreamName].LightList;
+            var listFromCache2 = cache2[Constants.DefaultStreamName].List;
             Assert.AreNotEqual(listFromCache2, originalList, "Second list sohuldn't be same because 100ms time difference in source");
         }
 
@@ -119,7 +119,7 @@ namespace ToSic.Eav.UnitTests.DataSources
             var cacher = CreateCacheDS(filtered);
 
             // Get first list from direct query and from cache - compare. Should be same
-            var originalList = cacher[Constants.DefaultStreamName].LightList;
+            var originalList = cacher[Constants.DefaultStreamName].List;
 
             var cacheItem = cacher.Cache.ListGet(cacher.Out[Constants.DefaultStreamName]);
             Assert.IsNotNull(cacheItem, "should be not null, expected it to be in the cache");
@@ -135,7 +135,7 @@ namespace ToSic.Eav.UnitTests.DataSources
             // special: tell cache2 to ignore time etc.
             cache2.RefreshOnSourceRefresh = false;
 
-            var listFromCache2 = cache2[Constants.DefaultStreamName].LightList;
+            var listFromCache2 = cache2[Constants.DefaultStreamName].List;
             Assert.AreEqual(listFromCache2, originalList, "Second list sohuldn't STILL be same because we ignore time difference in source");
         }
 
@@ -149,7 +149,7 @@ namespace ToSic.Eav.UnitTests.DataSources
             cacher.CacheDurationInSeconds = 1;
 
             // Get first list from direct query and from cache - compare. Should be same
-            var originalList = cacher[Constants.DefaultStreamName].LightList;
+            var originalList = cacher[Constants.DefaultStreamName].List;
             var listFromCache1 = cacher.Cache.ListGet(cacher.Out[Constants.DefaultStreamName]).LightList;
             Assert.AreEqual(listFromCache1, originalList, "Should be same list - right now");
 
@@ -161,7 +161,7 @@ namespace ToSic.Eav.UnitTests.DataSources
             var newCacher = CreateCacheDS(filtered);
             newCacher.CacheDurationInSeconds = 1;
             newCacher.RefreshOnSourceRefresh = false; // don't enforce this, otherwise it will automatically be a new cache anyhow
-            var listFromCacheAfter1Second = newCacher[Constants.DefaultStreamName].LightList;
+            var listFromCacheAfter1Second = newCacher[Constants.DefaultStreamName].List;
             Assert.AreNotEqual(listFromCacheAfter1Second, originalList, "Second list MUST be Different because 1 second passed");
         }
 

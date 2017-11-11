@@ -103,7 +103,7 @@ namespace ToSic.Eav.DataSources.Caches
 	    {
             EnsureConfigurationIsLoaded();
 
-	        var outStream = new DataStream(this, name,  () => In[name].LightList, true);
+	        var outStream = new DataStream(this, name,  () => In[name].List, true);
 
 	        // inStream.AutoCaching = true;
 	        if (CacheDurationInSeconds != 0) // only set if a value other than 0 (= default) was given

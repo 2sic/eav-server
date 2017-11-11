@@ -27,7 +27,7 @@ namespace ToSic.Eav.DataSources.Tests
         {
             var vf = _testDataGeneratedOutsideTimer;// CreateValueSortForTesting(testVolume);
             var listOut = vf.LightList.ToList();
-            var listIn = vf.In["Default"].LightList.ToList();
+            var listIn = vf.In["Default"].List.ToList();
             CollectionAssert.AreEqual(listOut, listIn, "Lists should be the same if no criteria applied");
         }
 

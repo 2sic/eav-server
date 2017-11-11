@@ -48,7 +48,7 @@ namespace ToSic.Eav.DataSources
 			var source = DataSource.GetInitialDataSource(appId: appId, parentLog:Log);
 			var metaDataSource = DataSource.GetMetaDataSource(source.ZoneId, source.AppId);
 
-		    var appEntities = source[Constants.DefaultStreamName].LightList;
+		    var appEntities = source[Constants.DefaultStreamName].List;
 			IEntity dataPipeline;
 			try
 			{

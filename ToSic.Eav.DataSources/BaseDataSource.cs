@@ -115,7 +115,7 @@ namespace ToSic.Eav.DataSources
 
         public IDataStream this[string outName] => Out[outName];
 
-        public IEnumerable<IEntity> LightList => Out[Constants.DefaultStreamName].LightList;
+        public IEnumerable<IEntity> LightList => Out[Constants.DefaultStreamName].List;
 
         public IValueCollectionProvider ConfigurationProvider { get; protected internal set; }
         public IDictionary<string, string> Configuration { get; internal set; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);

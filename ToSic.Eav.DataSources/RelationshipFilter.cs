@@ -124,8 +124,8 @@ namespace ToSic.Eav.DataSources
             var res = GetEntities();
             // ReSharper disable PossibleMultipleEnumeration
             if (!res.Any())
-                if (In.ContainsKey(Constants.FallbackStreamName) && In[Constants.FallbackStreamName] != null && In[Constants.FallbackStreamName].LightList.Any())
-                    res = In[Constants.FallbackStreamName].LightList;
+                if (In.ContainsKey(Constants.FallbackStreamName) && In[Constants.FallbackStreamName] != null && In[Constants.FallbackStreamName].List.Any())
+                    res = In[Constants.FallbackStreamName].List;
 
             return res;
             // ReSharper restore PossibleMultipleEnumeration
@@ -156,7 +156,7 @@ namespace ToSic.Eav.DataSources
 		    Log.Add($"get related on attr:{compAttr}, filter:{filter}, mode:{mode}, child/parent:{childParent}");
             //var specAttr = lowAttribName == Constants.EntityFieldAutoSelect ? 'a' : lowAttribName == Constants.EntityFieldId ? 'i' : lowAttribName == Constants.EntityFieldTitle ? 't' : 'x';
 
-			var originals = In[Constants.DefaultStreamName].LightList;
+			var originals = In[Constants.DefaultStreamName].List;
 
             var compType = lowAttribName == Constants.EntityFieldAutoSelect ? CompareType.Auto : lowAttribName == Constants.EntityFieldId ? CompareType.Id : lowAttribName == Constants.EntityFieldTitle ? CompareType.Title : CompareType.Any;
 

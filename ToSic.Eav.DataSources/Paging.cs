@@ -78,7 +78,7 @@ namespace ToSic.Eav.DataSources
 	        EnsureConfigurationIsLoaded();
 		    var itemsToSkip = (PageNumber - 1)*PageSize;
 
-	        var result = In["Default"].LightList.Skip(itemsToSkip).Take(PageSize).ToList();
+	        var result = In["Default"].List.Skip(itemsToSkip).Take(PageSize).ToList();
 	        Log.Add($"get page:{PageNumber} with size{PageSize} found:{result.Count}");
             return result;
 	    }
@@ -88,7 +88,7 @@ namespace ToSic.Eav.DataSources
             EnsureConfigurationIsLoaded();
 
             // Calculate any additional stuff
-            var itemCount = In["Default"].LightList.Count();
+            var itemCount = In["Default"].List.Count();
             var pageCount = Math.Ceiling((decimal) itemCount / PageSize);
 
             // Assemble the entity

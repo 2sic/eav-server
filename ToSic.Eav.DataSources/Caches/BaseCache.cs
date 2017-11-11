@@ -241,7 +241,7 @@ namespace ToSic.Eav.DataSources.Caches
 
         public void ListSet(IDataStream dataStream, int durationInSeconds = 0)
         {
-            ListSet(dataStream.Source.CacheFullKey + "|" + dataStream.Name, dataStream.LightList, dataStream.Source.CacheLastRefresh, durationInSeconds);
+            ListSet(dataStream.Source.CacheFullKey + "|" + dataStream.Name, dataStream.List, dataStream.Source.CacheLastRefresh, durationInSeconds);
         }
         #endregion
 

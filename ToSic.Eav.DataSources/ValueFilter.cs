@@ -94,10 +94,10 @@ namespace ToSic.Eav.DataSources
             // ReSharper disable PossibleMultipleEnumeration
             if (!res.Any())
                 if (In.ContainsKey(Constants.FallbackStreamName) && In[Constants.FallbackStreamName] != null &&
-                    In[Constants.FallbackStreamName].LightList.Any())
+                    In[Constants.FallbackStreamName].List.Any())
                 {
                     Log.Add("will return fallback stream");
-                    res = In[Constants.FallbackStreamName].LightList;
+                    res = In[Constants.FallbackStreamName].List;
                 }
             
             return res;
@@ -124,7 +124,7 @@ namespace ToSic.Eav.DataSources
 		    _initializedLangs = new[] { lang };
             #endregion
 
-            var originals = In[Constants.DefaultStreamName].LightList.ToList();
+            var originals = In[Constants.DefaultStreamName].List.ToList();
 
             #region stop if the list is empty
             if (!originals.Any()) 
