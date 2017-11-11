@@ -64,10 +64,6 @@ namespace ToSic.Eav.Serializers
         ///     note that this could be in use on webAPIs and scripts
         ///     so even if it looks un-used, it must stay available
         /// </remarks>
-        //[Obsolete("Try to use the List-overload instead of the dictionary overload")]
-        //public IEnumerable<Dictionary<string, object>> Prepare(IDictionary<int, IEntity> list) 
-        //    => list.Select(c => GetDictionaryFromEntity(c.Value));
-
         public IEnumerable<Dictionary<string, object>> Prepare(IEnumerable<IEntity> entities) 
             => entities.Select(GetDictionaryFromEntity);
 

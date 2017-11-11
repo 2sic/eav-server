@@ -465,16 +465,16 @@ namespace ToSic.Eav.DataSources
 	    /// <param name="filter"></param>
 	    /// <returns></returns>
 	    // ReSharper disable once UnusedMember.Local
-	    private IDictionary<int, IEntity> GetFilteredWithLoop(IDictionary<int, IEntity> inList, string attr, string lang, string filter)
+	    private IEnumerable<IEntity> GetFilteredWithLoop(IEnumerable<IEntity> inList, string attr, string lang, string filter)
 	    {
-            var result = new Dictionary<int, IEntity>();
+            var result = new List<IEntity>();
             var langArr = new[] { lang };
             foreach (var res in inList)
                 //try
                 //{
                     //if (res.Value[attr][lang].ToString() == filter)
-                    if ((res.Value.GetBestValue(attr, langArr) ?? "").ToString() == filter)
-                        result.Add(res.Key, res.Value);
+                    if ((res.GetBestValue(attr, langArr) ?? "").ToString() == filter)
+                        result.Add(res);
                 //}
                 //catch { }
 	        return result;

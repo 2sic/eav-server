@@ -38,7 +38,7 @@ namespace ToSic.Eav.DataSources.SqlSources
 
             // this function will load data as it's needed
             // note: must use the source null (not "this"), as it's only used for internal deferred child-entity lookups and would cause infinite looping
-            IEnumerable<IEntity> GetItems() => Loader.AppPackage(AppId, null, true, Log).Entities.Values;
+            IEnumerable<IEntity> GetItems() => Loader.AppPackage(AppId, null, true, Log).List;
 		}
 
 

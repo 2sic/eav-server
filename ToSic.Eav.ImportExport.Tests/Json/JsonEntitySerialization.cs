@@ -60,7 +60,7 @@ namespace ToSic.Eav.ImportExport.Tests.json
             var count = 0;
             try
             {
-                foreach (var appEntity in app.Entities.Values)
+                foreach (var appEntity in app.List)
                 {
                     // maybe skip some
                     if (count++ < skip) continue;

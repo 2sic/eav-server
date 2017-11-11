@@ -172,7 +172,7 @@ namespace ToSic.Eav.Persistence.Efc
 
             #region Build EntityModels
             var entities = new Dictionary<int, IEntity>();
-            var entList = new List<IEntity>();
+            //var entList = new List<IEntity>();
 
             var serializer = Factory.Resolve<IThingDeserializer>();
             serializer.Initialize(appId, contentTypes, source, Log);
@@ -292,7 +292,7 @@ namespace ToSic.Eav.Persistence.Efc
                 #endregion
 
                 entities.Add(e.EntityId, newEntity);
-                entList.Add(newEntity);
+                //entList.Add(newEntity);
             }
             entityTimer.Stop();
             #endregion
@@ -327,7 +327,7 @@ namespace ToSic.Eav.Persistence.Efc
             _sqlTotalTime = _sqlTotalTime.Add(sqlTime.Elapsed);
             Log.Add($"timers types&typesql:{typeTimer.Elapsed} sqlAll:{_sqlTotalTime}, entities:{entityTimer.Elapsed}, relationship:{relTimer.Elapsed}");
 
-            var appPack = new AppDataPackage(appId, entities, entList, contentTypes, 
+            var appPack = new AppDataPackage(appId, entities.Values, contentTypes, 
                 metadataForGuid, metadataForNumber, metadataForString, 
                 relationships, source,
                 Log);

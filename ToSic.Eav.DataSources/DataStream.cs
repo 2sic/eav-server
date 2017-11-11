@@ -4,11 +4,6 @@ using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
 {
-	///// <summary>
-	///// Delegate to get Entities when needed
-	///// </summary>
-	//public delegate IDictionary<int, IEntity> GetDictionaryDelegate();
-
     /// <summary>
     /// The light list for the series of items returned
     /// </summary>
@@ -74,7 +69,6 @@ namespace ToSic.Eav.DataSources
 		}
 
         #region Get Dictionary and Get List
-        private IDictionary<int, IEntity> _dicList; 
 
 	    private IEnumerable<IEntity> _lightList; 
         public IEnumerable<IEntity> LightList

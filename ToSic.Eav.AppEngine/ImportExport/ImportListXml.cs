@@ -59,7 +59,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 return;
             }
 
-            ExistingEntities = App.Entities.Values.Where(e => e.Type == contentType).ToList();
+            ExistingEntities = App.List.Where(e => e.Type == contentType).ToList();
 
             _languages = languages;
             if (_languages == null || !_languages.Any())
