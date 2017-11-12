@@ -77,7 +77,8 @@ namespace ToSic.Eav.Apps.Parts
             #endregion
 
             #region check if we can delete, or throw exception
-            var canDelete = AppManager.DataController.Entities.CanDeleteEntity(id);
+
+            var canDelete = CanDelete(id);// AppManager.DataController.Entities.CanDeleteEntity(id);
             if (!canDelete.Item1 && !force && !skipIfCant)
                 throw new InvalidOperationException($"Item {id} cannot be deleted. It is used by other items: {canDelete.Item2}");
             #endregion
@@ -86,6 +87,8 @@ namespace ToSic.Eav.Apps.Parts
             SystemManager.Purge(AppManager.AppId);
             return ok;
         }
+
+        internal Tuple<bool, string> CanDelete(int entityId) => AppManager.DataController.Entities.CanDeleteEntity(entityId);
 
         public bool Delete(Guid guid)
         {

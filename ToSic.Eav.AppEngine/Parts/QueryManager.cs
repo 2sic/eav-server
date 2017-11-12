@@ -48,20 +48,7 @@ namespace ToSic.Eav.Apps.Parts
 
             var saveList = newParts.Select(p => p.Value).Concat(newMetadata).Cast<IEntity>().ToList();
             saveList.Add(newQuery);
-            //var newQueryId = 0;
-
-            //AppManager.Storage.DoInTransaction(() =>
-            //{
-                AppManager.Entities.Save(saveList);
-            //    newQueryId = AppManager.Entities.Save(newQuery);
-            //});
-
-            //return newQueryId;
-            //return 0; // isn't actually used anywhere
-
-            //var eavCt = AppManager.DataController;
-            //var clonedId = new DbPipeline(eavCt).CopyDataPipeline(AppManager.AppId, id, "");
-            //return clonedId;
+            AppManager.Entities.Save(saveList);
         }
 
         private static string RemapWiringToCopy(string origWiring, Dictionary<string, string> keyMap)
@@ -100,32 +87,28 @@ namespace ToSic.Eav.Apps.Parts
 
         public bool Delete(int id)
         {
-            //if (_context == null)
-            var dbController = AppManager.DataController;
-
-            var canDeleteResult = dbController.Entities.CanDeleteEntity(id);
+            var canDeleteResult = AppManager.Entities.CanDelete(id);
             if (!canDeleteResult.Item1)
                 throw new Exception(canDeleteResult.Item2);
 
 
             // Get the Entity describing the Pipeline and Pipeline Parts (DataSources)
             var pipelineEntity = DataPipeline.GetPipelineEntity(id, AppManager.Cache);
-            var dataSources = DataPipeline.GetPipelineParts(AppManager.ZoneId, AppManager.AppId, pipelineEntity.EntityGuid);
+            var parts = DataPipeline.GetPipelineParts(AppManager.ZoneId, AppManager.AppId, pipelineEntity.EntityGuid).ToList();
             var metaDataSource = DataSource.GetMetaDataSource(appId: AppManager.AppId);
 
-            // Delete Pipeline Parts
-            foreach (var dataSource in dataSources)
-            {
-                // Delete Configuration Entities (if any)
-                var dataSourceConfig = metaDataSource.GetMetadata(Constants.MetadataForEntity, dataSource.EntityGuid).FirstOrDefault();
-                if (dataSourceConfig != null)
-                    dbController.Entities.DeleteEntity(dataSourceConfig.EntityId);
+            var mdItems = parts
+                .Select(ds =>
+                    metaDataSource.GetMetadata(Constants.MetadataForEntity, ds.EntityGuid).FirstOrDefault())
+                .Where(md => md != null)
+                .Select(md => md.EntityId)
+                .ToList();
 
-                dbController.Entities.DeleteEntity(dataSource.EntityId);
-            }
+            AppManager.Entities.Delete(mdItems);
 
-            // Delete Pipeline
-            dbController.Entities.DeleteEntity(id);
+            AppManager.Entities.Delete(parts.Select(p => p.EntityId).ToList());
+
+            AppManager.Entities.Delete(id);
 
             // flush cache
             SystemManager.Purge(AppManager.AppId);

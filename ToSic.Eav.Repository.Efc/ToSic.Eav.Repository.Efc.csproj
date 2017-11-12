@@ -140,7 +140,6 @@
     <Compile Include="Parts\DbEntity_newSave.cs" />
     <Compile Include="Parts\DbEntity_base.cs" />
     <Compile Include="Parts\DbEntity_read.cs" />
-    <Compile Include="Parts\DbPipeline.cs" />
     <Compile Include="Parts\DbPublishing.cs" />
     <Compile Include="Parts\DbRelationship.cs" />
     <Compile Include="Parts\DbValue.cs" />
