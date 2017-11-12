@@ -70,14 +70,14 @@ namespace ToSic.Eav.Apps.Parts
             return newWiring;
         }
 
-        private Entity CopyAndResetIds(IEntity origQuery, Guid? newTarget = null)
+        private Entity CopyAndResetIds(IEntity origQuery, Guid? newMetadataTarget = null)
         {
             var newSer = Serializer.Serialize(origQuery);
             var newEnt = Serializer.Deserialize(newSer) as Entity;
             newEnt.SetGuid(Guid.NewGuid());
             newEnt.ChangeIdForSaving(0);
-            if(newTarget != null)
-                newEnt.Retarget(newTarget.Value);
+            if(newMetadataTarget != null)
+                newEnt.Retarget(newMetadataTarget.Value);
             return newEnt;
         }
 
@@ -95,19 +95,17 @@ namespace ToSic.Eav.Apps.Parts
             // Get the Entity describing the Pipeline and Pipeline Parts (DataSources)
             var pipelineEntity = DataPipeline.GetPipelineEntity(id, AppManager.Cache);
             var parts = DataPipeline.GetPipelineParts(AppManager.ZoneId, AppManager.AppId, pipelineEntity.EntityGuid).ToList();
-            var metaDataSource = DataSource.GetMetaDataSource(appId: AppManager.AppId);
+            var mdSource = DataSource.GetMetaDataSource(appId: AppManager.AppId);
 
             var mdItems = parts
-                .Select(ds =>
-                    metaDataSource.GetMetadata(Constants.MetadataForEntity, ds.EntityGuid).FirstOrDefault())
+                .Select(ds => mdSource.GetMetadata(Constants.MetadataForEntity, ds.EntityGuid).FirstOrDefault())
                 .Where(md => md != null)
                 .Select(md => md.EntityId)
                 .ToList();
 
+            // delete in the right order - first the outermost-dependants, then a layer in, and finally the top node
             AppManager.Entities.Delete(mdItems);
-
             AppManager.Entities.Delete(parts.Select(p => p.EntityId).ToList());
-
             AppManager.Entities.Delete(id);
 
             // flush cache
