@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using ToSic.Eav.Data.Query;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Logging.Simple;
@@ -16,13 +15,13 @@ namespace ToSic.Eav.Apps.Parts
 
         #region Get
 
-        public IEnumerable<ToSic.Eav.Interfaces.IEntity> All => App.Cache.LightList;
+        public IEnumerable<Eav.Interfaces.IEntity> All => App.Cache.LightList;
 
-        public ToSic.Eav.Interfaces.IEntity Get(int entityId) => App.Cache.LightList.One(entityId);
+        public Eav.Interfaces.IEntity Get(int entityId) => App.Cache.LightList.One(entityId);
 
-        public ToSic.Eav.Interfaces.IEntity Get(Guid entityGuid) => App.Cache.LightList.FirstOrDefault(e => e.EntityGuid == entityGuid);
+        public Eav.Interfaces.IEntity Get(Guid entityGuid) => App.Cache.LightList.One(entityGuid);// .FirstOrDefault(e => e.EntityGuid == entityGuid);
 
-        public IEnumerable<ToSic.Eav.Interfaces.IEntity> Get(string contentTypeName)
+        public IEnumerable<Eav.Interfaces.IEntity> Get(string contentTypeName)
         {
             var typeFilter = DataSource.GetDataSource<EntityTypeFilter>(appId: App.AppId, upstream: App.Cache, valueCollectionProvider: App.Data.ConfigurationProvider); // need to go to cache, to include published & unpublished
             typeFilter.TypeName = contentTypeName;

@@ -8,8 +8,7 @@ using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.ValueProvider;
 
-// ReSharper disable once CheckNamespace
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.DataSources.Pipeline
 {
 	/// <summary>
 	/// Factory to create a Data Pipeline

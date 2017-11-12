@@ -61,8 +61,24 @@ namespace ToSic.Eav.Data.Builder
             e.Attributes = attributes;
             e.Relationships = new RelationshipManager(e, allRelationships);
 
-            e.MetadataFor = ((MetadataFor)entity.MetadataFor).CloneIsMetadata();
+            e.MetadataFor = new MetadataFor(entity.MetadataFor);//  ((MetadataFor)entity.MetadataFor).CloneMetadataFor();
             return e;
         }
+
+        //public static Entity Copy(IEntity entity)
+        //{
+        //    var guid = Guid.NewGuid();
+        //    var id = 0;
+        //    var version = 0;
+        //    var e = EntityWithAllIdsAndType(entity.AppId, Guid.NewGuid(), id, id, entity.Type, 
+        //        entity.IsPublished, entity.Modified, entity.Owner, version);
+        //    e.Attributes = entity.Attributes.Copy();
+        //}
+
+
+        //public static Dictionary<string, IAttribute> Copy(this Dictionary<string, IAttribute> attribs)
+        //{
+        //    var attribs = attribs.tod
+        //}
     }
 }

@@ -1,8 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Data;
+using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.DataSources.Pipeline;
+using ToSic.Eav.Enums;
+using ToSic.Eav.ImportExport.Json;
+using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging.Simple;
-using ToSic.Eav.Repository.Efc.Parts;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -14,25 +20,95 @@ namespace ToSic.Eav.Apps.Parts
     {
         public QueryManager(AppManager app, Log parentLog) : base(app, parentLog, "App.QryMng") {}
 
-        public int Clone(int id)
+        public void Clone(int id)
         {
-            var eavCt = AppManager.DataController;// DbDataController.Instance(appId: appId);
-            var clonedId = new DbPipeline(eavCt).CopyDataPipeline(AppManager.AppId, id, "");// _userName);
-            return clonedId;
+            // 1. find the currenty query
+            var origQuery = DataPipeline.GetPipelineEntity(id, AppManager.Cache);
+            var newQuery = CopyAndResetIds(origQuery);
+
+            var origParts = DataPipeline.GetPipelineParts(AppManager.ZoneId, AppManager.AppId, origQuery.EntityGuid).ToList();
+            var newParts = origParts.ToDictionary(o => o.EntityGuid, o => CopyAndResetIds(o, newQuery.EntityGuid));
+
+            var metaDataSource = DataSource.GetMetaDataSource(appId: AppManager.AppId);
+            var origMetadata = origParts
+                .ToDictionary(o => o.EntityGuid, o => metaDataSource.GetMetadata(Constants.MetadataForEntity, o.EntityGuid).FirstOrDefault())
+                .Where(m => m.Value != null);
+
+            var newMetadata = origMetadata.Select(o => CopyAndResetIds(o.Value, newParts[o.Key].EntityGuid));
+
+            // now update wiring...
+            var origWiring = origQuery.GetBestValue(Constants.DataPipelineStreamWiringStaticName).ToString();
+            var keyMap = newParts.ToDictionary(o => o.Key.ToString(), o => o.Value.EntityGuid.ToString());
+            var newWiring = RemapWiringToCopy(origWiring, keyMap);
+
+            newQuery.Attributes[Constants.DataPipelineStreamWiringStaticName].Values = new List<IValue>
+            {
+                ValueBuilder.Build(AttributeTypeEnum.String, newWiring, new List<ILanguage>())
+            };
+
+            var saveList = newParts.Select(p => p.Value).Concat(newMetadata).Cast<IEntity>().ToList();
+            saveList.Add(newQuery);
+            //var newQueryId = 0;
+
+            //AppManager.Storage.DoInTransaction(() =>
+            //{
+                AppManager.Entities.Save(saveList);
+            //    newQueryId = AppManager.Entities.Save(newQuery);
+            //});
+
+            //return newQueryId;
+            //return 0; // isn't actually used anywhere
+
+            //var eavCt = AppManager.DataController;
+            //var clonedId = new DbPipeline(eavCt).CopyDataPipeline(AppManager.AppId, id, "");
+            //return clonedId;
         }
+
+        private static string RemapWiringToCopy(string origWiring, Dictionary<string, string> keyMap)
+        {
+            var wiringsSource = DataPipelineWiring.Deserialize(origWiring);
+            var wiringsClone = new List<WireInfo>();
+            if (wiringsSource != null)
+                foreach (var wireInfo in wiringsSource)
+                {
+                    var wireInfoClone = wireInfo; // creates a clone of the Struct
+                    if (keyMap.ContainsKey(wireInfo.From))
+                        wireInfoClone.From = keyMap[wireInfo.From];
+                    if (keyMap.ContainsKey(wireInfo.To))
+                        wireInfoClone.To = keyMap[wireInfo.To];
+
+                    wiringsClone.Add(wireInfoClone);
+                }
+            var newWiring = DataPipelineWiring.Serialize(wiringsClone);
+            return newWiring;
+        }
+
+        private Entity CopyAndResetIds(IEntity origQuery, Guid? newTarget = null)
+        {
+            var newSer = Serializer.Serialize(origQuery);
+            var newEnt = Serializer.Deserialize(newSer) as Entity;
+            newEnt.SetGuid(Guid.NewGuid());
+            newEnt.ChangeIdForSaving(0);
+            if(newTarget != null)
+                newEnt.Retarget(newTarget.Value);
+            return newEnt;
+        }
+
+        private JsonSerializer Serializer 
+            => _serializer ?? (_serializer = new JsonSerializer(AppManager.Package, Log));
+        private JsonSerializer _serializer;
 
         public bool Delete(int id)
         {
             //if (_context == null)
-            var dbController = AppManager.DataController;//.Instance(appId: appId);
+            var dbController = AppManager.DataController;
 
-            var canDeleteResult = (dbController.Entities.CanDeleteEntity(id));// _context.EntCommands.CanDeleteEntity(id);
+            var canDeleteResult = dbController.Entities.CanDeleteEntity(id);
             if (!canDeleteResult.Item1)
                 throw new Exception(canDeleteResult.Item2);
 
 
             // Get the Entity describing the Pipeline and Pipeline Parts (DataSources)
-            // var source = DataSource.GetInitialDataSource(appId: appId);
             var pipelineEntity = DataPipeline.GetPipelineEntity(id, AppManager.Cache);
             var dataSources = DataPipeline.GetPipelineParts(AppManager.ZoneId, AppManager.AppId, pipelineEntity.EntityGuid);
             var metaDataSource = DataSource.GetMetaDataSource(appId: AppManager.AppId);
@@ -41,7 +117,7 @@ namespace ToSic.Eav.Apps.Parts
             foreach (var dataSource in dataSources)
             {
                 // Delete Configuration Entities (if any)
-                var dataSourceConfig = metaDataSource.GetMetadata(Constants.MetadataForEntity /* .AssignmentObjectTypeEntity*/, dataSource.EntityGuid).FirstOrDefault();
+                var dataSourceConfig = metaDataSource.GetMetadata(Constants.MetadataForEntity, dataSource.EntityGuid).FirstOrDefault();
                 if (dataSourceConfig != null)
                     dbController.Entities.DeleteEntity(dataSourceConfig.EntityId);
 

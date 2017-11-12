@@ -19,8 +19,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             DbContext.DoInTransaction(() =>
             {
-                // DbContext.UserName = userName;
-
                 // Clone Pipeline Entity with a new new Guid
                 string importantIncludes = "AttributeSet,ToSicEavValues,ToSicEavValues.ToSicEavValuesDimensions";
                 var sourcePipelineEntity =
@@ -97,7 +95,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// note that we should refactor this soon, as soon as json-serialization etc. works
         /// with that, we should then clone using serialize/deserialize, and not a DB-level clone
         /// </summary>
-        internal ToSicEavEntities CloneEntityForPipelineSimpleValuesOnly(ToSicEavEntities sourceEntity)
+        private ToSicEavEntities CloneEntityForPipelineSimpleValuesOnly(ToSicEavEntities sourceEntity)
         {
             var versioningId = DbContext.Versioning.GetChangeLogId();
             var clone = new ToSicEavEntities

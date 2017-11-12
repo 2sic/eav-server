@@ -5,7 +5,7 @@ using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.ValueProvider;
 
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.DataSources.Pipeline
 {
 	/// <summary>
 	/// Helpers to work with Data Pipelines
@@ -24,7 +24,7 @@ namespace ToSic.Eav.DataSources
 			IEntity pipelineEntity;
 			try
 			{
-				pipelineEntity = entities.One(entityId);//[entityId];
+				pipelineEntity = entities.One(entityId);
                 if (pipelineEntity.Type.StaticName != Constants.DataPipelineStaticName)
                     throw new ArgumentException("Entity is not an DataPipeline Entity", nameof(entityId));
 			}
@@ -54,9 +54,6 @@ namespace ToSic.Eav.DataSources
         /// The queries internally are not assembled yet for performance reasons...
         /// ...but will be auto-assembled the moment they are accessed
         /// </summary>
-        /// <param name="zoneId"></param>
-        /// <param name="appId"></param>
-        /// <param name="valuesCollectionProvider"></param>
         /// <returns></returns>
 	    public static Dictionary<string, IDataSource> AllPipelines(int zoneId, int appId, IValueCollectionProvider valuesCollectionProvider, Log parentLog)
 	    {

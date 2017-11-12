@@ -17,6 +17,9 @@ namespace ToSic.Eav.Data.Builder
 
         public static void SetMetadata(this Entity entity, MetadataFor meta) => entity.MetadataFor = meta;
 
+        public static void Retarget(this Entity entity, Guid newTarget)
+            => entity.SetMetadata(new MetadataFor(entity.MetadataFor) {KeyGuid = newTarget});
+
         public static void SetType(this Entity entity, IContentType contentType) => entity.Type = contentType;
 
         public static int? GetPublishedIdForSaving(this Entity entity) => entity.PublishedEntity?.EntityId ?? entity.PublishedEntityId;

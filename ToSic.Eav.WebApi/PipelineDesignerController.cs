@@ -9,6 +9,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.DataSources.Pipeline;
 using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.WebApi
@@ -20,14 +21,6 @@ namespace ToSic.Eav.WebApi
 	public class PipelineDesignerController : Eav3WebApiBase
     {
         #region initializers etc. - work on later
-        #region Helpers
-        // I must keep the serializer so it can be configured from outside if necessary
-        //private Serializer _serializer;
-        //public Serializer Serializer => _serializer ?? (_serializer = Factory.Resolve<Serializer>());
-
-	    #endregion
-		//public List<IValueProvider> AdditionalValueProviders { get; set; }
-
         /// <inheritdoc />
         /// <summary>
         /// Default Constructor
@@ -258,16 +251,7 @@ namespace ToSic.Eav.WebApi
 			// Add/Update Entity
 			var newValues = GetEntityValues(pipelineClone);
 
-            // 2017-06-24 2dm - disabled dimension IDs, as they were never actually used in the save path
-			// Guess DimensionIDs for the Pipeline-Entity
-			//var source = DataSource.GetInitialDataSource(appId: appId);
-			//var pipelineEntity = DataPipeline.GetPipelineEntity(id.Value, source);
-			//int[] dimensionIds = null;
-
-			//if (pipelineEntity.Title.Values.Any())
-			//	dimensionIds = pipelineEntity.Title.Values.First().Languages.Select(l => l.DimensionId).ToArray();
-
-            appManager.Entities.UpdateParts(id.Value, newValues);//, dimensionIds: dimensionIds);
+            appManager.Entities.UpdateParts(id.Value, newValues);
 		}
 
 		/// <summary>
@@ -319,7 +303,6 @@ namespace ToSic.Eav.WebApi
 		{
 		    Log.Add($"construct pipe a#{appId}, pipe:{id}, drafts:{showDrafts}");
 			var testValueProviders = new DataPipelineFactory(Log).GetTestValueProviders(appId, id).ToList();
-		    //AdditionalValueProviders.ForEach(ap => testValueProviders.Add(ap));
 		    return new DataPipelineFactory(Log).GetDataSource(appId, id, testValueProviders, showDrafts:showDrafts);
 		}
 
@@ -332,8 +315,8 @@ namespace ToSic.Eav.WebApi
         /// Clone a Pipeline with all DataSources and their configurations
         /// </summary>
         [HttpGet]
-        public object ClonePipeline(int appId, int id)
-            => new { EntityId = new AppManager(appId, Log).Queries.Clone(id) };
+        public void ClonePipeline(int appId, int id)
+            => /*new { EntityId =*/ new AppManager(appId, Log).Queries.Clone(id) /*}*/;
 		
 
 		/// <summary>

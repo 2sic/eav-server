@@ -30,13 +30,24 @@ namespace ToSic.Eav.Data
         /// </summary>
         public string KeyString { get; set; }
 
-        public MetadataFor CloneIsMetadata() => new MetadataFor
+        public MetadataFor() { }
+
+        public MetadataFor(IMetadataFor originalToCopy)
         {
-            TargetType = TargetType,
-            KeyString = KeyString,
-            KeyNumber = KeyNumber,
-            KeyGuid = KeyGuid
-        };
+            TargetType = originalToCopy.TargetType;
+            KeyString = originalToCopy.KeyString;
+            KeyNumber = originalToCopy.KeyNumber;
+            KeyGuid = originalToCopy.KeyGuid;
+
+        }
+
+        //public MetadataFor CloneMetadataFor() => new MetadataFor
+        //{
+        //    TargetType = TargetType,
+        //    KeyString = KeyString,
+        //    KeyNumber = KeyNumber,
+        //    KeyGuid = KeyGuid
+        //};
 
     }
 }

@@ -264,21 +264,25 @@ namespace ToSic.Eav.WebApi
             };
 
             importEntity.SetGuid(toEntity.Guid);
-            //if (toEntity.IsBranch)
-            //    importEntity.SetPublishedIdForSaving(toEntity.Id); 
-
 
             #region Metadata if we have any
             // todo: as the objects are of the same type, we can probably remove the type Format.Metadata soon...
             if (toMetadata != null && toMetadata.HasMetadata)
-                importEntity.SetMetadata(new Data.MetadataFor
+                importEntity.SetMetadata(new MetadataFor
                 {
                     TargetType = toMetadata.TargetType,
                     KeyGuid = toMetadata.KeyGuid,
                     KeyNumber = toMetadata.KeyNumber,
                     KeyString = toMetadata.KeyString
                 });
-
+            else
+            {
+                // todo: must re-attach metadata-info from previous generation of item...
+                // this is important because the json must know about this for full serialization
+                var orig = AppManager.Read.Entities.Get(editInfo.Header.Guid);
+                if(orig != null)
+                    importEntity.SetMetadata(new MetadataFor(orig.MetadataFor));
+            }
             #endregion
 
             return importEntity;
