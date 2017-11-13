@@ -239,27 +239,18 @@ namespace ToSic.Eav.DataSources
 			            for (var i = 0; i < reader.FieldCount; i++)
 			                columNames[i] = reader.GetName(i);
 
+			            // try alternate casing - will result in null if not found (handled later on)
 			            if (!columNames.Contains(casedEntityId))
-			            {
-			                // try alternate casing
 			                casedEntityId = columNames.FirstOrDefault(c =>
 			                    string.Equals(c, casedEntityId, StringComparison.InvariantCultureIgnoreCase));
-			                if (casedEntityId == null)
-			                    throw new Exception(
-			                        $"{GetType().Name} - SQL Result doesn't contain an EntityId Column with Name '{EntityIdField}'. " +
-			                        "Ideally use something like Select ID As EntityId...");
-			            }
+			            Log.Add($"will used '{casedEntityId}' as entity field (null if not found)");
 
+			            // try alternate casing - new: just take first column if the defined one isn't found - worst case it doesn't have a title
 			            if (!columNames.Contains(casedTitle))
-			            {
-			                // try alternate casing
 			                casedTitle = columNames.FirstOrDefault(c =>
-			                    string.Equals(c, casedTitle, StringComparison.InvariantCultureIgnoreCase));
-			                if (casedTitle == null)
-			                    throw new Exception(
-			                        $"{GetType().Name} - SQL Result doesn't contain an EntityTitle Column with Name '{TitleField}'. " +
-			                        "Ideally use something like Select FullName As EntityTitle...");
-			            }
+			                                 string.Equals(c, casedTitle, StringComparison.InvariantCultureIgnoreCase))
+			                             ?? columNames.FirstOrDefault();
+			            Log.Add($"will use '{casedTitle}' as title field");
 
 			            #endregion
 
@@ -267,7 +258,7 @@ namespace ToSic.Eav.DataSources
 
 			            while (reader.Read())
 			            {
-			                var entityId = Convert.ToInt32(reader[casedEntityId]);
+			                var entityId = casedEntityId == null ? 0 : Convert.ToInt32(reader[casedEntityId]);
 			                var values = columNames.Where(c => c != casedEntityId).ToDictionary(c => c, c => reader[c]);
 			                var entity = new Data.Entity(Constants.TransientAppId, entityId, ContentType, values, casedTitle);
 			                list.Add(entity);
