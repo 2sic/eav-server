@@ -32,7 +32,7 @@ namespace ToSic.Eav.UnitTests.ValueProvider
             testSource.Attach(ds);
             testSource.Attach("MyConf", myConfDs);
             testSource.ConfigurationProvider = ds.ConfigurationProvider;
-            var y = testSource.LightList; // must access something to provoke configuration resolving
+            var y = testSource.List; // must access something to provoke configuration resolving
 
             Assert.AreEqual("First Name 1001", testSource.Configuration["InTestFirstName"], "Tested in:Default:EntityTitle");
             Assert.AreEqual("", testSource.Configuration["InTestBadStream"], "Testing in-token with invalid stream");

@@ -142,7 +142,7 @@ namespace ToSic.Eav.Apps.Parts
                 throw new NotImplementedException("atm this command only creates metadata for entities with id-keys");
 
             // see if a metadata already exists which we would update
-            var existingEntity = AppManager.Cache.LightList.FirstOrDefault(e => e.MetadataFor?.TargetType == target.TargetType && e.MetadataFor?.KeyNumber == target.KeyNumber);
+            var existingEntity = AppManager.Cache.List.FirstOrDefault(e => e.MetadataFor?.TargetType == target.TargetType && e.MetadataFor?.KeyNumber == target.KeyNumber);
             if (existingEntity != null)
                 UpdateParts(existingEntity.EntityId, values);
             else
@@ -164,7 +164,7 @@ namespace ToSic.Eav.Apps.Parts
             saveOptions.PreserveUntouchedAttributes = true;
             saveOptions.PreserveUnknownLanguages = true;
 
-            var orig = Data.Query.Entity.One(AppManager.Cache.LightList,id);//[id];
+            var orig = Data.Query.Entity.One(AppManager.Cache.List,id);//[id];
             var tempEnt = new Entity(AppManager.AppId, 0, "", values);
             var saveEnt = new EntitySaver(Log).CreateMergedForSaving(orig, tempEnt, saveOptions);
             Save(saveEnt, saveOptions);

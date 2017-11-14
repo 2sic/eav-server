@@ -31,7 +31,7 @@ namespace ToSic.Eav.DataSources.Tests
             var vf = _testDataGeneratedOutsideTimer;
             vf.Attributes = Birthdate;
             vf.Directions = "d";
-            var result = vf.LightList.ToList();
+            var result = vf.List.ToList();
             // check that each following city is same or larger...
             ValidateDateFieldIsSorted(result, Birthdate, false);
         }
@@ -41,7 +41,7 @@ namespace ToSic.Eav.DataSources.Tests
         {
             var vf = _testDataGeneratedOutsideTimer;
             vf.Attributes = ModifiedReal;
-            var result = vf.LightList.ToList();
+            var result = vf.List.ToList();
             // check that each following city is same or larger...
             ValidateDateFieldIsSorted(result, ModifiedReal, true);
         }
@@ -52,7 +52,7 @@ namespace ToSic.Eav.DataSources.Tests
             var vf = _testDataGeneratedOutsideTimer;
             vf.Attributes = ModifiedReal;
             vf.Directions = "d";
-            var result = vf.LightList.ToList();
+            var result = vf.List.ToList();
             // check that each following city is same or larger...
             ValidateDateFieldIsSorted(result, ModifiedReal, false);
         }

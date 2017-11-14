@@ -68,7 +68,7 @@ namespace ToSic.Eav.WebApi
 	            Description = t.Description,
 	            UsesSharedDef = share.ParentId != null,
 	            SharedDefId = share.ParentId,
-	            Items = cache?.LightList.Count(i => i.Type == t) ?? -1, // only count if cache provided
+	            Items = cache?.List.Count(i => i.Type == t) ?? -1, // only count if cache provided
 	            Fields = t.Attributes.Count,
 	            Metadata = ser.Prepare(metadata),
                 I18nKey = t.I18nKey

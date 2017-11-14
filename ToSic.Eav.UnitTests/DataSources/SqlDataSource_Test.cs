@@ -68,27 +68,27 @@ And ProductSort = @" + SqlDataSource.ExtractedParamPrefix + @"3";
         [TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
         public void SqlDataSource_BadSqlInsert() 
-            => GenerateSqlDataSource(ConnectionDummy, "Insert something into something", ContentTypeName).LightList.Any();
+            => GenerateSqlDataSource(ConnectionDummy, "Insert something into something", ContentTypeName).List.Any();
 
         [TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
         public void SqlDataSource_BadSqlSelectInsert() 
-            => GenerateSqlDataSource(ConnectionDummy, "Select * from table; Insert something", ContentTypeName).LightList.Any();
+            => GenerateSqlDataSource(ConnectionDummy, "Select * from table; Insert something", ContentTypeName).List.Any();
 
         [TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
         public void SqlDataSource_BadSqlSpaceInsert() 
-            => GenerateSqlDataSource(ConnectionDummy, " Insert something into something", ContentTypeName).LightList.Any();
+            => GenerateSqlDataSource(ConnectionDummy, " Insert something into something", ContentTypeName).List.Any();
 
         [TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
         public void SqlDataSource_BadSqlDropInsert() 
-            => GenerateSqlDataSource(ConnectionDummy, "Drop tablename", ContentTypeName).LightList.Any();
+            => GenerateSqlDataSource(ConnectionDummy, "Drop tablename", ContentTypeName).List.Any();
 
         [TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
         public void SqlDataSource_BadSqlSelectDrop() 
-            => GenerateSqlDataSource(ConnectionDummy, "Select * from Products; Drop tablename", ContentTypeName).LightList.Any();
+            => GenerateSqlDataSource(ConnectionDummy, "Select * from Products; Drop tablename", ContentTypeName).List.Any();
 
         #endregion
 
@@ -102,7 +102,7 @@ And ProductSort = @" + SqlDataSource.ExtractedParamPrefix + @"3";
                          "[AdministratorId],[GUID],[HomeDirectory],[PortalGroupID] " +
                          "FROM [Portals]";
             var sql = GenerateSqlDataSource(ConnectionName, select, ContentTypeName);
-            var list = sql.LightList;
+            var list = sql.List;
             Assert.IsTrue(list.Any(), "found some");
         }
 

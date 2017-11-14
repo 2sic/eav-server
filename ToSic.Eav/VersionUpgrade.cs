@@ -120,7 +120,7 @@ namespace ToSic.Eav
 		    // try to access cache before we start the import, to ensure it's available afterwards (very, very important!)
 		    var cache = DataSource.GetCache(Constants.DefaultZoneId, Constants.MetaDataAppId);
 		    // ReSharper disable once UnusedVariable
-		    var x = cache.LightList.First();
+		    var x = cache.List.First();
 
             // 2017-06 put dependency in interface, not directly to importer...
             var importer = Factory.Resolve<IRepositoryImporter>();

@@ -110,8 +110,8 @@ namespace ToSic.Eav.DataSources
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntitiesOrFallback));
 			Configuration.Add(RelationshipKey, "[Settings:Relationship]");
 			Configuration.Add(FilterKey, "[Settings:Filter]");
-		    Configuration.Add(CompareAttributeKey, Constants.EntityFieldTitle);
-			Configuration.Add(CompareModeKey, "default");
+		    Configuration.Add(CompareAttributeKey, "[Settings:RelationshipAttribute||" + Constants.EntityFieldTitle + "]");
+			Configuration.Add(CompareModeKey, "[Settings:Comparison||" + "default" + "]");
 			Configuration.Add(ChildOrParentKey, "child");
 			//Configuration.Add(ParentTypeKey, "");
             //Configuration.Add(PassThroughOnEmptyFilterKey, "[Settings:PassThroughOnEmptyFilter||false]");

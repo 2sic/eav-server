@@ -25,7 +25,7 @@ namespace ToSic.Eav.UnitTests.DataSources
             Assert.IsFalse(cacher.Cache.ListHas(cacher.Out[Constants.DefaultStreamName]),
                 "Should not be in yet");
 
-            var y = cacher.LightList; // not it should get in
+            var y = cacher.List; // not it should get in
 
             // check again, should be in
             Assert.IsTrue(cacher.Cache.ListHas(cacher.Out[Constants.DefaultStreamName]),
@@ -43,7 +43,7 @@ namespace ToSic.Eav.UnitTests.DataSources
             Assert.IsTrue(cacher.Cache.ListHas(cacher.Out[Constants.DefaultStreamName]),
                 "Should be in because the previous test already added it");
 
-            var y = cacher.LightList; // not it should get in
+            var y = cacher.List; // not it should get in
 
             Assert.AreEqual(1, y.Count(), "still has correct amount of items");
             Assert.AreEqual(1067, y.First().EntityId, "check correct entity id");
