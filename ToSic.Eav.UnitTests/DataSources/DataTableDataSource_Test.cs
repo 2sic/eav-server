@@ -54,8 +54,8 @@ namespace ToSic.Eav.UnitTests.DataSources
             const int itemsToGenerate = 25;
             var ds = GenerateTrivial(itemsToGenerate);
 
-            Assert.AreEqual(25, ds.LightList.Count());
-            var first = ds.LightList.FirstOrDefault();
+            Assert.AreEqual(25, ds.List.Count());
+            var first = ds.List.FirstOrDefault();
             Assert.AreEqual("Daniel Mettler", first.GetBestTitle());
         }
 
@@ -87,7 +87,7 @@ namespace ToSic.Eav.UnitTests.DataSources
 
             // now enumerate all, to be sure that the time counted for DS creation isn't part of the tracked test-time
             // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-            source.LightList.LastOrDefault();
+            source.List.LastOrDefault();
 
             if (useCacheForSpeed)
                 _cachedDs.Add(itemsToGenerate, source);
@@ -151,7 +151,7 @@ namespace ToSic.Eav.UnitTests.DataSources
 
             // now enumerate all, to be sure that the time counted for DS creation isn't part of the tracked test-time
             // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-            source.LightList.LastOrDefault();
+            source.List.LastOrDefault();
 
             if (useCacheForSpeed)
                 _cachedDs.Add(itemsToGenerate, source);

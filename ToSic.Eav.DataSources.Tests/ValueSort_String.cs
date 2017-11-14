@@ -26,7 +26,7 @@ namespace ToSic.Eav.DataSources.Tests
         public void ValueSort_Unused()
         {
             var vf = _testDataGeneratedOutsideTimer;// CreateValueSortForTesting(testVolume);
-            var listOut = vf.LightList.ToList();
+            var listOut = vf.List.ToList();
             var listIn = vf.In["Default"].List.ToList();
             CollectionAssert.AreEqual(listOut, listIn, "Lists should be the same if no criteria applied");
         }
@@ -36,7 +36,7 @@ namespace ToSic.Eav.DataSources.Tests
         {
             var vf = _testDataGeneratedOutsideTimer;
             vf.Attributes = City;
-            var result = vf.LightList.ToList();
+            var result = vf.List.ToList();
             // check that each following city is same or larger...
             ValidateFieldIsSorted(result, City, true);
         }
@@ -52,7 +52,7 @@ namespace ToSic.Eav.DataSources.Tests
             var vf = _testDataGeneratedOutsideTimer;
             vf.Attributes = field;
             vf.Directions = direction;
-            var result = vf.LightList.ToList();
+            var result = vf.List.ToList();
             // check that each following city is same or larger...
             ValidateFieldIsSorted(result, field, testAscending);
         }

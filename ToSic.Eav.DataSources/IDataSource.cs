@@ -37,7 +37,7 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		IDataStream this[string outName] { get; }
 
-        IEnumerable<IEntity> LightList { get; }
+        IEnumerable<IEntity> List { get; }
             
         /// <summary>
 		/// Gets the ConfigurationProvider for this DataSource

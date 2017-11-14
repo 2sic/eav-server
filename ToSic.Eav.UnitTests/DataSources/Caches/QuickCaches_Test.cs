@@ -57,7 +57,7 @@ namespace ToSic.Eav.UnitTests.DataSources.Caches
             listCache.ListDefaultRetentionTimeInSeconds = 1;
             Assert.IsFalse(listCache.ListHas(ds.CacheFullKey), "Should not have it in cache yet");
 
-            listCache.ListSet(ds.CacheFullKey, ds.LightList, ds.CacheLastRefresh);
+            listCache.ListSet(ds.CacheFullKey, ds.List, ds.CacheLastRefresh);
             Assert.IsTrue(listCache.ListHas(ds.CacheFullKey), "Should have it in cache now");
 
             Thread.Sleep(400);

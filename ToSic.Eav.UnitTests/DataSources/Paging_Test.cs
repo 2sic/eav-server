@@ -24,7 +24,7 @@ namespace ToSic.Eav.UnitTests
             Assert.AreEqual(100.ToDecimal(), pgstream.GetBestValue("PageCount"));
             Assert.AreEqual(1000.ToDecimal(), pgstream.GetBestValue("ItemCount"));
 
-            var result = ds.LightList;
+            var result = ds.List;
             Assert.AreEqual(10, result.Count());
             Assert.AreEqual(seedId, result.First().EntityId);
         }
@@ -40,7 +40,7 @@ namespace ToSic.Eav.UnitTests
             Assert.AreEqual(101.ToDecimal(), pgstream.GetBestValue("PageCount"));
             Assert.AreEqual(1001.ToDecimal(), pgstream.GetBestValue("ItemCount"));
 
-            var result = ds.LightList;
+            var result = ds.List;
             Assert.AreEqual(10, result.Count());
             Assert.AreEqual(seedId + 60, result.First().EntityId);
         }
@@ -57,7 +57,7 @@ namespace ToSic.Eav.UnitTests
             Assert.AreEqual(5.ToDecimal(), pgstream.GetBestValue("PageCount"));
             Assert.AreEqual(223.ToDecimal(), pgstream.GetBestValue("ItemCount"));
 
-            var result = ds.LightList;
+            var result = ds.List;
             Assert.AreEqual(23, result.Count());
             Assert.AreEqual(seedId + 200, result.First().EntityId);
             Assert.AreEqual(seedId + 223 -1, result.Last().EntityId);

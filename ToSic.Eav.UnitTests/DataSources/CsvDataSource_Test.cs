@@ -64,7 +64,7 @@ namespace ToSic.Eav.UnitTests.DataSources
             {
                 var source = CreateDataSource("Files/CsvDataSource - Test Semicolon Delimited.csv", ";", "Anonymous", TestFileTitleColumnName /* String cannot be parsed to Int */, TestFileTitleColumnName);
                 // ReSharper disable once UnusedVariable
-                var sourceList = source.LightList;
+                var sourceList = source.List;
             }
             catch (Exception ex)
             {       
@@ -86,7 +86,7 @@ namespace ToSic.Eav.UnitTests.DataSources
 
         private void AssertIsSourceListValid(CsvDataSource source)
         {
-            var sourceList = source.LightList.OrderBy(item => item.EntityId).ToList();
+            var sourceList = source.List.OrderBy(item => item.EntityId).ToList();
 
             // List
             Assert.AreEqual(sourceList.Count(), TestFileRowCount, "Entity list has not the expected length.");

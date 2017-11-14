@@ -13,14 +13,14 @@ namespace ToSic.Eav.UnitTests.DataSources
             var stmf = AssembleTestFallbackStream();
             stmf.In[Constants.DefaultStreamName] = stmf.In["1"];
 
-            Assert.AreEqual(1, stmf.LightList.Count(), "should have found 1");
+            Assert.AreEqual(1, stmf.List.Count(), "should have found 1");
         }
 
         [TestMethod]
         public void StreamsWhereFirstFallbackIsReturned()
         {
             var stmf = AssembleTestFallbackStream();
-            Assert.AreEqual(1, stmf.LightList.Count(), "should be 1 - the fallback");
+            Assert.AreEqual(1, stmf.List.Count(), "should be 1 - the fallback");
         }
 
         [TestMethod]
@@ -33,7 +33,7 @@ namespace ToSic.Eav.UnitTests.DataSources
             stmf.In.Add("Fallback3", stmf.In[Constants.DefaultStreamName]);
             stmf.In.Add("Fallback4", stmf.In[Constants.DefaultStreamName]);
             stmf.In.Add("Fallback5", stmf.In[Constants.DefaultStreamName]);
-            Assert.AreEqual(45, stmf.LightList.Count(), "Should have looped through many and found the 45");
+            Assert.AreEqual(45, stmf.List.Count(), "Should have looped through many and found the 45");
             Assert.AreEqual("ZMany", stmf.ReturnedStreamName);
         }
 
@@ -47,7 +47,7 @@ namespace ToSic.Eav.UnitTests.DataSources
             stmf.In.Add("2", stmf.In[Constants.DefaultStreamName]);
             stmf.In.Add("3", stmf.In[Constants.DefaultStreamName]);
             stmf.In.Add("Fallback5", stmf.In[Constants.DefaultStreamName]);
-            Assert.AreEqual(45, stmf.LightList.Count(), "Should have looped through many and found the 45");
+            Assert.AreEqual(45, stmf.List.Count(), "Should have looped through many and found the 45");
             Assert.AreEqual("ZMany", stmf.ReturnedStreamName);
         }
 
@@ -60,7 +60,7 @@ namespace ToSic.Eav.UnitTests.DataSources
             stmf.In.Add("2", stmf.In[Constants.DefaultStreamName]);
             stmf.In.Add("3", stmf.In[Constants.DefaultStreamName]);
             stmf.In.Remove("ZMany");
-            Assert.AreEqual(0, stmf.LightList.Count(), "Should find none");
+            Assert.AreEqual(0, stmf.List.Count(), "Should find none");
         }
 
         public StreamFallback AssembleTestFallbackStream()

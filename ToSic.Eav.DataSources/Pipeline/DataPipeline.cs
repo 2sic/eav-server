@@ -62,7 +62,7 @@ namespace ToSic.Eav.DataSources.Pipeline
             typeFilter.TypeName = Constants.DataPipelineStaticName;
 
 	        var dict = new Dictionary<string, IDataSource>(StringComparer.OrdinalIgnoreCase);
-	        foreach (var entQuery in typeFilter.LightList)
+	        foreach (var entQuery in typeFilter.List)
 	        {
 	            var delayedQuery = new DeferredPipelineQuery(zoneId, appId, entQuery, valuesCollectionProvider);
                 dict.Add(entQuery.Title[0].ToString(), delayedQuery);
