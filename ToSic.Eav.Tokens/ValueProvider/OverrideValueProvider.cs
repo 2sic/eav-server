@@ -27,6 +27,11 @@ namespace ToSic.Eav.ValueProvider
         public override string Get(string property, string format, ref bool propertyNotFound)
         {
             var usedSource = Providers.Find(p => p.Has(property));
+            if (usedSource == null)
+            {
+                propertyNotFound = true;
+                return null;
+            }
             return usedSource.Get(property, format, ref propertyNotFound);
         }
 
