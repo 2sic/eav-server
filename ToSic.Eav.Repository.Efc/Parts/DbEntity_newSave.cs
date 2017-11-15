@@ -167,7 +167,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                     // increase version
                     dbEnt.Version++;
-                    (newEnt as Entity)?.VersionIncrease();
+                    (newEnt as Entity)?.SetVersion(dbEnt.Version);
                     if (saveJson)
                     {
                         dbEnt.Json = _jsonifier.Serialize(newEnt);
