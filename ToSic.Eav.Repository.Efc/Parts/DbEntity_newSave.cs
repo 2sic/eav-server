@@ -168,7 +168,12 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     // increase version
                     dbEnt.Version++;
                     (newEnt as Entity)?.VersionIncrease();
-                    dbEnt.Json = saveJson ? _jsonifier.Serialize(newEnt) : null;
+                    if (saveJson)
+                    {
+                        dbEnt.Json = _jsonifier.Serialize(newEnt);
+                        dbEnt.AttributeSetId = contentTypeId;       // in case the previous entity wasn't json stored yet
+                        dbEnt.ContentType = newEnt.Type.StaticName; // in case the previous entity wasn't json stored yet
+                    }
 
                     // first, clean up all existing attributes / values (flush)
                     // this is necessary after remove, because otherwise EF state tracking gets messed up
