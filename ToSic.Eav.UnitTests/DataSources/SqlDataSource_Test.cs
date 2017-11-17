@@ -2,6 +2,8 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.TokenEngine.Tests.TestData;
+using ToSic.Eav.TokenEngine.Tests.ValueProvider;
 
 namespace ToSic.Eav.UnitTests
 {
@@ -57,8 +59,8 @@ And ProductSort = @" + SqlDataSource.ExtractedParamPrefix + @"3";
 
             Assert.AreEqual(configCountBefore + 3, sql.Configuration.Count);
             Assert.AreEqual(expectedQuery, sql.SelectCommand);
-            Assert.AreEqual(ValueProvider.ValueCollectionProvider_Test.MaxPictures, sql.Configuration["@" + SqlDataSource.ExtractedParamPrefix + "1"]);
-            Assert.AreEqual(ValueProvider.ValueCollectionProvider_Test.DefaultCategory, sql.Configuration["@" + SqlDataSource.ExtractedParamPrefix + "2"]);
+            Assert.AreEqual(ValueCollectionProvider_Test.MaxPictures, sql.Configuration["@" + SqlDataSource.ExtractedParamPrefix + "1"]);
+            Assert.AreEqual(ValueCollectionProvider_Test.DefaultCategory, sql.Configuration["@" + SqlDataSource.ExtractedParamPrefix + "2"]);
             Assert.AreEqual("CorrectlyDefaulted", sql.Configuration["@" + SqlDataSource.ExtractedParamPrefix + "3"]);
         }
 
@@ -111,7 +113,7 @@ And ProductSort = @" + SqlDataSource.ExtractedParamPrefix + @"3";
         public static SqlDataSource GenerateSqlDataSource(string connection, string query, string typeName)
         {
             var source = new SqlDataSource(connection, query, typeName);
-            source.ConfigurationProvider = new ValueProvider.ValueCollectionProvider_Test().ValueCollection();
+            source.ConfigurationProvider = DemoConfigs.AppSetAndRes();
 
             return source;
         }

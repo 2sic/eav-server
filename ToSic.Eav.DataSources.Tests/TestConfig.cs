@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.DataSources.Tests
 {
-    internal class TestConfiguration
+    internal class TestConfig
     {
         public static int Zone = 2;
 

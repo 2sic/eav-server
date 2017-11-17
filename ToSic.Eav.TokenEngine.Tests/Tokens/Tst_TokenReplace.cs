@@ -5,10 +5,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Tokens;
 using ToSic.Eav.ValueProvider;
 
-namespace ToSic.Eav.UnitTests
+namespace ToSic.Eav.TokenEngine.Tests.Tokens
 {
     [TestClass]
-    public class TokenReplace_Test
+    public class Tst_TokenReplace
     {
         #region Test Values
 
@@ -104,7 +104,7 @@ but this should [token:key] again"
         private readonly Regex tokenRegEx = TokenReplace.Tokenizer;
          
 
-        public TokenReplace_Test()
+        public Tst_TokenReplace()
         {
             // Initialize the QueryString PropertyAccess
             foreach (var qsValue in qsValues)
@@ -122,27 +122,27 @@ but this should [token:key] again"
         public void TokenReplace_ContainsToken()
         {
             foreach (var validPureToken in ValidPureTokens)
-                Assert.IsTrue(Tokens.TokenReplace.ContainsTokens(validPureToken));
+                Assert.IsTrue(Eav.Tokens.TokenReplace.ContainsTokens(validPureToken));
 
             foreach (var validMixedSingleToken in ValidMixedSingleTokens)
-                Assert.IsTrue(Tokens.TokenReplace.ContainsTokens(validMixedSingleToken));
+                Assert.IsTrue(Eav.Tokens.TokenReplace.ContainsTokens(validMixedSingleToken));
 
             foreach (var validMixedMultiToken in ValidMixedMultiTokens)
-                Assert.IsTrue(Tokens.TokenReplace.ContainsTokens(validMixedMultiToken));
+                Assert.IsTrue(Eav.Tokens.TokenReplace.ContainsTokens(validMixedMultiToken));
         }
 
         [TestMethod]
         public void TokenReplace_ContainsTokenWithSubtoken()
         {
             foreach (var token in ValidTokensWithSubTokens)
-                Assert.IsTrue(Tokens.TokenReplace.ContainsTokens(token));   
+                Assert.IsTrue(Eav.Tokens.TokenReplace.ContainsTokens(token));   
         }
 
         [TestMethod]
         public void TokenReplace_DoesntContainToken()
         {
             foreach (var invalidToken in InvalidTokens)
-                Assert.IsFalse(Tokens.TokenReplace.ContainsTokens(invalidToken));
+                Assert.IsFalse(Eav.Tokens.TokenReplace.ContainsTokens(invalidToken));
         }
 
         #endregion

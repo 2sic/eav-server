@@ -21,6 +21,9 @@ namespace ToSic.Eav.DataSources
         #region Configuration-properties
 	    public override string LogId => "DS.RelatF";
 
+	    public const string SettingsRelationship = "Relationship";
+	    public const string SettingsFilter = "Filter";
+
         private const string RelationshipKey = "Relationship";
 		private const string FilterKey = "Filter";
 		private const string CompareAttributeKey = "CompareAttribute";
@@ -108,9 +111,9 @@ namespace ToSic.Eav.DataSources
         public RelationshipFilter()
 		{
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntitiesOrFallback));
-			Configuration.Add(RelationshipKey, "[Settings:Relationship]");
-			Configuration.Add(FilterKey, "[Settings:Filter]");
-		    Configuration.Add(CompareAttributeKey, "[Settings:RelationshipAttribute||" + Constants.EntityFieldTitle + "]");
+			Configuration.Add(RelationshipKey, $"[Settings:{SettingsRelationship}]");
+			Configuration.Add(FilterKey, $"[Settings:{SettingsFilter}]");
+		    Configuration.Add(CompareAttributeKey, $"[Settings:RelationshipAttribute||{Constants.EntityFieldTitle}]");
 			Configuration.Add(CompareModeKey, "[Settings:Comparison||" + "default" + "]");
 			Configuration.Add(ChildOrParentKey, "child");
 			//Configuration.Add(ParentTypeKey, "");
@@ -153,12 +156,18 @@ namespace ToSic.Eav.DataSources
 			//if (lang == "default") lang = ""; // no language is automatically the default language
 
 		    var lowAttribName = compAttr.ToLower();
-		    Log.Add($"get related on attr:{compAttr}, filter:{filter}, mode:{mode}, child/parent:{childParent}");
+		    Log.Add($"get related on relationship:'{relationship}', filter:'{filter}', rel-field:'{compAttr}' mode:'{mode}', child/parent:'{childParent}'");
             //var specAttr = lowAttribName == Constants.EntityFieldAutoSelect ? 'a' : lowAttribName == Constants.EntityFieldId ? 'i' : lowAttribName == Constants.EntityFieldTitle ? 't' : 'x';
 
 			var originals = In[Constants.DefaultStreamName].List;
 
-            var compType = lowAttribName == Constants.EntityFieldAutoSelect ? CompareType.Auto : lowAttribName == Constants.EntityFieldId ? CompareType.Id : lowAttribName == Constants.EntityFieldTitle ? CompareType.Title : CompareType.Any;
+		    var compType = lowAttribName == Constants.EntityFieldAutoSelect
+		        ? CompareType.Auto
+		        : lowAttribName == Constants.EntityFieldId
+		            ? CompareType.Id
+		            : lowAttribName == Constants.EntityFieldTitle
+		                ? CompareType.Title
+		                : CompareType.Any;
 
             //if (string.IsNullOrWhiteSpace(_filter) && PassThroughOnEmptyFilter)
             //	return originals;
