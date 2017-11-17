@@ -104,7 +104,7 @@ namespace ToSic.Eav.DataSources
 		    if (AppSwitch != 0)
 				AppId = AppSwitch;
 
-		    var newDs = DataSource.GetInitialDataSource(ZoneId, AppId);
+		    var newDs = DataSource.GetInitialDataSource(ZoneId, AppId, configProvider: ConfigurationProvider);
 		    if (In.ContainsKey(Constants.DefaultStreamName))
 		        In.Remove(Constants.DefaultStreamName);
 			In.Add(Constants.DefaultStreamName, newDs[Constants.DefaultStreamName]);
@@ -134,8 +134,8 @@ namespace ToSic.Eav.DataSources
 
 			// now provide all data streams for all data types; only need the cache for the content-types list, don't use it as the source...
 			// because the "real" source already applies filters like published
-			var cache = (BaseCache)DataSource.GetCache(zoneId: ZoneId, appId: AppId);
-			var listOfTypes = cache.GetContentTypes();//.Values;
+			var cache = (BaseCache)DataSource.GetCache(ZoneId, AppId);
+			var listOfTypes = cache.GetContentTypes();
 		    foreach (var contentType in listOfTypes)
 		    {
 		        var typeName = contentType.Name;
@@ -147,7 +147,7 @@ namespace ToSic.Eav.DataSources
 
 		            if (typeName != Constants.DefaultStreamName)
 		                ds.AddNamedStream(typeName);
-		            var typeOut = ds.Out[typeName];// ds.RenamedStream(typeName);
+		            var typeOut = ds.Out[typeName];
 		            typeOut.AutoCaching = true; // enable auto-caching 
 
 		            _out.Add(typeName, typeOut);

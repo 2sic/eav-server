@@ -26,11 +26,6 @@ namespace ToSic.Eav.App
         public int AppId { get; }
 
         /// <summary>
-        /// Gets all Entities in this App
-        /// </summary>
-        //public IDictionary<int, IEntity> Entities { get; }
-
-        /// <summary>
         /// The simple list of entities, used in many pipeline parts
         /// </summary>
         public IEnumerable<IEntity> List { get; } 
@@ -73,7 +68,6 @@ namespace ToSic.Eav.App
 		{
 		    AppId = appId;
 		    List = entList;
-		    //Entities = entities;
 
 		    _appTypesFromRepository = RemoveAliasesForGlobalTypes(contentTypes);
 
