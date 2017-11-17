@@ -38,7 +38,10 @@ namespace ToSic.Eav.DataSources
 		IDataStream this[string outName] { get; }
 
         IEnumerable<IEntity> List { get; }
-            
+
+        [Obsolete("deprecated since 2sxc 9.8 / eav 4.5 - use List instead")]
+        IEnumerable<IEntity> LightList { get; }
+
         /// <summary>
 		/// Gets the ConfigurationProvider for this DataSource
 		/// </summary>
