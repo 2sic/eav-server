@@ -8,13 +8,13 @@ namespace ToSic.Eav.Data.Query
     public static class Entity
     {
         public static IEntity One(this IEnumerable<IEntity> entities, int id) 
-            => entities.FirstOrDefault(e => e.EntityId == id);
+            => entities.FirstOrDefault(e => e.EntityId == id || e.RepositoryId == id);
 
         public static IEntity One(this IEnumerable<IEntity> entities, Guid guid) 
             => entities.FirstOrDefault(e => e.EntityGuid == guid);
 
         public static bool Has(this IEnumerable<IEntity> entities, int id) 
-            => entities.Any(e => e.EntityId == id);
+            => entities.Any(e => e.EntityId == id || e.RepositoryId == id);
 
         public static bool Has(this IEnumerable<IEntity> entities, Guid guid) 
             => entities.Any(e => e.EntityGuid == guid);
