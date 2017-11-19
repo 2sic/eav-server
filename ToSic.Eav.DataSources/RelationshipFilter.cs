@@ -23,17 +23,34 @@ namespace ToSic.Eav.DataSources
 
 	    public const string SettingsRelationship = "Relationship";
 	    public const string SettingsFilter = "Filter";
+	    public const string SettingsRelAttribute = "AttributeOnRelationship"; // todo
+	    public const string SettingsCompareMode = "Comparison"; 
+	    public const string SettingsDirection = "Direction"; // todo
+	    public const string SettingsSeparator = "Separator";
 
+	    private const string PrefixNot = "not-";
         private const string RelationshipKey = "Relationship";
 		private const string FilterKey = "Filter";
 		private const string CompareAttributeKey = "CompareAttribute";
 		private const string CompareModeKey = "Mode";
+	    private const string SeparatorKey = "Separator";
 		private const string ChildOrParentKey = "ChildOrParent";
-		private readonly string[] _childOrParentPossibleValues = { "child" };//, "parent"};
+	    private const string DefaultDirection = "child";
+	    private const string DefaultSeparator = ",";
+		private readonly string[] _directionPossibleValues = { DefaultDirection, "parent"};
 		private readonly string[] _compareModeValues = { "default", "contains" };
 		//private const string ParentTypeKey = "ParentType";
 		//private const string PassThroughOnEmptyFilterKey = "PassThroughOnEmptyFilter";
 
+
+            public enum CompareModes
+            {
+                contains,
+                containsall,
+                todocontainsany,
+                todocontainsnone,
+                first,
+            }
 
 	    private enum CompareType { Any, Id, Title, Auto }
 
@@ -77,14 +94,12 @@ namespace ToSic.Eav.DataSources
 		public string CompareMode
 		{
 			get => Configuration[CompareModeKey];
-		    set
-			{
-				if (_compareModeValues.Contains(value.ToLower()))
-					Configuration[CompareModeKey] = value.ToLower();
-				else
-					throw new Exception("Value '" + value + "' not allowed for CompareMode");
-
-			}
+		    set => Configuration[CompareModeKey] = value.ToLower();
+		}
+		public string Separator
+		{
+			get => Configuration[SeparatorKey];
+		    set => Configuration[SeparatorKey] = value.ToLower();
 		}
 
 		public string ChildOrParent
@@ -92,7 +107,7 @@ namespace ToSic.Eav.DataSources
 			get => Configuration[ChildOrParentKey];
 		    set
 			{
-				if (_childOrParentPossibleValues.Contains(value.ToLower()))
+				if (_directionPossibleValues.Contains(value.ToLower()))
 					Configuration[ChildOrParentKey] = value.ToLower();
 				else
 					throw new Exception("Value '" + value + "'not allowed for ChildOrParent");
@@ -113,9 +128,10 @@ namespace ToSic.Eav.DataSources
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntitiesOrFallback));
 			Configuration.Add(RelationshipKey, $"[Settings:{SettingsRelationship}]");
 			Configuration.Add(FilterKey, $"[Settings:{SettingsFilter}]");
-		    Configuration.Add(CompareAttributeKey, $"[Settings:RelationshipAttribute||{Constants.EntityFieldTitle}]");
-			Configuration.Add(CompareModeKey, "[Settings:Comparison||" + "default" + "]");
-			Configuration.Add(ChildOrParentKey, "child");
+		    Configuration.Add(CompareAttributeKey, $"[Settings:{SettingsRelAttribute}||{Constants.EntityFieldTitle}]");
+			Configuration.Add(CompareModeKey, $"[Settings:{SettingsCompareMode}||{CompareModes.contains}]");
+			Configuration.Add(SeparatorKey, $"[Settings:{SettingsSeparator}||{DefaultSeparator}]");
+			Configuration.Add(ChildOrParentKey, $"[Settings:{SettingsDirection}||{DefaultDirection}]");
 			//Configuration.Add(ParentTypeKey, "");
             //Configuration.Add(PassThroughOnEmptyFilterKey, "[Settings:PassThroughOnEmptyFilter||false]");
 
@@ -143,12 +159,16 @@ namespace ToSic.Eav.DataSources
 			var relationship = Relationship;
 			var compAttr = CompareAttribute;
 			var filter = Filter.ToLower(); // new: make case insensitive
-			var mode = CompareMode.ToLower();
-			if (mode == "contains") mode = "default";
-			if (mode != "default")
+			var strMode = CompareMode.ToLower();
+		    var useNot = strMode.StartsWith(PrefixNot);
+		    if (useNot) strMode = strMode.Substring(PrefixNot.Length);
+
+			if (strMode == "default") strMode = "contains"; // 2017-11-18 old default was "default" - this is still in for compatibility
+            if(!Enum.TryParse<CompareModes>(strMode, true, out var mode))
 				throw new Exception("Can't use CompareMode other than 'default'");
+
 			var childParent = ChildOrParent;
-			if (!_childOrParentPossibleValues.Contains(childParent)) // != "child")
+			if (!_directionPossibleValues.Contains(childParent)) // != "child")
 				throw new Exception("can only find related children at the moment, must set ChildOrParent to 'child'");
 			//var lang = Languages.ToLower();
 			//if (lang != "default")
@@ -173,26 +193,33 @@ namespace ToSic.Eav.DataSources
             //	return originals;
 
             // only get those, having a relationship on this name
-            var results = // (ChildOrParent == "child") ?
-				from e in originals
-				where e.Relationships.Children[relationship].Any()
-				select e;
+		    var results = originals;// (ChildOrParent == "child") ?
+            // by default, skip all which don't have anything, but not if we're finding the "not" list
+		    if (!useNot) results = results.Where(e => e.Relationships.Children[relationship].Any());
+
 			//: (from e in originals
 			//	where e.Value.Relationships.AllParents.Any(p => p.Type.Name == ParentType)
 			//	select e);
 
+            // pick the correct value-comparison
+		    var internalCompare = compType == CompareType.Auto
+			    ? CompareTitleOrId(compAttr)
+			    : CompareField(compAttr, compType);
+
+
+		    var filterList = filter.Split(new []{Separator}, StringSplitOptions.RemoveEmptyEntries);
+
+            // pick the correct list-comparison - atm 2 options
+		    var modeCompare = mode == CompareModes.containsall
+		        ? ModeContainsAll(relationship, filterList, internalCompare)
+		        : ModeContainsOne(relationship, filter, internalCompare);
+
+		    if (useNot) modeCompare = ModeNot(modeCompare);
+
 			if (ChildOrParent == "child")
 			{
-			    if (compType == CompareType.Auto)
-			        results = results
-			            .Where(e => e.Relationships.Children[relationship]
-			                .Any(x => getStringToCompare(x, compAttr, CompareType.Id)?.ToLower() == filter
-			                          || getStringToCompare(x, compAttr, CompareType.Title)?.ToLower() == filter));
-			    else
-			        results = results.Where(e =>
-			            e.Relationships.Children[relationship]
-			                .Any(x => getStringToCompare(x, compAttr, compType)?.ToLower() == filter));
-			}
+			    results = results.Where(modeCompare);
+            }
 			else
 			{
 				throw new NotImplementedException("using 'parent' not supported yet, use 'child' to filter'");
@@ -201,10 +228,39 @@ namespace ToSic.Eav.DataSources
 				//		   select e);
 			}
 
+		    Log.Add($"found {results.Count()}");
 			return results;
 		}
 
-		//private string getStringToCompare(IEntity e, string a, char special)
+	    private static Func<IEntity, bool> ModeNot(Func<IEntity, bool> innerFunc) => e => !innerFunc(e);
+
+	    private static Func<IEntity, bool> ModeContainsAll(string relationship, string[] filterList, Func<IEntity, string, bool> internalCompare)
+	    {
+	        return e =>
+	        {
+	            var rels = e.Relationships.Children[relationship];
+	            return filterList.All(v => rels.Any(r => internalCompare(r, v)));
+	        };
+	    }
+
+	    private static Func<IEntity, bool> ModeContainsOne(string relationship, string value, Func<IEntity, string, bool> internalCompare)
+	    {
+	        return entity => entity.Relationships.Children[relationship]
+	                .Any(r => internalCompare(r, value));
+	    }
+
+	    private Func<IEntity, string, bool> CompareTitleOrId(string compAttr)
+	    {
+	        return (entity, filter) => getStringToCompare(entity, compAttr, CompareType.Id)?.ToLower() == filter
+	                    || getStringToCompare(entity, compAttr, CompareType.Title)?.ToLower() == filter;
+	    }
+
+	    private Func<IEntity, string, bool> CompareField(string compAttr, CompareType compType)
+	    {
+	        return (entity, value) => getStringToCompare(entity, compAttr, compType)?.ToLower() == value;
+	    }
+
+	    //private string getStringToCompare(IEntity e, string a, char special)
 		//{
 		//	try
 		//	{
