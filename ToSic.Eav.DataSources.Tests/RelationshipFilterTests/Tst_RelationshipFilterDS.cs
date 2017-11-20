@@ -6,7 +6,7 @@ using ToSic.Eav.Logging.Simple;
 namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
 {
     [TestClass]
-    public partial class Tst_RelationshipFilterDS: RelationshipTestBase
+    public partial class Tst_RelationshipFilterDs: RelationshipTestBase
     {
 
         // todo: necessary tests

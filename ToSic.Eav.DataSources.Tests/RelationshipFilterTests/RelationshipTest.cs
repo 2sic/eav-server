@@ -75,7 +75,9 @@ namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
             var x = CountApi + CountConfig; // access the streams to ensure it's logged
             Trace.Write("Log after accessing DSs\n\n" + Log.Dump());
 
-            Assert.IsTrue(expectsResults ? CountApi > 0 : CountApi == 0, $"test: {Name} - foundCount{CountApi} > 0");
+            Api.List.ToList().ForEach(e => Trace.WriteLine($"item ({e.EntityId}):'{e.GetBestTitle()}'"));
+
+            Assert.IsTrue(expectsResults ? CountApi > 0 : CountApi == 0, $"test: {Name} - found-Count:{CountApi} > 0");
             if(exactCount != -1)
                 Assert.AreEqual(exactCount, CountApi, $"test: {Name} - missed expected exact count");
 

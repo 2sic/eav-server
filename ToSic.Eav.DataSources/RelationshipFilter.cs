@@ -56,11 +56,11 @@ namespace ToSic.Eav.DataSources
         // this must all be in lower-case, to make further case-changes irrelevant
         public enum CompareModes
         {
-            contains,
-            todomovetocontaininsteadofcontainsall,
-            containsany,
-            todocontainsnone,
-            first,
+            contains, // default case - must contain all provided filter-values
+            containsany, // must contain any of the provided filter-values
+            any, // must contain anything (not empty)
+            first, // first item must match provided filter-values
+            count
         }
         // ReSharper restore InconsistentNaming
 
@@ -196,12 +196,12 @@ namespace ToSic.Eav.DataSources
             // only get those, having a relationship on this name
 		    var query = originals;
             // by default, skip all which don't have anything, but not if we're finding the "not" list
-		    if (!useNot) query = query.Where(e => e.Relationships.Children[relationship].Any());
+		    //if (!useNot) query = query.Where(e => e.Relationships.Children[relationship].Any());
 
             // pick the correct value-comparison
 		    var comparisonOnRelatedItem = compType == CompareType.Auto
-			    ? CompareTitleOrId(compAttr)
-			    : CompareField(compAttr, compType);
+		        ? CompareTwo(GetFieldValue(CompareType.Id, null), GetFieldValue(CompareType.Title, null))
+		        : CompareOne(GetFieldValue(compType, compAttr));
 
 
 		    var filterList = Separator == DefaultSeparator
@@ -209,15 +209,18 @@ namespace ToSic.Eav.DataSources
 		        : filter.Split(new[] {Separator}, StringSplitOptions.RemoveEmptyEntries);
 
 
-		    Log.Add($"will compare on:{compType} '{lowAttribName}', values to check ({filterList.Length}):'{filter}'");
+		    Log.Add($"will compare mode:{mode} on:{compType} '{lowAttribName}', values to check ({filterList.Length}):'{filter}'");
 
             // pick the correct list-comparison - atm 2 options
 		    var modeCompare = PickMode(mode, relationship, comparisonOnRelatedItem, filterList);
 
-		    if (useNot) modeCompare = ModeNot(modeCompare);
+		    var finalCompare = useNot
+		        ? e => !modeCompare(e)
+		        : modeCompare;
+
 
 		    if (ChildOrParent == "child")
-		        query = query.Where(modeCompare);
+		        query = query.Where(finalCompare);
 		    else
 		    {
 		        throw new NotImplementedException("using 'parent' not supported yet, use 'child' to filter'");
@@ -231,99 +234,114 @@ namespace ToSic.Eav.DataSources
 			return results;
 		}
 
-	    private Func<IEntity, bool> PickMode(CompareModes modeToPick, string relationship, Func<IEntity, string, bool> comparisonOnRelatedItem, string[] filterList)
+
+        /// <summary>
+        /// Generate the condition (mode) which will be used, like contain-any, has-any, etc.
+        /// </summary>
+        /// <param name="modeToPick">mode-type</param>
+        /// <param name="relationship">relationship on which the compare will operate</param>
+        /// <param name="internalCompare">internal compare method</param>
+        /// <param name="valuesToFind">value-list to compare to</param>
+        /// <returns></returns>
+	    private Func<IEntity, bool> PickMode(CompareModes modeToPick, string relationship, Func<IEntity, string, bool> internalCompare, string[] valuesToFind)
 	    {
 	        switch (modeToPick)
 	        {
 	            case CompareModes.contains:
-	                Log.Add("will use contains one");
-	                return ModeContainsOne(relationship, filterList.FirstOrDefault() ?? "", comparisonOnRelatedItem);
-	            case CompareModes.todomovetocontaininsteadofcontainsall:
-	                Log.Add("will use contains all");
-	                return ModeContainsAll(relationship, filterList, comparisonOnRelatedItem);
-	            case CompareModes.containsany:
-	                Log.Add("will use contains any");
-	                return ModeContainsAny(relationship, filterList, comparisonOnRelatedItem);
-	            case CompareModes.todocontainsnone:
-	                Log.Add("will use contains-none");
-	                return entity => !entity.Relationships.Children[relationship].Any();
-                case CompareModes.first:
-	                Log.Add("will use first is");
-	                return ModeFirst(relationship, filterList.FirstOrDefault() ?? "", comparisonOnRelatedItem);
-	            default:
+	                Log.Add("will use contains one / all");
+	                if (valuesToFind.Length > 1)
+	                    return entity =>
+	                    {
+	                        var rels = entity.Relationships.Children[relationship];
+	                        return valuesToFind.All(v => rels.Any(r => internalCompare(r, v)));
+	                    };
+	                else
+	                    return entity => entity.Relationships.Children[relationship]
+	                        .Any(r => internalCompare(r, valuesToFind.FirstOrDefault() ?? ""));
+	            case CompareModes.containsany: // Condition that of the needed relationships, at least one must exist
+                    Log.Add("will use contains any");
+                    return entity =>
+	                {
+	                    var rels = entity.Relationships.Children[relationship];
+	                    return valuesToFind.Any(v => rels.Any(r => internalCompare(r, v)));
+	                };
+	            case CompareModes.any:
+	                Log.Add("will use has-any");
+	                return entity => entity.Relationships.Children[relationship].Any();
+                case CompareModes.first: 
+                    // Condition that of the needed relationships, the first must be what we want
+                    Log.Add("will use first is");
+                    return entity =>
+                    {
+                        var first = entity.Relationships.Children[relationship].FirstOrDefault();
+                        return first != null && valuesToFind.Any(v => internalCompare(first, v));
+                    };
+	            case CompareModes.count:
+	                Log.Add("will use count");
+	                if(int.TryParse(valuesToFind.FirstOrDefault() ?? "0", out int count))
+                        return entity => entity.Relationships.Children[relationship].Count() == count;
+
+	                return entity => false;
+
+                default:
 	                throw new ArgumentOutOfRangeException(nameof(modeToPick), modeToPick, null);
 	        }
 	    }
 	    
 
 
-	    /// <summary>
-        /// Invert the result of the inner query
-        /// </summary>
-	    private static Func<IEntity, bool> ModeNot(Func<IEntity, bool> innerFunc) => e => !innerFunc(e);
+	    private static Func<IEntity, string, bool> CompareTwo(Func<IEntity, string> getId, Func<IEntity, string> getTitle) 
+            => (entity, value) => getId(entity) == value || getTitle(entity) == value;
 
-        /// <summary>
-        /// Condition that the needed relationships must ALL exist
-        /// </summary>
-	    private static Func<IEntity, bool> ModeContainsAll(string relationship, string[] filterList,
-	        Func<IEntity, string, bool> internalCompare)
-	        => entity =>
+	    private static Func<IEntity, string, bool> CompareOne(Func<IEntity, string> getValue) 
+            => (entity, value) => getValue(entity) == value;
+
+
+	    private Func<IEntity, string> GetFieldValue(CompareType type, string fieldName)
+	    {
+	        switch (type)
 	        {
-	            var rels = entity.Relationships.Children[relationship];
-	            return filterList.All(v => rels.Any(r => internalCompare(r, v)));
-	        };
+	            case CompareType.Any:
+	                Log.Add($"will compare on a normal attribute:{fieldName}");
+	                return e =>
+	                {
+	                    try
+	                    {
+	                        return e?[fieldName]?[0]?.ToString().ToLower();
+	                    }
+	                    catch
+	                    {
+	                        throw new Exception("Error while trying to filter for related entities. " +
+	                            "Probably comparing an attribute on the related entity that doesn\'t exist. " +
+	                            $"Was trying to compare the attribute \'{fieldName}\'");
+	                    }
+	                };
+                case CompareType.Id:
+                    Log.Add("will compare on ID");
+	                return e => e?.EntityId.ToString();
+                case CompareType.Title:
+                    Log.Add("will compare no title");
+                    return e => e?.Title?[0]?.ToString().ToLower();
+	            // ReSharper disable once RedundantCaseLabel
+                case CompareType.Auto:
+	            default:
+	                throw new ArgumentOutOfRangeException(nameof(type), type, null);
+	        }
+	    }
 
-
-        /// <summary>
-        /// Condition that of the needed relationships, at least one must exist
-        /// </summary>
-	    private static Func<IEntity, bool> ModeContainsAny(string relationship, string[] filterList,
-	        Func<IEntity, string, bool> internalCompare)
-	        => entity =>
-	        {
-	            var rels = entity.Relationships.Children[relationship];
-	            return filterList.Any(v => rels.Any(r => internalCompare(r, v)));
-	        };
-
-
-        /// <summary>
-        /// Condition that of the needed relationships, at least one must exist
-        /// </summary>
-	    private static Func<IEntity, bool> ModeFirst(string relationship, string filter,
-	        Func<IEntity, string, bool> internalCompare)
-	        => entity =>
-	        {
-	            var rels = entity.Relationships.Children[relationship].FirstOrDefault();
-	            return rels != null && internalCompare(rels, filter);
-	        };
-
-
-	    private static Func<IEntity, bool> ModeContainsOne(string relationship, string value,
-	        Func<IEntity, string, bool> internalCompare)
-	        => entity => entity.Relationships.Children[relationship]
-	            .Any(r => internalCompare(r, value));
-
-	    private Func<IEntity, string, bool> CompareTitleOrId(string compAttr)
-	        => (entity, filter) => getStringToCompare(entity, compAttr, CompareType.Id)?.ToLower() == filter
-	                               || getStringToCompare(entity, compAttr, CompareType.Title)?.ToLower() == filter;
-
-	    private Func<IEntity, string, bool> CompareField(string compAttr, CompareType compType) 
-            => (entity, value) => getStringToCompare(entity, compAttr, compType)?.ToLower() == value;
-
-
-        private string getStringToCompare(IEntity e, string a, CompareType special)
-		{
-			try
-			{
-				// get either the special id or title, if title or normal field, then use language [0] = default
-			    if (e == null) return null;
-				return special == CompareType.Id ? e.EntityId.ToString() : (special == CompareType.Title ? e.Title : e[a])?[0]?.ToString();
-		}
-			catch
-			{
-				throw new Exception(
-				    $"Error while trying to filter for related entities. Probably comparing an attribute on the related entity that doesn\'t exist. Was trying to compare the attribute \'{a}\'");
-			}
-		}
+  //      private string getStringToCompare(IEntity e, string a, CompareType special)
+		//{
+		//	try
+		//	{
+		//		// get either the special id or title, if title or normal field, then use language [0] = default
+		//	    if (e == null) return null;
+		//		return special == CompareType.Id ? e.EntityId.ToString() : (special == CompareType.Title ? e.Title : e[a])?[0]?.ToString();
+		//}
+		//	catch
+		//	{
+		//		throw new Exception(
+		//		    $"Error while trying to filter for related entities. Probably comparing an attribute on the related entity that doesn\'t exist. Was trying to compare the attribute \'{a}\'");
+		//	}
+		//}
 	}
 }
