@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using ToSic.Eav.DataSources.Attributes;
 using ToSic.Eav.Interfaces;
@@ -22,14 +21,12 @@ namespace ToSic.Eav.DataSources
         #region Configuration-properties
 	    public override string LogId => "DS.RelatF";
 
-        #region The keys on the settings which deliver values - provided as public const, to aid in testing
-     //   public const string SettingsRelationship = "Relationship";
-	    //public const string SettingsFilter = "Filter";
-	    //public const string SettingsRelAttribute = "AttributeOnRelationship";
-	    //public const string SettingsCompareMode = "Comparison"; 
-	    //public const string SettingsDirection = "Direction";
-	    //public const string SettingsSeparator = "Separator";
-
+        /// <summary>
+        /// Settings-keys as they are used in the entity which provides settings
+        /// </summary>
+        /// <remarks>
+        /// Don't change these terms, the spelling etc. must stay exactly like this
+        /// </remarks>
         public enum Settings
         {
             Relationship,
@@ -39,7 +36,6 @@ namespace ToSic.Eav.DataSources
             Direction,
             Separator
         }
-        #endregion
 
         private const string PrefixNot = "not-";
         private const string RelationshipKey = "Relationship";
@@ -56,14 +52,17 @@ namespace ToSic.Eav.DataSources
 		//private const string PassThroughOnEmptyFilterKey = "PassThroughOnEmptyFilter";
 
 
-            public enum CompareModes
-            {
-                contains,
-                containsall,
-                todocontainsany,
-                todocontainsnone,
-                first,
-            }
+        // ReSharper disable InconsistentNaming
+        // this must all be in lower-case, to make further case-changes irrelevant
+        public enum CompareModes
+        {
+            contains,
+            todomovetocontaininsteadofcontainsall,
+            containsany,
+            todocontainsnone,
+            first,
+        }
+        // ReSharper restore InconsistentNaming
 
 	    private enum CompareType { Any, Id, Title, Auto }
 
@@ -213,9 +212,7 @@ namespace ToSic.Eav.DataSources
 		    Log.Add($"will compare on:{compType} '{lowAttribName}', values to check ({filterList.Length}):'{filter}'");
 
             // pick the correct list-comparison - atm 2 options
-		    var modeCompare = mode == CompareModes.containsall
-		        ? ModeContainsAll(relationship, filterList, comparisonOnRelatedItem)
-		        : ModeContainsOne(relationship, filter, comparisonOnRelatedItem);
+		    var modeCompare = PickMode(mode, relationship, comparisonOnRelatedItem, filterList);
 
 		    if (useNot) modeCompare = ModeNot(modeCompare);
 
@@ -234,8 +231,40 @@ namespace ToSic.Eav.DataSources
 			return results;
 		}
 
+	    private Func<IEntity, bool> PickMode(CompareModes modeToPick, string relationship, Func<IEntity, string, bool> comparisonOnRelatedItem, string[] filterList)
+	    {
+	        switch (modeToPick)
+	        {
+	            case CompareModes.contains:
+	                Log.Add("will use contains one");
+	                return ModeContainsOne(relationship, filterList.FirstOrDefault() ?? "", comparisonOnRelatedItem);
+	            case CompareModes.todomovetocontaininsteadofcontainsall:
+	                Log.Add("will use contains all");
+	                return ModeContainsAll(relationship, filterList, comparisonOnRelatedItem);
+	            case CompareModes.containsany:
+	                Log.Add("will use contains any");
+	                return ModeContainsAny(relationship, filterList, comparisonOnRelatedItem);
+	            case CompareModes.todocontainsnone:
+	                Log.Add("will use contains-none");
+	                return entity => !entity.Relationships.Children[relationship].Any();
+                case CompareModes.first:
+	                Log.Add("will use first is");
+	                return ModeFirst(relationship, filterList.FirstOrDefault() ?? "", comparisonOnRelatedItem);
+	            default:
+	                throw new ArgumentOutOfRangeException(nameof(modeToPick), modeToPick, null);
+	        }
+	    }
+	    
+
+
+	    /// <summary>
+        /// Invert the result of the inner query
+        /// </summary>
 	    private static Func<IEntity, bool> ModeNot(Func<IEntity, bool> innerFunc) => e => !innerFunc(e);
 
+        /// <summary>
+        /// Condition that the needed relationships must ALL exist
+        /// </summary>
 	    private static Func<IEntity, bool> ModeContainsAll(string relationship, string[] filterList,
 	        Func<IEntity, string, bool> internalCompare)
 	        => entity =>
@@ -244,13 +273,30 @@ namespace ToSic.Eav.DataSources
 	            return filterList.All(v => rels.Any(r => internalCompare(r, v)));
 	        };
 
-	    private static Func<IEntity, bool> ModeContainsSome(string relationship, string[] filterList,
+
+        /// <summary>
+        /// Condition that of the needed relationships, at least one must exist
+        /// </summary>
+	    private static Func<IEntity, bool> ModeContainsAny(string relationship, string[] filterList,
 	        Func<IEntity, string, bool> internalCompare)
 	        => entity =>
 	        {
 	            var rels = entity.Relationships.Children[relationship];
 	            return filterList.Any(v => rels.Any(r => internalCompare(r, v)));
 	        };
+
+
+        /// <summary>
+        /// Condition that of the needed relationships, at least one must exist
+        /// </summary>
+	    private static Func<IEntity, bool> ModeFirst(string relationship, string filter,
+	        Func<IEntity, string, bool> internalCompare)
+	        => entity =>
+	        {
+	            var rels = entity.Relationships.Children[relationship].FirstOrDefault();
+	            return rels != null && internalCompare(rels, filter);
+	        };
+
 
 	    private static Func<IEntity, bool> ModeContainsOne(string relationship, string value,
 	        Func<IEntity, string, bool> internalCompare)
