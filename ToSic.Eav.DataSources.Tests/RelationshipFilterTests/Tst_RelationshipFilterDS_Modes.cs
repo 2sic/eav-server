@@ -6,6 +6,9 @@ namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
 {
     public partial class Tst_RelationshipFilterDS: RelationshipTestBase
     {
+        // More tests
+        // split and don't split!
+        // 
 
         // for contains-many tests
         const string CatMnyBase = "ContMny";
@@ -15,6 +18,16 @@ namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
 
         private const int CompsWithCat12 = 5;
         private const int CompsWithCat123 = 4;
+        private const int CompsWithCatComma = 4;
+        
+        // todo
+        private const int CompsWithCat12Comma = 3;
+        private const int CompsWithCat123Comma = 2;
+
+        private const int CompsWithCatExactly123 = 2;
+
+        // todo
+        private const string CatWithComma = "CategoryWith,Comma";
 
 
         [TestMethod]
@@ -32,39 +45,60 @@ namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
         ///  Build a contain-many basic test - but don't run yet
         /// </summary>
         /// <returns></returns>
-        private static RelationshipTest BuildContainsMany(bool useThree = false)
-            => new RelationshipTest("basic-cat-having-title", Company, CompCat,
-                $"{CatMny1}{DefSeparator}{CatMny2}" + (useThree ? $"{DefSeparator}{CatMny3}" : ""),
+        private static RelationshipTest BuildContainsAll(bool useThree = false, bool repeat2 = false)
+            => new RelationshipTest("basic-cat-contains-all", Company, CompCat,
+                $"{CatMny1}{DefSeparator}{CatMny2}"
+                + (repeat2 ? $"{DefSeparator}{CatMny2}" : "") // optionally repeate the second value (shouldn't affect result)
+                + (useThree ? $"{DefSeparator}{CatMny3}" : ""), // optionally add a third category (for other tests)
+                separator: DefSeparator,
                 compareMode: RelationshipFilter.CompareModes.containsall.ToString());
 
         [TestMethod]
-        public void DS_RelFil_Comp_Cat_ContainsManyWithoutOperator()
+        public void DS_RelFil_Comp_Cat_ContainsAllWithoutOperator()
+            => new RelationshipTest("basic-cat-having-title", Company, CompCat,
+                $"{CatMny1}{DefSeparator}{CatMny2}", 
+                separator: DefSeparator)
+                .Run(false);
+
+        [TestMethod]
+        public void DS_RelFil_Comp_Cat_ContainsAllWithoutSeparator()
             => new RelationshipTest("basic-cat-having-title", Company, CompCat,
                 $"{CatMny1}{DefSeparator}{CatMny2}")
                 .Run(false);
 
         [TestMethod]
-        public void DS_RelFil_Comp_Cat_ContainsMany2() 
-            => BuildContainsMany()
+        public void DS_RelFil_Comp_Cat_ContainsCatHavingComma()
+            => new RelationshipTest("basic-cat-having-title", Company, CompCat,
+                $"{CatWithComma}")
+                .Run(true, exactCount: CompsWithCatComma);
+
+        [TestMethod]
+        public void DS_RelFil_Comp_Cat_ContainsAll2() 
+            => BuildContainsAll()
             .Run(true, exactCount: CompsWithCat12);
 
         [TestMethod]
-        public void DS_RelFil_Comp_Cat_ContainsMany3() 
-            => BuildContainsMany(true)
+        public void DS_RelFil_Comp_Cat_ContainsAll2WithDupls() 
+            => BuildContainsAll(repeat2: true)
+            .Run(true, exactCount: CompsWithCat12);
+
+        [TestMethod]
+        public void DS_RelFil_Comp_Cat_ContainsAll3() 
+            => BuildContainsAll(true)
             .Run(true, exactCount: CompsWithCat123);
 
         [TestMethod]
         [ExpectedException(typeof(AssertFailedException), "this is expected to fail assert-counts, just for testing that the count is actually controlled")]
-        public void DS_RelFil_Comp_Cat_ContainsMany2WrongCount() 
-            => BuildContainsMany(true)
+        public void DS_RelFil_Comp_Cat_ContainsAll2WrongCount() 
+            => BuildContainsAll(true)
             .Run(true, exactCount: CompsWithCat12);
 
         [TestMethod]
-        public void DS_RelFil_Comp_Cat_NotContainsMany()
+        public void DS_RelFil_Comp_Cat_NotContainsAll()
         {
-            var original = BuildContainsMany();
+            var original = BuildContainsAll();
 
-            var not = BuildContainsMany();
+            var not = BuildContainsAll();
             not.CompareMode = "not-" + not.CompareMode;
             not.Rebuild().Run(true);
 
@@ -74,7 +108,7 @@ namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
         }
 
         [TestMethod]
-        public void DS_RelFil_Comp_Cat_ContainsManyBadSeparator() 
+        public void DS_RelFil_Comp_Cat_ContainsAllBadSeparator() 
             => new RelationshipTest("basic-cat-having-title", Company, CompCat, 
                 $"{CatWeb}{AltSeparator}{CatGreen}", 
                 compareMode:RelationshipFilter.CompareModes.containsall.ToString()
@@ -82,7 +116,7 @@ namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
             .Run(false); // since the separator won't separate, it will not find anything
 
          [TestMethod]
-        public void DS_RelFil_Comp_Cat_ContainsManyAltSeparator()
+        public void DS_RelFil_Comp_Cat_ContainsAllAltSeparator()
          {
              new RelationshipTest("basic-cat-having-title", Company, CompCat,
                      $"{CatWeb}{AltSeparator}{CatGreen}",
@@ -90,5 +124,35 @@ namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
                      separator: AltSeparator)
                  .Run(true);
          }
+
+         [TestMethod]
+        public void DS_RelFil_Comp_Cat_Contains2AndCommaCase()
+         {
+             new RelationshipTest("basic-cat-having-title", Company, CompCat,
+                     $"{CatMny1}{AltSeparator}{CatMny2}{AltSeparator}{CatWithComma}",
+                     compareMode: RelationshipFilter.CompareModes.containsall.ToString(),
+                     separator: AltSeparator)
+                 .Run(true, exactCount: CompsWithCat12Comma);
+         }
+
+         [TestMethod]
+        public void DS_RelFil_Comp_Cat_Contains3AndCommaCase()
+         {
+             new RelationshipTest("basic-cat-having-title", Company, CompCat,
+                     $"{CatMny1}{AltSeparator}{CatMny2}{AltSeparator}{CatMny3}{AltSeparator}{CatWithComma}",
+                     compareMode: RelationshipFilter.CompareModes.containsall.ToString(),
+                     separator: AltSeparator)
+                 .Run(true, exactCount: CompsWithCat123Comma);
+         }
+
+        /// <summary>
+        ///  Build a contain-many basic test - but don't run yet
+        /// </summary>
+        /// <returns></returns>
+        private static RelationshipTest BuildContainsAny(bool useThree = false)
+            => new RelationshipTest("basic-cat-having-title", Company, CompCat,
+                $"{CatMny1}{DefSeparator}{CatMny2}" + (useThree ? $"{DefSeparator}{CatMny3}" : ""),
+                compareMode: RelationshipFilter.CompareModes.todocontainsany.ToString());
+
     }
 }

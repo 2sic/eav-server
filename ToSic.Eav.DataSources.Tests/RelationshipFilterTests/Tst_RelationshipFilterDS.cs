@@ -55,24 +55,17 @@ namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
         }
 
         [TestMethod]
-        public void DS_RelFil_Companies_Having_Category_Title()
-        {
-            new RelationshipTest("basic-cat-having-title", Company, CompCat, CatWeb).Run(true);
-        }
+        public void DS_RelFil_Companies_Having_Category_Title() 
+            => new RelationshipTest("basic-cat-having-title", Company, CompCat, CatWeb).Run(true);
 
         [TestMethod]
-        public void DS_RelFil_Companies_Having_Category_Active()
-        {
-            new RelationshipTest("basic-cat-having-title", Company, CompCat, "true", relAttribute: "Active").Run(true);
-        }
+        public void DS_RelFil_Companies_Having_Category_Active() 
+            => new RelationshipTest("basic-cat-having-title", Company, CompCat, "true", relAttribute: "Active").Run(true);
 
 
         [Ignore]
         [TestMethod]
-        public void DS_RelFil_Categories_OfCompanies()
-        {
-            new RelationshipTest("basic-cat-having-title", Category, CompCat).Run(true);
-
-        }
+        public void DS_RelFil_Categories_OfCompanies() 
+            => new RelationshipTest("basic-cat-having-title", Category, CompCat).Run(true);
     }
 }
