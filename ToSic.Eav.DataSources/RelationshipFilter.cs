@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using ToSic.Eav.DataSources.Attributes;
 using ToSic.Eav.Interfaces;
@@ -21,14 +22,26 @@ namespace ToSic.Eav.DataSources
         #region Configuration-properties
 	    public override string LogId => "DS.RelatF";
 
-	    public const string SettingsRelationship = "Relationship";
-	    public const string SettingsFilter = "Filter";
-	    public const string SettingsRelAttribute = "AttributeOnRelationship"; // todo
-	    public const string SettingsCompareMode = "Comparison"; 
-	    public const string SettingsDirection = "Direction"; // todo
-	    public const string SettingsSeparator = "Separator";
+        #region The keys on the settings which deliver values - provided as public const, to aid in testing
+     //   public const string SettingsRelationship = "Relationship";
+	    //public const string SettingsFilter = "Filter";
+	    //public const string SettingsRelAttribute = "AttributeOnRelationship";
+	    //public const string SettingsCompareMode = "Comparison"; 
+	    //public const string SettingsDirection = "Direction";
+	    //public const string SettingsSeparator = "Separator";
 
-	    private const string PrefixNot = "not-";
+        public enum Settings
+        {
+            Relationship,
+            Filter,
+            AttributeOnRelationship,
+            Comparison,
+            Direction,
+            Separator
+        }
+        #endregion
+
+        private const string PrefixNot = "not-";
         private const string RelationshipKey = "Relationship";
 		private const string FilterKey = "Filter";
 		private const string CompareAttributeKey = "CompareAttribute";
@@ -119,12 +132,12 @@ namespace ToSic.Eav.DataSources
         public RelationshipFilter()
 		{
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntitiesOrFallback));
-			Configuration.Add(RelationshipKey, $"[Settings:{SettingsRelationship}]");
-			Configuration.Add(FilterKey, $"[Settings:{SettingsFilter}]");
-		    Configuration.Add(CompareAttributeKey, $"[Settings:{SettingsRelAttribute}||{Constants.EntityFieldTitle}]");
-			Configuration.Add(CompareModeKey, $"[Settings:{SettingsCompareMode}||{CompareModes.contains}]");
-			Configuration.Add(SeparatorKey, $"[Settings:{SettingsSeparator}||{DefaultSeparator}]");
-			Configuration.Add(ChildOrParentKey, $"[Settings:{SettingsDirection}||{DefaultDirection}]");
+			Configuration.Add(RelationshipKey, $"[Settings:{Settings.Relationship}]");
+			Configuration.Add(FilterKey, $"[Settings:{Settings.Filter}]");
+		    Configuration.Add(CompareAttributeKey, $"[Settings:{Settings.AttributeOnRelationship}||{Constants.EntityFieldTitle}]");
+			Configuration.Add(CompareModeKey, $"[Settings:{Settings.Comparison}||{CompareModes.contains}]");
+			Configuration.Add(SeparatorKey, $"[Settings:{Settings.Separator}||{DefaultSeparator}]");
+			Configuration.Add(ChildOrParentKey, $"[Settings:{Settings.Direction}||{DefaultDirection}]");
 
             CacheRelevantConfigurations = new[] { RelationshipKey, FilterKey, CompareAttributeKey, CompareModeKey, ChildOrParentKey};
         }

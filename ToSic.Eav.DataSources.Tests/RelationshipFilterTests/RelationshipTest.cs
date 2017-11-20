@@ -44,10 +44,10 @@ namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
             Separator = separator;
             Direction = direction;
 
-            Rebuild();
+            //Rebuild();
         }
 
-        public RelationshipTest Rebuild()
+        private RelationshipTest BuildObjects()
         {
             // test using api configuration
             Api = FilterWithApi(Type, 
@@ -72,6 +72,8 @@ namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
 
         internal void Run(bool expectsResults, bool shouldReturnAll = false, int exactCount = -1)
         {
+            BuildObjects();
+
             var x = CountApi + CountConfig; // access the streams to ensure it's logged
             Trace.Write("Log after accessing DSs\n\n" + Log.Dump());
 

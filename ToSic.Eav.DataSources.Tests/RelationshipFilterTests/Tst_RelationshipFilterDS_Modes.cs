@@ -7,7 +7,6 @@ namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
     public partial class Tst_RelationshipFilterDS: RelationshipTestBase
     {
         // More tests
-        // split and don't split!
         // 
 
         // for contains-many tests
@@ -19,8 +18,6 @@ namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
         private const int CompsWithCat12 = 5;
         private const int CompsWithCat123 = 4;
         private const int CompsWithCatComma = 4;
-        
-        // todo
         private const int CompsWithCat12Comma = 3;
         private const int CompsWithCat123Comma = 2;
 
@@ -97,10 +94,11 @@ namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
         public void DS_RelFil_Comp_Cat_NotContainsAll()
         {
             var original = BuildContainsAll();
+            original.Run(true);
 
             var not = BuildContainsAll();
             not.CompareMode = "not-" + not.CompareMode;
-            not.Rebuild().Run(true);
+            not.Run(true);
 
             Assert.IsTrue(original.CountAll == original.CountApi + not.CountApi, 
                 "not and default should together have the total failed "

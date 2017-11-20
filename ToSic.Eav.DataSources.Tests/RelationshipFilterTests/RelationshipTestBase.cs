@@ -72,13 +72,13 @@ namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
         {
             var settings = new Dictionary<string, object> { { "Title", "..." } };
 
-            void MaybeAddValue(string key, string value) { if (value != null) settings.Add(key, value); }
-            MaybeAddValue(RelationshipFilter.SettingsRelationship, relationship);
-            MaybeAddValue(RelationshipFilter.SettingsFilter, filter);
-            MaybeAddValue(RelationshipFilter.SettingsRelAttribute, relAttrib);
-            MaybeAddValue(RelationshipFilter.SettingsCompareMode, compareMode);
-            MaybeAddValue(RelationshipFilter.SettingsSeparator, separator);
-            MaybeAddValue(RelationshipFilter.SettingsDirection, direction);
+            void MaybeAddValue(RelationshipFilter.Settings key, string value) { if (value != null) settings.Add(key.ToString(), value); }
+            MaybeAddValue(RelationshipFilter.Settings.Relationship, relationship);
+            MaybeAddValue(RelationshipFilter.Settings.Filter, filter);
+            MaybeAddValue(RelationshipFilter.Settings.AttributeOnRelationship, relAttrib);
+            MaybeAddValue(RelationshipFilter.Settings.Comparison, compareMode);
+            MaybeAddValue(RelationshipFilter.Settings.Separator, separator);
+            MaybeAddValue(RelationshipFilter.Settings.Direction, direction);
 
             var config = BuildConfigurationProvider("Settings", settings);
             return BuildRelationshipFilter(TestConfig.Zone, TestConfig.AppForRelationshipTests, Company, config);
