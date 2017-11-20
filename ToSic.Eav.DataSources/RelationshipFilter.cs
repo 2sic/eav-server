@@ -33,7 +33,7 @@ namespace ToSic.Eav.DataSources
             Filter,
             AttributeOnRelationship,
             Comparison,
-            Direction,
+            Direction, // important: not surfaced yet to the outside world as not implemented
             Separator
         }
 
@@ -46,7 +46,7 @@ namespace ToSic.Eav.DataSources
 		private const string ChildOrParentKey = "ChildOrParent";
 	    private const string DefaultDirection = "child";
 	    private const string DefaultSeparator = "ignore"; // by default, don't separate!
-		private readonly string[] _directionPossibleValues = { DefaultDirection, "parent"};
+		private readonly string[] _directionPossibleValues = { DefaultDirection };//, "parent"};
 		//private readonly string[] _compareModeValues = { "default", "contains" };
 		//private const string ParentTypeKey = "ParentType";
 		//private const string PassThroughOnEmptyFilterKey = "PassThroughOnEmptyFilter";
@@ -138,7 +138,7 @@ namespace ToSic.Eav.DataSources
 			Configuration.Add(SeparatorKey, $"[Settings:{Settings.Separator}||{DefaultSeparator}]");
 			Configuration.Add(ChildOrParentKey, $"[Settings:{Settings.Direction}||{DefaultDirection}]");
 
-            CacheRelevantConfigurations = new[] { RelationshipKey, FilterKey, CompareAttributeKey, CompareModeKey, ChildOrParentKey};
+            CacheRelevantConfigurations = new[] { RelationshipKey, FilterKey, CompareAttributeKey, CompareModeKey, SeparatorKey, ChildOrParentKey};
         }
 
         private IEnumerable<IEntity> GetEntitiesOrFallback()
@@ -190,13 +190,6 @@ namespace ToSic.Eav.DataSources
 		            : lowAttribName == Constants.EntityFieldTitle
 		                ? CompareType.Title
 		                : CompareType.Any;
-            //if (string.IsNullOrWhiteSpace(_filter) && PassThroughOnEmptyFilter)
-            //	return originals;
-
-            // only get those, having a relationship on this name
-		    var query = originals;
-            // by default, skip all which don't have anything, but not if we're finding the "not" list
-		    //if (!useNot) query = query.Where(e => e.Relationships.Children[relationship].Any());
 
             // pick the correct value-comparison
 		    var comparisonOnRelatedItem = compType == CompareType.Auto
@@ -219,16 +212,10 @@ namespace ToSic.Eav.DataSources
 		        : modeCompare;
 
 
-		    if (ChildOrParent == "child")
-		        query = query.Where(finalCompare);
-		    else
-		    {
+		    if (ChildOrParent != "child")
 		        throw new NotImplementedException("using 'parent' not supported yet, use 'child' to filter'");
-		        //results = (from e in results
-		        //		   where e.Value.Relationships.AllParents.Any(x => getStringToCompare(x, compAttr, specAttr) == _filter)
-		        //		   select e);
-		    }
-		    var results = query.ToList();
+
+		    var results = originals.Where(finalCompare).ToList();
 
 		    Log.Add($"found in relationship-filter {results.Count}");
 			return results;

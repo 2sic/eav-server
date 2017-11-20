@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
         protected const string CompCat = "Categories";
         protected const string CatWeb = "Web";
         protected const string CatGreen = "Green";
-
+        protected const string CompInexistingProp = "InexistingProperty";
 
 
         protected const string DefSeparator = ",";
