@@ -46,13 +46,13 @@ namespace ToSic.Eav.ImportExport.Serializers
             Log.LinkTo(parentLog);
         }
 
-        protected IEntity Lookup(int entityId) => App.List.One(entityId);
+        protected IEntity Lookup(int entityId) => App.List.FindRepoId(entityId); // should use repo, as we're often serializing unpublished entities, and then the ID is the Repo-ID
 
         public abstract string Serialize(IEntity entity);
 
         public string Serialize(int entityId) => Serialize(Lookup(entityId));
 
-        public Dictionary<int, string> Serialize(List<int> entities) => entities.ToDictionary(x => x, x => Serialize(Lookup(x)));
+        public Dictionary<int, string> Serialize(List<int> entities) => entities.ToDictionary(x => x, Serialize);
 
         public Dictionary<int, string> Serialize(List<IEntity> entities) => entities.ToDictionary(e => e.EntityId, Serialize);
 

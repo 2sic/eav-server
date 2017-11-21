@@ -123,10 +123,8 @@
     <Compile Include="ImportExport\Refactoring\XmlExport_Test.cs" />
     <Compile Include="ImportExport\Refactoring\XmlImport_Test.cs" />
     <Compile Include="InitializeTests.cs" />
-    <Compile Include="Tokens\TokenReplace_Test.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ValueProvider\DataTargetValueProvider_Test.cs" />
-    <Compile Include="ValueProvider\ValueCollectionProvider_Test.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -171,6 +169,10 @@
       <Project>{2bba13d2-f6d2-443b-b7c8-8f4c31432c03}</Project>
       <Name>ToSic.Eav.Repository.Efc</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ToSic.Eav.TokenEngine.Tests\ToSic.Eav.TokenEngine.Tests.csproj">
+      <Project>{ef7808df-f67f-4e0a-a851-21358773dd25}</Project>
+      <Name>ToSic.Eav.TokenEngine.Tests</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ToSic.Eav.Tokens\ToSic.Eav.TokenEngine.csproj">
       <Project>{2a81f269-8cca-4afd-a85f-82b1c2343965}</Project>
       <Name>ToSic.Eav.TokenEngine</Name>
@@ -184,6 +186,7 @@
       <Name>ToSic.Testing.Shared</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

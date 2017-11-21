@@ -17,7 +17,7 @@ namespace ToSic.Eav.Apps.Parts
 
         public IEnumerable<Eav.Interfaces.IEntity> All => App.Cache.List;
 
-        public Eav.Interfaces.IEntity Get(int entityId) => App.Cache.List.One(entityId);
+        public Eav.Interfaces.IEntity Get(int entityId) => App.Cache.List.FindRepoId(entityId);
 
         public Eav.Interfaces.IEntity Get(Guid entityGuid) => App.Cache.List.One(entityGuid);// .FirstOrDefault(e => e.EntityGuid == entityGuid);
 

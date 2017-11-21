@@ -25,7 +25,7 @@ namespace ToSic.Eav
 		/// <param name="appId">AppId for this DataSource</param>
 		/// <param name="valueCollectionProvider">Configuration Provider used for all DataSources</param>
 		/// <returns>A single DataSource that has attached </returns>
-		private static IDataSource AssembleDataSourceReverse(IList<string> chain, int zoneId, int appId, ValueCollectionProvider valueCollectionProvider)
+		private static IDataSource AssembleDataSourceReverse(IList<string> chain, int zoneId, int appId, IValueCollectionProvider valueCollectionProvider)
 		{
 			var newSource = GetDataSource(chain[0], zoneId, appId, valueCollectionProvider: valueCollectionProvider);
 			if (chain.Count > 1)
@@ -114,7 +114,7 @@ namespace ToSic.Eav
 	    /// <param name="configProvider"></param>
 	    /// <param name="parentLog"></param>
 	    /// <returns>A single DataSource</returns>
-	    public static IDataSource GetInitialDataSource(int? zoneId = null, int? appId = null, bool showDrafts = false, ValueCollectionProvider configProvider = null, Log parentLog = null)
+	    public static IDataSource GetInitialDataSource(int? zoneId = null, int? appId = null, bool showDrafts = false, IValueCollectionProvider configProvider = null, Log parentLog = null)
 	    {
             parentLog?.AddChild(LogKey, $"get init #{zoneId}/{appId}, draft:{showDrafts}, config:{configProvider != null}");
 	        var zoneAppId = GetZoneAppId(zoneId, appId);

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.Caching;
 using ToSic.Eav.App;
@@ -47,11 +46,6 @@ namespace ToSic.Eav.DataSources.Caches
 		public abstract Dictionary<int, Zone> ZoneApps { get; protected set; }
 
 		/// <summary>
-		/// Gets or sets the Dictionary of all AssignmentObjectTypes
-		/// </summary>
-		public abstract ImmutableDictionary<int, string> AssignmentObjectTypes { get; protected set; }
-
-		/// <summary>
 		/// Gets the KeySchema used to store values for a specific Zone and App. Must contain {0} for ZoneId and {1} for AppId
 		/// </summary>
 		public abstract string CacheKeySchema { get; }
@@ -81,11 +75,9 @@ namespace ToSic.Eav.DataSources.Caches
 		/// </summary>
 		protected AppDataPackage EnsureCache()
 		{
-            if (ZoneApps == null || AssignmentObjectTypes == null)
+            if (ZoneApps == null)
             {
                 ZoneApps = Backend.GetAllZones();
-
-                AssignmentObjectTypes = Factory.Resolve<IGlobalMetadataProvider>().TargetTypes;
             }
 
             if (ZoneId == 0 || AppId == 0)

@@ -5,11 +5,11 @@ using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.App
 {
-	/// <inheritdoc />
-	/// <summary>
-	/// Cache Object for a specific App
-	/// </summary>
-	public partial class AppDataPackage: IMetadataProvider
+    /// <inheritdoc cref="IMetadataProvider" />
+    /// <summary>
+    /// Cache Object for a specific App
+    /// </summary>
+    public partial class AppDataPackage: IMetadataProvider
 	{
 
         #region Metadata Properties
@@ -28,6 +28,14 @@ namespace ToSic.Eav.App
 		/// </summary>
 		private IDictionary<int, Dictionary<string, IEnumerable<IEntity>>> MetadataForString { get; }
     
+        /// <summary>
+        /// Get metadata-items of something
+        /// </summary>
+        /// <typeparam name="TMetadataKey">Type - guid, int or string</typeparam>
+        /// <param name="targetType">target-type is a number from 1-4 which says if it's metadata of an entity, of an attribute, etc.</param>
+        /// <param name="key">the (int/guid/string) key we're looking for</param>
+        /// <param name="contentTypeName">an optional type name, if we only want the items of a specific type</param>
+        /// <returns></returns>
 	    public IEnumerable<IEntity> GetMetadata<TMetadataKey>(int targetType, TMetadataKey key, string contentTypeName = null)
 	    {
 	        if (typeof(TMetadataKey) == typeof(Guid))
@@ -44,12 +52,14 @@ namespace ToSic.Eav.App
             }
 	    }
 
-	    private static IEnumerable<IEntity> Lookup<T>(IDictionary<int, Dictionary<T, IEnumerable<IEntity>>> list, int targetType, T key, string contentTypeName = null)
+	    private static IEnumerable<IEntity> Lookup<T>(IDictionary<int, Dictionary<T, IEnumerable<IEntity>>> list, int targetType, T key, string contentTypeName)
         {
             // ReSharper disable once CollectionNeverUpdated.Local
             if (list.TryGetValue(targetType, out Dictionary<T, IEnumerable<IEntity>> keyDict))
                 if (keyDict.TryGetValue(key, out IEnumerable<IEntity> entities))
-                    return entities.Where(e => contentTypeName == null || e.Type.StaticName == contentTypeName);
+                    return contentTypeName == null
+                        ? entities
+                        : entities.Where(e => e.Type.StaticName == contentTypeName);
             return new List<IEntity>();
         }
         #endregion

@@ -21,16 +21,48 @@ namespace ToSic.Eav.DataSources
         #region Configuration-properties
 	    public override string LogId => "DS.RelatF";
 
+        /// <summary>
+        /// Settings-keys as they are used in the entity which provides settings
+        /// </summary>
+        /// <remarks>
+        /// Don't change these terms, the spelling etc. must stay exactly like this
+        /// </remarks>
+        public enum Settings
+        {
+            Relationship,
+            Filter,
+            AttributeOnRelationship,
+            Comparison,
+            Direction, // important: not surfaced yet to the outside world as not implemented
+            Separator
+        }
+
+        private const string PrefixNot = "not-";
         private const string RelationshipKey = "Relationship";
 		private const string FilterKey = "Filter";
 		private const string CompareAttributeKey = "CompareAttribute";
 		private const string CompareModeKey = "Mode";
+	    private const string SeparatorKey = "Separator";
 		private const string ChildOrParentKey = "ChildOrParent";
-		private readonly string[] _childOrParentPossibleValues = { "child" };//, "parent"};
-		private readonly string[] _compareModeValues = { "default", "contains" };
+	    private const string DefaultDirection = "child";
+	    private const string DefaultSeparator = "ignore"; // by default, don't separate!
+		private readonly string[] _directionPossibleValues = { DefaultDirection };//, "parent"};
+		//private readonly string[] _compareModeValues = { "default", "contains" };
 		//private const string ParentTypeKey = "ParentType";
 		//private const string PassThroughOnEmptyFilterKey = "PassThroughOnEmptyFilter";
 
+
+        // ReSharper disable InconsistentNaming
+        // this must all be in lower-case, to make further case-changes irrelevant
+        public enum CompareModes
+        {
+            contains, // default case - must contain all provided filter-values
+            containsany, // must contain any of the provided filter-values
+            any, // must contain anything (not empty)
+            first, // first item must match provided filter-values
+            count
+        }
+        // ReSharper restore InconsistentNaming
 
 	    private enum CompareType { Any, Id, Title, Auto }
 
@@ -59,13 +91,6 @@ namespace ToSic.Eav.DataSources
 		    set => Configuration[CompareAttributeKey] = value;
 		}
 
-		//2dm maybe a feature for the future, not sure
-		//public string ParentType
-		//{
-		//	get { return Configuration[ParentTypeKey]; }
-		//	set { Configuration[ParentTypeKey] = value; }
-		//}
-
 		/// <summary>
 		/// Comparison mode.
 		/// "default" and "contains" will check if such a relationship is available
@@ -74,14 +99,12 @@ namespace ToSic.Eav.DataSources
 		public string CompareMode
 		{
 			get => Configuration[CompareModeKey];
-		    set
-			{
-				if (_compareModeValues.Contains(value.ToLower()))
-					Configuration[CompareModeKey] = value.ToLower();
-				else
-					throw new Exception("Value '" + value + "' not allowed for CompareMode");
-
-			}
+		    set => Configuration[CompareModeKey] = value.ToLower();
+		}
+		public string Separator
+		{
+			get => Configuration[SeparatorKey];
+		    set => Configuration[SeparatorKey] = value.ToLower();
 		}
 
 		public string ChildOrParent
@@ -89,7 +112,7 @@ namespace ToSic.Eav.DataSources
 			get => Configuration[ChildOrParentKey];
 		    set
 			{
-				if (_childOrParentPossibleValues.Contains(value.ToLower()))
+				if (_directionPossibleValues.Contains(value.ToLower()))
 					Configuration[ChildOrParentKey] = value.ToLower();
 				else
 					throw new Exception("Value '" + value + "'not allowed for ChildOrParent");
@@ -108,15 +131,14 @@ namespace ToSic.Eav.DataSources
         public RelationshipFilter()
 		{
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntitiesOrFallback));
-			Configuration.Add(RelationshipKey, "[Settings:Relationship]");
-			Configuration.Add(FilterKey, "[Settings:Filter]");
-		    Configuration.Add(CompareAttributeKey, "[Settings:RelationshipAttribute||" + Constants.EntityFieldTitle + "]");
-			Configuration.Add(CompareModeKey, "[Settings:Comparison||" + "default" + "]");
-			Configuration.Add(ChildOrParentKey, "child");
-			//Configuration.Add(ParentTypeKey, "");
-            //Configuration.Add(PassThroughOnEmptyFilterKey, "[Settings:PassThroughOnEmptyFilter||false]");
+			Configuration.Add(RelationshipKey, $"[Settings:{Settings.Relationship}]");
+			Configuration.Add(FilterKey, $"[Settings:{Settings.Filter}]");
+		    Configuration.Add(CompareAttributeKey, $"[Settings:{Settings.AttributeOnRelationship}||{Constants.EntityFieldTitle}]");
+			Configuration.Add(CompareModeKey, $"[Settings:{Settings.Comparison}||{CompareModes.contains}]");
+			Configuration.Add(SeparatorKey, $"[Settings:{Settings.Separator}||{DefaultSeparator}]");
+			Configuration.Add(ChildOrParentKey, $"[Settings:{Settings.Direction}||{DefaultDirection}]");
 
-            CacheRelevantConfigurations = new[] { RelationshipKey, FilterKey, CompareAttributeKey, CompareModeKey, ChildOrParentKey};
+            CacheRelevantConfigurations = new[] { RelationshipKey, FilterKey, CompareAttributeKey, CompareModeKey, SeparatorKey, ChildOrParentKey};
         }
 
         private IEnumerable<IEntity> GetEntitiesOrFallback()
@@ -140,12 +162,16 @@ namespace ToSic.Eav.DataSources
 			var relationship = Relationship;
 			var compAttr = CompareAttribute;
 			var filter = Filter.ToLower(); // new: make case insensitive
-			var mode = CompareMode.ToLower();
-			if (mode == "contains") mode = "default";
-			if (mode != "default")
+			var strMode = CompareMode.ToLower();
+		    var useNot = strMode.StartsWith(PrefixNot);
+		    if (useNot) strMode = strMode.Substring(PrefixNot.Length);
+
+			if (strMode == "default") strMode = "contains"; // 2017-11-18 old default was "default" - this is still in for compatibility
+            if(!Enum.TryParse<CompareModes>(strMode, true, out var mode))
 				throw new Exception("Can't use CompareMode other than 'default'");
+
 			var childParent = ChildOrParent;
-			if (!_childOrParentPossibleValues.Contains(childParent)) // != "child")
+			if (!_directionPossibleValues.Contains(childParent)) // != "child")
 				throw new Exception("can only find related children at the moment, must set ChildOrParent to 'child'");
 			//var lang = Languages.ToLower();
 			//if (lang != "default")
@@ -153,75 +179,156 @@ namespace ToSic.Eav.DataSources
 			//if (lang == "default") lang = ""; // no language is automatically the default language
 
 		    var lowAttribName = compAttr.ToLower();
-		    Log.Add($"get related on attr:{compAttr}, filter:{filter}, mode:{mode}, child/parent:{childParent}");
-            //var specAttr = lowAttribName == Constants.EntityFieldAutoSelect ? 'a' : lowAttribName == Constants.EntityFieldId ? 'i' : lowAttribName == Constants.EntityFieldTitle ? 't' : 'x';
+		    Log.Add($"get related on relationship:'{relationship}', filter:'{filter}', rel-field:'{compAttr}' mode:'{mode}', child/parent:'{childParent}'");
 
 			var originals = In[Constants.DefaultStreamName].List;
 
-            var compType = lowAttribName == Constants.EntityFieldAutoSelect ? CompareType.Auto : lowAttribName == Constants.EntityFieldId ? CompareType.Id : lowAttribName == Constants.EntityFieldTitle ? CompareType.Title : CompareType.Any;
+		    var compType = lowAttribName == Constants.EntityFieldAutoSelect
+		        ? CompareType.Auto
+		        : lowAttribName == Constants.EntityFieldId
+		            ? CompareType.Id
+		            : lowAttribName == Constants.EntityFieldTitle
+		                ? CompareType.Title
+		                : CompareType.Any;
 
-            //if (string.IsNullOrWhiteSpace(_filter) && PassThroughOnEmptyFilter)
-            //	return originals;
+            // pick the correct value-comparison
+		    var comparisonOnRelatedItem = compType == CompareType.Auto
+		        ? CompareTwo(GetFieldValue(CompareType.Id, null), GetFieldValue(CompareType.Title, null))
+		        : CompareOne(GetFieldValue(compType, compAttr));
 
-            // only get those, having a relationship on this name
-            var results = // (ChildOrParent == "child") ?
-				from e in originals
-				where e.Relationships.Children[relationship].Any()
-				select e;
-			//: (from e in originals
-			//	where e.Value.Relationships.AllParents.Any(p => p.Type.Name == ParentType)
-			//	select e);
 
-			if (ChildOrParent == "child")
-			{
-			    if (compType == CompareType.Auto)
-			        results = results
-			            .Where(e => e.Relationships.Children[relationship]
-			                .Any(x => getStringToCompare(x, compAttr, CompareType.Id)?.ToLower() == filter
-			                          || getStringToCompare(x, compAttr, CompareType.Title)?.ToLower() == filter));
-			    else
-			        results = results.Where(e =>
-			            e.Relationships.Children[relationship]
-			                .Any(x => getStringToCompare(x, compAttr, compType)?.ToLower() == filter));
-			}
-			else
-			{
-				throw new NotImplementedException("using 'parent' not supported yet, use 'child' to filter'");
-				//results = (from e in results
-				//		   where e.Value.Relationships.AllParents.Any(x => getStringToCompare(x, compAttr, specAttr) == _filter)
-				//		   select e);
-			}
+		    var filterList = Separator == DefaultSeparator
+		        ? new[] {filter}
+		        : filter.Split(new[] {Separator}, StringSplitOptions.RemoveEmptyEntries);
 
+
+		    Log.Add($"will compare mode:{mode} on:{compType} '{lowAttribName}', values to check ({filterList.Length}):'{filter}'");
+
+            // pick the correct list-comparison - atm 2 options
+		    var modeCompare = PickMode(mode, relationship, comparisonOnRelatedItem, filterList);
+
+		    var finalCompare = useNot
+		        ? e => !modeCompare(e)
+		        : modeCompare;
+
+
+		    if (ChildOrParent != "child")
+		        throw new NotImplementedException("using 'parent' not supported yet, use 'child' to filter'");
+
+		    var results = originals.Where(finalCompare).ToList();
+
+		    Log.Add($"found in relationship-filter {results.Count}");
 			return results;
 		}
 
-		//private string getStringToCompare(IEntity e, string a, char special)
+
+        /// <summary>
+        /// Generate the condition (mode) which will be used, like contain-any, has-any, etc.
+        /// </summary>
+        /// <param name="modeToPick">mode-type</param>
+        /// <param name="relationship">relationship on which the compare will operate</param>
+        /// <param name="internalCompare">internal compare method</param>
+        /// <param name="valuesToFind">value-list to compare to</param>
+        /// <returns></returns>
+	    private Func<IEntity, bool> PickMode(CompareModes modeToPick, string relationship, Func<IEntity, string, bool> internalCompare, string[] valuesToFind)
+	    {
+	        switch (modeToPick)
+	        {
+	            case CompareModes.contains:
+	                Log.Add("will use contains one / all");
+	                if (valuesToFind.Length > 1)
+	                    return entity =>
+	                    {
+	                        var rels = entity.Relationships.Children[relationship];
+	                        return valuesToFind.All(v => rels.Any(r => internalCompare(r, v)));
+	                    };
+	                else
+	                    return entity => entity.Relationships.Children[relationship]
+	                        .Any(r => internalCompare(r, valuesToFind.FirstOrDefault() ?? ""));
+	            case CompareModes.containsany: // Condition that of the needed relationships, at least one must exist
+                    Log.Add("will use contains any");
+                    return entity =>
+	                {
+	                    var rels = entity.Relationships.Children[relationship];
+	                    return valuesToFind.Any(v => rels.Any(r => internalCompare(r, v)));
+	                };
+	            case CompareModes.any:
+	                Log.Add("will use has-any");
+	                return entity => entity.Relationships.Children[relationship].Any();
+                case CompareModes.first: 
+                    // Condition that of the needed relationships, the first must be what we want
+                    Log.Add("will use first is");
+                    return entity =>
+                    {
+                        var first = entity.Relationships.Children[relationship].FirstOrDefault();
+                        return first != null && valuesToFind.Any(v => internalCompare(first, v));
+                    };
+	            case CompareModes.count:
+	                Log.Add("will use count");
+	                if(int.TryParse(valuesToFind.FirstOrDefault() ?? "0", out int count))
+                        return entity => entity.Relationships.Children[relationship].Count() == count;
+
+	                return entity => false;
+
+                default:
+	                throw new ArgumentOutOfRangeException(nameof(modeToPick), modeToPick, null);
+	        }
+	    }
+	    
+
+
+	    private static Func<IEntity, string, bool> CompareTwo(Func<IEntity, string> getId, Func<IEntity, string> getTitle) 
+            => (entity, value) => getId(entity) == value || getTitle(entity) == value;
+
+	    private static Func<IEntity, string, bool> CompareOne(Func<IEntity, string> getValue) 
+            => (entity, value) => getValue(entity) == value;
+
+
+	    private Func<IEntity, string> GetFieldValue(CompareType type, string fieldName)
+	    {
+	        switch (type)
+	        {
+	            case CompareType.Any:
+	                Log.Add($"will compare on a normal attribute:{fieldName}");
+	                return e =>
+	                {
+	                    try
+	                    {
+	                        return e?[fieldName]?[0]?.ToString().ToLower();
+	                    }
+	                    catch
+	                    {
+	                        throw new Exception("Error while trying to filter for related entities. " +
+	                            "Probably comparing an attribute on the related entity that doesn\'t exist. " +
+	                            $"Was trying to compare the attribute \'{fieldName}\'");
+	                    }
+	                };
+                case CompareType.Id:
+                    Log.Add("will compare on ID");
+	                return e => e?.EntityId.ToString();
+                case CompareType.Title:
+                    Log.Add("will compare no title");
+                    return e => e?.Title?[0]?.ToString().ToLower();
+	            // ReSharper disable once RedundantCaseLabel
+                case CompareType.Auto:
+	            default:
+	                throw new ArgumentOutOfRangeException(nameof(type), type, null);
+	        }
+	    }
+
+  //      private string getStringToCompare(IEntity e, string a, CompareType special)
 		//{
 		//	try
 		//	{
 		//		// get either the special id or title, if title or normal field, then use language [0] = default
 		//	    if (e == null) return null;
-		//		return special == 'i' ? e.EntityId.ToString() : (special == 't' ? e.Title : e[a])?[0]?.ToString();
-		//	}
+		//		return special == CompareType.Id ? e.EntityId.ToString() : (special == CompareType.Title ? e.Title : e[a])?[0]?.ToString();
+		//}
 		//	catch
 		//	{
 		//		throw new Exception(
 		//		    $"Error while trying to filter for related entities. Probably comparing an attribute on the related entity that doesn\'t exist. Was trying to compare the attribute \'{a}\'");
 		//	}
 		//}
-		private string getStringToCompare(IEntity e, string a, CompareType special)
-		{
-			try
-			{
-				// get either the special id or title, if title or normal field, then use language [0] = default
-			    if (e == null) return null;
-				return special == CompareType.Id ? e.EntityId.ToString() : (special == CompareType.Title ? e.Title : e[a])?[0]?.ToString();
-			}
-			catch
-			{
-				throw new Exception(
-				    $"Error while trying to filter for related entities. Probably comparing an attribute on the related entity that doesn\'t exist. Was trying to compare the attribute \'{a}\'");
-			}
-		}
 	}
 }

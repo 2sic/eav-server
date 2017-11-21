@@ -26,14 +26,6 @@ namespace ToSic.Eav.DataSources.Caches
         }
         private static Dictionary<int, Zone> _zoneApps;
 
-        public override ImmutableDictionary<int, string> AssignmentObjectTypes
-        {
-            get => _assignmentObjectTypes;
-            protected set => _assignmentObjectTypes = value;
-        }
-        private static ImmutableDictionary<int, string> _assignmentObjectTypes;
-
-
 
         public override string CacheKeySchema => "Z{0}A{1}";
 

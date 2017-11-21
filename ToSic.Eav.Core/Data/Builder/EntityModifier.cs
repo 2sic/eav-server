@@ -25,7 +25,7 @@ namespace ToSic.Eav.Data.Builder
         public static int? GetPublishedIdForSaving(this Entity entity) => entity.PublishedEntity?.EntityId ?? entity.PublishedEntityId;
         public static int? ChangeIdForSaving(this IEntity entity, int newId) => ((EntityLight) entity).EntityId = newId;
 
-        public static int? VersionIncrease(this Entity entity) => entity.Version++;
+        public static int? SetVersion(this Entity entity, int newVersion) => entity.Version = newVersion;
 
         public static void SetPublishedIdForSaving(this Entity entity, int? publishedId) => entity.PublishedEntityId = publishedId;
 

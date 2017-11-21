@@ -24,11 +24,11 @@ namespace ToSic.Testing.Shared
             Factory.Debug = true;
         }
 
-        public static void ConfigureEfcDi() => ConfigureEfcDi(sc => { });
+        public static void ConfigureEfcDi(string optionalConnection = null) => ConfigureEfcDi(sc => { }, optionalConnection);
 
-        public static void ConfigureEfcDi(Factory.ServiceConfigurator configure)
+        public static void ConfigureEfcDi(Factory.ServiceConfigurator configure, string optionalConnection = null)
         {
-            Configuration.SetConnectionString(TestConstants.ConStr);
+            Configuration.SetConnectionString(optionalConnection ?? TestConstants.ConStr);
             Factory.ActivateNetCoreDi(sc =>
             {
                 sc.AddTransient<IEavValueConverter, MockValueConverter>();

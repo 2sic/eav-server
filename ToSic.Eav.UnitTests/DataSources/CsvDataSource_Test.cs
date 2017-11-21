@@ -2,7 +2,8 @@
 using System;
 using System.Linq;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.UnitTests.ValueProvider;
+using ToSic.Eav.TokenEngine.Tests.TestData;
+using ToSic.Eav.TokenEngine.Tests.ValueProvider;
 
 namespace ToSic.Eav.UnitTests.DataSources
 {
@@ -123,7 +124,7 @@ namespace ToSic.Eav.UnitTests.DataSources
                 ContentType = contentType,
                 IdColumnName = idColumnName,
                 TitleColumnName = titleColumnName,
-                ConfigurationProvider = new ValueCollectionProvider_Test().ValueCollection()
+                ConfigurationProvider = DemoConfigs.AppSetAndRes()
             };
             return source;
         }

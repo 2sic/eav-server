@@ -24,7 +24,7 @@ namespace ToSic.Eav.DataSources.Pipeline
 			IEntity pipelineEntity;
 			try
 			{
-				pipelineEntity = entities.One(entityId);
+				pipelineEntity = entities.FindRepoId(entityId); // all in-bound give us the cache, so entities used to be a dictionary of repo-ids
                 if (pipelineEntity.Type.StaticName != Constants.DataPipelineStaticName)
                     throw new ArgumentException("Entity is not an DataPipeline Entity", nameof(entityId));
 			}

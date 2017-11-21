@@ -4,6 +4,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Data;
 using System.Linq;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.TokenEngine.Tests.TestData;
+using ToSic.Eav.TokenEngine.Tests.ValueProvider;
 
 namespace ToSic.Eav.UnitTests.DataSources
 {
@@ -82,7 +84,7 @@ namespace ToSic.Eav.UnitTests.DataSources
 
             var source = new DataTableDataSource(dataTable, "Person", titleField: "FullName", modifiedField: "InternalModified")
             {
-                ConfigurationProvider = new ValueProvider.ValueCollectionProvider_Test().ValueCollection()
+                ConfigurationProvider = DemoConfigs.AppSetAndRes()
             };
 
             // now enumerate all, to be sure that the time counted for DS creation isn't part of the tracked test-time
@@ -146,7 +148,7 @@ namespace ToSic.Eav.UnitTests.DataSources
 
             var source = new DataTableDataSource(dataTable, "Person", modifiedField: "InternalModified")
             {
-                ConfigurationProvider = new ValueProvider.ValueCollectionProvider_Test().ValueCollection()
+                ConfigurationProvider = DemoConfigs.AppSetAndRes()
             };
 
             // now enumerate all, to be sure that the time counted for DS creation isn't part of the tracked test-time

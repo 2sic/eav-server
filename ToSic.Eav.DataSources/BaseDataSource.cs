@@ -117,6 +117,10 @@ namespace ToSic.Eav.DataSources
 
         public IEnumerable<IEntity> List => Out[Constants.DefaultStreamName].List;
 
+        [Obsolete("deprecated since 2sxc 9.8 / eav 4.5 - use List instead")]
+        public IEnumerable<IEntity> LightList => List;
+
+
         public IValueCollectionProvider ConfigurationProvider { get; protected internal set; }
         public IDictionary<string, string> Configuration { get; internal set; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         protected internal bool _configurationIsLoaded;

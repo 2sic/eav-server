@@ -5,6 +5,7 @@ using ToSic.Eav.Tokens;
 
 namespace ToSic.Eav.ValueProvider
 {
+	/// <inheritdoc />
 	/// <summary>
 	/// Provides Configuration for a configurable DataSource
 	/// </summary>
@@ -27,22 +28,24 @@ namespace ToSic.Eav.ValueProvider
 			_reusableTokenReplace = new TokenReplace(Sources);
 		}
 
-        /// <summary>
-        /// This will go through a dictionary of strings (usually configuration values) and replace all tokens in that string
-        /// with whatever the token-resolver delivers. It's usually needed to initialize a DataSource. 
-        /// </summary>
-        /// <param name="configList">Dictionary of configuration strings</param>
-        /// <param name="instanceSpecificPropertyAccesses">Instance specific additional value-dictionaries</param>
-		public void LoadConfiguration(IDictionary<string, string> configList, Dictionary<string, IValueProvider> instanceSpecificPropertyAccesses = null, int repeat = 2)
+	    /// <inheritdoc />
+	    /// <summary>
+	    /// This will go through a dictionary of strings (usually configuration values) and replace all tokens in that string
+	    /// with whatever the token-resolver delivers. It's usually needed to initialize a DataSource. 
+	    /// </summary>
+	    /// <param name="configList">Dictionary of configuration strings</param>
+	    /// <param name="instanceSpecificPropertyAccesses">Instance specific additional value-dictionaries</param>
+	    /// <param name="repeat">max repeater in case of recursions</param>
+	    public void LoadConfiguration(IDictionary<string, string> configList, Dictionary<string, IValueProvider> instanceSpecificPropertyAccesses = null, int repeat = 2)
 		{
             #region if there are instance-specific additional Property-Access objects, add them to the sources-list
             // note: it's important to create a one-time use list of sources if instance-specific sources are needed, to never modify the "global" list.
-            var useAdditionalPA = (instanceSpecificPropertyAccesses != null); // not null, so it has instance specific stuff
-		    if (useAdditionalPA)
+            var useAdditionalPa = instanceSpecificPropertyAccesses != null; // not null, so it has instance specific stuff
+		    if (useAdditionalPa)
 		        foreach (var pa in Sources)
 		            if (!instanceSpecificPropertyAccesses.ContainsKey(pa.Key))
 		                instanceSpecificPropertyAccesses.Add(pa.Key.ToLower(), pa.Value);
-		    var instanceTokenReplace = useAdditionalPA ? new TokenReplace(instanceSpecificPropertyAccesses) : _reusableTokenReplace;
+		    var instanceTokenReplace = useAdditionalPa ? new TokenReplace(instanceSpecificPropertyAccesses) : _reusableTokenReplace;
             #endregion
 
             #region Loop through all config-items and token-replace them
@@ -57,9 +60,12 @@ namespace ToSic.Eav.ValueProvider
             #endregion
         }
 
-	    public string Replace(string sourceText)
-	    {
-	        return _reusableTokenReplace.ReplaceTokens(sourceText, 0);
-	    }
+	    public string Replace(string sourceText) => _reusableTokenReplace.ReplaceTokens(sourceText);
+
+	    /// <summary>
+        /// Add a value provider to the source list
+        /// </summary>
+        /// <param name="newSource"></param>
+	    public void Add(IValueProvider newSource) => Sources.Add(newSource.Name, newSource);
 	}
 }

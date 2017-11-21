@@ -131,6 +131,9 @@ namespace ToSic.Eav.DataSources
 	    }
         #endregion
 
+	    [Obsolete("deprecated since 2sxc 9.8 / eav 4.5 - use List instead")]
+	    public IEnumerable<IEntity> LightList => List;
+
 
         /// <inheritdoc />
         /// <summary>

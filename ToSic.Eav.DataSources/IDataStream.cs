@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
@@ -9,7 +10,10 @@ namespace ToSic.Eav.DataSources
 	public interface IDataStream
 	{
         IEnumerable<IEntity> List { get; }
-        
+
+        [Obsolete("deprecated since 2sxc 9.8 / eav 4.5 - use List instead")]
+	    IEnumerable<IEntity> LightList { get; }
+
         /// <summary>
 		/// DataSource providing the Entities
 		/// </summary>
