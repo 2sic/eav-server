@@ -95,7 +95,7 @@ namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
             // micro tests to ensure we have the right app etc.
             Assert.IsTrue(appDs.List.Count() > 20, "appDs.List.Count() > 20");
 
-            Assert.IsTrue(appDs.List.One(731)?.GetBestTitle() == "2sic", "expecting item 731");
+            Assert.IsTrue(appDs.List.FindRepoId(731)?.GetBestTitle() == "2sic", "expecting item 731");
 
             Assert.IsTrue(appDs.Out.ContainsKey(primaryType), $"app should contain stream of {primaryType}");
 

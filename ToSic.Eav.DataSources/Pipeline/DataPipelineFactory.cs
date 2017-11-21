@@ -51,7 +51,7 @@ namespace ToSic.Eav.DataSources.Pipeline
 			IEntity dataPipeline;
 			try
 			{
-				dataPipeline = appEntities.One(pipelineEntityId);// [pipelineEntityId];
+				dataPipeline = appEntities.FindRepoId(pipelineEntityId); // use findRepo, as it uses the cache, which gives the list of all items // [pipelineEntityId];
 			}
 			catch (KeyNotFoundException)
 			{
