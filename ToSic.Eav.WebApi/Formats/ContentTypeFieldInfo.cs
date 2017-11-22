@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.WebApi.Formats
@@ -13,7 +14,7 @@ namespace ToSic.Eav.WebApi.Formats
         public bool IsTitle { get; set; }
         public int AttributeId { get; set; }
         public Dictionary<string, Dictionary<string, object>> Metadata { get; set; }
-        public Dictionary<string, object> InputTypeConfig { get; set; }
+        public InputTypeInfo InputTypeConfig { get; set; }
 
         public string I18nKey { get; set; }
     }
