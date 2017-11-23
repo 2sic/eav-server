@@ -44,30 +44,29 @@ namespace ToSic.Eav.Data.Builder
 
                     case AttributeTypeEnum.Number:
                         decimal? newDec = null;
-                        if (!(value is string && String.IsNullOrEmpty(value as string))) // only try converting if it's not an empty string
-                        {
-                            try
+                        if(value != null) 
+                            if (!(value is string && String.IsNullOrEmpty(value as string))) // only try converting if it's not an empty string
                             {
-                                newDec = Convert.ToDecimal(value, CultureInfo.InvariantCulture);
-                            }
-                            catch
-                            {
-                                // ignored
-                            }
-
-                            // if it's still blank, try another method
-                            // note: 2dm added this 2017-08-29 after a few bugs, but it may not be necessary any more, as the bug was something else
-                            if (newDec == null)
                                 try
                                 {
-                                    if (Decimal.TryParse(stringValue, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal typedDecimal))
-                                        newDec = typedDecimal;
+                                    newDec = Convert.ToDecimal(value, CultureInfo.InvariantCulture);
                                 }
-                                catch
-                                {
-                                    // ignored
-                                }
-                        }
+                                catch { /* ignored */ }
+
+                                // if it's still blank, try another method
+                                // note: 2dm added this 2017-08-29 after a few bugs, but it may not be necessary any more, as the bug was something else
+                                // note: 2dm removed this 2017-11-23 as probably not in use and could cause side effects - if nothing pops up, remove in 2018
+                                //if (newDec == null)
+                                //    try
+                                //    {
+                                //        if (Decimal.TryParse(stringValue, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal typedDecimal))
+                                //            newDec = typedDecimal;
+                                //    }
+                                //    catch
+                                //    {
+                                //        // ignored
+                                //    }
+                            }
                         typedModel = new Value<decimal?>(newDec);
                         break;
 
