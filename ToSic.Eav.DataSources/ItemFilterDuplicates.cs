@@ -1,0 +1,68 @@
+﻿using System.Collections.Generic;
+using System.Linq;
+using ToSic.Eav.DataSources.Attributes;
+using ToSic.Eav.Interfaces;
+
+namespace ToSic.Eav.DataSources
+{
+	/// <inheritdoc />
+	/// <summary>
+	/// A DataSource that merges two streams
+	/// </summary>
+	[PipelineDesigner]
+	[DataSourceProperties(Type = DataSourceType.Logic, 
+        DynamicOut = false, 
+        EnableConfig = false,
+	    HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-ItemFilterDuplicates")]
+
+    public sealed class ItemFilterDuplicates: BaseDataSource
+	{
+        #region Configuration-properties (no config)
+	    public override string LogId => "DS.StMrge";
+
+        #endregion
+
+	    public const string DuplicatesStreamName = "Duplicates";
+
+
+        /// <inheritdoc />
+        /// <summary>
+        /// Constructs a new EntityIdFilter
+        /// </summary>
+		public ItemFilterDuplicates()
+		{
+			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetUnique));
+			Out.Add(DuplicatesStreamName, new DataStream(this, Constants.DefaultStreamName, GetDuplicates));
+
+		}
+
+        /// <summary>
+        /// Find and return the unique items in the list
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerable<IEntity> GetUnique()
+        {
+            if(!In.ContainsKey(Constants.DefaultStreamName) || In[Constants.DefaultStreamName].List == null)
+                return new List<IEntity>();
+
+            var list = In[Constants.DefaultStreamName].List;
+
+            return list.Distinct();
+        }
+
+
+        /// <summary>
+        /// Find and return only the duplicate items in the list
+        /// </summary>
+        /// <returns></returns>
+	    private IEnumerable<IEntity> GetDuplicates()
+	    {
+	        if (!In.ContainsKey(Constants.DefaultStreamName) || In[Constants.DefaultStreamName].List == null)
+	            return new List<IEntity>();
+
+	        var list = In[Constants.DefaultStreamName].List;
+
+	        return list.GroupBy(s => s).Where(g => g.Count() > 1).Select(g => g.Key);
+	    }
+    }
+}
