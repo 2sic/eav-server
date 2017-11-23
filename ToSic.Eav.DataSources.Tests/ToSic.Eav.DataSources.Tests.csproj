@@ -103,6 +103,7 @@
     <Compile Include="Shuffle\Shuffle.cs" />
     <Compile Include="DataSourceTests.cs" />
     <Compile Include="PassThrough\PassThrough_Cache.cs" />
+    <Compile Include="StreamMerge\Tst_StreamMerge.cs" />
     <Compile Include="TestConfig.cs" />
     <Compile Include="ValueFilter\ValueFilter_DateTime.cs" />
     <Compile Include="ValueFilter\ValueFilter_Numbers.cs" />

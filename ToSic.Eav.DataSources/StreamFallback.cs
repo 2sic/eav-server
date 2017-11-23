@@ -7,7 +7,7 @@ namespace ToSic.Eav.DataSources
 {
 	/// <inheritdoc />
 	/// <summary>
-	/// A DataSource that filters Entities by Ids
+	/// A DataSource that returns the first stream which has content
 	/// </summary>
 	[PipelineDesigner]
 	[DataSourceProperties(Type = DataSourceType.Logic, DynamicOut = false, 
