@@ -6,14 +6,15 @@ namespace ToSic.Eav.DataSources.Tests
     [TestClass]
     public class DataSourcTests
     {
-        public const int StandardInstalledDSCount = 22;
+        public const int StandardInstalledDSCount = 20;
 
         public const int StandardInstalledPipeLineDS =
              //16; // without sql
-             17; // this is with the sql
+             19; // this is with some json-types...
         public const string SqlFullName = "ToSic.Eav.DataSources.SqlDataSource";
         public const string DeferredFullName = "ToSic.Eav.DataSources.DeferredPipelineQuery";
 
+        [Ignore] // disabled for now, as the SqlDs doesn't have a code-version any more
         [TestMethod]
         public void AutoFindAllDataSources()
         {

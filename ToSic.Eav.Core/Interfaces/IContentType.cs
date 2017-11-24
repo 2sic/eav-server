@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.Enums;
+using ToSic.Eav.Repositories;
 
 namespace ToSic.Eav.Interfaces
 {
@@ -51,8 +51,8 @@ namespace ToSic.Eav.Interfaces
         IAttributeDefinition this[string fieldName] { get; }
 
 
-        //bool IsInstalledInPrimaryStorage { get; }
-        Repositories Source { get; }
+        RepositoryTypes RepositoryType { get; }
+        string RepositoryAddress { get; }
 
         bool IsDynamic { get; }
 
@@ -63,5 +63,6 @@ namespace ToSic.Eav.Interfaces
         /// The metadata is either already prepared, from the same app, or from a remote app
         /// </remarks>
         IMetadataOfItem Metadata { get; }
+
     }
 }

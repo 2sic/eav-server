@@ -72,6 +72,7 @@ namespace ToSic.Eav.WebApi
 	            Items = cache?.List.Count(i => i.Type == t) ?? -1, // only count if cache provided
 	            Fields = t.Attributes.Count,
 	            Metadata = ser.Prepare(metadata),
+                DebugInfoRepositoryAddress = t.RepositoryAddress,
                 I18nKey = t.I18nKey
 	        };
 	        return jsonReady;

@@ -104,7 +104,9 @@
     <Compile Include="Data\EntityEnumerator.cs" />
     <Compile Include="Data\OfMetadataOfItem.cs" />
     <Compile Include="Data\Query\Entity.cs" />
-    <Compile Include="Enums\Repositories.cs" />
+    <Compile Include="Repositories\RepositoryInfo.cs" />
+    <Compile Include="Repositories\RepositoryInfoOfFolder.cs" />
+    <Compile Include="Repositories\RepositoryTypes.cs" />
     <Compile Include="Implementations\Runtime\NeutralRuntime.cs" />
     <Compile Include="Interfaces\IGlobalMetadataProvider.cs" />
     <Compile Include="Interfaces\IHasExternalI18n.cs" />

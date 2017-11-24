@@ -9,6 +9,7 @@ using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Efc.Models;
+using ToSic.Eav.Repositories;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
@@ -48,7 +49,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             #endregion Test languages exist
 
             // check if saving should be with db-type or with the plain json
-            var saveJson = newEnt.Type.Source != Repositories.Sql;
+            var saveJson = newEnt.Type.RepositoryType != RepositoryTypes.Sql;
             Log.Add($"save json:{saveJson}");
             #endregion Step 1
 

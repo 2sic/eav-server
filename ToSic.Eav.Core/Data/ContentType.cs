@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Enums;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Repositories;
 
 namespace ToSic.Eav.Data
 {
@@ -21,7 +21,9 @@ namespace ToSic.Eav.Data
         public int ContentTypeId { get; }
         public IList<IAttributeDefinition> Attributes { get; set; }
         //public bool IsInstalledInPrimaryStorage { get; protected set; } = true;
-        public Repositories Source { get; internal set; } = Repositories.Sql;
+        public RepositoryTypes RepositoryType { get; internal set; } = RepositoryTypes.Sql;
+
+        public string RepositoryAddress { get; internal set; } = "";
 
         public bool IsDynamic { get; internal set; }
 
