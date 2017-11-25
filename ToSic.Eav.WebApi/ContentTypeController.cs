@@ -2,15 +2,19 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Net.Http;
 using System.Web.Http;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Caches;
+using ToSic.Eav.ImportExport.Json;
+using ToSic.Eav.ImportExport.Validation;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Serializers;
 using ToSic.Eav.WebApi.Formats;
+using ToSic.Eav.WebApi.Helpers;
 
 namespace ToSic.Eav.WebApi
 {
@@ -162,15 +166,18 @@ namespace ToSic.Eav.WebApi
                     I18nKey = type.I18nKey
                 };
             });
+
+
+	        string FindInputType(IEnumerable<IEntity> definitions)
+	        {
+	            var inputType = definitions.FirstOrDefault(d => d.Type.StaticName == "@All")
+                    ?.GetBestValue("InputType");
+
+	            return string.IsNullOrEmpty(inputType as string) ? "unknown" : inputType.ToString();
+	        }
         }
 
-	    private static string FindInputType(IEnumerable<IEntity> definitions)
-	    {
-	        var inputType = definitions.FirstOrDefault(d => d.Type.StaticName == "@All")
-                ?.GetBestValue("InputType");
 
-	        return string.IsNullOrEmpty(inputType as string) ? "unknown" : inputType.ToString();
-	    }
 
         [HttpGet]
         public bool Reorder(int appId, int contentTypeId, string newSortOrder)
@@ -248,6 +255,8 @@ namespace ToSic.Eav.WebApi
             CurrentContext.AttributesDefinition.RenameAttribute(attributeId, contentTypeId, newName);
             return true;
         }
+
+
 
 
         #endregion
