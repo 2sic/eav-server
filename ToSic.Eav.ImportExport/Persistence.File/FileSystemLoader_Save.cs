@@ -1,4 +1,5 @@
 ﻿using System;
+using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Validation;
 using ToSic.Eav.Interfaces;
 
@@ -16,7 +17,7 @@ namespace ToSic.Eav.Persistence.File
 
             System.IO.Directory.CreateDirectory(ContentTypePath);
 
-            var fileName = ContentTypePath + cleanName + JsonExtension;
+            var fileName = ContentTypePath + cleanName + ImpExpConstants.Extension(ImpExpConstants.Files.json);
 
             System.IO.File.WriteAllText(fileName, json);
         }

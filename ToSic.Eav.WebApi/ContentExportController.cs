@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net.Http;
 using System.Web.Http;
+using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.ImportExport.Validation;
@@ -140,7 +141,8 @@ namespace ToSic.Eav.WebApi
             var serializer = new JsonSerializer(AppManager.Package, Log);
 
             return Download.BuildDownload(serializer.Serialize(type),
-                (type.Scope + "." + type.StaticName).RemoveNonFilenameCharacters());
+                (type.Scope + "." + type.StaticName + ImpExpConstants.Extension(ImpExpConstants.Files.json))
+                     .RemoveNonFilenameCharacters());
         }
 
     }

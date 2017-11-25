@@ -77,6 +77,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ImpExpConstants.cs" />
     <Compile Include="Environment\TennantFileItem.cs" />
     <Compile Include="Json\JsonDeserializer_ContentType.cs" />
     <Compile Include="Json\JsonSerializer_Entity.cs" />

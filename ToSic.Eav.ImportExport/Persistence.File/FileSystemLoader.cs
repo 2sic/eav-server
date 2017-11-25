@@ -5,6 +5,7 @@ using System.Linq;
 using ToSic.Eav.App;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
@@ -33,7 +34,7 @@ namespace ToSic.Eav.Persistence.File
 
         private RepositoryTypes Source { get; }
 
-        private const string JsonExtension = ".json";
+        //private const string JsonExtension = ".json";
 
         public IList<IContentType> ContentTypes(int appId, IDeferredEntitiesList source)
         {
@@ -51,7 +52,7 @@ namespace ToSic.Eav.Persistence.File
 
             #region #2 find all content-type files in folder
 
-            var jsons = Directory.GetFiles(pathCt, "*" + JsonExtension).OrderBy(f => f);
+            var jsons = Directory.GetFiles(pathCt, "*" + ImpExpConstants.Extension(ImpExpConstants.Files.json)).OrderBy(f => f);
 
             #endregion
 
