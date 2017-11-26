@@ -2,9 +2,9 @@
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Enums;
 using ToSic.Eav.ImportExport.Tests.Persistence.File;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Repositories;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Persistence.File.Tests
@@ -95,7 +95,7 @@ namespace ToSic.Eav.Persistence.File.Tests
 
         private IList<IContentType> LoadAllTypes()
         {
-            var loader = new FileSystemLoader(TestStorageRoot, Repositories.TestFiles, false, Log);
+            var loader = new FileSystemLoader(TestStorageRoot, RepositoryTypes.TestingDoNotUse, false, Log);
             IList<IContentType> cts;
             try
             {

@@ -121,6 +121,8 @@
     <Compile Include="RootSources\IRootSource.cs" />
     <Compile Include="SqlDataSource.cs" />
     <Compile Include="SqlSources\EavSqlStore.cs" />
+    <Compile Include="ItemFilterDuplicates.cs" />
+    <Compile Include="StreamMerge.cs" />
     <Compile Include="StreamFallback.cs" />
     <Compile Include="ValueFilter.cs" />
     <Compile Include="ValueProvider\DataTargetValueProvider.cs" />

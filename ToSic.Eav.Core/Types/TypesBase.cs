@@ -2,6 +2,7 @@
 using ToSic.Eav.Data;
 using ToSic.Eav.Enums;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Repositories;
 
 namespace ToSic.Eav.Types
 {
@@ -23,7 +24,7 @@ namespace ToSic.Eav.Types
             Description = "todo";
             Attributes = new List<IAttributeDefinition>();
             //IsInstalledInPrimaryStorage = false;
-            Source = Repositories.Code;
+            RepositoryType = RepositoryTypes.Code;
             ParentId = Constants.SystemContentTypeFakeParent;  // important that parentid is different, so the GUI regards this as a ghost, and doesn't provide editing features
             I18nKey = i18nKey;
         }

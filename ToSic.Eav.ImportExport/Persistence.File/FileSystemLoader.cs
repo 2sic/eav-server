@@ -5,11 +5,12 @@ using System.Linq;
 using ToSic.Eav.App;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
-using ToSic.Eav.Enums;
+using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.Repositories;
 using ToSic.Eav.Types;
 
 // ReSharper disable once CheckNamespace
@@ -20,7 +21,7 @@ namespace ToSic.Eav.Persistence.File
         private const string ContentTypeFolder = "contenttypes\\";
         private const string ItemFolder = "items\\";
 
-        public FileSystemLoader(string path, Repositories source, bool ignoreMissing, Log parentLog): base("FSL.Loadr", parentLog, $"init with path:{path} ignore:{ignoreMissing}")
+        public FileSystemLoader(string path, RepositoryTypes source, bool ignoreMissing, Log parentLog): base("FSL.Loadr", parentLog, $"init with path:{path} ignore:{ignoreMissing}")
         {
             Path = path + (path.EndsWith("\\") ? "" : "\\");
             Source = source;
@@ -31,9 +32,9 @@ namespace ToSic.Eav.Persistence.File
 
         private bool IgnoreMissingStuff { get; }
 
-        private Repositories Source { get; }
+        private RepositoryTypes Source { get; }
 
-        private const string JsonExtension = ".json";
+        //private const string JsonExtension = ".json";
 
         public IList<IContentType> ContentTypes(int appId, IDeferredEntitiesList source)
         {
@@ -42,16 +43,16 @@ namespace ToSic.Eav.Persistence.File
 
             #region #1. check that folder exists
 
-            if (!CheckPathExists(Path)) return null;
             var pathCt = ContentTypePath;
-            if (!CheckPathExists(pathCt)) return null;
+            if (!CheckPathExists(Path) || !CheckPathExists(pathCt))
+                return new List<IContentType>();
 
             #endregion
 
 
             #region #2 find all content-type files in folder
 
-            var jsons = Directory.GetFiles(pathCt, "*" + JsonExtension).OrderBy(f => f);
+            var jsons = Directory.GetFiles(pathCt, "*" + ImpExpConstants.Extension(ImpExpConstants.Files.json)).OrderBy(f => f);
 
             #endregion
 
@@ -96,7 +97,7 @@ namespace ToSic.Eav.Persistence.File
             {
                 var json = System.IO.File.ReadAllText(path);
                 var ct = ser.DeserializeContentType(json);
-                (ct as ContentType).SetSourceAndParent(Source, Constants.SystemContentTypeFakeParent);
+                (ct as ContentType).SetSourceAndParent(Source, Constants.SystemContentTypeFakeParent, path);
                 return ct;
             }
             catch (IOException e)

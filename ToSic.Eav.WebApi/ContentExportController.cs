@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Web.Http;
+using ToSic.Eav.ImportExport;
+using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.ImportExport.Options;
+using ToSic.Eav.ImportExport.Validation;
 using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.WebApi.Helpers;
 
 namespace ToSic.Eav.WebApi
 {
@@ -47,15 +49,13 @@ namespace ToSic.Eav.WebApi
                 throw new Exception("trouble finding selected IDs to export", e);
             }
 
-            //var tableExporter = new DbXmlExportTable(CurrentContext);
-            //tableExporter.Init(contentTypeId);
             var tableExporter = AppManager.Entities.Exporter(contentType);
             var fileContent = exportSelection == ExportSelection.Blank
                 ? tableExporter.EmptyListTemplate()
                 : tableExporter.GenerateXml(language ?? "", defaultLanguage, contextLanguages, exportLanguageReferences,
                     exportResourcesReferences == ExportResourceReferenceMode.Resolve, ids);
 
-            var contentTypeName = tableExporter.ContentType.Name; // 2017-04-23 2dm check! ct.Name;
+            var contentTypeName = tableExporter.ContentType.Name;
 
 
             var fileName =
@@ -63,16 +63,18 @@ namespace ToSic.Eav.WebApi
                 $"{(exportSelection == ExportSelection.Blank ? "Template" : "Data")} " +
                 $"{DateTime.Now:yyyyMMddHHmmss}.xml";
 
-            var response = new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent(fileContent)
-            };
-            response.Content.Headers.ContentType = new MediaTypeHeaderValue("text/xml");
-            response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
-            {
-                FileName = fileName
-            };
-            return response;
+            return Download.BuildDownload(fileContent, fileName);
+
+            //var response = new HttpResponseMessage(HttpStatusCode.OK)
+            //{
+            //    Content = new StringContent(fileContent)
+            //};
+            //response.Content.Headers.ContentType = new MediaTypeHeaderValue("text/xml");
+            //response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+            //{
+            //    FileName = fileName
+            //};
+            //return response;
         }
 
         // 2017-10-19 2dm disabled, as I replaced it with the app-imlementation
@@ -127,5 +129,21 @@ namespace ToSic.Eav.WebApi
         //    };
         //    return response;
         //}
+
+
+        [HttpGet]
+        public HttpResponseMessage DownloadTypeAsJson(int appId, string name)
+        {
+            Log.Add($"get fields a#{appId}, type:{name}");
+            SetAppIdAndUser(appId);
+
+            var type = AppManager.Read.ContentTypes.Get(name);
+            var serializer = new JsonSerializer(AppManager.Package, Log);
+
+            return Download.BuildDownload(serializer.Serialize(type),
+                (type.Scope + "." + type.StaticName + ImpExpConstants.Extension(ImpExpConstants.Files.json))
+                     .RemoveNonFilenameCharacters());
+        }
+
     }
 }

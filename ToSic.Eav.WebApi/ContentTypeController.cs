@@ -2,14 +2,19 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Net.Http;
 using System.Web.Http;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Caches;
+using ToSic.Eav.ImportExport.Json;
+using ToSic.Eav.ImportExport.Validation;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Serializers;
 using ToSic.Eav.WebApi.Formats;
+using ToSic.Eav.WebApi.Helpers;
 
 namespace ToSic.Eav.WebApi
 {
@@ -71,6 +76,7 @@ namespace ToSic.Eav.WebApi
 	            Items = cache?.List.Count(i => i.Type == t) ?? -1, // only count if cache provided
 	            Fields = t.Attributes.Count,
 	            Metadata = ser.Prepare(metadata),
+                DebugInfoRepositoryAddress = t.RepositoryAddress,
                 I18nKey = t.I18nKey
 	        };
 	        return jsonReady;
@@ -135,28 +141,12 @@ namespace ToSic.Eav.WebApi
             SetAppIdAndUser(appId);
 
             SetAppIdAndUser(appId);
-            var type = DataSource.GetCache(null, appId).GetContentType(staticName) as ContentType;
-            if(type == null) throw new Exception("type should be a ContentType - something broke");
+            if(!(DataSource.GetCache(null, appId).GetContentType(staticName) is ContentType type))
+                throw new Exception("type should be a ContentType - something broke");
             var fields = type.Attributes.OrderBy(a => a.SortOrder);
 
 
-            var appInputTypes = new AppRuntime(appId, Log).ContentTypes.GetInputTypes(true).ToList();
-            var noTitleCount = 0;
-            var fldName = "";
-
-            // assemble a list of all input-types (like "string-default", "string-wysiwyg..."
-            Dictionary<string, IEntity> inputTypesDic;
-            try
-            {
-                inputTypesDic =
-                    appInputTypes.ToDictionary(
-                        a => fldName = a.GetBestTitle() ?? "error-no-title" + noTitleCount++,
-                        a => a);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Error on " + fldName + "; note: noTitleCount " + noTitleCount, ex);
-            }
+            var appInputTypes = new AppRuntime(appId, Log).ContentTypes.GetInputTypes();
 
             var ser = new Serializer();
             return fields.Select(a =>
@@ -172,21 +162,22 @@ namespace ToSic.Eav.WebApi
                     IsTitle = a.IsTitle,
                     AttributeId = a.AttributeId,
                     Metadata = a.Metadata.ToDictionary(e => e.Type.StaticName.TrimStart('@'), e => ser.Prepare(e)),
-                    InputTypeConfig = inputTypesDic.ContainsKey(inputtype)
-                        ? ser.Prepare(inputTypesDic[inputtype])
-                        : null,
+                    InputTypeConfig = appInputTypes.FirstOrDefault(it => it.Type == inputtype),
                     I18nKey = type.I18nKey
                 };
             });
+
+
+	        string FindInputType(IEnumerable<IEntity> definitions)
+	        {
+	            var inputType = definitions.FirstOrDefault(d => d.Type.StaticName == "@All")
+                    ?.GetBestValue("InputType");
+
+	            return string.IsNullOrEmpty(inputType as string) ? "unknown" : inputType.ToString();
+	        }
         }
 
-	    private static string FindInputType(IEnumerable<IEntity> definitions)
-	    {
-	        var inputType = definitions.FirstOrDefault(d => d.Type.StaticName == "@All")
-                ?.GetBestValue("InputType");
 
-	        return string.IsNullOrEmpty(inputType as string) ? "unknown" : inputType.ToString();
-	    }
 
         [HttpGet]
         public bool Reorder(int appId, int contentTypeId, string newSortOrder)
@@ -208,14 +199,13 @@ namespace ToSic.Eav.WebApi
 	    }
 
 	    [HttpGet]
-	    // public IEnumerable<Dictionary<string, object>> InputTypes(int appId)
-	    public IEnumerable<Dictionary<string, object>> InputTypes(int appId)
+	    public List<InputTypeInfo> InputTypes(int appId)
 	    {
 	        Log.Add($"get input types a#{appId}");
             SetAppIdAndUser(appId);
-	        var appInputTypes = new AppRuntime(appId, Log).ContentTypes.GetInputTypes(true).ToList(); // appDef.GetInputTypes(true).ToList();
-            
-	        return Serializer.Prepare(appInputTypes);
+	        var appInputTypes = new AppRuntime(appId, Log).ContentTypes.GetInputTypes();
+
+	        return appInputTypes;
 
 	    }
 
@@ -265,6 +255,8 @@ namespace ToSic.Eav.WebApi
             CurrentContext.AttributesDefinition.RenameAttribute(attributeId, contentTypeId, newName);
             return true;
         }
+
+
 
 
         #endregion

@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
@@ -32,4 +33,4 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("4.5.0.*")]
-// [assembly: AssemblyFileVersion("4.5.0.*")]
+[assembly: InternalsVisibleTo("ToSic.Eav.ImportExport.Tests")]

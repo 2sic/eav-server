@@ -2,9 +2,9 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
-using ToSic.Eav.Enums;
 using ToSic.Eav.ImportExport.Tests.Persistence.File;
 using ToSic.Eav.Persistence.Efc;
+using ToSic.Eav.Repositories;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Repository.Efc.Tests;
 
@@ -29,7 +29,7 @@ namespace ToSic.Eav.Persistence.File.Tests
             var cts = app.ContentTypes;
             var sharedCts = cts.Where(ct => (ct as ContentType).AlwaysShareConfiguration).ToList();
 
-            var fileSysLoader = new FileSystemLoader(ExportStorageRoot, Repositories.TestFiles, true, Log);
+            var fileSysLoader = new FileSystemLoader(ExportStorageRoot, RepositoryTypes.TestingDoNotUse, true, Log);
 
             var time = Stopwatch.StartNew();
             sharedCts.ForEach(ct => fileSysLoader.SaveContentType(ct));
