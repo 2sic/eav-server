@@ -62,7 +62,7 @@ namespace ToSic.Eav.ImportExport.Json
             }
 
             var newEntity = EntityBuilder.EntityFromRepository(AppId, jEnt.Guid, jEnt.Id, jEnt.Id, ismeta, contentType, true,
-                null, DateTime.Now, jEnt.Owner, jEnt.Version);
+                null, null, DateTime.Now, jEnt.Owner, jEnt.Version);
 
 
             // build attributes - based on type definition

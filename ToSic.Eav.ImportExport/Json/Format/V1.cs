@@ -35,6 +35,7 @@ namespace ToSic.Eav.ImportExport.Json.Format
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public string Owner;
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public JsonMetadataFor For;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public List<JsonEntity> Metadata;
     }
 
     internal class JsonAttributes

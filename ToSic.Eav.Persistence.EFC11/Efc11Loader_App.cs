@@ -172,7 +172,6 @@ namespace ToSic.Eav.Persistence.Efc
 
             #region Build EntityModels
             var entities = new Dictionary<int, IEntity>();
-            //var entList = new List<IEntity>();
 
             var serializer = Factory.Resolve<IThingDeserializer>();
             serializer.Initialize(appId, contentTypes, source, Log);
@@ -196,7 +195,8 @@ namespace ToSic.Eav.Persistence.Efc
                     if (sysTypes.ContainsKey(contentType.StaticName))
                         contentType = (ContentType)sysTypes[contentType.StaticName];
 
-                    newEntity = EntityBuilder.EntityFromRepository(appId, e.EntityGuid, e.EntityId, e.EntityId, e.Metadata, contentType, e.IsPublished, relationships, e.Modified, e.Owner, e.Version);
+                    newEntity = EntityBuilder.EntityFromRepository(appId, e.EntityGuid, e.EntityId, e.EntityId, 
+                        e.Metadata, contentType, e.IsPublished, relationships, source, e.Modified, e.Owner, e.Version);
 
                     IAttribute titleAttrib = null;
 

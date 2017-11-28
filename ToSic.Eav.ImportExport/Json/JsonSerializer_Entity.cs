@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using ToSic.Eav.Data;
@@ -10,12 +11,18 @@ namespace ToSic.Eav.ImportExport.Json
 {
     public partial class JsonSerializer
     {
-        public override string Serialize(IEntity entity) => JsonConvert.SerializeObject(new JsonFormat
+        public override string Serialize(IEntity entity) => Serialize(entity, 0);
+        //    JsonConvert.SerializeObject(new JsonFormat
+        //{
+        //    Entity = ToJson(entity)
+        //}, JsonSerializerSettings());
+
+        public string Serialize(IEntity entity, int metadataDepth) => JsonConvert.SerializeObject(new JsonFormat
         {
-            Entity = ToJson(entity)
+            Entity = ToJson(entity, metadataDepth)
         }, JsonSerializerSettings());
 
-        private JsonEntity ToJson(IEntity entity)
+        private JsonEntity ToJson(IEntity entity, int metadataDepth = 0)
         {
             JsonMetadataFor mddic = null;
             if (entity.MetadataFor.IsMetadata)
@@ -69,6 +76,11 @@ namespace ToSic.Eav.ImportExport.Json
                 }
             });
 
+            // new: optionally include metadata
+            List<JsonEntity> itemMeta = null;
+            if (metadataDepth > 0)
+                itemMeta = entity.Metadata.Select(m => ToJson(m, metadataDepth - 1)).ToList();
+
             var jEnt = new JsonEntity
             {
                 Id = entity.EntityId,
@@ -81,7 +93,8 @@ namespace ToSic.Eav.ImportExport.Json
                 },
                 Attributes = attribs,
                 Owner = entity.Owner,
-                For = mddic
+                For = mddic,
+                Metadata = itemMeta
             };
             return jEnt;
         }

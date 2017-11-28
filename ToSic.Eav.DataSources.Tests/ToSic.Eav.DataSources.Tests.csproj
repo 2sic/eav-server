@@ -97,6 +97,7 @@
     <Compile Include="InitializeTests.cs" />
     <Compile Include="ItemFilterDuplicates\Tst_ItemFilterDuplicates.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Query\Tst_QueryBasic.cs" />
     <Compile Include="RelationshipFilterTests\RelationshipTest.cs" />
     <Compile Include="RelationshipFilterTests\RelationshipTestBase.cs" />
     <Compile Include="RelationshipFilterTests\Tst_RelationshipFilterDS_Modes.cs" />
@@ -122,6 +123,10 @@
     <ProjectReference Include="..\ToSic.Eav.DataSources\ToSic.Eav.DataSources.csproj">
       <Project>{daae8e21-ca5f-400b-9f5a-5e4e1196b21b}</Project>
       <Name>ToSic.Eav.DataSources</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ToSic.Eav.ImportExport\ToSic.Eav.ImportExport.csproj">
+      <Project>{5A75CD35-99F4-4CF0-944A-DC0F5D68B430}</Project>
+      <Name>ToSic.Eav.ImportExport</Name>
     </ProjectReference>
     <ProjectReference Include="..\ToSic.Eav.TokenEngine.Tests\ToSic.Eav.TokenEngine.Tests.csproj">
       <Project>{ef7808df-f67f-4e0a-a851-21358773dd25}</Project>
