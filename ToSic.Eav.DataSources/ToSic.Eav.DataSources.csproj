@@ -107,6 +107,8 @@
     <Compile Include="IDataTarget.cs" />
     <Compile Include="IDeferredDataSource.cs" />
     <Compile Include="Metadata\MetadataFromDataSource.cs" />
+    <Compile Include="Pipeline\QueryConstants.cs" />
+    <Compile Include="Queries\QueryDefinition.cs" />
     <Compile Include="Shuffle.cs" />
     <Compile Include="Paging.cs" />
     <Compile Include="PassThrough.cs" />

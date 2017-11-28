@@ -122,9 +122,8 @@ namespace ToSic.Eav.DataSources.Pipeline
 
 
                 // This is new in 2015-10-38 - check type because we renamed the DLL with the parts, and sometimes the old dll-name had been saved
-                var assemblyAndType = dataPipelinePart["PartAssemblyAndType"][0].ToString();
-		        if (assemblyAndType.EndsWith(Constants.V3To4DataSourceDllOld))
-		            assemblyAndType = assemblyAndType.Replace(Constants.V3To4DataSourceDllOld, Constants.V3To4DataSourceDllNew);
+                var assemblyAndType = dataPipelinePart[QueryConstants.PartAssemblyAndType][0].ToString();
+		        assemblyAndType = RewriteOldAssemblyNames(assemblyAndType);
 
 		        var dataSource = DataSource.GetDataSource(assemblyAndType,
 		            source.ZoneId, source.AppId, valueCollectionProvider: configurationProvider, parentLog:Log);
@@ -144,7 +143,19 @@ namespace ToSic.Eav.DataSources.Pipeline
 			return outSource;
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Check if a pipeline part has an old assembly name, and if yes, correct it to the new name
+        /// </summary>
+        /// <param name="assemblyAndType"></param>
+        /// <returns></returns>
+	    public static string RewriteOldAssemblyNames(string assemblyAndType)
+        {
+            return assemblyAndType.EndsWith(Constants.V3To4DataSourceDllOld) 
+                ? assemblyAndType.Replace(Constants.V3To4DataSourceDllOld, Constants.V3To4DataSourceDllNew) 
+                : assemblyAndType;
+        }
+
+	    /// <summary>
 		/// Init Stream Wirings between Pipeline-Parts (Buttom-Up)
 		/// </summary>
 		private void InitWirings(IEntity dataPipeline, IDictionary<string, IDataSource> dataSources)

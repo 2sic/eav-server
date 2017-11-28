@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Attributes;
+using ToSic.Eav.DataSources.Pipeline;
+using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Apps.Parts
@@ -52,6 +54,9 @@ namespace ToSic.Eav.Apps.Parts
 
             return result;
         }
+
+        public QueryDefinition Get(int queryId) =>
+            new QueryDefinition(DataPipeline.GetPipelineEntity(queryId, App.Cache));
 
         public class DataSourceInfo
         {
