@@ -137,8 +137,9 @@ namespace ToSic.Eav.WebApi
 		private IDataSource ConstructPipeline(int appId, int id, bool showDrafts)
 		{
 		    Log.Add($"construct pipe a#{appId}, pipe:{id}, drafts:{showDrafts}");
-			var testValueProviders = new DataPipelineFactory(Log).GetTestValueProviders(appId, id).ToList();
-		    return new DataPipelineFactory(Log).GetDataSource(appId, id, testValueProviders, showDrafts:showDrafts);
+		    return new DataPipelineFactory(Log).GetDataSource(appId, id, showDrafts);
+			//var testValueProviders = fact.GetTestValueProviders(appId, id).ToList();
+		 //   return fact.GetDataSource(appId, id, testValueProviders, showDrafts:showDrafts);
 		}
 
         [HttpGet]

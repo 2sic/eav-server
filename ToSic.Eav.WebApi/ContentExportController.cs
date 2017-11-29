@@ -7,6 +7,7 @@ using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.ImportExport.Validation;
 using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.Persistence.File;
 using ToSic.Eav.WebApi.Helpers;
 
 namespace ToSic.Eav.WebApi
@@ -143,6 +144,22 @@ namespace ToSic.Eav.WebApi
             return Download.BuildDownload(serializer.Serialize(type),
                 (type.Scope + "." + type.StaticName + ImpExpConstants.Extension(ImpExpConstants.Files.json))
                      .RemoveNonFilenameCharacters());
+        }
+
+        [HttpGet]
+        public HttpResponseMessage DownloadEntityAsJson(int appId, int id, string prefix, bool withMetadata)
+        {
+            Log.Add($"get fields a#{appId}, id:{id}");
+            SetAppIdAndUser(appId);
+
+            var entity = AppManager.Read.Entities.Get(id);
+            var serializer = new JsonSerializer(AppManager.Package, Log);
+
+            return Download.BuildDownload(
+                serializer.Serialize(entity, withMetadata ? FileSystemLoader.QueryMetadataDepth : 0),
+                (prefix + (string.IsNullOrWhiteSpace(prefix) ? "" : ".")
+                 + entity.GetBestTitle() + ImpExpConstants.Extension(ImpExpConstants.Files.json))
+                .RemoveNonFilenameCharacters());
         }
 
     }

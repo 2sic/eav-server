@@ -19,6 +19,7 @@ namespace ToSic.Eav.Persistence.File
     public partial class FileSystemLoader: HasLog, IRepositoryLoader
     {
         private const string ContentTypeFolder = "contenttypes\\";
+        private const string QueryFolder = "query\\";
         private const string ItemFolder = "items\\";
 
         public FileSystemLoader(string path, RepositoryTypes source, bool ignoreMissing, Log parentLog): base("FSL.Loadr", parentLog, $"init with path:{path} ignore:{ignoreMissing}")
@@ -81,6 +82,7 @@ namespace ToSic.Eav.Persistence.File
         private JsonSerializer _ser;
 
         private string ContentTypePath => Path + ContentTypeFolder;
+        private string QueryPath => Path + QueryFolder;
 
         private string ItemPath => Path + ItemFolder;
 
