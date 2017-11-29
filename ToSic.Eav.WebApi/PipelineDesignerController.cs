@@ -4,12 +4,12 @@ using System.Diagnostics;
 using System.Linq;
 using System.Web.Http;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Pipeline;
 using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.WebApi.Formats;
 
 namespace ToSic.Eav.WebApi
 {
@@ -31,11 +31,10 @@ namespace ToSic.Eav.WebApi
         /// Get a Pipeline with DataSources
         /// </summary>
         [HttpGet]
-		public Dictionary<string, object> GetPipeline(int appId, int? id = null)
+		public QueryDefinitionInfo GetPipeline(int appId, int? id = null)
         {
             Log.Add($"get pipe a#{appId}, id:{id}");
-			Dictionary<string, object> pipelineJson = null;
-			var dataSourcesJson = new List<Dictionary<string, object>>();
+            var query = new QueryDefinitionInfo();
             var appManager = new AppManager(appId, Log);
 
             if (id.HasValue)
@@ -43,29 +42,24 @@ namespace ToSic.Eav.WebApi
 			    var qdef = appManager.Read.Queries.Get(id.Value);
 
                 #region Deserialize some Entity-Values
-                pipelineJson = EntityToDictionary(qdef.Header);
-				pipelineJson[Constants.DataPipelineStreamWiringStaticName] = DataPipelineWiring
-                    .Deserialize((string)pipelineJson[Constants.DataPipelineStreamWiringStaticName]);
+                query.Pipeline = EntityToDictionary(qdef.Header);
+			    query.Pipeline[Constants.DataPipelineStreamWiringStaticName] = DataPipelineWiring
+                    .Deserialize((string)query.Pipeline[Constants.DataPipelineStreamWiringStaticName]);
 
-				foreach (var dataSource in qdef.Parts.Select(EntityToDictionary))
+				foreach (var part in qdef.Parts.Select(EntityToDictionary))
 				{
-					dataSource[QueryConstants.VisualDesignerData] = JsonConvert
-                        .DeserializeObject((string)dataSource[QueryConstants.VisualDesignerData] ?? "");
+					part[QueryConstants.VisualDesignerData] = JsonConvert
+                        .DeserializeObject((string)part[QueryConstants.VisualDesignerData] ?? "");
 					
                     // Replace ToSic.Eav with ToSic.Eav.DataSources because they moved to a different DLL
-				    dataSource[QueryConstants.PartAssemblyAndType] 
-                        = DataPipelineFactory.RewriteOldAssemblyNames((string)dataSource[QueryConstants.PartAssemblyAndType]);
-                    dataSourcesJson.Add(dataSource);
+				    part[QueryConstants.PartAssemblyAndType] 
+                        = DataPipelineFactory.RewriteOldAssemblyNames((string)part[QueryConstants.PartAssemblyAndType]);
+                    query.DataSources.Add(part);
 				}
 				#endregion
 			}
 
-			// return consolidated Data
-			return new Dictionary<string, object>
-			{
-				{"Pipeline", pipelineJson},
-				{"DataSources", dataSourcesJson}
-			};
+            return query;
 
             Dictionary<string, object> EntityToDictionary(Interfaces.IEntity entity)
             {
@@ -75,7 +69,6 @@ namespace ToSic.Eav.WebApi
                 return attributes;
             }
         }
-
 
 
         /// <summary>
@@ -91,40 +84,22 @@ namespace ToSic.Eav.WebApi
 		/// <param name="data">JSON object { pipeline: pipeline, dataSources: dataSources }</param>
 		/// <param name="appId">AppId this Pipeline belogs to</param>
 		/// <param name="id">PipelineEntityId</param>
-		public Dictionary<string, object> SavePipeline([FromBody] JToken data, int appId, int id)
+		public QueryDefinitionInfo SavePipeline([FromBody] QueryDefinitionInfo data, int appId, int id)
 		{
 		    Log.Add($"save pipe: a#{appId}, id#{id}");
 
-            // extract typed structure of the data, for further processing
-		    var headerValues = ValuesDictionary(data["pipeline"]);
-		    var partsDics = data["dataSources"].ToObject<List<Dictionary<string, object>>>();
-
             // assemble list of all new data-source guids, for later re-mapping when saving
-            var newDsGuids = data["dataSources"]
-                .Select(d => (string)d["EntityGuid"])
+            var newDsGuids = data.DataSources.Select(d => (string)d["EntityGuid"])
                 .Where(g => g != "Out" && !g.StartsWith("unsaved"))
                 .Select(Guid.Parse)
                 .ToList();
 
             // Update Pipeline Entity with new Wirings etc.
-		    var wirings = data["pipeline"][Constants.DataPipelineStreamWiringStaticName].ToObject<List<WireInfo>>();
+		    var wirings = JsonConvert.DeserializeObject<List<WireInfo>>(data.Pipeline[Constants.DataPipelineStreamWiringStaticName].ToString());
 
-            new AppManager(appId, Log).Queries.Update(id, partsDics, newDsGuids, headerValues, wirings);
+            new AppManager(appId, Log).Queries.Update(id, data.DataSources, newDsGuids, data.Pipeline, wirings);
 
 		    return GetPipeline(appId, id);
-		}
-        
-
-        /// <summary>
-		/// Update an Entity with values from a JObject
-		/// </summary>
-		/// <param name="newValues">JObject with new Values</param>
-		private static Dictionary<string, object> ValuesDictionary(JToken newValues)
-		{
-            var excludeKeysStatic = new[] { Constants.EntityFieldGuid, Constants.EntityFieldId };
-			return newValues.ToObject<IDictionary<string, object>>()
-                .Where(i => !excludeKeysStatic.Contains(i.Key, StringComparer.InvariantCultureIgnoreCase))
-                .ToDictionary(k => k.Key, v => v.Value);
 		}
 
 
@@ -143,7 +118,7 @@ namespace ToSic.Eav.WebApi
             timer.Stop();
 
             // Now get some more debug info
-		    var debugInfo = new DataSources.Debug.PipelineInfo(outStreams);// ConstructPipeline(appId, id));
+		    var debugInfo = new DataSources.Debug.PipelineInfo(outStreams);
 
             // ...and return the results
 			return new
@@ -185,7 +160,6 @@ namespace ToSic.Eav.WebApi
 		[HttpGet]
 		public object DeletePipeline(int appId, int id)
 		{
-		    Log.Add($"delete a#{appId}, id:{id}");
 		    new AppManager(appId, Log).Queries.Delete(id);
 			return new { Result = "Success" };
 		}

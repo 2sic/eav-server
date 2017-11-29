@@ -31,9 +31,9 @@ namespace ToSic.Eav.Apps.Parts
             var origParts = qDef.Parts;// DataPipeline.GetPipelineParts(AppManager.ZoneId, AppManager.AppId, origQuery.EntityGuid).ToList();
             var newParts = origParts.ToDictionary(o => o.EntityGuid, o => CopyAndResetIds(o, newQuery.EntityGuid));
 
-            var metaDataSource = DataSource.GetMetaDataSource(appId: AppManager.AppId);
+            //var metaDataSource = DataSource.GetMetaDataSource(appId: AppManager.AppId);
             var origMetadata = origParts
-                .ToDictionary(o => o.EntityGuid, o => metaDataSource.GetMetadata(Constants.MetadataForEntity, o.EntityGuid).FirstOrDefault())
+                .ToDictionary(o => o.EntityGuid, o => o.Metadata /*metaDataSource.GetMetadata(Constants.MetadataForEntity, o.EntityGuid)*/.FirstOrDefault())
                 .Where(m => m.Value != null);
 
             var newMetadata = origMetadata.Select(o => CopyAndResetIds(o.Value, newParts[o.Key].EntityGuid));
@@ -89,6 +89,7 @@ namespace ToSic.Eav.Apps.Parts
 
         public bool Delete(int id)
         {
+            Log.Add($"delete a#{AppManager.AppId}, id:{id}");
             var canDeleteResult = AppManager.Entities.CanDelete(id);
             if (!canDeleteResult.Item1)
                 throw new Exception(canDeleteResult.Item2);
@@ -96,18 +97,19 @@ namespace ToSic.Eav.Apps.Parts
 
             // Get the Entity describing the Pipeline and Pipeline Parts (DataSources)
             var pipelineEntity = DataPipeline.GetPipelineEntity(id, AppManager.Cache);
-            var parts = DataPipeline.GetPipelineParts(AppManager.ZoneId, AppManager.AppId, pipelineEntity.EntityGuid).ToList();
-            var mdSource = DataSource.GetMetaDataSource(appId: AppManager.AppId);
+            var qdef = new QueryDefinition(pipelineEntity);
+            //var parts = DataPipeline.GetPipelineParts(AppManager.ZoneId, AppManager.AppId, pipelineEntity.EntityGuid).ToList();
+            //var mdSource = DataSource.GetMetaDataSource(appId: AppManager.AppId);
 
-            var mdItems = parts
-                .Select(ds => mdSource.GetMetadata(Constants.MetadataForEntity, ds.EntityGuid).FirstOrDefault())
+            var mdItems = qdef.Parts// parts
+                .Select(ds => ds.Metadata.FirstOrDefault())// mdSource.GetMetadata(Constants.MetadataForEntity, ds.EntityGuid).FirstOrDefault())
                 .Where(md => md != null)
                 .Select(md => md.EntityId)
                 .ToList();
 
             // delete in the right order - first the outermost-dependants, then a layer in, and finally the top node
             AppManager.Entities.Delete(mdItems);
-            AppManager.Entities.Delete(parts.Select(p => p.EntityId).ToList());
+            AppManager.Entities.Delete(qdef.Parts/*parts*/.Select(p => p.EntityId).ToList());
             AppManager.Entities.Delete(id);
 
             // flush cache
@@ -140,6 +142,8 @@ namespace ToSic.Eav.Apps.Parts
 
             DeletedRemovedPipelineParts(newDsGuids, addedSources.Values, qdef);
 
+            headerValues = new Dictionary<string, object>(headerValues, StringComparer.InvariantCultureIgnoreCase);
+            RemoveIdAndGuidFromValues(headerValues);
             SaveHeader(queryId, headerValues, wirings, addedSources);
         }
 
@@ -163,8 +167,7 @@ namespace ToSic.Eav.Apps.Parts
                 dataSource.TryGetValue(Constants.EntityFieldId, out object entityId);
 
                 // remove key-fields, as we cannot save them (would cause error)
-                dataSource.Remove(Constants.EntityFieldGuid);
-                dataSource.Remove(Constants.EntityFieldId);
+                RemoveIdAndGuidFromValues(dataSource);
 
                 if (originalIdentity == "Out") continue;
 
@@ -185,6 +188,18 @@ namespace ToSic.Eav.Apps.Parts
 
             return newDataSources;
         }
+
+
+        /// <summary>
+        /// micro helper - otherwise we run into errors when saving
+        /// </summary>
+        /// <param name="values"></param>
+        private static void RemoveIdAndGuidFromValues(Dictionary<string, object> values)
+        {
+            values.Remove(Constants.EntityFieldGuid);
+            values.Remove(Constants.EntityFieldId);
+        }
+
         /// <summary>
         /// Delete Pipeline Parts (DataSources) that are not present
         /// </summary>
@@ -195,8 +210,7 @@ namespace ToSic.Eav.Apps.Parts
         {
             Log.Add($"delete part a#{AppManager.AppId}, pipe:{qdef.Header.EntityGuid}");
             // Get EntityGuids currently stored in EAV
-            var existingEntityGuids = qdef.Parts //  DataPipeline.GetPipelineParts(zoneId, appId, pipelineEntityGuid)
-                .Select(e => e.EntityGuid);
+            var existingEntityGuids = qdef.Parts.Select(e => e.EntityGuid);
 
             // Get EntityGuids from the UI (except Out and unsaved)
             newEntityGuids.AddRange(newDataSources/*.Values*/);
@@ -215,7 +229,7 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="values"></param>
         /// <param name="wirings"></param>
         /// <param name="renamedDataSources">Array with new DataSources and the unsavedName and final EntityGuid</param>
-        /*temp*/ public void SaveHeader(int id, Dictionary<string, object> values, List<WireInfo> wirings, IDictionary<string, Guid> renamedDataSources)
+        private void SaveHeader(int id, Dictionary<string, object> values, List<WireInfo> wirings, IDictionary<string, Guid> renamedDataSources)
         {
             Log.Add($"save pipe a#{AppManager.AppId}, pipe:{id}");
             wirings = RenameWiring(wirings, renamedDataSources);

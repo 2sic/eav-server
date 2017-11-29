@@ -95,6 +95,7 @@
     <Compile Include="EntityPickerController.cs" />
     <Compile Include="Formats\CompleteEntity.cs" />
     <Compile Include="Formats\ItemIdentifiers.cs" />
+    <Compile Include="Formats\QueryDefinitionInfo.cs" />
     <Compile Include="Helpers\Download.cs" />
     <Compile Include="PipelineDesignerController.cs">
       <SubType>Code</SubType>

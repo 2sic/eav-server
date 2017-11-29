@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using ToSic.Eav.Data.Query;
+using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
@@ -41,8 +42,6 @@ namespace ToSic.Eav.DataSources.Pipeline
 	    public IDataSource GetDataSource(int appId, int pipelineEntityId, IEnumerable<IValueProvider> configurationPropertyAccesses, IDataSource outSource = null, bool showDrafts = false)
 		{
             Log.Add($"build pipe#{pipelineEntityId} for a#{appId}, draft:{showDrafts}");
-            if(outSource == null)
-                outSource = new PassThrough();
 			#region Load Pipeline Entity and Pipeline Parts
 			var source = DataSource.GetInitialDataSource(appId: appId, parentLog:Log);
 			var metaDataSource = DataSource.GetMetaDataSource(source.ZoneId, source.AppId);
@@ -57,12 +56,16 @@ namespace ToSic.Eav.DataSources.Pipeline
 			{
 				throw new Exception("PipelineEntity not found with ID " + pipelineEntityId + " on AppId " + appId);
 			}
+		    var qdef = new QueryDefinition(dataPipeline);
+
 
             // tell the primary-out that it has this guid, for better debugging
+            if(outSource == null)
+                outSource = new PassThrough();
 		    if (outSource.DataSourceGuid == Guid.Empty)
-		        outSource.DataSourceGuid = dataPipeline.EntityGuid;
+		        outSource.DataSourceGuid = qdef.Header.EntityGuid; // dataPipeline.EntityGuid;
 
-			var dataPipelineParts = metaDataSource.GetMetadata(Constants.MetadataForEntity, dataPipeline.EntityGuid, Constants.DataPipelinePartStaticName);
+			//var dataPipelineParts = metaDataSource.GetMetadata(Constants.MetadataForEntity, dataPipeline.EntityGuid, Constants.DataPipelinePartStaticName);
             #endregion
 
             #region prepare shared / global value providers
@@ -78,7 +81,7 @@ namespace ToSic.Eav.DataSources.Pipeline
 
 		    Log.Add($"add parts to pipe#{dataPipeline.EntityId} ");
             var dataSources = new Dictionary<string, IDataSource>();
-		    foreach (var dataPipelinePart in dataPipelineParts)
+		    foreach (var dataPipelinePart in qdef.Parts)// dataPipelineParts)
 		    {
 		        #region Init Configuration Provider
 

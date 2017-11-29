@@ -33,10 +33,7 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// Serialize Wire Infos to a String
 		/// </summary>
-		public static string Serialize(IEnumerable<WireInfo> wirings)
-		{
-			return string.Join("\r\n", wirings.Select(w => w.ToString()));
-		}
+		public static string Serialize(IEnumerable<WireInfo> wirings) => string.Join("\r\n", wirings.Select(w => w.ToString()));
 	}
 
 
@@ -50,9 +47,6 @@ namespace ToSic.Eav.DataSources
 		public string To { get; set; }
 		public string In { get; set; }
 
-		public override string ToString()
-		{
-			return From + ":" + Out + ">" + To + ":" + In;
-		}
+		public override string ToString() => From + ":" + Out + ">" + To + ":" + In;
 	}
 }
