@@ -21,25 +21,21 @@ namespace ToSic.Eav.Apps.Parts
     {
         public QueryManager(AppManager app, Log parentLog) : base(app, parentLog, "App.QryMng") {}
 
-        public void Clone(int id)
+        public void SaveCopy(int id) => SaveCopy(AppManager.Read.Queries.Get(id));
+
+        public void SaveCopy(QueryDefinition query)
         {
-            // 1. find the currenty query
-            var qDef = AppManager.Read.Queries.Get(id);
-            var origQuery = qDef.Header;// DataPipeline.GetPipelineEntity(id, AppManager.Cache);
-            var newQuery = CopyAndResetIds(origQuery);
+            var newQuery = CopyAndResetIds(query.Header);
+            var newParts = query.Parts.ToDictionary(o => o.EntityGuid, o => CopyAndResetIds(o, newQuery.EntityGuid));
 
-            var origParts = qDef.Parts;// DataPipeline.GetPipelineParts(AppManager.ZoneId, AppManager.AppId, origQuery.EntityGuid).ToList();
-            var newParts = origParts.ToDictionary(o => o.EntityGuid, o => CopyAndResetIds(o, newQuery.EntityGuid));
-
-            //var metaDataSource = DataSource.GetMetaDataSource(appId: AppManager.AppId);
-            var origMetadata = origParts
-                .ToDictionary(o => o.EntityGuid, o => o.Metadata /*metaDataSource.GetMetadata(Constants.MetadataForEntity, o.EntityGuid)*/.FirstOrDefault())
+            var origMetadata = query.Parts
+                .ToDictionary(o => o.EntityGuid, o => o.Metadata.FirstOrDefault())
                 .Where(m => m.Value != null);
 
             var newMetadata = origMetadata.Select(o => CopyAndResetIds(o.Value, newParts[o.Key].EntityGuid));
 
             // now update wiring...
-            var origWiring = origQuery.GetBestValue(Constants.DataPipelineStreamWiringStaticName).ToString();
+            var origWiring = query.Header.GetBestValue(Constants.DataPipelineStreamWiringStaticName).ToString();
             var keyMap = newParts.ToDictionary(o => o.Key.ToString(), o => o.Value.EntityGuid.ToString());
             var newWiring = RemapWiringToCopy(origWiring, keyMap);
 

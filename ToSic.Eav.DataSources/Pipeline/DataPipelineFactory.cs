@@ -77,17 +77,15 @@ namespace ToSic.Eav.DataSources.Pipeline
 	        if (outSource == null)
 	            outSource = new PassThrough();
 	        if (outSource.DataSourceGuid == Guid.Empty)
-	            outSource.DataSourceGuid = qdef.Header.EntityGuid; // dataPipeline.EntityGuid;
+	            outSource.DataSourceGuid = qdef.Header.EntityGuid;
 
 	        #endregion
 
 	        #region prepare shared / global value providers
-
-	        //var metaDataSource = DataSource.GetMetaDataSource(/*source.ZoneId*/null, /*source.AppId*/ appId);
 	        // the pipeline settings which apply to the whole pipeline
 	        var pipelineSettingsProvider =
 	            new AssignedEntityValueProvider("pipelinesettings",
-	                qdef.Header /* dataPipeline*/); //.EntityGuid, metaDataSource);
+	                qdef.Header);
 
 	        // global settings, ATM just if showdrafts are to be used
 	        const string itemSettings = "settings";
@@ -97,16 +95,15 @@ namespace ToSic.Eav.DataSources.Pipeline
 
 	        #region init all DataPipelineParts
 
-	        Log.Add($"add parts to pipe#{ /*dataPipeline*/qdef.Header.EntityId} ");
+	        Log.Add($"add parts to pipe#{qdef.Header.EntityId} ");
 	        var dataSources = new Dictionary<string, IDataSource>();
-	        foreach (var dataPipelinePart in qdef.Parts) // dataPipelineParts)
+	        foreach (var dataPipelinePart in qdef.Parts)
 	        {
 	            #region Init Configuration Provider
 
 	            var configurationProvider = new ValueCollectionProvider();
 	            configurationProvider.Sources.Add(itemSettings,
 	                new AssignedEntityValueProvider(itemSettings, dataPipelinePart));
-	            // .EntityGuid, metaDataSource));
 
 	            // if show-draft in overridden, add that to the settings
 	            if (showDrafts)
@@ -147,11 +144,9 @@ namespace ToSic.Eav.DataSources.Pipeline
 	            var assemblyAndType = dataPipelinePart[QueryConstants.PartAssemblyAndType][0].ToString();
 	            assemblyAndType = RewriteOldAssemblyNames(assemblyAndType);
 
-	            var dataSource = DataSource.GetDataSource(assemblyAndType,
-	                /*source.ZoneId*/ null, /*source.AppId*/ qdef.Header.AppId /*appId*/,
+	            var dataSource = DataSource.GetDataSource(assemblyAndType, null, qdef.Header.AppId,
 	                valueCollectionProvider: configurationProvider, parentLog: Log);
 	            dataSource.DataSourceGuid = dataPipelinePart.EntityGuid;
-	            //ConfigurationProvider.configList = dataSource.Configuration;
 
 	            Log.Add($"add '{assemblyAndType}' as " +
 	                    $"part#{dataPipelinePart.EntityId}({dataPipelinePart.EntityGuid.ToString().Substring(0, 6)}...)");
@@ -161,22 +156,20 @@ namespace ToSic.Eav.DataSources.Pipeline
 
 	        #endregion
 
-	        InitWirings( /*dataPipeline*/qdef.Header, dataSources);
+	        InitWirings(qdef.Header, dataSources);
 
 	        return outSource;
 	    }
 
 	    /// <summary>
-        /// Check if a pipeline part has an old assembly name, and if yes, correct it to the new name
-        /// </summary>
-        /// <param name="assemblyAndType"></param>
-        /// <returns></returns>
+	    /// Check if a pipeline part has an old assembly name, and if yes, correct it to the new name
+	    /// </summary>
+	    /// <param name="assemblyAndType"></param>
+	    /// <returns></returns>
 	    public static string RewriteOldAssemblyNames(string assemblyAndType)
-        {
-            return assemblyAndType.EndsWith(Constants.V3To4DataSourceDllOld) 
-                ? assemblyAndType.Replace(Constants.V3To4DataSourceDllOld, Constants.V3To4DataSourceDllNew) 
-                : assemblyAndType;
-        }
+	        => assemblyAndType.EndsWith(Constants.V3To4DataSourceDllOld)
+	            ? assemblyAndType.Replace(Constants.V3To4DataSourceDllOld, Constants.V3To4DataSourceDllNew)
+	            : assemblyAndType;
 
 	    /// <summary>
 		/// Init Stream Wirings between Pipeline-Parts (Buttom-Up)
@@ -233,7 +226,7 @@ namespace ToSic.Eav.DataSources.Pipeline
 				    {
 				        var sourceDsrc = allDataSources[wire.From];
 				        var sourceStream = (sourceDsrc as IDeferredDataSource)?.DeferredOut(wire.Out) ?? sourceDsrc.Out[wire.Out]; // if the source provides deferredOut, use that
-				        ((IDataTarget) allDataSources[wire.To]).In[wire.In] = sourceStream;// sourceDsrc.Out[wire.Out];
+				        ((IDataTarget) allDataSources[wire.To]).In[wire.In] = sourceStream;
 
 				        initializedWirings.Add(wire);
 
@@ -262,7 +255,7 @@ namespace ToSic.Eav.DataSources.Pipeline
 
 	    public IDataSource GetDataSource(QueryDefinition qdef, bool showDrafts)
 	    {
-	        var testValueProviders = GetTestValueProviders( /*appId, queryId,*/ qdef).ToList();
+	        var testValueProviders = GetTestValueProviders(qdef).ToList();
 	        return GetDataSource(qdef, testValueProviders, showDrafts: showDrafts);
 	    }
 

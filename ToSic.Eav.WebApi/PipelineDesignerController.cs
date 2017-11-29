@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Web.Http;
 using Newtonsoft.Json;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Pipeline;
+using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.WebApi.Formats;
 
@@ -138,8 +140,6 @@ namespace ToSic.Eav.WebApi
 		{
 		    Log.Add($"construct pipe a#{appId}, pipe:{id}, drafts:{showDrafts}");
 		    return new DataPipelineFactory(Log).GetDataSource(appId, id, showDrafts);
-			//var testValueProviders = fact.GetTestValueProviders(appId, id).ToList();
-		 //   return fact.GetDataSource(appId, id, testValueProviders, showDrafts:showDrafts);
 		}
 
         [HttpGet]
@@ -152,7 +152,7 @@ namespace ToSic.Eav.WebApi
         /// </summary>
         [HttpGet]
         public void ClonePipeline(int appId, int id)
-            => new AppManager(appId, Log).Queries.Clone(id);
+            => new AppManager(appId, Log).Queries.SaveCopy(id);
 		
 
 		/// <summary>
@@ -164,5 +164,32 @@ namespace ToSic.Eav.WebApi
 		    new AppManager(appId, Log).Queries.Delete(id);
 			return new { Result = "Success" };
 		}
-	}
+
+
+
+        [HttpPost]
+        public bool ImportQuery(QueryImport args)
+        {
+            try
+            {
+                Log.Add("import content" + args.DebugInfo);
+                AppId = args.AppId;
+
+                var data = Convert.FromBase64String(args.ContentBase64);
+                var str = Encoding.UTF8.GetString(data);
+
+                var deser = new ImportExport.Json.JsonSerializer(AppManager.Package, Log);
+                var ents = deser.Deserialize(str);
+                var qdef = new QueryDefinition(ents);
+                AppManager.Queries.SaveCopy(qdef);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Couldn't import - probably bad file format", ex);
+            }
+        }
+
+    }
 }
