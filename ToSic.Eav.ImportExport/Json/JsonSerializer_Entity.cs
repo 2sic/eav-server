@@ -12,17 +12,13 @@ namespace ToSic.Eav.ImportExport.Json
     public partial class JsonSerializer
     {
         public override string Serialize(IEntity entity) => Serialize(entity, 0);
-        //    JsonConvert.SerializeObject(new JsonFormat
-        //{
-        //    Entity = ToJson(entity)
-        //}, JsonSerializerSettings());
 
         public string Serialize(IEntity entity, int metadataDepth) => JsonConvert.SerializeObject(new JsonFormat
         {
             Entity = ToJson(entity, metadataDepth)
         }, JsonSerializerSettings());
 
-        private JsonEntity ToJson(IEntity entity, int metadataDepth = 0)
+        private static JsonEntity ToJson(IEntity entity, int metadataDepth = 0)
         {
             JsonMetadataFor mddic = null;
             if (entity.MetadataFor.IsMetadata)

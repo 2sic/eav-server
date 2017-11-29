@@ -13,11 +13,8 @@ namespace ToSic.Eav.ImportExport.Json
     public partial class JsonSerializer: IThingDeserializer
     {
 
-        public IEntity Deserialize(string serialized, bool allowDynamic = false, bool skipUnknownType = false)
-        {
-            var jsonObj = UnpackAndTestGenericJsonV1(serialized);
-            return Deserialize(jsonObj.Entity, allowDynamic, skipUnknownType);
-        }
+        public IEntity Deserialize(string serialized, bool allowDynamic = false, bool skipUnknownType = false) 
+            => Deserialize(UnpackAndTestGenericJsonV1(serialized).Entity, allowDynamic, skipUnknownType);
 
 
         private static JsonFormat UnpackAndTestGenericJsonV1(string serialized)
@@ -64,6 +61,14 @@ namespace ToSic.Eav.ImportExport.Json
             var newEntity = EntityBuilder.EntityFromRepository(AppId, jEnt.Guid, jEnt.Id, jEnt.Id, ismeta, contentType, true,
                 null, null, DateTime.Now, jEnt.Owner, jEnt.Version);
 
+            // check if metadata was included
+            if (jEnt.Metadata != null)
+            {
+                var mdItems = jEnt.Metadata
+                    .Select(m => Deserialize(m, allowDynamic, skipUnknownType))
+                    .ToList();
+                newEntity.Metadata.Use(mdItems);
+            }
 
             // build attributes - based on type definition
             if (contentType.IsDynamic)
