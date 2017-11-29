@@ -74,7 +74,7 @@ namespace ToSic.Eav.ImportExport.Json
 
             // new: optionally include metadata
             List<JsonEntity> itemMeta = null;
-            if (metadataDepth > 0)
+            if (metadataDepth > 0 && entity.Metadata.Any())
                 itemMeta = entity.Metadata.Select(m => ToJson(m, metadataDepth - 1)).ToList();
 
             var jEnt = new JsonEntity
