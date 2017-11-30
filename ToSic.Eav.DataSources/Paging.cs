@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.DataSources.Attributes;
+using ToSic.Eav.DataSources.VisualQuery;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
@@ -10,8 +10,8 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// A DataSource that filters Entities by Ids
 	/// </summary>
-	[PipelineDesigner]
-	[DataSourceProperties(Type = DataSourceType.Logic, DynamicOut = false,
+
+	[VisualQuery(Type = DataSourceType.Logic, DynamicOut = false,
 	    HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Paging")]
 
     public sealed class Paging: BaseDataSource
@@ -25,7 +25,7 @@ namespace ToSic.Eav.DataSources
 	    private const int DefPageNum = 1;
 
         /// <summary>
-        /// The attribute whoose value will be filtered
+        /// The Page size
         /// </summary>
         public int PageSize
         {
@@ -38,7 +38,7 @@ namespace ToSic.Eav.DataSources
         }
 
         /// <summary>
-        /// The attribute whoose value will be filtered
+        /// The Page number
         /// </summary>
         public int PageNumber
         {

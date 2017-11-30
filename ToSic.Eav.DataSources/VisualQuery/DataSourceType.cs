@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.DataSources.Attributes
+﻿namespace ToSic.Eav.DataSources.VisualQuery
 {
     public enum DataSourceType
     {

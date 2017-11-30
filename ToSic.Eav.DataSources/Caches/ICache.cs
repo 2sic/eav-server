@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.App;
-using ToSic.Eav.DataSources.Attributes;
+using ToSic.Eav.DataSources.VisualQuery;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources.Caches
@@ -10,8 +10,8 @@ namespace ToSic.Eav.DataSources.Caches
 	/// <summary>
 	/// Caching interface for standard Eav Cache
 	/// </summary>
-	[PipelineDesigner]
-	[DataSourceProperties(Type = DataSourceType.Source, EnableConfig = false)]
+
+	[VisualQuery(Type = DataSourceType.Source, EnableConfig = false)]
     public interface ICache : IDataSource
 	{
 		/// <summary>

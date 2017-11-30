@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.DataSources.Attributes;
 using ToSic.Eav.DataSources.Exceptions;
+using ToSic.Eav.DataSources.VisualQuery;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
@@ -11,8 +11,8 @@ namespace ToSic.Eav.DataSources
     /// <summary>
     /// Return only Entities having a specific value in an Attribute
     /// </summary>
-    [PipelineDesigner]
-    [DataSourceProperties(
+    //[PipelineDesigner]
+    [VisualQuery(
         Type = DataSourceType.Filter, 
         In = new[] { Constants.DefaultStreamName, Constants.FallbackStreamName },
         DynamicOut = false,

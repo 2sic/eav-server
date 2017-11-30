@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.DataSources.Attributes;
+using ToSic.Eav.DataSources.VisualQuery;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
@@ -10,8 +10,8 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// A DataSource that filters Entities by Ids
 	/// </summary>
-	[PipelineDesigner]
-    [DataSourceProperties(Type = DataSourceType.Sort, DynamicOut = false, EnableConfig = true, 
+
+    [VisualQuery(Type = DataSourceType.Sort, DynamicOut = false, EnableConfig = true, 
         ExpectsDataOfType = "38e7822b-1049-4539-bb3f-f99949b1b1d1",
         Icon = "shuffle",
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Shuffle")]

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.DataSources.Attributes;
+using ToSic.Eav.DataSources.VisualQuery;
 
 namespace ToSic.Eav.DataSources.Caches
 {
@@ -9,8 +9,8 @@ namespace ToSic.Eav.DataSources.Caches
 	/// <summary>
 	/// Return all Entities from a specific App
 	/// </summary>
-	[PipelineDesigner]
-    [DataSourceProperties(Type = DataSourceType.Cache, DynamicOut = true,
+
+    [VisualQuery(Type = DataSourceType.Cache, DynamicOut = true,
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-CacheAllStreams")]
 	public class CacheAllStreams : BaseDataSource, IDeferredDataSource
 	{

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.DataSources.Attributes;
+using ToSic.Eav.DataSources.VisualQuery;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
@@ -9,8 +9,8 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// A DataSource that merges two streams
 	/// </summary>
-	[PipelineDesigner]
-	[DataSourceProperties(Type = DataSourceType.Logic, 
+
+	[VisualQuery(Type = DataSourceType.Logic, 
         DynamicOut = false, 
         EnableConfig = false,
 	    HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-StreamMerge")]
