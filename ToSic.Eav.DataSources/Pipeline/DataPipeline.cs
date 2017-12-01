@@ -19,35 +19,19 @@ namespace ToSic.Eav.DataSources.Pipeline
 		/// <param name="dataSource">DataSource to load Entity from</param>
 		public static IEntity GetPipelineEntity(int entityId, IDataSource dataSource)
 		{
-			var entities = dataSource[Constants.DefaultStreamName].List;
-
-			IEntity pipelineEntity;
 			try
 			{
-				pipelineEntity = entities.FindRepoId(entityId); // all in-bound give us the cache, so entities used to be a dictionary of repo-ids
+			    var pipelineEntity = dataSource.List.FindRepoId(entityId);
                 if (pipelineEntity.Type.StaticName != Constants.DataPipelineStaticName)
                     throw new ArgumentException("Entity is not an DataPipeline Entity", nameof(entityId));
+			    return pipelineEntity;
 			}
 			catch (Exception)
 			{
 				throw new ArgumentException($"Could not load Pipeline-Entity with ID {entityId}.", nameof(entityId));
 			}
 
-			return pipelineEntity;
 		}
-
-		/// <summary>
-		/// Get Entities Describing PipelineParts
-		/// </summary>
-		/// <param name="zoneId">zoneId of the Pipeline</param>
-		/// <param name="appId">appId of the Pipeline</param>
-		/// <param name="pipelineEntityGuid">EntityGuid of the Entity describing the Pipeline</param>
-		public static IEnumerable<IEntity> GetPipelineParts(int zoneId, int appId, Guid pipelineEntityGuid)
-		{
-			var metaDataSource = DataSource.GetMetaDataSource(zoneId, appId);
-			return metaDataSource.GetMetadata(Constants.MetadataForEntity, pipelineEntityGuid, Constants.DataPipelinePartStaticName);
-		}
-
 
         /// <summary>
         /// Assembles a list of all queries / pipelines configured for this app. 

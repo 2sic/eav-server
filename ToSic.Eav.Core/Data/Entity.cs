@@ -190,5 +190,27 @@ namespace ToSic.Eav.Data
 
         /// <inheritdoc />
         public int Version { get; internal set; } = 1;
+
+
+
+        #region Metadata
+
+        public IMetadataOfItem Metadata
+        {
+            get
+            {
+                if(_metadata == null)
+                {
+                    _metadata = new OfMetadataOfItem<Guid>(Constants.MetadataForEntity, EntityGuid, DeferredLookupData);
+                    if (DeferredLookupData == null) _metadata.Use(new List<IEntity>());
+                }
+                return _metadata;
+            }
+        }
+
+        private IMetadataOfItem _metadata;
+        internal IDeferredEntitiesList DeferredLookupData = null;
+
+        #endregion
     }
 }

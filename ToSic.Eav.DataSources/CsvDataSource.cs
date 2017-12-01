@@ -4,14 +4,14 @@ using System.Linq;
 using CsvHelper;
 using System.IO;
 using System.Web;
-using ToSic.Eav.DataSources.Attributes;
+using ToSic.Eav.DataSources.VisualQuery;
 using ToSic.Eav.Interfaces;
 
 
 namespace ToSic.Eav.DataSources
 {
-    [PipelineDesigner]
-    [DataSourceProperties(Type = DataSourceType.Source, DynamicOut = false)]
+    //[PipelineDesigner]
+    [VisualQuery(Type = DataSourceType.Source, DynamicOut = false)]
     public class CsvDataSource : ExternalDataDataSource
     {
         private const string FilePathKey = "FilePath";

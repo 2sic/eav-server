@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.DataSources.Attributes;
 using ToSic.Eav.DataSources.Caches;
+using ToSic.Eav.DataSources.VisualQuery;
 using ToSic.Eav.Interfaces;
 using static System.Int32;
 
@@ -11,8 +11,8 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// Return all Entities from a specific App
 	/// </summary>
-	[PipelineDesigner]
-	[DataSourceProperties(Type = DataSourceType.Source, Icon = "app", DynamicOut = true,
+
+	[VisualQuery(Type = DataSourceType.Source, Icon = "app", DynamicOut = true,
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-App")]
 
     public class App : BaseDataSource

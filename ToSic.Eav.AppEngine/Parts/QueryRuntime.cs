@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSources.Attributes;
+using ToSic.Eav.DataSources.Pipeline;
+using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.DataSources.VisualQuery;
 using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Apps.Parts
@@ -42,7 +44,7 @@ namespace ToSic.Eav.Apps.Parts
                 }
                 #endregion
 
-                var dsInfo = dataSource.GetCustomAttributes(typeof(DataSourceProperties), true).FirstOrDefault() as DataSourceProperties;
+                var dsInfo = dataSource.GetCustomAttributes(typeof(VisualQueryAttribute), true).FirstOrDefault() as VisualQueryAttribute;
                 result.Add(new DataSourceInfo(dataSource.Name, dsInfo)
                 {
                     PartAssemblyAndType = dataSource.FullName + ", " + dataSource.Assembly.GetName().Name,
@@ -52,6 +54,9 @@ namespace ToSic.Eav.Apps.Parts
 
             return result;
         }
+
+        public QueryDefinition Get(int queryId) =>
+            new QueryDefinition(DataPipeline.GetPipelineEntity(queryId, App.Cache));
 
         public class DataSourceInfo
         {
@@ -66,10 +71,11 @@ namespace ToSic.Eav.Apps.Parts
             public string HelpLink;
             public bool EnableConfig;
             public string Name;
+            public int Difficulty;
 
-            public DataSourceInfo(string fallbackName, DataSourceProperties dsInfo)
+            public DataSourceInfo(string fallbackName, VisualQueryAttribute dsInfo)
             {
-                Name = fallbackName; // will override afterwards if possible
+                Name = fallbackName; // will override further down if dsInfo is provided
                 if (dsInfo == null) return;
                 PrimaryType = dsInfo.Type.ToString();
                 Icon = dsInfo.Icon;
@@ -80,6 +86,7 @@ namespace ToSic.Eav.Apps.Parts
                 ContentType = dsInfo.ExpectsDataOfType;
                 if (!string.IsNullOrEmpty(dsInfo.NiceName))
                     Name = dsInfo.NiceName;
+                Difficulty = (int) dsInfo.Difficulty;
             }
         }
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using ToSic.Eav.Data.Query;
+using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
@@ -40,111 +41,137 @@ namespace ToSic.Eav.DataSources.Pipeline
 	    /// <returns>A single DataSource Out with wirings and configurations loaded, ready to use</returns>
 	    public IDataSource GetDataSource(int appId, int pipelineEntityId, IEnumerable<IValueProvider> configurationPropertyAccesses, IDataSource outSource = null, bool showDrafts = false)
 		{
-            Log.Add($"build pipe#{pipelineEntityId} for a#{appId}, draft:{showDrafts}");
-            if(outSource == null)
-                outSource = new PassThrough();
-			#region Load Pipeline Entity and Pipeline Parts
-			var source = DataSource.GetInitialDataSource(appId: appId, parentLog:Log);
-			var metaDataSource = DataSource.GetMetaDataSource(source.ZoneId, source.AppId);
-
-		    var appEntities = source[Constants.DefaultStreamName].List;
-			IEntity dataPipeline;
-			try
-			{
-				dataPipeline = appEntities.FindRepoId(pipelineEntityId); // use findRepo, as it uses the cache, which gives the list of all items // [pipelineEntityId];
-			}
-			catch (KeyNotFoundException)
-			{
-				throw new Exception("PipelineEntity not found with ID " + pipelineEntityId + " on AppId " + appId);
-			}
-
-            // tell the primary-out that it has this guid, for better debugging
-		    if (outSource.DataSourceGuid == Guid.Empty)
-		        outSource.DataSourceGuid = dataPipeline.EntityGuid;
-
-			var dataPipelineParts = metaDataSource.GetMetadata(Constants.MetadataForEntity, dataPipeline.EntityGuid, Constants.DataPipelinePartStaticName);
-            #endregion
-
-            #region prepare shared / global value providers
-            // the pipeline settings which apply to the whole pipeline
-            var pipelineSettingsProvider = new AssignedEntityValueProvider("pipelinesettings", dataPipeline.EntityGuid, metaDataSource);
-
-            // global settings, ATM just if showdrafts are to be used
-            const string itemSettings = "settings";
-            #endregion
-
-
-            #region init all DataPipelineParts
-
-		    Log.Add($"add parts to pipe#{dataPipeline.EntityId} ");
-            var dataSources = new Dictionary<string, IDataSource>();
-		    foreach (var dataPipelinePart in dataPipelineParts)
-		    {
-		        #region Init Configuration Provider
-
-		        var configurationProvider = new ValueCollectionProvider();
-                configurationProvider.Sources.Add(itemSettings, new AssignedEntityValueProvider(itemSettings, dataPipelinePart.EntityGuid,
-                    metaDataSource));
-
-                // if show-draft in overridden, add that to the settings
-                if (showDrafts)
-                    configurationProvider.Sources[itemSettings] = new OverrideValueProvider(itemSettings,
-		                new StaticValueProvider(itemSettings, new Dictionary<string, string>
-		                {
-		                    {"ShowDrafts", true.ToString()}
-		                }), configurationProvider.Sources[itemSettings]);
-
-		        configurationProvider.Sources.Add(pipelineSettingsProvider.Name, pipelineSettingsProvider);
-
-		        // attach all propertyProviders
-		        if (configurationPropertyAccesses != null)
-		        {
-		            // ReSharper disable once PossibleMultipleEnumeration
-		            var injectConfs = configurationPropertyAccesses.ToList();
-
-		            foreach (var propertyProvider in injectConfs)
-		            {
-		                if (propertyProvider.Name == null)
-		                    throw new NullReferenceException("PropertyProvider must have a Name");
-
-		                // check if it already has this provider. 
-		                // ensure that there is an "override property provider" which would pre-catch certain keys
-		                if (configurationProvider.Sources.ContainsKey(propertyProvider.Name))
-		                    configurationProvider.Sources[propertyProvider.Name] =
-		                        new OverrideValueProvider(propertyProvider.Name, propertyProvider,
-		                            configurationProvider.Sources[propertyProvider.Name]);
-		                else
-		                    configurationProvider.Sources.Add(propertyProvider.Name, propertyProvider);
-		            }
-		        }
-
-		        #endregion
-
-
-                // This is new in 2015-10-38 - check type because we renamed the DLL with the parts, and sometimes the old dll-name had been saved
-                var assemblyAndType = dataPipelinePart["PartAssemblyAndType"][0].ToString();
-		        if (assemblyAndType.EndsWith(Constants.V3To4DataSourceDllOld))
-		            assemblyAndType = assemblyAndType.Replace(Constants.V3To4DataSourceDllOld, Constants.V3To4DataSourceDllNew);
-
-		        var dataSource = DataSource.GetDataSource(assemblyAndType,
-		            source.ZoneId, source.AppId, valueCollectionProvider: configurationProvider, parentLog:Log);
-		        dataSource.DataSourceGuid = dataPipelinePart.EntityGuid;
-		        //ConfigurationProvider.configList = dataSource.Configuration;
-
-		        Log.Add($"add '{assemblyAndType}' as " +
-		                $"part#{dataPipelinePart.EntityId}({dataPipelinePart.EntityGuid.ToString().Substring(0, 6)}...)");
-		        dataSources.Add(dataPipelinePart.EntityGuid.ToString(), dataSource);
-
-		    }
-		    dataSources.Add("Out", outSource);
-			#endregion
-
-			InitWirings(dataPipeline, dataSources);
-
-			return outSource;
+		    Log.Add($"build pipe#{pipelineEntityId} for a#{appId}, draft:{showDrafts}");
+            var qdef = GetQueryDefinition(appId, pipelineEntityId);
+            return GetDataSource(qdef, configurationPropertyAccesses, outSource, showDrafts);
 		}
 
-		/// <summary>
+	    private QueryDefinition GetQueryDefinition(int appId, int pipelineEntityId)
+	    {
+	        Log.Add($"get query def#{pipelineEntityId} for a#{appId}");
+
+	        try
+	        {
+                var source = DataSource.GetInitialDataSource(appId: appId, parentLog: Log);
+	            var appEntities = source[Constants.DefaultStreamName].List;
+
+	            // use findRepo, as it uses the cache, which gives the list of all items // [pipelineEntityId];
+	            var dataPipeline = appEntities.FindRepoId(pipelineEntityId);
+	            return new QueryDefinition(dataPipeline);
+	        }
+	        catch (KeyNotFoundException)
+	        {
+	            throw new Exception("PipelineEntity not found with ID " + pipelineEntityId + " on AppId " + appId);
+	        }
+
+	    }
+
+	    public IDataSource GetDataSource(QueryDefinition qdef, 
+            IEnumerable<IValueProvider> configurationPropertyAccesses,
+	        IDataSource outSource = null, 
+            bool showDrafts = false)
+	    {
+	        #region Load Pipeline Entity and Pipeline Parts
+
+	        // tell the primary-out that it has this guid, for better debugging
+	        if (outSource == null)
+	            outSource = new PassThrough();
+	        if (outSource.DataSourceGuid == Guid.Empty)
+	            outSource.DataSourceGuid = qdef.Header.EntityGuid;
+
+	        #endregion
+
+	        #region prepare shared / global value providers
+	        // the pipeline settings which apply to the whole pipeline
+	        var pipelineSettingsProvider =
+	            new AssignedEntityValueProvider("pipelinesettings",
+	                qdef.Header);
+
+	        // global settings, ATM just if showdrafts are to be used
+	        const string itemSettings = "settings";
+
+	        #endregion
+
+
+	        #region init all DataPipelineParts
+
+	        Log.Add($"add parts to pipe#{qdef.Header.EntityId} ");
+	        var dataSources = new Dictionary<string, IDataSource>();
+	        foreach (var dataPipelinePart in qdef.Parts)
+	        {
+	            #region Init Configuration Provider
+
+	            var configurationProvider = new ValueCollectionProvider();
+	            configurationProvider.Sources.Add(itemSettings,
+	                new AssignedEntityValueProvider(itemSettings, dataPipelinePart));
+
+	            // if show-draft in overridden, add that to the settings
+	            if (showDrafts)
+	                configurationProvider.Sources[itemSettings] = new OverrideValueProvider(itemSettings,
+	                    new StaticValueProvider(itemSettings, new Dictionary<string, string>
+	                    {
+	                        {"ShowDrafts", true.ToString()}
+	                    }), configurationProvider.Sources[itemSettings]);
+
+	            configurationProvider.Sources.Add(pipelineSettingsProvider.Name, pipelineSettingsProvider);
+
+	            // attach all propertyProviders
+	            if (configurationPropertyAccesses != null)
+	            {
+	                // ReSharper disable once PossibleMultipleEnumeration
+	                var injectConfs = configurationPropertyAccesses.ToList();
+
+	                foreach (var propertyProvider in injectConfs)
+	                {
+	                    if (propertyProvider.Name == null)
+	                        throw new NullReferenceException("PropertyProvider must have a Name");
+
+	                    // check if it already has this provider. 
+	                    // ensure that there is an "override property provider" which would pre-catch certain keys
+	                    if (configurationProvider.Sources.ContainsKey(propertyProvider.Name))
+	                        configurationProvider.Sources[propertyProvider.Name] =
+	                            new OverrideValueProvider(propertyProvider.Name, propertyProvider,
+	                                configurationProvider.Sources[propertyProvider.Name]);
+	                    else
+	                        configurationProvider.Sources.Add(propertyProvider.Name, propertyProvider);
+	                }
+	            }
+
+	            #endregion
+
+
+	            // This is new in 2015-10-38 - check type because we renamed the DLL with the parts, and sometimes the old dll-name had been saved
+	            var assemblyAndType = dataPipelinePart[QueryConstants.PartAssemblyAndType][0].ToString();
+	            assemblyAndType = RewriteOldAssemblyNames(assemblyAndType);
+
+	            var dataSource = DataSource.GetDataSource(assemblyAndType, null, qdef.Header.AppId,
+	                valueCollectionProvider: configurationProvider, parentLog: Log);
+	            dataSource.DataSourceGuid = dataPipelinePart.EntityGuid;
+
+	            Log.Add($"add '{assemblyAndType}' as " +
+	                    $"part#{dataPipelinePart.EntityId}({dataPipelinePart.EntityGuid.ToString().Substring(0, 6)}...)");
+	            dataSources.Add(dataPipelinePart.EntityGuid.ToString(), dataSource);
+	        }
+	        dataSources.Add("Out", outSource);
+
+	        #endregion
+
+	        InitWirings(qdef.Header, dataSources);
+
+	        return outSource;
+	    }
+
+	    /// <summary>
+	    /// Check if a pipeline part has an old assembly name, and if yes, correct it to the new name
+	    /// </summary>
+	    /// <param name="assemblyAndType"></param>
+	    /// <returns></returns>
+	    public static string RewriteOldAssemblyNames(string assemblyAndType)
+	        => assemblyAndType.EndsWith(Constants.V3To4DataSourceDllOld)
+	            ? assemblyAndType.Replace(Constants.V3To4DataSourceDllOld, Constants.V3To4DataSourceDllNew)
+	            : assemblyAndType;
+
+	    /// <summary>
 		/// Init Stream Wirings between Pipeline-Parts (Buttom-Up)
 		/// </summary>
 		private void InitWirings(IEntity dataPipeline, IDictionary<string, IDataSource> dataSources)
@@ -199,7 +226,7 @@ namespace ToSic.Eav.DataSources.Pipeline
 				    {
 				        var sourceDsrc = allDataSources[wire.From];
 				        var sourceStream = (sourceDsrc as IDeferredDataSource)?.DeferredOut(wire.Out) ?? sourceDsrc.Out[wire.Out]; // if the source provides deferredOut, use that
-				        ((IDataTarget) allDataSources[wire.To]).In[wire.In] = sourceStream;// sourceDsrc.Out[wire.Out];
+				        ((IDataTarget) allDataSources[wire.To]).In[wire.In] = sourceStream;
 
 				        initializedWirings.Add(wire);
 
@@ -215,21 +242,33 @@ namespace ToSic.Eav.DataSources.Pipeline
 			return wiringsCreated;
 		}
 
+
+        /// <summary>
+        /// Build a data-source using test-values
+        /// </summary>
+        /// <param name="appId"></param>
+        /// <param name="queryId"></param>
+        /// <param name="showDrafts"></param>
+        /// <returns></returns>
+	    public IDataSource GetDataSource(int appId, int queryId, bool showDrafts) 
+            => GetDataSource(GetQueryDefinition(appId, queryId), showDrafts);
+
+	    public IDataSource GetDataSource(QueryDefinition qdef, bool showDrafts)
+	    {
+	        var testValueProviders = GetTestValueProviders(qdef).ToList();
+	        return GetDataSource(qdef, testValueProviders, showDrafts: showDrafts);
+	    }
+
+	    private const string FieldTestParams = "TestParameters";
         /// <summary>
         /// Retrieve test values to test a specific pipeline. 
         /// The specs are found in the pipeline definition, but the must be converted to a source
         /// </summary>
-        /// <param name="appId"></param>
-        /// <param name="pipelineEntityId"></param>
         /// <returns></returns>
-        public IEnumerable<IValueProvider> GetTestValueProviders(int appId, int pipelineEntityId)
+        public IEnumerable<IValueProvider> GetTestValueProviders(QueryDefinition qdef)
         {
-            // Get the Entity describing the Pipeline
-            var source = DataSource.GetInitialDataSource(appId: appId);
-            var pipelineEntity = DataPipeline.GetPipelineEntity(pipelineEntityId, source);
-
             // Parse Test-Parameters in Format [Token:Property]=Value
-            var testParameters = ((IAttribute<string>)pipelineEntity["TestParameters"]).TypedContents;
+            var testParameters = ((IAttribute<string>) qdef.Header[FieldTestParams]).TypedContents;
             if (testParameters == null)
                 return null;
             // todo: dangerous: seems like another token-replace mechanism! should probably use same token-replace everywhere

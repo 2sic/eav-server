@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.DataSources.Attributes;
+﻿using ToSic.Eav.DataSources.VisualQuery;
 
 namespace ToSic.Eav.DataSources
 {
@@ -6,8 +6,8 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// A DataSource that passes through all In Connections. Can be used con consollidate/merge multiple Sources into one.
 	/// </summary>
-	[PipelineDesigner]
-	[DataSourceProperties(Type = DataSourceType.Source, DynamicOut = true)]
+
+	[VisualQuery(Type = DataSourceType.Source, DynamicOut = true)]
 
     public class PassThrough : BaseDataSource
 	{

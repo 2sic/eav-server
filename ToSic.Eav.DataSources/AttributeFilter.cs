@@ -2,7 +2,7 @@
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
-using ToSic.Eav.DataSources.Attributes;
+using ToSic.Eav.DataSources.VisualQuery;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
@@ -12,8 +12,8 @@ namespace ToSic.Eav.DataSources
 	/// DataSource to only pass through configured AttributeNames
 	/// </summary>
 	/// <remarks>Uses Configuration "AttributeNames"</remarks>
-	[PipelineDesigner]
-	[DataSourceProperties(Type = DataSourceType.Modify, DynamicOut = false,
+
+	[VisualQuery(Type = DataSourceType.Modify, DynamicOut = false,
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-AttributeFilter")]
 
     public class AttributeFilter : BaseDataSource

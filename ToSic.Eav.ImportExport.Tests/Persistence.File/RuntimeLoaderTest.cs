@@ -34,7 +34,7 @@ namespace ToSic.Eav.ImportExport.Tests.Persistence.File
 
         [TestMethod]
         [DeploymentItem("..\\..\\" + PathWith40Types, TestingPath40)]
-        public void TestWith40FileTypes()
+        public void TestWith40FileTypes_JustReRunIfItFails()
         {
             // set loader root path, based on test environment
             RepositoryInfoOfDemoSystem.PathToUse = TestingPath40;

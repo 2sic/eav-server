@@ -88,6 +88,7 @@
     <Compile Include="ContentExportController.cs" />
     <Compile Include="ContentImportController.cs" />
     <Compile Include="ContentTypeController.cs" />
+    <Compile Include="Formats\QueryImport.cs" />
     <Compile Include="Formats\ContentImportArgs.cs" />
     <Compile Include="Formats\ContentImportResult.cs" />
     <Compile Include="Formats\ContentTypeFieldInfo.cs" />
@@ -95,6 +96,7 @@
     <Compile Include="EntityPickerController.cs" />
     <Compile Include="Formats\CompleteEntity.cs" />
     <Compile Include="Formats\ItemIdentifiers.cs" />
+    <Compile Include="Formats\QueryDefinitionInfo.cs" />
     <Compile Include="Helpers\Download.cs" />
     <Compile Include="PipelineDesignerController.cs">
       <SubType>Code</SubType>

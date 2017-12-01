@@ -22,5 +22,15 @@ namespace ToSic.Eav.Interfaces
         /// version of this entity in the repository
         /// </summary>
         int Version { get; }
+
+
+        /// <summary>
+        /// Get the metadata for this item
+        /// </summary>
+        /// <remarks>
+        /// The metadata is either already prepared, from the same app, or from a remote app
+        /// </remarks>
+        IMetadataOfItem Metadata { get; }
+
     }
 }

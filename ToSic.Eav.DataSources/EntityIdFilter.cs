@@ -3,7 +3,7 @@ using System.Collections.Generic;
 // using System.Data.EntityClient;
 using System.Linq;
 using ToSic.Eav.Data.Query;
-using ToSic.Eav.DataSources.Attributes;
+using ToSic.Eav.DataSources.VisualQuery;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
@@ -12,8 +12,8 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// A DataSource that filters Entities by Ids
 	/// </summary>
-	[PipelineDesigner]
-	[DataSourceProperties(Type = DataSourceType.Filter, DynamicOut = false,
+
+	[VisualQuery(Type = DataSourceType.Filter, DynamicOut = false,
         NiceName = "ItemIdFilter",
 	    HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-ItemIdFilter")]
 

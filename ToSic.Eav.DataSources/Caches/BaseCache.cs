@@ -136,6 +136,7 @@ namespace ToSic.Eav.DataSources.Caches
 	    /// Get a ContentType by StaticName if found of DisplayName if not
 	    /// </summary>
 	    /// <param name="name">Either StaticName or DisplayName</param>
+	    /// <returns>a content-type OR null</returns>
 	    public IContentType GetContentType(string name) => AppDataPackage.GetContentType(name);
 
 		/// <inheritdoc />

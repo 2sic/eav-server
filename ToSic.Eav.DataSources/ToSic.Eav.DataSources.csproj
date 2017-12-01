@@ -80,8 +80,11 @@
   <ItemGroup>
     <Compile Include="App.cs" />
     <Compile Include="AttributeFilter.cs" />
-    <Compile Include="Attributes\DataSourceType.cs" />
-    <Compile Include="Attributes\DataSourceProperties.cs" />
+    <Compile Include="Apps.cs" />
+    <Compile Include="VisualQuery\DifficultyBeta.cs" />
+    <Compile Include="Zones.cs" />
+    <Compile Include="VisualQuery\DataSourceType.cs" />
+    <Compile Include="VisualQuery\VisualQueryAttribute.cs" />
     <Compile Include="BaseDataSource.cs" />
     <Compile Include="Caches\BaseCache.cs" />
     <Compile Include="Caches\CacheAllStreams.cs" />
@@ -107,13 +110,16 @@
     <Compile Include="IDataTarget.cs" />
     <Compile Include="IDeferredDataSource.cs" />
     <Compile Include="Metadata\MetadataFromDataSource.cs" />
+    <Compile Include="Attributes.cs" />
+    <Compile Include="Pipeline\QueryConstants.cs" />
+    <Compile Include="Queries\QueryDefinition.cs" />
     <Compile Include="Shuffle.cs" />
     <Compile Include="Paging.cs" />
     <Compile Include="PassThrough.cs" />
     <Compile Include="Pipeline\DataPipeline.cs" />
     <Compile Include="Pipeline\DataPipelineFactory.cs" />
     <Compile Include="Pipeline\DataPipelineWiring.cs" />
-    <Compile Include="Pipeline\PipelineDesignerAttribute.cs" />
+    <Compile Include="VisualQuery\PipelineDesignerAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="OwnerFilter.cs" />
     <Compile Include="PublishingFilter.cs" />

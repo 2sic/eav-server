@@ -17,6 +17,7 @@ namespace ToSic.Eav.Data.Builder
         public static Entity EntityFromRepository(int appId, Guid entityGuid, int entityId, 
             int repositoryId, IMetadataFor metadataFor, IContentType type, 
             bool isPublished, IEnumerable<EntityRelationshipItem> allRelationships, 
+            IDeferredEntitiesList source,
             DateTime modified, string owner, int version)
         {
             var e = EntityWithAllIdsAndType(appId, entityGuid, entityId, repositoryId,
@@ -28,6 +29,8 @@ namespace ToSic.Eav.Data.Builder
             if (allRelationships == null)
                 allRelationships = new List<EntityRelationshipItem>();
             e.Relationships = new RelationshipManager(e, allRelationships);
+
+            e.DeferredLookupData = source;
 
             return e;
         }
@@ -62,6 +65,8 @@ namespace ToSic.Eav.Data.Builder
             e.Relationships = new RelationshipManager(e, allRelationships);
 
             e.MetadataFor = new MetadataFor(entity.MetadataFor);
+
+            e.DeferredLookupData = (entity as Entity)?.DeferredLookupData;
             return e;
         }
 

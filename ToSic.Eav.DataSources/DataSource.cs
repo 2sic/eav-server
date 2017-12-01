@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
+using ToSic.Eav.DataSources.VisualQuery;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.ValueProvider;
@@ -166,11 +167,11 @@ namespace ToSic.Eav
 	    /// Get all Installed DataSources
 	    /// </summary>
 	    /// <remarks>Objects that implement IDataSource</remarks>
-	    public static IEnumerable<Type> GetInstalledDataSources(bool onlyForDesigner)
-	        => onlyForDesigner
+	    public static IEnumerable<Type> GetInstalledDataSources(bool onlyForVisualQuery)
+	        => onlyForVisualQuery
 	            ? Plumbing.AssemblyHandling.FindClassesWithAttribute(
                     typeof(IDataSource),
-	                typeof(PipelineDesignerAttribute), false)
+	                typeof(VisualQueryAttribute), false)
 	            : Plumbing.AssemblyHandling.FindInherited(typeof(IDataSource));
 
 

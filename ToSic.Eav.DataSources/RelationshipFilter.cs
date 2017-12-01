@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.DataSources.Attributes;
+using ToSic.Eav.DataSources.VisualQuery;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
@@ -10,8 +10,8 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// Filter Entities by Value in a Related Entity
 	/// </summary>
-	[PipelineDesigner]
-	[DataSourceProperties(
+
+	[VisualQuery(
         Type = DataSourceType.Lookup, 
         In = new[] { Constants.DefaultStreamName, Constants.FallbackStreamName }, 
         DynamicOut = false,

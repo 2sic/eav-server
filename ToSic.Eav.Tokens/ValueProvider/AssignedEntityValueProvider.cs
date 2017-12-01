@@ -11,11 +11,14 @@ namespace ToSic.Eav.ValueProvider
 	/// </summary>
 	public class AssignedEntityValueProvider : EntityValueProvider
 	{
-	    private readonly IMetadataProvider _metaDataSource;
+	    private readonly IMetadataProvider _metaDataSource = null;
 		private readonly Guid _objectToProvideSettingsTo;
 		private bool _entityLoaded;
+	    private IEntity _parent = null;
 
 		public new string Name { get; }
+
+
 
 	    /// <summary>
 		/// Constructs the object with prefilled parameters. It won't access the entity yet, because 
@@ -31,14 +34,21 @@ namespace ToSic.Eav.ValueProvider
 			_objectToProvideSettingsTo = objectId;
 			_metaDataSource = metaDataSource;
 		}
-
+		public AssignedEntityValueProvider(string name, IEntity entityWithMetadata)
+		{
+			Name = name;
+		    _parent = entityWithMetadata;
+		}
         /// <summary>
         /// For late-loading the entity. Will be called automatically by the Get if not loaded yet. 
         /// </summary>
 		protected void LoadEntity()
-		{
-			var assignedEntities = _metaDataSource.GetMetadata(Constants.MetadataForEntity, _objectToProvideSettingsTo);
-			Entity = assignedEntities.FirstOrDefault(e => e.Type.StaticName != Constants.DataPipelinePartStaticName);
+        {
+            var md = _parent?.Metadata ??
+                     _metaDataSource.GetMetadata(Constants.MetadataForEntity, _objectToProvideSettingsTo);
+
+            // make sure we get the settings, but not the pipeline-parts, which may also be assigned
+			Entity = md.FirstOrDefault(e => e.Type.StaticName != Constants.DataPipelinePartStaticName);
 			_entityLoaded = true;
 		}
 

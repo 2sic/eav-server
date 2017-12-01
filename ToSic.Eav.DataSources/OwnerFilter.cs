@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.DataSources.Attributes;
+using ToSic.Eav.DataSources.VisualQuery;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
@@ -9,8 +9,8 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// Filter entities to show Drafts or only Published Entities
 	/// </summary>
-	[PipelineDesigner]
-	[DataSourceProperties(Type = DataSourceType.Security, DynamicOut = false,
+
+	[VisualQuery(Type = DataSourceType.Security, DynamicOut = false,
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-OwnerFilter")]
 
     public class OwnerFilter : BaseDataSource

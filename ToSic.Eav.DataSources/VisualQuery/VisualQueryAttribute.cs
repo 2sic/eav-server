@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ToSic.Eav.DataSources.Attributes
+namespace ToSic.Eav.DataSources.VisualQuery
 {
 	/// <inheritdoc />
 	/// <summary>
@@ -8,7 +8,7 @@ namespace ToSic.Eav.DataSources.Attributes
 	/// Only DataSources which have this attribute will be listed in the designer-tool
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
-	public class DataSourceProperties : Attribute
+	public class VisualQueryAttribute : Attribute
 	{
         /// <summary>
         /// A primary type of this source, which determines a default icon + some standard help-text
@@ -50,5 +50,11 @@ namespace ToSic.Eav.DataSources.Attributes
         /// </summary>
         public string NiceName { get; set; }
 
-    }
+
+        /// <summary>
+        /// This is still an experiment, but the goal is to hide complex sources from "normal" users
+        /// </summary>
+	    public DifficultyBeta Difficulty { get; set; } = DifficultyBeta.Default;
+
+	}
 }
