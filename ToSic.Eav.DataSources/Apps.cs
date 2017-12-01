@@ -10,12 +10,12 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// A DataSource that returns the attributes of a content-type
 	/// </summary>
-	[VisualQuery(Type = DataSourceType.Source, 
-        DynamicOut = false,
-        Difficulty = DifficultyBeta.Advanced,
-        EnableConfig = true,
-        ExpectsDataOfType = "fabc849e-b426-42ea-8e1c-c04e69facd9b",
-        HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Apps")]
+	//[VisualQuery(Type = DataSourceType.Source, 
+ //       DynamicOut = false,
+ //       Difficulty = DifficultyBeta.Advanced,
+ //       EnableConfig = true,
+ //       ExpectsDataOfType = "fabc849e-b426-42ea-8e1c-c04e69facd9b",
+ //       HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Apps")]
 
     public sealed class Apps: BaseDataSource
 	{
