@@ -49,7 +49,10 @@ namespace ToSic.Eav.DataSources.Pipeline
 	        foreach (var entQuery in typeFilter.List)
 	        {
 	            var delayedQuery = new DeferredPipelineQuery(zoneId, appId, entQuery, valuesCollectionProvider);
-                dict.Add(entQuery.Title[0].ToString(), delayedQuery);
+                // make sure it doesn't break if two queries have the same name...
+	            var name = entQuery.Title[0].ToString();
+	            if (!dict.ContainsKey(name))
+	                dict[name] = delayedQuery;
 	        }
 	        return dict;
 	    }
