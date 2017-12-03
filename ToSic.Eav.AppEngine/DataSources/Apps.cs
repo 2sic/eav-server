@@ -71,6 +71,8 @@ namespace ToSic.Eav.DataSources
 
 	        var list = zone.Apps.OrderBy(a => a.Key).Select(app =>
 	        {
+                //todo: must add more info about this app!
+
                // Assemble the entities
 	            var appEnt = new Dictionary<string, object>
 	            {

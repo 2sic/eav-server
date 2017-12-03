@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.DataSources.VisualQuery;
 using ToSic.Eav.Interfaces;
 
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.Apps.DataSources
 {
     /// <inheritdoc />
     /// <summary>
