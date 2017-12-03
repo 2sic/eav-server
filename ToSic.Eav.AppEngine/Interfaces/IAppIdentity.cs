@@ -4,7 +4,7 @@
     /// <summary>
     /// A app object capable of telling us it's identity
     /// </summary>
-    public interface IApp: IZone
+    public interface IAppIdentity: IZoneIdentity
     {
         /// <summary>
         /// The app id as used internally

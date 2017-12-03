@@ -3,7 +3,7 @@
     /// <summary>
     /// A zone
     /// </summary>
-    public interface IZone
+    public interface IZoneIdentity
     {
         /// <summary>
         /// ID of the zone (EAV Tennant)
