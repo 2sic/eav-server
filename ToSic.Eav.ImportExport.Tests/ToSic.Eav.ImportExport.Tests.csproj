@@ -81,10 +81,10 @@
     <Compile Include="Json\JsonEntitySerialization.cs" />
     <Compile Include="Json\JsonDynamic.cs" />
     <Compile Include="Json\JsonTestBase.cs" />
-    <Compile Include="Persistence.File\DemoRuntime.cs" />
-    <Compile Include="Persistence.File\FileLoaderTests.cs" />
+    <Compile Include="Persistence.File\Tst_FileLoader_Query.cs" />
+    <Compile Include="Persistence.File\Tst_FileLoader_Ct.cs" />
     <Compile Include="Persistence.File\PersistenceTestsBase.cs" />
-    <Compile Include="Persistence.File\RepositoryInfoOfDemoSystem.cs" />
+    <Compile Include="Persistence.File\RepositoryInfoOfTestSystem.cs" />
     <Compile Include="Persistence.File\RuntimeLoaderTest.cs" />
     <Compile Include="Persistence.File\TypeExporter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -97,6 +97,8 @@
     <Content Include="Persistence.File\.data\ContentTypes\System.Config ToSic.Eav.DataSources.SqlDataSource.json" />
     <Content Include="Persistence.File\.data\ContentTypes\System.Whatever.json" />
     <Content Include="Persistence.File\.data\ContentTypes\Default.Something.json" />
+    <None Include="Persistence.File\.data\queries\Query.Apps.json" />
+    <None Include="Persistence.File\.data\queries\Query.Zones.json" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj">
@@ -127,6 +129,9 @@
       <Project>{41243c6d-2d10-4285-8af2-719497ae00db}</Project>
       <Name>ToSic.Testing.Shared</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Json\queries\" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

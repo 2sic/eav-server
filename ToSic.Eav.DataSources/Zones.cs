@@ -6,15 +6,15 @@ using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
 {
-	/// <inheritdoc />
-	/// <summary>
-	/// A DataSource that returns the attributes of a content-type
-	/// </summary>
-	//[VisualQuery(Type = DataSourceType.Source,
-	//    Difficulty = DifficultyBeta.Advanced, 
- //       DynamicOut = false,
- //       EnableConfig = false,
-	//    HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Zones")]
+    /// <inheritdoc />
+    /// <summary>
+    /// A DataSource that returns the attributes of a content-type
+    /// </summary>
+    [VisualQuery(Type = DataSourceType.Source,
+        Difficulty = DifficultyBeta.Advanced,
+        DynamicOut = false,
+        EnableConfig = false,
+        HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Zones")]
 
     public sealed class Zones: BaseDataSource
 	{

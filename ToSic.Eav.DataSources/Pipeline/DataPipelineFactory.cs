@@ -144,7 +144,7 @@ namespace ToSic.Eav.DataSources.Pipeline
 	            var assemblyAndType = dataPipelinePart[QueryConstants.PartAssemblyAndType][0].ToString();
 	            assemblyAndType = RewriteOldAssemblyNames(assemblyAndType);
 
-	            var dataSource = DataSource.GetDataSource(assemblyAndType, null, qdef.Header.AppId,
+	            var dataSource = DataSource.GetDataSource(assemblyAndType, null, qdef.AppId /*qdef.Header.AppId*/,
 	                valueCollectionProvider: configurationProvider, parentLog: Log);
 	            dataSource.DataSourceGuid = dataPipelinePart.EntityGuid;
 

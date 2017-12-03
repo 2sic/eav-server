@@ -3,9 +3,9 @@ using ToSic.Eav.Repositories;
 
 namespace ToSic.Eav.ImportExport.Tests.Persistence.File
 {
-    public class RepositoryInfoOfDemoSystem: RepositoryInfoOfFolder
+    public class RepositoryInfoOfTestSystem: RepositoryInfoOfFolder
     {
-        public RepositoryInfoOfDemoSystem() : base(true, true, null)
+        public RepositoryInfoOfTestSystem() : base(true, true, null)
         {
         }
 

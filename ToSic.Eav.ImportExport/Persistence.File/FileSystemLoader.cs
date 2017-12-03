@@ -19,7 +19,7 @@ namespace ToSic.Eav.Persistence.File
     public partial class FileSystemLoader: HasLog, IRepositoryLoader
     {
         private const string ContentTypeFolder = "contenttypes\\";
-        private const string QueryFolder = "query\\";
+        private const string QueryFolder = "queries\\";
         private const string ItemFolder = "items\\";
 
         public FileSystemLoader(string path, RepositoryTypes source, bool ignoreMissing, Log parentLog): base("FSL.Loadr", parentLog, $"init with path:{path} ignore:{ignoreMissing}")
@@ -35,38 +35,9 @@ namespace ToSic.Eav.Persistence.File
 
         private RepositoryTypes Source { get; }
 
-        //private const string JsonExtension = ".json";
-
-        public IList<IContentType> ContentTypes(int appId, IDeferredEntitiesList source)
-        {
-            if(appId != 0)
-                throw new ArgumentOutOfRangeException(nameof(appId), appId, "appid should only be 0 for now");
-
-            #region #1. check that folder exists
-
-            var pathCt = ContentTypePath;
-            if (!CheckPathExists(Path) || !CheckPathExists(pathCt))
-                return new List<IContentType>();
-
-            #endregion
 
 
-            #region #2 find all content-type files in folder
-
-            var jsons = Directory.GetFiles(pathCt, "*" + ImpExpConstants.Extension(ImpExpConstants.Files.json)).OrderBy(f => f);
-
-            #endregion
-
-            #region #3 load content-types from folder
-
-
-            var cts = jsons.Select(json => LoadAndBuildCt(Serializer, json)).Where(ct => ct != null).ToList();
-
-            #endregion
-
-            return cts;
-        }
-
+        #region json serializer
         private JsonSerializer Serializer
         {
             get
@@ -80,11 +51,59 @@ namespace ToSic.Eav.Persistence.File
         }
 
         private JsonSerializer _ser;
+        #endregion
+
+        #region Queries
+        private string QueryPath => Path + QueryFolder;
+        public IList<IEntity> Queries()
+        {
+            // #1. check that folder exists
+            var pathQ = QueryPath;
+            if (!CheckPathExists(Path) || !CheckPathExists(pathQ))
+                return new List<IEntity>();
+
+            // #2 find all content-type files in folder
+            var jsons = Directory.GetFiles(pathQ, "*" + ImpExpConstants.Extension(ImpExpConstants.Files.json)).OrderBy(f => f);
+
+            // #3 load content-types from folder
+            var cts = jsons.Select(json => LoadAndBuildEntity(Serializer, json)).Where(ct => ct != null).ToList();
+
+            return cts;
+        }
+
+
+
+        #endregion
+
+
+        #region ContentType
+
+        public IList<IContentType> ContentTypes() => ContentTypes(0, null);
+
+        /// <inheritdoc />
+        /// <param name="appId">this is not used ATM - just for interface compatibility, must always be 0</param>
+        /// <param name="source">this is not used ATM - just for interface compatibility</param>
+        /// <returns></returns>
+        public IList<IContentType> ContentTypes(int appId, IDeferredEntitiesList source)
+        {
+            if(appId != 0)
+                throw new ArgumentOutOfRangeException(nameof(appId), appId, "appid should only be 0 for now");
+
+            // #1. check that folder exists
+            var pathCt = ContentTypePath;
+            if (!CheckPathExists(Path) || !CheckPathExists(pathCt))
+                return new List<IContentType>();
+
+            // #2 find all content-type files in folder
+            var jsons = Directory.GetFiles(pathCt, "*" + ImpExpConstants.Extension(ImpExpConstants.Files.json)).OrderBy(f => f);
+
+            // #3 load content-types from folder
+            var cts = jsons.Select(json => LoadAndBuildCt(Serializer, json)).Where(ct => ct != null).ToList();
+
+            return cts;
+        }
 
         private string ContentTypePath => Path + ContentTypeFolder;
-        private string QueryPath => Path + QueryFolder;
-
-        private string ItemPath => Path + ItemFolder;
 
         /// <summary>
         /// Try to load a content-type file, but if anything fails, just return a null
@@ -113,6 +132,43 @@ namespace ToSic.Eav.Persistence.File
                 return null;
             }
         }
+        #endregion
+
+
+        #region todo someday items
+        private string ItemPath => Path + ItemFolder;
+
+
+        /// <summary>
+        /// Try to load an entity (for example a query-definition)
+        /// If anything fails, just return a null
+        /// </summary>
+        /// <param name="ser"></param>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        private IEntity LoadAndBuildEntity(JsonSerializer ser, string path)
+        {
+            Log.Add("Loading " + path);
+            try
+            {
+                var json = System.IO.File.ReadAllText(path);
+                var ct = ser.Deserialize(json, allowDynamic: true);
+                // ct.SetSourceAndParent(Source, Constants.SystemContentTypeFakeParent, path);
+                return ct;
+            }
+            catch (IOException e)
+            {
+                Log.Add("Failed loading type - couldn't read file because of " + e);
+                return null;
+            }
+            catch
+            {
+                Log.Add("Failed loading type - couldn't deserialize or unknown reason");
+                return null;
+            }
+        }
+
+        #endregion
 
         /// <summary>
         /// Check if a path exists - if missing path is forbidden, will raise error

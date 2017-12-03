@@ -81,6 +81,7 @@
     <Compile Include="App.cs" />
     <Compile Include="AttributeFilter.cs" />
     <Compile Include="Apps.cs" />
+    <Compile Include="Queries\Global.cs" />
     <Compile Include="VisualQuery\DifficultyBeta.cs" />
     <Compile Include="Zones.cs" />
     <Compile Include="VisualQuery\DataSourceType.cs" />
