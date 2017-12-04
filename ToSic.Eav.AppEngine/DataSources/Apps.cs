@@ -28,6 +28,7 @@ namespace ToSic.Eav.DataSources
         private const string AppsContentTypeName = "EAV_Apps";
 
         // 2dm: this is for a later feature...
+	    // ReSharper disable once UnusedMember.Local
 	    private const string AppsCtGuid = "11001010-251c-eafe-2792-000000000002";
 
 
@@ -35,7 +36,10 @@ namespace ToSic.Eav.DataSources
 	    {
 	        Id,
 	        Name,
-            IsDefault
+            IsDefault,
+            Folder,
+            Hidden,
+            GlobalId
 	    }
 	    /// <summary>
 	    /// The attribute whoose value will be filtered
@@ -71,14 +75,22 @@ namespace ToSic.Eav.DataSources
 
 	        var list = zone.Apps.OrderBy(a => a.Key).Select(app =>
 	        {
-                //todo: must add more info about this app!
+	            Eav.Apps.App appObj = null;
+	            try
+	            {
+	                appObj = new Eav.Apps.App(zone.ZoneId, app.Key, false, Log, "for apps DS");
+	            }
+	            catch { /* ignore */ }
 
-               // Assemble the entities
+	            // Assemble the entities
 	            var appEnt = new Dictionary<string, object>
 	            {
 	                {AppsType.Id.ToString(), app.Key},
-	                {AppsType.Name.ToString(), app.Value},
-	                {AppsType.IsDefault.ToString(), app.Key == zone.DefaultAppId}
+	                {AppsType.Name.ToString(), appObj?.Name ?? "error - can't lookup name"},
+                    {AppsType.Folder.ToString(), appObj?.Folder ?? "" },
+                    {AppsType.Hidden.ToString(), appObj?.Hidden ?? false },
+	                {AppsType.IsDefault.ToString(), app.Key == zone.DefaultAppId},
+                    {AppsType.GlobalId.ToString(), appObj?.AppGuid ?? ""}
 	            };
 
                 return new Data.Entity(AppId, app.Key, AppsContentTypeName, appEnt, AppsType.Name.ToString());

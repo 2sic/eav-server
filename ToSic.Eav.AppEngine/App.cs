@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Apps.Environment;
 using ToSic.Eav.Apps.Interfaces;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
@@ -13,8 +12,10 @@ using ToSic.Eav.ValueProvider;
 
 namespace ToSic.Eav.Apps
 {
-    public class App<T>: HasLog, IApp
+    public class App: HasLog, IApp
     {
+        protected const int AutoLookup = -1;
+
         public int AppId { get; }
         public int ZoneId { get; }
 
@@ -28,12 +29,11 @@ namespace ToSic.Eav.Apps
         protected IValueCollectionProvider ConfigurationProvider { get; set; }
         protected bool ShowDraftsInData { get; set; }
         protected bool VersioningEnabled { get; set; }
-        protected IEnvironment<T> Env;
 
         protected const string IconFile = "/" + AppConstants.AppIconFile;
         protected const string ContentAppName = Constants.ContentAppName;
 
-        public Tennant<T> Tennant;
+
 
 
 
@@ -54,51 +54,37 @@ namespace ToSic.Eav.Apps
         }
 
 
-        protected App(IEnvironment<T> env, int zoneId, int appId, Tennant<T> tennant, bool allowSideEffects = true, Log parentLog = null)
-            : base("App.2sxcAp", parentLog, $"prep App z#{zoneId}, a#{appId}, allowSE:{allowSideEffects}, P:{tennant?.Id}")
+        internal App(int zoneId, int appId, bool allowSideEffects, Log parentLog, string logMsg)
+            : base("App.2sxcAp", parentLog, $"prep App z#{zoneId}, a#{appId}, allowSE:{allowSideEffects}, {logMsg}")
         {
-            Env = env;
-
-            // require valid ownerPS
-            if (tennant == null) throw new Exception("no tennant (portal settings) received");
-
             // if zone is missing, try to find it; if still missing, throw error
-            if (zoneId == -1) zoneId = Env.ZoneMapper.GetZoneId(tennant);
-            if (zoneId == -1) throw new Exception("Cannot find zone-id for portal specified");
+            if (zoneId == AutoLookup) throw new Exception("Cannot find zone-id for portal specified");
 
-            // Save basic values
+            // provide basic values
             AppId = appId;
             ZoneId = zoneId;
-            Tennant = tennant;
 
-            // Look up name
-            // Get appName from cache
+            // Look up name in cache
             AppGuid = ((BaseCache)DataSource.GetCache(zoneId)).ZoneApps[zoneId].Apps[appId];
 
             if (AppGuid == Constants.DefaultAppName)
                 Name = Folder = ContentAppName;
             else
             {
+                // if it's a real App (not content/default), do more
                 Log.Add($"create app resources? allowSE:{allowSideEffects}");
 
                 if (allowSideEffects)
-                    // if it's a real App (not content/default), do more
                     AppManager.EnsureAppIsConfigured(ZoneId, AppId, Log); // make sure additional settings etc. exist
                 InitializeResourcesSettingsAndMetadata();
             }
         }
 
-        #region Paths
-        protected string GetRootPath() => System.IO.Path.Combine(Tennant.RootPath, Folder);
-
-        public string PhysicalPath => Env.MapPath(GetRootPath());
-
-        #endregion
 
         #region Settings, Config, Metadata
-        protected internal IEntity AppMetadata;
-        protected internal IEntity AppSettings;
-        protected internal IEntity AppResources;
+        protected IEntity AppMetadata;
+        protected IEntity AppSettings;
+        protected IEntity AppResources;
 
         /// <summary>
         /// Assign all kinds of metadata / resources / settings (App-Mode only)
@@ -132,10 +118,9 @@ namespace ToSic.Eav.Apps
         #region Data
 
         public IAppData Data => _data ?? (_data = BuildData());
-
         private IAppData _data;
 
-        private IAppData BuildData()
+        protected virtual DataSources.App BuildData()
         {
             Log.Add("configure on demand start");
             if (ConfigurationProvider == null)
@@ -147,18 +132,8 @@ namespace ToSic.Eav.Apps
                 ConfigurationProvider as ValueCollectionProvider, Log);
 
             // todo: probably use the full configuration provider from function params, not from initial source?
-            _data = DataSource.GetDataSource<DataSources.App>(initialSource.ZoneId,
+            var xData = DataSource.GetDataSource<DataSources.App>(initialSource.ZoneId,
                 initialSource.AppId, initialSource, initialSource.ConfigurationProvider, Log);
-
-            var languagesActive = Env.ZoneMapper.CulturesWithState(Tennant.Settings, ZoneId)
-                .Any(c => c.Active);
-
-            var defaultLanguage = languagesActive
-                ? Tennant.DefaultLanguage
-                : "";
-            var xData = (DataSources.App)_data;
-            xData.DefaultLanguage = defaultLanguage;
-            xData.CurrentUserName = Env.User.CurrentUserIdentityToken;
 
             Log.Add("configure on demand completed");
             return xData;

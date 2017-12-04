@@ -11,5 +11,6 @@
         IPagePublishing PagePublishing { get; }
 
         string MapPath(string virtualPath);
+
     }
 }
