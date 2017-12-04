@@ -173,7 +173,7 @@ namespace ToSic.Eav.Apps
             var qent = Eav.DataSources.Queries.Global.FindQuery(name);
             if (qent == null)
                 throw new Exception($"can't find (BETA) global query {name}");
-            var query = new DeferredPipelineQuery(AppId, ZoneId, qent, ConfigurationProvider);
+            var query = new DeferredPipelineQuery(ZoneId, AppId, qent, ConfigurationProvider);
             return query;
         }
 
