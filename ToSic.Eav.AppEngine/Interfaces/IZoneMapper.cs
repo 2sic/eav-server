@@ -3,7 +3,7 @@ using ToSic.Eav.Apps.Environment;
 
 namespace ToSic.Eav.Apps.Interfaces
 {
-    public interface IZoneMapper
+    public interface IZoneMapper<T>
     {
         /// <summary>
         /// The zoneId which belongs to the tennant of this environment
@@ -12,6 +12,7 @@ namespace ToSic.Eav.Apps.Interfaces
         /// <returns></returns>
         int GetZoneId(int tennantId);
 
+        int GetZoneId(Tennant<T> tennant);
 
         /// <summary>
         /// The cultures available on this tennant/zone combination
@@ -21,6 +22,7 @@ namespace ToSic.Eav.Apps.Interfaces
         /// <param name="zoneId"></param>
         /// <returns></returns>
         List<TempTempCulture> CulturesWithState(int tennantId, int zoneId);
+        List<TempTempCulture> CulturesWithState(T tennant, int zoneId);
 
     }
 }
