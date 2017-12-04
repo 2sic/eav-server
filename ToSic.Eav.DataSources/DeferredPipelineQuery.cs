@@ -55,7 +55,7 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		private void CreateOutWithAllStreams()
 		{
-		    var pipeln = new DataPipelineFactory(Log).GetDataSource(AppId, QueryDefinition.EntityId, ConfigurationProvider as ValueCollectionProvider);
+		    var pipeln = new DataPipelineFactory(Log).GetDataSource(AppId, QueryDefinition/*.EntityId*/, ConfigurationProvider as ValueCollectionProvider);
 		    _Out = pipeln.Out;
 		}
 	}

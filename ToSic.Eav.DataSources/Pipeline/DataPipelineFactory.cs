@@ -18,31 +18,34 @@ namespace ToSic.Eav.DataSources.Pipeline
 	{
 	    public DataPipelineFactory(Log parentLog) : base("DS.PipeFt", parentLog) {}
 
-	    /// <summary>
-	    /// Creates a DataSource from a PipelineEntity for specified Zone and App
-	    /// </summary>
-	    /// <param name="appId">AppId to use</param>
-	    /// <param name="pipelineEntityId">EntityId of the Entity describing the Pipeline</param>
-	    /// <param name="valueCollection">ConfigurationProvider Provider for configurable DataSources</param>
-	    /// <param name="outSource">DataSource to attach the Out-Streams</param>
-	    /// <param name="showDrafts"></param>
-	    /// <returns>A single DataSource Out with wirings and configurations loaded, ready to use</returns>
-	    public IDataSource GetDataSource(int appId, int pipelineEntityId, ValueCollectionProvider valueCollection, IDataSource outSource = null, bool showDrafts = false) 
-            => GetDataSource(appId, pipelineEntityId, valueCollection.Sources.Select(s => s.Value), outSource, showDrafts);
+	    ///// <summary>
+	    ///// Creates a DataSource from a PipelineEntity for specified Zone and App
+	    ///// </summary>
+	    ///// <param name="appId">AppId to use</param>
+	    ///// <param name="pipelineEntityId">EntityId of the Entity describing the Pipeline</param>
+	    ///// <param name="valueCollection">ConfigurationProvider Provider for configurable DataSources</param>
+	    ///// <param name="outSource">DataSource to attach the Out-Streams</param>
+	    ///// <param name="showDrafts"></param>
+	    ///// <returns>A single DataSource Out with wirings and configurations loaded, ready to use</returns>
+	    //public IDataSource GetDataSource(int appId, int pipelineEntityId, ValueCollectionProvider valueCollection, IDataSource outSource = null, bool showDrafts = false) 
+     //       => GetDataSource(appId, pipelineEntityId, valueCollection.Sources.Select(s => s.Value), outSource, showDrafts);
 
 	    /// <summary>
 	    /// Creates a DataSource from a PipelineEntity for specified Zone and App
 	    /// </summary>
 	    /// <param name="appId">AppId to use</param>
 	    /// <param name="pipelineEntityId">EntityId of the Entity describing the Pipeline</param>
+	    /// <param name="valueCollection">ConfigurationProvider Provider for configurable DataSources</param>
 	    /// <param name="configurationPropertyAccesses">Property Providers for configurable DataSources</param>
 	    /// <param name="outSource">DataSource to attach the Out-Streams</param>
 	    /// <param name="showDrafts"></param>
 	    /// <returns>A single DataSource Out with wirings and configurations loaded, ready to use</returns>
-	    public IDataSource GetDataSource(int appId, int pipelineEntityId, IEnumerable<IValueProvider> configurationPropertyAccesses, IDataSource outSource = null, bool showDrafts = false)
-		{
+	    public IDataSource GetDataSource(int appId, IEntity query /*int pipelineEntityId*/, ValueCollectionProvider valueCollection /*IEnumerable<IValueProvider> configurationPropertyAccesses*/, IDataSource outSource = null, bool showDrafts = false)
+	    {
+	        var pipelineEntityId = query.EntityId;
 		    Log.Add($"build pipe#{pipelineEntityId} for a#{appId}, draft:{showDrafts}");
-            var qdef = GetQueryDefinition(appId, pipelineEntityId);
+		    var configurationPropertyAccesses = valueCollection.Sources.Select(s => s.Value);
+            var qdef = new QueryDefinition(query, appId); // GetQueryDefinition(appId, pipelineEntityId);
             return GetDataSource(qdef, configurationPropertyAccesses, outSource, showDrafts);
 		}
 
@@ -57,7 +60,7 @@ namespace ToSic.Eav.DataSources.Pipeline
 
 	            // use findRepo, as it uses the cache, which gives the list of all items // [pipelineEntityId];
 	            var dataPipeline = appEntities.FindRepoId(pipelineEntityId);
-	            return new QueryDefinition(dataPipeline);
+	            return new QueryDefinition(dataPipeline, appId);
 	        }
 	        catch (KeyNotFoundException)
 	        {
@@ -144,7 +147,7 @@ namespace ToSic.Eav.DataSources.Pipeline
 	            var assemblyAndType = dataPipelinePart[QueryConstants.PartAssemblyAndType][0].ToString();
 	            assemblyAndType = RewriteOldAssemblyNames(assemblyAndType);
 
-	            var dataSource = DataSource.GetDataSource(assemblyAndType, null, qdef.Header.AppId,
+	            var dataSource = DataSource.GetDataSource(assemblyAndType, null, qdef.AppId /*qdef.Header.AppId*/,
 	                valueCollectionProvider: configurationProvider, parentLog: Log);
 	            dataSource.DataSourceGuid = dataPipelinePart.EntityGuid;
 

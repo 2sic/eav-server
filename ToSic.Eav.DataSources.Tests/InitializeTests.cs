@@ -9,7 +9,8 @@ namespace ToSic.Eav.UnitTests
             "Data Source=(local)\\sqlexpress;Initial Catalog=eav-testing;Integrated Security=True";
 
         [AssemblyInitialize()]
-        public static void AssemblyInit(TestContext context) => Testing.Shared.InitializeTests.ConfigureEfcDi(connectionForTests);
+        public static void AssemblyInit(TestContext context) =>
+            ToSic.Eav.ImportExport.Tests.InitializeTests.AssemblyInit(context);
 
     }
 }
