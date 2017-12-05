@@ -72,71 +72,37 @@ namespace ToSic.Eav.DataSources
                 ? optionalList?.FirstOrDefault()?.Type 
                 : DataSource.GetCache(ZoneId, AppId).GetContentType(ContentTypeName);
 
-            IEnumerable<Dictionary<string, object>> list;
-            // try to load from type, if it exists
-	        list = type?.Attributes?.OrderBy(at => at.Name).Select(at => new Dictionary<string, object>
-	        {
-	            {AttributeType.Name.ToString(), at.Name},
-	            {AttributeType.Type.ToString(), at.Type},
-	            {AttributeType.IsTitle.ToString(), at.IsTitle},
-	            {AttributeType.SortOrder.ToString(), at.SortOrder}
-	        });
+	        // try to load from type, if it exists
+	        var list = type?.Attributes?.OrderBy(at => at.Name).Select(BuildDictionary).ToList()
+	                   ?? (TryToUseInStream == ContentTypeName
+	                       ? optionalList?.FirstOrDefault()?.Attributes
+	                           .OrderBy(at => at.Key)
+	                           .Select(BuildDictionary)
+	                           .ToList()
+	                       : null);
 
             // if it didn't work yet, maybe try from stream items
-            if (list == null)
-	        {
-	            // try first item
-	            if (TryToUseInStream != ContentTypeName) return new List<IEntity>();
 
-	            var item = optionalList?.FirstOrDefault();
-	            if (item == null) return new List<IEntity>();
-
-	            list = item.Attributes.OrderBy(at => at.Key).Select(at => new Dictionary<string, object>
-	            {
-	                {AttributeType.Name.ToString(), at.Key},
-	                {AttributeType.Type.ToString(), at.Value.Type},
-	                {AttributeType.IsTitle.ToString(), false},
-	                {AttributeType.SortOrder.ToString(), 0}
-	            });
-            }
-
-	        //list = attribs.OrderBy(at => at.Name).Select(at => new Dictionary<string, object>
-	        //{
-	        //    {AttributeType.Name.ToString(), at.Name},
-	        //    {AttributeType.Type.ToString(), at.Type},
-	        //    {AttributeType.IsTitle.ToString(), at.IsTitle},
-	        //    {AttributeType.SortOrder.ToString(), at.SortOrder}
-	        //});
-
-            return list.Select(attribData => new Data.Entity(AppId, 0, AttribContentTypeName, attribData, AttributeType.Name.ToString()));
+	        return list?.Select(attribData => new Data.Entity(AppId, 0, AttribContentTypeName, attribData, AttributeType.Name.ToString())) 
+                ?? new List<IEntity>() as IEnumerable<IEntity>;
         }
 
 
 
-	    //private static AttribInfo BuildAttribInfo(KeyValuePair<string, IAttribute> a) => new AttribInfo
-	    //{
-	    //    Name = a.Key,
-	    //    Type = a.Value.Type,
-	    //    SortOrder = 0,
-	    //    IsTitle = false
-	    //};
-
-	    //private static AttribInfo BuildAttribInfo(IAttributeDefinition at) => new AttribInfo
-	    //{
-	    //    Name = at.Name,
-	    //    Type = at.Type,
-	    //    IsTitle = at.IsTitle,
-	    //    SortOrder = at.SortOrder
-	    //};
-
-	    internal class AttribInfo
+	    private static Dictionary<string, object> BuildDictionary(KeyValuePair<string, IAttribute> at) => new Dictionary<string, object>
 	    {
-	        public string Name;
-            public string Type;
+	        {AttributeType.Name.ToString(), at.Key},
+	        {AttributeType.Type.ToString(), at.Value.Type},
+	        {AttributeType.IsTitle.ToString(), false},
+	        {AttributeType.SortOrder.ToString(), 0}
+	    };
 
-	        public int SortOrder;
-	        public bool IsTitle;
-	    }
-
+	    private static Dictionary<string, object> BuildDictionary(IAttributeDefinition at) => new Dictionary<string, object>
+	    {
+	        {AttributeType.Name.ToString(), at.Name},
+	        {AttributeType.Type.ToString(), at.Type},
+	        {AttributeType.IsTitle.ToString(), at.IsTitle},
+	        {AttributeType.SortOrder.ToString(), at.SortOrder}
+	    };
 	}
 }

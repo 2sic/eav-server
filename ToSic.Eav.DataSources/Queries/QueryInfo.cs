@@ -23,9 +23,11 @@ namespace ToSic.Eav.DataSources.Queries
         #region Configuration-properties (no config)
 	    public override string LogId => "DS.EavAts";
 
-        private const string QueryTypeKey = "Query";
+        private const string QueryKey = "Query";
         private const string QueryNameField = "QueryName";
 	    private const string DefQuery = "not-configured"; // can't be blank, otherwise tokens fail
+        private const string StreamKey = "Stream";
+        private const string StreamField = "StreamName";
 	    private const string QueryStreamsContentType = "EAV_Query_Stream";
 	    
         // 2dm: this is for a later feature...
@@ -44,10 +46,15 @@ namespace ToSic.Eav.DataSources.Queries
         /// </summary>
         public string QueryName
         {
-            get => Configuration[QueryTypeKey];
-            set => Configuration[QueryTypeKey] = value;
+            get => Configuration[QueryKey];
+            set => Configuration[QueryKey] = value;
         }
         
+        public string StreamName
+        {
+            get => Configuration[StreamKey];
+            set => Configuration[StreamKey] = value;
+        }
 		#endregion
 
         /// <inheritdoc />
@@ -58,9 +65,10 @@ namespace ToSic.Eav.DataSources.Queries
 		{
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetStreams));
 			Out.Add("Attributes", new DataStream(this, Constants.DefaultStreamName, GetAttributes));
-            Configuration.Add(QueryTypeKey, $"[Settings:{QueryNameField}||{DefQuery}]");
+            Configuration.Add(QueryKey, $"[Settings:{QueryNameField}||{DefQuery}]");
+            Configuration.Add(StreamKey, $"[Settings:{StreamField}||{Constants.DefaultStreamName}]");
 
-            CacheRelevantConfigurations = new[] {QueryTypeKey};
+            CacheRelevantConfigurations = new[] {QueryKey,StreamKey};
 		}
 
 	    private IEnumerable<IEntity> GetStreams()
@@ -85,8 +93,13 @@ namespace ToSic.Eav.DataSources.Queries
             EnsureConfigurationIsLoaded();
             BuildQuery();
 
-	        var attribInfo = DataSource.GetDataSource<Attributes>(upstream: _query);
-	        var x = attribInfo.ConfigurationProvider;
+            // todo: check that _query has the stream name
+            if(!_query.Out.ContainsKey(StreamName))
+                return new List<IEntity>();
+
+	        var attribInfo = DataSource.GetDataSource<Attributes>(upstream: _query, valueCollectionProvider:_query.ConfigurationProvider);
+            if(StreamName != Constants.DefaultStreamName)
+                attribInfo.Attach(Constants.DefaultStreamName, _query[StreamName]);
 
 	        return attribInfo.List;
         }
