@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Apps.DataSources.Types;
 using ToSic.Eav.Apps.Interfaces;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
@@ -28,18 +29,6 @@ namespace ToSic.Eav.Apps.DataSources
 	    // 2dm: this is for a later feature...
 	    // ReSharper disable once UnusedMember.Local
         private const string ZoneCtGuid = "11001010-251c-eafe-2792-000000000001";
-
-
-        private enum ZoneType
-	    {
-	        Id,
-	        Name,
-            TennantId,
-            TennantName,
-	        IsCurrent,
-            DefaultAppId,
-	        AppCount
-	    }
 
         
 		#endregion

@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Apps.DataSources.Types;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.DataSources.VisualQuery;
@@ -25,7 +27,6 @@ namespace ToSic.Eav.Apps.DataSources
 
         private const string ZoneKey = "Zone";
         private const string ZoneIdField = "ZoneId";
-        private const int DefZone = 0;
         private const string AppsContentTypeName = "EAV_Apps";
 
         // 2dm: this is for a later feature...
@@ -33,15 +34,6 @@ namespace ToSic.Eav.Apps.DataSources
 	    private const string AppsCtGuid = "11001010-251c-eafe-2792-000000000002";
 
 
-        private enum AppsType
-	    {
-	        Id,
-	        Name,
-            IsDefault,
-            Folder,
-            Hidden,
-            GlobalId
-	    }
 	    /// <summary>
 	    /// The attribute whoose value will be filtered
 	    /// </summary>
@@ -77,24 +69,25 @@ namespace ToSic.Eav.Apps.DataSources
 	        var list = zone.Apps.OrderBy(a => a.Key).Select(app =>
 	        {
 	            Eav.Apps.App appObj = null;
+	            Guid? guid = null;
 	            try
 	            {
 	                appObj = new Eav.Apps.App(zone.ZoneId, app.Key, false, Log, "for apps DS");
+	                if(Guid.TryParse(appObj.AppGuid, out Guid g)) guid = g;
 	            }
 	            catch { /* ignore */ }
 
 	            // Assemble the entities
 	            var appEnt = new Dictionary<string, object>
 	            {
-	                {AppsType.Id.ToString(), app.Key},
-	                {AppsType.Name.ToString(), appObj?.Name ?? "error - can't lookup name"},
-                    {AppsType.Folder.ToString(), appObj?.Folder ?? "" },
-                    {AppsType.Hidden.ToString(), appObj?.Hidden ?? false },
-	                {AppsType.IsDefault.ToString(), app.Key == zone.DefaultAppId},
-                    {AppsType.GlobalId.ToString(), appObj?.AppGuid ?? ""}
+	                {AppType.Id.ToString(), app.Key},
+	                {AppType.Name.ToString(), appObj?.Name ?? "error - can't lookup name"},
+                    {AppType.Folder.ToString(), appObj?.Folder ?? "" },
+                    {AppType.IsHidden.ToString(), appObj?.Hidden ?? false },
+	                {AppType.IsDefault.ToString(), app.Key == zone.DefaultAppId},
 	            };
 
-                return new Data.Entity(AppId, app.Key, AppsContentTypeName, appEnt, AppsType.Name.ToString());
+                return new Data.Entity(AppId, app.Key, AppsContentTypeName, appEnt, AppType.Name.ToString(), entityGuid: guid);
             });
 
             return list;

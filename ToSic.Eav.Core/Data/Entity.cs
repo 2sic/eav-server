@@ -88,8 +88,8 @@ namespace ToSic.Eav.Data
         /// </summary>
         internal Entity() { }
 
-        public Entity(int appId, int entityId, object contentType, Dictionary<string, object> values, string titleAttribute = null, DateTime? modified = null) 
-            : base(appId, entityId, contentType, values, titleAttribute, modified)
+        public Entity(int appId, int entityId, object contentType, Dictionary<string, object> values, string titleAttribute = null, DateTime? modified = null, Guid? entityGuid = null) 
+            : base(appId, entityId, entityGuid, contentType, values, titleAttribute, modified)
         {
             if (values.All(x => x.Value is IAttribute))
                 Attributes = values.ToDictionary(x => x.Key, x => x.Value as IAttribute);
@@ -103,12 +103,13 @@ namespace ToSic.Eav.Data
         /// Mainly used for entities which are created for later saving
         /// </summary>
         public Entity(int appId, Guid entityGuid, object contentType, Dictionary<string, object> values) 
-            : base(appId, entityGuid, contentType, values)
+            : this(appId, 0, contentType, values, entityGuid: entityGuid)
         {
-            if (values.All(x => x.Value is IAttribute))
-                Attributes = values.ToDictionary(x => x.Key, x => x.Value as IAttribute);
-            else
-                _useLightModel = true;
+            // 2017-12-05 2dm - merged this with the other constructor, remove in 2018 if everything works
+            //if (values.All(x => x.Value is IAttribute))
+            //    Attributes = values.ToDictionary(x => x.Key, x => x.Value as IAttribute);
+            //else
+            //    _useLightModel = true;
         }
         
 

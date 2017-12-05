@@ -64,10 +64,11 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Create a new Entity. Used to create InMemory Entities that are not persisted to the EAV SqlStore.
         /// </summary>
-        public EntityLight(int appId, int entityId, object contentType, Dictionary<string, object> values, string titleAttribute = null, DateTime? modified = null)
+        internal EntityLight(int appId, int entityId, Guid? guid, object contentType, Dictionary<string, object> values, string titleAttribute = null, DateTime? modified = null)
         {
             AppId = appId;
             EntityId = entityId;
+            if(guid != null) EntityGuid = guid.Value;
             SetContentTypeFromNameOrObject(appId, contentType);
             LightAttributesForInternalUseOnlyForNow = values;//.ConvertToAttributes();
             try
@@ -85,6 +86,17 @@ namespace ToSic.Eav.Data
             Relationships = new RelationshipManager(this, new EntityRelationshipItem[0]);
         }
 
+        ///// <inheritdoc />
+        ///// <summary>
+        ///// Create a brand new Entity. 
+        ///// Mainly used for entities which are created for later saving
+        ///// </summary>
+        //public EntityLight(int appId, Guid entityGuid, object contentType, Dictionary<string, object> values) : this(appId, 0, contentType, values)
+        //{
+        //    EntityGuid = entityGuid;
+        //}
+
+
         private void SetContentTypeFromNameOrObject(int appId, object contentType)
         {
             switch (contentType)
@@ -101,15 +113,6 @@ namespace ToSic.Eav.Data
             }
         }
 
-        /// <inheritdoc />
-        /// <summary>
-        /// Create a brand new Entity. 
-        /// Mainly used for entities which are created for later saving
-        /// </summary>
-        public EntityLight(int appId, Guid entityGuid, object contentType, Dictionary<string, object> values) : this(appId, 0, contentType, values)
-        {
-            EntityGuid = entityGuid;
-        }
 
         #endregion
 
