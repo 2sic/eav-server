@@ -136,11 +136,8 @@ namespace ToSic.Eav.WebApi
 		}
 
 
-		private IDataSource ConstructPipeline(int appId, int id, bool showDrafts)
-		{
-		    Log.Add($"construct pipe a#{appId}, pipe:{id}, drafts:{showDrafts}");
-		    return new DataPipelineFactory(Log).GetDataSource(appId, id, showDrafts);
-		}
+		private IDataSource ConstructPipeline(int appId, int id, bool showDrafts) 
+            => new DataPipelineFactory(Log).GetDataSourceForTesting(appId, id, showDrafts);
 
         [HttpGet]
         public dynamic PipelineDebugInfo(int appId, int id)

@@ -19,5 +19,5 @@ using System.Runtime.InteropServices;
 //[assembly: AssemblyVersion("4.5.0.0")]
 // [assembly: AssemblyFileVersion("4.5.0.*")]
 
-[assembly: InternalsVisibleTo("ToSic.Sxc.WebApi")]
+[assembly: InternalsVisibleTo("ToSic.SexyContent.WebApi")]
 [assembly: InternalsVisibleTo("ToSic.Eav.Apps.Tests")]

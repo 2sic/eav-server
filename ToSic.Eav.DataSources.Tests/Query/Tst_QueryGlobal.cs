@@ -49,7 +49,7 @@ namespace ToSic.Eav.DataSources.Tests.Query
             var qdef = new QueryDefinition(queryEnt, TestConfig.AppForQueryTests);
 
             var fac = new Pipeline.DataPipelineFactory(Log);
-            var query = fac.GetDataSource(qdef, false);
+            var query = fac.GetDataSourceForTesting(qdef, false);
 
             var list = query.List;
             Assert.IsTrue(list.Count() > 1, "should find a few portals");

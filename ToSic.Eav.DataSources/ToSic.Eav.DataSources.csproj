@@ -80,6 +80,8 @@
   <ItemGroup>
     <Compile Include="App.cs" />
     <Compile Include="AttributeFilter.cs" />
+    <Compile Include="ContentTypes\Attributes.cs" />
+    <Compile Include="Queries\QueryInfo.cs" />
     <Compile Include="Queries\Global.cs" />
     <Compile Include="VisualQuery\DifficultyBeta.cs" />
     <Compile Include="VisualQuery\DataSourceType.cs" />

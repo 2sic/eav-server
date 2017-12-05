@@ -18,29 +18,15 @@ namespace ToSic.Eav.DataSources.Pipeline
 	{
 	    public DataPipelineFactory(Log parentLog) : base("DS.PipeFt", parentLog) {}
 
-	    ///// <summary>
-	    ///// Creates a DataSource from a PipelineEntity for specified Zone and App
-	    ///// </summary>
-	    ///// <param name="appId">AppId to use</param>
-	    ///// <param name="pipelineEntityId">EntityId of the Entity describing the Pipeline</param>
-	    ///// <param name="valueCollection">ConfigurationProvider Provider for configurable DataSources</param>
-	    ///// <param name="outSource">DataSource to attach the Out-Streams</param>
-	    ///// <param name="showDrafts"></param>
-	    ///// <returns>A single DataSource Out with wirings and configurations loaded, ready to use</returns>
-	    //public IDataSource GetDataSource(int appId, int pipelineEntityId, ValueCollectionProvider valueCollection, IDataSource outSource = null, bool showDrafts = false) 
-     //       => GetDataSource(appId, pipelineEntityId, valueCollection.Sources.Select(s => s.Value), outSource, showDrafts);
-
 	    /// <summary>
 	    /// Creates a DataSource from a PipelineEntity for specified Zone and App
 	    /// </summary>
 	    /// <param name="appId">AppId to use</param>
-	    /// <param name="pipelineEntityId">EntityId of the Entity describing the Pipeline</param>
 	    /// <param name="valueCollection">ConfigurationProvider Provider for configurable DataSources</param>
-	    /// <param name="configurationPropertyAccesses">Property Providers for configurable DataSources</param>
 	    /// <param name="outSource">DataSource to attach the Out-Streams</param>
 	    /// <param name="showDrafts"></param>
 	    /// <returns>A single DataSource Out with wirings and configurations loaded, ready to use</returns>
-	    public IDataSource GetDataSource(int appId, IEntity query /*int pipelineEntityId*/, ValueCollectionProvider valueCollection /*IEnumerable<IValueProvider> configurationPropertyAccesses*/, IDataSource outSource = null, bool showDrafts = false)
+	    public IDataSource GetDataSource(int appId, IEntity query, ValueCollectionProvider valueCollection, IDataSource outSource = null, bool showDrafts = false)
 	    {
 	        var pipelineEntityId = query.EntityId;
 		    Log.Add($"build pipe#{pipelineEntityId} for a#{appId}, draft:{showDrafts}");
@@ -70,31 +56,40 @@ namespace ToSic.Eav.DataSources.Pipeline
 	    }
 
 	    public IDataSource GetDataSource(QueryDefinition qdef, 
-            IEnumerable<IValueProvider> configurationPropertyAccesses,
+            IEnumerable<IValueProvider> propertyProviders,
 	        IDataSource outSource = null, 
             bool showDrafts = false)
 	    {
+
+
+	        #region prepare shared / global value providers
+
+	        propertyProviders = propertyProviders?.ToList();
+	        // the pipeline settings which apply to the whole pipeline
+            // todo 2017-12-05 2dm - this is probably where I will apply parameters, I think it's not used yet!
+	        var pipelineSettingsProvider = new AssignedEntityValueProvider("pipelinesettings", qdef.Header);
+
+
+            // global settings, ATM just if showdrafts are to be used
+            const string itemSettings = "settings";
+
+	        #endregion
 	        #region Load Pipeline Entity and Pipeline Parts
 
 	        // tell the primary-out that it has this guid, for better debugging
 	        if (outSource == null)
-	            outSource = new PassThrough();
-	        if (outSource.DataSourceGuid == Guid.Empty)
+	        {
+	            var ptValues = new ValueCollectionProvider();
+                ptValues.Add(pipelineSettingsProvider);
+                ptValues.AddOverride(propertyProviders);
+
+	            var pass = new PassThrough {ConfigurationProvider = ptValues};
+	            outSource = pass;
+	        }
+            if (outSource.DataSourceGuid == Guid.Empty)
 	            outSource.DataSourceGuid = qdef.Header.EntityGuid;
 
 	        #endregion
-
-	        #region prepare shared / global value providers
-	        // the pipeline settings which apply to the whole pipeline
-	        var pipelineSettingsProvider =
-	            new AssignedEntityValueProvider("pipelinesettings",
-	                qdef.Header);
-
-	        // global settings, ATM just if showdrafts are to be used
-	        const string itemSettings = "settings";
-
-	        #endregion
-
 
 	        #region init all DataPipelineParts
 
@@ -105,40 +100,47 @@ namespace ToSic.Eav.DataSources.Pipeline
 	            #region Init Configuration Provider
 
 	            var configurationProvider = new ValueCollectionProvider();
-	            configurationProvider.Sources.Add(itemSettings,
+	            configurationProvider./*Sources.*/Add(/*itemSettings,*/
 	                new AssignedEntityValueProvider(itemSettings, dataPipelinePart));
 
 	            // if show-draft in overridden, add that to the settings
 	            if (showDrafts)
-	                configurationProvider.Sources[itemSettings] = new OverrideValueProvider(itemSettings,
-	                    new StaticValueProvider(itemSettings, new Dictionary<string, string>
+	                configurationProvider.AddOverride(new StaticValueProvider(itemSettings,
+	                    new Dictionary<string, string>
 	                    {
 	                        {"ShowDrafts", true.ToString()}
-	                    }), configurationProvider.Sources[itemSettings]);
+	                    }));
 
-	            configurationProvider.Sources.Add(pipelineSettingsProvider.Name, pipelineSettingsProvider);
+
+                //configurationProvider.Sources[itemSettings] = new OverrideValueProvider(itemSettings,
+                //    new StaticValueProvider(itemSettings, new Dictionary<string, string>
+                //    {
+                //            {"ShowDrafts", true.ToString()}
+                //    }), configurationProvider.Sources[itemSettings]);
+
+                configurationProvider./*Sources.*/Add(/*pipelineSettingsProvider.Name,*/ pipelineSettingsProvider);
+
+	            // ReSharper disable once PossibleMultipleEnumeration
+                configurationProvider.AddOverride(propertyProviders);
+	            //var providers = configurationPropertyAccesses?.ToList();
 
 	            // attach all propertyProviders
-	            if (configurationPropertyAccesses != null)
-	            {
-	                // ReSharper disable once PossibleMultipleEnumeration
-	                var injectConfs = configurationPropertyAccesses.ToList();
-
-	                foreach (var propertyProvider in injectConfs)
-	                {
-	                    if (propertyProvider.Name == null)
-	                        throw new NullReferenceException("PropertyProvider must have a Name");
-
-	                    // check if it already has this provider. 
-	                    // ensure that there is an "override property provider" which would pre-catch certain keys
-	                    if (configurationProvider.Sources.ContainsKey(propertyProvider.Name))
-	                        configurationProvider.Sources[propertyProvider.Name] =
-	                            new OverrideValueProvider(propertyProvider.Name, propertyProvider,
-	                                configurationProvider.Sources[propertyProvider.Name]);
-	                    else
-	                        configurationProvider.Sources.Add(propertyProvider.Name, propertyProvider);
-	                }
-	            }
+	            //if (providers != null)
+	            //    foreach (var provider in providers)
+	                
+	            //        if (provider.Name == null)
+	            //            throw new NullReferenceException("PropertyProvider must have a Name");
+             //           else
+	            //        // check if it already has this provider. 
+	            //        // ensure that there is an "override property provider" which would pre-catch certain keys
+	            //        configurationProvider.AddOverride(provider);
+	            //        //if (configurationProvider.Sources.ContainsKey(propertyProvider.Name))
+	            //        //    configurationProvider.Sources[propertyProvider.Name] =
+	            //        //        new OverrideValueProvider(propertyProvider.Name, propertyProvider,
+	            //        //            configurationProvider.Sources[propertyProvider.Name]);
+	            //        //else
+	            //        //    configurationProvider.Sources.Add(propertyProvider.Name, propertyProvider);
+	                
 
 	            #endregion
 
@@ -147,7 +149,7 @@ namespace ToSic.Eav.DataSources.Pipeline
 	            var assemblyAndType = dataPipelinePart[QueryConstants.PartAssemblyAndType][0].ToString();
 	            assemblyAndType = RewriteOldAssemblyNames(assemblyAndType);
 
-	            var dataSource = DataSource.GetDataSource(assemblyAndType, null, qdef.AppId /*qdef.Header.AppId*/,
+	            var dataSource = DataSource.GetDataSource(assemblyAndType, null, qdef.AppId,
 	                valueCollectionProvider: configurationProvider, parentLog: Log);
 	            dataSource.DataSourceGuid = dataPipelinePart.EntityGuid;
 
@@ -253,12 +255,14 @@ namespace ToSic.Eav.DataSources.Pipeline
         /// <param name="queryId"></param>
         /// <param name="showDrafts"></param>
         /// <returns></returns>
-	    public IDataSource GetDataSource(int appId, int queryId, bool showDrafts) 
-            => GetDataSource(GetQueryDefinition(appId, queryId), showDrafts);
+	    public IDataSource GetDataSourceForTesting(int appId, int queryId, bool showDrafts) 
+            => GetDataSourceForTesting(GetQueryDefinition(appId, queryId), showDrafts);
 
-	    public IDataSource GetDataSource(QueryDefinition qdef, bool showDrafts)
+	    public IDataSource GetDataSourceForTesting(QueryDefinition qdef, bool showDrafts)
 	    {
-	        var testValueProviders = GetTestValueProviders(qdef).ToList();
+	        Log.Add($"construct test query a#{qdef.AppId}, pipe:{qdef.Header.EntityGuid} ({qdef.Header.EntityId}), drafts:{showDrafts}");
+
+            var testValueProviders = GetTestValueProviders(qdef).ToList();
 	        return GetDataSource(qdef, testValueProviders, showDrafts: showDrafts);
 	    }
 

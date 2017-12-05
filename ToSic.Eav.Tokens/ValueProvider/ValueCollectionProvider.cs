@@ -67,5 +67,31 @@ namespace ToSic.Eav.ValueProvider
         /// </summary>
         /// <param name="newSource"></param>
 	    public void Add(IValueProvider newSource) => Sources.Add(newSource.Name, newSource);
-	}
+
+
+
+	    public void AddOverride(IValueProvider propertyProvider)
+	    {
+	        if (Sources.ContainsKey(propertyProvider.Name))
+	            Sources[propertyProvider.Name] =
+	                new OverrideValueProvider(propertyProvider.Name, propertyProvider,
+	                    Sources[propertyProvider.Name]);
+	        else
+	            Sources.Add(propertyProvider.Name, propertyProvider);
+
+        }
+
+	    public void AddOverride(IEnumerable<IValueProvider> providers)
+	    {
+	        if (providers == null) return;
+	        foreach (var provider in providers)
+
+	            if (provider.Name == null)
+	                throw new NullReferenceException("PropertyProvider must have a Name");
+	            else
+	                // check if it already has this provider. 
+	                // ensure that there is an "override property provider" which would pre-catch certain keys
+	                AddOverride(provider);
+	    }
+    }
 }

@@ -168,7 +168,23 @@ namespace ToSic.Eav.Apps
             }
         }
 
-        public DeferredPipelineQuery GlobalQueryBeta(string name)
+        // this is a DNN/MVC-Routing problem, must use "-" instead of "." for now... 
+        private const string GlobalQueryPrefix = "Eav-Queries-Global-";
+
+        internal DeferredPipelineQuery GetQuery(string name)
+        {
+            if (name.StartsWith(GlobalQueryPrefix))
+                return GetGlobalQuery(name.Replace('-', '.'));
+
+            // Try to find the query, abort if not found
+            if (Query.ContainsKey(name) && Query[name] is DeferredPipelineQuery query)
+                return query;
+
+            // not found
+            return null;
+        }
+
+        private DeferredPipelineQuery GetGlobalQuery(string name)
         {
             var qent = Eav.DataSources.Queries.Global.FindQuery(name);
             if (qent == null)

@@ -16,7 +16,7 @@ namespace ToSic.Eav.ValueProvider
 		private bool _entityLoaded;
 	    private IEntity _parent = null;
 
-		public new string Name { get; }
+		//public new string Name { get; }
 
 
 
