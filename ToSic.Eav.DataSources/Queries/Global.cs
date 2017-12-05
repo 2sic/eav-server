@@ -4,7 +4,7 @@ using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources.Queries
 {
-    public partial class Global
+    public class Global
     {
         /// <summary>
         /// List of global queries, caches after first scan

@@ -1,10 +1,10 @@
 ﻿namespace ToSic.Eav.Apps.Interfaces
 {
-    public interface IEnvironment<T>
+    public interface IEnvironment
     {
         IPermissions Permissions { get; }
 
-        IZoneMapper<T> ZoneMapper { get; }
+        IZoneMapper ZoneMapper { get; }
 
         IUser User { get; }
 

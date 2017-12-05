@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.DataSources.VisualQuery;
 using ToSic.Eav.Interfaces;
 
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.Apps.DataSources
 {
     /// <inheritdoc />
     /// <summary>
@@ -46,11 +47,11 @@ namespace ToSic.Eav.DataSources
 	    /// </summary>
 	    public int ZoneNumber
 	    {
-	        get => int.Parse(Configuration[ZoneKey]);
+	        get => int.TryParse(Configuration[ZoneKey], out int zid) ? zid : ZoneId;
 	        set => Configuration[ZoneKey] = value.ToString();
 	    }
 
-        #endregion
+	    #endregion
 
         /// <inheritdoc />
         /// <summary>
@@ -59,7 +60,7 @@ namespace ToSic.Eav.DataSources
         public Apps()
 		{
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
-		    Configuration.Add(ZoneKey, $"[Settings:{ZoneIdField}||{DefZone}]");
+		    Configuration.Add(ZoneKey, $"[Settings:{ZoneIdField}]");
 
             CacheRelevantConfigurations = new [] { ZoneKey };
 		}
