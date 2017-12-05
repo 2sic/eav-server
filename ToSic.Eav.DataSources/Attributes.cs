@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.DataSources.Caches;
+using ToSic.Eav.DataSources.ContentTypes;
 using ToSic.Eav.DataSources.VisualQuery;
 using ToSic.Eav.Interfaces;
 
@@ -24,20 +25,13 @@ namespace ToSic.Eav.DataSources
 
         private const string ContentTypeKey = "ContentType";
         private const string ContentTypeField = "ContentTypeName";
-	    private const string DefContentType = "not-configured"; // can't be blank, otherwise tokens fail
+	    private const string TryToUseInStream = "not-configured-try-in"; // can't be blank, otherwise tokens fail
 	    private const string AttribContentTypeName = "EAV_Attribute";
 	    
         // 2dm: this is for a later feature...
         private const string AttribCtGuid = "11001010-251c-eafe-2792-000000000004";
 
 
-        private enum AttributeType
-	    {
-	        Name,
-	        Type,
-	        IsTitle,
-	        SortOrder
-	    }
         /// <summary>
         /// The content-type name
         /// </summary>
@@ -56,7 +50,7 @@ namespace ToSic.Eav.DataSources
 		public Attributes()
 		{
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
-            Configuration.Add(ContentTypeKey, $"[Settings:{ContentTypeField}||{DefContentType}]");
+            Configuration.Add(ContentTypeKey, $"[Settings:{ContentTypeField}||{TryToUseInStream}]");
 
             CacheRelevantConfigurations = new[] {ContentTypeKey};
 		}
@@ -65,10 +59,17 @@ namespace ToSic.Eav.DataSources
 	    {
             EnsureConfigurationIsLoaded();
 
+	        IContentType type;
             // try to load the content-type - if it fails, return empty list
 	        if (string.IsNullOrWhiteSpace(ContentTypeName)) return new List<IEntity>();
-	        var cache = (BaseCache)DataSource.GetCache(ZoneId, AppId);
-	        var type = cache.GetContentType(ContentTypeName);
+
+	        if (TryToUseInStream == ContentTypeName)
+	            type = In.ContainsKey(Constants.DefaultStreamName)
+	                ? In[Constants.DefaultStreamName]?.List?.FirstOrDefault()?.Type
+	                : null;
+	        else
+	            type = DataSource.GetCache(ZoneId, AppId).GetContentType(ContentTypeName);
+
 	        if (type == null) return new List<IEntity>();
 
 	        var list = type.Attributes.OrderBy(at => at.Name).Select(at =>
