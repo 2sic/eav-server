@@ -62,7 +62,7 @@ namespace ToSic.Eav
         /// </summary>
         [Obsolete("Use MetadataForEntity instead")]
         public static readonly int AssignmentObjectTypeEntity = 4;
-        public static readonly int MetadataForEntity = 4;
+        public const int MetadataForEntity = 4;
 
         public static readonly int MetadataForContentType = 5;
 

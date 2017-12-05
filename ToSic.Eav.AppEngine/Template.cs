@@ -9,21 +9,21 @@ namespace ToSic.Eav.Apps
 {
     public class Template: HasLog
     {
-        private readonly IEntity _templateEntity;
+        public readonly IEntity Entity;
 
         public Template(IEntity templateEntity, Log parentLog): base("App.Templt", parentLog)
         {
-            _templateEntity = templateEntity ?? throw new Exception("Template entity is null");
+            Entity = templateEntity ?? throw new Exception("Template entity is null");
         }
 
-        private string GetBestString(string key) => (string) _templateEntity.GetBestValue(key);
-        private IEntity GetBestRelationship(string key) => ((Data.EntityRelationship)_templateEntity.Attributes[key][0]).FirstOrDefault();
-        private bool GetBestBool(string key) => (bool)(_templateEntity.GetBestValue(key) ?? false);
+        private string GetBestString(string key) => (string) Entity.GetBestValue(key);
+        private IEntity GetBestRelationship(string key) => ((Data.EntityRelationship)Entity.Attributes[key][0]).FirstOrDefault();
+        private bool GetBestBool(string key) => (bool)(Entity.GetBestValue(key) ?? false);
 
 
-        public int TemplateId => _templateEntity.EntityId;
+        public int TemplateId => Entity.EntityId;
 
-        public string Name => (string) _templateEntity.GetBestValue(AppConstants.TemplateName, new[] {Thread.CurrentThread.CurrentUICulture.Name});
+        public string Name => (string) Entity.GetBestValue(AppConstants.TemplateName, new[] {Thread.CurrentThread.CurrentUICulture.Name});
 
         public string Path => GetBestString(AppConstants.TemplatePath);
 
@@ -44,7 +44,7 @@ namespace ToSic.Eav.Apps
         public IEntity ListPresentationDemoEntity => GetBestRelationship(AppConstants.TemplateListPresentationDemo);
 
         public string Type => GetBestString(AppConstants.TemplateType);
-        public Guid Guid => _templateEntity.EntityGuid;
+        public Guid Guid => Entity.EntityGuid;
 
         public string GetTypeStaticName(string groupPart)
         {
@@ -71,7 +71,7 @@ namespace ToSic.Eav.Apps
         public string StreamsToPublish => GetBestString(AppConstants.TemplatePublishStreams);
 
 
-        public IEntity Pipeline => ((Data.EntityRelationship)_templateEntity.Attributes["Pipeline"][0]).FirstOrDefault();
+        public IEntity Pipeline => ((Data.EntityRelationship)Entity.Attributes["Pipeline"][0]).FirstOrDefault();
         public string ViewNameInUrl => GetBestString(AppConstants.TemplateViewName);
 
         /// <summary>
