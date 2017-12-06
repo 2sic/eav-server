@@ -5,6 +5,7 @@ using ToSic.Eav.Apps.Interfaces;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.DataSources.Pipeline;
+using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
@@ -168,15 +169,9 @@ namespace ToSic.Eav.Apps
             }
         }
 
-        // this is a DNN/MVC-Routing problem, must use "-" instead of "." for now... 
-        private const string GlobalQueryPrefixBeta = "Eav-Queries-Global-";
-        private const string GlobalQueryPrefix = "Eav.Queries.Global.";
-
         internal DeferredPipelineQuery GetQuery(string name)
         {
-            if (name.StartsWith(GlobalQueryPrefixBeta))
-                return GetGlobalQuery(name.Replace('-', '.'));
-            if (name.StartsWith(GlobalQueryPrefix))
+            if (name.StartsWith(Global.GlobalQueryPrefix))
                 return GetGlobalQuery(name);
 
             // Try to find the query, abort if not found
@@ -189,11 +184,9 @@ namespace ToSic.Eav.Apps
 
         private DeferredPipelineQuery GetGlobalQuery(string name)
         {
-            var qent = Eav.DataSources.Queries.Global.FindQuery(name);
-            if (qent == null)
-                throw new Exception($"can't find (BETA) global query {name}");
-            var query = new DeferredPipelineQuery(ZoneId, AppId, qent, ConfigurationProvider);
-            return query;
+            var qent = Global.FindQuery(name) 
+                ?? throw new Exception($"can't find global query {name}");
+            return new DeferredPipelineQuery(ZoneId, AppId, qent, ConfigurationProvider);
         }
 
         #endregion 

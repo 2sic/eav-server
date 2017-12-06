@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.DataSources.Pipeline;
+using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSources.System.Types;
 using ToSic.Eav.DataSources.VisualQuery;
 using ToSic.Eav.Interfaces;
@@ -84,6 +85,10 @@ namespace ToSic.Eav.DataSources.System
 	    {
             EnsureConfigurationIsLoaded();
 
+            // no query can happen if the name was blank
+            if(_query == null)
+                return new List<IEntity>();
+
             // check that _query has the stream name
             if(!_query.Out.ContainsKey(StreamName))
                 return new List<IEntity>();
@@ -103,14 +108,22 @@ namespace ToSic.Eav.DataSources.System
 
 
         private void BuildQuery()
-	    {            
-            // find id
-	        var queries = DataPipeline.AllQueryItems(AppId, Log);
+        {
+            if (string.IsNullOrWhiteSpace(QueryName))
+                return;
+
             // important, use "Name" and not get-best-title, as some queries may not be correctly typed, so missing title-info
-	        var found = queries.FirstOrDefault(q => string.Equals(q.GetBestValue("Name").ToString(), QueryName, StringComparison.InvariantCultureIgnoreCase));
-	        if (found != null)
-	            _query = new DataPipelineFactory(Log).GetDataSourceForTesting(AppId, found.EntityId, false);
-	    }
+            var found = QueryName.StartsWith(Global.GlobalQueryPrefix)
+                ? Global.FindQuery(QueryName)
+                : DataPipeline.AllQueryItems(AppId, Log)
+                    .FirstOrDefault(q => string.Equals(q.GetBestValue("Name").ToString(), QueryName,
+                        StringComparison.InvariantCultureIgnoreCase));
+
+            if (found == null) throw new Exception($"Can't build information about query - couldn't find query '{QueryName}'");
+
+            _query = new DataPipelineFactory(Log).GetDataSourceForTesting(new QueryDefinition(found, AppId), false);
+        }
+
 	    private IDataSource _query;
 
 	}

@@ -40,12 +40,11 @@ namespace ToSic.Eav.DataSources.Queries
         private static IEnumerable<IEntity> _runtimeCache;
 
 
+        public const string GlobalQueryPrefix = "Eav.Queries.Global.";
 
         public static IEntity FindQuery(string name)
         {
-            // use the types which have been loaded
-            // this is to enable lookup of system types, while in the background we're still building the json-types
-            // this is important, because the deserializer for json will also call this
+            // Note: must use GetBestValue("Name") as GetTitle() will fail, since the type is often not known
             var types = _globalQueriesCache ?? AllQueries();
             return types.FirstOrDefault(e => e.GetBestValue("Name").ToString() == name);
         }
