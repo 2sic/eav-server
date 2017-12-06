@@ -213,5 +213,18 @@ namespace ToSic.Eav.Data
         internal IDeferredEntitiesList DeferredLookupData = null;
 
         #endregion
+
+
+        #region Obsolete / Special breaking changes
+
+        public object Value
+        {
+            get
+            {
+                throw new Exception("Error: You're seeing this because of a breaking change in EAV 4.5 / 2sxc 9.8. Please read this to fix: https://2sxc.org/en/blog/post/fixing-the-breaking-change-in-2sxc-9-8-list-instead-of-dictionary");
+            }
+        }
+
+        #endregion
     }
 }
