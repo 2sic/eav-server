@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.DataSources.Exceptions
 {
-    public class DataSourceException: System.Exception
+    public class DataSourceException: Exception
     {
         private string p;
         private Exception ex;

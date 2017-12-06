@@ -7,7 +7,7 @@ using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.DataSources.VisualQuery;
 using ToSic.Eav.Interfaces;
 
-namespace ToSic.Eav.Apps.DataSources
+namespace ToSic.Eav.DataSources.System
 {
     /// <inheritdoc />
     /// <summary>

@@ -202,7 +202,7 @@ namespace ToSic.Eav.DataSources
 			if (!string.IsNullOrEmpty(ConnectionStringName) && (string.IsNullOrEmpty(ConnectionString) || ConnectionString == ConnectionStringDefault))
 			    try
 			    {
-			        ConnectionString = System.Configuration.ConfigurationManager
+			        ConnectionString = global::System.Configuration.ConfigurationManager
                         .ConnectionStrings[ConnectionStringName].ConnectionString;
 			    }
 			    catch (Exception ex)

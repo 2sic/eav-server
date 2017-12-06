@@ -37,3 +37,4 @@ using System.Runtime.InteropServices;
 
 // This is needed for unit testing
 [assembly: InternalsVisibleTo("ToSic.Eav.UnitTests")]
+[assembly: InternalsVisibleTo("ToSic.Eav.Apps")]

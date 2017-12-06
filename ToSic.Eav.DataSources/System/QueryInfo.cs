@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.DataSources.Pipeline;
+using ToSic.Eav.DataSources.System.Types;
 using ToSic.Eav.DataSources.VisualQuery;
 using ToSic.Eav.Interfaces;
 
-namespace ToSic.Eav.DataSources.Queries
+namespace ToSic.Eav.DataSources.System
 {
     /// <inheritdoc />
     /// <summary>
@@ -21,7 +22,7 @@ namespace ToSic.Eav.DataSources.Queries
     public sealed class QueryInfo: BaseDataSource
 	{
         #region Configuration-properties (no config)
-	    public override string LogId => "DS.EavAts";
+	    public override string LogId => "DS.EavQIn";
 
         private const string QueryKey = "Query";
         private const string QueryNameField = "QueryName";
@@ -34,12 +35,6 @@ namespace ToSic.Eav.DataSources.Queries
 	    // ReSharper disable once UnusedMember.Local
         private const string QueryCtGuid = "11001010-251c-eafe-2792-00000000000!";
 
-
-
-	    private enum StreamsType
-	    {
-	        Name
-	    }
 
         /// <summary>
         /// The content-type name
@@ -73,27 +68,23 @@ namespace ToSic.Eav.DataSources.Queries
 
 	    private IEnumerable<IEntity> GetStreams()
 	    {
-            EnsureConfigurationIsLoaded();
-            BuildQuery();
+	        EnsureConfigurationIsLoaded();
 
-	        if (_query == null) return new List<IEntity>();
-
-	        var list = _query?.Out.OrderBy(stream => stream.Key).Select(stream
-	            => new Data.Entity(AppId, 0,
-	                QueryStreamsContentType, new Dictionary<string, object>
-	                {
-	                    {StreamsType.Name.ToString(), stream.Key},
-	                }, StreamsType.Name.ToString()));
-
-	        return list;
+	        return _query?.Out.OrderBy(stream => stream.Key).Select(stream
+	                   => new Data.Entity(AppId, 0, QueryStreamsContentType,
+	                       new Dictionary<string, object>
+	                       {
+	                           {StreamsType.Name.ToString(), stream.Key}
+	                       },
+	                       StreamsType.Name.ToString()))
+	               ?? (IEnumerable<IEntity>) new List<IEntity>();
 	    }
 
 	    private IEnumerable<IEntity> GetAttributes()
 	    {
             EnsureConfigurationIsLoaded();
-            BuildQuery();
 
-            // todo: check that _query has the stream name
+            // check that _query has the stream name
             if(!_query.Out.ContainsKey(StreamName))
                 return new List<IEntity>();
 
@@ -104,25 +95,23 @@ namespace ToSic.Eav.DataSources.Queries
 	        return attribInfo.List;
         }
 
-	    private IDataSource _query;
-
-	    private void BuildQuery()
+	    protected internal override void EnsureConfigurationIsLoaded()
 	    {
-	        if (_alreadyBuilt) return;
-            
+	        base.EnsureConfigurationIsLoaded();
+            BuildQuery();
+	    }
+
+
+        private void BuildQuery()
+	    {            
             // find id
 	        var queries = DataPipeline.AllQueryItems(AppId, Log);
             // important, use "Name" and not get-best-title, as some queries may not be correctly typed, so missing title-info
 	        var found = queries.FirstOrDefault(q => string.Equals(q.GetBestValue("Name").ToString(), QueryName, StringComparison.InvariantCultureIgnoreCase));
 	        if (found != null)
-	        {
-	            var id = found.EntityId;
-	            _query = new DataPipelineFactory(Log).GetDataSourceForTesting(AppId, id, false);
-	        }
-	        _alreadyBuilt = true;
+	            _query = new DataPipelineFactory(Log).GetDataSourceForTesting(AppId, found.EntityId, false);
 	    }
-
-	    private bool _alreadyBuilt;
+	    private IDataSource _query;
 
 	}
 }
