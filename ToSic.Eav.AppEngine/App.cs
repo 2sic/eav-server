@@ -169,12 +169,15 @@ namespace ToSic.Eav.Apps
         }
 
         // this is a DNN/MVC-Routing problem, must use "-" instead of "." for now... 
-        private const string GlobalQueryPrefix = "Eav-Queries-Global-";
+        private const string GlobalQueryPrefixBeta = "Eav-Queries-Global-";
+        private const string GlobalQueryPrefix = "Eav.Queries.Global.";
 
         internal DeferredPipelineQuery GetQuery(string name)
         {
-            if (name.StartsWith(GlobalQueryPrefix))
+            if (name.StartsWith(GlobalQueryPrefixBeta))
                 return GetGlobalQuery(name.Replace('-', '.'));
+            if (name.StartsWith(GlobalQueryPrefix))
+                return GetGlobalQuery(name);
 
             // Try to find the query, abort if not found
             if (Query.ContainsKey(name) && Query[name] is DeferredPipelineQuery query)
