@@ -32,5 +32,10 @@ namespace ToSic.Eav.Interfaces
         /// </remarks>
         IMetadataOfItem Metadata { get; }
 
+
+        /// <summary>
+        /// Dummy entry, to show better error message when it's being accessed because of breaking changes in EAV 4.5 / 2sxc 9.8, which 
+        /// </summary>
+        object Value { get; }
     }
 }

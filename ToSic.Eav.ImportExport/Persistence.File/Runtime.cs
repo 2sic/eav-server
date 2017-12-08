@@ -60,13 +60,31 @@ namespace ToSic.Eav.ImportExport.Persistence.File
 
             // 3 - return content types
             var types = new List<IContentType>();
-            Loaders.ForEach(l => types.AddRange(l.ContentTypes(0, null)));
+            Loaders.ForEach(l => types.AddRange(l.ContentTypes()));
             Log.Add($"found {types.Count} types");
             return types;
         }
 
+
+
         internal List<FileSystemLoader> Loaders => _loader ?? (_loader = Paths.Select(path => new FileSystemLoader(path, Source, true, Log)).ToList());
         private List<FileSystemLoader> _loader;
+
+
+        public IEnumerable<IEntity> LoadGlobalItems(string groupIdentifier)
+        {
+            Log.Add($"loading items for {groupIdentifier}");
+
+            if(groupIdentifier != "query")
+                throw new ArgumentOutOfRangeException(nameof(groupIdentifier), "atm we can only load items of type 'query'");
+
+            // 3 - return content types
+            var query = new List<IEntity>();
+            Loaders.ForEach(l => query.AddRange(l.Queries()));
+            Log.Add($"found {query.Count} queries");
+            return query;
+        }
+
 
     }
 }

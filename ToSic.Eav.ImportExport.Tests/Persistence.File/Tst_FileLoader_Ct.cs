@@ -10,7 +10,7 @@ using ToSic.Eav.Repositories;
 namespace ToSic.Eav.Persistence.File.Tests
 {
     [TestClass]
-    public class FileLoaderTests: PersistenceTestsBase
+    public class Tst_FileLoader_Ct: PersistenceTestsBase
     {
 
         [TestMethod]
@@ -99,7 +99,7 @@ namespace ToSic.Eav.Persistence.File.Tests
             IList<IContentType> cts;
             try
             {
-                cts = loader.ContentTypes(0, null);
+                cts = loader.ContentTypes();
             }
             finally
             {
@@ -107,5 +107,7 @@ namespace ToSic.Eav.Persistence.File.Tests
             }
             return cts;
         }
+
+        
     }
 }

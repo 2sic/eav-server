@@ -8,7 +8,7 @@ namespace ToSic.Eav.Interfaces
     public interface IRepositoryLoader
     {
         /// <summary>
-        /// Get all ContentTypes for specified AppId. If called multiple times it loads from a private field.
+        /// Get all ContentTypes for specified AppId. If called multiple times it loads from a private cache.
         /// </summary>
         IList<IContentType> ContentTypes(int appId, IDeferredEntitiesList source);
 

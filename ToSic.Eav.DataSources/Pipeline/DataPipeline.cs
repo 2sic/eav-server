@@ -41,12 +41,8 @@ namespace ToSic.Eav.DataSources.Pipeline
         /// <returns></returns>
 	    public static Dictionary<string, IDataSource> AllPipelines(int zoneId, int appId, IValueCollectionProvider valuesCollectionProvider, Log parentLog)
 	    {
-            var source = DataSource.GetInitialDataSource(appId: appId, parentLog:parentLog);
-            var typeFilter = DataSource.GetDataSource<EntityTypeFilter>(appId: appId, upstream: source);
-            typeFilter.TypeName = Constants.DataPipelineStaticName;
-
 	        var dict = new Dictionary<string, IDataSource>(StringComparer.OrdinalIgnoreCase);
-	        foreach (var entQuery in typeFilter.List)
+	        foreach (var entQuery in AllQueryItems(appId, parentLog))
 	        {
 	            var delayedQuery = new DeferredPipelineQuery(zoneId, appId, entQuery, valuesCollectionProvider);
                 // make sure it doesn't break if two queries have the same name...
@@ -57,6 +53,13 @@ namespace ToSic.Eav.DataSources.Pipeline
 	        return dict;
 	    }
 
-        
+	    public static IEnumerable<IEntity> AllQueryItems(int appId, Log parentLog)
+	    {
+	        var source = DataSource.GetInitialDataSource(appId: appId, parentLog: parentLog);
+	        var typeFilter = DataSource.GetDataSource<EntityTypeFilter>(appId: appId, upstream: source);
+	        typeFilter.TypeName = Constants.DataPipelineStaticName;
+	        var list = typeFilter.List;
+	        return list;
+	    }
 	}
 }

@@ -6,12 +6,14 @@ namespace ToSic.Eav.Apps.Interfaces
     public interface IZoneMapper
     {
         /// <summary>
-        /// The zoneId which belongs to the tennant of this environment
+        /// Get the zoneId which belongs to the tennant of this environment
         /// </summary>
         /// <param name="tennantId"></param>
         /// <returns></returns>
         int GetZoneId(int tennantId);
 
+
+        ITennant Tennant(int zoneId);
 
         /// <summary>
         /// The cultures available on this tennant/zone combination
@@ -21,6 +23,7 @@ namespace ToSic.Eav.Apps.Interfaces
         /// <param name="zoneId"></param>
         /// <returns></returns>
         List<TempTempCulture> CulturesWithState(int tennantId, int zoneId);
+
 
     }
 }

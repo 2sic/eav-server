@@ -44,6 +44,12 @@
         public const string ListPresentationLower = "listpresentation";
 
 
+        public static readonly string AttributeSetStaticNameApps = "2SexyContent-App";
+        public static readonly string AttributeSetStaticNameAppResources = "App-Resources";
+        public static readonly string AttributeSetStaticNameAppSettings = "App-Settings";
+
+        public static readonly string AttributeSetScopeApps = "2SexyContent-App";
+
         #endregion
 
     }

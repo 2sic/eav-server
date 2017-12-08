@@ -16,7 +16,7 @@ namespace ToSic.Eav.ImportExport.Tests.Persistence.File
         public void TestWith3FileTypes()
         {
             // set loader root path, based on test environment
-            RepositoryInfoOfDemoSystem.PathToUse = TestStorageRoot;
+            RepositoryInfoOfTestSystem.PathToUse = TestStorageRoot;
 
             var all = Global.AllContentTypes();
             Assert.AreEqual(expectedTypesSysAndJson, all.Count);
@@ -37,7 +37,7 @@ namespace ToSic.Eav.ImportExport.Tests.Persistence.File
         public void TestWith40FileTypes_JustReRunIfItFails()
         {
             // set loader root path, based on test environment
-            RepositoryInfoOfDemoSystem.PathToUse = TestingPath40;
+            RepositoryInfoOfTestSystem.PathToUse = TestingPath40;
 
             var time = Stopwatch.StartNew();
             var all = Global.AllContentTypes();
@@ -51,12 +51,12 @@ namespace ToSic.Eav.ImportExport.Tests.Persistence.File
         public void TestWith400FileTypes()
         {
             // set loader root path, based on test environment
-            RepositoryInfoOfDemoSystem.PathToUse = TestingPath40;
+            RepositoryInfoOfTestSystem.PathToUse = TestingPath40;
             var loader = new Runtime();
             var time = Stopwatch.StartNew();
             for (var i = 0; i < 10; i++)
             {
-                loader.Loaders.First().ContentTypes(0, null);
+                loader.Loaders.First().ContentTypes();
                 Trace.WriteLine($"time after cycle {i} was {time.Elapsed}");
             }
             time.Stop();

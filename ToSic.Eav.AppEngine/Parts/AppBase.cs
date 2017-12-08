@@ -7,7 +7,7 @@ using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Apps.Parts
 {
-    public class AppBase: HasLog, IApp
+    public class AppBase: HasLog, IAppIdentity
     {
         #region Constructor and simple properties
         #region basic properties
@@ -37,7 +37,7 @@ namespace ToSic.Eav.Apps.Parts
             AppId = appId;
         }
 
-        public AppBase(IApp app, Log parentLog) : this(app.ZoneId, app.AppId, parentLog) { }
+        public AppBase(IAppIdentity app, Log parentLog) : this(app.ZoneId, app.AppId, parentLog) { }
 
         public AppBase(int appId, Log parentLog) : this(((BaseCache) DataSource.GetCache(null)).GetZoneAppId(appId: appId).Item1, appId, parentLog) { }
 

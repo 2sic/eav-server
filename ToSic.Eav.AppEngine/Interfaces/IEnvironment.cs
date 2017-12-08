@@ -9,5 +9,8 @@
         IUser User { get; }
 
         IPagePublishing PagePublishing { get; }
+
+        string MapPath(string virtualPath);
+
     }
 }

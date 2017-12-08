@@ -1,14 +1,18 @@
-﻿namespace ToSic.Eav.Apps.Interfaces
+﻿using System.Collections.Generic;
+using ToSic.Eav.DataSources;
+
+namespace ToSic.Eav.Apps.Interfaces
 {
-    /// <inheritdoc />
-    /// <summary>
-    /// A app object capable of telling us it's identity
-    /// </summary>
-    public interface IApp: IZone
+    public interface IApp : IAppIdentity
     {
-        /// <summary>
-        /// The app id as used internally
-        /// </summary>
-        int AppId { get; }
+        string Name { get; }
+        string Folder { get; }
+        bool Hidden { get; }
+        string AppGuid { get; }
+
+
+        IAppData Data { get; }
+        IDictionary<string, IDataSource> Query { get; }
+
     }
 }

@@ -1,21 +1,24 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Apps.DataSources.Types;
+using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.DataSources.VisualQuery;
 using ToSic.Eav.Interfaces;
 
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.DataSources.System
 {
-	/// <inheritdoc />
-	/// <summary>
-	/// A DataSource that returns the attributes of a content-type
-	/// </summary>
-	//[VisualQuery(Type = DataSourceType.Source, 
- //       DynamicOut = false,
- //       Difficulty = DifficultyBeta.Advanced,
- //       EnableConfig = true,
- //       ExpectsDataOfType = "fabc849e-b426-42ea-8e1c-c04e69facd9b",
- //       HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Apps")]
+    /// <inheritdoc />
+    /// <summary>
+    /// A DataSource that returns the attributes of a content-type
+    /// </summary>
+    [VisualQuery(Type = DataSourceType.Source,
+        DynamicOut = false,
+        Difficulty = DifficultyBeta.Advanced,
+        EnableConfig = true,
+        ExpectsDataOfType = "fabc849e-b426-42ea-8e1c-c04e69facd9b",
+        HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Apps")]
 
     public sealed class Apps: BaseDataSource
 	{
@@ -24,29 +27,23 @@ namespace ToSic.Eav.DataSources
 
         private const string ZoneKey = "Zone";
         private const string ZoneIdField = "ZoneId";
-        private const int DefZone = 0;
         private const string AppsContentTypeName = "EAV_Apps";
 
         // 2dm: this is for a later feature...
+	    // ReSharper disable once UnusedMember.Local
 	    private const string AppsCtGuid = "11001010-251c-eafe-2792-000000000002";
 
 
-        private enum AppsType
-	    {
-	        Id,
-	        Name,
-            IsDefault
-	    }
 	    /// <summary>
 	    /// The attribute whoose value will be filtered
 	    /// </summary>
 	    public int ZoneNumber
 	    {
-	        get => int.Parse(Configuration[ZoneKey]);
+	        get => int.TryParse(Configuration[ZoneKey], out int zid) ? zid : ZoneId;
 	        set => Configuration[ZoneKey] = value.ToString();
 	    }
 
-        #endregion
+	    #endregion
 
         /// <inheritdoc />
         /// <summary>
@@ -55,7 +52,7 @@ namespace ToSic.Eav.DataSources
         public Apps()
 		{
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
-		    Configuration.Add(ZoneKey, $"[Settings:{ZoneIdField}||{DefZone}]");
+		    Configuration.Add(ZoneKey, $"[Settings:{ZoneIdField}]");
 
             CacheRelevantConfigurations = new [] { ZoneKey };
 		}
@@ -71,15 +68,26 @@ namespace ToSic.Eav.DataSources
 
 	        var list = zone.Apps.OrderBy(a => a.Key).Select(app =>
 	        {
-               // Assemble the entities
+	            Eav.Apps.App appObj = null;
+	            Guid? guid = null;
+	            try
+	            {
+	                appObj = new Eav.Apps.App(zone.ZoneId, app.Key, false, Log, "for apps DS");
+	                if(Guid.TryParse(appObj.AppGuid, out Guid g)) guid = g;
+	            }
+	            catch { /* ignore */ }
+
+	            // Assemble the entities
 	            var appEnt = new Dictionary<string, object>
 	            {
-	                {AppsType.Id.ToString(), app.Key},
-	                {AppsType.Name.ToString(), app.Value},
-	                {AppsType.IsDefault.ToString(), app.Key == zone.DefaultAppId}
+	                {AppType.Id.ToString(), app.Key},
+	                {AppType.Name.ToString(), appObj?.Name ?? "error - can't lookup name"},
+                    {AppType.Folder.ToString(), appObj?.Folder ?? "" },
+                    {AppType.IsHidden.ToString(), appObj?.Hidden ?? false },
+	                {AppType.IsDefault.ToString(), app.Key == zone.DefaultAppId},
 	            };
 
-                return new Data.Entity(AppId, app.Key, AppsContentTypeName, appEnt, AppsType.Name.ToString());
+                return new Data.Entity(AppId, app.Key, AppsContentTypeName, appEnt, AppType.Name.ToString(), entityGuid: guid);
             });
 
             return list;

@@ -80,9 +80,14 @@
   <ItemGroup>
     <Compile Include="App.cs" />
     <Compile Include="AttributeFilter.cs" />
-    <Compile Include="Apps.cs" />
+    <Compile Include="System\Types\AppType.cs" />
+    <Compile Include="System\Types\AttributeType.cs" />
+    <Compile Include="System\Types\ContentTypeType.cs" />
+    <Compile Include="System\QueryInfo.cs" />
+    <Compile Include="Queries\Global.cs" />
+    <Compile Include="System\Types\StreamsType.cs" />
+    <Compile Include="System\Types\ZoneType.cs" />
     <Compile Include="VisualQuery\DifficultyBeta.cs" />
-    <Compile Include="Zones.cs" />
     <Compile Include="VisualQuery\DataSourceType.cs" />
     <Compile Include="VisualQuery\VisualQueryAttribute.cs" />
     <Compile Include="BaseDataSource.cs" />
@@ -91,7 +96,7 @@
     <Compile Include="Caches\ICache.cs" />
     <Compile Include="Caches\ListCacheItem.cs" />
     <Compile Include="Caches\QuickCache.cs" />
-    <Compile Include="ContentTypes\JsonTest.cs" />
+    <Compile Include="TypeHelpers\JsonTest.cs" />
     <Compile Include="CsvDataSource.cs" />
     <Compile Include="DataSource.cs" />
     <Compile Include="DataStream.cs" />
@@ -110,7 +115,7 @@
     <Compile Include="IDataTarget.cs" />
     <Compile Include="IDeferredDataSource.cs" />
     <Compile Include="Metadata\MetadataFromDataSource.cs" />
-    <Compile Include="Attributes.cs" />
+    <Compile Include="System\Attributes.cs" />
     <Compile Include="Pipeline\QueryConstants.cs" />
     <Compile Include="Queries\QueryDefinition.cs" />
     <Compile Include="Shuffle.cs" />

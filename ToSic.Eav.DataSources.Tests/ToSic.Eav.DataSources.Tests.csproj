@@ -69,6 +69,12 @@
     <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=1.1.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.1.1.1\lib\netstandard1.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.VisualStudio.TestPlatform.14.0.0.0\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.VisualStudio.TestPlatform.14.0.0.0\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
@@ -87,17 +93,14 @@
         <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
       </ItemGroup>
     </When>
-    <Otherwise>
-      <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
-      </ItemGroup>
-    </Otherwise>
+    <Otherwise />
   </Choose>
   <ItemGroup>
     <Compile Include="InitializeTests.cs" />
     <Compile Include="ItemFilterDuplicates\Tst_ItemFilterDuplicates.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Query\Tst_QueryBasic.cs" />
+    <Compile Include="Query\Tst_QueryGlobal.cs" />
     <Compile Include="RelationshipFilterTests\RelationshipTest.cs" />
     <Compile Include="RelationshipFilterTests\RelationshipTestBase.cs" />
     <Compile Include="RelationshipFilterTests\Tst_RelationshipFilterDS_Modes.cs" />
@@ -123,6 +126,10 @@
     <ProjectReference Include="..\ToSic.Eav.DataSources\ToSic.Eav.DataSources.csproj">
       <Project>{daae8e21-ca5f-400b-9f5a-5e4e1196b21b}</Project>
       <Name>ToSic.Eav.DataSources</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ToSic.Eav.ImportExport.Tests\ToSic.Eav.ImportExport.Tests.csproj">
+      <Project>{00C8672B-E79E-42D4-A512-6C0ABCCAF046}</Project>
+      <Name>ToSic.Eav.ImportExport.Tests</Name>
     </ProjectReference>
     <ProjectReference Include="..\ToSic.Eav.ImportExport\ToSic.Eav.ImportExport.csproj">
       <Project>{5A75CD35-99F4-4CF0-944A-DC0F5D68B430}</Project>
@@ -152,6 +159,8 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+    <None Include="Query\.data\queries\Query.Apps.json" />
+    <None Include="Query\.data\queries\Query.Zones.json" />
   </ItemGroup>
   <ItemGroup />
   <Choose>

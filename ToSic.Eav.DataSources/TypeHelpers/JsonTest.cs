@@ -2,7 +2,7 @@
 using ToSic.Eav.Types.Attributes;
 using ToSic.Eav.Types.Builder;
 
-namespace ToSic.Eav.DataSources.ContentTypes
+namespace ToSic.Eav.DataSources.TypeHelpers
 {
     [ContentTypeDefinition(StaticTypeName)]
     public class JsonTest: TypesBase
