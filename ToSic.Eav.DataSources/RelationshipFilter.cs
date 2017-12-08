@@ -130,15 +130,16 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         public RelationshipFilter()
 		{
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntitiesOrFallback));
-			Configuration.Add(RelationshipKey, $"[Settings:{Settings.Relationship}]");
-			Configuration.Add(FilterKey, $"[Settings:{Settings.Filter}]");
-		    Configuration.Add(CompareAttributeKey, $"[Settings:{Settings.AttributeOnRelationship}||{Constants.EntityFieldTitle}]");
-			Configuration.Add(CompareModeKey, $"[Settings:{Settings.Comparison}||{CompareModes.contains}]");
-			Configuration.Add(SeparatorKey, $"[Settings:{Settings.Separator}||{DefaultSeparator}]");
-			Configuration.Add(ChildOrParentKey, $"[Settings:{Settings.Direction}||{DefaultDirection}]");
+            Provide(GetEntitiesOrFallback);
+            //Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntitiesOrFallback));
+		    ConfigMask(RelationshipKey, $"[Settings:{Settings.Relationship}]");
+		    ConfigMask(FilterKey, $"[Settings:{Settings.Filter}]");
+		    ConfigMask(CompareAttributeKey, $"[Settings:{Settings.AttributeOnRelationship}||{Constants.EntityFieldTitle}]");
+		    ConfigMask(CompareModeKey, $"[Settings:{Settings.Comparison}||{CompareModes.contains}]");
+		    ConfigMask(SeparatorKey, $"[Settings:{Settings.Separator}||{DefaultSeparator}]");
+		    ConfigMask(ChildOrParentKey, $"[Settings:{Settings.Direction}||{DefaultDirection}]");
 
-            CacheRelevantConfigurations = new[] { RelationshipKey, FilterKey, CompareAttributeKey, CompareModeKey, SeparatorKey, ChildOrParentKey};
+            //CacheRelevantConfigurations = new[] { RelationshipKey, FilterKey, CompareAttributeKey, CompareModeKey, SeparatorKey, ChildOrParentKey};
         }
 
         private IEnumerable<IEntity> GetEntitiesOrFallback()

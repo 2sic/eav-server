@@ -63,12 +63,9 @@ namespace ToSic.Eav.DataSources.System
         /// </summary>
         public ContentTypes()
 		{
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
-			//Out.Add("Scopes", new DataStream(this, Constants.DefaultStreamName, GetList));
-            Configuration.Add(AppIdKey, $"[Settings:{AppIdField}]");
-            Configuration.Add(ScopeKey, $"[Settings:{ScopeField}||Default]");
-
-            CacheRelevantConfigurations = new[] {AppIdKey};
+			Provide(GetList);
+		    ConfigMask(AppIdKey, $"[Settings:{AppIdField}]");
+		    ConfigMask(ScopeKey, $"[Settings:{ScopeField}||Default]");
 		}
 
 	    private IEnumerable<IEntity> GetList()
@@ -96,7 +93,7 @@ namespace ToSic.Eav.DataSources.System
 	                /* ignore */
 	            }
 
-	            return new Data.Entity(DesiredAppId, t.ContentTypeId, ContentTypeTypeName, BuildDictionary(t), ContentTypeType.Name.ToString(), entityGuid: guid);
+	            return AsEntity(BuildDictionary(t), ContentTypeType.Name.ToString(), ContentTypeTypeName, t.ContentTypeId, guid, appId: DesiredAppId);// new Data.Entity(DesiredAppId, t.ContentTypeId, ContentTypeTypeName, BuildDictionary(t), ContentTypeType.Name.ToString(), entityGuid: guid);
 	        });
 
 	        return list;

@@ -46,10 +46,8 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         public Shuffle()
 		{
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
-            Configuration.Add(TakeKey, "[Settings:Take||0]");
-
-            CacheRelevantConfigurations = new[] { TakeKey };
+            Provide(GetList);
+		    ConfigMask(TakeKey, "[Settings:Take||0]");
         }
 
 

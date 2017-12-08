@@ -37,12 +37,13 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public PublishingFilter()
 		{
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
-			Configuration.Add(ShowDraftsKey, "[Settings:ShowDrafts||false]");
+            Provide(() => DataStream().List);
+            //Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
+		    ConfigMask(ShowDraftsKey, "[Settings:ShowDrafts||false]");
 
-            CacheRelevantConfigurations = new[] { ShowDraftsKey };
+            //CacheRelevantConfigurations = new[] { ShowDraftsKey };
 
- 	        IEnumerable<IEntity> GetList() => DataStream().List;
+ 	        //IEnumerable<IEntity> GetList() => DataStream().List;
        }
 
 

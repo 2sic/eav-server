@@ -59,12 +59,10 @@ namespace ToSic.Eav.DataSources.System
         /// </summary>
 		public QueryInfo()
 		{
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetStreams));
-			Out.Add("Attributes", new DataStream(this, Constants.DefaultStreamName, GetAttributes));
-            Configuration.Add(QueryKey, $"[Settings:{QueryNameField}||{DefQuery}]");
-            Configuration.Add(StreamKey, $"[Settings:{StreamField}||{Constants.DefaultStreamName}]");
-
-            CacheRelevantConfigurations = new[] {QueryKey,StreamKey};
+			Provide(GetStreams);
+			Provide("Attributes", GetAttributes);
+		    ConfigMask(QueryKey, $"[Settings:{QueryNameField}||{DefQuery}]");
+		    ConfigMask(StreamKey, $"[Settings:{StreamField}||{Constants.DefaultStreamName}]");
 		}
 
 	    private IEnumerable<IEntity> GetStreams()
@@ -72,13 +70,18 @@ namespace ToSic.Eav.DataSources.System
 	        EnsureConfigurationIsLoaded();
 
 	        return _query?.Out.OrderBy(stream => stream.Key).Select(stream
-	                   => new Data.Entity(AppId, 0, QueryStreamsContentType,
-	                       new Dictionary<string, object>
-	                       {
-	                           {StreamsType.Name.ToString(), stream.Key}
-	                       },
-	                       StreamsType.Name.ToString()))
-	               ?? (IEnumerable<IEntity>) new List<IEntity>();
+                => AsEntity(new Dictionary<string, object>
+                           {
+                               {StreamsType.Name.ToString(), stream.Key}
+                           }, StreamsType.Name.ToString(), QueryStreamsContentType)
+                       //=> new Data.Entity(AppId, 0, QueryStreamsContentType,
+                       //    new Dictionary<string, object>
+                       //    {
+                       //        {StreamsType.Name.ToString(), stream.Key}
+                       //    },
+                       //    StreamsType.Name.ToString())
+                       )
+	               ?? new List<IEntity>();
 	    }
 
 	    private IEnumerable<IEntity> GetAttributes()

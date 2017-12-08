@@ -36,10 +36,11 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public OwnerFilter()
 		{
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
-			Configuration.Add(IdentityCode, "[Settings:" + IdentityCode + "]"); 
+            Provide(GetList);
+            //Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
+		    ConfigMask(IdentityCode, "[Settings:" + IdentityCode + "]"); 
 
-            CacheRelevantConfigurations = new[] { IdentityCode };
+            //CacheRelevantConfigurations = new[] { IdentityCode };
         }
 
         private IEnumerable<IEntity> GetList()

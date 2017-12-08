@@ -2,11 +2,11 @@
 using System.Linq;
 using ToSic.Eav.Apps.DataSources.Types;
 using ToSic.Eav.Apps.Interfaces;
-using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.DataSources.VisualQuery;
 using ToSic.Eav.Interfaces;
 
+// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataSources.System
 {
     /// <inheritdoc />
@@ -39,9 +39,7 @@ namespace ToSic.Eav.DataSources.System
         /// </summary>
 		public Zones()
 		{
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
-
-            CacheRelevantConfigurations = new string[0];
+            Provide(GetList);
 		}
 
 	    private IEnumerable<IEntity> GetList()
@@ -69,7 +67,7 @@ namespace ToSic.Eav.DataSources.System
                     {ZoneType.AppCount.ToString(), zone.Apps.Count }
 	            };
 
-	            return new Data.Entity(AppId, zone.ZoneId, ZoneContentTypeName, znData, ZoneType.Name.ToString());
+	            return AsEntity(znData, ZoneType.Name.ToString(), ZoneContentTypeName, zone.ZoneId); // new Data.Entity(AppId, zone.ZoneId, ZoneContentTypeName, znData, ZoneType.Name.ToString());
 	        });
 
             return list;

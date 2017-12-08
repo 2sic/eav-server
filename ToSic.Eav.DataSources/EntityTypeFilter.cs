@@ -37,10 +37,11 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public EntityTypeFilter()
 		{
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
-			Configuration.Add(TypeNameKey, "[Settings:TypeName]");
+            Provide(GetList);
+            //Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
+		    ConfigMask(TypeNameKey, "[Settings:TypeName]");
         
-            CacheRelevantConfigurations = new[] { TypeNameKey };
+            //CacheRelevantConfigurations = new[] { TypeNameKey };
         }
 
         // special alternately named stream for use in the App data-source

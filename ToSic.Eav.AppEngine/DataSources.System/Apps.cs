@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Apps.DataSources.Types;
-using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.DataSources.VisualQuery;
 using ToSic.Eav.Interfaces;
 
+// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataSources.System
 {
     /// <inheritdoc />
@@ -51,11 +50,14 @@ namespace ToSic.Eav.DataSources.System
         /// </summary>
         public Apps()
 		{
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
-		    Configuration.Add(ZoneKey, $"[Settings:{ZoneIdField}]");
+            Provide(GetList);
+            ConfigMask(ZoneKey, $"[Settings:{ZoneIdField}]");
+			//Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
+		    //Configuration.Add(ZoneKey, $"[Settings:{ZoneIdField}]");
 
-            CacheRelevantConfigurations = new [] { ZoneKey };
+            //CacheRelevantConfigurations = new [] { ZoneKey };
 		}
+
 
 	    private IEnumerable<IEntity> GetList()
 	    {
@@ -87,7 +89,7 @@ namespace ToSic.Eav.DataSources.System
 	                {AppType.IsDefault.ToString(), app.Key == zone.DefaultAppId},
 	            };
 
-                return new Data.Entity(AppId, app.Key, AppsContentTypeName, appEnt, AppType.Name.ToString(), entityGuid: guid);
+	            return AsEntity(appEnt, AppType.Name.ToString(), AppsContentTypeName, app.Key, guid);// new Data.Entity(AppId, app.Key, AppsContentTypeName, appEnt, AppType.Name.ToString(), entityGuid: guid);
             });
 
             return list;

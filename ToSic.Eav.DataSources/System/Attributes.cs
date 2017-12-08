@@ -48,10 +48,8 @@ namespace ToSic.Eav.DataSources.System
         /// </summary>
 		public Attributes()
 		{
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
-            Configuration.Add(ContentTypeKey, $"[Settings:{ContentTypeField}||{TryToUseInStream}]");
-
-            CacheRelevantConfigurations = new[] {ContentTypeKey};
+			Provide(GetList);
+		    ConfigMask(ContentTypeKey, $"[Settings:{ContentTypeField}||{TryToUseInStream}]");
 		}
 
 	    private IEnumerable<IEntity> GetList()
@@ -82,8 +80,9 @@ namespace ToSic.Eav.DataSources.System
 
             // if it didn't work yet, maybe try from stream items
 
-	        return list?.Select(attribData => new Data.Entity(AppId, 0, AttribContentTypeName, attribData, AttributeType.Name.ToString())) 
-                ?? new List<IEntity>() as IEnumerable<IEntity>;
+	        return list?.Select(attribData => AsEntity(attribData, AttributeType.Name.ToString(), AttribContentTypeName) // new Data.Entity(AppId, 0, AttribContentTypeName, attribData, AttributeType.Name.ToString())
+            ) 
+                ?? new List<IEntity>();
         }
 
 

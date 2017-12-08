@@ -78,14 +78,12 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public ValueFilter()
 		{
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntitiesOrFallback));
-			Configuration.Add(AttrKey, "[Settings:Attribute]");
-			Configuration.Add(FilterKey, "[Settings:Value]");
-            Configuration.Add(OperatorKey, "[Settings:Operator||==]");
-            Configuration.Add(TakeKey, "[Settings:Take]");
-			Configuration.Add(LangKey, "Default"); // "[Settings:Language|Any]"); // use setting, but by default, expect "any"
-
-            CacheRelevantConfigurations = new[] { AttrKey, FilterKey, LangKey };
+			Provide(GetEntitiesOrFallback);
+		    ConfigMask(AttrKey, "[Settings:Attribute]");
+		    ConfigMask(FilterKey, "[Settings:Value]");
+		    ConfigMask(OperatorKey, "[Settings:Operator||==]");
+		    ConfigMask(TakeKey, "[Settings:Take]");
+		    ConfigMask(LangKey, "Default"); // "[Settings:Language|Any]"); // use setting, but by default, expect "any"
         }
 
         private IEnumerable<IEntity> GetEntitiesOrFallback()

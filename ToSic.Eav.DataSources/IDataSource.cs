@@ -52,31 +52,31 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		IDictionary<string, string> Configuration { get; }
 
-		#endregion
+        #endregion
 
-		#region UI Interfaces -- not implemented yet
+        #region UI Interfaces -- not implemented yet
 
-		///// <summary>
-		///// if the UI should show editing features for the user
-		///// </summary>
-		//bool AllowUserEdit { get; }
-		///// <summary>
-		///// if the UI should show sorting features for the user
-		///// </summary>
-		//bool AllowUserSort { get; }
+        ///// <summary>
+        ///// if the UI should show editing features for the user
+        ///// </summary>
+        //bool AllowUserEdit { get; }
+        ///// <summary>
+        ///// if the UI should show sorting features for the user
+        ///// </summary>
+        //bool AllowUserSort { get; }
 
-		///// <summary>
-		///// if the UI should show versioning features for the user
-		///// </summary>
-		//bool AllowVersioningUI { get; }
+        ///// <summary>
+        ///// if the UI should show versioning features for the user
+        ///// </summary>
+        //bool AllowVersioningUI { get; }
 
-		#endregion
+	    #endregion
 
-		#region Internals (Ready, DistanceFromSource)
-		/// <summary>
-		/// If this data source is ready to supply data
+	    #region Internals (Ready, DistanceFromSource)
+	    /// <summary>
+	    /// Indicates whether the DataSource is ready for use (initialized/configured)
 		/// </summary>
-		bool Ready { get; }
+        bool Ready { get; }
 
 		/// <summary>
 		/// Gets the Name of this DataSource
@@ -90,12 +90,15 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// List of items from the configuration which should be used for creating the cache-key
         /// </summary>
-        string[] CacheRelevantConfigurations { get; set; }
+        List<string> CacheRelevantConfigurations { get; set; }
         /// <summary>
         /// Unique key-id for this specific part - without the full chain to the parents
         /// </summary>
         string CachePartialKey { get; }
         string CacheFullKey { get; }
+        /// <summary>
+        /// try to return the upstream creation date
+        /// </summary>
         DateTime CacheLastRefresh { get; }
 
         bool TempUsesDynamicOut { get; }

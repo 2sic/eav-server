@@ -39,10 +39,11 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public AttributeFilter()
 		{
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
-			Configuration.Add(AttributeNamesKey, "[Settings:AttributeNames]");
+            Provide(GetList);
+			//Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
+			ConfigMask(AttributeNamesKey, "[Settings:AttributeNames]");
 
-            CacheRelevantConfigurations = new[] { AttributeNamesKey };
+            //CacheRelevantConfigurations = new[] { AttributeNamesKey };
         }
 
         /// <summary>
