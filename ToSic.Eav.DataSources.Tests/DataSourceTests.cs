@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSources.Tests
 
         public const int StandardInstalledPipeLineDS =
              //16; // without sql
-             19; // this is with some json-types...
+             21; // this is with some json-types...
         public const string SqlFullName = "ToSic.Eav.DataSources.SqlDataSource";
         public const string DeferredFullName = "ToSic.Eav.DataSources.DeferredPipelineQuery";
 
