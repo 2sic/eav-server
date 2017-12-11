@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using ToSic.Eav.DataSources.VisualQuery;
-using ToSic.Eav.Interfaces;
+﻿using ToSic.Eav.DataSources.VisualQuery;
 
 namespace ToSic.Eav.DataSources
 {
@@ -9,10 +7,11 @@ namespace ToSic.Eav.DataSources
 	/// Filter entities to show Drafts or only Published Entities
 	/// </summary>
 
-	[VisualQuery(Type = DataSourceType.Security, Icon = "eye", DynamicOut = false, 
-        EnableConfig = false,
-        HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-PublishingFilter",
-        ExpectsDataOfType = null)]
+	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.PublishingFilter, ToSic.Eav.DataSources",
+        Type = DataSourceType.Security, 
+        Icon = "eye", 
+        DynamicOut = false, 
+        HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-PublishingFilter")]
 
     public class PublishingFilter : BaseDataSource
 	{

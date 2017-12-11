@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-// using System.Data.EntityClient;
 using System.Linq;
 using ToSic.Eav.Data.Query;
 using ToSic.Eav.DataSources.VisualQuery;
@@ -13,9 +12,12 @@ namespace ToSic.Eav.DataSources
 	/// A DataSource that filters Entities by Ids
 	/// </summary>
 
-	[VisualQuery(Type = DataSourceType.Filter, DynamicOut = false,
+	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.EntityIdFilter, ToSic.Eav.DataSources",
+        Type = DataSourceType.Filter, 
+        DynamicOut = false,
         NiceName = "ItemIdFilter",
-	    HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-ItemIdFilter")]
+	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.EntityIdFilter",
+        HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-ItemIdFilter")]
 
     public class EntityIdFilter : BaseDataSource
 	{

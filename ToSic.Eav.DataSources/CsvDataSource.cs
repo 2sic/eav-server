@@ -10,8 +10,10 @@ using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
 {
-    //[PipelineDesigner]
-    [VisualQuery(Type = DataSourceType.Source, DynamicOut = false)]
+    [VisualQuery(GlobalName = "ToSic.Eav.DataSources.CsvDataSource, ToSic.Eav.DataSources",
+        Type = DataSourceType.Source, 
+        DynamicOut = false,
+        ExpectsDataOfType = "|Config ToSic.Eav.DataSources.CsvDataSource")]
     public class CsvDataSource : ExternalDataDataSource
     {
         private const string FilePathKey = "FilePath";

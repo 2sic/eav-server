@@ -11,7 +11,9 @@ namespace ToSic.Eav.DataSources
 	/// A DataSource that filters Entities by Ids
 	/// </summary>
 
-    [VisualQuery(Type = DataSourceType.Sort, DynamicOut = false, EnableConfig = true, 
+    [VisualQuery(GlobalName = "ToSic.Eav.DataSources.Shuffle, ToSic.Eav.DataSources",
+        Type = DataSourceType.Sort, 
+        DynamicOut = false, 
         ExpectsDataOfType = "38e7822b-1049-4539-bb3f-f99949b1b1d1",
         Icon = "shuffle",
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Shuffle")]

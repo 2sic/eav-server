@@ -13,10 +13,10 @@ namespace ToSic.Eav.DataSources.System
     /// <summary>
     /// A DataSource that returns the attributes of a content-type
     /// </summary>
-    [VisualQuery(Type = DataSourceType.Source,
+    [VisualQuery(GlobalName = "ToSic.Eav.DataSources.System.QueryInfo, ToSic.Eav.DataSources",
+        Type = DataSourceType.Source,
         Difficulty = DifficultyBeta.Advanced,
         DynamicOut = false,
-        EnableConfig = true,
         ExpectsDataOfType = "4638668f-d506-4f5c-ae37-aa7fdbbb5540",
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-QueryInfo")]
 

@@ -11,11 +11,12 @@ namespace ToSic.Eav.DataSources
 	/// Filter Entities by Value in a Related Entity
 	/// </summary>
 
-	[VisualQuery(
+	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.RelationshipFilter, ToSic.Eav.DataSources",
         Type = DataSourceType.Lookup, 
         In = new[] { Constants.DefaultStreamName, Constants.FallbackStreamName }, 
         DynamicOut = false,
-	    HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-RelationshipFilter")]
+	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.RelationshipFilter",
+        HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-RelationshipFilter")]
     public sealed class RelationshipFilter : BaseDataSource
 	{
         #region Configuration-properties

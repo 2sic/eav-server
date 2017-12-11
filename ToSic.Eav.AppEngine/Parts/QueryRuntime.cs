@@ -13,17 +13,21 @@ namespace ToSic.Eav.Apps.Parts
     {
         internal QueryRuntime(AppRuntime app, Log parentLog) : base(app, parentLog) { }
 
+        /// <summary>
+        /// Get all installed data sources - usually for the UI
+        /// </summary>
+        /// <returns></returns>
         public static IEnumerable<DataSourceInfo> GetInstalledDataSources()
         {
             var result = new List<DataSourceInfo>();
-            var installedDataSources = DataSource.GetInstalledDataSources(true);
+            var installedDataSources = DataSource.GetInstalledDataSources2(true);
             foreach (var dataSource in installedDataSources)
             {
                 #region Create Instance of DataSource to get In- and Out-Streams
                 ICollection<string> outStreamNames = new string[0];
-                if (!dataSource.IsInterface && !dataSource.IsAbstract)
+                if (!dataSource.Type.IsInterface && !dataSource.Type.IsAbstract)
                 {
-                    var dataSourceInstance = (IDataSource)Activator.CreateInstance(dataSource);
+                    var dataSourceInstance = (IDataSource)Activator.CreateInstance(dataSource.Type);
                     if (dataSourceInstance.TempUsesDynamicOut) // skip this if out-connections cannot be queried
                         outStreamNames = null;
                     else
@@ -37,17 +41,17 @@ namespace ToSic.Eav.Apps.Parts
                         }
                 }
                 // Handle Interfaces (currently only on ICache)
-                else if (dataSource.IsInterface)
+                else if (dataSource.Type.IsInterface)
                 {
-                    var dataSourceInstance = (IDataSource)Factory.Resolve(dataSource);
+                    var dataSourceInstance = (IDataSource)Factory.Resolve(dataSource.Type);
                     outStreamNames = dataSourceInstance.Out.Keys;
                 }
                 #endregion
 
-                var dsInfo = dataSource.GetCustomAttributes(typeof(VisualQueryAttribute), true).FirstOrDefault() as VisualQueryAttribute;
-                result.Add(new DataSourceInfo(dataSource.Name, dsInfo)
+                //var dsInfo = dataSource.VisualQuery;//.GetCustomAttributes(typeof(VisualQueryAttribute), true).FirstOrDefault() as VisualQueryAttribute;
+                result.Add(new DataSourceInfo(dataSource.Type.Name, dataSource.VisualQuery)
                 {
-                    PartAssemblyAndType = dataSource.FullName + ", " + dataSource.Assembly.GetName().Name,
+                    PartAssemblyAndType = dataSource.GlobalName,// dataSource.Type.FullName + ", " + dataSource.Type.Assembly.GetName().Name,
                     Out = outStreamNames
                 });
             }
@@ -55,6 +59,11 @@ namespace ToSic.Eav.Apps.Parts
             return result;
         }
 
+        /// <summary>
+        /// Get a query definition from the current app
+        /// </summary>
+        /// <param name="queryId"></param>
+        /// <returns></returns>
         public QueryDefinition Get(int queryId) =>
             new QueryDefinition(DataPipeline.GetPipelineEntity(queryId, App.Cache));
 

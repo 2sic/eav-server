@@ -12,7 +12,11 @@ namespace ToSic.Eav.DataSources
 	/// Return all Entities from a specific App
 	/// </summary>
 
-	[VisualQuery(Type = DataSourceType.Source, Icon = "app", DynamicOut = true,
+	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.App, ToSic.Eav.DataSources",
+        Type = DataSourceType.Source, 
+        Icon = "app",
+        DynamicOut = true,
+        ExpectsDataOfType = "|Config ToSic.Eav.DataSources.App",
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-App")]
 
     public class App : BaseDataSource

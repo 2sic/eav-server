@@ -163,19 +163,57 @@ namespace ToSic.Eav
 			return (IMetadataProvider)GetCache(zoneAppId.Item1, zoneAppId.Item2);
 		}
 
+
+        // 2017-12-11 2dm - turning this off...
+        ///// <summary>
+        ///// Get all Installed DataSources
+        ///// </summary>
+        ///// <remarks>Objects that implement IDataSource</remarks>
+        //public static IEnumerable<Type> GetInstalledDataSources(bool onlyForVisualQuery)
+        //    => onlyForVisualQuery
+        //        ? Plumbing.AssemblyHandling.FindClassesWithAttribute(
+        //               typeof(IDataSource),
+        //            typeof(VisualQueryAttribute), false)
+        //        : Plumbing.AssemblyHandling.FindInherited(typeof(IDataSource));
+
+
+
+
 	    /// <summary>
 	    /// Get all Installed DataSources
 	    /// </summary>
 	    /// <remarks>Objects that implement IDataSource</remarks>
-	    public static IEnumerable<Type> GetInstalledDataSources(bool onlyForVisualQuery)
+	    public static IEnumerable<DataSourceInfo> GetInstalledDataSources2(bool onlyForVisualQuery)
 	        => onlyForVisualQuery
-	            ? Plumbing.AssemblyHandling.FindClassesWithAttribute(
-                    typeof(IDataSource),
-	                typeof(VisualQueryAttribute), false)
-	            : Plumbing.AssemblyHandling.FindInherited(typeof(IDataSource));
+	            ? DsCache.Where(dsi => !string.IsNullOrEmpty(dsi.VisualQuery?.GlobalName))
+	            : DsCache;
+
+	    private static List<DataSourceInfo> DsCache { get; } = Plumbing.AssemblyHandling
+	        .FindInherited(typeof(IDataSource))
+	        .Select(t => new DataSourceInfo(t)).ToList();
 
 
+	    public class DataSourceInfo
+	    {
+	        public Type Type { get; }
+            public VisualQueryAttribute VisualQuery { get; }
+	        public string GlobalName => VisualQuery?.GlobalName;
 
+	        public DataSourceInfo(Type dsType)
+	        {
+	            Type = dsType;
+
+                // must put this in a try/catch, in case other DLLs have incompatible attributes
+	            try
+	            {
+	                VisualQuery =
+	                    Type.GetCustomAttributes(typeof(VisualQueryAttribute), false).FirstOrDefault() as
+	                        VisualQueryAttribute;
+	            }
+
+                catch {  /*ignore */ }
+	        }
+	    }
 	}
 
 }

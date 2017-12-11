@@ -10,9 +10,9 @@ namespace ToSic.Eav.DataSources
 	/// A DataSource that merges two streams
 	/// </summary>
 
-	[VisualQuery(Type = DataSourceType.Logic, 
+	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.StreamMerge, ToSic.Eav.DataSources",
+        Type = DataSourceType.Logic, 
         DynamicOut = false, 
-        EnableConfig = false,
 	    HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-StreamMerge")]
 
     public sealed class StreamMerge: BaseDataSource

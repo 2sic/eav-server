@@ -11,7 +11,8 @@ namespace ToSic.Eav.DataSources.Caches
 	/// Caching interface for standard Eav Cache
 	/// </summary>
 
-	[VisualQuery(Type = DataSourceType.Source, EnableConfig = false)]
+	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.Caches.ICache, ToSic.Eav.DataSources",
+        Type = DataSourceType.Source)]
     public interface ICache : IDataSource
 	{
 		/// <summary>

@@ -13,7 +13,10 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
 	/// <remarks>Uses Configuration "AttributeNames"</remarks>
 
-	[VisualQuery(Type = DataSourceType.Modify, DynamicOut = false,
+	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.AttributeFilter, ToSic.Eav.DataSources",
+        Type = DataSourceType.Modify, 
+        DynamicOut = false,
+	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.AttributeFilter",
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-AttributeFilter")]
 
     public class AttributeFilter : BaseDataSource

@@ -11,8 +11,11 @@ namespace ToSic.Eav.DataSources
 	/// A DataSource that filters Entities by Ids
 	/// </summary>
 
-	[VisualQuery(Type = DataSourceType.Logic, DynamicOut = false,
-	    HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Paging")]
+	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.Paging, ToSic.Eav.DataSources",
+        Type = DataSourceType.Logic, 
+        DynamicOut = false,
+	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.Paging",
+        HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Paging")]
 
     public sealed class Paging: BaseDataSource
 	{

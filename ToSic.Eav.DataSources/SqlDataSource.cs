@@ -13,8 +13,9 @@ namespace ToSic.Eav.DataSources
     /// <summary>
     /// Provide Entities from a SQL Server
     /// </summary>
-    //[PipelineDesigner]
-    [VisualQuery(Type = DataSourceType.Source, DynamicOut = false,
+    [VisualQuery(GlobalName = "ToSic.Eav.DataSources.SqlDataSource, ToSic.Eav.DataSources",
+        Type = DataSourceType.Source, 
+        DynamicOut = false,
         Icon = "database",
         ExpectsDataOfType = "c76901b5-0345-4866-9fa3-6208de7f8543",
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-SqlDataSource")]

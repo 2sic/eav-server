@@ -11,11 +11,11 @@ namespace ToSic.Eav.DataSources
     /// <summary>
     /// Return only Entities having a specific value in an Attribute
     /// </summary>
-    //[PipelineDesigner]
-    [VisualQuery(
+    [VisualQuery(GlobalName = "ToSic.Eav.DataSources.ValueFilter, ToSic.Eav.DataSources",
         Type = DataSourceType.Filter, 
         In = new[] { Constants.DefaultStreamName, Constants.FallbackStreamName },
         DynamicOut = false,
+        ExpectsDataOfType = "|Config ToSic.Eav.DataSources.ValueFilter",
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-ValueFilter")]
 
     public sealed class ValueFilter : BaseDataSource

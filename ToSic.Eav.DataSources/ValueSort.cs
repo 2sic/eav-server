@@ -11,7 +11,10 @@ namespace ToSic.Eav.DataSources
 	/// Sort Entity by values in specified Attributes
 	/// </summary>
 
-	[VisualQuery(Type = DataSourceType.Sort, DynamicOut = false,
+	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.ValueSort, ToSic.Eav.DataSources",
+        Type = DataSourceType.Sort,
+        DynamicOut = false,
+	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.ValueSort",
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-ValueSort")]
 
     public sealed class ValueSort : BaseDataSource
