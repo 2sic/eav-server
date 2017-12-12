@@ -38,7 +38,7 @@ namespace ToSic.Eav
 		}
 
 	    /// <summary>
-	    /// Get DataSource for specified sourceName/Type using Unity.
+	    /// Get DataSource for specified sourceName/Type
 	    /// </summary>
 	    /// <param name="sourceName">Full Qualified Type/Interface Name</param>
 	    /// <param name="zoneId">ZoneId for this DataSource</param>
@@ -49,15 +49,35 @@ namespace ToSic.Eav
 	    /// <returns>A single DataSource</returns>
 	    public static IDataSource GetDataSource(string sourceName, int? zoneId = null, int? appId = null, IDataSource upstream = null, IValueCollectionProvider valueCollectionProvider = null, Log parentLog = null)
 		{
-			var type = Type.GetType(sourceName);
+		    // try to find with assembly name, or otherwise with GlobalName / previous names
+            var type = Type.GetType(sourceName) 
+                ?? FindInDsTypeCache(sourceName)?.Type;
+
+		    // still not found? must show error
 			if (type == null)
-			{
-				throw new Exception("DataSource not installed on Server: " + sourceName);
-			}
-			var newDs = (BaseDataSource)Factory.Resolve(type);
-			ConfigureNewDataSource(newDs, zoneId, appId, upstream, valueCollectionProvider, parentLog);
-			return newDs;
+			    throw new Exception("DataSource not installed on Server: " + sourceName);
+
+			return GetDataSource(type, zoneId, appId, upstream, valueCollectionProvider, parentLog);
 		}
+
+
+	    /// <summary>
+	    /// Get DataSource for specified sourceName/Type
+	    /// </summary>
+	    /// <param name="type">the .net type of this data-source</param>
+	    /// <param name="zoneId">ZoneId for this DataSource</param>
+	    /// <param name="appId">AppId for this DataSource</param>
+	    /// <param name="upstream">In-Connection</param>
+	    /// <param name="valueCollectionProvider">Provides configuration values if needed</param>
+	    /// <param name="parentLog"></param>
+	    /// <returns>A single DataSource</returns>
+	    private static IDataSource GetDataSource(Type type, int? zoneId, int? appId, IDataSource upstream,
+	        IValueCollectionProvider valueCollectionProvider, Log parentLog)
+	    {
+	        var newDs = (BaseDataSource) Factory.Resolve(type);
+	        ConfigureNewDataSource(newDs, zoneId, appId, upstream, valueCollectionProvider, parentLog);
+	        return newDs;
+	    }
 
 	    /// <summary>
 	    /// Get DataSource for specified sourceName/Type using Unity.
@@ -87,7 +107,8 @@ namespace ToSic.Eav
 	    /// <param name="upstream">upstream data source - for auto-attaching</param>
 	    /// <param name="valueCollectionProvider">optional configuration provider - for auto-attaching</param>
 	    /// <param name="parentLog"></param>
-	    private static void ConfigureNewDataSource(BaseDataSource newDs, int? zoneId = null, int? appId = null,
+	    private static void ConfigureNewDataSource(BaseDataSource newDs, 
+            int? zoneId = null, int? appId = null,
 			IDataSource upstream = null,
 			IValueCollectionProvider valueCollectionProvider = null, 
             Log parentLog = null)
@@ -178,6 +199,13 @@ namespace ToSic.Eav
 
 
 
+	    private static DataSourceInfo FindInDsTypeCache(string name)
+	        => DsTypeCache
+	               .FirstOrDefault(dst => string.Equals(dst.GlobalName, name, StringComparison.InvariantCultureIgnoreCase))
+	           ?? DsTypeCache
+	               .FirstOrDefault(dst => dst.VisualQuery?
+	                                          .PreviousNames.Any(pn => string.Equals(pn, name,
+	                                              StringComparison.InvariantCultureIgnoreCase)) ?? false);
 
 	    /// <summary>
 	    /// Get all Installed DataSources
@@ -185,10 +213,13 @@ namespace ToSic.Eav
 	    /// <remarks>Objects that implement IDataSource</remarks>
 	    public static IEnumerable<DataSourceInfo> GetInstalledDataSources2(bool onlyForVisualQuery)
 	        => onlyForVisualQuery
-	            ? DsCache.Where(dsi => !string.IsNullOrEmpty(dsi.VisualQuery?.GlobalName))
-	            : DsCache;
+	            ? DsTypeCache.Where(dsi => !string.IsNullOrEmpty(dsi.VisualQuery?.GlobalName))
+	            : DsTypeCache;
 
-	    private static List<DataSourceInfo> DsCache { get; } = Plumbing.AssemblyHandling
+        /// <summary>
+        /// A cache of all DataSource Types
+        /// </summary>
+	    private static List<DataSourceInfo> DsTypeCache { get; } = Plumbing.AssemblyHandling
 	        .FindInherited(typeof(IDataSource))
 	        .Select(t => new DataSourceInfo(t)).ToList();
 
