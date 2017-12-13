@@ -10,8 +10,10 @@ using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
 {
-    //[PipelineDesigner]
-    [VisualQuery(Type = DataSourceType.Source, DynamicOut = false)]
+    [VisualQuery(GlobalName = "ToSic.Eav.DataSources.CsvDataSource, ToSic.Eav.DataSources",
+        Type = DataSourceType.Source, 
+        DynamicOut = false,
+        ExpectsDataOfType = "|Config ToSic.Eav.DataSources.CsvDataSource")]
     public class CsvDataSource : ExternalDataDataSource
     {
         private const string FilePathKey = "FilePath";
@@ -64,14 +66,15 @@ namespace ToSic.Eav.DataSources
 
         public CsvDataSource()
         {
-            Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
+            Provide(GetList);
+            //Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
 
-            Configuration.Add(FilePathKey, "[Settings:FilePath]");
-            Configuration.Add(DelimiterKey, "[Settings:Delimiter||\t]");
-            Configuration.Add(ContentTypeKey, "[Settings:ContentType||Anonymous]");
-            Configuration.Add(IdColumnNameKey, "[Settings:IdColumnName]");
-            Configuration.Add(TitleColumnNameKey, "[Settings:TitleColumnName]");
-            CacheRelevantConfigurations = new[] { FilePathKey, DelimiterKey, ContentTypeKey };
+            ConfigMask(FilePathKey, "[Settings:FilePath]");
+            ConfigMask(DelimiterKey, "[Settings:Delimiter||\t]");
+            ConfigMask(ContentTypeKey, "[Settings:ContentType||Anonymous]");
+            ConfigMask(IdColumnNameKey, "[Settings:IdColumnName]", cacheRelevant: false);
+            ConfigMask(TitleColumnNameKey, "[Settings:TitleColumnName]", cacheRelevant: false);
+            //CacheRelevantConfigurations = new[] { FilePathKey, DelimiterKey, ContentTypeKey };
         }
 
 

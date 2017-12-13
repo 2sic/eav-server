@@ -13,8 +13,9 @@ namespace ToSic.Eav.DataSources
     /// <summary>
     /// Provide Entities from a SQL Server
     /// </summary>
-    //[PipelineDesigner]
-    [VisualQuery(Type = DataSourceType.Source, DynamicOut = false,
+    [VisualQuery(GlobalName = "ToSic.Eav.DataSources.SqlDataSource, ToSic.Eav.DataSources",
+        Type = DataSourceType.Source, 
+        DynamicOut = false,
         Icon = "database",
         ExpectsDataOfType = "c76901b5-0345-4866-9fa3-6208de7f8543",
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-SqlDataSource")]
@@ -103,17 +104,14 @@ namespace ToSic.Eav.DataSources
 		public SqlDataSource()
 		{
             // ReSharper disable once DoNotCallOverridableMethodsInConstructor
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
-			Configuration.Add(TitleFieldKey, "[Settings:EntityTitleField||" + Constants.EntityFieldTitle + "]");
+			Provide(GetList);
+		    ConfigMask(TitleFieldKey, "[Settings:EntityTitleField||" + Constants.EntityFieldTitle + "]");
+		    ConfigMask(EntityIdFieldKey, "[Settings:EntityIdField||" + Constants.EntityFieldId + "]");
 
-            Configuration.Add(EntityIdFieldKey, "[Settings:EntityIdField||" + Constants.EntityFieldId + "]");
-
-            Configuration.Add(ContentTypeKey, "[Settings:ContentType||SqlData]");
-			Configuration.Add(SelectCommandKey, "[Settings:SelectCommand]");
-			Configuration.Add(ConnectionStringKey, ConnectionStringDefault);
-			Configuration.Add(ConnectionStringNameKey, "[Settings:ConnectionStringName]");
-
-            CacheRelevantConfigurations = new[] { ContentTypeKey, SelectCommandKey, ConnectionStringKey, ConnectionStringNameKey };
+		    ConfigMask(ContentTypeKey, "[Settings:ContentType||SqlData]");
+		    ConfigMask(SelectCommandKey, "[Settings:SelectCommand]");
+		    ConfigMask(ConnectionStringKey, ConnectionStringDefault);
+		    ConfigMask(ConnectionStringNameKey, "[Settings:ConnectionStringName]");
         }
 
 		/// <inheritdoc />
@@ -136,7 +134,7 @@ namespace ToSic.Eav.DataSources
         /// </summary>
 	    protected internal override void EnsureConfigurationIsLoaded()
 	    {
-	        if (_configurationIsLoaded)
+	        if (ConfigurationIsLoaded)
 	            return;
 
             // Protect ourselves against SQL injection:
@@ -180,7 +178,7 @@ namespace ToSic.Eav.DataSources
                 // Ready to finish, but first, ensure repeating if desired
                 SelectCommand = result.ToString();
             }
-	        CacheRelevantConfigurations = CacheRelevantConfigurations.Concat(additionalParams).ToArray();
+	        CacheRelevantConfigurations = CacheRelevantConfigurations.Concat(additionalParams).ToList();
 
 	        base.EnsureConfigurationIsLoaded();
 	    }

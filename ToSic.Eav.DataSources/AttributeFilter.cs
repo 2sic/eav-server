@@ -13,7 +13,10 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
 	/// <remarks>Uses Configuration "AttributeNames"</remarks>
 
-	[VisualQuery(Type = DataSourceType.Modify, DynamicOut = false,
+	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.AttributeFilter, ToSic.Eav.DataSources",
+        Type = DataSourceType.Modify, 
+        DynamicOut = false,
+	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.AttributeFilter",
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-AttributeFilter")]
 
     public class AttributeFilter : BaseDataSource
@@ -39,10 +42,11 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public AttributeFilter()
 		{
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
-			Configuration.Add(AttributeNamesKey, "[Settings:AttributeNames]");
+            Provide(GetList);
+			//Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
+			ConfigMask(AttributeNamesKey, "[Settings:AttributeNames]");
 
-            CacheRelevantConfigurations = new[] { AttributeNamesKey };
+            //CacheRelevantConfigurations = new[] { AttributeNamesKey };
         }
 
         /// <summary>

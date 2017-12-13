@@ -12,7 +12,11 @@ namespace ToSic.Eav.DataSources
 	/// Return all Entities from a specific App
 	/// </summary>
 
-	[VisualQuery(Type = DataSourceType.Source, Icon = "app", DynamicOut = true,
+	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.App, ToSic.Eav.DataSources",
+        Type = DataSourceType.Source, 
+        Icon = "app",
+        DynamicOut = true,
+        ExpectsDataOfType = "|Config ToSic.Eav.DataSources.App",
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-App")]
 
     public class App : BaseDataSource
@@ -85,10 +89,11 @@ namespace ToSic.Eav.DataSources
 			//Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntities));
 
 			// Set default switch-keys to 0 = no switch
-			Configuration.Add(AppSwitchKey, "[Settings:" + AppSwitchKey + "||0]");
-			Configuration.Add(ZoneSwitchKey, "[Settings:" + ZoneSwitchKey + "||0]");
+            
+			ConfigMask(AppSwitchKey, "[Settings:" + AppSwitchKey + "||0]");
+			ConfigMask(ZoneSwitchKey, "[Settings:" + ZoneSwitchKey + "||0]");
 
-            CacheRelevantConfigurations = new[] { AppSwitchKey, ZoneSwitchKey };
+            //CacheRelevantConfigurations = new[] { AppSwitchKey, ZoneSwitchKey };
             TempUsesDynamicOut = true;
         }
 

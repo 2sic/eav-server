@@ -13,10 +13,11 @@ namespace ToSic.Eav.DataSources.System
     /// <summary>
     /// A DataSource that returns the attributes of a content-type
     /// </summary>
-    [VisualQuery(Type = DataSourceType.Source,
+    [VisualQuery(
+        GlobalName = "ToSic.Eav.DataSources.System.ContentTypes, ToSic.Eav.Apps",
+        Type = DataSourceType.Source,
         Difficulty = DifficultyBeta.Advanced,
         DynamicOut = false,
-        EnableConfig = true,
         ExpectsDataOfType = "37b25044-29bb-4c78-85e4-7b89f0abaa2c",
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-ContentTypes")]
 
@@ -63,12 +64,9 @@ namespace ToSic.Eav.DataSources.System
         /// </summary>
         public ContentTypes()
 		{
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
-			//Out.Add("Scopes", new DataStream(this, Constants.DefaultStreamName, GetList));
-            Configuration.Add(AppIdKey, $"[Settings:{AppIdField}]");
-            Configuration.Add(ScopeKey, $"[Settings:{ScopeField}||Default]");
-
-            CacheRelevantConfigurations = new[] {AppIdKey};
+			Provide(GetList);
+		    ConfigMask(AppIdKey, $"[Settings:{AppIdField}]");
+		    ConfigMask(ScopeKey, $"[Settings:{ScopeField}||Default]");
 		}
 
 	    private IEnumerable<IEntity> GetList()
@@ -96,7 +94,7 @@ namespace ToSic.Eav.DataSources.System
 	                /* ignore */
 	            }
 
-	            return new Data.Entity(DesiredAppId, t.ContentTypeId, ContentTypeTypeName, BuildDictionary(t), ContentTypeType.Name.ToString(), entityGuid: guid);
+	            return AsEntity(BuildDictionary(t), ContentTypeType.Name.ToString(), ContentTypeTypeName, t.ContentTypeId, guid, appId: DesiredAppId);// new Data.Entity(DesiredAppId, t.ContentTypeId, ContentTypeTypeName, BuildDictionary(t), ContentTypeType.Name.ToString(), entityGuid: guid);
 	        });
 
 	        return list;

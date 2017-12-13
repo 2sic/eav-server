@@ -11,11 +11,14 @@ namespace ToSic.Eav.ImportExport.Tests
         [AssemblyInitialize]
         public static void AssemblyInit(TestContext context)
         {
+            AssemblyInit(context);
+        }
+        public static void AssemblyInit(TestContext context, string connectionString = null)
+        {
             Testing.Shared.InitializeTests.ConfigureEfcDi(sc =>
             {
                 sc.AddTransient<IRuntime, Runtime>();
-            });
-        }
-        
+            }, connectionString);
+        }        
     }
 }

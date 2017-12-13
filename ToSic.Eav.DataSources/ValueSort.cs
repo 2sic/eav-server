@@ -11,7 +11,10 @@ namespace ToSic.Eav.DataSources
 	/// Sort Entity by values in specified Attributes
 	/// </summary>
 
-	[VisualQuery(Type = DataSourceType.Sort, DynamicOut = false,
+	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.ValueSort, ToSic.Eav.DataSources",
+        Type = DataSourceType.Sort,
+        DynamicOut = false,
+	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.ValueSort",
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-ValueSort")]
 
     public sealed class ValueSort : BaseDataSource
@@ -57,12 +60,10 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public ValueSort()
 		{
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
-			Configuration.Add(AttrKey, "[Settings:Attributes]");
-			Configuration.Add(DirectionKey, "[Settings:Directions]");
-			Configuration.Add(LangKey, "Default"); // "[Settings:Language|Default]"); // use setting, but by default, expect "any"
-
-            CacheRelevantConfigurations = new[] { AttrKey, DirectionKey, LangKey };
+			Provide(GetList);
+		    ConfigMask(AttrKey, "[Settings:Attributes]");
+		    ConfigMask(DirectionKey, "[Settings:Directions]");
+		    ConfigMask(LangKey, "Default"); // "[Settings:Language|Default]"); // use setting, but by default, expect "any"
         }
 
 		private IEnumerable<IEntity> GetList()

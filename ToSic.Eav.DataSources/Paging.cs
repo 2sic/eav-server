@@ -11,8 +11,11 @@ namespace ToSic.Eav.DataSources
 	/// A DataSource that filters Entities by Ids
 	/// </summary>
 
-	[VisualQuery(Type = DataSourceType.Logic, DynamicOut = false,
-	    HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Paging")]
+	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.Paging, ToSic.Eav.DataSources",
+        Type = DataSourceType.Logic, 
+        DynamicOut = false,
+	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.Paging",
+        HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Paging")]
 
     public sealed class Paging: BaseDataSource
 	{
@@ -64,12 +67,14 @@ namespace ToSic.Eav.DataSources
         /// </summary>
 		public Paging()
 		{
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
-            Out.Add("Paging", new DataStream(this, "Paging", GetPaging));
-            Configuration.Add(PageSizeKey, "[Settings:" + PageSizeKey + "||" + DefPageSize + "]");
-            Configuration.Add(PageNumberKey, "[Settings:" + PageNumberKey + "||" + DefPageNum + "]");
+            Provide(GetList);
+            Provide("Paging", GetPaging);
+            //Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
+            //Out.Add("Paging", new DataStream(this, "Paging", GetPaging));
+		    ConfigMask(PageSizeKey, "[Settings:" + PageSizeKey + "||" + DefPageSize + "]");
+		    ConfigMask(PageNumberKey, "[Settings:" + PageNumberKey + "||" + DefPageNum + "]");
 
-            CacheRelevantConfigurations = new[] {PageSizeKey, PageNumberKey};
+            //CacheRelevantConfigurations = new[] {PageSizeKey, PageNumberKey};
 		}
 
 

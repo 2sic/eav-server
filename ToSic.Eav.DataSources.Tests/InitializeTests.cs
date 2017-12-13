@@ -10,7 +10,7 @@ namespace ToSic.Eav.UnitTests
 
         [AssemblyInitialize()]
         public static void AssemblyInit(TestContext context) =>
-            ToSic.Eav.ImportExport.Tests.InitializeTests.AssemblyInit(context);
+            ToSic.Eav.ImportExport.Tests.InitializeTests.AssemblyInit(context, connectionForTests);
 
     }
 }

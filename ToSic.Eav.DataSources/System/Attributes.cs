@@ -9,10 +9,10 @@ namespace ToSic.Eav.DataSources.System
     /// <summary>
     /// A DataSource that returns the attributes of a content-type
     /// </summary>
-    [VisualQuery(Type = DataSourceType.Source,
+    [VisualQuery(GlobalName = "ToSic.Eav.DataSources.System.Attributes, ToSic.Eav.DataSources",
+        Type = DataSourceType.Source,
         Difficulty = DifficultyBeta.Advanced,
         DynamicOut = false,
-        EnableConfig = true,
         ExpectsDataOfType = "5461d34d-7dc6-4d38-9250-a0729cc8ead3",
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Attributes")]
 
@@ -48,10 +48,8 @@ namespace ToSic.Eav.DataSources.System
         /// </summary>
 		public Attributes()
 		{
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
-            Configuration.Add(ContentTypeKey, $"[Settings:{ContentTypeField}||{TryToUseInStream}]");
-
-            CacheRelevantConfigurations = new[] {ContentTypeKey};
+			Provide(GetList);
+		    ConfigMask(ContentTypeKey, $"[Settings:{ContentTypeField}||{TryToUseInStream}]");
 		}
 
 	    private IEnumerable<IEntity> GetList()
@@ -82,8 +80,9 @@ namespace ToSic.Eav.DataSources.System
 
             // if it didn't work yet, maybe try from stream items
 
-	        return list?.Select(attribData => new Data.Entity(AppId, 0, AttribContentTypeName, attribData, AttributeType.Name.ToString())) 
-                ?? new List<IEntity>() as IEnumerable<IEntity>;
+	        return list?.Select(attribData => AsEntity(attribData, AttributeType.Name.ToString(), AttribContentTypeName) // new Data.Entity(AppId, 0, AttribContentTypeName, attribData, AttributeType.Name.ToString())
+            ) 
+                ?? new List<IEntity>();
         }
 
 

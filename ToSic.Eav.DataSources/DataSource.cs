@@ -38,7 +38,7 @@ namespace ToSic.Eav
 		}
 
 	    /// <summary>
-	    /// Get DataSource for specified sourceName/Type using Unity.
+	    /// Get DataSource for specified sourceName/Type
 	    /// </summary>
 	    /// <param name="sourceName">Full Qualified Type/Interface Name</param>
 	    /// <param name="zoneId">ZoneId for this DataSource</param>
@@ -49,15 +49,35 @@ namespace ToSic.Eav
 	    /// <returns>A single DataSource</returns>
 	    public static IDataSource GetDataSource(string sourceName, int? zoneId = null, int? appId = null, IDataSource upstream = null, IValueCollectionProvider valueCollectionProvider = null, Log parentLog = null)
 		{
-			var type = Type.GetType(sourceName);
+		    // try to find with assembly name, or otherwise with GlobalName / previous names
+            var type = Type.GetType(sourceName) 
+                ?? FindInDsTypeCache(sourceName)?.Type;
+
+		    // still not found? must show error
 			if (type == null)
-			{
-				throw new Exception("DataSource not installed on Server: " + sourceName);
-			}
-			var newDs = (BaseDataSource)Factory.Resolve(type);
-			ConfigureNewDataSource(newDs, zoneId, appId, upstream, valueCollectionProvider, parentLog);
-			return newDs;
+			    throw new Exception("DataSource not installed on Server: " + sourceName);
+
+			return GetDataSource(type, zoneId, appId, upstream, valueCollectionProvider, parentLog);
 		}
+
+
+	    /// <summary>
+	    /// Get DataSource for specified sourceName/Type
+	    /// </summary>
+	    /// <param name="type">the .net type of this data-source</param>
+	    /// <param name="zoneId">ZoneId for this DataSource</param>
+	    /// <param name="appId">AppId for this DataSource</param>
+	    /// <param name="upstream">In-Connection</param>
+	    /// <param name="valueCollectionProvider">Provides configuration values if needed</param>
+	    /// <param name="parentLog"></param>
+	    /// <returns>A single DataSource</returns>
+	    private static IDataSource GetDataSource(Type type, int? zoneId, int? appId, IDataSource upstream,
+	        IValueCollectionProvider valueCollectionProvider, Log parentLog)
+	    {
+	        var newDs = (BaseDataSource) Factory.Resolve(type);
+	        ConfigureNewDataSource(newDs, zoneId, appId, upstream, valueCollectionProvider, parentLog);
+	        return newDs;
+	    }
 
 	    /// <summary>
 	    /// Get DataSource for specified sourceName/Type using Unity.
@@ -87,7 +107,8 @@ namespace ToSic.Eav
 	    /// <param name="upstream">upstream data source - for auto-attaching</param>
 	    /// <param name="valueCollectionProvider">optional configuration provider - for auto-attaching</param>
 	    /// <param name="parentLog"></param>
-	    private static void ConfigureNewDataSource(BaseDataSource newDs, int? zoneId = null, int? appId = null,
+	    private static void ConfigureNewDataSource(BaseDataSource newDs, 
+            int? zoneId = null, int? appId = null,
 			IDataSource upstream = null,
 			IValueCollectionProvider valueCollectionProvider = null, 
             Log parentLog = null)
@@ -163,19 +184,67 @@ namespace ToSic.Eav
 			return (IMetadataProvider)GetCache(zoneAppId.Item1, zoneAppId.Item2);
 		}
 
+
+        // 2017-12-11 2dm - turning this off...
+        ///// <summary>
+        ///// Get all Installed DataSources
+        ///// </summary>
+        ///// <remarks>Objects that implement IDataSource</remarks>
+        //public static IEnumerable<Type> GetInstalledDataSources(bool onlyForVisualQuery)
+        //    => onlyForVisualQuery
+        //        ? Plumbing.AssemblyHandling.FindClassesWithAttribute(
+        //               typeof(IDataSource),
+        //            typeof(VisualQueryAttribute), false)
+        //        : Plumbing.AssemblyHandling.FindInherited(typeof(IDataSource));
+
+
+
+	    private static DataSourceInfo FindInDsTypeCache(string name)
+	        => DsTypeCache
+	               .FirstOrDefault(dst => string.Equals(dst.GlobalName, name, StringComparison.InvariantCultureIgnoreCase))
+	           ?? DsTypeCache
+	               .FirstOrDefault(dst => dst.VisualQuery?
+	                                          .PreviousNames.Any(pn => string.Equals(pn, name,
+	                                              StringComparison.InvariantCultureIgnoreCase)) ?? false);
+
 	    /// <summary>
 	    /// Get all Installed DataSources
 	    /// </summary>
 	    /// <remarks>Objects that implement IDataSource</remarks>
-	    public static IEnumerable<Type> GetInstalledDataSources(bool onlyForVisualQuery)
+	    public static IEnumerable<DataSourceInfo> GetInstalledDataSources2(bool onlyForVisualQuery)
 	        => onlyForVisualQuery
-	            ? Plumbing.AssemblyHandling.FindClassesWithAttribute(
-                    typeof(IDataSource),
-	                typeof(VisualQueryAttribute), false)
-	            : Plumbing.AssemblyHandling.FindInherited(typeof(IDataSource));
+	            ? DsTypeCache.Where(dsi => !string.IsNullOrEmpty(dsi.VisualQuery?.GlobalName))
+	            : DsTypeCache;
+
+        /// <summary>
+        /// A cache of all DataSource Types
+        /// </summary>
+	    private static List<DataSourceInfo> DsTypeCache { get; } = Plumbing.AssemblyHandling
+	        .FindInherited(typeof(IDataSource))
+	        .Select(t => new DataSourceInfo(t)).ToList();
 
 
+	    public class DataSourceInfo
+	    {
+	        public Type Type { get; }
+            public VisualQueryAttribute VisualQuery { get; }
+	        public string GlobalName => VisualQuery?.GlobalName;
 
+	        public DataSourceInfo(Type dsType)
+	        {
+	            Type = dsType;
+
+                // must put this in a try/catch, in case other DLLs have incompatible attributes
+	            try
+	            {
+	                VisualQuery =
+	                    Type.GetCustomAttributes(typeof(VisualQueryAttribute), false).FirstOrDefault() as
+	                        VisualQueryAttribute;
+	            }
+
+                catch {  /*ignore */ }
+	        }
+	    }
 	}
 
 }

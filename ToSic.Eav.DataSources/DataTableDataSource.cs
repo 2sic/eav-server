@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
 {
+	/// <inheritdoc />
 	/// <summary>
 	/// Provide Entities from a System.Data.DataTable
 	/// </summary>
@@ -63,7 +63,6 @@ namespace ToSic.Eav.DataSources
 		    set => Configuration[EntityIdFieldKey] = value;
 		}
 
-	    // private bool _hasModifiedField;
 		public string ModifiedField
 		{
 			get => Configuration[ModifiedFieldKey];
@@ -78,13 +77,11 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         public DataTableDataSource()
 		{
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntities));
-			Configuration.Add(TitleFieldKey, EntityTitleDefaultColumnName);
-			Configuration.Add(EntityIdFieldKey, EntityIdDefaultColumnName);
-			Configuration.Add(ModifiedFieldKey, "");
-			Configuration.Add(ContentTypeKey, "[Settings:ContentType]");
-
-            CacheRelevantConfigurations = new[] { ContentTypeKey };
+			Provide(GetEntities);
+		    ConfigMask(TitleFieldKey, EntityTitleDefaultColumnName);
+		    ConfigMask(EntityIdFieldKey, EntityIdDefaultColumnName);
+		    ConfigMask(ModifiedFieldKey, "");
+		    ConfigMask(ContentTypeKey, "[Settings:ContentType]");
         }
 
 		/// <inheritdoc />
@@ -106,15 +103,15 @@ namespace ToSic.Eav.DataSources
 		{
 			EnsureConfigurationIsLoaded();
 
-            var result = ConvertToEntityDictionary(Source, ContentType, EntityIdField, TitleField, ModifiedField);
 		    Log.Add($"get type:{ContentType}, id:{EntityIdField}, title:{TitleField}, modified:{ModifiedField}");
+            var result = ConvertToEntityDictionary(Source, ContentType, EntityIdField, TitleField, ModifiedField);
 		    return result;
 		}
 
 		/// <summary>
 		/// Convert a DataTable to a Dictionary of EntityModels
 		/// </summary>
-		private static IEnumerable<IEntity> ConvertToEntityDictionary(DataTable source, string contentType, string entityIdField, string titleField, string modifiedField = null)
+		private IEnumerable<IEntity> ConvertToEntityDictionary(DataTable source, string contentType, string entityIdField, string titleField, string modifiedField = null)
 		{
 			// Validate Columns
 			if (!source.Columns.Contains(entityIdField))
@@ -130,7 +127,7 @@ namespace ToSic.Eav.DataSources
 				var values = row.Table.Columns.Cast<DataColumn>().Where(c => c.ColumnName != entityIdField).ToDictionary(c => c.ColumnName, c => row.Field<object>(c.ColumnName));
                 values = new Dictionary<string, object>(values, StringComparer.OrdinalIgnoreCase); // recast to ensure case-insensitive
 			    var mod = string.IsNullOrEmpty(modifiedField) ? null : values[modifiedField] as DateTime?;
-				var entity = new Entity(Constants.TransientAppId, entityId, contentType, values, titleField, mod);
+			    var entity = AsEntity(values, titleField, contentType, entityId, modified: mod, appId: Constants.TransientAppId);// new Entity(Constants.TransientAppId, entityId, contentType, values, titleField, mod);
 				result.Add(entity);
 			}
 			return result;

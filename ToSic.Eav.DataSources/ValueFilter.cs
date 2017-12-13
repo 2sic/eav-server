@@ -11,11 +11,11 @@ namespace ToSic.Eav.DataSources
     /// <summary>
     /// Return only Entities having a specific value in an Attribute
     /// </summary>
-    //[PipelineDesigner]
-    [VisualQuery(
+    [VisualQuery(GlobalName = "ToSic.Eav.DataSources.ValueFilter, ToSic.Eav.DataSources",
         Type = DataSourceType.Filter, 
         In = new[] { Constants.DefaultStreamName, Constants.FallbackStreamName },
         DynamicOut = false,
+        ExpectsDataOfType = "|Config ToSic.Eav.DataSources.ValueFilter",
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-ValueFilter")]
 
     public sealed class ValueFilter : BaseDataSource
@@ -78,14 +78,12 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public ValueFilter()
 		{
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntitiesOrFallback));
-			Configuration.Add(AttrKey, "[Settings:Attribute]");
-			Configuration.Add(FilterKey, "[Settings:Value]");
-            Configuration.Add(OperatorKey, "[Settings:Operator||==]");
-            Configuration.Add(TakeKey, "[Settings:Take]");
-			Configuration.Add(LangKey, "Default"); // "[Settings:Language|Any]"); // use setting, but by default, expect "any"
-
-            CacheRelevantConfigurations = new[] { AttrKey, FilterKey, LangKey };
+			Provide(GetEntitiesOrFallback);
+		    ConfigMask(AttrKey, "[Settings:Attribute]");
+		    ConfigMask(FilterKey, "[Settings:Value]");
+		    ConfigMask(OperatorKey, "[Settings:Operator||==]");
+		    ConfigMask(TakeKey, "[Settings:Take]");
+		    ConfigMask(LangKey, "Default"); // "[Settings:Language|Any]"); // use setting, but by default, expect "any"
         }
 
         private IEnumerable<IEntity> GetEntitiesOrFallback()

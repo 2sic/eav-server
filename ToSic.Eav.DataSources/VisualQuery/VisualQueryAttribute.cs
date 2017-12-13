@@ -10,10 +10,10 @@ namespace ToSic.Eav.DataSources.VisualQuery
 	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
 	public class VisualQueryAttribute : Attribute
 	{
-        /// <summary>
-        /// A primary type of this source, which determines a default icon + some standard help-text
-        /// </summary>
-	    public DataSourceType Type { get; set; }
+	    /// <summary>
+	    /// A primary type of this source, which determines a default icon + some standard help-text
+	    /// </summary>
+	    public DataSourceType Type { get; set; } = DataSourceType.Source;
 
         /// <summary>
         /// Optional customim icon
@@ -36,7 +36,7 @@ namespace ToSic.Eav.DataSources.VisualQuery
 	    public string HelpLink { get; set; } = "";
 
 
-	    public bool EnableConfig { get; set; } = true;
+	    public bool EnableConfig => !string.IsNullOrWhiteSpace(ExpectsDataOfType);
 
         /// <summary>
         /// Name of the data-type it will support...
@@ -50,6 +50,9 @@ namespace ToSic.Eav.DataSources.VisualQuery
         /// </summary>
         public string NiceName { get; set; }
 
+
+	    public string GlobalName { get; set; } = "";
+	    public string[] PreviousNames { get; set; } = new string[0];
 
         /// <summary>
         /// This is still an experiment, but the goal is to hide complex sources from "normal" users

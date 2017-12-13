@@ -100,8 +100,7 @@ namespace ToSic.Eav.DataSources.Pipeline
 	            #region Init Configuration Provider
 
 	            var configurationProvider = new ValueCollectionProvider();
-	            configurationProvider./*Sources.*/Add(/*itemSettings,*/
-	                new AssignedEntityValueProvider(itemSettings, dataPipelinePart));
+	            configurationProvider.Add(new AssignedEntityValueProvider(itemSettings, dataPipelinePart));
 
 	            // if show-draft in overridden, add that to the settings
 	            if (showDrafts)
@@ -111,36 +110,10 @@ namespace ToSic.Eav.DataSources.Pipeline
 	                        {"ShowDrafts", true.ToString()}
 	                    }));
 
-
-                //configurationProvider.Sources[itemSettings] = new OverrideValueProvider(itemSettings,
-                //    new StaticValueProvider(itemSettings, new Dictionary<string, string>
-                //    {
-                //            {"ShowDrafts", true.ToString()}
-                //    }), configurationProvider.Sources[itemSettings]);
-
-                configurationProvider./*Sources.*/Add(/*pipelineSettingsProvider.Name,*/ pipelineSettingsProvider);
+                configurationProvider.Add(pipelineSettingsProvider);
 
 	            // ReSharper disable once PossibleMultipleEnumeration
                 configurationProvider.AddOverride(propertyProviders);
-	            //var providers = configurationPropertyAccesses?.ToList();
-
-	            // attach all propertyProviders
-	            //if (providers != null)
-	            //    foreach (var provider in providers)
-	                
-	            //        if (provider.Name == null)
-	            //            throw new NullReferenceException("PropertyProvider must have a Name");
-             //           else
-	            //        // check if it already has this provider. 
-	            //        // ensure that there is an "override property provider" which would pre-catch certain keys
-	            //        configurationProvider.AddOverride(provider);
-	            //        //if (configurationProvider.Sources.ContainsKey(propertyProvider.Name))
-	            //        //    configurationProvider.Sources[propertyProvider.Name] =
-	            //        //        new OverrideValueProvider(propertyProvider.Name, propertyProvider,
-	            //        //            configurationProvider.Sources[propertyProvider.Name]);
-	            //        //else
-	            //        //    configurationProvider.Sources.Add(propertyProvider.Name, propertyProvider);
-	                
 
 	            #endregion
 

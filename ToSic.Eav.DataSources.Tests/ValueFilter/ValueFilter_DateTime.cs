@@ -91,7 +91,7 @@ namespace ToSic.Eav.DataSources.Tests
 
         // test invalid operator
         [TestMethod]
-        [ExpectedException(typeof (System.Exception))]
+        [ExpectedException(typeof (global::System.Exception))]
         public void NumberFilterInvalidOperator()
             => DateTimeFilter("Birthdate", "180", 5632, "!!");
 

@@ -10,7 +10,10 @@ namespace ToSic.Eav.DataSources
 	/// Filter entities to show Drafts or only Published Entities
 	/// </summary>
 
-	[VisualQuery(Type = DataSourceType.Security, DynamicOut = false,
+	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.OwnerFilter, ToSic.Eav.DataSources",
+        Type = DataSourceType.Security,
+        DynamicOut = false,
+	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.OwnerFilter",
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-OwnerFilter")]
 
     public class OwnerFilter : BaseDataSource
@@ -36,10 +39,11 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public OwnerFilter()
 		{
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
-			Configuration.Add(IdentityCode, "[Settings:" + IdentityCode + "]"); 
+            Provide(GetList);
+            //Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
+		    ConfigMask(IdentityCode, "[Settings:" + IdentityCode + "]"); 
 
-            CacheRelevantConfigurations = new[] { IdentityCode };
+            //CacheRelevantConfigurations = new[] { IdentityCode };
         }
 
         private IEnumerable<IEntity> GetList()

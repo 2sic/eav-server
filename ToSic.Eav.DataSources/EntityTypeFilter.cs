@@ -10,8 +10,11 @@ namespace ToSic.Eav.DataSources
 	/// Return only entities of a specific type
 	/// </summary>
 
-	[VisualQuery(Type = DataSourceType.Filter, DynamicOut = false,
+	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.EntityTypeFilter, ToSic.Eav.DataSources",
+        Type = DataSourceType.Filter, 
+        DynamicOut = false,
         NiceName = "ContentTypeFilter",
+	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.EntityTypeFilter",
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-ContentTypeFilter")]
 
     public class EntityTypeFilter : BaseDataSource
@@ -37,10 +40,11 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public EntityTypeFilter()
 		{
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
-			Configuration.Add(TypeNameKey, "[Settings:TypeName]");
+            Provide(GetList);
+            //Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
+		    ConfigMask(TypeNameKey, "[Settings:TypeName]");
         
-            CacheRelevantConfigurations = new[] { TypeNameKey };
+            //CacheRelevantConfigurations = new[] { TypeNameKey };
         }
 
         // special alternately named stream for use in the App data-source

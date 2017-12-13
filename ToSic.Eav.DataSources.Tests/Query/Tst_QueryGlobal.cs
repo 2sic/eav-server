@@ -34,7 +34,7 @@ namespace ToSic.Eav.DataSources.Tests.Query
         [TestMethod]
         public void ReviewGlobalZonesQuery()
         {
-            var queryEnt = Global.FindQuery("Zones");
+            var queryEnt = Global.FindQuery("Eav.Queries.Global.Zones");
             Assert.IsTrue(queryEnt.GetBestValue("Name").ToString() == "Zones", "should find zones");
 
             var qdef = new QueryDefinition(queryEnt);
@@ -44,7 +44,7 @@ namespace ToSic.Eav.DataSources.Tests.Query
         [TestMethod]
         public void UseGlobalZonesQuery()
         {
-            var queryEnt = Global.FindQuery("Zones");
+            var queryEnt = Global.FindQuery("Eav.Queries.Global.Zones");
 
             var qdef = new QueryDefinition(queryEnt, TestConfig.AppForQueryTests);
 

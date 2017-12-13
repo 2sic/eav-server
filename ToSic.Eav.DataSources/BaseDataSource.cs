@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
@@ -20,9 +21,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Constructor
         /// </summary>
-        protected BaseDataSource() : base("DS.Base")
-        {
-        }
+        protected BaseDataSource() : base("DS.Base") { }
 
         /// <inheritdoc />
         /// <summary>
@@ -32,34 +31,34 @@ namespace ToSic.Eav.DataSources
 
         #region Caching stuff
 
-        /// <summary>
-        /// List of items from the configuration which should be used for creating the cache-key
-        /// </summary>
-        public string[] CacheRelevantConfigurations { get; set; } = new string[0];
+        /// <inheritdoc />
+        public List<string> CacheRelevantConfigurations { get; set; } = new List<string>();
 
-        /// <summary>
-        /// Unique key-id for this specific part - without the full chain to the parents
-        /// </summary>
+        protected void ConfigMask(string key, string mask, bool cacheRelevant = true)
+        {
+            Configuration.Add(key, mask);
+            if (cacheRelevant)
+                CacheRelevantConfigurations.Add(key);
+        }
+
+        /// <inheritdoc />
         public virtual string CachePartialKey
         {
             get
             {
-                var key = "";
                 // Assemble the partial key
                 // If this item has a guid thet it's a configured part which always has this unique guid; then use that
-                if (DataSourceGuid != Guid.Empty)
-                    key += Name + DataSourceGuid;
-                else
-                    key += Name + "-NoGuid";
+                var key = DataSourceGuid != Guid.Empty 
+                    ? Name + DataSourceGuid 
+                    : Name + "-NoGuid";
 
                 // Important to check configuration first - to ensure all tokens are resolved to the resulting parameters
                 EnsureConfigurationIsLoaded();
 
                 // note: whenever a item has filter-parameters, these should be part of the key as well...
-                foreach (var configName in CacheRelevantConfigurations)
-                    key += "&" + configName + "=" + Configuration[configName];
 
-                return key;
+                return CacheRelevantConfigurations
+                    .Aggregate(key, (current, configName) => current + "&" + configName + "=" + Configuration[configName]);
             }
         }
 
@@ -81,31 +80,19 @@ namespace ToSic.Eav.DataSources
             }
         }
 
-        public virtual DateTime CacheLastRefresh
-        {
-            get
-            {
-                // try to return the upstream creation date
-                if (In.ContainsKey(Constants.DefaultStreamName) && In[Constants.DefaultStreamName].Source != null)
-                    return In[Constants.DefaultStreamName].Source.CacheLastRefresh;
 
-                // if no relevant up-stream, just return now!
-                return DateTime.Now;
-            }
-        }
+        /// <inheritdoc />
+        public virtual DateTime CacheLastRefresh
+            => In.ContainsKey(Constants.DefaultStreamName) && In[Constants.DefaultStreamName].Source != null
+                ? In[Constants.DefaultStreamName].Source.CacheLastRefresh
+                : DateTime.Now; // if no relevant up-stream, just return now!
 
         #endregion
 
         /// <inheritdoc />
-        /// <summary>
-        /// The app this data-source is attached to
-        /// </summary>
         public virtual int AppId { get; set; }
 
         /// <inheritdoc />
-        /// <summary>
-        /// The Zone this data-source is attached to
-        /// </summary>
         public virtual int ZoneId { get; set; }
 
         public Guid DataSourceGuid { get; set; }
@@ -123,7 +110,7 @@ namespace ToSic.Eav.DataSources
 
         public IValueCollectionProvider ConfigurationProvider { get; protected internal set; }
         public IDictionary<string, string> Configuration { get; internal set; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        protected internal bool _configurationIsLoaded;
+        protected internal bool ConfigurationIsLoaded;
 
 
         // protected internal Dictionary<string, IValueProvider> Settings 
@@ -133,7 +120,7 @@ namespace ToSic.Eav.DataSources
         /// </summary>
 		protected internal virtual void EnsureConfigurationIsLoaded()
         {
-            if (_configurationIsLoaded)
+            if (ConfigurationIsLoaded)
                 return;
 
             // Ensure that we have a configuration-provider (not always the case, but required)
@@ -141,11 +128,12 @@ namespace ToSic.Eav.DataSources
                 throw new Exception("No ConfigurationProvider configured on this data-source. Cannot EnsureConfigurationIsLoaded");
 
             // construct a property access for in, use it in the config provider
-            var instancePAs = new Dictionary<string, IValueProvider>() { { "In".ToLower(), new DataTargetValueProvider(this) } };
+            var instancePAs = new Dictionary<string, IValueProvider> { { "In".ToLower(), new DataTargetValueProvider(this) } };
             ConfigurationProvider.LoadConfiguration(Configuration, instancePAs);
-            _configurationIsLoaded = true;
+            ConfigurationIsLoaded = true;
         }
 
+        #region various Attach-In commands
         /// <inheritdoc />
         /// <summary>
         /// Attach specified DataSource to In
@@ -161,10 +149,8 @@ namespace ToSic.Eav.DataSources
         }
 
 
-        public void Attach(string streamName, IDataSource dataSource)
-        {
-            Attach(streamName, dataSource[Constants.DefaultStreamName]);
-        }
+        public void Attach(string streamName, IDataSource dataSource) 
+            => Attach(streamName, dataSource[Constants.DefaultStreamName]);
 
         public void Attach(string streamName, IDataStream dataStream)
         {
@@ -173,6 +159,18 @@ namespace ToSic.Eav.DataSources
 
             In.Add(streamName, dataStream);
         }
+
+        #endregion
+
+        #region Various provide-out commands
+
+        public void Provide(GetIEnumerableDelegate getList) 
+            => Provide(Constants.DefaultStreamName, getList);
+
+        public void Provide(string name, GetIEnumerableDelegate getList) 
+            => Out.Add(name, new DataStream(this, name, getList));
+
+        #endregion
 
         #region User Interface - not implemented yet
         //public virtual bool AllowUserEdit
@@ -200,15 +198,56 @@ namespace ToSic.Eav.DataSources
 
         #region Internals (Ready)
 
-        /// <summary>
-        /// Indicates whether the DataSource is ready for use (initialized/configured)
-        /// </summary>
-        public virtual bool Ready => (In[Constants.DefaultStreamName].Source != null && In[Constants.DefaultStreamName].Source.Ready);
+        /// <inheritdoc />
+        public virtual bool Ready => In[Constants.DefaultStreamName].Source != null && In[Constants.DefaultStreamName].Source.Ready;
 
         public bool TempUsesDynamicOut { get; protected set; } = false;
 
         #endregion
 
 
+        #region API to build items, in case this data source generates items
+
+        private const string UnspecifiedType = "unspecified";
+
+        /// <summary>
+        /// Convert a dictionary of values into an entity
+        /// </summary>
+        /// <param name="values">dictionary of values</param>
+        /// <param name="titleField">which field should be access if every something wants to know the title of this item</param>
+        /// <param name="typeName">an optional type-name - usually not needed, defaults to "unspecified"</param>
+        /// <param name="id">an optional id for this item, defaults to 0</param>
+        /// <param name="guid">an optional guid for this item, defaults to empty guid</param>
+        /// <param name="modified"></param>
+        /// <param name="appId">optional app id for this item, defaults to the current app</param>
+        /// <returns></returns>
+        protected IEntity AsEntity(Dictionary<string, object> values,
+            string titleField = null,
+            string typeName = UnspecifiedType,
+            int id = 0,
+            Guid? guid = null,
+            DateTime? modified = null,
+            int? appId = null)
+            => new Data.Entity(appId ?? AppId, id, typeName, values, titleField, modified, entityGuid: guid);
+
+
+
+        /// <summary>
+        /// Convert a list of value-dictionaries dictionary into a list of entities
+        /// this assumes that the entities don't have an own id or guid, 
+        /// otherwise you should use the single-item overload
+        /// </summary>
+        /// <param name="itemValues">list of value-dictionaries</param>
+        /// <param name="titleField">which field should be access if every something wants to know the title of this item</param>
+        /// <param name="typeName">an optional type-name - usually not needed, defaults to "unspecified"</param>
+        /// <param name="appId">optional app id for this item, defaults to the current app</param>
+        /// <returns></returns>
+        protected IEnumerable<IEntity> AsEntity(IEnumerable<Dictionary<string, object>> itemValues,
+            string titleField = null,
+            string typeName = UnspecifiedType,
+            int? appId = null)
+            => itemValues.Select(i => AsEntity(i, titleField, typeName, 0, null, appId: appId));
+
+        #endregion
     }
 }

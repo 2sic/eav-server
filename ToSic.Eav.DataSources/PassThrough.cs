@@ -7,7 +7,8 @@ namespace ToSic.Eav.DataSources
 	/// A DataSource that passes through all In Connections. Can be used con consollidate/merge multiple Sources into one.
 	/// </summary>
 
-	[VisualQuery(Type = DataSourceType.Source, DynamicOut = true)]
+	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.PassThrough, ToSic.Eav.DataSources",
+        Type = DataSourceType.Source, DynamicOut = true)]
 
     public class PassThrough : BaseDataSource
 	{

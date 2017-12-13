@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSources.Tests
 
         public const int StandardInstalledPipeLineDS =
              //16; // without sql
-             19; // this is with some json-types...
+             21; // this is with some json-types...
         public const string SqlFullName = "ToSic.Eav.DataSources.SqlDataSource";
         public const string DeferredFullName = "ToSic.Eav.DataSources.DeferredPipelineQuery";
 
@@ -18,23 +18,23 @@ namespace ToSic.Eav.DataSources.Tests
         [TestMethod]
         public void AutoFindAllDataSources()
         {
-            var dsList = DataSource.GetInstalledDataSources(false);
+            var dsList = DataSource.GetInstalledDataSources2(false);
             Assert.AreEqual(StandardInstalledDSCount, dsList.Count(), "expect a correct number of DSs");
 
-            var hasSqlDs = dsList.FirstOrDefault(c => c.FullName == SqlFullName);
+            var hasSqlDs = dsList.FirstOrDefault(c => c.Type.FullName == SqlFullName);
             Assert.IsNotNull(hasSqlDs, "should find sql-data source");
         }
 
         [TestMethod]
         public void AutoFindPipelineDataSources()
         {
-            var dsList = DataSource.GetInstalledDataSources(true);
+            var dsList = DataSource.GetInstalledDataSources2(true);
             Assert.AreEqual(StandardInstalledPipeLineDS, dsList.Count(), "expect a correct number of DSs");
 
-            var hasSqlDs = dsList.FirstOrDefault(c => c.FullName == SqlFullName);
+            var hasSqlDs = dsList.FirstOrDefault(c => c.Type.FullName == SqlFullName);
             Assert.IsNotNull(hasSqlDs, "should NOT find sql-data source");
 
-            var shouldNotFind = dsList.FirstOrDefault(c => c.FullName == DeferredFullName);
+            var shouldNotFind = dsList.FirstOrDefault(c => c.Type.FullName == DeferredFullName);
             Assert.IsNull(shouldNotFind, "should NOT find sql-data source");
         }
 
