@@ -5,7 +5,7 @@ using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data
 {
-    public class ContentTypeMetadata : OfMetadataOfItem<string>
+    public class ContentTypeMetadata : MetadataOf<string>
     {
 
         #region empty constructors

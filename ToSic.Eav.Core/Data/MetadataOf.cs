@@ -11,12 +11,12 @@ namespace ToSic.Eav.Data
     /// Metadata entities of an item (a content-type or another entity)
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class OfMetadataOfItem<T> : IMetadataOfItem
+    public class MetadataOf<T> : IMetadataOfItem
     {
         /// <summary>
         /// initialize using a prepared metadata provider
         /// </summary>
-        public OfMetadataOfItem(int itemType, T key, IDeferredEntitiesList metaProvider) : this(itemType, key)
+        public MetadataOf(int itemType, T key, IDeferredEntitiesList metaProvider) : this(itemType, key)
         {
             _appMetadataProvider = metaProvider;
         }
@@ -24,13 +24,13 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// initialize using keys to the metadata-environment, for lazy retrieval
         /// </summary>
-        public OfMetadataOfItem(int itemType, T key, int remoteZoneId, int remoteAppId): this(itemType, key)
+        public MetadataOf(int itemType, T key, int remoteZoneId, int remoteAppId): this(itemType, key)
         {
             _remoteZoneId = remoteZoneId;
             _remoteAppId = remoteAppId;
         }
 
-        private OfMetadataOfItem(int itemType, T key)
+        private MetadataOf(int itemType, T key)
         {
             _itemType = itemType;
             Key = key;

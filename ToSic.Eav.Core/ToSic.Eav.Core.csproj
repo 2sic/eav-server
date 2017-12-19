@@ -104,7 +104,7 @@
     <Compile Include="Data\Builder\ValueBuilder.cs" />
     <Compile Include="Data\ContentTypeMetadata.cs" />
     <Compile Include="Data\EntityEnumerator.cs" />
-    <Compile Include="Data\OfMetadataOfItem.cs" />
+    <Compile Include="Data\MetadataOf.cs" />
     <Compile Include="Data\Query\Entity.cs" />
     <Compile Include="Repositories\RepositoryInfo.cs" />
     <Compile Include="Repositories\RepositoryInfoOfFolder.cs" />
