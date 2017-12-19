@@ -94,6 +94,7 @@
     <Compile Include="App\AppDataPackage_ContentTypes.cs" />
     <Compile Include="App\AppDataPackageDeferredList.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="Constants_Permissions.cs" />
     <Compile Include="Constants_Relationships.cs" />
     <Compile Include="App\AppDataPackage.cs" />
     <Compile Include="Data\AttributeDefinition.cs" />
@@ -101,6 +102,7 @@
     <Compile Include="Data\AttributeDefinition_Shared.cs" />
     <Compile Include="Data\Builder\EntityBuilder.cs" />
     <Compile Include="Data\Builder\ValueBuilder.cs" />
+    <Compile Include="Data\ContentTypeMetadata.cs" />
     <Compile Include="Data\EntityEnumerator.cs" />
     <Compile Include="Data\OfMetadataOfItem.cs" />
     <Compile Include="Data\Query\Entity.cs" />
