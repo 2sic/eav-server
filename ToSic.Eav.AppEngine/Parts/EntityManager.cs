@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ToSic.Eav.Apps.ImportExport;
+using ToSic.Eav.Apps.Interfaces;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport.Options;
@@ -194,6 +195,27 @@ namespace ToSic.Eav.Apps.Parts
             var newE = new Entity(AppManager.AppId, newGuid, contentTypeName, values);
             return Save(newE);
         }
+
+
+        #region Helpers to get things done
+        // todo: probably should move to the new Eav.Apps section, but for that we must
+        public void ModifyItemList(int parentId, string field, IItemListAction actionToPerform)
+        {
+            Log.Add($"modify item list parent:{parentId}, field:{field}, action:{actionToPerform}");
+            var parentEntity = AppManager.Read.Entities.Get(parentId);
+            var parentField = parentEntity.GetBestValue(field);
+
+            if (!(parentField is EntityRelationship fieldList))
+                throw new Exception("field " + field + " doesn't seem to be a list of content-items, must abort");
+
+            var ids = actionToPerform.Change(fieldList.ToList());
+            if (ids == null) return;
+
+            // save
+            var values = new Dictionary<string, object> { { field, ids.Select(e => e?.EntityGuid).ToList() } };
+            AppManager.Entities.UpdateParts(parentEntity.EntityId, values);
+        }
+        #endregion
 
 
         public ExportListXml Exporter(IContentType contentType) 

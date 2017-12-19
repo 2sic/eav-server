@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Apps.Interfaces
 {
@@ -7,6 +9,10 @@ namespace ToSic.Eav.Apps.Interfaces
     /// </summary>
     public interface IItemListAction
     {
-        bool Change(List<int?> ids);
+        //bool Change(List<int?> ids);
+
+        //bool Change(List<Guid?> ids);
+
+        List<IEntity> Change(List<IEntity> ids);
     }
 }

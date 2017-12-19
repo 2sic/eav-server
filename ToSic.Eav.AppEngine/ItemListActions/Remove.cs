@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using ToSic.Eav.Apps.Interfaces;
+using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Apps.ItemListActions
 {
@@ -10,15 +12,18 @@ namespace ToSic.Eav.Apps.ItemListActions
         {
             _index = index;
         }
-        public bool Change(List<int?> ids)
+        public List<IEntity> Change(List<IEntity> ids)
         {
             // don't allow rmove outside of index
             if (_index < 0 || _index >= ids.Count)
-                return false;
+                return null;// false;
+
+            // first copy, so we don't touch the original object
+            ids = ids.ToList();
 
             // do actualy re-ordering
             ids.RemoveAt(_index);
-            return true;
+            return ids;// true;
 
         }
     }
