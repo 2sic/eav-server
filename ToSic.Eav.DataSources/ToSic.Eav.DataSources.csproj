@@ -124,7 +124,6 @@
     <Compile Include="Pipeline\DataPipeline.cs" />
     <Compile Include="Pipeline\DataPipelineFactory.cs" />
     <Compile Include="Pipeline\DataPipelineWiring.cs" />
-    <Compile Include="VisualQuery\PipelineDesignerAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="OwnerFilter.cs" />
     <Compile Include="PublishingFilter.cs" />

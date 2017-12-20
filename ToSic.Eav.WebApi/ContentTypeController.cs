@@ -2,19 +2,15 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Net.Http;
 using System.Web.Http;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Caches;
-using ToSic.Eav.ImportExport.Json;
-using ToSic.Eav.ImportExport.Validation;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Serializers;
 using ToSic.Eav.WebApi.Formats;
-using ToSic.Eav.WebApi.Helpers;
 
 namespace ToSic.Eav.WebApi
 {
@@ -54,7 +50,7 @@ namespace ToSic.Eav.WebApi
         private ContentTypeInfo ContentTypeForJson(ContentType t, ICache cache)
 	    {
 	        Log.Add($"for json a:{t.AppId}, type:{t.Name}");
-	        var metadata = t.Metadata.FirstOrDefault();
+	        var metadata = t.Metadata.Description;//.FirstOrDefault();
 
 	        var nameOverride = metadata?.GetBestValue(Constants.ContentTypeMetadataLabel).ToString();
 	        if (string.IsNullOrEmpty(nameOverride))

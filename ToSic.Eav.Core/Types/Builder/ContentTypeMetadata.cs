@@ -29,7 +29,7 @@ namespace ToSic.Eav.Types.Builder
                 .Select(v => v.Key).ToList()
                 .ForEach(k => values.Remove(k));
 
-            type?.Metadata.Add("ContentType", values);
+            type?.Metadata.Add( Constants.ContentTypeTypeName /*"ContentType"*/, values);
             return type; // for chaining...
         }
 

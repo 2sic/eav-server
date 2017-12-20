@@ -100,12 +100,15 @@ namespace ToSic.Eav.Data
 
         #region Metadata
 
-        public IMetadataOfItem Metadata
+
+
+        public ContentTypeMetadata Metadata
             => _metadata ?? (_metadata = ParentAppId == AppId
-                   ? new OfMetadataOfItem<string>(Constants.MetadataForContentType, StaticName, _metaOfThisApp)
-                   : new OfMetadataOfItem<string>(Constants.MetadataForContentType, StaticName, ParentZoneId, ParentAppId)
+                   ? new ContentTypeMetadata(StaticName,
+                       _metaOfThisApp) // OfMetadataOfItem<string>(Constants.MetadataForContentType, StaticName, _metaOfThisApp)
+                   : new ContentTypeMetadata(StaticName, ParentZoneId, ParentAppId)// OfMetadataOfItem<string>(Constants.MetadataForContentType, StaticName, ParentZoneId, ParentAppId)
                );
-        private IMetadataOfItem _metadata;
+        private ContentTypeMetadata _metadata;
         private readonly IDeferredEntitiesList _metaOfThisApp;
 
         #endregion
@@ -113,5 +116,8 @@ namespace ToSic.Eav.Data
         #region external i18n
         public string I18nKey { get; protected set; } = null;
         #endregion
+
     }
+
+
 }

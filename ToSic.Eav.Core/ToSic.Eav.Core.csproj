@@ -94,6 +94,7 @@
     <Compile Include="App\AppDataPackage_ContentTypes.cs" />
     <Compile Include="App\AppDataPackageDeferredList.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="Constants_Permissions.cs" />
     <Compile Include="Constants_Relationships.cs" />
     <Compile Include="App\AppDataPackage.cs" />
     <Compile Include="Data\AttributeDefinition.cs" />
@@ -101,8 +102,9 @@
     <Compile Include="Data\AttributeDefinition_Shared.cs" />
     <Compile Include="Data\Builder\EntityBuilder.cs" />
     <Compile Include="Data\Builder\ValueBuilder.cs" />
+    <Compile Include="Data\ContentTypeMetadata.cs" />
     <Compile Include="Data\EntityEnumerator.cs" />
-    <Compile Include="Data\OfMetadataOfItem.cs" />
+    <Compile Include="Data\MetadataOf.cs" />
     <Compile Include="Data\Query\Entity.cs" />
     <Compile Include="Repositories\RepositoryInfo.cs" />
     <Compile Include="Repositories\RepositoryInfoOfFolder.cs" />
@@ -121,6 +123,8 @@
     <Compile Include="Persistence\Logging\LogItem.cs" />
     <Compile Include="Persistence\Logging\Message.cs" />
     <Compile Include="Persistence\Logging\MessageTypes.cs" />
+    <Compile Include="Security\Permissions\PermissionController.cs" />
+    <Compile Include="Security\Permissions\PermissionGrant.cs" />
     <Compile Include="Types\Attributes\ContentTypeDefinition.cs" />
     <Compile Include="Data\Builder\AttDefBuilder.cs" />
     <Compile Include="Data\Builder\AttribBuilder.cs" />

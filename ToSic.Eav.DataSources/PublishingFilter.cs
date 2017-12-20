@@ -1,4 +1,6 @@
-﻿using ToSic.Eav.DataSources.VisualQuery;
+﻿using System.Collections.Generic;
+using ToSic.Eav.DataSources.VisualQuery;
+using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
 {
@@ -36,22 +38,19 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public PublishingFilter()
 		{
-            Provide(() => DataStream().List);
-            //Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
+            Provide(GetList);
 		    ConfigMask(ShowDraftsKey, "[Settings:ShowDrafts||false]");
-
-            //CacheRelevantConfigurations = new[] { ShowDraftsKey };
-
- 	        //IEnumerable<IEntity> GetList() => DataStream().List;
        }
 
 
-	    private IDataStream DataStream()
+	    private IEnumerable<IEntity> GetList()
 	    {
 	        EnsureConfigurationIsLoaded();
 	        Log.Add($"get incl. draft:{ShowDrafts}");
-	        var outStreamName = ShowDrafts ? Constants.DraftsStreamName : Constants.PublishedStreamName;
-	        return In[outStreamName];
+	        var outStreamName = ShowDrafts 
+                ? Constants.DraftsStreamName 
+                : Constants.PublishedStreamName;
+	        return In[outStreamName].List;
 	    }
 
 	}

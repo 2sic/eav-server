@@ -70,8 +70,8 @@ namespace ToSic.Eav.Data
         #region material for defining/creating attributes / defining them for import
         public IMetadataOfItem Metadata
             => _metadata ?? (_metadata = !_isShared
-                   ? new OfMetadataOfItem<int>(Constants.MetadataForAttribute, AttributeId, _metaOfThisApp)
-                   : new OfMetadataOfItem<int>(Constants.MetadataForAttribute, AttributeId, 0, _parentAppId)
+                   ? new MetadataOf<int>(Constants.MetadataForAttribute, AttributeId, _metaOfThisApp)
+                   : new MetadataOf<int>(Constants.MetadataForAttribute, AttributeId, 0, _parentAppId)
                );
         private IMetadataOfItem _metadata;
 

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Data;
 using ToSic.Eav.Repositories;
 
 namespace ToSic.Eav.Interfaces
@@ -62,7 +63,7 @@ namespace ToSic.Eav.Interfaces
         /// <remarks>
         /// The metadata is either already prepared, from the same app, or from a remote app
         /// </remarks>
-        IMetadataOfItem Metadata { get; }
+        ContentTypeMetadata Metadata { get; }
 
     }
 }

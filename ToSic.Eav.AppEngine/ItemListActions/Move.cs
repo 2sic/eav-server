@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using ToSic.Eav.Apps.Interfaces;
+using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Apps.ItemListActions
 {
@@ -11,21 +13,24 @@ namespace ToSic.Eav.Apps.ItemListActions
             _indexFrom = from;
             _indexTo = to;
         }
-        public bool Change(List<int?> ids)
+        public List<IEntity> Change(List<IEntity> ids)
         {
             if (_indexFrom >= ids.Count) // this is if you set cut after the last item
                 _indexFrom = ids.Count - 1;
             if (_indexTo >= ids.Count)
                 _indexTo = ids.Count;
             if (_indexFrom == _indexTo)
-                return false;
+                return null;// false;
+
+            // first copy, so we don't touch the original object
+            ids = ids.ToList();
 
             // do actualy re-ordering
             var oldId = ids[_indexFrom];
             ids.RemoveAt(_indexFrom);
             if (_indexTo > _indexFrom) _indexTo--; // the actual index could have shifted due to the removal
             ids.Insert(_indexTo, oldId);
-            return true;
+            return ids;// true;
 
         }
     }
