@@ -26,8 +26,9 @@ namespace ToSic.Eav.Data.Builder
             e.MetadataFor = metadataFor;
             e.Attributes = new Dictionary<string, IAttribute>(StringComparer.OrdinalIgnoreCase);
 
-            if (allRelationships == null)
-                allRelationships = new List<EntityRelationshipItem>();
+            //moved to RelationshipManager
+            //if (allRelationships == null)
+            //    allRelationships = new List<EntityRelationshipItem>();
             e.Relationships = new RelationshipManager(e, allRelationships);
 
             e.DeferredLookupData = source;

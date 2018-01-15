@@ -36,6 +36,7 @@ namespace ToSic.Eav.App
         {
             Types = metadataTypes;
 
+            // make sure the lists have a sub-list for each known relationship type
             foreach (var mdt in Types)
             {
                 _guid.Add(mdt.Key, new Dictionary<Guid, IEnumerable<IEntity>>());
@@ -61,6 +62,11 @@ namespace ToSic.Eav.App
                 AddToMetaDic(_number, md.TargetType, md.KeyNumber.Value, entity);
             if (!string.IsNullOrEmpty(md.KeyString))
                 AddToMetaDic(_string, md.TargetType, md.KeyString, entity);
+        }
+
+        public void Remove(int entityId)
+        {
+            throw new NotImplementedException();
         }
         
         private static void AddToMetaDic<T>(Dictionary<int, Dictionary<T, IEnumerable<IEntity>>> metadataIndex, int mdTargetType, T mdValue, Entity newEntity)

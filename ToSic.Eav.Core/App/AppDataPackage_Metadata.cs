@@ -9,7 +9,7 @@ namespace ToSic.Eav.App
     /// </summary>
     public partial class AppDataPackage: IMetadataProvider
 	{
-        private AppMetadataManager MetadataManager { get; }
+        internal AppMetadataManager Metadata { get; set; }
 
         /// <summary>
         /// Get metadata-items of something
@@ -20,7 +20,7 @@ namespace ToSic.Eav.App
         /// <param name="contentTypeName">an optional type name, if we only want the items of a specific type</param>
         /// <returns></returns>
 	    public IEnumerable<IEntity> GetMetadata<TMetadataKey>(int targetType, TMetadataKey key, string contentTypeName = null) 
-            => MetadataManager.GetMetadata(targetType, key, contentTypeName);
+            => Metadata.GetMetadata(targetType, key, contentTypeName);
 
 
 	}

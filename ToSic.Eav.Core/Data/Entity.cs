@@ -105,7 +105,7 @@ namespace ToSic.Eav.Data
         public Entity(int appId, Guid entityGuid, object contentType, Dictionary<string, object> values) 
             : this(appId, 0, contentType, values, entityGuid: entityGuid)
         {
-            // 2017-12-05 2dm - merged this with the other constructor, remove in 2018 if everything works
+            // 2017-12-05 2dm - merged this with the other constructor, remove in March 2018 if everything works
             //if (values.All(x => x.Value is IAttribute))
             //    Attributes = values.ToDictionary(x => x.Key, x => x.Value as IAttribute);
             //else
@@ -217,13 +217,10 @@ namespace ToSic.Eav.Data
 
         #region Obsolete / Special breaking changes
 
-        public object Value
-        {
-            get
-            {
-                throw new Exception("Error: You're seeing this because of a breaking change in EAV 4.5 / 2sxc 9.8. Please read this to fix: https://2sxc.org/en/blog/post/fixing-the-breaking-change-in-2sxc-9-8-list-instead-of-dictionary");
-            }
-        }
+        public object Value 
+            => throw new Exception("Error: You're seeing this because of a breaking change " +
+                                   "in EAV 4.5 / 2sxc 9.8. Please read this to fix: " +
+                                   "https://2sxc.org/en/blog/post/fixing-the-breaking-change-in-2sxc-9-8-list-instead-of-dictionary");
 
         #endregion
     }

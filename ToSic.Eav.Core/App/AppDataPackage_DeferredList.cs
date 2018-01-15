@@ -1,14 +1,11 @@
-﻿using ToSic.Eav.Interfaces;
-
-namespace ToSic.Eav.App
+﻿namespace ToSic.Eav.App
 {
-	/// <inheritdoc />
 	/// <summary>
 	/// Cache Object for a specific App
 	/// </summary>
 	public partial class AppDataPackage
 	{
-        public IDeferredEntitiesList BetaDeferredEntitiesList { get; }
+        public AppDataPackageDeferredList BetaDeferred { get; }
 
 
 	}

@@ -94,6 +94,7 @@
     <Compile Include="App\AppDataPackage_ContentTypes.cs" />
     <Compile Include="App\AppDataPackageDeferredList.cs" />
     <Compile Include="App\AppMetadataManager.cs" />
+    <Compile Include="App\AppRelationshipManager.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Constants_Permissions.cs" />
     <Compile Include="Constants_Relationships.cs" />

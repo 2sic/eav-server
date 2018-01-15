@@ -38,32 +38,34 @@ namespace ToSic.Eav.Persistence.Efc
         /// <param name="entityIds">null or a List of EntitiIds</param>
         /// <param name="entitiesOnly">If only the CachItem.Entities is needed, this can be set to true to imporove performance</param>
         /// <param name="parentLog"></param>
-        /// <returns>Item1: EntityModels, Item2: all ContentTypes, Item3: Assignment Object Types</returns>
+        /// <returns>app package with initialized app</returns>
         public AppDataPackage AppPackage(int appId, int[] entityIds = null, bool entitiesOnly = false, Log parentLog = null)
         {
             Log = new Log("DB.EFLoad", parentLog, $"get app data package for a#{appId}, ids only:{entityIds != null}, entities-only:{entitiesOnly}");
-            var source = new AppDataPackageDeferredList();
+            var app = new AppDataPackage(appId, parentLog);
+
+            // var source = app.BetaDeferred;// new AppDataPackageDeferredList();
+
+            //var relationships = app.Relationships;// new AppRelationshipManager(); // new List<EntityRelationshipItem>();
+
+            #region prepare metadata lists & relationships etc.
+
+            var sqlTime = Stopwatch.StartNew();
+            InitMetadataLists(app);
+            sqlTime.Stop();
+
+            #endregion
 
             #region prepare content-types
             var typeTimer = Stopwatch.StartNew();
-            var contentTypes = ContentTypes(appId, source);
+            var contentTypes = ContentTypes(appId, app.BetaDeferred);
             var sysTypes = Global.AllContentTypes();
-            
+            app.Set2ContentTypes(contentTypes);
             typeTimer.Stop();
             #endregion
 
-            var relationships = new List<EntityRelationshipItem>();
 
-            #region prepare metadata lists for relationships etc.
 
-            var sqlTime = Stopwatch.StartNew();
-            var metadataTypes = _dbContext.ToSicEavAssignmentObjectTypes
-                .ToImmutableDictionary(a => a.AssignmentObjectTypeId, a => a.Name);
-            sqlTime.Stop();
-
-            var appMdManager = new AppMetadataManager(metadataTypes);
-
-            #endregion
 
             #region Prepare & Extend EntityIds
             if (entityIds == null)
@@ -167,7 +169,7 @@ namespace ToSic.Eav.Persistence.Efc
             var entities = new Dictionary<int, IEntity>();
 
             var serializer = Factory.Resolve<IThingDeserializer>();
-            serializer.Initialize(appId, contentTypes, source, Log);
+            serializer.Initialize(appId, contentTypes, app.BetaDeferred, Log);
 
             var entityTimer = Stopwatch.StartNew();
             foreach (var e in rawEntities)
@@ -181,6 +183,7 @@ namespace ToSic.Eav.Persistence.Efc
 
                 else
                 {
+                    // todo: continue here!
                     var contentType = (ContentType)contentTypes.SingleOrDefault(ct => ct.ContentTypeId == e.AttributeSetId);
                     if(contentType == null) throw new NullReferenceException("content type is not found for type " + e.AttributeSetId);
                     
@@ -189,7 +192,7 @@ namespace ToSic.Eav.Persistence.Efc
                         contentType = (ContentType)sysTypes[contentType.StaticName];
 
                     newEntity = EntityBuilder.EntityFromRepository(appId, e.EntityGuid, e.EntityId, e.EntityId, 
-                        e.Metadata, contentType, e.IsPublished, relationships, source, e.Modified, e.Owner, e.Version);
+                        e.Metadata, contentType, e.IsPublished, app.Relationships, app.BetaDeferred, e.Modified, e.Owner, e.Version);
 
                     IAttribute titleAttrib = null;
 
@@ -209,7 +212,7 @@ namespace ToSic.Eav.Persistence.Efc
                         foreach (var r in relatedEntities[e.EntityId])
                         {
                             var attrib = newEntity.Attributes[r.Name];
-                            attrib.Values = new List<IValue> {ValueBuilder.Build(attrib.Type, r.Childs, null, source)};
+                            attrib.Values = new List<IValue> {ValueBuilder.Build(attrib.Type, r.Childs, null, app.BetaDeferred)};
                         }
 
                     #endregion
@@ -269,20 +272,10 @@ namespace ToSic.Eav.Persistence.Efc
                 }
                 #endregion
 
-                #region Add metadata-lists based on AssignmentObjectTypes
+                #region Add to metadata
 
-                if (/*e.Metadata.IsMetadata &&*/ !entitiesOnly)
-                {
-                    appMdManager.Add(newEntity);
-                    //var targetType = e.Metadata.TargetType;
-                    //// Try guid first. Note that an item can be assigned to both a guid, string and an int if necessary, though not commonly used
-                    //if (e.Metadata.KeyGuid.HasValue)
-                    //    AddToMetaDic(metadataForGuid, targetType, e.Metadata.KeyGuid.Value, newEntity);
-                    //if (e.Metadata.KeyNumber.HasValue)
-                    //    AddToMetaDic(metadataForNumber, targetType, e.Metadata.KeyNumber.Value, newEntity);
-                    //if (!string.IsNullOrEmpty(e.Metadata.KeyString))
-                    //    AddToMetaDic(metadataForString, targetType, e.Metadata.KeyString, newEntity);
-                }
+                if (!entitiesOnly)
+                    app.Metadata.Add(newEntity);
 
                 #endregion
 
@@ -309,11 +302,12 @@ namespace ToSic.Eav.Persistence.Efc
             {
                 try
                 {
-                    if (entities.ContainsKey(relationship.ParentEntityId) &&
-                        (!relationship.ChildEntityId.HasValue ||
-                         entities.ContainsKey(relationship.ChildEntityId.Value)))
-                        relationships.Add(new EntityRelationshipItem(entities[relationship.ParentEntityId],
-                            relationship.ChildEntityId.HasValue ? entities[relationship.ChildEntityId.Value] : null));
+                    app.Relationships.Add(entities, relationship.ParentEntityId, relationship.ChildEntityId);
+                    //if (entities.ContainsKey(relationship.ParentEntityId) &&
+                    //    (!relationship.ChildEntityId.HasValue ||
+                    //     entities.ContainsKey(relationship.ChildEntityId.Value)))
+                    //    relationships.Add(new EntityRelationshipItem(entities[relationship.ParentEntityId],
+                    //        relationship.ChildEntityId.HasValue ? entities[relationship.ChildEntityId.Value] : null));
                 }
                 catch (KeyNotFoundException) { /* ignore */ }
             }
@@ -323,12 +317,24 @@ namespace ToSic.Eav.Persistence.Efc
             _sqlTotalTime = _sqlTotalTime.Add(sqlTime.Elapsed);
             Log.Add($"timers types&typesql:{typeTimer.Elapsed} sqlAll:{_sqlTotalTime}, entities:{entityTimer.Elapsed}, relationship:{relTimer.Elapsed}");
 
-            var appPack = new AppDataPackage(appId, entities.Values, contentTypes, 
-                appMdManager,
-                //relationships, 
-                source,
-                Log);
-            return appPack;
+            app.Set3Entities(entities.Values);
+            return app;
+
+            //var appPack = new AppDataPackage(appId, entities.Values, contentTypes, 
+            //    appMdManager,
+            //    //relationships, 
+            //    //source,
+            //    Log);
+            //return appPack;
+        }
+
+        private void InitMetadataLists(AppDataPackage app)
+        {
+            var metadataTypes = _dbContext.ToSicEavAssignmentObjectTypes
+                .ToImmutableDictionary(a => a.AssignmentObjectTypeId, a => a.Name);
+
+            var appMdManager = new AppMetadataManager(metadataTypes);
+            app.Set1MetadataManager(appMdManager);
         }
 
         #endregion

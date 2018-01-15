@@ -27,7 +27,7 @@ namespace ToSic.Eav.App
         /// <summary>
         /// The simple list of entities, used in many pipeline parts
         /// </summary>
-        public IEnumerable<IEntity> List { get; } 
+        public IEnumerable<IEntity> List { get; private set; } 
 
 		/// <summary>
 		/// Get all Published Entities in this App (excluding Drafts)
@@ -43,12 +43,12 @@ namespace ToSic.Eav.App
         /// <summary>
         /// Get all Relationships between Entities
         /// </summary>
-        //public IEnumerable<EntityRelationshipItem> Relationships { get; }
+        public AppRelationshipManager Relationships { get; }
 
-		/// <summary>
-		/// Gets the DateTime when this CacheItem was populated
-		/// </summary>
-		public DateTime LastRefresh { get; }
+        /// <summary>
+        /// Gets the DateTime when this CacheItem was populated
+        /// </summary>
+        public DateTime LastRefresh { get; }
 		#endregion
 
 		/// <summary>
@@ -59,26 +59,71 @@ namespace ToSic.Eav.App
             IEnumerable<IEntity> entList,
             IList<IContentType> contentTypes,
             AppMetadataManager metadataManager,
-            AppDataPackageDeferredList selfDeferredEntitiesList, Log parentLog): base("App.Packge", parentLog)
+            //AppDataPackageDeferredList selfDeferredEntitiesList, 
+            Log parentLog): this(appId, parentLog)// base("App.Packge", parentLog)
 		{
-		    AppId = appId;
-		    List = entList;
+		    //AppId = appId;
 
-		    _appTypesFromRepository = RemoveAliasesForGlobalTypes(contentTypes);
+		    Set1MetadataManager(metadataManager);
 
-		    MetadataManager = metadataManager;
+		    Set2ContentTypes(contentTypes);
+
+		    Set3Entities(entList);
 
 			//Relationships = relationships;
 
-			LastRefresh = DateTime.Now;
+			//LastRefresh = DateTime.Now;
 
-            // build types by name
-            BuildCacheForTypesByName(_appTypesFromRepository);
 
             // ensure that the previously built entities can look up relationships
-		    selfDeferredEntitiesList.AttachApp(this);
-		    BetaDeferredEntitiesList = selfDeferredEntitiesList;
+		    //selfDeferredEntitiesList.AttachApp(this);
+		    // BetaDeferredEntitiesList = selfDeferredEntitiesList;
         }
+
+
+
+        internal AppDataPackage(int appId, Log parentLog): base("App.Packge", parentLog)
+	    {
+	        AppId = appId;
+
+            Relationships = new AppRelationshipManager();
+
+            // create a self-referencing deferred entities list
+            var deferred = new AppDataPackageDeferredList();
+	        deferred.AttachApp(this);
+	        BetaDeferred = deferred;
+
+            LastRefresh = DateTime.Now;
+	    }
+
+	    internal void Set1MetadataManager(AppMetadataManager metadataManager)
+	    {
+	        if (_appTypesFromRepository != null)
+	            throw new Exception("can't set metadata if content-types are already set");
+	        Metadata = metadataManager;
+	    }
+
+
+	    internal void Set2ContentTypes(IList<IContentType> contentTypes)
+	    {
+	        if (Metadata == null)
+	            throw new Exception("can't set content types before setting Metadata manager");
+	        if (List != null)
+	            throw new Exception("can't set content-types if entities List already exist");
+
+	        _appTypesFromRepository = RemoveAliasesForGlobalTypes(contentTypes);
+	        // build types by name
+	        BuildCacheForTypesByName(_appTypesFromRepository);
+	    }
+
+	    internal void Set3Entities(IEnumerable<IEntity> entList)
+	    {
+	        if (_appTypesFromRepository == null)
+	            throw new Exception("can't set entities if content-types not set yet");
+
+	        List = entList;
+	    }
+
 
     }
 }
