@@ -55,20 +55,17 @@ namespace ToSic.Eav.Persistence.Efc
             var relationships = new List<EntityRelationshipItem>();
 
             #region prepare metadata lists for relationships etc.
-            var metadataForGuid = new Dictionary<int, Dictionary<Guid, IEnumerable<IEntity>>>();
-            var metadataForNumber = new Dictionary<int, Dictionary<int, IEnumerable<IEntity>>>();
-            var metadataForString = new Dictionary<int, Dictionary<string, IEnumerable<IEntity>>>();
+            //var metadataForGuid = new Dictionary<int, Dictionary<Guid, IEnumerable<IEntity>>>();
+            //var metadataForNumber = new Dictionary<int, Dictionary<int, IEnumerable<IEntity>>>();
+            //var metadataForString = new Dictionary<int, Dictionary<string, IEnumerable<IEntity>>>();
 
             var sqlTime = Stopwatch.StartNew();
             var metadataTypes = _dbContext.ToSicEavAssignmentObjectTypes.ToImmutableDictionary(a => a.AssignmentObjectTypeId, a => a.Name);
             sqlTime.Stop();
 
-            foreach (var mdt in metadataTypes.ToList())
-            {
-                metadataForGuid.Add(mdt.Key, new Dictionary<Guid, IEnumerable<IEntity>>());
-                metadataForNumber.Add(mdt.Key, new Dictionary<int, IEnumerable<IEntity>>());
-                metadataForString.Add(mdt.Key, new Dictionary<string, IEnumerable<IEntity>>());
-            }
+            //InitDics(metadataTypes, metadataForGuid, metadataForNumber, metadataForString);
+
+            var appMdManager = new AppMetadataManager(metadataTypes);
 
             #endregion
 
@@ -278,21 +275,22 @@ namespace ToSic.Eav.Persistence.Efc
 
                 #region Add metadata-lists based on AssignmentObjectTypes
 
-                if (e.Metadata.IsMetadata && !entitiesOnly)
+                if (/*e.Metadata.IsMetadata &&*/ !entitiesOnly)
                 {
-                    // Try guid first. Note that an item can be assigned to both a guid, string and an int if necessary, though not commonly used
-                    if (e.Metadata.KeyGuid.HasValue)
-                        AddToMetaDic(metadataForGuid, e.Metadata.TargetType, e.Metadata.KeyGuid.Value, newEntity);
-                    if (e.Metadata.KeyNumber.HasValue)
-                        AddToMetaDic(metadataForNumber, e.Metadata.TargetType, e.Metadata.KeyNumber.Value, newEntity);
-                    if (!string.IsNullOrEmpty(e.Metadata.KeyString))
-                        AddToMetaDic(metadataForString, e.Metadata.TargetType, e.Metadata.KeyString, newEntity);
+                    appMdManager.Add(newEntity);
+                    //var targetType = e.Metadata.TargetType;
+                    //// Try guid first. Note that an item can be assigned to both a guid, string and an int if necessary, though not commonly used
+                    //if (e.Metadata.KeyGuid.HasValue)
+                    //    AddToMetaDic(metadataForGuid, targetType, e.Metadata.KeyGuid.Value, newEntity);
+                    //if (e.Metadata.KeyNumber.HasValue)
+                    //    AddToMetaDic(metadataForNumber, targetType, e.Metadata.KeyNumber.Value, newEntity);
+                    //if (!string.IsNullOrEmpty(e.Metadata.KeyString))
+                    //    AddToMetaDic(metadataForString, targetType, e.Metadata.KeyString, newEntity);
                 }
 
                 #endregion
 
                 entities.Add(e.EntityId, newEntity);
-                //entList.Add(newEntity);
             }
             entityTimer.Stop();
             #endregion
@@ -305,7 +303,9 @@ namespace ToSic.Eav.Persistence.Efc
                 .Where(r => r.Attribute.ToSicEavAttributesInSets.Any(s => s.AttributeSet.AppId == appId))
                 .Where(r => !filterByEntityIds || !r.ChildEntityId.HasValue || entityIds.Contains(r.ChildEntityId.Value) ||
                          entityIds.Contains(r.ParentEntityId))
-                .OrderBy(r => r.ParentEntityId).ThenBy(r => r.AttributeId).ThenBy(r => r.ChildEntityId)
+                .OrderBy(r => r.ParentEntityId)
+                .ThenBy(r => r.AttributeId)
+                .ThenBy(r => r.ChildEntityId)
                 .Select(r => new {r.ParentEntityId, r.Attribute.StaticName, r.ChildEntityId});
 
             var relationshipsRaw = relationshipQuery.ToList();
@@ -328,21 +328,34 @@ namespace ToSic.Eav.Persistence.Efc
             Log.Add($"timers types&typesql:{typeTimer.Elapsed} sqlAll:{_sqlTotalTime}, entities:{entityTimer.Elapsed}, relationship:{relTimer.Elapsed}");
 
             var appPack = new AppDataPackage(appId, entities.Values, contentTypes, 
-                metadataForGuid, metadataForNumber, metadataForString, 
-                relationships, source,
+                appMdManager,
+                //metadataForGuid, metadataForNumber, metadataForString, 
+                //relationships, 
+                source,
                 Log);
             return appPack;
         }
 
-        private static void AddToMetaDic<T>(Dictionary<int, Dictionary<T, IEnumerable<IEntity>>> metadataForGuid, int mdTargetType, T mdValue, Entity newEntity)
-        {
-            // Ensure that the assignment type (like 4) the target guid (like a350320-3502-afg0-...) has an empty list of items
-            if (!metadataForGuid[mdTargetType].ContainsKey(mdValue)) // ensure target list exists
-                metadataForGuid[mdTargetType][mdValue] = new List<IEntity>();
+        //private static void InitDics(ImmutableDictionary<int, string> metadataTypes, Dictionary<int, Dictionary<Guid, IEnumerable<IEntity>>> metadataForGuid,
+        //    Dictionary<int, Dictionary<int, IEnumerable<IEntity>>> metadataForNumber, Dictionary<int, Dictionary<string, IEnumerable<IEntity>>> metadataForString)
+        //{
+        //    foreach (var mdt in metadataTypes)
+        //    {
+        //        metadataForGuid.Add(mdt.Key, new Dictionary<Guid, IEnumerable<IEntity>>());
+        //        metadataForNumber.Add(mdt.Key, new Dictionary<int, IEnumerable<IEntity>>());
+        //        metadataForString.Add(mdt.Key, new Dictionary<string, IEnumerable<IEntity>>());
+        //    }
+        //}
 
-            // Now all containers must exist, add this item
-            ((List<IEntity>) metadataForGuid[mdTargetType][mdValue]).Add(newEntity);
-        }
+        //private static void AddToMetaDic<T>(Dictionary<int, Dictionary<T, IEnumerable<IEntity>>> metadataForGuid, int mdTargetType, T mdValue, Entity newEntity)
+        //{
+        //    // Ensure that the assignment type (like 4) the target guid (like a350320-3502-afg0-...) has an empty list of items
+        //    if (!metadataForGuid[mdTargetType].ContainsKey(mdValue)) // ensure target list exists
+        //        metadataForGuid[mdTargetType][mdValue] = new List<IEntity>();
+
+        //    // Now all containers must exist, add this item
+        //    ((List<IEntity>) metadataForGuid[mdTargetType][mdValue]).Add(newEntity);
+        //}
 
         #endregion
 

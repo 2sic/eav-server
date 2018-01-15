@@ -44,7 +44,7 @@ namespace ToSic.Eav.App
         /// <summary>
         /// Get all Relationships between Entities
         /// </summary>
-        public IEnumerable<EntityRelationshipItem> Relationships { get; }
+        //public IEnumerable<EntityRelationshipItem> Relationships { get; }
 
 		/// <summary>
 		/// Gets the DateTime when this CacheItem was populated
@@ -55,15 +55,15 @@ namespace ToSic.Eav.App
 		/// <summary>
 		/// Construct a new CacheItem with all required Items
 		/// </summary>
-		public AppDataPackage(
+		internal AppDataPackage(
             int appId,
-            //IDictionary<int, IEntity> entities, 
             IEnumerable<IEntity> entList,
             IList<IContentType> contentTypes,
-			IDictionary<int, Dictionary<Guid, IEnumerable<IEntity>>> metadataForGuid, 
-            IDictionary<int, Dictionary<int, IEnumerable<IEntity>>> metadataForNumber,
-			IDictionary<int, Dictionary<string, IEnumerable<IEntity>>> metadataForString, 
-            IEnumerable<EntityRelationshipItem> relationships,
+            AppMetadataManager metadataManager,
+			//IDictionary<int, Dictionary<Guid, IEnumerable<IEntity>>> metadataForGuid, 
+   //         IDictionary<int, Dictionary<int, IEnumerable<IEntity>>> metadataForNumber,
+			//IDictionary<int, Dictionary<string, IEnumerable<IEntity>>> metadataForString, 
+            //IEnumerable<EntityRelationshipItem> relationships,
             AppDataPackageDeferredList selfDeferredEntitiesList, Log parentLog): base("App.Packge", parentLog)
 		{
 		    AppId = appId;
@@ -71,11 +71,12 @@ namespace ToSic.Eav.App
 
 		    _appTypesFromRepository = RemoveAliasesForGlobalTypes(contentTypes);
 
-            MetadataForGuid = metadataForGuid;
-			MetadataForNumber = metadataForNumber;
-			MetadataForString = metadataForString;
+		    MetadataManager = metadataManager;
+   //         MetadataForGuid = metadataForGuid;
+			//MetadataForNumber = metadataForNumber;
+			//MetadataForString = metadataForString;
 
-			Relationships = relationships;
+			//Relationships = relationships;
 
 			LastRefresh = DateTime.Now;
 
