@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
@@ -60,10 +59,6 @@ namespace ToSic.Eav.App
             IEnumerable<IEntity> entList,
             IList<IContentType> contentTypes,
             AppMetadataManager metadataManager,
-			//IDictionary<int, Dictionary<Guid, IEnumerable<IEntity>>> metadataForGuid, 
-   //         IDictionary<int, Dictionary<int, IEnumerable<IEntity>>> metadataForNumber,
-			//IDictionary<int, Dictionary<string, IEnumerable<IEntity>>> metadataForString, 
-            //IEnumerable<EntityRelationshipItem> relationships,
             AppDataPackageDeferredList selfDeferredEntitiesList, Log parentLog): base("App.Packge", parentLog)
 		{
 		    AppId = appId;
@@ -72,9 +67,6 @@ namespace ToSic.Eav.App
 		    _appTypesFromRepository = RemoveAliasesForGlobalTypes(contentTypes);
 
 		    MetadataManager = metadataManager;
-   //         MetadataForGuid = metadataForGuid;
-			//MetadataForNumber = metadataForNumber;
-			//MetadataForString = metadataForString;
 
 			//Relationships = relationships;
 

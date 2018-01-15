@@ -9,24 +9,27 @@ namespace ToSic.Eav.App
 {
     internal class AppMetadataManager: IMetadataProvider
     {
-        public ImmutableDictionary<int, string> Types;
+        /// <summary>
+        /// Type-map for id/name of types
+        /// </summary>
+        private ImmutableDictionary<int, string> Types { get; }
 
         /// <summary>
         /// Gets a Dictionary of AssignmentObjectTypes and assigned Entities having a KeyGuid
         /// </summary>
-        private Dictionary<int, Dictionary<Guid, IEnumerable<IEntity>>> MetadataForGuid
+        private readonly Dictionary<int, Dictionary<Guid, IEnumerable<IEntity>>> _guid
             = new Dictionary<int, Dictionary<Guid, IEnumerable<IEntity>>>();
 
         /// <summary>
         /// Gets a Dictionary of AssignmentObjectTypes and assigned Entities having a KeyNumber
         /// </summary>
-        private Dictionary<int, Dictionary<int, IEnumerable<IEntity>>> MetadataForNumber
+        private readonly Dictionary<int, Dictionary<int, IEnumerable<IEntity>>> _number
             = new Dictionary<int, Dictionary<int, IEnumerable<IEntity>>>();
 
         /// <summary>
         /// Gets a Dictionary of AssignmentObjectTypes and assigned Entities having a KeyString
         /// </summary>
-        private Dictionary<int, Dictionary<string, IEnumerable<IEntity>>> MetadataForString
+        private readonly Dictionary<int, Dictionary<string, IEnumerable<IEntity>>> _string
             = new Dictionary<int, Dictionary<string, IEnumerable<IEntity>>>();
 
         public AppMetadataManager(ImmutableDictionary<int, string> metadataTypes)
@@ -35,12 +38,17 @@ namespace ToSic.Eav.App
 
             foreach (var mdt in Types)
             {
-                MetadataForGuid.Add(mdt.Key, new Dictionary<Guid, IEnumerable<IEntity>>());
-                MetadataForNumber.Add(mdt.Key, new Dictionary<int, IEnumerable<IEntity>>());
-                MetadataForString.Add(mdt.Key, new Dictionary<string, IEnumerable<IEntity>>());
+                _guid.Add(mdt.Key, new Dictionary<Guid, IEnumerable<IEntity>>());
+                _number.Add(mdt.Key, new Dictionary<int, IEnumerable<IEntity>>());
+                _string.Add(mdt.Key, new Dictionary<string, IEnumerable<IEntity>>());
             }
         }
 
+        /// <summary>
+        /// Register an entity to the metadata manager
+        /// This ensures that any request for metadata would include this entity, if it's metadata
+        /// </summary>
+        /// <param name="entity"></param>
         public void Add(Entity entity)
         {
             var md = entity.MetadataFor;
@@ -48,11 +56,11 @@ namespace ToSic.Eav.App
 
             // Try guid first. Note that an item can be assigned to both a guid, string and an int if necessary, though not commonly used
             if (md.KeyGuid.HasValue)
-                AddToMetaDic(MetadataForGuid, md.TargetType, md.KeyGuid.Value, entity);
+                AddToMetaDic(_guid, md.TargetType, md.KeyGuid.Value, entity);
             if (md.KeyNumber.HasValue)
-                AddToMetaDic(MetadataForNumber, md.TargetType, md.KeyNumber.Value, entity);
+                AddToMetaDic(_number, md.TargetType, md.KeyNumber.Value, entity);
             if (!string.IsNullOrEmpty(md.KeyString))
-                AddToMetaDic(MetadataForString, md.TargetType, md.KeyString, entity);
+                AddToMetaDic(_string, md.TargetType, md.KeyString, entity);
         }
         
         private static void AddToMetaDic<T>(Dictionary<int, Dictionary<T, IEnumerable<IEntity>>> metadataIndex, int mdTargetType, T mdValue, Entity newEntity)
@@ -78,16 +86,16 @@ namespace ToSic.Eav.App
         public IEnumerable<IEntity> GetMetadata<TMetadataKey>(int targetType, TMetadataKey key, string contentTypeName = null)
         {
             if (typeof(TMetadataKey) == typeof(Guid))
-                return Lookup(MetadataForGuid, targetType, key as Guid? ?? Guid.Empty, contentTypeName);
+                return Lookup(_guid, targetType, key as Guid? ?? Guid.Empty, contentTypeName);
 
             switch (Type.GetTypeCode(typeof(TMetadataKey)))
             {
                 case TypeCode.Int32:
-                    return Lookup(MetadataForNumber, targetType, key as int? ?? 0, contentTypeName);
+                    return Lookup(_number, targetType, key as int? ?? 0, contentTypeName);
                 case TypeCode.String:
-                    return Lookup(MetadataForString, targetType, key as string, contentTypeName);
+                    return Lookup(_string, targetType, key as string, contentTypeName);
                 default:
-                    return Lookup(MetadataForString, targetType, key.ToString(), contentTypeName);
+                    return Lookup(_string, targetType, key.ToString(), contentTypeName);
             }
         }
 
