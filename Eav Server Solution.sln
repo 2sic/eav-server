@@ -25,11 +25,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToSic.Eav.Persistence.Efc",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.Persistence.Efc.Tests", "ToSic.Eav.Persistence.EFC11.Tests\ToSic.Eav.Persistence.Efc.Tests.csproj", "{EB8491A7-4147-4A18-AC74-CD1BE957FF48}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2sxc WebApi", "..\2SexyContent\Web\DesktopModules\ToSIC_SexyContent\Sxc WebApi\2sxc WebApi.csproj", "{2F0610DE-2518-4FC8-823E-7228DD17C04F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2sxc WebApi", "..\2sxc-dnn742\Website\DesktopModules\ToSIC_SexyContent\Sxc WebApi\2sxc WebApi.csproj", "{2F0610DE-2518-4FC8-823E-7228DD17C04F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2sxc Razor", "..\2SexyContent\Web\DesktopModules\ToSIC_SexyContent\2Sexy Content Razor\2sxc Razor.csproj", "{78A558AF-F274-4E3C-95FE-8DE9226E0EBC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2sxc Razor", "..\2sxc-dnn742\Website\DesktopModules\ToSIC_SexyContent\2Sexy Content Razor\2sxc Razor.csproj", "{78A558AF-F274-4E3C-95FE-8DE9226E0EBC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2sxc", "..\2SexyContent\Web\DesktopModules\ToSIC_SexyContent\2sxc.csproj", "{D4250011-B9BE-4326-9736-4F0122C79802}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2sxc", "..\2sxc-dnn742\Website\DesktopModules\ToSIC_SexyContent\2sxc.csproj", "{D4250011-B9BE-4326-9736-4F0122C79802}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.Repository.Efc", "ToSic.Eav.Repository.Efc\ToSic.Eav.Repository.Efc.csproj", "{2BBA13D2-F6D2-443B-B7C8-8F4C31432C03}"
 EndProject
@@ -47,7 +47,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.TokenEngine.Tests
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.Apps.Tests", "ToSic.Eav.Apps.Tests\ToSic.Eav.Apps.Tests.csproj", "{5BAEFA99-42C6-4C06-96DE-881303AAE178}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2sxc core (ToSic.Sxc)", "..\2SexyContent\Web\DesktopModules\ToSIC_SexyContent\ToSic.Sxc\2sxc core (ToSic.Sxc).csproj", "{66318F76-3D43-406C-8DE6-94B46C22F776}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2sxc core (ToSic.Sxc)", "..\2sxc-dnn742\Website\DesktopModules\ToSIC_SexyContent\ToSic.Sxc\2sxc core (ToSic.Sxc).csproj", "{66318F76-3D43-406C-8DE6-94B46C22F776}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

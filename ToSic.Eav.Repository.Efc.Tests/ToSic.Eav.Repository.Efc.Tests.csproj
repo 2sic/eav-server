@@ -137,7 +137,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\2SexyContent\Web\DesktopModules\ToSIC_SexyContent\2sxc.csproj">
+    <ProjectReference Include="..\..\2sxc-dnn742\Website\DesktopModules\ToSIC_SexyContent\2sxc.csproj">
       <Project>{d4250011-b9be-4326-9736-4f0122c79802}</Project>
       <Name>2sxc</Name>
     </ProjectReference>
