@@ -114,7 +114,7 @@
       <HintPath>..\packages\Remotion.Linq.2.1.1\lib\net45\Remotion.Linq.dll</HintPath>
     </Reference>
     <Reference Include="SharpZipLib">
-      <HintPath>..\..\2SexyContent\Web\bin\SharpZipLib.dll</HintPath>
+      <HintPath>..\..\2sxc-dnn742\Website\bin\SharpZipLib.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Collections.Immutable, Version=1.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
