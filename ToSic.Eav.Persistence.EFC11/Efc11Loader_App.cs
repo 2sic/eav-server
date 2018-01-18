@@ -137,6 +137,8 @@ namespace ToSic.Eav.Persistence.Efc
                         Childs = rg.OrderBy(c => c.SortOrder).Select(c => c.ChildEntityId)
                     }));
 
+            var debug = relatedEntities.Count;
+
             var attributes = _dbContext.ToSicEavValues
                 .Include(v => v.Attribute)
                 .Include(v => v.ToSicEavValuesDimensions)
