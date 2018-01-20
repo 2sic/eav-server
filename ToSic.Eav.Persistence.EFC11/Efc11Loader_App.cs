@@ -123,11 +123,15 @@ namespace ToSic.Eav.Persistence.Efc
             sqlTime.Start();
             var relatedEntities = _dbContext.ToSicEavEntityRelationships
                 .Include(rel => rel.Attribute)
-                /* new */
-                .Where(r => r.Attribute.ToSicEavAttributesInSets.Any(s => s.AttributeSet.AppId == appId))
+                .Include(er => er.Attribute.ToSicEavAttributesInSets)
+                                 /* new - but can't use, as sometimes we're using a global schema, so this would block those relationships */
+                                 //.Where(r => r.Attribute.ToSicEavAttributesInSets.Any(s => s.AttributeSet.AppId == appId))
 
-                // old .Where(r => entityIdsFound.Contains(r.ParentEntityId))
-                .Where(r => /*!filterByEntityIds ||*/ (!r.ChildEntityId.HasValue || /*entityIds*/entityIdsFound.Contains(r.ChildEntityId.Value)) ||
+                // very new...
+                .Where(rel => rel.ParentEntity.AppId == appId)
+
+                 //.Where(r => entityIdsFound.Contains(r.ParentEntityId))
+                .Where(r => /*!filterByEntityIds ||*/ !r.ChildEntityId.HasValue || /*entityIds*/entityIdsFound.Contains(r.ChildEntityId.Value) ||
                             /*entityIds*/entityIdsFound.Contains(r.ParentEntityId))
 
                 .GroupBy(g => g.ParentEntityId)
@@ -293,6 +297,20 @@ namespace ToSic.Eav.Persistence.Efc
             #region Populate Entity-Relationships (after all Entities are created)
 
             var relTimer = Stopwatch.StartNew();
+
+            foreach (var relGroup in relatedEntities)
+                foreach (var rel in relGroup.Value)
+                    foreach (var child in rel.Childs)
+                    //try
+                    //{
+                        app.Relationships.Add(entities, relGroup.Key, child.Value);
+                    //}
+                    //catch (KeyNotFoundException)
+                    //{
+                    //    /* ignore */
+                    //}
+
+
             //var relationshipQuery = _dbContext.ToSicEavEntityRelationships
             //    .Include(er => er.Attribute.ToSicEavAttributesInSets)
             //    .Where(r => r.Attribute.ToSicEavAttributesInSets.Any(s => s.AttributeSet.AppId == appId))
@@ -301,22 +319,10 @@ namespace ToSic.Eav.Persistence.Efc
             //    .OrderBy(r => r.ParentEntityId)
             //    .ThenBy(r => r.AttributeId)
             //    .ThenBy(r => r.ChildEntityId)
-            //    .Select(r => new {r.ParentEntityId, r.Attribute.StaticName, r.ChildEntityId});
+            //    .Select(r => new { r.ParentEntityId, r.Attribute.StaticName, r.ChildEntityId });
 
             //var relationshipsRaw = relationshipQuery.ToList();
-            foreach (var relGroup in relatedEntities)
-            foreach (var rel in relGroup.Value)
-            foreach (var child in rel.Childs)
-            {
-                try
-                {
-                    app.Relationships.Add(entities, relGroup.Key, child.Value);
-                }
-                catch (KeyNotFoundException)
-                {
-                    /* ignore */
-                }
-            }
+
             //foreach (var relationship in relationshipsRaw)
             //{
             //    try
@@ -330,6 +336,7 @@ namespace ToSic.Eav.Persistence.Efc
             //    }
             //    catch (KeyNotFoundException) { /* ignore */ }
             //}
+
             relTimer.Stop();
             #endregion
 
