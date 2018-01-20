@@ -106,5 +106,11 @@ namespace ToSic.Eav.App
 	        //((List<IEntity>) List).Add(newEntity);
 	    }
 
+	    internal void Reset()
+	    {
+	        Index.Clear();
+            Relationships.Clear();
+	    }
+
     }
 }

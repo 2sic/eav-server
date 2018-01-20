@@ -187,7 +187,7 @@ namespace ToSic.Eav.Persistence.File
 
 
         #region not implemented stuff
-        public AppDataPackage AppPackage(int appId, int[] entityIds = null, bool entitiesOnly = false, Log parentLog = null)
+        public AppDataPackage AppPackage(int appId, int[] entityIds = null, Log parentLog = null)
         {
             throw new NotImplementedException();
         }
