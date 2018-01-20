@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
@@ -64,30 +65,21 @@ namespace ToSic.Eav.App
 	        List = Index.Values;
             Relationships = new AppRelationshipManager(Index);
 
-            // create a self-referencing deferred entities list
-            var deferred = new AppDataPackageDeferredList();
-	        deferred.AttachApp(this);
-	        BetaDeferred = deferred;
-
             LastRefresh = DateTime.Now;
 	    }
 
-	    internal void Set1MetadataManager(AppMetadataManager metadataManager)
-	    {
-	        if (_appTypesFromRepository != null)
-	            throw new Exception("can't set metadata if content-types are already set");
-	        Metadata = metadataManager;
-	    }
+	    internal void Set1MetadataManager(ImmutableDictionary<int, string> metadataTypes)
+	        => Metadata = _appTypesFromRepository == null
+	            ? new AppMetadataManager(metadataTypes)
+	            : throw new Exception("can't set metadata if content-types are already set");
 
 
 	    internal void Set2ContentTypes(IList<IContentType> contentTypes)
 	    {
-	        if (Metadata == null)
-	            throw new Exception("can't set content types before setting Metadata manager");
-	        if (List.Any())
-	            throw new Exception("can't set content-types if entities List already exist");
+	        if (Metadata == null || List.Any())
+	            throw new Exception("can't set content types before setting Metadata manager, or after entities-list already exists");
 
-	        _appTypeMap = contentTypes.ToImmutableList();
+	        _appTypeMap = contentTypes.ToImmutableDictionary(x => x.ContentTypeId, x => x.StaticName);
 	        _appTypesFromRepository = RemoveAliasesForGlobalTypes(contentTypes);
 	        // build types by name
 	        BuildCacheForTypesByName(_appTypesFromRepository);
@@ -102,15 +94,50 @@ namespace ToSic.Eav.App
             if (Index.ContainsKey(newEntity.RepositoryId))
                 throw new Exception("updating not supported yet");
 
+            Metadata.Add((Entity)newEntity);
+
             Index.Add(newEntity.RepositoryId, newEntity);
 	        //((List<IEntity>) List).Add(newEntity);
 	    }
 
+        /// <summary>
+        /// Reset all item storages and indexes
+        /// </summary>
 	    internal void Reset()
 	    {
 	        Index.Clear();
             Relationships.Clear();
+            Metadata.Reset();
 	    }
 
-    }
+	    public void AddAndMapDraftToPublished(Entity newEntity, int? publishedId)
+	    {
+            // always add first - the rest is only if it's draft with published
+            Add(newEntity);
+
+	        if (newEntity.IsPublished || !publishedId.HasValue) return;
+
+	        // Published Entity is already in the Entities-List as EntityIds is validated/extended before and Draft-EntityID is always higher as Published EntityId
+	        newEntity.PublishedEntity = Index[publishedId.Value];
+	        ((Entity)newEntity.PublishedEntity).DraftEntity = newEntity;
+	        newEntity.EntityId = publishedId.Value;
+
+	    }
+
+	    public void RebuildRelationshipIndex()
+	    {
+	        Relationships.Clear();
+	        foreach (var entity in List)
+	        foreach (IAttribute<EntityRelationship> attrib in entity
+                    .Attributes.Select(a => a.Value)
+                    .Where(a => a is IAttribute<EntityRelationship>)
+                    .Cast<IAttribute<EntityRelationship>>())
+	        {
+	            foreach (var val in attrib.Typed.FirstOrDefault().TypedContents.EntityIds)
+                {
+	                Relationships.Add(entity.EntityId, val);
+	            }
+	        }
+	    }
+	}
 }

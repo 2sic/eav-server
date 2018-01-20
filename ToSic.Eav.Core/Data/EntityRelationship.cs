@@ -108,9 +108,9 @@ namespace ToSic.Eav.Data
                     ? Guids.Select(l => !l.HasValue
                         ? null
                         // special: in some cases, the entity cannot be found because it has been deleted or something
-                        : _lookupList.Entities.One(l.Value))
+                        : _lookupList.List.One(l.Value))
                     : EntityIds.Select(l => l.HasValue
-                        ? _lookupList.Entities.FindRepoId(l.Value)// (_lookupList.List.ContainsKey(l.Value) ? _lookupList.List[l.Value] : null)
+                        ? _lookupList.List.FindRepoId(l.Value)// (_lookupList.List.ContainsKey(l.Value) ? _lookupList.List[l.Value] : null)
                         // special: in some cases, the entity cannot be found because it has been deleted or something
                         : null)).ToList();
         }

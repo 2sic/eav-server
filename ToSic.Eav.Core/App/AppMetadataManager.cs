@@ -9,6 +9,7 @@ namespace ToSic.Eav.App
 {
     internal class AppMetadataManager: IMetadataProvider
     {
+        #region cache value objects: Types, _guid, _number, _string
         /// <summary>
         /// Type-map for id/name of types
         /// </summary>
@@ -17,26 +18,37 @@ namespace ToSic.Eav.App
         /// <summary>
         /// Gets a Dictionary of AssignmentObjectTypes and assigned Entities having a KeyGuid
         /// </summary>
-        private readonly Dictionary<int, Dictionary<Guid, IEnumerable<IEntity>>> _guid
-            = new Dictionary<int, Dictionary<Guid, IEnumerable<IEntity>>>();
+        private Dictionary<int, Dictionary<Guid, IEnumerable<IEntity>>> _guid;
 
         /// <summary>
         /// Gets a Dictionary of AssignmentObjectTypes and assigned Entities having a KeyNumber
         /// </summary>
-        private readonly Dictionary<int, Dictionary<int, IEnumerable<IEntity>>> _number
-            = new Dictionary<int, Dictionary<int, IEnumerable<IEntity>>>();
+        private Dictionary<int, Dictionary<int, IEnumerable<IEntity>>> _number;
 
         /// <summary>
         /// Gets a Dictionary of AssignmentObjectTypes and assigned Entities having a KeyString
         /// </summary>
-        private readonly Dictionary<int, Dictionary<string, IEnumerable<IEntity>>> _string
-            = new Dictionary<int, Dictionary<string, IEnumerable<IEntity>>>();
+        private Dictionary<int, Dictionary<string, IEnumerable<IEntity>>> _string;
+
+        #endregion
 
         public AppMetadataManager(ImmutableDictionary<int, string> metadataTypes)
         {
             Types = metadataTypes;
 
             // make sure the lists have a sub-list for each known relationship type
+            Reset();
+        }
+
+        /// <summary>
+        /// Reset all indexes
+        /// </summary>
+        public void Reset()
+        {
+            _guid = new Dictionary<int, Dictionary<Guid, IEnumerable<IEntity>>>();
+            _number = new Dictionary<int, Dictionary<int, IEnumerable<IEntity>>>();
+            _string = new Dictionary<int, Dictionary<string, IEnumerable<IEntity>>>();
+
             foreach (var mdt in Types)
             {
                 _guid.Add(mdt.Key, new Dictionary<Guid, IEnumerable<IEntity>>());

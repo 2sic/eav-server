@@ -189,7 +189,7 @@ namespace ToSic.Eav.WebApi
             foreach (var i in items)
                 i.Entity.Guid = i.Header.Guid;
 
-            IDeferredEntitiesList appPack = AppManager.Package.BetaDeferred;
+            IDeferredEntitiesList appPack = AppManager.Package/*.BetaDeferred*/;
 
             var entitiesToImport = items
                 .Where(entity => entity.Header.Group == null || !entity.Header.Group.SlotIsEmpty)

@@ -26,7 +26,7 @@ namespace ToSic.Eav.Data.Builder
             e.MetadataFor = metadataFor;
             e.Attributes = new Dictionary<string, IAttribute>(StringComparer.OrdinalIgnoreCase);
 
-            //moved to RelationshipManager
+            //2018-01-18 moved to RelationshipManager
             //if (allRelationships == null)
             //    allRelationships = new List<EntityRelationshipItem>();
             e.Relationships = new RelationshipManager(e, allRelationships);
@@ -71,5 +71,18 @@ namespace ToSic.Eav.Data.Builder
             return e;
         }
 
+
+        public static IAttribute GenerateAttributesOfContentType(this IEntity newEntity, IContentType contentType)
+        {
+            IAttribute titleAttrib = null;
+            foreach (var definition in contentType.Attributes)
+            {
+                var entityAttribute = ((AttributeDefinition)definition).CreateAttribute();
+                newEntity.Attributes.Add(entityAttribute.Name, entityAttribute);
+                if (definition.IsTitle)
+                    titleAttrib = entityAttribute;
+            }
+            return titleAttrib;
+        }
     }
 }

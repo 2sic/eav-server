@@ -8,11 +8,10 @@ using ToSic.Eav.Types;
 
 namespace ToSic.Eav.App
 {
-	/// <inheritdoc />
-	/// <summary>
-	/// Cache Object for a specific App
-	/// </summary>
-	public partial class AppDataPackage
+    /// <summary>
+    /// Cache Object for a specific App
+    /// </summary>
+    public partial class AppDataPackage
 	{
 	    /// <summary>
 	    /// Gets all ContentTypes in this App
@@ -50,7 +49,8 @@ namespace ToSic.Eav.App
 
 	    private IDictionary<string, IContentType> _appTypesByName;
 	    private ImmutableList<IContentType> _appTypesFromRepository;
-	    private ImmutableList<IContentType> _appTypeMap;
+	    private ImmutableDictionary<int, string> _appTypeMap;
+	    //private ImmutableList<IContentType> _appTypeMap;
 
         /// <summary>
         /// Get a content-type by name
@@ -72,8 +72,8 @@ namespace ToSic.Eav.App
             var found = _appTypesFromRepository.FirstOrDefault(c => c.ContentTypeId == contentTypeId);
             if (found != null) return found;
 
-            found = _appTypeMap.FirstOrDefault(x => x.ContentTypeId == contentTypeId);
-	        return found == null ? null : GetContentType(found.StaticName);
+            var name = _appTypeMap.FirstOrDefault(x => x.Key == contentTypeId).Value;
+	        return name == null ? null : GetContentType(name);
 	    }
-    }
+	}
 }
