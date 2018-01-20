@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.TokenEngine.Tests.TestData;
 using ToSic.Eav.TokenEngine.Tests.ValueProvider;
+using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.UnitTests
 {
@@ -11,7 +12,7 @@ namespace ToSic.Eav.UnitTests
     public class SqlDataSource_Test
     {
         private const string ConnectionDummy = "";
-        private const string ConnectionName = "Data Source=.\\SQLExpress;Initial Catalog=2flex 2Sexy Content;Integrated Security=True";
+        private const string ConnectionName = TestConstants.ConStr;// "Data Source=.\\SQLExpress;Initial Catalog=2flex 2Sexy Content;Integrated Security=True";
         private const string ContentTypeName = "SqlData";
 
         [TestMethod]

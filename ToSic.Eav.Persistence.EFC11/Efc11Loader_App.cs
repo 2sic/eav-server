@@ -44,14 +44,10 @@ namespace ToSic.Eav.Persistence.Efc
             Log = new Log("DB.EFLoad", parentLog, $"get app data package for a#{appId}, ids only:{entityIds != null}, entities-only:{entitiesOnly}");
             var app = new AppDataPackage(appId, parentLog);
 
-            // var source = app.BetaDeferred;// new AppDataPackageDeferredList();
-
-            //var relationships = app.Relationships;// new AppRelationshipManager(); // new List<EntityRelationshipItem>();
-
             #region prepare metadata lists & relationships etc.
 
             var sqlTime = Stopwatch.StartNew();
-            InitMetadataLists(app);
+            InitMetadataLists(app, _dbContext);
             sqlTime.Stop();
 
             #endregion
@@ -122,28 +118,35 @@ namespace ToSic.Eav.Persistence.Efc
                 })
                 .ToList();
             sqlTime.Stop();
-            var eIds = rawEntities.Select(e => e.EntityId).ToList();
+            var entityIdsFound = rawEntities.Select(e => e.EntityId).ToList();
 
             sqlTime.Start();
             var relatedEntities = _dbContext.ToSicEavEntityRelationships
                 .Include(rel => rel.Attribute)
-                .Where(r => eIds.Contains(r.ParentEntityId))
+                /* new */
+                .Where(r => r.Attribute.ToSicEavAttributesInSets.Any(s => s.AttributeSet.AppId == appId))
+
+                // old .Where(r => entityIdsFound.Contains(r.ParentEntityId))
+                .Where(r => /*!filterByEntityIds ||*/ (!r.ChildEntityId.HasValue || /*entityIds*/entityIdsFound.Contains(r.ChildEntityId.Value)) ||
+                            /*entityIds*/entityIdsFound.Contains(r.ParentEntityId))
+
                 .GroupBy(g => g.ParentEntityId)
                 .ToDictionary(g => g.Key, g => g.GroupBy(r => r.AttributeId)
                     .Select(rg => new
                     {
                         AttributeID = rg.Key,
-                        Name = rg.First().Attribute.StaticName,
+                        rg.First().Attribute.StaticName,
                         Childs = rg.OrderBy(c => c.SortOrder).Select(c => c.ChildEntityId)
                     }));
 
             var debug = relatedEntities.Count;
 
+            #region load attributes & values
             var attributes = _dbContext.ToSicEavValues
                 .Include(v => v.Attribute)
                 .Include(v => v.ToSicEavValuesDimensions)
                     .ThenInclude(d => d.Dimension)
-                .Where(r => eIds.Contains(r.EntityId))
+                .Where(r => entityIdsFound.Contains(r.EntityId))
                 .Where(v => !v.ChangeLogDeleted.HasValue)
                 .GroupBy(e => e.EntityId)
                 .ToDictionary(e => e.Key, e => e.GroupBy(v => v.AttributeId)
@@ -164,6 +167,7 @@ namespace ToSic.Eav.Persistence.Efc
                                     } as ILanguage).ToList(),
                             })
                     }));
+            #endregion
             sqlTime.Stop();
             #endregion
 
@@ -213,7 +217,7 @@ namespace ToSic.Eav.Persistence.Efc
                     if (relatedEntities.ContainsKey(e.EntityId))
                         foreach (var r in relatedEntities[e.EntityId])
                         {
-                            var attrib = newEntity.Attributes[r.Name];
+                            var attrib = newEntity.Attributes[r.StaticName];
                             attrib.Values = new List<IValue> {ValueBuilder.Build(attrib.Type, r.Childs, null, app.BetaDeferred)};
                         }
 
@@ -286,33 +290,46 @@ namespace ToSic.Eav.Persistence.Efc
             entityTimer.Stop();
             #endregion
 
-            #region Populate Entity-Relationships (after all Entitys are created)
+            #region Populate Entity-Relationships (after all Entities are created)
 
             var relTimer = Stopwatch.StartNew();
-            var relationshipQuery = _dbContext.ToSicEavEntityRelationships
-                .Include(er => er.Attribute.ToSicEavAttributesInSets)
-                .Where(r => r.Attribute.ToSicEavAttributesInSets.Any(s => s.AttributeSet.AppId == appId))
-                .Where(r => !filterByEntityIds || !r.ChildEntityId.HasValue || entityIds.Contains(r.ChildEntityId.Value) ||
-                         entityIds.Contains(r.ParentEntityId))
-                .OrderBy(r => r.ParentEntityId)
-                .ThenBy(r => r.AttributeId)
-                .ThenBy(r => r.ChildEntityId)
-                .Select(r => new {r.ParentEntityId, r.Attribute.StaticName, r.ChildEntityId});
+            //var relationshipQuery = _dbContext.ToSicEavEntityRelationships
+            //    .Include(er => er.Attribute.ToSicEavAttributesInSets)
+            //    .Where(r => r.Attribute.ToSicEavAttributesInSets.Any(s => s.AttributeSet.AppId == appId))
+            //    .Where(r => !filterByEntityIds || !r.ChildEntityId.HasValue || /*entityIds*/entityIdsFound.Contains(r.ChildEntityId.Value) ||
+            //             /*entityIds*/entityIdsFound.Contains(r.ParentEntityId))
+            //    .OrderBy(r => r.ParentEntityId)
+            //    .ThenBy(r => r.AttributeId)
+            //    .ThenBy(r => r.ChildEntityId)
+            //    .Select(r => new {r.ParentEntityId, r.Attribute.StaticName, r.ChildEntityId});
 
-            var relationshipsRaw = relationshipQuery.ToList();
-            foreach (var relationship in relationshipsRaw)
+            //var relationshipsRaw = relationshipQuery.ToList();
+            foreach (var relGroup in relatedEntities)
+            foreach (var rel in relGroup.Value)
+            foreach (var child in rel.Childs)
             {
                 try
                 {
-                    app.Relationships.Add(entities, relationship.ParentEntityId, relationship.ChildEntityId);
-                    //if (entities.ContainsKey(relationship.ParentEntityId) &&
-                    //    (!relationship.ChildEntityId.HasValue ||
-                    //     entities.ContainsKey(relationship.ChildEntityId.Value)))
-                    //    relationships.Add(new EntityRelationshipItem(entities[relationship.ParentEntityId],
-                    //        relationship.ChildEntityId.HasValue ? entities[relationship.ChildEntityId.Value] : null));
+                    app.Relationships.Add(entities, relGroup.Key, child.Value);
                 }
-                catch (KeyNotFoundException) { /* ignore */ }
+                catch (KeyNotFoundException)
+                {
+                    /* ignore */
+                }
             }
+            //foreach (var relationship in relationshipsRaw)
+            //{
+            //    try
+            //    {
+            //        app.Relationships.Add(entities, relationship.ParentEntityId, relationship.ChildEntityId);
+            //        //if (entities.ContainsKey(relationship.ParentEntityId) &&
+            //        //    (!relationship.ChildEntityId.HasValue ||
+            //        //     entities.ContainsKey(relationship.ChildEntityId.Value)))
+            //        //    relationships.Add(new EntityRelationshipItem(entities[relationship.ParentEntityId],
+            //        //        relationship.ChildEntityId.HasValue ? entities[relationship.ChildEntityId.Value] : null));
+            //    }
+            //    catch (KeyNotFoundException) { /* ignore */ }
+            //}
             relTimer.Stop();
             #endregion
 
@@ -330,9 +347,10 @@ namespace ToSic.Eav.Persistence.Efc
             //return appPack;
         }
 
-        private void InitMetadataLists(AppDataPackage app)
+
+        private static void InitMetadataLists(AppDataPackage app, EavDbContext dbContext)
         {
-            var metadataTypes = _dbContext.ToSicEavAssignmentObjectTypes
+            var metadataTypes = dbContext.ToSicEavAssignmentObjectTypes
                 .ToImmutableDictionary(a => a.AssignmentObjectTypeId, a => a.Name);
 
             var appMdManager = new AppMetadataManager(metadataTypes);
