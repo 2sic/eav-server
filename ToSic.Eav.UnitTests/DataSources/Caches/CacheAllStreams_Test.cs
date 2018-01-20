@@ -19,7 +19,8 @@ namespace ToSic.Eav.UnitTests.DataSources
 
             var cacher = CreateCacheDS(filtered);
 
-            Assert.AreEqual("DataTableDataSource-NoGuid&ContentType=Person>EntityIdFilter-NoGuid&EntityIds=1067", filtered.CacheFullKey);
+            Assert.AreEqual("DataTableDataSource-NoGuid&TitleField=FullName&EntityIdField=EntityId&ModifiedField=InternalModified&ContentType=Person" +
+                            ">EntityIdFilter-NoGuid&EntityIds=1067", filtered.CacheFullKey);
 
             // check if in cache - shouldn't be yet
             Assert.IsFalse(cacher.Cache.ListHas(cacher.Out[Constants.DefaultStreamName]),
@@ -41,7 +42,7 @@ namespace ToSic.Eav.UnitTests.DataSources
 
             // Should already be in - even though it may be an old copy
             Assert.IsTrue(cacher.Cache.ListHas(cacher.Out[Constants.DefaultStreamName]),
-                "Should be in because the previous test already added it");
+                "Should be in because the previous test already added it - will fail if run by itself");
 
             var y = cacher.List; // not it should get in
 
@@ -80,7 +81,9 @@ namespace ToSic.Eav.UnitTests.DataSources
 
             var cacher = CreateCacheDS(secondFilter);
 
-            Assert.AreEqual("DataTableDataSource-NoGuid&ContentType=Person>EntityIdFilter-NoGuid&EntityIds=1067>EntityTypeFilter-NoGuid&TypeName=Person", secondFilter.CacheFullKey);
+            Assert.AreEqual("DataTableDataSource-NoGuid&TitleField=FullName&EntityIdField=EntityId&ModifiedField=InternalModified&ContentType=Person" +
+                            ">EntityIdFilter-NoGuid&EntityIds=1067" +
+                            ">EntityTypeFilter-NoGuid&TypeName=Person", secondFilter.CacheFullKey);
 
             Assert.IsFalse((cacher.Cache as QuickCache).ListHas(secondFilter.Out[Constants.DefaultStreamName]),
                 "Should not be in because the previous test added a shorter key");
