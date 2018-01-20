@@ -6,12 +6,27 @@ namespace ToSic.Eav.App
 {
     public class AppRelationshipManager: List<EntityRelationshipItem>
     {
-        public void Add(Dictionary<int, IEntity> entities, int parent, int? child)
+        private readonly Dictionary<int, IEntity> _lookup;
+
+        public AppRelationshipManager(Dictionary<int, IEntity> entities) 
         {
-            if (entities.ContainsKey(parent) &&
-                (!child.HasValue || entities.ContainsKey(child.Value)))
-                Add(new EntityRelationshipItem(entities[parent],
-                    child.HasValue ? entities[child.Value] : null));
+            _lookup = entities;
+        }
+
+        public void Add(int parent, int? child)
+        {            
+            //try
+            //{
+
+            if (_lookup.ContainsKey(parent) &&
+                (!child.HasValue || _lookup.ContainsKey(child.Value)))
+                Add(new EntityRelationshipItem(_lookup[parent],
+                    child.HasValue ? _lookup[child.Value] : null));
+            //}
+            //catch (KeyNotFoundException)
+            //{
+            //    /* ignore */
+            //}
         }
     }
 }

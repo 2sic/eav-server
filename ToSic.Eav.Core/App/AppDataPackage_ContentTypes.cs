@@ -50,6 +50,7 @@ namespace ToSic.Eav.App
 
 	    private IDictionary<string, IContentType> _appTypesByName;
 	    private ImmutableList<IContentType> _appTypesFromRepository;
+	    private ImmutableList<IContentType> _appTypeMap;
 
         /// <summary>
         /// Get a content-type by name
@@ -61,11 +62,18 @@ namespace ToSic.Eav.App
 	            ? _appTypesByName[name]
 	            : Global.FindContentType(name); // note: will return null if not found
 
-        /// <summary>
-        /// Get a content-type by number / id
-        /// </summary>
-        /// <param name="contentTypeId">id of the type as stored in the repository</param>
-        /// <returns>a type object or null if not found</returns>
-	    public IContentType GetContentType(int contentTypeId) => _appTypesFromRepository.FirstOrDefault(c => c.ContentTypeId == contentTypeId);
+	    /// <summary>
+	    /// Get a content-type by number / id
+	    /// </summary>
+	    /// <param name="contentTypeId">id of the type as stored in the repository</param>
+	    /// <returns>a type object or null if not found</returns>
+	    public IContentType GetContentType(int contentTypeId)
+	    {
+            var found = _appTypesFromRepository.FirstOrDefault(c => c.ContentTypeId == contentTypeId);
+            if (found != null) return found;
+
+            found = _appTypeMap.FirstOrDefault(x => x.ContentTypeId == contentTypeId);
+	        return found == null ? null : GetContentType(found.StaticName);
+	    }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
@@ -27,7 +28,9 @@ namespace ToSic.Eav.App
         /// <summary>
         /// The simple list of entities, used in many pipeline parts
         /// </summary>
-        public IEnumerable<IEntity> List { get; private set; } 
+        public IEnumerable<IEntity> List { get; }// { get; private set; } 
+
+        internal Dictionary<int, IEntity> Index { get; }
 
 		/// <summary>
 		/// Get all Published Entities in this App (excluding Drafts)
@@ -51,42 +54,15 @@ namespace ToSic.Eav.App
         public DateTime LastRefresh { get; }
 		#endregion
 
-		/// <summary>
-		/// Construct a new CacheItem with all required Items
-		/// </summary>
-		internal AppDataPackage(
-            int appId,
-            IEnumerable<IEntity> entList,
-            IList<IContentType> contentTypes,
-            AppMetadataManager metadataManager,
-            //AppDataPackageDeferredList selfDeferredEntitiesList, 
-            Log parentLog): this(appId, parentLog)// base("App.Packge", parentLog)
-		{
-		    //AppId = appId;
-
-		    Set1MetadataManager(metadataManager);
-
-		    Set2ContentTypes(contentTypes);
-
-		    Set3Entities(entList);
-
-			//Relationships = relationships;
-
-			//LastRefresh = DateTime.Now;
-
-
-            // ensure that the previously built entities can look up relationships
-		    //selfDeferredEntitiesList.AttachApp(this);
-		    // BetaDeferredEntitiesList = selfDeferredEntitiesList;
-        }
-
 
 
         internal AppDataPackage(int appId, Log parentLog): base("App.Packge", parentLog)
 	    {
 	        AppId = appId;
 
-            Relationships = new AppRelationshipManager();
+	        Index = new Dictionary<int, IEntity>();
+	        List = Index.Values;
+            Relationships = new AppRelationshipManager(Index);
 
             // create a self-referencing deferred entities list
             var deferred = new AppDataPackageDeferredList();
@@ -108,22 +84,27 @@ namespace ToSic.Eav.App
 	    {
 	        if (Metadata == null)
 	            throw new Exception("can't set content types before setting Metadata manager");
-	        if (List != null)
+	        if (List.Any())
 	            throw new Exception("can't set content-types if entities List already exist");
 
+	        _appTypeMap = contentTypes.ToImmutableList();
 	        _appTypesFromRepository = RemoveAliasesForGlobalTypes(contentTypes);
 	        // build types by name
 	        BuildCacheForTypesByName(_appTypesFromRepository);
 	    }
 
-	    internal void Set3Entities(IEnumerable<IEntity> entList)
+
+	    internal void Add(IEntity newEntity)
 	    {
-	        if (_appTypesFromRepository == null)
-	            throw new Exception("can't set entities if content-types not set yet");
+            if(newEntity.RepositoryId == 0)
+                throw new Exception("Entities without real ID not supported yet");
 
-	        List = entList;
+            if (Index.ContainsKey(newEntity.RepositoryId))
+                throw new Exception("updating not supported yet");
+
+            Index.Add(newEntity.RepositoryId, newEntity);
+	        //((List<IEntity>) List).Add(newEntity);
 	    }
-
 
     }
 }

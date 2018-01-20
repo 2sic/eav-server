@@ -10,7 +10,6 @@ using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc.Models;
-using ToSic.Eav.Types;
 
 namespace ToSic.Eav.Persistence.Efc
 {
@@ -55,7 +54,7 @@ namespace ToSic.Eav.Persistence.Efc
             #region prepare content-types
             var typeTimer = Stopwatch.StartNew();
             var contentTypes = ContentTypes(appId, app.BetaDeferred);
-            var sysTypes = Global.AllContentTypes();
+            //var sysTypes = Global.AllContentTypes();
             app.Set2ContentTypes(contentTypes);
             typeTimer.Stop();
             #endregion
@@ -123,16 +122,9 @@ namespace ToSic.Eav.Persistence.Efc
             sqlTime.Start();
             var relatedEntities = _dbContext.ToSicEavEntityRelationships
                 .Include(rel => rel.Attribute)
-                .Include(er => er.Attribute.ToSicEavAttributesInSets)
-                                 /* new - but can't use, as sometimes we're using a global schema, so this would block those relationships */
-                                 //.Where(r => r.Attribute.ToSicEavAttributesInSets.Any(s => s.AttributeSet.AppId == appId))
-
-                // very new...
                 .Where(rel => rel.ParentEntity.AppId == appId)
-
-                 //.Where(r => entityIdsFound.Contains(r.ParentEntityId))
-                .Where(r => /*!filterByEntityIds ||*/ !r.ChildEntityId.HasValue || /*entityIds*/entityIdsFound.Contains(r.ChildEntityId.Value) ||
-                            /*entityIds*/entityIdsFound.Contains(r.ParentEntityId))
+                .Where(r => /*!filterByEntityIds ||*/ !r.ChildEntityId.HasValue || entityIdsFound.Contains(r.ChildEntityId.Value) ||
+                            entityIdsFound.Contains(r.ParentEntityId))
 
                 .GroupBy(g => g.ParentEntityId)
                 .ToDictionary(g => g.Key, g => g.GroupBy(r => r.AttributeId)
@@ -143,7 +135,6 @@ namespace ToSic.Eav.Persistence.Efc
                         Childs = rg.OrderBy(c => c.SortOrder).Select(c => c.ChildEntityId)
                     }));
 
-            var debug = relatedEntities.Count;
 
             #region load attributes & values
             var attributes = _dbContext.ToSicEavValues
@@ -176,31 +167,25 @@ namespace ToSic.Eav.Persistence.Efc
             #endregion
 
             #region Build EntityModels
-            var entities = new Dictionary<int, IEntity>();
+
+            //var entities = app.BetaIndex;// new Dictionary<int, IEntity>();
 
             var serializer = Factory.Resolve<IThingDeserializer>();
-            serializer.Initialize(appId, contentTypes, app.BetaDeferred, Log);
+            serializer.Initialize(app, /*appId, contentTypes, app.BetaDeferred ,*/ Log);
 
             var entityTimer = Stopwatch.StartNew();
             foreach (var e in rawEntities)
             {
                 Entity newEntity;
-
-                var useJson = e.Json != null;
                 
-                if(useJson)
+                if(e.Json != null)
                     newEntity = serializer.Deserialize(e.Json, false, true) as Entity;
 
                 else
                 {
-                    // todo: continue here!
-                    var contentType = (ContentType)contentTypes.SingleOrDefault(ct => ct.ContentTypeId == e.AttributeSetId);
+                    var contentType = app.GetContentType(e.AttributeSetId);
                     if(contentType == null) throw new NullReferenceException("content type is not found for type " + e.AttributeSetId);
                     
-                    // test if there is a global code-type overriding this type
-                    if (sysTypes.ContainsKey(contentType.StaticName))
-                        contentType = (ContentType)sysTypes[contentType.StaticName];
-
                     newEntity = EntityBuilder.EntityFromRepository(appId, e.EntityGuid, e.EntityId, e.EntityId, 
                         e.Metadata, contentType, e.IsPublished, app.Relationships, app.BetaDeferred, e.Modified, e.Owner, e.Version);
 
@@ -276,7 +261,7 @@ namespace ToSic.Eav.Persistence.Efc
                 if (!e.IsPublished && e.PublishedEntityId.HasValue)
                 {
                     // Published Entity is already in the Entities-List as EntityIds is validated/extended before and Draft-EntityID is always higher as Published EntityId
-                    newEntity.PublishedEntity = entities[e.PublishedEntityId.Value];
+                    newEntity.PublishedEntity = app.Index[e.PublishedEntityId.Value];
                     ((Entity)newEntity.PublishedEntity).DraftEntity = newEntity;
                     newEntity.EntityId = e.PublishedEntityId.Value;
                 }
@@ -289,7 +274,7 @@ namespace ToSic.Eav.Persistence.Efc
 
                 #endregion
 
-                entities.Add(e.EntityId, newEntity);
+                app.Add(newEntity);
             }
             entityTimer.Stop();
             #endregion
@@ -301,41 +286,7 @@ namespace ToSic.Eav.Persistence.Efc
             foreach (var relGroup in relatedEntities)
                 foreach (var rel in relGroup.Value)
                     foreach (var child in rel.Childs)
-                    //try
-                    //{
-                        app.Relationships.Add(entities, relGroup.Key, child.Value);
-                    //}
-                    //catch (KeyNotFoundException)
-                    //{
-                    //    /* ignore */
-                    //}
-
-
-            //var relationshipQuery = _dbContext.ToSicEavEntityRelationships
-            //    .Include(er => er.Attribute.ToSicEavAttributesInSets)
-            //    .Where(r => r.Attribute.ToSicEavAttributesInSets.Any(s => s.AttributeSet.AppId == appId))
-            //    .Where(r => !filterByEntityIds || !r.ChildEntityId.HasValue || /*entityIds*/entityIdsFound.Contains(r.ChildEntityId.Value) ||
-            //             /*entityIds*/entityIdsFound.Contains(r.ParentEntityId))
-            //    .OrderBy(r => r.ParentEntityId)
-            //    .ThenBy(r => r.AttributeId)
-            //    .ThenBy(r => r.ChildEntityId)
-            //    .Select(r => new { r.ParentEntityId, r.Attribute.StaticName, r.ChildEntityId });
-
-            //var relationshipsRaw = relationshipQuery.ToList();
-
-            //foreach (var relationship in relationshipsRaw)
-            //{
-            //    try
-            //    {
-            //        app.Relationships.Add(entities, relationship.ParentEntityId, relationship.ChildEntityId);
-            //        //if (entities.ContainsKey(relationship.ParentEntityId) &&
-            //        //    (!relationship.ChildEntityId.HasValue ||
-            //        //     entities.ContainsKey(relationship.ChildEntityId.Value)))
-            //        //    relationships.Add(new EntityRelationshipItem(entities[relationship.ParentEntityId],
-            //        //        relationship.ChildEntityId.HasValue ? entities[relationship.ChildEntityId.Value] : null));
-            //    }
-            //    catch (KeyNotFoundException) { /* ignore */ }
-            //}
+                        app.Relationships.Add(relGroup.Key, child.Value);
 
             relTimer.Stop();
             #endregion
@@ -343,15 +294,9 @@ namespace ToSic.Eav.Persistence.Efc
             _sqlTotalTime = _sqlTotalTime.Add(sqlTime.Elapsed);
             Log.Add($"timers types&typesql:{typeTimer.Elapsed} sqlAll:{_sqlTotalTime}, entities:{entityTimer.Elapsed}, relationship:{relTimer.Elapsed}");
 
-            app.Set3Entities(entities.Values);
+            //app.Set3Entities(entities.Values);
             return app;
 
-            //var appPack = new AppDataPackage(appId, entities.Values, contentTypes, 
-            //    appMdManager,
-            //    //relationships, 
-            //    //source,
-            //    Log);
-            //return appPack;
         }
 
 
