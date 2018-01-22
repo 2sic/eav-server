@@ -5,7 +5,6 @@
         Start,
         MetadataInit,
         ContentTypeLoad,
-        ItemLoad,
-        //RelationshipIndex
+        ItemLoad
     }
 }

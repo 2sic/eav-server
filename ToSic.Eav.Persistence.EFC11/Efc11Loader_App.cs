@@ -62,26 +62,10 @@ namespace ToSic.Eav.Persistence.Efc
             else
                 Log.Add("skipping items load");
 
-            //// Populate Entity-Relationships (after all Entities are created)
-            //if (startAt <= AppPackageLoadingSteps.RelationshipIndex)
-            //    RebuildRelationshipIndex(app);
-            //else
-            //    Log.Add("skipping rebuild relationship index");
-
             Log.Add($"timers sql:sqlAll:{_sqlTotalTime}");
 
             return app;
         }
-
-
-        //private void RebuildRelationshipIndex(AppDataPackage app)
-        //{
-        //    var relTimer = Stopwatch.StartNew();
-        //    app.RebuildRelationshipIndex();
-        //    relTimer.Stop();
-        //    Log.Add($"relationship timer:{relTimer.Elapsed}");
-        //}
-
 
         #endregion
 
