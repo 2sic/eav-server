@@ -12,7 +12,6 @@ namespace ToSic.Eav.Interfaces
         /// </summary>
         IList<IContentType> ContentTypes(int appId, IDeferredEntitiesList source);
 
-        // 2017-06-08 disabled for now, as not in use...
         /// <summary>
         /// Get EntityModel for specified EntityId
         /// </summary>
@@ -23,6 +22,8 @@ namespace ToSic.Eav.Interfaces
         /// <param name="parentLog">parent logger</param>
         /// <returns>An object with everything which an app has, usually for caching</returns>
         AppDataPackage AppPackage(int appId, int[] entityIds = null, Log parentLog = null);
+
+        AppDataPackage Update(AppDataPackage app, AppPackageLoadingSteps startAt, int[] entityIds = null, Log parentLog = null);
 
 
         Dictionary<int, Zone> Zones();

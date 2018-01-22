@@ -19,6 +19,9 @@ namespace ToSic.Eav.App
 	    public IEnumerable<IContentType> ContentTypes 
             => _appTypesFromRepository.Union(Global.AllContentTypes().Values);
 
+
+
+
 	    private void BuildCacheForTypesByName(IList<IContentType> allTypes)
 	    {
 	        _appTypesByName = new Dictionary<string, IContentType>(StringComparer.InvariantCultureIgnoreCase);
@@ -50,7 +53,6 @@ namespace ToSic.Eav.App
 	    private IDictionary<string, IContentType> _appTypesByName;
 	    private ImmutableList<IContentType> _appTypesFromRepository;
 	    private ImmutableDictionary<int, string> _appTypeMap;
-	    //private ImmutableList<IContentType> _appTypeMap;
 
         /// <summary>
         /// Get a content-type by name

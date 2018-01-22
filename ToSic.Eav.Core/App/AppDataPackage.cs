@@ -15,10 +15,6 @@ namespace ToSic.Eav.App
     /// </summary>
     public partial class AppDataPackage: HasLog
 	{
-		#region private entities lists
-		private IEnumerable<IEntity> _publishedEntities;
-		private IEnumerable<IEntity> _draftEntities;
-		#endregion
 
 		#region public properties like AppId, Entities, List, Publisheentities, DraftEntities, 
         /// <summary>
@@ -29,19 +25,24 @@ namespace ToSic.Eav.App
         /// <summary>
         /// The simple list of entities, used in many pipeline parts
         /// </summary>
-        public IEnumerable<IEntity> List { get; }// { get; private set; } 
+        public IEnumerable<IEntity> List { get; }
 
         internal Dictionary<int, IEntity> Index { get; }
 
 		/// <summary>
 		/// Get all Published Entities in this App (excluding Drafts)
 		/// </summary>
-		public IEnumerable<IEntity> PublishedEntities => _publishedEntities ?? (_publishedEntities = List.Where(e => e.IsPublished));//.ToDictionary(k => k.Key, v => v.Value));
+		public IEnumerable<IEntity> PublishedEntities => _publishedEntities 
+            ?? (_publishedEntities = List.Where(e => e.IsPublished));
+	    private IEnumerable<IEntity> _publishedEntities;
 
-	    /// <summary>
-		/// Get all Entities not having a Draft (Entities that are Published (not having a draft) or draft itself)
-		/// </summary>
-		public IEnumerable<IEntity> DraftEntities => _draftEntities ?? (_draftEntities = List.Where(e => e.GetDraft() == null));//.ToDictionary(k => k.Value.EntityId, v => v.Value));
+        /// <summary>
+        /// Get all Entities not having a Draft (Entities that are Published (not having a draft) or draft itself)
+        /// </summary>
+        public IEnumerable<IEntity> DraftEntities => _draftEntities 
+            ?? (_draftEntities = List.Where(e => e.GetDraft() == null));
+
+	    private IEnumerable<IEntity> _draftEntities;
 
 
         /// <summary>
@@ -53,6 +54,8 @@ namespace ToSic.Eav.App
         /// Gets the DateTime when this CacheItem was populated
         /// </summary>
         public DateTime LastRefresh { get; }
+
+	    public int DynamicUpdatesCount = 0;
 		#endregion
 
 
@@ -63,18 +66,28 @@ namespace ToSic.Eav.App
 
 	        Index = new Dictionary<int, IEntity>();
 	        List = Index.Values;
-            Relationships = new AppRelationshipManager(Index);
+            Relationships = new AppRelationshipManager(this);
 
             LastRefresh = DateTime.Now;
 	    }
 
-	    internal void Set1MetadataManager(ImmutableDictionary<int, string> metadataTypes)
+        /// <summary>
+        /// The first init-command to run after creating the package
+        /// it's needed, so the metadata knows what lookup types are supported
+        /// </summary>
+        /// <param name="metadataTypes"></param>
+	    internal void InitMetadata(ImmutableDictionary<int, string> metadataTypes)
 	        => Metadata = _appTypesFromRepository == null
 	            ? new AppMetadataManager(metadataTypes)
 	            : throw new Exception("can't set metadata if content-types are already set");
 
 
-	    internal void Set2ContentTypes(IList<IContentType> contentTypes)
+        /// <summary>
+        /// The second init-command
+        /// Load content-types
+        /// </summary>
+        /// <param name="contentTypes"></param>
+	    internal void InitContentTypes(IList<IContentType> contentTypes)
 	    {
 	        if (Metadata == null || List.Any())
 	            throw new Exception("can't set content types before setting Metadata manager, or after entities-list already exists");
@@ -97,16 +110,17 @@ namespace ToSic.Eav.App
             Metadata.Add((Entity)newEntity);
 
             Index.Add(newEntity.RepositoryId, newEntity);
-	        //((List<IEntity>) List).Add(newEntity);
+
+            Relationships.Reset(); 
 	    }
 
         /// <summary>
         /// Reset all item storages and indexes
         /// </summary>
-	    internal void Reset()
+	    internal void ResetItems()
 	    {
 	        Index.Clear();
-            Relationships.Clear();
+            Relationships.Reset();
             Metadata.Reset();
 	    }
 
@@ -124,15 +138,5 @@ namespace ToSic.Eav.App
 
 	    }
 
-	    public void RebuildRelationshipIndex()
-	    {
-	        Relationships.Clear();
-	        foreach (var entity in List)
-	        foreach (var attrib in entity.Attributes.Select(a => a.Value)
-                .Where(a => a is IAttribute<EntityRelationship>)
-                .Cast<IAttribute<EntityRelationship>>())
-	        foreach (var val in attrib.Typed[0].TypedContents.EntityIds.Where(e => e != null))
-	            Relationships.Add(entity.EntityId, val);
-	    }
     }
 }

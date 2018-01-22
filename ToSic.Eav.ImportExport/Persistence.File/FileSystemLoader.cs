@@ -192,6 +192,12 @@ namespace ToSic.Eav.Persistence.File
             throw new NotImplementedException();
         }
 
+        public AppDataPackage Update(AppDataPackage app, AppPackageLoadingSteps startAt, int[] entityIds = null,
+            Log parentLog = null)
+        {
+            throw new NotImplementedException();
+        }
+
         public Dictionary<int, Zone> Zones()
         {
             throw new NotImplementedException();

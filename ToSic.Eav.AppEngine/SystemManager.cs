@@ -20,7 +20,8 @@ namespace ToSic.Eav.Apps
 
         public static void Purge(int appId) => Purge(ZoneIdOfApp(appId), appId);
 
-        public static int ZoneIdOfApp(int appId) => ((BaseCache) DataSource.GetCache(null)).GetZoneAppId(appId: appId).Item1;
+        public static int ZoneIdOfApp(int appId) 
+            => ((BaseCache) DataSource.GetCache(null)).GetZoneAppId(appId: appId).Item1;
 
         public static void DoAndPurge(int zoneId, int appId, Action action, bool global = false)
         {
