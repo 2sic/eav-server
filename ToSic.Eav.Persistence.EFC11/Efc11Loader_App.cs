@@ -255,16 +255,35 @@ namespace ToSic.Eav.Persistence.Efc
             // compare times
             // ensure new method doesn't store null-references
 
-            foreach (var relGroup in relatedEntities)
-                foreach (var rel in relGroup.Value)
-                    foreach (var child in rel.Childs)
-                        app.Relationships.Add(relGroup.Key, child.Value);
+            //foreach (var relGroup in relatedEntities)
+            //    foreach (var rel in relGroup.Value)
+            //        foreach (var child in rel.Childs)//.Where(c => c != null))
+            //            app.Relationships.Add(relGroup.Key, child);
 
-            var classicMethod = app.Relationships.Count;
+            //var classicMethod = app.Relationships.Count;
+            //relTimer.Stop();
+            //var timeclassic = relTimer.ElapsedTicks;
 
+            //var classicList = app.Relationships.Select(x => x).ToList();
+
+            //// test
+            //app.Relationships.Clear();
+
+            relTimer.Restart();
             app.RebuildRelationshipIndex();
+            relTimer.Stop();
+            var newMethod = app.Relationships.Count;
+            var timenew = relTimer.ElapsedTicks;
+            //var diff = timenew - timeclassic;
 
-            var newMethod = app.Relationships.Count; 
+            // find differences
+            //var diff1 = classicList.Where(a => !app.Relationships
+            //    .Any(b => b.Parent.EntityId == a.Parent.EntityId && b.Child?.EntityId == a.Child?.EntityId))
+            //    .ToList();
+            //var diff2 = app.Relationships.Where(a => !classicList
+            //    .Any(b => b.Parent.EntityId == a.Parent.EntityId && b.Child?.EntityId == a.Child?.EntityId))
+            //    .ToList();
+
 
             relTimer.Stop();
             Log.Add($"relationship timer:{relTimer.Elapsed}");

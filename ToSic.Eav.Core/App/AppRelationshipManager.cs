@@ -4,6 +4,7 @@ using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.App
 {
+    // todo: if we have time, optimize it so it doesn't do the lookup until accessed
     public class AppRelationshipManager: List<EntityRelationshipItem>
     {
         private readonly Dictionary<int, IEntity> _lookup;

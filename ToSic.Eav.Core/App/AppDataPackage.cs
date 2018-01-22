@@ -128,16 +128,11 @@ namespace ToSic.Eav.App
 	    {
 	        Relationships.Clear();
 	        foreach (var entity in List)
-	        foreach (IAttribute<EntityRelationship> attrib in entity
-                    .Attributes.Select(a => a.Value)
-                    .Where(a => a is IAttribute<EntityRelationship>)
-                    .Cast<IAttribute<EntityRelationship>>())
-	        {
-	            foreach (var val in attrib.Typed.FirstOrDefault().TypedContents.EntityIds)
-                {
-	                Relationships.Add(entity.EntityId, val);
-	            }
-	        }
+	        foreach (var attrib in entity.Attributes.Select(a => a.Value)
+                .Where(a => a is IAttribute<EntityRelationship>)
+                .Cast<IAttribute<EntityRelationship>>())
+	        foreach (var val in attrib.Typed[0].TypedContents.EntityIds.Where(e => e != null))
+	            Relationships.Add(entity.EntityId, val);
 	    }
-	}
+    }
 }
