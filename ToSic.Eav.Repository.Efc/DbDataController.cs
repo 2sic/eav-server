@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.App;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.Implementations.UserInformation;
 using ToSic.Eav.Interfaces;
@@ -257,6 +258,14 @@ namespace ToSic.Eav.Repository.Efc
         /// </summary>
         /// <remarks>Usefull if many changes are made in a batch and Cache should be purged after that batch</remarks>
         private bool _purgeAppCacheOnSave = true;
+
+        public void DoButSkipAppCachePurge(Action action)
+        {
+            var before = _purgeAppCacheOnSave;
+            _purgeAppCacheOnSave = false;
+            action.Invoke();
+            _purgeAppCacheOnSave = before;
+        }
 
         public void DoWithDelayedCacheInvalidation(Action action)
         {

@@ -89,7 +89,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Convert an entity to xml and add to saving queue
         /// </summary>
-        private void SerializeEntityAndAddToQueue(IThingSerializer serializer, int entityId, Guid entityGuid) => SaveEntity(entityId, entityGuid, serializer.Serialize(entityId));
+        private void SerializeEntityAndAddToQueue(IThingSerializer serializer, int entityId, Guid entityGuid) 
+            => SaveEntity(entityId, entityGuid, serializer.Serialize(entityId));
 
         /// <summary>
         /// Save an entity to versioning, which is already serialized
@@ -112,10 +113,15 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         private void Save()
         {
-            var sharedSerializer = ImmediateStateSerializer();
-            // now handle the delayed queue, which waited with serializing
-            _delaySerialization.ToList().ForEach(td => SerializeEntityAndAddToQueue(sharedSerializer, td.Key, td.Value));
-            _delaySerialization.Clear();
+            // only create expensive serializer etc. if there is something in the queue
+            if (_delaySerialization.Any())
+            {
+                var sharedSerializer = ImmediateStateSerializer();
+                // now handle the delayed queue, which waited with serializing
+                _delaySerialization.ToList()
+                    .ForEach(td => SerializeEntityAndAddToQueue(sharedSerializer, td.Key, td.Value));
+                _delaySerialization.Clear();
+            }
 
             DbContext.SqlDb.ToSicEavDataTimeline.AddRange(_queue);
             DbContext.SqlDb.SaveChanges();

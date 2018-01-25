@@ -18,17 +18,17 @@ namespace ToSic.Eav.App
         /// <summary>
         /// Gets a Dictionary of AssignmentObjectTypes and assigned Entities having a KeyGuid
         /// </summary>
-        private Dictionary<int, Dictionary<Guid, IEnumerable<IEntity>>> _guid;
+        private Dictionary<int, Dictionary<Guid, List<IEntity>>> _guid;
 
         /// <summary>
         /// Gets a Dictionary of AssignmentObjectTypes and assigned Entities having a KeyNumber
         /// </summary>
-        private Dictionary<int, Dictionary<int, IEnumerable<IEntity>>> _number;
+        private Dictionary<int, Dictionary<int, List<IEntity>>> _number;
 
         /// <summary>
         /// Gets a Dictionary of AssignmentObjectTypes and assigned Entities having a KeyString
         /// </summary>
-        private Dictionary<int, Dictionary<string, IEnumerable<IEntity>>> _string;
+        private Dictionary<int, Dictionary<string, List<IEntity>>> _string;
 
         #endregion
 
@@ -45,15 +45,15 @@ namespace ToSic.Eav.App
         /// </summary>
         public void Reset()
         {
-            _guid = new Dictionary<int, Dictionary<Guid, IEnumerable<IEntity>>>();
-            _number = new Dictionary<int, Dictionary<int, IEnumerable<IEntity>>>();
-            _string = new Dictionary<int, Dictionary<string, IEnumerable<IEntity>>>();
+            _guid = new Dictionary<int, Dictionary<Guid, List<IEntity>>>();
+            _number = new Dictionary<int, Dictionary<int, List<IEntity>>>();
+            _string = new Dictionary<int, Dictionary<string, List<IEntity>>>();
 
             foreach (var mdt in Types)
             {
-                _guid.Add(mdt.Key, new Dictionary<Guid, IEnumerable<IEntity>>());
-                _number.Add(mdt.Key, new Dictionary<int, IEnumerable<IEntity>>());
-                _string.Add(mdt.Key, new Dictionary<string, IEnumerable<IEntity>>());
+                _guid.Add(mdt.Key, new Dictionary<Guid, List<IEntity>>());
+                _number.Add(mdt.Key, new Dictionary<int, List<IEntity>>());
+                _string.Add(mdt.Key, new Dictionary<string, List<IEntity>>());
             }
         }
 
@@ -81,14 +81,21 @@ namespace ToSic.Eav.App
             throw new NotImplementedException();
         }
         
-        private static void AddToMetaDic<T>(Dictionary<int, Dictionary<T, IEnumerable<IEntity>>> metadataIndex, int mdTargetType, T mdValue, Entity newEntity)
+        private static void AddToMetaDic<T>(Dictionary<int, Dictionary<T, List<IEntity>>> metadataIndex, int mdTargetType, T mdValue, Entity newEntity)
         {
+            var indexOfType = metadataIndex[mdTargetType];
             // Ensure that the assignment type (like 4) the target guid (like a350320-3502-afg0-...) has an empty list of items
-            if (!metadataIndex[mdTargetType].ContainsKey(mdValue)) // ensure target list exists
-                metadataIndex[mdTargetType][mdValue] = new List<IEntity>();
+            if (!indexOfType.ContainsKey(mdValue)) // ensure target list exists
+                indexOfType[mdValue] = new List<IEntity>();
+
+            // in case it was already in this index, remove first
+            var list = indexOfType[mdValue];
+            var found = list.FirstOrDefault(e => e.EntityId == newEntity.EntityId);
+            if (found != null)
+                list.Remove(found);
 
             // Now all containers must exist, add this item
-            ((List<IEntity>)metadataIndex[mdTargetType][mdValue]).Add(newEntity);
+            list.Add(newEntity);
         }
 
 
@@ -117,11 +124,11 @@ namespace ToSic.Eav.App
             }
         }
 
-        private static IEnumerable<IEntity> Lookup<T>(IDictionary<int, Dictionary<T, IEnumerable<IEntity>>> list, int targetType, T key, string contentTypeName)
+        private static IEnumerable<IEntity> Lookup<T>(IDictionary<int, Dictionary<T, List<IEntity>>> list, int targetType, T key, string contentTypeName)
         {
             // ReSharper disable once CollectionNeverUpdated.Local
-            if (list.TryGetValue(targetType, out Dictionary<T, IEnumerable<IEntity>> keyDict))
-                if (keyDict.TryGetValue(key, out IEnumerable<IEntity> entities))
+            if (list.TryGetValue(targetType, out var keyDict))
+                if (keyDict.TryGetValue(key, out var entities))
                     return contentTypeName == null
                         ? entities
                         : entities.Where(e => e.Type.StaticName == contentTypeName);

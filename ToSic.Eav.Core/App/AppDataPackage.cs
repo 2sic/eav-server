@@ -104,13 +104,15 @@ namespace ToSic.Eav.App
             if(newEntity.RepositoryId == 0)
                 throw new Exception("Entities without real ID not supported yet");
 
-            if (Index.ContainsKey(newEntity.RepositoryId))
-                throw new Exception("updating not supported yet");
+            //if (Index.ContainsKey(newEntity.RepositoryId))
+            //    throw new Exception("updating not supported yet");
 
             Metadata.Add((Entity)newEntity);
 
-            Index.Add(newEntity.RepositoryId, newEntity);
+	        Index[newEntity.RepositoryId] = newEntity; // add like this, it could also be an update
+            //Index.Add(newEntity.RepositoryId, newEntity);
 
+            // Relationships uses the index, but it must know that it's now invalid
             Relationships.Reset(); 
 	    }
 

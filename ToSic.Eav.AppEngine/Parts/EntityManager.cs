@@ -118,17 +118,19 @@ namespace ToSic.Eav.Apps.Parts
             saveOptions = saveOptions ?? SaveOptions.Build(AppManager.ZoneId);
 
             List<int> ids = null;
-            throw new Exception("WIP - must finish entity save and add to memory package");
-            AppManager.DataController.DoWhileQueueingRelationships(() =>
-            {
-                ids = AppManager.DataController.Save(entities, saveOptions);
-            });
+            //throw new Exception("WIP - must finish entity save and add to memory package");
+            AppManager.DataController.DoButSkipAppCachePurge(() =>
+                AppManager.DataController.DoWhileQueueingRelationships(() =>
+                {
+                    ids = AppManager.DataController.Save(entities, saveOptions);
+                })
+            );
 
             // todo: continue here
             AppManager.DataController.Loader.Update(AppManager.Package, 
                 AppPackageLoadingSteps.ItemLoad, ids.ToArray(), Log);
             // clear cache of this app
-            SystemManager.Purge(AppManager.AppId);
+            //SystemManager.Purge(AppManager.AppId);
             return ids;
         }
 
