@@ -61,22 +61,23 @@ namespace ToSic.Eav.Repository.Efc.Parts
             Save();
         }
 
-        /// <summary>
-        /// Persist Entity to DataTimeline - but look up the entity either now, or place it in queue (to serialize it after changes are saved)
-        /// </summary>
-        internal void SaveEntity(int entityId, Guid entityGuid, bool useDelayedSerialize)
-        {
-            // if delayed is used, then it should serialize it at the moment the save is done, 
-            // an not right now - so it should only queue the IDs, not the generated XML
-            // this is important for cases where related entities are added later
-            if (useDelayedSerialize)
-                _delaySerialization[entityId] = entityGuid;
-            else
-                SerializeEntityAndAddToQueue(ImmediateStateSerializer(), entityId, entityGuid);
+        // 2018-01-27a 2dm disabled this - believe it's not necessary any more
+        ///// <summary>
+        ///// Persist Entity to DataTimeline - but look up the entity either now, or place it in queue (to serialize it after changes are saved)
+        ///// </summary>
+        //internal void SaveEntity(int entityId, Guid entityGuid, bool useDelayedSerialize)
+        //{
+        //    // if delayed is used, then it should serialize it at the moment the save is done, 
+        //    // an not right now - so it should only queue the IDs, not the generated XML
+        //    // this is important for cases where related entities are added later
+        //    if (useDelayedSerialize)
+        //        _delaySerialization[entityId] = entityGuid;
+        //    else
+        //        SerializeEntityAndAddToQueue(ImmediateStateSerializer(), entityId, entityGuid);
 
-            if(!_useQueue)
-                Save();
-        }
+        //    if(!_useQueue)
+        //        Save();
+        //}
 
         private IThingSerializer ImmediateStateSerializer()
         {
@@ -113,15 +114,16 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         private void Save()
         {
-            // only create expensive serializer etc. if there is something in the queue
-            if (_delaySerialization.Any())
-            {
-                var sharedSerializer = ImmediateStateSerializer();
-                // now handle the delayed queue, which waited with serializing
-                _delaySerialization.ToList()
-                    .ForEach(td => SerializeEntityAndAddToQueue(sharedSerializer, td.Key, td.Value));
-                _delaySerialization.Clear();
-            }
+            // 2018-01-27a 2dm disabled this - believe it's not necessary any more
+            //// only create expensive serializer etc. if there is something in the queue
+            //if (_delaySerialization.Any())
+            //{
+            //    var sharedSerializer = ImmediateStateSerializer();
+            //    // now handle the delayed queue, which waited with serializing
+            //    _delaySerialization.ToList()
+            //        .ForEach(td => SerializeEntityAndAddToQueue(sharedSerializer, td.Key, td.Value));
+            //    _delaySerialization.Clear();
+            //}
 
             DbContext.SqlDb.ToSicEavDataTimeline.AddRange(_queue);
             DbContext.SqlDb.SaveChanges();
@@ -129,7 +131,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
         }
 
 
-        private readonly Dictionary<int, Guid> _delaySerialization = new Dictionary<int, Guid>();
+        // 2018-01-27a 2dm disabled this - believe it's not necessary any more
+        //private readonly Dictionary<int, Guid> _delaySerialization = new Dictionary<int, Guid>();
 
         private readonly List<ToSicEavDataTimeline> _queue = new List<ToSicEavDataTimeline>();
 

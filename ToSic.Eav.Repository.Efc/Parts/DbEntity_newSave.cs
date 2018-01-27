@@ -131,9 +131,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     // case 2: new data is set to not publish, but we don't want a branch
                     if (stateChanged || hasAdditionalDraft)
                     {
+                        // 2018-01-27a 2dm disabled this - believe it's not necessary any more
                         // if Entity has a published Version, add an additional DateTimeline Item for the Update of this Draft-Entity
-                        if (dbEnt.PublishedEntityId.HasValue)
-                            DbContext.Versioning.SaveEntity(dbEnt.EntityId, dbEnt.EntityGuid, false);
+                        //if (dbEnt.PublishedEntityId.HasValue)
+                        //    DbContext.Versioning.SaveEntity(dbEnt.EntityId, dbEnt.EntityGuid, false);
 
                         // now reset the branch/entity-state to properly set the state / purge the draft
                         dbEnt = DbContext.Publishing.ClearDraftBranchAndSetPublishedState(dbEnt, existingDraftId,
