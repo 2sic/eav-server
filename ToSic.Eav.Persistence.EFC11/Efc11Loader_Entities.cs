@@ -35,7 +35,7 @@ namespace ToSic.Eav.Persistence.Efc
 
             // if the app already exists and is being reloaded, remove all existing data
             if (!filterByEntityIds)
-                app.ResetItems();
+                app.RemoveAllItems();
 
             // Ensure published Versions of Drafts are also loaded (if filtered by EntityId, otherwise all Entities from the app are loaded anyway)
             var sqlTime = Stopwatch.StartNew();
@@ -198,7 +198,7 @@ namespace ToSic.Eav.Persistence.Efc
                 }
 
                 // If entity is a draft, add references to Published Entity
-                app.AddAndMapDraftToPublished(newEntity, e.PublishedEntityId);
+                app.Add(newEntity, e.PublishedEntityId);
 
             }
 

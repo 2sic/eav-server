@@ -20,9 +20,24 @@ namespace ToSic.Eav.App
             => _appTypesFromRepository.Union(Global.AllContentTypes().Values);
 
 
+	    /// <summary>
+	    /// The second init-command
+	    /// Load content-types
+	    /// </summary>
+	    /// <param name="contentTypes"></param>
+	    internal void InitContentTypes(IList<IContentType> contentTypes)
+	    {
+	        if (Metadata == null || List.Any())
+	            throw new Exception("can't set content types before setting Metadata manager, or after entities-list already exists");
+
+	        _appTypeMap = contentTypes.ToImmutableDictionary(x => x.ContentTypeId, x => x.StaticName);
+	        _appTypesFromRepository = RemoveAliasesForGlobalTypes(contentTypes);
+	        // build types by name
+	        BuildCacheForTypesByName(_appTypesFromRepository);
+	    }
 
 
-	    private void BuildCacheForTypesByName(IList<IContentType> allTypes)
+        private void BuildCacheForTypesByName(IList<IContentType> allTypes)
 	    {
 	        _appTypesByName = new Dictionary<string, IContentType>(StringComparer.InvariantCultureIgnoreCase);
 

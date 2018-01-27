@@ -82,63 +82,65 @@ namespace ToSic.Eav.App
 	            : throw new Exception("can't set metadata if content-types are already set");
 
 
-        /// <summary>
-        /// The second init-command
-        /// Load content-types
-        /// </summary>
-        /// <param name="contentTypes"></param>
-	    internal void InitContentTypes(IList<IContentType> contentTypes)
-	    {
-	        if (Metadata == null || List.Any())
-	            throw new Exception("can't set content types before setting Metadata manager, or after entities-list already exists");
 
-	        _appTypeMap = contentTypes.ToImmutableDictionary(x => x.ContentTypeId, x => x.StaticName);
-	        _appTypesFromRepository = RemoveAliasesForGlobalTypes(contentTypes);
-	        // build types by name
-	        BuildCacheForTypesByName(_appTypesFromRepository);
-	    }
-
-
-	    internal void Add(IEntity newEntity)
+	    public void Add(Entity newEntity, int? publishedId)
 	    {
             if(newEntity.RepositoryId == 0)
                 throw new Exception("Entities without real ID not supported yet");
 
-            //if (Index.ContainsKey(newEntity.RepositoryId))
-            //    throw new Exception("updating not supported yet");
+	        RemoveObsoleteDraft(newEntity);
 
-            Metadata.Add((Entity)newEntity);
-
-	        Index[newEntity.RepositoryId] = newEntity; // add like this, it could also be an update
-            //Index.Add(newEntity.RepositoryId, newEntity);
+            // add to indexes
+            Metadata.Add(newEntity);
+            Index[newEntity.RepositoryId] = newEntity; // add like this, it could also be an update
 
             // Relationships uses the index, but it must know that it's now invalid
             Relationships.Reset(); 
+
+	        MapDraftToPublished(newEntity, publishedId);
+
 	    }
 
         /// <summary>
         /// Reset all item storages and indexes
         /// </summary>
-	    internal void ResetItems()
+	    internal void RemoveAllItems()
 	    {
 	        Index.Clear();
             Relationships.Reset();
             Metadata.Reset();
 	    }
 
-	    public void AddAndMapDraftToPublished(Entity newEntity, int? publishedId)
-	    {
-            // always add first - the rest is only if it's draft with published
-            Add(newEntity);
 
+        /// <summary>
+        /// Reconnect / wire drafts to the published item
+        /// </summary>
+	    private void MapDraftToPublished(Entity newEntity, int? publishedId)
+	    {
 	        if (newEntity.IsPublished || !publishedId.HasValue) return;
 
 	        // Published Entity is already in the Entities-List as EntityIds is validated/extended before and Draft-EntityID is always higher as Published EntityId
 	        newEntity.PublishedEntity = Index[publishedId.Value];
-	        ((Entity)newEntity.PublishedEntity).DraftEntity = newEntity;
+	        ((Entity) newEntity.PublishedEntity).DraftEntity = newEntity;
 	        newEntity.EntityId = publishedId.Value;
-
 	    }
 
-    }
+	    /// <summary>
+        /// Check if a new entity previously had a draft, and remove that
+        /// </summary>
+	    private void RemoveObsoleteDraft(IEntity newEntity)
+	    {
+	        var previous = Index.ContainsKey(newEntity.EntityId) ? Index[newEntity.EntityId] : null;
+
+	        // check if we went from draft-branch to published, because in this case, we have to remove the last draft
+	        if (previous == null) return;  // didn't exist, return
+            if(!previous.IsPublished) return; // previous wasn't published, so we couldn't have had a branch
+	        if(!newEntity.IsPublished) return; // new entity isn't published, so we're not switching "back"
+
+	        var draftEnt = previous.GetDraft();
+            var draft = draftEnt?.RepositoryId;
+	        if (draft != null)
+	            Index.Remove(draft.Value);
+	    }
+	}
 }
