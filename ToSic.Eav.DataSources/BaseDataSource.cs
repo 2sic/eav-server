@@ -5,6 +5,7 @@ using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.ValueProvider;
+using ICache = ToSic.Eav.DataSources.Caches.ICache;
 
 namespace ToSic.Eav.DataSources
 {
@@ -82,10 +83,15 @@ namespace ToSic.Eav.DataSources
 
 
         /// <inheritdoc />
-        public virtual DateTime CacheLastRefresh
+        public virtual long CacheTimestamp /*DateTime CacheLastRefresh */
             => In.ContainsKey(Constants.DefaultStreamName) && In[Constants.DefaultStreamName].Source != null
-                ? In[Constants.DefaultStreamName].Source.CacheLastRefresh
-                : DateTime.Now; // if no relevant up-stream, just return now!
+                ? In[Constants.DefaultStreamName].Source.CacheTimestamp //.CacheLastRefresh
+                : DateTime.Now.Ticks; // if no relevant up-stream, just return now!
+
+        public bool CacheChanged(long prevCacheTimestamp) => 
+            !In.ContainsKey(Constants.DefaultStreamName) 
+            || In[Constants.DefaultStreamName].Source == null 
+            || In[Constants.DefaultStreamName].Source.CacheChanged(prevCacheTimestamp);
 
         #endregion
 
@@ -170,30 +176,6 @@ namespace ToSic.Eav.DataSources
         public void Provide(string name, GetIEnumerableDelegate getList) 
             => Out.Add(name, new DataStream(this, name, getList));
 
-        #endregion
-
-        #region User Interface - not implemented yet
-        //public virtual bool AllowUserEdit
-        //{
-        //    get { return true; }
-        //}
-
-        //public virtual bool AllowUserSort
-        //{
-        //    get { return true; }
-        //}
-
-        //public virtual bool AllowVersioningUI
-        //{
-        //    get { return false; }
-        //}
-        #endregion
-
-        #region Configuration - not implemented yet
-        //public virtual bool IsConfigurable
-        //{
-        //    get { return false; }
-        //}
         #endregion
 
         #region Internals (Ready)

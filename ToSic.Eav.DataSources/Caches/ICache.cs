@@ -69,7 +69,7 @@ namespace ToSic.Eav.DataSources.Caches
         /// <param name="list"></param>
         /// <param name="sourceRefresh"></param>
         /// <param name="durationInSeconds"></param>
-        void ListSet(string key, IEnumerable<IEntity> list, DateTime sourceRefresh, int durationInSeconds = 0);
+        void ListSet(string key, IEnumerable<IEntity> list, /*DateTime*/long sourceRefresh, int durationInSeconds = 0);
 
         /// <summary>
         /// Add an item to the list-cache

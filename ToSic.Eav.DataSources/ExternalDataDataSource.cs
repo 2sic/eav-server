@@ -15,9 +15,10 @@ namespace ToSic.Eav.DataSources
             // set the creation date to the moment the object is constructed
             // this is important, because the date should stay fixed throughout the lifetime of this object
             // but renew when it is updates
-            CacheLastRefresh = DateTime.Now;
+            //CacheLastRefresh = DateTime.Now;
+            CacheTimestamp = DateTime.Now.Ticks;
         }
  
-        public override DateTime CacheLastRefresh { get; }
+        public override /*DateTime CacheLastRefresh*/ long CacheTimestamp { get; }
     }
 }

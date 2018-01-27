@@ -89,6 +89,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App\AppDataPackage_Caching.cs" />
     <Compile Include="App\AppDataPackage_DeferredList.cs" />
     <Compile Include="App\AppDataPackage_Metadata.cs" />
     <Compile Include="App\AppDataPackage_ContentTypes.cs" />
@@ -109,6 +110,8 @@
     <Compile Include="Data\EntityEnumerator.cs" />
     <Compile Include="Data\MetadataOf.cs" />
     <Compile Include="Data\Query\Entity.cs" />
+    <Compile Include="Interfaces\ICacheExpirable.cs" />
+    <Compile Include="Interfaces\ICacheExpiring.cs" />
     <Compile Include="Repositories\RepositoryInfo.cs" />
     <Compile Include="Repositories\RepositoryInfoOfFolder.cs" />
     <Compile Include="Repositories\RepositoryTypes.cs" />

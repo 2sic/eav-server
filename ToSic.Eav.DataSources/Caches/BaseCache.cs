@@ -56,14 +56,17 @@ namespace ToSic.Eav.DataSources.Caches
 		/// Test whether CacheKey exists in Cache
 		/// </summary>
 		protected abstract bool HasCacheItem(string cacheKey);
+
 		/// <summary>
 		/// Sets the CacheItem with specified CacheKey
 		/// </summary>
 		protected abstract void SetCacheItem(string cacheKey, AppDataPackage item);
+
 		/// <summary>
 		/// Get CacheItem with specified CacheKey
 		/// </summary>
 		protected abstract AppDataPackage GetCacheItem(string cacheKey);
+
 		/// <summary>
 		/// Remove the CacheItem with specified CacheKey
 		/// </summary>
@@ -114,7 +117,7 @@ namespace ToSic.Eav.DataSources.Caches
 
 	    #region Cache-Chain
 
-	    public override DateTime CacheLastRefresh => AppDataPackage.LastRefresh;
+	    public override long CacheTimestamp /*DateTime CacheLastRefresh */=> AppDataPackage.CacheTimestamp/*.LastRefresh*/;
 
 	    private string _cachePartialKey;
 	    public override string CachePartialKey
@@ -178,7 +181,15 @@ namespace ToSic.Eav.DataSources.Caches
         #region GetAssignedEntities by Guid, string and int
 
         public IEnumerable<IEntity> GetMetadata<T>(int targetType, T key, string contentTypeName = null) => AppDataPackage.GetMetadata(targetType, key, contentTypeName);
-	    #endregion
+
+        // todo: not implemented yet - probably not needed
+
+	    public bool CacheChanged(long prevCacheTimestamp)
+        {
+            return false;
+        }
+
+        #endregion
 
 
         #region Additional Stream Caching
@@ -223,7 +234,7 @@ namespace ToSic.Eav.DataSources.Caches
         /// <summary>
         /// Insert a data-stream to the cache - if it can be found
         /// </summary>
-        public void ListSet(string key, IEnumerable<IEntity> list, DateTime sourceRefresh, int durationInSeconds = 0)
+        public void ListSet(string key, IEnumerable<IEntity> list, long /*DateTime*/ sourceRefresh, int durationInSeconds = 0)
         {
             var policy = new CacheItemPolicy();
             policy.SlidingExpiration = new TimeSpan(0, 0, durationInSeconds > 0 ? durationInSeconds : ListDefaultRetentionTimeInSeconds);
@@ -234,7 +245,7 @@ namespace ToSic.Eav.DataSources.Caches
 
         public void ListSet(IDataStream dataStream, int durationInSeconds = 0)
         {
-            ListSet(dataStream.Source.CacheFullKey + "|" + dataStream.Name, dataStream.List, dataStream.Source.CacheLastRefresh, durationInSeconds);
+            ListSet(dataStream.Source.CacheFullKey + "|" + dataStream.Name, dataStream.List, dataStream.Source.CacheTimestamp/*.CacheLastRefresh*/, durationInSeconds);
         }
         #endregion
 

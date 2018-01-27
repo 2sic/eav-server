@@ -7,6 +7,7 @@ using ToSic.Eav.DataSources.VisualQuery;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.ValueProvider;
+using ICache = ToSic.Eav.DataSources.Caches.ICache;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav

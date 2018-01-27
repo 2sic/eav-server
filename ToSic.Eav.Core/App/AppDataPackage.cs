@@ -68,8 +68,10 @@ namespace ToSic.Eav.App
 	        List = Index.Values;
             Relationships = new AppRelationshipManager(this);
 
+            // todo: remove the LastRefresh...
             LastRefresh = DateTime.Now;
-	    }
+            CacheResetTimestamp();
+        }
 
         /// <summary>
         /// The first init-command to run after creating the package
@@ -78,7 +80,7 @@ namespace ToSic.Eav.App
         /// <param name="metadataTypes"></param>
 	    internal void InitMetadata(ImmutableDictionary<int, string> metadataTypes)
 	        => Metadata = _appTypesFromRepository == null
-	            ? new AppMetadataManager(metadataTypes)
+	            ? new AppMetadataManager(this, metadataTypes)
 	            : throw new Exception("can't set metadata if content-types are already set");
 
 
@@ -96,9 +98,9 @@ namespace ToSic.Eav.App
 
             // Relationships uses the index, but it must know that it's now invalid
             Relationships.Reset(); 
+            CacheResetTimestamp(); // for metadata
 
 	        MapDraftToPublished(newEntity, publishedId);
-
 	    }
 
         /// <summary>

@@ -30,10 +30,14 @@ namespace ToSic.Eav.App
         /// </summary>
         private Dictionary<int, Dictionary<string, List<IEntity>>> _string;
 
+        private AppDataPackage _app;
+
         #endregion
 
-        public AppMetadataManager(ImmutableDictionary<int, string> metadataTypes)
+        public AppMetadataManager(AppDataPackage app, ImmutableDictionary<int, string> metadataTypes)
         {
+            _app = app;
+
             Types = metadataTypes;
 
             // make sure the lists have a sub-list for each known relationship type
@@ -56,6 +60,14 @@ namespace ToSic.Eav.App
                 _string.Add(mdt.Key, new Dictionary<string, List<IEntity>>());
             }
         }
+
+        #region Cache Timestamp & Invalidation
+
+        public long CacheTimestamp => _app.CacheTimestamp;
+
+        public bool CacheChanged(long prevCacheTimestamp) => _app.CacheChanged(prevCacheTimestamp);
+
+        #endregion
 
         /// <summary>
         /// Register an entity to the metadata manager

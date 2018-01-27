@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.App
@@ -23,5 +24,5 @@ namespace ToSic.Eav.App
             => Metadata.GetMetadata(targetType, key, contentTypeName);
 
 
-	}
+    }
 }
