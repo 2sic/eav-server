@@ -165,18 +165,18 @@ namespace ToSic.Eav.WebApi
 
 
         [HttpPost]
-        public bool ImportQuery(QueryImport args)
+        public bool ImportQuery(EntityImport args)
         {
             try
             {
                 Log.Add("import content" + args.DebugInfo);
                 AppId = args.AppId;
 
-                var data = Convert.FromBase64String(args.ContentBase64);
-                var str = Encoding.UTF8.GetString(data);
+                //var data = Convert.FromBase64String(args.ContentBase64);
+                //var str = Encoding.UTF8.GetString(data);
 
                 var deser = new ImportExport.Json.JsonSerializer(AppManager.Package, Log);
-                var ents = deser.Deserialize(str);
+                var ents = deser.Deserialize(args.GetContentString());
                 var qdef = new QueryDefinition(ents);
                 AppManager.Queries.SaveCopy(qdef);
 
