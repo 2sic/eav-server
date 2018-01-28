@@ -8,6 +8,7 @@ namespace ToSic.Eav.Apps.Interfaces
     public interface IAppData: IDataSource, IDataTarget
     {
         void Create(string contentTypeName, Dictionary<string, object> values, string userName = null);
+        void Create(string contentTypeName, IEnumerable<Dictionary<string, object>> multiValues, string userName = null);
 
         void Update(int entityId, Dictionary<string, object> values, string userName = null);
 
