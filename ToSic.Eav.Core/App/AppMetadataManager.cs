@@ -7,7 +7,7 @@ using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.App
 {
-    internal class AppMetadataManager: IMetadataProvider
+    internal class AppMetadataManager: IMetadataProvider//, ICacheDependent
     {
         #region cache value objects: Types, _guid, _number, _string
         /// <summary>
@@ -30,7 +30,7 @@ namespace ToSic.Eav.App
         /// </summary>
         private Dictionary<int, Dictionary<string, List<IEntity>>> _string;
 
-        private AppDataPackage _app;
+        private readonly AppDataPackage _app;
 
         #endregion
 
@@ -64,7 +64,6 @@ namespace ToSic.Eav.App
         #region Cache Timestamp & Invalidation
 
         public long CacheTimestamp => _app.CacheTimestamp;
-
         public bool CacheChanged(long prevCacheTimestamp) => _app.CacheChanged(prevCacheTimestamp);
 
         #endregion
@@ -74,7 +73,7 @@ namespace ToSic.Eav.App
         /// This ensures that any request for metadata would include this entity, if it's metadata
         /// </summary>
         /// <param name="entity"></param>
-        public void Add(Entity entity)
+        public void Register(Entity entity)
         {
             var md = entity.MetadataFor;
             if (!md.IsMetadata) return;
@@ -88,10 +87,6 @@ namespace ToSic.Eav.App
                 AddToMetaDic(_string, md.TargetType, md.KeyString, entity);
         }
 
-        public void Remove(int entityId)
-        {
-            throw new NotImplementedException();
-        }
         
         private static void AddToMetaDic<T>(Dictionary<int, Dictionary<T, List<IEntity>>> metadataIndex, int mdTargetType, T mdValue, Entity newEntity)
         {

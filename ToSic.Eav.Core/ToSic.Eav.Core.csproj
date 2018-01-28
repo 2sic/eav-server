@@ -93,8 +93,8 @@
     <Compile Include="App\AppDataPackage_DeferredList.cs" />
     <Compile Include="App\AppDataPackage_Metadata.cs" />
     <Compile Include="App\AppDataPackage_ContentTypes.cs" />
-    <Compile Include="App\AppDataPackageDeferredList.cs" />
     <Compile Include="App\AppMetadataManager.cs" />
+    <Compile Include="App\AppDependentIEnumerable.cs" />
     <Compile Include="App\AppRelationshipManager.cs" />
     <Compile Include="App\AppPackageLoadingSteps.cs" />
     <Compile Include="Constants.cs" />
@@ -111,6 +111,7 @@
     <Compile Include="Data\MetadataOf.cs" />
     <Compile Include="Data\Query\Entity.cs" />
     <Compile Include="Interfaces\ICacheExpirable.cs" />
+    <Compile Include="Interfaces\ICacheDependent.cs" />
     <Compile Include="Interfaces\ICacheExpiring.cs" />
     <Compile Include="Repositories\RepositoryInfo.cs" />
     <Compile Include="Repositories\RepositoryInfoOfFolder.cs" />

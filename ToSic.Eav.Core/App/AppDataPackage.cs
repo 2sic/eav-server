@@ -32,28 +32,26 @@ namespace ToSic.Eav.App
 		/// <summary>
 		/// Get all Published Entities in this App (excluding Drafts)
 		/// </summary>
-		public IEnumerable<IEntity> PublishedEntities => _publishedEntities 
-            ?? (_publishedEntities = List.Where(e => e.IsPublished));
-	    private IEnumerable<IEntity> _publishedEntities;
+		//public IEnumerable<IEntity> PublishedEntities => _publishedEntities 
+  //          ?? (_publishedEntities = List.Where(e => e.IsPublished));
+	 //   private IEnumerable<IEntity> _publishedEntities;
+
+        public IEnumerable<IEntity> PublishedEntities => new AppDependentIEnumerable<IEntity>(this, 
+            () => List.Where(e => e.IsPublished).ToList());
 
         /// <summary>
         /// Get all Entities not having a Draft (Entities that are Published (not having a draft) or draft itself)
         /// </summary>
-        public IEnumerable<IEntity> DraftEntities => _draftEntities 
-            ?? (_draftEntities = List.Where(e => e.GetDraft() == null));
-
-	    private IEnumerable<IEntity> _draftEntities;
-
+        //   public IEnumerable<IEntity> DraftEntities => _draftEntities 
+        //       ?? (_draftEntities = List.Where(e => e.GetDraft() == null));
+        //private IEnumerable<IEntity> _draftEntities;
+        public IEnumerable<IEntity> DraftEntities => new AppDependentIEnumerable<IEntity>(this, 
+            () => List.Where(e => e.GetDraft() == null).ToList());
 
         /// <summary>
         /// Get all Relationships between Entities
         /// </summary>
         public AppRelationshipManager Relationships { get; }
-
-        /// <summary>
-        /// Gets the DateTime when this CacheItem was populated
-        /// </summary>
-        public DateTime LastRefresh { get; }
 
 	    public int DynamicUpdatesCount = 0;
 		#endregion
@@ -63,14 +61,12 @@ namespace ToSic.Eav.App
         internal AppDataPackage(int appId, Log parentLog): base("App.Packge", parentLog)
 	    {
 	        AppId = appId;
+            CacheResetTimestamp();  // do this very early, as this number is needed elsewhere
 
 	        Index = new Dictionary<int, IEntity>();
 	        List = Index.Values;
             Relationships = new AppRelationshipManager(this);
 
-            // todo: remove the LastRefresh...
-            LastRefresh = DateTime.Now;
-            CacheResetTimestamp();
         }
 
         /// <summary>
@@ -84,23 +80,19 @@ namespace ToSic.Eav.App
 	            : throw new Exception("can't set metadata if content-types are already set");
 
 
-
+        /// <summary>
+        /// Add an entity to the cache
+        /// </summary>
 	    public void Add(Entity newEntity, int? publishedId)
 	    {
             if(newEntity.RepositoryId == 0)
                 throw new Exception("Entities without real ID not supported yet");
 
+            CacheResetTimestamp(); // for relationships
 	        RemoveObsoleteDraft(newEntity);
-
-            // add to indexes
-            Metadata.Add(newEntity);
             Index[newEntity.RepositoryId] = newEntity; // add like this, it could also be an update
-
-            // Relationships uses the index, but it must know that it's now invalid
-            Relationships.Reset(); 
-            CacheResetTimestamp(); // for metadata
-
 	        MapDraftToPublished(newEntity, publishedId);
+            Metadata.Register(newEntity);
 	    }
 
         /// <summary>
@@ -109,7 +101,7 @@ namespace ToSic.Eav.App
 	    internal void RemoveAllItems()
 	    {
 	        Index.Clear();
-            Relationships.Reset();
+            CacheResetTimestamp(); // for relationships
             Metadata.Reset();
 	    }
 
