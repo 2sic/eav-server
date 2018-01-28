@@ -54,23 +54,16 @@ namespace ToSic.Eav.WebApi
             return new ContentImportResult(!import.ErrorLog.HasErrors, null);
         }
 
-        //private const bool UseOldImporter = false;
         private ImportListXml GetXmlImport(ContentImportArgs args)
         {
             Log.Add("get xml import " + args.DebugInfo);
-            //var contentTypeId = CurrentContext.AttribSet.GetIdWithEitherName(args.ContentType);
             var contextLanguages = AppManager.Read.Zone.Languages().Select(l => l.EnvironmentKey).ToArray();
 
             using (var contentSteam = new MemoryStream(Convert.FromBase64String(args.ContentBase64)))
             {
-                return 
-                    //UseOldImporter
-                    //? new ToRefactorXmlImportVTable(CurrentContext.ZoneId, args.AppId, contentTypeId, contentSteam,
-                    //    contextLanguages, args.DefaultLanguage,
-                    //    args.ClearEntities, args.ImportResourcesReferences, Log) as IImportListTemp
-                    AppManager.Entities.Importer(args.ContentType, contentSteam,
-                        contextLanguages, args.DefaultLanguage,
-                        args.ClearEntities, args.ImportResourcesReferences);
+                return AppManager.Entities.Importer(args.ContentType, contentSteam,
+                    contextLanguages, args.DefaultLanguage,
+                    args.ClearEntities, args.ImportResourcesReferences);
             }
         }
 
