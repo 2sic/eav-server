@@ -83,12 +83,12 @@ namespace ToSic.Eav.DataSources
 
 
         /// <inheritdoc />
-        public virtual long CacheTimestamp /*DateTime CacheLastRefresh */
+        public virtual long CacheTimestamp 
             => In.ContainsKey(Constants.DefaultStreamName) && In[Constants.DefaultStreamName].Source != null
-                ? In[Constants.DefaultStreamName].Source.CacheTimestamp //.CacheLastRefresh
+                ? In[Constants.DefaultStreamName].Source.CacheTimestamp
                 : DateTime.Now.Ticks; // if no relevant up-stream, just return now!
 
-        public bool CacheChanged(long prevCacheTimestamp) => 
+        public virtual bool CacheChanged(long prevCacheTimestamp) => 
             !In.ContainsKey(Constants.DefaultStreamName) 
             || In[Constants.DefaultStreamName].Source == null 
             || In[Constants.DefaultStreamName].Source.CacheChanged(prevCacheTimestamp);

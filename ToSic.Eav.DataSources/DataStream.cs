@@ -84,8 +84,8 @@ namespace ToSic.Eav.DataSources
 			        var itemInCache = Source.Cache.ListGet(this);
 			        var isInCache = itemInCache != null;
 
-			        var refreshCache = !isInCache || (CacheRefreshOnSourceRefresh && Source.CacheTimestamp/*.CacheLastRefresh*/ > itemInCache.SourceRefresh);
-			        var useCache = isInCache && !refreshCache; // || ReturnCacheWhileRefreshing
+			        var refreshCache = !isInCache || CacheRefreshOnSourceRefresh && Source.CacheTimestamp > itemInCache.SourceRefresh;
+			        var useCache = isInCache && !refreshCache; 
 
 			        if(useCache)
 			            return _list = itemInCache.LightList;

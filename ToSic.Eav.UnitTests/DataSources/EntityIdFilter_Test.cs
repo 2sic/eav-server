@@ -76,8 +76,8 @@ namespace ToSic.Eav.UnitTests.DataSources
             Assert.AreEqual("EntityIdFilter-NoGuid&EntityIds=1023", ds.CachePartialKey);
             Assert.AreEqual("DataTableDataSource-NoGuid&TitleField=FullName&EntityIdField=EntityId&ModifiedField=InternalModified&ContentType=Person" +
                             ">EntityIdFilter-NoGuid&EntityIds=1023", ds.CacheFullKey);
-            var lastRefresh = ds.CacheLastRefresh; // get this before comparison, because sometimes slow execution will get strange results
-            Assert.IsTrue(DateTime.Now >= lastRefresh, "Date-check of cache refresh");
+            var lastRefresh = ds.CacheTimestamp; // get this before comparison, because sometimes slow execution will get strange results
+            Assert.IsTrue(DateTime.Now.Ticks >= lastRefresh, "Date-check of cache refresh");
 
         }
         [TestMethod]

@@ -97,23 +97,9 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         string CachePartialKey { get; }
         string CacheFullKey { get; }
-        /// <summary>
-        /// try to return the upstream creation date
-        /// </summary>
-        //DateTime CacheLastRefresh { get; }
 
         bool TempUsesDynamicOut { get; }
         #endregion
     }
 
-	///// <summary>
-	///// Internal interface for building the object
-	///// </summary>
-	//public interface IDataSourceInternals
-	//{
-	//    #region Configuration -- not implemented yet
-	//    // IEntity ConfigEntity { set; }
-	//    // Dictionary<string, string> ConfigValues { set; }
-	//    #endregion
-	//}
 }
