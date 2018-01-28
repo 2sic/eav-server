@@ -61,23 +61,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
             Save();
         }
 
-        /// <summary>
-        /// Persist Entity to DataTimeline - but look up the entity either now, or place it in queue (to serialize it after changes are saved)
-        /// </summary>
-        internal void SaveEntity(int entityId, Guid entityGuid, bool useDelayedSerialize)
-        {
-            // if delayed is used, then it should serialize it at the moment the save is done, 
-            // an not right now - so it should only queue the IDs, not the generated XML
-            // this is important for cases where related entities are added later
-            if (useDelayedSerialize)
-                _delaySerialization[entityId] = entityGuid;
-            else
-                SerializeEntityAndAddToQueue(ImmediateStateSerializer(), entityId, entityGuid);
-
-            if(!_useQueue)
-                Save();
-        }
-
         private IThingSerializer ImmediateStateSerializer()
         {
             var loader = new Efc11Loader(DbContext.SqlDb);
@@ -89,7 +72,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Convert an entity to xml and add to saving queue
         /// </summary>
-        private void SerializeEntityAndAddToQueue(IThingSerializer serializer, int entityId, Guid entityGuid) => SaveEntity(entityId, entityGuid, serializer.Serialize(entityId));
+        private void SerializeEntityAndAddToQueue(IThingSerializer serializer, int entityId, Guid entityGuid) 
+            => SaveEntity(entityId, entityGuid, serializer.Serialize(entityId));
 
         /// <summary>
         /// Save an entity to versioning, which is already serialized
@@ -112,18 +96,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         private void Save()
         {
-            var sharedSerializer = ImmediateStateSerializer();
-            // now handle the delayed queue, which waited with serializing
-            _delaySerialization.ToList().ForEach(td => SerializeEntityAndAddToQueue(sharedSerializer, td.Key, td.Value));
-            _delaySerialization.Clear();
-
             DbContext.SqlDb.ToSicEavDataTimeline.AddRange(_queue);
             DbContext.SqlDb.SaveChanges();
             _queue.Clear();
         }
-
-
-        private readonly Dictionary<int, Guid> _delaySerialization = new Dictionary<int, Guid>();
 
         private readonly List<ToSicEavDataTimeline> _queue = new List<ToSicEavDataTimeline>();
 

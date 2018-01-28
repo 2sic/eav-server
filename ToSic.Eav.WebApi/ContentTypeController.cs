@@ -11,6 +11,7 @@ using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Serializers;
 using ToSic.Eav.WebApi.Formats;
+using ICache = ToSic.Eav.DataSources.Caches.ICache;
 
 namespace ToSic.Eav.WebApi
 {

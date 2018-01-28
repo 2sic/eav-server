@@ -204,7 +204,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             Log.Add("save relationships");
             DoWhileQueueingRelationships(() =>
             {
-                // todo: put all relationships into queue
+                // put all relationships into queue
                 foreach (var attribute in eToSave.Attributes.Values)
                 {
                     // find attribute definition - will be null if the attribute cannot be found - in which case ignore

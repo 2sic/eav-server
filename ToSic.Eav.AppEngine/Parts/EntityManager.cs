@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using ToSic.Eav.App;
 using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Apps.Interfaces;
 using ToSic.Eav.Data;
@@ -108,20 +109,28 @@ namespace ToSic.Eav.Apps.Parts
 
         #endregion
 
-        public int Save(IEntity entity, SaveOptions saveOptions = null) => Save(new List<IEntity> {entity}, saveOptions).FirstOrDefault();
+        public int Save(IEntity entity, SaveOptions saveOptions = null) 
+            => Save(new List<IEntity> {entity}, saveOptions).FirstOrDefault();
 
         public List<int> Save(List<IEntity> entities, SaveOptions saveOptions = null)
         {
             Log.Add("save count:" + entities.Count + ", with Options:" + (saveOptions != null));
             saveOptions = saveOptions ?? SaveOptions.Build(AppManager.ZoneId);
-            //saveOptions.DelayRelationshipSave = true; // save all relationships in one round when ready...
+
             List<int> ids = null;
-            AppManager.DataController.DoWhileQueueingRelationships(() =>
-            {
-                ids = AppManager.DataController.Entities.SaveEntity(entities, saveOptions);
-            });
+            //throw new Exception("WIP - must finish entity save and add to memory package");
+            AppManager.DataController.DoButSkipAppCachePurge(() =>
+                AppManager.DataController.DoWhileQueueingRelationships(() =>
+                {
+                    ids = AppManager.DataController.Save(entities, saveOptions);
+                })
+            );
+
+            // todo: continue here
+            AppManager.DataController.Loader.Update(AppManager.Package, 
+                AppPackageLoadingSteps.ItemLoad, ids.ToArray(), Log);
             // clear cache of this app
-            SystemManager.Purge(AppManager.AppId);
+            //SystemManager.Purge(AppManager.AppId);
             return ids;
         }
 

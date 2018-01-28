@@ -174,7 +174,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             // now update (main) entity id from existing - since it already exists
             var original = existingEntities.First();
-            update.ChangeIdForSaving(original.EntityId);
+            update.ResetEntityId(original.EntityId);
             return new EntitySaver(Log).CreateMergedForSaving(original, update, saveOptions) as Entity;
 
         }

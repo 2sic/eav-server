@@ -36,9 +36,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             // continue here - must ensure that the languages are passed in, cached - or are cached on the DbEntity... for multiple saves
             if (_zoneLanguages == null)
-                _zoneLanguages = so.Languages;
-            if (_zoneLanguages == null)
-                throw new Exception("languages missing in save-options. cannot continue");
+                _zoneLanguages = so.Languages ?? throw new Exception("languages missing in save-options. cannot continue");
 
             if(usedLanguages.Count > 0)
                 if (!usedLanguages.All(l => _zoneLanguages.Any(zl => zl.Matches(l.Key))))
@@ -50,6 +48,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             // check if saving should be with db-type or with the plain json
             var saveJson = newEnt.Type.RepositoryType != RepositoryTypes.Sql;
+            string jsonExport;
             Log.Add($"save json:{saveJson}");
             #endregion Step 1
 
@@ -70,11 +69,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 if (!newEnt.IsPublished && ((Entity) newEnt).PlaceDraftInBranch)
                 {
                     ((Entity)newEnt).SetPublishedIdForSaving(newEnt.EntityId);  // set this, in case we'll create a new one
-                    ((Entity) newEnt).ChangeIdForSaving(existingDraftId ?? 0);  // set to the draft OR 0 = new
+                    newEnt.ResetEntityId(existingDraftId ?? 0);  // set to the draft OR 0 = new
                     hasAdditionalDraft = false; // not additional any more, as we're now pointing this as primary
                 }
             }
-            var isNew = newEnt.EntityId <= 0;   // no remember how we want to work...
+            var isNew = newEnt.EntityId <= 0;   // remember how we want to work...
 
             var contentTypeId = saveJson 
                 ? RepoIdForJsonEntities 
@@ -91,7 +90,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             ToSicEavEntities dbEnt = null;
 
-            var changeId = DbContext.Versioning.GetChangeLogId();
+            var changeLogId = DbContext.Versioning.GetChangeLogId();
+
             DbContext.DoInTransaction(() =>
             {
 
@@ -99,48 +99,27 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                 if (isNew)
                 {
-                    #region Step 3a: Create new
-
                     Log.Add("create new...");
-                    dbEnt = new ToSicEavEntities
-                    {
-                        AppId = DbContext.AppId,
-                        AssignmentObjectTypeId = newEnt.MetadataFor?.TargetType ?? Constants.NotMetadata,
-                        KeyNumber = newEnt.MetadataFor?.KeyNumber,
-                        KeyGuid = newEnt.MetadataFor?.KeyGuid,
-                        KeyString = newEnt.MetadataFor?.KeyString,
-                        ChangeLogCreated = changeId,
-                        ChangeLogModified = changeId,
-                        EntityGuid = newEnt.EntityGuid != Guid.Empty ? newEnt.EntityGuid : Guid.NewGuid(),
-                        IsPublished = newEnt.IsPublished,
-                        PublishedEntityId = newEnt.IsPublished ? null : ((Entity) newEnt).GetPublishedIdForSaving(),
-                        Owner = DbContext.UserName,
-                        AttributeSetId = contentTypeId,
-                        Version = 1,
-                        Json = null // use null, as we must wait to serialize till we have the entityId
-                    };
 
-                    DbContext.SqlDb.Add(dbEnt);
-                    DbContext.SqlDb.SaveChanges();
+                    dbEnt = CreateNewInDb(newEnt, changeLogId, contentTypeId);
+                    // update the ID - for versioning and/or json persistence
+                    newEnt.ResetEntityId(dbEnt.EntityId); // update this, as it was only just generated
+                    jsonExport = _jsonifier.Serialize(newEnt);
 
                     if (saveJson)
                     {
-                        newEnt.ChangeIdForSaving(dbEnt.EntityId); // update this, as it was only just generated
-                        dbEnt.Json = _jsonifier.Serialize(newEnt);
+                        dbEnt.Json = jsonExport ;
                         dbEnt.ContentType = newEnt.Type.StaticName;
                         DbContext.SqlDb.SaveChanges();
                     }
                     Log.Add($"create new i:{dbEnt.EntityId}, guid:{dbEnt.EntityGuid}");
-
-                    #endregion
                 }
                 else
                 {
                     #region Step 3b: Check published (only if not new) - make sure we don't have multiple drafts
 
-                    // todo: check if repo-id is always there, may need to use repoid OR entityId
                     // new: always change the draft if there is one! - it will then either get published, or not...
-                    dbEnt = DbContext.Entities.GetDbEntity(newEnt.EntityId);
+                    dbEnt = DbContext.Entities.GetDbEntity(newEnt.EntityId); // get the published one (entityid is always the published id)
 
                     var stateChanged = dbEnt.IsPublished != newEnt.IsPublished;
                     Log.Add($"used existing i:{dbEnt.EntityId}, guid:{dbEnt.EntityGuid}, newstate:{newEnt.IsPublished}, state-changed:{stateChanged}, has-additional-draft:{hasAdditionalDraft}");
@@ -152,16 +131,12 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     // case 2: new data is set to not publish, but we don't want a branch
                     if (stateChanged || hasAdditionalDraft)
                     {
-                        // if Entity has a published Version, add an additional DateTimeline Item for the Update of this Draft-Entity
-                        if (dbEnt.PublishedEntityId.HasValue)
-                            DbContext.Versioning.SaveEntity(dbEnt.EntityId, dbEnt.EntityGuid, false);
-
                         // now reset the branch/entity-state to properly set the state / purge the draft
                         dbEnt = DbContext.Publishing.ClearDraftBranchAndSetPublishedState(dbEnt, existingDraftId,
                             newEnt.IsPublished);
 
-                        ((Entity) newEnt).ChangeIdForSaving(dbEnt.EntityId);
-                            // update ID of the save-entity, as it's used again later on...
+                        // update ID of the save-entity, as it's used again later on...
+                        newEnt.ResetEntityId(dbEnt.EntityId);
                     }
 
                     #endregion
@@ -169,9 +144,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     // increase version
                     dbEnt.Version++;
                     (newEnt as Entity)?.SetVersion(dbEnt.Version);
+                    
+                    // prepare export for save json OR versioning later on
+                    jsonExport = _jsonifier.Serialize(newEnt);
+
                     if (saveJson)
                     {
-                        dbEnt.Json = _jsonifier.Serialize(newEnt);
+                        dbEnt.Json = jsonExport;
                         dbEnt.AttributeSetId = contentTypeId;       // in case the previous entity wasn't json stored yet
                         dbEnt.ContentType = newEnt.Type.StaticName; // in case the previous entity wasn't json stored yet
                     }
@@ -185,34 +164,24 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                 #endregion Step 3
 
-                #region Step 4: Save all normal values
+                #region Step 4: Save all normal attributes / values & relationships
 
                 if (!saveJson)
+                {
+                    // save all the values we just added
                     DbContext.DoAndSave(() =>
-                        SaveAttributesInDbModel(newEnt, so, attributeDefs, dbEnt, changeId)
-                    ); // save all the values we just added
-                else
-                {
-                    if (isNew)
-                        Log.Add("won't save properties in db model as it's json");
-                    else
-                        ClearAttributesInDbModel(newEnt.EntityId);
-                }
+                        SaveAttributesInDbModel(newEnt, so, attributeDefs, dbEnt, changeLogId)
+                    );
 
-                #endregion
-
-
-
-                #region Step 5: Save / update all relationships
-
-                if (!saveJson)
                     DbContext.Relationships.SaveRelationships(newEnt, dbEnt, attributeDefs, so);
-                else
+                }
+                else if (isNew)
+                    Log.Add("won't save properties / relationships in db model as it's json");
+                else 
                 {
-                    if (isNew)
-                        Log.Add("won't save relationships in db model as it's json");
-                    else
-                        DbContext.Relationships.FlushChildrenRelationships(new List<int>() {newEnt.EntityId});
+                    // in update scenarios, the old data could have been a db-model, so clear that
+                    ClearAttributesInDbModel(newEnt.EntityId);
+                    DbContext.Relationships.FlushChildrenRelationships(new List<int> {newEnt.EntityId});
                 }
 
                 #endregion
@@ -221,16 +190,15 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                 #region Step 6: Ensure versioning
 
-                if (saveJson)
-                    DbContext.Versioning.SaveEntity(dbEnt.EntityId, dbEnt.EntityGuid, dbEnt.Json);
-                else
-                    DbContext.Versioning.SaveEntity(dbEnt.EntityId, dbEnt.EntityGuid, useDelayedSerialize: true);
+                if(jsonExport == null)
+                    throw new Exception("trying to save version history entry, but jsonexport isn't ready");
+                    DbContext.Versioning.SaveEntity(dbEnt.EntityId, dbEnt.EntityGuid, jsonExport);
 
                 #endregion
 
 
 
-                #region Workaround for preserving the last guid - temp
+                #region Workaround for preserving the last guid (temp - improve some day...)
 
                 TempLastSaveGuid = dbEnt.EntityGuid;
 
@@ -240,6 +208,32 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             Log.Add("save done for id:" + dbEnt?.EntityId);
             return dbEnt.EntityId;
+        }
+
+        private ToSicEavEntities CreateNewInDb(IEntity newEnt, int changeId, int contentTypeId)
+        {
+            var dbEnt = new ToSicEavEntities
+            {
+                AppId = DbContext.AppId,
+                AssignmentObjectTypeId = newEnt.MetadataFor?.TargetType ?? Constants.NotMetadata,
+                KeyNumber = newEnt.MetadataFor?.KeyNumber,
+                KeyGuid = newEnt.MetadataFor?.KeyGuid,
+                KeyString = newEnt.MetadataFor?.KeyString,
+                ChangeLogCreated = changeId,
+                ChangeLogModified = changeId,
+                EntityGuid = newEnt.EntityGuid != Guid.Empty ? newEnt.EntityGuid : Guid.NewGuid(),
+                IsPublished = newEnt.IsPublished,
+                PublishedEntityId = newEnt.IsPublished ? null : ((Entity) newEnt).GetPublishedIdForSaving(),
+                Owner = DbContext.UserName,
+                AttributeSetId = contentTypeId,
+                Version = 1,
+                Json = null // use null, as we must wait to serialize till we have the entityId
+            };
+
+            DbContext.SqlDb.Add(dbEnt);
+            DbContext.SqlDb.SaveChanges();
+
+            return dbEnt;
         }
 
         /// <summary>

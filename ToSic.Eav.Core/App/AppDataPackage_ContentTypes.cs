@@ -8,18 +8,36 @@ using ToSic.Eav.Types;
 
 namespace ToSic.Eav.App
 {
-	/// <inheritdoc />
-	/// <summary>
-	/// Cache Object for a specific App
-	/// </summary>
-	public partial class AppDataPackage
+    /// <summary>
+    /// Cache Object for a specific App
+    /// </summary>
+    public partial class AppDataPackage
 	{
 	    /// <summary>
 	    /// Gets all ContentTypes in this App
 	    /// </summary>
-	    public IEnumerable<IContentType> ContentTypes => _appTypesFromRepository.Union(Global.AllContentTypes().Values);
+	    public IEnumerable<IContentType> ContentTypes 
+            => _appTypesFromRepository.Union(Global.AllContentTypes().Values);
 
-	    private void BuildCacheForTypesByName(IList<IContentType> allTypes)
+
+	    /// <summary>
+	    /// The second init-command
+	    /// Load content-types
+	    /// </summary>
+	    /// <param name="contentTypes"></param>
+	    internal void InitContentTypes(IList<IContentType> contentTypes)
+	    {
+	        if (Metadata == null || List.Any())
+	            throw new Exception("can't set content types before setting Metadata manager, or after entities-list already exists");
+
+	        _appTypeMap = contentTypes.ToImmutableDictionary(x => x.ContentTypeId, x => x.StaticName);
+	        _appTypesFromRepository = RemoveAliasesForGlobalTypes(contentTypes);
+	        // build types by name
+	        BuildCacheForTypesByName(_appTypesFromRepository);
+	    }
+
+
+        private void BuildCacheForTypesByName(IList<IContentType> allTypes)
 	    {
 	        _appTypesByName = new Dictionary<string, IContentType>(StringComparer.InvariantCultureIgnoreCase);
 
@@ -48,7 +66,8 @@ namespace ToSic.Eav.App
 
 
 	    private IDictionary<string, IContentType> _appTypesByName;
-	    private readonly ImmutableList<IContentType> _appTypesFromRepository;
+	    private ImmutableList<IContentType> _appTypesFromRepository;
+	    private ImmutableDictionary<int, string> _appTypeMap;
 
         /// <summary>
         /// Get a content-type by name
@@ -60,11 +79,18 @@ namespace ToSic.Eav.App
 	            ? _appTypesByName[name]
 	            : Global.FindContentType(name); // note: will return null if not found
 
-        /// <summary>
-        /// Get a content-type by number / id
-        /// </summary>
-        /// <param name="contentTypeId">id of the type as stored in the repository</param>
-        /// <returns>a type object or null if not found</returns>
-	    public IContentType GetContentType(int contentTypeId) => _appTypesFromRepository.FirstOrDefault(c => c.ContentTypeId == contentTypeId);
-    }
+	    /// <summary>
+	    /// Get a content-type by number / id
+	    /// </summary>
+	    /// <param name="contentTypeId">id of the type as stored in the repository</param>
+	    /// <returns>a type object or null if not found</returns>
+	    public IContentType GetContentType(int contentTypeId)
+	    {
+            var found = _appTypesFromRepository.FirstOrDefault(c => c.ContentTypeId == contentTypeId);
+            if (found != null) return found;
+
+            var name = _appTypeMap.FirstOrDefault(x => x.Key == contentTypeId).Value;
+	        return name == null ? null : GetContentType(name);
+	    }
+	}
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
@@ -14,10 +15,6 @@ namespace ToSic.Eav.App
     /// </summary>
     public partial class AppDataPackage: HasLog
 	{
-		#region private entities lists
-		private IEnumerable<IEntity> _publishedEntities;
-		private IEnumerable<IEntity> _draftEntities;
-		#endregion
 
 		#region public properties like AppId, Entities, List, Publisheentities, DraftEntities, 
         /// <summary>
@@ -28,64 +25,115 @@ namespace ToSic.Eav.App
         /// <summary>
         /// The simple list of entities, used in many pipeline parts
         /// </summary>
-        public IEnumerable<IEntity> List { get; } 
+        public IEnumerable<IEntity> List { get; }
+
+        internal Dictionary<int, IEntity> Index { get; }
 
 		/// <summary>
 		/// Get all Published Entities in this App (excluding Drafts)
 		/// </summary>
-		public IEnumerable<IEntity> PublishedEntities => _publishedEntities ?? (_publishedEntities = List.Where(e => e.IsPublished));//.ToDictionary(k => k.Key, v => v.Value));
+        public IEnumerable<IEntity> PublishedEntities => new AppDependentIEnumerable<IEntity>(this, 
+            () => List.Where(e => e.IsPublished).ToList());
 
-	    /// <summary>
-		/// Get all Entities not having a Draft (Entities that are Published (not having a draft) or draft itself)
-		/// </summary>
-		public IEnumerable<IEntity> DraftEntities => _draftEntities ?? (_draftEntities = List.Where(e => e.GetDraft() == null));//.ToDictionary(k => k.Value.EntityId, v => v.Value));
-
+        /// <summary>
+        /// Get all Entities not having a Draft (Entities that are Published (not having a draft) or draft itself)
+        /// </summary>
+        public IEnumerable<IEntity> DraftEntities => new AppDependentIEnumerable<IEntity>(this, 
+            () => List.Where(e => e.GetDraft() == null).ToList());
 
         /// <summary>
         /// Get all Relationships between Entities
         /// </summary>
-        public IEnumerable<EntityRelationshipItem> Relationships { get; }
+        public AppRelationshipManager Relationships { get; }
 
-		/// <summary>
-		/// Gets the DateTime when this CacheItem was populated
-		/// </summary>
-		public DateTime LastRefresh { get; }
+	    private bool _firstLoadCompleted = false;
+	    public int DynamicUpdatesCount = 0;
 		#endregion
 
-		/// <summary>
-		/// Construct a new CacheItem with all required Items
-		/// </summary>
-		public AppDataPackage(
-            int appId,
-            //IDictionary<int, IEntity> entities, 
-            IEnumerable<IEntity> entList,
-            IList<IContentType> contentTypes,
-			IDictionary<int, Dictionary<Guid, IEnumerable<IEntity>>> metadataForGuid, 
-            IDictionary<int, Dictionary<int, IEnumerable<IEntity>>> metadataForNumber,
-			IDictionary<int, Dictionary<string, IEnumerable<IEntity>>> metadataForString, 
-            IEnumerable<EntityRelationshipItem> relationships,
-            AppDataPackageDeferredList selfDeferredEntitiesList, Log parentLog): base("App.Packge", parentLog)
-		{
-		    AppId = appId;
-		    List = entList;
 
-		    _appTypesFromRepository = RemoveAliasesForGlobalTypes(contentTypes);
 
-            MetadataForGuid = metadataForGuid;
-			MetadataForNumber = metadataForNumber;
-			MetadataForString = metadataForString;
+        internal AppDataPackage(int appId, Log parentLog): base("App.Packge", parentLog)
+	    {
+	        AppId = appId;
+            CacheResetTimestamp();  // do this very early, as this number is needed elsewhere
 
-			Relationships = relationships;
+	        Index = new Dictionary<int, IEntity>();
+	        List = Index.Values;
+            Relationships = new AppRelationshipManager(this);
 
-			LastRefresh = DateTime.Now;
-
-            // build types by name
-            BuildCacheForTypesByName(_appTypesFromRepository);
-
-            // ensure that the previously built entities can look up relationships
-		    selfDeferredEntitiesList.AttachApp(this);
-		    BetaDeferredEntitiesList = selfDeferredEntitiesList;
         }
 
-    }
+        /// <summary>
+        /// The first init-command to run after creating the package
+        /// it's needed, so the metadata knows what lookup types are supported
+        /// </summary>
+        /// <param name="metadataTypes"></param>
+	    internal void InitMetadata(ImmutableDictionary<int, string> metadataTypes)
+	        => Metadata = _appTypesFromRepository == null
+	            ? new AppMetadataManager(this, metadataTypes)
+	            : throw new Exception("can't set metadata if content-types are already set");
+
+
+        /// <summary>
+        /// Add an entity to the cache
+        /// </summary>
+	    public void Add(Entity newEntity, int? publishedId)
+	    {
+            if(newEntity.RepositoryId == 0)
+                throw new Exception("Entities without real ID not supported yet");
+
+            CacheResetTimestamp(); 
+	        RemoveObsoleteDraft(newEntity);
+            Index[newEntity.RepositoryId] = newEntity; // add like this, it could also be an update
+	        MapDraftToPublished(newEntity, publishedId);
+            Metadata.Register(newEntity);
+
+	        if (_firstLoadCompleted)
+	            DynamicUpdatesCount++;
+	    }
+
+        /// <summary>
+        /// Reset all item storages and indexes
+        /// </summary>
+	    internal void RemoveAllItems()
+	    {
+	        Index.Clear();
+            CacheResetTimestamp(); 
+            Metadata.Reset();
+	    }
+
+
+        /// <summary>
+        /// Reconnect / wire drafts to the published item
+        /// </summary>
+	    private void MapDraftToPublished(Entity newEntity, int? publishedId)
+	    {
+	        if (newEntity.IsPublished || !publishedId.HasValue) return;
+
+	        // Published Entity is already in the Entities-List as EntityIds is validated/extended before and Draft-EntityID is always higher as Published EntityId
+	        newEntity.PublishedEntity = Index[publishedId.Value];
+	        ((Entity) newEntity.PublishedEntity).DraftEntity = newEntity;
+	        newEntity.EntityId = publishedId.Value;
+	    }
+
+	    /// <summary>
+        /// Check if a new entity previously had a draft, and remove that
+        /// </summary>
+	    private void RemoveObsoleteDraft(IEntity newEntity)
+	    {
+	        var previous = Index.ContainsKey(newEntity.EntityId) ? Index[newEntity.EntityId] : null;
+
+	        // check if we went from draft-branch to published, because in this case, we have to remove the last draft
+	        if (previous == null) return;  // didn't exist, return
+            if(!previous.IsPublished) return; // previous wasn't published, so we couldn't have had a branch
+	        if(!newEntity.IsPublished) return; // new entity isn't published, so we're not switching "back"
+
+	        var draftEnt = previous.GetDraft();
+            var draft = draftEnt?.RepositoryId;
+	        if (draft != null)
+	            Index.Remove(draft.Value);
+	    }
+
+	    public void LoadCompleted() => _firstLoadCompleted = true;
+	}
 }

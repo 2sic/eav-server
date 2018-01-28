@@ -63,9 +63,9 @@ namespace ToSic.Eav.ImportExport.Serializers
             get
             {
                 if (_relList != null) return _relList;
-                var appList = new AppDataPackageDeferredList();
-                appList.AttachApp(App);
-                _relList = appList;
+                //var appList = new AppDataPackageDeferredList();
+                //appList.AttachApp(App);
+                _relList = App; // appList;
                 return _relList;
             }
         }

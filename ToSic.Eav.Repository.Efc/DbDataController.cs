@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.App;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.Implementations.UserInformation;
 using ToSic.Eav.Interfaces;
@@ -11,6 +12,7 @@ using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Repository.Efc.Parts;
+using ICache = ToSic.Eav.DataSources.Caches.ICache;
 
 namespace ToSic.Eav.Repository.Efc
 {
@@ -258,6 +260,14 @@ namespace ToSic.Eav.Repository.Efc
         /// <remarks>Usefull if many changes are made in a batch and Cache should be purged after that batch</remarks>
         private bool _purgeAppCacheOnSave = true;
 
+        public void DoButSkipAppCachePurge(Action action)
+        {
+            var before = _purgeAppCacheOnSave;
+            _purgeAppCacheOnSave = false;
+            action.Invoke();
+            _purgeAppCacheOnSave = before;
+        }
+
         public void DoWithDelayedCacheInvalidation(Action action)
         {
             Log.Add("DB do with delayed cache invalidation - start");
@@ -273,10 +283,14 @@ namespace ToSic.Eav.Repository.Efc
         public void DoWhileQueuingVersioning(Action action) => Versioning.QueueDuringAction(action);
         public void DoWhileQueueingRelationships(Action action) => Relationships.DoWhileQueueingRelationships(action);
 
-        public List<int> Save(List<IEntity> entities, SaveOptions saveOptions) => Entities.SaveEntity(entities, saveOptions);
+        public List<int> Save(List<IEntity> entities, SaveOptions saveOptions) 
+            => Entities.SaveEntity(entities, saveOptions);
 
-        public int Save(IEntity entity, SaveOptions saveOptions) => Entities.SaveEntity(entity, saveOptions);
-        public void Save(List<IContentType> contentTypes, SaveOptions saveOptions) => ContentType.ExtendSaveContentTypes(contentTypes, saveOptions /* SaveOptions.Build(ZoneId)*/);
+        public int Save(IEntity entity, SaveOptions saveOptions) 
+            => Entities.SaveEntity(entity, saveOptions);
+
+        public void Save(List<IContentType> contentTypes, SaveOptions saveOptions) 
+            => ContentType.ExtendSaveContentTypes(contentTypes, saveOptions);
 
         #endregion
     }

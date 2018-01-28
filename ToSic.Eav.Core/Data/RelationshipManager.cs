@@ -20,7 +20,7 @@ namespace ToSic.Eav.Data
 		public RelationshipManager(IEntityLight entity, IEnumerable<EntityRelationshipItem> allRelationships)
 		{
 			_entity = entity;
-			AllRelationships = allRelationships;
+            AllRelationships = allRelationships ?? new List<EntityRelationshipItem>();
 		}
 
 		/// <inheritdoc />

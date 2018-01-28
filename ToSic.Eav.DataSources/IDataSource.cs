@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.ValueProvider;
+using ICache = ToSic.Eav.DataSources.Caches.ICache;
 
 namespace ToSic.Eav.DataSources
 {
 	/// <summary>
 	/// Public interface for an Eav Data Source
 	/// </summary>
-	public interface IDataSource
+	public interface IDataSource : ICacheExpiring
 	{
 		#region Data Interfaces
 
@@ -96,23 +97,9 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         string CachePartialKey { get; }
         string CacheFullKey { get; }
-        /// <summary>
-        /// try to return the upstream creation date
-        /// </summary>
-        DateTime CacheLastRefresh { get; }
 
         bool TempUsesDynamicOut { get; }
         #endregion
     }
 
-	///// <summary>
-	///// Internal interface for building the object
-	///// </summary>
-	//public interface IDataSourceInternals
-	//{
-	//    #region Configuration -- not implemented yet
-	//    // IEntity ConfigEntity { set; }
-	//    // Dictionary<string, string> ConfigValues { set; }
-	//    #endregion
-	//}
 }

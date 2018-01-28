@@ -35,7 +35,8 @@ namespace ToSic.Eav.Apps
         private AppRuntime _runtime;
         #endregion
 
-        internal DbDataController DataController => _eavContext ?? (_eavContext = DbDataController.Instance(ZoneId, AppId, Log));
+        internal DbDataController DataController 
+            => _eavContext ?? (_eavContext = DbDataController.Instance(ZoneId, AppId, Log));
         private DbDataController _eavContext;
 
 

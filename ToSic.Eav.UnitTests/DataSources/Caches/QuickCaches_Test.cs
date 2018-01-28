@@ -20,7 +20,6 @@ namespace ToSic.Eav.UnitTests.DataSources.Caches
             Assert.IsFalse(listCache.ListHas(ds.CacheFullKey), "Should not have it in cache yet");
 
             // manually add to cache
-            // listCache.ListSet(ds.CacheFullKey, ds.LightList, ds.CacheLastRefresh);
             listCache.ListSet(ds[Constants.DefaultStreamName]);
             Assert.IsTrue(listCache.ListHas(ds.CacheFullKey + "|Default"), "Should have it in cache now");
             Assert.IsTrue(listCache.ListHas(ds[Constants.DefaultStreamName]), "Should also have the DS default");
@@ -57,7 +56,7 @@ namespace ToSic.Eav.UnitTests.DataSources.Caches
             listCache.ListDefaultRetentionTimeInSeconds = 1;
             Assert.IsFalse(listCache.ListHas(ds.CacheFullKey), "Should not have it in cache yet");
 
-            listCache.ListSet(ds.CacheFullKey, ds.List, ds.CacheLastRefresh);
+            listCache.ListSet(ds.CacheFullKey, ds.List, ds.CacheTimestamp);
             Assert.IsTrue(listCache.ListHas(ds.CacheFullKey), "Should have it in cache now");
 
             Thread.Sleep(400);
