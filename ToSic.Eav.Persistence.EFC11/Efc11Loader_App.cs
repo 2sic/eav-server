@@ -64,6 +64,8 @@ namespace ToSic.Eav.Persistence.Efc
 
             Log.Add($"timers sql:sqlAll:{_sqlTotalTime}");
 
+            app.LoadCompleted(); // tell app that loading is done
+            Log.Add($"app dynamic load count: {app.DynamicUpdatesCount}");
             return app;
         }
 

@@ -32,19 +32,12 @@ namespace ToSic.Eav.App
 		/// <summary>
 		/// Get all Published Entities in this App (excluding Drafts)
 		/// </summary>
-		//public IEnumerable<IEntity> PublishedEntities => _publishedEntities 
-  //          ?? (_publishedEntities = List.Where(e => e.IsPublished));
-	 //   private IEnumerable<IEntity> _publishedEntities;
-
         public IEnumerable<IEntity> PublishedEntities => new AppDependentIEnumerable<IEntity>(this, 
             () => List.Where(e => e.IsPublished).ToList());
 
         /// <summary>
         /// Get all Entities not having a Draft (Entities that are Published (not having a draft) or draft itself)
         /// </summary>
-        //   public IEnumerable<IEntity> DraftEntities => _draftEntities 
-        //       ?? (_draftEntities = List.Where(e => e.GetDraft() == null));
-        //private IEnumerable<IEntity> _draftEntities;
         public IEnumerable<IEntity> DraftEntities => new AppDependentIEnumerable<IEntity>(this, 
             () => List.Where(e => e.GetDraft() == null).ToList());
 
@@ -53,6 +46,7 @@ namespace ToSic.Eav.App
         /// </summary>
         public AppRelationshipManager Relationships { get; }
 
+	    private bool _firstLoadCompleted = false;
 	    public int DynamicUpdatesCount = 0;
 		#endregion
 
@@ -88,11 +82,14 @@ namespace ToSic.Eav.App
             if(newEntity.RepositoryId == 0)
                 throw new Exception("Entities without real ID not supported yet");
 
-            CacheResetTimestamp(); // for relationships
+            CacheResetTimestamp(); 
 	        RemoveObsoleteDraft(newEntity);
             Index[newEntity.RepositoryId] = newEntity; // add like this, it could also be an update
 	        MapDraftToPublished(newEntity, publishedId);
             Metadata.Register(newEntity);
+
+	        if (_firstLoadCompleted)
+	            DynamicUpdatesCount++;
 	    }
 
         /// <summary>
@@ -101,7 +98,7 @@ namespace ToSic.Eav.App
 	    internal void RemoveAllItems()
 	    {
 	        Index.Clear();
-            CacheResetTimestamp(); // for relationships
+            CacheResetTimestamp(); 
             Metadata.Reset();
 	    }
 
@@ -136,5 +133,7 @@ namespace ToSic.Eav.App
 	        if (draft != null)
 	            Index.Remove(draft.Value);
 	    }
+
+	    public void LoadCompleted() => _firstLoadCompleted = true;
 	}
 }
