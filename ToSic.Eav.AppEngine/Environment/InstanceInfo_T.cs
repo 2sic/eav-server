@@ -14,5 +14,7 @@ namespace ToSic.Eav.Apps.Environment
         public abstract int Id { get; }
 
         public abstract int PageId { get; }
+
+        public abstract int TennantId { get; }
     }
 }

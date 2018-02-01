@@ -19,7 +19,6 @@ namespace ToSic.Eav.Security.Permissions
 
         private IEnumerable<IEntity> _permissionList;
 
-
         /// <summary>
         /// Initialize this object so it can then give information regarding the permissions of an entity.
         /// Uses a GUID as identifier because that survives export/import. 
