@@ -2,7 +2,7 @@
 {
     public interface IEnvironment
     {
-        IPermissions Permissions { get; }
+        IPermissions Permissions { get; set; }
 
         IZoneMapper ZoneMapper { get; }
 

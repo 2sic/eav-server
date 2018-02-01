@@ -15,5 +15,9 @@ namespace ToSic.Eav.Apps.Interfaces
         /// Initialize this object so it can then give information regarding the permissions of a type.
         /// </summary>
         PermissionController TypePermissions(IContentType targetType, IEntity targetItem, Log parentLog, IInstanceInfo module = null);
+
+        IPagePublishing PagePublisher(Log parentLog);
+
+        IEnvironment Environment(Log parentLog);
     }
 }
