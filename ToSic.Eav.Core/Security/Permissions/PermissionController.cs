@@ -100,5 +100,6 @@ namespace ToSic.Eav.Security.Permissions
         protected abstract bool EnvironmentGivesPermission(string condition/*, out bool doesPermissionAllow*/);
 
         protected abstract string CurrentUser { get; }
+
     }
 }

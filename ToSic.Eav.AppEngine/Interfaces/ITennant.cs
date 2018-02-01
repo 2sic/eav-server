@@ -26,5 +26,8 @@
         /// </summary>
         string RootPath { get; }
 
+
+        bool RefactorUserIsAdmin { get; }
+
     }
 }

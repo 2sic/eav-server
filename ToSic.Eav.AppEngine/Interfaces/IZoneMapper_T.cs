@@ -5,8 +5,8 @@ namespace ToSic.Eav.Apps.Interfaces
 {
     public interface IZoneMapper<T> : IZoneMapper
     {
-        int GetZoneId(Tennant<T> tennant);
+        int GetZoneId(ITennant tennant);
 
-        List<TempTempCulture> CulturesWithState(T tennant, int zoneId);
+        //List<TempTempCulture> CulturesWithState(ITennant tennant, int zoneId);
     }
 }

@@ -9,13 +9,13 @@ namespace ToSic.Eav.Apps
     public class App<T>: App
     {
 
-        protected IEnvironment<T> Env;
-        public Tennant<T> Tennant;
+        protected IEnvironment Env;
+        public ITennant Tennant;
 
-        protected App(IEnvironment<T> env, int zoneId, int appId, Tennant<T> tennant, bool allowSideEffects, Log parentLog) 
+        protected App(IEnvironment env, int zoneId, int appId, ITennant tennant, bool allowSideEffects, Log parentLog) 
             : base(zoneId != AutoLookup    // if zone is missing, try to find it; if still missing, throw error
                   ? zoneId
-                  : env.ZoneMapper.GetZoneId(tennant), 
+                  : env.ZoneMapper.GetZoneId(tennant.Id), 
                   appId, 
                   allowSideEffects, 
                   parentLog,
@@ -43,7 +43,7 @@ namespace ToSic.Eav.Apps
         protected override DataSources.App BuildData()
         {
             var xData = base.BuildData();
-            var languagesActive = Env.ZoneMapper.CulturesWithState(Tennant.Settings, ZoneId)
+            var languagesActive = Env.ZoneMapper.CulturesWithState(Tennant.Id/*.Settings*/, ZoneId)
                 .Any(c => c.Active);
             xData.DefaultLanguage = languagesActive
                 ? Tennant.DefaultLanguage
