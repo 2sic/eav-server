@@ -23,9 +23,6 @@ namespace ToSic.Eav.Apps.Environment
 
         public abstract bool RefactorUserIsAdmin { get; }
 
-        protected Tennant(T settings)
-        {
-            Settings = settings;
-        }
+        protected Tennant(T settings) => Settings = settings;
     }
 }
