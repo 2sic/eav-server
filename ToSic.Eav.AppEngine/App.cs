@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps.Interfaces;
-using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
-using ToSic.Eav.DataSources.Pipeline;
-using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
@@ -13,7 +9,7 @@ using ToSic.Eav.ValueProvider;
 
 namespace ToSic.Eav.Apps
 {
-    public class App: HasLog, IApp
+    public partial class App: HasLog, IApp
     {
         protected const int AutoLookup = -1;
 
@@ -35,24 +31,6 @@ namespace ToSic.Eav.Apps
         protected const string ContentAppName = Constants.ContentAppName;
 
 
-
-
-
-
-        /// <summary>
-        /// needed to initialize data - must always happen a bit later because the show-draft info isn't available when creating the first App-object.
-        /// todo: later this should be moved to initialization of this object
-        /// </summary>
-        /// <param name="showDrafts"></param>
-        /// <param name="versioningEnabled"></param>
-        /// <param name="configurationValues">this is needed for providing parameters to the data-query-system</param>
-        public void InitData(bool showDrafts, bool versioningEnabled, IValueCollectionProvider configurationValues)
-        {
-            Log.Add($"init data drafts:{showDrafts}, vers:{versioningEnabled}, hasConf:{configurationValues != null}");
-            ConfigurationProvider = configurationValues;
-            ShowDraftsInData = showDrafts;
-            VersioningEnabled = versioningEnabled;
-        }
 
 
         internal App(int zoneId, int appId, bool allowSideEffects, Log parentLog, string logMsg)
@@ -116,79 +94,6 @@ namespace ToSic.Eav.Apps
         }
         #endregion
 
-        #region Data
-
-        public IAppData Data => _data ?? (_data = BuildData());
-        private IAppData _data;
-
-        protected virtual DataSources.App BuildData()
-        {
-            Log.Add("configure on demand start");
-            if (ConfigurationProvider == null)
-                throw new Exception("Cannot provide Data for the object App as crucial information is missing. " +
-                                    "Please call InitData first to provide this data.");
-
-            // ModulePermissionController does not work when indexing, return false for search
-            var initialSource = DataSource.GetInitialDataSource(ZoneId, AppId, ShowDraftsInData, 
-                ConfigurationProvider as ValueCollectionProvider, Log);
-
-            // todo: probably use the full configuration provider from function params, not from initial source?
-            var xData = DataSource.GetDataSource<DataSources.App>(initialSource.ZoneId,
-                initialSource.AppId, initialSource, initialSource.ConfigurationProvider, Log);
-
-            Log.Add("configure on demand completed");
-            return xData;
-        }
-
-
-        #endregion
-
-
-        #region query stuff
-        /// <summary>
-        /// Cached list of queries
-        /// </summary>
-        protected IDictionary<string, IDataSource> Queries;
-
-        /// <summary>
-        /// Accessor to queries. Use like:
-        /// - App.Query.Count
-        /// - App.Query.ContainsKey(...)
-        /// - App.Query["One Event"].List
-        /// </summary>
-        public IDictionary<string, IDataSource> Query
-        {
-            get
-            {
-                if (Queries != null) return Queries;
-
-                if (ConfigurationProvider == null)
-                    throw new Exception("Can't use app-queries, because the necessary configuration provider hasn't been initialized. Call InitData first.");
-                Queries = DataPipeline.AllPipelines(ZoneId, AppId, ConfigurationProvider, Log);
-                return Queries;
-            }
-        }
-
-        internal DeferredPipelineQuery GetQuery(string name)
-        {
-            if (name.StartsWith(Global.GlobalQueryPrefix))
-                return GetGlobalQuery(name);
-
-            // Try to find the query, abort if not found
-            if (Query.ContainsKey(name) && Query[name] is DeferredPipelineQuery query)
-                return query;
-
-            // not found
-            return null;
-        }
-
-        private DeferredPipelineQuery GetGlobalQuery(string name)
-        {
-            var qent = Global.FindQuery(name) 
-                ?? throw new Exception($"can't find global query {name}");
-            return new DeferredPipelineQuery(ZoneId, AppId, qent, ConfigurationProvider);
-        }
-
-        #endregion 
+        
     }
 }

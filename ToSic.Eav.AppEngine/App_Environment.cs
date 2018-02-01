@@ -1,19 +1,17 @@
 ﻿using System;
-using System.Linq;
-using ToSic.Eav.Apps.Environment;
 using ToSic.Eav.Apps.Interfaces;
 using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Apps
 {
-    public class App<T>: App
+    public partial class App
     {
 
         protected IEnvironment Env;
         public ITennant Tennant;
 
         protected App(IEnvironment env, int zoneId, int appId, ITennant tennant, bool allowSideEffects, Log parentLog) 
-            : base(zoneId != AutoLookup    // if zone is missing, try to find it; if still missing, throw error
+            : this(zoneId != AutoLookup    // if zone is missing, try to find it; if still missing, throw error
                   ? zoneId
                   : env.ZoneMapper.GetZoneId(tennant.Id), 
                   appId, 
@@ -34,25 +32,5 @@ namespace ToSic.Eav.Apps
 
         #endregion
 
-        #region Data
-
-        /// <summary>
-        /// Override and enhance with environment data like current user, languages, etc.
-        /// </summary>
-        /// <returns></returns>
-        protected override DataSources.App BuildData()
-        {
-            var xData = base.BuildData();
-            var languagesActive = Env.ZoneMapper.CulturesWithState(Tennant.Id/*.Settings*/, ZoneId)
-                .Any(c => c.Active);
-            xData.DefaultLanguage = languagesActive
-                ? Tennant.DefaultLanguage
-                : "";
-            xData.CurrentUserName = Env.User.CurrentUserIdentityToken;
-
-            return xData;
-        }
-
-        #endregion
     }
 }

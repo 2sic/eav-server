@@ -115,6 +115,7 @@
     <Compile Include="Interfaces\ICacheExpiring.cs" />
     <Compile Include="Plumbing\Booting\Boot.cs" />
     <Compile Include="Plumbing\Booting\IConfigurationLoader.cs" />
+    <Compile Include="Plumbing\SingleInitNullable_T.cs" />
     <Compile Include="Repositories\RepositoryInfo.cs" />
     <Compile Include="Repositories\RepositoryInfoOfFolder.cs" />
     <Compile Include="Repositories\RepositoryTypes.cs" />

@@ -1,5 +1,4 @@
-﻿using System;
-using ToSic.Eav.Apps.Interfaces;
+﻿using ToSic.Eav.Apps.Interfaces;
 
 namespace ToSic.Eav.Apps.Environment
 {

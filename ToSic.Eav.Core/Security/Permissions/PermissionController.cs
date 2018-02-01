@@ -84,8 +84,8 @@ namespace ToSic.Eav.Security.Permissions
                     && TargetItem.Owner == CurrentUser)
                     return true;
 
-                if (EnvironmentGivesPermission(condition/*, out var doesPermissionAllow*/))
-                    return true; // doesPermissionAllow;
+                if (EnvironmentGivesPermission(condition))
+                    return true;
             }
             catch
             {
@@ -97,7 +97,7 @@ namespace ToSic.Eav.Security.Permissions
             return false;
         }
 
-        protected abstract bool EnvironmentGivesPermission(string condition/*, out bool doesPermissionAllow*/);
+        protected abstract bool EnvironmentGivesPermission(string condition);
 
         protected abstract string CurrentUser { get; }
 
