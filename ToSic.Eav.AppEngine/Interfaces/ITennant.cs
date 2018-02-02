@@ -24,10 +24,11 @@
         /// <summary>
         /// The root path of the tennant
         /// </summary>
-        string RootPath { get; }
+        string SxcPath { get; }
 
 
         bool RefactorUserIsAdmin { get; }
 
+        string ContentPath { get; }
     }
 }

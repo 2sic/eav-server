@@ -26,7 +26,7 @@ namespace ToSic.Eav.Apps
         }
 
         #region Paths
-        protected string GetRootPath() => System.IO.Path.Combine(Tennant.RootPath, Folder);
+        protected string GetRootPath() => System.IO.Path.Combine(Tennant.SxcPath, Folder);
 
         public string PhysicalPath => Env.MapPath(GetRootPath());
 
