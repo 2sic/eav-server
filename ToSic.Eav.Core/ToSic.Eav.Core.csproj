@@ -110,6 +110,7 @@
     <Compile Include="Data\EntityEnumerator.cs" />
     <Compile Include="Data\MetadataOf.cs" />
     <Compile Include="Data\Query\Entity.cs" />
+    <Compile Include="Identity\Mapper.cs" />
     <Compile Include="Interfaces\ICacheExpirable.cs" />
     <Compile Include="Interfaces\ICacheDependent.cs" />
     <Compile Include="Interfaces\ICacheExpiring.cs" />
