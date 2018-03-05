@@ -73,7 +73,7 @@ namespace ToSic.Eav.ValueProvider
         /// <param name="format">format specification</param>
         /// <returns>formatted string</returns>
         /// <remarks></remarks>
-        public string FormatString(string value, string format)
+        public static string FormatString(string value, string format)
         {
             if (string.IsNullOrWhiteSpace(format))// format.Trim() == string.Empty)
             {
