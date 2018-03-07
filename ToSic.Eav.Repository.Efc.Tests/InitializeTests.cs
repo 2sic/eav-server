@@ -15,7 +15,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             Testing.Shared.InitializeTests.ConfigureEfcDi(sc =>
             {
                 // these are only used in Repository.Efc.Tests
-                sc.AddTransient<Apps.ImportExport.XmlExporter, ToSxcXmlExporter>();
+                sc.AddTransient<Apps.ImportExport.XmlExporter, DnnXmlExporter>();
 
                 sc.AddTransient<IImportExportEnvironment, ImportExportEnvironmentMock>();
             });

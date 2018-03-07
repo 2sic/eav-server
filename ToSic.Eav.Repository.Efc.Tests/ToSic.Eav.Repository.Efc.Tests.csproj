@@ -137,6 +137,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\2sxc-dnn742\Website\DesktopModules\ToSIC_SexyContent\2sxc Dnn\2sxc Dnn.csproj">
+      <Project>{a94de6d7-d1e6-4be2-b5b5-dc4a6a61cd80}</Project>
+      <Name>2sxc Dnn</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\2sxc-dnn742\Website\DesktopModules\ToSIC_SexyContent\2sxc.csproj">
       <Project>{d4250011-b9be-4326-9736-4f0122c79802}</Project>
       <Name>2sxc</Name>

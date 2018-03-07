@@ -12,6 +12,8 @@ namespace ToSic.Eav.Apps.Interfaces
         /// <returns></returns>
         int GetZoneId(int tennantId);
 
+        int GetZoneId(ITennant tennant);
+
 
         ITennant Tennant(int zoneId);
 

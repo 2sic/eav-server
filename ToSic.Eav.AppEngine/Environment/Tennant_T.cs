@@ -19,13 +19,13 @@ namespace ToSic.Eav.Apps.Environment
         public abstract string Name { get; }
 
         /// <inheritdoc />
-        public abstract string RootPath { get; }
+        public abstract string SxcPath { get; }
 
         public abstract bool RefactorUserIsAdmin { get; }
 
-        protected Tennant(T settings)
-        {
-            Settings = settings;
-        }
+        public abstract string ContentPath { get; }
+
+
+        protected Tennant(T settings) => Settings = settings;
     }
 }

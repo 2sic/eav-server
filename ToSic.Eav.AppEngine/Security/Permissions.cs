@@ -32,5 +32,6 @@ namespace ToSic.Eav.Apps.Security
         public bool UserMayTranslate;
 
 
+        bool IPermissions.UserMayEditContent(IInstanceInfo instanceInfo) => false;
     }
 }

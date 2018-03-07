@@ -16,7 +16,6 @@ namespace ToSic.Eav.ValueProvider
 		/// <summary>
 		/// List of all Configurations for this DataSource
 		/// </summary>
-		//public IDictionary<string, string> configList { get; internal set; }
 		private readonly TokenReplace _reusableTokenReplace;
 
 		/// <summary>

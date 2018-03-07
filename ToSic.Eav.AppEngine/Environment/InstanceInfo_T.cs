@@ -1,5 +1,4 @@
-﻿using System;
-using ToSic.Eav.Apps.Interfaces;
+﻿using ToSic.Eav.Apps.Interfaces;
 
 namespace ToSic.Eav.Apps.Environment
 {
@@ -15,5 +14,9 @@ namespace ToSic.Eav.Apps.Environment
         public abstract int Id { get; }
 
         public abstract int PageId { get; }
+
+        public abstract int TennantId { get; }
+
+        public abstract bool IsPrimary { get; }
     }
 }

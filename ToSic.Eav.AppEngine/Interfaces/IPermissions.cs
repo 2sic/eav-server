@@ -2,6 +2,11 @@
 {
     public interface IPermissions
     {
-        bool UserMayEditContent { get; }
+        // Todo: convert to method receiving the InstanceInfo
+        // todo: probably merge with the other permissionscontroller
+        bool UserMayEditContent(IInstanceInfo instanceInfo);
+
+
+
     }
 }

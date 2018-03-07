@@ -110,9 +110,13 @@
     <Compile Include="Data\EntityEnumerator.cs" />
     <Compile Include="Data\MetadataOf.cs" />
     <Compile Include="Data\Query\Entity.cs" />
+    <Compile Include="Identity\Mapper.cs" />
     <Compile Include="Interfaces\ICacheExpirable.cs" />
     <Compile Include="Interfaces\ICacheDependent.cs" />
     <Compile Include="Interfaces\ICacheExpiring.cs" />
+    <Compile Include="Plumbing\Booting\Boot.cs" />
+    <Compile Include="Plumbing\Booting\IConfigurationLoader.cs" />
+    <Compile Include="Plumbing\SingleInitNullable_T.cs" />
     <Compile Include="Repositories\RepositoryInfo.cs" />
     <Compile Include="Repositories\RepositoryInfoOfFolder.cs" />
     <Compile Include="Repositories\RepositoryTypes.cs" />

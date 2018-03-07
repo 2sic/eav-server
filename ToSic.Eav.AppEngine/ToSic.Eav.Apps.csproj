@@ -28,4 +28,8 @@
     <Reference Include="System.Web" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Assets\Adam\" />
+  </ItemGroup>
+
 </Project>
