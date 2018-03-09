@@ -64,13 +64,13 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Create a new Entity. Used to create InMemory Entities that are not persisted to the EAV SqlStore.
         /// </summary>
-        internal EntityLight(int appId, int entityId, Guid? guid, object contentType, Dictionary<string, object> values, string titleAttribute = null, DateTime? modified = null)
+        internal EntityLight(int appId, int entityId, Guid? guid, IContentType contentType, Dictionary<string, object> values, string titleAttribute = null, DateTime? modified = null)
         {
             AppId = appId;
             EntityId = entityId;
             if(guid != null) EntityGuid = guid.Value;
-            SetContentTypeFromNameOrObject(appId, contentType);
-            LightAttributesForInternalUseOnlyForNow = values;//.ConvertToAttributes();
+            Type = contentType;// CreateContentType(appId, contentType);
+            LightAttributesForInternalUseOnlyForNow = values;
             try
             {
                 if (titleAttribute != null)
@@ -83,34 +83,7 @@ namespace ToSic.Eav.Data
             MetadataFor = new MetadataFor();
             if (modified.HasValue)
                 Modified = modified.Value;
-            Relationships = new RelationshipManager(this, null /*new EntityRelationshipItem[0]*/);
-        }
-
-        ///// <inheritdoc />
-        ///// <summary>
-        ///// Create a brand new Entity. 
-        ///// Mainly used for entities which are created for later saving
-        ///// </summary>
-        //public EntityLight(int appId, Guid entityGuid, object contentType, Dictionary<string, object> values) : this(appId, 0, contentType, values)
-        //{
-        //    EntityGuid = entityGuid;
-        //}
-
-
-        private void SetContentTypeFromNameOrObject(int appId, object contentType)
-        {
-            switch (contentType)
-            {
-                case IContentType _:
-                    Type = contentType as IContentType;
-                    break;
-                case string _:
-                    Type = new ContentType(appId, contentType as string);
-                    break;
-                default:
-                    throw new Exception(
-                        $"content type should be string or of type IContentType - it's {contentType.GetType().FullName}");
-            }
+            Relationships = new RelationshipManager(this, null);
         }
 
 

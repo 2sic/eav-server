@@ -64,17 +64,11 @@ namespace ToSic.Eav.Apps
 
         public void MetadataEnsureTypeAndSingleEntity(string scope, string setName, string label, int appAssignment, Dictionary<string, object> values)
         {
-            //ToSicEavAttributeSets contentType;
             if (!DataController.AttribSet.DbAttribSetExists(AppId, setName))
             {
-                //contentType = 
                 DataController.AttribSet.PrepareDbAttribSet(setName, label, setName, scope, false, null);
                 DataController.SqlDb.SaveChanges();
             }
-            //else
-            //{
-            //    contentType = DataController.AttribSet.GetDbAttribSet(setName);
-            //}
 
             if (values == null)
                 values = new Dictionary<string, object>();

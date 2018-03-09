@@ -67,7 +67,7 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// This determines if the access to the properties will use light-objects, or IAttributes containing multi-language objects
         /// </summary>
-        private readonly bool _useLightModel;
+        private bool _useLightModel;
         #endregion
 
         #region simple direct accessors
@@ -88,8 +88,19 @@ namespace ToSic.Eav.Data
         /// </summary>
         internal Entity() { }
 
-        public Entity(int appId, int entityId, object contentType, Dictionary<string, object> values, string titleAttribute = null, DateTime? modified = null, Guid? entityGuid = null) 
+        public Entity(int appId, int entityId, string contentType, Dictionary<string, object> values, string titleAttribute = null, DateTime? modified = null, Guid? entityGuid = null)
+            : base(appId, entityId, entityGuid, new ContentType(appId, contentType), values, titleAttribute, modified)
+        {
+            MapAttributesInConstructor(values);
+        }
+
+        public Entity(int appId, int entityId, IContentType contentType, Dictionary<string, object> values, string titleAttribute = null, DateTime? modified = null, Guid? entityGuid = null) 
             : base(appId, entityId, entityGuid, contentType, values, titleAttribute, modified)
+        {
+            MapAttributesInConstructor(values);
+        }
+
+        private void MapAttributesInConstructor(Dictionary<string, object> values)
         {
             if (values.All(x => x.Value is IAttribute))
                 Attributes = values.ToDictionary(x => x.Key, x => x.Value as IAttribute);
@@ -102,15 +113,9 @@ namespace ToSic.Eav.Data
         /// Create a brand new Entity. 
         /// Mainly used for entities which are created for later saving
         /// </summary>
-        public Entity(int appId, Guid entityGuid, object contentType, Dictionary<string, object> values) 
+        public Entity(int appId, Guid entityGuid, IContentType contentType, Dictionary<string, object> values) 
             : this(appId, 0, contentType, values, entityGuid: entityGuid)
-        {
-            // 2017-12-05 2dm - merged this with the other constructor, remove in March 2018 if everything works
-            //if (values.All(x => x.Value is IAttribute))
-            //    Attributes = values.ToDictionary(x => x.Key, x => x.Value as IAttribute);
-            //else
-            //    _useLightModel = true;
-        }
+        {}
         
 
         /// <inheritdoc />

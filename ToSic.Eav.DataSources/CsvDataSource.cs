@@ -6,6 +6,7 @@ using System.IO;
 using System.Web;
 using ToSic.Eav.DataSources.VisualQuery;
 using ToSic.Eav.Interfaces;
+using ContentTypeBuilder = ToSic.Eav.Data.Builder.ContentTypeBuilder;
 
 
 namespace ToSic.Eav.DataSources
@@ -133,7 +134,7 @@ namespace ToSic.Eav.DataSources
                         entityValues.Add(parser.FieldHeaders[i], fields[i]);
                     }
 
-                    entityList.Add(new Data.Entity(Constants.TransientAppId, entityId, ContentType, entityValues, entityTitleName));
+                    entityList.Add(new Data.Entity(Constants.TransientAppId, entityId, ContentTypeBuilder.Fake(ContentType), entityValues, entityTitleName));
                 }
             }
             Log.Add($"found:{entityList.Count}");

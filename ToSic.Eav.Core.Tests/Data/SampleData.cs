@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Data;
+using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Core.Tests.Data
 {
@@ -7,6 +8,29 @@ namespace ToSic.Eav.Core.Tests.Data
     {
         public const int AppId = -1;
 
+        static readonly ContentType CtTestType = new ContentType(AppId, "TestType")
+        {
+            Attributes = new List<IAttributeDefinition>
+            {
+                new AttributeDefinition(AppId, "FirstName", "String", true, 0, 0),
+                new AttributeDefinition(AppId, "LastName", "String", false, 0, 0),
+                new AttributeDefinition(AppId, "Phone", "String", false, 0, 0),
+                new AttributeDefinition(AppId, "Age", "Number", false, 0,0)
+            }
+        };
+
+
+        static readonly ContentType CtPet = new ContentType(AppId, "Pet")
+        {
+            Attributes = new List<IAttributeDefinition>
+            {
+                new AttributeDefinition(AppId, "FirstName", "String", true, 0, 0),
+                new AttributeDefinition(AppId, "LastName", "String", false, 0, 0),
+                //new AttributeDefinition(AppId, "Birthday", "DateTime", true, 0, 0),
+                new AttributeDefinition(AppId, "Phone", "String", false, 0, 0),
+                new AttributeDefinition(AppId, "Age", "Number", false, 0,0)
+            }
+        };
 
         public static Interfaces.IEntity TestEntityDaniel()
         {
@@ -17,7 +41,7 @@ namespace ToSic.Eav.Core.Tests.Data
                 {"Phone", "+41 81 750 67 70"},
                 {"Age", 37}
             };
-            var entDaniel = new Entity(AppId, 1, "TestType", valDaniel, "FirstName");
+            var entDaniel = new Entity(AppId, 1, CtTestType, valDaniel, "FirstName");
             return entDaniel;
         }
 
@@ -31,7 +55,7 @@ namespace ToSic.Eav.Core.Tests.Data
                 {"Age", 6}
             };
 
-            var entLeonie = new Entity(AppId, 2, "TestType", valLeonie, "FirstName");
+            var entLeonie = new Entity(AppId, 2, CtTestType, valLeonie, "FirstName");
             return entLeonie;
         }
         public static Interfaces.IEntity TestEntityPet(int petNumber)
@@ -44,7 +68,7 @@ namespace ToSic.Eav.Core.Tests.Data
                 {"Age", petNumber}
             };
 
-            var entPet = new Entity(AppId, 1000 + petNumber, "Pet", valsPet, "FirstName");
+            var entPet = new Entity(AppId, 1000 + petNumber, CtPet, valsPet, "FirstName");
             return entPet;
         }
         

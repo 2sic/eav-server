@@ -22,6 +22,9 @@ namespace ToSic.Eav.Data.Builder
         public const string DynTypeDefScope = Constants.ScopeSystem;
         public const string DynTypeDefDescription = "Dynamic content type";
 
+        public static ContentType Fake(string typeName)
+            => DynamicContentType(Constants.TransientAppId, typeName);
+
         public static ContentType DynamicContentType(int appId, string typeName, string scope = DynTypeDefScope)
             => new ContentType(appId, typeName, typeName, DynTypeId, scope, DynTypeDefDescription, null, 0, 0,
                 false, null)

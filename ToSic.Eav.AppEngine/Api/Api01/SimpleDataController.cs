@@ -7,7 +7,6 @@ using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
-using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repository.Efc;
 
 // This is the simple API used to quickly create/edit/delete entities
@@ -68,16 +67,17 @@ namespace ToSic.Eav.Api.Api01
             Log.Add($"create type:{contentTypeName}");
 
             // ensure the type really exists
-            var attributeSet = _context.AttribSet.GetDbAttribSets().FirstOrDefault(item => item.Name == contentTypeName);
-            if (attributeSet == null)
+            var type = _appManager.Read.ContentTypes.Get(contentTypeName);
+            //var attributeSet = _context.AttribSet.GetDbAttribSets().FirstOrDefault(item => item.Name == contentTypeName);
+            if (type /*attributeSet*/ == null)
                 throw new ArgumentException("Content type '" + contentTypeName + "' does not exist.");
 
-            var importEntity = multiValues.Select(values => BuildEntity(attributeSet, values)).ToList();
+            var importEntity = multiValues.Select(values => BuildEntity(type/*attributeSet*/, values)).ToList();
 
             _appManager.Entities.Save(importEntity);
         }
 
-        private IEntity BuildEntity(ToSicEavAttributeSets attributeSet, Dictionary<string, object> values)
+        private IEntity BuildEntity(/*ToSicEavAttributeSets*/IContentType type, Dictionary<string, object> values)
         {
             // ensure it's case insensitive...
             values = new Dictionary<string, object>(values, StringComparer.OrdinalIgnoreCase);
@@ -86,8 +86,8 @@ namespace ToSic.Eav.Api.Api01
                 values.Add(Constants.EntityFieldGuid, Guid.NewGuid());
 
             var eGuid = Guid.Parse(values[Constants.EntityFieldGuid].ToString());
-            var importEntity = new Entity(_appId, eGuid, attributeSet.StaticName, new Dictionary<string, object>());
-            AppendAttributeValues(importEntity, attributeSet, ConvertEntityRelations(values), _defaultLanguageCode, false,
+            var importEntity = new Entity(_appId, eGuid, type, new Dictionary<string, object>());
+            AppendAttributeValues(importEntity, type, ConvertEntityRelations(values), _defaultLanguageCode, false,
                 true);
             return importEntity;
         }
@@ -149,7 +149,7 @@ namespace ToSic.Eav.Api.Api01
         //private void ExecuteImport(Entity entity, SaveOptions so = null) 
         //    => _appManager.Entities.Save(entity, so);
 
-        private void AppendAttributeValues(Entity entity, ToSicEavAttributeSets attributeSet, Dictionary<string, object> values, string valuesLanguage, bool valuesReadOnly, bool resolveHyperlink)
+        private void AppendAttributeValues(Entity entity, /*ToSicEavAttributeSets*/IContentType attributeSet, Dictionary<string, object> values, string valuesLanguage, bool valuesReadOnly, bool resolveHyperlink)
         {
             Log.Add("append attrib values");
             foreach (var value in values)
@@ -170,9 +170,9 @@ namespace ToSic.Eav.Api.Api01
                 }
 
                 // Handle content-type attributes
-                var attribute = attributeSet.AttributeByName(value.Key);
+                var attribute = attributeSet[value.Key];//.AttributeByName(value.Key);
                 if (attribute != null)
-                    entity.Attributes.AddValue(attribute.StaticName, value.Value.ToString(), attribute.Type, valuesLanguage, valuesReadOnly, resolveHyperlink);
+                    entity.Attributes.AddValue(attribute.Name, value.Value.ToString(), attribute.Type, valuesLanguage, valuesReadOnly, resolveHyperlink);
             }
         }
     }

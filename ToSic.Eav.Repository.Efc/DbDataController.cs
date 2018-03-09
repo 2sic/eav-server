@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.App;
-using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.Implementations.UserInformation;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging.Simple;
@@ -169,9 +167,6 @@ namespace ToSic.Eav.Repository.Efc
 
             // if only ZoneId was supplied, use that...
             _zoneId = zoneId.Value;
-
-            // ...and try to find the best match for App-ID
-            // var zone = ((DataSources.Caches.BaseCache)DataSource.GetCache(_zoneId, null)).ZoneApps[_zoneId];
 
             if (appId.HasValue)
             {

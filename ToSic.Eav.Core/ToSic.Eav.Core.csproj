@@ -207,7 +207,6 @@
     <Compile Include="Types\Global.cs" />
     <Compile Include="Types\Global_Code.cs" />
     <Compile Include="Types\Global_Runtime.cs" />
-    <Compile Include="Types\TypesBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Logging\Import\" />

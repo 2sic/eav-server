@@ -80,6 +80,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Types\GlobalManagerTests.cs" />
     <Compile Include="Types\DemoType.cs" />
+    <Compile Include="Types\JsonTest.cs" />
+    <Compile Include="Types\TypesBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

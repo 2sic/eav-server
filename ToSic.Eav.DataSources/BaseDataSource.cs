@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
@@ -210,7 +211,7 @@ namespace ToSic.Eav.DataSources
             Guid? guid = null,
             DateTime? modified = null,
             int? appId = null)
-            => new Data.Entity(appId ?? AppId, id, typeName, values, titleField, modified, entityGuid: guid);
+            => new Data.Entity(appId ?? AppId, id, ContentTypeBuilder.Fake(typeName), values, titleField, modified, entityGuid: guid);
 
 
 

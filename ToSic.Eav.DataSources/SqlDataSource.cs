@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources.VisualQuery;
 using ToSic.Eav.Interfaces;
 
@@ -258,7 +259,7 @@ namespace ToSic.Eav.DataSources
 			            {
 			                var entityId = casedEntityId == null ? 0 : Convert.ToInt32(reader[casedEntityId]);
 			                var values = columNames.Where(c => c != casedEntityId).ToDictionary(c => c, c => reader[c]);
-			                var entity = new Data.Entity(Constants.TransientAppId, entityId, ContentType, values, casedTitle);
+			                var entity = new Data.Entity(Constants.TransientAppId, entityId, ContentTypeBuilder.Fake(ContentType), values, casedTitle);
 			                list.Add(entity);
 			            }
 

@@ -22,6 +22,7 @@ namespace ToSic.Eav.ImportExport.Serializers
             set => _app = value;
         }
         private AppDataPackage _app;
+        protected AppDataPackage AppPackageOrNull => _app;
 
         public IContentType GetContentType(string staticName)
             => Global.FindContentType(staticName) // note: will return null if not found

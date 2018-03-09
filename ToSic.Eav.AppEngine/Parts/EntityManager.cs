@@ -109,6 +109,7 @@ namespace ToSic.Eav.Apps.Parts
 
         #endregion
 
+
         public int Save(IEntity entity, SaveOptions saveOptions = null) 
             => Save(new List<IEntity> {entity}, saveOptions).FirstOrDefault();
 
@@ -116,6 +117,11 @@ namespace ToSic.Eav.Apps.Parts
         {
             Log.Add("save count:" + entities.Count + ", with Options:" + (saveOptions != null));
             saveOptions = saveOptions ?? SaveOptions.Build(AppManager.ZoneId);
+
+            // ensure the type-definitions are real, not just placeholders
+            foreach (var entity in entities)
+                if (entity is Entity e2 && !e2.Type.IsDynamic && !e2.Type.Attributes.Any())
+                    e2.UpdateType(AppManager.Read.ContentTypes.Get(entity.Type.Name));
 
             List<int> ids = null;
             //throw new Exception("WIP - must finish entity save and add to memory package");
@@ -137,7 +143,7 @@ namespace ToSic.Eav.Apps.Parts
         public Tuple<int, Guid> Create(string typeName, Dictionary<string, object> values, IMetadataFor metadataFor = null)
         {
             Log.Add($"create type:{typeName}, meta:{metadataFor}, val-count:{values.Count}");
-            var newEnt = new Entity(AppManager.AppId, 0, typeName, values);
+            var newEnt = new Entity(AppManager.AppId, 0, AppManager.Read.ContentTypes.Get(typeName), values);
             if (metadataFor != null) newEnt.SetMetadata(metadataFor as MetadataFor);
             var eid = Save(newEnt);
 
@@ -157,7 +163,7 @@ namespace ToSic.Eav.Apps.Parts
                 UpdateParts(existingEntity.EntityId, values);
             else
             {
-                var saveEnt = new Entity(AppManager.AppId, 0, typeName, values);
+                var saveEnt = new Entity(AppManager.AppId, 0, AppManager.Read.ContentTypes.Get(typeName), values);
                 saveEnt.SetMetadata(target);
                 Save(saveEnt);
             }
@@ -174,8 +180,8 @@ namespace ToSic.Eav.Apps.Parts
             saveOptions.PreserveUntouchedAttributes = true;
             saveOptions.PreserveUnknownLanguages = true;
 
-            var orig = Data.Query.Entity.FindRepoId(AppManager.Cache.List,id);//[id];
-            var tempEnt = new Entity(AppManager.AppId, 0, "", values);
+            var orig = Data.Query.Entity.FindRepoId(AppManager.Cache.List,id);
+            var tempEnt = new Entity(AppManager.AppId, 0, orig.Type, values);
             var saveEnt = new EntitySaver(Log).CreateMergedForSaving(orig, tempEnt, saveOptions);
             Save(saveEnt, saveOptions);
         }
@@ -185,12 +191,12 @@ namespace ToSic.Eav.Apps.Parts
         /// Important for use cases, where an information must exist for sure, so it would be created with the provided defaults
         /// </summary>
         /// <param name="newGuid"></param>
-        /// <param name="contentTypeName"></param>
+        /// <param name="typeName"></param>
         /// <param name="values"></param>
         /// <returns></returns>
-        public int GetOrCreate(Guid newGuid, string contentTypeName, Dictionary<string, object> values)
+        public int GetOrCreate(Guid newGuid, string typeName, Dictionary<string, object> values)
         {
-            Log.Add($"get or create guid:{newGuid}, type:{contentTypeName}, val-count:{values.Count}");
+            Log.Add($"get or create guid:{newGuid}, type:{typeName}, val-count:{values.Count}");
             if (AppManager.DataController.Entities.EntityExists(newGuid))
             {
                 // check if it's deleted - if yes, resurrect
@@ -201,7 +207,7 @@ namespace ToSic.Eav.Apps.Parts
                 return existingEnt.EntityId;
             }
 
-            var newE = new Entity(AppManager.AppId, newGuid, contentTypeName, values);
+            var newE = new Entity(AppManager.AppId, newGuid, AppManager.Read.ContentTypes.Get(typeName), values);
             return Save(newE);
         }
 
