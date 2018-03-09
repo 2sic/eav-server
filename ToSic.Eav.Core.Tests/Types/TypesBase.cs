@@ -38,11 +38,8 @@ namespace ToSic.Eav.Types
         protected AttributeDefinition AttDef(AttributeTypeEnum type, string input, string name, string niceName = null, string description = null, string defaultValue = null)
         {
             var correctedInput = type.ToString().ToLowerInvariant() + "-" + input;
-            var attDef = new AttributeDefinition(AppId, name, niceName, type, correctedInput, description, true, defaultValue);
+            var attDef = new AttributeDefinition(AppId, name, niceName, type.ToString(), correctedInput, description, true, defaultValue);
             return attDef;
         }
-
-        protected AttributeDefinition AttGrp(string name, string niceName = null, string description = null) 
-            => AttDef(Grp, DefInp, name, niceName, description);
     }
 }

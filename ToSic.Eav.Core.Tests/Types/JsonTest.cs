@@ -13,7 +13,7 @@ namespace ToSic.Eav.DataSources.TypeHelpers
         public JsonTest() : base(NiceName, StaticTypeName, "json")
         {
             Add(AttDef(Str, DefInp, "Title", defaultValue:"from code").MakeTitle());
-            Add(AttGrp("Group", "Group from Code"));
+            Add(AttDef(Grp, DefInp, "Group", "Group from Code"));
             {
                 Add(AttDef(Str, DefInp, "Text", defaultValue: "from code"));
                 Add(AttDef(Num, DefInp, "Number"));
