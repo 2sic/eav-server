@@ -97,8 +97,6 @@ namespace ToSic.Eav.Apps.Parts
             Log.Add($"delete guid:{guid}");
             // todo: check if getmostcurrentdb... can't be in the app-layer
             return Delete(AppManager.DataController.Entities.GetMostCurrentDbEntity(guid).EntityId);
-            //return AppManager.DataController.Entities.DeleteEntity(AppManager.DataController.Entities
-            //    .GetMostCurrentDbEntity(guid).EntityId);
         }
 
         public bool Delete(List<int> ids)
@@ -143,7 +141,8 @@ namespace ToSic.Eav.Apps.Parts
         public Tuple<int, Guid> Create(string typeName, Dictionary<string, object> values, IMetadataFor metadataFor = null)
         {
             Log.Add($"create type:{typeName}, meta:{metadataFor}, val-count:{values.Count}");
-            var newEnt = new Entity(AppManager.AppId, 0, AppManager.Read.ContentTypes.Get(typeName), values);
+            var newEnt = new Entity(AppManager.AppId, 0, AppManager.Read.ContentTypes.Get(typeName), values,
+                entityGuid: Guid.NewGuid());
             if (metadataFor != null) newEnt.SetMetadata(metadataFor as MetadataFor);
             var eid = Save(newEnt);
 
