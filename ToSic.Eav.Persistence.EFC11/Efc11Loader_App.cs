@@ -45,6 +45,9 @@ namespace ToSic.Eav.Persistence.Efc
             else
                 Log.Add("skipping metadata load");
 
+            if (startAt <= AppPackageLoadingSteps.ContentTypeLoad && app.ContentTypesShouldBeReloaded)
+                startAt = AppPackageLoadingSteps.ContentTypeLoad;
+
             // prepare content-types
             if (startAt <= AppPackageLoadingSteps.ContentTypeLoad)
             {

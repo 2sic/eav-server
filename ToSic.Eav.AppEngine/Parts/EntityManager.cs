@@ -118,8 +118,13 @@ namespace ToSic.Eav.Apps.Parts
 
             // ensure the type-definitions are real, not just placeholders
             foreach (var entity in entities)
-                if (entity is Entity e2 && !e2.Type.IsDynamic && !e2.Type.Attributes.Any())
-                    e2.UpdateType(AppManager.Read.ContentTypes.Get(entity.Type.Name));
+                if (entity is Entity e2
+                    && !e2.Type.IsDynamic // it's not dynamic
+                    && e2.Type.Attributes == null) // it doesn't have attributes, so it must have been in-memory
+                {
+                    var newtype = AppManager.Read.ContentTypes.Get(entity.Type.Name);
+                    if(newtype != null) e2.UpdateType(newtype); // try to update, but leave if not found
+                }
 
             List<int> ids = null;
             //throw new Exception("WIP - must finish entity save and add to memory package");

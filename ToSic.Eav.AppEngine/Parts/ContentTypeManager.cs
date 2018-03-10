@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Data;
+using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Apps.Parts
@@ -8,6 +9,15 @@ namespace ToSic.Eav.Apps.Parts
     {
         public ContentTypeManager(AppManager app, Log parentLog) : base(app, parentLog, "App.TypMng")
         {
+        }
+
+        public void Create(string name, string staticName, string description, string scope)
+        {
+            AppManager.DataController.DoAndSave(() =>
+                AppManager.DataController.AttribSet.PrepareDbAttribSet(name, description, name, scope, false, AppManager.AppId));
+
+            // ensure app-package loads this type - this is a simple thing, as no data uses this type till now
+            AppManager.Package.ContentTypesShouldBeReloaded = true;
         }
 
         /// <summary>

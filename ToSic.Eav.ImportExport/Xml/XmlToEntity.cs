@@ -159,7 +159,7 @@ namespace ToSic.Eav.ImportExport.Xml
 
 		    var targetEntity = contentType != null
 		        ? new Entity(AppId, guid, contentType, attribs)
-		        : new Entity(AppId, 0, typeName, attribs, entityGuid: guid);
+		        : new Entity(AppId, 0, guid, typeName, attribs);
 		    if (metadataForFor != null) targetEntity.SetMetadata(metadataForFor);
 
 			return targetEntity;

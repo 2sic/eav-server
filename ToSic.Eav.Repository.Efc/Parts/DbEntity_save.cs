@@ -101,6 +101,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 {
                     Log.Add("create new...");
 
+                    if (newEnt.EntityGuid == Guid.Empty)
+                        throw new ArgumentException("can't create entity in DB with guid null - entities must be fully prepared before sending to save");
+
                     dbEnt = CreateNewInDb(newEnt, changeLogId, contentTypeId);
                     // update the ID - for versioning and/or json persistence
                     newEnt.ResetEntityId(dbEnt.EntityId); // update this, as it was only just generated

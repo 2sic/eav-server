@@ -34,6 +34,7 @@ namespace ToSic.Eav.App
 	        _appTypesFromRepository = RemoveAliasesForGlobalTypes(contentTypes);
 	        // build types by name
 	        BuildCacheForTypesByName(_appTypesFromRepository);
+	        ContentTypesShouldBeReloaded = false;
 	    }
 
 
@@ -92,5 +93,8 @@ namespace ToSic.Eav.App
             var name = _appTypeMap.FirstOrDefault(x => x.Key == contentTypeId).Value;
 	        return name == null ? null : GetContentType(name);
 	    }
+
+        
+	    public bool ContentTypesShouldBeReloaded = true;
 	}
 }

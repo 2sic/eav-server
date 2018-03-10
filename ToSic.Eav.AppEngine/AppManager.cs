@@ -64,16 +64,18 @@ namespace ToSic.Eav.Apps
 
         public void MetadataEnsureTypeAndSingleEntity(string scope, string setName, string label, int appAssignment, Dictionary<string, object> values)
         {
-            if (!DataController.AttribSet.DbAttribSetExists(AppId, setName))
-            {
-                DataController.AttribSet.PrepareDbAttribSet(setName, label, setName, scope, false, null);
-                DataController.SqlDb.SaveChanges();
-            }
+            if (Read.ContentTypes.Get(setName) == null)
+                ContentTypes.Create(setName, setName, label, scope);
+
+            // todo: must change to use app-manager api, not DB api
+            //if (!DataController.AttribSet.DbAttribSetExists(AppId, setName))
+            //    DataController.DoAndSave(() =>
+            //        DataController.AttribSet.PrepareDbAttribSet(setName, label, setName, scope, false, null));
 
             if (values == null)
                 values = new Dictionary<string, object>();
 
-            var newEnt = new Entity(AppId, 0, setName, values);
+            var newEnt = new Entity(AppId, 0, Guid.NewGuid(), setName, values);
             newEnt.SetMetadata(new MetadataFor { KeyNumber = DataController.AppId, TargetType = appAssignment });
             Entities.Save(newEnt);
 

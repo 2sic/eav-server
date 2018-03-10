@@ -19,6 +19,7 @@ namespace ToSic.Eav.Apps.Parts
         /// <summary>
         /// Gets a ContentType by Name
         /// </summary>
+        /// <returns>a content-type or null if not found</returns>
         public IContentType Get(string name) => App.Cache.GetContentType(name);
 
         /// <summary>

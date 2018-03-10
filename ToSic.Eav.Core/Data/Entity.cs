@@ -88,7 +88,7 @@ namespace ToSic.Eav.Data
         /// </summary>
         internal Entity() { }
 
-        public Entity(int appId, int entityId, string contentType, Dictionary<string, object> values, string titleAttribute = null, DateTime? modified = null, Guid? entityGuid = null)
+        public Entity(int appId, int entityId, Guid entityGuid, string contentType, Dictionary<string, object> values, string titleAttribute = null, DateTime? modified = null)
             : base(appId, entityId, entityGuid, new ContentType(appId, contentType), values, titleAttribute, modified)
         {
             MapAttributesInConstructor(values);

@@ -48,7 +48,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
         [TestMethod]
         public void LoadContentTypesOf2TenXCached()
         {
-            Loader.ResetCacheForTesting();
+            //Loader.ResetCacheForTesting();
             var results = TestLoadCts(2);
             for (var x = 0; x < 9; x++)
                 results = TestLoadCts(2);
@@ -62,7 +62,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
             for (var x = 0; x < 9; x++)
             {
                 results = TestLoadCts(2);
-                Loader.ResetCacheForTesting();
+                //Loader.ResetCacheForTesting();
             }
             // var str = results.ToString();
             Assert.AreEqual(61, results.Count, "dummy test: ");

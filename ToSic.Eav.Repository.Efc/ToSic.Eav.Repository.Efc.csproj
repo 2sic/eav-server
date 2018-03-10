@@ -137,7 +137,7 @@
     <Compile Include="Parts\DbDimensions.cs" />
     <Compile Include="Parts\DbEntity_delete.cs" />
     <Compile Include="Parts\DbEntity_metadata.cs" />
-    <Compile Include="Parts\DbEntity_newSave.cs" />
+    <Compile Include="Parts\DbEntity_save.cs" />
     <Compile Include="Parts\DbEntity_base.cs" />
     <Compile Include="Parts\DbEntity_read.cs" />
     <Compile Include="Parts\DbPublishing.cs" />
