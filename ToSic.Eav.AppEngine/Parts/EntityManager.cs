@@ -146,8 +146,7 @@ namespace ToSic.Eav.Apps.Parts
         public Tuple<int, Guid> Create(string typeName, Dictionary<string, object> values, IMetadataFor metadataFor = null)
         {
             Log.Add($"create type:{typeName}, meta:{metadataFor}, val-count:{values.Count}");
-            var newEnt = new Entity(AppManager.AppId, 0, AppManager.Read.ContentTypes.Get(typeName), values,
-                entityGuid: Guid.NewGuid());
+            var newEnt = new Entity(AppManager.AppId, Guid.NewGuid(), AppManager.Read.ContentTypes.Get(typeName), values);
             if (metadataFor != null) newEnt.SetMetadata(metadataFor as MetadataFor);
             var eid = Save(newEnt);
 
@@ -167,7 +166,7 @@ namespace ToSic.Eav.Apps.Parts
                 UpdateParts(existingEntity.EntityId, values);
             else
             {
-                var saveEnt = new Entity(AppManager.AppId, 0, AppManager.Read.ContentTypes.Get(typeName), values);
+                var saveEnt = new Entity(AppManager.AppId, Guid.NewGuid(), AppManager.Read.ContentTypes.Get(typeName), values);
                 saveEnt.SetMetadata(target);
                 Save(saveEnt);
             }
