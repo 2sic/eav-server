@@ -34,11 +34,12 @@ namespace ToSic.Eav.DataSources.Tests.Query
         [TestMethod]
         public void ReviewGlobalZonesQuery()
         {
-            var queryEnt = Global.FindQuery("Eav.Queries.Global.Zones");
-            Assert.IsTrue(queryEnt.GetBestValue("Name").ToString() == "Zones", "should find zones");
+            var queryName = "Eav.Queries.Global.Zones";
+            var queryEnt = Global.FindQuery(queryName);
+            Assert.AreEqual(queryName, queryEnt.GetBestValue("Name").ToString(), "should find zones");
 
             var qdef = new QueryDefinition(queryEnt);
-            Assert.IsTrue(qdef.Parts.Count == 1);
+            Assert.AreEqual(2, qdef.Parts.Count, "counting parts of the qdef, should have the zone + sort = 2 parts");
         }
 
         [TestMethod]

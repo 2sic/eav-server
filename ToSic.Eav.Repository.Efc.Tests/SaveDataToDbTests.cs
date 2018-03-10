@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -106,7 +107,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var app1 = loader1.AppPackage(test.AppId);
             var ct1 = app1.GetContentType(ctName);
 
-            var newE = new Entity(test.AppId, 0, ct1, new Dictionary<string, object>
+            var newE = new Entity(test.AppId, Guid.NewGuid(), ct1, new Dictionary<string, object>
             {
                 { "Title", ctTitle }
             });

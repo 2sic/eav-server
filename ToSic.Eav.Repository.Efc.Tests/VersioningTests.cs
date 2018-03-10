@@ -53,7 +53,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         [TestMethod]
         public void GetHistoryTests()
         {
-            GetHistoryTest(TestItemWithCa20Changes, 9);
+            GetHistoryTest(TestItemWithCa20Changes, 10);
             // 2017-10-05 2dm disabled temporarily, as history was cleared
             //GetHistoryTest(TestItemWithCa100Changes, 102);
             //GetHistoryTest(TestItemWithCa9Changes, 9);
@@ -76,7 +76,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         private List<ItemHistory> GetHistoryTest(int entityId, int expectedCount)
         {
             var history = DbDataController.Instance(ZoneId, parentLog:Log).Versioning.GetHistoryList(entityId, true);
-            Assert.AreEqual(expectedCount, history.Count, "should have 20 items in history for this one");
+            Assert.AreEqual(expectedCount, history.Count, $"should have {expectedCount} items in history for this one");
             return history;
         }
         

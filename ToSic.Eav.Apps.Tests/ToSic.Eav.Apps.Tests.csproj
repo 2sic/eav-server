@@ -59,6 +59,9 @@
   <ItemGroup>
     <Compile Include="ImportExport\XmlTable.cs" />
     <Compile Include="InitializeTests.cs" />
+    <Compile Include="Mocks\MockEnvironment.cs" />
+    <Compile Include="Mocks\MockTennant.cs" />
+    <Compile Include="Mocks\MockZoneMapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -47,7 +47,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             {"Birthday", new DateTime(1981, 5, 14) }
         });
 
-        private Entity GirlMarried => new Entity(AppId, 0, _ctPerson, new Dictionary<string, object>
+        private Entity GirlMarried => new Entity(AppId, 0, ContentTypeBuilder.Fake("DynPerson"), new Dictionary<string, object>
         {
             {"FullName", "Sandra Unmarried-Married"},
             {"FirstName", "Sandra"},
@@ -328,7 +328,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             var merged = new EntitySaver(new  Log("Tst.Merge")).CreateMergedForSaving(GirlSingle, GirlMarried, _saveDefault);
             Assert.IsNotNull(merged, "result should never be null");
-            Assert.AreEqual(GirlMarried.Attributes.Count, merged.Attributes.Count, "this test case should simply keep all new values");
+            Assert.AreEqual(GirlSingle.Attributes.Count, merged.Attributes.Count, "this test case should keep all values of the first type");
             AssertBasicsInMerge(_origENull, GirlMarried, merged, GirlSingle);
             Assert.AreNotSame(GirlMarried.Attributes, merged.Attributes, "attributes new / merged shouldn't be same");
             Assert.AreEqual(merged.GetBestValue("FullName"), GirlMarried.GetBestValue("FullName"), "full name should be that of married");
@@ -391,10 +391,19 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             // Merge keeping all and remove unknown attributes
             var merged = new EntitySaver(new  Log("Tst.Merge")).CreateMergedForSaving(GirlSingle, GirlMarried, _saveKeepAndClean);
-            var expectedFields = GirlMarried.Attributes.Keys.Concat(GirlSingle.Attributes.Keys).Distinct().ToList();
+            var expectedFields = GirlSingle.Attributes.Keys;// GirlSingle.Attributes.Keys.Concat(GirlMarried.Attributes.Keys).Distinct().ToList();
             Assert.IsNotNull(merged, "result should never be null");
-            Assert.AreEqual(expectedFields.Count, merged.Attributes.Count, "should have only ct-field count except the un-used one");
+            Assert.IsTrue(expectedFields.Count <= merged.Attributes.Count 
+                && GirlSingle.Type.Attributes.Count >= merged.Attributes.Count, "should have only ct-field count except the un-used one");
             Assert.AreEqual(0, expectedFields.Except(merged.Attributes.Keys).Count(), "should have exactly the same fields as expected");
+
+            var merged2 = new EntitySaver(new  Log("Tst.Merge")).CreateMergedForSaving(GirlMarried, GirlSingle, _saveKeepAndClean);
+            var expectedFields2 = GirlMarried.Attributes.Keys.Concat(GirlSingle.Attributes.Keys).Distinct().ToList();
+            Assert.IsNotNull(merged2, "result should never be null");
+            Assert.AreEqual(expectedFields2.Count, merged2.Attributes.Count, "should have only ct-field count except the un-used one");
+            Assert.AreEqual(0, expectedFields2.Except(merged2.Attributes.Keys).Count(), "should have exactly the same fields as expected");
+
+
             AssertBasicsInMerge(_origENull, GirlMarried, merged, GirlSingle);
         }
 
