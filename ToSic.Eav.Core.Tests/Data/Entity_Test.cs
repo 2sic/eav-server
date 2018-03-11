@@ -2,15 +2,12 @@
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
-using ToSic.Eav.Core.Tests.Data;
 
 namespace ToSic.Eav.Core.Tests.Data
 {
     [TestClass]
     public class EntityTest
     {
-        const int AppIdX = -1;
-
         [TestMethod]
         public void Entity_CreateSimpleUnpersistedEntity()
         {

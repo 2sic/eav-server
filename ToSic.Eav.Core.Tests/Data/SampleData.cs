@@ -32,7 +32,7 @@ namespace ToSic.Eav.Core.Tests.Data
             }
         };
 
-        public static Interfaces.IEntity TestEntityDaniel()
+        public static IEntity TestEntityDaniel()
         {
             var valDaniel = new Dictionary<string, object>()
             {
@@ -45,7 +45,7 @@ namespace ToSic.Eav.Core.Tests.Data
             return entDaniel;
         }
 
-        public static Interfaces.IEntity TestEntityLeonie()
+        public static IEntity TestEntityLeonie()
         {
             var valLeonie = new Dictionary<string, object>()
             {
@@ -58,7 +58,7 @@ namespace ToSic.Eav.Core.Tests.Data
             var entLeonie = new Entity(AppId, 2, CtTestType, valLeonie, "FirstName");
             return entLeonie;
         }
-        public static Interfaces.IEntity TestEntityPet(int petNumber)
+        public static IEntity TestEntityPet(int petNumber)
         {
             var valsPet = new Dictionary<string, object>()
             {

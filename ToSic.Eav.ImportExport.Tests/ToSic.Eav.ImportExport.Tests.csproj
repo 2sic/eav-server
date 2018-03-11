@@ -62,6 +62,9 @@
       <HintPath>..\packages\MSTest.TestFramework.1.1.18\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Collections.Immutable, Version=1.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Collections.Immutable.1.3.0\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+    </Reference>
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
@@ -88,6 +91,8 @@
     <Compile Include="Persistence.File\RuntimeLoaderTest.cs" />
     <Compile Include="Persistence.File\TypeExporter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RepositoryInfoEavAndUi.cs" />
+    <Compile Include="Types\AutoLoadFromRuntimeFiles.cs" />
     <Compile Include="XmlSerializationTests.cs" />
   </ItemGroup>
   <ItemGroup>

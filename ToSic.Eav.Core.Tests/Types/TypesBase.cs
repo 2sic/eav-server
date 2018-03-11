@@ -4,7 +4,7 @@ using ToSic.Eav.Enums;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Repositories;
 
-namespace ToSic.Eav.Types
+namespace ToSic.Eav.Core.Tests.Types
 {
     public abstract class TypesBase: ContentType
     {

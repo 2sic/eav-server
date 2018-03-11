@@ -1,4 +1,6 @@
 ﻿// 2018-03-09 2dm disabled various tests related to code-based content-types, which ATM are never in use
+
+using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Types;
@@ -8,14 +10,16 @@ namespace ToSic.Eav.Core.Tests.Types
     [TestClass]
     public class GlobalManagerTests
     {
-        public const int ProvidedTypesCount = 0; // 2018-03-09 no more code-types provided
+        public const int CodeTypesCount = 0; // 2018-03-09 no more code-types provided
 
         [TestMethod]
-        public void ScanForTypes()
+        public void ScanForTypesReflection()
         {
-            var globTypes = Eav.Types.Global.ContentTypesInReflection();
-            Assert.AreEqual(ProvidedTypesCount, globTypes.Count(), "expect a fixed about of types at dev time");
+            var globTypes = Global.ContentTypesInReflection();
+            Assert.AreEqual(CodeTypesCount, globTypes.Count(), "expect a fixed about of types at dev time");
         }
+
+
 
         //[TestMethod]
         //public void TestGlobalCache()

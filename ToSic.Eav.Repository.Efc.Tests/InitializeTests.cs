@@ -12,16 +12,23 @@ namespace ToSic.Eav.Repository.Efc.Tests
         [AssemblyInitialize]
         public static void AssemblyInit(TestContext context)
         {
-            Testing.Shared.InitializeTests.ConfigureEfcDi(sc =>
+            ConfigureEfcDi(sc => { });
+        }
+
+        public static void ConfigureEfcDi(Factory.ServiceConfigurator configure, string optionalConnection = null)
+        {
+            Persistence.Efc.Tests.InitializeTests.ConfigureEfcDi(sc =>
             {
                 // these are only used in Repository.Efc.Tests
                 sc.AddTransient<Apps.ImportExport.XmlExporter, DnnXmlExporter>();
 
                 sc.AddTransient<IImportExportEnvironment, ImportExportEnvironmentMock>();
-            });
-            Factory.Debug = true;
-        }
-        
 
+                configure.Invoke(sc);
+            }, optionalConnection);
+            Factory.Debug = true;
+
+
+        }
     }
 }

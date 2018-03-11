@@ -15,7 +15,6 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
 
         public static Log Log = new Log("TstXml");
         private int AppId = 78;
-        private int TestItemId = 0;
 
         private const string NonLinkType = "whatever";
 

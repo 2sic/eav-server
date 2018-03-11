@@ -1,4 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.ImportExport.Tests.Mocks;
+using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Persistence.Efc.Tests
 {
@@ -8,8 +11,17 @@ namespace ToSic.Eav.Persistence.Efc.Tests
         [AssemblyInitialize]
         public static void AssemblyInit(TestContext context)
         {
-            Testing.Shared.InitializeTests.ConfigureEfcDi(sc => { });
+            ConfigureEfcDi(sc => { });
         }
-        
+
+        public static void ConfigureEfcDi(Factory.ServiceConfigurator configure, string optionalConnection = null)
+        {
+            Testing.Shared.InitializeTests.ConfigureEfcDi(sc => {
+                sc.AddTransient<IGlobalMetadataProvider, MockGlobalMetadataProvider>();
+                configure.Invoke(sc);
+            }, optionalConnection);
+        }
+
+
     }
 }

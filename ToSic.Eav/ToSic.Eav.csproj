@@ -149,8 +149,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DependencyInjection.cs" />
-    <Compile Include="Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repository.Efc.Implementations\Configuration.cs" />
     <Compile Include="Repository.Efc.Implementations\RepositoryImporter.cs" />
   </ItemGroup>
   <ItemGroup>

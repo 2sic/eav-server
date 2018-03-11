@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
 
-namespace ToSic.Eav.UnitTests
+namespace ToSic.Eav.Core.Tests.Data
 {
     [TestClass]
     public class ContentType_Test

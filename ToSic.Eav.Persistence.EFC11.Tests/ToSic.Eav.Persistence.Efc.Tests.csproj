@@ -138,6 +138,7 @@
     <Compile Include="Efc11LoadTests.cs" />
     <Compile Include="Efc11TestBase.cs" />
     <Compile Include="InitializeTests.cs" />
+    <Compile Include="Mocks\MockGlobalMetadataProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ZoneTests.cs" />
   </ItemGroup>
