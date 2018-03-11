@@ -1,5 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Apps.Interfaces;
+using ToSic.Eav.Apps.Tests.Mocks;
+using ToSic.Eav.ImportExport.Persistence.File;
+using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Repository.Efc.Tests.Mocks;
 using ToSic.SexyContent.ImportExport;
@@ -21,6 +25,9 @@ namespace ToSic.Eav.Repository.Efc.Tests
             {
                 // these are only used in Repository.Efc.Tests
                 sc.AddTransient<Apps.ImportExport.XmlExporter, DnnXmlExporter>();
+
+                sc.AddTransient<IRuntime, Runtime>();
+                sc.AddTransient<IEnvironment, MockEnvironment>();
 
                 sc.AddTransient<IImportExportEnvironment, ImportExportEnvironmentMock>();
 

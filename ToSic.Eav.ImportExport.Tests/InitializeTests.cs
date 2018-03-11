@@ -25,8 +25,8 @@ namespace ToSic.Eav.ImportExport.Tests
         {
             Eav.Repository.Efc.Tests.InitializeTests.ConfigureEfcDi(sc =>
             {
-                sc.AddTransient<IRuntime, Runtime>();
-                sc.AddTransient<IEnvironment, MockEnvironment>();
+                //sc.AddTransient<IRuntime, Runtime>();
+                //sc.AddTransient<IEnvironment, MockEnvironment>();
                 configure.Invoke(sc);
 
             }, optionalConnection);

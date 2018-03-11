@@ -60,9 +60,7 @@ namespace ToSic.Eav.ImportExport.Json
                         attribs.Boolean = ToTypedDictionary<bool?>(gList);
                         break;
                     case AttributeTypeEnum.Entity:
-                        attribs.Entity = ToTypedDictionary<EntityRelationship>(gList)
-                            .ToDictionary(a => a.Key, a => a.Value
-                                .ToDictionary(b => b.Key, b => b.Value.Select(e => e?.EntityGuid).ToList()));
+                        attribs.Entity = ToTypedDictionaryEntity(gList);
                         break;
                     case AttributeTypeEnum.Empty:
                     case AttributeTypeEnum.Undefined:
@@ -95,6 +93,25 @@ namespace ToSic.Eav.ImportExport.Json
             return jEnt;
         }
 
+        /// <summary>
+        /// this is a special helper to create typed entities-dictionaries
+        /// </summary>
+        /// <param name="gList"></param>
+        /// <returns></returns>
+        private static Dictionary<string, Dictionary<string, List<Guid?>>> ToTypedDictionaryEntity(List<IAttribute> gList)
+        {
+            // the following is a bit complex for the following reason
+            // 1. either the relationship is guid based, and in that case, 
+            //    it's possible that the items don't exist yet (because it's an import or similar)
+            // 2. or it's int/id based, in which case the items exist, 
+            //    but the relationship manager doesn't have a direct reference to the guid,
+            //    but only to the items directly
+            // so it tries to get the guids first, and otherwise uses the items
+            var ents = ToTypedDictionary<EntityRelationship>(gList)
+                .ToDictionary(a => a.Key, a => a.Value
+                    .ToDictionary(b => b.Key, b => b.Value.ResolveGuids()));
+            return ents;
+        }
 
         private static string LanguageKey(IValue v)
         {
