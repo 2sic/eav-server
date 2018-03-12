@@ -141,7 +141,7 @@ namespace ToSic.Eav.Persistence.Efc
             #region Build EntityModels
 
             var serializer = Factory.Resolve<IThingDeserializer>();
-            serializer.Initialize(app, /*appId, contentTypes, app ,*/ Log);
+            serializer.Initialize(app, Log);
 
             var entityTimer = Stopwatch.StartNew();
             foreach (var e in rawEntities)
@@ -158,7 +158,7 @@ namespace ToSic.Eav.Persistence.Efc
                         throw new NullReferenceException("content type is not found for type " + e.AttributeSetId);
 
                     newEntity = EntityBuilder.EntityFromRepository(appId, e.EntityGuid, e.EntityId, e.EntityId,
-                        e.Metadata, contentType, e.IsPublished, /*app.Relationships,*/ app, e.Modified, e.Owner,
+                        e.Metadata, contentType, e.IsPublished, app, e.Modified, e.Owner,
                         e.Version);
 
                     // Add all Attributes of that Content-Type

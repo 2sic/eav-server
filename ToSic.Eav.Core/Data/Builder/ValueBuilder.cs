@@ -115,7 +115,12 @@ namespace ToSic.Eav.Data.Builder
 
 
 
-        internal static readonly Value<EntityRelationship> NullRelationship = new Value<EntityRelationship>(new EntityRelationship(null, identifiers: null))
+        /// <summary>
+        /// Generate a new empty relationship. This is important, because it's used often to create empty relationships...
+        /// ...and then it must be a new object every time, 
+        /// because the object could be changed at runtime, and if it were shared, then it would be changed in many places
+        /// </summary>
+        internal static Value<EntityRelationship> NullRelationship => new Value<EntityRelationship>(new EntityRelationship(null, identifiers: null))
         {
             Languages = new List<ILanguage>()
         };

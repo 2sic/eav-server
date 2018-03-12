@@ -121,7 +121,8 @@ namespace ToSic.Eav.ImportExport.Json
                         BuildValues(jAtts.DateTime, definition, newAtt);
                         break;
                     case AttributeTypeEnum.Entity:
-                        if (!jAtts.Entity?.ContainsKey(definition.Name) ?? true) continue;
+                        if (!jAtts.Entity?.ContainsKey(definition.Name) ?? true)
+                            break; // just keep the empty definition, as that's fine
                         newAtt.Values = jAtts.Entity[definition.Name]
                             .Select(v => ValueBuilder.Build(definition.Type, v.Value, RecreateLanguageList(v.Key),
                                 RelLookupList)).ToList();
@@ -147,7 +148,6 @@ namespace ToSic.Eav.ImportExport.Json
                         throw new ArgumentOutOfRangeException();
                 }
 
-                // only add if we actually found something
                 newEntity.Attributes.Add(newAtt.Name, newAtt);
 
                 if (definition.IsTitle)
