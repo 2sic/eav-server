@@ -26,7 +26,7 @@ namespace ToSic.Eav.ImportExport.Json
                 Type = attrib.Type,
                 IsTitle = attrib.IsTitle,
                 Metadata = attrib.Metadata
-                    ?.Select(md => ToJson(md)) /* important: must write the method with params, otherwise default param metadata = 1 instead of 0*/
+                    ?.Select(ToJson) /* important: must write the method with params, otherwise default param metadata = 1 instead of 0*/
                     .ToList()
             }).ToList();
 

@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
+using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.App
 {
-    public class AppRelationshipManager: AppDependentIEnumerable<EntityRelationshipItem>// IEnumerable<EntityRelationshipItem>
+    public class AppRelationshipManager: AppDependentIEnumerable<EntityRelationshipItem>
     {
         public AppRelationshipManager(AppDataPackage app) : base(app, () => Rebuild(app))
         {
@@ -27,6 +28,14 @@ namespace ToSic.Eav.App
                 Add(appDataPackage, cache, entity.EntityId, val);
 
             return cache;
+        }
+
+        public void AttachRelationshipResolver(IEntity entity)
+        {
+            foreach (var attrib in entity.Attributes.Select(a => a.Value)
+                .Where(a => a is IAttribute<EntityRelationship>)
+                .Cast<IAttribute<EntityRelationship>>())
+                    attrib.TypedContents.AttachLookupList(App);
         }
 
         public static void Add(AppDataPackage appDataPackage, List<EntityRelationshipItem> list, int parent, int? child)

@@ -126,6 +126,9 @@ namespace ToSic.Eav.Apps.Parts
                     if(newtype != null) e2.UpdateType(newtype); // try to update, but leave if not found
                 }
 
+            // attach relationship resolver - important when saving data which doesn't yet have the guid
+            entities.ForEach(AppManager.Package.Relationships.AttachRelationshipResolver);
+
             List<int> ids = null;
             //throw new Exception("WIP - must finish entity save and add to memory package");
             AppManager.DataController.DoButSkipAppCachePurge(() =>
