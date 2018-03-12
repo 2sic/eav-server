@@ -6,7 +6,7 @@
 
         int PageId { get; }
 
-        int TennantId { get; }
+        int TenantId { get; }
 
         bool IsPrimary { get; }
     }

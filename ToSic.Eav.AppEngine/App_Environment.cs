@@ -8,25 +8,25 @@ namespace ToSic.Eav.Apps
     {
 
         protected IEnvironment Env;
-        public ITennant Tennant;
+        public ITenant Tenant;
 
-        protected App(IEnvironment env, int zoneId, int appId, ITennant tennant, bool allowSideEffects, Log parentLog) 
+        protected App(IEnvironment env, int zoneId, int appId, ITenant tenant, bool allowSideEffects, Log parentLog) 
             : this(zoneId != AutoLookup    // if zone is missing, try to find it; if still missing, throw error
                   ? zoneId
-                  : env.ZoneMapper.GetZoneId(tennant.Id), 
+                  : env.ZoneMapper.GetZoneId(tenant.Id), 
                   appId, 
                   allowSideEffects, 
                   parentLog,
-                  $"P:{tennant?.Id}")
+                  $"P:{tenant?.Id}")
         {
             Env = env;
 
-            Tennant = tennant ?? throw new Exception("no tennant (portal settings) received");
+            Tenant = tenant ?? throw new Exception("no tenant (portal settings) received");
 
         }
 
         #region Paths
-        protected string GetRootPath() => System.IO.Path.Combine(Tennant.SxcPath, Folder);
+        protected string GetRootPath() => System.IO.Path.Combine(Tenant.SxcPath, Folder);
 
         public string PhysicalPath => Env.MapPath(GetRootPath());
 

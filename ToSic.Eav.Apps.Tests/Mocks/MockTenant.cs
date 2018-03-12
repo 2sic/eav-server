@@ -2,13 +2,13 @@
 
 namespace ToSic.Eav.Apps.Tests.Mocks
 {
-    public class MockTennant: ITennant
+    public class MockTenant: ITenant
     {
         public int Id => -999;
 
         public string DefaultLanguage => null;
 
-        public string Name => "MockTennant";
+        public string Name => "MockTenant";
 
         public string SxcPath => "Mock";
 

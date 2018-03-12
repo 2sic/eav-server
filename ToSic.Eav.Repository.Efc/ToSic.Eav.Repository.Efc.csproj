@@ -145,7 +145,6 @@
     <Compile Include="Parts\DbValue.cs" />
     <Compile Include="Parts\DbVersioning_History.cs" />
     <Compile Include="Parts\DbVersioning.cs" />
-    <Compile Include="Parts\DbXmlExportTable.cs" />
     <Compile Include="Parts\DbZone.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

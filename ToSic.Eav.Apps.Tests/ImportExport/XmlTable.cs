@@ -42,21 +42,21 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
 
             // test the Resolve Hyperlink
             string link = "";
-            link = ExportListXml.ResolveHyperlinksFromTennant(link2sic, Constants.Hyperlink, resolver);
+            link = ExportListXml.ResolveHyperlinksFromTenant(link2sic, Constants.Hyperlink, resolver);
             Assert.AreEqual(link, link2sic, "real link should stay the same");
 
-            link = ExportListXml.ResolveHyperlinksFromTennant(linkFile, Constants.Hyperlink, resolver);
+            link = ExportListXml.ResolveHyperlinksFromTenant(linkFile, Constants.Hyperlink, resolver);
             Assert.AreNotEqual(link, linkFile, "file link should change");
 
-            link = ExportListXml.ResolveHyperlinksFromTennant(linkPage, Constants.Hyperlink, resolver);
+            link = ExportListXml.ResolveHyperlinksFromTenant(linkPage, Constants.Hyperlink, resolver);
             Assert.AreNotEqual(link, linkPage, "page link should change");
 
-            link = ExportListXml.ResolveHyperlinksFromTennant("http://www.2sic.com/", NonLinkType, resolver);
+            link = ExportListXml.ResolveHyperlinksFromTenant("http://www.2sic.com/", NonLinkType, resolver);
             Assert.AreEqual(link, link2sic, "non-link shouldn't resolve");
 
-            link = ExportListXml.ResolveHyperlinksFromTennant(linkPage, NonLinkType, resolver);
+            link = ExportListXml.ResolveHyperlinksFromTenant(linkPage, NonLinkType, resolver);
             Assert.AreEqual(link, linkPage, "non-link shouldn't resolve");
-            link = ExportListXml.ResolveHyperlinksFromTennant(linkFile, NonLinkType, resolver);
+            link = ExportListXml.ResolveHyperlinksFromTenant(linkFile, NonLinkType, resolver);
             Assert.AreEqual(link, linkFile, "non-link shouldn't resolve");
         }
 

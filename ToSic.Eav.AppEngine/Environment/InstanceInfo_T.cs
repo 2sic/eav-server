@@ -15,7 +15,7 @@ namespace ToSic.Eav.Apps.Environment
 
         public abstract int PageId { get; }
 
-        public abstract int TennantId { get; }
+        public abstract int TenantId { get; }
 
         public abstract bool IsPrimary { get; }
     }

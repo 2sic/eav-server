@@ -18,9 +18,9 @@ namespace ToSic.Eav.Persistence.Interfaces
         ///// <param name="overwriteFiles"></param>
         ///// <param name="messages"></param>
         ///// <param name="fileIdMapping">The fileIdMapping is needed to re-assign the existing "File:" parameters while importing the content</param>
-        void TransferFilesToTennant(string sourceFolder, string destinationFolder);
+        void TransferFilesToTenant(string sourceFolder, string destinationFolder);
 
-        Version TennantVersion { get; }
+        Version TenantVersion { get; }
 
         string ModuleVersion { get; }
 

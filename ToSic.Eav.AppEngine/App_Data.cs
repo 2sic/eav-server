@@ -57,10 +57,10 @@ namespace ToSic.Eav.Apps
         /// <returns></returns>
         protected void GetLanguageAndUser(DataSources.App xData)
         {
-            var languagesActive = Env.ZoneMapper.CulturesWithState(Tennant.Id, ZoneId)
+            var languagesActive = Env.ZoneMapper.CulturesWithState(Tenant.Id, ZoneId)
                 .Any(c => c.Active);
             xData.DefaultLanguage = languagesActive
-                ? Tennant.DefaultLanguage
+                ? Tenant.DefaultLanguage
                 : "";
             xData.CurrentUserName = Env.User.CurrentUserIdentityToken;
         }

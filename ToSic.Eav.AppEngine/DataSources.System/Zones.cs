@@ -54,15 +54,15 @@ namespace ToSic.Eav.DataSources.System
 
 	        var list = cache.ZoneApps.Values.OrderBy(z => z.ZoneId).Select(zone =>
 	        {
-	            var tennant = env.ZoneMapper.Tennant(zone.ZoneId);
+	            var tenant = env.ZoneMapper.Tenant(zone.ZoneId);
 
 	            // Assemble the entities
 	            var znData = new Dictionary<string, object>
 	            {
                     {ZoneType.Id.ToString(), zone.ZoneId},
                     {ZoneType.Name.ToString(), $"Zone {zone.ZoneId}" },
-	                {ZoneType.TennantId.ToString(), tennant?.Id},
-	                {ZoneType.TennantName.ToString(), tennant?.Name},
+	                {ZoneType.TenantId.ToString(), tenant?.Id},
+	                {ZoneType.TenantName.ToString(), tenant?.Name},
                     {ZoneType.DefaultAppId.ToString(), zone.DefaultAppId },
                     {ZoneType.IsCurrent.ToString(), zone.ZoneId == ZoneId },
                     {ZoneType.AppCount.ToString(), zone.Apps.Count }

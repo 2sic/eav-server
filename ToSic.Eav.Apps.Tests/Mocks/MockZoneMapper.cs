@@ -10,12 +10,12 @@ namespace ToSic.Eav.Apps.Tests.Mocks
 {
     public class MockZoneMapper: IZoneMapper
     {
-        public int GetZoneId(int tennantId) => -1;
+        public int GetZoneId(int tenantId) => -1;
 
-        public int GetZoneId(ITennant tennant) => -999;
+        public int GetZoneId(ITenant tenant) => -999;
 
-        public ITennant Tennant(int zoneId) => new MockTennant();
+        public ITenant Tenant(int zoneId) => new MockTenant();
 
-        public List<TempTempCulture> CulturesWithState(int tennantId, int zoneId) => new List<TempTempCulture>();
+        public List<TempTempCulture> CulturesWithState(int tenantId, int zoneId) => new List<TempTempCulture>();
     }
 }

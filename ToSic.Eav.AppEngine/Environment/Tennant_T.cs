@@ -2,10 +2,10 @@
 
 namespace ToSic.Eav.Apps.Environment
 {
-    public abstract class Tennant<T> :ITennant
+    public abstract class Tenant<T> :ITenant
     {
         /// <summary>
-        /// The tennant settings - usually the DNN PortalSettings
+        /// The tenant settings - usually the DNN PortalSettings
         /// </summary>
         public T Settings { get; }
 
@@ -26,6 +26,6 @@ namespace ToSic.Eav.Apps.Environment
         public abstract string ContentPath { get; }
 
 
-        protected Tennant(T settings) => Settings = settings;
+        protected Tenant(T settings) => Settings = settings;
     }
 }

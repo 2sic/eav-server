@@ -1,9 +1,9 @@
 ﻿namespace ToSic.Eav.Apps.Interfaces
 {
-    public interface ITennant
+    public interface ITenant
     {
         /// <summary>
-        /// The tennant ID as a number (if the tennant supports it)
+        /// The tenant ID as a number (if the tenant supports it)
         /// Usually the DNN PortalId
         /// </summary>
         int Id { get; }
@@ -15,14 +15,14 @@
 
 
         /// <summary>
-        /// The tennant name for human readibility (UIs)
+        /// The tenant name for human readibility (UIs)
         /// Usually the DNN PortalName
         /// </summary>
         string Name { get; }
 
 
         /// <summary>
-        /// The root path of the tennant
+        /// The root path of the tenant
         /// </summary>
         string SxcPath { get; }
 
