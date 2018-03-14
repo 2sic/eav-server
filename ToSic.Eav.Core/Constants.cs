@@ -67,6 +67,8 @@ namespace ToSic.Eav
         public static readonly int MetadataForContentType = 5;
         public const string ContentTypeTypeName = "ContentType";
 
+        public static readonly int MetadataForZone = 6;
+
         [Obsolete("Use MetadataForCmsObject instead")]
         public static readonly int AssignmentObjectTypeCmsObject = 10; 
         public static readonly int MetadataForCmsObject = 10;
