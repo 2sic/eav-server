@@ -23,7 +23,7 @@ namespace ToSic.Eav.App
         public int AppId { get; }
 
         /// <summary>
-        /// The simple list of entities, used in many pipeline parts
+        /// The simple list of entities, used in many query parts
         /// </summary>
         public IEnumerable<IEntity> List { get; }
 

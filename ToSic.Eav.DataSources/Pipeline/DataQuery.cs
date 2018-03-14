@@ -8,43 +8,43 @@ using ToSic.Eav.ValueProvider;
 namespace ToSic.Eav.DataSources.Pipeline
 {
 	/// <summary>
-	/// Helpers to work with Data Pipelines
+	/// Helpers to work with Data Queries
 	/// </summary>
-	public class DataPipeline
+	public class DataQuery
 	{
 	    /// <summary>
-		/// Get an Entity Describing a Pipeline
+		/// Get an Entity Describing a Query
 		/// </summary>
 		/// <param name="entityId">EntityId</param>
 		/// <param name="dataSource">DataSource to load Entity from</param>
-		public static IEntity GetPipelineEntity(int entityId, IDataSource dataSource)
+		public static IEntity GetQueryEntity(int entityId, IDataSource dataSource)
 		{
 			try
 			{
-			    var pipelineEntity = dataSource.List.FindRepoId(entityId);
-                if (pipelineEntity.Type.StaticName != Constants.DataPipelineStaticName)
-                    throw new ArgumentException("Entity is not an DataPipeline Entity", nameof(entityId));
-			    return pipelineEntity;
+			    var queryEntity = dataSource.List.FindRepoId(entityId);
+                if (queryEntity.Type.StaticName != Constants.QueryTypeName)
+                    throw new ArgumentException("Entity is not an DataQuery Entity", nameof(entityId));
+			    return queryEntity;
 			}
 			catch (Exception)
 			{
-				throw new ArgumentException($"Could not load Pipeline-Entity with ID {entityId}.", nameof(entityId));
+				throw new ArgumentException($"Could not load Query-Entity with ID {entityId}.", nameof(entityId));
 			}
 
 		}
 
         /// <summary>
-        /// Assembles a list of all queries / pipelines configured for this app. 
+        /// Assembles a list of all queries / Querys configured for this app. 
         /// The queries internally are not assembled yet for performance reasons...
         /// ...but will be auto-assembled the moment they are accessed
         /// </summary>
         /// <returns></returns>
-	    public static Dictionary<string, IDataSource> AllPipelines(int zoneId, int appId, IValueCollectionProvider valuesCollectionProvider, Log parentLog)
+	    public static Dictionary<string, IDataSource> AllQueries(int zoneId, int appId, IValueCollectionProvider valuesCollectionProvider, Log parentLog)
 	    {
 	        var dict = new Dictionary<string, IDataSource>(StringComparer.OrdinalIgnoreCase);
 	        foreach (var entQuery in AllQueryItems(appId, parentLog))
 	        {
-	            var delayedQuery = new DeferredPipelineQuery(zoneId, appId, entQuery, valuesCollectionProvider);
+	            var delayedQuery = new DeferredQuery(zoneId, appId, entQuery, valuesCollectionProvider);
                 // make sure it doesn't break if two queries have the same name...
 	            var name = entQuery.Title[0].ToString();
 	            if (!dict.ContainsKey(name))
@@ -57,7 +57,7 @@ namespace ToSic.Eav.DataSources.Pipeline
 	    {
 	        var source = DataSource.GetInitialDataSource(appId: appId, parentLog: parentLog);
 	        var typeFilter = DataSource.GetDataSource<EntityTypeFilter>(appId: appId, upstream: source);
-	        typeFilter.TypeName = Constants.DataPipelineStaticName;
+	        typeFilter.TypeName = Constants.QueryTypeName;
 	        var list = typeFilter.List;
 	        return list;
 	    }

@@ -8,7 +8,7 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// Helper for DataPipeline Wiring of DataSources
 	/// </summary>
-	public static class DataPipelineWiring
+	public static class QueryWiring
 	{
 		private static readonly Regex WireRegex = new Regex("(?<From>.+):(?<Out>.+)>(?<To>.+):(?<In>.+)", RegexOptions.Compiled);
 

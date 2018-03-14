@@ -7,16 +7,16 @@ namespace ToSic.Eav.DataSources
 {
 	/// <inheritdoc />
 	/// <summary>
-	/// Provides a data-source to a query (pipeline), but won't assemble the pipeline unless accessed
+	/// Provides a data-source to a query, but won't assemble the query unless accessed
 	/// </summary>
-	public class DeferredPipelineQuery : BaseDataSource
+	public sealed class DeferredQuery : BaseDataSource
 	{
         #region Configuration-properties
 	    public override string LogId => "DS.DefQry";
 
         public IEntity QueryDefinition;
 
-		private IDictionary<string, IDataStream> _Out = new Dictionary<string, IDataStream>();
+		private IDictionary<string, IDataStream> _out = new Dictionary<string, IDataStream>();
 		private bool _requiresRebuildOfOut = true;
 
         /// <summary>
@@ -26,20 +26,19 @@ namespace ToSic.Eav.DataSources
 		{
 			get
 			{
-				if (_requiresRebuildOfOut)
-				{
-				    CreateOutWithAllStreams();
-					_requiresRebuildOfOut = false;
-				}
-				return _Out;
+			    if (!_requiresRebuildOfOut) return _out;
+			    CreateOutWithAllStreams();
+			    _requiresRebuildOfOut = false;
+			    return _out;
 			}
 		}
 		#endregion
 
+		/// <inheritdoc />
 		/// <summary>
 		/// Constructs a new App DataSource
 		/// </summary>
-		public DeferredPipelineQuery(int zoneId, int appId, IEntity queryDef, IValueCollectionProvider config)
+		public DeferredQuery(int zoneId, int appId, IEntity queryDef, IValueCollectionProvider config)
 		{
 		    ZoneId = zoneId;
 		    AppId = appId;
@@ -55,8 +54,8 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		private void CreateOutWithAllStreams()
 		{
-		    var pipeln = new DataPipelineFactory(Log).GetDataSource(AppId, QueryDefinition/*.EntityId*/, ConfigurationProvider as ValueCollectionProvider);
-		    _Out = pipeln.Out;
+		    var pipeln = new QueryFactory(Log).GetDataSource(AppId, QueryDefinition, ConfigurationProvider as ValueCollectionProvider);
+		    _out = pipeln.Out;
 		}
 	}
 

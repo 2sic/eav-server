@@ -20,7 +20,7 @@ namespace ToSic.Eav.ImportExport.Tests.Mocks
                 {3, "App" },
                 {4, "Entity" },
                 {5, "ContentType" },
-                {6, "Reserved" },
+                {6, "Zone" },
                 {7, "Reserved" },
                 {8, "Reserved" },
                 {9, "Reserved" },

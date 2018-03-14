@@ -58,7 +58,7 @@ namespace ToSic.Eav
         public static readonly int MetadataForAttribute = 2;
 
         /// <summary>
-        /// AssignmentObjectTypeId for DataPipelines
+        /// AssignmentObjectTypeId for DataQueries
         /// </summary>
         [Obsolete("Use MetadataForEntity instead")]
         public static readonly int AssignmentObjectTypeEntity = 4;
@@ -76,18 +76,18 @@ namespace ToSic.Eav
         #endregion
 
         /// <summary>
-        /// StaticName of the DataPipeline AttributeSet
+        /// content type name of the query AttributeSet
         /// </summary>
-        public static readonly string DataPipelineStaticName = "DataPipeline";
+        public static readonly string QueryTypeName = "DataPipeline";
         /// <summary>
-        /// StaticName of the DataPipelinePart AttributeSet
+        /// content-type name of the queryPart AttributeSet
         /// </summary>
-        public static readonly string DataPipelinePartStaticName = "DataPipelinePart";
+        public static readonly string QueryPartTypeName = "DataPipelinePart";
 
         /// <summary>
-        /// Attribute Name on the Pipeline-Entity describing the Stream-Wiring
+        /// Attribute Name on the query-Entity describing the Stream-Wiring
         /// </summary>
-        public const string DataPipelineStreamWiringStaticName = "StreamWiring";
+        public const string QueryStreamWiringAttributeName = "StreamWiring";
 
         /// <summary>
         /// Default In-/Out-Stream Name

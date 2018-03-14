@@ -94,7 +94,7 @@
         public const string TemplateContentTypeId = "ContentTypeID";
         public const string TemplateDemoItemId = "DemoEntityID";
         public const string TemplateDemoItemGuid = "DemoEntityGUID";
-        public const string TemplatePipelineGuid = "PipelineEntityGUID";
+        public const string TemplateQueryGuidField = "PipelineEntityGUID";
 
 
         // Virtual Table Export - Placeholders/codes

@@ -98,11 +98,7 @@
     <None Include="app.config" />
     <Content Include="Json\ContentTypes\System.Config ToSic.Eav.DataSources.SqlDataSource.json" />
     <None Include="packages.config" />
-    <Content Include="Persistence.File\.data\ContentTypes\System.Config ToSic.Eav.DataSources.SqlDataSource.json" />
-    <Content Include="Persistence.File\.data\ContentTypes\System.Whatever.json" />
-    <Content Include="Persistence.File\.data\ContentTypes\Default.Something.json" />
-    <None Include="Persistence.File\.data\queries\Query.Apps.json" />
-    <None Include="Persistence.File\.data\queries\Query.Zones.json" />
+    <None Include="Persistence.File\.data\readme.md" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.AppEngine\ToSic.Eav.Apps.csproj">

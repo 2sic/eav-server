@@ -118,13 +118,13 @@ namespace ToSic.Eav.DataSources.System
             // important, use "Name" and not get-best-title, as some queries may not be correctly typed, so missing title-info
             var found = QueryName.StartsWith(Global.GlobalQueryPrefix)
                 ? Global.FindQuery(QueryName)
-                : DataPipeline.AllQueryItems(AppId, Log)
+                : DataQuery.AllQueryItems(AppId, Log)
                     .FirstOrDefault(q => string.Equals(q.GetBestValue("Name").ToString(), QueryName,
                         StringComparison.InvariantCultureIgnoreCase));
 
             if (found == null) throw new Exception($"Can't build information about query - couldn't find query '{QueryName}'");
 
-            _query = new DataPipelineFactory(Log).GetDataSourceForTesting(new QueryDefinition(found, AppId), false);
+            _query = new QueryFactory(Log).GetDataSourceForTesting(new QueryDefinition(found, AppId), false);
         }
 
 	    private IDataSource _query;

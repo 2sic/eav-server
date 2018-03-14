@@ -102,9 +102,9 @@
     <Compile Include="DataStreamDeferred.cs" />
     <Compile Include="DataTableDataSource.cs" />
     <Compile Include="Debug\DataSourceInfo.cs" />
-    <Compile Include="Debug\PipelineInfo.cs" />
+    <Compile Include="Debug\QueryInfo.cs" />
     <Compile Include="Debug\StreamInfo.cs" />
-    <Compile Include="DeferredPipelineQuery.cs" />
+    <Compile Include="DeferredQuery.cs" />
     <Compile Include="EntityIdFilter.cs" />
     <Compile Include="EntityTypeFilter.cs" />
     <Compile Include="Exceptions\DataSourceException.cs" />
@@ -120,9 +120,9 @@
     <Compile Include="Shuffle.cs" />
     <Compile Include="Paging.cs" />
     <Compile Include="PassThrough.cs" />
-    <Compile Include="Pipeline\DataPipeline.cs" />
-    <Compile Include="Pipeline\DataPipelineFactory.cs" />
-    <Compile Include="Pipeline\DataPipelineWiring.cs" />
+    <Compile Include="Pipeline\DataQuery.cs" />
+    <Compile Include="Pipeline\QueryFactory.cs" />
+    <Compile Include="Pipeline\QueryWiring.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="OwnerFilter.cs" />
     <Compile Include="PublishingFilter.cs" />

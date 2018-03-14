@@ -97,7 +97,7 @@
     <Compile Include="Formats\ItemIdentifiers.cs" />
     <Compile Include="Formats\QueryDefinitionInfo.cs" />
     <Compile Include="Helpers\Download.cs" />
-    <Compile Include="PipelineDesignerController.cs">
+    <Compile Include="QueryController.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />

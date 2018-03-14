@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Web.Http;
 using Newtonsoft.Json;
 using ToSic.Eav.Apps;
@@ -19,10 +18,10 @@ namespace ToSic.Eav.WebApi
 	/// <summary>
 	/// Web API Controller for the Pipeline Designer UI
 	/// </summary>
-	public class PipelineDesignerController : Eav3WebApiBase
+	public class QueryController : Eav3WebApiBase
     {
         #region initializers etc. - work on later
-        public PipelineDesignerController(Log parentLog): base(parentLog)
+        public QueryController(Log parentLog): base(parentLog)
 		{
             Log.Rename("Api.EaPipe");
 		}
@@ -45,8 +44,8 @@ namespace ToSic.Eav.WebApi
 
                 #region Deserialize some Entity-Values
                 query.Pipeline = EntityToDictionary(qdef.Header);
-			    query.Pipeline[Constants.DataPipelineStreamWiringStaticName] = DataPipelineWiring
-                    .Deserialize((string)query.Pipeline[Constants.DataPipelineStreamWiringStaticName]);
+			    query.Pipeline[Constants.QueryStreamWiringAttributeName] = QueryWiring
+                    .Deserialize((string)query.Pipeline[Constants.QueryStreamWiringAttributeName]);
 
 				foreach (var part in qdef.Parts.Select(EntityToDictionary))
 				{
@@ -55,7 +54,7 @@ namespace ToSic.Eav.WebApi
 					
                     // Replace ToSic.Eav with ToSic.Eav.DataSources because they moved to a different DLL
 				    part[QueryConstants.PartAssemblyAndType] 
-                        = DataPipelineFactory.RewriteOldAssemblyNames((string)part[QueryConstants.PartAssemblyAndType]);
+                        = QueryFactory.RewriteOldAssemblyNames((string)part[QueryConstants.PartAssemblyAndType]);
                     query.DataSources.Add(part);
 				}
 				#endregion
@@ -97,7 +96,7 @@ namespace ToSic.Eav.WebApi
                 .ToList();
 
             // Update Pipeline Entity with new Wirings etc.
-		    var wirings = JsonConvert.DeserializeObject<List<WireInfo>>(data.Pipeline[Constants.DataPipelineStreamWiringStaticName].ToString());
+		    var wirings = JsonConvert.DeserializeObject<List<WireInfo>>(data.Pipeline[Constants.QueryStreamWiringAttributeName].ToString());
 
             new AppManager(appId, Log).Queries.Update(id, data.DataSources, newDsGuids, data.Pipeline, wirings);
 
@@ -120,7 +119,7 @@ namespace ToSic.Eav.WebApi
             timer.Stop();
 
             // Now get some more debug info
-		    var debugInfo = new DataSources.Debug.PipelineInfo(outStreams);
+		    var debugInfo = new DataSources.Debug.QueryInfo(outStreams);
 
             // ...and return the results
 			return new
@@ -137,11 +136,11 @@ namespace ToSic.Eav.WebApi
 
 
 		private IDataSource ConstructPipeline(int appId, int id, bool showDrafts) 
-            => new DataPipelineFactory(Log).GetDataSourceForTesting(appId, id, showDrafts);
+            => new QueryFactory(Log).GetDataSourceForTesting(appId, id, showDrafts);
 
         [HttpGet]
         public dynamic PipelineDebugInfo(int appId, int id)
-            => new DataSources.Debug.PipelineInfo(ConstructPipeline(appId, id, true));
+            => new DataSources.Debug.QueryInfo(ConstructPipeline(appId, id, true));
 
 
         /// <summary>

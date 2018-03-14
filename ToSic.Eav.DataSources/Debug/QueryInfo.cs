@@ -3,12 +3,12 @@ using System.Collections.Generic;
 
 namespace ToSic.Eav.DataSources.Debug
 {
-    public class PipelineInfo
+    public class QueryInfo
     {
         public List<StreamInfo> Streams = new List<StreamInfo>();
         public Dictionary<Guid, DataSourceInfo> Sources = new Dictionary<Guid, DataSourceInfo>();
 
-        public PipelineInfo(IDataSource outStream)
+        public QueryInfo(IDataSource outStream)
         {
             GetStreamInfosRecursive(outStream as IDataTarget, ref Streams, ref Sources);
         }

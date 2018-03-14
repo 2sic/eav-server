@@ -12,14 +12,14 @@ using ToSic.Eav.ValueProvider;
 namespace ToSic.Eav.DataSources.Pipeline
 {
 	/// <summary>
-	/// Factory to create a Data Pipeline
+	/// Factory to create a Data Query
 	/// </summary>
-	public class DataPipelineFactory: HasLog
+	public class QueryFactory: HasLog
 	{
-	    public DataPipelineFactory(Log parentLog) : base("DS.PipeFt", parentLog) {}
+	    public QueryFactory(Log parentLog) : base("DS.PipeFt", parentLog) {}
 
 	    /// <summary>
-	    /// Creates a DataSource from a PipelineEntity for specified Zone and App
+	    /// Creates a DataSource from a QueryEntity for specified Zone and App
 	    /// </summary>
 	    /// <param name="appId">AppId to use</param>
 	    /// <param name="valueCollection">ConfigurationProvider Provider for configurable DataSources</param>
@@ -28,29 +28,29 @@ namespace ToSic.Eav.DataSources.Pipeline
 	    /// <returns>A single DataSource Out with wirings and configurations loaded, ready to use</returns>
 	    public IDataSource GetDataSource(int appId, IEntity query, ValueCollectionProvider valueCollection, IDataSource outSource = null, bool showDrafts = false)
 	    {
-	        var pipelineEntityId = query.EntityId;
-		    Log.Add($"build pipe#{pipelineEntityId} for a#{appId}, draft:{showDrafts}");
+	        var queryEntityId = query.EntityId;
+		    Log.Add($"build pipe#{queryEntityId} for a#{appId}, draft:{showDrafts}");
 		    var configurationPropertyAccesses = valueCollection.Sources.Select(s => s.Value);
-            var qdef = new QueryDefinition(query, appId); // GetQueryDefinition(appId, pipelineEntityId);
+            var qdef = new QueryDefinition(query, appId); // GetQueryDefinition(appId, queryEntityId);
             return GetDataSource(qdef, configurationPropertyAccesses, outSource, showDrafts);
 		}
 
-	    private QueryDefinition GetQueryDefinition(int appId, int pipelineEntityId)
+	    private QueryDefinition GetQueryDefinition(int appId, int queryEntityId)
 	    {
-	        Log.Add($"get query def#{pipelineEntityId} for a#{appId}");
+	        Log.Add($"get query def#{queryEntityId} for a#{appId}");
 
 	        try
 	        {
                 var source = DataSource.GetInitialDataSource(appId: appId, parentLog: Log);
 	            var appEntities = source[Constants.DefaultStreamName].List;
 
-	            // use findRepo, as it uses the cache, which gives the list of all items // [pipelineEntityId];
-	            var dataPipeline = appEntities.FindRepoId(pipelineEntityId);
-	            return new QueryDefinition(dataPipeline, appId);
+	            // use findRepo, as it uses the cache, which gives the list of all items // [queryEntityId];
+	            var dataQuery = appEntities.FindRepoId(queryEntityId);
+	            return new QueryDefinition(dataQuery, appId);
 	        }
 	        catch (KeyNotFoundException)
 	        {
-	            throw new Exception("PipelineEntity not found with ID " + pipelineEntityId + " on AppId " + appId);
+	            throw new Exception("QueryEntity not found with ID " + queryEntityId + " on AppId " + appId);
 	        }
 
 	    }
@@ -65,22 +65,22 @@ namespace ToSic.Eav.DataSources.Pipeline
 	        #region prepare shared / global value providers
 
 	        propertyProviders = propertyProviders?.ToList();
-	        // the pipeline settings which apply to the whole pipeline
+	        // the query settings which apply to the whole query
             // todo 2017-12-05 2dm - this is probably where I will apply parameters, I think it's not used yet!
-	        var pipelineSettingsProvider = new AssignedEntityValueProvider("pipelinesettings", qdef.Header);
+	        var querySettingsProvider = new AssignedEntityValueProvider("pipelinesettings", qdef.Header);
 
 
             // global settings, ATM just if showdrafts are to be used
             const string itemSettings = "settings";
 
 	        #endregion
-	        #region Load Pipeline Entity and Pipeline Parts
+	        #region Load Query Entity and Query Parts
 
 	        // tell the primary-out that it has this guid, for better debugging
 	        if (outSource == null)
 	        {
 	            var ptValues = new ValueCollectionProvider();
-                ptValues.Add(pipelineSettingsProvider);
+                ptValues.Add(querySettingsProvider);
                 ptValues.AddOverride(propertyProviders);
 
 	            var pass = new PassThrough {ConfigurationProvider = ptValues};
@@ -91,16 +91,16 @@ namespace ToSic.Eav.DataSources.Pipeline
 
 	        #endregion
 
-	        #region init all DataPipelineParts
+	        #region init all DataQueryParts
 
 	        Log.Add($"add parts to pipe#{qdef.Header.EntityId} ");
 	        var dataSources = new Dictionary<string, IDataSource>();
-	        foreach (var dataPipelinePart in qdef.Parts)
+	        foreach (var dataQueryPart in qdef.Parts)
 	        {
 	            #region Init Configuration Provider
 
 	            var configurationProvider = new ValueCollectionProvider();
-	            configurationProvider.Add(new AssignedEntityValueProvider(itemSettings, dataPipelinePart));
+	            configurationProvider.Add(new AssignedEntityValueProvider(itemSettings, dataQueryPart));
 
 	            // if show-draft in overridden, add that to the settings
 	            if (showDrafts)
@@ -110,7 +110,7 @@ namespace ToSic.Eav.DataSources.Pipeline
 	                        {"ShowDrafts", true.ToString()}
 	                    }));
 
-                configurationProvider.Add(pipelineSettingsProvider);
+                configurationProvider.Add(querySettingsProvider);
 
 	            // ReSharper disable once PossibleMultipleEnumeration
                 configurationProvider.AddOverride(propertyProviders);
@@ -119,16 +119,16 @@ namespace ToSic.Eav.DataSources.Pipeline
 
 
 	            // This is new in 2015-10-38 - check type because we renamed the DLL with the parts, and sometimes the old dll-name had been saved
-	            var assemblyAndType = dataPipelinePart[QueryConstants.PartAssemblyAndType][0].ToString();
+	            var assemblyAndType = dataQueryPart[QueryConstants.PartAssemblyAndType][0].ToString();
 	            assemblyAndType = RewriteOldAssemblyNames(assemblyAndType);
 
 	            var dataSource = DataSource.GetDataSource(assemblyAndType, null, qdef.AppId,
 	                valueCollectionProvider: configurationProvider, parentLog: Log);
-	            dataSource.DataSourceGuid = dataPipelinePart.EntityGuid;
+	            dataSource.DataSourceGuid = dataQueryPart.EntityGuid;
 
 	            Log.Add($"add '{assemblyAndType}' as " +
-	                    $"part#{dataPipelinePart.EntityId}({dataPipelinePart.EntityGuid.ToString().Substring(0, 6)}...)");
-	            dataSources.Add(dataPipelinePart.EntityGuid.ToString(), dataSource);
+	                    $"part#{dataQueryPart.EntityId}({dataQueryPart.EntityGuid.ToString().Substring(0, 6)}...)");
+	            dataSources.Add(dataQueryPart.EntityGuid.ToString(), dataSource);
 	        }
 	        dataSources.Add("Out", outSource);
 
@@ -140,7 +140,7 @@ namespace ToSic.Eav.DataSources.Pipeline
 	    }
 
 	    /// <summary>
-	    /// Check if a pipeline part has an old assembly name, and if yes, correct it to the new name
+	    /// Check if a Query part has an old assembly name, and if yes, correct it to the new name
 	    /// </summary>
 	    /// <param name="assemblyAndType"></param>
 	    /// <returns></returns>
@@ -150,12 +150,12 @@ namespace ToSic.Eav.DataSources.Pipeline
 	            : assemblyAndType;
 
 	    /// <summary>
-		/// Init Stream Wirings between Pipeline-Parts (Buttom-Up)
+		/// Init Stream Wirings between Query-Parts (Buttom-Up)
 		/// </summary>
-		private void InitWirings(IEntity dataPipeline, IDictionary<string, IDataSource> dataSources)
+		private void InitWirings(IEntity dataQuery, IDictionary<string, IDataSource> dataSources)
 		{
 			// Init
-			var wirings = DataPipelineWiring.Deserialize((string)dataPipeline[Constants.DataPipelineStreamWiringStaticName][0]).ToList();
+			var wirings = QueryWiring.Deserialize((string)dataQuery[Constants.QueryStreamWiringAttributeName][0]).ToList();
 			var initializedWirings = new List<WireInfo>();
 		    Log.Add($"init wirings⋮{wirings.Count}");
 
@@ -241,8 +241,8 @@ namespace ToSic.Eav.DataSources.Pipeline
 
 	    private const string FieldTestParams = "TestParameters";
         /// <summary>
-        /// Retrieve test values to test a specific pipeline. 
-        /// The specs are found in the pipeline definition, but the must be converted to a source
+        /// Retrieve test values to test a specific query. 
+        /// The specs are found in the query definition, but the must be converted to a source
         /// </summary>
         /// <returns></returns>
         public IEnumerable<IValueProvider> GetTestValueProviders(QueryDefinition qdef)

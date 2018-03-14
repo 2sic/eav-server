@@ -31,7 +31,7 @@ namespace ToSic.Eav.DataSources.Tests.Query
         private QueryDefinition LoadQueryDef(int appId, int queryId)
         {
             var source = DataSource.GetInitialDataSource(appId: appId);
-            var pipelineEntity = DataPipeline.GetPipelineEntity(queryId, source);
+            var pipelineEntity = DataQuery.GetQueryEntity(queryId, source);
             return new QueryDefinition(pipelineEntity);
         }
 
@@ -86,7 +86,7 @@ namespace ToSic.Eav.DataSources.Tests.Query
         public void Query_Run_And_Run_Materialized()
         {
             var qdef = LoadQueryDef(TestConfig.AppForQueryTests, basicId);
-            var query = new DataPipelineFactory(null).GetDataSourceForTesting(qdef, false);
+            var query = new QueryFactory(null).GetDataSourceForTesting(qdef, false);
             var countDef = query.List.Count();
             Assert.IsTrue(countDef > 0, "result > 0");
             Assert.AreEqual(basicCount, countDef);
@@ -96,7 +96,7 @@ namespace ToSic.Eav.DataSources.Tests.Query
             var eDef2 = ser.Deserialize(strQuery, true);
 
             var qdef2 = new QueryDefinition(eDef2);
-            var query2 = new DataPipelineFactory(null).GetDataSourceForTesting(qdef2, false);
+            var query2 = new QueryFactory(null).GetDataSourceForTesting(qdef2, false);
             var countDef2 = query2.List.Count();
             Assert.AreEqual(countDef2, countDef, "countdefs should be same");
         }

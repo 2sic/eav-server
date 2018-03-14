@@ -27,29 +27,29 @@ namespace ToSic.Eav.Apps
 
                 if (ConfigurationProvider == null)
                     throw new Exception("Can't use app-queries, because the necessary configuration provider hasn't been initialized. Call InitData first.");
-                Queries = DataPipeline.AllPipelines(ZoneId, AppId, ConfigurationProvider, Log);
+                Queries = DataQuery.AllQueries(ZoneId, AppId, ConfigurationProvider, Log);
                 return Queries;
             }
         }
 
-        internal DeferredPipelineQuery GetQuery(string name)
+        internal DeferredQuery GetQuery(string name)
         {
             if (name.StartsWith(Global.GlobalQueryPrefix))
                 return GetGlobalQuery(name);
 
             // Try to find the query, abort if not found
-            if (Query.ContainsKey(name) && Query[name] is DeferredPipelineQuery query)
+            if (Query.ContainsKey(name) && Query[name] is DeferredQuery query)
                 return query;
 
             // not found
             return null;
         }
 
-        private DeferredPipelineQuery GetGlobalQuery(string name)
+        private DeferredQuery GetGlobalQuery(string name)
         {
             var qent = Global.FindQuery(name) 
                 ?? throw new Exception($"can't find global query {name}");
-            return new DeferredPipelineQuery(ZoneId, AppId, qent, ConfigurationProvider);
+            return new DeferredQuery(ZoneId, AppId, qent, ConfigurationProvider);
         }
     }
 }

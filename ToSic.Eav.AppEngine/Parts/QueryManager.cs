@@ -35,11 +35,11 @@ namespace ToSic.Eav.Apps.Parts
             var newMetadata = origMetadata.Select(o => CopyAndResetIds(o.Value, newParts[o.Key].EntityGuid));
 
             // now update wiring...
-            var origWiring = query.Header.GetBestValue(Constants.DataPipelineStreamWiringStaticName).ToString();
+            var origWiring = query.Header.GetBestValue(Constants.QueryStreamWiringAttributeName).ToString();
             var keyMap = newParts.ToDictionary(o => o.Key.ToString(), o => o.Value.EntityGuid.ToString());
             var newWiring = RemapWiringToCopy(origWiring, keyMap);
 
-            newQuery.Attributes[Constants.DataPipelineStreamWiringStaticName].Values = new List<IValue>
+            newQuery.Attributes[Constants.QueryStreamWiringAttributeName].Values = new List<IValue>
             {
                 ValueBuilder.Build(AttributeTypeEnum.String, newWiring, new List<ILanguage>())
             };
@@ -51,7 +51,7 @@ namespace ToSic.Eav.Apps.Parts
 
         private static string RemapWiringToCopy(string origWiring, Dictionary<string, string> keyMap)
         {
-            var wiringsSource = DataPipelineWiring.Deserialize(origWiring);
+            var wiringsSource = QueryWiring.Deserialize(origWiring);
             var wiringsClone = new List<WireInfo>();
             if (wiringsSource != null)
                 foreach (var wireInfo in wiringsSource)
@@ -64,7 +64,7 @@ namespace ToSic.Eav.Apps.Parts
 
                     wiringsClone.Add(wireInfoClone);
                 }
-            var newWiring = DataPipelineWiring.Serialize(wiringsClone);
+            var newWiring = QueryWiring.Serialize(wiringsClone);
             return newWiring;
         }
 
@@ -91,21 +91,19 @@ namespace ToSic.Eav.Apps.Parts
                 throw new Exception(canDeleteResult.Item2);
 
 
-            // Get the Entity describing the Pipeline and Pipeline Parts (DataSources)
-            var pipelineEntity = DataPipeline.GetPipelineEntity(id, AppManager.Cache);
-            var qdef = new QueryDefinition(pipelineEntity);
-            //var parts = DataPipeline.GetPipelineParts(AppManager.ZoneId, AppManager.AppId, pipelineEntity.EntityGuid).ToList();
-            //var mdSource = DataSource.GetMetaDataSource(appId: AppManager.AppId);
+            // Get the Entity describing the Query and Query Parts (DataSources)
+            var queryEntity = DataQuery.GetQueryEntity(id, AppManager.Cache);
+            var qdef = new QueryDefinition(queryEntity);
 
             var mdItems = qdef.Parts// parts
-                .Select(ds => ds.Metadata.FirstOrDefault())// mdSource.GetMetadata(Constants.MetadataForEntity, ds.EntityGuid).FirstOrDefault())
+                .Select(ds => ds.Metadata.FirstOrDefault())
                 .Where(md => md != null)
                 .Select(md => md.EntityId)
                 .ToList();
 
             // delete in the right order - first the outermost-dependants, then a layer in, and finally the top node
             AppManager.Entities.Delete(mdItems);
-            AppManager.Entities.Delete(qdef.Parts/*parts*/.Select(p => p.EntityId).ToList());
+            AppManager.Entities.Delete(qdef.Parts.Select(p => p.EntityId).ToList());
             AppManager.Entities.Delete(id);
 
             // flush cache
@@ -126,17 +124,17 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="wirings"></param>
         public void Update(int queryId, List<Dictionary<string, object>> partDefs, List<Guid> newDsGuids, Dictionary<string, object> headerValues, List<WireInfo> wirings)
         {
-            // Get/Save Pipeline EntityGuid. Its required to assign Pipeline Parts to it.
+            // Get/Save Query EntityGuid. Its required to assign Query Parts to it.
             var qdef = AppManager.Read.Queries.Get(queryId);
 
             // todo: maybe create a GetBestValue<typed> ? 
             if (((IAttribute<bool?>)qdef.Header["AllowEdit"]).TypedContents == false)
-                throw new InvalidOperationException("Pipeline has AllowEdit set to false");
+                throw new InvalidOperationException("Query has AllowEdit set to false");
 
             Dictionary<string, Guid> addedSources = SavePartsAndGenerateRenameMap(
                 partDefs, qdef.Header.EntityGuid);
 
-            DeletedRemovedPipelineParts(newDsGuids, addedSources.Values, qdef);
+            DeletedRemovedParts(newDsGuids, addedSources.Values, qdef);
 
             headerValues = new Dictionary<string, object>(headerValues, StringComparer.InvariantCultureIgnoreCase);
             RemoveIdAndGuidFromValues(headerValues);
@@ -144,14 +142,14 @@ namespace ToSic.Eav.Apps.Parts
         }
 
         /// <summary>
-        /// Save PipelineParts (DataSources) to EAV
+        /// Save QueryParts (DataSources) to EAV
         /// </summary>
         /// <param name="partsDefinitions"></param>
-        /// <param name="pipelineEntityGuid">EngityGuid of the Pipeline-Entity</param>
+        /// <param name="queryEntityGuid">EngityGuid of the Pipeline-Entity</param>
         private Dictionary<string, Guid> SavePartsAndGenerateRenameMap(List<Dictionary<string, object>> partsDefinitions,
-            Guid pipelineEntityGuid)
+            Guid queryEntityGuid)
         {
-            Log.Add($"save parts guid:{pipelineEntityGuid}");
+            Log.Add($"save parts guid:{queryEntityGuid}");
             var newDataSources = new Dictionary<string, Guid>();
 
             foreach (var ds in partsDefinitions)
@@ -176,8 +174,8 @@ namespace ToSic.Eav.Apps.Parts
                 // Add new DataSource
                 else
                 {
-                    Tuple<int, Guid> entity = AppManager.Entities.Create(Constants.DataPipelinePartStaticName, dataSource,
-                        new MetadataFor { TargetType = Constants.MetadataForEntity, KeyGuid = pipelineEntityGuid });
+                    Tuple<int, Guid> entity = AppManager.Entities.Create(Constants.QueryPartTypeName, dataSource,
+                        new MetadataFor { TargetType = Constants.MetadataForEntity, KeyGuid = queryEntityGuid });
                     newDataSources.Add(originalIdentity, entity.Item2);
                 }
             }
@@ -197,9 +195,9 @@ namespace ToSic.Eav.Apps.Parts
         }
 
         /// <summary>
-        /// Delete Pipeline Parts (DataSources) that are not present
+        /// Delete Query Parts (DataSources) that are not present
         /// </summary>
-        public void DeletedRemovedPipelineParts(
+        public void DeletedRemovedParts(
             List<Guid> newEntityGuids, 
             IEnumerable<Guid> newDataSources, 
             QueryDefinition qdef)
@@ -219,9 +217,9 @@ namespace ToSic.Eav.Apps.Parts
 
 
         /// <summary>
-        /// Save a Pipeline Entity to EAV
+        /// Save a Query Entity to EAV
         /// </summary>
-        /// <param name="id">EntityId of the Entity describing the Pipeline</param>
+        /// <param name="id">EntityId of the Entity describing the Query</param>
         /// <param name="values"></param>
         /// <param name="wirings"></param>
         /// <param name="renamedDataSources">Array with new DataSources and the unsavedName and final EntityGuid</param>
@@ -236,7 +234,7 @@ namespace ToSic.Eav.Apps.Parts
                     $"DataSource \"{wireInfo.To}\" has multiple In-Streams with Name \"{wireInfo.In}\". Each In-Stream must have an unique Name and can have only one connection.");
 
             // add to new object...then send to save/update
-            values[Constants.DataPipelineStreamWiringStaticName] = DataPipelineWiring.Serialize(wirings);
+            values[Constants.QueryStreamWiringAttributeName] = QueryWiring.Serialize(wirings);
             AppManager.Entities.UpdateParts(id, values);
         }
 
