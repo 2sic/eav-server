@@ -114,6 +114,7 @@
     <Compile Include="Interfaces\ICacheExpirable.cs" />
     <Compile Include="Interfaces\ICacheDependent.cs" />
     <Compile Include="Interfaces\ICacheExpiring.cs" />
+    <Compile Include="Interfaces\IUser.cs" />
     <Compile Include="Plumbing\Booting\Boot.cs" />
     <Compile Include="Plumbing\Booting\IConfigurationLoader.cs" />
     <Compile Include="Plumbing\SingleInitNullable_T.cs" />
@@ -160,7 +161,7 @@
     <Compile Include="Enums\AttributeTypeEnum.cs" />
     <Compile Include="Factory.cs" />
     <Compile Include="HelpersToRefactor.cs" />
-    <Compile Include="Implementations\UserInformation\NeutralEavUserInformation.cs" />
+    <Compile Include="Implementations\UserInformation\NeutralEavUser.cs" />
     <Compile Include="Implementations\ValueConverter\ConversionScenario.cs" />
     <Compile Include="Implementations\ValueConverter\IEavValueConverter.cs" />
     <Compile Include="Implementations\ValueConverter\NeutralValueConverter.cs" />
@@ -185,7 +186,6 @@
     <Compile Include="Interfaces\IEntityLight.cs" />
     <Compile Include="Interfaces\IRelatedEntities.cs" />
     <Compile Include="Interfaces\IRelationshipManager.cs" />
-    <Compile Include="Implementations\UserInformation\IEavUserInformation.cs" />
     <Compile Include="Interfaces\IRepositoryLoader.cs" />
     <Compile Include="Interfaces\IValue.cs" />
     <Compile Include="Logging\HasLog.cs" />

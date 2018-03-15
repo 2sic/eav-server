@@ -66,8 +66,10 @@ namespace ToSic.Eav.Repository.Efc
                 try
                 {
                     // try to get using dependency injection
-                    var uinfo = Factory.Resolve<IEavUserInformation>();
-                    _userName = uinfo.IdentityForLog;
+                    var usr = Factory.Resolve<IUser>();
+                    _userName = usr.IdentityToken;
+                    //var uinfo = Factory.Resolve<IEavUserInformation>();
+                    //_userName = uinfo.IdentityForLog;
                 }
                 catch
                 {

@@ -208,7 +208,7 @@ namespace ToSic.Eav.Data
                 if(_metadata == null)
                 {
                     _metadata = new MetadataOf<Guid>(Constants.MetadataForEntity, EntityGuid, DeferredLookupData);
-                    if (DeferredLookupData == null) _metadata.Use(new List<IEntity>());
+                    //if (DeferredLookupData == null) _metadata.Use(new List<IEntity>());
                 }
                 return _metadata;
             }

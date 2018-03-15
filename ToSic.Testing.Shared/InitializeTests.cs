@@ -33,8 +33,8 @@ namespace ToSic.Testing.Shared
 
             Factory.ActivateNetCoreDi(sc =>
             {
-                sc.TryAddTransient<IEavUserInformation, NeutralEavUserInformation>();
-                sc.TryAddTransient<IEavUserInformation, NeutralEavUserInformation>();
+                //sc.TryAddTransient<IEavUserInformation, NeutralEavUserInformation>();
+                sc.TryAddTransient<IUser, NeutralEavUser>();
                 sc.TryAddTransient<IRuntime, NeutralRuntime>();
 
                 configure.Invoke(sc);

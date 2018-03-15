@@ -8,7 +8,12 @@
         Delete = 'd',
         Develop = 'v',
         Full = 'f',
-        Approve = 'a'
+        Approve = 'a',
+        Schema = '$',
+        ReadDraft = 'ř',
+        CreateDraft = 'č',
+        UpdateDraft = 'ǔ',
+        DeleteDraft = 'ď' // the "d" with caron looks a bit different
     }
 
 }

@@ -20,7 +20,7 @@ namespace ToSic.Eav.Apps
         public string Folder { get; private set; }
         public bool Hidden { get; private set; }
 
-        public string AppGuid { get; set; }
+        public string AppGuid { get; }
 
 
         protected IValueCollectionProvider ConfigurationProvider { get; set; }
@@ -44,7 +44,10 @@ namespace ToSic.Eav.Apps
             ZoneId = zoneId;
 
             // Look up name in cache
-            AppGuid = ((BaseCache)DataSource.GetCache(zoneId)).ZoneApps[zoneId].Apps[appId];
+            var cache = (BaseCache) DataSource.GetCache(zoneId, appId);
+            _deferredLookupData = cache.AppDataPackage; // for metadata
+
+            AppGuid = cache.ZoneApps[zoneId].Apps[appId];
 
             if (AppGuid == Constants.DefaultAppName)
                 Name = Folder = ContentAppName;

@@ -67,6 +67,10 @@ namespace ToSic.Eav
         public static readonly int MetadataForContentType = 5;
         public const string ContentTypeTypeName = "ContentType";
 
+        /// <summary>App metadata</summary>
+        public static readonly int MetadataForApp = 3;
+        
+        /// <summary>Zone metadata</summary>
         public static readonly int MetadataForZone = 6;
 
         [Obsolete("Use MetadataForCmsObject instead")]
@@ -77,13 +81,10 @@ namespace ToSic.Eav
         public static readonly string ContentTypeMetadataLabel = "Label";
         #endregion
 
-        /// <summary>
-        /// content type name of the query AttributeSet
-        /// </summary>
+        /// <summary>content type name of the query AttributeSet</summary>
         public static readonly string QueryTypeName = "DataPipeline";
-        /// <summary>
-        /// content-type name of the queryPart AttributeSet
-        /// </summary>
+
+        /// <summary>content-type name of the queryPart AttributeSet</summary>
         public static readonly string QueryPartTypeName = "DataPipelinePart";
 
         /// <summary>
@@ -100,6 +101,7 @@ namespace ToSic.Eav
 
         /// <summary>PublishedEntities Stream Name</summary>
         public const string PublishedStreamName = "Published";
+
         /// <summary>Draft-Entities Stream Name</summary>
         public const string DraftsStreamName = "Drafts";
 

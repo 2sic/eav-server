@@ -62,7 +62,7 @@ namespace ToSic.Eav.Apps
             xData.DefaultLanguage = languagesActive
                 ? Tenant.DefaultLanguage
                 : "";
-            xData.CurrentUserName = Env.User.CurrentUserIdentityToken;
+            xData.CurrentUserName = Env.User.IdentityToken;
         }
 
         #endregion
