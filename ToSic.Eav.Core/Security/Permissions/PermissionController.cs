@@ -86,6 +86,7 @@ namespace ToSic.Eav.Security.Permissions
 
         public bool UserMay(PermissionGrant action) => DoesPermissionsListAllow((char)action);
 
+        public bool UserMay(List<PermissionGrant> actions) => actions.Any(action => DoesPermissionsListAllow((char)action));
 
         /// <summary>
         /// Check if the permission-list would allow such an action

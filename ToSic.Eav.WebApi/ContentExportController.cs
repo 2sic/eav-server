@@ -22,11 +22,8 @@ namespace ToSic.Eav.WebApi
         [HttpGet]
         public HttpResponseMessage ExportContent(int appId, string language, string defaultLanguage, string contentType,
             ExportSelection exportSelection, ExportResourceReferenceMode exportResourcesReferences,
-            ExportLanguageResolution exportLanguageReferences, string selectedIds = null)
-        {
-            // return ExportContentOld(appId, language, defaultLanguage, contentType, exportSelection, exportResourcesReferences, exportLanguageReferences, selectedIds);
-            return ExportContentNew(appId, language, defaultLanguage, contentType, exportSelection, exportResourcesReferences, exportLanguageReferences, selectedIds);
-        }
+            ExportLanguageResolution exportLanguageReferences, string selectedIds = null) 
+            => ExportContentNew(appId, language, defaultLanguage, contentType, exportSelection, exportResourcesReferences, exportLanguageReferences, selectedIds);
 
         private HttpResponseMessage ExportContentNew(int appId, string language, string defaultLanguage, string contentType,
     ExportSelection exportSelection, ExportResourceReferenceMode exportResourcesReferences,
@@ -72,7 +69,7 @@ namespace ToSic.Eav.WebApi
         public HttpResponseMessage DownloadTypeAsJson(int appId, string name)
         {
             Log.Add($"get fields a#{appId}, type:{name}");
-            SetAppIdAndUser(appId);
+            SetAppId(appId);
 
             var type = AppManager.Read.ContentTypes.Get(name);
             var serializer = new JsonSerializer(AppManager.Package, Log);
@@ -86,7 +83,7 @@ namespace ToSic.Eav.WebApi
         public HttpResponseMessage DownloadEntityAsJson(int appId, int id, string prefix, bool withMetadata)
         {
             Log.Add($"get fields a#{appId}, id:{id}");
-            SetAppIdAndUser(appId);
+            SetAppId(appId);
 
             var entity = AppManager.Read.Entities.Get(id);
             var serializer = new JsonSerializer(AppManager.Package, Log);
