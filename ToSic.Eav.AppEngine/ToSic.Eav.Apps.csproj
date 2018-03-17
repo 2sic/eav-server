@@ -30,6 +30,7 @@
 
   <ItemGroup>
     <Folder Include="Assets\Adam\" />
+    <Folder Include="Security\" />
   </ItemGroup>
 
 </Project>

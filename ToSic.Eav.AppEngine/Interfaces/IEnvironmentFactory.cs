@@ -9,12 +9,17 @@ namespace ToSic.Eav.Apps.Interfaces
         /// <summary>
         /// Initialize this object so it can then give information regarding the permissions of an entity.
         /// </summary>
-        PermissionController ItemPermissions(IEntity targetItem, Log parentLog, IInstanceInfo module = null);
+        PermissionCheckBase ItemPermissions(IEntity targetItem, Log parentLog, IInstanceInfo module = null);
 
         /// <summary>
         /// Initialize this object so it can then give information regarding the permissions of a type.
         /// </summary>
-        PermissionController TypePermissions(IContentType targetType, IEntity targetItem, Log parentLog, IInstanceInfo module = null);
+        PermissionCheckBase TypePermissions(IContentType targetType, IEntity targetItem, Log parentLog, IInstanceInfo module = null);
+
+        /// <summary>
+        /// Initialize to get permissions for an instance
+        /// </summary>
+        PermissionCheckBase InstancePermissions(Log parentLog, IInstanceInfo module, IApp app);
 
         IPagePublishing PagePublisher(Log parentLog);
 

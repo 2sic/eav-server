@@ -2,13 +2,13 @@
 
 namespace ToSic.Eav.Apps.Environment
 {
-    public abstract class InstanceInfo<T>: IInstanceInfo
+    public abstract class EnvironmentInstance<T>: IInstanceInfo
     {
-        public T Info { get; }
+        public T Original { get; }
 
-        protected InstanceInfo(T item)
+        protected EnvironmentInstance(T item)
         {
-            Info = item;
+            Original = item;
         }
 
         public abstract int Id { get; }

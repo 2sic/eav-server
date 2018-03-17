@@ -6,29 +6,35 @@ using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Security.Permissions
 {
-    public abstract class PermissionController : HasLog
+    public abstract class PermissionCheckBase : HasLog, IPermissionCheck
     {
-        protected IContentType TargetType { get; }
 
-        public IEntity TargetItem { get; set; }
+        #region Permission Targets and resulting list of metadata to control
+        private IContentType TargetType { get; }
 
-        public IEnumerable<IEntity> PermissionList
+        private IEntity TargetItem { get; }
+
+        protected IEnumerable<IEntity> PermissionList
         {
             get
             {
+                // already constructed, use that
                 if (_permissionList != null) return _permissionList;
 
-                // start with the type OR item metadata-list
-                _permissionList = (TargetType?.Metadata ?? TargetItem?.Metadata)?
-                    .Where(md => md.Type.StaticName == Constants.PermissionTypeName)
-                    .ToList()
-                    ??  new List<IEntity>(); // use empty if none found
-
-                // see if we should attach anything additional
-                if (_additionalMetadata != null)
-                    _permissionList = _additionalMetadata.Where(md => md.Type.StaticName == Constants.PermissionTypeName)
-                        .ToList().Concat(_permissionList);
-
+                var partsToConsider = new[]
+                {
+                    TargetItem?.Metadata,
+                    TargetType?.Metadata,
+                    _additionalMetadata
+                };
+                // bundle all permission metadata items
+                _permissionList = partsToConsider
+                    .Where(mdList => mdList != null)
+                    .Aggregate(_permissionList = new List<IEntity>(), (current, mdList)
+                        => current.Concat(mdList.Where(md
+                            => md.Type.StaticName == Constants.PermissionTypeName)))
+                    .ToList();
+                
                 return _permissionList;
             }
         }
@@ -37,64 +43,60 @@ namespace ToSic.Eav.Security.Permissions
 
         private readonly IEnumerable<IEntity> _additionalMetadata;
 
+        public bool HasPermissions => PermissionList.Any();
+
+        #endregion
+
+
+        #region constructors
+
         /// <summary>
         /// Initialize this object so it can then give information regarding the permissions of an entity.
         /// Uses a GUID as identifier because that survives export/import. 
         /// </summary>
-        /// <param name="targetItem"></param>
-        /// <param name="parentLog"></param>
-        protected PermissionController(
-            IEntity targetItem,
-            Log parentLog)
-            : base("App.PermCk", parentLog, $"init for itm:{targetItem?.EntityGuid} ({targetItem?.EntityId})")
-        {
-            TargetItem = targetItem;
-            TargetType = null; // important that it doesn't exist, otherwise the security check will use that instead of the item
-        }
-
-        protected PermissionController(
-            IContentType targetType, 
-            IEntity targetItem, 
-            Log parentLog, 
-            IMetadataOfItem addMeta1 = null, // optional additional metadata, like of an app
-            IMetadataOfItem addMeta2 = null)  // optional additional metadata, like of a zone
-            : this(addMeta1, addMeta2, parentLog, $"init for type:{targetType?.StaticName}, itm:{targetItem?.EntityGuid} ({targetItem?.EntityId})")
+        protected PermissionCheckBase(
+            Log parentLog,
+            IContentType targetType = null, // optional type to check
+            IEntity targetItem = null,      // optional entity to check
+            IMetadataOfItem meta1 = null, // optional additional metadata, like of an app
+            IMetadataOfItem meta2 = null)  // optional additional metadata, like of a zone
+            : base("App.PermCk", parentLog, $"init for type:{targetType?.StaticName}, " +
+                                            $"itm:{targetItem?.EntityGuid} ({targetItem?.EntityId}), " +
+                                            $"meta1: {meta1?.Count()}, " +
+                                            $"meta2: {meta2?.Count()}")
         {
             TargetType = targetType;
             TargetItem = targetItem;
-        }
 
-        protected PermissionController(
-            IMetadataOfItem meta1 = null, // optional additional metadata, like of an app
-            IMetadataOfItem meta2 = null,  // optional additional metadata, like of a zone
-            Log parentLog = null,
-            string message = null
-            ) : base("App.PermCk", parentLog, $"{message} - init for meta:{meta1 != null}, 2:{meta2 != null}")
-        {
             _additionalMetadata = meta1 ?? meta2;
             if (meta1 != null && meta2 != null)
                 _additionalMetadata = meta1.Concat(meta2);
+
         }
 
+        #endregion
+
+        public bool UserMay(PermissionGrant grant) => DoesPermissionsListAllow((char)grant);
+
+        public bool UserMay(List<PermissionGrant> grants)
+            => EnvironmentAllows(grants)
+               || grants.Any(grant => DoesPermissionsListAllow((char) grant));
 
         /// <summary>
-        /// Check if a user may do something based on the permissions in the background. 
+        /// This should 
         /// </summary>
-        /// <param name="actionCode">Short-code for r=read, u=update etc.</param>
+        /// <param name="grants"></param>
         /// <returns></returns>
-        public bool UserMay(char actionCode) => DoesPermissionsListAllow(actionCode);
+        protected abstract bool EnvironmentAllows(List<PermissionGrant> grants);
 
-        public bool UserMay(PermissionGrant action) => DoesPermissionsListAllow((char)action);
-
-        public bool UserMay(List<PermissionGrant> actions) => actions.Any(action => DoesPermissionsListAllow((char)action));
 
         /// <summary>
         /// Check if the permission-list would allow such an action
         /// </summary>
-        /// <param name="desiredActionCode">The desired action like c, r, u, d etc.</param>
+        /// <param name="desiredGrant">The desired action like c, r, u, d etc.</param>
         /// <returns></returns>
-        protected bool DoesPermissionsListAllow(char desiredActionCode) 
-            => PermissionList.Any(perm => DoesPermissionAllow(perm, desiredActionCode));
+        protected bool DoesPermissionsListAllow(char desiredGrant) 
+            => PermissionList.Any(perm => DoesPermissionAllow(perm, desiredGrant));
 
         /// <summary>
         /// Check if a specific permission entity allows for the desired permission
@@ -134,25 +136,22 @@ namespace ToSic.Eav.Security.Permissions
                         return true;
                 }
 
-                if (EnvironmentGivesPermission(condition))
-                    return true;
+                return EnvironmentApprovesCondition(condition);
             }
             catch
             {
                 // something happened, in this case we assume that this rule cannot described a "is allowed"
                 return false;
             }
-
-            // If the code gets here, we apparently don't know what the rule is about - return false
-            return false;
         }
 
-        protected abstract bool EnvironmentGivesPermission(string condition);
+        protected abstract bool EnvironmentApprovesCondition(string condition);
 
         /// <summary>
         /// The current user, as provided by injection
         /// </summary>
         protected abstract IUser User { get; }
+
 
     }
 }
