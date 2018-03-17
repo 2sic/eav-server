@@ -76,7 +76,8 @@ namespace ToSic.Eav.Security.Permissions
 
         #endregion
 
-        public bool UserMay(PermissionGrant grant) => DoesPermissionsListAllow((char)grant);
+        public bool UserMay(PermissionGrant grant) 
+            => UserMay(new List<PermissionGrant> {grant});
 
         public bool UserMay(List<PermissionGrant> grants)
             => EnvironmentAllows(grants)
