@@ -72,6 +72,8 @@ namespace ToSic.Eav.Security.Permissions
             if (meta1 != null && meta2 != null)
                 _additionalMetadata = meta1.Concat(meta2);
 
+            GrantedBecause = ConditionType.Undefined;
+
         }
 
         #endregion
@@ -79,9 +81,18 @@ namespace ToSic.Eav.Security.Permissions
         public bool UserMay(Grants grant) 
             => UserMay(new List<Grants> {grant});
 
+        public ConditionType GrantedBecause
+        {
+            get;
+            protected set;
+        }
+
         public bool UserMay(List<Grants> grants)
-            => EnvironmentAllows(grants)
-               || grants.Any(grant => DoesPermissionsListAllow((char) grant));
+        {
+            GrantedBecause = ConditionType.Undefined;
+            return EnvironmentAllows(grants)
+                   || DoesPermissionsListAllow(grants);
+        }
 
         /// <summary>
         /// This should 
@@ -94,10 +105,12 @@ namespace ToSic.Eav.Security.Permissions
         /// <summary>
         /// Check if the permission-list would allow such an action
         /// </summary>
-        /// <param name="desiredGrant">The desired action like c, r, u, d etc.</param>
+        /// <param name="grants">The desired action like c, r, u, d etc.</param>
         /// <returns></returns>
-        protected bool DoesPermissionsListAllow(char desiredGrant) 
-            => PermissionList.Any(perm => DoesPermissionAllow(perm, desiredGrant));
+        protected bool DoesPermissionsListAllow(List<Grants> grants) 
+            => PermissionList.Any(
+                perm => DoesPermissionAllow(perm, 
+                grants.Select(g => (char)g).ToArray()));
 
         /// <summary>
         /// Check if a specific permission entity allows for the desired permission
@@ -105,39 +118,52 @@ namespace ToSic.Eav.Security.Permissions
         /// <param name="permissionEntity">The entity describing a permission</param>
         /// <param name="desiredActionCode">A key like r (for read), u (for update) etc. which is the level you want to check</param>
         /// <returns></returns>
-        protected bool DoesPermissionAllow(IEntity permissionEntity, char desiredActionCode)
+        protected bool DoesPermissionAllow(IEntity permissionEntity, char[] desiredActionCode)
         {
-
             // Check if it's a grant for the desired action - otherwise stop here
             var grnt = permissionEntity.GetBestValue(Constants.PermissionGrant).ToString();
-            if (grnt.IndexOf(desiredActionCode) == -1) // Grant doesn't contain desired action, so stop here
-                return false;
+            // If Grant doesn't contain desired action, stop here
+            // otherwise check if it applies
+            return grnt.IndexOfAny(desiredActionCode) != -1 
+                && DoesConditionApply(permissionEntity);
+        }
 
-            // now we know that the rule would give the permission 
-            // ...IF it applies to the current user
-            // so let's check that now
-
-            // Check if the current user fits the reason for this grant
+        /// <summary>
+        /// Check if the current user fits the reason for this grant
+        /// </summary>
+        /// <returns></returns>
+        private bool DoesConditionApply(IEntity permissionEntity)
+        {
             try
             {
                 // check general permissions
                 var condition = permissionEntity.GetBestValue(Constants.PermissionCondition).ToString();
 
                 // check custom permission based on the user Guid or owner
-                if (User.Guid != null)  // we have to have a valid user
+                if (User.Guid != null) // we have to have a valid user
                 {
                     // check owner conditions (only possible on target entities, not content-types)
-                    if (condition == Constants.PermissionKeyOwner
-                        && TargetItem != null
-                        && TargetItem.Owner == User.IdentityToken)
+                    if (ConditionItemOwner(condition, TargetItem, User))
+                    {
+                        GrantedBecause = ConditionType.Identity;
                         return true;
+                    }
 
                     // rule just for this user
-                    if (permissionEntity.GetBestValue(Constants.PermissionIdentity).ToString() == User.Guid.ToString())
+                    if (ConditionUserIdentity(permissionEntity, User))
+                    {
+                        GrantedBecause = ConditionType.Owner;
                         return true;
+                    }
                 }
 
-                return EnvironmentApprovesCondition(condition);
+                if (DoesConditionApplyInEnvironment(condition))
+                {
+                    GrantedBecause = ConditionType.EnvironmentInstance;
+                    return true;
+                }
+
+                return false;
             }
             catch
             {
@@ -146,7 +172,21 @@ namespace ToSic.Eav.Security.Permissions
             }
         }
 
-        protected abstract bool EnvironmentApprovesCondition(string condition);
+        /// <summary>
+        /// Verify if the permission referrs to this user
+        /// </summary>
+        private static bool ConditionUserIdentity(IEntity permissionEntity, IUser user)
+            => permissionEntity.GetBestValue(Constants.PermissionIdentity).ToString()
+               == user.Guid.ToString();
+
+        /// <summary>
+        /// Verify that the permission is for owners, and the user is the item owner
+        /// </summary>
+        private static bool ConditionItemOwner(string condition, IEntity item, IUser user)
+            => condition == Constants.PermissionKeyOwner
+               && item?.Owner == user.IdentityToken;
+
+        protected abstract bool DoesConditionApplyInEnvironment(string condition);
 
         /// <summary>
         /// The current user, as provided by injection

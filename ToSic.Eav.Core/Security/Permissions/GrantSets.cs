@@ -35,5 +35,14 @@ namespace ToSic.Eav.Security.Permissions
             UpdateDraft,
             Update
         };
+
+        public static List<Grants> WritePublished = new List<Grants>
+        {
+            Create,
+            Update,
+            Approve,
+            Full,
+            Develop
+        };
     }
 }

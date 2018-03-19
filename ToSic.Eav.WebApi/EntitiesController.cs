@@ -26,8 +26,6 @@ namespace ToSic.Eav.WebApi
         #region GetOne GetAll calls
         public IEntity GetEntityOrThrowError(string contentType, int id)
         {
-            //SetAppIdAndUser(appId);
-
             // must use cache, because it shows both published  unpublished
             var found = AppManager.Read.Entities.Get(id);
             if (contentType != null && !(found.Type.Name == contentType || found.Type.StaticName == contentType))
@@ -109,7 +107,6 @@ namespace ToSic.Eav.WebApi
                     {
                         AppId = appId,
                         Id = duplicateFrom.HasValue ? 0 : found.EntityId,
-                        //RepoId = duplicateFrom.HasValue ? 0 : found.RepositoryId,
                         Guid = duplicateFrom.HasValue ? Guid.Empty : found.EntityGuid,
                         Type = new Formats.Type { Name = found.Type.Name, StaticName = found.Type.StaticName },
                         IsPublished = found.IsPublished,
@@ -131,7 +128,6 @@ namespace ToSic.Eav.WebApi
             }
         }
 
-        [HttpPost]
         public List<EntityWithHeader> GetManyForEditing([FromUri]int appId, [FromBody]List<ItemIdentifier> items)
         {
             Log.Add($"get many for editing a#{appId}, items⋮{items.Count}");
@@ -173,8 +169,7 @@ namespace ToSic.Eav.WebApi
         }
 
         #endregion
-        [HttpPost]
-        public Dictionary<Guid, int> SaveMany([FromUri] int appId, [FromBody] List<EntityWithHeader> items, [FromUri] bool partOfPage = false)
+        public Dictionary<Guid, int> SaveMany([FromUri] int appId, [FromBody] List<EntityWithHeader> items, [FromUri] bool partOfPage = false, bool draftOnly = false)
         {
             var myLog = new Log("Eav.SavMny", Log, "start");
             SetAppId(appId);
@@ -182,6 +177,10 @@ namespace ToSic.Eav.WebApi
             // must move guid from header to entity, because we only transfer it on the header (so no duplicates)
             foreach (var i in items)
                 i.Entity.Guid = i.Header.Guid;
+
+            if(draftOnly)
+                foreach (var i in items)
+                    i.Entity.IsPublished = false;
 
             IDeferredEntitiesList appPack = AppManager.Package;
 
