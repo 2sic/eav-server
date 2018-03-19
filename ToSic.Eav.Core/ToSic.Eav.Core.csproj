@@ -135,9 +135,10 @@
     <Compile Include="Persistence\Logging\LogItem.cs" />
     <Compile Include="Persistence\Logging\Message.cs" />
     <Compile Include="Persistence\Logging\MessageTypes.cs" />
+    <Compile Include="Security\Permissions\GrantSets.cs" />
     <Compile Include="Security\Permissions\IPermissionCheck.cs" />
     <Compile Include="Security\Permissions\PermissionCheckBase.cs" />
-    <Compile Include="Security\Permissions\PermissionGrant.cs" />
+    <Compile Include="Security\Permissions\Grants.cs" />
     <Compile Include="Types\Attributes\ContentTypeDefinition.cs" />
     <Compile Include="Data\Builder\AttDefBuilder.cs" />
     <Compile Include="Data\Builder\AttribBuilder.cs" />

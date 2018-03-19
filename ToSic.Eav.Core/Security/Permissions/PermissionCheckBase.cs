@@ -76,10 +76,10 @@ namespace ToSic.Eav.Security.Permissions
 
         #endregion
 
-        public bool UserMay(PermissionGrant grant) 
-            => UserMay(new List<PermissionGrant> {grant});
+        public bool UserMay(Grants grant) 
+            => UserMay(new List<Grants> {grant});
 
-        public bool UserMay(List<PermissionGrant> grants)
+        public bool UserMay(List<Grants> grants)
             => EnvironmentAllows(grants)
                || grants.Any(grant => DoesPermissionsListAllow((char) grant));
 
@@ -88,7 +88,7 @@ namespace ToSic.Eav.Security.Permissions
         /// </summary>
         /// <param name="grants"></param>
         /// <returns></returns>
-        protected abstract bool EnvironmentAllows(List<PermissionGrant> grants);
+        protected abstract bool EnvironmentAllows(List<Grants> grants);
 
 
         /// <summary>

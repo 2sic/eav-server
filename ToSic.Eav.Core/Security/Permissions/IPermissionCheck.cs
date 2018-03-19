@@ -7,7 +7,8 @@ namespace ToSic.Eav.Security.Permissions
         bool HasPermissions { get; }
 
 
-        bool UserMay(List<PermissionGrant> grants);
-        bool UserMay(PermissionGrant grant);
+        bool UserMay(List<Grants> grants);
+
+        bool UserMay(Grants grant);
     }
 }

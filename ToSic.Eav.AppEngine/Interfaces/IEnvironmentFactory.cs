@@ -24,5 +24,6 @@ namespace ToSic.Eav.Apps.Interfaces
         IPagePublishing PagePublisher(Log parentLog);
 
         IEnvironment Environment(Log parentLog);
+
     }
 }
