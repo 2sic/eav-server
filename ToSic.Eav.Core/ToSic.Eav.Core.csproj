@@ -140,6 +140,7 @@
     <Compile Include="Security\Permissions\IPermissionCheck.cs" />
     <Compile Include="Security\Permissions\PermissionCheckBase.cs" />
     <Compile Include="Security\Permissions\Grants.cs" />
+    <Compile Include="Security\Permissions\PermissionCheckBase_Conditions.cs" />
     <Compile Include="Types\Attributes\ContentTypeDefinition.cs" />
     <Compile Include="Data\Builder\AttDefBuilder.cs" />
     <Compile Include="Data\Builder\AttribBuilder.cs" />

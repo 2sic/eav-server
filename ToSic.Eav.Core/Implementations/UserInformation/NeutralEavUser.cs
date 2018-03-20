@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Implementations.UserInformation
@@ -10,5 +11,7 @@ namespace ToSic.Eav.Implementations.UserInformation
         public string IdentityToken => Unknown;
 
         public Guid? Guid => null;
+
+        public List<int> Roles => new List<int>();
     }
 }

@@ -3,8 +3,9 @@
     public enum ConditionType
     {
         Undefined,
-        Identity,
         Owner,
+        Identity,
+        Group,
         EnvironmentInstance,
         EnvironmentGlobal,
     }
