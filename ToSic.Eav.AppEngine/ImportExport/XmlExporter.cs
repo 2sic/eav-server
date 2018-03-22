@@ -42,7 +42,7 @@ namespace ToSic.Eav.Apps.ImportExport
         private string _appStaticName = "";
         #endregion
 
-        protected Log Log = new Log("Xml.Exp");
+        public Log Log { get; private set; } = new Log("Xml.Exp");
 
         #region Constructor stuff
 
