@@ -180,7 +180,10 @@ namespace ToSic.Eav.WebApi
 
             if(draftOnly)
                 foreach (var i in items)
+                {
                     i.Entity.IsPublished = false;
+                    i.Entity.IsBranch = true;
+                }
 
             IDeferredEntitiesList appPack = AppManager.Package;
 
