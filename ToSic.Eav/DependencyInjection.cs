@@ -36,14 +36,14 @@ namespace ToSic.Eav
 
             serviceCollection.TryAddTransient<IRepositoryImporter, RepositoryImporter>();
 
-            serviceCollection.TryAddTransient<ISystemConfiguration, Configuration>();
+            serviceCollection.TryAddTransient<ISystemConfiguration, Repository.Efc.Implementations.Configuration>();
 
             serviceCollection.TryAddTransient<IRepositoryLoader, Efc11Loader>();
 
 	        serviceCollection.TryAddTransient<IThingSerializer, JsonSerializer>();
 	        serviceCollection.TryAddTransient<IThingDeserializer, JsonSerializer>();
 
-            var conStr = new Configuration().DbConnectionString;
+            var conStr = new Repository.Efc.Implementations.Configuration().DbConnectionString;
             if (!conStr.ToLower().Contains("multipleactiveresultsets")) // this is needed to allow querying data while preparing new data on the same DbContext
                 conStr += ";MultipleActiveResultSets=True";
 

@@ -97,6 +97,7 @@
     <Compile Include="App\AppDependentIEnumerable.cs" />
     <Compile Include="App\AppRelationshipManager.cs" />
     <Compile Include="App\AppPackageLoadingSteps.cs" />
+    <Compile Include="Configuration\Global.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Constants_Permissions.cs" />
     <Compile Include="Constants_Relationships.cs" />

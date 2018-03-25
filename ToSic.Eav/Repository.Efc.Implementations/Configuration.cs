@@ -1,7 +1,7 @@
 ﻿using System;
 using ToSic.Eav.Interfaces;
 
-namespace ToSic.Eav
+namespace ToSic.Eav.Repository.Efc.Implementations
 {
 	/// <summary>
 	/// Global Eav Configuration

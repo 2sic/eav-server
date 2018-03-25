@@ -10,6 +10,7 @@ using ToSic.Eav.Implementations.UserInformation;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Efc.Diagnostics;
 using ToSic.Eav.Persistence.Efc.Models;
+using ToSic.Eav.Repository.Efc.Implementations;
 
 namespace ToSic.Testing.Shared
 {
