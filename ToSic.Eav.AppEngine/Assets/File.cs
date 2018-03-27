@@ -22,8 +22,8 @@ namespace ToSic.Eav.Apps.Assets
 
         public string Path { get; set; }
 
-        public DateTime CreatedOnDate { get; set; }
-        public DateTime LastUpdated { get; set; }
+        public DateTime Created { get; set; }
+        public DateTime Modified { get; set; }
 
         public int Size { get; set; }
 
