@@ -91,9 +91,9 @@ namespace ToSic.Eav.Persistence.Efc
             var relatedEntities = _dbContext.ToSicEavEntityRelationships
                 .Include(rel => rel.Attribute)
                 .Where(rel => rel.ParentEntity.AppId == appId)
-                .Where(r => /*!filterByEntityIds ||*/ !r.ChildEntityId.HasValue ||
-                                                      entityIdsFound.Contains(r.ChildEntityId.Value) ||
-                                                      entityIdsFound.Contains(r.ParentEntityId))
+                .Where(r => !r.ChildEntityId.HasValue ||
+                            entityIdsFound.Contains(r.ChildEntityId.Value) ||
+                            entityIdsFound.Contains(r.ParentEntityId))
                 .GroupBy(g => g.ParentEntityId)
                 .ToDictionary(g => g.Key, g => g.GroupBy(r => r.AttributeId)
                     .Select(rg => new
@@ -149,8 +149,10 @@ namespace ToSic.Eav.Persistence.Efc
                 Entity newEntity;
 
                 if (e.Json != null)
+                {
                     newEntity = serializer.Deserialize(e.Json, false, true) as Entity;
-
+                    newEntity.IsPublished = e.IsPublished;
+                }
                 else
                 {
                     var contentType = app.GetContentType(e.AttributeSetId);
