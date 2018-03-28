@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Data;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Apps.Parts
@@ -24,13 +23,13 @@ namespace ToSic.Eav.Apps.Parts
         /// Append a new Attribute to an AttributeSet
         /// Simple overload returning int so it can be used from outside
         /// </summary>
-        public int CreateAttributeAndInitializeAndSave(int attributeSetId, AttributeDefinition attDef, /*string staticName, string type,*/ string inputType/*, int sortOrder*/)
+        public int CreateAttributeAndInitializeAndSave(int attributeSetId, AttributeDefinition attDef, string inputType)
         {
             Log.Add($"create attrib+init+save type:{attributeSetId}, input:{inputType}");
-            var newAttribute = AppManager.DataController.AttributesDefinition.AddAttributeAndSave(attributeSetId, attDef);// staticName, type, sortOrder, false);
+            var newAttribute = AppManager.DataController.AttributesDefinition.AddAttributeAndSave(attributeSetId, attDef);
 
             // set the nice name and input type, important for newly created attributes
-            InitializeNameAndInputType(/*staticName*/attDef.Name, inputType, newAttribute);
+            InitializeNameAndInputType(attDef.Name, inputType, newAttribute);
 
             return newAttribute;
         }
