@@ -86,8 +86,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
             DbContext.SqlDb.SaveChanges();
 
             // if this set expects to share it's configuration, ensure that it does
-            if (destinationSet.AlwaysShareConfiguration)
-                DbContext.AttribSet.DistributeSharedContentTypes();
+            // 2018-03-28 disable auto-shared attributes, as not needed any more - part of #1492
+            //if (destinationSet.AlwaysShareConfiguration)
+            //    DbContext.AttribSet.DistributeSharedContentTypes();
 
             // all ok :)
             return destinationSet.AttributeSetId;
