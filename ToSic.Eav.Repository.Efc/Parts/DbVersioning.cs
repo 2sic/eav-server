@@ -42,22 +42,14 @@ namespace ToSic.Eav.Repository.Efc.Parts
         #endregion
 
 
-        /// <summary>
-        /// This will not version immediately, but wait for another later call to persist the versions
-        /// </summary>
-        private bool _useQueue;
-
-
         public void QueueDuringAction(Action action)
         {
-            _useQueue = true;
             action.Invoke();
             ProcessQueue();
         }
 
         private void ProcessQueue()
         {
-            _useQueue = false;
             Save();
         }
 

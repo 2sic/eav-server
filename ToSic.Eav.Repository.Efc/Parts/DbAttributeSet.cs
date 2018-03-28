@@ -54,7 +54,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                         .ToList();
 
                 if (found.Count != 1)
-                    throw new Exception("too many or to few content types found");
+                    throw new Exception($"too many or to few content types found for the content-type {name} - found {found.Count}");
 
                 return found.First();
             }
@@ -72,10 +72,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         internal bool DbAttribSetExists(int appId, string staticName)
             => GetSetCoreQuery(appId).Any(a => a.StaticName == staticName);
-            //DbContext.SqlDb.ToSicEavAttributeSets.Any(
-            //    a => !a.ChangeLogDeleted.HasValue
-            //         && a.AppId == appId
-            //         && a.StaticName == staticName);
 
 
         /// <summary>
