@@ -40,11 +40,15 @@ namespace ToSic.Eav.DataSources.Caches
             try
             {
                 // add or create
-                Caches[cacheKey] = item;
+                // 2018-03-28 added lock - because I assume that's the cause of the random errors sometimes on system-load - see #1498
+                lock (Caches)
+                {
+                    Caches[cacheKey] = item;
+                }
             }
             catch (Exception ex)
             {
-                // had some issues sometimes on my dev system, unclear if it would also hit on live, so I'm adding some more info
+                // unclear why this pops up sometime...if it would also hit on live, so I'm adding some more info
                 throw new Exception("issue with setting cache item - key is '" + cacheKey + "' and cache is null =" +
                                     (Caches == null) + " and item is null=" + (item == null), ex);
             }
