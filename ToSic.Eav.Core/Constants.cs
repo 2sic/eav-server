@@ -58,7 +58,7 @@ namespace ToSic.Eav
         public static readonly int MetadataForAttribute = 2;
 
         /// <summary>
-        /// AssignmentObjectTypeId for DataPipelines
+        /// AssignmentObjectTypeId for DataQueries
         /// </summary>
         [Obsolete("Use MetadataForEntity instead")]
         public static readonly int AssignmentObjectTypeEntity = 4;
@@ -66,6 +66,12 @@ namespace ToSic.Eav
 
         public static readonly int MetadataForContentType = 5;
         public const string ContentTypeTypeName = "ContentType";
+
+        /// <summary>App metadata</summary>
+        public static readonly int MetadataForApp = 3;
+        
+        /// <summary>Zone metadata</summary>
+        public static readonly int MetadataForZone = 6;
 
         [Obsolete("Use MetadataForCmsObject instead")]
         public static readonly int AssignmentObjectTypeCmsObject = 10; 
@@ -75,19 +81,16 @@ namespace ToSic.Eav
         public static readonly string ContentTypeMetadataLabel = "Label";
         #endregion
 
-        /// <summary>
-        /// StaticName of the DataPipeline AttributeSet
-        /// </summary>
-        public static readonly string DataPipelineStaticName = "DataPipeline";
-        /// <summary>
-        /// StaticName of the DataPipelinePart AttributeSet
-        /// </summary>
-        public static readonly string DataPipelinePartStaticName = "DataPipelinePart";
+        /// <summary>content type name of the query AttributeSet</summary>
+        public static readonly string QueryTypeName = "DataPipeline";
+
+        /// <summary>content-type name of the queryPart AttributeSet</summary>
+        public static readonly string QueryPartTypeName = "DataPipelinePart";
 
         /// <summary>
-        /// Attribute Name on the Pipeline-Entity describing the Stream-Wiring
+        /// Attribute Name on the query-Entity describing the Stream-Wiring
         /// </summary>
-        public const string DataPipelineStreamWiringStaticName = "StreamWiring";
+        public const string QueryStreamWiringAttributeName = "StreamWiring";
 
         /// <summary>
         /// Default In-/Out-Stream Name
@@ -98,6 +101,7 @@ namespace ToSic.Eav
 
         /// <summary>PublishedEntities Stream Name</summary>
         public const string PublishedStreamName = "Published";
+
         /// <summary>Draft-Entities Stream Name</summary>
         public const string DraftsStreamName = "Drafts";
 
@@ -151,7 +155,8 @@ namespace ToSic.Eav
 
         #region Special Field Types
 
-        public const string Hyperlink = "Hyperlink";
+        public const string DataTypeEntity = "Entity"; // todo: update all references with this as a constant
+        public const string Hyperlink = "Hyperlink"; // todo: rename to DataType
 
         #endregion
 

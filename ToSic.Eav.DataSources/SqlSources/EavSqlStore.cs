@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Generic;
 using ToSic.Eav.App;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.RootSources;
@@ -37,12 +35,12 @@ namespace ToSic.Eav.DataSources.SqlSources
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetItems));
 
             // this function will load data as it's needed
-            // note: must use the source null (not "this"), as it's only used for internal deferred child-entity lookups and would cause infinite looping
-            IEnumerable<IEntity> GetItems() => Loader.AppPackage(AppId, null, true, Log).List;
+            IEnumerable<IEntity> GetItems() => Loader.AppPackage(AppId, null, Log).List;
 		}
 
 
 
+		/// <inheritdoc />
 		/// <summary>
 		/// Set Zone and App for this DataSource
 		/// </summary>

@@ -22,6 +22,7 @@ namespace ToSic.Eav.ImportExport.Serializers
             set => _app = value;
         }
         private AppDataPackage _app;
+        protected AppDataPackage AppPackageOrNull => _app;
 
         public IContentType GetContentType(string staticName)
             => Global.FindContentType(staticName) // note: will return null if not found
@@ -63,9 +64,9 @@ namespace ToSic.Eav.ImportExport.Serializers
             get
             {
                 if (_relList != null) return _relList;
-                var appList = new AppDataPackageDeferredList();
-                appList.AttachApp(App);
-                _relList = appList;
+                //var appList = new AppDataPackageDeferredList();
+                //appList.AttachApp(App);
+                _relList = App; // appList;
                 return _relList;
             }
         }

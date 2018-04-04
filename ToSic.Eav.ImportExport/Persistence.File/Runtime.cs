@@ -75,14 +75,16 @@ namespace ToSic.Eav.ImportExport.Persistence.File
         {
             Log.Add($"loading items for {groupIdentifier}");
 
-            if(groupIdentifier != "query")
-                throw new ArgumentOutOfRangeException(nameof(groupIdentifier), "atm we can only load items of type 'query'");
+            if(groupIdentifier != "query" && groupIdentifier != "configuration")
+                throw new ArgumentOutOfRangeException(nameof(groupIdentifier), "atm we can only load items of type 'query'/'configuration'");
+
+            var doQuery = groupIdentifier == "query";
 
             // 3 - return content types
-            var query = new List<IEntity>();
-            Loaders.ForEach(l => query.AddRange(l.Queries()));
-            Log.Add($"found {query.Count} queries");
-            return query;
+            var entities = new List<IEntity>();
+            Loaders.ForEach(l => entities.AddRange(doQuery ? l.Queries() : l.Configurations()));
+            Log.Add($"found {entities.Count} items of type {groupIdentifier}");
+            return entities;
         }
 
 

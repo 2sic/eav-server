@@ -13,13 +13,6 @@
 
   <ItemGroup>
     <Compile Remove="Repository.cs" />
-    <Compile Remove="Repository\AppRepo.cs" />
-    <Compile Remove="Repository\AttributeSetRepo.cs" />
-    <Compile Remove="Repository\DimensionsRepo.cs" />
-    <Compile Remove="Repository\EfcRepoPart.cs" />
-    <Compile Remove="Repository\EfcRepository.cs" />
-    <Compile Remove="Repository\ZoneManager.cs" />
-    <Compile Remove="Repository\ZoneRepo.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,10 +26,6 @@
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj" />
     <ProjectReference Include="..\ToSic.Eav.DataSources\ToSic.Eav.DataSources.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Repository\" />
   </ItemGroup>
 
 </Project>

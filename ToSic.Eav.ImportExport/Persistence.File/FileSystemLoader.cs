@@ -20,6 +20,7 @@ namespace ToSic.Eav.Persistence.File
     {
         private const string ContentTypeFolder = "contenttypes\\";
         private const string QueryFolder = "queries\\";
+        private const string ConfigurationFolder = "configurations\\";
         private const string ItemFolder = "items\\";
 
         public FileSystemLoader(string path, RepositoryTypes source, bool ignoreMissing, Log parentLog): base("FSL.Loadr", parentLog, $"init with path:{path} ignore:{ignoreMissing}")
@@ -53,25 +54,27 @@ namespace ToSic.Eav.Persistence.File
         private JsonSerializer _ser;
         #endregion
 
-        #region Queries
+        #region Queries & Configuration
         private string QueryPath => Path + QueryFolder;
-        public IList<IEntity> Queries()
+        private string ConfigurationPath => Path + ConfigurationFolder;
+        public IList<IEntity> Queries() => LoadEntitiesFromSubfolder(QueryPath);
+
+        public IList<IEntity> Configurations() => LoadEntitiesFromSubfolder(ConfigurationPath);
+
+        private IList<IEntity> LoadEntitiesFromSubfolder(string path)
         {
             // #1. check that folder exists
-            var pathQ = QueryPath;
-            if (!CheckPathExists(Path) || !CheckPathExists(pathQ))
+            if (!CheckPathExists(Path) || !CheckPathExists(path))
                 return new List<IEntity>();
 
             // #2 find all content-type files in folder
-            var jsons = Directory.GetFiles(pathQ, "*" + ImpExpConstants.Extension(ImpExpConstants.Files.json)).OrderBy(f => f);
+            var jsons = Directory.GetFiles(path, "*" + ImpExpConstants.Extension(ImpExpConstants.Files.json)).OrderBy(f => f);
 
             // #3 load content-types from folder
-            var cts = jsons.Select(json => LoadAndBuildEntity(Serializer, json)).Where(ct => ct != null).ToList();
+            var cts = jsons.Select(json => LoadAndBuildEntity(Serializer, json)).Where(entity => entity != null).ToList();
 
             return cts;
         }
-
-
 
         #endregion
 
@@ -153,7 +156,6 @@ namespace ToSic.Eav.Persistence.File
             {
                 var json = System.IO.File.ReadAllText(path);
                 var ct = ser.Deserialize(json, allowDynamic: true);
-                // ct.SetSourceAndParent(Source, Constants.SystemContentTypeFakeParent, path);
                 return ct;
             }
             catch (IOException e)
@@ -187,15 +189,16 @@ namespace ToSic.Eav.Persistence.File
 
 
         #region not implemented stuff
-        public AppDataPackage AppPackage(int appId, int[] entityIds = null, bool entitiesOnly = false, Log parentLog = null)
-        {
-            throw new NotImplementedException();
-        }
+        public AppDataPackage AppPackage(int appId, int[] entityIds = null, Log parentLog = null) 
+            => throw new NotImplementedException();
 
-        public Dictionary<int, Zone> Zones()
-        {
-            throw new NotImplementedException();
-        }
+        public AppDataPackage Update(AppDataPackage app, AppPackageLoadingSteps startAt, int[] entityIds = null,
+            Log parentLog = null) 
+            => throw new NotImplementedException();
+
+        public Dictionary<int, Zone> Zones() 
+            => throw new NotImplementedException();
+
         #endregion
     }
 }

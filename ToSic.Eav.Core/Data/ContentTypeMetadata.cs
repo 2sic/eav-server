@@ -26,19 +26,19 @@ namespace ToSic.Eav.Data
             .Where(md => md.Type.StaticName == Constants.PermissionTypeName);
 
 
-        protected override IMetadataProvider LoadFromProvider()
+        protected override void LoadFromProvider()
         {
             // get the string based metadata
-            var mdProvider = base.LoadFromProvider();
+            base.LoadFromProvider();
+
+            // check if it uses a guid, otherwise leave here
+            if (!Guid.TryParse(Key, out var ctGuid)) return;
 
             // add the guid metadata on entity if it has a real guid
-            if (!Guid.TryParse(Key, out var ctGuid)) return mdProvider;
-
-            var additional = mdProvider?.GetMetadata(Constants.MetadataForEntity, ctGuid)
+            var additional = GetMetadataProvider()?.GetMetadata(Constants.MetadataForEntity, ctGuid)
                                  .ToList()
                              ?? new List<IEntity>();
             Entities = Entities.Concat(additional).ToList();
-            return mdProvider;
         }
     }
 }

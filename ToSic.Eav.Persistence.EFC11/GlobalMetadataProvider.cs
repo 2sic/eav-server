@@ -19,7 +19,7 @@ namespace ToSic.Eav.Persistence.Efc
         /// this is only needed once per application cycle, as the result is fully cached
         /// </summary>
         /// <returns></returns>
-        private ImmutableDictionary<int, string> GetTargetTypes()
+        protected virtual ImmutableDictionary<int, string> GetTargetTypes()
         {
             var dbContext = Factory.Resolve<EavDbContext>();
 

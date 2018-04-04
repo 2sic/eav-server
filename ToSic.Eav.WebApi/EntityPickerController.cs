@@ -17,8 +17,6 @@ namespace ToSic.Eav.WebApi
         /// <summary>
         /// Returns a list of entities, optionally filtered by AttributeSetId.
         /// </summary>
-        [HttpGet]
-        [HttpPost]
         public IEnumerable<dynamic> GetAvailableEntities([FromUri]int appId, [FromBody] string[] items, [FromUri] string contentTypeName = null, [FromUri] int? dimensionId = null)
         {
             Log.Add($"Get entities for a#{appId}, itms⋮{items?.Length}, type:{contentTypeName}, lang#{dimensionId}");

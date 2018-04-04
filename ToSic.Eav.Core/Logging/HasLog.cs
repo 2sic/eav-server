@@ -6,7 +6,7 @@ namespace ToSic.Eav.Logging
     {
         public string LogId { get; internal set; } = "unknwn";
 
-        protected Log Log { get; private set; }
+        public Log Log { get; private set; }
 
 
         public HasLog(string logName, Log parentLog = null, string initialMessage = null)

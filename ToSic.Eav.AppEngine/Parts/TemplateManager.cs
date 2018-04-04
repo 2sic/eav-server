@@ -20,7 +20,7 @@ namespace ToSic.Eav.Apps.Parts
             int? contentDemoEntity, string presentationTypeStaticName, int? presentationDemoEntity,
             string listContentTypeStaticName, int? listContentDemoEntity, string listPresentationTypeStaticName,
             int? listPresentationDemoEntity, string templateType, bool isHidden, string location, bool useForList,
-            bool publishData, string streamsToPublish, int? pipelineEntity, string viewNameInUrl)
+            bool publishData, string streamsToPublish, int? queryEntity, string viewNameInUrl)
         {
             var values = new Dictionary<string, object>
             {
@@ -40,7 +40,7 @@ namespace ToSic.Eav.Apps.Parts
                 { "UseForList", useForList },
                 { "PublishData", publishData },
                 { "StreamsToPublish", streamsToPublish },
-                { "Pipeline", pipelineEntity.HasValue ? new List<int> { pipelineEntity.Value } : new List<int>() },
+                { "Pipeline", queryEntity.HasValue ? new List<int> { queryEntity.Value } : new List<int>() },
                 { "ViewNameInUrl", viewNameInUrl }
             };
 

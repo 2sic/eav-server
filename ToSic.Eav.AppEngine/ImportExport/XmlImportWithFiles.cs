@@ -387,16 +387,16 @@ namespace ToSic.Eav.Apps.ImportExport
                         ? null
                         : template.Attribute(AppConstants.TemplateViewName).Value;
 
-                    var pipelineEntityGuid = template.Attribute(XmlConstants.TemplatePipelineGuid);
-                    var pipelineEntityId = new int?();
+                    var queryEntityGuid = template.Attribute(XmlConstants.TemplateQueryGuidField);
+                    var queryEntityId = new int?();
 
-                    if (!String.IsNullOrEmpty(pipelineEntityGuid?.Value))
+                    if (!String.IsNullOrEmpty(queryEntityGuid?.Value))
                     {
-                        var entityGuid = Guid.Parse(pipelineEntityGuid.Value);
+                        var entityGuid = Guid.Parse(queryEntityGuid.Value);
                         if (_eavContext.Entities.EntityExists(entityGuid))
-                            pipelineEntityId = _eavContext.Entities.GetMostCurrentDbEntity(entityGuid).EntityId;
+                            queryEntityId = _eavContext.Entities.GetMostCurrentDbEntity(entityGuid).EntityId;
                         else
-                            Messages.Add(new Message($"Pipeline Entity for Template \'{name}\' could not be found. (Guid: {pipelineEntityGuid.Value})", Message.MessageTypes.Information));
+                            Messages.Add(new Message($"Query Entity for Template \'{name}\' could not be found. (Guid: {queryEntityGuid.Value})", Message.MessageTypes.Information));
                     }
 
                     var useForList = false;
@@ -485,7 +485,7 @@ namespace ToSic.Eav.Apps.ImportExport
                         null, name, path, contentTypeStaticName, demoEntityId, presentationTypeStaticName,
                         presentationDemoEntityId, listContentTypeStaticName, listContentDemoEntityId,
                         listPresentationTypeStaticName, listPresentationDemoEntityId, type, isHidden, location,
-                        useForList, publishData, streamsToPublish, pipelineEntityId, viewNameInUrl);
+                        useForList, publishData, streamsToPublish, queryEntityId, viewNameInUrl);
 
                     Messages.Add(new Message($"Template \'{name}\' successfully imported.",
                         Message.MessageTypes.Information));

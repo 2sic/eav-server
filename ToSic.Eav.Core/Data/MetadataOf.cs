@@ -37,7 +37,7 @@ namespace ToSic.Eav.Data
         }
 
 
-        private int AppId = 0; // todo: may be a problem, must check!
+        private int AppId = 0; 
         private readonly int _remoteAppId;
 
         private readonly int _remoteZoneId;
@@ -47,30 +47,41 @@ namespace ToSic.Eav.Data
         protected readonly T Key;
         protected List<IEntity> Entities;
 
-        protected virtual IMetadataProvider LoadFromProvider()
+        private long _cacheTimestamp;
+
+        protected bool RequiresReload()
+            => _metadataProvider != null && _metadataProvider.CacheChanged(_cacheTimestamp);
+        
+
+        protected virtual void LoadFromProvider()
         {
             var mdProvider = GetMetadataProvider();
             Entities = mdProvider?.GetMetadata(_itemType, Key).ToList()
-                        ?? new List<IEntity>();
-            return mdProvider;
+                       ?? new List<IEntity>();
+            if (mdProvider != null)
+                _cacheTimestamp = mdProvider.CacheTimestamp;
         }
 
-        private IMetadataProvider GetMetadataProvider()
+        protected IMetadataProvider GetMetadataProvider()
         {
-            var metadataProvider = _remoteAppId != 0
+            // check if already retrieved
+            if (_alreadyTriedToGetProvider) return _metadataProvider;
+
+            _metadataProvider = _remoteAppId != 0
                 ? (_remoteZoneId != 0
-                    ? GetRemoteMdProvider()?.OfZoneAndApp(_remoteZoneId, _remoteAppId)
-                    : GetRemoteMdProvider()?.OfApp(_remoteAppId))
+                    ? Factory.Resolve<IRemoteMetadataProvider>()?.OfZoneAndApp(_remoteZoneId, _remoteAppId)
+                    : Factory.Resolve<IRemoteMetadataProvider>()?.OfApp(_remoteAppId))
                 : _appMetadataProvider?.Metadata;
-            return metadataProvider;
+            _alreadyTriedToGetProvider = true;
+            return _metadataProvider;
         }
 
-        private static IRemoteMetadataProvider GetRemoteMdProvider() 
-            => Factory.Resolve<IRemoteMetadataProvider>();
+        private bool _alreadyTriedToGetProvider;
+        private IMetadataProvider _metadataProvider;
 
-
+        // 2018-03-09 2dm - this was used when we tried creating code-based content-types, but I believe it's dead code now
         public void Add(string type, Dictionary<string, object> values)
-            => Add(new Entity(AppId, Guid.Empty, type, values));
+            => Add(new Entity(AppId, 0, Guid.Empty, type, values));
 
         public void Add(IEntity additionalItem)
             => (Entities ?? (Entities = new List<IEntity>())).Add(additionalItem);
@@ -83,7 +94,7 @@ namespace ToSic.Eav.Data
         public IEnumerator<IEntity> GetEnumerator()
         {
             // If necessary, initialize first. Note that it will only add Ids which really exist in the source (the source should be the cache)
-            if (Entities == null)
+            if (Entities == null || RequiresReload())
                 LoadFromProvider();
             return new EntityEnumerator(Entities);
         }

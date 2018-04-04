@@ -6,7 +6,7 @@
     public interface IZoneIdentity
     {
         /// <summary>
-        /// ID of the zone (EAV Tennant)
+        /// ID of the zone (EAV Tenant)
         /// </summary>
         int ZoneId { get; }
     }

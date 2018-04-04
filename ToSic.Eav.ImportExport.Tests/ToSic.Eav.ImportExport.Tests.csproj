@@ -62,6 +62,9 @@
       <HintPath>..\packages\MSTest.TestFramework.1.1.18\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Collections.Immutable, Version=1.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Collections.Immutable.1.3.0\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+    </Reference>
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
@@ -88,19 +91,28 @@
     <Compile Include="Persistence.File\RuntimeLoaderTest.cs" />
     <Compile Include="Persistence.File\TypeExporter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Types\AutoLoadFromRuntimeFiles.cs" />
     <Compile Include="XmlSerializationTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <Content Include="Json\ContentTypes\System.Config ToSic.Eav.DataSources.SqlDataSource.json" />
     <None Include="packages.config" />
-    <Content Include="Persistence.File\.data\ContentTypes\System.Config ToSic.Eav.DataSources.SqlDataSource.json" />
-    <Content Include="Persistence.File\.data\ContentTypes\System.Whatever.json" />
-    <Content Include="Persistence.File\.data\ContentTypes\Default.Something.json" />
-    <None Include="Persistence.File\.data\queries\Query.Apps.json" />
-    <None Include="Persistence.File\.data\queries\Query.Zones.json" />
+    <None Include="Persistence.File\.data\readme.md" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ToSic.Eav.AppEngine\ToSic.Eav.Apps.csproj">
+      <Project>{FA1B4495-6B85-400F-A5E3-0E292CCBFAE2}</Project>
+      <Name>ToSic.Eav.Apps</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ToSic.Eav.Apps.Tests\ToSic.Eav.Apps.Tests.csproj">
+      <Project>{5BAEFA99-42C6-4C06-96DE-881303AAE178}</Project>
+      <Name>ToSic.Eav.Apps.Tests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ToSic.Eav.Core.Tests\ToSic.Eav.Core.Tests.csproj">
+      <Project>{afed35b5-8e43-4f46-8e4d-fc3f07244d8b}</Project>
+      <Name>ToSic.Eav.Core.Tests</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj">
       <Project>{82f94588-269b-4cdd-98d1-d5cb14c39090}</Project>
       <Name>ToSic.Eav.Core</Name>

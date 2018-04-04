@@ -105,9 +105,8 @@ namespace ToSic.Eav.Data
         public ContentTypeMetadata Metadata
             => _metadata ?? (_metadata = ParentAppId == AppId
                    ? new ContentTypeMetadata(StaticName,
-                       _metaOfThisApp) // OfMetadataOfItem<string>(Constants.MetadataForContentType, StaticName, _metaOfThisApp)
-                   : new ContentTypeMetadata(StaticName, ParentZoneId, ParentAppId)// OfMetadataOfItem<string>(Constants.MetadataForContentType, StaticName, ParentZoneId, ParentAppId)
-               );
+                       _metaOfThisApp)
+                       : new ContentTypeMetadata(StaticName, ParentZoneId, ParentAppId));
         private ContentTypeMetadata _metadata;
         private readonly IDeferredEntitiesList _metaOfThisApp;
 

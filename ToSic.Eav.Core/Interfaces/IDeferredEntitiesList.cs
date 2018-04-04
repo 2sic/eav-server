@@ -4,7 +4,7 @@ namespace ToSic.Eav.Interfaces
 {
     public interface IDeferredEntitiesList
     {
-        IEnumerable<IEntity> Entities { get; }  
+        IEnumerable<IEntity> List { get; }  
 
         IMetadataProvider Metadata { get; }
     }

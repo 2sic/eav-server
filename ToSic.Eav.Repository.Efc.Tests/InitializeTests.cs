@@ -1,5 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Apps.Interfaces;
+using ToSic.Eav.Apps.Tests.Mocks;
+using ToSic.Eav.ImportExport.Persistence.File;
+using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Repository.Efc.Tests.Mocks;
 using ToSic.SexyContent.ImportExport;
@@ -12,16 +16,26 @@ namespace ToSic.Eav.Repository.Efc.Tests
         [AssemblyInitialize]
         public static void AssemblyInit(TestContext context)
         {
-            Testing.Shared.InitializeTests.ConfigureEfcDi(sc =>
+            ConfigureEfcDi(sc => { });
+        }
+
+        public static void ConfigureEfcDi(Factory.ServiceConfigurator configure, string optionalConnection = null)
+        {
+            Persistence.Efc.Tests.InitializeTests.ConfigureEfcDi(sc =>
             {
                 // these are only used in Repository.Efc.Tests
-                sc.AddTransient<Apps.ImportExport.XmlExporter, ToSxcXmlExporter>();
+                sc.AddTransient<Apps.ImportExport.XmlExporter, DnnXmlExporter>();
+
+                sc.AddTransient<IRuntime, Runtime>();
+                sc.AddTransient<IEnvironment, MockEnvironment>();
 
                 sc.AddTransient<IImportExportEnvironment, ImportExportEnvironmentMock>();
-            });
-            Factory.Debug = true;
-        }
-        
 
+                configure.Invoke(sc);
+            }, optionalConnection);
+            Factory.Debug = true;
+
+
+        }
     }
 }

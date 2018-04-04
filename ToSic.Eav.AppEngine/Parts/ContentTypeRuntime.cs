@@ -19,6 +19,7 @@ namespace ToSic.Eav.Apps.Parts
         /// <summary>
         /// Gets a ContentType by Name
         /// </summary>
+        /// <returns>a content-type or null if not found</returns>
         public IContentType Get(string name) => App.Cache.GetContentType(name);
 
         /// <summary>
@@ -125,11 +126,12 @@ namespace ToSic.Eav.Apps.Parts
                 {
                     // try to access metadata, if it has any
                     var metadata = it.Metadata.FirstOrDefault();
+                    var inputMeta = it.Metadata.FirstOrDefault(ct => ct.Type.Name == Constants.TypeForInputTypeDefinition);
                     return new InputTypeInfo(
                         it.StaticName.TrimStart(FieldTypePrefix[0]),
                         metadata?.GetBestValue("Label")?.ToString(),
                         metadata?.GetBestValue("Description")?.ToString(),
-                        "" // ATM assets not supported yet, must decide how to include this metadata...
+                        inputMeta?.GetBestValue("Assets")?.ToString()
                     );
                 })
                 .ToList();

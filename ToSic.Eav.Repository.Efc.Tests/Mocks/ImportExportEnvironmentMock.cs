@@ -21,11 +21,11 @@ namespace ToSic.Eav.Repository.Efc.Tests.Mocks
         public string BasePath { get; set; }= @"C:\Projects\eav-server\ToSic.Eav.Repository.Efc.Tests\";
 
 
-        public virtual void TransferFilesToTennant(string sourceFolder, string destinationFolder)
+        public virtual void TransferFilesToTenant(string sourceFolder, string destinationFolder)
         {
         }
 
-        public virtual Version TennantVersion => new Version(8, 0);
+        public virtual Version TenantVersion => new Version(8, 0);
 
         public virtual string ModuleVersion => "08.12.00";
 

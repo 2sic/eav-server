@@ -2,14 +2,17 @@
 
 namespace ToSic.Eav.App
 {
-	/// <inheritdoc />
+	/// <inheritdoc cref="IDeferredEntitiesList" />
 	/// <summary>
 	/// Cache Object for a specific App
 	/// </summary>
-	public partial class AppDataPackage
-	{
-        public IDeferredEntitiesList BetaDeferredEntitiesList { get; }
+	public partial class AppDataPackage : IDeferredEntitiesList
+    {
+        //public AppDataPackageDeferredList BetaDeferred { get; }
 
 
-	}
+        //public IEnumerable<IEntity> Entities => List;
+
+        IMetadataProvider IDeferredEntitiesList.Metadata => Metadata;
+    }
 }

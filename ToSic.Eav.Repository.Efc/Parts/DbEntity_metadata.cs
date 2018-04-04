@@ -29,7 +29,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
         internal IQueryable<ToSicEavEntities> GetEntityMetadataByGuid(int appId, Guid keyGuid, string includes = null)
         {
             var query = GetAssignedEntities(Constants.MetadataForEntity, keyGuid: keyGuid, includes: includes)
-                //.Where(e => e.AttributeSet.AppId == appId);
                 .Where(e => e.AppId == appId);
             return query;
         }

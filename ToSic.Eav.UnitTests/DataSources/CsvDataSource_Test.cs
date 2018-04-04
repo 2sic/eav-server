@@ -69,7 +69,7 @@ namespace ToSic.Eav.UnitTests.DataSources
             }
             catch (Exception ex)
             {       
-                // The pipeline does wrap my exception expected
+                // The Query does wrap my exception expected
                 throw ex.InnerException;
             }
         }

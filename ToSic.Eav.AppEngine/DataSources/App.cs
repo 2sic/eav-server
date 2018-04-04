@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using ToSic.Eav.Api.Api01;
 using ToSic.Eav.Apps.Interfaces;
+using ToSic.Eav.Data;
 using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Apps.DataSources
@@ -22,10 +24,20 @@ namespace ToSic.Eav.Apps.DataSources
         private SimpleDataController DataController() => new SimpleDataController(ZoneId, AppId, DefaultLanguage, Log);
 
         public void Create(string contentTypeName,
-            Dictionary<string, object> values, string userName = null)
+            Dictionary<string, object> values, 
+            string userName = null,
+            MetadataFor target = null)
         {
             Log.Add($"app create new entity of type:{contentTypeName}");
-            DataController().Create(contentTypeName, values);
+            DataController().Create(contentTypeName, new List<Dictionary<string, object>> { values}, target); 
+        }
+
+        public void Create(string contentTypeName, 
+            IEnumerable<Dictionary<string, object>> multiValues, 
+            string userName = null)
+        {
+            Log.Add($"app create many ({multiValues.Count()}) new entities of type:{contentTypeName}");
+            DataController().Create(contentTypeName, multiValues); 
         }
 
         public void Update(int entityId, Dictionary<string, object> values,

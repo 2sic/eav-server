@@ -89,10 +89,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App\AppDataPackage_Caching.cs" />
     <Compile Include="App\AppDataPackage_DeferredList.cs" />
     <Compile Include="App\AppDataPackage_Metadata.cs" />
     <Compile Include="App\AppDataPackage_ContentTypes.cs" />
-    <Compile Include="App\AppDataPackageDeferredList.cs" />
+    <Compile Include="App\AppMetadataManager.cs" />
+    <Compile Include="App\AppDependentIEnumerable.cs" />
+    <Compile Include="App\AppRelationshipManager.cs" />
+    <Compile Include="App\AppPackageLoadingSteps.cs" />
+    <Compile Include="Configuration\Global.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Constants_Permissions.cs" />
     <Compile Include="Constants_Relationships.cs" />
@@ -106,6 +111,14 @@
     <Compile Include="Data\EntityEnumerator.cs" />
     <Compile Include="Data\MetadataOf.cs" />
     <Compile Include="Data\Query\Entity.cs" />
+    <Compile Include="Identity\Mapper.cs" />
+    <Compile Include="Interfaces\ICacheExpirable.cs" />
+    <Compile Include="Interfaces\ICacheDependent.cs" />
+    <Compile Include="Interfaces\ICacheExpiring.cs" />
+    <Compile Include="Interfaces\IUser.cs" />
+    <Compile Include="Plumbing\Booting\Boot.cs" />
+    <Compile Include="Plumbing\Booting\IConfigurationLoader.cs" />
+    <Compile Include="Plumbing\SingleInitNullable_T.cs" />
     <Compile Include="Repositories\RepositoryInfo.cs" />
     <Compile Include="Repositories\RepositoryInfoOfFolder.cs" />
     <Compile Include="Repositories\RepositoryTypes.cs" />
@@ -123,8 +136,12 @@
     <Compile Include="Persistence\Logging\LogItem.cs" />
     <Compile Include="Persistence\Logging\Message.cs" />
     <Compile Include="Persistence\Logging\MessageTypes.cs" />
-    <Compile Include="Security\Permissions\PermissionController.cs" />
-    <Compile Include="Security\Permissions\PermissionGrant.cs" />
+    <Compile Include="Security\Permissions\ConditionType.cs" />
+    <Compile Include="Security\Permissions\GrantSets.cs" />
+    <Compile Include="Security\Permissions\IPermissionCheck.cs" />
+    <Compile Include="Security\Permissions\PermissionCheckBase.cs" />
+    <Compile Include="Security\Permissions\Grants.cs" />
+    <Compile Include="Security\Permissions\PermissionCheckBase_Conditions.cs" />
     <Compile Include="Types\Attributes\ContentTypeDefinition.cs" />
     <Compile Include="Data\Builder\AttDefBuilder.cs" />
     <Compile Include="Data\Builder\AttribBuilder.cs" />
@@ -149,7 +166,7 @@
     <Compile Include="Enums\AttributeTypeEnum.cs" />
     <Compile Include="Factory.cs" />
     <Compile Include="HelpersToRefactor.cs" />
-    <Compile Include="Implementations\UserInformation\NeutralEavUserInformation.cs" />
+    <Compile Include="Implementations\UserInformation\NeutralEavUser.cs" />
     <Compile Include="Implementations\ValueConverter\ConversionScenario.cs" />
     <Compile Include="Implementations\ValueConverter\IEavValueConverter.cs" />
     <Compile Include="Implementations\ValueConverter\NeutralValueConverter.cs" />
@@ -174,7 +191,6 @@
     <Compile Include="Interfaces\IEntityLight.cs" />
     <Compile Include="Interfaces\IRelatedEntities.cs" />
     <Compile Include="Interfaces\IRelationshipManager.cs" />
-    <Compile Include="Implementations\UserInformation\IEavUserInformation.cs" />
     <Compile Include="Interfaces\IRepositoryLoader.cs" />
     <Compile Include="Interfaces\IValue.cs" />
     <Compile Include="Logging\HasLog.cs" />
@@ -196,7 +212,6 @@
     <Compile Include="Types\Global.cs" />
     <Compile Include="Types\Global_Code.cs" />
     <Compile Include="Types\Global_Runtime.cs" />
-    <Compile Include="Types\TypesBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Logging\Import\" />

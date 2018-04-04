@@ -136,7 +136,7 @@ namespace ToSic.Eav.Apps.ImportExport
                                             // Handle PortalFiles folder
                                             var portalTempRoot = Path.Combine(appDirectory, XmlConstants.PortalFiles);
                                             if (Directory.Exists(portalTempRoot))
-                                                _environment.TransferFilesToTennant(portalTempRoot, "");
+                                                _environment.TransferFilesToTenant(portalTempRoot, "");
                                         }
 
                                         import.ImportApp(_zoneId, xdoc, out appId);
@@ -150,7 +150,7 @@ namespace ToSic.Eav.Apps.ImportExport
                                             // Handle PortalFiles folder
                                             var portalTempRoot = Path.Combine(appDirectory, XmlConstants.PortalFiles);
                                             if (Directory.Exists(portalTempRoot))
-                                                _environment.TransferFilesToTennant(portalTempRoot, "");
+                                                _environment.TransferFilesToTenant(portalTempRoot, "");
                                         }
 
                                         import.ImportXml(_zoneId, appId/*.Value*/, xdoc);
@@ -224,7 +224,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             if (reqVersionNodeDnn != null)
             {
-                var vHost = _environment.TennantVersion;
+                var vHost = _environment.TenantVersion;
                 var reqHost = Version.Parse(reqVersionNodeDnn);
                 if (reqHost.CompareTo(vHost) == 1) // required is bigger
                     throw new Exception("this app requires host/dnn version " + reqVersionNodeDnn +

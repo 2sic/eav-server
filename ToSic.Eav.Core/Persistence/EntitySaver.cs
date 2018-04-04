@@ -38,8 +38,9 @@ namespace ToSic.Eav.Persistence
 
             #region Step 1: check if there is an original item
             // only accept original if it's a real object with a valid GUID, otherwise it's not an existing entity
-            var hasOriginal = !(original == null || (original.EntityId == 0 && original.EntityGuid == Guid.Empty));
-            var idProvidingEntity = hasOriginal ? original : update;
+            var hasOriginal = original != null;
+            var originalWasSaved = hasOriginal && !(original.EntityId == 0 && original.EntityGuid == Guid.Empty);
+            var idProvidingEntity = originalWasSaved ? original : update;
             #endregion
 
             #region Step 2: clean up unwanted attributes from both lists
@@ -47,26 +48,26 @@ namespace ToSic.Eav.Persistence
             var origAttribs = original?.Attributes.Copy();
             var newAttribs = update.Attributes.Copy();
 
-            Log.Add($"has orig:{hasOriginal}, origAtts⋮{origAttribs?.Count}, newAtts⋮{newAttribs.Count}");
+            Log.Add($"has orig:{originalWasSaved}, origAtts⋮{origAttribs?.Count}, newAtts⋮{newAttribs.Count}");
 
             // Optionally remove original values not in the update - but only if no option prevents this
-            if (hasOriginal && !saveOptions.PreserveUntouchedAttributes && !saveOptions.SkipExistingAttributes)
+            if (originalWasSaved && !saveOptions.PreserveUntouchedAttributes && !saveOptions.SkipExistingAttributes)
                 origAttribs = KeepOnlyKnownKeys(origAttribs, newAttribs.Keys.ToList());
 
             // Optionaly remove unknown - if possible - of both original and new
             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-            if (!saveOptions.PreserveUnknownAttributes && ct.Attributes != null)
+            if (!ct.IsDynamic && !saveOptions.PreserveUnknownAttributes && ct.Attributes != null)
             {
                 var keys = ct.Attributes.Select(a => a.Name).ToList();
                 keys.Add(Constants.EntityFieldGuid);
                 keys.Add(Constants.EntityFieldIsPublished);
 
-                if (hasOriginal) origAttribs = KeepOnlyKnownKeys(origAttribs, keys);
+                if (originalWasSaved) origAttribs = KeepOnlyKnownKeys(origAttribs, keys);
                 newAttribs = KeepOnlyKnownKeys(newAttribs, keys);
             }
 
             // optionally remove new things which already exist
-            if (hasOriginal && saveOptions.SkipExistingAttributes)
+            if (originalWasSaved && saveOptions.SkipExistingAttributes)
                 newAttribs = KeepOnlyKnownKeys(newAttribs, newAttribs.Keys
                     .Where(k => !origAttribs.Keys.Any(
                                 ok => string.Equals(k, ok, StringComparison.InvariantCultureIgnoreCase))).ToList());
@@ -87,15 +88,15 @@ namespace ToSic.Eav.Persistence
 
             if (hasLanguages && !saveOptions.PreserveUnknownLanguages && (saveOptions.Languages?.Any() ?? false))
             {
-                if (hasOriginal) StripUnknownLanguages(origAttribs, saveOptions);
+                if (originalWasSaved) StripUnknownLanguages(origAttribs, saveOptions);
                 StripUnknownLanguages(newAttribs, saveOptions);
             }
 
             #endregion
 
             // now merge into new target
-            Dictionary<string, IAttribute> mergedAttribs = hasOriginal ? origAttribs : newAttribs; // will become 
-            if(hasOriginal)
+            var mergedAttribs = origAttribs ?? newAttribs; // 2018-03-09 2dm fixed, was previously:  hasOriginal ? origAttribs : newAttribs; // will become 
+            if(original != null)
                 foreach (var newAttrib in newAttribs)
                     mergedAttribs[newAttrib.Key] = saveOptions.PreserveExistingLanguages && mergedAttribs.ContainsKey(newAttrib.Key)
                         ? MergeAttribute(mergedAttribs[newAttrib.Key], newAttrib.Value, saveOptions)

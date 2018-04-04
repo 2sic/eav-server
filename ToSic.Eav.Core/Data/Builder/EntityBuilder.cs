@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ToSic.Eav.App;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data.Builder
@@ -16,8 +17,8 @@ namespace ToSic.Eav.Data.Builder
         /// </summary>
         public static Entity EntityFromRepository(int appId, Guid entityGuid, int entityId, 
             int repositoryId, IMetadataFor metadataFor, IContentType type, 
-            bool isPublished, IEnumerable<EntityRelationshipItem> allRelationships, 
-            IDeferredEntitiesList source,
+            bool isPublished, 
+            AppDataPackage source,
             DateTime modified, string owner, int version)
         {
             var e = EntityWithAllIdsAndType(appId, entityGuid, entityId, repositoryId,
@@ -26,8 +27,10 @@ namespace ToSic.Eav.Data.Builder
             e.MetadataFor = metadataFor;
             e.Attributes = new Dictionary<string, IAttribute>(StringComparer.OrdinalIgnoreCase);
 
-            if (allRelationships == null)
-                allRelationships = new List<EntityRelationshipItem>();
+            IEnumerable<EntityRelationshipItem> allRelationships = source?.Relationships;
+            //2018-01-18 moved to RelationshipManager
+            //if (allRelationships == null)
+            //    allRelationships = new List<EntityRelationshipItem>();
             e.Relationships = new RelationshipManager(e, allRelationships);
 
             e.DeferredLookupData = source;
@@ -70,5 +73,18 @@ namespace ToSic.Eav.Data.Builder
             return e;
         }
 
+
+        public static IAttribute GenerateAttributesOfContentType(this IEntity newEntity, IContentType contentType)
+        {
+            IAttribute titleAttrib = null;
+            foreach (var definition in contentType.Attributes)
+            {
+                var entityAttribute = ((AttributeDefinition)definition).CreateAttribute();
+                newEntity.Attributes.Add(entityAttribute.Name, entityAttribute);
+                if (definition.IsTitle)
+                    titleAttrib = entityAttribute;
+            }
+            return titleAttrib;
+        }
     }
 }

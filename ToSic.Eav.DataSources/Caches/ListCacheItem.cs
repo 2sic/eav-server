@@ -19,14 +19,14 @@ namespace ToSic.Eav.DataSources.Caches
         /// <summary>
         /// The age of the data - to see if it needs refreshing if the new source has a newer date
         /// </summary>
-        public DateTime SourceRefresh { get; set; }
+        public /*DateTime*/long SourceRefresh { get; set; }
 
         /// <summary>
         /// Initialize the object - ready to cache
         /// </summary>
         /// <param name="list"></param>
         /// <param name="sourceRefresh"></param>
-        public ListCacheItem(string cacheKey, IEnumerable<IEntity> list, DateTime sourceRefresh)
+        public ListCacheItem(string cacheKey, IEnumerable<IEntity> list, /*DateTime*/ long sourceRefresh)
         {
             CacheKey = cacheKey;
             LightList = list;

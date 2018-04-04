@@ -4,7 +4,7 @@ namespace ToSic.Eav.Types.Attributes
 {
 	/// <inheritdoc />
 	/// <summary>
-	/// Custom Attribute for DataSources and usage in Pipeline Designer
+	/// Custom Attribute for DataSources and usage in query Designer
 	/// Only DataSources which have this attribute will be listed in the designer-tool
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Class)]

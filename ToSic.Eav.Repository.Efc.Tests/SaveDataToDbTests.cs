@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -35,7 +36,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var itm1 = Data.Query.Entity.One(app1.List, test.ItemOnHomeId);
 
             // save it
-            dbi.Entities.SaveEntity(itm1, so);
+            dbi.Save(itm1, so);
 
             // re-load it
             var loader2 = new Efc11Loader(dbi.SqlDb); // use existing db context because the transaction is still open
@@ -66,14 +67,14 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var itm1 = Data.Query.Entity.One(app1.List, test.ItemOnHomeId);
 
             // todo: make some minor changes
-            var itmNewTitle = new Entity(test.AppId, 0, "", new Dictionary<string, object>()
+            var itmNewTitle = new Entity(test.AppId, 0, itm1.Type, new Dictionary<string, object>()
             {
                 {"Title", "changed title"}
             });
             var saveEntity = new EntitySaver(new Log("Tst.Merge")).CreateMergedForSaving(itm1, itmNewTitle, so);
 
             // save it
-            dbi.Entities.SaveEntity(saveEntity, so);
+            dbi.Save(saveEntity, so);
 
             // reload it
             var loader2 = new Efc11Loader(dbi.SqlDb); // use existing db context because the transaction is still open
@@ -104,18 +105,17 @@ namespace ToSic.Eav.Repository.Efc.Tests
             // load content type to start creating an item...
             var loader1 = new Efc11Loader(dbi.SqlDb);
             var app1 = loader1.AppPackage(test.AppId);
-            var ct1 = app1.GetContentType(ctName);//.ContentTypes.Values.First(ct => ct.Name == ctName);
+            var ct1 = app1.GetContentType(ctName);
 
-            var newE = new Entity(test.AppId, 0, ct1.StaticName, new Dictionary<string, object>
+            var newE = new Entity(test.AppId, Guid.NewGuid(), ct1, new Dictionary<string, object>
             {
                 { "Title", ctTitle }
             });
-            newE.SetType(ct1);
 
             var saveEntity = new EntitySaver(new Log("Tst.Merge")).CreateMergedForSaving(null, newE, so);
 
             // save it
-            var newId = dbi.Entities.SaveEntity(saveEntity, so);
+            var newId = dbi.Save(saveEntity, so);
 
             // reload it
             var loader2 = new Efc11Loader(dbi.SqlDb); // use existing db context because the transaction is still open

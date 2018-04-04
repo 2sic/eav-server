@@ -71,7 +71,7 @@ namespace ToSic.Eav.Apps
         public string StreamsToPublish => GetBestString(AppConstants.TemplatePublishStreams);
 
 
-        public IEntity Pipeline => ((Data.EntityRelationship)Entity.Attributes["Pipeline"][0]).FirstOrDefault();
+        public IEntity Query => ((Data.EntityRelationship)Entity.Attributes["Pipeline"][0]).FirstOrDefault();
         public string ViewNameInUrl => GetBestString(AppConstants.TemplateViewName);
 
         /// <summary>

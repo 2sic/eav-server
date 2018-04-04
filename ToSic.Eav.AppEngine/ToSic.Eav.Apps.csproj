@@ -21,11 +21,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="SharpZipLib">
-      <HintPath>..\..\2SexyContent\Web\bin\SharpZipLib.dll</HintPath>
-    </Reference>
     <Reference Include="System.Data.Entity" />
     <Reference Include="System.Web" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Assets\Adam\" />
+    <Folder Include="Security\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SharpZipLib" Version="0.86.0" />
   </ItemGroup>
 
 </Project>

@@ -12,13 +12,13 @@ namespace ToSic.Eav.Persistence.Efc
     {
         #region Testing / Analytics helpers
 
-        internal void ResetCacheForTesting()
-            => _contentTypes = new Dictionary<int, IList<IContentType>>();
+        //internal void ResetCacheForTesting()
+        //    => _contentTypes = new Dictionary<int, IList<IContentType>>();
         #endregion
 
         #region Load Content-Types into IContent-Type Dictionary
 
-        private Dictionary<int, IList<IContentType>> _contentTypes = new Dictionary<int, IList<IContentType>>();
+        //private Dictionary<int, IList<IContentType>> _contentTypes = new Dictionary<int, IList<IContentType>>();
 
         /// <inheritdoc />
         /// <summary>
@@ -27,20 +27,37 @@ namespace ToSic.Eav.Persistence.Efc
         /// </summary>
         public IList<IContentType> ContentTypes(int appId, IDeferredEntitiesList source)
         {
-            if (!_contentTypes.ContainsKey(appId))
-                LoadContentTypesIntoLocalCache(appId, source);
-            return _contentTypes[appId];
+            return LoadContentTypesIntoLocalCache(appId, source);
+            
+            //if (!_contentTypes.ContainsKey(appId))
+            //    _contentTypes[appId] = LoadContentTypesIntoLocalCache(appId, source, false);
+            //return _contentTypes[appId];
         }
+
 
         /// <summary>
         /// Load DB content-types into loader-cache
         /// </summary>
-        private void LoadContentTypesIntoLocalCache(int appId, IDeferredEntitiesList source)
+        private ImmutableList<IContentType> LoadContentTypesIntoLocalCache(int appId, 
+            IDeferredEntitiesList source/*, bool justAddNewOnes*/)
         {
             // Load from DB
             var sqlTime = Stopwatch.StartNew();
-            var contentTypes = _dbContext.ToSicEavAttributeSets
-                    .Where(set => set.AppId == appId && set.ChangeLogDeleted == null)
+            var query = _dbContext.ToSicEavAttributeSets
+                .Where(set => set.AppId == appId && set.ChangeLogDeleted == null);
+
+            //IEnumerable<IContentType> prevList;
+
+            //if (justAddNewOnes)
+            //{
+            //    var typedSource = ((AppDataPackage) source);
+            //    prevList = .ContentTypes;
+            //    var listOfExisting = prevList?.Select(ct => ct.ContentTypeId).ToList();
+            //    if (listOfExisting != null)
+            //        query = query.Where(set => !listOfExisting.Contains(set.AttributeSetId));
+            //}
+
+            var contentTypes = query
                     .Include(set => set.ToSicEavAttributesInSets)
                         .ThenInclude(attrs => attrs.Attribute)
                     .Include(set => set.App)
@@ -79,7 +96,7 @@ namespace ToSic.Eav.Persistence.Efc
             sqlTime.Stop();
 
             // Convert to ContentType-Model
-            _contentTypes[appId] = contentTypes.Select(set => (IContentType) new ContentType(appId, set.Name, set.StaticName, set.AttributeSetId,
+            var newTypes = contentTypes.Select(set => (IContentType) new ContentType(appId, set.Name, set.StaticName, set.AttributeSetId,
                     set.Scope, set.Description, set.IsGhost, set.ZoneId, set.AppId, set.ConfigIsOmnipresent, source)
                 {
                     Attributes = (set.SharedDefinitionId.HasValue
@@ -89,13 +106,19 @@ namespace ToSic.Eav.Persistence.Efc
                         .Cast<IAttributeDefinition>()
                         .ToList()
                 }
-            ).ToImmutableList();
+            );
+
+            //if (justAddNewOnes && prevList != null)
+            //    newTypes = newTypes.Concat(prevList);
 
             _sqlTotalTime = _sqlTotalTime.Add(sqlTime.Elapsed);
+
+            //_contentTypes[appId] =
+            return newTypes.ToImmutableList();
+
         }
 
         #endregion
-
 
 
 

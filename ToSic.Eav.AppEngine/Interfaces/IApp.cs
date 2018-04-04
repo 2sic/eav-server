@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Apps.Interfaces
 {
@@ -13,6 +14,8 @@ namespace ToSic.Eav.Apps.Interfaces
 
         IAppData Data { get; }
         IDictionary<string, IDataSource> Query { get; }
+
+        IMetadataOfItem Metadata { get; }
 
     }
 }

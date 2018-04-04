@@ -48,7 +48,7 @@ namespace ToSic.Eav.ValueProvider
                      _metaDataSource.GetMetadata(Constants.MetadataForEntity, _objectToProvideSettingsTo);
 
             // make sure we get the settings, but not the pipeline-parts, which may also be assigned
-			Entity = md.FirstOrDefault(e => e.Type.StaticName != Constants.DataPipelinePartStaticName);
+			Entity = md.FirstOrDefault(e => e.Type.StaticName != Constants.QueryPartTypeName);
 			_entityLoaded = true;
 		}
 

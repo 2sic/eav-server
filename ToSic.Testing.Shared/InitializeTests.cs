@@ -1,15 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore.Infrastructure;
+﻿using System.Diagnostics;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav;
-using ToSic.Eav.Core.Tests.Mocks;
 using ToSic.Eav.Implementations.Runtime;
 using ToSic.Eav.Implementations.UserInformation;
-using ToSic.Eav.Implementations.ValueConverter;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Efc.Diagnostics;
 using ToSic.Eav.Persistence.Efc.Models;
+using ToSic.Eav.Repository.Efc.Implementations;
 
 namespace ToSic.Testing.Shared
 {
@@ -28,13 +29,14 @@ namespace ToSic.Testing.Shared
 
         public static void ConfigureEfcDi(Factory.ServiceConfigurator configure, string optionalConnection = null)
         {
-            Configuration.SetConnectionString(optionalConnection ?? TestConstants.ConStr);
+            var con = optionalConnection ?? TestConstants.ConStr;
+            Configuration.SetConnectionString(con);
+
             Factory.ActivateNetCoreDi(sc =>
             {
-                sc.AddTransient<IEavValueConverter, MockValueConverter>();
-                sc.AddTransient<IEavUserInformation, NeutralEavUserInformation>();
-                sc.AddTransient<IEavUserInformation, NeutralEavUserInformation>();
-                sc.AddTransient<IRuntime, NeutralRuntime>();
+                //sc.TryAddTransient<IEavUserInformation, NeutralEavUserInformation>();
+                sc.TryAddTransient<IUser, NeutralEavUser>();
+                sc.TryAddTransient<IRuntime, NeutralRuntime>();
 
                 configure.Invoke(sc);
 

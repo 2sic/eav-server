@@ -52,20 +52,6 @@ namespace ToSic.Eav.Data.Builder
                                     newDec = Convert.ToDecimal(value, CultureInfo.InvariantCulture);
                                 }
                                 catch { /* ignored */ }
-
-                                // if it's still blank, try another method
-                                // note: 2dm added this 2017-08-29 after a few bugs, but it may not be necessary any more, as the bug was something else
-                                // note: 2dm removed this 2017-11-23 as probably not in use and could cause side effects - if nothing pops up, remove in 2018
-                                //if (newDec == null)
-                                //    try
-                                //    {
-                                //        if (Decimal.TryParse(stringValue, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal typedDecimal))
-                                //            newDec = typedDecimal;
-                                //    }
-                                //    catch
-                                //    {
-                                //        // ignored
-                                //    }
                             }
                         typedModel = new Value<decimal?>(newDec);
                         break;
@@ -75,14 +61,14 @@ namespace ToSic.Eav.Data.Builder
                         EntityRelationship rel;
                         if (entityIds != null)
                             rel = new EntityRelationship(fullEntityListForLookup, entityIds.ToList());
-                        else if (value is EntityRelationship)
-                            rel = ((EntityRelationship)value).Guids != null
-                                ? new EntityRelationship(fullEntityListForLookup, ((EntityRelationship)value).Guids)
-                                : new EntityRelationship(fullEntityListForLookup, ((EntityRelationship)value).EntityIds);
-                        else if (value is List<Guid?>)
-                            rel = new EntityRelationship(fullEntityListForLookup, (List<Guid?>)value);
+                        else if (value is EntityRelationship rels)
+                            rel = rels.Guids != null
+                                ? new EntityRelationship(fullEntityListForLookup, rels.Guids)
+                                : new EntityRelationship(fullEntityListForLookup, rels.EntityIds);
+                        else if (value is List<Guid?> guids)
+                            rel = new EntityRelationship(fullEntityListForLookup, guids);
                         else
-                            rel = new EntityRelationship(fullEntityListForLookup, GuidCsvToList(value)); // new Value<List<Guid?>>(entityGuids);
+                            rel = new EntityRelationship(fullEntityListForLookup, GuidCsvToList(value)); 
                         typedModel = new Value<EntityRelationship>(rel);
                         break;
                     // ReSharper disable RedundantCaseLabel
@@ -129,7 +115,12 @@ namespace ToSic.Eav.Data.Builder
 
 
 
-        internal static readonly Value<EntityRelationship> NullRelationship = new Value<EntityRelationship>(new EntityRelationship(null, identifiers: null))
+        /// <summary>
+        /// Generate a new empty relationship. This is important, because it's used often to create empty relationships...
+        /// ...and then it must be a new object every time, 
+        /// because the object could be changed at runtime, and if it were shared, then it would be changed in many places
+        /// </summary>
+        internal static Value<EntityRelationship> NullRelationship => new Value<EntityRelationship>(new EntityRelationship(null, identifiers: null))
         {
             Languages = new List<ILanguage>()
         };

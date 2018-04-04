@@ -21,15 +21,11 @@ namespace ToSic.Eav.WebApi
 
         #region Constructors
 
-        public Eav3WebApiBase(Log parentLog = null)
-        {
-            Log.LinkTo(parentLog);
-        }
+        public Eav3WebApiBase(Log parentLog = null) => Log.LinkTo(parentLog);
 
-        public Eav3WebApiBase(int appId, Log parentLog = null): this(parentLog)
-        {
-            _appId = appId;
-        }
+        public Eav3WebApiBase(int appId, Log parentLog = null)
+            : this(parentLog) 
+            => _appId = appId;
 
         #endregion
 
@@ -78,7 +74,7 @@ namespace ToSic.Eav.WebApi
 	    #endregion
 
 
-        public void SetAppIdAndUser(int? appId)
+        public void SetAppId(int? appId)
         {
             if (appId.HasValue)
                 AppId = appId.Value;

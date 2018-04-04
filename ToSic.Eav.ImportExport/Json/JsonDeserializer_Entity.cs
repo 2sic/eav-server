@@ -41,7 +41,7 @@ namespace ToSic.Eav.ImportExport.Json
             // get type def - use dynamic if dynamic is allowed OR if we'll skip unknown types
             IContentType contentType = GetContentType(jEnt.Type.Id)
                                        ?? (allowDynamic || skipUnknownType
-                                           ? ContentTypeBuilder.DynamicContentType(AppId, jEnt.Type.Id)
+                                           ? ContentTypeBuilder.DynamicContentType(AppId, jEnt.Type.Name, jEnt.Type.Id)
                                            : throw new FormatException(
                                                "type not found for deserialization and dynamic not allowed " +
                                                $"- cannot continue with {jEnt.Type.Id}")
@@ -59,7 +59,7 @@ namespace ToSic.Eav.ImportExport.Json
             }
 
             var newEntity = EntityBuilder.EntityFromRepository(AppId, jEnt.Guid, jEnt.Id, jEnt.Id, ismeta, contentType, true,
-                null, null, DateTime.Now, jEnt.Owner, jEnt.Version);
+                AppPackageOrNull, DateTime.Now, jEnt.Owner, jEnt.Version);
 
             // check if metadata was included
             if (jEnt.Metadata != null)
@@ -121,7 +121,8 @@ namespace ToSic.Eav.ImportExport.Json
                         BuildValues(jAtts.DateTime, definition, newAtt);
                         break;
                     case AttributeTypeEnum.Entity:
-                        if (!jAtts.Entity?.ContainsKey(definition.Name) ?? true) continue;
+                        if (!jAtts.Entity?.ContainsKey(definition.Name) ?? true)
+                            break; // just keep the empty definition, as that's fine
                         newAtt.Values = jAtts.Entity[definition.Name]
                             .Select(v => ValueBuilder.Build(definition.Type, v.Value, RecreateLanguageList(v.Key),
                                 RelLookupList)).ToList();
@@ -147,7 +148,6 @@ namespace ToSic.Eav.ImportExport.Json
                         throw new ArgumentOutOfRangeException();
                 }
 
-                // only add if we actually found something
                 newEntity.Attributes.Add(newAtt.Name, newAtt);
 
                 if (definition.IsTitle)

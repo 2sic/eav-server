@@ -19,15 +19,19 @@ namespace ToSic.Eav.Types
         public static Dictionary<string, IContentType> CodeContentTypes()
         {
             if (_codeContentTypes != null) return _codeContentTypes;
-            _codeContentTypes = ContentTypesInReflection()
-                .Select(type => new
-                {
-                    Name = (type.GetCustomAttributes(typeof(ContentTypeDefinition), true)
-                        .FirstOrDefault() as ContentTypeDefinition)?.StaticName,
-                    Obj = (IContentType) Activator.CreateInstance(type)
-                })
-                .ToDictionary(t => t.Name, t => t.Obj, StringComparer.OrdinalIgnoreCase);
-            // make sure it's case insensitive...
+
+            _codeContentTypes = new Dictionary<string, IContentType>(StringComparer.OrdinalIgnoreCase);
+
+            // 2018-03-09 2dm disabled all this, because ATM we don't have coded type any more
+            // keeping it active caused some difficult recursions and stack-overflows, as the lists were always empty
+            //_codeContentTypes = ContentTypesInReflection()
+            //    .Select(type => new
+            //    {
+            //        Name = (type.GetCustomAttributes(typeof(ContentTypeDefinition), true)
+            //            .FirstOrDefault() as ContentTypeDefinition)?.StaticName,
+            //        Obj = (IContentType) Activator.CreateInstance(type)
+            //    })
+            //    .ToDictionary(t => t.Name, t => t.Obj, StringComparer.OrdinalIgnoreCase); // make sure it's case insensitive...
             return _codeContentTypes;
         }
 

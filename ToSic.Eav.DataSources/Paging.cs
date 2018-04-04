@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources.VisualQuery;
 using ToSic.Eav.Interfaces;
 
@@ -106,7 +107,7 @@ namespace ToSic.Eav.DataSources
                 {"PageCount", pageCount}
             };
 
-            var entity = new Data.Entity(Constants.TransientAppId, 0, "Paging", paging, "Title");
+            var entity = new Data.Entity(Constants.TransientAppId, 0, ContentTypeBuilder.Fake("Paging"), paging, "Title");
 
             // Assemble list of this for the stream
             var list = new List<IEntity> {entity};

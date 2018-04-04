@@ -12,7 +12,7 @@ namespace ToSic.Eav.DataSources.Queries
         public int AppId; 
 
         public IEntity Header;
-        public List<IEntity> Parts => Header.Metadata.Where(m => m.Type.Name == Constants.DataPipelinePartStaticName).ToList();
+        public List<IEntity> Parts => Header.Metadata.Where(m => m.Type.Name == Constants.QueryPartTypeName).ToList();
 
         public QueryDefinition(IEntity header, int? appId = null)
         {

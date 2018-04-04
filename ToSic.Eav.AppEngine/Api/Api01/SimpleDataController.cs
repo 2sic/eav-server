@@ -4,9 +4,9 @@ using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
-using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repository.Efc;
 
 // This is the simple API used to quickly create/edit/delete entities
@@ -27,7 +27,7 @@ namespace ToSic.Eav.Api.Api01
 
         private readonly AppManager _appManager;
 
-        private readonly string _defaultLanguageCode = null;
+        private readonly string _defaultLanguageCode;
 
         //private readonly int _zoneId;
 
@@ -51,51 +51,47 @@ namespace ToSic.Eav.Api.Api01
         }
 
 
-
         /// <summary>
         /// Create a new entity of the content-type specified.
         /// </summary>
         /// <param name="contentTypeName">Content-type</param>
-        /// <param name="values">
+        /// <param name="multiValues">
         ///     Values to be set collected in a dictionary. Each dictionary item is a pair of attribute 
         ///     name and value. To set references to other entities, set the attribute value to a list of 
         ///     entity ids. 
         /// </param>
+        /// <param name="target"></param>
         /// <exception cref="ArgumentException">Content-type does not exist, or an attribute in values</exception>
-        public void Create(string contentTypeName, Dictionary<string, object> values)
+        public void Create(string contentTypeName, IEnumerable<Dictionary<string, object>> multiValues, MetadataFor target = null)
         {
             Log.Add($"create type:{contentTypeName}");
+
+            // ensure the type really exists
+            var type = _appManager.Read.ContentTypes.Get(contentTypeName);
+            if (type == null)
+                throw new ArgumentException("Content type '" + contentTypeName + "' does not exist.");
+
+            var importEntity = multiValues.Select(values => BuildEntity(type, values, target)).ToList();
+
+            _appManager.Entities.Save(importEntity);
+        }
+
+        private IEntity BuildEntity(IContentType type, Dictionary<string, object> values, MetadataFor target)
+        {
             // ensure it's case insensitive...
             values = new Dictionary<string, object>(values, StringComparer.OrdinalIgnoreCase);
 
-            // ensure the type really exists
-            var attributeSet = _context.AttribSet.GetDbAttribSets().FirstOrDefault(item => item.Name == contentTypeName);
-            if (attributeSet == null)
-                throw new ArgumentException("Content type '" + contentTypeName + "' does not exist.");
-
-            if(values.All(v => v.Key.ToLower() != Constants.EntityFieldGuid))
+            if (values.All(v => v.Key.ToLower() != Constants.EntityFieldGuid))
                 values.Add(Constants.EntityFieldGuid, Guid.NewGuid());
 
             var eGuid = Guid.Parse(values[Constants.EntityFieldGuid].ToString());
-            var importEntity = new Entity(_appId, eGuid, attributeSet.StaticName, new Dictionary<string, object>());
-            AppendAttributeValues(importEntity, attributeSet, ConvertEntityRelations(values), _defaultLanguageCode, false, true);
-
-            _appManager.Entities.Save(importEntity/*, so */);
-            //ExecuteImport(importEntity);
+            var importEntity = new Entity(_appId, eGuid, type, new Dictionary<string, object>());
+            if (target != null)
+                importEntity.SetMetadata(target);
+            AppendAttributeValues(importEntity, type, ConvertEntityRelations(values), _defaultLanguageCode, false,
+                true);
+            return importEntity;
         }
-
-        //private static Dictionary<string, object> RemoveUnknownFields(Dictionary<string, object> values, ToSicEavAttributeSets attributeSet)
-        //{
-        //    // todo: ensure things like IsPublished and EntityGuid don't get filtered...
-        //    // part of https://github.com/2sic/2sxc/issues/1173
-        //    var listAllowed = attributeSet.GetAttributes();
-        //    var allowedNames = listAllowed.Select(a => a.StaticName.ToLower()).ToList();
-        //    allowedNames.Add(Constants.EntityFieldGuid);
-        //    allowedNames.Add(Constants.EntityFieldIsPublished);
-        //    values = values.Where(x => allowedNames.Any(y => y == x.Key.ToLower()))
-        //        .ToDictionary(x => x.Key, y => y.Value);
-        //    return values;
-        //}
 
 
         /// <summary>
@@ -112,46 +108,9 @@ namespace ToSic.Eav.Api.Api01
         public void Update(int entityId, Dictionary<string, object> values)
         {
             Log.Add($"update i:{entityId}");
-            //var entity = _context.Entities.GetDbEntity(entityId);
             _appManager.Entities.UpdateParts(entityId, values);
-            //Update(entity, values);
         }
-
-        // 2017-09-27 2dm seems unused
-        ///// <summary>
-        ///// Update an entity specified by GUID.
-        ///// </summary>
-        ///// <param name="entityGuid">Entity GUID</param>param>
-        ///// <param name="values">
-        /////     Values to be set collected in a dictionary. Each dictionary item is a pair of attribute 
-        /////     name and value. To set references to other entities, set the attribute value to a list of 
-        /////     entity ids. 
-        ///// </param>
-        ///// <exception cref="ArgumentException">Attribute in values does not exit</exception>
-        ///// <exception cref="ArgumentNullException">Entity does not exist</exception>
-        //public void Update(Guid entityGuid, Dictionary<string, object> values)
-        //{
-        //    Log.Add($"update i:{entityGuid}");
-        //    var entity = _context.Entities.GetMostCurrentDbEntity(entityGuid);
-        //    Update(entity, values);
-        //}
-
-        //private void Update(ToSicEavEntities entity, Dictionary<string, object> values, bool filterUnknownFields = true)
-        //{
-        //    Log.Add($"update entity:{entity.EntityId}, vals⋮{values.Count}, filter:{filterUnknownFields}");
-        //    var attributeSet = _context.AttribSet.GetDbAttribSet(entity.AttributeSetId);
-        //    var importEntity = new Entity(_appId, /*entity.EntityGuid, */entity.EntityId, attributeSet.StaticName, new Dictionary<string, object>());
-
-        //    if (filterUnknownFields)
-        //        values = RemoveUnknownFields(values, attributeSet);
-
-        //    AppendAttributeValues(importEntity, attributeSet, ConvertEntityRelations(values), _defaultLanguageCode, false, true);
-        //    var so = SaveOptions.Build(_appManager.ZoneId);
-        //    so.PreserveUntouchedAttributes = true;
-        //    so.PreserveExistingLanguages = true;
-        //    _appManager.Entities.Save(importEntity, so);
-        //    //ExecuteImport(importEntity, so);
-        //}
+        
 
 
         /// <summary>
@@ -186,10 +145,7 @@ namespace ToSic.Eav.Api.Api01
             return result;
         }
 
-        //private void ExecuteImport(Entity entity, SaveOptions so = null) 
-        //    => _appManager.Entities.Save(entity, so);
-
-        private void AppendAttributeValues(Entity entity, ToSicEavAttributeSets attributeSet, Dictionary<string, object> values, string valuesLanguage, bool valuesReadOnly, bool resolveHyperlink)
+        private void AppendAttributeValues(Entity entity, IContentType attributeSet, Dictionary<string, object> values, string valuesLanguage, bool valuesReadOnly, bool resolveHyperlink)
         {
             Log.Add("append attrib values");
             foreach (var value in values)
@@ -210,9 +166,9 @@ namespace ToSic.Eav.Api.Api01
                 }
 
                 // Handle content-type attributes
-                var attribute = attributeSet.AttributeByName(value.Key);
+                var attribute = attributeSet[value.Key];
                 if (attribute != null)
-                    entity.Attributes.AddValue(attribute.StaticName, value.Value.ToString(), attribute.Type, valuesLanguage, valuesReadOnly, resolveHyperlink);
+                    entity.Attributes.AddValue(attribute.Name, value.Value.ToString(), attribute.Type, valuesLanguage, valuesReadOnly, resolveHyperlink);
             }
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Data.Builder;
 using ToSic.Eav.TokenEngine.Tests.ValueProvider;
 using ToSic.Eav.ValueProvider;
 
@@ -20,7 +21,7 @@ namespace ToSic.Eav.TokenEngine.Tests.TestData
 
         public static EntityValueProvider BuildValueProvider(string name, Dictionary<string, object> vals, int appId = AppIdX)
         {
-            var ent = new Data.Entity(appId, 0, name, vals, vals.FirstOrDefault().Key);
+            var ent = new Data.Entity(appId, 0, ContentTypeBuilder.Fake(name), vals, vals.FirstOrDefault().Key);
             return new EntityValueProvider(ent, name);
         }
 

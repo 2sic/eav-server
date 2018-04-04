@@ -34,9 +34,37 @@ namespace ToSic.Eav.Data
 
         private List<int?> _entityIds;
 
-        internal List<Guid?> Guids { get; }
+        internal List<Guid?> Guids { get; } = null;
 
-        private readonly IDeferredEntitiesList _lookupList;
+        /// <summary>
+        /// Lookup the guids of all relationships
+        /// Either because the guids were stored - and are the primary key
+        /// or because the IDs were stored, and the guids were then looked up
+        /// </summary>
+        /// <returns></returns>
+        /// <remarks>
+        /// This is important for serializing to json, because there we need the guids, 
+        /// and the serializer shouldn't have know about the internals of relationship management
+        /// </remarks>
+        public List<Guid?> ResolveGuids()
+        {
+            if (_useGuid) return Guids;
+
+            // if we have number-IDs, but no lookup system, we'll have to use this as lookup system
+            if (_entityIds != null && _lookupList == null) // not set yet
+                throw new Exception("trying to resolve guids for this relationship, but can't, because the lookupList is not available");
+
+            return this.Select(e => e?.EntityGuid).ToList();
+        }
+
+        public void AttachLookupList(IDeferredEntitiesList lookupList)
+        {
+            _lookupList = lookupList
+                ?? throw new ArgumentNullException(nameof(lookupList), "Trying to resolve relationship guids, which requires a full list of the app-items, but didn't receive it.");
+            _entities = null; // reset possibly cached list of entities from before, so it will be rebuilt
+        }
+
+        private IDeferredEntitiesList _lookupList;
         private List<IEntity> _entities;
 
 
@@ -68,19 +96,6 @@ namespace ToSic.Eav.Data
 
         }
 
-        ///// <summary>
-        ///// Initializes a new instance of the EntityRelationship class.
-        ///// </summary>
-        ///// <param name="allEntities">DataSource to retrieve child entities</param>
-        ///// <param name="entityGuids">List of IDs to initialize with</param>
-        //public EntityRelationship(IDeferredEntitiesList allEntities, List<Guid?> entityGuids)
-        //{
-        //    _useGuid = true;
-        //    Guids = entityGuids;
-        //    _lookupList = allEntities;
-        //}
-
-
         // todo: unclear when this is actually needed / used?
         public override string ToString()
         {
@@ -94,23 +109,23 @@ namespace ToSic.Eav.Data
         {
             // If necessary, initialize first. Note that it will only add Ids which really exist in the source (the source should be the cache)
             if (_entities == null)
-                LoadEntities();
+                _entities = LoadEntities();
 
             return new EntityEnumerator(_entities);
         }
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        private void LoadEntities()
+        private List<IEntity> LoadEntities()
         {
-            _entities = _lookupList == null
+            return _lookupList == null
                 ? new List<IEntity>()
                 : (_useGuid
                     ? Guids.Select(l => !l.HasValue
                         ? null
                         // special: in some cases, the entity cannot be found because it has been deleted or something
-                        : _lookupList.Entities.One(l.Value))
+                        : _lookupList.List.One(l.Value))
                     : EntityIds.Select(l => l.HasValue
-                        ? _lookupList.Entities.FindRepoId(l.Value)// (_lookupList.List.ContainsKey(l.Value) ? _lookupList.List[l.Value] : null)
+                        ? _lookupList.List.FindRepoId(l.Value)
                         // special: in some cases, the entity cannot be found because it has been deleted or something
                         : null)).ToList();
         }

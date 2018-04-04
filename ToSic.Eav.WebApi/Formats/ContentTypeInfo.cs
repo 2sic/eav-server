@@ -17,7 +17,7 @@ namespace ToSic.Eav.WebApi.Formats
         public int Fields { get; set; }
         public Dictionary<string, object> Metadata { get; set; }
 
-        public string DebugInfoRepositoryAddress { get; set; }
+        // public string DebugInfoRepositoryAddress { get; set; }
 
         // ReSharper disable once InconsistentNaming
         public string I18nKey { get; set; }

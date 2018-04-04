@@ -10,7 +10,7 @@ namespace ToSic.Eav.Persistence.Efc
         private TimeSpan _sqlTotalTime = new TimeSpan(0);
 
 
-        private Log Log { get; set; }
+        public Log Log { get; private set; }
 
 
         #region IHasLog interface

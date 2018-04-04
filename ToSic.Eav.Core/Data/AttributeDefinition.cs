@@ -1,8 +1,5 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using ToSic.Eav.Data.Builder;
-using ToSic.Eav.Enums;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data
@@ -41,10 +38,6 @@ namespace ToSic.Eav.Data
         private readonly bool _isShared;
         private readonly int _parentAppId;
 
-        /// <inheritdoc />
-        public AttributeDefinition(int appId, string name, string niceName, AttributeTypeEnum type, string inputType, string notes, bool? visibleInEditUi, object defaultValue) 
-            : this(appId, name, niceName, type.ToString(), inputType, notes, visibleInEditUi, defaultValue) { }
-
         /// <summary>
         /// Create an attribute definition "from scratch" so for
         /// import-scenarios and code-created attribute definitions
@@ -74,33 +67,7 @@ namespace ToSic.Eav.Data
                    : new MetadataOf<int>(Constants.MetadataForAttribute, AttributeId, 0, _parentAppId)
                );
         private IMetadataOfItem _metadata;
-
-        //public List<IEntity> MetadataItems
-        //{
-        //    get
-        //    {
-        //        if (_metaItems != null) return _metaItems;
-
-        //        var metadataProvider = _isShared
-        //            ? Factory.Resolve<IRemoteMetadataProvider>()?.OfApp(_parentAppId)
-        //            : _appMetadataProvider?.Metadata;
-
-        //        _metaItems = metadataProvider?.GetMetadata(
-        //                     Constants.MetadataForAttribute, AttributeId).ToList()
-        //                 ?? new List<IEntity>();
-
-        //        return _metaItems;
-        //    }
-        //    internal set => _metaItems = value;
-        //}
-        //// ReSharper disable once InconsistentNaming
-        //private List<IEntity> _metaItems;
-
-        //public bool HasMetadata => _metaItems != null && _metaItems.Any();
-
-        //public void AddMetadata(string type, Dictionary<string, object> values)
-        //    => MetadataItems.Add(new Entity(AppId, Guid.Empty, type, values));
-
+        
         #endregion
 
     }

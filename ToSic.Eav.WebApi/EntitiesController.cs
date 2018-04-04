@@ -26,8 +26,6 @@ namespace ToSic.Eav.WebApi
         #region GetOne GetAll calls
         public IEntity GetEntityOrThrowError(string contentType, int id)
         {
-            //SetAppIdAndUser(appId);
-
             // must use cache, because it shows both published  unpublished
             var found = AppManager.Read.Entities.Get(id);
             if (contentType != null && !(found.Type.Name == contentType || found.Type.StaticName == contentType))
@@ -37,7 +35,7 @@ namespace ToSic.Eav.WebApi
 
         public IEntity GetEntityOrThrowError(string contentType, Guid guid, int? appId = null)
         {
-            SetAppIdAndUser(appId);
+            SetAppId(appId);
 
             // must use cache, because it shows both published  unpublished
             var itm = AppManager.Read.Entities.Get(guid);
@@ -56,7 +54,7 @@ namespace ToSic.Eav.WebApi
         /// <returns></returns>
         public Dictionary<string, object> GetOne(string contentType, int id, int? appId = null, string cultureCode = null)
         {
-            SetAppIdAndUser(appId);
+            SetAppId(appId);
 
             var found = GetEntityOrThrowError(contentType, id);
             return Serializer.Prepare(found);
@@ -67,18 +65,13 @@ namespace ToSic.Eav.WebApi
 		/// </summary>
 		public IEnumerable<Dictionary<string, object>> GetEntities(string contentType, string cultureCode = null, int? appId = null)
         {
-            SetAppIdAndUser(appId);
-
+            SetAppId(appId);
             return Serializer.Prepare(AppManager.Read.Entities.Get(contentType));
-            //var typeFilter = AppManager.Read.Entities.Get(contentType);//  DataSource.GetDataSource<EntityTypeFilter>(appId: appId, upstream: InitialDS);
-            //typeFilter.TypeName = contentType;
-
-            //return Serializer.Prepare(typeFilter.LightList);//  typeFilter.List.Select(t => Helpers.GetEntityValues(t.Value, cultureCode: cultureCode));
         }
 
         public IEnumerable<Dictionary<string, object>> GetAllOfTypeForAdmin(int appId, string contentType)
         {
-            SetAppIdAndUser(appId);
+            SetAppId(appId);
             Serializer.ConfigureForAdminUse();
 
             var list = Serializer.Prepare(AppManager.Read.Entities.Get(contentType));
@@ -114,7 +107,6 @@ namespace ToSic.Eav.WebApi
                     {
                         AppId = appId,
                         Id = duplicateFrom.HasValue ? 0 : found.EntityId,
-                        //RepoId = duplicateFrom.HasValue ? 0 : found.RepositoryId,
                         Guid = duplicateFrom.HasValue ? Guid.Empty : found.EntityGuid,
                         Type = new Formats.Type { Name = found.Type.Name, StaticName = found.Type.StaticName },
                         IsPublished = found.IsPublished,
@@ -136,14 +128,12 @@ namespace ToSic.Eav.WebApi
             }
         }
 
-        [HttpPost]
         public List<EntityWithHeader> GetManyForEditing([FromUri]int appId, [FromBody]List<ItemIdentifier> items)
         {
             Log.Add($"get many for editing a#{appId}, items⋮{items.Count}");
-            SetAppIdAndUser(appId);
+            SetAppId(appId);
 
             // clean up content-type names in case it's using the nice-name instead of the static name...
-            // var cache = DataSource.GetCache(null, appId);
             foreach (var itm in items.Where(i => !string.IsNullOrEmpty(i.ContentTypeName)).ToArray())
             {
                 var ct = AppManager.Read.ContentTypes.Get(itm.ContentTypeName);
@@ -179,17 +169,23 @@ namespace ToSic.Eav.WebApi
         }
 
         #endregion
-        [HttpPost]
-        public Dictionary<Guid, int> SaveMany([FromUri] int appId, [FromBody] List<EntityWithHeader> items, [FromUri] bool partOfPage = false)
+        public Dictionary<Guid, int> SaveMany([FromUri] int appId, [FromBody] List<EntityWithHeader> items, [FromUri] bool partOfPage = false, bool draftOnly = false)
         {
             var myLog = new Log("Eav.SavMny", Log, "start");
-            SetAppIdAndUser(appId);
+            SetAppId(appId);
 
             // must move guid from header to entity, because we only transfer it on the header (so no duplicates)
             foreach (var i in items)
                 i.Entity.Guid = i.Header.Guid;
 
-            IDeferredEntitiesList appPack = AppManager.Package.BetaDeferredEntitiesList;
+            if(draftOnly)
+                foreach (var i in items)
+                {
+                    i.Entity.IsPublished = false;
+                    i.Entity.IsBranch = true;
+                }
+
+            IDeferredEntitiesList appPack = AppManager.Package;
 
             var entitiesToImport = items
                 .Where(entity => entity.Header.Group == null || !entity.Header.Group.SlotIsEmpty)
@@ -304,7 +300,7 @@ namespace ToSic.Eav.WebApi
         [HttpGet]
         public void Delete(string contentType, int id, int? appId = null, bool force = false)
         {
-            SetAppIdAndUser(appId);
+            SetAppId(appId);
 
             //var found = AppManager.Read.Entities.Get(id);
             //if (found.Type.Name != contentType && found.Type.StaticName != contentType)
@@ -330,7 +326,7 @@ namespace ToSic.Eav.WebApi
         [HttpGet]
         public void Delete(string contentType, Guid entityGuid, int? appId = null, bool force = false)
         {
-            SetAppIdAndUser(appId);
+            SetAppId(appId);
             var entity = AppManager.Read.Entities.Get(entityGuid);
             Delete(contentType, entity.EntityId, force: force);
         }
@@ -344,7 +340,7 @@ namespace ToSic.Eav.WebApi
         [HttpGet]
         public List<ItemHistory> History(int appId, int entityId)
         {
-            SetAppIdAndUser(appId);
+            SetAppId(appId);
             var versions = AppManager.Entities.VersionHistory(entityId);
             return versions;
         }
@@ -352,7 +348,7 @@ namespace ToSic.Eav.WebApi
         [HttpGet]
         public bool Restore(int appId, int entityId, int changeId)
         {
-            SetAppIdAndUser(appId);
+            SetAppId(appId);
             AppManager.Entities.VersionRestore(entityId, changeId);
             return true;
         }

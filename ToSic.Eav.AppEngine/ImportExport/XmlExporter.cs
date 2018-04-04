@@ -27,7 +27,7 @@ namespace ToSic.Eav.Apps.ImportExport
         #region simple properties
         protected readonly List<int> ReferencedFileIds = new List<int>();
         protected readonly List<int> ReferencedFolderIds = new List<int>();
-        public List<TennantFileItem> ReferencedFiles = new List<TennantFileItem>();
+        public List<TenantFileItem> ReferencedFiles = new List<TenantFileItem>();
         private bool _isAppExport;
 
         public string[] AttributeSetNamesOrIds;
@@ -42,7 +42,7 @@ namespace ToSic.Eav.Apps.ImportExport
         private string _appStaticName = "";
         #endregion
 
-        protected Log Log = new Log("Xml.Exp");
+        public Log Log { get; private set; } = new Log("Xml.Exp");
 
         #region Constructor stuff
 
@@ -316,7 +316,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 );
         }
 
-        protected abstract TennantFileItem ResolveFile(int fileId);
+        protected abstract TenantFileItem ResolveFile(int fileId);
 
         private XElement GetFileXElement(int fileId)
         {

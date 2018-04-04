@@ -7,6 +7,7 @@ using ToSic.Eav.DataSources.VisualQuery;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.ValueProvider;
+using ICache = ToSic.Eav.DataSources.Caches.ICache;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav
@@ -125,10 +126,10 @@ namespace ToSic.Eav
                 newDs.InitLog(newDs.LogId, parentLog);
 		}
 
-		private static readonly string[] InitialDataSourcePipeline = { "ToSic.Eav.DataSources.Caches.ICache, ToSic.Eav.DataSources", "ToSic.Eav.DataSources.RootSources.IRootSource, ToSic.Eav.DataSources" };
+		private static readonly string[] InitialDataSourceQuery = { "ToSic.Eav.DataSources.Caches.ICache, ToSic.Eav.DataSources", "ToSic.Eav.DataSources.RootSources.IRootSource, ToSic.Eav.DataSources" };
 
 	    /// <summary>
-	    /// Gets a DataSource with Pipeline having PublishingFilter, ICache and IRootSource.
+	    /// Gets a DataSource with Query having PublishingFilter, ICache and IRootSource.
 	    /// </summary>
 	    /// <param name="zoneId">ZoneId for this DataSource</param>
 	    /// <param name="appId">AppId for this DataSource</param>
@@ -142,7 +143,7 @@ namespace ToSic.Eav
 	        var zoneAppId = GetZoneAppId(zoneId, appId);
 
 			configProvider = configProvider ?? new ValueCollectionProvider();
-			var dataSource = AssembleDataSourceReverse(InitialDataSourcePipeline, zoneAppId.Item1, zoneAppId.Item2, configProvider);
+			var dataSource = AssembleDataSourceReverse(InitialDataSourceQuery, zoneAppId.Item1, zoneAppId.Item2, configProvider);
 
 			var publishingFilter = GetDataSource<PublishingFilter>(zoneAppId.Item1, zoneAppId.Item2, dataSource, configProvider, parentLog);
 			publishingFilter.ShowDrafts = showDrafts;

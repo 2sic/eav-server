@@ -69,14 +69,14 @@ namespace ToSic.Eav.DataSources
 
         #region Get Dictionary and Get List
 
-	    private IEnumerable<IEntity> _lightList; 
+	    private IEnumerable<IEntity> _list; 
         public IEnumerable<IEntity> List
 	    {
             get
             {
                 // already retrieved? then return last result to be faster
-                if (_lightList != null && KeepResultsAfterFirstQuery)
-                    return _lightList;
+                if (_list != null && KeepResultsAfterFirstQuery)
+                    return _list;
 
                 #region Check if it's in the cache - and if yes, if it's still valid and should be re-used --> return if found
                 if (AutoCaching)
@@ -84,11 +84,11 @@ namespace ToSic.Eav.DataSources
 			        var itemInCache = Source.Cache.ListGet(this);
 			        var isInCache = itemInCache != null;
 
-			        var refreshCache = !isInCache || (CacheRefreshOnSourceRefresh && Source.CacheLastRefresh > itemInCache.SourceRefresh);
-			        var useCache = isInCache && !refreshCache; // || ReturnCacheWhileRefreshing
+			        var refreshCache = !isInCache || CacheRefreshOnSourceRefresh && Source.CacheTimestamp > itemInCache.SourceRefresh;
+			        var useCache = isInCache && !refreshCache; 
 
 			        if(useCache)
-			            return _lightList = itemInCache.LightList;
+			            return _list = itemInCache.LightList;
                 }
                 #endregion
 
@@ -103,7 +103,7 @@ namespace ToSic.Eav.DataSources
                     try
                     {
                         var getEntitiesDelegate = new GetIEnumerableDelegate(_lightListDelegate);
-                        _lightList = getEntitiesDelegate();
+                        _list = getEntitiesDelegate();
                     }
                     catch (InvalidOperationException) // this is a special exeption - for example when using SQL. Pass it on to enable proper testing
                     {
@@ -125,7 +125,7 @@ namespace ToSic.Eav.DataSources
 
                 #endregion
 
-                return _lightList;
+                return _list;
 
             }
 	    }

@@ -48,7 +48,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
         [TestMethod]
         public void LoadContentTypesOf2TenXCached()
         {
-            Loader.ResetCacheForTesting();
+            //Loader.ResetCacheForTesting();
             var results = TestLoadCts(2);
             for (var x = 0; x < 9; x++)
                 results = TestLoadCts(2);
@@ -62,7 +62,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
             for (var x = 0; x < 9; x++)
             {
                 results = TestLoadCts(2);
-                Loader.ResetCacheForTesting();
+                //Loader.ResetCacheForTesting();
             }
             // var str = results.ToString();
             Assert.AreEqual(61, results.Count, "dummy test: ");
@@ -85,7 +85,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
             var apps = zones[2].Apps;
 
             Assert.AreEqual(1, defapp, "def app on first zone");
-            Assert.AreEqual(73, zones.Count, "zone count - often changes, as new test-portals are made");
+            Assert.IsTrue(zones.Count > 70 && zones.Count < 100, "zone count - often changes, as new test-portals are made");
             Assert.AreEqual(24, apps.Count, "app count on second zone");
 
             // ML Checks

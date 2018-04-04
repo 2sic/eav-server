@@ -60,8 +60,8 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CsvHelper">
-      <HintPath>..\packages\CsvHelper.2.13.1.0\lib\net35-client\CsvHelper.dll</HintPath>
+    <Reference Include="CsvHelper, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8c4959082be5c823, processorArchitecture=MSIL">
+      <HintPath>..\packages\CsvHelper.2.16.3.0\lib\net45\CsvHelper.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Collections.Immutable, Version=1.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -96,16 +96,15 @@
     <Compile Include="Caches\ICache.cs" />
     <Compile Include="Caches\ListCacheItem.cs" />
     <Compile Include="Caches\QuickCache.cs" />
-    <Compile Include="TypeHelpers\JsonTest.cs" />
     <Compile Include="CsvDataSource.cs" />
     <Compile Include="DataSource.cs" />
     <Compile Include="DataStream.cs" />
     <Compile Include="DataStreamDeferred.cs" />
     <Compile Include="DataTableDataSource.cs" />
     <Compile Include="Debug\DataSourceInfo.cs" />
-    <Compile Include="Debug\PipelineInfo.cs" />
+    <Compile Include="Debug\QueryInfo.cs" />
     <Compile Include="Debug\StreamInfo.cs" />
-    <Compile Include="DeferredPipelineQuery.cs" />
+    <Compile Include="DeferredQuery.cs" />
     <Compile Include="EntityIdFilter.cs" />
     <Compile Include="EntityTypeFilter.cs" />
     <Compile Include="Exceptions\DataSourceException.cs" />
@@ -121,9 +120,9 @@
     <Compile Include="Shuffle.cs" />
     <Compile Include="Paging.cs" />
     <Compile Include="PassThrough.cs" />
-    <Compile Include="Pipeline\DataPipeline.cs" />
-    <Compile Include="Pipeline\DataPipelineFactory.cs" />
-    <Compile Include="Pipeline\DataPipelineWiring.cs" />
+    <Compile Include="Pipeline\DataQuery.cs" />
+    <Compile Include="Pipeline\QueryFactory.cs" />
+    <Compile Include="Pipeline\QueryWiring.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="OwnerFilter.cs" />
     <Compile Include="PublishingFilter.cs" />
@@ -152,6 +151,7 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

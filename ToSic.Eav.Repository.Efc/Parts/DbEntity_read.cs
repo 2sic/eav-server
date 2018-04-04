@@ -39,13 +39,17 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <returns>Entity or throws InvalidOperationException</returns>
         internal ToSicEavEntities GetMostCurrentDbEntity(Guid entityGuid)
             // GetEntity should never return a draft entity that has a published version
-            => GetEntitiesByGuid(entityGuid).Single(e => !e.PublishedEntityId.HasValue);
-
+        {
+            var x = GetEntitiesByGuid(entityGuid);
+            return x.Single(e => !e.PublishedEntityId.HasValue);
+        }
 
 
         internal IQueryable<ToSicEavEntities> GetEntitiesByGuid(Guid entityGuid)
-            => EntityQuery.Where(e => e.EntityGuid == entityGuid && !e.ChangeLogDeleted.HasValue &&
-                !e.AttributeSet.ChangeLogDeleted.HasValue && e.AttributeSet.AppId == DbContext.AppId);
+            => EntityQuery.Where(e => e.EntityGuid == entityGuid
+                                      && !e.ChangeLogDeleted.HasValue
+                                      && !e.AttributeSet.ChangeLogDeleted.HasValue
+                                      && e.AppId == DbContext.AppId);
 
 
         internal IQueryable<ToSicEavEntities> GetEntitiesByType(ToSicEavAttributeSets set)

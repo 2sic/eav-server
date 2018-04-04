@@ -39,10 +39,10 @@ namespace ToSic.Eav.ImportExport.Tests.json
         }
 
         [TestMethod]
-        public void Json_Export_OfType_JsonTest()
+        public void Json_Export_OfType()
         {
             var test = new TestValuesOnPc2Dm();
-            var json = JsonOfContentType(test.BlogAppId, "x48d849d6-b83d-4001-96e5-79da0833e84e");
+            var json = JsonOfContentType(test.BlogAppId, "48d849d6-b83d-4001-96e5-79da0833e84e");
             Trace.Write(json);
         }
 

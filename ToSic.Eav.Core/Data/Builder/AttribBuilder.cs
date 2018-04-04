@@ -87,7 +87,7 @@ namespace ToSic.Eav.Data.Builder
             }
 
             // sometimes language is passed in as an empty string - this would have side effects, so it must be neutralized
-            if (string.IsNullOrWhiteSpace(language)) language = null;
+            if (String.IsNullOrWhiteSpace(language)) language = null;
 
             var valueWithLanguages = ValueBuilder.Build(valueType, value, language == null
                 ? null : new List<ILanguage> { new Dimension { Key = language, ReadOnly = languageReadOnly } }, allEntitiesForRelationships);
@@ -123,6 +123,30 @@ namespace ToSic.Eav.Data.Builder
                 .Select(item => item.Value)
                 .FirstOrDefault();
             return values?.Values.FirstOrDefault(value => value.Languages.Any(dimension => dimension.Key == language));
+        }
+
+
+
+        public static void BuildReferenceAttribute(this IEntity newEntity, string attribName, IEnumerable<int?> references,
+            IDeferredEntitiesList app)
+        {
+            var attrib = newEntity.Attributes[attribName];
+            attrib.Values = new List<IValue> { ValueBuilder.Build(attrib.Type, references, null, app) };
+        }
+
+
+        public static void FixIncorrectLanguageDefinitions(this IAttribute attrib)
+        {
+            // Background: there are rare cases, where data was stored incorrectly
+            // this happens when a attribute has multiple values, but some don't have languages assigned
+            // that would be invalid, as any property with a language code must have all the values (for that property) with language codes
+            if (attrib.Values.Count > 1 && attrib.Values.Any(v => !v.Languages.Any()))
+            {
+                var badValuesWithoutLanguage = attrib.Values.Where(v => !v.Languages.Any()).ToList();
+                if (badValuesWithoutLanguage.Any())
+                    badValuesWithoutLanguage.ForEach(badValue =>
+                        attrib.Values.Remove(badValue));
+            }
         }
     }
 }
