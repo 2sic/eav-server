@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Apps.Assets
 {
-    public class Folder
+    public class Folder : IFolder
     {
         /// <summary>
         /// An Id - only relevant if the environment uses Ids

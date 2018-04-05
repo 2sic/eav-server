@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Apps.Assets
 {
-    public class File
+    public class File : IFile
     {
         /// <summary>
         /// An Id - only relevant if the environment uses Ids
