@@ -178,15 +178,16 @@ namespace ToSic.Eav.Persistence.Efc
                     if (attributes.ContainsKey(e.EntityId))
                         foreach (var a in attributes[e.EntityId])
                         {
-                            IAttribute attrib;
-                            try
-                            {
-                                attrib = newEntity.Attributes[a.Name];
-                            }
-                            catch (KeyNotFoundException)
-                            {
+                            if (!newEntity.Attributes.TryGetValue(a.Name, out var attrib))
                                 continue;
-                            }
+                            //try
+                            //{
+                            //    attrib = newEntity.Attributes[a.Name];
+                            //}
+                            //catch (KeyNotFoundException)
+                            //{
+                            //    continue;
+                            //}
 
                             attrib.Values = a.Values
                                 .Select(v => ValueBuilder.Build(attrib.Type, v.Value, v.Languages))
