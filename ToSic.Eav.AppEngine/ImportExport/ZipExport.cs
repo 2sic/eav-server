@@ -4,8 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Xml.XPath;
-using ICSharpCode.SharpZipLib.Zip;
 using ToSic.Eav.ImportExport;
+using ToSic.Eav.ImportExport.Zip;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Logging;
@@ -113,18 +113,15 @@ namespace ToSic.Eav.Apps.ImportExport
             string xml = xmlExport.GenerateNiceXml();
             File.AppendAllText(Path.Combine(appDirectory.FullName, _AppXmlFileName), xml);
 
-
             // Zip directory and return as stream
-            var stream = new MemoryStream();
-            var zipStream = new ZipOutputStream(stream);
-            zipStream.SetLevel(6);
-            ZipFolder(tempDirectory.FullName + "\\", tempDirectory.FullName + "\\", zipStream);
-            zipStream.Finish();
+            var stream = new Zipping(Log).ZipDirectoryIntoStream(tempDirectory.FullName + "\\");//, tempDirectory.FullName + "\\");
 
             tempDirectory.Delete(true);
 
             return stream;
         }
+
+
 
         private XmlExporter GenerateExportXml(bool includeContentGroups, bool resetAppGuid)
         {
@@ -149,8 +146,6 @@ namespace ToSic.Eav.Apps.ImportExport
 
             var xmlExport = Factory.Resolve<XmlExporter>()
                 .Init(_zoneId, _appId, runtime, true, contentTypeNames, entityIds, Log);
-            // var xmlExport = Factory.Container.Resolve<XmlExporter>(new ParameterOverrides { { "zoneId", _zoneId }, { "appId", _appId}, {"appExport", true}, { "contentTypeIds", attributeSetIds }, {"entityIds", entityIds} });
-            // new ToSxcXmlExporter(_zoneId, _appId, true, attributeSetIds, entityIds);
 
             #region reset App Guid if necessary
 
@@ -179,46 +174,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
         }
 
-        public static void ZipFolder(string rootFolder, string currentFolder, ZipOutputStream zStream)
-        {
 
-            var SubFolders = Directory.GetDirectories(currentFolder);
-            foreach (var Folder in SubFolders)
-                ZipFolder(rootFolder, Folder, zStream);
-
-            var relativePath = currentFolder.Substring(rootFolder.Length) + "\\";
-
-            if (relativePath.Length > 1)
-            {
-                var dirEntry = new ZipEntry(relativePath);
-                dirEntry.DateTime = DateTime.Now;
-            }
-            foreach (var file in Directory.GetFiles(currentFolder))
-            {
-                AddFileToZip(zStream, relativePath, file);
-            }
-        }
-
-
-
-        private static void AddFileToZip(ZipOutputStream zStream, string relativePath, string file)
-        {
-            var buffer = new byte[4096];
-            var fileRelativePath = (relativePath.Length > 1 ? relativePath : string.Empty) + Path.GetFileName(file);
-            var entry = new ZipEntry(fileRelativePath);
-            entry.DateTime = DateTime.Now;
-            zStream.PutNextEntry(entry);
-            using (var fs = File.OpenRead(file))
-            {
-                int sourceBytes;
-                do
-                {
-                    sourceBytes = fs.Read(buffer, 0, buffer.Length);
-                    zStream.Write(buffer, 0, sourceBytes);
-
-                } while (sourceBytes > 0);
-            }
-        }
 
     }
 }

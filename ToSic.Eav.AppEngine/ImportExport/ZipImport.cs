@@ -5,8 +5,9 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Xml.Linq;
-using ICSharpCode.SharpZipLib.Zip;
+//using ICSharpCode.SharpZipLib.Zip;
 using ToSic.Eav.ImportExport;
+using ToSic.Eav.ImportExport.Zip;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
@@ -17,15 +18,12 @@ namespace ToSic.Eav.Apps.ImportExport
     {
         private int? _appId;
         private readonly int _zoneId;
-        // ReSharper disable once NotAccessedField.Local
-        private bool _allowRazor; // note: not used yet, but will be important in the future 
         private readonly IImportExportEnvironment _environment;
         public ZipImport(IImportExportEnvironment environment, int zoneId, int? appId, bool allowRazor, Log parentLog)
         {
             Log = new Log("Zip.Imp", parentLog);
             _appId = appId;
             _zoneId = zoneId;
-            _allowRazor = allowRazor;
             _environment = environment;
 
         }
@@ -54,7 +52,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     Directory.CreateDirectory(temporaryDirectory);
 
                 // Extract ZIP archive to the temporary folder
-                ExtractZipFile(zipStream, temporaryDirectory);
+                new Zipping(Log).ExtractZipFile(zipStream, temporaryDirectory);
 
                 var currentWorkingDir = temporaryDirectory;
                 var baseDirectories = Directory.GetDirectories(currentWorkingDir);
@@ -153,7 +151,7 @@ namespace ToSic.Eav.Apps.ImportExport
                                                 _environment.TransferFilesToTenant(portalTempRoot, "");
                                         }
 
-                                        import.ImportXml(_zoneId, appId/*.Value*/, xdoc);
+                                        import.ImportXml(_zoneId, appId, xdoc);
                                     }
 
                                     
@@ -163,7 +161,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
 
                                     // Copy all files in 2sexy folder to (portal file system) 2sexy folder
-                                    var templateRoot = _environment.TemplatesRoot(_zoneId, appId/*.Value*/);
+                                    var templateRoot = _environment.TemplatesRoot(_zoneId, appId);
                                     var appTemplateRoot = Path.Combine(appDirectory, "2sexy");
                                     if (Directory.Exists(appTemplateRoot))
                                         new FileManager(appTemplateRoot).CopyAllFiles(templateRoot, false, messages);
@@ -192,11 +190,11 @@ namespace ToSic.Eav.Apps.ImportExport
                     // Finally delete the temporary directory
                     Directory.Delete(temporaryDirectory, true);
                 }
-                catch(Exception ex) when (ex is FormatException || ex is OverflowException) 
+                catch
                 {
-                    // The folder itself or files inside may be used by other processes.
-                    // Deleting the folder recursively will fail in such cases
-                    // If deleting is not possible, just leave the temporary folder as it is
+                    Log.Add("Delete ran into issues, will ignore. " +
+                            "Probably files/folders are used by another process like anti-virus. " +
+                            "Just leave temp folder as is");
                 }
             }
 
@@ -271,52 +269,6 @@ namespace ToSic.Eav.Apps.ImportExport
             return success;
         }
 
-        #region Zip Import Helpers
 
-        /// <summary>
-        /// Extracts a Zip (as Stream) to the given OutFolder directory.
-        /// </summary>
-        /// <param name="zipStream"></param>
-        /// <param name="outFolder"></param>
-        private void ExtractZipFile(Stream zipStream, string outFolder)
-        {
-            Log.Add($"extract zip to:{outFolder}");
-            var file = new ZipFile(zipStream);
-
-            try
-            {
-                foreach (ZipEntry entry in file)
-                {
-                    if (entry.IsDirectory)
-                        continue;
-                    var fileName = entry.Name;
-
-                    var entryStream = file.GetInputStream(entry);
-
-                    var fullPath = Path.Combine(outFolder, fileName);
-                    var directoryName = Path.GetDirectoryName(fullPath);
-                    if (!String.IsNullOrEmpty(directoryName))
-                    {
-                        Log.Add($"will create temp dir len:{fullPath.Length} path:{fullPath}");
-                        Directory.CreateDirectory(directoryName);
-                    }
-
-                    if (fullPath.Length > 240)
-                        Log.Warn($"file name is very long - could cause trouble:{fullPath}");
-
-                    // Unzip File in buffered chunks
-                    using (var streamWriter = File.Create(fullPath))
-                    {
-                        entryStream.CopyTo(streamWriter, 4096);
-                    }
-                }
-            }
-            finally
-            {
-                file.Close();
-            }
-        }
-
-        #endregion
     }
 }
