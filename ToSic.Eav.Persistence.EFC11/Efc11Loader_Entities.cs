@@ -58,9 +58,6 @@ namespace ToSic.Eav.Persistence.Efc
                             (
                                 // filter by EntityIds (if set)
                                 !filterByEntityIds || entityIds.Contains(e.EntityId)
-                            // also load drafts
-                            // 2018-01-22 disabled, as it's already included in the id-list
-                            //|| e.PublishedEntityId.HasValue && entityIds.Contains(e.PublishedEntityId.Value)
                             ))
                 .OrderBy(e => e.EntityId) // order to ensure drafts are processed after draft-parents
                 .Select(e => new

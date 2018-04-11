@@ -144,10 +144,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                     #endregion
 
+                    // update changelogmodified for the DB record
+                    dbEnt.ChangeLogModified = changeLogId;
+                    
                     // increase version
                     dbEnt.Version++;
                     (newEnt as Entity)?.SetVersion(dbEnt.Version);
-                    
+
                     // prepare export for save json OR versioning later on
                     jsonExport = _jsonifier.Serialize(newEnt);
 
@@ -207,7 +210,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                 #endregion
 
-            });
+            }); // end of transaction
 
             Log.Add("save done for id:" + dbEnt?.EntityId);
             return dbEnt.EntityId;
