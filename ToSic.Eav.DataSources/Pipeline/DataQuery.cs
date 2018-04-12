@@ -39,12 +39,12 @@ namespace ToSic.Eav.DataSources.Pipeline
         /// ...but will be auto-assembled the moment they are accessed
         /// </summary>
         /// <returns></returns>
-	    public static Dictionary<string, IDataSource> AllQueries(int zoneId, int appId, IValueCollectionProvider valuesCollectionProvider, Log parentLog)
+	    public static Dictionary<string, IDataSource> AllQueries(int zoneId, int appId, IValueCollectionProvider valuesCollectionProvider, Log parentLog, bool showDrafts)
 	    {
 	        var dict = new Dictionary<string, IDataSource>(StringComparer.OrdinalIgnoreCase);
 	        foreach (var entQuery in AllQueryItems(appId, parentLog))
 	        {
-	            var delayedQuery = new DeferredQuery(zoneId, appId, entQuery, valuesCollectionProvider);
+	            var delayedQuery = new DeferredQuery(zoneId, appId, entQuery, valuesCollectionProvider, showDrafts);
                 // make sure it doesn't break if two queries have the same name...
 	            var name = entQuery.Title[0].ToString();
 	            if (!dict.ContainsKey(name))
