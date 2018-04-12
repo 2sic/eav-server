@@ -10,6 +10,7 @@ using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Repository.Efc;
+using ToSic.Eav.Types;
 
 namespace ToSic.Eav.Apps
 {
@@ -62,17 +63,31 @@ namespace ToSic.Eav.Apps
 
 
 
-        public void MetadataEnsureTypeAndSingleEntity(string scope, string setName, string label, int appAssignment, Dictionary<string, object> values)
+        public void MetadataEnsureTypeAndSingleEntity(string scope, string setName, string label, int appAssignment, Dictionary<string, object> values, bool inAppType)
         {
-            var ct = Read.ContentTypes.Get(setName);
-            if (ct == null)
+            Log.Add($"check / create for {scope}/{setName} and {label} for app {appAssignment} - inApp: {inAppType}");
+
+            // if it's an in-app type, it should check the app, otherwise it should check the global type
+            // this is important, because there are rare cases where historic data accidentally
+            // created the 2SexyContent-App type as a local type in an app (2sxc 9.20-9.22)
+            // Basically after this update has run for a while - probably till end of 2018-04
+            // this is probably not so important any more, but I would leave it forever for now
+            // discuss w/2dm if you think you want to change this
+            var ct = inAppType 
+                ? Read.ContentTypes.Get(setName)
+                : Global.FindContentType(setName);
+
+            if (ct == null && inAppType)
             {
                 ContentTypes.Create(setName, setName, label, scope);
                 ct = Read.ContentTypes.Get(setName);
             }
 
-            if (values == null)
-                values = new Dictionary<string, object>();
+            // if it's still null, we have a problem...
+            if (ct == null)
+                throw new Exception("something went wrong - can't find type in app, but it's not a global type, so I must cancel");
+
+            values = values ?? new Dictionary<string, object>();
 
             var newEnt = new Entity(AppId, Guid.NewGuid(), ct, values);
             newEnt.SetMetadata(new MetadataFor { KeyNumber = DataController.AppId, TargetType = appAssignment });
@@ -127,7 +142,8 @@ namespace ToSic.Eav.Apps
                         {"AllowRazorTemplates", "False"},
                         {"Version", "00.00.01"},
                         {"OriginalId", ""}
-                    });
+                    }, 
+                    false);
 
 
             // Add new (empty) ContentType for Settings
@@ -136,7 +152,8 @@ namespace ToSic.Eav.Apps
                     AppConstants.AttributeSetStaticNameAppSettings,
                     "Stores settings for an app",
                     Constants.MetadataForApp,
-                    null);
+                    null,
+                    true);
 
             // add new (empty) ContentType for Resources
             if (appResources == null)
@@ -144,7 +161,8 @@ namespace ToSic.Eav.Apps
                     AppConstants.AttributeSetStaticNameAppResources,
                     "Stores resources like translations for an app",
                     Constants.MetadataForApp,
-                    null);
+                    null, 
+                    true);
 
             if (appMetaData == null || appSettings == null || appResources == null)
                 SystemManager.Purge(zoneId, appId);
