@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using ToSic.Eav.Apps;
+using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.WebApi
@@ -25,16 +27,33 @@ namespace ToSic.Eav.WebApi
             if (appId.HasValue)
                 AppId = appId.Value;
 
-            IEnumerable<Interfaces.IEntity> entityList;
-            if (keyType == "guid")
+            IEnumerable<IEntity> entityList;
+
+            // todo: if possible, move metadata lookup to appRuntime
+            //var metaDs = DataSource.GetMetaDataSource(appId: AppId);
+            var appRun = new AppRuntime(AppId, Log);
+
+            bool ok;
+            switch (keyType)
             {
-                var guidkey = Guid.Parse(key);
-                entityList = MetaDs.GetMetadata(assignmentObjectTypeId, guidkey, contentType);                
+                case "guid":
+                    ok = Guid.TryParse(key, out var guidKey);
+                    entityList = appRun.Package.GetMetadata(assignmentObjectTypeId, guidKey, contentType);
+                    break;
+                case "string":
+                    ok = true;
+                    entityList = appRun.Package.GetMetadata(assignmentObjectTypeId, key, contentType);
+                    break;
+                case "number":
+                    ok = int.TryParse(key, out var keyInt);
+                    entityList = appRun.Package.GetMetadata(assignmentObjectTypeId, keyInt, contentType);
+                    break;
+                default:
+                    throw new Exception("keytype unknown:" + keyType);
             }
-            else if (keyType == "string")
-                entityList = MetaDs.GetMetadata(assignmentObjectTypeId, key, contentType);
-            else
-                throw new Exception("keytype unknown:" + keyType);
+
+            if(!ok)
+                throw new Exception($"was not able to convert '{key}' to keytype {keyType}, must cancel");
 
             return Serializer.Prepare(entityList);
         }

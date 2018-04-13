@@ -33,7 +33,6 @@ namespace ToSic.Eav.WebApi
 
         internal AppManager AppManager => new AppManager(AppId, Log);
 
-        internal IMetadataProvider MetaDs => DataSource.GetMetaDataSource(appId: AppId);
 
         private DbDataController _dbContext;
 	    internal DbDataController CurrentContext => _dbContext ?? (_dbContext = DbDataController.Instance(appId: AppId, parentLog: Log));
