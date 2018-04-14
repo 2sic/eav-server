@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using Newtonsoft.Json;
 
@@ -12,25 +11,21 @@ namespace ToSic.Eav.Configuration
         public const string FeaturesField = "Features";
         public const string SignatureField = "Signature";
 
-        private static ImmutableDictionary<Guid, Feature> _all; 
-        private static ImmutableDictionary<Guid, Feature> _stored; 
+        private static FeatureList _merged; 
 
         // todo: differentiate between stored and used...
 
-        internal static ImmutableDictionary<Guid, Feature> Stored => _stored ?? (_stored = Load());
+        internal static FeatureList Stored => _stored ?? (_stored = Load());
+        private static FeatureList _stored; 
 
-        internal static ImmutableDictionary<Guid, Feature> Dic => _all ?? (_all = Merge(_stored, Catalog));
+        public static IEnumerable<Feature> All => (_merged ?? (_merged = Merge(Stored, Catalog))).Features;
 
-        public static IEnumerable<Feature> All => Dic.Values;
+        public static IEnumerable<Feature> Ui => All
+            .Where(f => f.Enabled && f.Ui == true);
 
-        public static IEnumerable<Feature> Ui => Dic.Values
-            .Where(f => f.Enabled)
-            .Where(f => f.Ui == true
-                        || Catalog.Features.Any(cf => cf.Id == f.Id && cf.Ui == true));
+        public static bool IsEnabled(Guid id) => All.Any(f => f.Id == id && f.Enabled);
 
-        public static bool Enabled(Guid id) => Dic.TryGetValue(id, out var feat) && feat.Enabled;
-
-        private static ImmutableDictionary<Guid, Feature> Load()
+        private static FeatureList Load()
         {
             try
             {
@@ -42,18 +37,18 @@ namespace ToSic.Eav.Configuration
                     feats = JsonConvert.DeserializeObject<FeatureList>(featStr);
 
                 if (feats != null)
-                    return feats.Features.ToDictionary(f => f.Id, f => f).ToImmutableDictionary();
+                    return feats;
             }
             catch 
             {
                 /* ignore */
             }
-            return new Dictionary<Guid, Feature>().ToImmutableDictionary();
+            return new FeatureList();
         }
 
-        private static ImmutableDictionary<Guid, Feature> Merge(ImmutableDictionary<Guid, Feature> config, FeatureList cat)
+        private static FeatureList Merge(FeatureList config, FeatureList cat)
         {
-            return config.Values.Select(f =>
+            var feats = config.Features.Select(f =>
             {
                 var inCat = cat.Features.FirstOrDefault(c => c.Id == f.Id);
                 return new Feature
@@ -64,8 +59,9 @@ namespace ToSic.Eav.Configuration
                     Public = f.Public ?? inCat?.Public,
                     Ui = f.Ui ?? inCat?.Ui
                 };
-            })
-            .ToImmutableDictionary(f => f.Id, f => f);
+            }).ToList();
+
+            return new FeatureList(feats);
 
         }
 
@@ -81,3 +77,4 @@ namespace ToSic.Eav.Configuration
         });
     }
 }
+
