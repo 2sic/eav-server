@@ -21,7 +21,7 @@ namespace ToSic.Eav.WebApi
     {
         public EntitiesController(int appId) : base(appId) { }
         public EntitiesController(Log parentLog) : base(parentLog) { }
-        public EntitiesController() { }
+        //public EntitiesController() { }
 
         #region GetOne GetAll calls
         public IEntity GetEntityOrThrowError(string contentType, int id)

@@ -10,7 +10,11 @@ namespace ToSic.Eav.Configuration
         private static List<IEntity> _list;
 
 
-
+        /// <summary>
+        /// Get the configuration for a specific type, or return null if no configuration found
+        /// </summary>
+        /// <param name="typeName"></param>
+        /// <returns></returns>
         public static IEntity For(string typeName) =>
             List.FirstOrDefault(e => e.Type.StaticName == typeName || e.Type.Name == typeName);
 
@@ -19,9 +23,7 @@ namespace ToSic.Eav.Configuration
         public static string GetOverride(string typeName, string key, string fallback)
         {
             var found = Value(typeName, key);
-            if(found == null)
-                return fallback;
-            return found.ToString();
+            return found?.ToString() ?? fallback;
         }
 
         /// <summary>

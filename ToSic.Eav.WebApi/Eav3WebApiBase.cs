@@ -21,7 +21,7 @@ namespace ToSic.Eav.WebApi
 
         #region Constructors
 
-        public Eav3WebApiBase(Log parentLog = null) => Log.LinkTo(parentLog);
+        public Eav3WebApiBase(Log parentLog, string name = null) => Log.LinkTo(parentLog, name);
 
         public Eav3WebApiBase(int appId, Log parentLog = null)
             : this(parentLog) 
