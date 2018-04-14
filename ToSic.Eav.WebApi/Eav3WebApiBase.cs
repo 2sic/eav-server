@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Web.Http;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Serializers;
@@ -43,11 +42,9 @@ namespace ToSic.Eav.WebApi
 	    {
 	        get
 	        {
-	            if (_serializer == null)
-	            {
-	                _serializer = Factory.Resolve<Serializer>();
-	                _serializer.IncludeGuid = true;
-	            }
+	            if (_serializer != null) return _serializer;
+	            _serializer = Factory.Resolve<Serializer>();
+	            _serializer.IncludeGuid = true;
 	            return _serializer;
 	        }
 	    }

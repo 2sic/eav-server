@@ -11,8 +11,6 @@ namespace ToSic.Eav.WebApi.Formats
         public int Id;
         [NonSerialized] public Guid Guid;
 
-        //[NonSerialized] public int RepoId;
-
         public Type Type;
         public bool IsPublished;
         public bool IsBranch;
@@ -23,7 +21,6 @@ namespace ToSic.Eav.WebApi.Formats
 
     public class Attribute
     {
-        // public string Key;
         public ValueSet[] Values;
     }
 
@@ -51,10 +48,7 @@ namespace ToSic.Eav.WebApi.Formats
         /// This is the AssignmentObjectTypeId - usually 1 (none), 2 (attribute), 4 (entity)
         /// </summary>
         public int TargetType {
-            get
-            {
-                return _targetType;
-            }
+            get => _targetType;
             set
             {
                 if(value > 10)
@@ -68,10 +62,7 @@ namespace ToSic.Eav.WebApi.Formats
 
         public string KeyType
         {
-            get
-            {
-                return _keyType;
-            } 
+            get => _keyType;
             set
             {
                 var newType = value.ToLower();
@@ -93,8 +84,7 @@ namespace ToSic.Eav.WebApi.Formats
             {
                 if (KeyType != "number")
                     return null;
-                int keyNum;
-                if (!int.TryParse(Key, out keyNum))
+                if (!int.TryParse(Key, out int keyNum))
                     throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest) { ReasonPhrase = "Tried to retrieve a number-key for the meadata but conversion failed" });
                 return keyNum;
             }
@@ -109,8 +99,7 @@ namespace ToSic.Eav.WebApi.Formats
             {
                 if (KeyType != "guid")
                     return null;
-                Guid keyGuid;
-                if (!Guid.TryParse(Key, out keyGuid))
+                if (!Guid.TryParse(Key, out var keyGuid))
                     throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest) { ReasonPhrase = "Tried to retrieve a guid-key for the meadata but conversion failed" });
                 return keyGuid;
             }
