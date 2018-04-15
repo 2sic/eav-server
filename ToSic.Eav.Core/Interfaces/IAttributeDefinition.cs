@@ -29,5 +29,7 @@
         bool IsTitle { get; }
 
         IMetadataOfItem Metadata { get; }
+
+        string InputType { get; }
 	}
 }

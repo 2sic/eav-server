@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
 
@@ -66,9 +67,24 @@ namespace ToSic.Eav.Data
                    ? new MetadataOf<int>(Constants.MetadataForAttribute, AttributeId, _metaOfThisApp)
                    : new MetadataOf<int>(Constants.MetadataForAttribute, AttributeId, 0, _parentAppId)
                );
+
         private IMetadataOfItem _metadata;
-        
+
         #endregion
 
+        #region InputType
+        public string InputType => _inputType ?? (_inputType = FindInputType());
+        private string _inputType;
+
+        private string FindInputType()
+        {
+            var inputType = Metadata
+                .FirstOrDefault(d => d.Type.StaticName == "@All")
+                ?.GetBestValue("InputType");
+
+            return string.IsNullOrEmpty(inputType as string) ? Type.ToLower() + "-default" /*"unknown"*/ : inputType.ToString();
+        }
+
+        #endregion InputType
     }
 }
