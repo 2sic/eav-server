@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.WebApi.Formats
 {
@@ -17,6 +19,30 @@ namespace ToSic.Eav.WebApi.Formats
         public string TitleAttributeName;
         public Dictionary<string, Attribute> Attributes;
         public int AppId;
+
+        public static EntityWithLanguages Build(int appId, IEntity entity)
+        {
+            var ce = new EntityWithLanguages
+            {
+                AppId = appId,
+                Id = entity.EntityId,
+                Guid = entity.EntityGuid,
+                Type = new Type { Name = entity.Type.Name, StaticName = entity.Type.StaticName },
+                IsPublished = entity.IsPublished,
+                IsBranch = !entity.IsPublished && entity.GetPublished() != null,
+                TitleAttributeName = entity.Title?.Name,
+                Attributes = entity.Attributes.ToDictionary(a => a.Key, a => new Attribute
+                    {
+                        Values = a.Value.Values?.Select(v => new ValueSet
+                        {
+                            Value = v.SerializableObject,
+                            Dimensions = v.Languages.ToDictionary(l => l.Key, y => y.ReadOnly)
+                        }).ToArray() ?? new ValueSet[0]
+                    }
+                )
+            };
+            return ce;
+        }
     }
 
     public class Attribute

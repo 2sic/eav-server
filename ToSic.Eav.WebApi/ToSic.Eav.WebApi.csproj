@@ -87,6 +87,7 @@
     <Compile Include="ContentExportController.cs" />
     <Compile Include="ContentImportController.cs" />
     <Compile Include="ContentTypeController.cs" />
+    <Compile Include="EntityApi.cs" />
     <Compile Include="Formats\EntityForPicker.cs" />
     <Compile Include="Formats\EntityImport.cs" />
     <Compile Include="Formats\ContentImportArgs.cs" />

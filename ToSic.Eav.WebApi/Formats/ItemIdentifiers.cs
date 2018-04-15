@@ -1,4 +1,5 @@
 ﻿using System;
+using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.WebApi.Formats
 {
@@ -26,11 +27,19 @@ namespace ToSic.Eav.WebApi.Formats
         public int? DuplicateEntity { get; set; }
     }
 
-    public class EntityWithHeader
+    public class EntityWithHeaderOldFormat
     {
         public ItemIdentifier Header { get; set; }
         public EntityWithLanguages Entity { get; set; }
     }
+
+    public class HeaderAndEntity
+    {
+        public ItemIdentifier Header { get; set; }
+        public IEntity Entity { get; set; }
+    }
+
+
 
     public class GroupAssignment
     {

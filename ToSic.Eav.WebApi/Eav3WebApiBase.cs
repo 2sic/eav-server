@@ -30,8 +30,8 @@ namespace ToSic.Eav.WebApi
 
         #region Helpers
 
+        [Obsolete("use the new GetAppManager instead, because the fairly trivial set-app-id-then-get feels flaky...")]
         internal AppManager AppManager => new AppManager(AppId, Log);
-
 
         private DbDataController _dbContext;
 	    internal DbDataController CurrentContext => _dbContext ?? (_dbContext = DbDataController.Instance(appId: AppId, parentLog: Log));
