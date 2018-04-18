@@ -27,7 +27,7 @@
 
         UpdateDraft = 'ǔ',
 
-        DeleteDraft = 'ď' // the "d" with caron looks a bit different
+        DeleteDraft = 'ď', // the "d" with caron looks a bit different
     }
 
 }
