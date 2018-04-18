@@ -11,8 +11,15 @@ namespace ToSic.Eav.Configuration
 
         private static string LoadSystemFingerprint()
         {
-            var provider = Factory.Resolve<IFingerprintProvider>();
-            return provider.GetSystemFingerprint();
+            try
+            {
+                var provider = Factory.Resolve<IFingerprintProvider>();
+                return provider.GetSystemFingerprint();
+            }
+            catch
+            {
+                return "error-generating-fingerprint-use-random:" + new Random().Next();
+            }
         }
     }
 }
