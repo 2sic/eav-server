@@ -52,7 +52,7 @@ namespace ToSic.Eav.Configuration
             {
                 /* ignore */
             }
-            Timestamp = DateTime.Now;
+            CacheTimestamp = DateTime.Now.Ticks;
             return new FeatureList();
         }
 
@@ -75,9 +75,9 @@ namespace ToSic.Eav.Configuration
 
         }
 
-        public static DateTime Timestamp { get; private set; }
+        public static long CacheTimestamp { get; private set; }
 
-        public static bool CompareCache(DateTime compareTo) => compareTo.CompareTo(Timestamp) != 0;
+        public static bool CacheChanged(long compareTo) => compareTo != CacheTimestamp;
 
         /// <summary>
         /// The catalog contains known features, and knows if they are used in the UI
