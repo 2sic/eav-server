@@ -155,7 +155,7 @@ namespace ToSic.Eav.Data
         {
             // ReSharper disable once CanBeReplacedWithTryCastAndCheckForNull
             return result is string
-                ? Factory.Resolve<IEavValueConverter>().Convert(ConversionScenario.GetFriendlyValue, Constants.Hyperlink, (string)result)
+                ? Factory.Resolve<IEavValueConverter>().Convert(ConversionScenario.GetFriendlyValue, Constants.DataTypeHyperlink, (string)result)
                 : result;
         }
 

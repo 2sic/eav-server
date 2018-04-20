@@ -80,5 +80,11 @@ namespace ToSic.Eav.Security.Permissions
             Full,
             Develop
         };
+
+        public static List<Grants> DeleteSomething = new List<Grants>
+        {
+            Delete,
+            DeleteDraft
+        };
     }
 }

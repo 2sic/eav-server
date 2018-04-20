@@ -141,6 +141,7 @@
     <Compile Include="Persistence\Logging\MessageTypes.cs" />
     <Compile Include="Security\Permissions\ConditionType.cs" />
     <Compile Include="Security\Permissions\GrantSets.cs" />
+    <Compile Include="Security\Permissions\IHasPermissions.cs" />
     <Compile Include="Security\Permissions\IPermissionCheck.cs" />
     <Compile Include="Security\Permissions\PermissionCheckBase.cs" />
     <Compile Include="Security\Permissions\Grants.cs" />

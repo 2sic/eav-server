@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Interfaces
+﻿using ToSic.Eav.Security.Permissions;
+
+namespace ToSic.Eav.Interfaces
 {
     /// <inheritdoc cref="IAttributeBase" />
     /// <summary>
@@ -6,7 +8,7 @@
     /// - attribute definition (in the IContentType)
     /// - attribute with values-list (in the IEntity)
     /// </summary>
-    public interface IAttributeDefinition: IAttributeBase//, IHasMetadata
+    public interface IAttributeDefinition: IAttributeBase, IHasPermissions
 	{
         /// <summary>
         /// AppId

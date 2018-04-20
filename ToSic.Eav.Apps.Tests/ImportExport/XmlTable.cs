@@ -42,13 +42,13 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
 
             // test the Resolve Hyperlink
             string link = "";
-            link = ExportListXml.ResolveHyperlinksFromTenant(link2sic, Constants.Hyperlink, resolver);
+            link = ExportListXml.ResolveHyperlinksFromTenant(link2sic, Constants.DataTypeHyperlink, resolver);
             Assert.AreEqual(link, link2sic, "real link should stay the same");
 
-            link = ExportListXml.ResolveHyperlinksFromTenant(linkFile, Constants.Hyperlink, resolver);
+            link = ExportListXml.ResolveHyperlinksFromTenant(linkFile, Constants.DataTypeHyperlink, resolver);
             Assert.AreNotEqual(link, linkFile, "file link should change");
 
-            link = ExportListXml.ResolveHyperlinksFromTenant(linkPage, Constants.Hyperlink, resolver);
+            link = ExportListXml.ResolveHyperlinksFromTenant(linkPage, Constants.DataTypeHyperlink, resolver);
             Assert.AreNotEqual(link, linkPage, "page link should change");
 
             link = ExportListXml.ResolveHyperlinksFromTenant("http://www.2sic.com/", NonLinkType, resolver);
@@ -66,9 +66,9 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
             // test resolves on any value, these versions should always resolve to default values but not resolve links
             TestResolvesWithNonLinkType(NonLinkType, false);
             TestResolvesWithNonLinkType(NonLinkType, true);
-            TestResolvesWithNonLinkType(Constants.Hyperlink, false);
+            TestResolvesWithNonLinkType(Constants.DataTypeHyperlink, false);
 
-            var type = Constants.Hyperlink;
+            var type = Constants.DataTypeHyperlink;
             var resolver = Factory.Resolve<IEavValueConverter>();
             // test resolves on any value, just certainly not a link, with "no-resolve"
             Assert.AreEqual(XmlConstants.Null, ExportListXml.ResolveValue(type, null, true, resolver), "test null resolve");

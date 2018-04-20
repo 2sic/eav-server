@@ -39,13 +39,47 @@ namespace ToSic.Eav.Data
 
         private int AppId = 0; 
         private readonly int _remoteAppId;
-
         private readonly int _remoteZoneId;
 
         private readonly IDeferredEntitiesList _appMetadataProvider;
         private readonly int _itemType;
         protected readonly T Key;
-        protected List<IEntity> Entities;
+
+        /// <summary>
+        /// All entities is internal - because it contains everything
+        /// including permissions-metadata
+        /// </summary>
+        protected List<IEntity> AllEntities {
+            get
+            {             
+                // If necessary, initialize first. Note that it will only add Ids which really exist in the source (the source should be the cache)
+                if (_allEntities == null || RequiresReload())
+                    LoadFromProvider();
+                return _allEntities;
+            }
+        }
+        private List<IEntity> _allEntities;
+
+        protected List<IEntity> FilteredEntities
+        {
+            get
+            {
+                // If necessary, initialize first. Note that it will only add Ids which really exist in the source (the source should be the cache)
+                if (_filteredEntities == null || RequiresReload())
+                    _filteredEntities = AllEntities
+                        .Where(md => new[] { Constants.PermissionTypeName }.Any(e => e != md.Type.Name && e != md.Type.StaticName))
+                        .ToList();
+                return _filteredEntities;
+            }
+        }
+        private List<IEntity> _filteredEntities;
+
+        private IEnumerable<IEntity> OnlyType(string typeName)
+            => AllEntities.Where(md => md.Type.StaticName == typeName || md.Type.Name == typeName);
+
+        public IEnumerable<IEntity> Unfiltered => this;
+
+        public IEnumerable<IEntity> Permissions => OnlyType(Constants.PermissionTypeName);
 
         private long _cacheTimestamp;
 
@@ -56,7 +90,7 @@ namespace ToSic.Eav.Data
         protected virtual void LoadFromProvider()
         {
             var mdProvider = GetMetadataProvider();
-            Entities = mdProvider?.GetMetadata(_itemType, Key).ToList()
+            _allEntities = mdProvider?.GetMetadata(_itemType, Key).ToList()
                        ?? new List<IEntity>();
             if (mdProvider != null)
                 _cacheTimestamp = mdProvider.CacheTimestamp;
@@ -75,29 +109,18 @@ namespace ToSic.Eav.Data
             _alreadyTriedToGetProvider = true;
             return _metadataProvider;
         }
-
         private bool _alreadyTriedToGetProvider;
         private IMetadataProvider _metadataProvider;
 
         // 2018-03-09 2dm - this was used when we tried creating code-based content-types, but I believe it's dead code now
-        public void Add(string type, Dictionary<string, object> values)
-            => Add(new Entity(AppId, 0, Guid.Empty, type, values));
+        public void Add(string type, Dictionary<string, object> values) => Add(new Entity(AppId, 0, Guid.Empty, type, values));
 
-        public void Add(IEntity additionalItem)
-            => (Entities ?? (Entities = new List<IEntity>())).Add(additionalItem);
+        public void Add(IEntity additionalItem) => AllEntities.Add(additionalItem);
 
+        public void Use(List<IEntity> items) => _allEntities = items;
 
-        public void Use(List<IEntity> items) => Entities = items;
-
-        #region enumerator
-
-        public IEnumerator<IEntity> GetEnumerator()
-        {
-            // If necessary, initialize first. Note that it will only add Ids which really exist in the source (the source should be the cache)
-            if (Entities == null || RequiresReload())
-                LoadFromProvider();
-            return new EntityEnumerator(Entities);
-        }
+        #region enumerators
+        public IEnumerator<IEntity> GetEnumerator() => new EntityEnumerator(FilteredEntities);
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         #endregion

@@ -220,9 +220,9 @@ namespace ToSic.Eav.Apps.ImportExport
         /// </summary>
         internal static string ResolveHyperlinksFromTenant(string value, string attrType,
             IEavValueConverter resolver)
-            => attrType != Constants.Hyperlink
+            => attrType != Constants.DataTypeHyperlink
                 ? value
-                : resolver.Convert(ConversionScenario.GetFriendlyValue, Constants.Hyperlink, value);
+                : resolver.Convert(ConversionScenario.GetFriendlyValue, Constants.DataTypeHyperlink, value);
 
         #endregion
 

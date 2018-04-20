@@ -61,7 +61,7 @@ namespace ToSic.Eav.Data
         public IAttribute CreateAttribute() => CreateTypedAttribute(Name, Type);
 
 
-        #region material for defining/creating attributes / defining them for import
+        #region Metadata and Permissions
         public IMetadataOfItem Metadata
             => _metadata ?? (_metadata = !_isShared
                    ? new MetadataOf<int>(Constants.MetadataForAttribute, AttributeId, _metaOfThisApp)
@@ -69,6 +69,8 @@ namespace ToSic.Eav.Data
                );
 
         private IMetadataOfItem _metadata;
+
+        public IEnumerable<IEntity> Permissions => Metadata.Permissions;
 
         #endregion
 
