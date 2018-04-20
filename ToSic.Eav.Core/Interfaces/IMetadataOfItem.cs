@@ -10,10 +10,5 @@ namespace ToSic.Eav.Interfaces
         void Add(IEntity additionalItem);
         void Use(List<IEntity> items);
 
-        //IEnumerable<IEntity> WithoutTypes(string[] exceptions);
-
-        //IEnumerable<IEntity> OnlyType(string typeName);
-
-        IEnumerable<IEntity> Unfiltered { get; }
     }
 }

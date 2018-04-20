@@ -60,7 +60,11 @@ namespace ToSic.Eav.Data
         }
         private List<IEntity> _allEntities;
 
-        protected List<IEntity> FilteredEntities
+        /// <summary>
+        /// All "normal" metadata entities - so it hides the system-entities
+        /// like permissions. This is the default view of metadata given by an item
+        /// </summary>
+        private List<IEntity> FilteredEntities
         {
             get
             {
@@ -74,12 +78,8 @@ namespace ToSic.Eav.Data
         }
         private List<IEntity> _filteredEntities;
 
-        private IEnumerable<IEntity> OnlyType(string typeName)
-            => AllEntities.Where(md => md.Type.StaticName == typeName || md.Type.Name == typeName);
-
-        public IEnumerable<IEntity> Unfiltered => this;
-
-        public IEnumerable<IEntity> Permissions => OnlyType(Constants.PermissionTypeName);
+        public IEnumerable<IEntity> Permissions =>
+            AllEntities.Where(md => md.Type.StaticName == Constants.PermissionTypeName);
 
         private long _cacheTimestamp;
 

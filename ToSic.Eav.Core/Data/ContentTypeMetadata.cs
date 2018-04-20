@@ -22,10 +22,6 @@ namespace ToSic.Eav.Data
         public IEntity Description => this
             .FirstOrDefault(md => md.Type.StaticName == Constants.ContentTypeTypeName);
 
-        //public IEnumerable<IEntity> Permissions => base.Permissions;
-            //.Where(md => md.Type.StaticName == Constants.PermissionTypeName);
-
-
         protected override void LoadFromProvider()
         {
             // get the string based metadata
