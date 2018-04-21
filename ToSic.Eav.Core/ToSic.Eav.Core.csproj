@@ -96,6 +96,7 @@
     <Compile Include="App\AppRelationshipManager.cs" />
     <Compile Include="App\AppPackageLoadingSteps.cs" />
     <Compile Include="Configuration\Feature.cs" />
+    <Compile Include="Configuration\FeatureIds.cs" />
     <Compile Include="Configuration\FeatureList.cs" />
     <Compile Include="Configuration\Features.cs" />
     <Compile Include="Configuration\Fingerprint.cs" />

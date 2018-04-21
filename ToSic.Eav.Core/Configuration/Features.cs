@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Configuration
 {
@@ -23,7 +24,18 @@ namespace ToSic.Eav.Configuration
         public static IEnumerable<Feature> Ui => All
             .Where(f => f.Enabled && f.Ui == true);
 
-        public static bool IsEnabled(Guid id) => All.Any(f => f.Id == id && f.Enabled);
+        public static bool Enabled(Guid id) => All.Any(f => f.Id == id && f.Enabled);
+
+        public static bool Enabled(IEnumerable<Guid> ids) => ids.All(Enabled);
+
+        public static string InfoLink 
+            => _infoLink ?? (_infoLink = Factory.Resolve<ISystemConfiguration>().FeaturesHelpLink);
+        private static string _infoLink;
+
+        public static string MsgMissingSome(Guid id) 
+            => $"Feature {id} not enabled - see {InfoLink}";
+        public static string MsgMissingSome(IEnumerable<Guid> ids) 
+            => $"Features {string.Join(", ", ids.Where(i => !Enabled(i)).Select(i => i.ToString()))} not enabled - see {InfoLink}";
 
         /// <summary>
         /// Reset the features to force reloading of the features
@@ -79,15 +91,28 @@ namespace ToSic.Eav.Configuration
 
         public static bool CacheChanged(long compareTo) => compareTo != CacheTimestamp;
 
+
+
+
         /// <summary>
         /// The catalog contains known features, and knows if they are used in the UI
         /// This is important, because the installation specific list often won't know about
         /// Ui or not. 
         /// </summary>
+        /// <remarks>
+        /// this is a temporary solution, because most features are from 2sxc (not eav)
+        /// so later on this must be injected or something
+        /// </remarks>
         public static FeatureList Catalog = new FeatureList(new List<Feature>
         {
-            // paste clipboard
-            new Feature(new Guid("f6b8d6da-4744-453b-9543-0de499aa2352"), true, true)
+            // released features
+            new Feature(FeatureIds.PublicForms, true, false, "public forms"),
+            new Feature(FeatureIds.PublicUpload, true, false, "public allow file upload"),
+
+            // Beta features
+            new Feature(FeatureIds.PasteImageClipboard, true, true, "paste image from clipboard"),
+
+
         });
 
 

@@ -17,9 +17,7 @@ namespace ToSic.Eav.Repository.Efc.Implementations
 	    public static void SetConnectionString(string conString) => _conStr = conString;
 
         #region Internal delivery for depedency injection...
-	    /// <summary>
-	    /// Db Connection String used in the Eav-Connector
-	    /// </summary>
+	    /// <inheritdoc />
 	    public string DbConnectionString {
 	        get
 	        {
@@ -30,7 +28,15 @@ namespace ToSic.Eav.Repository.Efc.Implementations
 	        }
 	    }
 
-        #endregion
+	    /// <inheritdoc />
+	    public string FeaturesHelpLink => _featuresHelpLink;
 
-    }
+	    private static string _featuresHelpLink;
+
+	    public static void SetFeaturesHelpLink(string value) => _featuresHelpLink = value;
+
+
+	    #endregion
+
+	}
 }
