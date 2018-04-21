@@ -90,8 +90,8 @@ namespace ToSic.Eav.Data
         protected virtual void LoadFromProvider()
         {
             var mdProvider = GetMetadataProvider();
-            _allEntities = mdProvider?.GetMetadata(_itemType, Key).ToList()
-                       ?? new List<IEntity>();
+            Use(mdProvider?.GetMetadata(_itemType, Key).ToList()
+                       ?? new List<IEntity>());
             if (mdProvider != null)
                 _cacheTimestamp = mdProvider.CacheTimestamp;
         }
@@ -117,7 +117,18 @@ namespace ToSic.Eav.Data
 
         public void Add(IEntity additionalItem) => AllEntities.Add(additionalItem);
 
-        public void Use(List<IEntity> items) => _allEntities = items;
+        public void Use(List<IEntity> items)
+        {
+            _allEntities = items;
+            _filteredEntities = null; // ensure this will be re-built when accessed
+        }
+
+        public TVal GetBestValue<TVal>(string name, string type = null)
+        {
+            var list = type == null ? this : this.Where(md => md.Type.StaticName == type || md.Type.Name == type);
+            var found = list.FirstOrDefault(md => md.Attributes.ContainsKey(name));
+            return found == null ? default(TVal) : found.GetBestValue<TVal>(name);
+        }
 
         #region enumerators
         public IEnumerator<IEntity> GetEnumerator() => new EntityEnumerator(FilteredEntities);

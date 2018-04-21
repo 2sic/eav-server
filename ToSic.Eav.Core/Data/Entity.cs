@@ -165,6 +165,11 @@ namespace ToSic.Eav.Data
             return result;
         }
 
+        public new TVal GetBestValue<TVal>(string name, bool resolveHyperlinks = false)
+            => ChangeTypeOrDefault<TVal>(GetBestValue(name, resolveHyperlinks));
+
+
+
         /// <inheritdoc />
         public new string GetBestTitle() => GetBestTitle(null, 0);
 

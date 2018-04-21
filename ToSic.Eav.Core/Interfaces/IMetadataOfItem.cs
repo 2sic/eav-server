@@ -10,5 +10,6 @@ namespace ToSic.Eav.Interfaces
         void Add(IEntity additionalItem);
         void Use(List<IEntity> items);
 
+        TVal GetBestValue<TVal>(string name, string type = null);
     }
 }
