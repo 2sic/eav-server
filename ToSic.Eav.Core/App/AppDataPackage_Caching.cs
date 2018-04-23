@@ -1,8 +1,9 @@
 ﻿using System;
+using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.App
 {
-    public partial class AppDataPackage
+    public partial class AppDataPackage: ICacheExpiring
     {
         public long CacheTimestamp { get; private set; }
 
