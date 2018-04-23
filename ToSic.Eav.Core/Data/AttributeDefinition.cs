@@ -80,11 +80,11 @@ namespace ToSic.Eav.Data
 
         private string FindInputType()
         {
-            var inputType = Metadata
-                .FirstOrDefault(d => d.Type.StaticName == "@All")
-                ?.GetBestValue("InputType");
+            var inputType = Metadata.GetBestValue<string>("InputType", "@All");
 
-            return string.IsNullOrEmpty(inputType as string) ? Type.ToLower() + "-default" /*"unknown"*/ : inputType.ToString();
+            return string.IsNullOrEmpty(inputType) 
+                ? "unknown" // unknown will let the UI fallback on other mechanisms
+                : inputType;
         }
 
         #endregion InputType
