@@ -5,7 +5,7 @@ using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.App
 {
-    public class AppRelationshipManager: UpstreamDependentIEnumerable<EntityRelationshipItem>
+    public class AppRelationshipManager: CacheChainedIEnumerable<EntityRelationshipItem>
     {
         AppDataPackage App;
         public AppRelationshipManager(AppDataPackage upstream) : base(upstream, () => Rebuild(upstream))

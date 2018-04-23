@@ -3,22 +3,28 @@ using System.Collections;
 using System.Collections.Generic;
 using ToSic.Eav.Interfaces;
 
-namespace ToSic.Eav.App
+namespace ToSic.Eav.Data
 {
-    public class UpstreamDependentIEnumerable<T>: IEnumerable<T>, ICacheDependent, ICacheExpiring
+    public class CacheChainedIEnumerable<T>: IEnumerable<T>, ICacheDependent, ICacheExpiring
     {
         protected readonly ICacheExpiring Upstream;
         private List<T> _cache;
         private readonly Func<List<T>> _rebuild;
 
-        public UpstreamDependentIEnumerable(ICacheExpiring upstream, Func<List<T>> rebuild)
+
+        /// <summary>
+        /// Initialized a new list which depends on another source
+        /// </summary>
+        /// <param name="upstream">the upstream cache which can tell us if a refresh is necessary</param>
+        /// <param name="rebuild">the method wich rebuilds the list</param>
+        public CacheChainedIEnumerable(ICacheExpiring upstream, Func<List<T>> rebuild)
         {
             Upstream = upstream;
             _rebuild = rebuild;
         }
 
 
-        public List<T> GetCache()
+        private List<T> GetCache()
         {
              if (_cache != null && !CacheChanged()) return _cache;
 

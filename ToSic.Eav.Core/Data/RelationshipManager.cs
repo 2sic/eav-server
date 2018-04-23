@@ -20,7 +20,7 @@ namespace ToSic.Eav.Data
         {
 			_entity = entity;
 		    if (app != null)
-		        AllRelationships = new UpstreamDependentIEnumerable<EntityRelationshipItem>(app,
+		        AllRelationships = new CacheChainedIEnumerable<EntityRelationshipItem>(app,
 		            () => app.Relationships.ToList());
 		    else
 		        AllRelationships = allRelationships ?? new List<EntityRelationshipItem>();
