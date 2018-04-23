@@ -68,9 +68,6 @@
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.IdentityModel" />
-    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=4.0.40306.1554, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.4.0.4.403061554\lib\net45\System.IdentityModel.Tokens.Jwt.dll</HintPath>
-    </Reference>
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Numerics" />
@@ -90,7 +87,8 @@
     <Compile Include="Data\Entity_Test.cs" />
     <Compile Include="Data\DynamicValue_Test.cs" />
     <Compile Include="InitializeTests.cs" />
-    <Compile Include="Jwt\ValidateToken2sxcTest.cs" />
+    <Compile Include="Signature\SignatureDataSha256.cs" />
+    <Compile Include="Signature\SignatureHashSha1.cs" />
     <Compile Include="Mocks\FingerprintProvider.cs" />
     <Compile Include="Mocks\MockValueConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -103,12 +101,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Jwt\2sxc-ca.pfx" />
-    <None Include="Jwt\2sxc-ca_Base64.cer" />
-    <None Include="Jwt\2sxc-ca_Base64_Public.cer" />
-    <None Include="Jwt\2sxc-ca_Public.crt" />
-    <None Include="Jwt\create-certificates.ps1" />
-    <None Include="Jwt\create-certificates_RunAsAdmin.cmd" />
+    <None Include="Signature\2sxc-ca.pfx" />
+    <None Include="Signature\2sxc-ca_Base64.cer" />
+    <None Include="Signature\2sxc-ca_Base64_Public.cer" />
+    <None Include="Signature\2sxc-ca_Public.crt" />
+    <None Include="Signature\create-certificates.ps1" />
+    <None Include="Signature\create-certificates_RunAsAdmin.cmd" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
