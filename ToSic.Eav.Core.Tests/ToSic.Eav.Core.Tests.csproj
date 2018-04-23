@@ -95,6 +95,7 @@
     <Compile Include="Data\Entity_Test.cs" />
     <Compile Include="Data\DynamicValue_Test.cs" />
     <Compile Include="InitializeTests.cs" />
+    <Compile Include="Jwt\JwsRsaPublicKeyValidationUnitTest.cs" />
     <Compile Include="Jwt\ValidateToken2sxcTest.cs" />
     <Compile Include="Mocks\FingerprintProvider.cs" />
     <Compile Include="Mocks\MockValueConverter.cs" />
