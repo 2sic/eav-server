@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
@@ -13,13 +12,16 @@ namespace ToSic.Eav.Persistence.Efc
     public partial class Efc11Loader
     {
 
-        private int[] GetEntityIdOfPartnerEntities(int[] entityIds)
+        private int[] GetEntityIdOfPartnerEntities(int[] repositoryIds)
         {
-            entityIds = entityIds.Union(from e in _dbContext.ToSicEavEntities
-                where e.PublishedEntityId.HasValue && !e.IsPublished && entityIds.Contains(e.EntityId) &&
-                      !entityIds.Contains(e.PublishedEntityId.Value) && e.ChangeLogDeleted == null
-                select e.PublishedEntityId.Value).ToArray();
-            return entityIds;
+            var relatedIds = from e in _dbContext.ToSicEavEntities
+                where e.PublishedEntityId.HasValue && !e.IsPublished && repositoryIds.Contains(e.EntityId) &&
+                      !repositoryIds.Contains(e.PublishedEntityId.Value) && e.ChangeLogDeleted == null
+                select e.PublishedEntityId.Value;
+
+            var combined = repositoryIds.Union(relatedIds).ToArray();
+
+            return combined;
         }
 
         private void LoadEntities(AppDataPackage app, int[] entityIds = null)
@@ -177,14 +179,6 @@ namespace ToSic.Eav.Persistence.Efc
                         {
                             if (!newEntity.Attributes.TryGetValue(a.Name, out var attrib))
                                 continue;
-                            //try
-                            //{
-                            //    attrib = newEntity.Attributes[a.Name];
-                            //}
-                            //catch (KeyNotFoundException)
-                            //{
-                            //    continue;
-                            //}
 
                             attrib.Values = a.Values
                                 .Select(v => ValueBuilder.Build(attrib.Type, v.Value, v.Languages))

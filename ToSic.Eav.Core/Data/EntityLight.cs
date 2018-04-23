@@ -83,7 +83,7 @@ namespace ToSic.Eav.Data
             MetadataFor = new MetadataFor();
             if (modified.HasValue)
                 Modified = modified.Value;
-            Relationships = new RelationshipManager(this, null);
+            Relationships = new RelationshipManager(this, null, null);
         }
 
 

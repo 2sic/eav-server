@@ -26,8 +26,7 @@ namespace ToSic.Eav.Core.Tests.Data
         {
             var dan = SampleData.TestEntityDaniel();
             var relDtoL = new EntityRelationshipItem(dan, SampleData.TestEntityLeonie());
-            var relationshipList = new List<EntityRelationshipItem>();
-            relationshipList.Add(relDtoL);
+            var relationshipList = new List<EntityRelationshipItem> {relDtoL};
             for (var p = 0; p < 15; p++)
             {
                 var relPet = new EntityRelationshipItem(dan, SampleData.TestEntityPet(p));
@@ -35,7 +34,7 @@ namespace ToSic.Eav.Core.Tests.Data
             }
 
             // ReSharper disable once UnusedVariable
-            var relMan = new RelationshipManager(dan, relationshipList);
+            var relMan = new RelationshipManager(dan, null, relationshipList);
 
             // note: can't test more, because the other properties are internal
         }

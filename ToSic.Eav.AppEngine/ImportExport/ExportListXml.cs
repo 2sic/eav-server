@@ -89,7 +89,7 @@ namespace ToSic.Eav.Apps.ImportExport
             var documentRoot = _xBuilder.BuildDocumentWithRoot();
 
             // Query all entities, or just the ones with specified IDs
-            var entities = App.PublishedEntities.Where(e => e.Type == ContentType);
+            var entities = App.ListPublished.Where(e => e.Type == ContentType);
             if (selectedIds != null && selectedIds.Length > 0)
                 entities = entities.Where(e => selectedIds.Contains(e.EntityId));
             var entList = entities.ToList();

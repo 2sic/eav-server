@@ -5,15 +5,15 @@ using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.App
 {
-    public class AppDependentIEnumerable<T>: IEnumerable<T>, ICacheDependent
+    public class UpstreamDependentIEnumerable<T>: IEnumerable<T>, ICacheDependent, ICacheExpiring
     {
-        protected readonly AppDataPackage App;
+        protected readonly ICacheExpiring Upstream;
         private List<T> _cache;
-        private readonly Func</*AppDataPackage,*/ List<T>> _rebuild;
+        private readonly Func<List<T>> _rebuild;
 
-        public AppDependentIEnumerable(AppDataPackage app, Func</*AppDataPackage, */List<T>> rebuild)
+        public UpstreamDependentIEnumerable(ICacheExpiring upstream, Func<List<T>> rebuild)
         {
-            App = app;
+            Upstream = upstream;
             _rebuild = rebuild;
         }
 
@@ -22,8 +22,8 @@ namespace ToSic.Eav.App
         {
              if (_cache != null && !CacheChanged()) return _cache;
 
-            _cache = _rebuild.Invoke(/*App*/);
-            CacheTimestamp = App.CacheTimestamp;
+            _cache = _rebuild.Invoke();
+            CacheTimestamp = Upstream.CacheTimestamp;
 
             return _cache;
         }
@@ -34,6 +34,8 @@ namespace ToSic.Eav.App
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         public long CacheTimestamp { get; private set; }
-        public bool CacheChanged() => App.CacheChanged(CacheTimestamp);
+        public bool CacheChanged(long prevCacheTimestamp) => Upstream.CacheChanged(prevCacheTimestamp);
+
+        public bool CacheChanged() => Upstream.CacheChanged(CacheTimestamp);
     }
 }
