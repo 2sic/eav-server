@@ -66,6 +66,7 @@ namespace ToSic.Eav.Configuration
 
         private static FeatureList Load()
         {
+            FeatureListWithFingerprint feats = null;
             try
             {
                 var entity = Global.For(TypeName);
@@ -87,18 +88,25 @@ namespace ToSic.Eav.Configuration
 
                     if (Valid || AllowUnsignedFeatures)
                     {
-                        FeatureList feats = null;
+                        FeatureListWithFingerprint feats2 = null;
                         if (featStr.StartsWith("{"))
-                            feats = JsonConvert.DeserializeObject<FeatureList>(featStr);
+                            feats2 = JsonConvert.DeserializeObject<FeatureListWithFingerprint>(featStr);
 
-                        if (feats != null)
-                            return feats;
+                        if (feats2 != null)
+                        {
+                            var fingerprint = feats2.Fingerprint;
+                            if (fingerprint != Fingerprint.System)
+                                Valid = false;
+
+                            if (Valid || AllowUnsignedFeatures)
+                                feats = feats2;
+                        }
                     }
                 }
             }
             catch { /* ignore */ }
             CacheTimestamp = DateTime.Now.Ticks;
-            return new FeatureList();
+            return feats ?? new FeatureList();
         }
 
         private static FeatureList Merge(FeatureList config, FeatureList cat)

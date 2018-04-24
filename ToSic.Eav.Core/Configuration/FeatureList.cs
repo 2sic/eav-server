@@ -15,4 +15,10 @@ namespace ToSic.Eav.Configuration
             Features = prefill?.ToList() ?? new List<Feature>();
         }
     }
+
+    public class FeatureListWithFingerprint : FeatureList
+    {
+        [JsonProperty("fingerprint")]
+        public string Fingerprint;
+    }
 }
