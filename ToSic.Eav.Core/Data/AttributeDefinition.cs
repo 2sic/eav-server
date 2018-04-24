@@ -75,9 +75,16 @@ namespace ToSic.Eav.Data
         #endregion
 
         #region InputType
-        public string InputType => _inputType ?? (_inputType = FindInputType());
-        private string _inputType;
 
+        public string InputType => FindInputType();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        /// <remarks>
+        /// It's important to NOT cache this result, because it can change during runtime, and then a cached info would be wrong. 
+        /// </remarks>
         private string FindInputType()
         {
             var inputType = Metadata.GetBestValue<string>("InputType", "@All");

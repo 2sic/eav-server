@@ -52,7 +52,7 @@ namespace ToSic.Eav.Configuration
 
         public Feature() { }
 
-        public Feature(Guid id, bool? ui, bool? isPublic, string niceName)
+        public Feature(Guid id, bool? ui, bool? isPublic)
         {
             Id = id;
             Ui = ui;

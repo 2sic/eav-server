@@ -8,6 +8,7 @@ namespace ToSic.Eav.Configuration
     {
         public static List<IEntity> List => _list ?? (_list = ConfigurationInRuntime());
         private static List<IEntity> _list;
+        public static void Reset() => _list = null;
 
 
         /// <summary>
@@ -44,5 +45,6 @@ namespace ToSic.Eav.Configuration
             }
             return list;
         }
+
     }
 }
