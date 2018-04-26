@@ -45,6 +45,13 @@ namespace ToSic.Eav.Configuration
 
         public static bool Enabled(IEnumerable<Guid> ids) => ids.All(Enabled);
 
+        public static bool EnabledOrException(IEnumerable<Guid> features, string message, out FeaturesDisabledException exception)
+        {
+            var enabled = Enabled(features);
+            exception = enabled ? null : new FeaturesDisabledException(message, features);
+            return enabled;
+        }
+
         public static string InfoLink 
             => _infoLink ?? (_infoLink = Factory.Resolve<ISystemConfiguration>().FeaturesHelpLink);
         private static string _infoLink;
@@ -150,6 +157,9 @@ namespace ToSic.Eav.Configuration
             new Feature(FeatureIds.PublicForms, true, false),
             new Feature(FeatureIds.PublicUpload, true, false),
             new Feature(FeatureIds.UseAdamInWebApi, false, false),
+
+            new Feature(FeatureIds.PermissionCheckUserId, true, false),
+            new Feature(FeatureIds.PermissionCheckGroups, true, false),
 
             // Beta features
             new Feature(FeatureIds.PasteImageClipboard, true, true),

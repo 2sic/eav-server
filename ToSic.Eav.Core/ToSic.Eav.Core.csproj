@@ -92,6 +92,7 @@
     <Compile Include="App\AppDataPackage_Metadata.cs" />
     <Compile Include="App\AppDataPackage_ContentTypes.cs" />
     <Compile Include="App\AppMetadataManager.cs" />
+    <Compile Include="Configuration\FeaturesDisabledException.cs" />
     <Compile Include="Data\CacheChainedIEnumerable.cs" />
     <Compile Include="App\AppRelationshipManager.cs" />
     <Compile Include="App\AppPackageLoadingSteps.cs" />

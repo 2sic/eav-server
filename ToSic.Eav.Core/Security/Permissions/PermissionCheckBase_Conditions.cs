@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using ToSic.Eav.Configuration;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Security.Permissions
@@ -64,10 +65,15 @@ namespace ToSic.Eav.Security.Permissions
         /// Verify if the permission referrs to this user
         /// </summary>
         private static bool ConditionUserIdentity(string identity, IUser user)
-            => identity == user.Guid.ToString();
+        {
+            if (!Features.Enabled(FeatureIds.PermissionCheckUserId)) return false;
+            return identity == user.Guid.ToString();
+        }
 
         private static bool ConditionUserGroup(string identity, IUser user)
         {
+            if (!Features.Enabled(FeatureIds.PermissionCheckGroups)) return false;
+
             if (string.IsNullOrWhiteSpace(identity)) return false;
 
             var groupIds = identity.Split(',').Select(g => g.Trim())
