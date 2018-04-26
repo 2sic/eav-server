@@ -149,6 +149,7 @@ namespace ToSic.Eav.Configuration
             // released features
             new Feature(FeatureIds.PublicForms, true, false),
             new Feature(FeatureIds.PublicUpload, true, false),
+            new Feature(FeatureIds.UseAdamInWebApi, false, false),
 
             // Beta features
             new Feature(FeatureIds.PasteImageClipboard, true, true),
