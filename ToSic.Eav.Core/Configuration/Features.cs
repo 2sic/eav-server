@@ -52,14 +52,17 @@ namespace ToSic.Eav.Configuration
             return enabled;
         }
 
-        public static string InfoLink 
-            => _infoLink ?? (_infoLink = Factory.Resolve<ISystemConfiguration>().FeaturesHelpLink);
-        private static string _infoLink;
+        private static string HelpLink => _helpLink ?? (_helpLink = Factory.Resolve<ISystemConfiguration>().FeaturesHelpLink);
+        private static string _helpLink;
+        private static string InfoLinkRoot => _infoLinkRoot ?? (_infoLinkRoot = Factory.Resolve<ISystemConfiguration>().FeatureInfoLinkRoot);
+        private static string _infoLinkRoot;
 
-        public static string MsgMissingSome(Guid id) 
-            => $"Feature {id} not enabled - see {InfoLink}";
+        //public static string MsgMissingSome(Guid id) 
+        //    => $"Feature {ToFeatInfoLink(id)} not enabled - see also {InfoLink}";
         public static string MsgMissingSome(IEnumerable<Guid> ids) 
-            => $"Features {string.Join(", ", ids.Where(i => !Enabled(i)).Select(i => i.ToString()))} not enabled - see {InfoLink}";
+            => $"Features {string.Join(", ", ids.Where(i => !Enabled(i)).Select(ToFeatInfoLink))} not enabled - see also {HelpLink}";
+
+        private static string ToFeatInfoLink(Guid id) => $"{InfoLinkRoot}{id}";
 
         /// <summary>
         /// Reset the features to force reloading of the features

@@ -12,5 +12,10 @@
         /// he/she needs to know more
         /// </summary>
         string FeaturesHelpLink { get; }
+
+        /// <summary>
+        /// The root link as a prefix to the details-info-link for a feature
+        /// </summary>
+        string FeatureInfoLinkRoot { get; }
     }
 }
