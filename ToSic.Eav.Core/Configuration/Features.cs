@@ -45,14 +45,24 @@ namespace ToSic.Eav.Configuration
 
         public static bool Enabled(IEnumerable<Guid> ids) => ids.All(Enabled);
 
-        public static string InfoLink 
-            => _infoLink ?? (_infoLink = Factory.Resolve<ISystemConfiguration>().FeaturesHelpLink);
-        private static string _infoLink;
+        public static bool EnabledOrException(IEnumerable<Guid> features, string message, out FeaturesDisabledException exception)
+        {
+            var enabled = Enabled(features);
+            exception = enabled ? null : new FeaturesDisabledException(message, features);
+            return enabled;
+        }
 
-        public static string MsgMissingSome(Guid id) 
-            => $"Feature {id} not enabled - see {InfoLink}";
+        private static string HelpLink => _helpLink ?? (_helpLink = Factory.Resolve<ISystemConfiguration>().FeaturesHelpLink);
+        private static string _helpLink;
+        private static string InfoLinkRoot => _infoLinkRoot ?? (_infoLinkRoot = Factory.Resolve<ISystemConfiguration>().FeatureInfoLinkRoot);
+        private static string _infoLinkRoot;
+
+        //public static string MsgMissingSome(Guid id) 
+        //    => $"Feature {ToFeatInfoLink(id)} not enabled - see also {InfoLink}";
         public static string MsgMissingSome(IEnumerable<Guid> ids) 
-            => $"Features {string.Join(", ", ids.Where(i => !Enabled(i)).Select(i => i.ToString()))} not enabled - see {InfoLink}";
+            => $"Features {string.Join(", ", ids.Where(i => !Enabled(i)).Select(ToFeatInfoLink))} not enabled - see also {HelpLink}";
+
+        private static string ToFeatInfoLink(Guid id) => $"{InfoLinkRoot}{id}";
 
         /// <summary>
         /// Reset the features to force reloading of the features
@@ -149,6 +159,10 @@ namespace ToSic.Eav.Configuration
             // released features
             new Feature(FeatureIds.PublicForms, true, false),
             new Feature(FeatureIds.PublicUpload, true, false),
+            new Feature(FeatureIds.UseAdamInWebApi, false, false),
+
+            new Feature(FeatureIds.PermissionCheckUserId, true, false),
+            new Feature(FeatureIds.PermissionCheckGroups, true, false),
 
             // Beta features
             new Feature(FeatureIds.PasteImageClipboard, true, true),

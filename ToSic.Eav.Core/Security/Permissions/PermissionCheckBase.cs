@@ -31,8 +31,7 @@ namespace ToSic.Eav.Security.Permissions
                 _permissionList = partsToConsider
                     .Where(permList => permList != null)
                     .Aggregate(_permissionList = new List<IEntity>(), (current, permList)
-                        => current.Concat(permList/*.Where(md
-                            => md.Type.StaticName == Constants.PermissionTypeName)*/))
+                        => current.Concat(permList))
                     .ToList();
                 
                 return _permissionList;
@@ -58,11 +57,9 @@ namespace ToSic.Eav.Security.Permissions
             Log parentLog,
             IContentType targetType = null, // optional type to check
             IEntity targetItem = null,      // optional entity to check
-            //IMetadataOfItem meta1 = null, // optional additional metadata, like of an app
-            //IMetadataOfItem meta2 = null,
             IEnumerable<IEntity> permissions1 = null,
             IEnumerable<IEntity> permissions2 = null
-            )  // optional additional metadata, like of a zone
+            ) 
             : base("App.PermCk", parentLog, $"init for type:{targetType?.StaticName}, " +
                                             $"itm:{targetItem?.EntityGuid} ({targetItem?.EntityId}), " +
                                             $"meta1: {permissions1?.Count()}, " +
@@ -74,12 +71,6 @@ namespace ToSic.Eav.Security.Permissions
             _additionalMetadata = permissions1 ?? new List<IEntity>();
             if (permissions2 != null)
                 _additionalMetadata = _additionalMetadata.Concat(permissions2);
-
-            //if (meta1 != null)
-            //    _additionalMetadata = _additionalMetadata.Concat(meta1);
-
-            //if (meta2 != null)
-            //    _additionalMetadata = _additionalMetadata.Concat(meta2);
 
             GrantedBecause = ConditionType.Undefined;
 
