@@ -100,9 +100,12 @@ namespace ToSic.Eav.ImportExport.Xml
 						break;
 					}
 
-					// Take first value if there is only one value wihtout a dimension (default / fallback value), but only in primary language
-					if (sourceValue == null && xmlValuesOfAttrib.Count == 1 && !xmlValuesOfAttrib.Elements(XmlConstants.ValueDimNode).Any() && envLang.Matches(_envDefLang))
-						sourceValue = xmlValuesOfAttrib.First();
+					// Take first value if there is only one value wihtout a dimension (default / fallback value), 
+					if (sourceValue == null && xmlValuesOfAttrib.Count == 1 &&
+                        // if there is no dimension node, or all dimension nodes contain undefined language
+                        (!xmlValuesOfAttrib.Elements(XmlConstants.ValueDimNode).Any() || xmlValuesOfAttrib.Elements(XmlConstants.ValueDimNode).All(x => x.Attribute(XmlConstants.DimId).Value == "0"))
+                        && envLang.Matches(_envDefLang)) // but only in primary language
+                        sourceValue = xmlValuesOfAttrib.First();
 
 					// Process found value
 					if (sourceValue != null)
