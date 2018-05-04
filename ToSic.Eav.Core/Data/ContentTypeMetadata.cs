@@ -22,10 +22,6 @@ namespace ToSic.Eav.Data
         public IEntity Description => this
             .FirstOrDefault(md => md.Type.StaticName == Constants.ContentTypeTypeName);
 
-        public IEnumerable<IEntity> Permissions => this
-            .Where(md => md.Type.StaticName == Constants.PermissionTypeName);
-
-
         protected override void LoadFromProvider()
         {
             // get the string based metadata
@@ -38,7 +34,7 @@ namespace ToSic.Eav.Data
             var additional = GetMetadataProvider()?.GetMetadata(Constants.MetadataForEntity, ctGuid)
                                  .ToList()
                              ?? new List<IEntity>();
-            Entities = Entities.Concat(additional).ToList();
+            Use(AllEntities.Concat(additional).ToList());
         }
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
 
@@ -60,15 +61,39 @@ namespace ToSic.Eav.Data
         public IAttribute CreateAttribute() => CreateTypedAttribute(Name, Type);
 
 
-        #region material for defining/creating attributes / defining them for import
+        #region Metadata and Permissions
         public IMetadataOfItem Metadata
             => _metadata ?? (_metadata = !_isShared
                    ? new MetadataOf<int>(Constants.MetadataForAttribute, AttributeId, _metaOfThisApp)
                    : new MetadataOf<int>(Constants.MetadataForAttribute, AttributeId, 0, _parentAppId)
                );
+
         private IMetadataOfItem _metadata;
-        
+
+        public IEnumerable<IEntity> Permissions => Metadata.Permissions;
+
         #endregion
 
+        #region InputType
+
+        public string InputType => FindInputType();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        /// <remarks>
+        /// It's important to NOT cache this result, because it can change during runtime, and then a cached info would be wrong. 
+        /// </remarks>
+        private string FindInputType()
+        {
+            var inputType = Metadata.GetBestValue<string>("InputType", "@All");
+
+            return string.IsNullOrEmpty(inputType) 
+                ? "unknown" // unknown will let the UI fallback on other mechanisms
+                : inputType;
+        }
+
+        #endregion InputType
     }
 }

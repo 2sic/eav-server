@@ -156,8 +156,8 @@ namespace ToSic.Eav
         #region Special Field Types
 
         public const string DataTypeEntity = "Entity"; // todo: update all references with this as a constant
-        public const string Hyperlink = "Hyperlink"; // todo: rename to DataType
-
+        public const string DataTypeHyperlink = "Hyperlink"; // todo: rename to DataType
+        public const string DataTypeString = "String";
         #endregion
 
 

@@ -8,10 +8,6 @@ namespace ToSic.Eav.App
 	/// </summary>
 	public partial class AppDataPackage : IDeferredEntitiesList
     {
-        //public AppDataPackageDeferredList BetaDeferred { get; }
-
-
-        //public IEnumerable<IEntity> Entities => List;
 
         IMetadataProvider IDeferredEntitiesList.Metadata => Metadata;
     }

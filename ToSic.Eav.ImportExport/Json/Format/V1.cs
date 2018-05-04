@@ -5,9 +5,9 @@ using Newtonsoft.Json;
 namespace ToSic.Eav.ImportExport.Json.Format
 {
 
-    internal class JsonHeader { public int V = 1; }
+    public class JsonHeader { public int V = 1; }
 
-    internal class JsonMetadataFor
+    public class JsonMetadataFor
     {
         public string Target;
 
@@ -16,16 +16,16 @@ namespace ToSic.Eav.ImportExport.Json.Format
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public int? Number;
     }
 
-    internal class JsonType { public string Name, Id; }
+    public class JsonType { public string Name, Id; }
 
-    internal class JsonFormat
+    public class JsonFormat
     {
         public JsonHeader _ = new JsonHeader();
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public JsonEntity Entity;
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public JsonContentType ContentType;
     }
 
-    internal class JsonEntity
+    public class JsonEntity
     {
         public int Id;
         public int Version;
@@ -38,7 +38,7 @@ namespace ToSic.Eav.ImportExport.Json.Format
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public List<JsonEntity> Metadata;
     }
 
-    internal class JsonAttributes
+    public class JsonAttributes
     {
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public Dictionary<string, Dictionary<string, string>> String;
 
@@ -55,7 +55,7 @@ namespace ToSic.Eav.ImportExport.Json.Format
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public Dictionary<string, Dictionary<string, bool?>> Boolean;
     }
 
-    internal class JsonContentType
+    public class JsonContentType
     {
         public string Id;
         public string Name;
@@ -66,7 +66,7 @@ namespace ToSic.Eav.ImportExport.Json.Format
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public List<JsonEntity> Metadata;
     }
 
-    internal class JsonContentTypeShareable
+    public class JsonContentTypeShareable
     {
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)] public bool AlwaysShare;
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)] public int ParentZoneId;
@@ -75,7 +75,7 @@ namespace ToSic.Eav.ImportExport.Json.Format
             NullValueHandling = NullValueHandling.Ignore)] public int? ParentId;
     }
 
-    internal class JsonAttributeDefinition
+    public class JsonAttributeDefinition
     {
         public string Name;
         public string Type;

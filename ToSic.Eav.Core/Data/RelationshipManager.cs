@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.App;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data
@@ -15,12 +16,14 @@ namespace ToSic.Eav.Data
 		/// <summary>
 		/// Initializes a new instance of the RelationshipManager class.
 		/// </summary>
-		/// <param name="entity"></param>
-		/// <param name="allRelationships"></param>
-		public RelationshipManager(IEntityLight entity, IEnumerable<EntityRelationshipItem> allRelationships)
-		{
+		public RelationshipManager(IEntityLight entity, AppDataPackage app, IEnumerable<EntityRelationshipItem> allRelationships)
+        {
 			_entity = entity;
-            AllRelationships = allRelationships ?? new List<EntityRelationshipItem>();
+		    if (app != null)
+		        AllRelationships = new CacheChainedIEnumerable<EntityRelationshipItem>(app,
+		            () => app.Relationships.ToList());
+		    else
+		        AllRelationships = allRelationships ?? new List<EntityRelationshipItem>();
 		}
 
 		/// <inheritdoc />

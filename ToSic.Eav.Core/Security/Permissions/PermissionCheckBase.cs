@@ -23,16 +23,15 @@ namespace ToSic.Eav.Security.Permissions
 
                 var partsToConsider = new[]
                 {
-                    TargetItem?.Metadata,
-                    TargetType?.Metadata,
+                    TargetItem?.Metadata.Permissions,
+                    TargetType?.Metadata.Permissions,
                     _additionalMetadata
                 };
                 // bundle all permission metadata items
                 _permissionList = partsToConsider
-                    .Where(mdList => mdList != null)
-                    .Aggregate(_permissionList = new List<IEntity>(), (current, mdList)
-                        => current.Concat(mdList.Where(md
-                            => md.Type.StaticName == Constants.PermissionTypeName)))
+                    .Where(permList => permList != null)
+                    .Aggregate(_permissionList = new List<IEntity>(), (current, permList)
+                        => current.Concat(permList))
                     .ToList();
                 
                 return _permissionList;
@@ -58,19 +57,20 @@ namespace ToSic.Eav.Security.Permissions
             Log parentLog,
             IContentType targetType = null, // optional type to check
             IEntity targetItem = null,      // optional entity to check
-            IMetadataOfItem meta1 = null, // optional additional metadata, like of an app
-            IMetadataOfItem meta2 = null)  // optional additional metadata, like of a zone
+            IEnumerable<IEntity> permissions1 = null,
+            IEnumerable<IEntity> permissions2 = null
+            ) 
             : base("App.PermCk", parentLog, $"init for type:{targetType?.StaticName}, " +
                                             $"itm:{targetItem?.EntityGuid} ({targetItem?.EntityId}), " +
-                                            $"meta1: {meta1?.Count()}, " +
-                                            $"meta2: {meta2?.Count()}")
+                                            $"meta1: {permissions1?.Count()}, " +
+                                            $"meta2: {permissions2?.Count()}")
         {
             TargetType = targetType;
             TargetItem = targetItem;
 
-            _additionalMetadata = meta1 ?? meta2;
-            if (meta1 != null && meta2 != null)
-                _additionalMetadata = meta1.Concat(meta2);
+            _additionalMetadata = permissions1 ?? new List<IEntity>();
+            if (permissions2 != null)
+                _additionalMetadata = _additionalMetadata.Concat(permissions2);
 
             GrantedBecause = ConditionType.Undefined;
 

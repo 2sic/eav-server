@@ -27,11 +27,8 @@ namespace ToSic.Eav.Data.Builder
             e.MetadataFor = metadataFor;
             e.Attributes = new Dictionary<string, IAttribute>(StringComparer.OrdinalIgnoreCase);
 
-            IEnumerable<EntityRelationshipItem> allRelationships = source?.Relationships;
-            //2018-01-18 moved to RelationshipManager
-            //if (allRelationships == null)
-            //    allRelationships = new List<EntityRelationshipItem>();
-            e.Relationships = new RelationshipManager(e, allRelationships);
+            //IEnumerable<EntityRelationshipItem> allRelationships = source?.Relationships;
+            e.Relationships = new RelationshipManager(e, source, null/*allRelationships*/);
 
             e.DeferredLookupData = source;
 
@@ -65,7 +62,7 @@ namespace ToSic.Eav.Data.Builder
                 entity.IsPublished, entity.Modified, entity.Owner, entity.Version);
             e.TitleFieldName = entity.Title?.Name;
             e.Attributes = attributes;
-            e.Relationships = new RelationshipManager(e, allRelationships);
+            e.Relationships = new RelationshipManager(e, null, allRelationships);
 
             e.MetadataFor = new MetadataFor(entity.MetadataFor);
 

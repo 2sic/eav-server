@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Interfaces
 {
-    public interface IDeferredEntitiesList
+    public interface IDeferredEntitiesList: ICacheExpiring
     {
         IEnumerable<IEntity> List { get; }  
 

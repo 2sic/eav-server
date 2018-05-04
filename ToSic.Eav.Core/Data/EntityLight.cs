@@ -83,7 +83,7 @@ namespace ToSic.Eav.Data
             MetadataFor = new MetadataFor();
             if (modified.HasValue)
                 Modified = modified.Value;
-            Relationships = new RelationshipManager(this, null);
+            Relationships = new RelationshipManager(this, null, null);
         }
 
 
@@ -127,6 +127,34 @@ namespace ToSic.Eav.Data
             return result;
         }
 
+        public TVal GetBestValue<TVal>(string name, bool resolveHyperlinks = false) 
+            => ChangeTypeOrDefault<TVal>(GetBestValue(name, resolveHyperlinks));
+
+        /// <summary>
+        /// Will try to convert an object to a type, or if not valid
+        /// return the default (null, zero, etc.) of a type
+        /// </summary>
+        /// <typeparam name="TVal"></typeparam>
+        /// <param name="found"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// also used by Entity.cs, because that uses it's own GetBestValue(...)
+        /// </remarks>
+        protected static TVal ChangeTypeOrDefault<TVal>(object found)
+        {
+            if (found == null)
+                return default(TVal);
+
+            try
+            {
+                return (TVal) Convert.ChangeType(found, typeof(TVal));
+            }
+            catch
+            {
+                return default(TVal);
+            }
+        }
+
         /// <summary>
         /// Get internal properties by string-name like "EntityTitle", etc.
         /// Resolves: EntityId, EntityGuid, EntityType, EntityModified
@@ -155,7 +183,7 @@ namespace ToSic.Eav.Data
         {
             // ReSharper disable once CanBeReplacedWithTryCastAndCheckForNull
             return result is string
-                ? Factory.Resolve<IEavValueConverter>().Convert(ConversionScenario.GetFriendlyValue, Constants.Hyperlink, (string)result)
+                ? Factory.Resolve<IEavValueConverter>().Convert(ConversionScenario.GetFriendlyValue, Constants.DataTypeHyperlink, (string)result)
                 : result;
         }
 

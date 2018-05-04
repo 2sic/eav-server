@@ -159,11 +159,16 @@ namespace ToSic.Eav.Data
                     return GetInternalPropertyByName(attributeName);
             }
 
-            if (resolveHyperlinks && attribute?.Type == Constants.Hyperlink)
+            if (resolveHyperlinks && attribute?.Type == Constants.DataTypeHyperlink)
                 result = TryToResolveLink(result);
 
             return result;
         }
+
+        public new TVal GetBestValue<TVal>(string name, bool resolveHyperlinks = false)
+            => ChangeTypeOrDefault<TVal>(GetBestValue(name, resolveHyperlinks));
+
+
 
         /// <inheritdoc />
         public new string GetBestTitle() => GetBestTitle(null, 0);
@@ -199,24 +204,14 @@ namespace ToSic.Eav.Data
 
 
 
-        #region Metadata
+        #region Metadata & Permissions
 
-        public IMetadataOfItem Metadata
-        {
-            get
-            {
-                if(_metadata == null)
-                {
-                    _metadata = new MetadataOf<Guid>(Constants.MetadataForEntity, EntityGuid, DeferredLookupData);
-                    //if (DeferredLookupData == null) _metadata.Use(new List<IEntity>());
-                }
-                return _metadata;
-            }
-        }
-
+        public IMetadataOfItem Metadata => _metadata ?? (_metadata =
+                                               new MetadataOf<Guid>(Constants.MetadataForEntity, EntityGuid, DeferredLookupData));
         private IMetadataOfItem _metadata;
         internal IDeferredEntitiesList DeferredLookupData = null;
 
+        public IEnumerable<IEntity> Permissions => Metadata.Permissions;
         #endregion
 
 

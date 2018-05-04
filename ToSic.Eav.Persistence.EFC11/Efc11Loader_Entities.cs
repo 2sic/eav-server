@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
@@ -13,13 +12,16 @@ namespace ToSic.Eav.Persistence.Efc
     public partial class Efc11Loader
     {
 
-        private int[] GetEntityIdOfPartnerEntities(int[] entityIds)
+        private int[] GetEntityIdOfPartnerEntities(int[] repositoryIds)
         {
-            entityIds = entityIds.Union(from e in _dbContext.ToSicEavEntities
-                where e.PublishedEntityId.HasValue && !e.IsPublished && entityIds.Contains(e.EntityId) &&
-                      !entityIds.Contains(e.PublishedEntityId.Value) && e.ChangeLogDeleted == null
-                select e.PublishedEntityId.Value).ToArray();
-            return entityIds;
+            var relatedIds = from e in _dbContext.ToSicEavEntities
+                where e.PublishedEntityId.HasValue && !e.IsPublished && repositoryIds.Contains(e.EntityId) &&
+                      !repositoryIds.Contains(e.PublishedEntityId.Value) && e.ChangeLogDeleted == null
+                select e.PublishedEntityId.Value;
+
+            var combined = repositoryIds.Union(relatedIds).ToArray();
+
+            return combined;
         }
 
         private void LoadEntities(AppDataPackage app, int[] entityIds = null)
@@ -58,9 +60,6 @@ namespace ToSic.Eav.Persistence.Efc
                             (
                                 // filter by EntityIds (if set)
                                 !filterByEntityIds || entityIds.Contains(e.EntityId)
-                            // also load drafts
-                            // 2018-01-22 disabled, as it's already included in the id-list
-                            //|| e.PublishedEntityId.HasValue && entityIds.Contains(e.PublishedEntityId.Value)
                             ))
                 .OrderBy(e => e.EntityId) // order to ensure drafts are processed after draft-parents
                 .Select(e => new
@@ -178,15 +177,8 @@ namespace ToSic.Eav.Persistence.Efc
                     if (attributes.ContainsKey(e.EntityId))
                         foreach (var a in attributes[e.EntityId])
                         {
-                            IAttribute attrib;
-                            try
-                            {
-                                attrib = newEntity.Attributes[a.Name];
-                            }
-                            catch (KeyNotFoundException)
-                            {
+                            if (!newEntity.Attributes.TryGetValue(a.Name, out var attrib))
                                 continue;
-                            }
 
                             attrib.Values = a.Values
                                 .Select(v => ValueBuilder.Build(attrib.Type, v.Value, v.Languages))

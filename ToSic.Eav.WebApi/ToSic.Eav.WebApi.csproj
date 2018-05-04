@@ -87,6 +87,8 @@
     <Compile Include="ContentExportController.cs" />
     <Compile Include="ContentImportController.cs" />
     <Compile Include="ContentTypeController.cs" />
+    <Compile Include="EntityApi.cs" />
+    <Compile Include="Formats\EntityForPicker.cs" />
     <Compile Include="Formats\EntityImport.cs" />
     <Compile Include="Formats\ContentImportArgs.cs" />
     <Compile Include="Formats\ContentImportResult.cs" />
@@ -97,6 +99,7 @@
     <Compile Include="Formats\ItemIdentifiers.cs" />
     <Compile Include="Formats\QueryDefinitionInfo.cs" />
     <Compile Include="Helpers\Download.cs" />
+    <Compile Include="SystemController.cs" />
     <Compile Include="QueryController.cs">
       <SubType>Code</SubType>
     </Compile>

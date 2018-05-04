@@ -64,6 +64,8 @@ namespace ToSic.Eav.Interfaces
 		/// </returns>
 		object GetBestValue(string attributeName, bool resolveHyperlinks = false);
 
+	    TVal GetBestValue<TVal>(string name, bool resolveHyperlinks = false);
+
         /// <summary>
         /// Best way to get the current entities title
         /// </summary>

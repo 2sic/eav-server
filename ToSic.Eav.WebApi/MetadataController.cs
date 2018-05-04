@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using ToSic.Eav.Apps;
+using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.WebApi
@@ -11,11 +13,8 @@ namespace ToSic.Eav.WebApi
 	/// </summary>
 	public class MetadataController : Eav3WebApiBase
     {
-        public MetadataController(Log parentLog = null) : base(parentLog)
-        {
-            Log.Rename("MetaDC");
-        }
-
+        public MetadataController(Log parentLog = null) : base(parentLog, "Api.MetaCn")
+        {}
 
         /// <summary>
         /// Get Entities with specified AssignmentObjectTypeId and Key
@@ -25,16 +24,29 @@ namespace ToSic.Eav.WebApi
             if (appId.HasValue)
                 AppId = appId.Value;
 
-            IEnumerable<Interfaces.IEntity> entityList;
-            if (keyType == "guid")
+            IEnumerable<IEntity> entityList = null;
+
+            var appRun = new AppRuntime(AppId, Log);
+
+            switch (keyType)
             {
-                var guidkey = Guid.Parse(key);
-                entityList = MetaDs.GetMetadata(assignmentObjectTypeId, guidkey, contentType);                
+                case "guid":
+                    if(Guid.TryParse(key, out var guidKey))
+                        entityList = appRun.Package.GetMetadata(assignmentObjectTypeId, guidKey, contentType);
+                    break;
+                case "string":
+                    entityList = appRun.Package.GetMetadata(assignmentObjectTypeId, key, contentType);
+                    break;
+                case "number":
+                    if(int.TryParse(key, out var keyInt))
+                        entityList = appRun.Package.GetMetadata(assignmentObjectTypeId, keyInt, contentType);
+                    break;
+                default:
+                    throw new Exception("keytype unknown:" + keyType);
             }
-            else if (keyType == "string")
-                entityList = MetaDs.GetMetadata(assignmentObjectTypeId, key, contentType);
-            else
-                throw new Exception("keytype unknown:" + keyType);
+
+            if(entityList == null)
+                throw new Exception($"was not able to convert '{key}' to keytype {keyType}, must cancel");
 
             return Serializer.Prepare(entityList);
         }

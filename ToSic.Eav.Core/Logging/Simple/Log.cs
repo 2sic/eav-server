@@ -101,9 +101,16 @@ namespace ToSic.Eav.Logging.Simple
 
         /// <summary>
         /// Link this logger to a parent
+        /// and optionally rename
         /// </summary>
-        /// <param name="parent"></param>
-        public void LinkTo(Log parent) => _parent = parent ?? _parent; // if new parent isn't defined, don't replace
+        /// <param name="parent">parent log to attach to</param>
+        /// <param name="name">optional new name</param>
+        public void LinkTo(Log parent, string name = null)
+        {
+            _parent = parent ?? _parent;
+            if (name != null)
+                Rename(name);
+        }
 
         public string Dump(string separator = " - ", string start = "", string end = "")
         {

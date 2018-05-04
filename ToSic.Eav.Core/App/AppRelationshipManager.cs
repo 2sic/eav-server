@@ -5,10 +5,12 @@ using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.App
 {
-    public class AppRelationshipManager: AppDependentIEnumerable<EntityRelationshipItem>
+    public class AppRelationshipManager: CacheChainedIEnumerable<EntityRelationshipItem>
     {
-        public AppRelationshipManager(AppDataPackage app) : base(app, () => Rebuild(app))
+        AppDataPackage App;
+        public AppRelationshipManager(AppDataPackage upstream) : base(upstream, () => Rebuild(upstream))
         {
+            App = upstream;
         }
 
 
@@ -40,18 +42,11 @@ namespace ToSic.Eav.App
 
         public static void Add(AppDataPackage appDataPackage, List<EntityRelationshipItem> list, int parent, int? child)
         {
-            //try
-            //{
             var lookup = appDataPackage.Index;
             if (lookup.ContainsKey(parent) &&
                 (!child.HasValue || lookup.ContainsKey(child.Value)))
                 list.Add(new EntityRelationshipItem(lookup[parent],
                     child.HasValue ? lookup[child.Value] : null));
-            //}
-            //catch (KeyNotFoundException)
-            //{
-            //    /* ignore */
-            //}
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Apps.Assets
 {
-    public class Folder
+    public class Folder : IFolder
     {
         /// <summary>
         /// An Id - only relevant if the environment uses Ids
@@ -11,10 +11,10 @@ namespace ToSic.Eav.Apps.Assets
 
         public bool HasChildren { get; set; }
 
-        public DateTime CreatedOnDate { get; set; }
-        public DateTime LastUpdated { get; set; }
+        public DateTime Created { get; set; }
+        public DateTime Modified { get; set; }
 
-        public string FolderPath { get; set; }
+        public string Path { get; set; }
         public string Name { get; set; }
 
 

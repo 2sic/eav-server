@@ -19,7 +19,7 @@ namespace ToSic.Eav.ImportExport.Json
             Entity = ToJson(entity, metadataDepth)
         }, JsonSerializerSettings());
 
-        private static JsonEntity ToJson(IEntity entity, int metadataDepth = 0)
+        public static JsonEntity ToJson(IEntity entity, int metadataDepth = 0)
         {
             JsonMetadataFor mddic = null;
             if (entity.MetadataFor.IsMetadata)

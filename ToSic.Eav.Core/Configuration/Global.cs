@@ -8,9 +8,14 @@ namespace ToSic.Eav.Configuration
     {
         public static List<IEntity> List => _list ?? (_list = ConfigurationInRuntime());
         private static List<IEntity> _list;
+        public static void Reset() => _list = null;
 
 
-
+        /// <summary>
+        /// Get the configuration for a specific type, or return null if no configuration found
+        /// </summary>
+        /// <param name="typeName"></param>
+        /// <returns></returns>
         public static IEntity For(string typeName) =>
             List.FirstOrDefault(e => e.Type.StaticName == typeName || e.Type.Name == typeName);
 
@@ -19,9 +24,7 @@ namespace ToSic.Eav.Configuration
         public static string GetOverride(string typeName, string key, string fallback)
         {
             var found = Value(typeName, key);
-            if(found == null)
-                return fallback;
-            return found.ToString();
+            return found?.ToString() ?? fallback;
         }
 
         /// <summary>
@@ -42,5 +45,6 @@ namespace ToSic.Eav.Configuration
             }
             return list;
         }
+
     }
 }

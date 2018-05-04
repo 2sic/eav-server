@@ -22,32 +22,47 @@ namespace ToSic.Eav.App
         /// </summary>
         public int AppId { get; }
 
-        /// <summary>
-        /// The simple list of entities, used in many query parts
-        /// </summary>
-        public IEnumerable<IEntity> List { get; }
+	    /// <summary>
+	    /// The simple list of entities, used in many query parts
+	    /// </summary>
+	    public IEnumerable<IEntity> List => _list 
+            ?? (_list = new CacheChainedIEnumerable<IEntity>(this, () => Index.Values.ToList()));
+	    private CacheChainedIEnumerable<IEntity> _list;
 
         internal Dictionary<int, IEntity> Index { get; }
 
-		/// <summary>
-		/// Get all Published Entities in this App (excluding Drafts)
-		/// </summary>
-        public IEnumerable<IEntity> PublishedEntities => new AppDependentIEnumerable<IEntity>(this, 
-            () => List.Where(e => e.IsPublished).ToList());
+	    /// <summary>
+	    /// Get all Published Entities in this App (excluding Drafts)
+	    /// </summary>
+	    public IEnumerable<IEntity> ListPublished
+	        => _listPublished ?? (_listPublished = new CacheChainedIEnumerable<IEntity>(this,
+	               () => List.Where(e => e.IsPublished).ToList()));
+	    private IEnumerable<IEntity> _listPublished;
 
-        /// <summary>
-        /// Get all Entities not having a Draft (Entities that are Published (not having a draft) or draft itself)
-        /// </summary>
-        public IEnumerable<IEntity> DraftEntities => new AppDependentIEnumerable<IEntity>(this, 
-            () => List.Where(e => e.GetDraft() == null).ToList());
+	    /// <summary>
+	    /// Get all Entities not having a Draft (Entities that are Published (not having a draft) or draft itself)
+	    /// </summary>
+	    public IEnumerable<IEntity> ListNotHavingDrafts
+	        => _listNotHavingDrafts ?? (_listNotHavingDrafts =
+	               new CacheChainedIEnumerable<IEntity>(this,
+	                   () => List.Where(e => e.GetDraft() == null).ToList()));
+	    private IEnumerable<IEntity> _listNotHavingDrafts;
+
+	    ///// <summary>
+	    ///// Get all Entities not having a Draft (Entities that are Published (not having a draft) or draft itself)
+	    ///// </summary>
+	    //public IEnumerable<IEntity> ListDraft
+	    //    => _listDraft ?? (_listDraft = new UpstreamDependentIEnumerable<IEntity>(this,
+	    //           () => List.Where(e => !e.IsPublished).ToList()));
+	    //private IEnumerable<IEntity> _listDraft;
 
         /// <summary>
         /// Get all Relationships between Entities
         /// </summary>
         public AppRelationshipManager Relationships { get; }
 
-	    private bool _firstLoadCompleted = false;
-	    public int DynamicUpdatesCount = 0;
+	    private bool _firstLoadCompleted;
+	    public int DynamicUpdatesCount;
 		#endregion
 
 
@@ -58,7 +73,7 @@ namespace ToSic.Eav.App
             CacheResetTimestamp();  // do this very early, as this number is needed elsewhere
 
 	        Index = new Dictionary<int, IEntity>();
-	        List = Index.Values;
+	        //List = Index.Values;
             Relationships = new AppRelationshipManager(this);
 
         }

@@ -11,6 +11,11 @@ namespace ToSic.Eav.Persistence.Xml
 {
     public class XmlSerializer: SerializerBase
     {
+        private Dictionary<string, int> _dimensions;
+        public XmlSerializer(Dictionary<string, int> dimensionMapping)
+        {
+            _dimensions = dimensionMapping;
+        }
 
         public Dictionary<int, XElement> ToXml(List<int> entityIds) => entityIds.ToDictionary(e => e, ToXml);
         public Dictionary<int, XElement> ToXml(List<IEntity> entities) => entities.ToDictionary(e => e.EntityId, ToXml);
@@ -66,7 +71,8 @@ namespace ToSic.Eav.Persistence.Xml
                 ((Value) value).Languages
                 .OrderBy(l => l.Key)
                 .Select(p => new XElement(XmlConstants.ValueDimNode,
-                    new XAttribute(XmlConstants.DimId, p.DimensionId),
+                    // because JSON-Entities do not contain valid dimension ids, lookup id
+                    new XAttribute(XmlConstants.DimId, p.DimensionId == 0 ? (_dimensions.ContainsKey(p.Key.ToLower()) ? _dimensions[p.Key] : 0) : p.DimensionId),
                     new XAttribute(XmlConstants.ValueDimRoAttr, p.ReadOnly)
                 ))
             );

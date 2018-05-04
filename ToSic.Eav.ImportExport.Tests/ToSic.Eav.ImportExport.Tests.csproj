@@ -77,6 +77,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FeatureTests\Features_Tests.cs" />
     <Compile Include="InitializeTests.cs" />
     <Compile Include="Json\JsonCtDeSerialization.cs" />
     <Compile Include="Json\JsonReSerialization.cs" />
@@ -97,6 +98,7 @@
   <ItemGroup>
     <None Include="app.config" />
     <Content Include="Json\ContentTypes\System.Config ToSic.Eav.DataSources.SqlDataSource.json" />
+    <None Include="Json\configuration\094941f2-688e-4df1-89c9-51a51c8bbb2e.testing.json" />
     <None Include="packages.config" />
     <None Include="Persistence.File\.data\readme.md" />
   </ItemGroup>

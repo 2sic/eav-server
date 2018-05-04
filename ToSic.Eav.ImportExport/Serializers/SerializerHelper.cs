@@ -18,8 +18,6 @@ namespace ToSic.Eav.Serializers
 
         protected bool IncludeMetadata { get; private set; }
 
-        public bool IncludeAllEditingInfos { get; set; }
-
         protected bool ProvideIdentityTitle { get; private set; }
 
         /// <summary>

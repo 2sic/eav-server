@@ -18,6 +18,7 @@ namespace ToSic.Eav.DataSources
 
 		private IDictionary<string, IDataStream> _out = new Dictionary<string, IDataStream>();
 		private bool _requiresRebuildOfOut = true;
+        private bool _showDrafts;
 
         /// <summary>
         /// Ensures that the Out doesn't need assembling till accessed, and then auto-assembles it all
@@ -38,12 +39,13 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// Constructs a new App DataSource
 		/// </summary>
-		public DeferredQuery(int zoneId, int appId, IEntity queryDef, IValueCollectionProvider config)
+		public DeferredQuery(int zoneId, int appId, IEntity queryDef, IValueCollectionProvider config, bool showDrafts)
 		{
 		    ZoneId = zoneId;
 		    AppId = appId;
 		    QueryDefinition = queryDef;
 		    ConfigurationProvider = config;
+            _showDrafts = showDrafts;
 
 		    // this one is unusual, so don't pre-attach a default data stream
 		    //Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntities));
@@ -54,7 +56,7 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		private void CreateOutWithAllStreams()
 		{
-		    var pipeln = new QueryFactory(Log).GetDataSource(AppId, QueryDefinition, ConfigurationProvider as ValueCollectionProvider);
+		    var pipeln = new QueryFactory(Log).GetDataSource(AppId, QueryDefinition, ConfigurationProvider as ValueCollectionProvider, null, _showDrafts);
 		    _out = pipeln.Out;
 		}
 	}

@@ -11,7 +11,7 @@ namespace ToSic.Eav.Data
     /// <summary>
     /// Represents Relationships to Child Entities
     /// </summary>
-    public class EntityRelationship : IEnumerable<IEntity>
+    public class EntityRelationship : IEnumerable<IEntity>, ICacheDependent
     {
         /// <summary>
         /// Blank value, just for marking the list as empty
@@ -34,7 +34,7 @@ namespace ToSic.Eav.Data
 
         private List<int?> _entityIds;
 
-        internal List<Guid?> Guids { get; } = null;
+        internal List<Guid?> Guids { get; }
 
         /// <summary>
         /// Lookup the guids of all relationships
@@ -108,7 +108,7 @@ namespace ToSic.Eav.Data
         public IEnumerator<IEntity> GetEnumerator()
         {
             // If necessary, initialize first. Note that it will only add Ids which really exist in the source (the source should be the cache)
-            if (_entities == null)
+            if (_entities == null || CacheChanged())
                 _entities = LoadEntities();
 
             return new EntityEnumerator(_entities);
@@ -117,7 +117,7 @@ namespace ToSic.Eav.Data
 
         private List<IEntity> LoadEntities()
         {
-            return _lookupList == null
+            var result = _lookupList == null
                 ? new List<IEntity>()
                 : (_useGuid
                     ? Guids.Select(l => !l.HasValue
@@ -128,7 +128,13 @@ namespace ToSic.Eav.Data
                         ? _lookupList.List.FindRepoId(l.Value)
                         // special: in some cases, the entity cannot be found because it has been deleted or something
                         : null)).ToList();
+
+            CacheTimestamp = _lookupList?.CacheTimestamp ?? 0;
+            return result;
         }
 
+        public long CacheTimestamp { get; private set; }
+
+        public bool CacheChanged() => _lookupList?.CacheChanged(CacheTimestamp) ?? false;
     }
 }

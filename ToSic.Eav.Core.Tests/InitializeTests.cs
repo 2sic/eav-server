@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Microsoft.Extensions.DependencyInjection.Extensions;
+﻿using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Core.Tests.Mocks;
 using ToSic.Eav.Implementations.Runtime;
@@ -24,6 +23,7 @@ namespace ToSic.Eav.Core.Tests
                 //Trace.WriteLine("di configuration core");
                 sc.TryAddTransient<IEavValueConverter, MockValueConverter>();
                 sc.TryAddTransient<IRuntime, NeutralRuntime>();
+                sc.TryAddTransient<IFingerprintProvider, FingerprintProvider>();
                 configure.Invoke(sc);   // call parent invoker if necessary (usually not relevant at core, as this is the top-level
             });
 

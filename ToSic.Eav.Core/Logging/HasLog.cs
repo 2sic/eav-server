@@ -1,11 +1,14 @@
-﻿using ToSic.Eav.Logging.Simple;
+﻿using System.Runtime.Serialization;
+using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Logging
 {
     public class HasLog : IHasLog
     {
+        [IgnoreDataMember]
         public string LogId { get; internal set; } = "unknwn";
 
+        [IgnoreDataMember]
         public Log Log { get; private set; }
 
 

@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Security.Permissions;
 
 namespace ToSic.Eav.Interfaces
 {
-    public interface IEntity: IEntityLight, IPublish<IEntity>
+    public interface IEntity: IEntityLight, IPublish<IEntity>, IHasPermissions
     {
         object GetBestValue(string attributeName, string[] languages, bool resolveHyperlinks = false);
 

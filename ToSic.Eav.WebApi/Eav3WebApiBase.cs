@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Web.Http;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Serializers;
@@ -21,7 +20,7 @@ namespace ToSic.Eav.WebApi
 
         #region Constructors
 
-        public Eav3WebApiBase(Log parentLog = null) => Log.LinkTo(parentLog);
+        public Eav3WebApiBase(Log parentLog, string name = null) => Log.LinkTo(parentLog, name);
 
         public Eav3WebApiBase(int appId, Log parentLog = null)
             : this(parentLog) 
@@ -31,9 +30,8 @@ namespace ToSic.Eav.WebApi
 
         #region Helpers
 
+        [Obsolete("use the new GetAppManager instead, because the fairly trivial set-app-id-then-get feels flaky...")]
         internal AppManager AppManager => new AppManager(AppId, Log);
-
-        internal IMetadataProvider MetaDs => DataSource.GetMetaDataSource(appId: AppId);
 
         private DbDataController _dbContext;
 	    internal DbDataController CurrentContext => _dbContext ?? (_dbContext = DbDataController.Instance(appId: AppId, parentLog: Log));
@@ -44,11 +42,9 @@ namespace ToSic.Eav.WebApi
 	    {
 	        get
 	        {
-	            if (_serializer == null)
-	            {
-	                _serializer = Factory.Resolve<Serializer>();
-	                _serializer.IncludeGuid = true;
-	            }
+	            if (_serializer != null) return _serializer;
+	            _serializer = Factory.Resolve<Serializer>();
+	            _serializer.IncludeGuid = true;
 	            return _serializer;
 	        }
 	    }

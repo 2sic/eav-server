@@ -148,7 +148,7 @@ namespace ToSic.Eav.WebApi
             var ser = new Serializer();
             return fields.Select(a =>
             {
-                var inputtype = FindInputType(a.Metadata);
+                var inputtype = a.InputType;
                 return new ContentTypeFieldInfo
                 {
                     Id = a.AttributeId,
@@ -158,20 +158,13 @@ namespace ToSic.Eav.WebApi
                     StaticName = a.Name,
                     IsTitle = a.IsTitle,
                     AttributeId = a.AttributeId,
-                    Metadata = a.Metadata.ToDictionary(e => e.Type.StaticName.TrimStart('@'), e => ser.Prepare(e)),
+                    Metadata = a.Metadata
+                        .ToDictionary(e => e.Type.StaticName.TrimStart('@'), e => ser.Prepare(e)),
                     InputTypeConfig = appInputTypes.FirstOrDefault(it => it.Type == inputtype),
                     I18nKey = type.I18nKey
                 };
             });
-
-
-	        string FindInputType(IEnumerable<IEntity> definitions)
-	        {
-	            var inputType = definitions.FirstOrDefault(d => d.Type.StaticName == "@All")
-                    ?.GetBestValue("InputType");
-
-	            return string.IsNullOrEmpty(inputType as string) ? "unknown" : inputType.ToString();
-	        }
+            
         }
 
 
