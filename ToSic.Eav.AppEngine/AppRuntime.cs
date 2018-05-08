@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.App;
-using ToSic.Eav.Apps.Interfaces;
+﻿using ToSic.Eav.Apps.Interfaces;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Logging.Simple;
@@ -21,6 +20,10 @@ namespace ToSic.Eav.Apps
 
         public EntityRuntime Entities => _entities ?? (_entities = new EntityRuntime(this, Log));
         private EntityRuntime _entities;
+
+        public MetadataRuntime Metadata => _metadata ?? (_metadata = new MetadataRuntime(this, Log));
+        private MetadataRuntime _metadata;
+
 
         public ContentTypeRuntime ContentTypes => _contentTypes ?? (_contentTypes = new ContentTypeRuntime(this, Log));
         private ContentTypeRuntime _contentTypes; 

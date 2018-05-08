@@ -251,7 +251,7 @@ namespace ToSic.Eav.DataSources.Pipeline
             var testParameters = ((IAttribute<string>) qdef.Header[FieldTestParams]).TypedContents;
             if (testParameters == null)
                 return null;
-            // todo: dangerous: seems like another token-replace mechanism! should probably use same token-replace everywhere
+            // extract the lines which look like [source:property]=value
             var paramMatches = Regex.Matches(testParameters, @"(?:\[(?<Token>\w+):(?<Property>\w+)\])=(?<Value>[^\r\n]*)");
 
             // Create a list of static Property Accessors

@@ -39,9 +39,6 @@ namespace ToSic.Eav.Security.Permissions
         public static List<Grants> ReadPublished = new List<Grants>
         {
             Approve,
-            DeleteDraft,
-            Grants.ReadDraft,
-            UpdateDraft,
             Delete,
             Develop,
             Full,
