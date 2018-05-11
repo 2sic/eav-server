@@ -3,18 +3,17 @@ using System.Linq;
 using ToSic.Eav.Apps.Interfaces;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.Interfaces;
-using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.ValueProvider;
 
 namespace ToSic.Eav.Apps
 {
-    public partial class App: HasLog, IApp
+    public partial class App: AppIdentity, IApp
     {
         protected const int AutoLookup = -1;
 
-        public int AppId { get; }
-        public int ZoneId { get; }
+        //public int AppId { get; }
+        //public int ZoneId { get; }
 
         public string Name { get; private set; }
         public string Folder { get; private set; }
@@ -34,14 +33,14 @@ namespace ToSic.Eav.Apps
 
 
         internal App(int zoneId, int appId, bool allowSideEffects, Log parentLog, string logMsg)
-            : base("App.2sxcAp", parentLog, $"prep App z#{zoneId}, a#{appId}, allowSE:{allowSideEffects}, {logMsg}")
+            : base(zoneId, appId, parentLog, "App.2sxcAp", $"prep App z#{zoneId}, a#{appId}, allowSE:{allowSideEffects}, {logMsg}")
         {
             // if zone is missing, try to find it; if still missing, throw error
             if (zoneId == AutoLookup) throw new Exception("Cannot find zone-id for portal specified");
 
-            // provide basic values
-            AppId = appId;
-            ZoneId = zoneId;
+            //// provide basic values
+            //AppId = appId;
+            //ZoneId = zoneId;
 
             // Look up name in cache
             var cache = (BaseCache) DataSource.GetCache(zoneId, appId);
@@ -84,7 +83,7 @@ namespace ToSic.Eav.Apps
 
             Name = AppMetadata?.GetBestValue("DisplayName")?.ToString() ?? "Error";
             Folder = AppMetadata?.GetBestValue("Folder")?.ToString() ?? "Error";
-            if (Boolean.TryParse(AppMetadata?.GetBestValue("Hidden")?.ToString(), out bool hidden))
+            if (bool.TryParse(AppMetadata?.GetBestValue("Hidden")?.ToString(), out var hidden))
                 Hidden = hidden;
 
             AppResources = mds.GetMetadata(appAssignmentId, AppId,

@@ -45,8 +45,6 @@ namespace ToSic.Eav.DataSources.System
 
 	    private IEnumerable<IEntity> GetList()
 	    {
-            //EnsureConfigurationIsLoaded();
-
             // Get cache, which manages a list of zones
 	        var cache = (BaseCache)DataSource.GetCache(ZoneId, AppId);
 
@@ -68,7 +66,7 @@ namespace ToSic.Eav.DataSources.System
                     {ZoneType.AppCount.ToString(), zone.Apps.Count }
 	            };
 
-	            return AsEntity(znData, ZoneType.Name.ToString(), ZoneContentTypeName, zone.ZoneId); // new Data.Entity(AppId, zone.ZoneId, ZoneContentTypeName, znData, ZoneType.Name.ToString());
+	            return AsEntity(znData, ZoneType.Name.ToString(), ZoneContentTypeName, zone.ZoneId);
 	        });
 
             return list;

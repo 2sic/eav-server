@@ -2,46 +2,30 @@
 using ToSic.Eav.Apps.Interfaces;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
-using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Apps.Parts
 {
-    public class AppBase: HasLog, IAppIdentity
+    /// <summary>
+    /// Root class for app runtime objects
+    /// </summary>
+    public abstract class AppBase: AppIdentity
     {
-        #region Constructor and simple properties
-        #region basic properties
-        /// <inheritdoc />
-        /// <summary>
-        /// The zone id of this app
-        /// </summary>
-        public int ZoneId { get; }
-
-        /// <inheritdoc />
-        /// <summary>
-        /// The app id
-        /// </summary>
-        public int AppId { get; }
-        #endregion
-
-
         /// <summary>
         /// Create an app manager for this specific app
         /// </summary>
         /// <param name="zoneId"></param>
         /// <param name="appId"></param>
         /// <param name="parentLog"></param>
-        public AppBase(int zoneId, int appId, Log parentLog) : base("App.Base", parentLog)
+        protected AppBase(int zoneId, int appId, Log parentLog) : base(zoneId, appId, parentLog, "App.Base")
         {
-            ZoneId = zoneId;
-            AppId = appId;
         }
 
-        public AppBase(IAppIdentity app, Log parentLog) : this(app.ZoneId, app.AppId, parentLog) { }
+        protected AppBase(IAppIdentity app, Log parentLog) : this(app.ZoneId, app.AppId, parentLog) { }
 
-        public AppBase(int appId, Log parentLog) : this(((BaseCache) DataSource.GetCache(null)).GetZoneAppId(appId: appId).Item1, appId, parentLog) { }
+        protected AppBase(int appId, Log parentLog) : this(((BaseCache) DataSource.GetCache(null)).GetZoneAppId(appId: appId).Item1, appId, parentLog) { }
 
-        internal AppBase(IDataSource data, Log parentLog) : this(data.ZoneId, data.AppId, parentLog)
+        protected AppBase(IDataSource data, Log parentLog) : this(data.ZoneId, data.AppId, parentLog)
         {
             _data = data;
         }
@@ -59,8 +43,6 @@ namespace ToSic.Eav.Apps.Parts
         /// </summary>
         public AppDataPackage Package => Cache.AppDataPackage;
 
-
-        #endregion
 
         #endregion
 
