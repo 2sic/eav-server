@@ -31,7 +31,8 @@ namespace ToSic.Eav
                 // to make sure the serviceprovider object is disposed correctly. If we don't do this,
                 // connections to the database are kept open, and this leads to errors like "SQL timeout:
                 // "All pooled connections were in use". https://github.com/2sic/2sxc/issues/1200
-                
+
+#if NETFULL
                 // Scope serviceprovider based on request
                 var httpContext = HttpContext.Current;
                 if (httpContext == null) return _sp.CreateScope().ServiceProvider;
@@ -49,14 +50,16 @@ namespace ToSic.Eav
 
                 return (IServiceProvider)httpContext.Items[ServiceProviderKey];
 
+#else
 	            // 2017-06-01 2dm attempt to use "child" scoped provider
 	            //return _sp.CreateScope().ServiceProvider;
 
                 // 2017-05-31 2rm Quick work-around for issue https://github.com/2sic/2sxc/issues/1200
-                // return ServiceCollection.BuildServiceProvider();
+                return ServiceCollection.BuildServiceProvider();
 
                 //if (_sp != null) return _sp;
                 //throw new Exception("service provider not built yet");
+#endif
             }
         }
 

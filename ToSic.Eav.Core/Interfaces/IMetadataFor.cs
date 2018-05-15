@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Web.Script.Serialization;
+//using System.Web.Script.Serialization;
 
 namespace ToSic.Eav.Interfaces
 {
@@ -8,7 +8,7 @@ namespace ToSic.Eav.Interfaces
 	/// </summary>
 	public interface IMetadataFor
 	{
-        [ScriptIgnore]
+        [Newtonsoft.Json.JsonIgnore]
         bool IsMetadata { get; }
 
         int TargetType { get; }

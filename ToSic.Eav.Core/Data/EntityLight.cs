@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web.Script.Serialization;
+//using System.Web.Script.Serialization;
 using ToSic.Eav.Implementations.ValueConverter;
 using ToSic.Eav.Interfaces;
 
@@ -21,7 +21,7 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         public object Title => TitleFieldName == null ? null : this[TitleFieldName];
 
-        [ScriptIgnore]
+        [Newtonsoft.Json.JsonIgnore]
         internal string TitleFieldName;
 
         /// <summary>
@@ -36,8 +36,8 @@ namespace ToSic.Eav.Data
 		public DateTime Modified { get; internal set; }
 
         /// <inheritdoc />
-		[ScriptIgnore]
-		public IRelationshipManager Relationships { get; internal set; }
+        [Newtonsoft.Json.JsonIgnore]
+        public IRelationshipManager Relationships { get; internal set; }
 
         public IMetadataFor MetadataFor { get; internal set; }
 
