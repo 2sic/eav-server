@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Web;
 using System.Xml.Linq;
+using System.Xml.XPath;
 //using ICSharpCode.SharpZipLib.Zip;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Zip;
@@ -37,8 +39,9 @@ namespace ToSic.Eav.Apps.ImportExport
         /// </summary>
         /// <param name="zipStream"></param>
         /// <param name="temporaryDirectory"></param>
+        /// <param name="name">App name</param>
         /// <returns></returns>
-        public bool ImportZip(Stream zipStream, string temporaryDirectory)
+        public bool ImportZip(Stream zipStream, string temporaryDirectory, string name = null)
         {
             Log.Add($"import zip temp-dir:{temporaryDirectory}");
             List<Message> messages = _environment.Messages;
@@ -81,7 +84,8 @@ namespace ToSic.Eav.Apps.ImportExport
                                     Log.Add($"xml file:{xmlFileName}");
                                     //var appId = new int?();
                                     int appId;
-                                    var fileContents = File.ReadAllText(Path.Combine(appDirectory, xmlFileName));
+                                    var xmlPath = Path.Combine(appDirectory, xmlFileName);
+                                    var fileContents = File.ReadAllText(xmlPath);
 	                                var xdoc = XDocument.Parse(fileContents);
                                     var import = new XmlImportWithFiles(Log);
 
@@ -122,19 +126,28 @@ namespace ToSic.Eav.Apps.ImportExport
                                         if(folder == null)
                                             throw new NullReferenceException("can't determine folder from xml, cannot continue");
 
+                                        // user decided to install app in different folder, because same App is already installed
+                                        if (!String.IsNullOrEmpty(name))
+                                        {
+                                            xdoc.XPathSelectElement("//SexyContent/Header/App").SetAttributeValue("Guid", string.Empty); // same App is already installed, so we have to change AppId 
+                                            xdoc.XPathSelectElement("//SexyContent/Entities/Entity/Value[@Key='Folder']").SetAttributeValue("Value", name); // change folder to install app
+                                            // xdoc.Save(xmlPath);
+                                            folder = name;
+                                        }
+
                                         // Do not import (throw error) if the app directory already exists
                                         var appPath = _environment.TargetPath(folder);
                                         if (Directory.Exists(appPath))
-                                            throw new Exception(
+                                            throw new IOException(
                                                 "The app could not be installed because the app-folder '" + appPath +
-                                                "' already exists. Please remove or rename the folder in the [portals]/2sxc and install the app again.");
+                                                "' already exists.");
 
                                         if (xmlIndex == 0)
                                         {
                                             // Handle PortalFiles folder
                                             var portalTempRoot = Path.Combine(appDirectory, XmlConstants.PortalFiles);
                                             if (Directory.Exists(portalTempRoot))
-                                                _environment.TransferFilesToTenant(portalTempRoot, "");
+                                                _environment.TransferFilesToTenant(portalTempRoot, folder);
                                         }
 
                                         import.ImportApp(_zoneId, xdoc, out appId);
@@ -174,6 +187,15 @@ namespace ToSic.Eav.Apps.ImportExport
                             break;
                     }
                 }
+            }
+            catch (IOException e)
+            {
+                // The app could not be installed because the app-folder already exists. Install app in different folder?
+                finalEx = e; // keep to throw later
+                // Add error message and return false, but use MessageTypes.Information so we can prompt user for new different name
+                messages.Add(new Message("Could not import the app / package: " + e.Message, Message.MessageTypes.Information));
+                // Exceptions.LogException(e);
+                success = false;
             }
             catch (Exception e)
             {
