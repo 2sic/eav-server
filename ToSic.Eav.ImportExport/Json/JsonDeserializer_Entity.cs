@@ -34,7 +34,7 @@ namespace ToSic.Eav.ImportExport.Json
             return jsonObj;
         }
 
-        private IEntity Deserialize(JsonEntity jEnt, bool allowDynamic, bool skipUnknownType)
+        public IEntity Deserialize(JsonEntity jEnt, bool allowDynamic, bool skipUnknownType)
         {
             Log.Add($"deserializing {jEnt.Guid} with allowDyn:{allowDynamic} skipUnknown:{skipUnknownType}");
 
