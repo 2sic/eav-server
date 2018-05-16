@@ -129,10 +129,7 @@ namespace ToSic.Eav.Apps.ImportExport
                                         // user decided to install app in different folder, because same App is already installed
                                         if (!String.IsNullOrEmpty(name))
                                         {
-                                            xdoc.XPathSelectElement("//SexyContent/Header/App").SetAttributeValue("Guid", string.Empty); // same App is already installed, so we have to change AppId 
-                                            xdoc.XPathSelectElement("//SexyContent/Entities/Entity/Value[@Key='Folder']").SetAttributeValue("Value", name); // change folder to install app
-                                            // xdoc.Save(xmlPath);
-                                            folder = name;
+                                            folder = FixAppXmlForInportAsDifferentApp(name, xdoc, appConfig, xmlPath);
                                         }
 
                                         // Do not import (throw error) if the app directory already exists
@@ -228,6 +225,50 @@ namespace ToSic.Eav.Apps.ImportExport
 
             Log.Add("import zip - completed");
             return success;
+        }
+
+        private string FixAppXmlForInportAsDifferentApp(string name, XDocument xdoc, XElement appConfig, string xmlPath)
+        {
+            // save original AppId (because soon will be rewritten with empty string)
+            var originalAppId = xdoc.XPathSelectElement("//SexyContent/Header/App").Attribute("Guid").Value;
+            Log.Add($"original AppID:{originalAppId}");
+
+            // same App is already installed, so we have to change AppId 
+            xdoc.XPathSelectElement("//SexyContent/Header/App").SetAttributeValue("Guid", string.Empty);
+            Log.Add($"original AppID is empty");
+
+            // change folder to install app
+            xdoc.XPathSelectElement("//SexyContent/Entities/Entity/Value[@Key='Folder']").SetAttributeValue("Value", name);
+            Log.Add($"change folder to install app:{name}");
+
+            // find Value element with OriginalId attribute
+            var valueElementWithOriginalIdAttribute = appConfig.Elements(XmlConstants.ValueNode).FirstOrDefault(v => v.Attribute(XmlConstants.KeyAttr)?.Value == "OriginalId");
+            // if missing add new Value element with OriginalId attribute
+            if (valueElementWithOriginalIdAttribute == null)
+            {
+                Log.Add($"Value element with OriginalId attribute is missing, so we are adding new one with OriginalId:{originalAppId}");
+                var valueElement = new XElement("Value");
+                valueElement.SetAttributeValue("Key", "OriginalId");
+                valueElement.SetAttributeValue("Value", originalAppId);
+                valueElement.SetAttributeValue("Type", "String");
+                appConfig.Add(valueElement);
+            }
+            else
+            {
+                // if OriginalID is empty, than add original AppId to it
+                var originalId = valueElementWithOriginalIdAttribute.Attribute(XmlConstants.ValueAttr)?.Value;
+                Log.Add($"current OriginalId:{originalId}");
+
+                if (string.IsNullOrEmpty(originalId))
+                {
+                    Log.Add($"current OriginalId is empty, so adding OriginalId:{originalAppId}");
+                    appConfig.Elements(XmlConstants.ValueNode).First(v => v.Attribute(XmlConstants.KeyAttr)?.Value == "OriginalId").SetAttributeValue("OriginalId", originalAppId);
+                }
+            }
+
+            xdoc.Save(xmlPath); // this is not necessary, but good to have it saved in file for debugging
+
+            return name;
         }
 
         private void CheckRequiredEnvironmentVersions(string reqVersionNode, string reqVersionNodeDnn)
