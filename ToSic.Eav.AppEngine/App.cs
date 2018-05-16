@@ -12,9 +12,6 @@ namespace ToSic.Eav.Apps
     {
         protected const int AutoLookup = -1;
 
-        //public int AppId { get; }
-        //public int ZoneId { get; }
-
         public string Name { get; private set; }
         public string Folder { get; private set; }
         public bool Hidden { get; private set; }
@@ -22,25 +19,17 @@ namespace ToSic.Eav.Apps
         public string AppGuid { get; }
 
 
-        protected IValueCollectionProvider ConfigurationProvider { get; set; }
-        protected bool ShowDraftsInData { get; set; }
-        protected bool VersioningEnabled { get; set; }
+        protected IValueCollectionProvider ConfigurationProvider { get; private set; }
+        protected bool ShowDraftsInData { get; private set; }
+        protected bool VersioningEnabled { get; private set; }
 
         protected const string IconFile = "/" + AppConstants.AppIconFile;
-        protected const string ContentAppName = Constants.ContentAppName;
-
-
-
 
         internal App(int zoneId, int appId, bool allowSideEffects, Log parentLog, string logMsg)
             : base(zoneId, appId, parentLog, "App.2sxcAp", $"prep App z#{zoneId}, a#{appId}, allowSE:{allowSideEffects}, {logMsg}")
         {
             // if zone is missing, try to find it; if still missing, throw error
             if (zoneId == AutoLookup) throw new Exception("Cannot find zone-id for portal specified");
-
-            //// provide basic values
-            //AppId = appId;
-            //ZoneId = zoneId;
 
             // Look up name in cache
             var cache = (BaseCache) DataSource.GetCache(zoneId, appId);
@@ -49,7 +38,7 @@ namespace ToSic.Eav.Apps
             AppGuid = cache.ZoneApps[zoneId].Apps[appId];
 
             if (AppGuid == Constants.DefaultAppName)
-                Name = Folder = ContentAppName;
+                Name = Folder = Constants.ContentAppName;
             else
             {
                 // if it's a real App (not content/default), do more
