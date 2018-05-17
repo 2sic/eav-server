@@ -132,11 +132,12 @@ namespace ToSic.Eav.App
         /// </summary>
 	    private void MapDraftToPublished(Entity newEntity, int? publishedId)
         {
-            Log.Add($"map draft to published for new: {newEntity.EntityId} on {publishedId}");
 	        if (newEntity.IsPublished || !publishedId.HasValue) return;
 
-	        // Published Entity is already in the Entities-List as EntityIds is validated/extended before and Draft-EntityID is always higher as Published EntityId
-	        newEntity.PublishedEntity = Index[publishedId.Value];
+            Log.Add($"map draft to published for new: {newEntity.EntityId} on {publishedId}");
+	
+            // Published Entity is already in the Entities-List as EntityIds is validated/extended before and Draft-EntityID is always higher as Published EntityId
+            newEntity.PublishedEntity = Index[publishedId.Value];
 	        ((Entity) newEntity.PublishedEntity).DraftEntity = newEntity;
 	        newEntity.EntityId = publishedId.Value;
 	    }
@@ -146,7 +147,6 @@ namespace ToSic.Eav.App
         /// </summary>
 	    private void RemoveObsoleteDraft(IEntity newEntity)
 	    {
-	        Log.Add($"remove obsolete draft {newEntity.EntityId}");
 	        var previous = Index.ContainsKey(newEntity.EntityId) ? Index[newEntity.EntityId] : null;
 
 	        // check if we went from draft-branch to published, because in this case, we have to remove the last draft
@@ -157,19 +157,19 @@ namespace ToSic.Eav.App
 
 	        if (msg != null)
 	        {
-	            Log.Add(msg);
-	            return;
+	            Log.Add("remove obsolete draft - nothing to change " + msg);
+                return;
 	        }
 
-	        var draftEnt = previous.GetDraft();
+            var draftEnt = previous.GetDraft();
             var draft = draftEnt?.RepositoryId;
 	        if (draft != null)
 	        {
-	            Log.Add($"found draft, will remove {draft.Value}");
+	            Log.Add($"remove obsolete draft - found draft, will remove {draft.Value}");
 	            Index.Remove(draft.Value);
 	        }
 	        else
-	            Log.Add("no draft, won't remove");
+	            Log.Add("remove obsolete draft - no draft, won't remove");
 	    }
 
 	    public void Load(Log parentLog, Action loader)
@@ -182,13 +182,7 @@ namespace ToSic.Eav.App
 	        _firstLoadCompleted = true;
 	        Log.Add($"app loading done - dynamic load count: {DynamicUpdatesCount}");
 	        Log.LinkTo(null);
-            //LoadCompleted();
         }
 
-        //public void LoadCompleted()
-        //{
-        //    _firstLoadCompleted = true;
-        //    Log.Add($"app dynamic load count: {DynamicUpdatesCount}");
-        //   }
     }
 }
