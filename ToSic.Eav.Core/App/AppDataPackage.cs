@@ -61,40 +61,46 @@ namespace ToSic.Eav.App
         /// </summary>
         public AppRelationshipManager Relationships { get; }
 
+	    private bool _loading;
 	    private bool _firstLoadCompleted;
 	    public int DynamicUpdatesCount;
 		#endregion
 
 
 
-        internal AppDataPackage(int appId, Log parentLog): base("App.Packge", parentLog)
+        internal AppDataPackage(int appId, Log parentLog): base("App.Packge", parentLog, $"start build package for {appId}")
 	    {
 	        AppId = appId;
             CacheResetTimestamp();  // do this very early, as this number is needed elsewhere
 
 	        Index = new Dictionary<int, IEntity>();
-	        //List = Index.Values;
             Relationships = new AppRelationshipManager(this);
-
         }
 
-        /// <summary>
-        /// The first init-command to run after creating the package
-        /// it's needed, so the metadata knows what lookup types are supported
-        /// </summary>
-        /// <param name="metadataTypes"></param>
+	    /// <summary>
+	    /// The first init-command to run after creating the package
+	    /// it's needed, so the metadata knows what lookup types are supported
+	    /// </summary>
+	    /// <param name="metadataTypes"></param>
 	    internal void InitMetadata(ImmutableDictionary<int, string> metadataTypes)
-	        => Metadata = _appTypesFromRepository == null
-	            ? new AppMetadataManager(this, metadataTypes)
+	    {
+            if(!_loading)
+                throw new Exception("trying to init metadata, but not in loading state. set that first!");
+	        Metadata = _appTypesFromRepository == null
+	            ? new AppMetadataManager(this, metadataTypes, Log)
 	            : throw new Exception("can't set metadata if content-types are already set");
+	    }
 
 
-        /// <summary>
+	    /// <summary>
         /// Add an entity to the cache
         /// </summary>
 	    public void Add(Entity newEntity, int? publishedId)
 	    {
-            if(newEntity.RepositoryId == 0)
+	        if (!_loading)
+	            throw new Exception("trying to add entity, but not in loading state. set that first!");
+
+            if (newEntity.RepositoryId == 0)
                 throw new Exception("Entities without real ID not supported yet");
 
             CacheResetTimestamp(); 
@@ -105,13 +111,16 @@ namespace ToSic.Eav.App
 
 	        if (_firstLoadCompleted)
 	            DynamicUpdatesCount++;
+
+	        Log.Add($"added entity {newEntity.EntityId} for published {publishedId}; dyn-update#{DynamicUpdatesCount}");
 	    }
 
         /// <summary>
         /// Reset all item storages and indexes
         /// </summary>
 	    internal void RemoveAllItems()
-	    {
+        {
+            Log.Add("remove all items");
 	        Index.Clear();
             CacheResetTimestamp(); 
             Metadata.Reset();
@@ -122,7 +131,8 @@ namespace ToSic.Eav.App
         /// Reconnect / wire drafts to the published item
         /// </summary>
 	    private void MapDraftToPublished(Entity newEntity, int? publishedId)
-	    {
+        {
+            Log.Add($"map draft to published for new: {newEntity.EntityId} on {publishedId}");
 	        if (newEntity.IsPublished || !publishedId.HasValue) return;
 
 	        // Published Entity is already in the Entities-List as EntityIds is validated/extended before and Draft-EntityID is always higher as Published EntityId
@@ -136,19 +146,49 @@ namespace ToSic.Eav.App
         /// </summary>
 	    private void RemoveObsoleteDraft(IEntity newEntity)
 	    {
+	        Log.Add($"remove obsolete draft {newEntity.EntityId}");
 	        var previous = Index.ContainsKey(newEntity.EntityId) ? Index[newEntity.EntityId] : null;
 
 	        // check if we went from draft-branch to published, because in this case, we have to remove the last draft
-	        if (previous == null) return;  // didn't exist, return
-            if(!previous.IsPublished) return; // previous wasn't published, so we couldn't have had a branch
-	        if(!newEntity.IsPublished) return; // new entity isn't published, so we're not switching "back"
+	        string msg = null;
+	        if (previous == null) msg = "previous == null";  // didn't exist, return
+            else if(!previous.IsPublished) msg = "previous not published"; // previous wasn't published, so we couldn't have had a branch
+	        else if(!newEntity.IsPublished) msg = "new not published"; // new entity isn't published, so we're not switching "back"
+
+	        if (msg != null)
+	        {
+	            Log.Add(msg);
+	            return;
+	        }
 
 	        var draftEnt = previous.GetDraft();
             var draft = draftEnt?.RepositoryId;
 	        if (draft != null)
+	        {
+	            Log.Add($"found draft, will remove {draft.Value}");
 	            Index.Remove(draft.Value);
+	        }
+	        else
+	            Log.Add("no draft, won't remove");
 	    }
 
-	    public void LoadCompleted() => _firstLoadCompleted = true;
-	}
+	    public void Load(Log parentLog, Action loader)
+	    {
+	        _loading = true;
+            Log.LinkTo(parentLog);
+	        Log.Add("app loading start");
+	        loader.Invoke();
+	        _loading = false;
+	        _firstLoadCompleted = true;
+	        Log.Add($"app loading done - dynamic load count: {DynamicUpdatesCount}");
+	        Log.LinkTo(null);
+            //LoadCompleted();
+        }
+
+        //public void LoadCompleted()
+        //{
+        //    _firstLoadCompleted = true;
+        //    Log.Add($"app dynamic load count: {DynamicUpdatesCount}");
+        //   }
+    }
 }

@@ -27,7 +27,11 @@ namespace ToSic.Eav.App
 	    /// <param name="contentTypes"></param>
 	    internal void InitContentTypes(IList<IContentType> contentTypes)
 	    {
-	        if (Metadata == null || List.Any())
+	        Log.Add($"initialize content types for {contentTypes?.Count} types");
+	        if (!_loading)
+	            throw new Exception("trying to set content-types, but not in loading state. set that first!");
+
+            if (Metadata == null || List.Any())
 	            throw new Exception("can't set content types before setting Metadata manager, or after entities-list already exists");
 
 	        _appTypeMap = contentTypes.ToImmutableDictionary(x => x.ContentTypeId, x => x.StaticName);
@@ -39,7 +43,8 @@ namespace ToSic.Eav.App
 
 
         private void BuildCacheForTypesByName(IList<IContentType> allTypes)
-	    {
+        {
+            Log.Add($"build cache for type names for {allTypes.Count} items");
 	        _appTypesByName = new Dictionary<string, IContentType>(StringComparer.InvariantCultureIgnoreCase);
 
 	        var keepTypes = allTypes;
