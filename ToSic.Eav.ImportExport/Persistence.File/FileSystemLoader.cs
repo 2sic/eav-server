@@ -45,7 +45,7 @@ namespace ToSic.Eav.Persistence.File
             {
                 if (_ser != null) return _ser;
                 _ser = new JsonSerializer();
-                _ser.Initialize(0, Global.CodeContentTypes().Values, null, Log);
+                _ser.Initialize(0, Global.CodeContentTypes(Log).Values, null, Log);
                 _ser.AssumeUnknownTypesAreDynamic = true;
                 return _ser;
             }
