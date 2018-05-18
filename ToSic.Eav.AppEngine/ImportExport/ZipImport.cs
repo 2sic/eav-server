@@ -189,8 +189,8 @@ namespace ToSic.Eav.Apps.ImportExport
             {
                 // The app could not be installed because the app-folder already exists. Install app in different folder?
                 finalEx = e; // keep to throw later
-                // Add error message and return false, but use MessageTypes.Information so we can prompt user for new different name
-                messages.Add(new Message("Could not import the app / package: " + e.Message, Message.MessageTypes.Information));
+                // Add error message and return false, but use MessageTypes.Warning so we can prompt user for new different name
+                messages.Add(new Message("Could not import the app / package: " + e.Message, Message.MessageTypes.Warning));
                 // Exceptions.LogException(e);
                 success = false;
             }
