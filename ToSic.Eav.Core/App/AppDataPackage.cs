@@ -68,21 +68,22 @@ namespace ToSic.Eav.App
 
 
 
-        internal AppDataPackage(int appId, Log parentLog): base("App.Packge", parentLog, $"start build package for {appId}")
+        internal AppDataPackage(int appId, Log parentLog): base($"App.Pkg{appId}", parentLog, $"start build package for {appId}")
 	    {
 	        AppId = appId;
             CacheResetTimestamp();  // do this very early, as this number is needed elsewhere
 
 	        Index = new Dictionary<int, IEntity>();
             Relationships = new AppRelationshipManager(this);
+	        History.Add("app-data-cache", Log);
         }
 
-	    /// <summary>
-	    /// The first init-command to run after creating the package
-	    /// it's needed, so the metadata knows what lookup types are supported
-	    /// </summary>
-	    /// <param name="metadataTypes"></param>
-	    internal void InitMetadata(ImmutableDictionary<int, string> metadataTypes)
+        /// <summary>
+        /// The first init-command to run after creating the package
+        /// it's needed, so the metadata knows what lookup types are supported
+        /// </summary>
+        /// <param name="metadataTypes"></param>
+        internal void InitMetadata(ImmutableDictionary<int, string> metadataTypes)
 	    {
             if(!_loading)
                 throw new Exception("trying to init metadata, but not in loading state. set that first!");
