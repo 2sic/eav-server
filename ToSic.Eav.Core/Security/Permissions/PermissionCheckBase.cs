@@ -114,7 +114,7 @@ namespace ToSic.Eav.Security.Permissions
         /// <returns></returns>
         private bool DoesPermissionAllow(IEntity permissionEntity, char[] desiredActionCode)
         {
-            Log.Add($"does perm list allow {desiredActionCode}");
+            Log.Add($"does perm list allow {new string(desiredActionCode)}");
             // Check if it's a grant for the desired action - otherwise stop here
             var grnt = permissionEntity.GetBestValue(Constants.PermissionGrant).ToString();
             // If Grant doesn't contain desired action, stop here
