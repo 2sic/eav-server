@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav", "ToSic.Eav\ToSi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.UnitTests", "ToSic.Eav.UnitTests\ToSic.Eav.UnitTests.csproj", "{7BC8FCDD-6381-4ADF-92E2-384D1AADC882}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.Core", "ToSic.Eav.Core\ToSic.Eav.Core.csproj", "{82F94588-269B-4CDD-98D1-D5CB14C39090}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToSic.Eav.Core", "ToSic.Eav.Core\ToSic.Eav.Core.csproj", "{82F94588-269B-4CDD-98D1-D5CB14C39090}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.DataSources", "ToSic.Eav.DataSources\ToSic.Eav.DataSources.csproj", "{DAAE8E21-CA5F-400B-9F5A-5E4E1196B21B}"
 EndProject
@@ -1420,7 +1420,6 @@ Global
 		{0EA1085A-D15F-4254-8A79-DE811C47EBF4}.Debug|Android.ActiveCfg = Debug|Any CPU
 		{0EA1085A-D15F-4254-8A79-DE811C47EBF4}.Debug|Android.Build.0 = Debug|Any CPU
 		{0EA1085A-D15F-4254-8A79-DE811C47EBF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0EA1085A-D15F-4254-8A79-DE811C47EBF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0EA1085A-D15F-4254-8A79-DE811C47EBF4}.Debug|DNN.ActiveCfg = Debug|Any CPU
 		{0EA1085A-D15F-4254-8A79-DE811C47EBF4}.Debug|DNN.Build.0 = Debug|Any CPU
 		{0EA1085A-D15F-4254-8A79-DE811C47EBF4}.Debug|iOS.ActiveCfg = Debug|Any CPU
@@ -1449,7 +1448,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {705647E1-B5B1-4D94-888C-1D918095554C}
 		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35;packages\Unity.2.1.505.0\lib\NET35
+		SolutionGuid = {705647E1-B5B1-4D94-888C-1D918095554C}
 	EndGlobalSection
 EndGlobal

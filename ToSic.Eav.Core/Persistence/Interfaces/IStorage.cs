@@ -68,7 +68,7 @@ namespace ToSic.Eav.Persistence.Interfaces
         #region Entities
 
         List<int> Save(List<IEntity> entities, SaveOptions saveOptions);
-        int Save(IEntity entity, SaveOptions saveOptions);
+        //int Save(IEntity entity, SaveOptions saveOptions);
         #endregion
 
 
