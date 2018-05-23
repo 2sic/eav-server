@@ -17,7 +17,7 @@ namespace ToSic.Eav.Logging.Simple
         public  List<Entry> Entries { get; } = new List<Entry>();
         private Log _parent;
 
-        private string Identifier => $"{_scope}{_name}({_id})";
+        private string Identifier => $"{_scope}{_name}[{_id}]";
 
         public string FullIdentifier => _parent?.FullIdentifier + Identifier;
 

@@ -149,25 +149,25 @@ namespace ToSic.Eav.App
 	    private void RemoveObsoleteDraft(IEntity newEntity)
 	    {
 	        var previous = Index.ContainsKey(newEntity.EntityId) ? Index[newEntity.EntityId] : null;
+            var draftEnt = previous?.GetDraft();
 
-	        // check if we went from draft-branch to published, because in this case, we have to remove the last draft
-	        string msg = null;
-	        if (previous == null) msg = "previous == null";  // didn't exist, return
-            else if(!previous.IsPublished) msg = "previous not published"; // previous wasn't published, so we couldn't have had a branch
-	        else if(!newEntity.IsPublished) msg = "new not published"; // new entity isn't published, so we're not switching "back"
+            // check if we went from draft-branch to published, because in this case, we have to remove the last draft
+            string msg = null;
+	        if (previous == null) msg = "previous is null => new will be added to cache";  // didn't exist, return
+            else if(!previous.IsPublished) msg = "previous not published => new will replace in cache"; // previous wasn't published, so we couldn't have had a branch
+	        else if(!newEntity.IsPublished && draftEnt == null) msg = "new copy not published, and no draft exists => new will replace in cache"; // new entity isn't published, so we're not switching "back"
 
 	        if (msg != null)
 	        {
-	            Log.Add("remove obsolete draft - nothing to change " + msg);
+	            Log.Add("remove obsolete draft - nothing to change because: " + msg);
                 return;
 	        }
 
-            var draftEnt = previous.GetDraft();
-            var draft = draftEnt?.RepositoryId;
-	        if (draft != null)
+            var draftId = draftEnt?.RepositoryId;
+	        if (draftId != null)
 	        {
-	            Log.Add($"remove obsolete draft - found draft, will remove {draft.Value}");
-	            Index.Remove(draft.Value);
+	            Log.Add($"remove obsolete draft - found draft, will remove {draftId.Value}");
+	            Index.Remove(draftId.Value);
 	        }
 	        else
 	            Log.Add("remove obsolete draft - no draft, won't remove");
