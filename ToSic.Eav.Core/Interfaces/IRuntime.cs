@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Interfaces
 {
-    public interface IRuntime
+    public interface IRuntime: IHasLog
     {
         IEnumerable<IContentType> LoadGlobalContentTypes();
 

@@ -35,40 +35,42 @@ namespace ToSic.Eav.Persistence.Efc
 
         public AppDataPackage Update(AppDataPackage app, AppPackageLoadingSteps startAt, int[] entityIds = null, Log parentLog = null)
         {
-            Log = new Log("DB.EFLoad", parentLog, $"get app data package for a#{app.AppId}, " +
-                                                  $"startAt: {startAt}, " +
-                                                  $"ids only:{entityIds != null}");
-
-            // prepare metadata lists & relationships etc.
-            if (startAt <= AppPackageLoadingSteps.MetadataInit)
-                _sqlTotalTime = _sqlTotalTime.Add(InitMetadataLists(app, _dbContext));
-            else
-                Log.Add("skipping metadata load");
-
-            if (startAt <= AppPackageLoadingSteps.ContentTypeLoad && app.ContentTypesShouldBeReloaded)
-                startAt = AppPackageLoadingSteps.ContentTypeLoad;
-
-            // prepare content-types
-            if (startAt <= AppPackageLoadingSteps.ContentTypeLoad)
+            app.Load(parentLog, () =>
             {
-                var typeTimer = Stopwatch.StartNew();
-                app.InitContentTypes(ContentTypes(app.AppId, app));
-                typeTimer.Stop();
-                Log.Add($"timers types:{typeTimer.Elapsed}");
-            }
-            else
-                Log.Add("skipping content-type load");
+                Log = new Log("DB.EFLoad", app.Log, $"get app data package for a#{app.AppId}, " +
+                                                    $"startAt: {startAt}, " +
+                                                    $"ids only:{entityIds != null}");
 
-            // load data
-            if (startAt <= AppPackageLoadingSteps.ItemLoad)
-                LoadEntities(app, entityIds);
-            else
-                Log.Add("skipping items load");
+                // prepare metadata lists & relationships etc.
+                if (startAt <= AppPackageLoadingSteps.MetadataInit)
+                    _sqlTotalTime = _sqlTotalTime.Add(InitMetadataLists(app, _dbContext));
+                else
+                    Log.Add("skipping metadata load");
 
-            Log.Add($"timers sql:sqlAll:{_sqlTotalTime}");
+                if (startAt <= AppPackageLoadingSteps.ContentTypeLoad && app.ContentTypesShouldBeReloaded)
+                    startAt = AppPackageLoadingSteps.ContentTypeLoad;
 
-            app.LoadCompleted(); // tell app that loading is done
-            Log.Add($"app dynamic load count: {app.DynamicUpdatesCount}");
+                // prepare content-types
+                if (startAt <= AppPackageLoadingSteps.ContentTypeLoad)
+                {
+                    var typeTimer = Stopwatch.StartNew();
+                    app.InitContentTypes(ContentTypes(app.AppId, app));
+                    typeTimer.Stop();
+                    Log.Add($"timers types:{typeTimer.Elapsed}");
+                }
+                else
+                    Log.Add("skipping content-type load");
+
+                // load data
+                if (startAt <= AppPackageLoadingSteps.ItemLoad)
+                    LoadEntities(app, entityIds);
+                else
+                    Log.Add("skipping items load");
+
+                Log.Add($"timers sql:sqlAll:{_sqlTotalTime}");
+
+                //app.LoadCompleted(); // tell app that loading is done
+            });
             return app;
         }
 

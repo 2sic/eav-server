@@ -59,21 +59,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
             // If we think we'll update an existing entity...
             // ...we have to check if we'll actualy update the draft of the entity
             // ...or create a new draft (branch)
-            int? existingDraftId = null;
-            var hasAdditionalDraft = false;
-            if (newEnt.EntityId > 0)
-            {
-                existingDraftId = DbContext.Publishing.GetDraftBranchEntityId(newEnt.EntityId);  // find a draft of this - note that it won't find anything, if the item itself is the draft
-                hasAdditionalDraft = existingDraftId != null && existingDraftId.Value != newEnt.EntityId;  // only true, if there is an "attached" draft; false if the item itself is draft
-                Log.Add($"draft check: existing:{existingDraftId}, hasAdd:{hasAdditionalDraft}");
-                if (!newEnt.IsPublished && ((Entity) newEnt).PlaceDraftInBranch)
-                {
-                    ((Entity)newEnt).SetPublishedIdForSaving(newEnt.EntityId);  // set this, in case we'll create a new one
-                    newEnt.ResetEntityId(existingDraftId ?? 0);  // set to the draft OR 0 = new
-                    hasAdditionalDraft = false; // not additional any more, as we're now pointing this as primary
-                }
-            }
+            var existingDraftId = GetDraftAndCorrectIdAndBranching(newEnt, out var hasAdditionalDraft);
+
             var isNew = newEnt.EntityId <= 0;   // remember how we want to work...
+            Log.Add($"entity id:{newEnt.EntityId} - will treat as new:{isNew}");
 
             var contentTypeId = saveJson 
                 ? RepoIdForJsonEntities 
@@ -214,6 +203,58 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             Log.Add("save done for id:" + dbEnt?.EntityId);
             return dbEnt.EntityId;
+        }
+
+        /// <summary>
+        /// Get the draft-id and branching info, 
+        /// then correct branching-infos on the entity depending on the scenario
+        /// </summary>
+        /// <param name="newEnt">the entity to be saved, with IDs and Guids</param>
+        /// <param name="hasAdditionalDraft">will be true, if there is a draft in a branch; false if the item itself is already draft</param>
+        /// <returns></returns>
+        private int? GetDraftAndCorrectIdAndBranching(IEntity newEnt, out bool hasAdditionalDraft)
+        {
+            Log.Add($"GetDraftAndCorrectIdAndBranching(entity:{newEnt.EntityId})");
+
+            // only do this, if we were given an EntityId, otherwise we assume new entity
+            if (newEnt.EntityId <= 0)
+            {
+                Log.Add("entity id == 0 so skip draft lookup");
+                hasAdditionalDraft = false;
+                return null;
+            }
+            Log.Add("entity id > 0 - will check draft/branching");
+
+            // find a draft of this - note that it won't find anything, if the item itself is the draft
+            var ent = (Entity) newEnt;
+            var existingDraftId = DbContext.Publishing.GetDraftBranchEntityId(ent.EntityId);
+
+            hasAdditionalDraft = ent.EntityId != (existingDraftId ?? -1); // only true, if there is an "attached" draft; false if the item itself is draft
+
+            Log.Add($"draft check: id:{ent.EntityId} existingDraft:{existingDraftId}, " +
+                    $"is-additional:{hasAdditionalDraft}");
+
+            if (ent.IsPublished || !ent.PlaceDraftInBranch)
+            {
+                Log.Add($"new is published or branching is not wanted, so we won't branch - returning draft-id:{existingDraftId}");
+                return existingDraftId;
+            }
+
+            Log.Add("new is draft, and setting is PlaceDraftInBranch:true");
+
+            // check if the original is also not published, with must prevent a second branch!
+            var entityInDb = DbContext.Entities.GetDbEntity(ent.EntityId);
+            if (!entityInDb.IsPublished)
+                Log.Add("original in DB is not published, will overwrite and not branch again");
+            else
+            {
+                Log.Add("original is published, so we'll draft in a branch");
+                ent.SetPublishedIdForSaving(ent.EntityId); // set this, in case we'll create a new one
+                ent.ResetEntityId(existingDraftId ?? 0); // set to the draft OR 0 = new
+                hasAdditionalDraft = false; // not additional any more, as we're now pointing this as primary
+            }
+
+            return existingDraftId;
         }
 
         private ToSicEavEntities CreateNewInDb(IEntity newEnt, int changeId, int contentTypeId)

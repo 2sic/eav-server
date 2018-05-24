@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Efc;
@@ -36,7 +37,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var itm1 = Data.Query.Entity.One(app1.List, test.ItemOnHomeId);
 
             // save it
-            dbi.Save(itm1, so);
+            dbi.Save(new List<IEntity> {itm1}, so);
 
             // re-load it
             var loader2 = new Efc11Loader(dbi.SqlDb); // use existing db context because the transaction is still open
@@ -74,7 +75,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var saveEntity = new EntitySaver(new Log("Tst.Merge")).CreateMergedForSaving(itm1, itmNewTitle, so);
 
             // save it
-            dbi.Save(saveEntity, so);
+            dbi.Save(new List<IEntity> {saveEntity}, so);
 
             // reload it
             var loader2 = new Efc11Loader(dbi.SqlDb); // use existing db context because the transaction is still open
@@ -115,7 +116,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var saveEntity = new EntitySaver(new Log("Tst.Merge")).CreateMergedForSaving(null, newE, so);
 
             // save it
-            var newId = dbi.Save(saveEntity, so);
+            var newId = dbi.Save(new List<IEntity> {saveEntity}, so);
 
             // reload it
             var loader2 = new Efc11Loader(dbi.SqlDb); // use existing db context because the transaction is still open

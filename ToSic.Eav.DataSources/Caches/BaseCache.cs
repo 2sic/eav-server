@@ -52,10 +52,12 @@ namespace ToSic.Eav.DataSources.Caches
 		/// </summary>
 		protected abstract bool HasCacheItem(string cacheKey);
 
-		/// <summary>
-		/// Sets the CacheItem with specified CacheKey
-		/// </summary>
-		protected abstract void SetCacheItem(string cacheKey, AppDataPackage item);
+	    public bool HasCacheItem(int zoneId, int appId) => HasCacheItem(string.Format(CacheKeySchema, zoneId, appId));
+
+        /// <summary>
+        /// Sets the CacheItem with specified CacheKey
+        /// </summary>
+        protected abstract void SetCacheItem(string cacheKey, AppDataPackage item);
 
 		/// <summary>
 		/// Get CacheItem with specified CacheKey
@@ -190,7 +192,7 @@ namespace ToSic.Eav.DataSources.Caches
 	    #region Has List
         public bool ListHas(string key) => ListCache.Contains(key);
 
-	    public bool ListHas(IDataStream dataStream) => ListHas(dataStream.Source.CacheFullKey + "|" + dataStream.Name);
+        public bool ListHas(IDataStream dataStream) => ListHas(dataStream.Source.CacheFullKey + "|" + dataStream.Name);
 
 	    #endregion
 

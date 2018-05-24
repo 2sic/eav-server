@@ -13,10 +13,11 @@ namespace ToSic.Eav.Logging.Simple
         private string _scope = "tdo";
         private const int MaxScopeLen = 3;
         private const int MaxNameLen = 6;
+        public readonly DateTime Created = DateTime.Now;
         public  List<Entry> Entries { get; } = new List<Entry>();
         private Log _parent;
 
-        private string Identifier => $"{_scope}{_name}({_id})";
+        private string Identifier => $"{_scope}{_name}[{_id}]";
 
         public string FullIdentifier => _parent?.FullIdentifier + Identifier;
 

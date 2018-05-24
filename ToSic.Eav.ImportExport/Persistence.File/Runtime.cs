@@ -27,7 +27,7 @@ namespace ToSic.Eav.ImportExport.Persistence.File
 
                 _paths = new List<string>();
                 // find all RepositoryInfoOfFolder and let them tell us what paths to use
-                var types = AssemblyHandling.FindInherited(typeof(RepositoryInfoOfFolder)).ToList();
+                var types = AssemblyHandling.FindInherited(typeof(RepositoryInfoOfFolder), Log).ToList();
                 Log.Add($"found {types.Count} Path providers");
 
                 foreach (var typ in types)
@@ -39,9 +39,9 @@ namespace ToSic.Eav.ImportExport.Persistence.File
                         if (paths != null)
                             _paths.AddRange(paths);
                     }
-                    catch
+                    catch(Exception e)
                     {
-                        Log.Add("ran into a problem with one of the path providers - will skip");
+                        Log.Add($"ran into a problem with one of the path providers: {typ?.FullName} - will skip. Message: {e.Message}");
                         /* ignore */
                     }
                 Log.Add($"done, found {_paths.Count} paths");

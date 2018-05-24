@@ -1,17 +1,16 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{82F94588-269B-4CDD-98D1-D5CB14C39090}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFrameworks>netstandard2.0;net451</TargetFrameworks>
+    <Configurations>Debug;Release;efc and WebApi;debug eav only;Dbg Testing</Configurations>
     <RootNamespace>ToSic.Eav</RootNamespace>
-    <AssemblyName>ToSic.Eav.Core</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
+    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -59,187 +58,73 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{82F94588-269B-4CDD-98D1-D5CB14C39090}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ToSic.Eav</RootNamespace>
+    <AssemblyName>ToSic.Eav.Core</AssemblyName>
+    <!--<TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>-->
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup />
   <ItemGroup>
-    <Reference Include="Microsoft.Extensions.DependencyInjection, Version=1.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.1.1.0\lib\netstandard1.1\Microsoft.Extensions.DependencyInjection.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=1.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.1.1.0\lib\netstandard1.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
-    </Reference>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="1.1.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="1.1.0" />
+    <PackageReference Include="Microsoft.NETCore.Platforms" Version="1.1.0" />
+    <PackageReference Include="System.Collections" Version="4.3.0" />
+    <PackageReference Include="System.Collections.Concurrent" Version="4.3.0" />
+    <PackageReference Include="System.Collections.Immutable" Version="1.3.0" />
+    <PackageReference Include="System.ComponentModel" Version="4.3.0" />
+    <PackageReference Include="System.Diagnostics.Debug" Version="4.3.0" />
+    <PackageReference Include="System.Diagnostics.Tools" Version="4.3.0" />
+    <PackageReference Include="System.Diagnostics.Tracing" Version="4.3.0" />
+    <PackageReference Include="System.Globalization" Version="4.3.0" />
+    <PackageReference Include="System.IO" Version="4.3.0" />
+    <PackageReference Include="System.IO.Compression" Version="4.3.0" />
+    <PackageReference Include="System.Linq" Version="4.3.0" />
+    <PackageReference Include="System.Linq.Expressions" Version="4.3.0" />
+    <PackageReference Include="System.Net.Http" Version="4.3.0" />
+    <PackageReference Include="System.Net.Primitives" Version="4.3.0" />
+    <PackageReference Include="System.ObjectModel" Version="4.3.0" />
+    <PackageReference Include="System.Reflection" Version="4.3.0" />
+    <PackageReference Include="System.Reflection.Extensions" Version="4.3.0" />
+    <PackageReference Include="System.Reflection.Primitives" Version="4.3.0" />
+    <PackageReference Include="System.Resources.ResourceManager" Version="4.3.0" />
+    <PackageReference Include="System.Runtime" Version="4.3.0" />
+    <PackageReference Include="System.Runtime.Extensions" Version="4.3.0" />
+    <PackageReference Include="System.Runtime.InteropServices" Version="4.3.0" />
+    <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
+    <PackageReference Include="System.Runtime.Numerics" Version="4.3.0" />
+    <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
+    <PackageReference Include="System.Text.Encoding" Version="4.3.0" />
+    <PackageReference Include="System.Text.Encoding.Extensions" Version="4.3.0" />
+    <PackageReference Include="System.Text.RegularExpressions" Version="4.3.0" />
+    <PackageReference Include="System.Threading" Version="4.3.0" />
+    <PackageReference Include="System.Threading.Tasks" Version="4.3.0" />
+    <PackageReference Include="System.Threading.Timer" Version="4.3.0" />
+    <PackageReference Include="System.Xml.ReaderWriter" Version="4.3.0" />
+    <PackageReference Include="System.Xml.XDocument" Version="4.3.0" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\2sxc-dnn742\Website\bin\Newtonsoft.Json.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Collections.Immutable, Version=1.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Collections.Immutable.1.3.0\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
-    </Reference>
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net451'">
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.configuration" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="App\AppDataPackage_Caching.cs" />
-    <Compile Include="App\AppDataPackage_DeferredList.cs" />
-    <Compile Include="App\AppDataPackage_Metadata.cs" />
-    <Compile Include="App\AppDataPackage_ContentTypes.cs" />
-    <Compile Include="App\AppMetadataManager.cs" />
-    <Compile Include="Configuration\FeaturesDisabledException.cs" />
-    <Compile Include="Data\CacheChainedIEnumerable.cs" />
-    <Compile Include="App\AppRelationshipManager.cs" />
-    <Compile Include="App\AppPackageLoadingSteps.cs" />
-    <Compile Include="Configuration\Feature.cs" />
-    <Compile Include="Configuration\FeatureIds.cs" />
-    <Compile Include="Configuration\FeatureList.cs" />
-    <Compile Include="Configuration\Features.cs" />
-    <Compile Include="Configuration\Fingerprint.cs" />
-    <Compile Include="Configuration\Global.cs" />
-    <Compile Include="Constants.cs" />
-    <Compile Include="Constants_Permissions.cs" />
-    <Compile Include="Constants_Relationships.cs" />
-    <Compile Include="App\AppDataPackage.cs" />
-    <Compile Include="Data\AttributeDefinition.cs" />
-    <Compile Include="Data\AttributeBase.cs" />
-    <Compile Include="Data\AttributeDefinition_Shared.cs" />
-    <Compile Include="Data\Builder\EntityBuilder.cs" />
-    <Compile Include="Data\Builder\ValueBuilder.cs" />
-    <Compile Include="Data\ContentTypeMetadata.cs" />
-    <Compile Include="Data\DynamicValue.cs" />
-    <Compile Include="Data\EntityEnumerator.cs" />
-    <Compile Include="Data\MetadataOf.cs" />
-    <Compile Include="Data\Query\Entity.cs" />
-    <Compile Include="Identity\Mapper.cs" />
-    <Compile Include="Interfaces\ICacheDependent.cs" />
-    <Compile Include="Interfaces\ICacheExpiring.cs" />
-    <Compile Include="Interfaces\IFingerprintProvider.cs" />
-    <Compile Include="Interfaces\IUser.cs" />
-    <Compile Include="Plumbing\Booting\Boot.cs" />
-    <Compile Include="Plumbing\Booting\IConfigurationLoader.cs" />
-    <Compile Include="Plumbing\SingleInitNullable_T.cs" />
-    <Compile Include="Repositories\RepositoryInfo.cs" />
-    <Compile Include="Repositories\RepositoryInfoOfFolder.cs" />
-    <Compile Include="Repositories\RepositoryTypes.cs" />
-    <Compile Include="Implementations\Runtime\NeutralRuntime.cs" />
-    <Compile Include="Interfaces\IGlobalMetadataProvider.cs" />
-    <Compile Include="Interfaces\IHasExternalI18n.cs" />
-    <Compile Include="Interfaces\IMetadataOfItem.cs" />
-    <Compile Include="Interfaces\IRemoteMetadataProvider.cs" />
-    <Compile Include="Interfaces\IRepositorySaver.cs" />
-    <Compile Include="Interfaces\IRuntime.cs" />
-    <Compile Include="Persistence\Logging\ImportError.cs" />
-    <Compile Include="Persistence\Logging\ImportErrorCode.cs" />
-    <Compile Include="Persistence\Logging\ImportErrorLog.cs" />
-    <Compile Include="Persistence\Logging\LocalizedDescriptionAttribute.cs" />
-    <Compile Include="Persistence\Logging\LogItem.cs" />
-    <Compile Include="Persistence\Logging\Message.cs" />
-    <Compile Include="Persistence\Logging\MessageTypes.cs" />
-    <Compile Include="Security\Encryption\Sha256.cs" />
-    <Compile Include="Security\Permissions\ConditionType.cs" />
-    <Compile Include="Security\Permissions\GrantSets.cs" />
-    <Compile Include="Security\Permissions\IHasPermissions.cs" />
-    <Compile Include="Security\Permissions\IPermissionCheck.cs" />
-    <Compile Include="Security\Permissions\PermissionCheckBase.cs" />
-    <Compile Include="Security\Permissions\Grants.cs" />
-    <Compile Include="Security\Permissions\PermissionCheckBase_Conditions.cs" />
-    <Compile Include="Types\Attributes\ContentTypeDefinition.cs" />
-    <Compile Include="Data\Builder\AttDefBuilder.cs" />
-    <Compile Include="Data\Builder\AttribBuilder.cs" />
-    <Compile Include="Data\Attribute_ofT.cs" />
-    <Compile Include="Data\Builder\ContentTypeBuilder.cs" />
-    <Compile Include="Data\Builder\DimensionBuilder.cs" />
-    <Compile Include="Data\Builder\EntityModifier.cs" />
-    <Compile Include="Data\ContentType.cs" />
-    <Compile Include="Data\DimensionDefinition.cs" />
-    <Compile Include="Data\Entity.cs" />
-    <Compile Include="Data\MetadataFor.cs" />
-    <Compile Include="Data\Dimension.cs" />
-    <Compile Include="Data\EntityRelationship.cs" />
-    <Compile Include="Data\EntityRelationshipItem.cs" />
-    <Compile Include="Data\RelatedEntities.cs" />
-    <Compile Include="Data\RelationshipManager.cs" />
-    <Compile Include="Data\Value.cs" />
-    <Compile Include="Data\Value_ofT.cs" />
-    <Compile Include="Data\Zone.cs" />
-    <Compile Include="Data\EntityLight.cs" />
-    <Compile Include="Enums\AttributeScope.cs" />
-    <Compile Include="Enums\AttributeTypeEnum.cs" />
-    <Compile Include="Factory.cs" />
-    <Compile Include="HelpersToRefactor.cs" />
-    <Compile Include="Implementations\UserInformation\NeutralEavUser.cs" />
-    <Compile Include="Implementations\ValueConverter\ConversionScenario.cs" />
-    <Compile Include="Implementations\ValueConverter\IEavValueConverter.cs" />
-    <Compile Include="Implementations\ValueConverter\NeutralValueConverter.cs" />
-    <Compile Include="Interfaces\IAttributeDefinition.cs" />
-    <Compile Include="Interfaces\IUsesSharedDefinition.cs" />
-    <Compile Include="Interfaces\IEntity.cs" />
-    <Compile Include="Interfaces\IMetadataProvider.cs" />
-    <Compile Include="Interfaces\IPublish_T.cs" />
-    <Compile Include="Interfaces\IThingDeserializer.cs" />
-    <Compile Include="Interfaces\IThingSerializer.cs" />
-    <Compile Include="Interfaces\IValue_T.cs" />
-    <Compile Include="Interfaces\IValueOfDimension_T.cs" />
-    <Compile Include="Interfaces\IAttribute_T.cs" />
-    <Compile Include="Interfaces\IAttributeBase.cs" />
-    <Compile Include="Interfaces\IAttribute.cs" />
-    <Compile Include="Interfaces\IContentType.cs" />
-    <Compile Include="Interfaces\IDeferredEntitiesList.cs" />
-    <Compile Include="Interfaces\ISystemConfiguration.cs" />
-    <Compile Include="Interfaces\ILanguage.cs" />
-    <Compile Include="Interfaces\IMetadataFor.cs" />
-    <Compile Include="Interfaces\IDimension.cs" />
-    <Compile Include="Interfaces\IEntityLight.cs" />
-    <Compile Include="Interfaces\IRelatedEntities.cs" />
-    <Compile Include="Interfaces\IRelationshipManager.cs" />
-    <Compile Include="Interfaces\IRepositoryLoader.cs" />
-    <Compile Include="Interfaces\IValue.cs" />
-    <Compile Include="Logging\HasLog.cs" />
-    <Compile Include="Logging\IHasLog.cs" />
-    <Compile Include="Logging\Simple\Entry.cs" />
-    <Compile Include="Logging\Simple\Log.cs" />
-    <Compile Include="Persistence\EntitySaver.cs" />
-    <Compile Include="Persistence\Interfaces\IImportExportEnvironment.cs" />
-    <Compile Include="Interfaces\IRepositoryImporter.cs" />
-    <Compile Include="Persistence\Interfaces\IStorage.cs" />
-    <Compile Include="Persistence\SaveOptions.cs" />
-    <Compile Include="Persistence\Versions\ItemHistory.cs" />
-    <Compile Include="Plumbing\AssemblyHandling.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Types\Builder\Settings.cs" />
-    <Compile Include="Types\Builder\ContentTypeMetadata.cs" />
-    <Compile Include="Types\Builder\Entity.cs" />
-    <Compile Include="Types\Builder\String.cs" />
-    <Compile Include="Types\Global.cs" />
-    <Compile Include="Types\Global_Code.cs" />
-    <Compile Include="Types\Global_Runtime.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Logging\Import\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Persistence\Logging\ImportErrorCode.de-DE.resx">
-      <DependentUpon>ImportErrorCode.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Persistence\Logging\ImportErrorCode.resx">
-      <DependentUpon>ImportErrorCode.cs</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0'">
+    <DefineConstants>NETCORE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net45'">
+    <DefineConstants>NETFULL</DefineConstants>
+  </PropertyGroup>
 </Project>

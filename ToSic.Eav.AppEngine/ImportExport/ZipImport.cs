@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Web;
 using System.Xml.Linq;
+using System.Xml.XPath;
 //using ICSharpCode.SharpZipLib.Zip;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Zip;
@@ -37,8 +39,9 @@ namespace ToSic.Eav.Apps.ImportExport
         /// </summary>
         /// <param name="zipStream"></param>
         /// <param name="temporaryDirectory"></param>
+        /// <param name="name">App name</param>
         /// <returns></returns>
-        public bool ImportZip(Stream zipStream, string temporaryDirectory)
+        public bool ImportZip(Stream zipStream, string temporaryDirectory, string name = null)
         {
             Log.Add($"import zip temp-dir:{temporaryDirectory}");
             List<Message> messages = _environment.Messages;
@@ -81,7 +84,8 @@ namespace ToSic.Eav.Apps.ImportExport
                                     Log.Add($"xml file:{xmlFileName}");
                                     //var appId = new int?();
                                     int appId;
-                                    var fileContents = File.ReadAllText(Path.Combine(appDirectory, xmlFileName));
+                                    var xmlPath = Path.Combine(appDirectory, xmlFileName);
+                                    var fileContents = File.ReadAllText(xmlPath);
 	                                var xdoc = XDocument.Parse(fileContents);
                                     var import = new XmlImportWithFiles(Log);
 
@@ -122,19 +126,25 @@ namespace ToSic.Eav.Apps.ImportExport
                                         if(folder == null)
                                             throw new NullReferenceException("can't determine folder from xml, cannot continue");
 
+                                        // user decided to install app in different folder, because same App is already installed
+                                        if (!String.IsNullOrEmpty(name))
+                                        {
+                                            folder = FixAppXmlForInportAsDifferentApp(name, xdoc, appConfig, xmlPath);
+                                        }
+
                                         // Do not import (throw error) if the app directory already exists
                                         var appPath = _environment.TargetPath(folder);
                                         if (Directory.Exists(appPath))
-                                            throw new Exception(
+                                            throw new IOException(
                                                 "The app could not be installed because the app-folder '" + appPath +
-                                                "' already exists. Please remove or rename the folder in the [portals]/2sxc and install the app again.");
+                                                "' already exists.");
 
                                         if (xmlIndex == 0)
                                         {
                                             // Handle PortalFiles folder
                                             var portalTempRoot = Path.Combine(appDirectory, XmlConstants.PortalFiles);
                                             if (Directory.Exists(portalTempRoot))
-                                                _environment.TransferFilesToTenant(portalTempRoot, "");
+                                                _environment.TransferFilesToTenant(portalTempRoot, folder);
                                         }
 
                                         import.ImportApp(_zoneId, xdoc, out appId);
@@ -175,6 +185,15 @@ namespace ToSic.Eav.Apps.ImportExport
                     }
                 }
             }
+            catch (IOException e)
+            {
+                // The app could not be installed because the app-folder already exists. Install app in different folder?
+                finalEx = e; // keep to throw later
+                // Add error message and return false, but use MessageTypes.Warning so we can prompt user for new different name
+                messages.Add(new Message("Could not import the app / package: " + e.Message, Message.MessageTypes.Warning));
+                // Exceptions.LogException(e);
+                success = false;
+            }
             catch (Exception e)
             {
                 finalEx = e; // keep to throw later
@@ -206,6 +225,50 @@ namespace ToSic.Eav.Apps.ImportExport
 
             Log.Add("import zip - completed");
             return success;
+        }
+
+        private string FixAppXmlForInportAsDifferentApp(string name, XDocument xdoc, XElement appConfig, string xmlPath)
+        {
+            // save original AppId (because soon will be rewritten with empty string)
+            var originalAppId = xdoc.XPathSelectElement("//SexyContent/Header/App").Attribute("Guid").Value;
+            Log.Add($"original AppID:{originalAppId}");
+
+            // same App is already installed, so we have to change AppId 
+            xdoc.XPathSelectElement("//SexyContent/Header/App").SetAttributeValue("Guid", string.Empty);
+            Log.Add($"original AppID is empty");
+
+            // change folder to install app
+            xdoc.XPathSelectElement("//SexyContent/Entities/Entity/Value[@Key='Folder']").SetAttributeValue("Value", name);
+            Log.Add($"change folder to install app:{name}");
+
+            // find Value element with OriginalId attribute
+            var valueElementWithOriginalIdAttribute = appConfig.Elements(XmlConstants.ValueNode).FirstOrDefault(v => v.Attribute(XmlConstants.KeyAttr)?.Value == "OriginalId");
+            // if missing add new Value element with OriginalId attribute
+            if (valueElementWithOriginalIdAttribute == null)
+            {
+                Log.Add($"Value element with OriginalId attribute is missing, so we are adding new one with OriginalId:{originalAppId}");
+                var valueElement = new XElement("Value");
+                valueElement.SetAttributeValue("Key", "OriginalId");
+                valueElement.SetAttributeValue("Value", originalAppId);
+                valueElement.SetAttributeValue("Type", "String");
+                appConfig.Add(valueElement);
+            }
+            else
+            {
+                // if OriginalID is empty, than add original AppId to it
+                var originalId = valueElementWithOriginalIdAttribute.Attribute(XmlConstants.ValueAttr)?.Value;
+                Log.Add($"current OriginalId:{originalId}");
+
+                if (string.IsNullOrEmpty(originalId))
+                {
+                    Log.Add($"current OriginalId is empty, so adding OriginalId:{originalAppId}");
+                    appConfig.Elements(XmlConstants.ValueNode).First(v => v.Attribute(XmlConstants.KeyAttr)?.Value == "OriginalId").SetAttributeValue("OriginalId", originalAppId);
+                }
+            }
+
+            xdoc.Save(xmlPath); // this is not necessary, but good to have it saved in file for debugging
+
+            return name;
         }
 
         private void CheckRequiredEnvironmentVersions(string reqVersionNode, string reqVersionNodeDnn)

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Implementations.UserInformation;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Efc;
@@ -280,13 +280,17 @@ namespace ToSic.Eav.Repository.Efc
         public void DoWhileQueuingVersioning(Action action) => Versioning.QueueDuringAction(action);
         public void DoWhileQueueingRelationships(Action action) => Relationships.DoWhileQueueingRelationships(action);
 
-        public List<int> Save(List<IEntity> entities, SaveOptions saveOptions) 
-            => Entities.SaveEntity(entities, saveOptions);
+        public List<int> Save(List<IEntity> entities, SaveOptions saveOptions)
+        {
+            History.Add("save-data", Log);
+            return Entities.SaveEntity(entities, saveOptions);
+        }
 
-        public int Save(IEntity entity, SaveOptions saveOptions) 
-            => Entities.SaveEntity(entity, saveOptions);
 
-        public void Save(List<IContentType> contentTypes, SaveOptions saveOptions) 
+        //public int Save(IEntity entity, SaveOptions saveOptions) 
+        //    => Entities.SaveEntity(entity, saveOptions);
+
+        public void Save(List<IContentType> contentTypes, SaveOptions saveOptions)
             => ContentType.ExtendSaveContentTypes(contentTypes, saveOptions);
 
         #endregion

@@ -70,13 +70,18 @@ namespace ToSic.Eav.DataSources.System
                 : DataSource.GetCache(ZoneId, AppId).GetContentType(ContentTypeName);
 
 	        // try to load from type, if it exists
-	        var list = type?.Attributes?.OrderBy(at => at.Name).Select(BuildDictionary).ToList()
-	                   ?? (TryToUseInStream == ContentTypeName
-	                       ? optionalList?.FirstOrDefault()?.Attributes
-	                           .OrderBy(at => at.Key)
-	                           .Select(BuildDictionary)
-	                           .ToList()
-	                       : null);
+	        var list = type?.Attributes?.OrderBy(at => at.Name).Select(BuildDictionary).ToList();
+
+            // note that often dynamic types will have zero attributes, so the previous command
+            // gives a 0-list of attributes
+            // so if that's the case, check the first item in the results
+	        if (list == null || list.Count == 0)
+	            list = TryToUseInStream == ContentTypeName
+	                ? optionalList?.FirstOrDefault()?.Attributes
+	                    .OrderBy(at => at.Key)
+	                    .Select(BuildDictionary)
+	                    .ToList()
+	                : null;
 
             // if it didn't work yet, maybe try from stream items
 
