@@ -229,6 +229,9 @@ namespace ToSic.Eav.Apps.ImportExport
 
         private string FixAppXmlForInportAsDifferentApp(string name, XDocument xdoc, XElement appConfig, string xmlPath)
         {
+            // save original App folder
+            var originalFolder = appConfig.Elements(XmlConstants.ValueNode).First(v => v.Attribute(XmlConstants.KeyAttr)?.Value == "Folder").Attribute(XmlConstants.ValueAttr)?.Value;
+
             // save original AppId (because soon will be rewritten with empty string)
             var originalAppId = xdoc.XPathSelectElement("//SexyContent/Header/App").Attribute("Guid").Value;
             Log.Add($"original AppID:{originalAppId}");
@@ -263,6 +266,30 @@ namespace ToSic.Eav.Apps.ImportExport
                 {
                     Log.Add($"current OriginalId is empty, so adding OriginalId:{originalAppId}");
                     appConfig.Elements(XmlConstants.ValueNode).First(v => v.Attribute(XmlConstants.KeyAttr)?.Value == "OriginalId").SetAttributeValue("OriginalId", originalAppId);
+                }
+            }
+
+            // change folder in PortalFolders
+            var folders = xdoc.Element(XmlConstants.RootNode)?.Elements(XmlConstants.FolderGroup)?.FirstOrDefault();
+            if (folders != null)
+            {
+                foreach (var folderItem in folders?.Elements(XmlConstants.Folder)?.ToList())
+                {
+                    string originalFolderRelativePath = folderItem.Attribute(XmlConstants.FolderNodePath).Value;
+                    string newFolderRelativePath = originalFolderRelativePath.Replace(originalFolder, name);
+                    folderItem.SetAttributeValue(XmlConstants.FolderNodePath, newFolderRelativePath);
+                }
+            }
+
+            // change app folder in PortalFiles
+            var files = xdoc.Element(XmlConstants.RootNode)?.Elements(XmlConstants.PortalFiles)?.FirstOrDefault();
+            if (files != null)
+            {
+                foreach (var fileItem in files?.Elements(XmlConstants.FileNode)?.ToList())
+                {
+                    string originalFileRelativePath = fileItem.Attribute(XmlConstants.FolderNodePath).Value;
+                    string newFileRelativePath = originalFileRelativePath.Replace(originalFolder, name);
+                    fileItem.SetAttributeValue(XmlConstants.FolderNodePath, newFileRelativePath);
                 }
             }
 
