@@ -33,11 +33,18 @@ namespace ToSic.Eav.Types
                     codeTypes.Add(t.StaticName, t);
             });
             Log.Add($"will return {codeTypes.Count} content-types");
+
+            // FIRST create the nice-names dictionary, so it always exists when the static-name dic exists
+            _globalContentTypesCacheNiceNames = codeTypes.ToImmutableDictionary(t => t.Value.Name, t => t.Value,
+                StringComparer.OrdinalIgnoreCase);
+
             // make sure it's case insensitive...
             _globalContentTypesCache = codeTypes.ToImmutableDictionary(StringComparer.OrdinalIgnoreCase);
+
             return _globalContentTypesCache;
         }
         private static ImmutableDictionary<string, IContentType> _globalContentTypesCache;
+        private static ImmutableDictionary<string, IContentType> _globalContentTypesCacheNiceNames;
 
 
 
@@ -46,8 +53,12 @@ namespace ToSic.Eav.Types
             // use the types which have been loaded
             // this is to enable lookup of system types, while in the background we're still building the json-types
             // this is important, because the deserializer for json will also call this
-            var types = _globalContentTypesCache != null ? AllContentTypes() : CodeContentTypes(Log);
-            return types.ContainsKey(name) ? types[name] : null;
+            var types = _globalContentTypesCache ?? CodeContentTypes(Log);
+            return types.ContainsKey(name)
+                ? types[name]
+                : (_globalContentTypesCacheNiceNames?.ContainsKey(name) ?? false)
+                    ? _globalContentTypesCacheNiceNames[name]
+                    : null;
         }
     }
 }
