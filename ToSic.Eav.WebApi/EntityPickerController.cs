@@ -34,14 +34,13 @@ namespace ToSic.Eav.WebApi
                 Log.Add($"tried to get '{contentTypeName}' - found: {contentType != null}");
             }
 
-            //var dsrc = DataSource.GetInitialDataSource(null, appId);
-            IEnumerable<IEntity> temp;// = dsrc["Default"].List;
+            IEnumerable<IEntity> temp;
 
             // optionally filter by type
             if (contentType != null)
             {
                 Log.Add($"filter by type:{contentType.Name}");
-                temp = appRead.Entities.Get(contentTypeName); // temp.Where(l => l.Type == contentType);
+                temp = appRead.Entities.Get(contentTypeName);
             }
             else
             {

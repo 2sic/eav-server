@@ -28,14 +28,27 @@ namespace ToSic.Eav.Apps.Parts
         /// Publish an entity 
         /// </summary>
         /// <param name="entityId"></param>
-        /// <param name="state"></param>
         /// <returns></returns>
-        public bool Publish(int entityId, bool state)
+        public void Publish(int entityId)
         {
-            Log.Add("publish id:" + entityId + ", state:" + state);
-            AppManager.DataController.Publishing.PublishDraftInDbEntity(entityId); 
+            PublishWithoutPurge(entityId);
+            // for now, do a full purge as it's the safest. in the future, maybe do a partial cache-update
             SystemManager.Purge(AppManager.AppId);
-            return state;
+        }
+
+        private void PublishWithoutPurge(int entityId)
+        {
+            // first, make sure we're publishing the draft, because the entityId might be the published one...
+            var contEntity = AppManager.Read.Entities.Get(entityId);
+            var maybeDraft = contEntity.IsPublished ? contEntity.GetDraft() : contEntity;
+            var repoId = maybeDraft.RepositoryId;
+
+            Log.Add($"publish requested for id:{entityId}, will publish: {repoId}");
+
+            if (!maybeDraft.IsPublished)
+                AppManager.DataController.Publishing.PublishDraftInDbEntity(repoId);
+            else
+                Log.Add("didn't publish, as it was already published");
         }
 
         /// <summary>
@@ -46,14 +59,12 @@ namespace ToSic.Eav.Apps.Parts
         {
             Log.Add(() => "publish many:" + entityIds.Length + " items [" + string.Join(",", entityIds) + "]");
             foreach (var eid in entityIds)
-            {
                 try
                 {
-                    Log.Add("publish id:" + eid);
-                    AppManager.DataController.Publishing.PublishDraftInDbEntity(eid);
+                    PublishWithoutPurge(eid);
                 }
-                catch (Repository.Efc.Parts.EntityAlreadyPublishedException) { }
-            }
+                catch (Repository.Efc.Parts.EntityAlreadyPublishedException) { /* ignore */ }
+            // for now, do a full purge as it's the safest. in the future, maybe do a partial cache-update
             SystemManager.Purge(AppManager.AppId);
         }
 
@@ -80,7 +91,7 @@ namespace ToSic.Eav.Apps.Parts
 
             #region check if we can delete, or throw exception
 
-            var canDelete = CanDelete(id);// AppManager.DataController.Entities.CanDeleteEntity(id);
+            var canDelete = CanDelete(id);
             if (!canDelete.Item1 && !force && !skipIfCant)
                 throw new InvalidOperationException($"Item {id} cannot be deleted. It is used by other items: {canDelete.Item2}");
             #endregion
