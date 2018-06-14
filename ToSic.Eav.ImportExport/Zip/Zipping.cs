@@ -54,9 +54,10 @@ namespace ToSic.Eav.ImportExport.Zip
 
             using (var fs = File.OpenRead(file))
             {
-                entry.Size = fs.Length;
                 // Setting the Size provides WinXP built-in extractor compatibility,
-                //  but if not available, you can set zipOutputStream.UseZip64 = UseZip64.Off instead.
+                // but if not available, you can set zipOutputStream.UseZip64 = UseZip64.Off instead.
+                entry.Size = fs.Length;
+
                 zStream.PutNextEntry(entry);
 
                 int sourceBytes;
