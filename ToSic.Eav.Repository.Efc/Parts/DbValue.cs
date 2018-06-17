@@ -16,11 +16,16 @@ namespace ToSic.Eav.Repository.Efc.Parts
         {
             Log.Add($"CloneEntitySimpleValues({source.EntityId}, {target.EntityId})");
             // Clear values on target (including Dimensions). Must be done in separate steps, would cause unallowed null-Foreign-Keys
+            var delCount = 0;
             if (target.ToSicEavValues.Any(v => v.ChangeLogDeleted == null))
                 foreach (var eavValue in target.ToSicEavValues.Where(v => v.ChangeLogDeleted == null))
+                {
                     eavValue.ChangeLogDeleted = DbContext.Versioning.GetChangeLogId();
+                    delCount++;
+                }
 
             // Add all Values with Dimensions
+            var cloneCount = 0;
             foreach (var eavValue in source.ToSicEavValues.ToList())
             {
                 var value = new ToSicEavValues
@@ -39,7 +44,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     });
 
                 target.ToSicEavValues.Add(value);
+                cloneCount++;
             }
+            Log.Add($"DelCount: {delCount}, cloneCount:{cloneCount} (note: should be 0 if json)");
+            Log.Add($"/CloneEntitySimpleValues({source.EntityId}, {target.EntityId})");
         }
 
         internal void CloneRelationshipsAndSave(ToSicEavEntities source, ToSicEavEntities target)
