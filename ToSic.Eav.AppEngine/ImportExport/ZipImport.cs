@@ -129,7 +129,10 @@ namespace ToSic.Eav.Apps.ImportExport
                                         // user decided to install app in different folder, because same App is already installed
                                         if (!String.IsNullOrEmpty(name))
                                         {
-                                            folder = FixAppXmlForInportAsDifferentApp(name, xdoc, appConfig, xmlPath);
+                                            Log.Add($"user decided to install app in different folder:{name}, because app is already installed in folder:{folder}");
+                                            FixAppXmlForInportAsDifferentApp(name, xdoc, appConfig, xmlPath);
+                                            FixPortalFilesAdamAppFolderName(appDirectory, folder, name);
+                                            folder = name;
                                         }
 
                                         // Do not import (throw error) if the app directory already exists
@@ -144,7 +147,9 @@ namespace ToSic.Eav.Apps.ImportExport
                                             // Handle PortalFiles folder
                                             var portalTempRoot = Path.Combine(appDirectory, XmlConstants.PortalFiles);
                                             if (Directory.Exists(portalTempRoot))
-                                                _environment.TransferFilesToTenant(portalTempRoot, folder);
+                                            {
+                                                _environment.TransferFilesToTenant(portalTempRoot, string.Empty);
+                                            }
                                         }
 
                                         import.ImportApp(_zoneId, xdoc, out appId);
@@ -227,8 +232,11 @@ namespace ToSic.Eav.Apps.ImportExport
             return success;
         }
 
-        private string FixAppXmlForInportAsDifferentApp(string name, XDocument xdoc, XElement appConfig, string xmlPath)
+        private void FixAppXmlForInportAsDifferentApp(string name, XDocument xdoc, XElement appConfig, string xmlPath)
         {
+            // save original App folder
+            var originalFolder = appConfig.Elements(XmlConstants.ValueNode).First(v => v.Attribute(XmlConstants.KeyAttr)?.Value == "Folder").Attribute(XmlConstants.ValueAttr)?.Value;
+
             // save original AppId (because soon will be rewritten with empty string)
             var originalAppId = xdoc.XPathSelectElement("//SexyContent/Header/App").Attribute("Guid").Value;
             Log.Add($"original AppID:{originalAppId}");
@@ -266,9 +274,50 @@ namespace ToSic.Eav.Apps.ImportExport
                 }
             }
 
-            xdoc.Save(xmlPath); // this is not necessary, but good to have it saved in file for debugging
+            // change folder in PortalFolders
+            var folders = xdoc.Element(XmlConstants.RootNode)?.Elements(XmlConstants.FolderGroup)?.FirstOrDefault();
+            if (folders != null)
+            {
+                foreach (var folderItem in folders?.Elements(XmlConstants.Folder)?.ToList())
+                {
+                    string originalFolderRelativePath = folderItem.Attribute(XmlConstants.FolderNodePath).Value;
+                    // replace first occurrence of original app name in folder relative path with new name
+                    int position = originalFolderRelativePath.IndexOf(originalFolder);
+                    if (position == -1) continue;
+                    string newFolderRelativePath = originalFolderRelativePath.Remove(position, originalFolder.Length).Insert(position, name);
+                    Log.Add($"replace first occurrence of original app name in folder relative path:{newFolderRelativePath}");
+                    folderItem.SetAttributeValue(XmlConstants.FolderNodePath, newFolderRelativePath);
+                }
+            }
 
-            return name;
+            // change app folder in PortalFiles
+            var files = xdoc.Element(XmlConstants.RootNode)?.Elements(XmlConstants.PortalFiles)?.FirstOrDefault();
+            if (files != null)
+            {
+                foreach (var fileItem in files?.Elements(XmlConstants.FileNode)?.ToList())
+                {
+                    string originalFileRelativePath = fileItem.Attribute(XmlConstants.FolderNodePath).Value;
+                    // replace first occurrence of original app name in file relative path with new name
+                    int position = originalFileRelativePath.IndexOf(originalFolder);
+                    if (position == -1) continue;
+                    string newFileRelativePath = originalFileRelativePath.Remove(position, originalFolder.Length).Insert(position, name);
+                    Log.Add($"replace first occurrence of original app name in file relative path:{newFileRelativePath}");
+                    fileItem.SetAttributeValue(XmlConstants.FolderNodePath, newFileRelativePath);
+                }
+            }
+
+            xdoc.Save(xmlPath); // this is not necessary, but good to have it saved in file for debugging
+        }
+
+        private void FixPortalFilesAdamAppFolderName(string appDirectory, string originalFolderName, string newFolderName)
+        {
+            var originalPortalFilesAdamAppTempRoot = Path.Combine(appDirectory, XmlConstants.PortalFiles, "adam", originalFolderName);
+            var newPortalFilesAdamAppTempRoot = Path.Combine(appDirectory, XmlConstants.PortalFiles, "adam", newFolderName);
+            if (Directory.Exists(originalPortalFilesAdamAppTempRoot))
+            {
+                Log.Add($"rename app folder name in temp PortalFiles/adam from:{originalPortalFilesAdamAppTempRoot} to:{newPortalFilesAdamAppTempRoot}");
+                Directory.Move(originalPortalFilesAdamAppTempRoot, newPortalFilesAdamAppTempRoot);
+            }
         }
 
         private void CheckRequiredEnvironmentVersions(string reqVersionNode, string reqVersionNodeDnn)
@@ -331,7 +380,6 @@ namespace ToSic.Eav.Apps.ImportExport
 
             return success;
         }
-
 
     }
 }

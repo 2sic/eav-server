@@ -12,7 +12,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         internal bool DeleteEntity(int repositoryId, bool autoSave = true, bool removeFromParents = false)
         {
-            Log.Add($"delete entity rep-id:{repositoryId}, remove-from-parents:{removeFromParents}, auto-save:{autoSave}");
+            Log.Add($"DeleteEntity(rep-id:{repositoryId}, remove-from-parents:{removeFromParents}, auto-save:{autoSave})");
             if (repositoryId == 0)
                 return false;
 
@@ -58,12 +58,19 @@ namespace ToSic.Eav.Repository.Efc.Parts
             if (autoSave)
                 DbContext.SqlDb.SaveChanges();
 
+            Log.Add("DeleteEntity(...) done");
+
             return true;
         }
 
         private void DeleteRelationships(ICollection<ToSicEavEntityRelationships> relationships)
         {
-            relationships.ToList().ForEach(r => DbContext.SqlDb.ToSicEavEntityRelationships.Remove(r));
+            Log.Add($"DeleteRelationships({relationships?.Count})");
+            if ((relationships?.Count ?? 0) == 0)
+                Log.Add("No relationships to delete");
+            else
+                relationships?.ToList().ForEach(r => DbContext.SqlDb.ToSicEavEntityRelationships.Remove(r));
+            Log.Add("/DeleteRelationships(...)");
         }
 
 

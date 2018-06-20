@@ -27,7 +27,7 @@ namespace ToSic.Eav.Apps
         /// <param name="logKey">a log key because most inheriting objects will want their own key in the log</param>
         /// <param name="initialMessage"></param>
         public AppIdentity(int zoneId, int appId, Log parentLog, string logKey = null, string initialMessage = null) 
-            : base(logKey ?? "App.Identy", parentLog, initialMessage)
+            : base(logKey ?? "App.Identy", parentLog, initialMessage ?? $"Zone {zoneId}, App {appId}")
         {
             ZoneId = zoneId;
             AppId = appId;
