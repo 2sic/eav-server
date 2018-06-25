@@ -1,51 +1,34 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Types
 {
-    public partial class Global
+    public class Global
     {
         public static Log Log = new Log("Eav.GlbTyp");
+
+        /// <summary>
+        /// The constructor is automatically run exactly 1x when the first bit of code
+        /// accesses any static property of this object
+        /// </summary>
+       static Global() => History.Add("global-types", Log);
+
+        /// <summary>
+        /// Now using a Lazy method like recommended in
+        /// http://csharpindepth.com/Articles/General/Singleton.aspx#lock
+        /// </summary>
+        private static readonly Lazy<GlobalTypeLoader> Lazy 
+            = new Lazy<GlobalTypeLoader>(() => new GlobalTypeLoader(Log));
 
         /// <summary>
         /// Dictionary of code-provided content-types, caches after first scan
         /// </summary>
         /// <returns></returns>
-        public static ImmutableDictionary<string, IContentType> AllContentTypes()
-        {
-            if (_globalContentTypesCache != null) return _globalContentTypesCache;
-
-            // copy the code-types dictionary...
-            Log.Add($"AllContentTypes starting load at {DateTime.Now}");
-            var codeTypes = new Dictionary<string, IContentType>(CodeContentTypes(Log), StringComparer.OrdinalIgnoreCase);
-
-            // add runtime stuff
-            var runtimeType = ContentTypesInRuntime(Log).ToList();
-
-            // merge lists, preferences is code-types
-            runtimeType.ForEach(t =>
-            {
-                if (!codeTypes.ContainsKey(t.StaticName))
-                    codeTypes.Add(t.StaticName, t);
-            });
-            Log.Add($"will return {codeTypes.Count} content-types");
-
-            // FIRST create the nice-names dictionary, so it always exists when the static-name dic exists
-            _globalContentTypesCacheNiceNames = codeTypes.ToImmutableDictionary(t => t.Value.Name, t => t.Value,
-                StringComparer.OrdinalIgnoreCase);
-
-            // make sure it's case insensitive...
-            _globalContentTypesCache = codeTypes.ToImmutableDictionary(StringComparer.OrdinalIgnoreCase);
-
-            return _globalContentTypesCache;
-        }
-        private static ImmutableDictionary<string, IContentType> _globalContentTypesCache;
-        private static ImmutableDictionary<string, IContentType> _globalContentTypesCacheNiceNames;
-
+        public static ImmutableDictionary<string, IContentType> AllContentTypes() 
+            => Lazy.Value.ByStaticName;
 
 
         public static IContentType FindContentType(string name)
@@ -53,12 +36,22 @@ namespace ToSic.Eav.Types
             // use the types which have been loaded
             // this is to enable lookup of system types, while in the background we're still building the json-types
             // this is important, because the deserializer for json will also call this
-            var types = _globalContentTypesCache ?? CodeContentTypes(Log);
-            return types.ContainsKey(name)
-                ? types[name]
-                : (_globalContentTypesCacheNiceNames?.ContainsKey(name) ?? false)
-                    ? _globalContentTypesCacheNiceNames[name]
-                    : null;
+            // when trying to load the first file-system based content-types (while initializing the types)
+            if (!Lazy.IsValueCreated)
+            {
+                Log.Add($"FindContentType({name}) before global types have been loaded = null");
+                return null;
+            }
+
+            var types = Lazy.Value.ByStaticName;
+            if (types.ContainsKey(name))
+                return types[name];
+
+            // now also try with nice-name
+            var niceNamedType = Lazy.Value.ByNiceName;
+            return niceNamedType.ContainsKey(name) 
+                ? niceNamedType[name]
+                : null;
         }
     }
 }
