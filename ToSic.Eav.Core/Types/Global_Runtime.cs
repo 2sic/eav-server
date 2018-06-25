@@ -11,7 +11,7 @@ namespace ToSic.Eav.Types
         /// All content-types available in Reflection; will cache after first scan
         /// </summary>
         /// <returns></returns>
-        internal static IEnumerable<IContentType> ContentTypesInRuntime(Log log)
+        private static IEnumerable<IContentType> ContentTypesInRuntime(Log log)
         {
             if (_runtimeCache != null) return _runtimeCache;
 
