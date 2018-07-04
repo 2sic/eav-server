@@ -2,6 +2,8 @@
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Data;
+using ToSic.Eav.Logging;
+using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Persistence.Efc
 {
@@ -9,7 +11,9 @@ namespace ToSic.Eav.Persistence.Efc
     {
         public Dictionary<int, Zone> Zones()
         {
-            Log.Add("Zones()");
+            var log = new Log("DB.EfLoad", null, "Zones()");
+            History.Add("zone-app-map", log);
+
             return _dbContext.ToSicEavZones
                 .Include(z => z.ToSicEavApps)
                 .Include(z => z.ToSicEavDimensions)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Caching;
@@ -39,7 +40,7 @@ namespace ToSic.Eav.DataSources.Caches
 	    /// <summary>
 	    /// Gets or sets the Dictionary of all Zones an Apps
 	    /// </summary>
-	    public abstract Dictionary<int, Zone> ZoneApps { get; /*protected set;*/ }
+	    public abstract Dictionary<int, Zone> ZoneApps { get; }
 
         protected Dictionary<int, Zone> LoadZoneApps() => Backend.GetAllZones();
 
@@ -78,28 +79,34 @@ namespace ToSic.Eav.DataSources.Caches
 		/// </summary>
 		protected AppDataPackage EnsureCache()
 		{
-            //if (ZoneApps == null)
-            //{
-            //    ZoneApps = Backend.GetAllZones();
-            //}
-
             if (ZoneId == 0 || AppId == 0)
                 return null;
 
             var cacheKey = CachePartialKey;
 
-            if (!HasCacheItem(cacheKey))
-            {
-                // Init EavSqlStore once
-                var zone = GetZoneAppInternal(ZoneId, AppId);
-                Backend.InitZoneApp(zone.Item1, zone.Item2);
+		    if (!HasCacheItem(cacheKey))
+		    {
+                // create lock to prevent parallel initialization
+	            var lockKey = LoadLocks.GetOrAdd(cacheKey, new object());
+		        lock (lockKey)
+		        {
+                    // now that lock is free, it could have been initialized, so re-check
+		            if (!HasCacheItem(cacheKey))
+		            {
+		                // Init EavSqlStore once
+		                var zone = GetZoneAppInternal(ZoneId, AppId);
+		                Backend.InitZoneApp(zone.Item1, zone.Item2);
+		                SetCacheItem(cacheKey, Backend.GetDataForCache());
+		            }
+		        }
+		    }
 
-                SetCacheItem(cacheKey, Backend.GetDataForCache());
-            }
-
-            return GetCacheItem(cacheKey);
+		    return GetCacheItem(cacheKey);
             
         }
+
+        private static readonly ConcurrentDictionary<string, object> LoadLocks 
+            = new ConcurrentDictionary<string, object>();
 
 	    public AppDataPackage AppDataPackage => EnsureCache();
 
