@@ -4,8 +4,6 @@ using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.RootSources;
 using ToSic.Eav.Interfaces;
 
-//using ToSic.Eav.Repository.EF4;
-
 // important: don't change the namespace just like that, as there are strings referencing it for this loader
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataSources.SqlSources
@@ -38,8 +36,6 @@ namespace ToSic.Eav.DataSources.SqlSources
             IEnumerable<IEntity> GetItems() => Loader.AppPackage(AppId, null, Log).List;
 		}
 
-
-
 		/// <inheritdoc />
 		/// <summary>
 		/// Set Zone and App for this DataSource
@@ -57,7 +53,5 @@ namespace ToSic.Eav.DataSources.SqlSources
             => Loader.AppPackage(AppId, parentLog: Log);
 
 	    public Dictionary<int, Zone> GetAllZones() => Loader.Zones();
-
-	    //public ImmutableDictionary<int, string> GetAssignmentObjectTypes() => Factory.Resolve<IGlobalMetadataProvider>().TargetTypes; // Loader.MetadataTargetTypes();
 	}
 }

@@ -21,9 +21,11 @@ namespace ToSic.Eav.DataSources.Caches
 
 		protected BaseCache()
 		{
+		    // ReSharper disable VirtualMemberCallInConstructor
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, () => AppDataPackage.List));
 			Out.Add(Constants.PublishedStreamName, new DataStream(this, Constants.PublishedStreamName, () => AppDataPackage.ListPublished));
 			Out.Add(Constants.DraftsStreamName, new DataStream(this, Constants.DraftsStreamName, () => AppDataPackage.ListNotHavingDrafts));
+		    // ReSharper restore VirtualMemberCallInConstructor
 
             ListDefaultRetentionTimeInSeconds = 60 * 60;
 		}
@@ -31,16 +33,17 @@ namespace ToSic.Eav.DataSources.Caches
         /// <summary>
 		/// The root DataSource
 		/// </summary>
-		/// <remarks>Unity sets this automatically</remarks>
-		public IRootSource Backend => _backend ?? (_backend = Factory.Resolve<IRootSource>());
+		private IRootSource Backend => _backend ?? (_backend = Factory.Resolve<IRootSource>());
 	    private IRootSource _backend;
 
-		/// <summary>
-		/// Gets or sets the Dictionary of all Zones an Apps
-		/// </summary>
-		public abstract Dictionary<int, Zone> ZoneApps { get; protected set; }
+	    /// <summary>
+	    /// Gets or sets the Dictionary of all Zones an Apps
+	    /// </summary>
+	    public abstract Dictionary<int, Zone> ZoneApps { get; /*protected set;*/ }
 
-		/// <summary>
+        protected Dictionary<int, Zone> LoadZoneApps() => Backend.GetAllZones();
+
+	    /// <summary>
 		/// Gets the KeySchema used to store values for a specific Zone and App. Must contain {0} for ZoneId and {1} for AppId
 		/// </summary>
 		public abstract string CacheKeySchema { get; }
@@ -75,10 +78,10 @@ namespace ToSic.Eav.DataSources.Caches
 		/// </summary>
 		protected AppDataPackage EnsureCache()
 		{
-            if (ZoneApps == null)
-            {
-                ZoneApps = Backend.GetAllZones();
-            }
+            //if (ZoneApps == null)
+            //{
+            //    ZoneApps = Backend.GetAllZones();
+            //}
 
             if (ZoneId == 0 || AppId == 0)
                 return null;
@@ -107,10 +110,10 @@ namespace ToSic.Eav.DataSources.Caches
 		public void PurgeCache(int zoneId, int appId) => RemoveCacheItem(string.Format(CacheKeySchema, zoneId, appId));
 
 	    /// <inheritdoc />
-		/// <summary>
-		/// Clear Zones/Apps List
-		/// </summary>
-		public void PurgeGlobalCache() => ZoneApps = null;
+	    /// <summary>
+	    /// Clear Zones/Apps List
+	    /// </summary>
+	    public abstract void PurgeGlobalCache();// => ZoneApps = null;
 
 	    #region Cache-Chain
 
