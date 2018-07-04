@@ -32,7 +32,8 @@ namespace ToSic.Eav.DataSources.Tests
                     }
                     else
                     {
-                        Assert.AreEqual("|Config " + ds.Type.FullName, dsDataType, $"types should be same {ds.Type.FullName}");
+                        // 2018-06-25 disabled this - as now the types provide their own names, and they can be different
+                        // Assert.AreEqual("|Config " + ds.Type.FullName, dsDataType, $"types should be same {ds.Type.FullName}");
                     }
                 }
             });

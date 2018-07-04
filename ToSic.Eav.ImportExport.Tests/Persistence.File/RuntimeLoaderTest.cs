@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Core.Tests.Types;
 using ToSic.Eav.ImportExport.Persistence.File;
@@ -38,18 +39,37 @@ namespace ToSic.Eav.ImportExport.Tests.Persistence.File
         public void TestWith40FileTypes_JustReRunIfItFails()
         {
             // set loader root path, based on test environment
-            RepositoryInfoOfTestSystem.PathToUse = TestingPath40;
 
             var time = Stopwatch.StartNew();
-            var all = Global.AllContentTypes();
+            RepositoryInfoOfTestSystem.PathToUse = TestingPath40;
+            var count = Global.AllContentTypes().Count;
             time.Stop();
             
-            Assert.IsTrue(all.Count >= 40 && all.Count <= 45);
+            Assert.IsTrue(count >= 40 && count <= 60, $"expected between 40 and 60, actually is {count}");
             Trace.WriteLine("time used: " + time.Elapsed);
         }
 
         [TestMethod]
-        public void TestWith400FileTypes()
+        [DeploymentItem("..\\..\\" + PathWith40Types, TestingPath40)]
+        public void TestConcurrentInitialize()
+        {
+            int res1 = 0, res2 = 0;
+            RepositoryInfoOfTestSystem.PathToUse = TestingPath40;
+
+            var t1 = new Thread(() => res1 = Global.AllContentTypes().Count);
+            var t2 = new Thread(() => res2 = Global.AllContentTypes().Count);
+
+            t1.Start();
+            t2.Start();
+            t1.Join();
+            t2.Join();
+            Assert.IsTrue(res1 > 0, "should have gotten a count");
+            Assert.AreEqual(res1, res2, "both res should be equal");
+        }
+
+        [TestMethod]
+        [DeploymentItem("..\\..\\" + PathWith40Types, TestingPath40)]
+        public void TimingWith400FileTypes()
         {
             // set loader root path, based on test environment
             RepositoryInfoOfTestSystem.PathToUse = TestingPath40;

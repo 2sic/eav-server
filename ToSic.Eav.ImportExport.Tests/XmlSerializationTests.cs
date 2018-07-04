@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Xml;
@@ -30,7 +32,9 @@ namespace ToSic.Eav.ImportExport.Tests
 
             var loader = new Efc11Loader(dbc.SqlDb);
             var app = loader.AppPackage(test.AppId);
-            var exBuilder = new XmlSerializer();
+            var zone = new ZoneRuntime(test.ZoneId, Log);
+            var languageMap = zone.Languages().ToDictionary(l => l.EnvironmentKey.ToLower(), l => l.DimensionId);
+            var exBuilder = new XmlSerializer(languageMap);
             exBuilder.Initialize(app, Log);
             var xmlEnt = exBuilder.Serialize(test.ItemOnHomeId);
             Assert.IsTrue(xmlEnt.Length > 200, "should get a long xml string");
@@ -47,7 +51,9 @@ namespace ToSic.Eav.ImportExport.Tests
             var dbc = DbDataController.Instance(null, appId, Log);
             var loader = new Efc11Loader(dbc.SqlDb);
             var app = loader.AppPackage(appId);
-            var exBuilder = new XmlSerializer();
+            var zone = new ZoneRuntime(test.ZoneId, Log);
+            var languageMap = zone.Languages().ToDictionary(l => l.EnvironmentKey.ToLower(), l => l.DimensionId);
+            var exBuilder = new XmlSerializer(languageMap);
             exBuilder.Initialize(app, Log);
 
             var maxCount = 500;

@@ -121,7 +121,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             // reload it
             var loader2 = new Efc11Loader(dbi.SqlDb); // use existing db context because the transaction is still open
             var app2 = loader2.AppPackage(test.AppId);
-            var itm2 = Data.Query.Entity.One(app2.List, newId);
+            var itm2 = Data.Query.Entity.One(app2.List, newId.First());
 
             Assert.AreEqual(itm2.GetBestTitle(), ctTitle, "title should be loaded as saved" );
 

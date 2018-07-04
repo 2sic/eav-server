@@ -12,12 +12,13 @@ namespace ToSic.Eav.Core.Tests.Types
     {
         public const int CodeTypesCount = 0; // 2018-03-09 no more code-types provided
 
-        [TestMethod]
-        public void ScanForTypesReflection()
-        {
-            var globTypes = Global.ContentTypesInReflection();
-            Assert.AreEqual(CodeTypesCount, globTypes.Count(), "expect a fixed about of types at dev time");
-        }
+        // 2018-06-25 2dm - as of now, there are not code-based content-types
+        //[TestMethod]
+        //public void ScanForTypesReflection()
+        //{
+        //    var globTypes = Global.ContentTypesInReflection();
+        //    Assert.AreEqual(CodeTypesCount, globTypes.Count(), "expect a fixed about of types at dev time");
+        //}
 
 
 
@@ -44,13 +45,13 @@ namespace ToSic.Eav.Core.Tests.Types
         //    Assert.AreEqual(TypesBase.UndefinedScope, testType.Scope, "scope should be undefined");
         //}
 
-        [TestMethod]
-        [Ignore]
-        public void TestUndefinedTitle()
-        {
-            // todo - must create an instance entity to test this
+        //[TestMethod]
+        //[Ignore]
+        //public void TestUndefinedTitle()
+        //{
+        //    // todo - must create an instance entity to test this
 
-        }
+        //}
 
     }
 }
