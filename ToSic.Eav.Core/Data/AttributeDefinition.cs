@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
 
@@ -78,8 +78,11 @@ namespace ToSic.Eav.Data
 
         public string InputType => FindInputType();
 
+        public string InputTypeTempBetterForNewUi => FindInputType2();
+
         /// <summary>
-        /// 
+        /// The old method, which returns the text "unknown" if not known. 
+        /// As soon as the new UI is used, this must be removed / deprecated
         /// </summary>
         /// <returns></returns>
         /// <remarks>
@@ -92,6 +95,28 @@ namespace ToSic.Eav.Data
             return string.IsNullOrEmpty(inputType) 
                 ? "unknown" // unknown will let the UI fallback on other mechanisms
                 : inputType;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        /// <remarks>
+        /// It's important to NOT cache this result, because it can change during runtime, and then a cached info would be wrong. 
+        /// </remarks>
+        private string FindInputType2()
+        {
+            var inputType = Metadata.GetBestValue<string>("InputType", "@All");
+
+            // if not available, check older metadata, where it was on the @String
+            if (string.IsNullOrWhiteSpace(inputType))
+                inputType = Metadata.GetBestValue<string>("InputType", "@String");
+
+            // if still not found, assemble from known type
+            if (string.IsNullOrWhiteSpace(inputType))
+                inputType = Type.ToLowerInvariant() + "-default";
+
+            return inputType;
         }
 
         #endregion InputType
