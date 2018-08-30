@@ -9,20 +9,18 @@ namespace ToSic.Eav.WebApi
 	/// Web API Controller for MetaData
 	/// Metadata-entities (content-items) are additional information about some other object
 	/// </summary>
-	public class SystemController : Eav3WebApiBase
+	public abstract class SystemController : Eav3WebApiBase
     {
-        public SystemController(Log parentLog = null) : base(parentLog, "Api.SysCon")
+        protected SystemController(Log parentLog = null) : base(parentLog, "Api.SysCon")
         {}
 
 
         /// <summary>
         /// Get Entities with specified AssignmentObjectTypeId and Key
         /// </summary>
-        public IEnumerable<Feature> Features(int appId)
-        {
-            //AppId = appId;
-            return Eav.Configuration.Features.Ui;
-        }
+        public IEnumerable<Feature> Features(int appId) => GetFeatures(appId);
+
+        public static IEnumerable<Feature> GetFeatures(int appId) => Eav.Configuration.Features.Ui;
 
     }
 }
