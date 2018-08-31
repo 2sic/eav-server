@@ -13,6 +13,7 @@ namespace ToSic.Eav.DataSources.Caches
     [VisualQuery(GlobalName = "ToSic.Eav.DataSources.Caches.CacheAllStreams, ToSic.Eav.DataSources",
         Type = DataSourceType.Cache, 
         DynamicOut = true,
+        ExpectsDataOfType = "|Config ToSic.Eav.DataSources.Caches.CacheAllStreams",
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-CacheAllStreams")]
 	public class CacheAllStreams : BaseDataSource, IDeferredDataSource
 	{
