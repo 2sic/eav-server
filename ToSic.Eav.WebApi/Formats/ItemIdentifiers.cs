@@ -6,18 +6,31 @@ namespace ToSic.Eav.WebApi.Formats
 
     public class ItemIdentifier
     {
-        // simple entity identifier (to edit existing)...
+        /// <summary>
+        /// simple entity identifier (to edit existing)...
+        /// </summary>
         public int EntityId { get; set; }
 
-        // the Guid
+        /// <summary>
+        ///  the Guid
+        /// </summary>
         public Guid Guid { get; set; } // not 
 
-        // ...or content-type (for new)
+        /// <summary>
+        /// the content-type (for new, and finding all fields etc.)
+        /// </summary>
         public string ContentTypeName { get; set; }
 
-        #region Additional Assignment information
+        /// <summary>
+        /// Additional Assignment (MetadataFor) information - important for new, assigned entities
+        /// </summary>
         public Metadata Metadata { get; set; }
-        #endregion
+
+
+        /// <summary>
+        /// Group information, for items which are coming from a group and not using direct IDs
+        /// This also contains information about 
+        /// </summary>
         public GroupAssignment Group { get; set; }
 
         // this is not needed on the server, but must be passed through so it's still attached to this item if in use
@@ -43,6 +56,9 @@ namespace ToSic.Eav.WebApi.Formats
 
     public class GroupAssignment
     {
+        /// <summary>
+        /// Entity Guid of the group
+        /// </summary>
         public Guid Guid { get; set; }
 
         /// <summary>
@@ -50,10 +66,19 @@ namespace ToSic.Eav.WebApi.Formats
         /// </summary>
         public string Part { get; set; }
 
+        /// <summary>
+        /// The index (position) in the group)
+        /// </summary>
+        /// <remarks>
+        /// We know that there is a small risk here, 
+        /// because if two people work on the same item the index could be off if a person adds items 
+        /// and the other person still viewing the last list (with different index).
+        /// It's low risk, so we won't address this ATM.
+        /// </remarks>
         public int Index { get; set; }
 
         /// <summary>
-        /// "Add" informs the save-routine that it is an additional slot
+        /// "Add" informs the save-routine that it is an additional slot which should be saved
         /// </summary>
         public bool Add { get; set; }
 

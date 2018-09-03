@@ -25,7 +25,6 @@ namespace ToSic.Eav.Data.Builder
                 type, isPublished, modified, owner, version);
 
             e.MetadataFor = metadataFor;
-            //e.Attributes = new Dictionary<string, IAttribute>(StringComparer.OrdinalIgnoreCase);
 
             e.Relationships = new RelationshipManager(e, source, null);
 
@@ -77,7 +76,6 @@ namespace ToSic.Eav.Data.Builder
             var e = EntityWithAllIdsAndType(entity.AppId, entity.EntityGuid, entity.EntityId, entity.RepositoryId, entity.Type, 
                 entity.IsPublished, entity.Modified, entity.Owner, entity.Version, attributes);
             e.TitleFieldName = entity.Title?.Name;
-            //e.Attributes = attributes;
             var lookupApp = (entity as Entity)?.DeferredLookupData as AppDataPackage;
             e.Relationships = new RelationshipManager(e, lookupApp, allRelationships);
 
