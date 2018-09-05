@@ -40,16 +40,26 @@ namespace ToSic.Eav.WebApi.Formats
         public int? DuplicateEntity { get; set; }
     }
 
-    public class EntityWithHeaderOldFormat
+    public class BundleWithHeader
     {
-        public ItemIdentifier Header { get; set; }
-        public EntityWithLanguages Entity { get; set; }
+        public ItemIdentifier Header { get; set; }     
     }
 
-    public class HeaderAndEntity
+    public class BundleWithHeader<T>: BundleWithHeader
     {
-        public ItemIdentifier Header { get; set; }
-        public IEntity Entity { get; set; }
+        public T Entity { get; set; }
+    }
+
+    public class BundleEntityWithLanguages: BundleWithHeader<EntityWithLanguages>
+    {
+        //public ItemIdentifier Header { get; set; }
+        //public EntityWithLanguages Entity { get; set; }
+    }
+
+    public class BundleIEntity: BundleWithHeader<IEntity>
+    {
+        //public ItemIdentifier Header { get; set; }
+        //public IEntity Entity { get; set; }
     }
 
 

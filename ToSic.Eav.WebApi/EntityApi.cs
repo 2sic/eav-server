@@ -74,11 +74,11 @@ namespace ToSic.Eav.WebApi
         public IEnumerable<Dictionary<string, object>> GetEntities(string contentType, string cultureCode = null) 
             => Serializer.Prepare(AppManager.Read.Entities.Get(contentType));
 
-        public List<HeaderAndEntity> GetEntitiesForEditing(int appId, List<ItemIdentifier> items)
+        public List<BundleIEntity> GetEntitiesForEditing(int appId, List<ItemIdentifier> items)
         {
             ReplaceSimpleTypeNames(items);
 
-            var list = items.Select(p => new HeaderAndEntity
+            var list = items.Select(p => new BundleIEntity
             {
                 Header = p,
                 Entity = p.EntityId != 0 || p.DuplicateEntity.HasValue

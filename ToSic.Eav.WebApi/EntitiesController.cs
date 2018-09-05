@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Http;
 using Newtonsoft.Json;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Enums;
@@ -22,7 +23,16 @@ namespace ToSic.Eav.WebApi
         public EntitiesController(int appId) : base(appId) { }
         public EntitiesController(Log parentLog) : base(parentLog) { }
 
-        public Dictionary<Guid, int> SaveMany([FromUri] int appId, [FromBody] List<EntityWithHeaderOldFormat> items, [FromUri] bool partOfPage = false, bool draftOnly = false)
+        public Dictionary<Guid, int> SaveMany([FromUri] int appId, [FromBody] List<BundleEntityWithLanguages> items,
+            [FromUri] bool partOfPage = false, bool draftOnly = false) 
+            => SaveManyBundles(appId, items, partOfPage, draftOnly);
+
+
+        public Dictionary<Guid, int> SaveManyBundles(
+            int appId, 
+            List<BundleEntityWithLanguages> items, 
+            bool partOfPage = false, 
+            bool draftOnly = false)
         {
             var myLog = new Log("Eav.SavMny", Log, $"SaveMany(appId:{appId}, items:{items.Count}, partOfPage:{partOfPage}, draftOnly:{draftOnly})");
 
@@ -42,7 +52,6 @@ namespace ToSic.Eav.WebApi
                 }
 
             var appMan = new AppManager(appId, Log);
-
             IDeferredEntitiesList appPack = appMan.Package;
 
             var entitiesToImport = items
@@ -55,22 +64,32 @@ namespace ToSic.Eav.WebApi
             appMan.Entities.Save(entitiesToImport);
 
             // find / update IDs of items updated to return to client
-            var idList = items.Select(e =>
-            {
-                var foundEntity = appMan.Read.Entities.Get(e.Header.Guid);
-                var state = foundEntity == null ? "not found" : foundEntity.IsPublished ? "published": "draft";
-                var draft = foundEntity?.GetDraft();
-                Log.Add($"draft check: entity {e.Header.Guid} ({state}) - additional draft: {draft != null} - will return the draft");
-                return draft ?? foundEntity;  // return the draft (that would be the latest), or the found, or null if not found
-            })
-            .Where(e => e != null)
-            .ToDictionary(f => f.EntityGuid, f => f.EntityId);
+            return GenerateIdList(items, appMan.Read.Entities);
+        }
 
+        /// <summary>
+        /// Generate pairs of guid/id of the newly added items
+        /// </summary>
+        /// <returns></returns>
+        private Dictionary<Guid, int> GenerateIdList(IEnumerable<BundleWithHeader> items, EntityRuntime appEntities)
+        {
+            var idList = items.Select(e =>
+                {
+                    var foundEntity = appEntities.Get(e.Header.Guid);
+                    var state = foundEntity == null ? "not found" : foundEntity.IsPublished ? "published" : "draft";
+                    var draft = foundEntity?.GetDraft();
+                    Log.Add(
+                        $"draft check: entity {e.Header.Guid} ({state}) - additional draft: {draft != null} - will return the draft");
+                    return
+                        draft ?? foundEntity; // return the draft (that would be the latest), or the found, or null if not found
+                })
+                .Where(e => e != null)
+                .ToDictionary(f => f.EntityGuid, f => f.EntityId);
             return idList;
         }
 
 
-        private Entity CreateEntityFromTransferObject(AppManager appMan, EntityWithHeaderOldFormat editInfo, IDeferredEntitiesList allEntitiesForRelationships)
+        private Entity CreateEntityFromTransferObject(AppManager appMan, BundleEntityWithLanguages editInfo, IDeferredEntitiesList allEntitiesForRelationships)
         {
             Log.Add($"CreateEntityFromTransferObject(editInfo:{editInfo.Header.ContentTypeName}:{editInfo.Header.Guid}, allEntitiesForRelationships:{allEntitiesForRelationships?.List?.Count()})");
             var toEntity = editInfo.Entity;
