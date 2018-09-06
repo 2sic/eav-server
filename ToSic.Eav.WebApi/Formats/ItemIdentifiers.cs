@@ -1,4 +1,7 @@
 ﻿using System;
+using ToSic.Eav.Data;
+using ToSic.Eav.Data.Builder;
+using ToSic.Eav.ImportExport.Json.Format;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.WebApi.Formats
@@ -48,15 +51,78 @@ namespace ToSic.Eav.WebApi.Formats
     public class BundleWithHeader<T>: BundleWithHeader
     {
         public T Entity { get; set; }
+
+        /// <summary>
+        /// Temporary solution to provide get/set EntityGuid across all expected types
+        /// remove this when only then new save is being used
+        /// </summary>
+        [Newtonsoft.Json.JsonIgnore]
+        public Guid EntityGuid
+        {
+            get
+            {
+                switch (Entity)
+                {
+                    case IEntity ent:
+                        return ent.EntityGuid;
+                    case EntityWithLanguages entLang:
+                        return entLang.Guid;
+                    case JsonEntity entJson:
+                        return entJson.Guid;
+                    default:
+                        throw new Exception($"BundleWithHeader<T> - found unsupported type of T: {Entity.GetType().Name}");
+                }
+
+            }
+
+            set
+            {
+                switch (Entity)
+                {
+                    case Entity ent:
+                        ent.SetGuid(value);
+                        break;
+                    case EntityWithLanguages entLang:
+                        entLang.Guid = value;
+                        break;
+                    case JsonEntity entJson:
+                        entJson.Guid = value;
+                        break;
+                    default:
+                        throw new Exception($"BundleWithHeader<T> - found unsupported type of T: {Entity.GetType().Name}");
+                }
+            }
+        }
+
+        [Newtonsoft.Json.JsonIgnore]
+        public int EntityId
+        {
+            get
+            {
+                switch (Entity)
+                {
+                    case IEntity ent:
+                        return ent.EntityId;
+                    case EntityWithLanguages entLang:
+                        return entLang.Id;
+                    case JsonEntity entJson:
+                        return entJson.Id;
+                    default:
+                        throw new Exception(
+                            $"BundleWithHeader<T> - found unsupported type of T: {Entity.GetType().Name}");
+                }
+
+            }
+        }
     }
 
-    public class BundleEntityWithLanguages: BundleWithHeader<EntityWithLanguages>
-    {
-        //public ItemIdentifier Header { get; set; }
-        //public EntityWithLanguages Entity { get; set; }
-    }
+        //public class BundleEntityWithLanguages: BundleWithHeader<EntityWithLanguages>
+        //{
+        //    //public ItemIdentifier Header { get; set; }
+        //    //public EntityWithLanguages Entity { get; set; }
+        //}
 
-    public class BundleIEntity: BundleWithHeader<IEntity>
+        public class BundleIEntity: BundleWithHeader<IEntity>
     {
         //public ItemIdentifier Header { get; set; }
         //public IEntity Entity { get; set; }

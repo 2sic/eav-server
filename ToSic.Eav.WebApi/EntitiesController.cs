@@ -23,26 +23,21 @@ namespace ToSic.Eav.WebApi
         public EntitiesController(int appId) : base(appId) { }
         public EntitiesController(Log parentLog) : base(parentLog) { }
 
-        public Dictionary<Guid, int> SaveMany([FromUri] int appId, [FromBody] List<BundleEntityWithLanguages> items,
-            [FromUri] bool partOfPage = false, bool draftOnly = false) 
-            => SaveManyBundles(appId, items, partOfPage, draftOnly);
-
-
-        public Dictionary<Guid, int> SaveManyBundles(
-            int appId, 
-            List<BundleEntityWithLanguages> items, 
-            bool partOfPage = false, 
-            bool draftOnly = false)
+        public Dictionary<Guid, int> SaveMany([FromUri] int appId, [FromBody] List<BundleWithHeader<EntityWithLanguages>> items,
+            [FromUri] bool partOfPage = false, bool draftOnly = false)
         {
-            var myLog = new Log("Eav.SavMny", Log, $"SaveMany(appId:{appId}, items:{items.Count}, partOfPage:{partOfPage}, draftOnly:{draftOnly})");
-
             //todo: remove this once we're sure we're not using the global appid for anything
             SetAppId(appId);
+            var appMan = new AppManager(appId, Log);
+            Log.Add($"SaveMany(appId:{appId}, items:{items.Count}, partOfPage (not used here, must be done in dnn):{partOfPage}, draftOnly:{draftOnly})");
 
+            #region this area should probably be disabled, but I'm not sure if it's still needed
+            // #1 set guid
             // must move guid from header to entity, because we only transfer it on the header (so no duplicates)
             foreach (var i in items)
-                i.Entity.Guid = i.Header.Guid;
+                i.EntityGuid = i.Header.Guid; //i.Entity.Guid = i.Header.Guid;
 
+            // #2 ensure draft/branch state
             if (draftOnly)
                 foreach (var i in items)
                 {
@@ -50,21 +45,45 @@ namespace ToSic.Eav.WebApi
                     i.Entity.IsPublished = false;
                     i.Entity.IsBranch = true;
                 }
+            #endregion
 
-            var appMan = new AppManager(appId, Log);
-            IDeferredEntitiesList appPack = appMan.Package;
+            // #3 create valid list of entities
+            //IDeferredEntitiesList appPack = appMan.Package;
 
-            var entitiesToImport = items
+            var entitySetToImport = items
                 .Where(entity => entity.Header.Group == null || !entity.Header.Group.SlotIsEmpty)
-                .Select(e => CreateEntityFromTransferObject(appMan, e, appPack))
-                .Cast<IEntity>()
+                .Select(e => new BundleWithHeader<IEntity>
+                {
+                    Header = e.Header,
+                    Entity = CreateEntityFromTransferObject(appMan, e)
+                })
                 .ToList();
 
-            myLog.Add("will save " + entitiesToImport.Count + " items");
+            return UpdateGuidAndPublishedAndSaveMany(appMan, items, entitySetToImport, draftOnly);
+        }
+
+        public Dictionary<Guid, int> UpdateGuidAndPublishedAndSaveMany(AppManager appMan, IEnumerable<BundleWithHeader> allItems, List<BundleWithHeader<IEntity>> itemsToImport, bool draftOnly)
+        {
+            foreach (var bundle in itemsToImport)
+            {
+                var currEntity = (Entity) bundle.Entity;
+                currEntity.SetGuid(bundle.Header.Guid);
+                if (draftOnly)
+                {
+                    Log.Add($"draft only, will set published/isbranch on {bundle.Header.Guid}");
+                    currEntity.IsPublished = false;
+                    currEntity.PlaceDraftInBranch = true;
+                }
+            }
+
+            var entitiesToImport = itemsToImport.Select(e => e.Entity).ToList();
+
+            // #4 save
+            Log.Add("will save " + entitiesToImport.Count + " items");
             appMan.Entities.Save(entitiesToImport);
 
-            // find / update IDs of items updated to return to client
-            return GenerateIdList(items, appMan.Read.Entities);
+            // #5 find / update IDs of items updated to return to client
+            return GenerateIdList(allItems, appMan.Read.Entities);
         }
 
         /// <summary>
@@ -89,8 +108,10 @@ namespace ToSic.Eav.WebApi
         }
 
 
-        private Entity CreateEntityFromTransferObject(AppManager appMan, BundleEntityWithLanguages editInfo, IDeferredEntitiesList allEntitiesForRelationships)
+        private Entity CreateEntityFromTransferObject(AppManager appMan, BundleWithHeader<EntityWithLanguages> editInfo/*, IDeferredEntitiesList allEntitiesForRelationships*/)
         {
+            var allEntitiesForRelationships = appMan.Package;
+
             Log.Add($"CreateEntityFromTransferObject(editInfo:{editInfo.Header.ContentTypeName}:{editInfo.Header.Guid}, allEntitiesForRelationships:{allEntitiesForRelationships?.List?.Count()})");
             var toEntity = editInfo.Entity;
 
@@ -126,15 +147,17 @@ namespace ToSic.Eav.WebApi
                 }
             }
 
-            if (toEntity.Guid == Guid.Empty)
-                throw new Exception("got empty guid - should never happen");
 
             var importEntity = new Entity(appMan.AppId, toEntity.Id, type, attribs.ToDictionary(x => x.Key, y => (object)y.Value))
             {
-                IsPublished = toEntity.IsPublished,
-                PlaceDraftInBranch = toEntity.IsBranch, // if it's not a branch, it should also force no branch...
+            // 2018-09-06 2dm moved this to later processing, full save should still work
+                //IsPublished = toEntity.IsPublished,
+                //PlaceDraftInBranch = toEntity.IsBranch, // if it's not a branch, it should also force no branch...
             };
-            importEntity.SetGuid(toEntity.Guid);
+            // 2018-09-06 2dm moved this to later processing, full save should still work
+            //if (toEntity.Guid == Guid.Empty)
+            //    throw new Exception("got empty guid - should never happen");
+            //importEntity.SetGuid(toEntity.Guid);
 
             Log.Add($"Import Entity app:{importEntity.AppId} id:{importEntity.EntityId}, "
                     + $"guid:{importEntity.EntityGuid}, "
