@@ -1,6 +1,4 @@
 ﻿using System;
-using ToSic.Eav.Data;
-using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport.Json.Format;
 using ToSic.Eav.Interfaces;
 
@@ -74,24 +72,6 @@ namespace ToSic.Eav.WebApi.Formats
                 }
 
             }
-
-            set
-            {
-                switch (Entity)
-                {
-                    case Entity ent:
-                        ent.SetGuid(value);
-                        break;
-                    case EntityWithLanguages entLang:
-                        entLang.Guid = value;
-                        break;
-                    case JsonEntity entJson:
-                        entJson.Guid = value;
-                        break;
-                    default:
-                        throw new Exception($"BundleWithHeader<T> - found unsupported type of T: {Entity.GetType().Name}");
-                }
-            }
         }
 
         [Newtonsoft.Json.JsonIgnore]
@@ -116,17 +96,7 @@ namespace ToSic.Eav.WebApi.Formats
         }
     }
 
-        //public class BundleEntityWithLanguages: BundleWithHeader<EntityWithLanguages>
-        //{
-        //    //public ItemIdentifier Header { get; set; }
-        //    //public EntityWithLanguages Entity { get; set; }
-        //}
-
-        public class BundleIEntity: BundleWithHeader<IEntity>
-    {
-        //public ItemIdentifier Header { get; set; }
-        //public IEntity Entity { get; set; }
-    }
+    public class BundleIEntity: BundleWithHeader<IEntity> { }
 
 
 

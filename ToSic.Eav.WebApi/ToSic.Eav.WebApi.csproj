@@ -104,6 +104,8 @@
     <Compile Include="Formats\ItemIdentifiers.cs" />
     <Compile Include="Formats\QueryDefinitionInfo.cs" />
     <Compile Include="Helpers\Download.cs" />
+    <Compile Include="SaveHelpers\OldSave.cs" />
+    <Compile Include="SaveHelpers\SaveEntities.cs" />
     <Compile Include="SystemController.cs" />
     <Compile Include="QueryController.cs">
       <SubType>Code</SubType>
