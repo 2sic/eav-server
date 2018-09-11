@@ -101,8 +101,17 @@ namespace ToSic.Eav.DataSources.Caches
 		    }
 		}
 
-        private IDataStream AttachDeferredStreamToOut(string name)
-	    {
+        /// <summary>
+        /// Will get the stream or if missing, try to attach it first
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+	    private IDataStream GetDeferredStream(string name) 
+            => _Out.ContainsKey(name) ? _Out[name] : AttachDeferredStreamToOut(name);
+
+	    private IDataStream AttachDeferredStreamToOut(string name)
+        {
+
             EnsureConfigurationIsLoaded();
 
 	        var outStream = new DataStream(this, name,  () => In[name].List, true);
@@ -117,7 +126,7 @@ namespace ToSic.Eav.DataSources.Caches
 	    }
 
         // already attach an out, ready to consume in when it's there
-	    public IDataStream DeferredOut(string name) => AttachDeferredStreamToOut(name);
+	    public IDataStream DeferredOut(string name) => GetDeferredStream(name);
 	}
 
 }
