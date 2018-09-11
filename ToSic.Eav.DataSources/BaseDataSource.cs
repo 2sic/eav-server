@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data.Builder;
-using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.ValueProvider;
@@ -232,5 +231,11 @@ namespace ToSic.Eav.DataSources
             => itemValues.Select(i => AsEntity(i, titleField, typeName, 0, null, appId: appId));
 
         #endregion
+
+        public void PurgeList(bool cascade = false)
+        {
+            foreach (var stream in Out)
+                stream.Value.PurgeList(cascade);
+        }
     }
 }

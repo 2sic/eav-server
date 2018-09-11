@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Interfaces.Caches;
 using ToSic.Eav.ValueProvider;
 using ICache = ToSic.Eav.DataSources.Caches.ICache;
 
@@ -10,7 +11,7 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// Public interface for an Eav Data Source
 	/// </summary>
-	public interface IDataSource : ICacheExpiring
+	public interface IDataSource : ICacheExpiring, ICacheKeyProvider, ICanPurgeListCache
 	{
 		#region Data Interfaces
 
@@ -92,11 +93,12 @@ namespace ToSic.Eav.DataSources
         /// List of items from the configuration which should be used for creating the cache-key
         /// </summary>
         List<string> CacheRelevantConfigurations { get; set; }
-        /// <summary>
-        /// Unique key-id for this specific part - without the full chain to the parents
-        /// </summary>
-        string CachePartialKey { get; }
-        string CacheFullKey { get; }
+
+        ///// <summary>
+        ///// Unique key-id for this specific part - without the full chain to the parents
+        ///// </summary>
+        //string CachePartialKey { get; }
+        //string CacheFullKey { get; }
 
         bool TempUsesDynamicOut { get; }
         #endregion

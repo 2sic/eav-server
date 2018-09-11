@@ -5,7 +5,7 @@ using ToSic.Eav.DataSources.VisualQuery;
 
 namespace ToSic.Eav.DataSources.Caches
 {
-	/// <inheritdoc />
+	/// <inheritdoc cref="BaseDataSource" />
 	/// <summary>
 	/// Return all Entities from a specific App
 	/// </summary>
@@ -19,7 +19,6 @@ namespace ToSic.Eav.DataSources.Caches
 	{
 
         // Todo: caching parameters
-        // Refresh when Source Refreshes ...? todo!
         // Time
         // Reload in BG
 	    public override string LogId => "DS.CachAl";
@@ -28,14 +27,13 @@ namespace ToSic.Eav.DataSources.Caches
         private const string RefreshOnSourceRefreshKey = "RefreshOnSourceRefresh";
         private const string CacheDurationInSecondsKey = "CacheDurationInSeconds";
 	    private const string ReturnCacheWhileRefreshingKey = "ReturnCacheWhileRefreshing";
-	    //private bool EnforceUniqueCache = false;
 
 		/// <summary>
 		/// An alternate app to switch to
 		/// </summary>
         public int CacheDurationInSeconds
 		{
-            get => Int32.Parse(Configuration[CacheDurationInSecondsKey]);
+            get => int.Parse(Configuration[CacheDurationInSecondsKey]);
 		    set => Configuration[CacheDurationInSecondsKey] = value.ToString();
 		}
 
@@ -69,6 +67,7 @@ namespace ToSic.Eav.DataSources.Caches
 		}
 		#endregion
 
+		/// <inheritdoc />
 		/// <summary>
 		/// Constructs a new App DataSource
 		/// </summary>
@@ -79,7 +78,7 @@ namespace ToSic.Eav.DataSources.Caches
 			// Set default switch-keys to 0 = no switch
             Configuration.Add(RefreshOnSourceRefreshKey, "[Settings:" + RefreshOnSourceRefreshKey + "||True]");
 			Configuration.Add(CacheDurationInSecondsKey, "[Settings:" + CacheDurationInSecondsKey + "||0]"); // 0 is default, meaning don't use custom value, use system value of 1 day
-		    Configuration.Add(ReturnCacheWhileRefreshingKey, "False");// "[Settings:" + ReturnCacheWhileRefreshingKey + "||False]");
+		    Configuration.Add(ReturnCacheWhileRefreshingKey, "False");
 
             TempUsesDynamicOut = true;
         }

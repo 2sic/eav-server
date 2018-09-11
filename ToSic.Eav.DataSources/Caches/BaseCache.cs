@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Caching;
 using ToSic.Eav.App;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.RootSources;
@@ -28,7 +27,7 @@ namespace ToSic.Eav.DataSources.Caches
 			Out.Add(Constants.DraftsStreamName, new DataStream(this, Constants.DraftsStreamName, () => AppDataPackage.ListNotHavingDrafts));
 		    // ReSharper restore VirtualMemberCallInConstructor
 
-            ListDefaultRetentionTimeInSeconds = 60 * 60;
+            Lists.ListDefaultRetentionTimeInSeconds = 60 * 60;
 		}
 
         /// <summary>
@@ -120,7 +119,7 @@ namespace ToSic.Eav.DataSources.Caches
 	    /// <summary>
 	    /// Clear Zones/Apps List
 	    /// </summary>
-	    public abstract void PurgeGlobalCache();// => ZoneApps = null;
+	    public abstract void PurgeGlobalCache();
 
 	    #region Cache-Chain
 
@@ -196,70 +195,12 @@ namespace ToSic.Eav.DataSources.Caches
 
         #region Additional Stream Caching
 
-        // todo: check what happens with this in a DNN environment; I guess it works, but there are risks...
-        private ObjectCache ListCache => MemoryCache.Default;
-
-	    #region Has List
-        public bool ListHas(string key) => ListCache.Contains(key);
-
-        public bool ListHas(IDataStream dataStream) => ListHas(dataStream.Source.CacheFullKey + "|" + dataStream.Name);
-
-	    #endregion
-
-        public int ListDefaultRetentionTimeInSeconds { get; set; }
-
-        #region Get List
-        /// <summary>
-        /// Get a DataStream in the cache - will be null if not found
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public ListCacheItem ListGet(string key) 
-            => ListCache[key] as ListCacheItem;
-
-	    public ListCacheItem ListGet(IDataStream dataStream) 
-            => ListGet(dataStream.Source.CacheFullKey + "|" + dataStream.Name);
-
-	    #endregion
-
-        #region Set/Add List
-
-        /// <summary>
-        /// Insert a data-stream to the cache - if it can be found
-        /// </summary>
-        public void ListSet(string key, IEnumerable<IEntity> list, long /*DateTime*/ sourceRefresh, int durationInSeconds = 0)
-        {
-            var policy = new CacheItemPolicy
-            {
-                SlidingExpiration = new TimeSpan(0, 0,
-                    durationInSeconds > 0 ? durationInSeconds : ListDefaultRetentionTimeInSeconds)
-            };
-
-            var cache = MemoryCache.Default;
-            cache.Set(key, new ListCacheItem(key, list, sourceRefresh), policy);
-        }
-
-        public void ListSet(IDataStream dataStream, int durationInSeconds = 0) 
-            => ListSet(dataStream.Source.CacheFullKey + "|" + dataStream.Name, dataStream.List, 
-                dataStream.Source.CacheTimestamp, durationInSeconds);
-
-	    #endregion
-
-        #region Remove List
-        public void ListRemove(string key)
-        {
-            var cache = MemoryCache.Default;
-            cache.Remove(key);
-        }
-
-        public void ListRemove(IDataStream dataStream) 
-            => ListRemove(dataStream.Source.CacheFullKey + "|" + dataStream.Name);
-
-	    #endregion
+        public IListsCache Lists => _listsCache ?? (_listsCache = new ListsCache());
+	    private IListsCache _listsCache;
 
         #endregion
 
-	    public override void InitLog(string name, Log parentLog = null, string initialMessage = null)
+        public override void InitLog(string name, Log parentLog = null, string initialMessage = null)
 	    {
 	        // ignore
 	    }
