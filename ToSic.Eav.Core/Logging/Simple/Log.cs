@@ -27,12 +27,16 @@ namespace ToSic.Eav.Logging.Simple
         /// <param name="name">name this logger should use</param>
         /// <param name="parent">optional parrent logger to attach to</param>
         /// <param name="initialMessage">optional initial message to log</param>
-        public Log(string name, Log parent = null, string initialMessage = null)
+        /// <param name="className">optional class-name, will change how the initial log is created</param>
+        public Log(string name, Log parent = null, string initialMessage = null, string className = null)
         {
             Rename(name);
             LinkTo(parent);
-            if(initialMessage != null)
+            if (initialMessage == null) return;
+            if (className == null)
                 Add(initialMessage);
+            else
+                New(className, initialMessage);
         }
 
         public Log AddChild(string name, string message) => new Log(name, this, message);
@@ -67,6 +71,91 @@ namespace ToSic.Eav.Logging.Simple
             Add(new Entry(this, message));
             return message;
         }
+
+        #region Constructor Logs
+        /// <summary>
+        /// Add a log entry for a class constructor, returning a method to call when done
+        /// </summary>
+        public Action<string> New(string className, string @params = null, string message = null) 
+            => LogWrap($"new {className}({@params}) {message}", $"{className}() ");
+
+        /// <summary>
+        /// Add a log entry for a class constructor, returning a method to call when done
+        /// </summary>
+        public Action<string> New(string className, Func<string> @params, Func<string> message = null)
+            => New(className, Try(@params), message != null ? Try(message) : null);
+
+        #endregion
+
+        #region Call Logs
+        /// <summary>
+        /// Add a log entry for method call, returning a method to call when done
+        /// </summary>
+        public Action<string> Call(string methodName, string @params = null, string message = null) 
+            => LogWrap($"{methodName}({@params}) {message}", $"{methodName}() ");
+
+        /// <summary>
+        /// Add a log entry for a class constructor, returning a method to call when done
+        /// </summary>
+        public Action<string> Call(string methodName, Func<string> @params, Func<string> message = null)
+            => Call(methodName, Try(@params), message != null ? Try(message) : null);
+        #endregion
+
+        #region GET calls
+        /// <summary>
+        /// Add a log entry for method call, returning a method to call when done
+        /// </summary>
+        public Action<string> Get(string property)
+            => LogWrap($"get {property} start", $"get {property} done ");
+        public Action<string> Set(string property)
+            => LogWrap($"set {property} start", $"set {property} done ");
+
+        #endregion
+
+        #region Intercept
+
+        public T Intercept<T>(string message, Func<T> generate)
+        {
+            var result = generate();
+            Add($"{message} {result}");
+            return result;
+        }
+
+        #endregion
+
+        #region Log Wrappers and Helpers
+        /// <summary>
+        /// Wrap a log entry - basically log something with a prefix, 
+        /// and return a method which can be used for the done-message which will use the same prefix
+        /// </summary>
+        /// <param name="open"></param>
+        /// <param name="closePrefix"></param>
+        /// <returns></returns>
+        private Action<string> LogWrap(string open, string closePrefix)
+        {
+            Add(open);
+            return message => Add(closePrefix + (message ?? string.Empty));
+        }
+
+        /// <summary>
+        /// Try to call a function generating a message. 
+        /// This will be inside a try/catch, to prevent crashes because of looping on nulls etc.
+        /// </summary>
+        /// <param name="messageMaker"></param>
+        private static string Try(Func<string> messageMaker)
+        {
+            try
+            {
+                return messageMaker.Invoke();
+            }
+            catch (Exception ex)
+            {
+                return "LOG: failed to generate from code, error: " + ex.Message;
+            }
+        }
+        #endregion
+
+
         public string Warn(string message)
         {
             Add(new Entry(this, "WARNING: " + message));
@@ -88,17 +177,8 @@ namespace ToSic.Eav.Logging.Simple
         /// Add a message by calling a function. This will be inside a try/catch, to prevent crashes because of looping on nulls etc.
         /// </summary>
         /// <param name="messageMaker"></param>
-        public void Add(Func<string> messageMaker)
-        {
-            try
-            {
-                Add(messageMaker.Invoke());
-            }
-            catch (Exception ex)
-            {
-                Add("Log: failed to add message from code, error was: " + ex.Message);
-            }
-        }
+        public void Add(Func<string> messageMaker) => Add(Try(messageMaker));
+
 
         /// <summary>
         /// Link this logger to a parent
