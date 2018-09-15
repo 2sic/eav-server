@@ -83,8 +83,8 @@ namespace ToSic.Eav.Security.Permissions
 
         #endregion
 
-        public bool UserMay(Grants grant) 
-            => UserMay(new List<Grants> {grant});
+        //public bool UserMay(Grants grant) 
+        //    => UserMay(new List<Grants> {grant});
 
         public ConditionType GrantedBecause
         {
