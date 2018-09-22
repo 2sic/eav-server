@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Security.Permissions
 {
-    public interface IPermissionCheck
+    public interface IPermissionCheck: IHasLog
     {
         bool HasPermissions { get; }
 
