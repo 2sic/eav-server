@@ -118,9 +118,9 @@ namespace ToSic.Eav.Apps
         internal static void EnsureAppIsConfigured(int zoneId, int appId, Log parentLog, string appName = null)
         {
             var mds = DataSource.GetMetaDataSource(zoneId, appId);
-            var appMetaData = mds.GetMetadata(Constants.MetadataForApp, appId, AppConstants.AttributeSetStaticNameApps).FirstOrDefault();
-            var appResources = mds.GetMetadata(Constants.MetadataForApp, appId, AppConstants.AttributeSetStaticNameAppResources).FirstOrDefault();
-            var appSettings = mds.GetMetadata(Constants.MetadataForApp, appId, AppConstants.AttributeSetStaticNameAppSettings).FirstOrDefault();
+            var appMetaData = mds.GetMetadata(Constants.MetadataForApp, appId, AppConstants.TypeAppConfig).FirstOrDefault();
+            var appResources = mds.GetMetadata(Constants.MetadataForApp, appId, AppConstants.TypeAppResources).FirstOrDefault();
+            var appSettings = mds.GetMetadata(Constants.MetadataForApp, appId, AppConstants.TypeAppSettings).FirstOrDefault();
 
             // Get appName from cache - stop if it's a "Default" app
             var eavAppName = new ZoneRuntime(zoneId, parentLog).GetName(appId);
@@ -131,7 +131,7 @@ namespace ToSic.Eav.Apps
             var appMan = new AppManager(zoneId, appId);
             if (appMetaData == null)
                 appMan.MetadataEnsureTypeAndSingleEntity(AppConstants.AttributeSetScopeApps,
-                    AppConstants.AttributeSetStaticNameApps,
+                    AppConstants.TypeAppConfig,
                     "App Metadata",
                     Constants.MetadataForApp,
                     new Dictionary<string, object>
@@ -149,7 +149,7 @@ namespace ToSic.Eav.Apps
             // Add new (empty) ContentType for Settings
             if (appSettings == null)
                 appMan.MetadataEnsureTypeAndSingleEntity(AppConstants.AttributeSetScopeApps,
-                    AppConstants.AttributeSetStaticNameAppSettings,
+                    AppConstants.TypeAppSettings,
                     "Stores settings for an app",
                     Constants.MetadataForApp,
                     null,
@@ -158,7 +158,7 @@ namespace ToSic.Eav.Apps
             // add new (empty) ContentType for Resources
             if (appResources == null)
                 appMan.MetadataEnsureTypeAndSingleEntity(AppConstants.AttributeSetScopeApps,
-                    AppConstants.AttributeSetStaticNameAppResources,
+                    AppConstants.TypeAppResources,
                     "Stores resources like translations for an app",
                     Constants.MetadataForApp,
                     null, 

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Linq;
 using ToSic.Eav.Apps.Interfaces;
 using ToSic.Eav.DataSources.Caches;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Apps
@@ -21,7 +19,6 @@ namespace ToSic.Eav.Apps
 
         public string AppGuid { get; }
 
-
         protected bool ShowDraftsInData { get; private set; }
         protected bool VersioningEnabled { get; private set; }
 
@@ -33,15 +30,15 @@ namespace ToSic.Eav.Apps
             Func<App, IAppDataConfiguration> buildConfiguration,
             Log parentLog, 
             string logMsg)
-            // first, initialize the AppIdentity
-            : base(zoneId, appId, parentLog, "App.2sxcAp", $"prep App z#{zoneId}, a#{appId}, allowSE:{allowSideEffects}, {logMsg}")
+            // first, initialize the AppIdentity and log it's use
+            : base(zoneId, appId, parentLog, "App.2sxcAp", $"prep App z#{zoneId}, a#{appId}, allowSE:{allowSideEffects}, hasDataConfig:{buildConfiguration != null}, {logMsg}")
         {
             // if zone is missing, try to find it; if still missing, throw error
             if (zoneId == AutoLookupZone) throw new Exception("Cannot find zone-id for portal specified");
 
             // Look up name in cache
             var cache = (BaseCache) DataSource.GetCache(zoneId, appId);
-            _deferredLookupData = cache.AppDataPackage; // for metadata
+            AppDataPackage = cache.AppDataPackage; // for metadata
 
             AppGuid = cache.ZoneApps[zoneId].Apps[appId];
 
@@ -60,42 +57,5 @@ namespace ToSic.Eav.Apps
             // for deferred initialization as needed
             _dataConfigurationBuilder = buildConfiguration;
         }
-
-
-        #region Settings, Config, Metadata
-        protected IEntity AppMetadata;
-        protected IEntity AppSettings;
-        protected IEntity AppResources;
-
-        /// <summary>
-        /// Assign all kinds of metadata / resources / settings (App-Mode only)
-        /// </summary>
-        protected void InitializeResourcesSettingsAndMetadata()
-        {
-            Log.Add("init app resources");
-
-            // Get app-describing entity
-            var appAssignmentId = SystemRuntime.MetadataType(Constants.AppAssignmentName);
-            var mds = DataSource.GetMetaDataSource(ZoneId, AppId);
-            AppMetadata = mds.GetMetadata(appAssignmentId, AppId,
-                        AppConstants.AttributeSetStaticNameApps)
-                    .FirstOrDefault();
-
-            Name = AppMetadata?.GetBestValue("DisplayName")?.ToString() ?? "Error";
-            Folder = AppMetadata?.GetBestValue("Folder")?.ToString() ?? "Error";
-            if (bool.TryParse(AppMetadata?.GetBestValue("Hidden")?.ToString(), out var hidden))
-                Hidden = hidden;
-
-            AppResources = mds.GetMetadata(appAssignmentId, AppId,
-                        AppConstants.AttributeSetStaticNameAppResources)
-                    .FirstOrDefault();
-
-            AppSettings = mds.GetMetadata(appAssignmentId, AppId,
-                        AppConstants.AttributeSetStaticNameAppSettings)
-                    .FirstOrDefault();
-        }
-        #endregion
-
-        
     }
 }
