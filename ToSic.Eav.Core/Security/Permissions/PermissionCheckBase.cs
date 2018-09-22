@@ -132,7 +132,7 @@ namespace ToSic.Eav.Security.Permissions
             // If Grant doesn't contain desired action, stop here
             // otherwise check if it applies
             var result = grnt.IndexOfAny(desiredActionCode) != -1 
-                && DoesConditionApply(permissionEntity);
+                && VerifyConditionApplies(permissionEntity);
             wrapLog($"{result}");
             return result;
         }
@@ -145,7 +145,13 @@ namespace ToSic.Eav.Security.Permissions
         protected abstract bool EnvironmentAllows(List<Grants> grants);
 
 
-        protected abstract bool DoesConditionApplyInEnvironment(string condition);
+        /// <summary>
+        /// Verify if a condition is a special code in the environment. 
+        /// Example: a DNN code which asks for "registered users" or "view-users"
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <returns></returns>
+        protected abstract bool VerifyConditionOfEnvironment(string condition);
 
         /// <summary>
         /// The current user, as provided by injection

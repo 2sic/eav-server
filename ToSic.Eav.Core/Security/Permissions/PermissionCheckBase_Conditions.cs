@@ -11,7 +11,7 @@ namespace ToSic.Eav.Security.Permissions
         /// Check if the current user fits the reason for this grant
         /// </summary>
         /// <returns></returns>
-        private bool DoesConditionApply(IEntity permissionEntity)
+        private bool VerifyConditionApplies(IEntity permissionEntity)
         {
             try
             {
@@ -19,38 +19,28 @@ namespace ToSic.Eav.Security.Permissions
                 var condition = permissionEntity.GetBestValue(Constants.PermissionCondition).ToString();
 
                 // check custom permission based on the user Guid or owner
-                if (User.Guid != null) // we have to have a valid user
+                if (User.Guid != null)
                 {
                     // check owner conditions (only possible on target entities, not content-types)
-                    if (ConditionItemOwner(condition, TargetItem, User))
-                    {
-                        GrantedBecause = ConditionType.Identity;
-                        return true;
-                    }
+                    if (VerifyUserIsItemOwner(condition, TargetItem, User))
+                        return IsGrantedBecause(ConditionType.Identity);
 
                     // check if an identity was provided
                     var identity = permissionEntity.GetBestValue(Constants.PermissionIdentity).ToString();
                     if (!string.IsNullOrWhiteSpace(identity))
                     {
-                        // rule just for this user
-                        if (ConditionUserIdentity(identity, User))
-                        {
-                            GrantedBecause = ConditionType.Owner;
-                            return true;
-                        }
-                        if (ConditionUserGroup(identity, User))
-                        {
-                            GrantedBecause = ConditionType.Group;
-                            return true;
-                        }
+                        if (VerifyUserIsThisUser(identity, User))
+                            return IsGrantedBecause(ConditionType.Owner);
+
+                        if (VerifyUserIsInGroup(identity, User))
+                            return IsGrantedBecause(ConditionType.Group);
                     }
                 }
 
-                if (DoesConditionApplyInEnvironment(condition))
-                {
-                    GrantedBecause = ConditionType.EnvironmentInstance;
-                    return true;
-                }
+                // this checks if the condition is a environment condition
+                // for example, if it's a DNN code for "user may view something"
+                if (VerifyConditionOfEnvironment(condition))
+                    return IsGrantedBecause(ConditionType.EnvironmentInstance);
 
                 return false;
             }
@@ -61,16 +51,30 @@ namespace ToSic.Eav.Security.Permissions
             }
         }
 
+        private bool IsGrantedBecause(ConditionType reason)
+        {
+            GrantedBecause = reason;
+            return true;
+        }
+
         /// <summary>
         /// Verify if the permission referrs to this user
+        /// Note that this only works if the feature is enabled
         /// </summary>
-        private static bool ConditionUserIdentity(string identity, IUser user)
+        private static bool VerifyUserIsThisUser(string identity, IUser user)
         {
             if (!Features.Enabled(FeatureIds.PermissionCheckUserId)) return false;
             return identity == user.Guid.ToString();
         }
 
-        private static bool ConditionUserGroup(string identity, IUser user)
+        /// <summary>
+        /// Check if the user is in any of the user groups provided
+        /// Note that this only works if this feature is enabled
+        /// </summary>
+        /// <param name="identity"></param>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        private static bool VerifyUserIsInGroup(string identity, IUser user)
         {
             if (!Features.Enabled(FeatureIds.PermissionCheckGroups)) return false;
 
@@ -88,7 +92,7 @@ namespace ToSic.Eav.Security.Permissions
         /// <summary>
         /// Verify that the permission is for owners, and the user is the item owner
         /// </summary>
-        private static bool ConditionItemOwner(string condition, IEntity item, IUser user)
+        private static bool VerifyUserIsItemOwner(string condition, IEntity item, IUser user)
             => condition == Constants.PermissionKeyOwner
                && item?.Owner == user.IdentityToken;
 

@@ -26,7 +26,7 @@ namespace ToSic.Eav.DataSources.Pipeline
 	    /// <param name="outSource">DataSource to attach the Out-Streams</param>
 	    /// <param name="showDrafts"></param>
 	    /// <returns>A single DataSource Out with wirings and configurations loaded, ready to use</returns>
-	    public IDataSource GetDataSource(int appId, IEntity query, ValueCollectionProvider valueCollection, IDataSource outSource = null, bool showDrafts = false)
+	    public IDataSource GetDataSource(int appId, IEntity query, IValueCollectionProvider valueCollection, IDataSource outSource = null, bool showDrafts = false)
 	    {
 	        var queryEntityId = query.EntityId;
 		    Log.Add($"build pipe#{queryEntityId} for a#{appId}, draft:{showDrafts}");

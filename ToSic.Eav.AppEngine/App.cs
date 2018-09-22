@@ -8,6 +8,10 @@ using ToSic.Eav.ValueProvider;
 
 namespace ToSic.Eav.Apps
 {
+    /// <summary>
+    /// A populated app-object providing quick simple api to access
+    /// name, folder, data, metadata etc.
+    /// </summary>
     public partial class App: AppIdentity, IApp
     {
         protected const int AutoLookup = -1;
@@ -19,13 +23,19 @@ namespace ToSic.Eav.Apps
         public string AppGuid { get; }
 
 
-        protected IValueCollectionProvider ConfigurationProvider { get; private set; }
+        public IValueCollectionProvider ConfigurationProvider { get; private set; }
         protected bool ShowDraftsInData { get; private set; }
         protected bool VersioningEnabled { get; private set; }
 
         protected const string IconFile = "/" + AppConstants.AppIconFile;
 
-        internal App(int zoneId, int appId, bool allowSideEffects, Log parentLog, string logMsg)
+        internal App(int zoneId, 
+            int appId, 
+            bool allowSideEffects,
+            Func<App, IAppDataConfiguration> buildConfiguration,
+            Log parentLog, 
+            string logMsg)
+            // first, initialize the AppIdentity
             : base(zoneId, appId, parentLog, "App.2sxcAp", $"prep App z#{zoneId}, a#{appId}, allowSE:{allowSideEffects}, {logMsg}")
         {
             // if zone is missing, try to find it; if still missing, throw error
@@ -48,6 +58,8 @@ namespace ToSic.Eav.Apps
                     AppManager.EnsureAppIsConfigured(ZoneId, AppId, Log); // make sure additional settings etc. exist
                 InitializeResourcesSettingsAndMetadata();
             }
+
+            InitData(buildConfiguration);
         }
 
 

@@ -9,6 +9,9 @@ namespace ToSic.Eav.Apps
     {
         #region Metadata
 
+        /// <summary>
+        /// Metadata for this app (describing the app itself)
+        /// </summary>
         public IMetadataOfItem Metadata
             => _metadata ?? (_metadata = new MetadataOf<int>(Constants.MetadataForApp, AppId,
                    _deferredLookupData));
@@ -16,6 +19,9 @@ namespace ToSic.Eav.Apps
         private IMetadataOfItem _metadata;
         private readonly IDeferredEntitiesList _deferredLookupData;
 
+        /// <summary>
+        /// Permissions of this app
+        /// </summary>
         public IEnumerable<IEntity> Permissions => Metadata.Permissions;
 
         #endregion

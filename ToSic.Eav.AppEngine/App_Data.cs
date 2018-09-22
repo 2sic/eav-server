@@ -11,6 +11,13 @@ namespace ToSic.Eav.Apps
 
         #region Data
 
+        private void InitData(Func<App, IAppDataConfiguration> buildConfiguration)
+        {
+            if (buildConfiguration == null) return;
+            var config = buildConfiguration.Invoke(this);
+            InitData(config.ShowDrafts, config.VersioningEnabled, config.Configuration);
+        }
+
         /// <summary>
         /// needed to initialize data - must always happen a bit later because the show-draft info isn't available when creating the first App-object.
         /// todo: later this should be moved to initialization of this object
