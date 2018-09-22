@@ -4,7 +4,6 @@ using ToSic.Eav.Apps.Interfaces;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging.Simple;
-using ToSic.Eav.ValueProvider;
 
 namespace ToSic.Eav.Apps
 {
@@ -14,7 +13,7 @@ namespace ToSic.Eav.Apps
     /// </summary>
     public partial class App: AppIdentity, IApp
     {
-        protected const int AutoLookup = -1;
+        public const int AutoLookupZone = -1;
 
         public string Name { get; private set; }
         public string Folder { get; private set; }
@@ -23,7 +22,6 @@ namespace ToSic.Eav.Apps
         public string AppGuid { get; }
 
 
-        public IValueCollectionProvider ConfigurationProvider { get; private set; }
         protected bool ShowDraftsInData { get; private set; }
         protected bool VersioningEnabled { get; private set; }
 
@@ -39,7 +37,7 @@ namespace ToSic.Eav.Apps
             : base(zoneId, appId, parentLog, "App.2sxcAp", $"prep App z#{zoneId}, a#{appId}, allowSE:{allowSideEffects}, {logMsg}")
         {
             // if zone is missing, try to find it; if still missing, throw error
-            if (zoneId == AutoLookup) throw new Exception("Cannot find zone-id for portal specified");
+            if (zoneId == AutoLookupZone) throw new Exception("Cannot find zone-id for portal specified");
 
             // Look up name in cache
             var cache = (BaseCache) DataSource.GetCache(zoneId, appId);
@@ -59,7 +57,8 @@ namespace ToSic.Eav.Apps
                 InitializeResourcesSettingsAndMetadata();
             }
 
-            InitData(buildConfiguration);
+            // for deferred initialization as needed
+            _dataConfigurationBuilder = buildConfiguration;
         }
 
 

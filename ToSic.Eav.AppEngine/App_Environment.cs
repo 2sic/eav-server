@@ -25,7 +25,7 @@ namespace ToSic.Eav.Apps
             bool allowSideEffects,
             Func<App, IAppDataConfiguration> buildConfiguration,
             Log parentLog)
-            : this(zoneId != AutoLookup    // if zone is missing, try to find it; if still missing, throw error
+            : this(zoneId != AutoLookupZone    // if zone is missing, try to find it; if still missing, throw error
                   ? zoneId
                   : env.ZoneMapper.GetZoneId(tenant.Id), 
                   appId, 
