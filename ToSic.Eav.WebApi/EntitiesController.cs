@@ -19,7 +19,7 @@ namespace ToSic.Eav.WebApi
         public EntitiesController(Log parentLog) : base(parentLog) { }
 
         public Dictionary<Guid, int> SaveMany([FromUri] int appId, [FromBody] List<BundleWithHeader<EntityWithLanguages>> items,
-            [FromUri] bool partOfPage = false, bool draftOnly = false)
+            [FromUri] bool partOfPage, bool draftOnly)
         {
             //todo: remove this once we're sure we're not using the global appid for anything
             SetAppId(appId);
@@ -34,13 +34,18 @@ namespace ToSic.Eav.WebApi
                 i.Entity.Guid = i.Header.Guid;
 
             // #2 ensure draft/branch state
-            if (draftOnly)
-                foreach (var i in items)
-                {
-                    Log.Add($"draft only, will set published/isbranch on {i.Header.Guid}");
-                    i.Entity.IsPublished = false;
-                    i.Entity.IsBranch = true;
-                }
+            // 2018-09-26 2dm - this is moved to a later point in the code
+            //foreach (var i in items)
+            //{
+            //    if (draftOnly)
+            //    {
+            //        Log.Add($"forceDraft:{draftOnly}, will change from isPublished:{i.Entity.IsPublished} isBranch:{i.Entity.IsBranch}");
+            //        i.Entity.IsPublished = false;
+            //        i.Entity.IsBranch = true;
+            //    }
+            //    Log.Add($"after forceDraft check item:{i.Header.Guid} - isPublished:{i.Entity.IsPublished} isBranch:{i.Entity.IsBranch}");
+            //}
+                
             #endregion
 
             var oldSave = new SaveHelpers.OldSave(Log);

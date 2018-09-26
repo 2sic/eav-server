@@ -19,6 +19,7 @@ namespace ToSic.Eav.WebApi.SaveHelpers
 
         public void UpdateGuidAndPublishedAndSaveMany(AppManager appMan, List<BundleWithHeader<IEntity>> itemsToImport, bool enforceDraft)
         {
+            var wrapLog = Log.Call("UpdateGuidAndPublishedAndSaveMany", "");
             foreach (var bundle in itemsToImport)
             {
                 var currEntity = (Entity)bundle.Entity;
@@ -31,11 +32,12 @@ namespace ToSic.Eav.WebApi.SaveHelpers
 
             Log.Add("will save " + entitiesToImport.Count + " items");
             appMan.Entities.Save(entitiesToImport);
+            wrapLog(null);
         }
 
         private void EnforceDraft(Entity currEntity)
         {
-            Log.Add($"draft only, will set published/isbranch on {currEntity.EntityGuid}");
+            Log.Add($"EnforceDraft() will set published/isbranch on {currEntity.EntityGuid}");
             currEntity.IsPublished = false;
             currEntity.PlaceDraftInBranch = true;
         }

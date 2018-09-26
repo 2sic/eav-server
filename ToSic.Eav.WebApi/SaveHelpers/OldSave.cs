@@ -59,12 +59,12 @@ namespace ToSic.Eav.WebApi.SaveHelpers
 
 
             var importEntity = new Entity(appMan.AppId, toEntity.Id, type, attribs.ToDictionary(x => x.Key, y => (object)y.Value))
-            //{
-            //// 2018-09-06 2dm moved this to later processing, full save should still work
-            //    //IsPublished = toEntity.IsPublished,
-            //    //PlaceDraftInBranch = toEntity.IsBranch, // if it's not a branch, it should also force no branch...
-            //}
-            ;
+            {
+                // 2018-09-06 2dm moved this to later processing, full save should still work
+                // 2018-09-26 2dm re-enabled this, because the attribute names are different, we must transfer it here
+                IsPublished = toEntity.IsPublished,
+                PlaceDraftInBranch = toEntity.IsBranch, // if it's not a branch, it should also force no branch...
+            };
             // 2018-09-06 2dm moved this to later processing, full save should still work
             //if (toEntity.Guid == Guid.Empty)
             //    throw new Exception("got empty guid - should never happen");

@@ -4,7 +4,7 @@ using ToSic.Eav.Logging.Simple;
 namespace ToSic.Eav.Apps.Parts
 {
     /// <summary>
-    /// Manager for entities in an app
+    /// Base class for any kind of read/runtime operations
     /// </summary>
     public abstract class RuntimeBase: HasLog
     {
