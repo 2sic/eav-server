@@ -8,7 +8,7 @@ namespace ToSic.Eav.Logging.Simple
         /// Add a log entry for a class constructor, returning a method to call when done
         /// </summary>
         public Action<string> New(string className, string @params = null, string message = null)
-            => Wrapper($"new {className}({@params}) {message}", $"{className}() ");
+            => Wrapper($"new {className}({@params}) {message}");
 
         /// <summary>
         /// Add a log entry for a class constructor, returning a method to call when done

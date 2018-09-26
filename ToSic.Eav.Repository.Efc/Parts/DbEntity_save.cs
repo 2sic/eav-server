@@ -23,7 +23,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         internal int SaveEntity(IEntity newEnt, SaveOptions so)
         {
-            Log.Add($"save start for id:{newEnt?.EntityId}/{newEnt?.EntityGuid}");
+            var wrapLog = Log.Call("SaveEntity", $"id:{newEnt?.EntityId}/{newEnt?.EntityGuid}");
             #region Step 1: Do some initial error checking and preparations
             if (newEnt == null)
                 throw new ArgumentNullException(nameof(newEnt));
@@ -88,7 +88,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                 if (isNew)
                 {
-                    Log.Add("create new...");
+                    var logNew = Log.Call("", "", "create new...");
 
                     if (newEnt.EntityGuid == Guid.Empty)
                         throw new ArgumentException("can't create entity in DB with guid null - entities must be fully prepared before sending to save");
@@ -104,7 +104,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                         dbEnt.ContentType = newEnt.Type.StaticName;
                         DbContext.SqlDb.SaveChanges();
                     }
-                    Log.Add($"create new i:{dbEnt.EntityId}, guid:{dbEnt.EntityGuid}");
+                    logNew($"i:{dbEnt.EntityId}, guid:{dbEnt.EntityGuid}");
                 }
                 else
                 {
@@ -114,7 +114,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     dbEnt = DbContext.Entities.GetDbEntity(newEnt.EntityId); // get the published one (entityid is always the published id)
 
                     var stateChanged = dbEnt.IsPublished != newEnt.IsPublished;
-                    Log.Add($"used existing i:{dbEnt.EntityId}, guid:{dbEnt.EntityGuid}, newstate:{newEnt.IsPublished}, state-changed:{stateChanged}, has-additional-draft:{hasAdditionalDraft}");
+                    var logUpdate = Log.Call("", "", $"used existing i:{dbEnt.EntityId}, guid:{dbEnt.EntityGuid}, newstate:{newEnt.IsPublished}, state-changed:{stateChanged}, has-additional-draft:{hasAdditionalDraft}");
 
                     #region If draft but should be published, correct what's necessary
 
@@ -153,7 +153,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     // first, clean up all existing attributes / values (flush)
                     // this is necessary after remove, because otherwise EF state tracking gets messed up
                     DbContext.DoAndSave(() => dbEnt.ToSicEavValues.Clear());
-
+                    logUpdate("ok");
                     #endregion Step 3b
                 }
 
@@ -201,7 +201,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             }); // end of transaction
 
-            Log.Add("save done for id:" + dbEnt?.EntityId);
+            wrapLog("done id:" + dbEnt?.EntityId);
             return dbEnt.EntityId;
         }
 
@@ -214,7 +214,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <returns></returns>
         private int? GetDraftAndCorrectIdAndBranching(IEntity newEnt, out bool hasAdditionalDraft)
         {
-            Log.Add($"GetDraftAndCorrectIdAndBranching(entity:{newEnt.EntityId})");
+            var wrapLog = Log.Call("GetDraftAndCorrectIdAndBranching", $"entity:{newEnt.EntityId}");
 
             // only do this, if we were given an EntityId, otherwise we assume new entity
             if (newEnt.EntityId <= 0)
@@ -253,7 +253,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 ent.ResetEntityId(existingDraftId ?? 0); // set to the draft OR 0 = new
                 hasAdditionalDraft = false; // not additional any more, as we're now pointing this as primary
             }
-
+            wrapLog($"{existingDraftId}");
             return existingDraftId;
         }
 
@@ -310,7 +310,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         {
             foreach (var attribute in newEnt.Attributes.Values)
             {
-                Log.Add($"add attrib:{attribute.Name}");
+                var wrapLog = Log.Call("SaveAttributesInDbModel", $"attrib:{attribute.Name}");
                 // find attribute definition
                 var attribDef =
                     attributeDefs.SingleOrDefault(
@@ -365,6 +365,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                         ToSicEavValuesDimensions = toSicEavValuesDimensions
                     });
                 }
+                wrapLog(null);
             }
         }
 
@@ -386,7 +387,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <returns></returns>
         internal List<int> SaveEntity(List<IEntity> entities, SaveOptions saveOptions)
         {
-            Log.Add($"save many count:{entities?.Count}");
+            var wrapLog = Log.Call("SaveEntity", $"count:{entities?.Count}");
             var ids = new List<int>();
 
             DbContext.DoInTransaction(()
@@ -396,6 +397,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     entities?.ForEach(e => DbContext.DoAndSave(() => ids.Add(SaveEntity(e, saveOptions))));
                     DbContext.Relationships.ImportRelationshipQueueAndSave();
                 }));
+            wrapLog($"id count:{ids.Count}");
             return ids;
         }
 

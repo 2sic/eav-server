@@ -37,9 +37,10 @@ namespace ToSic.Eav.WebApi.SaveHelpers
 
         private void EnforceDraft(Entity currEntity)
         {
-            Log.Add($"EnforceDraft() will set published/isbranch on {currEntity.EntityGuid}");
+            var wrapLog = Log.Call("EnforceDraft", $"will set published/isbranch on {currEntity.EntityGuid}");
             currEntity.IsPublished = false;
             currEntity.PlaceDraftInBranch = true;
+            wrapLog(null);
         }
 
         /// <summary>
@@ -48,6 +49,7 @@ namespace ToSic.Eav.WebApi.SaveHelpers
         /// <returns></returns>
         public Dictionary<Guid, int> GenerateIdList(EntityRuntime appEntities, IEnumerable<BundleWithHeader> items)
         {
+            var wrapLog = Log.Call("GenerateIdList");
             var idList = items.Select(e =>
                 {
                     var foundEntity = appEntities.Get(e.Header.Guid);
@@ -61,6 +63,7 @@ namespace ToSic.Eav.WebApi.SaveHelpers
                 })
                 .Where(e => e != null)
                 .ToDictionary(f => f.EntityGuid, f => f.EntityId);
+            wrapLog(null);
             return idList;
         }
 

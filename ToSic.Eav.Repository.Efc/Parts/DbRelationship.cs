@@ -16,12 +16,12 @@ namespace ToSic.Eav.Repository.Efc.Parts
         internal void DoWhileQueueingRelationships(Action action)
         {
             var randomId = Guid.NewGuid().ToString().Substring(0, 4);
-            Log.Add($"relationship queue:{randomId} start");
+            var wrapLog = Log.Call("DoWhileQueueingRelationships", $"relationship queue:{randomId} start");
 
             var willPurgeQueue = _outermostQueueCall;
             _outermostQueueCall = false;
             action.Invoke();
-            Log.Add($"relationship queue:{randomId} completed");
+            wrapLog("completed");
 
             if (willPurgeQueue)
                 ImportRelationshipQueueAndSave();
@@ -48,7 +48,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         private void UpdateEntityRelationshipsAndSave(int attributeId, IEnumerable<int?> newValue, ToSicEavEntities currentEntity)
         {
-            Log.Add(() => $"updating relationships on i:{currentEntity.EntityId}, attrib:{attributeId}, vals:[{string.Join(",", newValue)}]");
+            var wrapLog = Log.Call("UpdateEntityRelationshipsAndSave", () => $"i:{currentEntity.EntityId}, attrib:{attributeId}, vals:[{string.Join(",", newValue)}]");
             // remove existing Relationships that are not in new list
             var newEntityIds = newValue.ToList();
             var existingRelationships = currentEntity.RelationshipsWithThisAsParent
@@ -73,6 +73,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             }
 
             DbContext.SqlDb.SaveChanges(); // now save the changed relationships
+            wrapLog("ok");
         }
 
         /// <summary>
@@ -110,7 +111,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         internal void ImportRelationshipQueueAndSave()
         {
-            Log.Add("import relationship queue");
+            var wrapLog = Log.Call("ImportRelationshipQueueAndSave", "");
             // if SaveOptions determines it, clear all existing relationships first
             var fullFlush = _saveQueue
                 .Where(r => r.FlushAllEntityRelationships)
@@ -156,17 +157,18 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 }
             );
 
-
+            wrapLog(null);
             _saveQueue.Clear();
         }
 
         internal void FlushChildrenRelationships(List<int> parentIds)
         {
+            var wrapLog = Log.Call("FlushChildrenRelationships", $"{parentIds?.Count} items", "will do full-flush");
+            
             // Delete all existing relationships - but not the target, just the relationship
             // note: can't use .Clear(), as that will try to actually delete the children
             if (parentIds == null || parentIds.Count <= 0) return;
 
-            Log.Add($"found {parentIds.Count} items, will do full-flush");
             foreach (var id in parentIds)
             {
                 var ent = DbContext.Entities.GetDbEntity(id);
@@ -175,6 +177,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             }
             // intermediate save (important) so that EF state tracking works
             DbContext.SqlDb.SaveChanges();
+            wrapLog(null);
         }
 
 
@@ -197,11 +200,12 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         internal void SaveRelationships(IEntity eToSave, ToSicEavEntities dbEntity, List<ToSicEavAttributes> attributeDefs, SaveOptions so)
         {
+            var wrapLog = Log.Call("SaveRelationships", "");
+
             // some initial error checking
             if(dbEntity.EntityId <= 0)
                 throw new Exception("can't work on relationships if entity doesn't have a repository id yet");
 
-            Log.Add("save relationships");
             DoWhileQueueingRelationships(() =>
             {
                 // put all relationships into queue
@@ -229,9 +233,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
                             break;
                     }
 
-                    //if (list is Guid) list = new List<Guid> {(Guid) list};
-                    //if (list is int) list = new List<int> {(int) list};
-
                     if (list is List<Guid> || list is List<Guid?>)
                     {
                         var guidList = (list as List<Guid>)?.Select(p => (Guid?) p) ??
@@ -248,6 +249,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                 }
             });
+            wrapLog(null);
         }
     }
 

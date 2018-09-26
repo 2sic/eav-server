@@ -24,7 +24,7 @@ namespace ToSic.Eav.WebApi
             //todo: remove this once we're sure we're not using the global appid for anything
             SetAppId(appId);
             var appMan = new AppManager(appId, Log);
-            Log.Add($"SaveMany(appId:{appId}, items:{items.Count}, partOfPage (not used here, must be done in dnn):{partOfPage}, draftOnly:{draftOnly})");
+            var wrapLog = Log.Call("SaveMany", $"appId:{appId}, items:{items.Count}, partOfPage (not used here, must be done in dnn):{partOfPage}, draftOnly:{draftOnly}");
 
             #region 2018-09-07 this area should probably be disabled, but I'm not sure if it's still needed - better leave it in, till this is deprecated
             // #1 set guid
@@ -60,6 +60,7 @@ namespace ToSic.Eav.WebApi
 
             var save= new SaveHelpers.SaveEntities(Log);
             save.UpdateGuidAndPublishedAndSaveMany(appMan, entitySetToImport, draftOnly);
+            wrapLog("ok");
             return save.GenerateIdList(appMan.Read.Entities, items);
         }
 

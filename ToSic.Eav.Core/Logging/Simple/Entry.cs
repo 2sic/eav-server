@@ -17,10 +17,6 @@
             Depth = depth;
         }
 
-        public void AppendResult(string message)
-            => Result = message;
-            //=> Message += "=>" + (message ?? string.Empty);
-
-        //public string Serialize() => Message;
+        public void AppendResult(string message) => Result = message;
     }
 }

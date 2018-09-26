@@ -9,9 +9,8 @@ namespace ToSic.Eav.Logging.Simple
         /// and return a method which can be used for the done-message which will use the same prefix
         /// </summary>
         /// <param name="open"></param>
-        /// <param name="closePrefix"></param>
         /// <returns></returns>
-        private Action<string> Wrapper(string open, string closePrefix)
+        private Action<string> Wrapper(string open)
         {
             var entry = AddEntry(open);
             WrapDepth++;
@@ -19,7 +18,6 @@ namespace ToSic.Eav.Logging.Simple
             {
                 WrapDepth--;
                 entry.AppendResult(message);
-                //Add(closePrefix + (message ?? string.Empty));
             };
         }
     }
