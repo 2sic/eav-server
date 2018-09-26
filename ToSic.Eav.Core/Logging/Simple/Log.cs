@@ -14,6 +14,7 @@ namespace ToSic.Eav.Logging.Simple
         private const int MaxScopeLen = 3;
         private const int MaxNameLen = 6;
         public readonly DateTime Created = DateTime.Now;
+        public int WrapDepth;
         public  List<Entry> Entries { get; } = new List<Entry>();
         private Log _parent;
 
@@ -68,8 +69,19 @@ namespace ToSic.Eav.Logging.Simple
         /// <param name="message"></param>
         public string Add(string message)
         {
-            Add(new Entry(this, message));
+            AddEntry(message);
             return message;
+        }
+
+        /// <summary>
+        /// Add a message
+        /// </summary>
+        /// <param name="message"></param>
+        private Entry AddEntry(string message)
+        {
+            var e = new Entry(this, message, WrapDepth);
+            Add(e);
+            return e;
         }
 
         #region Constructor Logs
@@ -133,8 +145,14 @@ namespace ToSic.Eav.Logging.Simple
         /// <returns></returns>
         private Action<string> LogWrap(string open, string closePrefix)
         {
-            Add(open);
-            return message => Add(closePrefix + (message ?? string.Empty));
+            var entry = AddEntry(open);
+            WrapDepth++;
+            return message =>
+            {
+                WrapDepth--;
+                entry.AppendResult(message);
+                //Add(closePrefix + (message ?? string.Empty));
+            };
         }
 
         /// <summary>
@@ -158,7 +176,7 @@ namespace ToSic.Eav.Logging.Simple
 
         public string Warn(string message)
         {
-            Add(new Entry(this, "WARNING: " + message));
+            Add(new Entry(this, "WARNING: " + message, WrapDepth));
             return message;
         }
 
@@ -196,7 +214,10 @@ namespace ToSic.Eav.Logging.Simple
         public string Dump(string separator = " - ", string start = "", string end = "")
         {
             var lg = new StringBuilder(start);
-            Entries.ForEach(e => lg.AppendLine(e.Source + separator + e.Message));
+            Entries.ForEach(e => lg.AppendLine(e.Source
+                                               + separator
+                                               + new string('~', e.Depth * 2)
+                                               + e.Message));
             lg.Append(end);
             return lg.ToString();
         }
