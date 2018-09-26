@@ -2,8 +2,9 @@
 {
     public class Entry
     {
-        public string Message { get; private set; }
-        public int Depth = 0;
+        public string Message { get; }
+        public string Result { get; private set; }
+        public int Depth;
 
         private readonly Log _log;
 
@@ -17,7 +18,8 @@
         }
 
         public void AppendResult(string message)
-            => Message += "=>" + (message ?? string.Empty);
+            => Result = message;
+            //=> Message += "=>" + (message ?? string.Empty);
 
         //public string Serialize() => Message;
     }

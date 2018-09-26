@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ToSic.Eav.Logging.Simple
 {
-    public class Log
+    public partial class Log
     {
         // unique ID of this logger, to not confuse it with other loggers
         private readonly string _id = Guid.NewGuid().ToString().Substring(0, 2);
@@ -84,76 +84,8 @@ namespace ToSic.Eav.Logging.Simple
             return e;
         }
 
-        #region Constructor Logs
-        /// <summary>
-        /// Add a log entry for a class constructor, returning a method to call when done
-        /// </summary>
-        public Action<string> New(string className, string @params = null, string message = null) 
-            => LogWrap($"new {className}({@params}) {message}", $"{className}() ");
 
-        /// <summary>
-        /// Add a log entry for a class constructor, returning a method to call when done
-        /// </summary>
-        public Action<string> New(string className, Func<string> @params, Func<string> message = null)
-            => New(className, Try(@params), message != null ? Try(message) : null);
-
-        #endregion
-
-        #region Call Logs
-        /// <summary>
-        /// Add a log entry for method call, returning a method to call when done
-        /// </summary>
-        public Action<string> Call(string methodName, string @params = null, string message = null) 
-            => LogWrap($"{methodName}({@params}) {message}", $"{methodName}() ");
-
-        /// <summary>
-        /// Add a log entry for a class constructor, returning a method to call when done
-        /// </summary>
-        public Action<string> Call(string methodName, Func<string> @params, Func<string> message = null)
-            => Call(methodName, Try(@params), message != null ? Try(message) : null);
-        #endregion
-
-        #region GET calls
-        /// <summary>
-        /// Add a log entry for method call, returning a method to call when done
-        /// </summary>
-        public Action<string> Get(string property)
-            => LogWrap($"get {property} start", $"get {property} done ");
-        public Action<string> Set(string property)
-            => LogWrap($"set {property} start", $"set {property} done ");
-
-        #endregion
-
-        #region Intercept
-
-        public T Intercept<T>(string message, Func<T> generate)
-        {
-            var result = generate();
-            Add($"{message} {result}");
-            return result;
-        }
-
-        #endregion
-
-        #region Log Wrappers and Helpers
-        /// <summary>
-        /// Wrap a log entry - basically log something with a prefix, 
-        /// and return a method which can be used for the done-message which will use the same prefix
-        /// </summary>
-        /// <param name="open"></param>
-        /// <param name="closePrefix"></param>
-        /// <returns></returns>
-        private Action<string> LogWrap(string open, string closePrefix)
-        {
-            var entry = AddEntry(open);
-            WrapDepth++;
-            return message =>
-            {
-                WrapDepth--;
-                entry.AppendResult(message);
-                //Add(closePrefix + (message ?? string.Empty));
-            };
-        }
+        #region Log Helpers
 
         /// <summary>
         /// Try to call a function generating a message. 
@@ -211,15 +143,6 @@ namespace ToSic.Eav.Logging.Simple
                 Rename(name);
         }
 
-        public string Dump(string separator = " - ", string start = "", string end = "")
-        {
-            var lg = new StringBuilder(start);
-            Entries.ForEach(e => lg.AppendLine(e.Source
-                                               + separator
-                                               + new string('~', e.Depth * 2)
-                                               + e.Message));
-            lg.Append(end);
-            return lg.ToString();
-        }
+
     }
 }
