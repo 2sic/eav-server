@@ -15,14 +15,14 @@ namespace ToSic.Eav.WebApi
     /// </summary>
     public class EntitiesController : Eav3WebApiBase
     {
-        public EntitiesController(int appId) : base(appId) { }
+        //public EntitiesController(int appId) : base(appId) { }
         public EntitiesController(Log parentLog) : base(parentLog) { }
 
         public Dictionary<Guid, int> SaveMany([FromUri] int appId, [FromBody] List<BundleWithHeader<EntityWithLanguages>> items,
             [FromUri] bool partOfPage, bool draftOnly)
         {
             //todo: remove this once we're sure we're not using the global appid for anything
-            SetAppId(appId);
+            //SetAppId(appId);
             var appMan = new AppManager(appId, Log);
             var wrapLog = Log.Call("SaveMany", $"appId:{appId}, items:{items.Count}, partOfPage (not used here, must be done in dnn):{partOfPage}, draftOnly:{draftOnly}");
 

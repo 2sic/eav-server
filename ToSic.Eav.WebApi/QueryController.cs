@@ -115,7 +115,7 @@ namespace ToSic.Eav.WebApi
 			var outStreams = ConstructPipeline(appId, id, true);
 		    var timer = new Stopwatch();
             timer.Start();
-		    var query = Serializer.Prepare(outStreams);
+		    var query = GetSerializerWithGuidEnabled().Prepare(outStreams);
             timer.Stop();
 
             // Now get some more debug info
@@ -169,15 +169,16 @@ namespace ToSic.Eav.WebApi
             try
             {
                 Log.Add("import content" + args.DebugInfo);
-                AppId = args.AppId;
+                //AppId = args.AppId;
 
                 //var data = Convert.FromBase64String(args.ContentBase64);
                 //var str = Encoding.UTF8.GetString(data);
+                var appManager = new AppManager(args.AppId, Log);
 
-                var deser = new ImportExport.Json.JsonSerializer(AppManager.Package, Log);
+                var deser = new ImportExport.Json.JsonSerializer(appManager.Package, Log);
                 var ents = deser.Deserialize(args.GetContentString());
                 var qdef = new QueryDefinition(ents);
-                AppManager.Queries.SaveCopy(qdef);
+                appManager.Queries.SaveCopy(qdef);
 
                 return true;
             }

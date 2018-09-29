@@ -19,14 +19,14 @@ namespace ToSic.Eav.WebApi
         /// <summary>
         /// Get Entities with specified AssignmentObjectTypeId and Key
         /// </summary>
-        public IEnumerable<Dictionary<string, object>> GetAssignedEntities(int assignmentObjectTypeId, string keyType, string key, string contentType, int? appId = null)
+        public IEnumerable<Dictionary<string, object>> GetAssignedEntities(int assignmentObjectTypeId, string keyType, string key, string contentType, int/*?*/ appId /*= null*/)
         {
-            if (appId.HasValue)
-                AppId = appId.Value;
+            //if (appId.HasValue)
+            //    AppId = appId.Value;
 
             IEnumerable<IEntity> entityList = null;
 
-            var appRun = new AppRuntime(AppId, Log);
+            var appRun = new AppRuntime(appId, Log);
 
             switch (keyType)
             {
@@ -48,7 +48,7 @@ namespace ToSic.Eav.WebApi
             if(entityList == null)
                 throw new Exception($"was not able to convert '{key}' to keytype {keyType}, must cancel");
 
-            return Serializer.Prepare(entityList);
+            return GetSerializerWithGuidEnabled().Prepare(entityList);
         }
 
     }
