@@ -8,6 +8,7 @@ using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Serializers;
@@ -20,11 +21,10 @@ namespace ToSic.Eav.WebApi
 	/// <summary>
 	/// Web API Controller for ContentTypes
 	/// </summary>
-	public class ContentTypeController : Eav3WebApiBase
+	public class ContentTypeController : HasLog
     {
-        public ContentTypeController(Log parentLog = null) : base(parentLog)
+        public ContentTypeController(Log parentLog = null) : base("Api.EavCTC", parentLog)
         {
-            Log.Rename("EavCTC");
         }
 
         #region Content-Type Get, Delete, Save

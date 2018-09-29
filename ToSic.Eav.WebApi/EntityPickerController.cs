@@ -4,17 +4,17 @@ using System.Linq;
 using System.Web.Http;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.WebApi.Formats;
 using static System.String;
 
 namespace ToSic.Eav.WebApi
 {
-    public class EntityPickerController : Eav3WebApiBase
+    public class EntityPickerController : HasLog
     {
-        public EntityPickerController(Log parentLog = null) : base(parentLog)
+        public EntityPickerController(Log parentLog) : base("Api.EntPck", parentLog)
         {
-            Log.Rename("EntPck");
         }
 
         /// <summary>

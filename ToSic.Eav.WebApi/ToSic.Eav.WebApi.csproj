@@ -105,14 +105,22 @@
     <Compile Include="Formats\QueryDefinitionInfo.cs" />
     <Compile Include="Helpers\Download.cs" />
     <Compile Include="Helpers\Serializers.cs" />
+    <Compile Include="ImportExport\ImportResult.cs" />
+    <Compile Include="PublicApi\IContentExportController.cs" />
+    <Compile Include="PublicApi\IContentImportController.cs" />
+    <Compile Include="PublicApi\IContentTypeController.cs" />
+    <Compile Include="PublicApi\IEntitiesController.cs" />
+    <Compile Include="PublicApi\IEntityPickerController.cs" />
+    <Compile Include="PublicApi\IImportExportController.cs" />
+    <Compile Include="PublicApi\IMetadataController.cs" />
+    <Compile Include="PublicApi\IPipelineDesignerController.cs" />
+    <Compile Include="PublicApi\ISystemController.cs" />
     <Compile Include="SaveHelpers\OldSave.cs" />
     <Compile Include="SaveHelpers\SaveEntities.cs" />
-    <Compile Include="SystemController.cs" />
     <Compile Include="QueryController.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Eav3WebApiBase.cs" />
     <Compile Include="Serializers\Serializer.cs" />
     <Compile Include="MetadataController.cs" />
     <Compile Include="EntitiesController.cs" />

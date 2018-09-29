@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.WebApi
@@ -11,9 +12,9 @@ namespace ToSic.Eav.WebApi
 	/// Web API Controller for MetaData
 	/// Metadata-entities (content-items) are additional information about some other object
 	/// </summary>
-	public class MetadataController : Eav3WebApiBase
+	public class MetadataController : HasLog
     {
-        public MetadataController(Log parentLog = null) : base(parentLog, "Api.MetaCn")
+        public MetadataController(Log parentLog) : base("Api.MetaCn", parentLog)
         {}
 
         /// <summary>

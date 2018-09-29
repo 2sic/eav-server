@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web.Http;
 using ToSic.Eav.Apps;
 using ToSic.Eav.WebApi.Formats;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.WebApi
@@ -13,13 +13,14 @@ namespace ToSic.Eav.WebApi
     /// <summary>
     /// Web API Controller for various actions
     /// </summary>
-    public class EntitiesController : Eav3WebApiBase
+    public class EntitiesController : HasLog
     {
-        //public EntitiesController(int appId) : base(appId) { }
-        public EntitiesController(Log parentLog) : base(parentLog) { }
+        public EntitiesController(Log parentLog) : base("Api.EntCtl", parentLog) { }
 
-        public Dictionary<Guid, int> SaveMany([FromUri] int appId, [FromBody] List<BundleWithHeader<EntityWithLanguages>> items,
-            [FromUri] bool partOfPage, bool draftOnly)
+        public Dictionary<Guid, int> SaveMany(int appId, 
+            List<BundleWithHeader<EntityWithLanguages>> items,
+            bool partOfPage, 
+            bool draftOnly)
         {
             //todo: remove this once we're sure we're not using the global appid for anything
             //SetAppId(appId);

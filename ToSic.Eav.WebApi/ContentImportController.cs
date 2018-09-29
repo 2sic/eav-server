@@ -5,6 +5,7 @@ using System.Web.Http;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.WebApi.Formats;
@@ -12,11 +13,10 @@ using ToSic.Eav.WebApi.Formats;
 namespace ToSic.Eav.WebApi
 {
     /// <inheritdoc />
-    public class ContentImportController : Eav3WebApiBase
+    public class ContentImportController : HasLog
     {
-        public ContentImportController(Log parentLog = null) : base(parentLog)
+        public ContentImportController(Log parentLog = null) : base("Api.EaCtIm", parentLog)
         {
-            Log.Rename("EaCtIm");
         }
 
 
@@ -76,7 +76,7 @@ namespace ToSic.Eav.WebApi
             {
                 Log.Add("import json item" + args.DebugInfo);
                 var appManager = new AppManager(args.AppId, Log);
-                var deser = new ImportExport.Json.JsonSerializer(appManager.Package, Log);
+                var deser = new ToSic.Eav.ImportExport.Json.JsonSerializer(appManager.Package, Log);
                 var entity = deser.Deserialize(args.GetContentString());
 
                 entity.ResetEntityId(0);

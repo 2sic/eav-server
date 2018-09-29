@@ -9,6 +9,7 @@ using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Pipeline;
 using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.WebApi.Formats;
 
@@ -18,12 +19,11 @@ namespace ToSic.Eav.WebApi
 	/// <summary>
 	/// Web API Controller for the Pipeline Designer UI
 	/// </summary>
-	public class QueryController : Eav3WebApiBase
+	public class QueryController : HasLog
     {
         #region initializers etc. - work on later
-        public QueryController(Log parentLog): base(parentLog)
+        public QueryController(Log parentLog): base("Api.EaPipe", parentLog)
 		{
-            Log.Rename("Api.EaPipe");
 		}
 
         #endregion
@@ -62,7 +62,7 @@ namespace ToSic.Eav.WebApi
 
             return query;
 
-            Dictionary<string, object> EntityToDictionary(Interfaces.IEntity entity)
+            Dictionary<string, object> EntityToDictionary(Eav.Interfaces.IEntity entity)
             {
                 var attributes = entity.Attributes.ToDictionary(k => k.Value.Name, v =>  v.Value[0]);
                 attributes.Add("EntityId", entity.EntityId);
@@ -171,7 +171,7 @@ namespace ToSic.Eav.WebApi
                 Log.Add("import content" + args.DebugInfo);
                 var appManager = new AppManager(args.AppId, Log);
 
-                var deser = new ImportExport.Json.JsonSerializer(appManager.Package, Log);
+                var deser = new Eav.ImportExport.Json.JsonSerializer(appManager.Package, Log);
                 var ents = deser.Deserialize(args.GetContentString());
                 var qdef = new QueryDefinition(ents);
                 appManager.Queries.SaveCopy(qdef);
