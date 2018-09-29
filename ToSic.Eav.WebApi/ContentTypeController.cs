@@ -84,7 +84,6 @@ namespace ToSic.Eav.WebApi
 	    public ContentTypeInfo GetSingle(int appId, string contentTypeStaticName, string scope = null)
 	    {
 	        Log.Add($"get single a#{appId}, type:{contentTypeStaticName}, scope:{scope}");
-            //SetAppId(appId);
             var cache = DataSource.GetCache(null, appId);
             var ct = cache.GetContentType(contentTypeStaticName);
             return ContentTypeForJson(ct as ContentType, null);
@@ -95,7 +94,6 @@ namespace ToSic.Eav.WebApi
 	    public bool Delete(int appId, string staticName)
 	    {
 	        Log.Add($"delete a#{appId}, name:{staticName}");
-            //SetAppId(appId);
             GetDb(appId).ContentType.Delete(staticName);
 	        return true;
 	    }
@@ -104,7 +102,6 @@ namespace ToSic.Eav.WebApi
 	    public bool Save(int appId, Dictionary<string, string> item)
 	    {
 	        Log.Add($"save a#{appId}, item count:{item.Count}");
-            //SetAppId(appId);
 	        bool.TryParse(item["ChangeStaticName"], out var changeStaticName);
 	        GetDb(appId).ContentType.AddOrUpdate(
                 item["StaticName"], 
@@ -122,7 +119,6 @@ namespace ToSic.Eav.WebApi
 	    public bool CreateGhost(int appId, string sourceStaticName)
 	    {
 	        Log.Add($"create ghost a#{appId}, type:{sourceStaticName}");
-            //SetAppId(appId);
 	        GetDb(appId).ContentType.CreateGhost(sourceStaticName);
             return true;
 	    }
@@ -137,7 +133,6 @@ namespace ToSic.Eav.WebApi
         {
             Log.Add($"get fields a#{appId}, type:{staticName}");
 
-            //SetAppId(appId);
             if(!(DataSource.GetCache(null, appId).GetContentType(staticName) is ContentType type))
                 throw new Exception("type should be a ContentType - something broke");
             var fields = type.Attributes.OrderBy(a => a.SortOrder);
@@ -173,7 +168,6 @@ namespace ToSic.Eav.WebApi
         public bool Reorder(int appId, int contentTypeId, string newSortOrder)
         {
             Log.Add($"reorder a#{appId}, type#{contentTypeId}, order:{newSortOrder}");
-            //SetAppId(appId);
 
             var sortOrderList = newSortOrder.Trim('[', ']').Split(',').Select(int.Parse).ToList();
             GetDb(appId).ContentType.SortAttributes(contentTypeId, sortOrderList);
@@ -184,7 +178,6 @@ namespace ToSic.Eav.WebApi
 	    public string[] DataTypes(int appId)
 	    {
 	        Log.Add($"get data types a#{appId}");
-            //SetAppId(appId);
             return GetDb(appId).AttributesDefinition.DataTypeNames(appId);
 	    }
 
@@ -192,7 +185,6 @@ namespace ToSic.Eav.WebApi
 	    public List<InputTypeInfo> InputTypes(int appId)
 	    {
 	        Log.Add($"get input types a#{appId}");
-            //SetAppId(appId);
 	        var appInputTypes = new AppRuntime(appId, Log).ContentTypes.GetInputTypes();
 
 	        return appInputTypes;
@@ -206,7 +198,6 @@ namespace ToSic.Eav.WebApi
         public int AddField(int appId, int contentTypeId, string staticName, string type, string inputType, int sortOrder)
 	    {
 	        Log.Add($"add field a#{appId}, type#{contentTypeId}, name:{staticName}, type:{type}, input:{inputType}, order:{sortOrder}");
-            //SetAppId(appId);
             var attDef = new AttributeDefinition(appId, staticName, type, false, 0, sortOrder);
 	        var appManager = new AppManager(appId, Log);
 
@@ -217,7 +208,6 @@ namespace ToSic.Eav.WebApi
         public bool UpdateInputType(int appId, int attributeId, string inputType)
         {
             Log.Add($"update input type a#{appId}, attrib:{attributeId}, input:{inputType}");
-            //SetAppId(appId);
             var appManager = new AppManager(appId, Log);
             return appManager.ContentTypes.UpdateInputType(attributeId, inputType);
         }
@@ -227,7 +217,6 @@ namespace ToSic.Eav.WebApi
 	    public bool DeleteField(int appId, int contentTypeId, int attributeId)
 	    {
 	        Log.Add($"delete field a#{appId}, type#{contentTypeId}, attrib:{attributeId}");
-            //SetAppId(appId);
             return GetDb(appId).AttributesDefinition.RemoveAttributeAndAllValuesAndSave(attributeId);
 	    }
 
@@ -235,7 +224,6 @@ namespace ToSic.Eav.WebApi
 	    public void SetTitle(int appId, int contentTypeId, int attributeId)
 	    {
 	        Log.Add($"set title a#{appId}, type#{contentTypeId}, attrib:{attributeId}");
-            //SetAppId(appId);
 	        GetDb(appId).AttributesDefinition.SetTitleAttribute(attributeId, contentTypeId);
 	    }
 
@@ -243,7 +231,6 @@ namespace ToSic.Eav.WebApi
         public bool Rename(int appId, int contentTypeId, int attributeId, string newName)
         {
             Log.Add($"rename attribute a#{appId}, type#{contentTypeId}, attrib:{attributeId}, name:{newName}");
-            //SetAppId(appId);
             GetDb(appId).AttributesDefinition.RenameAttribute(attributeId, contentTypeId, newName);
             return true;
         }

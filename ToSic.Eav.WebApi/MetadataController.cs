@@ -21,9 +21,6 @@ namespace ToSic.Eav.WebApi
         /// </summary>
         public IEnumerable<Dictionary<string, object>> GetAssignedEntities(int assignmentObjectTypeId, string keyType, string key, string contentType, int/*?*/ appId /*= null*/)
         {
-            //if (appId.HasValue)
-            //    AppId = appId.Value;
-
             IEnumerable<IEntity> entityList = null;
 
             var appRun = new AppRuntime(appId, Log);

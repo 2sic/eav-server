@@ -169,10 +169,6 @@ namespace ToSic.Eav.WebApi
             try
             {
                 Log.Add("import content" + args.DebugInfo);
-                //AppId = args.AppId;
-
-                //var data = Convert.FromBase64String(args.ContentBase64);
-                //var str = Encoding.UTF8.GetString(data);
                 var appManager = new AppManager(args.AppId, Log);
 
                 var deser = new ImportExport.Json.JsonSerializer(appManager.Package, Log);

@@ -36,7 +36,6 @@ namespace ToSic.Eav.WebApi
         {
             Log.Add($"export content NEW a#{appId}, lang:{language}, " +
                     $"deflang:{defaultLanguage}, ct:{contentType}, ids:{selectedIds}");
-            //AppId = appId;
             var appManager = new AppManager(appId, Log);
             var contextLanguages = appManager.Read.Zone.Languages().Select(l => l.EnvironmentKey).ToArray();
 
@@ -74,7 +73,6 @@ namespace ToSic.Eav.WebApi
         public HttpResponseMessage DownloadTypeAsJson(int appId, string name)
         {
             Log.Add($"get fields a#{appId}, type:{name}");
-            //SetAppId(appId);
             var appManager = new AppManager(appId, Log);
             var type = appManager.Read.ContentTypes.Get(name);
             var serializer = new JsonSerializer(appManager.Package, Log);
@@ -88,7 +86,6 @@ namespace ToSic.Eav.WebApi
         public HttpResponseMessage DownloadEntityAsJson(int appId, int id, string prefix, bool withMetadata)
         {
             Log.Add($"get fields a#{appId}, id:{id}");
-            //SetAppId(appId);
             var appManager = new AppManager(appId, Log);
             var entity = appManager.Read.Entities.Get(id);
             var serializer = new JsonSerializer(appManager.Package, Log);

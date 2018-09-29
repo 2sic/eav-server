@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Xml;
 using ToSic.Eav.Interfaces;
@@ -119,13 +118,12 @@ namespace ToSic.Eav.Apps.ImportExport
         /// Creates an app and then imports the xml
         /// </summary>
         /// <returns>AppId of the new imported app</returns>
-        public bool ImportApp(int zoneId, XDocument doc, out int/*?*/ appId)
+        public bool ImportApp(int zoneId, XDocument doc, out int appId)
         {
             Log.Add($"import app z#{zoneId}");
 			// Increase script timeout to prevent timeouts
 			//HttpContext.Current.Server.ScriptTimeout = 300;
 
-			// appId = new int?();
             appId = 0;
 
 			if (!IsCompatible(doc))

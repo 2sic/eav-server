@@ -24,7 +24,6 @@ namespace ToSic.Eav.WebApi
         public ContentImportResult EvaluateContent(ContentImportArgs args)
         {
             Log.Add("eval content - start" + args.DebugInfo);
-            //AppId = args.AppId;
 
             var import = GetXmlImport(args);
             return import.ErrorLog.HasErrors 
@@ -45,7 +44,6 @@ namespace ToSic.Eav.WebApi
         public ContentImportResult ImportContent(ContentImportArgs args)
         {
             Log.Add("import content" + args.DebugInfo);
-            //AppId = args.AppId;
 
             var import = GetXmlImport(args);
             if (!import.ErrorLog.HasErrors)
@@ -77,7 +75,6 @@ namespace ToSic.Eav.WebApi
             try
             {
                 Log.Add("import json item" + args.DebugInfo);
-                //AppId = args.AppId;
                 var appManager = new AppManager(args.AppId, Log);
                 var deser = new ImportExport.Json.JsonSerializer(appManager.Package, Log);
                 var entity = deser.Deserialize(args.GetContentString());
