@@ -1,6 +1,5 @@
 ﻿using System.Web.Http;
 using ToSic.Eav.Logging.Simple;
-using ToSic.Eav.Serializers;
 
 namespace ToSic.Eav.WebApi
 {
@@ -16,19 +15,6 @@ namespace ToSic.Eav.WebApi
 
         public Eav3WebApiBase(Log parentLog, string name = null) => Log.LinkTo(parentLog, name);
 
-        #region Helpers
-
-        // I must keep the serializer so it can be configured from outside if necessary
-	    //private Serializer _serializer;
-	    public static Serializer GetSerializerWithGuidEnabled()
-	    {
-	        // if (_serializer != null) return _serializer;
-	        var serializer = Factory.Resolve<Serializer>();
-	        serializer.IncludeGuid = true;
-	        return serializer;
-	    }
-
-	    #endregion
 
         #region App-ID helper - 2018-09-29 2dm disabled as I removed all uses, and this was a dangerous global variable
         //public Eav3WebApiBase(int appId, Log parentLog = null)

@@ -115,7 +115,7 @@ namespace ToSic.Eav.WebApi
 			var outStreams = ConstructPipeline(appId, id, true);
 		    var timer = new Stopwatch();
             timer.Start();
-		    var query = GetSerializerWithGuidEnabled().Prepare(outStreams);
+		    var query = Helpers.Serializers.GetSerializerWithGuidEnabled().Prepare(outStreams);
             timer.Stop();
 
             // Now get some more debug info
