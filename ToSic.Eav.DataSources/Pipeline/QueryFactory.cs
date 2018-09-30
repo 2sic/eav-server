@@ -19,23 +19,30 @@ namespace ToSic.Eav.DataSources.Pipeline
 	    public QueryFactory(Log parentLog) : base("DS.PipeFt", parentLog) {}
 
 	    /// <summary>
-	    /// Creates a DataSource from a QueryEntity for specified Zone and App
+	    /// Creates a Query DataSource from a QueryEntity for specified App
 	    /// </summary>
 	    /// <param name="appId">AppId to use</param>
+	    /// <param name="query">The entity describing the this data source part in the query</param>
 	    /// <param name="valueCollection">ConfigurationProvider Provider for configurable DataSources</param>
 	    /// <param name="outSource">DataSource to attach the Out-Streams</param>
 	    /// <param name="showDrafts"></param>
 	    /// <returns>A single DataSource Out with wirings and configurations loaded, ready to use</returns>
-	    public IDataSource GetDataSource(int appId, IEntity query, IValueCollectionProvider valueCollection, IDataSource outSource = null, bool showDrafts = false)
+	    public IDataSource GetAsDataSource(int appId, IEntity query, IValueCollectionProvider valueCollection, IDataSource outSource = null, bool showDrafts = false)
 	    {
-	        var queryEntityId = query.EntityId;
-		    Log.Add($"build pipe#{queryEntityId} for a#{appId}, draft:{showDrafts}");
-		    var configurationPropertyAccesses = valueCollection.Sources.Select(s => s.Value);
-            var qdef = new QueryDefinition(query, appId); // GetQueryDefinition(appId, queryEntityId);
-            return GetDataSource(qdef, configurationPropertyAccesses, outSource, showDrafts);
+		    Log.Add($"build pipe#{query.EntityId} for a#{appId}, draft:{showDrafts}");
+		    //var configurationPropertyAccesses = valueCollection.Sources.Select(s => s.Value);
+            var qdef = new QueryDefinition(query, appId);
+	        return GetAsDataSource(qdef,  valueCollection,/*configurationPropertyAccesses*/ null, outSource, showDrafts);
 		}
 
-	    private QueryDefinition GetQueryDefinition(int appId, int queryEntityId)
+
+        /// <summary>
+        /// Build a query-definition object based on the entity-ID defining the query
+        /// </summary>
+        /// <param name="appId"></param>
+        /// <param name="queryEntityId"></param>
+        /// <returns></returns>
+	    public QueryDefinition GetQueryDefinition(int appId, int queryEntityId)
 	    {
 	        Log.Add($"get query def#{queryEntityId} for a#{appId}");
 
@@ -55,36 +62,51 @@ namespace ToSic.Eav.DataSources.Pipeline
 
 	    }
 
-	    public IDataSource GetDataSource(QueryDefinition qdef, 
-            IEnumerable<IValueProvider> propertyProviders,
-	        IDataSource outSource = null, 
+        public const string ConfigKeyPartSettings = "settings";
+	    public const string ConfigKeyPipelineSettings = "pipelinesettings";
+
+	    private IDataSource GetAsDataSource(QueryDefinition qdef,
+            IValueCollectionProvider providerToClone,
+            IEnumerable<IValueProvider> propertyProviders = null,
+            IDataSource outSource = null,
             bool showDrafts = false)
-	    {
-
-
+        {
 	        #region prepare shared / global value providers
 
 	        propertyProviders = propertyProviders?.ToList();
+	        var wrapLog = Log.Call("GetAsDataSource", $"{qdef.Header.EntityId}, " +
+	                                                  $"hasProv:{providerToClone != null}, " +
+	                                                  $"{propertyProviders?.Count()}, " +
+	                                                  $"out:{outSource != null}, " +
+	                                                  $"drafts:{showDrafts}");
+
 	        // the query settings which apply to the whole query
             // todo 2017-12-05 2dm - this is probably where I will apply parameters, I think it's not used yet!
-	        var querySettingsProvider = new AssignedEntityValueProvider("pipelinesettings", qdef.Header);
+	        var querySettingsProvider = new AssignedEntityValueProvider(ConfigKeyPipelineSettings, qdef.Header);
 
+            // 2018-09-30 2dm - centralizing building of the primary configuration template for each part
+            if (providerToClone != null)
+                Log.Add(() =>
+                    $"Sources in original provider: {providerToClone.Sources.Count} " +
+                    $"[{string.Join(",", providerToClone.Sources.Keys)}]");
+            var templateConfig = new ValueCollectionProvider(providerToClone);
+            templateConfig.Add(querySettingsProvider);  
+            templateConfig.AddOverride(propertyProviders);
+
+	        var itemSettingsShowDrafts = showDrafts
+	            ? new Dictionary<string, string> {{"ShowDrafts", true.ToString()}}
+	            : null;
 
             // global settings, ATM just if showdrafts are to be used
-            const string itemSettings = "settings";
 
-	        #endregion
-	        #region Load Query Entity and Query Parts
+            #endregion
+            #region Load Query Entity and Query Parts
 
-	        // tell the primary-out that it has this guid, for better debugging
-	        if (outSource == null)
+            // tell the primary-out that it has this guid, for better debugging
+            if (outSource == null)
 	        {
-	            var ptValues = new ValueCollectionProvider();
-                ptValues.Add(querySettingsProvider);
-                ptValues.AddOverride(propertyProviders);
-
-	            var pass = new PassThrough {ConfigurationProvider = ptValues};
-	            outSource = pass;
+	            var passThroughConfig = new ValueCollectionProvider(templateConfig);
+	            outSource = new PassThrough {ConfigurationProvider = passThroughConfig};
 	        }
             if (outSource.DataSourceGuid == Guid.Empty)
 	            outSource.DataSourceGuid = qdef.Header.EntityGuid;
@@ -95,35 +117,28 @@ namespace ToSic.Eav.DataSources.Pipeline
 
 	        Log.Add($"add parts to pipe#{qdef.Header.EntityId} ");
 	        var dataSources = new Dictionary<string, IDataSource>();
+
 	        foreach (var dataQueryPart in qdef.Parts)
 	        {
 	            #region Init Configuration Provider
 
-	            var configurationProvider = new ValueCollectionProvider();
-	            configurationProvider.Add(new AssignedEntityValueProvider(itemSettings, dataQueryPart));
+	            var partConfig = new ValueCollectionProvider(templateConfig);
+                // add / set item part configuration
+	            partConfig.Add(new AssignedEntityValueProvider(ConfigKeyPartSettings, dataQueryPart));
 
 	            // if show-draft in overridden, add that to the settings
-	            if (showDrafts)
-	                configurationProvider.AddOverride(new StaticValueProvider(itemSettings,
-	                    new Dictionary<string, string>
-	                    {
-	                        {"ShowDrafts", true.ToString()}
-	                    }));
+	            if (itemSettingsShowDrafts != null)
+	                partConfig.AddOverride(new StaticValueProvider(ConfigKeyPartSettings, itemSettingsShowDrafts));
 
-                configurationProvider.Add(querySettingsProvider);
-
-	            // ReSharper disable once PossibleMultipleEnumeration
-                configurationProvider.AddOverride(propertyProviders);
-
-	            #endregion
+                #endregion
 
 
-	            // This is new in 2015-10-38 - check type because we renamed the DLL with the parts, and sometimes the old dll-name had been saved
-	            var assemblyAndType = dataQueryPart[QueryConstants.PartAssemblyAndType][0].ToString();
+                // Check type because we renamed the DLL with the parts, and sometimes the old dll-name had been saved
+                var assemblyAndType = dataQueryPart[QueryConstants.PartAssemblyAndType][0].ToString();
 	            assemblyAndType = RewriteOldAssemblyNames(assemblyAndType);
 
 	            var dataSource = DataSource.GetDataSource(assemblyAndType, null, qdef.AppId,
-	                valueCollectionProvider: configurationProvider, parentLog: Log);
+	                valueCollectionProvider: partConfig, parentLog: Log);
 	            dataSource.DataSourceGuid = dataQueryPart.EntityGuid;
 
 	            Log.Add($"add '{assemblyAndType}' as " +
@@ -136,6 +151,7 @@ namespace ToSic.Eav.DataSources.Pipeline
 
 	        InitWirings(qdef.Header, dataSources);
 
+	        wrapLog($"parts:{qdef.Parts.Count}");
 	        return outSource;
 	    }
 
@@ -157,7 +173,7 @@ namespace ToSic.Eav.DataSources.Pipeline
 			// Init
 			var wirings = QueryWiring.Deserialize((string)dataQuery[Constants.QueryStreamWiringAttributeName][0]).ToList();
 			var initializedWirings = new List<WireInfo>();
-		    Log.Add($"init wirings⋮{wirings.Count}");
+		    var logWrap = Log.Call("InitWirings", $"count⋮{wirings.Count}");
 
 			// 1. wire Out-Streams of DataSources with no In-Streams
 			var dataSourcesWithNoInStreams = dataSources.Where(d => wirings.All(w => w.To != d.Key));
@@ -183,6 +199,7 @@ namespace ToSic.Eav.DataSources.Pipeline
 				var error = string.Join(", ", notInitialized);
 				throw new Exception("Some Stream-Wirings were not created: " + error);
 			}
+		    logWrap("ok");
 		}
 
 		/// <summary>
@@ -221,44 +238,39 @@ namespace ToSic.Eav.DataSources.Pipeline
 		}
 
 
-        /// <summary>
-        /// Build a data-source using test-values
-        /// </summary>
-        /// <param name="appId"></param>
-        /// <param name="queryId"></param>
-        /// <param name="showDrafts"></param>
-        /// <returns></returns>
-	    public IDataSource GetDataSourceForTesting(int appId, int queryId, bool showDrafts) 
-            => GetDataSourceForTesting(GetQueryDefinition(appId, queryId), showDrafts);
-
-	    public IDataSource GetDataSourceForTesting(QueryDefinition qdef, bool showDrafts)
+	    public IDataSource GetDataSourceForTesting(QueryDefinition qdef, bool showDrafts, IValueCollectionProvider configuration = null)
 	    {
 	        Log.Add($"construct test query a#{qdef.AppId}, pipe:{qdef.Header.EntityGuid} ({qdef.Header.EntityId}), drafts:{showDrafts}");
 
-            var testValueProviders = GetTestValueProviders(qdef).ToList();
-	        return GetDataSource(qdef, testValueProviders, showDrafts: showDrafts);
+            var testValueProviders = GenerateTestValueProviders(qdef).ToList();
+	        return GetAsDataSource(qdef, configuration, testValueProviders, showDrafts: showDrafts);
 	    }
 
 	    private const string FieldTestParams = "TestParameters";
         /// <summary>
         /// Retrieve test values to test a specific query. 
         /// The specs are found in the query definition, but the must be converted to a source
+        /// They are in the format [source:key]=value
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<IValueProvider> GetTestValueProviders(QueryDefinition qdef)
+        private IEnumerable<IValueProvider> GenerateTestValueProviders(QueryDefinition qdef)
         {
+            var wrapLog = Log.Call("GenerateTestValueProviders", $"{qdef.Header.EntityId}");
             // Parse Test-Parameters in Format [Token:Property]=Value
             var testParameters = ((IAttribute<string>) qdef.Header[FieldTestParams]).TypedContents;
             if (testParameters == null)
                 return null;
             // extract the lines which look like [source:property]=value
+            const string keyToken = "Token", 
+                keyProperty = "Property", 
+                keyValue = "Value";
             var paramMatches = Regex.Matches(testParameters, @"(?:\[(?<Token>\w+):(?<Property>\w+)\])=(?<Value>[^\r\n]*)");
 
             // Create a list of static Property Accessors
             var result = new List<IValueProvider>();
             foreach (Match testParam in paramMatches)
             {
-                var token = testParam.Groups["Token"].Value.ToLower();
+                var token = testParam.Groups[keyToken].Value.ToLower();
 
                 // Ensure a PropertyAccess exists
                 if (!(result.FirstOrDefault(i => i.Name == token) is StaticValueProvider propertyAccess))
@@ -268,10 +280,11 @@ namespace ToSic.Eav.DataSources.Pipeline
                 }
 
                 // Add the static value
-                propertyAccess.Properties.Add(testParam.Groups["Property"].Value, testParam.Groups["Value"].Value);
+                propertyAccess.Properties.Add(testParam.Groups[keyProperty].Value, testParam.Groups[keyValue].Value);
             }
-
+            wrapLog("ok");
             return result;
         }
+
 	}
 }

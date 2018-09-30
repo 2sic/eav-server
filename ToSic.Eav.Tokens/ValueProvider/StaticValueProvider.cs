@@ -23,8 +23,6 @@ namespace ToSic.Eav.ValueProvider
 			Name = name;
 		}
 
-		//public string Name { get; private set; }
-
 		public override string Get(string property, string format, ref bool propertyNotFound)
 		{
 			try

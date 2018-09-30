@@ -11,20 +11,31 @@ namespace ToSic.Eav.ValueProvider
 	/// </summary>
 	public class ValueCollectionProvider : IValueCollectionProvider
 	{
-		//public string DataSourceType { get; internal set; }
-		public Dictionary<string, IValueProvider> Sources { get; }
-		/// <summary>
-		/// List of all Configurations for this DataSource
-		/// </summary>
-		private readonly TokenReplace _reusableTokenReplace;
+	    public Dictionary<string, IValueProvider> Sources { get; }
+	        = new Dictionary<string, IValueProvider>(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// List of all Configurations for this DataSource
+        /// </summary>
+        private readonly TokenReplace _reusableTokenReplace;
 
 		/// <summary>
 		/// Constructs a new Configuration Provider
 		/// </summary>
 		public ValueCollectionProvider()
 		{
-			Sources = new Dictionary<string, IValueProvider>(StringComparer.OrdinalIgnoreCase);
 			_reusableTokenReplace = new TokenReplace(Sources);
+		}
+
+		/// <inheritdoc />
+		/// <summary>
+		/// ...cloning an original
+		/// </summary>
+		public ValueCollectionProvider(IValueCollectionProvider original): this()
+		{
+		    if (original == null) return;
+		    foreach (var srcSet in original.Sources)
+		        Sources.Add(srcSet.Key, srcSet.Value);
 		}
 
 	    /// <inheritdoc />
@@ -61,15 +72,9 @@ namespace ToSic.Eav.ValueProvider
 
 	    public string Replace(string sourceText) => _reusableTokenReplace.ReplaceTokens(sourceText);
 
-	    /// <summary>
-        /// Add a value provider to the source list
-        /// </summary>
-        /// <param name="newSource"></param>
-	    public void Add(IValueProvider newSource) => Sources.Add(newSource.Name, newSource);
+	    public void Add(IValueProvider newSource) => Sources[newSource.Name] = newSource;
 
-
-
-	    public void AddOverride(IValueProvider propertyProvider)
+        public void AddOverride(IValueProvider propertyProvider)
 	    {
 	        if (Sources.ContainsKey(propertyProvider.Name))
 	            Sources[propertyProvider.Name] =
