@@ -43,7 +43,7 @@ namespace ToSic.Eav.WebApi
             }
             else
             {
-                temp = appRead.Entities.AllContent;
+                temp = appRead.Entities.OnlyContent;
                 Log.Add("won't filter by type because it's null");
             }
 

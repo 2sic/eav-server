@@ -25,8 +25,8 @@ namespace ToSic.Eav.Apps.Parts
         /// <summary>
         /// All content-entities. It does not include system-entity items. 
         /// </summary>
-        public IEnumerable<Eav.Interfaces.IEntity> AllContent =>
-            All.Where(e => AppConstants.ScopesContent.Contains(e.Type.Scope));
+        public IEnumerable<Eav.Interfaces.IEntity> OnlyContent =>
+            App.Cache.List.Where(e => AppConstants.ScopesContent.Contains(e.Type.Scope));
 
         /// <summary>
         /// Get this item or return null if not found
