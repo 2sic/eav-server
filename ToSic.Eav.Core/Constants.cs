@@ -12,6 +12,7 @@ namespace ToSic.Eav
 
 
         public const string CultureSystemKey = "Culture";
+
         /// <summary>
         /// DataTimeline Operation-Key for Entity-States (Entity-Versioning)
         /// </summary>
@@ -22,12 +23,14 @@ namespace ToSic.Eav
         /// <summary>
         /// AttributeSet StaticName must match this Regex. Accept Alphanumeric, except the first char must be alphabetic or underscore.
         /// </summary>
-        public static Regex AttributeStaticName = new Regex("^[_a-zA-Z]{1}[_a-zA-Z0-9]*", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        public static Regex AttributeStaticName =
+            new Regex("^[_a-zA-Z]{1}[_a-zA-Z0-9]*", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         /// <summary>
         /// If AttributeSet StaticName doesn't match, users see this message.
         /// </summary>
-        public static string AttributeStaticNameRegExNotes = "Only alphanumerics and underscore is allowed, first char must be alphabetic or underscore.";
+        public static string AttributeStaticNameRegExNotes =
+            "Only alphanumerics and underscore is allowed, first char must be alphabetic or underscore.";
 
         #endregion
 
@@ -37,6 +40,7 @@ namespace ToSic.Eav
         /// Default ZoneId. Used if none is specified on the Context.
         /// </summary>
         public static readonly int DefaultZoneId = 1;
+
         /// <summary>
         /// AppId where MetaData (Entities) are stored.
         /// </summary>
@@ -46,22 +50,22 @@ namespace ToSic.Eav
         /// <summary>
         /// Default Entity AssignmentObjectTypeId
         /// </summary>
-        [Obsolete("Use NotMetadata instead")]
-        public const int AssignmentObjectTypeId = 1;
+        [Obsolete("Use NotMetadata instead")] public const int AssignmentObjectTypeId = 1;
+
         public const int NotMetadata = 1;
 
         /// <summary>
         /// AssignmentObjectTypeId for FieldProperties (Field MetaData)
         /// </summary>
-        [Obsolete("Use MetadataForField instead")]
-        public static readonly int AssignmentObjectTypeIdFieldProperties = 2;
+        [Obsolete("Use MetadataForField instead")] public static readonly int AssignmentObjectTypeIdFieldProperties = 2;
+
         public static readonly int MetadataForAttribute = 2;
 
         /// <summary>
         /// AssignmentObjectTypeId for DataQueries
         /// </summary>
-        [Obsolete("Use MetadataForEntity instead")]
-        public static readonly int AssignmentObjectTypeEntity = 4;
+        [Obsolete("Use MetadataForEntity instead")] public static readonly int AssignmentObjectTypeEntity = 4;
+
         public const int MetadataForEntity = 4;
 
         public static readonly int MetadataForContentType = 5;
@@ -69,16 +73,17 @@ namespace ToSic.Eav
 
         /// <summary>App metadata</summary>
         public static readonly int MetadataForApp = 3;
-        
+
         /// <summary>Zone metadata</summary>
         public static readonly int MetadataForZone = 6;
 
-        [Obsolete("Use MetadataForCmsObject instead")]
-        public static readonly int AssignmentObjectTypeCmsObject = 10; 
+        [Obsolete("Use MetadataForCmsObject instead")] public static readonly int AssignmentObjectTypeCmsObject = 10;
         public static readonly int MetadataForCmsObject = 10;
 
         #region Metadata-Properties which have system use
+
         public static readonly string ContentTypeMetadataLabel = "Label";
+
         #endregion
 
         /// <summary>content type name of the query AttributeSet</summary>
@@ -111,17 +116,29 @@ namespace ToSic.Eav
         public const string DraftEntityField = "DraftEntity";
 
         public const string TypeForInputTypeDefinition = "ContentType-InputType";
+
         #endregion
 
 
         #region Version Change Constants
+
         public const string V3To4DataSourceDllOld = ", ToSic.Eav";
         public const string V3To4DataSourceDllNew = ", ToSic.Eav.DataSources";
+
         #endregion
 
         #region Scopes
 
+        public const string ScopeContentFuture = "Default";
+        public const string ScopeContentOld = "2SexyContent";
+        public static readonly string[] ScopesContent = {ScopeContentOld, ScopeContentFuture};
         public const string ScopeSystem = "System";
+        public const string ScopeApp = "2SexyContent-App";
+        public const string ScopeContentSystem = "2SexyContent-System";
+        public static readonly string[] ScopesSystem = {ScopeSystem, ScopeApp, ScopeContentSystem};
+
+        public const string AppConfigContentType = "2SexyContent-App";
+
 
         #endregion
 
@@ -165,7 +182,6 @@ namespace ToSic.Eav
         public const string ContentAppName = "Content";
         public const string AppAssignmentName = "App";
 
-        public const string AppConfigContentType = "2SexyContent-App";
 
         #endregion
 

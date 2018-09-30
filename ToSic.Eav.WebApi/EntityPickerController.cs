@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web.Http;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
@@ -20,7 +19,7 @@ namespace ToSic.Eav.WebApi
         /// <summary>
         /// Returns a list of entities, optionally filtered by AttributeSetId.
         /// </summary>
-        public IEnumerable<dynamic> GetAvailableEntities([FromUri]int appId, [FromBody] string[] items, [FromUri] string contentTypeName = null, [FromUri] int? dimensionId = null)
+        public IEnumerable<dynamic> GetAvailableEntities(int appId, string[] items, string contentTypeName, int? dimensionId)
         {
             Log.Add($"Get entities for a#{appId}, itms⋮{items?.Length}, type:{contentTypeName}, lang#{dimensionId}");
             var dimensionIds = dimensionId ?? 0;
@@ -44,7 +43,7 @@ namespace ToSic.Eav.WebApi
             }
             else
             {
-                temp = appRead.Entities.All;
+                temp = appRead.Entities.AllContent;
                 Log.Add("won't filter by type because it's null");
             }
 

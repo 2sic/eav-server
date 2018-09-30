@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ToSic.Eav.Data.Query;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.Repositories;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -16,7 +18,16 @@ namespace ToSic.Eav.Apps.Parts
 
         #region Get
 
+        /// <summary>
+        /// All entities in the app - this also includes system entities like data-source configuration etc.
+        /// </summary>
         public IEnumerable<Eav.Interfaces.IEntity> All => App.Cache.List;
+
+        /// <summary>
+        /// All content-entities. It does not include system-entity items. 
+        /// </summary>
+        public IEnumerable<Eav.Interfaces.IEntity> AllContent =>
+            All.Where(e => Constants.ScopesContent.Contains(e.Type.Scope));
 
         /// <summary>
         /// Get this item or return null if not found
@@ -28,7 +39,7 @@ namespace ToSic.Eav.Apps.Parts
         /// </summary>
         /// <param name="entityGuid"></param>
         /// <returns></returns>
-        public Eav.Interfaces.IEntity Get(Guid entityGuid) => App.Cache.List.One(entityGuid);// .FirstOrDefault(e => e.EntityGuid == entityGuid);
+        public Eav.Interfaces.IEntity Get(Guid entityGuid) => App.Cache.List.One(entityGuid);
 
         public IEnumerable<Eav.Interfaces.IEntity> Get(string contentTypeName)
         {
