@@ -130,7 +130,7 @@ namespace ToSic.Eav.Apps
 
             var appMan = new AppManager(zoneId, appId);
             if (appMetaData == null)
-                appMan.MetadataEnsureTypeAndSingleEntity(AppConstants.AttributeSetScopeApps,
+                appMan.MetadataEnsureTypeAndSingleEntity(AppConstants.ScopeApp,
                     AppConstants.TypeAppConfig,
                     "App Metadata",
                     Constants.MetadataForApp,
@@ -148,7 +148,7 @@ namespace ToSic.Eav.Apps
 
             // Add new (empty) ContentType for Settings
             if (appSettings == null)
-                appMan.MetadataEnsureTypeAndSingleEntity(AppConstants.AttributeSetScopeApps,
+                appMan.MetadataEnsureTypeAndSingleEntity(AppConstants.ScopeApp,
                     AppConstants.TypeAppSettings,
                     "Stores settings for an app",
                     Constants.MetadataForApp,
@@ -157,7 +157,7 @@ namespace ToSic.Eav.Apps
 
             // add new (empty) ContentType for Resources
             if (appResources == null)
-                appMan.MetadataEnsureTypeAndSingleEntity(AppConstants.AttributeSetScopeApps,
+                appMan.MetadataEnsureTypeAndSingleEntity(AppConstants.ScopeApp,
                     AppConstants.TypeAppResources,
                     "Stores resources like translations for an app",
                     Constants.MetadataForApp,

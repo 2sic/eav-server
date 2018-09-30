@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Runtime.CompilerServices;
 using System.Web;
 using System.Xml.Linq;
 using System.Xml.XPath;
-//using ICSharpCode.SharpZipLib.Zip;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Zip;
 using ToSic.Eav.Logging.Simple;
@@ -109,7 +107,7 @@ namespace ToSic.Eav.Apps.ImportExport
                                         var appConfig = rootNode
                                             .Element(XmlConstants.Entities)?
                                             .Elements(XmlConstants.Entity)
-                                            .Single(e => e.Attribute(XmlConstants.AttSetStatic)?.Value == Constants.AppConfigContentType);
+                                            .Single(e => e.Attribute(XmlConstants.AttSetStatic)?.Value == AppConstants.TypeAppConfig);
 
                                         if(appConfig == null)
                                             throw new NullReferenceException("app config node not found in xml, cannot continue");

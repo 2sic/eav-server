@@ -4,7 +4,6 @@ using System.Linq;
 using ToSic.Eav.Data.Query;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Logging.Simple;
-using ToSic.Eav.Repositories;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -27,7 +26,7 @@ namespace ToSic.Eav.Apps.Parts
         /// All content-entities. It does not include system-entity items. 
         /// </summary>
         public IEnumerable<Eav.Interfaces.IEntity> AllContent =>
-            All.Where(e => Constants.ScopesContent.Contains(e.Type.Scope));
+            All.Where(e => AppConstants.ScopesContent.Contains(e.Type.Scope));
 
         /// <summary>
         /// Get this item or return null if not found
