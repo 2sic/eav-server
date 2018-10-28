@@ -86,7 +86,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         public void DeleteAnApp(string appGuid)
         {
-            var applist = DbDataController.Instance(ZoneId, parentLog: Log).SqlDb.ToSicEavApps.Where(a => a.ZoneId == ZoneId).ToList();
+            var applist = DbDataController.Instance(ZoneId, null, Log).SqlDb.ToSicEavApps.Where(a => a.ZoneId == ZoneId).ToList();
             var appId = applist.FirstOrDefault(a => a.Name == appGuid)?.AppId ?? 0;
             if (appId > 0)
                 new ZoneManager(ZoneId, Log).DeleteApp(appId);

@@ -135,7 +135,7 @@ namespace ToSic.Eav.Repository.Efc
         /// Returns a new instace of the Eav Context on specified ZoneId and/or AppId
         /// </summary>
         // ReSharper disable once MethodOverloadWithOptionalParameter
-        public static DbDataController Instance(int? zoneId = null, int? appId = null, Log parentLog = null)
+        public static DbDataController Instance(int? zoneId, int? appId, Log parentLog)
         {
             var context = Instance();
             context.InitZoneApp(zoneId, appId);

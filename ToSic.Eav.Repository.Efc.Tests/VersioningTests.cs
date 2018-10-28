@@ -64,9 +64,9 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             var id = TestItemWithCa20Changes;
             var version = 6;
-            var all = DbDataController.Instance(ZoneId, parentLog:Log).Versioning.GetHistoryList(id, false);
+            var all = DbDataController.Instance(ZoneId, null, Log).Versioning.GetHistoryList(id, false);
             var vId = all.First(x => x.VersionNumber == version).ChangeSetId;
-            var vItem = DbDataController.Instance(ZoneId, parentLog:Log).Versioning.GetItem(id, vId);
+            var vItem = DbDataController.Instance(ZoneId, null, Log).Versioning.GetItem(id, vId);
             Console.Write(vItem.Json);
         }
 
@@ -75,7 +75,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         private List<ItemHistory> GetHistoryTest(int entityId, int expectedCount)
         {
-            var history = DbDataController.Instance(ZoneId, parentLog:Log).Versioning.GetHistoryList(entityId, true);
+            var history = DbDataController.Instance(ZoneId, null, Log).Versioning.GetHistoryList(entityId, true);
             Assert.AreEqual(expectedCount, history.Count, $"should have {expectedCount} items in history for this one");
             return history;
         }

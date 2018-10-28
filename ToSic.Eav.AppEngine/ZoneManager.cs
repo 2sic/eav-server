@@ -11,7 +11,7 @@ namespace ToSic.Eav.Apps
 
         public ZoneManager(int zoneId, Log parentLog) : base(zoneId, parentLog, "App.Zone") {}
 
-        internal DbDataController DataController => _eavContext ?? (_eavContext = DbDataController.Instance(ZoneId, parentLog: Log));
+        internal DbDataController DataController => _eavContext ?? (_eavContext = DbDataController.Instance(ZoneId, null, Log));
         private DbDataController _eavContext;
 
         #endregion
@@ -39,7 +39,7 @@ namespace ToSic.Eav.Apps
         public static int CreateZone(string name, Log parentLog)
         {
             var log = new Log("App.ZoneMg", parentLog, $"create zone:{name}");
-            var zoneId = DbDataController.Instance(parentLog:parentLog).Zone.AddZone(name);
+            var zoneId = DbDataController.Instance(null, null, parentLog).Zone.AddZone(name);
             SystemManager.PurgeZoneList();
             return zoneId;
         }

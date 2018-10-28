@@ -151,7 +151,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     appGuid = Guid.NewGuid().ToString();
 
                 // Adding app to EAV
-                var eavDc = DbDataController.Instance(zoneId, parentLog: Log);
+                var eavDc = DbDataController.Instance(zoneId, null, Log);
                 var app = eavDc.App.AddApp(null, appGuid);
                 eavDc.SqlDb.SaveChanges();
 

@@ -48,7 +48,7 @@ namespace ToSic.Eav.WebApi
             var import = GetXmlImport(args);
             if (!import.ErrorLog.HasErrors)
             {
-                var db = DbDataController.Instance(args.AppId, parentLog: Log);
+                var db = DbDataController.Instance(null, args.AppId, Log);
                 import.PersistImportToRepository(db.UserName);
                 SystemManager.Purge(args.AppId);
             }

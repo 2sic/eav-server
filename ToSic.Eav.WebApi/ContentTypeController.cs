@@ -240,7 +240,7 @@ namespace ToSic.Eav.WebApi
 
         #endregion
 
-        internal DbDataController GetDb(int appId) => DbDataController.Instance(appId, parentLog: Log);
+        internal DbDataController GetDb(int appId) => DbDataController.Instance(null, appId, Log);
     }
 
 
