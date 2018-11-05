@@ -234,7 +234,7 @@ namespace ToSic.Eav.DataSources
 
         public void PurgeList(bool cascade = false)
         {
-            foreach (var stream in Out)
+            foreach (var stream in In)
                 stream.Value.PurgeList(cascade);
         }
     }
