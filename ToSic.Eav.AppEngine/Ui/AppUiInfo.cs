@@ -6,5 +6,6 @@
         public int AppId;
         public bool SupportsAjaxReload;
         public string Thumbnail;
+        public string Version;
     }
 }
