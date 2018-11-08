@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Web.Http;
 using Newtonsoft.Json;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Pipeline;
 using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.ValueProvider;
 using ToSic.Eav.WebApi.Formats;
 
 namespace ToSic.Eav.WebApi
@@ -18,12 +19,11 @@ namespace ToSic.Eav.WebApi
 	/// <summary>
 	/// Web API Controller for the Pipeline Designer UI
 	/// </summary>
-	public class QueryController : Eav3WebApiBase
+	public class QueryController : HasLog
     {
         #region initializers etc. - work on later
-        public QueryController(Log parentLog): base(parentLog)
+        public QueryController(Log parentLog): base("Api.EaPipe", parentLog)
 		{
-            Log.Rename("Api.EaPipe");
 		}
 
         #endregion
@@ -31,7 +31,6 @@ namespace ToSic.Eav.WebApi
         /// <summary>
         /// Get a Pipeline with DataSources
         /// </summary>
-        [HttpGet]
 		public QueryDefinitionInfo GetPipeline(int appId, int? id = null)
         {
             Log.Add($"get pipe a#{appId}, id:{id}");
@@ -75,8 +74,7 @@ namespace ToSic.Eav.WebApi
         /// <summary>
         /// Get installed DataSources from .NET Runtime but only those with [PipelineDesigner Attribute]
         /// </summary>
-        [HttpGet]
-		public IEnumerable<QueryRuntime.DataSourceInfo> GetInstalledDataSources()
+		public static IEnumerable<QueryRuntime.DataSourceInfo> GetInstalledDataSources()
 		    => QueryRuntime.GetInstalledDataSources();
 
 		/// <summary>
@@ -85,7 +83,7 @@ namespace ToSic.Eav.WebApi
 		/// <param name="data">JSON object { pipeline: pipeline, dataSources: dataSources }</param>
 		/// <param name="appId">AppId this Pipeline belogs to</param>
 		/// <param name="id">PipelineEntityId</param>
-		public QueryDefinitionInfo SavePipeline([FromBody] QueryDefinitionInfo data, int appId, int id)
+		public QueryDefinitionInfo SavePipeline(QueryDefinitionInfo data, int appId, int id)
 		{
 		    Log.Add($"save pipe: a#{appId}, id#{id}");
 
@@ -107,15 +105,16 @@ namespace ToSic.Eav.WebApi
 		/// <summary>
 		/// Query the Result of a Pipline using Test-Parameters
 		/// </summary>
-		[HttpGet]
-		public dynamic QueryPipeline(int appId, int id)
+		public dynamic QueryPipeline(int appId, int id, ValueCollectionProvider config)
 		{
 		    Log.Add($"queryy pipe: a#{appId}, id:{id}");
             // Get the query, run it and track how much time this took
-			var outStreams = ConstructPipeline(appId, id, true);
-		    var timer = new Stopwatch();
+		    var queryFactory = new QueryFactory(Log);
+		    var qDef = queryFactory.GetQueryDefinition(appId, id);
+			var outStreams = queryFactory.GetDataSourceForTesting(qDef, true, config);// ConstructPipeline(appId, id, true, config);
+            var timer = new Stopwatch();
             timer.Start();
-		    var query = Serializer.Prepare(outStreams);
+		    var query = Helpers.Serializers.GetSerializerWithGuidEnabled().Prepare(outStreams);
             timer.Stop();
 
             // Now get some more debug info
@@ -135,18 +134,9 @@ namespace ToSic.Eav.WebApi
 		}
 
 
-		private IDataSource ConstructPipeline(int appId, int id, bool showDrafts) 
-            => new QueryFactory(Log).GetDataSourceForTesting(appId, id, showDrafts);
-
-        [HttpGet]
-        public dynamic PipelineDebugInfo(int appId, int id)
-            => new DataSources.Debug.QueryInfo(ConstructPipeline(appId, id, true));
-
-
         /// <summary>
         /// Clone a Pipeline with all DataSources and their configurations
         /// </summary>
-        [HttpGet]
         public void ClonePipeline(int appId, int id)
             => new AppManager(appId, Log).Queries.SaveCopy(id);
 		
@@ -154,7 +144,6 @@ namespace ToSic.Eav.WebApi
 		/// <summary>
 		/// Delete a Pipeline with the Pipeline Entity, Pipeline Parts and their Configurations. Stops if the if the Pipeline Entity has relationships to other Entities.
 		/// </summary>
-		[HttpGet]
 		public object DeletePipeline(int appId, int id)
 		{
 		    new AppManager(appId, Log).Queries.Delete(id);
@@ -163,21 +152,17 @@ namespace ToSic.Eav.WebApi
 
 
 
-        [HttpPost]
         public bool ImportQuery(EntityImport args)
         {
             try
             {
                 Log.Add("import content" + args.DebugInfo);
-                AppId = args.AppId;
+                var appManager = new AppManager(args.AppId, Log);
 
-                //var data = Convert.FromBase64String(args.ContentBase64);
-                //var str = Encoding.UTF8.GetString(data);
-
-                var deser = new ImportExport.Json.JsonSerializer(AppManager.Package, Log);
+                var deser = new Eav.ImportExport.Json.JsonSerializer(appManager.Package, Log);
                 var ents = deser.Deserialize(args.GetContentString());
                 var qdef = new QueryDefinition(ents);
-                AppManager.Queries.SaveCopy(qdef);
+                appManager.Queries.SaveCopy(qdef);
 
                 return true;
             }

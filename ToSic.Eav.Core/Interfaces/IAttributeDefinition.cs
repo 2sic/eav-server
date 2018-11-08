@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Security.Permissions;
+﻿using System;
+using ToSic.Eav.Security.Permissions;
 
 namespace ToSic.Eav.Interfaces
 {
@@ -32,6 +33,11 @@ namespace ToSic.Eav.Interfaces
 
         IMetadataOfItem Metadata { get; }
 
+	    [Obsolete("this is the old call - which returns unknown. for the new UI, we should use the #2, which will later replace this")]
         string InputType { get; }
+
+        // 2018-08-26 2dm new version temporary, will later replace the InputType
+	    string InputTypeTempBetterForNewUi { get; }
+
 	}
 }

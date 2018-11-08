@@ -8,8 +8,31 @@ namespace ToSic.Eav.Apps
     public partial class App
     {
 
+        public IValueCollectionProvider ConfigurationProvider
+        {
+            get
+            {
+                if (_configurationProviderBuilt) return _configurationProvider;
+
+                // try deferred initialization of the configuration, 
+                // this only works if on initialization a _dataConfigBuilder was provided
+                if (_dataConfigurationBuilder != null)
+                {
+                    var config = _dataConfigurationBuilder.Invoke(this);
+                    InitData(config.ShowDrafts, config.VersioningEnabled, config.Configuration);
+                }
+                _configurationProviderBuilt = true;
+                return _configurationProvider;
+            }
+        }
+        private IValueCollectionProvider _configurationProvider;
+        private bool _configurationProviderBuilt;
+
 
         #region Data
+
+        private readonly Func<App, IAppDataConfiguration> _dataConfigurationBuilder;
+
 
         /// <summary>
         /// needed to initialize data - must always happen a bit later because the show-draft info isn't available when creating the first App-object.
@@ -18,10 +41,10 @@ namespace ToSic.Eav.Apps
         /// <param name="showDrafts"></param>
         /// <param name="versioningEnabled"></param>
         /// <param name="configurationValues">this is needed for providing parameters to the data-query-system</param>
-        public void InitData(bool showDrafts, bool versioningEnabled, IValueCollectionProvider configurationValues)
+        private void InitData(bool showDrafts, bool versioningEnabled, IValueCollectionProvider configurationValues)
         {
             Log.Add($"init data drafts:{showDrafts}, vers:{versioningEnabled}, hasConf:{configurationValues != null}");
-            ConfigurationProvider = configurationValues;
+            _configurationProvider = configurationValues;
             ShowDraftsInData = showDrafts;
             VersioningEnabled = versioningEnabled;
         }

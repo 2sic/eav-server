@@ -20,7 +20,7 @@ namespace ToSic.Eav.Security.Permissions
             {
                 // already constructed, use that
                 if (_permissionList != null) return _permissionList;
-
+                var logWrap = Log.Get("PermissionList");
                 var partsToConsider = new[]
                 {
                     TargetItem?.Metadata.Permissions,
@@ -33,7 +33,8 @@ namespace ToSic.Eav.Security.Permissions
                     .Aggregate(_permissionList = new List<IEntity>(), (current, permList)
                         => current.Concat(permList))
                     .ToList();
-                
+
+                logWrap($"found {PermissionList.Count()} items");
                 return _permissionList;
             }
         }
@@ -60,26 +61,30 @@ namespace ToSic.Eav.Security.Permissions
             IEnumerable<IEntity> permissions1 = null,
             IEnumerable<IEntity> permissions2 = null
             ) 
-            : base("App.PermCk", parentLog, $"init for type:{targetType?.StaticName}, " +
-                                            $"itm:{targetItem?.EntityGuid} ({targetItem?.EntityId}), " +
-                                            $"meta1: {permissions1?.Count()}, " +
-                                            $"meta2: {permissions2?.Count()}")
+            : base("App.PermCk", parentLog)
         {
+            var permList2 = permissions2 as IList<IEntity> ?? permissions2?.ToList();
+
+            var wrapLog = Log.New("PermissionCheckBase", $"type:{targetType?.StaticName}, " +
+                    $"itm:{targetItem?.EntityGuid} ({targetItem?.EntityId}), " +
+                    $"permList1: {permissions1?.Count()}, " +
+                    $"permList2: {permList2?.Count}");
+
             TargetType = targetType;
             TargetItem = targetItem;
 
             _additionalMetadata = permissions1 ?? new List<IEntity>();
-            if (permissions2 != null)
-                _additionalMetadata = _additionalMetadata.Concat(permissions2);
+            if (permList2 != null)
+                _additionalMetadata = _additionalMetadata.Concat(permList2);
 
             GrantedBecause = ConditionType.Undefined;
-
+            wrapLog("ready");
         }
 
         #endregion
 
-        public bool UserMay(Grants grant) 
-            => UserMay(new List<Grants> {grant});
+        //public bool UserMay(Grants grant) 
+        //    => UserMay(new List<Grants> {grant});
 
         public ConditionType GrantedBecause
         {
@@ -89,10 +94,12 @@ namespace ToSic.Eav.Security.Permissions
 
         public bool UserMay(List<Grants> grants)
         {
-            Log.Add("user may...");
+            var wrapLog = Log.Call("UserMay", () => $"[{string.Join(",", grants)}]");
             GrantedBecause = ConditionType.Undefined;
-            return EnvironmentAllows(grants)
+            var result = EnvironmentAllows(grants)
                    || DoesPermissionsListAllow(grants);
+            wrapLog($"{result}");
+            return result;
         }
 
 
@@ -101,10 +108,15 @@ namespace ToSic.Eav.Security.Permissions
         /// </summary>
         /// <param name="grants">The desired action like c, r, u, d etc.</param>
         /// <returns></returns>
-        private bool DoesPermissionsListAllow(List<Grants> grants) 
-            => PermissionList.Any(
-                perm => DoesPermissionAllow(perm, 
-                grants.Select(g => (char)g).ToArray()));
+        private bool DoesPermissionsListAllow(List<Grants> grants)
+        {
+            var wrapLog = Log.Call("DoesPermissionListAllow", () => $"[{string.Join(", ", grants)}]", () => $"for {PermissionList.Count()} permission items");
+            var result = PermissionList.Any(
+                perm => DoesPermissionAllow(perm,
+                    grants.Select(g => (char) g).ToArray()));
+            wrapLog($"{result}");
+            return result;
+        }
 
         /// <summary>
         /// Check if a specific permission entity allows for the desired permission
@@ -114,13 +126,15 @@ namespace ToSic.Eav.Security.Permissions
         /// <returns></returns>
         private bool DoesPermissionAllow(IEntity permissionEntity, char[] desiredActionCode)
         {
-            Log.Add($"does perm list allow {new string(desiredActionCode)}");
+            var wrapLog = Log.Call("DoesPermissionAllow", $"{new string(desiredActionCode)}");
             // Check if it's a grant for the desired action - otherwise stop here
             var grnt = permissionEntity.GetBestValue(Constants.PermissionGrant).ToString();
             // If Grant doesn't contain desired action, stop here
             // otherwise check if it applies
-            return grnt.IndexOfAny(desiredActionCode) != -1 
-                && DoesConditionApply(permissionEntity);
+            var result = grnt.IndexOfAny(desiredActionCode) != -1 
+                && VerifyConditionApplies(permissionEntity);
+            wrapLog($"{result}");
+            return result;
         }
 
         /// <summary>
@@ -131,7 +145,13 @@ namespace ToSic.Eav.Security.Permissions
         protected abstract bool EnvironmentAllows(List<Grants> grants);
 
 
-        protected abstract bool DoesConditionApplyInEnvironment(string condition);
+        /// <summary>
+        /// Verify if a condition is a special code in the environment. 
+        /// Example: a DNN code which asks for "registered users" or "view-users"
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <returns></returns>
+        protected abstract bool VerifyConditionOfEnvironment(string condition);
 
         /// <summary>
         /// The current user, as provided by injection

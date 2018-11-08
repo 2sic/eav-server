@@ -78,6 +78,17 @@ namespace ToSic.Eav.Security.Permissions
             Develop
         };
 
+
+        public static List<Grants> UpdateSomething = new List<Grants>
+        {
+            Develop,
+            Full,
+            Approve,
+            UpdateDraft,
+            Update
+        };
+
+
         public static List<Grants> DeleteSomething = new List<Grants>
         {
             Delete,

@@ -166,8 +166,8 @@ namespace ToSic.Eav.Configuration
 
             // Beta features
             new Feature(FeatureIds.PasteImageClipboard, true, true),
-            new Feature(FeatureIds.Angular5Ui, false,false)
-
+            new Feature(FeatureIds.Angular5Ui, false,false),
+            new Feature(FeatureIds.WysiwygPasteFormatted, true, true)
         });
 
 

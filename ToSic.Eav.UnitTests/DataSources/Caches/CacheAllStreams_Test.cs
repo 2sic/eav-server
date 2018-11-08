@@ -23,13 +23,13 @@ namespace ToSic.Eav.UnitTests.DataSources
                             ">EntityIdFilter-NoGuid&EntityIds=1067", filtered.CacheFullKey);
 
             // check if in cache - shouldn't be yet
-            Assert.IsFalse(cacher.Cache.ListHas(cacher.Out[Constants.DefaultStreamName]),
+            Assert.IsFalse(cacher.Cache.Lists.Has(cacher.Out[Constants.DefaultStreamName]),
                 "Should not be in yet");
 
             var y = cacher.List; // not it should get in
 
             // check again, should be in
-            Assert.IsTrue(cacher.Cache.ListHas(cacher.Out[Constants.DefaultStreamName]),
+            Assert.IsTrue(cacher.Cache.Lists.Has(cacher.Out[Constants.DefaultStreamName]),
                 "Should be in now");
         }
 
@@ -41,7 +41,7 @@ namespace ToSic.Eav.UnitTests.DataSources
             var cacher = CreateCacheDS(filtered);
 
             // Should already be in - even though it may be an old copy
-            Assert.IsTrue(cacher.Cache.ListHas(cacher.Out[Constants.DefaultStreamName]),
+            Assert.IsTrue(cacher.Cache.Lists.Has(cacher.Out[Constants.DefaultStreamName]),
                 "Should be in because the previous test already added it - will fail if run by itself");
 
             var y = cacher.List; // not it should get in
@@ -57,7 +57,7 @@ namespace ToSic.Eav.UnitTests.DataSources
 
             CreateCacheDS(filtered);
 
-            Assert.IsFalse((filtered.Cache as QuickCache).ListHas(filtered.Out[Constants.DefaultStreamName]),
+            Assert.IsFalse((filtered.Cache as QuickCache).Lists.Has(filtered.Out[Constants.DefaultStreamName]),
                 "Should not be in because the previous test added different item");
 
         }
@@ -85,7 +85,7 @@ namespace ToSic.Eav.UnitTests.DataSources
                             ">EntityIdFilter-NoGuid&EntityIds=1067" +
                             ">EntityTypeFilter-NoGuid&TypeName=Person", secondFilter.CacheFullKey);
 
-            Assert.IsFalse((cacher.Cache as QuickCache).ListHas(secondFilter.Out[Constants.DefaultStreamName]),
+            Assert.IsFalse((cacher.Cache as QuickCache).Lists.Has(secondFilter.Out[Constants.DefaultStreamName]),
                 "Should not be in because the previous test added a shorter key");
         }
 
@@ -97,12 +97,12 @@ namespace ToSic.Eav.UnitTests.DataSources
             var cacher = CreateCacheDS(filtered);
 
             // shouldn't be in cache et...
-            Assert.IsFalse(cacher.Cache.ListHas(cacher.Out[Constants.DefaultStreamName]),
+            Assert.IsFalse(cacher.Cache.Lists.Has(cacher.Out[Constants.DefaultStreamName]),
                 "Should not be in because the previous test added a shorter key");
 
             // Get first list from direct query and from cache - compare. Should be same
             var originalList = cacher[Constants.DefaultStreamName].List;
-            var listFromCache1 = cacher.Cache.ListGet(cacher.Out[Constants.DefaultStreamName]).LightList;
+            var listFromCache1 = cacher.Cache.Lists.Get(cacher.Out[Constants.DefaultStreamName]).LightList;
             Assert.AreEqual(listFromCache1, originalList, "Should be same list - right now");
 
             // Now wait 100 milliseconds, then repeat the process. Since the new source has another date-time, it should rebuild the cache
@@ -124,7 +124,7 @@ namespace ToSic.Eav.UnitTests.DataSources
             // Get first list from direct query and from cache - compare. Should be same
             var originalList = cacher[Constants.DefaultStreamName].List;
 
-            var cacheItem = cacher.Cache.ListGet(cacher.Out[Constants.DefaultStreamName]);
+            var cacheItem = cacher.Cache.Lists.Get(cacher.Out[Constants.DefaultStreamName]);
             Assert.IsNotNull(cacheItem, "should be not null, expected it to be in the cache");
             var listFromCache1 = cacheItem.LightList;
             Assert.AreEqual(listFromCache1, originalList, "Should be same list - right now");
@@ -153,7 +153,7 @@ namespace ToSic.Eav.UnitTests.DataSources
 
             // Get first list from direct query and from cache - compare. Should be same
             var originalList = cacher[Constants.DefaultStreamName].List;
-            var listFromCache1 = cacher.Cache.ListGet(cacher.Out[Constants.DefaultStreamName]).LightList;
+            var listFromCache1 = cacher.Cache.Lists.Get(cacher.Out[Constants.DefaultStreamName]).LightList;
             Assert.AreEqual(listFromCache1, originalList, "Should be same list - right now");
 
             // Now wait 1 second, then repeat the process. Since the new source has another date-time, it should rebuild the cache

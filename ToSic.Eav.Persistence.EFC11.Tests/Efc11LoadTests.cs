@@ -73,7 +73,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
         {
             var types = Factory.Resolve<IGlobalMetadataProvider>().TargetTypes;
 
-            Assert.AreEqual(100, types.Count);
+            Assert.AreEqual(10, types.Count);
             Assert.IsTrue(types[Constants.NotMetadata] == "Default");
         }
 

@@ -25,31 +25,46 @@ namespace ToSic.Eav.Data.Builder
                 type, isPublished, modified, owner, version);
 
             e.MetadataFor = metadataFor;
-            e.Attributes = new Dictionary<string, IAttribute>(StringComparer.OrdinalIgnoreCase);
 
-            //IEnumerable<EntityRelationshipItem> allRelationships = source?.Relationships;
-            e.Relationships = new RelationshipManager(e, source, null/*allRelationships*/);
+            e.Relationships = new RelationshipManager(e, source, null);
 
             e.DeferredLookupData = source;
 
             return e;
         }
 
-        private static Entity EntityWithAllIdsAndType(int appId, Guid entityGuid, int entityId, 
-            int repositoryId, IContentType type, bool isPublished, 
-            DateTime modified, string owner, int version) 
-            => new Entity
+        public static Entity EntityWithAttributes(int appId, Guid entityGuid, int entityId,
+            int repositoryId, IContentType type, bool isPublished = true,
+            DateTime? modified = null, string owner = "", int version = 1)
         {
-            AppId = appId,
-            EntityId = entityId,
-            Version = version,
-            EntityGuid = entityGuid,
-            Type = type,
-            IsPublished = isPublished,
-            RepositoryId = repositoryId,
-            Modified = modified,
-            Owner = owner
-        };
+            var ent = EntityWithAllIdsAndType(appId, entityGuid, entityId, repositoryId, 
+                type, isPublished, modified ?? DateTime.Now, owner, version);
+
+            ent.MetadataFor = new MetadataFor();
+
+            var titleAttrib = ent.GenerateAttributesOfContentType(type);
+            if (titleAttrib != null)
+                ent.SetTitleField(titleAttrib.Name);
+            return ent;
+        }
+
+        private static Entity EntityWithAllIdsAndType(int appId, Guid entityGuid, int entityId,
+            int repositoryId, IContentType type, bool isPublished,
+            DateTime modified, string owner, int version, 
+            Dictionary<string, IAttribute> attribs = null)
+            => new Entity
+            {
+                AppId = appId,
+                EntityId = entityId,
+                Version = version,
+                EntityGuid = entityGuid,
+                Type = type,
+                IsPublished = isPublished,
+                RepositoryId = repositoryId,
+                Modified = modified,
+                Owner = owner,
+                Attributes = attribs ?? new Dictionary<string, IAttribute>(StringComparer.OrdinalIgnoreCase)
+            };
 
         /// <summary>
         /// Create a new Entity based on an Entity and Attributes
@@ -59,14 +74,14 @@ namespace ToSic.Eav.Data.Builder
             IEnumerable<EntityRelationshipItem> allRelationships)
         {
             var e = EntityWithAllIdsAndType(entity.AppId, entity.EntityGuid, entity.EntityId, entity.RepositoryId, entity.Type, 
-                entity.IsPublished, entity.Modified, entity.Owner, entity.Version);
+                entity.IsPublished, entity.Modified, entity.Owner, entity.Version, attributes);
             e.TitleFieldName = entity.Title?.Name;
-            e.Attributes = attributes;
-            e.Relationships = new RelationshipManager(e, null, allRelationships);
+            var lookupApp = (entity as Entity)?.DeferredLookupData as AppDataPackage;
+            e.Relationships = new RelationshipManager(e, lookupApp, allRelationships);
 
             e.MetadataFor = new MetadataFor(entity.MetadataFor);
 
-            e.DeferredLookupData = (entity as Entity)?.DeferredLookupData;
+            e.DeferredLookupData = lookupApp;
             return e;
         }
 

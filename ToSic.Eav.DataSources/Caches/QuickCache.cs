@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using ToSic.Eav.App;
 using ToSic.Eav.Data;
 
@@ -19,13 +18,23 @@ namespace ToSic.Eav.DataSources.Caches
             Cache = this;
         }
 
-        public override Dictionary<int, Zone> ZoneApps 
+        public override Dictionary<int, Zone> ZoneApps
         {
-            get => _zoneApps;
-            protected set => _zoneApps = value;
+            get
+            {
+                // ensure it's only loaded once, even if multiple threads are trying this at the same time
+                if (_zoneAppsCache != null) return _zoneAppsCache;
+                lock (ZoneAppLoadLock)
+                    if (_zoneAppsCache == null)
+                        _zoneAppsCache = LoadZoneApps();
+                return _zoneAppsCache;
+            }
         }
-        private static Dictionary<int, Zone> _zoneApps;
 
+        private static Dictionary<int, Zone> _zoneAppsCache;
+        private static readonly object ZoneAppLoadLock = new object();
+
+        public override void PurgeGlobalCache() => _zoneAppsCache = null;
 
         public override string CacheKeySchema => "Z{0}A{1}";
 

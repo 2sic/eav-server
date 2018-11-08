@@ -21,6 +21,10 @@ namespace ToSic.Eav.ImportExport.Json
 
         public static JsonEntity ToJson(IEntity entity, int metadataDepth = 0)
         {
+            // do a null-check, because sometimes code could ask to serialize not-yet existing entities
+            if (entity == null)
+                return null;
+
             JsonMetadataFor mddic = null;
             if (entity.MetadataFor.IsMetadata)
                 mddic = new JsonMetadataFor

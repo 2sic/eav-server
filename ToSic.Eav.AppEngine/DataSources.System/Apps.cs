@@ -75,8 +75,9 @@ namespace ToSic.Eav.DataSources.System
 	            Guid? guid = null;
 	            try
 	            {
-	                appObj = new Eav.Apps.App(zone.ZoneId, app.Key, false, Log, "for apps DS");
-	                if(Guid.TryParse(appObj.AppGuid, out Guid g)) guid = g;
+	                appObj = new Eav.Apps.App(zone.ZoneId, app.Key, false, null, Log, "for apps DS");
+                    // this will get the guid, if the identity is not "default"
+	                if(Guid.TryParse(appObj.AppGuid, out var g)) guid = g;
 	            }
 	            catch { /* ignore */ }
 
@@ -90,7 +91,7 @@ namespace ToSic.Eav.DataSources.System
 	                {AppType.IsDefault.ToString(), app.Key == zone.DefaultAppId},
 	            };
 
-	            return AsEntity(appEnt, AppType.Name.ToString(), AppsContentTypeName, app.Key, guid);// new Data.Entity(AppId, app.Key, AppsContentTypeName, appEnt, AppType.Name.ToString(), entityGuid: guid);
+	            return AsEntity(appEnt, AppType.Name.ToString(), AppsContentTypeName, app.Key, guid);
             });
 
             return list;

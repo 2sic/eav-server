@@ -1,10 +1,12 @@
-﻿namespace ToSic.Eav.Apps.Interfaces
+﻿using ToSic.Eav.Logging;
+
+namespace ToSic.Eav.Apps.Interfaces
 {
-    /// <inheritdoc />
+    /// <inheritdoc cref="IZoneIdentity" />
     /// <summary>
     /// A app object capable of telling us it's identity
     /// </summary>
-    public interface IAppIdentity: IZoneIdentity
+    public interface IAppIdentity: IZoneIdentity, ICanLogState
     {
         /// <summary>
         /// The app id as used internally

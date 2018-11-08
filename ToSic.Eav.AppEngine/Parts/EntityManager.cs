@@ -133,7 +133,7 @@ namespace ToSic.Eav.Apps.Parts
 
         public List<int> Save(List<IEntity> entities, SaveOptions saveOptions = null)
         {
-            Log.Add("save count:" + entities.Count + ", with Options:" + (saveOptions != null));
+            var wrapLog = Log.Call("Save", "", "save count:" + entities.Count + ", with Options:" + (saveOptions != null));
             saveOptions = saveOptions ?? SaveOptions.Build(AppManager.ZoneId);
 
             // ensure the type-definitions are real, not just placeholders
@@ -150,7 +150,6 @@ namespace ToSic.Eav.Apps.Parts
             entities.ForEach(AppManager.Package.Relationships.AttachRelationshipResolver);
 
             List<int> ids = null;
-            //throw new Exception("WIP - must finish entity save and add to memory package");
             AppManager.DataController.DoButSkipAppCachePurge(() =>
                 AppManager.DataController.DoWhileQueueingRelationships(() =>
                 {
@@ -163,22 +162,24 @@ namespace ToSic.Eav.Apps.Parts
                 AppPackageLoadingSteps.ItemLoad, ids.ToArray(), Log);
             // clear cache of this app
             //SystemManager.Purge(AppManager.AppId);
+            wrapLog($"ids:{ids.Count}");
             return ids;
         }
 
         public Tuple<int, Guid> Create(string typeName, Dictionary<string, object> values, IMetadataFor metadataFor = null)
         {
-            Log.Add($"create type:{typeName}, meta:{metadataFor}, val-count:{values.Count}");
+            var wrapLog = Log.Call("Create", $"type:{typeName}, val-count:{values.Count}, meta:{metadataFor}");
             var newEnt = new Entity(AppManager.AppId, Guid.NewGuid(), AppManager.Read.ContentTypes.Get(typeName), values);
             if (metadataFor != null) newEnt.SetMetadata(metadataFor as MetadataFor);
             var eid = Save(newEnt);
-
-            return new Tuple<int, Guid>(eid, AppManager.DataController.Entities.TempLastSaveGuid);
+            var guid = AppManager.DataController.Entities.TempLastSaveGuid;
+            wrapLog($"id:{eid}, guid:{guid}");
+            return new Tuple<int, Guid>(eid, guid);
         }
 
         public void SaveMetadata(MetadataFor target, string typeName, Dictionary<string, object> values)
         {
-            Log.Add("save metadata target:" + target.KeyNumber + "/" + target.KeyGuid + ", values count:" + values.Count);
+            var wrapLog = Log.Call("SaveMetadata", "target:" + target.KeyNumber + "/" + target.KeyGuid + ", values count:" + values.Count);
 
             if (target.TargetType != Constants.MetadataForAttribute || target.KeyNumber == null || target.KeyNumber == 0)
                 throw new NotImplementedException("atm this command only creates metadata for entities with id-keys");
@@ -193,6 +194,7 @@ namespace ToSic.Eav.Apps.Parts
                 saveEnt.SetMetadata(target);
                 Save(saveEnt);
             }
+            wrapLog("ok");
         }
 
         /// <summary>
@@ -202,6 +204,7 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="values"></param>
         public void UpdateParts(int id, Dictionary<string, object> values)
         {
+            var wrapLog = Log.Call("UpdateParts");
             var saveOptions = SaveOptions.Build(AppManager.ZoneId);
             saveOptions.PreserveUntouchedAttributes = true;
             saveOptions.PreserveUnknownLanguages = true;
@@ -210,6 +213,7 @@ namespace ToSic.Eav.Apps.Parts
             var tempEnt = new Entity(AppManager.AppId, 0, orig.Type, values);
             var saveEnt = new EntitySaver(Log).CreateMergedForSaving(orig, tempEnt, saveOptions);
             Save(saveEnt, saveOptions);
+            wrapLog(null);
         }
 
         /// <summary>

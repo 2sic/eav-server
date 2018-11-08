@@ -1,23 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace ToSic.Eav.Logging.Simple
 {
-    public class Log
+    public partial class Log
     {
         // unique ID of this logger, to not confuse it with other loggers
         private readonly string _id = Guid.NewGuid().ToString().Substring(0, 2);
 
-        private string _name = "unknwn";
-        private string _scope = "tdo";
+        protected string Name = "unknwn";
+        protected string Scope = "tdo";
         private const int MaxScopeLen = 3;
         private const int MaxNameLen = 6;
         public readonly DateTime Created = DateTime.Now;
+        public int WrapDepth;
         public  List<Entry> Entries { get; } = new List<Entry>();
         private Log _parent;
 
-        private string Identifier => $"{_scope}{_name}[{_id}]";
+        private string Identifier => $"{Scope}{Name}[{_id}]";
 
         public string FullIdentifier => _parent?.FullIdentifier + Identifier;
 
@@ -27,12 +27,16 @@ namespace ToSic.Eav.Logging.Simple
         /// <param name="name">name this logger should use</param>
         /// <param name="parent">optional parrent logger to attach to</param>
         /// <param name="initialMessage">optional initial message to log</param>
-        public Log(string name, Log parent = null, string initialMessage = null)
+        /// <param name="className">optional class-name, will change how the initial log is created</param>
+        public Log(string name, Log parent = null, string initialMessage = null, string className = null)
         {
             Rename(name);
             LinkTo(parent);
-            if(initialMessage != null)
+            if (initialMessage == null) return;
+            if (className == null)
                 Add(initialMessage);
+            else
+                New(className, initialMessage);
         }
 
         public Log AddChild(string name, string message) => new Log(name, this, message);
@@ -50,55 +54,14 @@ namespace ToSic.Eav.Logging.Simple
             try
             {
                 var dot = name.IndexOf(".", StringComparison.Ordinal);
-                _scope = dot > 0 ? name.Substring(0, Math.Min(dot, MaxScopeLen)) + "." : "";
+                Scope = dot > 0 ? name.Substring(0, Math.Min(dot, MaxScopeLen)) + "." : "";
                 var rest = dot > 0 ? name.Substring(dot + 1) : name;
-                _name = rest.Substring(0, Math.Min(rest.Length, MaxNameLen));
-                _name = _name.Substring(0, Math.Min(_name.Length, MaxNameLen));
+                Name = rest.Substring(0, Math.Min(rest.Length, MaxNameLen));
+                Name = Name.Substring(0, Math.Min(Name.Length, MaxNameLen));
             }
             catch { /* ignore */ }
         }
 
-        /// <summary>
-        /// Add a message
-        /// </summary>
-        /// <param name="message"></param>
-        public string Add(string message)
-        {
-            Add(new Entry(this, message));
-            return message;
-        }
-        public string Warn(string message)
-        {
-            Add(new Entry(this, "WARNING: " + message));
-            return message;
-        }
-
-
-        /// <summary>
-        /// add an existing entry of another logger
-        /// </summary>
-        /// <param name="entry"></param>
-        private void Add(Entry entry)
-        {
-            Entries.Add(entry);
-            _parent?.Add(entry);
-        }
-
-        /// <summary>
-        /// Add a message by calling a function. This will be inside a try/catch, to prevent crashes because of looping on nulls etc.
-        /// </summary>
-        /// <param name="messageMaker"></param>
-        public void Add(Func<string> messageMaker)
-        {
-            try
-            {
-                Add(messageMaker.Invoke());
-            }
-            catch (Exception ex)
-            {
-                Add("Log: failed to add message from code, error was: " + ex.Message);
-            }
-        }
 
         /// <summary>
         /// Link this logger to a parent
@@ -113,12 +76,6 @@ namespace ToSic.Eav.Logging.Simple
                 Rename(name);
         }
 
-        public string Dump(string separator = " - ", string start = "", string end = "")
-        {
-            var lg = new StringBuilder(start);
-            Entries.ForEach(e => lg.AppendLine(e.Source + separator + e.Message));
-            lg.Append(end);
-            return lg.ToString();
-        }
+
     }
 }

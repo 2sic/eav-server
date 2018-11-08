@@ -5,17 +5,18 @@ using System.Web.Http;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.WebApi.Formats;
 
 namespace ToSic.Eav.WebApi
 {
     /// <inheritdoc />
-    public class ContentImportController : Eav3WebApiBase
+    public class ContentImportController : HasLog
     {
-        public ContentImportController(Log parentLog = null) : base(parentLog)
+        public ContentImportController(Log parentLog = null) : base("Api.EaCtIm", parentLog)
         {
-            Log.Rename("EaCtIm");
         }
 
 
@@ -23,7 +24,6 @@ namespace ToSic.Eav.WebApi
         public ContentImportResult EvaluateContent(ContentImportArgs args)
         {
             Log.Add("eval content - start" + args.DebugInfo);
-            AppId = args.AppId;
 
             var import = GetXmlImport(args);
             return import.ErrorLog.HasErrors 
@@ -44,13 +44,13 @@ namespace ToSic.Eav.WebApi
         public ContentImportResult ImportContent(ContentImportArgs args)
         {
             Log.Add("import content" + args.DebugInfo);
-            AppId = args.AppId;
 
             var import = GetXmlImport(args);
             if (!import.ErrorLog.HasErrors)
             {
-                import.PersistImportToRepository(CurrentContext.UserName);
-                SystemManager.Purge(AppId);
+                var db = DbDataController.Instance(null, args.AppId, Log);
+                import.PersistImportToRepository(db.UserName);
+                SystemManager.Purge(args.AppId);
             }
             return new ContentImportResult(!import.ErrorLog.HasErrors, null);
         }
@@ -58,11 +58,12 @@ namespace ToSic.Eav.WebApi
         private ImportListXml GetXmlImport(ContentImportArgs args)
         {
             Log.Add("get xml import " + args.DebugInfo);
-            var contextLanguages = AppManager.Read.Zone.Languages().Select(l => l.EnvironmentKey).ToArray();
+            var appManager = new AppManager(args.AppId, Log);
+            var contextLanguages = appManager.Read.Zone.Languages().Select(l => l.EnvironmentKey).ToArray();
 
             using (var contentSteam = new MemoryStream(Convert.FromBase64String(args.ContentBase64)))
             {
-                return AppManager.Entities.Importer(args.ContentType, contentSteam,
+                return appManager.Entities.Importer(args.ContentType, contentSteam,
                     contextLanguages, args.DefaultLanguage,
                     args.ClearEntities, args.ImportResourcesReferences);
             }
@@ -74,18 +75,17 @@ namespace ToSic.Eav.WebApi
             try
             {
                 Log.Add("import json item" + args.DebugInfo);
-                AppId = args.AppId;
-
-                var deser = new ImportExport.Json.JsonSerializer(AppManager.Package, Log);
+                var appManager = new AppManager(args.AppId, Log);
+                var deser = new ToSic.Eav.ImportExport.Json.JsonSerializer(appManager.Package, Log);
                 var entity = deser.Deserialize(args.GetContentString());
 
                 entity.ResetEntityId(0);
 
-                var checkExists = AppManager.Read.Entities.Get(entity.EntityGuid);
+                var checkExists = appManager.Read.Entities.Get(entity.EntityGuid);
                 if (checkExists != null)
                     throw new ArgumentException("Can't import this item - an item with the same guid already exists");
 
-                AppManager.Entities.Save(entity);
+                appManager.Entities.Save(entity);
 
                 return true;
             }

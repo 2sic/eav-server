@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.WebApi
@@ -11,22 +12,19 @@ namespace ToSic.Eav.WebApi
 	/// Web API Controller for MetaData
 	/// Metadata-entities (content-items) are additional information about some other object
 	/// </summary>
-	public class MetadataController : Eav3WebApiBase
+	public class MetadataController : HasLog
     {
-        public MetadataController(Log parentLog = null) : base(parentLog, "Api.MetaCn")
+        public MetadataController(Log parentLog) : base("Api.MetaCn", parentLog)
         {}
 
         /// <summary>
         /// Get Entities with specified AssignmentObjectTypeId and Key
         /// </summary>
-        public IEnumerable<Dictionary<string, object>> GetAssignedEntities(int assignmentObjectTypeId, string keyType, string key, string contentType, int? appId = null)
+        public IEnumerable<Dictionary<string, object>> GetAssignedEntities(int assignmentObjectTypeId, string keyType, string key, string contentType, int/*?*/ appId /*= null*/)
         {
-            if (appId.HasValue)
-                AppId = appId.Value;
-
             IEnumerable<IEntity> entityList = null;
 
-            var appRun = new AppRuntime(AppId, Log);
+            var appRun = new AppRuntime(appId, Log);
 
             switch (keyType)
             {
@@ -48,7 +46,7 @@ namespace ToSic.Eav.WebApi
             if(entityList == null)
                 throw new Exception($"was not able to convert '{key}' to keytype {keyType}, must cancel");
 
-            return Serializer.Prepare(entityList);
+            return Helpers.Serializers.GetSerializerWithGuidEnabled().Prepare(entityList);
         }
 
     }

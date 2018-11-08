@@ -43,14 +43,20 @@
         public const string ListPresentation = "ListPresentation";
         public const string ListPresentationLower = "listpresentation";
 
+        // Known App Content Types
+        public const string TypeAppConfig = "2SexyContent-App";
+        public const string TypeAppResources = "App-Resources";
+        public const string TypeAppSettings = "App-Settings";
 
-        public static readonly string AttributeSetStaticNameApps = "2SexyContent-App";
-        public static readonly string AttributeSetStaticNameAppResources = "App-Resources";
-        public static readonly string AttributeSetStaticNameAppSettings = "App-Settings";
+        // App and Content Scopes
+        public const string ScopeApp = "2SexyContent-App";
+        public const string ScopeContentFuture = "Default";
+        public const string ScopeContentOld = "2SexyContent";
+        public static readonly string[] ScopesContent = {ScopeContentOld, ScopeContentFuture };
 
-        public static readonly string AttributeSetScopeApps = "2SexyContent-App";
+        public const string ScopeContentSystem = "2SexyContent-System";
+        public static readonly string[] ScopesSystem = { Constants.ScopeSystem, ScopeApp, ScopeContentSystem };
 
         #endregion
-
     }
 }

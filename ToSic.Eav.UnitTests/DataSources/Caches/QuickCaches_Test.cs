@@ -2,6 +2,7 @@
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.DataSources.Caches;
 
 namespace ToSic.Eav.UnitTests.DataSources.Caches
 {
@@ -16,32 +17,32 @@ namespace ToSic.Eav.UnitTests.DataSources.Caches
             var ds = CreateFilterForTesting(100, ItemToFilter);
 
             var cache = ds.Cache;
-            var listCache = cache;// as IListCache;
-            Assert.IsFalse(listCache.ListHas(ds.CacheFullKey), "Should not have it in cache yet");
+            var listCache = cache.Lists;// as IListCache;
+            Assert.IsFalse(listCache.Has(ds.CacheFullKey), "Should not have it in cache yet");
 
             // manually add to cache
-            listCache.ListSet(ds[Constants.DefaultStreamName]);
-            Assert.IsTrue(listCache.ListHas(ds.CacheFullKey + "|Default"), "Should have it in cache now");
-            Assert.IsTrue(listCache.ListHas(ds[Constants.DefaultStreamName]), "Should also have the DS default");
+            listCache.Set(ds[Constants.DefaultStreamName]);
+            Assert.IsTrue(listCache.Has(ds.CacheFullKey + "|Default"), "Should have it in cache now");
+            Assert.IsTrue(listCache.Has(ds[Constants.DefaultStreamName]), "Should also have the DS default");
             
-            Assert.IsTrue(listCache.ListHas(ds[Constants.DefaultStreamName]), "should have it by stream as well");
+            Assert.IsTrue(listCache.Has(ds[Constants.DefaultStreamName]), "should have it by stream as well");
             
 
             // Try to auto-retrieve 
-            var cached = listCache.ListGet(ds.CacheFullKey + "|Default").LightList;
+            var cached = listCache.Get(ds.CacheFullKey + "|Default").LightList;
 
             Assert.AreEqual(1, cached.Count());
 
-            cached = listCache.ListGet(ds[Constants.DefaultStreamName]).LightList;
+            cached = listCache.Get(ds[Constants.DefaultStreamName]).LightList;
             Assert.AreEqual(1, cached.Count());
 
-            var lci = listCache.ListGet(ds.CacheFullKey);
+            var lci = listCache.Get(ds.CacheFullKey);
             Assert.AreEqual(null, lci, "Cached should be null because the name isn't correct");
 
-            lci = listCache.ListGet(ds[Constants.DefaultStreamName]);
+            lci = listCache.Get(ds[Constants.DefaultStreamName]);
             Assert.AreNotEqual(null, lci, "Cached should be found because usin stream instead of name");
 
-            cached = listCache.ListGet(ds[Constants.DefaultStreamName]).LightList;
+            cached = listCache.Get(ds[Constants.DefaultStreamName]).LightList;
             Assert.AreEqual(1, cached.Count());
 
         }
@@ -52,18 +53,18 @@ namespace ToSic.Eav.UnitTests.DataSources.Caches
             const string ItemToFilter = "1027";
             var ds = CreateFilterForTesting(100, ItemToFilter);
 
-            var listCache = ds.Cache; //as IListCache;
+            var listCache = ds.Cache.Lists; //as IListCache;
             listCache.ListDefaultRetentionTimeInSeconds = 1;
-            Assert.IsFalse(listCache.ListHas(ds.CacheFullKey), "Should not have it in cache yet");
+            Assert.IsFalse(listCache.Has(ds.CacheFullKey), "Should not have it in cache yet");
 
-            listCache.ListSet(ds.CacheFullKey, ds.List, ds.CacheTimestamp);
-            Assert.IsTrue(listCache.ListHas(ds.CacheFullKey), "Should have it in cache now");
+            listCache.Set(ds.CacheFullKey, ds.List, ds.CacheTimestamp);
+            Assert.IsTrue(listCache.Has(ds.CacheFullKey), "Should have it in cache now");
 
             Thread.Sleep(400);
-            Assert.IsTrue(listCache.ListHas(ds.CacheFullKey), "Should STILL be in cache");
+            Assert.IsTrue(listCache.Has(ds.CacheFullKey), "Should STILL be in cache");
 
             Thread.Sleep(601);
-            Assert.IsFalse(listCache.ListHas(ds.CacheFullKey), "Should NOT be in cache ANY MORE");
+            Assert.IsFalse(listCache.Has(ds.CacheFullKey), "Should NOT be in cache ANY MORE");
         }
 
 

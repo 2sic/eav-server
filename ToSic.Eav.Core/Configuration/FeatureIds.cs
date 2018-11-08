@@ -15,5 +15,6 @@ namespace ToSic.Eav.Configuration
         // Beta
         public static readonly Guid PasteImageClipboard = new Guid("f6b8d6da-4744-453b-9543-0de499aa2352");
         public static readonly Guid Angular5Ui = new Guid("6cac008e-0663-4cd8-92b2-1d3afbcefcd8");
+        public static readonly Guid WysiwygPasteFormatted = new Guid("1b13e0e6-a346-4454-a1e6-2fb18c047d20");
     }
 }

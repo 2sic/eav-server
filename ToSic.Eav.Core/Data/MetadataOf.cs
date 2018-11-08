@@ -113,7 +113,7 @@ namespace ToSic.Eav.Data
         private IMetadataProvider _metadataProvider;
 
         // 2018-03-09 2dm - this was used when we tried creating code-based content-types, but I believe it's dead code now
-        public void Add(string type, Dictionary<string, object> values) => Add(new Entity(AppId, 0, Guid.Empty, type, values));
+        //public void Add(string type, Dictionary<string, object> values) => Add(new Entity(AppId, 0, Guid.Empty, type, values));
 
         public void Add(IEntity additionalItem) => AllEntities.Add(additionalItem);
 

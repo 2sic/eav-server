@@ -24,7 +24,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// This one will return the original result if queried again - as long as this object exists
         /// </summary>
-        public bool KeepResultsAfterFirstQuery { get; set; }
+        public bool ReuseInitialResults { get; set; }
 
         /// <inheritdoc />
         /// <summary>
@@ -62,7 +62,7 @@ namespace ToSic.Eav.DataSources
 		    AutoCaching = enableAutoCaching;
             
             // Default properties for caching config
-            KeepResultsAfterFirstQuery = true;
+            ReuseInitialResults = true;
 		    CacheDurationInSeconds = 3600 * 24; // one day, since by default if it caches, it would check upstream for cache-reload
             CacheRefreshOnSourceRefresh = true;
 		}
@@ -75,13 +75,13 @@ namespace ToSic.Eav.DataSources
             get
             {
                 // already retrieved? then return last result to be faster
-                if (_list != null && KeepResultsAfterFirstQuery)
+                if (_list != null && ReuseInitialResults)
                     return _list;
 
                 #region Check if it's in the cache - and if yes, if it's still valid and should be re-used --> return if found
                 if (AutoCaching)
 			    {
-			        var itemInCache = Source.Cache.ListGet(this);
+			        var itemInCache = Source.Cache.Lists.Get(this);
 			        var isInCache = itemInCache != null;
 
 			        var refreshCache = !isInCache || CacheRefreshOnSourceRefresh && Source.CacheTimestamp > itemInCache.SourceRefresh;
@@ -119,9 +119,9 @@ namespace ToSic.Eav.DataSources
 
                 #region place in cache if so needed
 
-                if (AutoCaching && KeepResultsAfterFirstQuery)
+                if (AutoCaching && ReuseInitialResults)
                     // second criteria important to prevent infinite loops
-                    Source.Cache.ListSet(this, CacheDurationInSeconds);
+                    Source.Cache.Lists.Set(this, CacheDurationInSeconds);
 
                 #endregion
 
@@ -130,6 +130,12 @@ namespace ToSic.Eav.DataSources
             }
 	    }
         #endregion
+
+	    public void PurgeList(bool cascade = false)
+	    {
+	        Source.Cache.Lists.Remove(this);
+	        if (cascade) Source.PurgeList(cascade);
+	    }
 
 	    [Obsolete("deprecated since 2sxc 9.8 / eav 4.5 - use List instead")]
 	    public IEnumerable<IEntity> LightList => List;

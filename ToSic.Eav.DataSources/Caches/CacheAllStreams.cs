@@ -5,7 +5,7 @@ using ToSic.Eav.DataSources.VisualQuery;
 
 namespace ToSic.Eav.DataSources.Caches
 {
-	/// <inheritdoc />
+	/// <inheritdoc cref="BaseDataSource" />
 	/// <summary>
 	/// Return all Entities from a specific App
 	/// </summary>
@@ -13,12 +13,12 @@ namespace ToSic.Eav.DataSources.Caches
     [VisualQuery(GlobalName = "ToSic.Eav.DataSources.Caches.CacheAllStreams, ToSic.Eav.DataSources",
         Type = DataSourceType.Cache, 
         DynamicOut = true,
+        ExpectsDataOfType = "|Config ToSic.Eav.DataSources.Caches.CacheAllStreams",
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-CacheAllStreams")]
 	public class CacheAllStreams : BaseDataSource, IDeferredDataSource
 	{
 
         // Todo: caching parameters
-        // Refresh when Source Refreshes ...? todo!
         // Time
         // Reload in BG
 	    public override string LogId => "DS.CachAl";
@@ -27,14 +27,13 @@ namespace ToSic.Eav.DataSources.Caches
         private const string RefreshOnSourceRefreshKey = "RefreshOnSourceRefresh";
         private const string CacheDurationInSecondsKey = "CacheDurationInSeconds";
 	    private const string ReturnCacheWhileRefreshingKey = "ReturnCacheWhileRefreshing";
-	    //private bool EnforceUniqueCache = false;
 
 		/// <summary>
 		/// An alternate app to switch to
 		/// </summary>
         public int CacheDurationInSeconds
 		{
-            get => Int32.Parse(Configuration[CacheDurationInSecondsKey]);
+            get => int.Parse(Configuration[CacheDurationInSecondsKey]);
 		    set => Configuration[CacheDurationInSecondsKey] = value.ToString();
 		}
 
@@ -68,6 +67,7 @@ namespace ToSic.Eav.DataSources.Caches
 		}
 		#endregion
 
+		/// <inheritdoc />
 		/// <summary>
 		/// Constructs a new App DataSource
 		/// </summary>
@@ -78,7 +78,7 @@ namespace ToSic.Eav.DataSources.Caches
 			// Set default switch-keys to 0 = no switch
             Configuration.Add(RefreshOnSourceRefreshKey, "[Settings:" + RefreshOnSourceRefreshKey + "||True]");
 			Configuration.Add(CacheDurationInSecondsKey, "[Settings:" + CacheDurationInSecondsKey + "||0]"); // 0 is default, meaning don't use custom value, use system value of 1 day
-		    Configuration.Add(ReturnCacheWhileRefreshingKey, "False");// "[Settings:" + ReturnCacheWhileRefreshingKey + "||False]");
+		    Configuration.Add(ReturnCacheWhileRefreshingKey, "False");
 
             TempUsesDynamicOut = true;
         }
@@ -101,8 +101,17 @@ namespace ToSic.Eav.DataSources.Caches
 		    }
 		}
 
-        private IDataStream AttachDeferredStreamToOut(string name)
-	    {
+        /// <summary>
+        /// Will get the stream or if missing, try to attach it first
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+	    private IDataStream GetDeferredStream(string name) 
+            => _Out.ContainsKey(name) ? _Out[name] : AttachDeferredStreamToOut(name);
+
+	    private IDataStream AttachDeferredStreamToOut(string name)
+        {
+
             EnsureConfigurationIsLoaded();
 
 	        var outStream = new DataStream(this, name,  () => In[name].List, true);
@@ -117,7 +126,7 @@ namespace ToSic.Eav.DataSources.Caches
 	    }
 
         // already attach an out, ready to consume in when it's there
-	    public IDataStream DeferredOut(string name) => AttachDeferredStreamToOut(name);
+	    public IDataStream DeferredOut(string name) => GetDeferredStream(name);
 	}
 
 }

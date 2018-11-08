@@ -10,18 +10,27 @@ namespace ToSic.Eav.Apps
         protected IEnvironment Env;
         public ITenant Tenant;
 
-        public App(ITenant tenant, int zoneId, int appId, bool allowSideEffects, Log parentLog)
+        public App(ITenant tenant, int zoneId, int appId, bool allowSideEffects,
+            Func<App, IAppDataConfiguration> buildConfiguration,
+            Log parentLog)
             : this(Factory.Resolve<IEnvironmentFactory>().Environment(parentLog), tenant, zoneId, appId,
-                allowSideEffects, parentLog)
+                allowSideEffects, buildConfiguration, parentLog)
         {
         }
 
-        protected App(IEnvironment env, ITenant tenant, int zoneId, int appId, bool allowSideEffects, Log parentLog)
-            : this(zoneId != AutoLookup    // if zone is missing, try to find it; if still missing, throw error
+        protected App(IEnvironment env, 
+            ITenant tenant, 
+            int zoneId, 
+            int appId, 
+            bool allowSideEffects,
+            Func<App, IAppDataConfiguration> buildConfiguration,
+            Log parentLog)
+            : this(zoneId != AutoLookupZone    // if zone is missing, try to find it; if still missing, throw error
                   ? zoneId
                   : env.ZoneMapper.GetZoneId(tenant.Id), 
                   appId, 
                   allowSideEffects, 
+                  buildConfiguration,
                   parentLog,
                   $"P:{tenant?.Id}")
         {

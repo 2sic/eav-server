@@ -12,10 +12,8 @@ namespace ToSic.Eav.Logging
         public Log Log { get; private set; }
 
 
-        public HasLog(string logName, Log parentLog = null, string initialMessage = null)
-        {
-            InitLogInternal(logName, parentLog, initialMessage);
-        }
+        public HasLog(string logName, Log parentLog = null, string initialMessage = null, string className = null) 
+            => InitLogInternal(logName, parentLog, initialMessage, className);
 
         /// <summary>
         /// 
@@ -27,7 +25,7 @@ namespace ToSic.Eav.Logging
         public virtual void InitLog(string name, Log parentLog = null, string initialMessage = null) 
             => InitLogInternal(name, parentLog, initialMessage);
 
-        private void InitLogInternal(string name, Log parentLog, string initialMessage)
+        private void InitLogInternal(string name, Log parentLog, string initialMessage, string className = null)
         {
             if (Log == null)
                 // standard & most common case: just create log
@@ -37,8 +35,11 @@ namespace ToSic.Eav.Logging
                 // late-init case, where the log was already created - just reconfig keeping what was in it
                 Log.Rename(name);
                 LinkLog(parentLog);
-                if (initialMessage != null)
+                if (initialMessage == null) return;
+                if (className == null)
                     Log.Add(initialMessage);
+                else
+                    Log.New(className, initialMessage);
             }
         }
 
