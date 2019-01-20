@@ -29,8 +29,7 @@ namespace ToSic.Eav.Apps.Parts
 
         public IEnumerable<IContentType> FromScope(string scope = null, bool includeAttributeTypes = false)
         {
-            var set = All 
-                .Where(c => includeAttributeTypes || !c.Name.StartsWith("@"));
+            var set = All.Where(c => includeAttributeTypes || !c.Name.StartsWith("@"));
             if (scope != null)
                 set = set.Where(p => p.Scope == scope);
             return set.OrderBy(c => c.Name);
@@ -42,13 +41,16 @@ namespace ToSic.Eav.Apps.Parts
         /// <returns></returns>
         public List<InputTypeInfo> GetInputTypes()
         {
-            var inputTypes = GetRegisteredInputTypes();
+            // Initial list is the global, file-system based types
+            var globalDef = GetGlobalInputTypesBasedOnContentTypes();
 
-            var globalDef = GetGlobalInputTypes();
+            // Merge input types registered in this app
+            var inputTypes = GetAppRegisteredInputTypes();
             AddMissingTypes(globalDef, inputTypes);
 
+            // Merge input types registered in global metadata-app
             var systemDef = new AppRuntime(Constants.MetaDataAppId, Log);
-            var systemInputTypes = systemDef.ContentTypes.GetRegisteredInputTypes();
+            var systemInputTypes = systemDef.ContentTypes.GetAppRegisteredInputTypes();
             AddMissingTypes(systemInputTypes, inputTypes);
 
             return inputTypes;
@@ -70,7 +72,7 @@ namespace ToSic.Eav.Apps.Parts
         /// Get a list of input-types registered to the current app
         /// </summary>
         /// <returns></returns>
-        private List<InputTypeInfo> GetRegisteredInputTypes()
+        private List<InputTypeInfo> GetAppRegisteredInputTypes()
             => App.Entities.Get(Constants.TypeForInputTypeDefinition)
             .Select(e => new InputTypeInfo(
                 e.GetBestValue<string>(Constants.InputTypeType), 
@@ -86,25 +88,21 @@ namespace ToSic.Eav.Apps.Parts
         /// Build a list of global (json) input-types
         /// </summary>
         /// <returns></returns>
-        private List<InputTypeInfo> GetGlobalInputTypes()
+        private static List<InputTypeInfo> GetGlobalInputTypesBasedOnContentTypes()
         {
             var types = Global.AllContentTypes()
                 .Where(p => p.Key.StartsWith(FieldTypePrefix))
                 .Select(p => p.Value).ToList();
 
-            var retyped = types.Select(it =>
-                {
-                    // try to access metadata, if it has any
-                    var metadata = it.Metadata.FirstOrDefault();
-                    var inputMeta = it.Metadata.FirstOrDefault(ct => ct.Type.Name == Constants.TypeForInputTypeDefinition);
-                    return new InputTypeInfo(
-                        it.StaticName.TrimStart(FieldTypePrefix[0]),
-                        metadata?.GetBestValue<string>(Constants.InputTypeLabel),
-                        metadata?.GetBestValue<string>(Constants.InputTypeDescription),
-                        inputMeta?.GetBestValue<string>(Constants.InputTypeAssets),
-                        inputMeta?.GetBestValue<bool>(Constants.InputTypeDisableI18N) ?? default(bool)
-                    );
-                })
+            // try to access metadata, if it has any
+            var typesToCheckInThisOrder = new[] { Constants.TypeForInputTypeDefinition, Constants.ContentTypeTypeName, null };
+            var retyped = types.Select(it => new InputTypeInfo(
+                    it.StaticName.TrimStart(FieldTypePrefix[0]),
+                    it.Metadata.GetBestValue<string>(Constants.InputTypeLabel, typesToCheckInThisOrder),
+                    it.Metadata.GetBestValue<string>(Constants.InputTypeDescription, typesToCheckInThisOrder),
+                    it.Metadata.GetBestValue<string>(Constants.InputTypeAssets, Constants.TypeForInputTypeDefinition),
+                    it.Metadata.GetBestValue<bool>(Constants.InputTypeDisableI18N, Constants.TypeForInputTypeDefinition)
+                ))
                 .ToList();
             return retyped;
         }

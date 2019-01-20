@@ -70,7 +70,7 @@ namespace ToSic.Eav.Persistence.File
             // #2 find all content-type files in folder
             var jsons = Directory.GetFiles(path, "*" + ImpExpConstants.Extension(ImpExpConstants.Files.json)).OrderBy(f => f);
 
-            // #3 load content-types from folder
+            // #3 load entity-items from folder
             var cts = jsons.Select(json => LoadAndBuildEntity(Serializer, json)).Where(entity => entity != null).ToList();
 
             return cts;
