@@ -81,7 +81,13 @@ namespace ToSic.Eav.DataSources
                 #region Check if it's in the cache - and if yes, if it's still valid and should be re-used --> return if found
                 if (AutoCaching)
 			    {
-			        var itemInCache = Source.Cache.Lists.Get(this);
+                    // todo 2rm: this is where we would add a Mutex-style cache-is-building for SharePoint and other slow loaders
+                    // similar to the BaseCache.cs lines 89 - 100
+                    // but that code should be in the ListCache, so here it's probably just a
+                    // probably something like:
+			        // var itemInCache = Source.Cache.Lists.Get(this, waitIfBuilding = true);
+
+                    var itemInCache = Source.Cache.Lists.Get(this);
 			        var isInCache = itemInCache != null;
 
 			        var refreshCache = !isInCache || CacheRefreshOnSourceRefresh && Source.CacheTimestamp > itemInCache.SourceRefresh;
@@ -89,6 +95,11 @@ namespace ToSic.Eav.DataSources
 
 			        if(useCache)
 			            return _list = itemInCache.LightList;
+
+                    // todo 2rm, then mark that we're building or something like
+                    // Source.Cache.Lists.SetBuildingMark(this);
+                    // and then below, ensure that where necessary, it's released on all errors
+                    // maybe by wrapping everything in another try-catch with a Source.Cache.Lists.ReleaseBuildingMark(this)
                 }
                 #endregion
 
@@ -98,23 +109,21 @@ namespace ToSic.Eav.DataSources
                 //    _lightList = LightList;//.Select(x => x.Value);
                 if(_lightListDelegate == null)
                     throw new Exception("can't load stream - no delegate found to supply it");
-                else
+                try
                 {
-                    try
-                    {
-                        var getEntitiesDelegate = new GetIEnumerableDelegate(_lightListDelegate);
-                        _list = getEntitiesDelegate();
-                    }
-                    catch (InvalidOperationException) // this is a special exeption - for example when using SQL. Pass it on to enable proper testing
-                    {
-                        throw;
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new Exception(
-                            $"Error getting List of Stream.\nStream Name: {Name}\nDataSource Name: {Source.Name}", ex);
-                    }
+                    var getEntitiesDelegate = new GetIEnumerableDelegate(_lightListDelegate);
+                    _list = getEntitiesDelegate();
                 }
+                catch (InvalidOperationException) // this is a special exeption - for example when using SQL. Pass it on to enable proper testing
+                {
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(
+                        $"Error getting List of Stream.\nStream Name: {Name}\nDataSource Name: {Source.Name}", ex);
+                }
+
                 #endregion
 
                 #region place in cache if so needed

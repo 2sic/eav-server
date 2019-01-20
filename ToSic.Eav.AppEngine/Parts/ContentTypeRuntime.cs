@@ -36,37 +36,6 @@ namespace ToSic.Eav.Apps.Parts
             return set.OrderBy(c => c.Name);
         }
 
-        // 2017-11-22 old - replaced with typed solution 
-
-        ///// <summary>
-        ///// Retrieve a list of all input types known to the current system
-        ///// </summary>
-        ///// <returns></returns>
-        //public List<IEntity> GetInputTypes()
-        //{
-        //    var inputsOfThisApp = GetRegisteredInputTypes();
-
-        //    var systemDef = new AppRuntime(Constants.MetaDataAppId, Log);
-        //    var systemInputTypes = systemDef.ContentTypes.GetRegisteredInputTypes();
-
-        //    systemInputTypes.ForEach(sit => {
-        //        if (inputsOfThisApp.FirstOrDefault(ait => ait.Title == sit.Title) == null)
-        //            inputsOfThisApp.Add(sit);
-        //    });
-
-        //    return inputsOfThisApp;
-        //}
-
-        ///// <summary>
-        ///// Get a list of input-types registered to the current app
-        ///// </summary>
-        ///// <returns></returns>
-        //private List<IEntity> GetRegisteredInputTypes()
-        //    => App.Entities.Get(Constants.TypeForInputTypeDefinition).ToList();
-
-
-
-
         /// <summary>
         /// Retrieve a list of all input types known to the current system
         /// </summary>
@@ -104,10 +73,11 @@ namespace ToSic.Eav.Apps.Parts
         private List<InputTypeInfo> GetRegisteredInputTypes()
             => App.Entities.Get(Constants.TypeForInputTypeDefinition)
             .Select(e => new InputTypeInfo(
-                e.GetBestValue("Type")?.ToString(), 
-                e.GetBestValue("Label")?.ToString(),
-                e.GetBestValue("Description")?.ToString(),
-                e.GetBestValue("Assets")?.ToString()))
+                e.GetBestValue<string>(Constants.InputTypeType), 
+                e.GetBestValue<string>(Constants.InputTypeLabel),
+                e.GetBestValue<string>(Constants.InputTypeDescription),
+                e.GetBestValue<string>(Constants.InputTypeAssets),
+                e.GetBestValue<bool>(Constants.InputTypeDisableI18N)))
             .ToList();
 
         private const string FieldTypePrefix = "@";
@@ -129,28 +99,14 @@ namespace ToSic.Eav.Apps.Parts
                     var inputMeta = it.Metadata.FirstOrDefault(ct => ct.Type.Name == Constants.TypeForInputTypeDefinition);
                     return new InputTypeInfo(
                         it.StaticName.TrimStart(FieldTypePrefix[0]),
-                        metadata?.GetBestValue("Label")?.ToString(),
-                        metadata?.GetBestValue("Description")?.ToString(),
-                        inputMeta?.GetBestValue("Assets")?.ToString()
+                        metadata?.GetBestValue<string>(Constants.InputTypeLabel),
+                        metadata?.GetBestValue<string>(Constants.InputTypeDescription),
+                        inputMeta?.GetBestValue<string>(Constants.InputTypeAssets),
+                        inputMeta?.GetBestValue<bool>(Constants.InputTypeDisableI18N) ?? default(bool)
                     );
                 })
                 .ToList();
             return retyped;
         }
-    }
-
-    public class InputTypeInfo
-    {
-        public InputTypeInfo(string type, string label, string description, string assets)
-        {
-            Type = type;
-            Label = label;
-            Description = description;
-            Assets = assets;
-        }
-        public string Type { get; }
-        public string Label { get; }
-        public string Description { get; }
-        public string Assets { get; }
     }
 }

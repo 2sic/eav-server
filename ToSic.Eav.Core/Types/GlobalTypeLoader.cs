@@ -20,9 +20,11 @@ namespace ToSic.Eav.Types
         private void BuildCache()
         {
             // copy the code-types dictionary...
+            // note 2019-01 2dm: as of now, no code-types are actually supported, I believe this 
+            // is a leftover of a temporary experiment
             Log.Add($"AllContentTypes starting load at {DateTime.Now}");
             var codeTypes =
-                new Dictionary<string, IContentType>(ReflectionTypes.FakeCache/*.Get(Log)*/, StringComparer.OrdinalIgnoreCase);
+                new Dictionary<string, IContentType>(ReflectionTypes.FakeCache, StringComparer.OrdinalIgnoreCase);
 
             // add runtime stuff
             var runtimeType = ContentTypesInRuntime().ToList();
