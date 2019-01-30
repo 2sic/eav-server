@@ -3,7 +3,7 @@ using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Apps.Tests.Mocks
 {
-    public class MockEnvironment: IEnvironment
+    public class MockEnvironment: Interfaces.IAppEnvironment
     {
         public IZoneMapper ZoneMapper => new MockZoneMapper();
 
@@ -11,6 +11,9 @@ namespace ToSic.Eav.Apps.Tests.Mocks
 
         public IPagePublishing PagePublishing => null;
 
-        public string MapPath(string virtualPath) => "MockMapped";
+        public string MapAppPath(string virtualPath) => "MockMapped";
+
+
+        public string DefaultLanguage => "en-US";
     }
 }

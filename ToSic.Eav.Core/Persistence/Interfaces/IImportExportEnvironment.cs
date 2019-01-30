@@ -29,6 +29,8 @@ namespace ToSic.Eav.Persistence.Interfaces
         /// is missing in the file
         /// </summary>
         string FallbackContentTypeScope { get; }
+
+        //todo: this is now availabl ein the normal IEnvironment, try to move all use cases to that
         string DefaultLanguage { get; }
         string TemplatesRoot(int zoneId, int appId);
         string TargetPath(string folder);

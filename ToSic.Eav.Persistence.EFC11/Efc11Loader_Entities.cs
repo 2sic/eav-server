@@ -27,7 +27,9 @@ namespace ToSic.Eav.Persistence.Efc
         private void LoadEntities(AppDataPackage app, int[] entityIds = null)
         {
             // ToDo: do not use importexportenvironment - should create a IEnvironment (discuss w/2dm)
-            var env = Factory.Resolve<Interfaces.IImportExportEnvironment>();
+            var env = Factory.Resolve<IEnvironment>();
+            var primaryLanguage = env.DefaultLanguage.ToLowerInvariant();
+            Log.Add($"Primary language from environment (for attribute sorting): {primaryLanguage}");
             var appId = app.AppId;
 
             #region Prepare & Extend EntityIds
@@ -124,7 +126,7 @@ namespace ToSic.Eav.Persistence.Efc
                             // Because we can't ensure order of values when saving, order values: priorize values without
                             // any dimensions, then values with primary language
                             .OrderByDescending(v2 => !v2.ToSicEavValuesDimensions.Any())
-                            .ThenByDescending(v2 => v2.ToSicEavValuesDimensions.Any(l => l.Dimension.EnvironmentKey.ToLowerInvariant() == env.DefaultLanguage.ToLowerInvariant()))
+                            .ThenByDescending(v2 => v2.ToSicEavValuesDimensions.Any(l => string.Equals(l.Dimension.EnvironmentKey, primaryLanguage, StringComparison.InvariantCultureIgnoreCase)))
                             .ThenBy(v2 => v2.ChangeLogCreated)
                             .Select(v2 => new
                             {
