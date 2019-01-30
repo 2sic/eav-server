@@ -172,7 +172,7 @@ namespace ToSic.Eav.ImportExport.Xml
                     if (sourceValueNode != null)
 					{
 						var dimensionsToAdd = new List<ILanguage>();
-						if (_envLangs.Any(p => p.Matches(envLang.EnvironmentKey)))
+						if (_envLangs.Single(p => p.Matches(envLang.EnvironmentKey)).DimensionId > 0)
 							dimensionsToAdd.Add(new Dimension { Key = envLang.EnvironmentKey, ReadOnly = readOnly });
 
 						// If value has already been added to the list, add just dimension with original ReadOnly state
