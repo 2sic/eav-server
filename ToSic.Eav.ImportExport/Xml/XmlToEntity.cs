@@ -18,8 +18,6 @@ namespace ToSic.Eav.ImportExport.Xml
 	{
         private class TargetLanguageToSourceLanguage: DimensionDefinition
         {
-            //public bool Active;
-            //public string EnvironmentKey;
             public List<DimensionDefinition> PriorizedDimensions = new List<DimensionDefinition>();
         }
 
@@ -31,8 +29,6 @@ namespace ToSic.Eav.ImportExport.Xml
 	        _envLangs = PrepareTargetToSourceLanguageMapping(envLanguages, envDefLang, srcLanguages, srcDefLang);
 	        _envDefLang = envDefLang;
             _srcDefLang = srcDefLang?.ToString();
-            // prepare language mapper-lists, to later assign in case import/target have different languages
-            //_relevantSrcLangsByPriority = ReduceSrcLangsToRelevantSet(srcLanguages, srcDefLang, _envLangs, _envDefLang);
 	    }
 
 	    private List<TargetLanguageToSourceLanguage> PrepareTargetToSourceLanguageMapping(List<DimensionDefinition> envLanguages, string envDefLang, List<DimensionDefinition> srcLanguages, int? srcDefLang)
@@ -40,25 +36,36 @@ namespace ToSic.Eav.ImportExport.Xml
 	        var wrapLog = Log.Call("PrepareTargetToSourceLanguageMapping", $"Env has {envLanguages.Count} languages");
 	        List<TargetLanguageToSourceLanguage> result;
             // if the environment doesn't have languages defined, we'll create a temp-entry for the main language to allow mapping
-	        if (envLanguages.Any())
-	        {
+            if (envLanguages.Any())
+            {
                 result =
-	                envLanguages.Select(el => new TargetLanguageToSourceLanguage
-	                {
-	                    Active = el.Active,
-	                    EnvironmentKey = el.EnvironmentKey,
-	                    PriorizedDimensions = FindPriorizedMatchingDimensions(el, envDefLang, srcLanguages, srcDefLang)
-	                }).ToList();}
-	        else
-	            result = new List<TargetLanguageToSourceLanguage>
-	            {
-	                new TargetLanguageToSourceLanguage
-	                {
-	                    Active = true,
-	                    EnvironmentKey = envDefLang
-	                    // todo: 2rm - maybe it also needs prioritize Dimensions here?
-	                }
-	            };
+                    envLanguages.Select(el => new TargetLanguageToSourceLanguage
+                    {
+                        Active = el.Active,
+                        EnvironmentKey = el.EnvironmentKey,
+                        DimensionId = el.DimensionId,
+                        PriorizedDimensions = FindPriorizedMatchingDimensions(el, envDefLang, srcLanguages, srcDefLang)
+                    }).ToList();
+            }
+            else
+            {
+                var tempDimension = new DimensionDefinition()
+                {
+                    Active = true,
+                    DimensionId = 0,
+                    EnvironmentKey = envDefLang,
+                    Name = "Default"
+                };
+                result = new List<TargetLanguageToSourceLanguage>
+                {
+                    new TargetLanguageToSourceLanguage
+                    {
+                        Active = true,
+                        EnvironmentKey = envDefLang,
+                        PriorizedDimensions = FindPriorizedMatchingDimensions(tempDimension, envDefLang, srcLanguages, srcDefLang)
+                    }
+                };
+            }
 
 	        wrapLog($"LanguageMap has {result.Count} items");
 	        return result;
