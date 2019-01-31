@@ -56,7 +56,7 @@ namespace ToSic.Eav.ImportExport.Xml
 	                {
 	                    Active = true,
 	                    EnvironmentKey = envDefLang
-	                    // todo: 2dm -> 2rm - maybe it also needs prioritize Dimensions here?
+	                    // todo: 2rm - maybe it also needs prioritize Dimensions here?
 	                }
 	            };
 
