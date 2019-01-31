@@ -167,7 +167,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
             
             // Delete all existing relationships - but not the target, just the relationship
             // note: can't use .Clear(), as that will try to actually delete the children
-            if (parentIds == null || parentIds.Count <= 0) return;
+            if (parentIds == null || parentIds.Count <= 0)
+            {
+                wrapLog(null);
+                return;
+            }
 
             foreach (var id in parentIds)
             {

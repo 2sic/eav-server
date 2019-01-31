@@ -36,7 +36,7 @@ namespace ToSic.Eav.Data
         }
 
 
-        private int AppId = 0; 
+        //private int AppId = 0; 
         private readonly int _remoteAppId;
         private readonly int _remoteZoneId;
 

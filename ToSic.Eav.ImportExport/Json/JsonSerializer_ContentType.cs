@@ -26,7 +26,7 @@ namespace ToSic.Eav.ImportExport.Json
                 Type = attrib.Type,
                 IsTitle = attrib.IsTitle,
                 Metadata = attrib.Metadata
-                    ?.Select(ToJson) /* important: must write the method with params, otherwise default param metadata = 1 instead of 0*/
+                    ?.Select(dt => ToJson(dt)) /* important: must write the method with params, otherwise default param metadata = 1 instead of 0*/
                     .ToList()
             }).ToList();
 
@@ -55,7 +55,7 @@ namespace ToSic.Eav.ImportExport.Json
                 Description = contentType.Description,
                 Attributes = attribs,
                 Sharing = jctShare,
-                Metadata = contentType.Metadata.Select(ToJson).ToList()
+                Metadata = contentType.Metadata.Select(md => ToJson(md)).ToList()
             };
             return package;
         }

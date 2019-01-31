@@ -217,7 +217,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             _targetDimensions = new ZoneRuntime(zoneId, Log).Languages(true);
 
-            _xmlBuilder = new XmlToEntity(AppId, sourceDimensions, sourceDefaultDimensionId, _targetDimensions, DefaultLanguage);
+            _xmlBuilder = new XmlToEntity(AppId, sourceDimensions, sourceDefaultDimensionId, _targetDimensions, DefaultLanguage, Log);
             #endregion
 
             var atsNodes = xmlSource.Element(XmlConstants.AttributeSets)?.Elements(XmlConstants.AttributeSet);
@@ -227,7 +227,7 @@ namespace ToSic.Eav.Apps.ImportExport
 		    var importEntities = GetImportEntities(entNodes, Constants.NotMetadata);
 
 
-			var import = new Import(ZoneId, AppId, leaveExistingValuesUntouched);
+			var import = new Import(ZoneId, AppId, leaveExistingValuesUntouched, parentLog: Log);
 			import.ImportIntoDb(importAttributeSets, importEntities.Cast<Entity>());
             SystemManager.Purge(ZoneId, AppId);
 
@@ -276,58 +276,75 @@ namespace ToSic.Eav.Apps.ImportExport
 
 		private List<ContentType> GetImportAttributeSets(IEnumerable<XElement> xAttributeSets)
 		{
-		    Log.Add("get imp attrib sets");
+            var wrap = Log.Call("GetImportAttributeSets", "start");
+            Log.Add($"items: {xAttributeSets.Count()}");
+
             var importAttributeSets = new List<ContentType>();
 
 			// Loop through AttributeSets
 			foreach (var attributeSet in xAttributeSets)
 			{
-				var attributes = new List<IAttributeDefinition>();
-			    var attsetElem = attributeSet.Element(XmlConstants.Attributes);
-                if (attsetElem != null)
-                    foreach (var xElementAttribute in attsetElem.Elements(XmlConstants.Attribute))
-                    {
-                        var attribute = new AttributeDefinition(AppId,
-                            xElementAttribute.Attribute(XmlConstants.Static).Value,
-                            null,
-                            xElementAttribute.Attribute(XmlConstants.EntityTypeAttribute).Value,
-                            null, null, null, null
-                        );
-                        attribute.Metadata.Use(GetImportEntities(xElementAttribute.Elements(XmlConstants.Entity), Constants.MetadataForAttribute));
-                        attributes.Add(attribute);
-
-                        // Set Title Attribute
-                        if (Boolean.Parse(xElementAttribute.Attribute(XmlConstants.IsTitle).Value))
-                            attribute.IsTitle = true;
-                    }
-                // check if it's normal (not a ghost) but still missing a title
-			    if(attributes.Any() && !attributes.Any(a => a.IsTitle)) 
-			        (attributes.First() as AttributeDefinition).IsTitle = true;
-
-			    // Add AttributeSet
-                var ct = new ContentType(AppId, attributeSet.Attribute(XmlConstants.Name).Value)
-				{
-					Attributes = attributes,
-                    OnSaveUseParentStaticName = attributeSet.Attributes(XmlConstants.AttributeSetParentDef).Any() ? attributeSet.Attribute(XmlConstants.AttributeSetParentDef).Value : "",
-                    OnSaveSortAttributes = attributeSet.Attributes(XmlConstants.SortAttributes).Any() && bool.Parse(attributeSet.Attribute(XmlConstants.SortAttributes).Value)
-				};
-			    ct.SetImportParameters(
-			        scope: attributeSet.Attributes(XmlConstants.Scope).Any()
-			            ? attributeSet.Attribute(XmlConstants.Scope).Value
-			            : _environment.FallbackContentTypeScope,
-                    staticName:attributeSet.Attribute(XmlConstants.Static).Value,
-                    description: attributeSet.Attribute(XmlConstants.Description).Value,
-                    alwaysShareDef: AllowSystemChanges && attributeSet.Attributes(XmlConstants.AlwaysShareConfig).Any() &&
-			                        Boolean.Parse(attributeSet.Attribute(XmlConstants.AlwaysShareConfig).Value)
-			    );
+			    var ct = BuildContentTypeFromXml(attributeSet);
 			    importAttributeSets.Add(ct);
-
 			}
 
+		    wrap($"found {importAttributeSets.Count}");
 			return importAttributeSets;
 		}
 
-		#endregion
+	    private ContentType BuildContentTypeFromXml(XElement attributeSet)
+	    {
+	        var attributes = new List<IAttributeDefinition>();
+	        var attsetElem = attributeSet.Element(XmlConstants.Attributes);
+	        var typeName = attributeSet.Attribute(XmlConstants.Name).Value;
+	        var wrap = Log.Call("BuildContentTypeFromXml", typeName);
+
+	        if (attsetElem != null)
+	            foreach (var xElementAttribute in attsetElem.Elements(XmlConstants.Attribute))
+	            {
+	                var attribute = new AttributeDefinition(AppId,
+	                    xElementAttribute.Attribute(XmlConstants.Static).Value,
+	                    null,
+	                    xElementAttribute.Attribute(XmlConstants.EntityTypeAttribute).Value,
+	                    null, null, null, null
+	                );
+	                attribute.Metadata.Use(GetImportEntities(xElementAttribute.Elements(XmlConstants.Entity),
+	                    Constants.MetadataForAttribute));
+	                attributes.Add(attribute);
+
+	                // Set Title Attribute
+	                if (bool.Parse(xElementAttribute.Attribute(XmlConstants.IsTitle).Value))
+	                    attribute.IsTitle = true;
+	            }
+	        // check if it's normal (not a ghost) but still missing a title
+	        if (attributes.Any() && !attributes.Any(a => a.IsTitle))
+	            (attributes.First() as AttributeDefinition).IsTitle = true;
+
+	        // create ContentType
+	        var ct = new ContentType(AppId, typeName)
+	        {
+	            Attributes = attributes,
+	            OnSaveUseParentStaticName = attributeSet.Attributes(XmlConstants.AttributeSetParentDef).Any()
+	                ? attributeSet.Attribute(XmlConstants.AttributeSetParentDef).Value
+	                : "",
+	            OnSaveSortAttributes = attributeSet.Attributes(XmlConstants.SortAttributes).Any() &&
+	                                   bool.Parse(attributeSet.Attribute(XmlConstants.SortAttributes).Value)
+	        };
+
+	        ct.SetImportParameters(
+	            scope: attributeSet.Attributes(XmlConstants.Scope).Any()
+	                ? attributeSet.Attribute(XmlConstants.Scope).Value
+	                : _environment.FallbackContentTypeScope,
+	            staticName: attributeSet.Attribute(XmlConstants.Static).Value,
+	            description: attributeSet.Attribute(XmlConstants.Description).Value,
+	            alwaysShareDef: AllowSystemChanges && attributeSet.Attributes(XmlConstants.AlwaysShareConfig).Any() &&
+	                            Boolean.Parse(attributeSet.Attribute(XmlConstants.AlwaysShareConfig).Value)
+	        );
+	        wrap("ok");
+	        return ct;
+	    }
+
+	    #endregion
 
 		#region Templates
 
@@ -510,18 +527,24 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="assignmentObjectTypeId"></param>
         /// <returns></returns>
         private List<IEntity> GetImportEntities(IEnumerable<XElement> entities, int assignmentObjectTypeId)
-            => entities.Select(e => GetImportEntity(e, assignmentObjectTypeId)).ToList();
-		
+        {
+            var wrap = Log.Call("GetImportEntities", $"for {entities?.Count()}; type {assignmentObjectTypeId}");
+	        var result = entities.Select(e => GetImportEntity(e, assignmentObjectTypeId)).ToList();
+            wrap($"found {result.Count}");
+            return result;
+        }
 
 
-        /// <summary>
+	    /// <summary>
         /// Returns an EAV import entity
         /// </summary>
         /// <param name="entityNode">The xml-Element of the entity to import</param>
         /// <param name="assignmentObjectTypeId">assignmentObjectTypeId</param>
         /// <returns></returns>
         private IEntity GetImportEntity(XElement entityNode, int assignmentObjectTypeId)
-		{
+        {
+            var wrap = Log.Call("GetImportEntity", $"assignment-type: {assignmentObjectTypeId}");
+
             #region retrieve optional metadata keys in the import - must happen before we apply corrections like AppId
             Guid? keyGuid = null;
 		    var maybeGuid = entityNode.Attribute(XmlConstants.KeyGuid);
@@ -536,7 +559,9 @@ namespace ToSic.Eav.Apps.ImportExport
             #endregion
 
             #region check if the xml has an own assignment object type (then we wouldn't use the default)
-            switch (entityNode.Attribute(XmlConstants.KeyTargetType)?.Value)
+
+            var keyType = entityNode.Attribute(XmlConstants.KeyTargetType)?.Value;
+            switch (keyType)
 			{
 				// Special case: App AttributeSets must be assigned to the current app
 				case XmlConstants.App:
@@ -570,22 +595,27 @@ namespace ToSic.Eav.Apps.ImportExport
 				var sourceValueString = sourceValue.Attribute(XmlConstants.ValueAttr).Value;
 
 				// Correct FileId in Hyperlink fields (takes XML data that lists files)
-			    if (!String.IsNullOrEmpty(sourceValueString) && sourceValue.Attribute(XmlConstants.EntityTypeAttribute).Value == XmlConstants.ValueTypeLink)
+			    if (!string.IsNullOrEmpty(sourceValueString) && sourceValue.Attribute(XmlConstants.EntityTypeAttribute).Value == XmlConstants.ValueTypeLink)
 			    {
-			        string newValue = GetMappedLink(sourceValueString);
+			        var newValue = GetMappedLink(sourceValueString);
 			        if (newValue != null)
 			            sourceValue.Attribute(XmlConstants.ValueAttr).SetValue(newValue);
 			    }
 			}
 
-            var importEntity = _xmlBuilder.BuildEntityFromXml(entityNode, new MetadataFor
-                {
-                    TargetType = assignmentObjectTypeId,
-                    KeyNumber = keyNumber,
-                    KeyGuid = keyGuid,
-                    KeyString = keyString
-                });
+            var metadata = new MetadataFor
+            {
+                TargetType = assignmentObjectTypeId,
+                KeyNumber = keyNumber,
+                KeyGuid = keyGuid,
+                KeyString = keyString
+            };
 
+            Log.Add($"Metadata ({metadata.IsMetadata}) - type:{metadata.TargetType}, #:{metadata.KeyNumber} guid:{metadata.KeyGuid}, $:{metadata.KeyString}");
+
+            var importEntity = _xmlBuilder.BuildEntityFromXml(entityNode, metadata);
+
+            wrap("got it");
 			return importEntity;
 		}
 

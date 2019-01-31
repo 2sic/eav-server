@@ -88,21 +88,36 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                 if (isNew)
                 {
-                    var logNew = Log.Call("", "", "create new...");
+                    var logNew = Log.Call("", "", "Create new...");
 
                     if (newEnt.EntityGuid == Guid.Empty)
+                    {
+                        Log.Add("New entity guid was null, will throw exception");
                         throw new ArgumentException("can't create entity in DB with guid null - entities must be fully prepared before sending to save");
+                    }
 
                     dbEnt = CreateNewInDb(newEnt, changeLogId, contentTypeId);
                     // update the ID - for versioning and/or json persistence
                     newEnt.ResetEntityId(dbEnt.EntityId); // update this, as it was only just generated
-                    jsonExport = _jsonifier.Serialize(newEnt);
+                    Log.Add($"will serialize-json id:{newEnt.EntityId}");
+                    try
+                    {
+                        jsonExport = _jsonifier.Serialize(newEnt);
+                    }
+                    catch
+                    {
+                        Log.Add("Error serializing - will try again with logging");
+                        _jsonifier.LinkLog(Log);
+                        jsonExport = _jsonifier.Serialize(newEnt);
+                    }
 
                     if (saveJson)
                     {
+                        var wrapSaveJson = Log.Call("SaveJson", $"id:{newEnt.EntityId}, guid:{newEnt.EntityGuid}");
                         dbEnt.Json = jsonExport ;
                         dbEnt.ContentType = newEnt.Type.StaticName;
                         DbContext.SqlDb.SaveChanges();
+                        wrapSaveJson("ok");
                     }
                     logNew($"i:{dbEnt.EntityId}, guid:{dbEnt.EntityGuid}");
                 }
@@ -221,6 +236,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             {
                 Log.Add("entity id == 0 so skip draft lookup");
                 hasAdditionalDraft = false;
+                wrapLog("null");
                 return null;
             }
             Log.Add("entity id > 0 - will check draft/branching");
@@ -237,6 +253,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             if (ent.IsPublished || !ent.PlaceDraftInBranch)
             {
                 Log.Add($"new is published or branching is not wanted, so we won't branch - returning draft-id:{existingDraftId}");
+                wrapLog($"{existingDraftId}");
                 return existingDraftId;
             }
 
@@ -259,6 +276,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         private ToSicEavEntities CreateNewInDb(IEntity newEnt, int changeId, int contentTypeId)
         {
+            var wrapLog = Log.Call("CreateNewInDb", $"a:{DbContext.AppId}, guid:{newEnt.EntityGuid}, type:{contentTypeId}");
             var dbEnt = new ToSicEavEntities
             {
                 AppId = DbContext.AppId,
@@ -279,7 +297,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             DbContext.SqlDb.Add(dbEnt);
             DbContext.SqlDb.SaveChanges();
-
+            wrapLog("ok");
             return dbEnt;
         }
 
@@ -308,9 +326,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
             ToSicEavEntities dbEnt,
             int changeId)
         {
+            var wrapLog = Log.Call("SaveAttributesInDbModel", $"id:{newEnt.EntityId}");
             foreach (var attribute in newEnt.Attributes.Values)
             {
-                var wrapLog = Log.Call("SaveAttributesInDbModel", $"attrib:{attribute.Name}");
+                var wrapAttrib = Log.Call("SaveAttributesInDbModel", $"attrib:{attribute.Name}");
                 // find attribute definition
                 var attribDef =
                     attributeDefs.SingleOrDefault(
@@ -365,8 +384,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
                         ToSicEavValuesDimensions = toSicEavValuesDimensions
                     });
                 }
-                wrapLog(null);
+                wrapAttrib(null);
             }
+            wrapLog("ok");
         }
 
 

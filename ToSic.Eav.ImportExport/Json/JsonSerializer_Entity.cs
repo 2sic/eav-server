@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
-using ToSic.Eav.App;
 using ToSic.Eav.Data;
 using ToSic.Eav.Enums;
 using ToSic.Eav.ImportExport.Json.Format;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.ImportExport.Json
 {
@@ -16,14 +16,19 @@ namespace ToSic.Eav.ImportExport.Json
 
         public string Serialize(IEntity entity, int metadataDepth) => JsonConvert.SerializeObject(new JsonFormat
         {
-            Entity = ToJson(entity, metadataDepth)
+            Entity = ToJson(entity, metadataDepth, Log)
         }, JsonSerializerSettings());
 
-        public static JsonEntity ToJson(IEntity entity, int metadataDepth = 0)
+        public static JsonEntity ToJson(IEntity entity, int metadataDepth = 0, Log parentLog = null)
         {
+            var log = new Log("Jsn.Serlzr", parent: parentLog, className:"JsonSerializer");
+            var wrapLog = log.Call("ToJson", $"id:{entity?.EntityId}, meta-depth:{metadataDepth}");
             // do a null-check, because sometimes code could ask to serialize not-yet existing entities
             if (entity == null)
+            {
+                wrapLog("is null");
                 return null;
+            }
 
             JsonMetadataFor mddic = null;
             if (entity.MetadataFor.IsMetadata)
@@ -47,25 +52,25 @@ namespace ToSic.Eav.ImportExport.Json
                 switch (g.Key)
                 {
                     case AttributeTypeEnum.String:
-                        attribs.String = ToTypedDictionary<string>(gList);
+                        attribs.String = ToTypedDictionary<string>(gList, log);
                         break;
                     case AttributeTypeEnum.Hyperlink:
-                        attribs.Hyperlink = ToTypedDictionary<string>(gList);
+                        attribs.Hyperlink = ToTypedDictionary<string>(gList, log);
                         break;
                     case AttributeTypeEnum.Custom:
-                        attribs.Custom = ToTypedDictionary<string>(gList);
+                        attribs.Custom = ToTypedDictionary<string>(gList, log);
                         break;
                     case AttributeTypeEnum.Number:
-                        attribs.Number = ToTypedDictionary<decimal?>(gList);
+                        attribs.Number = ToTypedDictionary<decimal?>(gList, log);
                         break;
                     case AttributeTypeEnum.DateTime:
-                        attribs.DateTime = ToTypedDictionary<DateTime?>(gList);
+                        attribs.DateTime = ToTypedDictionary<DateTime?>(gList, log);
                         break;
                     case AttributeTypeEnum.Boolean:
-                        attribs.Boolean = ToTypedDictionary<bool?>(gList);
+                        attribs.Boolean = ToTypedDictionary<bool?>(gList, log);
                         break;
                     case AttributeTypeEnum.Entity:
-                        attribs.Entity = ToTypedDictionaryEntity(gList);
+                        attribs.Entity = ToTypedDictionaryEntity(gList, log);
                         break;
                     case AttributeTypeEnum.Empty:
                     case AttributeTypeEnum.Undefined:
@@ -95,15 +100,15 @@ namespace ToSic.Eav.ImportExport.Json
                 For = mddic,
                 Metadata = itemMeta
             };
+            wrapLog("ok");
             return jEnt;
         }
 
         /// <summary>
         /// this is a special helper to create typed entities-dictionaries
         /// </summary>
-        /// <param name="gList"></param>
         /// <returns></returns>
-        private static Dictionary<string, Dictionary<string, List<Guid?>>> ToTypedDictionaryEntity(List<IAttribute> gList)
+        private static Dictionary<string, Dictionary<string, List<Guid?>>> ToTypedDictionaryEntity(List<IAttribute> gList, Log log)
         {
             // the following is a bit complex for the following reason
             // 1. either the relationship is guid based, and in that case, 
@@ -112,7 +117,7 @@ namespace ToSic.Eav.ImportExport.Json
             //    but the relationship manager doesn't have a direct reference to the guid,
             //    but only to the items directly
             // so it tries to get the guids first, and otherwise uses the items
-            var ents = ToTypedDictionary<EntityRelationship>(gList)
+            var ents = ToTypedDictionary<EntityRelationship>(gList, log)
                 .ToDictionary(a => a.Key, a => a.Value
                     .ToDictionary(b => b.Key, b => b.Value.ResolveGuids()));
             return ents;
