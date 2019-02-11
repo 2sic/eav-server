@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Interfaces;
@@ -37,7 +36,7 @@ namespace ToSic.Eav.Data
         }
 
 
-        private int AppId = 0; 
+        //private int AppId = 0; 
         private readonly int _remoteAppId;
         private readonly int _remoteZoneId;
 
@@ -128,6 +127,17 @@ namespace ToSic.Eav.Data
             var list = type == null ? this : this.Where(md => md.Type.StaticName == type || md.Type.Name == type);
             var found = list.FirstOrDefault(md => md.Attributes.ContainsKey(name));
             return found == null ? default(TVal) : found.GetBestValue<TVal>(name);
+        }
+
+        public TVal GetBestValue<TVal>(string name, string[] types)
+        {
+            foreach (var type in types)
+            {
+                var result = GetBestValue<TVal>(name, type);
+                if (!EqualityComparer<TVal>.Default.Equals(result, default(TVal)))
+                    return result;
+            }
+            return default(TVal);
         }
 
         #region enumerators

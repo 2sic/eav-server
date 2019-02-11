@@ -225,10 +225,10 @@ namespace ToSic.Eav.Repository.Efc
 
         internal void DoAndSave(Action action)
         {
-            Log.Add("DB do and save - start");
+            var wrapLog = Log.Call("DoAndSave");
             action.Invoke();
             SqlDb.SaveChanges();
-            Log.Add("DB do and save - completed");
+            wrapLog("completed");
         }
 
 
@@ -236,17 +236,20 @@ namespace ToSic.Eav.Repository.Efc
         {
             var randomId = Guid.NewGuid().ToString().Substring(0, 4);
             var ownTransaction = SqlDb.Database.CurrentTransaction == null ? SqlDb.Database.BeginTransaction() : null;
-            Log.Add($"DB do in trans:{randomId} - create new trans:{ownTransaction != null}");
+            var wrapLog = Log.Call("DoInTransaction", $"id:{randomId} - create new trans:{ownTransaction != null}");
             try
             {
                 action.Invoke();
                 ownTransaction?.Commit();
-                Log.Add($"do in trans:{randomId} - completed");
+                Log.Add($"Transaction {randomId} - completed"); // adds ok to end of block
+                wrapLog("transaction ok"); // adds ok to top of block
             }
-            catch
+            catch(Exception e)
             {
                 ownTransaction?.Rollback();
-                Log.Add($"DB do in trans:{randomId} - failed / rollback");
+                Log.Add("Error: " + e.Message);
+                Log.Add($"Transaction {randomId} failed / rollback");
+                wrapLog("transaction failed / rollback");
                 throw;
             }
         }

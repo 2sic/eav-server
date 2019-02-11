@@ -117,6 +117,12 @@ namespace ToSic.Eav
 
         public const string TypeForInputTypeDefinition = "ContentType-InputType";
 
+        public const string InputTypeType = "Type";
+        public const string InputTypeLabel = "Label";
+        public const string InputTypeDescription = "Description";
+        public const string InputTypeAssets = "Assets";
+        public const string InputTypeDisableI18N = "DisableI18n";
+
         #endregion
 
 

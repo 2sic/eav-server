@@ -7,6 +7,7 @@ using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Enums;
 using ToSic.Eav.ImportExport.Json.Format;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.ImportExport.Json
 {
@@ -171,12 +172,44 @@ namespace ToSic.Eav.ImportExport.Json
                 .ToList();
 
 
-        private static Dictionary<string, Dictionary<string, T>> ToTypedDictionary<T>(List<IAttribute> attribs)
-            => attribs.Cast<IAttribute<T>>()
-                .ToDictionary(
-                    a => a.Name,
-                    a => a.Typed.ToDictionary(LanguageKey, v => v.TypedContents)
-                );
+        private static Dictionary<string, Dictionary<string, T>> ToTypedDictionary<T>(List<IAttribute> attribs, Log log)
+        {
+            var result = new Dictionary<string, Dictionary<string, T>>();
+            attribs.Cast<IAttribute<T>>().ToList().ForEach(a =>
+            {
+                Dictionary<string, T> dimensions;
+                try
+                {
+                    dimensions = a.Typed.ToDictionary(LanguageKey, v => v.TypedContents);
+                }
+                catch
+                {
+                    string langList = null;
+                    try
+                    {
+                        langList = string.Join(",", a.Typed.Select(LanguageKey));
+                    }
+                    catch { /* ignore */ }
+                    log.Warn($"Error building languages list on '{a.Name}', probably multiple identical keys: {langList}");
+                    throw;
+                }
+                try
+                {
+                    result.Add(a.Name, dimensions);
+                }
+                catch
+                {
+                    log.Warn($"Error adding attribute '{a.Name}' to dictionary, probably multiple identical keys");
+                    throw;
+                }
+
+                //.ToDictionary(
+                //    a => a.Name,
+                //    a => a.Typed.ToDictionary(LanguageKey, v => v.TypedContents)
+                //)               
+            });
+            return result;
+        }
 
         public List<IEntity> Deserialize(List<string> serialized, bool allowDynamic = false) 
             => serialized.Select(s => Deserialize(s, allowDynamic)).ToList();

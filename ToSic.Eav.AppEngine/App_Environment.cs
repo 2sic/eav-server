@@ -7,7 +7,7 @@ namespace ToSic.Eav.Apps
     public partial class App
     {
 
-        protected IEnvironment Env;
+        protected IAppEnvironment Env;
         public ITenant Tenant;
 
         public App(ITenant tenant, int zoneId, int appId, bool allowSideEffects,
@@ -18,7 +18,7 @@ namespace ToSic.Eav.Apps
         {
         }
 
-        protected App(IEnvironment env, 
+        protected App(IAppEnvironment env, 
             ITenant tenant, 
             int zoneId, 
             int appId, 
@@ -41,7 +41,7 @@ namespace ToSic.Eav.Apps
         #region Paths
         protected string GetRootPath() => System.IO.Path.Combine(Tenant.SxcPath, Folder);
 
-        public string PhysicalPath => Env.MapPath(GetRootPath());
+        public string PhysicalPath => Env.MapAppPath(GetRootPath());
 
         #endregion
 

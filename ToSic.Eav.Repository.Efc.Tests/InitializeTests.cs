@@ -27,6 +27,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
                 sc.AddTransient<Apps.ImportExport.XmlExporter, DnnXmlExporter>();
 
                 sc.AddTransient<IRuntime, Runtime>();
+                sc.AddTransient<IAppEnvironment, MockEnvironment>();
                 sc.AddTransient<IEnvironment, MockEnvironment>();
 
                 sc.AddTransient<IImportExportEnvironment, ImportExportEnvironmentMock>();

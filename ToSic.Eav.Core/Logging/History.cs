@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Linq;
 using ToSic.Eav.Logging.Internals;
 using ToSic.Eav.Logging.Simple;
 
@@ -37,7 +38,11 @@ namespace ToSic.Eav.Logging
 
             // add the current item
             if (Logs.TryGetValue(key, out var queue))
-                queue.Enqueue(log);
+            {
+                // add if it's already in the queue
+                if (!queue.ToArray().Contains(log))
+                    queue.Enqueue(log);
+            }
         }
 
 
