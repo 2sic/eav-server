@@ -23,6 +23,8 @@ namespace ToSic.Eav.DataSources
 
 	public class SqlDataSource : ExternalDataDataSource
 	{
+	    public override string LogId => "DS.ExtSql";
+
         // Note: of the standard SQL-terms, I will only allow exec|execute|select
         // Everything else shouldn't be allowed
         public static Regex ForbiddenTermsInSelect = new Regex(@"(;|\s|^)+(insert|update|delete|create|alter|drop|rename|truncate|backup|restore)\s", RegexOptions.IgnoreCase | RegexOptions.Compiled);
@@ -251,14 +253,16 @@ namespace ToSic.Eav.DataSources
 			                             ?? columNames.FirstOrDefault();
 			            Log.Add($"will use '{casedTitle}' as title field");
 
-			            #endregion
+                        #endregion
 
-			            #region Read all Rows from SQL Server
+                        #region Read all Rows from SQL Server
 
+                        // apparently SQL could return the same column name - which would cause problems - so distinct them first
+                        var columnsToUse = columNames.Where(c => c != casedEntityId).Distinct().ToList();
 			            while (reader.Read())
 			            {
 			                var entityId = casedEntityId == null ? 0 : Convert.ToInt32(reader[casedEntityId]);
-			                var values = columNames.Where(c => c != casedEntityId).ToDictionary(c => c, c => reader[c]);
+			                var values = columnsToUse.ToDictionary(c => c, c => reader[c]);
 			                var entity = new Data.Entity(Constants.TransientAppId, entityId, ContentTypeBuilder.Fake(ContentType), values, casedTitle);
 			                list.Add(entity);
 			            }
