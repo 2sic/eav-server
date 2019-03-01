@@ -11,6 +11,22 @@ namespace ToSic.Eav.Persistence.Efc
 {
     public partial class Efc11Loader
     {
+        private string _primaryLanguage;
+        public string PrimaryLanguage
+        {
+            get {
+                if(_primaryLanguage == null)
+                {
+                    var env = Factory.Resolve<IEnvironment>();
+                    _primaryLanguage = env.DefaultLanguage.ToLowerInvariant();
+                    Log.Add($"Primary language from environment (for attribute sorting): {_primaryLanguage}");
+                }
+                return _primaryLanguage;
+            }
+            set {
+                _primaryLanguage = value;
+            }
+        }
 
         private int[] GetEntityIdOfPartnerEntities(int[] repositoryIds)
         {
@@ -27,9 +43,7 @@ namespace ToSic.Eav.Persistence.Efc
         private void LoadEntities(AppDataPackage app, int[] entityIds = null)
         {
             // ToDo: do not use importexportenvironment - should create a IEnvironment (discuss w/2dm)
-            var env = Factory.Resolve<IEnvironment>();
-            var primaryLanguage = env.DefaultLanguage.ToLowerInvariant();
-            Log.Add($"Primary language from environment (for attribute sorting): {primaryLanguage}");
+            
             var appId = app.AppId;
 
             #region Prepare & Extend EntityIds
@@ -126,7 +140,7 @@ namespace ToSic.Eav.Persistence.Efc
                             // Because we can't ensure order of values when saving, order values: priorize values without
                             // any dimensions, then values with primary language
                             .OrderByDescending(v2 => !v2.ToSicEavValuesDimensions.Any())
-                            .ThenByDescending(v2 => v2.ToSicEavValuesDimensions.Any(l => string.Equals(l.Dimension.EnvironmentKey, primaryLanguage, StringComparison.InvariantCultureIgnoreCase)))
+                            .ThenByDescending(v2 => v2.ToSicEavValuesDimensions.Any(l => string.Equals(l.Dimension.EnvironmentKey, PrimaryLanguage, StringComparison.InvariantCultureIgnoreCase)))
                             .ThenBy(v2 => v2.ChangeLogCreated)
                             .Select(v2 => new
                             {

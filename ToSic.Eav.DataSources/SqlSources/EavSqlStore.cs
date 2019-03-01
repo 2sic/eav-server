@@ -49,8 +49,11 @@ namespace ToSic.Eav.DataSources.SqlSources
 
 		public override bool Ready => _ready;
 
-	    public AppDataPackage GetDataForCache() 
-            => Loader.AppPackage(AppId, parentLog: Log);
+        public AppDataPackage GetDataForCache(string primaryLanguage = null)
+        {
+            if (primaryLanguage != null) Loader.PrimaryLanguage = primaryLanguage;
+            return Loader.AppPackage(AppId, parentLog: Log);
+        }
 
 	    public Dictionary<int, Zone> GetAllZones() => Loader.Zones();
 	}

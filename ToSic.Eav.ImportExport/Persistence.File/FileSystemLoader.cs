@@ -22,6 +22,18 @@ namespace ToSic.Eav.Persistence.File
         private const string QueryFolder = "queries\\";
         private const string ConfigurationFolder = "configurations\\";
         private const string ItemFolder = "items\\";
+        
+        public string PrimaryLanguage
+        {
+            get
+            {
+                throw new Exception("Not implemented");
+            }
+            set
+            {
+                throw new Exception("Not implemented");
+            }
+        }
 
         public FileSystemLoader(string path, RepositoryTypes source, bool ignoreMissing, Log parentLog): base("FSL.Loadr", parentLog, $"init with path:{path} ignore:{ignoreMissing}")
         {

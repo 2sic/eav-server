@@ -42,5 +42,8 @@ namespace ToSic.Eav.DataSources.Caches
         IListsCache Lists { get; }
 
         AppDataPackage AppDataPackage { get; }
-	}
+
+        void PreLoadCache(string primaryLanguage);
+
+    }
 }

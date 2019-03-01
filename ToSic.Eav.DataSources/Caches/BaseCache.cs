@@ -75,33 +75,49 @@ namespace ToSic.Eav.DataSources.Caches
 
         /// <summary>
 		/// Ensure cache for current AppId
+        /// In this case, the system will pick up the primary language from the surrounding context (e.g. HttpContext)
 		/// </summary>
 		protected AppDataPackage EnsureCache()
 		{
+            return EnsureCacheInternal();
+        }
+
+        /// <summary>
+        /// Preload the cache with the given primary language
+        /// Needed for cache buildup outside of a HttpContext (e.g. a Scheduler)
+        /// </summary>
+        /// <param name="primaryLanguage"></param>
+        /// <returns></returns>
+        public void PreLoadCache(string primaryLanguage)
+        {
+            EnsureCacheInternal(primaryLanguage);
+        }
+
+        private AppDataPackage EnsureCacheInternal(string primaryLanguage = null)
+        {
             if (ZoneId == 0 || AppId == 0)
                 return null;
 
             var cacheKey = CachePartialKey;
 
-		    if (!HasCacheItem(cacheKey))
-		    {
+            if (!HasCacheItem(cacheKey))
+            {
                 // create lock to prevent parallel initialization
-	            var lockKey = LoadLocks.GetOrAdd(cacheKey, new object());
-		        lock (lockKey)
-		        {
+                var lockKey = LoadLocks.GetOrAdd(cacheKey, new object());
+                lock (lockKey)
+                {
                     // now that lock is free, it could have been initialized, so re-check
-		            if (!HasCacheItem(cacheKey))
-		            {
-		                // Init EavSqlStore once
-		                var zone = GetZoneAppInternal(ZoneId, AppId);
-		                Backend.InitZoneApp(zone.Item1, zone.Item2);
-		                SetCacheItem(cacheKey, Backend.GetDataForCache());
-		            }
-		        }
-		    }
+                    if (!HasCacheItem(cacheKey))
+                    {
+                        // Init EavSqlStore once
+                        var zone = GetZoneAppInternal(ZoneId, AppId);
+                        Backend.InitZoneApp(zone.Item1, zone.Item2);
+                        SetCacheItem(cacheKey, Backend.GetDataForCache(primaryLanguage));
+                    }
+                }
+            }
 
-		    return GetCacheItem(cacheKey);
-            
+            return GetCacheItem(cacheKey);
         }
 
         private static readonly ConcurrentDictionary<string, object> LoadLocks 
