@@ -27,5 +27,7 @@ namespace ToSic.Eav.Interfaces
 
 
         Dictionary<int, Zone> Zones();
+
+        string PrimaryLanguage { get; set; }
     }
 }

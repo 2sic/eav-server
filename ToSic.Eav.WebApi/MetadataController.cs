@@ -20,7 +20,7 @@ namespace ToSic.Eav.WebApi
         /// <summary>
         /// Get Entities with specified AssignmentObjectTypeId and Key
         /// </summary>
-        public IEnumerable<Dictionary<string, object>> GetAssignedEntities(int assignmentObjectTypeId, string keyType, string key, string contentType, int/*?*/ appId /*= null*/)
+        public IEnumerable<Dictionary<string, object>> Get(int appId, int targetType, string keyType, string key, string contentType = null)
         {
             IEnumerable<IEntity> entityList = null;
 
@@ -30,14 +30,14 @@ namespace ToSic.Eav.WebApi
             {
                 case "guid":
                     if(Guid.TryParse(key, out var guidKey))
-                        entityList = appRun.Package.GetMetadata(assignmentObjectTypeId, guidKey, contentType);
+                        entityList = appRun.Package.GetMetadata(targetType, guidKey, contentType);
                     break;
                 case "string":
-                    entityList = appRun.Package.GetMetadata(assignmentObjectTypeId, key, contentType);
+                    entityList = appRun.Package.GetMetadata(targetType, key, contentType);
                     break;
                 case "number":
                     if(int.TryParse(key, out var keyInt))
-                        entityList = appRun.Package.GetMetadata(assignmentObjectTypeId, keyInt, contentType);
+                        entityList = appRun.Package.GetMetadata(targetType, keyInt, contentType);
                     break;
                 default:
                     throw new Exception("keytype unknown:" + keyType);

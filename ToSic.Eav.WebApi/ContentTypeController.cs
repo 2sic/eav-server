@@ -101,7 +101,13 @@ namespace ToSic.Eav.WebApi
 	    [HttpPost]
 	    public bool Save(int appId, Dictionary<string, string> item)
 	    {
-	        Log.Add($"save a#{appId}, item count:{item.Count}");
+	        Log.Add($"save a#{appId}, item count:{item?.Count}");
+	        if (item == null)
+	        {
+	            Log.Add("item was null, will cancel");
+	            return false;
+	        }
+
 	        bool.TryParse(item["ChangeStaticName"], out var changeStaticName);
 	        GetDb(appId).ContentType.AddOrUpdate(
                 item["StaticName"], 
