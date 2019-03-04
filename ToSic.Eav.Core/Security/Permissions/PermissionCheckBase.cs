@@ -128,7 +128,7 @@ namespace ToSic.Eav.Security.Permissions
         {
             var wrapLog = Log.Call("DoesPermissionAllow", $"{new string(desiredActionCode)}");
             // Check if it's a grant for the desired action - otherwise stop here
-            var grnt = permissionEntity.GetBestValue(Constants.PermissionGrant).ToString();
+            var grnt = permissionEntity.GetBestValue(/*Constants.PermissionGrant*/ Permission.FieldGrant).ToString();
             // If Grant doesn't contain desired action, stop here
             // otherwise check if it applies
             var result = grnt.IndexOfAny(desiredActionCode) != -1 

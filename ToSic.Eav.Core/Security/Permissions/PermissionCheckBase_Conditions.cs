@@ -16,7 +16,7 @@ namespace ToSic.Eav.Security.Permissions
             try
             {
                 // check general permissions
-                var condition = permissionEntity.GetBestValue(Constants.PermissionCondition).ToString();
+                var condition = permissionEntity.GetBestValue(/*Constants.PermissionCondition*/ Permission.FieldCondition).ToString();
 
                 // check custom permission based on the user Guid or owner
                 if (User.Guid != null)
@@ -26,7 +26,7 @@ namespace ToSic.Eav.Security.Permissions
                         return IsGrantedBecause(ConditionType.Identity);
 
                     // check if an identity was provided
-                    var identity = permissionEntity.GetBestValue(Constants.PermissionIdentity).ToString();
+                    var identity = permissionEntity.GetBestValue(/*Constants.PermissionIdentity*/ Permission.FieldIdentity).ToString();
                     if (!string.IsNullOrWhiteSpace(identity))
                     {
                         if (VerifyUserIsThisUser(identity, User))
@@ -93,7 +93,7 @@ namespace ToSic.Eav.Security.Permissions
         /// Verify that the permission is for owners, and the user is the item owner
         /// </summary>
         private static bool VerifyUserIsItemOwner(string condition, IEntity item, IUser user)
-            => condition == Constants.PermissionKeyOwner
+            => condition == /*Constants.PermissionKeyOwner*/ Permission.FieldOwner
                && item?.Owner == user.IdentityToken;
 
     }

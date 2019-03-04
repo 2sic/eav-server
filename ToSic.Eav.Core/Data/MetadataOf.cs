@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Security.Permissions;
 
 namespace ToSic.Eav.Data
 {
@@ -70,7 +71,7 @@ namespace ToSic.Eav.Data
                 // If necessary, initialize first. Note that it will only add Ids which really exist in the source (the source should be the cache)
                 if (_filteredEntities == null || RequiresReload())
                     _filteredEntities = AllEntities
-                        .Where(md => new[] { Constants.PermissionTypeName }.Any(e => e != md.Type.Name && e != md.Type.StaticName))
+                        .Where(md => new[] { /*Constants.PermissionTypeName*/ Permission.TypeName  }.Any(e => e != md.Type.Name && e != md.Type.StaticName))
                         .ToList();
                 return _filteredEntities;
             }
@@ -78,7 +79,7 @@ namespace ToSic.Eav.Data
         private List<IEntity> _filteredEntities;
 
         public IEnumerable<IEntity> Permissions =>
-            AllEntities.Where(md => md.Type.StaticName == Constants.PermissionTypeName);
+            AllEntities.Where(md => md.Type.StaticName == /*Constants.PermissionTypeName*/ Permission.TypeName);
 
         private long _cacheTimestamp;
 
