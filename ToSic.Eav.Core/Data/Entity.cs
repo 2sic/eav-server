@@ -6,7 +6,7 @@ using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data
 {
-    public class Entity: EntityLight, IEntity
+    public class Entity: EntityLight, IEntity, IEntityQ
     {
 
         #region Basic properties like EntityId, Guid, IsPublished etc.
@@ -204,6 +204,7 @@ namespace ToSic.Eav.Data
 
 
 
+
         #region Metadata & Permissions
 
         public IMetadataOfItem Metadata => _metadata ?? (_metadata =
@@ -221,6 +222,33 @@ namespace ToSic.Eav.Data
             => throw new Exception("Error: You're seeing this because of a breaking change " +
                                    "in EAV 4.5 / 2sxc 9.8. Please read this to fix: " +
                                    "https://2sxc.org/en/blog/post/fixing-the-breaking-change-in-2sxc-9-8-list-instead-of-dictionary");
+
+        #endregion
+
+
+        #region IEntity Queryable / Quick
+        public List<IEntityQ> Children(string field = null, string type = null)
+        {
+            var list = Relationships
+                .FindChildren(field, type)
+                .Cast<IEntityQ>()
+                .ToList();
+            return list;
+        }
+
+        public List<IEntityQ> Parents(string type = null, string field = null)
+        {
+            var list = Relationships
+                .FindParents(type, field)
+                .Cast<IEntityQ>()
+                .ToList();
+            return list;
+
+        }
+
+        public object Get(string field) => GetBestValue(field);
+
+        public T Get<T>(string field) => GetBestValue<T>(field);
 
         #endregion
     }

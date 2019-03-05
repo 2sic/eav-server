@@ -7,6 +7,11 @@ namespace ToSic.Eav.Interfaces
     {
         object GetBestValue(string attributeName, string[] languages, bool resolveHyperlinks = false);
 
+        /// <summary>
+        /// Best way to get the current entities title
+        /// </summary>
+        /// <param name="dimensions">Array of dimensions to use in the lookup</param>
+        /// <returns>The entity title as a string</returns>
         string GetBestTitle(string[] dimensions);
 
         Dictionary<string, IAttribute> Attributes { get; }
