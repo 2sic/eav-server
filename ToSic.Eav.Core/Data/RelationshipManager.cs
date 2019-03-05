@@ -30,21 +30,73 @@ namespace ToSic.Eav.Data
 		/// <summary>
 		/// Get all Child Entities
 		/// </summary>
-		public IEnumerable<IEntity> AllChildren => AllRelationships.Where(r => r.Parent == _entity).Select(r => r.Child);
+		public IEnumerable<IEntity> AllChildren => ChildRelationships().Select(r => r.Child);
+	    private IEnumerable<EntityRelationshipItem> ChildRelationships() => AllRelationships.Where(r => r.Parent == _entity);
 
-	    /// <inheritdoc />
-	    /// <summary>
-	    /// Get all Parent Entities
-	    /// </summary>
-		public IEnumerable<IEntity> AllParents => AllRelationships.Where(r => r.Child == _entity).Select(r => r.Parent);
 
-	    /// <inheritdoc />
-	    /// <summary>
-	    /// Get Children of a specified Attribute Name
-	    /// </summary>
-	    public IRelatedEntities Children 
+        /// <inheritdoc />
+        /// <summary>
+        /// Get all Parent Entities
+        /// </summary>
+        public IEnumerable<IEntity> AllParents => ParentRelationships().Select(r => r.Parent);
+	    private IEnumerable<EntityRelationshipItem> ParentRelationships() => AllRelationships.Where(r => r.Child == _entity);
+
+        /// <inheritdoc />
+        /// <summary>
+        /// Get Children of a specified Attribute Name
+        /// </summary>
+        public IRelatedEntities Children 
             => _entity is IEntity ? new RelatedEntities(((IEntity) _entity).Attributes) : null ;
 
-	    // special note: ATM everything is an IEntity, so EntityLight is currently not supported
-	}
+        // special note: ATM everything is an IEntity, so EntityLight is currently not supported
+
+
+	    #region Relationship-Navigation - Experimental
+
+	    public List<IEntity> FindChildren(string field = null, string type = null, string useNamedParameters = "xyz", Logging.Simple.Log log = null)
+	    {
+            var wrap = log?.Call("RelMan.FindChildren", $"field:{field}; type:{type}");
+	        List<IEntity> rels;
+	        if (string.IsNullOrEmpty(field))
+	            rels = ChildRelationships().Select(r => r.Child).ToList();
+            else
+            {
+                // If the field doesn't exist, return empty list
+                if (!((IEntity) _entity).Attributes.ContainsKey(field))
+                    rels = new List<IEntity>();
+                else
+                    // if it does exist, still catch any situation where it's not a relationship field
+                    try
+                    {
+                        rels = Children[field].ToList();
+                    }
+                    catch
+                    {
+                        return new List<IEntity>();
+                    }
+            }
+
+            // Optionally filter by type
+	        if (!string.IsNullOrEmpty(type) && rels.Any())
+	            rels = rels.Where(e => e.Type.Is(type)).ToList();
+	        wrap?.Invoke(rels.Count.ToString());
+	        return rels;
+	    }
+
+	    public List<IEntity> FindParents(string type = null, string field = null, string useNamedParameters = "xyz", Logging.Simple.Log log = null)
+	    {
+	        var wrap = log?.Call("RelMan.FindParents", $"type:{type}; field:{field}");
+            var list = ParentRelationships();
+	        if (!string.IsNullOrEmpty(type))
+	            list = list.Where(r => r.Parent.Type.Is(type));
+
+	        if (string.IsNullOrEmpty(field)) return list.Select(r => r.Parent).ToList();
+
+	        list = list.Where(r => r.Parent.Relationships.FindChildren(field).Any(c => c == r.Child));
+	        var result = list.Select(r => r.Parent).ToList();
+            wrap?.Invoke(result.Count.ToString());
+            return result;
+	    }
+	    #endregion
+    }
 }
