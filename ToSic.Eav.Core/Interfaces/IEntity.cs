@@ -43,14 +43,18 @@ namespace ToSic.Eav.Interfaces
         IMetadataOfItem Metadata { get; }
 
 
-        /// <summary>
-        /// Dummy entry, to show better error message when it's being accessed because of breaking changes in EAV 4.5 / 2sxc 9.8, which 
-        /// </summary>
-        object Value { get; }
+        // 2019-03-07 2dm - disabled this - as we need the Value property for a nicer API
+        ///// <summary>
+        ///// Dummy entry, to show better error message when it's being accessed because of breaking changes in EAV 4.5 / 2sxc 9.8, which 
+        ///// </summary>
+        //object Value { get; }
 
         #region experimental IEntity Queryable / Quick
         List<IEntity> Children(string field = null, string type = null);
         List<IEntity> Parents(string type = null, string field = null);
+
+        object Value(string field, bool resolve = true);
+        T Value<T>(string field, bool resolve = true);
 
         #endregion experimental
     }

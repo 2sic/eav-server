@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
 
@@ -224,12 +225,18 @@ namespace ToSic.Eav.Data
 
         #region Obsolete / Special breaking changes
 
-        public object Value 
-            => throw new Exception("Error: You're seeing this because of a breaking change " +
-                                   "in EAV 4.5 / 2sxc 9.8. Please read this to fix: " +
-                                   "https://2sxc.org/en/blog/post/fixing-the-breaking-change-in-2sxc-9-8-list-instead-of-dictionary");
+        //public object Value 
+        //    => throw new Exception("Error: You're seeing this because of a breaking change " +
+        //                           "in EAV 4.5 / 2sxc 9.8. Please read this to fix: " +
+        //                           "https://2sxc.org/en/blog/post/fixing-the-breaking-change-in-2sxc-9-8-list-instead-of-dictionary");
 
         #endregion
+
+        public object Value(string field, bool resolve = true)
+            => GetBestValue(field, new[] { Thread.CurrentThread.CurrentCulture.Name }, resolve);
+
+        public T Value<T>(string field, bool resolve = true)
+            => GetBestValue<T>(field, new[] { Thread.CurrentThread.CurrentCulture.Name }, resolve);
 
 
         #region IEntity Queryable / Quick
