@@ -6,7 +6,7 @@ using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data
 {
-    public class Entity: EntityLight, IEntity, IEntityQ
+    public class Entity: EntityLight, IEntity
     {
 
         #region Basic properties like EntityId, Guid, IsPublished etc.
@@ -168,6 +168,8 @@ namespace ToSic.Eav.Data
         public new TVal GetBestValue<TVal>(string name, bool resolveHyperlinks = false)
             => ChangeTypeOrDefault<TVal>(GetBestValue(name, resolveHyperlinks));
 
+        public TVal GetBestValue<TVal>(string name, string[] languages, bool resolveHyperlinks = false)
+            => ChangeTypeOrDefault<TVal>(GetBestValue(name, resolveHyperlinks));
 
 
         /// <inheritdoc />
@@ -227,28 +229,22 @@ namespace ToSic.Eav.Data
 
 
         #region IEntity Queryable / Quick
-        public List<IEntityQ> Children(string field = null, string type = null)
+        public List<IEntity> Children(string field = null, string type = null)
         {
             var list = Relationships
                 .FindChildren(field, type)
-                .Cast<IEntityQ>()
                 .ToList();
             return list;
         }
 
-        public List<IEntityQ> Parents(string type = null, string field = null)
+        public List<IEntity> Parents(string type = null, string field = null)
         {
             var list = Relationships
                 .FindParents(type, field)
-                .Cast<IEntityQ>()
                 .ToList();
             return list;
 
         }
-
-        public object Get(string field) => GetBestValue(field);
-
-        public T Get<T>(string field) => GetBestValue<T>(field);
 
         #endregion
     }

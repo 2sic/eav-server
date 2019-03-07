@@ -6,6 +6,7 @@ namespace ToSic.Eav.Interfaces
     public interface IEntity: IEntityLight, IPublish<IEntity>, IHasPermissions
     {
         object GetBestValue(string attributeName, string[] languages, bool resolveHyperlinks = false);
+        T GetBestValue<T>(string attributeName, string[] languages, bool resolveHyperlinks = false);
 
         /// <summary>
         /// Best way to get the current entities title
@@ -43,5 +44,11 @@ namespace ToSic.Eav.Interfaces
         /// Dummy entry, to show better error message when it's being accessed because of breaking changes in EAV 4.5 / 2sxc 9.8, which 
         /// </summary>
         object Value { get; }
+
+        #region experimental IEntity Queryable / Quick
+        List<IEntity> Children(string field = null, string type = null);
+        List<IEntity> Parents(string type = null, string field = null);
+
+        #endregion experimental
     }
 }
