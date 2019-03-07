@@ -7,9 +7,10 @@ using ToSic.Eav.Interfaces.Caches;
 namespace ToSic.Eav.DataSources
 {
 	/// <summary>
-	/// Represents a DataStream
+	/// Represents a DataStream object. This is a stream of IEntity objects, which has a source and a name.
+	/// A stream can be read from, and it can be attached to upstream data-sources for further processing.
 	/// </summary>
-	public interface IDataStream: ICanSelfCache, ICanPurgeListCache
+	public interface IDataStream: ICanSelfCache, ICanPurgeListCache, IEnumerable<IEntity>
 	{
         IEnumerable<IEntity> List { get; }
 

@@ -15,7 +15,7 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// A DataStream to get Entities when needed
 	/// </summary>
-	public class DataStream : IDataStream, IEnumerable<IEntity>
+	public class DataStream : IDataStream
 	{
 	    private readonly GetIEnumerableDelegate _lightListDelegate;
 
