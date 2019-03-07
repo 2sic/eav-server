@@ -8,6 +8,9 @@ namespace ToSic.Eav.Interfaces
         object GetBestValue(string attributeName, string[] languages, bool resolveHyperlinks = false);
         T GetBestValue<T>(string attributeName, string[] languages, bool resolveHyperlinks = false);
 
+        object PrimaryValue(string attributeName, bool resolveHyperlinks = false);
+        T PrimaryValue<T>(string attributeName, bool resolveHyperlinks = false);
+
         /// <summary>
         /// Best way to get the current entities title
         /// </summary>

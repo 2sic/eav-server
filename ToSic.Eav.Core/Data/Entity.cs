@@ -123,7 +123,6 @@ namespace ToSic.Eav.Data
             => GetBestValue(attributeName, new string[0], resolveHyperlinks);
 
 
-
         /// <summary>
         /// Retrieves the best possible value for an attribute or virtual attribute (like EntityTitle)
         /// Automatically resolves the language-variations as well based on the list of preferred languages
@@ -171,6 +170,11 @@ namespace ToSic.Eav.Data
         public TVal GetBestValue<TVal>(string name, string[] languages, bool resolveHyperlinks = false)
             => ChangeTypeOrDefault<TVal>(GetBestValue(name, resolveHyperlinks));
 
+        public object PrimaryValue(string attributeName, bool resolveHyperlinks = false)
+            => GetBestValue(attributeName, new string[0], resolveHyperlinks);
+
+        public TVal PrimaryValue<TVal>(string attributeName, bool resolveHyperlinks = false)
+            => GetBestValue<TVal>(attributeName, new string[0], resolveHyperlinks);
 
         /// <inheritdoc />
         public new string GetBestTitle() => GetBestTitle(null, 0);
