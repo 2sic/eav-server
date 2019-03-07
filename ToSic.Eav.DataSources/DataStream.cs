@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using ToSic.Eav.Interfaces;
 
@@ -105,8 +106,6 @@ namespace ToSic.Eav.DataSources
 
                 #region Assemble the list - either from the DictionaryDelegate or from the LightListDelegate
                 // try to use the built-in Entities-Delegate, but if not defined, use other delegate; just make sure we test both, to prevent infinite loops
-                //if (_lightListDelegate == null && _dictionaryDelegate != null)
-                //    _lightList = LightList;//.Select(x => x.Value);
                 if(_lightListDelegate == null)
                     throw new Exception("can't load stream - no delegate found to supply it");
                 try
@@ -163,6 +162,12 @@ namespace ToSic.Eav.DataSources
 		public string Name { get; }
 
 
+        #region Experimental support for IEnumerable<IEntity> - WIP for https://github.com/2sic/2sxc/issues/1700
+        // if this works well, we would then put it in the IDataStream interface
 
+        public IEnumerator<IEntity> GetEnumerator() => List.GetEnumerator();
+
+	    IEnumerator IEnumerable.GetEnumerator() => List.GetEnumerator();
+        #endregion Experimental support for IEnumerable<IEntity>
     }
 }

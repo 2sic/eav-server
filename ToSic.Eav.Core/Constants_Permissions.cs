@@ -1,11 +1,12 @@
-﻿namespace ToSic.Eav
-{
-    public partial class Constants
-    {
-        public const string PermissionTypeName = "PermissionConfiguration";
-        public const string PermissionIdentity = "Identity";
-        public const string PermissionCondition = "Condition";
-        public const string PermissionGrant = "Grant";
-        public const string PermissionKeyOwner = "Owner";
-    }
-}
+﻿// moved to Security.Permissions.Permission...
+//namespace ToSic.Eav
+//{
+//    public partial class Constants
+//    {
+//        //public const string PermissionTypeName = "PermissionConfiguration";
+//        //public const string PermissionIdentity = "Identity";
+//        //public const string PermissionCondition = "Condition";
+//        //public const string PermissionGrant = "Grant";
+//        //public const string PermissionKeyOwner = "Owner";
+//    }
+//}

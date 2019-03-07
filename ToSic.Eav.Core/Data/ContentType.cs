@@ -27,6 +27,8 @@ namespace ToSic.Eav.Data
 
         public bool IsDynamic { get; internal set; }
 
+        public bool Is(string name) => Name == name || StaticName == name;
+
         /// <inheritdoc />
         public IAttributeDefinition this[string fieldName] => Attributes.FirstOrDefault(a => a.Name == fieldName);
 

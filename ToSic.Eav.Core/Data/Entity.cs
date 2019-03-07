@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
 
@@ -123,7 +124,6 @@ namespace ToSic.Eav.Data
             => GetBestValue(attributeName, new string[0], resolveHyperlinks);
 
 
-
         /// <summary>
         /// Retrieves the best possible value for an attribute or virtual attribute (like EntityTitle)
         /// Automatically resolves the language-variations as well based on the list of preferred languages
@@ -168,7 +168,14 @@ namespace ToSic.Eav.Data
         public new TVal GetBestValue<TVal>(string name, bool resolveHyperlinks = false)
             => ChangeTypeOrDefault<TVal>(GetBestValue(name, resolveHyperlinks));
 
+        public TVal GetBestValue<TVal>(string name, string[] languages, bool resolveHyperlinks = false)
+            => ChangeTypeOrDefault<TVal>(GetBestValue(name, resolveHyperlinks));
 
+        public object PrimaryValue(string attributeName, bool resolveHyperlinks = false)
+            => GetBestValue(attributeName, new string[0], resolveHyperlinks);
+
+        public TVal PrimaryValue<TVal>(string attributeName, bool resolveHyperlinks = false)
+            => GetBestValue<TVal>(attributeName, new string[0], resolveHyperlinks);
 
         /// <inheritdoc />
         public new string GetBestTitle() => GetBestTitle(null, 0);
@@ -204,6 +211,7 @@ namespace ToSic.Eav.Data
 
 
 
+
         #region Metadata & Permissions
 
         public IMetadataOfItem Metadata => _metadata ?? (_metadata =
@@ -217,10 +225,37 @@ namespace ToSic.Eav.Data
 
         #region Obsolete / Special breaking changes
 
-        public object Value 
-            => throw new Exception("Error: You're seeing this because of a breaking change " +
-                                   "in EAV 4.5 / 2sxc 9.8. Please read this to fix: " +
-                                   "https://2sxc.org/en/blog/post/fixing-the-breaking-change-in-2sxc-9-8-list-instead-of-dictionary");
+        //public object Value 
+        //    => throw new Exception("Error: You're seeing this because of a breaking change " +
+        //                           "in EAV 4.5 / 2sxc 9.8. Please read this to fix: " +
+        //                           "https://2sxc.org/en/blog/post/fixing-the-breaking-change-in-2sxc-9-8-list-instead-of-dictionary");
+
+        #endregion
+
+        public object Value(string field, bool resolve = true)
+            => GetBestValue(field, new[] { Thread.CurrentThread.CurrentCulture.Name }, resolve);
+
+        public T Value<T>(string field, bool resolve = true)
+            => GetBestValue<T>(field, new[] { Thread.CurrentThread.CurrentCulture.Name }, resolve);
+
+
+        #region IEntity Queryable / Quick
+        public List<IEntity> Children(string field = null, string type = null)
+        {
+            var list = Relationships
+                .FindChildren(field, type)
+                .ToList();
+            return list;
+        }
+
+        public List<IEntity> Parents(string type = null, string field = null)
+        {
+            var list = Relationships
+                .FindParents(type, field)
+                .ToList();
+            return list;
+
+        }
 
         #endregion
     }

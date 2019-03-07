@@ -65,5 +65,12 @@ namespace ToSic.Eav.Interfaces
         /// </remarks>
         ContentTypeMetadata Metadata { get; }
 
-    }
+        /// <summary>
+        /// Check if this type is the same as a name given.
+        /// Will check both the name and the static name
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+	    bool Is(string name); 
+	}
 }
