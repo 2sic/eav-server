@@ -57,7 +57,7 @@ namespace ToSic.Eav.Persistence.File
             {
                 if (_ser != null) return _ser;
                 _ser = new JsonSerializer();
-                _ser.Initialize(0, ReflectionTypes.FakeCache.Values /*.Get(Log).Values*/, null, Log);
+                _ser.Initialize(0, ReflectionTypes.FakeCache.Values, null, Log);
                 _ser.AssumeUnknownTypesAreDynamic = true;
                 return _ser;
             }
@@ -129,21 +129,26 @@ namespace ToSic.Eav.Persistence.File
         private IContentType LoadAndBuildCt(JsonSerializer ser, string path)
         {
             Log.Add("Loading " + path);
+            var infoIfError = "couldn't read type-file";
             try
             {
                 var json = System.IO.File.ReadAllText(path);
+
+                infoIfError = "couldn't deserialize string";
                 var ct = ser.DeserializeContentType(json);
+
+                infoIfError = "couldn't set source/parent";
                 (ct as ContentType).SetSourceAndParent(Source, Constants.SystemContentTypeFakeParent, path);
                 return ct;
             }
             catch (IOException e)
             {
-                Log.Add("Failed loading type - couldn't read file because of " + e);
+                Log.Add("Failed loading type - couldn't import type-file, IO exception: " + e);
                 return null;
             }
-            catch
+            catch (Exception e)
             {
-                Log.Add("Failed loading type - couldn't deserialize or unknown reason");
+                Log.Add($"Failed loading type - {infoIfError}, exception '" + e.GetType().FullName + "':" + e.Message);
                 return null;
             }
         }

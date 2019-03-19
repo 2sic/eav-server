@@ -20,13 +20,15 @@ namespace ToSic.Eav.ImportExport.Json
             var sharableCt = contentType as IUsesSharedDefinition;
             JsonContentTypeShareable jctShare = null;
 
+            var jsonSerializer = new JsonSerializer();
+
             var attribs = contentType.Attributes.OrderBy(a => a.SortOrder).Select(attrib => new JsonAttributeDefinition
             {
                 Name = attrib.Name,
                 Type = attrib.Type,
                 IsTitle = attrib.IsTitle,
                 Metadata = attrib.Metadata
-                    ?.Select(dt => ToJson(dt)) /* important: must write the method with params, otherwise default param metadata = 1 instead of 0*/
+                    ?.Select(dt => jsonSerializer.ToJson(dt)) /* important: must write the method with params, otherwise default param metadata = 1 instead of 0*/
                     .ToList()
             }).ToList();
 
@@ -55,7 +57,7 @@ namespace ToSic.Eav.ImportExport.Json
                 Description = contentType.Description,
                 Attributes = attribs,
                 Sharing = jctShare,
-                Metadata = contentType.Metadata.Select(md => ToJson(md)).ToList()
+                Metadata = contentType.Metadata.Select(md => jsonSerializer.ToJson(md)).ToList()
             };
             return package;
         }

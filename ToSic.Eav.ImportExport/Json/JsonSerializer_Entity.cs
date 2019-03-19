@@ -19,7 +19,7 @@ namespace ToSic.Eav.ImportExport.Json
             Entity = ToJson(entity, metadataDepth, Log)
         }, JsonSerializerSettings());
 
-        public static JsonEntity ToJson(IEntity entity, int metadataDepth = 0, Log parentLog = null)
+        public JsonEntity ToJson(IEntity entity, int metadataDepth = 0, Log parentLog = null)
         {
             var log = new Log("Jsn.Serlzr", parent: parentLog, className:"JsonSerializer");
             var wrapLog = log.Call("ToJson", $"id:{entity?.EntityId}, meta-depth:{metadataDepth}");
@@ -34,7 +34,7 @@ namespace ToSic.Eav.ImportExport.Json
             if (entity.MetadataFor.IsMetadata)
                 mddic = new JsonMetadataFor
                 {
-                    Target = Factory.Resolve<IGlobalMetadataProvider>().GetType(entity.MetadataFor.TargetType),
+                    Target = GetMetadataName(entity.MetadataFor.TargetType),// Factory.Resolve<IGlobalMetadataProvider>().GetType(entity.MetadataFor.TargetType),
                     Guid = entity.MetadataFor.KeyGuid,
                     Number = entity.MetadataFor.KeyNumber,
                     String = entity.MetadataFor.KeyString
