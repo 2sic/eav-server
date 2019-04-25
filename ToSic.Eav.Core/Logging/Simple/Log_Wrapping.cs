@@ -20,5 +20,17 @@ namespace ToSic.Eav.Logging.Simple
                 entry.AppendResult(message);
             };
         }
+
+        private Func<string, T, T> Wrapper<T>(string open)
+        {
+            var entry = AddEntry(open);
+            WrapDepth++;
+            return (message, result) =>
+            {
+                WrapDepth--;
+                entry.AppendResult(message);
+                return result;
+            };
+        }
     }
 }

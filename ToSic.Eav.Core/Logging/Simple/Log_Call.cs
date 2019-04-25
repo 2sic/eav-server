@@ -16,5 +16,12 @@ namespace ToSic.Eav.Logging.Simple
         public Action<string> Call(string methodName, Func<string> @params, Func<string> message = null)
             => Call(methodName, Try(@params), message != null ? Try(message) : null);
 
+
+        /// <summary>
+        /// Add a log entry for method call, returning a method to call when done
+        /// </summary>
+        public Func<string, T, T> Call<T>(string methodName, string @params = null, string message = null)
+            => Wrapper<T>($"{methodName}({@params}) {message}");
+
     }
 }

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2020
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.202
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav", "ToSic.Eav\ToSic.Eav.csproj", "{CF3B9349-8C66-4901-8EDB-A4EC1D75326B}"
 EndProject
@@ -25,7 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToSic.Eav.Persistence.Efc",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.Persistence.Efc.Tests", "ToSic.Eav.Persistence.EFC11.Tests\ToSic.Eav.Persistence.Efc.Tests.csproj", "{EB8491A7-4147-4A18-AC74-CD1BE957FF48}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2sxc Dnn WebApi", "..\2sxc-dnn742\Website\DesktopModules\ToSIC_SexyContent\Sxc WebApi\2sxc Dnn WebApi.csproj", "{2F0610DE-2518-4FC8-823E-7228DD17C04F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2sxc.WebApi (Dnn)", "..\2sxc-dnn742\Website\DesktopModules\ToSIC_SexyContent\Sxc WebApi\2sxc.WebApi (Dnn).csproj", "{2F0610DE-2518-4FC8-823E-7228DD17C04F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2sxc Razor", "..\2sxc-dnn742\Website\DesktopModules\ToSIC_SexyContent\2Sexy Content Razor\2sxc Razor.csproj", "{78A558AF-F274-4E3C-95FE-8DE9226E0EBC}"
 EndProject
@@ -52,6 +52,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2sxc Dnn", "..\2sxc-dnn742\Website\DesktopModules\ToSIC_SexyContent\2sxc Dnn\2sxc Dnn.csproj", "{A94DE6D7-D1E6-4BE2-B5B5-DC4A6A61CD80}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2sxc core tests (ToSic.Sxc.Tests)", "..\2sxc-dnn742\Website\DesktopModules\ToSIC_SexyContent\ToSic.Sxc.Tests\2sxc core tests (ToSic.Sxc.Tests).csproj", "{0EA1085A-D15F-4254-8A79-DE811C47EBF4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2sxc.WebApi.Tests", "..\2sxc-dnn742\Website\DesktopModules\ToSIC_SexyContent\2sxc.WebApi.Tests\2sxc.WebApi.Tests.csproj", "{000D1ACB-7247-42CF-A86F-987A0AF68BA1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1443,12 +1445,68 @@ Global
 		{0EA1085A-D15F-4254-8A79-DE811C47EBF4}.Release|Windows-x64.Build.0 = Release|Any CPU
 		{0EA1085A-D15F-4254-8A79-DE811C47EBF4}.Release|Windows-x86.ActiveCfg = Release|Any CPU
 		{0EA1085A-D15F-4254-8A79-DE811C47EBF4}.Release|Windows-x86.Build.0 = Release|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Dbg Testing|Android.ActiveCfg = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Dbg Testing|Android.Build.0 = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Dbg Testing|Any CPU.ActiveCfg = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Dbg Testing|Any CPU.Build.0 = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Dbg Testing|DNN.ActiveCfg = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Dbg Testing|DNN.Build.0 = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Dbg Testing|iOS.ActiveCfg = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Dbg Testing|iOS.Build.0 = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Dbg Testing|Windows-ARM.ActiveCfg = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Dbg Testing|Windows-ARM.Build.0 = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Dbg Testing|Windows-x64.ActiveCfg = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Dbg Testing|Windows-x64.Build.0 = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Dbg Testing|Windows-x86.ActiveCfg = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Dbg Testing|Windows-x86.Build.0 = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.debug eav only|Android.ActiveCfg = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.debug eav only|Android.Build.0 = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.debug eav only|Any CPU.ActiveCfg = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.debug eav only|Any CPU.Build.0 = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.debug eav only|DNN.ActiveCfg = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.debug eav only|DNN.Build.0 = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.debug eav only|iOS.ActiveCfg = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.debug eav only|iOS.Build.0 = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.debug eav only|Windows-ARM.ActiveCfg = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.debug eav only|Windows-ARM.Build.0 = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.debug eav only|Windows-x64.ActiveCfg = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.debug eav only|Windows-x64.Build.0 = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.debug eav only|Windows-x86.ActiveCfg = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.debug eav only|Windows-x86.Build.0 = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Debug|Android.ActiveCfg = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Debug|Android.Build.0 = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Debug|DNN.ActiveCfg = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Debug|DNN.Build.0 = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Debug|iOS.ActiveCfg = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Debug|iOS.Build.0 = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Debug|Windows-ARM.ActiveCfg = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Debug|Windows-ARM.Build.0 = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Debug|Windows-x64.ActiveCfg = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Debug|Windows-x64.Build.0 = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Debug|Windows-x86.ActiveCfg = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Debug|Windows-x86.Build.0 = Debug|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Release|Android.ActiveCfg = Release|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Release|Android.Build.0 = Release|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Release|DNN.ActiveCfg = Release|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Release|DNN.Build.0 = Release|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Release|iOS.ActiveCfg = Release|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Release|iOS.Build.0 = Release|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Release|Windows-ARM.ActiveCfg = Release|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Release|Windows-ARM.Build.0 = Release|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Release|Windows-x64.ActiveCfg = Release|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Release|Windows-x64.Build.0 = Release|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Release|Windows-x86.ActiveCfg = Release|Any CPU
+		{000D1ACB-7247-42CF-A86F-987A0AF68BA1}.Release|Windows-x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35;packages\Unity.2.1.505.0\lib\NET35
 		SolutionGuid = {705647E1-B5B1-4D94-888C-1D918095554C}
+		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35;packages\Unity.2.1.505.0\lib\NET35
 	EndGlobalSection
 EndGlobal
