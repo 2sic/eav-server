@@ -41,18 +41,25 @@ namespace ToSic.Eav.Apps.Parts
         /// <returns></returns>
         public List<InputTypeInfo> GetInputTypes()
         {
+            var wraplog = Log.Call("GetInputTypes");
             // Initial list is the global, file-system based types
             var globalDef = GetGlobalInputTypesBasedOnContentTypes();
+            Log.Add($"in global {globalDef.Count}");
 
             // Merge input types registered in this app
             var inputTypes = GetAppRegisteredInputTypes();
+            Log.Add($"in app {inputTypes.Count}");
             AddMissingTypes(globalDef, inputTypes);
+            Log.Add($"combined {inputTypes.Count}");
 
             // Merge input types registered in global metadata-app
             var systemDef = new AppRuntime(Constants.MetaDataAppId, Log);
             var systemInputTypes = systemDef.ContentTypes.GetAppRegisteredInputTypes();
+            Log.Add($"in system {systemInputTypes.Count}");
             AddMissingTypes(systemInputTypes, inputTypes);
+            Log.Add($"combined {inputTypes.Count}");
 
+            wraplog($"found {inputTypes.Count}");
             return inputTypes;
         }
 

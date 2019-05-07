@@ -18,17 +18,29 @@ namespace ToSic.Eav.ImportExport.Serializers
 
         public AppDataPackage App
         {
-            get => _app ?? throw new Exception("cannot use app in serializer without initializing it first, make sure you call Initialize(...)");
-            set => _app = value;
+            get => AppPackageOrNull ?? throw new Exception("cannot use app in serializer without initializing it first, make sure you call Initialize(...)");
+            set => AppPackageOrNull = value;
         }
-        private AppDataPackage _app;
-        protected AppDataPackage AppPackageOrNull => _app;
+        protected AppDataPackage AppPackageOrNull { get; private set; }
+
+        public bool PreferLocalAppTypes = false;
 
         public IContentType GetContentType(string staticName)
-            => Global.FindContentType(staticName) // note: will return null if not found
-               ?? (_types != null
-                   ? _types.FirstOrDefault(t => t.StaticName == staticName)
-                   : App.GetContentType(staticName)); // only use the App if really necessary...
+        {
+            // If local type is preferred, use the App accessor,
+            // this will also check the global types internally
+            // ReSharper disable once InvertIf
+            if (PreferLocalAppTypes)
+            {
+                var type = App.GetContentType(staticName);
+                if (type != null) return type;
+            }
+
+            return Global.FindContentType(staticName) // note: will return null if not found
+                       ?? (_types != null
+                           ? _types.FirstOrDefault(t => t.StaticName == staticName)
+                           : App.GetContentType(staticName));
+        }
 
         public void Initialize(AppDataPackage app, Log parentLog)
         {
