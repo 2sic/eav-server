@@ -18,8 +18,9 @@ namespace ToSic.Eav.ImportExport.Json
             => Deserialize(UnpackAndTestGenericJsonV1(serialized).Entity, allowDynamic, skipUnknownType);
 
 
-        private static JsonFormat UnpackAndTestGenericJsonV1(string serialized)
+        private JsonFormat UnpackAndTestGenericJsonV1(string serialized)
         {
+            var wrapLog = Log.Call("UnpackAndTestGenericJsonV1");
             JsonFormat jsonObj;
             try
             {
@@ -27,20 +28,23 @@ namespace ToSic.Eav.ImportExport.Json
             }
             catch (Exception ex)
             {
-                throw new FormatException("cannot deserialize json - bad format", ex);
+                const string msg = "cannot deserialize json - bad format";
+                wrapLog(msg);
+                throw new FormatException(msg, ex);
             }
 
             if (jsonObj._.V != 1)
                 throw new ArgumentOutOfRangeException(nameof(serialized), "unexpected format version");
+            wrapLog("ok");
             return jsonObj;
         }
 
         public IEntity Deserialize(JsonEntity jEnt, bool allowDynamic, bool skipUnknownType)
         {
-            Log.Add($"deserializing {jEnt.Guid} with allowDyn:{allowDynamic} skipUnknown:{skipUnknownType}");
+            var wrapLog = Log.Call("Deserialize", $"guid: {jEnt.Guid}; allowDynamic:{allowDynamic} skipUnknown:{skipUnknownType}");
 
             // get type def - use dynamic if dynamic is allowed OR if we'll skip unknown types
-            IContentType contentType = GetContentType(jEnt.Type.Id)
+            var contentType = GetContentType(jEnt.Type.Id)
                                        ?? (allowDynamic || skipUnknownType
                                            ? ContentTypeBuilder.DynamicContentType(AppId, jEnt.Type.Name, jEnt.Type.Id)
                                            : throw new FormatException(
@@ -53,18 +57,21 @@ namespace ToSic.Eav.ImportExport.Json
             if (jEnt.For != null)
             {
                 var md = jEnt.For;
-                ismeta.TargetType = Factory.Resolve<IGlobalMetadataProvider>().GetType(md.Target);
+                Log.Add($"this is metadata; will construct 'For' object. Type: {md.Target}");
+                ismeta.TargetType = GetMetadataNumber(md.Target);// Factory.Resolve<IGlobalMetadataProvider>().GetType(md.Target);
                 ismeta.KeyGuid = md.Guid;
                 ismeta.KeyNumber = md.Number;
                 ismeta.KeyString = md.String;
             }
 
+            Log.Add("build entity");
             var newEntity = EntityBuilder.EntityFromRepository(AppId, jEnt.Guid, jEnt.Id, jEnt.Id, ismeta, contentType, true,
                 AppPackageOrNull, DateTime.Now, jEnt.Owner, jEnt.Version);
 
             // check if metadata was included
             if (jEnt.Metadata != null)
             {
+                Log.Add("found more metadata, will deserialize");
                 var mdItems = jEnt.Metadata
                     .Select(m => Deserialize(m, allowDynamic, skipUnknownType))
                     .ToList();
@@ -82,11 +89,13 @@ namespace ToSic.Eav.ImportExport.Json
             else
                 BuildAttribsOfKnownType(jEnt.Attributes, contentType, newEntity);
 
+            wrapLog("ok");
             return newEntity;
         }
 
         private void BuildAttribsOfUnknownContentType(JsonAttributes jAtts, Entity newEntity)
         {
+            var wrapLog = Log.Call("BuildAttribsOfUnknownContentType");
             BuildAttrib(jAtts.DateTime, AttributeTypeEnum.DateTime, newEntity);
             BuildAttrib(jAtts.Boolean, AttributeTypeEnum.Boolean, newEntity);
             BuildAttrib(jAtts.Custom, AttributeTypeEnum.Custom, newEntity);
@@ -94,6 +103,7 @@ namespace ToSic.Eav.ImportExport.Json
             BuildAttrib(jAtts.Hyperlink, AttributeTypeEnum.Hyperlink, newEntity);
             BuildAttrib(jAtts.Number, AttributeTypeEnum.Number, newEntity);
             BuildAttrib(jAtts.String, AttributeTypeEnum.String, newEntity);
+            wrapLog("ok");
         }
 
         private void BuildAttrib<T>(Dictionary<string, Dictionary<string, T>> list, AttributeTypeEnum type, Entity newEntity)
@@ -110,6 +120,7 @@ namespace ToSic.Eav.ImportExport.Json
 
         private void BuildAttribsOfKnownType(JsonAttributes jAtts, IContentType contentType, Entity newEntity)
         {
+            var wrapLog = Log.Call("BuildAttribsOfKnownType");
             foreach (var definition in contentType.Attributes)
             {
                 var newAtt = ((AttributeDefinition) definition).CreateAttribute();
@@ -154,6 +165,7 @@ namespace ToSic.Eav.ImportExport.Json
                 if (definition.IsTitle)
                     newEntity.SetTitleField(definition.Name);
             }
+            wrapLog("ok");
         }
 
         private void BuildValues<T>(Dictionary<string, Dictionary<string, T>> list, IAttributeDefinition attrDef, IAttribute target)

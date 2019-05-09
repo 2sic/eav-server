@@ -16,9 +16,14 @@ namespace ToSic.Eav.ImportExport.Json
         }
 
         public static JsonContentType ToJson(IContentType contentType)
+            => ToJson(contentType, false);
+
+        public static JsonContentType ToJson(IContentType contentType, bool includeSharedTypes)
         {
             var sharableCt = contentType as IUsesSharedDefinition;
             JsonContentTypeShareable jctShare = null;
+
+            var jsonSerializer = new JsonSerializer();
 
             var attribs = contentType.Attributes.OrderBy(a => a.SortOrder).Select(attrib => new JsonAttributeDefinition
             {
@@ -26,14 +31,17 @@ namespace ToSic.Eav.ImportExport.Json
                 Type = attrib.Type,
                 IsTitle = attrib.IsTitle,
                 Metadata = attrib.Metadata
-                    ?.Select(dt => ToJson(dt)) /* important: must write the method with params, otherwise default param metadata = 1 instead of 0*/
+                    ?.Select(dt => jsonSerializer.ToJson(dt)) /* important: must write the method with params, otherwise default param metadata = 1 instead of 0*/
                     .ToList()
             }).ToList();
 
             // clean up metadata info on this metadata list, as it's already packed inside something it's related to
             attribs.Where(a => a.Metadata != null).SelectMany(a => a.Metadata).ToList().ForEach(e => e.For = null);
 
-            if (sharableCt != null && (sharableCt.AlwaysShareConfiguration || sharableCt.ParentId.HasValue && sharableCt.ParentId != Constants.SystemContentTypeFakeParent))
+            var typeIsShared = sharableCt != null && (sharableCt.AlwaysShareConfiguration ||
+                                                      sharableCt.ParentId.HasValue && sharableCt.ParentId !=
+                                                      Constants.SystemContentTypeFakeParent);
+            if (typeIsShared && !includeSharedTypes /*sharableCt != null && (sharableCt.AlwaysShareConfiguration || sharableCt.ParentId.HasValue && sharableCt.ParentId != Constants.SystemContentTypeFakeParent)*/)
             {
                 // if it's a shared type, flush definition as we won't include it
                 if (sharableCt.ParentId.HasValue)
@@ -55,7 +63,7 @@ namespace ToSic.Eav.ImportExport.Json
                 Description = contentType.Description,
                 Attributes = attribs,
                 Sharing = jctShare,
-                Metadata = contentType.Metadata.Select(md => ToJson(md)).ToList()
+                Metadata = contentType.Metadata.Select(md => jsonSerializer.ToJson(md)).ToList()
             };
             return package;
         }

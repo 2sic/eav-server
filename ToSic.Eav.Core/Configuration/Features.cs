@@ -47,8 +47,10 @@ namespace ToSic.Eav.Configuration
 
         public static bool EnabledOrException(IEnumerable<Guid> features, string message, out FeaturesDisabledException exception)
         {
+            // ReSharper disable PossibleMultipleEnumeration
             var enabled = Enabled(features);
             exception = enabled ? null : new FeaturesDisabledException(message, features);
+            // ReSharper restore PossibleMultipleEnumeration
             return enabled;
         }
 
@@ -96,6 +98,7 @@ namespace ToSic.Eav.Configuration
                         catch { /* ignore */ }
                     }
 
+                    // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                     if (Valid || AllowUnsignedFeatures)
                     {
                         FeatureListWithFingerprint feats2 = null;
@@ -108,6 +111,7 @@ namespace ToSic.Eav.Configuration
                             if (fingerprint != Fingerprint.System)
                                 Valid = false;
 
+                            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                             if (Valid || AllowUnsignedFeatures)
                                 feats = feats2;
                         }
@@ -167,7 +171,11 @@ namespace ToSic.Eav.Configuration
             // Beta features
             new Feature(FeatureIds.PasteImageClipboard, true, true),
             new Feature(FeatureIds.Angular5Ui, false,false),
-            new Feature(FeatureIds.WysiwygPasteFormatted, true, true)
+            new Feature(FeatureIds.WysiwygPasteFormatted, true, true),
+
+            // 2sxc 9.43+
+            new Feature(FeatureIds.PreferOldFormsToNewAngularUI, true, true),
+            new Feature(FeatureIds.WebApiOptionsAllowLocal, true, true)
         });
 
 

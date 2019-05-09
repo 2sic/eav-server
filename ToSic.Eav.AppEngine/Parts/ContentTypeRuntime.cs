@@ -41,18 +41,25 @@ namespace ToSic.Eav.Apps.Parts
         /// <returns></returns>
         public List<InputTypeInfo> GetInputTypes()
         {
+            var wraplog = Log.Call("GetInputTypes");
             // Initial list is the global, file-system based types
             var globalDef = GetGlobalInputTypesBasedOnContentTypes();
+            Log.Add($"in global {globalDef.Count}");
 
             // Merge input types registered in this app
             var inputTypes = GetAppRegisteredInputTypes();
+            Log.Add($"in app {inputTypes.Count}");
             AddMissingTypes(globalDef, inputTypes);
+            Log.Add($"combined {inputTypes.Count}");
 
             // Merge input types registered in global metadata-app
             var systemDef = new AppRuntime(Constants.MetaDataAppId, Log);
             var systemInputTypes = systemDef.ContentTypes.GetAppRegisteredInputTypes();
+            Log.Add($"in system {systemInputTypes.Count}");
             AddMissingTypes(systemInputTypes, inputTypes);
+            Log.Add($"combined {inputTypes.Count}");
 
+            wraplog($"found {inputTypes.Count}");
             return inputTypes;
         }
 
@@ -74,18 +81,22 @@ namespace ToSic.Eav.Apps.Parts
         /// <returns></returns>
         private List<InputTypeInfo> GetAppRegisteredInputTypes()
             => App.Entities.Get(Constants.TypeForInputTypeDefinition)
-            .Select(e => new InputTypeInfo(
-                e.GetBestValue<string>(Constants.InputTypeType), 
-                e.GetBestValue<string>(Constants.InputTypeLabel),
-                e.GetBestValue<string>(Constants.InputTypeDescription),
-                e.GetBestValue<string>(Constants.InputTypeAssets),
-                e.GetBestValue<bool>(Constants.InputTypeDisableI18N)))
-            .ToList();
+                .Select(e => new InputTypeInfo(
+                    e.GetBestValue<string>(Constants.InputTypeType),
+                    e.GetBestValue<string>(Constants.InputTypeLabel),
+                    e.GetBestValue<string>(Constants.InputTypeDescription),
+                    e.GetBestValue<string>(Constants.InputTypeAssets),
+                    e.GetBestValue<bool>(Constants.InputTypeDisableI18N),
+                    e.GetBestValue<string>(Constants.InputTypeAngularAssets),
+                    e.GetBestValue<string>(Constants.InputTypeAngularMode),
+                    e.GetBestValue<bool>(Constants.InputTypeUseAdam)
+                ))
+                .ToList();
 
         private const string FieldTypePrefix = "@";
 
         /// <summary>
-        /// Build a list of global (json) input-types
+        /// Build a list of global (json) Content-Types and their metadata
         /// </summary>
         /// <returns></returns>
         private static List<InputTypeInfo> GetGlobalInputTypesBasedOnContentTypes()
@@ -101,7 +112,10 @@ namespace ToSic.Eav.Apps.Parts
                     it.Metadata.GetBestValue<string>(Constants.InputTypeLabel, typesToCheckInThisOrder),
                     it.Metadata.GetBestValue<string>(Constants.InputTypeDescription, typesToCheckInThisOrder),
                     it.Metadata.GetBestValue<string>(Constants.InputTypeAssets, Constants.TypeForInputTypeDefinition),
-                    it.Metadata.GetBestValue<bool>(Constants.InputTypeDisableI18N, Constants.TypeForInputTypeDefinition)
+                    it.Metadata.GetBestValue<bool>(Constants.InputTypeDisableI18N, Constants.TypeForInputTypeDefinition),
+                    it.Metadata.GetBestValue<string>(Constants.InputTypeAngularAssets, Constants.TypeForInputTypeDefinition),
+                    it.Metadata.GetBestValue<string>(Constants.InputTypeAngularMode, Constants.TypeForInputTypeDefinition),
+                    it.Metadata.GetBestValue<bool>(Constants.InputTypeUseAdam, Constants.TypeForInputTypeDefinition)
                 ))
                 .ToList();
             return retyped;
