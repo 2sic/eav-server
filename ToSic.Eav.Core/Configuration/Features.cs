@@ -170,12 +170,12 @@ namespace ToSic.Eav.Configuration
 
             // Beta features
             new Feature(FeatureIds.PasteImageClipboard, true, true),
-            new Feature(FeatureIds.Angular5Ui, false,false),
+            //new Feature(FeatureIds.Angular5Ui, false,false),
             new Feature(FeatureIds.WysiwygPasteFormatted, true, true),
 
             // 2sxc 9.43+
-            new Feature(FeatureIds.PreferOldFormsToNewAngularUI, true, true),
-            new Feature(FeatureIds.WebApiOptionsAllowLocal, true, true)
+            new Feature(FeatureIds.PreferOldFormsToNewAngularUi, true, true),
+            new Feature(FeatureIds.WebApiOptionsAllowLocal, true, false)
         });
 
 

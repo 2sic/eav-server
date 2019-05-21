@@ -16,6 +16,7 @@
                 case "jpgx":
                 case "jpeg":
                 case "gif":
+                case "svg":
                     return Image;
                 case "doc":
                 case "docx":
