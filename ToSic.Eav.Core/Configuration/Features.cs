@@ -174,7 +174,7 @@ namespace ToSic.Eav.Configuration
             new Feature(FeatureIds.WysiwygPasteFormatted, true, true),
 
             // 2sxc 9.43+
-            new Feature(FeatureIds.PreferOldFormsToNewAngularUi, true, true),
+            new Feature(FeatureIds.EditFormPreferAngularJs, true, true),
             new Feature(FeatureIds.WebApiOptionsAllowLocal, true, false)
         });
 

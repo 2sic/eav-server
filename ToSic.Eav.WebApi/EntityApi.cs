@@ -78,12 +78,32 @@ namespace ToSic.Eav.WebApi
         {
             ReplaceSimpleTypeNames(items);
 
-            var list = items.Select(p => new BundleIEntity
+            var list = items.Select(p =>
             {
-                Header = p,
-                Entity = p.EntityId != 0 || p.DuplicateEntity.HasValue
-                    ? GetEditableEditionAndMaybeCloneIt(p)
-                    : null
+                var ent = p.EntityId != 0 || p.DuplicateEntity.HasValue
+                        ? GetEditableEditionAndMaybeCloneIt(p)
+                        : null;
+                if (p.Metadata == null && ent.MetadataFor != null)
+                {
+                    var mdFor = ent.MetadataFor;
+                    var md = new Metadata()
+                    {
+                        Key = mdFor.KeyNumber?.ToString()
+                        ?? mdFor.KeyGuid?.ToString()
+                        ?? mdFor.KeyString,
+                        TargetType = ent.MetadataFor.TargetType,
+                        //KeyType =
+                    };
+                    if (mdFor.KeyNumber != null) md.KeyType = "number";
+                    if (mdFor.KeyGuid != null) md.KeyType = "guid";
+                    if (mdFor.KeyString != null) md.KeyType = "string";
+                    p.Metadata = md;
+                }
+                return new BundleIEntity
+                {
+                    Header = p,
+                    Entity = ent
+                };
             }).ToList();
 
             // make sure the header has the right "new" guid as well - as this is the primary one to work with
