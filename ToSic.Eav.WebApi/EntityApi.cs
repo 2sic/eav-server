@@ -83,22 +83,22 @@ namespace ToSic.Eav.WebApi
                 var ent = p.EntityId != 0 || p.DuplicateEntity.HasValue
                         ? GetEditableEditionAndMaybeCloneIt(p)
                         : null;
-                if (p.Metadata == null && ent?.MetadataFor != null)
-                {
-                    var mdFor = ent.MetadataFor;
-                    var md = new Metadata()
-                    {
-                        Key = mdFor.KeyNumber?.ToString()
-                        ?? mdFor.KeyGuid?.ToString()
-                        ?? mdFor.KeyString,
-                        TargetType = ent.MetadataFor.TargetType,
-                        //KeyType =
-                    };
-                    if (mdFor.KeyNumber != null) md.KeyType = "number";
-                    if (mdFor.KeyGuid != null) md.KeyType = "guid";
-                    if (mdFor.KeyString != null) md.KeyType = "string";
-                    p.Metadata = md;
-                }
+                //if (p.Metadata == null && ent?.MetadataFor != null)
+                //{
+                //    var mdFor = ent.MetadataFor;
+                //    var md = new Metadata()
+                //    {
+                //        Key = mdFor.KeyNumber?.ToString()
+                //        ?? mdFor.KeyGuid?.ToString()
+                //        ?? mdFor.KeyString,
+                //        TargetType = ent.MetadataFor.TargetType,
+                //        //KeyType =
+                //    };
+                //    if (mdFor.KeyNumber != null) md.KeyType = "number";
+                //    if (mdFor.KeyGuid != null) md.KeyType = "guid";
+                //    if (mdFor.KeyString != null) md.KeyType = "string";
+                //    p.Metadata = md;
+                //}
                 return new BundleIEntity
                 {
                     Header = p,
