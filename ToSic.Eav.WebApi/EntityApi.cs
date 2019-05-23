@@ -83,7 +83,7 @@ namespace ToSic.Eav.WebApi
                 var ent = p.EntityId != 0 || p.DuplicateEntity.HasValue
                         ? GetEditableEditionAndMaybeCloneIt(p)
                         : null;
-                if (p.Metadata == null && ent.MetadataFor != null)
+                if (p.Metadata == null && ent?.MetadataFor != null)
                 {
                     var mdFor = ent.MetadataFor;
                     var md = new Metadata()
