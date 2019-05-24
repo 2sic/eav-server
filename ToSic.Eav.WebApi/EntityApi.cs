@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
@@ -92,11 +93,16 @@ namespace ToSic.Eav.WebApi
 
             // make sure the header has the right "new" guid as well - as this is the primary one to work with
             // it is really important to use the header guid, because sometimes the entity does not exist - so it doesn't have a guid either
-            foreach (var i in list.Where(i => i.Header.Guid == Guid.Empty).ToArray()
-            ) // must do toarray, to prevent re-checking after setting the guid
-                i.Header.Guid = i.Entity != null && i.Entity.EntityGuid != Guid.Empty
+            var itemsToCorrect = list.Where(i => i.Header.Guid == Guid.Empty).ToArray(); // must do toarray, to prevent re-checking after setting the guid
+            foreach (var i in itemsToCorrect)
+            {
+                var useExisting = i.Entity != null && i.Entity.EntityGuid != Guid.Empty;
+                i.Header.Guid = useExisting // i.Entity != null && i.Entity.EntityGuid != Guid.Empty
                     ? i.Entity.EntityGuid
                     : Guid.NewGuid();
+                if (!useExisting)
+                    (i.Entity as Entity).SetGuid(i.Header.Guid);
+            }
 
             foreach (var itm in list.Where(i => i.Header.ContentTypeName == null && i.Entity != null))
                 itm.Header.ContentTypeName = itm.Entity.Type.StaticName;
