@@ -28,6 +28,9 @@ namespace ToSic.Eav.WebApi.Formats
         public Metadata Metadata { get; set; }
 
 
+        // 2019-05-23 new for 2sxc 10
+        public JsonMetadataFor For { get; set; }
+
         /// <summary>
         /// Group information, for items which are coming from a group and not using direct IDs
         /// This also contains information about 
