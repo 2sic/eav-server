@@ -189,5 +189,20 @@ namespace ToSic.Eav
 
         public const int TransientAppId = -9999;
         public const int SystemContentTypeFakeParent = -9203503; // just a very strange, dummy number
+
+        #region Parameter protection
+        // Special constant to protect functions which should use named parameters
+        public const string RandomProtectionParameter = "random-y023n";
+        // ReSharper disable once UnusedParameter.Local
+        public static void ProtectAgainstMissingParameterNames(string criticalParameter, string protectedMethod, string paramNames)
+        {
+            if (criticalParameter == null || criticalParameter != RandomProtectionParameter)
+                throw new Exception($"when using '{protectedMethod}' you must use named parameters " +
+                                    "- otherwise you are relying on the parameter order staying the same. " +
+                                    $"this command experts params like {paramNames}");
+        }
+
+
+        #endregion
     }
 }
