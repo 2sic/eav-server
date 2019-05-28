@@ -14,6 +14,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug eav only|AnyCPU'" />
 
   <ItemGroup>
+    <Compile Remove="Security\**" />
+    <EmbeddedResource Remove="Security\**" />
+    <None Remove="Security\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj" />
     <ProjectReference Include="..\ToSic.Eav.DataSources\ToSic.Eav.DataSources.csproj" />
     <ProjectReference Include="..\ToSic.Eav.ImportExport\ToSic.Eav.ImportExport.csproj" />
@@ -28,7 +34,6 @@
 
   <ItemGroup>
     <Folder Include="Assets\Adam\" />
-    <Folder Include="Security\" />
   </ItemGroup>
 
   <ItemGroup>
