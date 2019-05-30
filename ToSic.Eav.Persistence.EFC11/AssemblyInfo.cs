@@ -29,8 +29,7 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-//[assembly: AssemblyVersion("4.5.0.0")]
-// [assembly: AssemblyFileVersion("4.5.0.*")]
+[assembly: AssemblyVersion("10.01.00.*")]
 
 [assembly: InternalsVisibleTo("ToSic.Eav.Persistence.Efc.Tests")]
 [assembly: InternalsVisibleTo("ToSic.Testing.Performance")]
