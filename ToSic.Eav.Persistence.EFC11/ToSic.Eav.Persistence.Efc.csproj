@@ -5,8 +5,8 @@
     <AssemblyName>ToSic.Eav.Persistence.Efc</AssemblyName>
     <RootNamespace>ToSic.Eav.Persistence.Efc</RootNamespace>
     <Configurations>Debug;Release;Dbg Testing</Configurations>
-    <AssemblyVersion>10.01.00.0</AssemblyVersion>
-    <FileVersion>10.01.00.0</FileVersion>
+    <AssemblyVersion>10.02.00.0</AssemblyVersion>
+    <FileVersion>10.02.00.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='efc and WebApi|AnyCPU'" />
