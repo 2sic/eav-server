@@ -13,10 +13,13 @@ namespace ToSic.Eav.Security.Permissions
         /// <returns></returns>
         private bool VerifyConditionApplies(IEntity permissionEntity)
         {
+            //var wrapLog = Log.Call<bool>("VerifyConditionApplies");
             try
             {
                 // check general permissions
-                var condition = permissionEntity.GetBestValue(/*Constants.PermissionCondition*/ Permission.FieldCondition).ToString();
+                var condition = permissionEntity.GetBestValue<string>(Permission.FieldCondition);
+                var identity = permissionEntity.GetBestValue<string>(Permission.FieldIdentity);
+                Log.Add($"condition:{condition}, identity:{identity}");
 
                 // check custom permission based on the user Guid or owner
                 if (User.Guid != null)
@@ -26,7 +29,6 @@ namespace ToSic.Eav.Security.Permissions
                         return IsGrantedBecause(ConditionType.Identity);
 
                     // check if an identity was provided
-                    var identity = permissionEntity.GetBestValue(/*Constants.PermissionIdentity*/ Permission.FieldIdentity).ToString();
                     if (!string.IsNullOrWhiteSpace(identity))
                     {
                         if (VerifyUserIsThisUser(identity, User))
@@ -46,7 +48,7 @@ namespace ToSic.Eav.Security.Permissions
             }
             catch
             {
-                // something happened, in this case we assume that this rule cannot described a "is allowed"
+                // something happened, in this case we assume that this rule doesn't grant anything
                 return false;
             }
         }
@@ -58,7 +60,7 @@ namespace ToSic.Eav.Security.Permissions
         }
 
         /// <summary>
-        /// Verify if the permission referrs to this user
+        /// Verify if the permission refers to this user
         /// Note that this only works if the feature is enabled
         /// </summary>
         private static bool VerifyUserIsThisUser(string identity, IUser user)
@@ -93,8 +95,6 @@ namespace ToSic.Eav.Security.Permissions
         /// Verify that the permission is for owners, and the user is the item owner
         /// </summary>
         private static bool VerifyUserIsItemOwner(string condition, IEntity item, IUser user)
-            => condition == /*Constants.PermissionKeyOwner*/ Permission.FieldOwner
-               && item?.Owner == user.IdentityToken;
-
+            => condition == Permission.FieldOwner && item?.Owner == user.IdentityToken;
     }
 }
