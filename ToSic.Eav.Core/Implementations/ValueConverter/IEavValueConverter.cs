@@ -14,10 +14,9 @@ namespace ToSic.Eav.Implementations.ValueConverter
         /// <summary>
         /// Resolve a reference to a value using the environment resolver
         /// </summary>
-        /// <param name="appId">App which contains the item</param>
         /// <param name="itemGuid">Guid of this item</param>
         /// <param name="reference">Reference code (or something else) - if not a code, will not resolve</param>
         /// <returns></returns>
-        string ToValue(int appId, Guid itemGuid, string reference);
+        string ToValue(Guid itemGuid, string reference);
     }
 }

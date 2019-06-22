@@ -160,7 +160,7 @@ namespace ToSic.Eav.Data
             }
 
             if (resolveHyperlinks && attribute?.Type == Constants.DataTypeHyperlink && result is string strResult)
-                result = TryToResolveLink(AppId, EntityGuid, strResult);
+                result = TryToResolveLink(EntityGuid, strResult);
 
             return result;
         }

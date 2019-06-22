@@ -109,7 +109,7 @@ namespace ToSic.Eav.Data
             }
 
             if (resolveHyperlinks && result is string strResult)
-                result = TryToResolveLink(AppId, EntityGuid, strResult);
+                result = TryToResolveLink(EntityGuid, strResult);
 
             // map any kind of number to the one format used in other code-checks: decimal
             if (result is short
@@ -178,8 +178,8 @@ namespace ToSic.Eav.Data
             }
         }
 
-        protected static string TryToResolveLink(int appId, Guid itemGuid, string result) 
-            => Factory.Resolve<IEavValueConverter>().ToValue(appId, itemGuid, result);
+        protected static string TryToResolveLink(Guid itemGuid, string result) 
+            => Factory.Resolve<IEavValueConverter>().ToValue(itemGuid, result);
 
         /// <inheritdoc />
 	    public string GetBestTitle() => GetBestTitle(0);
