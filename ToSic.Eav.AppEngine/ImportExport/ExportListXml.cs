@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using ToSic.Eav.App;
@@ -39,7 +40,7 @@ namespace ToSic.Eav.Apps.ImportExport
             if (ContentType == null) 
                 return null;
 
-            // build two emtpy nodes for easier filling in by the user
+            // build two empty nodes for easier filling in by the user
             var firstRow = _xBuilder.BuildEntity("", "", ContentType.Name);
             var secondRow = _xBuilder.BuildEntity("", "", ContentType.Name);
             var rootNode = _xBuilder.BuildDocumentWithRoot(firstRow, secondRow);
@@ -134,7 +135,7 @@ namespace ToSic.Eav.Apps.ImportExport
         private static string ValueWithFullFallback(IEntity entity, IAttributeDefinition attribute, string language, string languageFallback, bool resolveLinks, IEavValueConverter resolver)
         {
             var value = entity.GetBestValue(attribute.Name, new []{ language, languageFallback } ).ToString();
-            return ResolveValue(attribute.Type, value, resolveLinks, resolver);
+            return ResolveValue(entity, attribute.Type, value, resolveLinks, resolver);
         }
 
         /// <summary>
@@ -158,7 +159,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             // Option 2: Exact match (non-shared) on no other languages
             if (valueItem.Languages.Count == 0 || valueItem.Languages.Count == 1)
-                return ResolveValue(attribute.Type, valueItem.Serialized, resolveLinks, resolver);
+                return ResolveValue(entity, attribute.Type, valueItem.Serialized, resolveLinks, resolver);
 
             // Option 4 - language is assigned - either shared or Read-only
             var sharedParentLanguages = valueItem.Languages
@@ -171,7 +172,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             // Option 4a - no other parent languages assigned
             if (!sharedParentLanguages.Any()) 
-                return ResolveValue(attribute.Type, valueItem.Serialized, resolveLinks, resolver);
+                return ResolveValue(entity, attribute.Type, valueItem.Serialized, resolveLinks, resolver);
 
             var langsOfValue = valueItem.Languages;
             string primaryLanguageRef = null;
@@ -185,7 +186,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             return primaryLanguageRef != null 
                 ? $"[ref({primaryLanguageRef},{(valueLanguageReadOnly ? XmlConstants.ReadOnly : XmlConstants.ReadWrite)})]" 
-                : ResolveValue(attribute.Type, valueItem.Serialized, resolveLinks, resolver);
+                : ResolveValue(entity, attribute.Type, valueItem.Serialized, resolveLinks, resolver);
         }
 
         internal static IValue GetExactAssignedValue(IAttribute attrib, string language, string languageFallback)
@@ -197,32 +198,39 @@ namespace ToSic.Eav.Apps.ImportExport
             return valueItem;
         }
 
+        /// <summary>
+        /// Append an element to this. The element will have the value of the EavValue. File and page references 
+        /// can optionally be resolved.
+        /// </summary>
+        internal static string ResolveValue(IEntity entity, string attrType, string value, bool resolveLinks, IEavValueConverter resolver) 
+            => ResolveValue(entity.AppId, entity.EntityGuid, attrType, value, resolveLinks, resolver);
+
 
         /// <summary>
         /// Append an element to this. The element will have the value of the EavValue. File and page references 
         /// can optionally be resolved.
         /// </summary>
-        internal static string ResolveValue(string attrType, string value, bool resolveLinks, IEavValueConverter resolver)
+        internal static string ResolveValue(int appId, Guid itemGuid, string attrType, string value, bool resolveLinks, IEavValueConverter resolver)
         {
             if (value == null)
                 return XmlConstants.Null;
             if (value == string.Empty)
                 return XmlConstants.Empty;
             if (resolveLinks)
-                return ResolveHyperlinksFromTenant(value, attrType, resolver);
+                return ResolveHyperlinksFromTenant(appId, itemGuid, value, attrType, resolver);
             return value;
         }
 
         /// <summary>
         /// If the value is a file or page reference, resolve it for example from 
-        /// File:4711 to Content/file4711.jpg. If the reference cannot be reoslved, 
+        /// File:4711 to Content/file4711.jpg. If the reference cannot be resolved, 
         /// the original value will be returned. 
         /// </summary>
-        internal static string ResolveHyperlinksFromTenant(string value, string attrType,
+        internal static string ResolveHyperlinksFromTenant(int appId, Guid itemGuid, string value, string attrType,
             IEavValueConverter resolver)
             => attrType != Constants.DataTypeHyperlink
                 ? value
-                : resolver.Convert(ConversionScenario.GetFriendlyValue, Constants.DataTypeHyperlink, value);
+                : resolver.ToValue(appId, itemGuid,value); // resolver.Convert(ConversionScenario.GetFriendlyValue, Constants.DataTypeHyperlink, value, appId);
 
         #endregion
 

@@ -12,7 +12,7 @@ namespace ToSic.Eav.Data
 
         #region Basic properties like EntityId, Guid, IsPublished etc.
         /// <summary>
-        /// Offical title of this content-item
+        /// Official title of this content-item
         /// </summary>
         public new IAttribute Title => TitleFieldName == null
             ? null
@@ -35,7 +35,7 @@ namespace ToSic.Eav.Data
 
         /// <inheritdoc />
         /// <summary>
-        /// Published/Draft status. If not published, it may be invisble, but there may also be another item visible ATM
+        /// Published/Draft status. If not published, it may be invisible, but there may also be another item visible ATM
         /// </summary>
         public bool IsPublished { get; set; } = true;
 
@@ -75,7 +75,7 @@ namespace ToSic.Eav.Data
 
         /// <inheritdoc />
         /// <summary>
-        /// Shorhand accessor to retrieve an attribute
+        /// Shorthand accessor to retrieve an attribute
         /// </summary>
         /// <param name="attributeName"></param>
         /// <returns></returns>
@@ -159,8 +159,8 @@ namespace ToSic.Eav.Data
                     return GetInternalPropertyByName(attributeName);
             }
 
-            if (resolveHyperlinks && attribute?.Type == Constants.DataTypeHyperlink)
-                result = TryToResolveLink(result);
+            if (resolveHyperlinks && attribute?.Type == Constants.DataTypeHyperlink && result is string strResult)
+                result = TryToResolveLink(AppId, EntityGuid, strResult);
 
             return result;
         }

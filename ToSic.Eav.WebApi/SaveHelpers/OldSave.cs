@@ -18,7 +18,7 @@ namespace ToSic.Eav.WebApi.SaveHelpers
         public OldSave(Log parentLog) : base("Eav.OldSav", parentLog) { }
 
 
-        public Entity CreateEntityFromTransferObject(AppManager appMan, BundleWithHeader<EntityWithLanguages> editInfo/*, IDeferredEntitiesList allEntitiesForRelationships*/)
+        public Entity CreateEntityFromTransferObject(AppManager appMan, BundleWithHeader<EntityWithLanguages> editInfo)
         {
             var allEntitiesForRelationships = appMan.Package;
 

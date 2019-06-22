@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-//using System.Web.Script.Serialization;
 using ToSic.Eav.Implementations.ValueConverter;
 using ToSic.Eav.Interfaces;
 
@@ -109,8 +108,8 @@ namespace ToSic.Eav.Data
                     return GetInternalPropertyByName(attributeName);
             }
 
-            if (resolveHyperlinks)
-                result = TryToResolveLink(result);
+            if (resolveHyperlinks && result is string strResult)
+                result = TryToResolveLink(AppId, EntityGuid, strResult);
 
             // map any kind of number to the one format used in other code-checks: decimal
             if (result is short
@@ -179,14 +178,8 @@ namespace ToSic.Eav.Data
             }
         }
 
-        protected static object TryToResolveLink(object result)
-        {
-            // ReSharper disable once CanBeReplacedWithTryCastAndCheckForNull
-            return result is string
-                ? Factory.Resolve<IEavValueConverter>().Convert(ConversionScenario.GetFriendlyValue, Constants.DataTypeHyperlink, (string)result)
-                : result;
-        }
-
+        protected static string TryToResolveLink(int appId, Guid itemGuid, string result) 
+            => Factory.Resolve<IEavValueConverter>().ToValue(appId, itemGuid, result);
 
         /// <inheritdoc />
 	    public string GetBestTitle() => GetBestTitle(0);
