@@ -131,6 +131,14 @@ namespace ToSic.Eav.WebApi.Formats
         /// </summary>
         public bool Add { get; set; }
 
+        /// <summary>
+        /// This property is only needed by the new UI, because it does more checking
+        /// and because the previous information if it should really, really add (entityId=0) fails
+        /// with the new API since it's set upon saving
+        /// </summary>
+        [Newtonsoft.Json.JsonIgnore]
+        public bool? ReallyAddBecauseAlreadyVerified { get; set; }
+
  
         /// <summary>
         /// Determines that an empty slot is allowed / possible
