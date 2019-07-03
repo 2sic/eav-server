@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Implementations.ValueConverter;
+﻿using System;
+using ToSic.Eav.Implementations.ValueConverter;
 
 namespace ToSic.Eav.Core.Tests.Mocks
 {
@@ -7,11 +8,17 @@ namespace ToSic.Eav.Core.Tests.Mocks
     /// </summary>
     public class MockValueConverter:IEavValueConverter
     {
-        public string Convert(ConversionScenario scenario, string type, string originalValue)
+
+        public string ToReference(string value)
         {
-            return originalValue.ToLowerInvariant().StartsWith("page:") || originalValue.ToLowerInvariant().StartsWith("file:")
-                ? "http://mock.converted/" + originalValue
-                : originalValue;
+            throw new NotImplementedException();
+        }
+
+        public string ToValue(Guid itemGuid, string reference)
+        {
+            return reference.ToLowerInvariant().StartsWith("page:") || reference.ToLowerInvariant().StartsWith("file:")
+                ? "http://mock.converted/" + reference
+                : reference;
         }
     }
 }

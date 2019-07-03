@@ -96,11 +96,12 @@ namespace ToSic.Eav.WebApi
             var itemsToCorrect = list.Where(i => i.Header.Guid == Guid.Empty).ToArray(); // must do toarray, to prevent re-checking after setting the guid
             foreach (var i in itemsToCorrect)
             {
-                var useExisting = i.Entity != null && i.Entity.EntityGuid != Guid.Empty;
-                i.Header.Guid = useExisting // i.Entity != null && i.Entity.EntityGuid != Guid.Empty
+                var hasEntity = i.Entity != null;
+                var useExistingGuid = hasEntity && i.Entity.EntityGuid != Guid.Empty;
+                i.Header.Guid = useExistingGuid // i.Entity != null && i.Entity.EntityGuid != Guid.Empty
                     ? i.Entity.EntityGuid
                     : Guid.NewGuid();
-                if (!useExisting)
+                if (hasEntity && !useExistingGuid)
                     (i.Entity as Entity).SetGuid(i.Header.Guid);
             }
 

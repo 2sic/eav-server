@@ -83,11 +83,11 @@ namespace ToSic.Eav.Data.Builder
             if (resolveHyperlink && valueType == AttributeTypeEnum.Hyperlink.ToString())
             {
                 var valueConverter = Factory.Resolve<IEavValueConverter>();
-                value = valueConverter.Convert(ConversionScenario.ConvertFriendlyToData, valueType, (string)value);
+                value = valueConverter.ToReference(valueType);//  valueConverter.Convert(ConversionScenario.ConvertFriendlyToData, valueType, (string)value);
             }
 
             // sometimes language is passed in as an empty string - this would have side effects, so it must be neutralized
-            if (String.IsNullOrWhiteSpace(language)) language = null;
+            if (string.IsNullOrWhiteSpace(language)) language = null;
 
             var valueWithLanguages = ValueBuilder.Build(valueType, value, language == null
                 ? null : new List<ILanguage> { new Dimension { Key = language, ReadOnly = languageReadOnly } }, allEntitiesForRelationships);

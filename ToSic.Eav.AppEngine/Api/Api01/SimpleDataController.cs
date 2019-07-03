@@ -147,7 +147,7 @@ namespace ToSic.Eav.Api.Api01
 
         private void AppendAttributeValues(Entity entity, IContentType attributeSet, Dictionary<string, object> values, string valuesLanguage, bool valuesReadOnly, bool resolveHyperlink)
         {
-            Log.Add("append attrib values");
+            Log.Add("append attribute values");
             foreach (var value in values)
             {
                 // Handle special attributes (for example of the system)

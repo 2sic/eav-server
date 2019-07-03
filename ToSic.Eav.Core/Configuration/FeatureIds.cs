@@ -21,6 +21,8 @@ namespace ToSic.Eav.Configuration
         // new for 2sxc 10.0
         public static readonly Guid EditFormPreferAngularJs = new Guid("51da2093-f75a-4750-aea2-b45562fc4d51");
 
+        // new for 2sxc 10.02
+        public static readonly Guid BlockFileIdLookupIfNotInSameApp = new Guid("702f694c-53bd-4d03-b75c-4dad9c4fb852");
 
         // todo: this name isn't final yet
         public static readonly Guid WebApiOptionsAllowLocal = new Guid("99fe8253-eb9e-46e3-af7b-b994c19ecfd6");

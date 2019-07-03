@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net451</TargetFrameworks>
+    <!--<TargetFrameworks>netstandard2.0;net451</TargetFrameworks>-->
+    <TargetFrameworks>net451</TargetFrameworks>
     <Configurations>Debug;Release;efc and WebApi;debug eav only;Dbg Testing</Configurations>
     <RootNamespace>ToSic.Eav</RootNamespace>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
