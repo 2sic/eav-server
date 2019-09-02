@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
@@ -90,7 +89,7 @@ namespace ToSic.Eav.Data
         /// </remarks>
         private string FindInputType()
         {
-            var inputType = Metadata.GetBestValue<string>("InputType", "@All");
+            var inputType = Metadata.GetBestValue<string>(Constants.MetadataFieldAllInputType, Constants.MetadataFieldTypeAll);
 
             return string.IsNullOrEmpty(inputType) 
                 ? "unknown" // unknown will let the UI fallback on other mechanisms
@@ -106,11 +105,20 @@ namespace ToSic.Eav.Data
         /// </remarks>
         private string FindInputType2()
         {
-            var inputType = Metadata.GetBestValue<string>("InputType", "@All");
+            // Preferred storage and available in all fields defined after 2sxc ca. 6 or 7
+            var inputType = Metadata.GetBestValue<string>(
+                Constants.MetadataFieldAllInputType, Constants.MetadataFieldTypeAll);
 
             // if not available, check older metadata, where it was on the @String
             if (string.IsNullOrWhiteSpace(inputType))
-                inputType = Metadata.GetBestValue<string>("InputType", "@String");
+            {
+                inputType = Metadata.GetBestValue<string>(
+                    Constants.MetadataFieldAllInputType, Constants.MetadataFieldTypeString);
+                // if found, check and maybe add prefix string
+                const string prefix = "string-";
+                if (!string.IsNullOrWhiteSpace(inputType) && !inputType.StartsWith(prefix))
+                    inputType = prefix + inputType;
+            }
 
             // if still not found, assemble from known type
             if (string.IsNullOrWhiteSpace(inputType))

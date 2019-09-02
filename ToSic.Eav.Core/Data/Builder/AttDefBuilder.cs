@@ -17,9 +17,9 @@ namespace ToSic.Eav.Data.Builder
             if (!string.IsNullOrEmpty(notes)) valDic.Add("Notes", notes);
             if (visibleInEditUi.HasValue) valDic.Add("VisibleInEditUI", visibleInEditUi);
             if (defaultValue != null) valDic.Add("DefaultValue", defaultValue);
-            if (!string.IsNullOrEmpty(inputType)) valDic.Add("InputType", inputType);
+            if (!string.IsNullOrEmpty(inputType)) valDic.Add(Constants.MetadataFieldAllInputType, inputType);
 
-            return new Entity(appId, Guid.Empty, Global.FindContentType("@All"), valDic);
+            return new Entity(appId, Guid.Empty, Global.FindContentType(Constants.MetadataFieldTypeAll), valDic);
         }
 
 
