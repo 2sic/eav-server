@@ -188,7 +188,13 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetPath)" "$(SolutionDir)..\2sxc-dnn742\Website\bin"</PostBuildEvent>
+    <PostBuildEvent>copy "$(TargetPath)" "$(SolutionDir)..\2sxc-dnn742\Website\bin"
+copy "$(TargetDir)\Microsoft.EntityFrameworkCore.*" "$(SolutionDir)..\2sxc-dnn742\Website\bin\2sxc"
+copy "$(TargetDir)\Microsoft.Extensions.*" "$(SolutionDir)..\2sxc-dnn742\Website\bin\2sxc"
+copy "$(TargetDir)\Remotion.Linq.dll" "$(SolutionDir)..\2sxc-dnn742\Website\bin\2sxc"
+copy "$(TargetDir)\System.Collections.Immutable.dll" "$(SolutionDir)..\2sxc-dnn742\Website\bin\2sxc"
+copy "$(TargetDir)\System.Diagnostics.DiagnosticSource.dll" "$(SolutionDir)..\2sxc-dnn742\Website\bin\2sxc"
+copy "$(TargetDir)\System.Interactive.Async.dll" "$(SolutionDir)..\2sxc-dnn742\Website\bin\2sxc"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
