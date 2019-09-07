@@ -49,7 +49,7 @@ namespace ToSic.Eav.Persistence.File.Tests
             var conMeta = conStr.Metadata;
             Assert.AreEqual(2, conMeta.Count(), "constr should have 2 meta-items");
 
-            var conMetaAll = conMeta.FirstOrDefault(e => e.Type.Name == "@All");
+            var conMetaAll = conMeta.FirstOrDefault(e => e.Type.Name == Constants.MetadataFieldTypeAll);
             Assert.IsNotNull(conMetaAll, "should have @all metadata");
 
             var conMetaStr = conMeta.FirstOrDefault(e => e.Type.Name == "@string-default");

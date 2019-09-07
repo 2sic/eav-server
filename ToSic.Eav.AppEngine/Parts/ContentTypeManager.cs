@@ -37,32 +37,32 @@ namespace ToSic.Eav.Apps.Parts
         private void InitializeNameAndInputType(string staticName, string inputType, int attributeId)
         {
             Log.Add($"init name+input attrib:{attributeId}, name:{staticName}, input:{inputType}");
-            // new: set the inputType - this is a bit tricky because it needs an attached entity of type "@All" to set the value to...
+            // new: set the inputType - this is a bit tricky because it needs an attached entity of type @All to set the value to...
             var newValues = new Dictionary<string, object>
             {
                 {"VisibleInEditUI", true},
                 {"Name", staticName},
-                {"InputType", inputType}
+                {Constants.MetadataFieldAllInputType, inputType}
             };
             var meta = new MetadataFor
             {
                 TargetType = Constants.MetadataForAttribute,
                 KeyNumber = attributeId
             };
-            AppManager.Entities.SaveMetadata(meta, "@All", newValues); // todo: put "@All" into some constant
+            AppManager.Entities.SaveMetadata(meta, Constants.MetadataFieldTypeAll, newValues);
         }
 
         public bool UpdateInputType(int attributeId, string inputType)
         {
             Log.Add($"update input type attrib:{attributeId}, input:{inputType}");
-            var newValues = new Dictionary<string, object> { { "InputType", inputType } };
+            var newValues = new Dictionary<string, object> { { Constants.MetadataFieldAllInputType, inputType } };
 
             var meta = new MetadataFor
             {
                 TargetType = Constants.MetadataForAttribute,
                 KeyNumber = attributeId
             };
-            AppManager.Entities.SaveMetadata(meta, "@All", newValues); // todo: put "@All" into some constant
+            AppManager.Entities.SaveMetadata(meta, Constants.MetadataFieldTypeAll, newValues);
             return true;
         }
 

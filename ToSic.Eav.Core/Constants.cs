@@ -115,6 +115,11 @@ namespace ToSic.Eav
         public const string PublishedEntityField = "PublishedEntity";
         public const string DraftEntityField = "DraftEntity";
 
+
+        public const string MetadataFieldTypeAll = "@All";
+        public const string MetadataFieldAllInputType = "InputType";
+        public const string MetadataFieldTypeString = "@String";
+
         public const string TypeForInputTypeDefinition = "ContentType-InputType";
 
         public const string InputTypeType = "Type";

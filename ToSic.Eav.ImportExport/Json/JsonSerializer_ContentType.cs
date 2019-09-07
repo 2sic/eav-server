@@ -25,12 +25,13 @@ namespace ToSic.Eav.ImportExport.Json
 
             var jsonSerializer = new JsonSerializer();
 
-            var attribs = contentType.Attributes.OrderBy(a => a.SortOrder).Select(attrib => new JsonAttributeDefinition
+            var attribs = contentType.Attributes.OrderBy(a => a.SortOrder).Select(a => new JsonAttributeDefinition
             {
-                Name = attrib.Name,
-                Type = attrib.Type,
-                IsTitle = attrib.IsTitle,
-                Metadata = attrib.Metadata
+                Name = a.Name,
+                Type = a.Type,
+                InputType = a.InputTypeTempBetterForNewUi,
+                IsTitle = a.IsTitle,
+                Metadata = a.Metadata
                     ?.Select(dt => jsonSerializer.ToJson(dt)) /* important: must write the method with params, otherwise default param metadata = 1 instead of 0*/
                     .ToList()
             }).ToList();
