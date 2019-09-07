@@ -2,10 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>net451</TargetFramework>
-    <AssemblyVersion>10.03.00.0</AssemblyVersion>
-    <FileVersion>10.03.00.0</FileVersion>
+    <AssemblyVersion>10.04.00.0</AssemblyVersion>
+    <FileVersion>10.04.00.0</FileVersion>
     <Copyright>Copyright AGPL 2sic 2017</Copyright>
-    <Version>10.03.00.00</Version>
+    <Version>10.04.00.00</Version>
     <Configurations>Debug;Release;Dbg Testing</Configurations>
   </PropertyGroup>
 
