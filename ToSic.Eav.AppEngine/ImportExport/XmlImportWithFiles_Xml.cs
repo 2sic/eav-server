@@ -64,10 +64,10 @@ namespace ToSic.Eav.Apps.ImportExport
             #endregion
 
             var atsNodes = xmlSource.Element(XmlConstants.AttributeSets)?.Elements(XmlConstants.AttributeSet);
-		    var entNodes = xmlSource.Elements(XmlConstants.Entities).Elements(XmlConstants.Entity);
+		    var entNodes = xmlSource.Elements(XmlConstants.Entities).Elements(XmlConstants.Entity).ToList();
 
             var importAttributeSets = GetImportContentTypes(atsNodes);
-		    var importEntities = GetImportEntities(entNodes, Constants.NotMetadata);
+		    var importEntities = BuildEntities(entNodes, Constants.NotMetadata);
 
 
 			var import = new Import(ZoneId, AppId, leaveExistingValuesUntouched, parentLog: Log);

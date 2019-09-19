@@ -6,7 +6,6 @@ using System.Xml.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.Interfaces;
-using ToSic.Eav.Logging;
 
 // 2dm: must disable NullRef warnings, because there a lot of warnings when processing XML, 
 // ...and these are real errors which should blow
@@ -22,10 +21,11 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="entities"></param>
         /// <param name="assignmentObjectTypeId"></param>
         /// <returns></returns>
-        private List<IEntity> GetImportEntities(IEnumerable<XElement> entities, int assignmentObjectTypeId)
+        private List<IEntity> BuildEntities(List<XElement> entities, int assignmentObjectTypeId)
         {
-            var wrap = Log.Call("GetImportEntities", $"for {entities?.Count()}; type {assignmentObjectTypeId}");
-	        var result = entities.Select(e => GetImportEntity(e, assignmentObjectTypeId)).ToList();
+            var wrap = Log.Call("BuildEntities", $"for {entities?.Count}; type {assignmentObjectTypeId}");
+            if(entities == null) return new List<IEntity>();
+	        var result = entities.Select(e => BuildEntity(e, assignmentObjectTypeId)).ToList();
             wrap($"found {result.Count}");
             return result;
         }
@@ -37,15 +37,17 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="entityNode">The xml-Element of the entity to import</param>
         /// <param name="assignmentObjectTypeId">assignmentObjectTypeId</param>
         /// <returns></returns>
-        private IEntity GetImportEntity(XElement entityNode, int assignmentObjectTypeId)
+        private IEntity BuildEntity(XElement entityNode, int assignmentObjectTypeId)
         {
-            var wrap = Log.Call("GetImportEntity", $"assignment-type: {assignmentObjectTypeId}");
+            var wrap = Log.Call("BuildEntity", $"assignment-type: {assignmentObjectTypeId}");
 
             #region retrieve optional metadata keys in the import - must happen before we apply corrections like AppId
+
             Guid? keyGuid = null;
 		    var maybeGuid = entityNode.Attribute(XmlConstants.KeyGuid);
             if (maybeGuid != null)
                 keyGuid = Guid.Parse(maybeGuid.Value);
+
             int? keyNumber = null;
 		    var maybeNumber = entityNode.Attribute(XmlConstants.KeyNumber);
             if (maybeNumber != null)
@@ -84,7 +86,7 @@ namespace ToSic.Eav.Apps.ImportExport
             #endregion
 
 
-            // Special case #2: Corrent values of Template-Describing entities, and resolve files
+            // Special case #2: Current values of Template-Describing entities, and resolve files
 
             foreach (var sourceValue in entityNode.Elements(XmlConstants.ValueNode))
 			{
