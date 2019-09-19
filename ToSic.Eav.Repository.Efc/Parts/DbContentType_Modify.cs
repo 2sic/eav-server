@@ -135,10 +135,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <param name="attributeId"></param>
         /// <param name="metadata"></param>
         /// <param name="saveOptions"></param>
-        private void SaveAttributeMetadata(int attributeId, IEnumerable<IEntity> metadata, SaveOptions saveOptions)
+        private void SaveAttributeMetadata(int attributeId, IMetadataOfItem metadata, SaveOptions saveOptions)
         {
             var entities = new List<IEntity>();
-            foreach (var entity in metadata)
+            // if possible, try to get the complete list which is usually hidden in IMetadataOfItem
+            var sourceList = (metadata as IMetadataWithHiddenItems)?.AllWithHidden as IEnumerable<IEntity> 
+                             ?? metadata;
+            foreach (var entity in sourceList)
             {
                 var md = (MetadataFor)entity.MetadataFor;
                 // Validate Entity
