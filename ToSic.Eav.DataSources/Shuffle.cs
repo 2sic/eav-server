@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.DataSources.VisualQuery;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.DataSources
 {
@@ -40,7 +41,7 @@ namespace ToSic.Eav.DataSources
 
         #endregion
 
-
+        protected static readonly bool DebugShuffleDs = false;
 
         /// <inheritdoc />
         /// <summary>
@@ -58,29 +59,46 @@ namespace ToSic.Eav.DataSources
 	        EnsureConfigurationIsLoaded();
 
 	        Log.Add($"will shuffle and take:{Take}");
-            return ShuffleInternal(In["Default"].List, Take);
+            return ShuffleInternal(In["Default"].List, Take, Log);
 	    }
 
         #region Experiment based on http://stackoverflow.com/questions/375351/most-efficient-way-to-randomly-sort-shuffle-a-list-of-integers-in-c-sharp/375446#375446
         static readonly Random Generator = new Random();
 
-        private static IEnumerable<T> ShuffleInternal<T>(IEnumerable<T> sequence, int take)
+        private static IEnumerable<T> ShuffleInternal<T>(IEnumerable<T> sequence, int take, Log log)
         {
+            var wrapLog = log.Call("ShuffleInternal");
             var retArray = sequence.ToArray();
+            
+            // check if there is actually any data
+            if (!retArray.Any())
+            {
+                wrapLog("0 items found to shuffle");
+                return retArray;
+            }
+
             var maxIndex = retArray.Length; // not Length -1, as the random-generator will always be below this
-            var maxTake = retArray.Length;
+            var maxTake = maxIndex;// retArray.Length;
+
             if (take > 0 && maxTake > take) maxTake = take;
-            maxTake = maxTake - 1; // either length of array, or take, but -1 as zero-based
+
+            log.Add($"take:{take}, maxTake:{maxTake}");
+            if (take > 0 && maxTake > take) maxTake = take;
+            // changed this a bit because of #1815
+            // var realTake = maxTake - 1; // either length of array, or take, but -1 as zero-based
             // go through array, shuffling the items - but only for as many times as we want to take
             for (var i = 0; i < maxTake; i++)
             {
                 var swapIndex = Generator.Next(i, maxIndex);   // get num between index and max
+                if (DebugShuffleDs)
+                    log.Add($"i:{i}, maxI:{maxIndex}, maxT:{maxTake} swap:{swapIndex} - will put {swapIndex} on {i}");
                 var temp = retArray[i];                 // get item at index i...
                 retArray[i] = retArray[swapIndex];      // set index i to new item
                 retArray[swapIndex] = temp;             // place temp-item to swap-slot
             }
 
-            return retArray.Take(maxTake + 1);
+            wrapLog((maxTake).ToString());
+            return retArray.Take(maxTake);
         }
         #endregion
 

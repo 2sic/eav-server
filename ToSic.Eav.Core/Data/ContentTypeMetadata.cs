@@ -34,7 +34,7 @@ namespace ToSic.Eav.Data
             var additional = GetMetadataProvider()?.GetMetadata(Constants.MetadataForEntity, ctGuid)
                                  .ToList()
                              ?? new List<IEntity>();
-            Use(AllEntities.Concat(additional).ToList());
+            Use(AllWithHidden.Concat(additional).ToList());
         }
     }
 }

@@ -6,12 +6,12 @@ using ToSic.Eav.Security.Permissions;
 
 namespace ToSic.Eav.Data
 {
-    /// <inheritdoc/>
+    /// <inheritdoc cref="IMetadataOfItem" />
     /// <summary>
     /// Metadata entities of an item (a content-type or another entity)
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class MetadataOf<T> : IMetadataOfItem
+    public class MetadataOf<T> : IMetadataOfItem, IMetadataWithHiddenItems
     {
         /// <summary>
         /// initialize using a prepared metadata provider
@@ -49,7 +49,7 @@ namespace ToSic.Eav.Data
         /// All entities is internal - because it contains everything
         /// including permissions-metadata
         /// </summary>
-        protected List<IEntity> AllEntities {
+        public List<IEntity> AllWithHidden {
             get
             {             
                 // If necessary, initialize first. Note that it will only add Ids which really exist in the source (the source should be the cache)
@@ -70,7 +70,7 @@ namespace ToSic.Eav.Data
             {
                 // If necessary, initialize first. Note that it will only add Ids which really exist in the source (the source should be the cache)
                 if (_filteredEntities == null || RequiresReload())
-                    _filteredEntities = AllEntities
+                    _filteredEntities = AllWithHidden
                         .Where(md => new[] { /*Constants.PermissionTypeName*/ Permission.TypeName  }.Any(e => e != md.Type.Name && e != md.Type.StaticName))
                         .ToList();
                 return _filteredEntities;
@@ -79,7 +79,7 @@ namespace ToSic.Eav.Data
         private List<IEntity> _filteredEntities;
 
         public IEnumerable<IEntity> Permissions =>
-            AllEntities.Where(md => md.Type.StaticName == /*Constants.PermissionTypeName*/ Permission.TypeName);
+            AllWithHidden.Where(md => md.Type.StaticName == /*Constants.PermissionTypeName*/ Permission.TypeName);
 
         private long _cacheTimestamp;
 
@@ -115,7 +115,7 @@ namespace ToSic.Eav.Data
         // 2018-03-09 2dm - this was used when we tried creating code-based content-types, but I believe it's dead code now
         //public void Add(string type, Dictionary<string, object> values) => Add(new Entity(AppId, 0, Guid.Empty, type, values));
 
-        public void Add(IEntity additionalItem) => AllEntities.Add(additionalItem);
+        public void Add(IEntity additionalItem) => AllWithHidden.Add(additionalItem);
 
         public void Use(List<IEntity> items)
         {
