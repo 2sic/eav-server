@@ -26,8 +26,9 @@ namespace ToSic.Eav.Apps.ImportExport
 			foreach (var attributeSet in list)
 			{
 			    var ct = BuildContentTypeFromXml(attributeSet);
-			    importAttributeSets.Add(ct);
-			}
+                if (ct != null)
+                    importAttributeSets.Add(ct);
+            }
 
 		    wrap($"found {importAttributeSets.Count}");
 			return importAttributeSets;
@@ -78,14 +79,25 @@ namespace ToSic.Eav.Apps.ImportExport
 	                                   bool.Parse(xmlContentType.Attribute(XmlConstants.SortAttributes).Value)
 	        };
 
-	        ct.SetImportParameters(
+            #region check for shared type and if it's allowed
+            var isSharedType = xmlContentType.Attributes(XmlConstants.AlwaysShareConfig).Any() &&
+                           bool.Parse(xmlContentType.Attribute(XmlConstants.AlwaysShareConfig).Value);
+
+            if(isSharedType & !AllowUpdateOnSharedTypes)
+            {
+                Log.Add("trying to update a shared type, but not allowed");
+                wrap("error");
+                return null;
+            }
+            #endregion
+
+            ct.SetImportParameters(
 	            scope: xmlContentType.Attributes(XmlConstants.Scope).Any()
 	                ? xmlContentType.Attribute(XmlConstants.Scope).Value
 	                : _environment.FallbackContentTypeScope,
 	            staticName: xmlContentType.Attribute(XmlConstants.Static).Value,
 	            description: xmlContentType.Attribute(XmlConstants.Description).Value,
-	            AllowSystemChanges && xmlContentType.Attributes(XmlConstants.AlwaysShareConfig).Any() &&
-                                bool.Parse(xmlContentType.Attribute(XmlConstants.AlwaysShareConfig).Value)
+	            AllowUpdateOnSharedTypes && isSharedType
 	        );
 	        wrap("ok");
 	        return ct;
