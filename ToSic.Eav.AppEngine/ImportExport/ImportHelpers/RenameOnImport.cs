@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using System.Xml.XPath;
@@ -31,15 +32,18 @@ namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
             var originalFolder = appConfig.Elements(XmlConstants.ValueNode).First(v => v.Attribute(XmlConstants.KeyAttr)?.Value == "Folder").Attribute(XmlConstants.ValueAttr)?.Value;
 
             // save original AppId (because soon will be rewritten with empty string)
-            var originalAppId = xmlDoc.XPathSelectElement("//SexyContent/Header/App").Attribute("Guid").Value;
+            var appGuidNode = xmlDoc.XPathSelectElement("//SexyContent/Header/App")?.Attribute("Guid");
+            if(appGuidNode == null) throw new Exception("app guid node not found - totally unexpected");
+            var originalAppId = appGuidNode.Value;
             Log.Add($"original AppID:{originalAppId}");
 
             // same App is already installed, so we have to change AppId 
-            xmlDoc.XPathSelectElement("//SexyContent/Header/App").SetAttributeValue("Guid", string.Empty);
+            appGuidNode.Value = string.Empty;//.SetAttributeValue("Guid", string.Empty);
             Log.Add($"original AppID is now empty");
 
             // change folder to install app
-            xmlDoc.XPathSelectElement("//SexyContent/Entities/Entity/Value[@Key='Folder']").SetAttributeValue("Value", name);
+            xmlDoc.XPathSelectElement("//SexyContent/Entities/Entity/Value[@Key='Folder']")
+                .SetAttributeValue("Value", name);
             Log.Add($"change folder to install app:{name}");
 
             // find Value element with OriginalId attribute

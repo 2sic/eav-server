@@ -31,9 +31,9 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <summary>
         /// Imports a ZIP file (from stream)
         /// </summary>
-        /// <param rename="zipStream">zip file</param>
-        /// <param rename="temporaryDirectory">temporary storage</param>
-        /// <param rename="rename">App rename</param>
+        /// <param name="zipStream">zip file</param>
+        /// <param name="temporaryDirectory">temporary storage</param>
+        /// <param name="rename">App rename</param>
         /// <returns></returns>
         public bool ImportZip(Stream zipStream, string temporaryDirectory, string rename = null)
         {
@@ -46,7 +46,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 // ensure temp directory and unzip to there
                 if (!Directory.Exists(temporaryDirectory))
                     Directory.CreateDirectory(temporaryDirectory);
-                new Zipping(Log).ExtractZipFile(zipStream, temporaryDirectory);
+                new Zipping(Log).ExtractZipFile(zipStream, temporaryDirectory, AllowCodeImport);
 
                 // Loop through each root-folder.
                 // For now only it should only contain the "Apps" folder.
@@ -118,9 +118,9 @@ namespace ToSic.Eav.Apps.ImportExport
         /// Historical note: the xml file used to have a different rename
         /// but it's been app.xml since Oct 2016 so this is all we plan to support
         /// </remarks>
-        /// <param rename="rename"></param>
-        /// <param rename="appDirectory"></param>
-        /// <param rename="importMessages"></param>
+        /// <param name="rename"></param>
+        /// <param name="appDirectory"></param>
+        /// <param name="importMessages"></param>
         private void ImportApp(string rename, string appDirectory, List<Message> importMessages)
         {
             var wrapLog = Log.Call(nameof(ImportApp),
@@ -189,9 +189,9 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <summary>
         /// Copy all files in 2sexy folder to (portal file system) 2sexy folder
         /// </summary>
-        /// <param rename="importMessages"></param>
-        /// <param rename="appId"></param>
-        /// <param rename="appDirectory"></param>
+        /// <param name="importMessages"></param>
+        /// <param name="appId"></param>
+        /// <param name="appDirectory"></param>
         private void FixOld2SexyFolderName(List<Message> importMessages, int appId, string appDirectory)
         {
             var templateRoot = _environment.TemplatesRoot(_zoneId, appId);
