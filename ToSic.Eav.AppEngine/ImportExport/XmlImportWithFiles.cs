@@ -25,7 +25,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// </summary>
         private string DefaultLanguage { get; }
 
-        private bool AllowSystemChanges { get; }
+        private bool AllowUpdateOnSharedTypes { get; }
 
 
 	    /// <summary>
@@ -33,15 +33,15 @@ namespace ToSic.Eav.Apps.ImportExport
 	    /// </summary>
 	    /// <param name="parentLog"></param>
 	    /// <param name="defaultLanguage">The portals default language / culture - example: de-DE</param>
-	    /// <param name="allowSystemChanges">Specify if the import should be able to change system-wide things like shared attributesets</param>
-	    public XmlImportWithFiles(Log parentLog, string defaultLanguage = null, bool allowSystemChanges = false): base("Xml.ImpFil", parentLog)
+	    /// <param name="allowUpdateOnSharedTypes">Specify if the import should be able to change system-wide things like shared attributesets</param>
+	    public XmlImportWithFiles(Log parentLog, string defaultLanguage = null, bool allowUpdateOnSharedTypes = false): base("Xml.ImpFil", parentLog)
 		{
 		    _environment = Factory.Resolve<IImportExportEnvironment>();
             _environment.LinkLog(Log);
 			// Prepare
 			Messages = new List<Message>();
 		    DefaultLanguage = (defaultLanguage ?? _environment.DefaultLanguage).ToLowerInvariant();
-			AllowSystemChanges = allowSystemChanges;
+			AllowUpdateOnSharedTypes = allowUpdateOnSharedTypes;
         }
 
 	}
