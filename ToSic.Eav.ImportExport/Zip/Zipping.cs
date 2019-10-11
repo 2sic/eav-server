@@ -97,7 +97,8 @@ namespace ToSic.Eav.ImportExport.Zip
                     var directoryName = Path.GetDirectoryName(fullPath);
                     if (!string.IsNullOrEmpty(directoryName))
                     {
-                        Log.Add($"Create temp path:{directoryName} (len:{directoryName.Length})");
+                        if(!Directory.Exists(directoryName))
+                            Log.Add($"Create temp path:{directoryName} (len:{directoryName.Length})");
                         Directory.CreateDirectory(directoryName);
                     }
 
