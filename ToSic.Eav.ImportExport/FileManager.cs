@@ -8,9 +8,9 @@ namespace ToSic.Eav.ImportExport
     public class FileManager
     {
 
-        public FileManager(string sourceFld)
+        public FileManager(string sourceFolder)
         {
-            _sourceFolder = sourceFld;
+            _sourceFolder = sourceFolder;
 
         }
 

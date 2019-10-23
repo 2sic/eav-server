@@ -90,6 +90,7 @@
     <Compile Include="Persistence.File\FileSystemLoader.cs" />
     <Compile Include="Persistence.File\FileSystemLoader_Save.cs" />
     <Compile Include="Persistence.File\Runtime.cs" />
+    <Compile Include="Security\Files\FileNames.cs" />
     <Compile Include="Serializers\SerializableRelationship.cs" />
     <Compile Include="Serializers\SerializerBase.cs" />
     <Compile Include="Serializers\SerializerHelper.cs" />

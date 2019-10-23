@@ -3,6 +3,7 @@ using System.IO;
 using ICSharpCode.SharpZipLib.Zip;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.Security.Files;
 
 namespace ToSic.Eav.ImportExport.Zip
 {
@@ -76,11 +77,10 @@ namespace ToSic.Eav.ImportExport.Zip
         /// <summary>
         /// Extracts a Zip (as Stream) to the given OutFolder directory.
         /// </summary>
-        /// <param name="zipStream"></param>
-        /// <param name="outFolder"></param>
-        public void ExtractZipFile(Stream zipStream, string outFolder)
+        public void ExtractZipFile(Stream zipStream, string outFolder, bool allowCodeImport)
         {
-            Log.Add($"extract zip to:{outFolder}");
+            var wrapLog = Log.Call(nameof(ExtractZipFile),
+                $"{nameof(outFolder)}:'{outFolder}', {nameof(allowCodeImport)}:{allowCodeImport}");
             var file = new ZipFile(zipStream);
 
             try
@@ -97,12 +97,27 @@ namespace ToSic.Eav.ImportExport.Zip
                     var directoryName = Path.GetDirectoryName(fullPath);
                     if (!string.IsNullOrEmpty(directoryName))
                     {
-                        Log.Add($"will create temp dir len:{fullPath.Length} path:{fullPath}");
+                        if(!Directory.Exists(directoryName))
+                            Log.Add($"Create temp path:{directoryName} (len:{directoryName.Length})");
                         Directory.CreateDirectory(directoryName);
                     }
 
                     if (fullPath.Length > 240)
                         Log.Warn($"file name is very long - could cause trouble:{fullPath}");
+
+                    // enhanced security check
+                    var isCode = FileNames.IsKnownCodeExtension(fileName);
+                    if (isCode)
+                    {
+                        Log.Add($"code file detected:{fullPath}");
+                        if (!allowCodeImport)
+                        {
+                            Log.Add("Code file import not permitted - will throw error");
+                            wrapLog("error");
+                            throw new Exception("Importing code files is not permitted - you need super-user permissions to do this. " +
+                                                $"The process was stopped on the file '{fileName}'");
+                        }
+                    }
 
                     // Unzip File in buffered chunks
                     using (var streamWriter = File.Create(fullPath))
@@ -115,6 +130,8 @@ namespace ToSic.Eav.ImportExport.Zip
             {
                 file.Close();
             }
+
+            wrapLog("ok");
         }
 
         #endregion

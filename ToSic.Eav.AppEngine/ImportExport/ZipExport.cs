@@ -18,13 +18,13 @@ namespace ToSic.Eav.Apps.ImportExport
     {
         private readonly int _appId;
         private readonly int _zoneId;
-        private string _sexycontentContentgroupName = "2SexyContent-ContentGroup";
-        private string _sourceControlDataFolder = ".data";
-        private string _sourceControlDataFile = "app.xml"; // lower case
+        private const string SexyContentContentGroupName = "2SexyContent-ContentGroup";
+        private const string SourceControlDataFolder = ".data";
+        private const string SourceControlDataFile = "app.xml"; // lower case
         private readonly string _blankGuid = Guid.Empty.ToString();
-        private string _zipFolderForPortalFiles = "PortalFiles";
-        private string _zipFolderForAppStuff = "2sexy";
-        private string _AppXmlFileName = "App.xml";
+        private const string ZipFolderForPortalFiles = "PortalFiles";
+        private const string ZipFolderForAppStuff = "2sexy";
+        private const string AppXmlFileName = "App.xml";
 
         public FileManager FileManager;
         private readonly string _physicalAppPath;
@@ -44,14 +44,14 @@ namespace ToSic.Eav.Apps.ImportExport
 
         public void ExportForSourceControl(bool includeContentGroups = false, bool resetAppGuid = false)
         {
-            var path = _physicalAppPath + "\\" + _sourceControlDataFolder;
+            var path = _physicalAppPath + "\\" + SourceControlDataFolder;
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
 
             // generate the XML & save
             var xmlExport = GenerateExportXml(includeContentGroups, resetAppGuid);
-            string xml = xmlExport.GenerateNiceXml();
-            File.WriteAllText(Path.Combine(path, _sourceControlDataFile), xml);
+            var xml = xmlExport.GenerateNiceXml();
+            File.WriteAllText(Path.Combine(path, SourceControlDataFile), xml);
 
         }
 
@@ -75,9 +75,9 @@ namespace ToSic.Eav.Apps.ImportExport
             var tempDirectory = new DirectoryInfo(temporaryDirectoryPath);
             var appDirectory = tempDirectory.CreateSubdirectory("Apps/" + _appFolder + "/");
             
-            var sexyDirectory = appDirectory.CreateSubdirectory(_zipFolderForAppStuff);
+            var sexyDirectory = appDirectory.CreateSubdirectory(ZipFolderForAppStuff);
             
-            var portalFilesDirectory = appDirectory.CreateSubdirectory(_zipFolderForPortalFiles);
+            var portalFilesDirectory = appDirectory.CreateSubdirectory(ZipFolderForPortalFiles);
 
             // Copy app folder
             if (Directory.Exists(_physicalAppPath))
@@ -110,11 +110,11 @@ namespace ToSic.Eav.Apps.ImportExport
 
 
             // Save export xml
-            string xml = xmlExport.GenerateNiceXml();
-            File.AppendAllText(Path.Combine(appDirectory.FullName, _AppXmlFileName), xml);
+            var xml = xmlExport.GenerateNiceXml();
+            File.AppendAllText(Path.Combine(appDirectory.FullName, AppXmlFileName), xml);
 
             // Zip directory and return as stream
-            var stream = new Zipping(Log).ZipDirectoryIntoStream(tempDirectory.FullName + "\\");//, tempDirectory.FullName + "\\");
+            var stream = new Zipping(Log).ZipDirectoryIntoStream(tempDirectory.FullName + "\\");
 
             tempDirectory.Delete(true);
 
@@ -138,7 +138,7 @@ namespace ToSic.Eav.Apps.ImportExport
                          && e.MetadataFor.TargetType != Constants.MetadataForAttribute).ToList();
 
             if (!includeContentGroups)
-                entities = entities.Where(p => p.Type.StaticName != _sexycontentContentgroupName).ToList();
+                entities = entities.Where(p => p.Type.StaticName != SexyContentContentGroupName).ToList();
 
             var entityIds = entities
                 .Select(e => e.EntityId.ToString()).ToArray();
@@ -170,8 +170,6 @@ namespace ToSic.Eav.Apps.ImportExport
 
             foreach (var file in Directory.GetFiles(srcPath))
                 File.Copy(file, Path.Combine(targetPath, Path.GetFileName(file)));
-
-
         }
 
 
