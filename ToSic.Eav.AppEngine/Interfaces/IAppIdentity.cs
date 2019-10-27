@@ -2,9 +2,8 @@
 
 namespace ToSic.Eav.Apps.Interfaces
 {
-    /// <inheritdoc cref="IZoneIdentity" />
     /// <summary>
-    /// A app object capable of telling us it's identity
+    /// This thing belongs to an App (which also always belongs to a zone)
     /// </summary>
     [PublicApi.PublicApi]
     public interface IAppIdentity: IZoneIdentity, ICanLogState

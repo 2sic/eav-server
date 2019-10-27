@@ -7,15 +7,9 @@ namespace ToSic.Eav.Apps
     public class AppIdentity: HasLog, IAppIdentity
     {
         /// <inheritdoc />
-        /// <summary>
-        /// The zone id of this app
-        /// </summary>
         public int ZoneId { get; }
 
         /// <inheritdoc />
-        /// <summary>
-        /// The app id
-        /// </summary>
         public int AppId { get; }
 
         /// <summary>

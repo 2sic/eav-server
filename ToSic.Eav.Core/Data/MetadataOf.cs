@@ -115,6 +115,7 @@ namespace ToSic.Eav.Data
         // 2018-03-09 2dm - this was used when we tried creating code-based content-types, but I believe it's dead code now
         //public void Add(string type, Dictionary<string, object> values) => Add(new Entity(AppId, 0, Guid.Empty, type, values));
 
+        // 2019-10-27 2dm - I think this is a leftover of old times, I believe it's not needed any more
         public void Add(IEntity additionalItem) => AllWithHidden.Add(additionalItem);
 
         public void Use(List<IEntity> items)

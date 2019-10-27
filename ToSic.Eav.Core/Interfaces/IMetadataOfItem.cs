@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.PublicApi;
 using ToSic.Eav.Security.Permissions;
 
 namespace ToSic.Eav.Interfaces
@@ -7,6 +8,8 @@ namespace ToSic.Eav.Interfaces
     {
         //// 2018-03-09 2dm - this was used when we tried creating code-based content-types, but I believe it's dead code now
         //void Add(string type, Dictionary<string, object> values);
+
+        // 2019-10-27 2dm - I think this is a leftover of old times, I believe it's not needed any more
         void Add(IEntity additionalItem);
         void Use(List<IEntity> items);
 
