@@ -1,9 +1,19 @@
-﻿namespace ToSic.Eav.Interfaces
+﻿using ToSic.Eav.PublicApi;
+
+namespace ToSic.Eav.Interfaces
 {
+    /// <remarks>
+    /// Still a private API, because the naming / typing could change
+    /// </remarks>
+    /// <typeparam name="T"></typeparam>
+    [PrivateApi]
     public interface IPublish<T>
     {
         /// <summary>
-        /// Gets the RepositoryId
+        /// Gets the RepositoryId - which is the ID in the database.
+        /// This is usually the same as the EntityId, but sometimes differs,
+        /// because when both a draft and published Entity exist, the have the same EntityId,
+        /// but are stored with an own RepositoryId.
         /// </summary>
         int RepositoryId { get; }
 
@@ -17,6 +27,7 @@
         /// Get Draft Entity of this Entity
         /// </summary>
         T GetDraft();
+
         /// <summary>
         /// Get Published Entity of this Entity
         /// </summary>

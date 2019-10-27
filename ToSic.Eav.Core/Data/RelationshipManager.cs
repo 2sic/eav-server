@@ -45,7 +45,7 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Get Children of a specified Attribute Name
         /// </summary>
-        public IRelatedEntities Children 
+        public IChildEntities Children 
             => _entity is IEntity ? new RelatedEntities(((IEntity) _entity).Attributes) : null ;
 
         // special note: ATM everything is an IEntity, so EntityLight is currently not supported

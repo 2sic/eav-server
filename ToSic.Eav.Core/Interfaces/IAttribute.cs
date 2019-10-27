@@ -18,14 +18,17 @@ namespace ToSic.Eav.Interfaces
         /// Gets the Value for this Language
         /// </summary>
         object this[int languageId] { get; }
+
         /// <summary>
         /// Gets the Value for this Languages
         /// </summary>
         object this[int[] languageIds] { get; }
+
         /// <summary>
         /// Gets the Value for this Language
         /// </summary>
         object this[string languageKey] { get; }
+
         /// <summary>
         /// Gets the Value for this Languages
         /// </summary>
