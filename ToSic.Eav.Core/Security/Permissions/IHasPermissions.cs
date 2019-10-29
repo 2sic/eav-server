@@ -8,7 +8,6 @@ namespace ToSic.Eav.Security.Permissions
     /// Anything that uses <see cref="IHasPermissions"/> can have custom permissions.
     /// This interface provides access to the information stored in the custom permissions.
     /// </summary>
-    [PublicApi]
     public interface IHasPermissions
     {
         /// <summary>
