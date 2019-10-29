@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Interfaces
 {
     /// <summary>
     /// This manages child entities - so entities referenced in a field of an Entity
     /// </summary>
-    [PublicApi.PublicApi]
+    [PublicApi]
     public interface IChildEntities
     {
         /// <summary>

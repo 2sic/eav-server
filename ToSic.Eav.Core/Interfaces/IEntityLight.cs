@@ -1,4 +1,5 @@
 ﻿using System;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Interfaces
 {
@@ -7,7 +8,7 @@ namespace ToSic.Eav.Interfaces
 	/// without multi-language capabilities, versions or publishing.
 	/// For the more powerful Entity, use <see cref="IEntity"/>.
 	/// </summary>
-	[PublicApi.PublicApi]
+	[PublicApi]
 	public interface IEntityLight
 	{
         /// <summary>

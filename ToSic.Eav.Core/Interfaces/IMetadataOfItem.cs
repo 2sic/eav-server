@@ -1,15 +1,14 @@
 ﻿using System.Collections.Generic;
-//using ToSic.Eav.Apps.Interfaces;
-using ToSic.Eav.PublicApi;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Security.Permissions;
 
 namespace ToSic.Eav.Interfaces
 {
     /// <summary>
     /// A provider for metadata for something.
-    /// So if an <see cref="IEntity"/> or an <see cref="IApp"/> has metadata, this will provide it. 
+    /// So if an <see cref="IEntity"/> or an <see cref="ToSic.Eav.Apps.Interfaces.IApp"/> has metadata, this will provide it. 
     /// </summary>
-    [PublicApi.PublicApi]
+    [PublicApi]
     public interface IMetadataOfItem: IEnumerable<IEntity>, IHasPermissions
     {
         // 2019-10-27 2dm - I think this is a leftover of old times, I believe it's not needed any more

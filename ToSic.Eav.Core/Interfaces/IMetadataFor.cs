@@ -1,11 +1,12 @@
 ﻿using System;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Interfaces
 {
 	/// <summary>
 	/// Enhances an Entity to say if it's used as metadata to describe something else.
 	/// </summary>
-	[PublicApi.PublicApi]
+	[PublicApi]
 	public interface IMetadataFor
 	{
         /// <summary>

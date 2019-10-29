@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ToSic.Eav.PublicApi
+namespace ToSic.Eav.Documentation
 {
     /// <summary>
     /// This attribute serves as metadata for other things to mark them as public APIs

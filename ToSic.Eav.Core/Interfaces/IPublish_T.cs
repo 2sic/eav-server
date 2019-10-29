@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.PublicApi;
+﻿using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Interfaces
 {
@@ -17,7 +17,6 @@ namespace ToSic.Eav.Interfaces
         /// </summary>
         int RepositoryId { get; }
 
-        #region Published / Draft properties
         /// <summary>
         /// Indicates whether this Entity is Published (true) or a Draft (false)
         /// </summary>
@@ -32,7 +31,5 @@ namespace ToSic.Eav.Interfaces
         /// Get Published Entity of this Entity
         /// </summary>
         T GetPublished();
-        #endregion
-
     }
 }

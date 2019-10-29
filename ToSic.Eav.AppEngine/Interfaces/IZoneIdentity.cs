@@ -1,9 +1,11 @@
-﻿namespace ToSic.Eav.Apps.Interfaces
+﻿using ToSic.Eav.Documentation;
+
+namespace ToSic.Eav.Apps.Interfaces
 {
     /// <summary>
     /// This things belongs to a zone
     /// </summary>
-    [PublicApi.PublicApi]
+    [PublicApi]
     public interface IZoneIdentity
     {
         /// <summary>

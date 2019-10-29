@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging.Simple;
-using ToSic.Eav.PublicApi;
 
 namespace ToSic.Eav.Interfaces
 {
     /// <summary>
     /// Manages relationships of an entity - to it's children and parents.
     /// </summary>
-    [PublicApi.PublicApi]
+    [PublicApi]
     public interface IRelationshipManager
     {
         /// <summary>

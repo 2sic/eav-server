@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Apps.Interfaces
@@ -7,7 +8,7 @@ namespace ToSic.Eav.Apps.Interfaces
     /// <summary>
     /// An App in memory - for quickly getting things done with the app data, queries etc.
     /// </summary>
-    [PublicApi.PublicApi]
+    [PublicApi]
     public interface IApp : IAppIdentity
     {
         /// <summary>

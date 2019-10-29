@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
-using ToSic.Eav.PublicApi;
 
 namespace ToSic.Eav.Security.Permissions
 {
@@ -8,7 +8,7 @@ namespace ToSic.Eav.Security.Permissions
     /// Anything that uses <see cref="IHasPermissions"/> can have custom permissions.
     /// This interface provides access to the information stored in the custom permissions.
     /// </summary>
-    [PublicApi.PublicApi]
+    [PublicApi]
     public interface IHasPermissions
     {
         /// <summary>

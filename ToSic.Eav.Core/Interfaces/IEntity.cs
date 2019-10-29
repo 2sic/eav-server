@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.PublicApi;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Security.Permissions;
 
 namespace ToSic.Eav.Interfaces
@@ -9,7 +9,7 @@ namespace ToSic.Eav.Interfaces
     /// Note that it inherits <see cref="IEntityLight"/> which is the basic definition without languages,
     /// versioning, publishing etc.
     /// </summary>
-    [PublicApi.PublicApi]
+    [PublicApi]
     public interface IEntity: IEntityLight, IPublish<IEntity>, IHasPermissions
     {
         /// <summary>

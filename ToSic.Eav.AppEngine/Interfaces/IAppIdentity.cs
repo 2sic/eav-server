@@ -1,11 +1,12 @@
-﻿using ToSic.Eav.Logging;
+﻿using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps.Interfaces
 {
     /// <summary>
     /// This thing belongs to an App (which also always belongs to a zone)
     /// </summary>
-    [PublicApi.PublicApi]
+    [PublicApi]
     public interface IAppIdentity: IZoneIdentity, ICanLogState
     {
         /// <summary>
