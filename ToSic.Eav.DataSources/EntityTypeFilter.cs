@@ -1,15 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.DataSources.VisualQuery;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
 {
 	/// <inheritdoc />
 	/// <summary>
-	/// Return only entities of a specific type
+	/// Return only entities of a specific content-type
 	/// </summary>
-
+    [PublicApi]
 	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.EntityTypeFilter, ToSic.Eav.DataSources",
         Type = DataSourceType.Filter, 
         DynamicOut = false,
@@ -20,31 +21,31 @@ namespace ToSic.Eav.DataSources
     public class EntityTypeFilter : BaseDataSource
 	{
         #region Configuration-properties
+        /// <inheritdoc/>
+        [PrivateApi]
 	    public override string LogId => "DS.TypeF";
 
         private const string TypeNameKey = "TypeName";
 
 		/// <summary>
-		/// The name of the type to filter for. 
+		/// The name of the type to filter for. Either the normal name or the 'StaticName' which is usually a GUID.
 		/// </summary>
 		public string TypeName
 		{
 			get => Configuration[TypeNameKey];
 		    set => Configuration[TypeNameKey] = value;
 		}
-		#endregion
+        #endregion
 
-		/// <inheritdoc />
-		/// <summary>
-		/// Constructs a new EntityTypeFilter
-		/// </summary>
-		public EntityTypeFilter()
+        /// <inheritdoc />
+        /// <summary>
+        /// Constructs a new EntityTypeFilter
+        /// </summary>
+        [PrivateApi]
+        public EntityTypeFilter()
 		{
             Provide(GetList);
-            //Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
 		    ConfigMask(TypeNameKey, "[Settings:TypeName]");
-        
-            //CacheRelevantConfigurations = new[] { TypeNameKey };
         }
 
         // special alternately named stream for use in the App data-source

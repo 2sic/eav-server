@@ -5,12 +5,17 @@ using CsvHelper;
 using System.IO;
 using System.Web;
 using ToSic.Eav.DataSources.VisualQuery;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
 using ContentTypeBuilder = ToSic.Eav.Data.Builder.ContentTypeBuilder;
 
 
 namespace ToSic.Eav.DataSources
 {
+    /// <summary>
+    /// DataSource for importing/reading CSV files. 
+    /// </summary>
+    [PublicApi]
     [VisualQuery(GlobalName = "ToSic.Eav.DataSources.CsvDataSource, ToSic.Eav.DataSources",
         Type = DataSourceType.Source, 
         DynamicOut = false,
@@ -19,63 +24,75 @@ namespace ToSic.Eav.DataSources
     {
         private const string FilePathKey = "FilePath";
 
+        /// <summary>
+        /// Path to the CSV file, relative to the website root
+        /// </summary>
         public string FilePath
         {
             get => Configuration[FilePathKey];
             set => Configuration[FilePathKey] = value;
         }
 
-
+        /// <summary>
+        /// Full path to the CSV file. 
+        /// </summary>
         public string ServerFilePath => HttpContext.Current != null ? HttpContext.Current.Server.MapPath(FilePath) : FilePath;
 
 
-        private const string DelimiterKey = "Delimiter";
-
+        /// <summary>
+        /// Delimiter character in the CSV, usually a ',' or ';' but could also be a tab or something. Default is tab.
+        /// </summary>
         public string Delimiter
         {
             get => Configuration[DelimiterKey];
             set => Configuration[DelimiterKey] = value;
         }
+        private const string DelimiterKey = "Delimiter";
 
 
-        private const string ContentTypeKey = "ContentType";
-
+        /// <summary>
+        /// Name of the content type which the imported entities have. This is fake, but may be necessary for later filtering of the types. Defaults to "Anonymous"
+        /// </summary>
         public string ContentType
         {
             get => Configuration[ContentTypeKey];
             set => Configuration[ContentTypeKey] = value;
         }
+        private const string ContentTypeKey = "ContentType";
 
 
-        private const string IdColumnNameKey = "IdColumnName";
-
+        /// <summary>
+        /// Column in the CSV which contains the ID. 
+        /// </summary>
         public string IdColumnName
         {
             get => Configuration[IdColumnNameKey];
             set => Configuration[IdColumnNameKey] = value;
         }
+        private const string IdColumnNameKey = "IdColumnName";
 
 
-        private const string TitleColumnNameKey = "TitleColumnName";
-
+        /// <summary>
+        /// The CSV column containing the title of the item - for dropdowns etc. and the EntityTitle property. 
+        /// </summary>
         public string TitleColumnName
         {
             get => Configuration[TitleColumnNameKey];
             set => Configuration[TitleColumnNameKey] = value;
         }
+        private const string TitleColumnNameKey = "TitleColumnName";
 
 
+        [PrivateApi]
         public CsvDataSource()
         {
             Provide(GetList);
-            //Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
 
             ConfigMask(FilePathKey, "[Settings:FilePath]");
             ConfigMask(DelimiterKey, "[Settings:Delimiter||\t]");
             ConfigMask(ContentTypeKey, "[Settings:ContentType||Anonymous]");
             ConfigMask(IdColumnNameKey, "[Settings:IdColumnName]", cacheRelevant: false);
             ConfigMask(TitleColumnNameKey, "[Settings:TitleColumnName]", cacheRelevant: false);
-            //CacheRelevantConfigurations = new[] { FilePathKey, DelimiterKey, ContentTypeKey };
         }
 
 

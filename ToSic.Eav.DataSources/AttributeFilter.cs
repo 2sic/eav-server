@@ -3,16 +3,17 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources.VisualQuery;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
 {
 	/// <inheritdoc />
 	/// <summary>
-	/// DataSource to only pass through configured AttributeNames
+	/// DataSource to only pass through configured AttributeNames - other attributes/properties are removed from the entities.
 	/// </summary>
 	/// <remarks>Uses Configuration "AttributeNames"</remarks>
-
+    [PublicApi]
 	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.AttributeFilter, ToSic.Eav.DataSources",
         Type = DataSourceType.Modify, 
         DynamicOut = false,
@@ -23,10 +24,13 @@ namespace ToSic.Eav.DataSources
 	{
 		#region Configuration-properties
 		private const string AttributeNamesKey = "AttributeNames";
-	    public override string LogId => "DS.AtribF";
+
+        /// <inheritdoc/>
+        [PrivateApi]
+        public override string LogId => "DS.AtribF";
 
         /// <summary>
-        /// A string containing one or more entity-ids. like "27" or "27,40,3063,30306"
+        /// A string containing one or more attribute names. like "FirstName" or "FirstName,LastName,Birthday"
         /// </summary>
         public string AttributeNames
 		{
@@ -40,13 +44,11 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// Constructs a new AttributeFilter DataSource
 		/// </summary>
+		[PrivateApi]
 		public AttributeFilter()
 		{
             Provide(GetList);
-			//Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
 			ConfigMask(AttributeNamesKey, "[Settings:AttributeNames]");
-
-            //CacheRelevantConfigurations = new[] { AttributeNamesKey };
         }
 
         /// <summary>
@@ -70,10 +72,8 @@ namespace ToSic.Eav.DataSources
 		}
 
         /// <inheritdoc />
-        /// <summary>
-        /// Load configuration and normalize parameters AttributeNames
-        /// </summary>
-	    protected internal override void EnsureConfigurationIsLoaded()
+        [PrivateApi]
+        protected internal override void EnsureConfigurationIsLoaded()
 	    {
 	        base.EnsureConfigurationIsLoaded();
 
