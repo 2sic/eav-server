@@ -7,7 +7,7 @@ namespace ToSic.Eav.DataSources.Caches
 {
     /// <inheritdoc cref="IDataSource" />
     /// <summary>
-    /// Caching interface for standard Eav Cache
+    /// Caching interface for Root Eav Cache. 
     /// </summary>
     [VisualQuery(GlobalName = "ToSic.Eav.DataSources.Caches.ICache, ToSic.Eav.DataSources",
         Type = DataSourceType.Source)]
@@ -24,7 +24,7 @@ namespace ToSic.Eav.DataSources.Caches
 		void PurgeGlobalCache();
 
 		/// <summary>
-		/// Gets a GeontentType by Name
+		/// Gets a ContentType by Name
 		/// </summary>
 		IContentType GetContentType(string name);
 

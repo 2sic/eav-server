@@ -5,7 +5,7 @@ using ToSic.Eav.Repositories;
 namespace ToSic.Eav.Interfaces
 {
 	/// <summary>
-	/// Represents a Content Type
+	/// Represents a Content Type information (the schema) used for <see cref="IEntity"/> objects.
 	/// </summary>
 	public interface IContentType
 	{

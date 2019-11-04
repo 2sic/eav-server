@@ -4,7 +4,6 @@ using ToSic.Eav.Apps.Interfaces;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
-using ToSic.Eav.Interfaces.Caches;
 using ToSic.Eav.ValueProvider;
 using ICache = ToSic.Eav.DataSources.Caches.ICache;
 
@@ -25,9 +24,10 @@ namespace ToSic.Eav.DataSources
         Guid DataSourceGuid { get; set; }
 
 		/// <summary>
-		/// Gets the Dictionary of Out-Streams. This is the internal accessor, as usually you'll use this["name"] instead.
+		/// Gets the Dictionary of Out-Streams. This is the internal accessor, as usually you'll use this["name"] instead. <br/>
+		/// In rare cases you need the Out, for example to list the stream names in the data source.
 		/// </summary>
-		[PrivateApi]
+		/// <returns>A dictionary of named <see cref="IDataStream"/> objects</returns>
         IDictionary<string, IDataStream> Out { get; }
 
 		/// <summary>
@@ -81,6 +81,7 @@ namespace ToSic.Eav.DataSources
 	    /// <summary>
 	    /// Indicates whether the DataSource is ready for use (initialized/configured)
 		/// </summary>
+		/// <returns>True if ready, false if not. Rarely used.</returns>
         bool Ready { get; }
 
 		/// <summary>
@@ -93,15 +94,16 @@ namespace ToSic.Eav.DataSources
         #region Caching Information
 
         /// <summary>
-        /// TODO
+        /// Direct access to the root cache underlying all data provided by this data source. 
         /// </summary>
-        [PrivateApi]
-	    ICache Cache { get; }
+        /// <returns>An <see cref="ICache"/> data source to the root cache.</returns>
+        ICache Cache { get; }
 
         /// <summary>
-        /// List of items from the configuration which should be used for creating the cache-key
+        /// Some configuration of the data source is cache-relevant, others are not.
+        /// This list contains the names of all configuration items which are cache relevant.
+        /// It will be used when generating a unique ID for caching the data.
         /// </summary>
-        [PrivateApi]
         List<string> CacheRelevantConfigurations { get; set; }
 
         [PrivateApi]

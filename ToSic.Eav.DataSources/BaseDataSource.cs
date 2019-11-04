@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.ValueProvider;
@@ -9,19 +10,22 @@ using ICache = ToSic.Eav.DataSources.Caches.ICache;
 
 namespace ToSic.Eav.DataSources
 {
-    /// <inheritdoc cref="IDataSource" />
-    /// <inheritdoc cref="IDataTarget" />
     /// <summary>
-    /// The base class, which should always be inherited. Already implements things like Get One / Get many, etc. 
-    /// also maintains default User-May-Do-Edit/Sort etc. values
+    /// The base class, which should always be inherited. Already implements things like Get One / Get many, Caching and a lot more.
     /// </summary>
+    [PublicApi]
     public abstract class BaseDataSource : HasLog, IDataSource, IDataTarget
     {
+        /// <summary>
+        /// The name to be used in logging. It's set in the code, and then used to initialize the logger. 
+        /// </summary>
+        [PrivateApi]
         public new abstract string LogId { get; }
 
         /// <summary>
         /// Constructor
         /// </summary>
+        [PrivateApi]
         protected BaseDataSource() : base("DS.Base") { }
 
         /// <inheritdoc />
@@ -35,6 +39,7 @@ namespace ToSic.Eav.DataSources
         /// <inheritdoc />
         public List<string> CacheRelevantConfigurations { get; set; } = new List<string>();
 
+        [PrivateApi]
         protected void ConfigMask(string key, string mask, bool cacheRelevant = true)
         {
             Configuration.Add(key, mask);
@@ -63,8 +68,10 @@ namespace ToSic.Eav.DataSources
             }
         }
 
+        /// <inheritdoc />
         public ICache Cache => DataSource.GetCache(ZoneId, AppId);
 
+        /// <inheritdoc />
         public virtual string CacheFullKey
         {
             get
@@ -101,29 +108,41 @@ namespace ToSic.Eav.DataSources
         /// <inheritdoc />
         public virtual int ZoneId { get; set; }
 
+        /// <inheritdoc />
         public Guid DataSourceGuid { get; set; }
 
+        /// <inheritdoc />
         public IDictionary<string, IDataStream> In { get; internal set; } = new Dictionary<string, IDataStream>();
+
+        /// <inheritdoc />
         public virtual IDictionary<string, IDataStream> Out { get; protected internal set; } = new Dictionary<string, IDataStream>();
 
+        /// <inheritdoc />
         public IDataStream this[string outName] => Out[outName];
 
+        /// <inheritdoc />
         public IEnumerable<IEntity> List => Out[Constants.DefaultStreamName].List;
 
+        [PrivateApi]
         [Obsolete("deprecated since 2sxc 9.8 / eav 4.5 - use List instead")]
         public IEnumerable<IEntity> LightList => List;
 
 
+        /// <inheritdoc />
         public IValueCollectionProvider ConfigurationProvider { get; protected internal set; }
+
+        /// <inheritdoc />
         public IDictionary<string, string> Configuration { get; internal set; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        [PrivateApi]
         protected internal bool ConfigurationIsLoaded;
 
 
-        // protected internal Dictionary<string, IValueProvider> Settings 
         /// <summary>
         /// Make sure that configuration-parameters have been parsed (tokens resolved)
         /// but do it only once (for performance reasons)
         /// </summary>
+        [PrivateApi]
 		protected internal virtual void EnsureConfigurationIsLoaded()
         {
             if (ConfigurationIsLoaded)
@@ -141,10 +160,6 @@ namespace ToSic.Eav.DataSources
 
         #region various Attach-In commands
         /// <inheritdoc />
-        /// <summary>
-        /// Attach specified DataSource to In
-        /// </summary>
-        /// <param name="dataSource">DataSource to attach</param>
         public void Attach(IDataSource dataSource)
         {
             // ensure list is blank, otherwise we'll have name conflicts when replacing a source
@@ -155,9 +170,11 @@ namespace ToSic.Eav.DataSources
         }
 
 
+        /// <inheritdoc />
         public void Attach(string streamName, IDataSource dataSource) 
             => Attach(streamName, dataSource[Constants.DefaultStreamName]);
 
+        /// <inheritdoc />
         public void Attach(string streamName, IDataStream dataStream)
         {
             if (In.ContainsKey(streamName))
@@ -168,11 +185,13 @@ namespace ToSic.Eav.DataSources
 
         #endregion
 
-        #region Various provide-out commands
+        #region Various provide-out commands - all PrivateApi
 
+        [PrivateApi]
         public void Provide(GetIEnumerableDelegate getList) 
             => Provide(Constants.DefaultStreamName, getList);
 
+        [PrivateApi]
         public void Provide(string name, GetIEnumerableDelegate getList) 
             => Out.Add(name, new DataStream(this, name, getList));
 
@@ -183,6 +202,8 @@ namespace ToSic.Eav.DataSources
         /// <inheritdoc />
         public virtual bool Ready => In[Constants.DefaultStreamName].Source != null && In[Constants.DefaultStreamName].Source.Ready;
 
+        /// <inheritdoc />
+        [PrivateApi]
         public bool TempUsesDynamicOut { get; protected set; } = false;
 
         #endregion
@@ -203,6 +224,7 @@ namespace ToSic.Eav.DataSources
         /// <param name="modified"></param>
         /// <param name="appId">optional app id for this item, defaults to the current app</param>
         /// <returns></returns>
+        [PrivateApi]
         protected IEntity AsEntity(Dictionary<string, object> values,
             string titleField = null,
             string typeName = UnspecifiedType,
@@ -224,6 +246,7 @@ namespace ToSic.Eav.DataSources
         /// <param name="typeName">an optional type-name - usually not needed, defaults to "unspecified"</param>
         /// <param name="appId">optional app id for this item, defaults to the current app</param>
         /// <returns></returns>
+        [PrivateApi]
         protected IEnumerable<IEntity> AsEntity(IEnumerable<Dictionary<string, object>> itemValues,
             string titleField = null,
             string typeName = UnspecifiedType,
@@ -232,6 +255,7 @@ namespace ToSic.Eav.DataSources
 
         #endregion
 
+        /// <inheritdoc />
         public void PurgeList(bool cascade = false)
         {
             foreach (var stream in In)

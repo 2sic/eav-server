@@ -15,6 +15,11 @@ namespace ToSic.Eav.Apps.Interfaces
 
         void Delete(int entityId, string userName = null);
 
+        /// <summary>
+        /// Metadata is an important feature of apps. <br/>
+        /// So the App DataSource automatically provides direct access to the metadata system.
+        /// This allows users of the App to query metadata directly through this object. 
+        /// </summary>
         IMetadataProvider Metadata { get; }
     }
 }

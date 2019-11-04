@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Interfaces.Caches
+﻿namespace ToSic.Eav.Interfaces
 {
     public interface ICanSelfCache
     {

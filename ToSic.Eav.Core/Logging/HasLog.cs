@@ -5,13 +5,24 @@ namespace ToSic.Eav.Logging
 {
     public class HasLog : IHasLog
     {
+        /// <summary>
+        /// The unique ID of this logging item. <br/>
+        /// It's usually a convention based name which helps identify logs of a specific class or object.
+        /// The schema is Abc.AreaNm where the prefix marks a topic, the suffix the specific thing it's for. 
+        /// </summary>
         [IgnoreDataMember]
         public string LogId { get; internal set; } = "unknwn";
 
         [IgnoreDataMember]
         public Log Log { get; private set; }
 
-
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="logName">Name to use in the Log-ID</param>
+        /// <param name="parentLog">Parent log (if available) for log-chaining</param>
+        /// <param name="initialMessage">First message to be added</param>
+        /// <param name="className">Class name it's for</param>
         public HasLog(string logName, Log parentLog = null, string initialMessage = null, string className = null) 
             => InitLogInternal(logName, parentLog, initialMessage, className);
 
