@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.DataSources.VisualQuery;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging.Simple;
 
@@ -11,7 +12,7 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// A DataSource that filters Entities by Ids
 	/// </summary>
-
+    [PublicApi]
     [VisualQuery(GlobalName = "ToSic.Eav.DataSources.Shuffle, ToSic.Eav.DataSources",
         Type = DataSourceType.Sort, 
         DynamicOut = false, 
@@ -21,12 +22,14 @@ namespace ToSic.Eav.DataSources
 	public sealed class Shuffle: BaseDataSource
 	{
         #region Configuration-properties (no config)
+        /// <inheritdoc/>
+        [PrivateApi]
 	    public override string LogId => "DS.Shuffl";
 
         private const string TakeKey = "Take";
 
         /// <summary>
-        /// Amount of items to take 
+        /// Amount of items to take / return when shuffling. Defaults to 0.
         /// </summary>
 		public int Take
         {
@@ -40,13 +43,14 @@ namespace ToSic.Eav.DataSources
 
 
         #endregion
-
-        protected static readonly bool DebugShuffleDs = false;
+        [PrivateApi] 
+        private static readonly bool DebugShuffleDs = false;
 
         /// <inheritdoc />
         /// <summary>
         /// Constructs a new EntityIdFilter
         /// </summary>
+        [PrivateApi]
         public Shuffle()
 		{
             Provide(GetList);

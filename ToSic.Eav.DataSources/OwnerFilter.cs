@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.DataSources.VisualQuery;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
@@ -9,7 +10,7 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// Filter entities to show Drafts or only Published Entities
 	/// </summary>
-
+    [PublicApi]
 	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.OwnerFilter, ToSic.Eav.DataSources",
         Type = DataSourceType.Security,
         DynamicOut = false,
@@ -19,12 +20,14 @@ namespace ToSic.Eav.DataSources
     public class OwnerFilter : BaseDataSource
 	{
         #region Configuration-properties
+        /// <inheritdoc/>
+        [PrivateApi]
 	    public override string LogId => "DS.OwnrF";
 
         private const string IdentityCode = "IdentityCode";
 
         /// <summary>
-        /// Indicates whether to show drafts or only Published Entities
+        /// The identity of the user to filter by. Uses the Identity-token convention like dnn:1 is the user #1 in the DNN DB
         /// </summary>
         public string Identity
 		{
@@ -37,13 +40,11 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// Constructs a new PublishingFilter
 		/// </summary>
+		[PrivateApi]
 		public OwnerFilter()
 		{
             Provide(GetList);
-            //Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
 		    ConfigMask(IdentityCode, "[Settings:" + IdentityCode + "]"); 
-
-            //CacheRelevantConfigurations = new[] { IdentityCode };
         }
 
         private IEnumerable<IEntity> GetList()

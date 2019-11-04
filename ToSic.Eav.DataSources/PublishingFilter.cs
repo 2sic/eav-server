@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.DataSources.VisualQuery;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
@@ -8,6 +9,7 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// Filter entities to show Drafts or only Published Entities
 	/// </summary>
+	[PublicApi]
 
 	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.PublishingFilter, ToSic.Eav.DataSources",
         Type = DataSourceType.Security, 
@@ -18,12 +20,14 @@ namespace ToSic.Eav.DataSources
     public class PublishingFilter : BaseDataSource
 	{
         #region Configuration-properties
+        /// <inheritdoc/>
+        [PrivateApi]
 	    public override string LogId => "DS.Publsh";
 
         private const string ShowDraftsKey = "ShowDrafts";
 
 		/// <summary>
-		/// Indicates whether to show drafts or only Published Entities
+		/// Indicates whether to show drafts or only Published Entities. 
 		/// </summary>
 		public bool ShowDrafts
 		{
@@ -36,6 +40,7 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// Constructs a new PublishingFilter
 		/// </summary>
+		[PrivateApi]
 		public PublishingFilter()
 		{
             Provide(GetList);

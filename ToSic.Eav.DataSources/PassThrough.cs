@@ -1,23 +1,28 @@
 ﻿using ToSic.Eav.DataSources.VisualQuery;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.DataSources
 {
 	/// <inheritdoc />
 	/// <summary>
-	/// A DataSource that passes through all In Connections. Can be used con consollidate/merge multiple Sources into one.
+	/// A DataSource that passes through all In Connections. Can be used con consolidate/merge multiple Sources into one.
 	/// </summary>
+	[PublicApi]
 
 	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.PassThrough, ToSic.Eav.DataSources",
         Type = DataSourceType.Source, DynamicOut = true)]
 
     public class PassThrough : BaseDataSource
 	{
-	    public override string LogId => "DS.Passth";
+        /// <inheritdoc/>
+        [PrivateApi]
+        public override string LogId => "DS.Passth";
 
         /// <inheritdoc />
         /// <summary>
         /// Constructs a new PassThrough DataSources
         /// </summary>
+        [PrivateApi]
         public PassThrough()
 		{
 			Out = In;

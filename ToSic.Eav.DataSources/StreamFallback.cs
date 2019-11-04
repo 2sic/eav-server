@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.DataSources.VisualQuery;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
@@ -9,7 +10,7 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// A DataSource that returns the first stream which has content
 	/// </summary>
-
+    [PublicApi]
 	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.StreamFallback, ToSic.Eav.DataSources",
         Type = DataSourceType.Logic, 
         DynamicOut = false, 
@@ -18,12 +19,14 @@ namespace ToSic.Eav.DataSources
     public sealed class StreamFallback : BaseDataSource
 	{
         #region Configuration-properties (no config)
+        /// <inheritdoc/>
+        [PrivateApi]
 	    public override string LogId => "DS.Fallbk";
 
         #endregion
 
         #region Debug-Properties
-
+        [PrivateApi]
         public string ReturnedStreamName { get; private set; }
         #endregion
 
@@ -32,6 +35,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Constructs a new EntityIdFilter
         /// </summary>
+        [PrivateApi]
 		public StreamFallback()
 		{
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));

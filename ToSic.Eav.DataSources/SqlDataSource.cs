@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources.VisualQuery;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
@@ -14,6 +15,7 @@ namespace ToSic.Eav.DataSources
     /// <summary>
     /// Provide Entities from a SQL Server
     /// </summary>
+    [PublicApi]
     [VisualQuery(GlobalName = "ToSic.Eav.DataSources.SqlDataSource, ToSic.Eav.DataSources",
         Type = DataSourceType.Source, 
         DynamicOut = false,
@@ -23,22 +25,25 @@ namespace ToSic.Eav.DataSources
 
 	public class SqlDataSource : ExternalDataDataSource
 	{
+        /// <inheritdoc/>
+        [PrivateApi]
 	    public override string LogId => "DS.ExtSql";
 
         // Note: of the standard SQL-terms, I will only allow exec|execute|select
         // Everything else shouldn't be allowed
+        [PrivateApi]
         public static Regex ForbiddenTermsInSelect = new Regex(@"(;|\s|^)+(insert|update|delete|create|alter|drop|rename|truncate|backup|restore)\s", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 		#region Configuration-properties
-		protected const string TitleFieldKey = "TitleField";
-		protected const string EntityIdFieldKey = "EntityIdField";
-		protected const string ContentTypeKey = "ContentType";
-		protected const string SelectCommandKey = "SelectCommand";
-		protected const string ConnectionStringKey = "ConnectionString";
-		protected const string ConnectionStringNameKey = "ConnectionStringName";
-		protected const string ConnectionStringDefault = "[Settings:ConnectionString]";
+        [PrivateApi] protected const string TitleFieldKey = "TitleField";
+        [PrivateApi] protected const string EntityIdFieldKey = "EntityIdField";
+        [PrivateApi] protected const string ContentTypeKey = "ContentType";
+        [PrivateApi] protected const string SelectCommandKey = "SelectCommand";
+        [PrivateApi] protected const string ConnectionStringKey = "ConnectionString";
+        [PrivateApi] protected const string ConnectionStringNameKey = "ConnectionStringName";
+        [PrivateApi] protected const string ConnectionStringDefault = "[Settings:ConnectionString]";
 
 		/// <summary>
-		/// Gets or sets the name of the ConnectionString in the Application.Config to use
+		/// Name of the ConnectionString in the Application.Config to use
 		/// </summary>
 		public string ConnectionStringName
 		{
@@ -47,7 +52,7 @@ namespace ToSic.Eav.DataSources
 		}
 
 		/// <summary>
-		/// Gets or sets the ConnectionString
+		/// ConnectionString to the DB
 		/// </summary>
 		public string ConnectionString
 		{
@@ -56,7 +61,7 @@ namespace ToSic.Eav.DataSources
 		}
 
 		/// <summary>
-		/// Gets or sets the SQL Command
+		/// SQL Command for selecting data. 
 		/// </summary>
 		public string SelectCommand
 		{
@@ -65,7 +70,7 @@ namespace ToSic.Eav.DataSources
 		}
 
 		/// <summary>
-		/// Gets or sets the Name of the ContentType
+		/// Name of the ContentType which we'll pretend the items have.
 		/// </summary>
 		public string ContentType
 		{
@@ -74,7 +79,7 @@ namespace ToSic.Eav.DataSources
 		}
 
 		/// <summary>
-		/// Gets or sets the Name of the Title Attribute of the Source DataTable
+		/// Name of the Title Attribute of the Source DataTable
 		/// </summary>
 		public string TitleField
 		{
@@ -83,7 +88,7 @@ namespace ToSic.Eav.DataSources
 		}
 
 		/// <summary>
-		/// Gets or sets the Name of the Column used as EntityId
+		/// Name of the Column used as EntityId
 		/// </summary>
 		public string EntityIdField
 		{
@@ -94,7 +99,7 @@ namespace ToSic.Eav.DataSources
 		#endregion
 
         #region Special SQL specific properties to prevent SQL Injection
-
+        [PrivateApi]
 	    public const string ExtractedParamPrefix = "AutoExtractedParam";
 
         #endregion
@@ -104,6 +109,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
 		/// Initializes a new instance of the SqlDataSource class
 		/// </summary>
+		[PrivateApi]
 		public SqlDataSource()
 		{
             // ReSharper disable once DoNotCallOverridableMethodsInConstructor
@@ -117,17 +123,22 @@ namespace ToSic.Eav.DataSources
 		    ConfigMask(ConnectionStringNameKey, "[Settings:ConnectionStringName]");
         }
 
-		/// <inheritdoc />
-		/// <summary>
-		/// Initializes a new instance of the SqlDataSource class
-		/// </summary>
-		public SqlDataSource(string connectionString, string selectCommand, string contentType, string entityIdField = null, string titleField = null)
+        /// <inheritdoc />
+        /// <summary>
+        /// Initializes a new instance of the SqlDataSource class
+        /// </summary>
+        /// <param name="connectionString">Connection String to the DB</param>
+        /// <param name="selectCommand">SQL Query</param>
+        /// <param name="contentType">Name of virtual content-type we'll return</param>
+        /// <param name="entityIdField">ID-field in the DB to use</param>
+        /// <param name="titleField">Title-field in the DB to use</param>
+        public SqlDataSource(string connectionString, string selectCommand, string contentType, string entityIdField = null, string titleField = null)
 			: this()
 		{
 			ConnectionString = connectionString;
 			SelectCommand = selectCommand;
 			ContentType = contentType;
-		    EntityIdField = entityIdField ?? Constants.EntityFieldId;// EntityIdDefaultColumnName;
+		    EntityIdField = entityIdField ?? Constants.EntityFieldId;
 			TitleField = titleField ?? Constants.EntityFieldTitle;
 		}
 
@@ -135,6 +146,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Replace original EnsureConfigurationIsLoaded to handle the SQL in a special way
         /// </summary>
+        [PrivateApi]
 	    protected internal override void EnsureConfigurationIsLoaded()
 	    {
 	        if (ConfigurationIsLoaded)

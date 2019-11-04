@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.DataSources.VisualQuery;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.DataSources
@@ -9,7 +10,7 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// A DataSource that merges two streams
 	/// </summary>
-
+    [PublicApi]
 	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.StreamMerge, ToSic.Eav.DataSources",
         Type = DataSourceType.Logic, 
         DynamicOut = false, 
@@ -18,6 +19,8 @@ namespace ToSic.Eav.DataSources
     public sealed class StreamMerge: BaseDataSource
 	{
         #region Configuration-properties (no config)
+        /// <inheritdoc/>
+        [PrivateApi]
 	    public override string LogId => "DS.StMrge";
 
         #endregion
@@ -27,6 +30,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Constructs a new EntityIdFilter
         /// </summary>
+        [PrivateApi]
 		public StreamMerge()
 		{
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));

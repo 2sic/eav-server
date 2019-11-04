@@ -22,6 +22,10 @@ namespace ToSic.Eav.DataSources
         ExpectsDataOfType = "|Config ToSic.Eav.DataSources.CsvDataSource")]
     public class CsvDataSource : ExternalDataDataSource
     {
+        /// <inheritdoc/>
+        [PrivateApi]
+        public override string LogId => "DS.CSV";
+
         private const string FilePathKey = "FilePath";
 
         /// <summary>
