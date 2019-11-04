@@ -33,10 +33,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Assets\Adam\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="SharpZipLib" Version="0.86.0" />
   </ItemGroup>
 
