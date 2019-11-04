@@ -27,9 +27,5 @@ namespace ToSic.Eav.Apps
             AppId = appId;
         }
 
-        /// <summary>
-        /// Text based identity for debugging only
-        /// </summary>
-        public string LogState => ZoneId + ":" + AppId;
     }
 }

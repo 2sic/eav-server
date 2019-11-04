@@ -7,7 +7,7 @@ namespace ToSic.Eav.Apps.Interfaces
     /// This thing belongs to an App (which also always belongs to a zone)
     /// </summary>
     [PublicApi]
-    public interface IAppIdentity: IZoneIdentity, ICanLogState
+    public interface IAppIdentity: IZoneIdentity
     {
         /// <summary>
         /// The app id as used internally
