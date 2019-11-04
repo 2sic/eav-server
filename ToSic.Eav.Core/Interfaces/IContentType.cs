@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Data;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Repositories;
 
 namespace ToSic.Eav.Interfaces
@@ -7,6 +8,7 @@ namespace ToSic.Eav.Interfaces
 	/// <summary>
 	/// Represents a Content Type information (the schema) used for <see cref="IEntity"/> objects.
 	/// </summary>
+	[PublicApi]
 	public interface IContentType
 	{
         /// <summary>
@@ -30,12 +32,12 @@ namespace ToSic.Eav.Interfaces
         string Description { get; }
 
         /// <summary>
-        /// Get the scope of the Content Type
+        /// Get the scope of the Content Type (like sections in a DB)
         /// </summary>
         string Scope { get; }
 
         /// <summary>
-        /// Get the id of the Content Type (AttributeSet) - you usually don't need this!
+        /// Get the id of the Content Type - you usually don't need this!
         /// </summary>
         int ContentTypeId { get; }
 
@@ -48,13 +50,22 @@ namespace ToSic.Eav.Interfaces
         /// A simple indexer to get an attribute
         /// </summary>
         /// <param name="fieldName"></param>
-        /// <returns></returns>
+        /// <returns>The <see cref="IAttributeDefinition"/> of the field name</returns>
         IAttributeDefinition this[string fieldName] { get; }
 
-
+        /// <summary>
+        /// Information where the Content-Type was stored (file system, DB, etc.)
+        /// </summary>
         RepositoryTypes RepositoryType { get; }
+
+        /// <summary>
+        /// Information / ID / URL to this content-type where it was stored in the repository
+        /// </summary>
         string RepositoryAddress { get; }
 
+        /// <summary>
+        /// Determines if the data for this type is dynamic (stored as JSON) or EAV (split into sql-tables)
+        /// </summary>
         bool IsDynamic { get; }
 
         /// <summary>

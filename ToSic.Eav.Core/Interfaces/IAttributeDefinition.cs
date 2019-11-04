@@ -1,4 +1,5 @@
 ﻿using System;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Security.Permissions;
 
 namespace ToSic.Eav.Interfaces
@@ -9,10 +10,11 @@ namespace ToSic.Eav.Interfaces
     /// - attribute definition (in the IContentType)
     /// - attribute with values-list (in the IEntity)
     /// </summary>
+    [PublicApi]
     public interface IAttributeDefinition: IAttributeBase, IHasPermissions
 	{
         /// <summary>
-        /// AppId
+        /// AppId for this attribute
         /// </summary>
         int AppId { get; }
 
@@ -33,9 +35,11 @@ namespace ToSic.Eav.Interfaces
 
         IMetadataOfItem Metadata { get; }
 
+        [PrivateApi]
 	    [Obsolete("this is the old call - which returns unknown. for the new UI, we should use the #2, which will later replace this")]
         string InputType { get; }
 
+        [PrivateApi]
         // 2018-08-26 2dm new version temporary, will later replace the InputType
 	    string InputTypeTempBetterForNewUi { get; }
 

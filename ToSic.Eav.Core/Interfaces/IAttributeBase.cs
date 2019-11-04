@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Enums;
+﻿using ToSic.Eav.Documentation;
+using ToSic.Eav.Enums;
 
 namespace ToSic.Eav.Interfaces
 {
@@ -7,6 +8,7 @@ namespace ToSic.Eav.Interfaces
 	/// - attribute definition (in the IContentType)
 	/// - attribute with values-list (in the IEntity)
 	/// </summary>
+	[PublicApi]
 	public interface IAttributeBase
 	{
 		/// <summary>
@@ -15,12 +17,12 @@ namespace ToSic.Eav.Interfaces
 		string Name { get; }
 
 		/// <summary>
-		/// Type of the Attribute
+		/// Type of the Attribute like 'string', 'decimal' etc.
 		/// </summary>
 		string Type { get; }
 
         /// <summary>
-        /// The officialy type, as a controlled value
+        /// The official type, as a controlled value
         /// </summary>
         AttributeTypeEnum ControlledType { get; }
 
