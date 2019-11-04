@@ -3,7 +3,8 @@
 namespace ToSic.Eav.Apps.Assets
 {
     /// <summary>
-    /// Describes an ADAM asset.
+    /// Describes an ADAM (Automatic Digital Asset Management) asset. <br/>
+    /// This contains properties which both <see cref="IAdamFolder"/> and <see cref="IAdamFile"/> have in common.
     /// </summary>
     [PublicApi]
     public interface IAdamAsset
@@ -37,11 +38,6 @@ namespace ToSic.Eav.Apps.Assets
         /// <returns>"folder", "image", "document", "file" depending on what it is</returns>
         string Type { get; }
 
-        ///// <summary>
-        ///// The asset name
-        ///// typically the folder or the file name
-        ///// </summary>
-        //string Name { get; }
     };
 }
 

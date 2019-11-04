@@ -67,7 +67,7 @@ namespace ToSic.Eav.App
         #region Cache Timestamp & Invalidation
 
         public long CacheTimestamp => _app.CacheTimestamp;
-        public bool CacheChanged(long prevCacheTimestamp) => _app.CacheChanged(prevCacheTimestamp);
+        public bool CacheChanged(long newCacheTimeStamp) => _app.CacheChanged(newCacheTimeStamp);
 
         #endregion
 

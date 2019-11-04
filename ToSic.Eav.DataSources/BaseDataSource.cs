@@ -88,10 +88,10 @@ namespace ToSic.Eav.DataSources
                 ? In[Constants.DefaultStreamName].Source.CacheTimestamp
                 : DateTime.Now.Ticks; // if no relevant up-stream, just return now!
 
-        public virtual bool CacheChanged(long prevCacheTimestamp) => 
+        public virtual bool CacheChanged(long newCacheTimeStamp) => 
             !In.ContainsKey(Constants.DefaultStreamName) 
             || In[Constants.DefaultStreamName].Source == null 
-            || In[Constants.DefaultStreamName].Source.CacheChanged(prevCacheTimestamp);
+            || In[Constants.DefaultStreamName].Source.CacheChanged(newCacheTimeStamp);
 
         #endregion
 

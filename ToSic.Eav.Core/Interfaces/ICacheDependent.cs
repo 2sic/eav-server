@@ -3,7 +3,7 @@
     public interface ICacheDependent
     {
         /// <summary>
-        /// Sistem time of last refresh
+        /// System time of last refresh
         /// </summary>
         long CacheTimestamp { get; }
 

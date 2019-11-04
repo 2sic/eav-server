@@ -40,7 +40,7 @@ namespace ToSic.Eav.Data
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         public long CacheTimestamp { get; private set; }
-        public bool CacheChanged(long prevCacheTimestamp) => Upstream.CacheChanged(prevCacheTimestamp);
+        public bool CacheChanged(long newCacheTimeStamp) => Upstream.CacheChanged(newCacheTimeStamp);
 
         public bool CacheChanged() => Upstream.CacheChanged(CacheTimestamp);
     }

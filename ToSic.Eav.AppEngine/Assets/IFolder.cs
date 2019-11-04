@@ -3,7 +3,7 @@
 namespace ToSic.Eav.Apps.Assets
 {
     /// <summary>
-    /// Describes a folder as provided by the underlying environment (for example: DNN)
+    /// Describes a folder as provided by the underlying environment (like DNN)
     /// </summary>
     [PublicApi]
     public interface IFolder: IAsset
@@ -14,11 +14,5 @@ namespace ToSic.Eav.Apps.Assets
         /// <returns>true if it has items inside it, false if not</returns>
         bool HasChildren { get; set; }
 
-
-        ///// <summary>
-        ///// The folder name
-        ///// </summary>
-        ///// <returns>A string containing the folder name</returns>
-        //string Name { get; set; }
     }
 }

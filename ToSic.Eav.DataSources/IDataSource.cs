@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using ToSic.Eav.Apps.Interfaces;
 using ToSic.Eav.DataSources.Caches;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Interfaces.Caches;
 using ToSic.Eav.ValueProvider;
@@ -9,45 +11,46 @@ using ICache = ToSic.Eav.DataSources.Caches.ICache;
 namespace ToSic.Eav.DataSources
 {
 	/// <summary>
-	/// Public interface for an Eav Data Source
+	/// Public interface for an Eav DataSource. All DataSource objects are based on this. 
 	/// </summary>
-	public interface IDataSource : ICacheExpiring, ICacheKeyProvider, ICanPurgeListCache
+	[PublicApi]
+	public interface IDataSource : IAppIdentity, ICacheExpiring, ICacheKeyProvider, ICanPurgeListCache
 	{
 		#region Data Interfaces
 
-		/// <summary>
-		/// Gets the ZoneId of this DataSource
-		/// </summary>
-		int ZoneId { get; }
-		/// <summary>
-		/// Gets the AppId of this DataSource
-		/// </summary>
-		int AppId { get; }
-
         /// <summary>
-        /// Internal ID usually from persisted configurations
+        /// Internal ID usually from persisted configurations IF the configuration was build from an pre-stored query.
         /// </summary>
+        /// <returns>The guid of this data source which identifies the configuration <see cref="IEntity"/> of the data source.</returns>
         Guid DataSourceGuid { get; set; }
 
 		/// <summary>
-		/// Gets the Dictionary of Out-Streams
+		/// Gets the Dictionary of Out-Streams. This is the internal accessor, as usually you'll use this["name"] instead.
 		/// </summary>
-		IDictionary<string, IDataStream> Out { get; }
+		[PrivateApi]
+        IDictionary<string, IDataStream> Out { get; }
 
 		/// <summary>
-		/// Gets the Out-Stream with specified Name
+		/// Gets the Out-Stream with specified Name. 
 		/// </summary>
+		/// <returns>an <see cref="IDataStream"/> of the desired name</returns>
+		/// <exception cref="NullReferenceException">if the stream does not exist</exception>
 		IDataStream this[string outName] { get; }
 
+        /// <summary>
+        /// The items in the data-source - to be exact, the ones in the Default stream.
+        /// </summary>
+        /// <returns>A list of <see cref="IEntity"/> items in the Default stream.</returns>
         IEnumerable<IEntity> List { get; }
 
+        [PrivateApi]
         [Obsolete("deprecated since 2sxc 9.8 / eav 4.5 - use List instead")]
         IEnumerable<IEntity> LightList { get; }
 
         /// <summary>
 		/// Gets the ConfigurationProvider for this DataSource
 		/// </summary>
-		IValueCollectionProvider ConfigurationProvider { get; }
+        IValueCollectionProvider ConfigurationProvider { get; }
 
 		/// <summary>
 		/// Gets a Dictionary of Configurations for this DataSource, e.g. Key: EntityId, Value: [QueryString:EntityId]
@@ -81,25 +84,27 @@ namespace ToSic.Eav.DataSources
         bool Ready { get; }
 
 		/// <summary>
-		/// Gets the Name of this DataSource
+		/// Name of this DataSource - not usually relevant.
 		/// </summary>
+		/// <returns>Name of this source.</returns>
 		string Name { get; }
 		#endregion
 
         #region Caching Information
 
+        /// <summary>
+        /// TODO
+        /// </summary>
+        [PrivateApi]
 	    ICache Cache { get; }
+
         /// <summary>
         /// List of items from the configuration which should be used for creating the cache-key
         /// </summary>
+        [PrivateApi]
         List<string> CacheRelevantConfigurations { get; set; }
 
-        ///// <summary>
-        ///// Unique key-id for this specific part - without the full chain to the parents
-        ///// </summary>
-        //string CachePartialKey { get; }
-        //string CacheFullKey { get; }
-
+        [PrivateApi]
         bool TempUsesDynamicOut { get; }
         #endregion
     }

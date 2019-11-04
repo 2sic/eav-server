@@ -4,7 +4,7 @@ using ToSic.Eav.Documentation;
 namespace ToSic.Eav.Apps.Assets
 {
     /// <summary>
-    /// Describes a file asset as provided by the underlying environment (for example: DNN)
+    /// Describes a file asset as provided by the underlying environment (like DNN)
     /// </summary>
     [PublicApi]
     public interface IFile: IAsset

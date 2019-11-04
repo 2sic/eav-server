@@ -140,7 +140,7 @@ namespace ToSic.Eav.DataSources.Caches
 	    #region Cache-Chain
 
 	    public override long CacheTimestamp => AppDataPackage.CacheTimestamp;
-	    public override bool CacheChanged(long prevCacheTimestamp) => AppDataPackage.CacheChanged(prevCacheTimestamp);
+	    public override bool CacheChanged(long newCacheTimeStamp) => AppDataPackage.CacheChanged(newCacheTimeStamp);
 
         private string _cachePartialKey;
 	    public override string CachePartialKey

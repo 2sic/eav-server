@@ -15,7 +15,7 @@ namespace ToSic.Eav.App
             Log.Add($"cache reset #{CacheUpdateCount} to stamp {CacheTimestamp}");
         }
 
-        public bool CacheChanged(long prevCacheTimestamp) => CacheTimestamp != prevCacheTimestamp;
+        public bool CacheChanged(long newCacheTimeStamp) => CacheTimestamp != newCacheTimeStamp;
 
     }
 }
