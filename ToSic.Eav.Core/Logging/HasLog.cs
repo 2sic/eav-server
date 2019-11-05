@@ -1,23 +1,30 @@
 ﻿using System.Runtime.Serialization;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Logging
 {
+    /// <summary>
+    /// Base class for most objects which simply want to implement log and log-chaining.
+    /// </summary>
+    [PublicApi]
     public class HasLog : IHasLog
     {
-        /// <summary>
-        /// The unique ID of this logging item. <br/>
-        /// It's usually a convention based name which helps identify logs of a specific class or object.
-        /// The schema is Abc.AreaNm where the prefix marks a topic, the suffix the specific thing it's for. 
-        /// </summary>
-        [IgnoreDataMember]
-        public string LogId { get; internal set; } = "unknwn";
+        ///// <summary>
+        ///// The unique ID of this logging item. <br/>
+        ///// It's usually a convention based name which helps identify logs of a specific class or object.
+        ///// The schema is Abc.AreaNm where the prefix marks a topic, the suffix the specific thing it's for. 
+        ///// </summary>
+        //[IgnoreDataMember]
+        //[PrivateApi] // I think this is not in use?
+        //public string LogId { get; internal set; } = "unknwn";
 
+        /// <inheritdoc />
         [IgnoreDataMember]
         public ILog Log { get; private set; }
 
         /// <summary>
-        /// Constructor
+        /// Constructor which ensures Log-chaining and optionally adds initial messages
         /// </summary>
         /// <param name="logName">Name to use in the Log-ID</param>
         /// <param name="parentLog">Parent log (if available) for log-chaining</param>
@@ -27,7 +34,8 @@ namespace ToSic.Eav.Logging
             => InitLogInternal(logName, parentLog, initialMessage, className);
 
         /// <summary>
-        /// 
+        /// This is the real initializer - implemented as a virtual method, because some
+        /// long-living objects must actively prevent logs from being attached. 
         /// </summary>
         /// <remarks>this one can be overridden by outside sources, like the cache which should never allow attaching logs at runtime</remarks>
         /// <param name="name"></param>
@@ -54,6 +62,8 @@ namespace ToSic.Eav.Logging
             }
         }
 
+
+        /// <inheritdoc/>
         public void LinkLog(ILog parentLog) => Log.LinkTo(parentLog);
     }
 }

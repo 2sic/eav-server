@@ -1,5 +1,8 @@
-﻿namespace ToSic.Eav.Logging.Simple
+﻿using ToSic.Eav.Documentation;
+
+namespace ToSic.Eav.Logging.Simple
 {
+    [PrivateApi]
     public class Entry
     {
         public string Message { get; }
