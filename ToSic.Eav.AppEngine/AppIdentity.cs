@@ -1,6 +1,5 @@
 ﻿using ToSic.Eav.Apps.Interfaces;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Apps
 {
@@ -20,7 +19,7 @@ namespace ToSic.Eav.Apps
         /// <param name="parentLog">the current log - could be null if necessary</param>
         /// <param name="logKey">a log key because most inheriting objects will want their own key in the log</param>
         /// <param name="initialMessage"></param>
-        public AppIdentity(int zoneId, int appId, Log parentLog, string logKey = null, string initialMessage = null) 
+        public AppIdentity(int zoneId, int appId, ILog parentLog, string logKey = null, string initialMessage = null) 
             : base(logKey ?? "App.Identy", parentLog, initialMessage ?? $"Zone {zoneId}, App {appId}")
         {
             ZoneId = zoneId;

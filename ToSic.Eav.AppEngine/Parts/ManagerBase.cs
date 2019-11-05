@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Logging.Simple;
+﻿using ToSic.Eav.Logging;
+using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -7,10 +8,10 @@ namespace ToSic.Eav.Apps.Parts
     /// </summary>
     public abstract class ManagerBase
     {
-        protected Log Log = new Log("App.MBase");
+        protected ILog Log = new Log("App.MBase");
 
         internal readonly AppManager AppManager;
-        internal ManagerBase(AppManager app, Log parentLog, string logRename = null)
+        internal ManagerBase(AppManager app, ILog parentLog, string logRename = null)
         {
             AppManager = app;
             Log.LinkTo(parentLog);

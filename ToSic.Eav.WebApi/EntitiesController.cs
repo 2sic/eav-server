@@ -15,7 +15,7 @@ namespace ToSic.Eav.WebApi
     /// </summary>
     public class EntitiesController : HasLog
     {
-        public EntitiesController(Log parentLog) : base("Api.EntCtl", parentLog) { }
+        public EntitiesController(ILog parentLog) : base("Api.EntCtl", parentLog) { }
 
         public Dictionary<Guid, int> SaveMany(int appId, 
             List<BundleWithHeader<EntityWithLanguages>> items,

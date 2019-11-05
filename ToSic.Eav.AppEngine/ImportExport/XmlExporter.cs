@@ -42,7 +42,7 @@ namespace ToSic.Eav.Apps.ImportExport
         private string _appStaticName = "";
         #endregion
 
-        public Log Log { get; private set; } = new Log("Xml.Exp");
+        public ILog Log { get; private set; } = new Log("Xml.Exp");
 
         #region Constructor stuff
 
@@ -60,7 +60,7 @@ namespace ToSic.Eav.Apps.ImportExport
         //    EntityIDs = entityIds;
         //}
 
-        protected void Constructor(int zoneId, AppRuntime app, string appStaticName, bool appExport, string[] typeNamesOrIds, string[] entityIds, Log parentLog)
+        protected void Constructor(int zoneId, AppRuntime app, string appStaticName, bool appExport, string[] typeNamesOrIds, string[] entityIds, ILog parentLog)
         {
             ZoneId = zoneId;
             Log = new Log("Xml.Exp", parentLog, "start XML exporter using app-package");
@@ -79,7 +79,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// Not that the overload of this must take care of creating the EavAppContext and calling the Constructor
         /// </summary>
         /// <returns></returns>
-        public abstract XmlExporter Init(int zoneId, int appId, AppRuntime appRuntime, bool appExport, string[] attrSetIds, string[] entityIds, Log parentLog);
+        public abstract XmlExporter Init(int zoneId, int appId, AppRuntime appRuntime, bool appExport, string[] attrSetIds, string[] entityIds, ILog parentLog);
 
         private void EnsureThisIsInitialized()
         {
@@ -358,6 +358,6 @@ namespace ToSic.Eav.Apps.ImportExport
             public override Encoding Encoding => Encoding.UTF8;
         }
 
-        public void LinkLog(Log parentLog) => Log.LinkTo(parentLog);
+        public void LinkLog(ILog parentLog) => Log.LinkTo(parentLog);
     }
 }

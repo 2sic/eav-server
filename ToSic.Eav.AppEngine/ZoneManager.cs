@@ -1,5 +1,6 @@
 ﻿using System;
 using ToSic.Eav.Apps.Parts;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Repository.Efc;
 
@@ -9,7 +10,7 @@ namespace ToSic.Eav.Apps
     {
         #region Constructor and simple properties
 
-        public ZoneManager(int zoneId, Log parentLog) : base(zoneId, parentLog, "App.Zone") {}
+        public ZoneManager(int zoneId, ILog parentLog) : base(zoneId, parentLog, "App.Zone") {}
 
         internal DbDataController DataController => _eavContext ?? (_eavContext = DbDataController.Instance(ZoneId, null, Log));
         private DbDataController _eavContext;
@@ -36,7 +37,7 @@ namespace ToSic.Eav.Apps
 
         #region Zone Management
 
-        public static int CreateZone(string name, Log parentLog)
+        public static int CreateZone(string name, ILog parentLog)
         {
             var log = new Log("App.ZoneMg", parentLog, $"create zone:{name}");
             var zoneId = DbDataController.Instance(null, null, parentLog).Zone.AddZone(name);

@@ -85,7 +85,7 @@ namespace ToSic.Eav.Repository.Efc
         #region shared logs in case of write commands
         public List<LogItem> ImportLogToBeRefactored { get; }=  new List<LogItem>();
 
-        public Log Log { get; private set; }
+        public ILog Log { get; private set; }
 
         #endregion
 
@@ -132,10 +132,10 @@ namespace ToSic.Eav.Repository.Efc
         }
 
         /// <summary>
-        /// Returns a new instace of the Eav Context on specified ZoneId and/or AppId
+        /// Returns a new instance of the Eav Context on specified ZoneId and/or AppId
         /// </summary>
         // ReSharper disable once MethodOverloadWithOptionalParameter
-        public static DbDataController Instance(int? zoneId, int? appId, Log parentLog)
+        public static DbDataController Instance(int? zoneId, int? appId, ILog parentLog)
         {
             var context = Instance();
             context.InitZoneApp(zoneId, appId);

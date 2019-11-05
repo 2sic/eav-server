@@ -3,13 +3,13 @@ using System.Linq;
 using ToSic.Eav.Api.Api01;
 using ToSic.Eav.Apps.Interfaces;
 using ToSic.Eav.Data;
-using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps.DataSources
 {
     public sealed class App: Eav.DataSources.App, IAppData
     {
-        public App(Log parentLog = null)
+        public App(ILog parentLog = null)
         {
             InitLog("DS.EavApp", parentLog);
         }

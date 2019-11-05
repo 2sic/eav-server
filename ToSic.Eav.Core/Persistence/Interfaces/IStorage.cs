@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.Interfaces;
-using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.Logging;
 
 namespace ToSic.Eav.Persistence.Interfaces
@@ -55,7 +55,7 @@ namespace ToSic.Eav.Persistence.Interfaces
 
         #region Logging new
 
-        Log Log { get; }
+        ILog Log { get; }
 
         #endregion
 

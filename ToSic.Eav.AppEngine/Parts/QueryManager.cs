@@ -9,6 +9,7 @@ using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Enums;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Apps.Parts
@@ -19,7 +20,7 @@ namespace ToSic.Eav.Apps.Parts
     /// </summary>
     public class QueryManager: ManagerBase
     {
-        public QueryManager(AppManager app, Log parentLog) : base(app, parentLog, "App.QryMng") {}
+        public QueryManager(AppManager app, ILog parentLog) : base(app, parentLog, "App.QryMng") {}
 
         public void SaveCopy(int id) => SaveCopy(AppManager.Read.Queries.Get(id));
 

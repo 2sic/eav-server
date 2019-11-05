@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Documentation;
-using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Logging
 {
@@ -12,12 +11,12 @@ namespace ToSic.Eav.Logging
         /// <summary>
         /// The log object which contains the log and can add more logs to the list.
         /// </summary>
-        Log Log { get; }
+        ILog Log { get; }
 
         /// <summary>
         /// Attach this log to another parent log, which should also know about events logged here.
         /// </summary>
         /// <param name="parentLog">The parent log</param>
-        void LinkLog(Log parentLog);
+        void LinkLog(ILog parentLog);
     }
 }

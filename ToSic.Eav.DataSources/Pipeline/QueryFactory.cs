@@ -16,7 +16,7 @@ namespace ToSic.Eav.DataSources.Pipeline
 	/// </summary>
 	public class QueryFactory: HasLog
 	{
-	    public QueryFactory(Log parentLog) : base("DS.PipeFt", parentLog) {}
+	    public QueryFactory(ILog parentLog) : base("DS.PipeFt", parentLog) {}
 
 	    /// <summary>
 	    /// Creates a Query DataSource from a QueryEntity for specified App

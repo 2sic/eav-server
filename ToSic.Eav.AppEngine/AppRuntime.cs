@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Apps.Interfaces;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Apps
@@ -12,16 +13,16 @@ namespace ToSic.Eav.Apps
     public class AppRuntime : AppBase
     {
         #region constructors
-        public AppRuntime(int zoneId, int appId, Log parentLog) : base(zoneId, appId, parentLog) { }
+        public AppRuntime(int zoneId, int appId, ILog parentLog) : base(zoneId, appId, parentLog) { }
 
-        public AppRuntime(IAppIdentity app, Log parentLog) : base(app, parentLog) { }
+        public AppRuntime(IAppIdentity app, ILog parentLog) : base(app, parentLog) { }
 
         /// <summary>
         ///  Special constructor, should be used with care as there is no Zone!
         /// </summary>
-        public AppRuntime(int appId, Log parentLog) :base (appId, parentLog) { }
+        public AppRuntime(int appId, ILog parentLog) :base (appId, parentLog) { }
 
-        internal AppRuntime(IDataSource data, Log parentLog): base(data, parentLog) { }
+        internal AppRuntime(IDataSource data, ILog parentLog): base(data, parentLog) { }
         #endregion
 
         /// <summary>

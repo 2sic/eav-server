@@ -42,7 +42,7 @@ namespace ToSic.Eav.Apps.ImportExport
         public ImportListXml(AppManager appMan, IContentType contentType, Stream dataStream, IEnumerable<string> languages, string documentLanguageFallback, 
             ImportDeleteUnmentionedItems deleteSetting, 
             ImportResourceReferenceMode resolveReferenceMode, 
-            Log parentLog): base("App.ImpVT", parentLog, "building xml vtable import")
+            ILog parentLog): base("App.ImpVT", parentLog, "building xml vtable import")
         {
             ImportEntities = new List<Entity>();
             ErrorLog = new ImportErrorLog();

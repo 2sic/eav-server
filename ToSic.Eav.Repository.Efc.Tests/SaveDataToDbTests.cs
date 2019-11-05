@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Efc;
@@ -15,7 +16,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
     [TestClass]
     public class SaveDataToDbTests
     {
-        public static Log Log = new Log("TstSav");
+        public static ILog Log = new Log("TstSav");
 
         [TestInitialize]
         public void Init()

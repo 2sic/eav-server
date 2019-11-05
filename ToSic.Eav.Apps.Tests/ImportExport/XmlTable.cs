@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Implementations.ValueConverter;
 using ToSic.Eav.ImportExport;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Repository.Efc;
@@ -14,7 +15,7 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
     public class XmlTable
     {
 
-        public static Log Log = new Log("TstXml");
+        public static ILog Log = new Log("TstXml");
         private int AppId = 78;
         public Guid ItemGuid = new Guid("cdf540dd-d012-4e7e-b828-7aa0efc5d81f");
 

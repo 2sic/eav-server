@@ -4,7 +4,7 @@ using System.Linq;
 using ToSic.Eav.DataSources.VisualQuery;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
-using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.DataSources
 {
@@ -69,7 +69,7 @@ namespace ToSic.Eav.DataSources
         #region Experiment based on http://stackoverflow.com/questions/375351/most-efficient-way-to-randomly-sort-shuffle-a-list-of-integers-in-c-sharp/375446#375446
         static readonly Random Generator = new Random();
 
-        private static IEnumerable<T> ShuffleInternal<T>(IEnumerable<T> sequence, int take, Log log)
+        private static IEnumerable<T> ShuffleInternal<T>(IEnumerable<T> sequence, int take, ILog log)
         {
             var wrapLog = log.Call("ShuffleInternal");
             var retArray = sequence.ToArray();

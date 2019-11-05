@@ -7,6 +7,7 @@ using ToSic.Eav.Apps.Interfaces;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Repository.Efc;
@@ -21,10 +22,10 @@ namespace ToSic.Eav.Apps
     public class AppManager: AppBase
     {
         #region Constructors
-        public AppManager(int zoneId, int appId, Log parentLog = null) : base(zoneId, appId, parentLog) { RenameLog();}
+        public AppManager(int zoneId, int appId, ILog parentLog = null) : base(zoneId, appId, parentLog) { RenameLog();}
 
-        public AppManager(IAppIdentity app, Log parentLog) : base(app, parentLog) { RenameLog();}
-        public AppManager(int appId, Log parentLog) : base(appId, parentLog) { RenameLog();}
+        public AppManager(IAppIdentity app, ILog parentLog) : base(app, parentLog) { RenameLog();}
+        public AppManager(int appId, ILog parentLog) : base(appId, parentLog) { RenameLog();}
 
         private void RenameLog() => Log.Rename("AppMan");
 
@@ -102,7 +103,7 @@ namespace ToSic.Eav.Apps
         /// app-definition
         /// </summary>
         /// <returns></returns>
-        public static void AddBrandNewApp(int zoneId, string appName, Log parentLog)
+        public static void AddBrandNewApp(int zoneId, string appName, ILog parentLog)
         {
             // check if invalid app-name
             if (appName == Constants.ContentAppName || appName == Constants.DefaultAppName || string.IsNullOrEmpty(appName) || !Regex.IsMatch(appName, "^[0-9A-Za-z -_]+$"))
@@ -115,7 +116,7 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// Create app-describing entity for configuration and add Settings and Resources Content Type
         /// </summary>
-        internal static void EnsureAppIsConfigured(int zoneId, int appId, Log parentLog, string appName = null)
+        internal static void EnsureAppIsConfigured(int zoneId, int appId, ILog parentLog, string appName = null)
         {
             var mds = DataSource.GetMetaDataSource(zoneId, appId);
             var appMetaData = mds.GetMetadata(Constants.MetadataForApp, appId, AppConstants.TypeAppConfig).FirstOrDefault();

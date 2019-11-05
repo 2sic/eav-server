@@ -10,7 +10,7 @@ namespace ToSic.Eav.Types
 {
     internal class GlobalTypeLoader: HasLog
     {
-        public GlobalTypeLoader(Log parentLog) 
+        public GlobalTypeLoader(ILog parentLog) 
             : base("Eav.GlTLdr", parentLog, "Start Loading")
         {
             BuildCache();

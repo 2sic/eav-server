@@ -68,7 +68,7 @@ namespace ToSic.Eav.App
 
 
 
-        internal AppDataPackage(int appId, Log parentLog): base($"App.Pkg{appId}", parentLog, $"start build package for {appId}")
+        internal AppDataPackage(int appId, ILog parentLog): base($"App.Pkg{appId}", parentLog, $"start build package for {appId}")
 	    {
 	        AppId = appId;
             CacheResetTimestamp();  // do this very early, as this number is needed elsewhere
@@ -173,7 +173,7 @@ namespace ToSic.Eav.App
 	            Log.Add("remove obsolete draft - no draft, won't remove");
 	    }
 
-	    public void Load(Log parentLog, Action loader)
+	    public void Load(ILog parentLog, Action loader)
 	    {
 	        _loading = true;
             Log.LinkTo(parentLog);

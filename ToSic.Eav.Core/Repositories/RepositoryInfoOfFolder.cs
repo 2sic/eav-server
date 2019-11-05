@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Repositories
@@ -10,7 +11,7 @@ namespace ToSic.Eav.Repositories
         /// </summary>
         protected RepositoryInfoOfFolder() : this(true, true, null) { }
 
-        protected RepositoryInfoOfFolder(bool global, bool readOnly, Log parentLog) 
+        protected RepositoryInfoOfFolder(bool global, bool readOnly, ILog parentLog) 
             : base(global, readOnly, RepositoryTypes.Folder, parentLog) { }
 
         public abstract List<string> RootPaths { get; }

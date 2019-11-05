@@ -23,7 +23,7 @@ namespace ToSic.Eav.Apps.ImportExport
         private AppDataPackage App { get; }
         public IContentType ContentType { get; }
 
-        public ExportListXml(AppDataPackage app, IContentType contentType, Log parentLog): base("App.LstExp", parentLog)
+        public ExportListXml(AppDataPackage app, IContentType contentType, ILog parentLog): base("App.LstExp", parentLog)
         {
             App = app;
             ContentType = contentType;

@@ -1,6 +1,7 @@
 ﻿using System;
 using ToSic.Eav.Apps.Interfaces;
 using ToSic.Eav.DataSources.Caches;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Apps
@@ -28,7 +29,7 @@ namespace ToSic.Eav.Apps
             int appId, 
             bool allowSideEffects,
             Func<App, IAppDataConfiguration> buildConfiguration,
-            Log parentLog, 
+            ILog parentLog, 
             string logMsg)
             // first, initialize the AppIdentity and log it's use
             : base(zoneId, appId, parentLog, "App.2sxcAp", $"prep App z#{zoneId}, a#{appId}, allowSE:{allowSideEffects}, hasDataConfig:{buildConfiguration != null}, {logMsg}")

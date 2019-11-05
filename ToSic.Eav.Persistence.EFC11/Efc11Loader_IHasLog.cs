@@ -10,11 +10,11 @@ namespace ToSic.Eav.Persistence.Efc
         private TimeSpan _sqlTotalTime = new TimeSpan(0);
 
 
-        public Log Log { get; private set; }
+        public ILog Log { get; private set; }
 
 
         #region IHasLog interface
-        public void LinkLog(Log parentLog) => Log.LinkTo(parentLog);
+        public void LinkLog(ILog parentLog) => Log.LinkTo(parentLog);
         #endregion
     }
 }

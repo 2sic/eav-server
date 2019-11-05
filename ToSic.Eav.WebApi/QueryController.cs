@@ -22,7 +22,7 @@ namespace ToSic.Eav.WebApi
 	public class QueryController : HasLog
     {
         #region initializers etc. - work on later
-        public QueryController(Log parentLog): base("Api.EaPipe", parentLog)
+        public QueryController(ILog parentLog): base("Api.EaPipe", parentLog)
 		{
 		}
 

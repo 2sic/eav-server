@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Pipeline;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSources.VisualQuery;
-using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps.Parts
 {
     public class QueryRuntime: RuntimeBase
     {
-        internal QueryRuntime(AppRuntime app, Log parentLog) : base(app, parentLog) { }
+        internal QueryRuntime(AppRuntime app, ILog parentLog) : base(app, parentLog) { }
 
         /// <summary>
         /// Get all installed data sources - usually for the UI

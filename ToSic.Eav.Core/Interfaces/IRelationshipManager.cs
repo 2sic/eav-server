@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Interfaces
 {
@@ -36,7 +36,7 @@ namespace ToSic.Eav.Interfaces
         /// <param name="log"></param>
         /// <returns></returns>
         [PrivateApi]
-        List<IEntity> FindChildren(string field = null, string type = null, string useNamedParameters = "xyz", Log log = null);
+        List<IEntity> FindChildren(string field = null, string type = null, string useNamedParameters = "xyz", ILog log = null);
 
         /// <summary>
         /// WIP!
@@ -45,6 +45,6 @@ namespace ToSic.Eav.Interfaces
         /// <param name="field"></param>
         /// <returns></returns>
         [PrivateApi]
-        List<IEntity> FindParents(string type = null, string field = null, string useNamedParameters = "xyz", Log log = null);
+        List<IEntity> FindParents(string type = null, string field = null, string useNamedParameters = "xyz", ILog log = null);
     }
 }

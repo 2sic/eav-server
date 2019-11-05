@@ -5,7 +5,6 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.App
 {
@@ -36,7 +35,7 @@ namespace ToSic.Eav.App
 
         #endregion
 
-        public AppMetadataManager(AppDataPackage app, ImmutableDictionary<int, string> metadataTypes, Log parentLog) 
+        public AppMetadataManager(AppDataPackage app, ImmutableDictionary<int, string> metadataTypes, ILog parentLog) 
             : base("App.MDMan", parentLog, "initialize")
         {
             _app = app;

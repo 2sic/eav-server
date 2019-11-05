@@ -35,7 +35,7 @@ namespace ToSic.Eav.Persistence.File
             }
         }
 
-        public FileSystemLoader(string path, RepositoryTypes source, bool ignoreMissing, Log parentLog): base("FSL.Loadr", parentLog, $"init with path:{path} ignore:{ignoreMissing}")
+        public FileSystemLoader(string path, RepositoryTypes source, bool ignoreMissing, ILog parentLog): base("FSL.Loadr", parentLog, $"init with path:{path} ignore:{ignoreMissing}")
         {
             Path = path + (path.EndsWith("\\") ? "" : "\\");
             Source = source;
@@ -206,11 +206,11 @@ namespace ToSic.Eav.Persistence.File
 
 
         #region not implemented stuff
-        public AppDataPackage AppPackage(int appId, int[] entityIds = null, Log parentLog = null) 
+        public AppDataPackage AppPackage(int appId, int[] entityIds = null, ILog parentLog = null) 
             => throw new NotImplementedException();
 
         public AppDataPackage Update(AppDataPackage app, AppPackageLoadingSteps startAt, int[] entityIds = null,
-            Log parentLog = null) 
+            ILog parentLog = null) 
             => throw new NotImplementedException();
 
         public Dictionary<int, Zone> Zones() 

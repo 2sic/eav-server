@@ -15,7 +15,7 @@ namespace ToSic.Eav.WebApi
     /// <inheritdoc />
     public class ContentImportController : HasLog
     {
-        public ContentImportController(Log parentLog = null) : base("Api.EaCtIm", parentLog)
+        public ContentImportController(ILog parentLog = null) : base("Api.EaCtIm", parentLog)
         {
         }
 

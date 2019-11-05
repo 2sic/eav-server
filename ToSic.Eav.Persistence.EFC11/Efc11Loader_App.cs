@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using ToSic.Eav.App;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc.Models;
 
@@ -30,10 +31,10 @@ namespace ToSic.Eav.Persistence.Efc
         /// <param name="entityIds">null or a List of EntitiIds</param>
         /// <param name="parentLog"></param>
         /// <returns>app package with initialized app</returns>
-        public AppDataPackage AppPackage(int appId, int[] entityIds = null, Log parentLog = null) 
+        public AppDataPackage AppPackage(int appId, int[] entityIds = null, ILog parentLog = null) 
             => Update(new AppDataPackage(appId, parentLog), AppPackageLoadingSteps.Start, entityIds, parentLog);
 
-        public AppDataPackage Update(AppDataPackage app, AppPackageLoadingSteps startAt, int[] entityIds = null, Log parentLog = null)
+        public AppDataPackage Update(AppDataPackage app, AppPackageLoadingSteps startAt, int[] entityIds = null, ILog parentLog = null)
         {
             app.Load(parentLog, () =>
             {

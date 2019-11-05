@@ -5,13 +5,12 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Persistence
 {
     public class EntitySaver :HasLog
     {
-        public EntitySaver(Log parentLog = null) : base("Dta.Saver", parentLog) { }
+        public EntitySaver(ILog parentLog = null) : base("Dta.Saver", parentLog) { }
 
         /// <summary>
         /// Goal: Pass changes into an existing entity so that it can then be saved as a whole, with correct

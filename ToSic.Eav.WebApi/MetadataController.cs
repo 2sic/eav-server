@@ -14,7 +14,7 @@ namespace ToSic.Eav.WebApi
 	/// </summary>
 	public class MetadataController : HasLog
     {
-        public MetadataController(Log parentLog) : base("Api.MetaCn", parentLog)
+        public MetadataController(ILog parentLog) : base("Api.MetaCn", parentLog)
         {}
 
         /// <summary>

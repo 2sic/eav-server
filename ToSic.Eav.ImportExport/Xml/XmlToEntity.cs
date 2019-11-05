@@ -22,7 +22,7 @@ namespace ToSic.Eav.ImportExport.Xml
         }
 
         public int AppId { get; }
-	    public XmlToEntity(int appId, List<DimensionDefinition> srcLanguages, int? srcDefLang, List<DimensionDefinition> envLanguages, string envDefLang, Log parentLog): base("Imp.XmlEnt", parentLog, "init", "XmlToEntity")
+	    public XmlToEntity(int appId, List<DimensionDefinition> srcLanguages, int? srcDefLang, List<DimensionDefinition> envLanguages, string envDefLang, ILog parentLog): base("Imp.XmlEnt", parentLog, "init", "XmlToEntity")
 	    {
 	        AppId = appId;
             envLanguages = envLanguages.OrderByDescending(p => p.Matches(envDefLang)).ThenBy(p => p.EnvironmentKey).ToList();

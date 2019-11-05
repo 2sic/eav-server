@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Plumbing
 {
@@ -13,16 +13,16 @@ namespace ToSic.Eav.Plumbing
         /// Get all Installed DataSources
         /// </summary>
         /// <remarks>Objects that implement IDataSource</remarks>
-        public static IEnumerable<Type> FindInherited(Type type, Log log = null)
+        public static IEnumerable<Type> FindInherited(Type type, ILog log = null)
         {
             log?.Add($"FindInherited of type {type.FullName}");
             return GetTypes(log).Where(t => type.IsAssignableFrom(t) && (!t.IsAbstract || t.IsInterface) && t != type);
         }
 
-        public static IEnumerable<Type> FindClassesWithAttribute(Type type, Type attribType, bool includeInherited, Log log)
+        public static IEnumerable<Type> FindClassesWithAttribute(Type type, Type attribType, bool includeInherited, ILog log)
             => FindInherited(type, log).Where(d => d.GetCustomAttributes(attribType, includeInherited).Any());
 
-        private static IEnumerable<Type> GetTypes(Log log = null)
+        private static IEnumerable<Type> GetTypes(ILog log = null)
         {
             if (_typeCache != null) return _typeCache;
             var asms = AppDomain.CurrentDomain.GetAssemblies();
@@ -42,7 +42,7 @@ namespace ToSic.Eav.Plumbing
         /// Does special try/catch to prevent bugs when assemblies are missing
         /// Source: http://stackoverflow.com/questions/7889228/how-to-prevent-reflectiontypeloadexception-when-calling-assembly-gettypes 
         /// </remarks>
-        private static IEnumerable<Type> GetLoadableTypes(Assembly assembly, Log log = null)
+        private static IEnumerable<Type> GetLoadableTypes(Assembly assembly, ILog log = null)
         {
             // try to log
             try

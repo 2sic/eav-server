@@ -9,7 +9,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.Interfaces;
-using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.Apps.Parts
@@ -20,7 +20,7 @@ namespace ToSic.Eav.Apps.Parts
     /// </summary>
     public partial class EntitiesManager: ManagerBase
     {
-        public EntitiesManager(AppManager app, Log parentLog = null) : base(app, parentLog, "App.EntMan")
+        public EntitiesManager(AppManager app, ILog parentLog = null) : base(app, parentLog, "App.EntMan")
         {
         }
 

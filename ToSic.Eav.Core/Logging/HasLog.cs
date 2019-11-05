@@ -14,7 +14,7 @@ namespace ToSic.Eav.Logging
         public string LogId { get; internal set; } = "unknwn";
 
         [IgnoreDataMember]
-        public Log Log { get; private set; }
+        public ILog Log { get; private set; }
 
         /// <summary>
         /// Constructor
@@ -23,7 +23,7 @@ namespace ToSic.Eav.Logging
         /// <param name="parentLog">Parent log (if available) for log-chaining</param>
         /// <param name="initialMessage">First message to be added</param>
         /// <param name="className">Class name it's for</param>
-        public HasLog(string logName, Log parentLog = null, string initialMessage = null, string className = null) 
+        public HasLog(string logName, ILog parentLog = null, string initialMessage = null, string className = null) 
             => InitLogInternal(logName, parentLog, initialMessage, className);
 
         /// <summary>
@@ -33,10 +33,10 @@ namespace ToSic.Eav.Logging
         /// <param name="name"></param>
         /// <param name="parentLog"></param>
         /// <param name="initialMessage"></param>
-        public virtual void InitLog(string name, Log parentLog = null, string initialMessage = null) 
+        public virtual void InitLog(string name, ILog parentLog = null, string initialMessage = null) 
             => InitLogInternal(name, parentLog, initialMessage);
 
-        private void InitLogInternal(string name, Log parentLog, string initialMessage, string className = null)
+        private void InitLogInternal(string name, ILog parentLog, string initialMessage, string className = null)
         {
             if (Log == null)
                 // standard & most common case: just create log
@@ -54,6 +54,6 @@ namespace ToSic.Eav.Logging
             }
         }
 
-        public void LinkLog(Log parentLog) => Log.LinkTo(parentLog);
+        public void LinkLog(ILog parentLog) => Log.LinkTo(parentLog);
     }
 }

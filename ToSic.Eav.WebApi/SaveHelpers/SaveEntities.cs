@@ -14,7 +14,7 @@ namespace ToSic.Eav.WebApi.SaveHelpers
 {
     public class SaveEntities: HasLog
     {
-        public SaveEntities(Log parentLog) : base("Eav.SavHlp", parentLog) {}
+        public SaveEntities(ILog parentLog) : base("Eav.SavHlp", parentLog) {}
 
 
         public void UpdateGuidAndPublishedAndSaveMany(AppManager appMan, List<BundleWithHeader<IEntity>> itemsToImport, bool enforceDraft)

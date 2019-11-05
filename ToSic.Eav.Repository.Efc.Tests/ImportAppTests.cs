@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.ImportExport;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Repository.Efc.Tests.Mocks;
 
@@ -13,7 +14,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
     [TestClass]
     public class ImportAppTests
     {
-        public static Log Log = new Log("TstImA");
+        public static ILog Log = new Log("TstImA");
 
         //public const string BaseTestPath = @"C:\Projects\eav-server\ToSic.Eav.Repository.Efc.Tests\";
         #region Test Data

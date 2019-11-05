@@ -12,7 +12,7 @@ namespace ToSic.Eav.WebApi
 {
     public class EntityPickerController : HasLog
     {
-        public EntityPickerController(Log parentLog) : base("Api.EntPck", parentLog)
+        public EntityPickerController(ILog parentLog) : base("Api.EntPck", parentLog)
         {
         }
 

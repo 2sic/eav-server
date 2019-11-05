@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Xml;
@@ -14,7 +15,7 @@ namespace ToSic.Eav.ImportExport.Tests
     [TestClass]
     public class XmlSerializationTests
     {
-        public static Log Log = new Log("TstXml");
+        public static ILog Log = new Log("TstXml");
         private int AppId = 2;
         private int TestItemId = 0;
 

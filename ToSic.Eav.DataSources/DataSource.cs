@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.DataSources.VisualQuery;
 using ToSic.Eav.Interfaces;
-using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.Logging;
 using ToSic.Eav.ValueProvider;
 using ICache = ToSic.Eav.DataSources.Caches.ICache;
 
@@ -48,7 +47,7 @@ namespace ToSic.Eav
 	    /// <param name="valueCollectionProvider">Provides configuration values if needed</param>
 	    /// <param name="parentLog"></param>
 	    /// <returns>A single DataSource</returns>
-	    public static IDataSource GetDataSource(string sourceName, int? zoneId = null, int? appId = null, IDataSource upstream = null, IValueCollectionProvider valueCollectionProvider = null, Log parentLog = null)
+	    public static IDataSource GetDataSource(string sourceName, int? zoneId = null, int? appId = null, IDataSource upstream = null, IValueCollectionProvider valueCollectionProvider = null, ILog parentLog = null)
 		{
 		    // try to find with assembly name, or otherwise with GlobalName / previous names
             var type = Type.GetType(sourceName) 
@@ -73,7 +72,7 @@ namespace ToSic.Eav
 	    /// <param name="parentLog"></param>
 	    /// <returns>A single DataSource</returns>
 	    private static IDataSource GetDataSource(Type type, int? zoneId, int? appId, IDataSource upstream,
-	        IValueCollectionProvider valueCollectionProvider, Log parentLog)
+	        IValueCollectionProvider valueCollectionProvider, ILog parentLog)
 	    {
 	        var newDs = (BaseDataSource) Factory.Resolve(type);
 	        ConfigureNewDataSource(newDs, zoneId, appId, upstream, valueCollectionProvider, parentLog);
@@ -90,7 +89,7 @@ namespace ToSic.Eav
 	    /// <param name="parentLog"></param>
 	    /// <returns>A single DataSource</returns>
 	    public static T GetDataSource<T>(int? zoneId = null, int? appId = null, IDataSource upstream = null,
-			IValueCollectionProvider valueCollectionProvider = null, Log parentLog = null)
+			IValueCollectionProvider valueCollectionProvider = null, ILog parentLog = null)
 		{
             if(upstream == null && valueCollectionProvider == null)
                     throw new Exception("Trying to GetDataSource<T> but cannot do so if both upstream and ConfigurationProvider are null.");
@@ -112,7 +111,7 @@ namespace ToSic.Eav
             int? zoneId = null, int? appId = null,
 			IDataSource upstream = null,
 			IValueCollectionProvider valueCollectionProvider = null, 
-            Log parentLog = null)
+            ILog parentLog = null)
 		{
 			var zoneAppId = GetZoneAppId(zoneId, appId);
 			newDs.ZoneId = zoneAppId.Item1;
@@ -137,7 +136,7 @@ namespace ToSic.Eav
 	    /// <param name="configProvider"></param>
 	    /// <param name="parentLog"></param>
 	    /// <returns>A single DataSource</returns>
-	    public static IDataSource GetInitialDataSource(int? zoneId = null, int? appId = null, bool showDrafts = false, IValueCollectionProvider configProvider = null, Log parentLog = null)
+	    public static IDataSource GetInitialDataSource(int? zoneId = null, int? appId = null, bool showDrafts = false, IValueCollectionProvider configProvider = null, ILog parentLog = null)
 	    {
             parentLog?.AddChild(LogKey, $"get init #{zoneId}/{appId}, draft:{showDrafts}, config:{configProvider != null}");
 	        var zoneAppId = GetZoneAppId(zoneId, appId);

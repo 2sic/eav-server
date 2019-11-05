@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data.Query;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Apps.Parts
@@ -13,7 +14,7 @@ namespace ToSic.Eav.Apps.Parts
     // ReSharper disable once InheritdocConsiderUsage
     public class EntityRuntime: RuntimeBase
     {
-        internal EntityRuntime(AppRuntime app, Log parentLog): base (app, parentLog) { }
+        internal EntityRuntime(AppRuntime app, ILog parentLog): base (app, parentLog) { }
 
         #region Get
 

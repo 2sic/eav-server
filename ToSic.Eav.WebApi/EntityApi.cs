@@ -16,7 +16,7 @@ namespace ToSic.Eav.WebApi
     {
         public AppManager AppManager;
 
-        public EntityApi(int appId, Log parentLog): base("Api.EntPrc", parentLog)
+        public EntityApi(int appId, ILog parentLog): base("Api.EntPrc", parentLog)
         {
             AppManager = new AppManager(appId, Log);
         }

@@ -13,7 +13,7 @@ namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
     {
         public readonly string From;
         public readonly string To;
-        internal RenameOnImport(string from, string to, Log parentLog) : base("Imp.Rename", parentLog)
+        internal RenameOnImport(string from, string to, ILog parentLog) : base("Imp.Rename", parentLog)
         {
             From = from;
             To = to;

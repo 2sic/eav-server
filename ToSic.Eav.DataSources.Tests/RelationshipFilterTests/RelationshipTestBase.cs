@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data.Query;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.TokenEngine.Tests.TestData;
 using ToSic.Eav.ValueProvider;
@@ -29,7 +30,7 @@ namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
         #endregion
 
 
-        protected Log Log { get; } = new Log("Tst.DSRelF");
+        protected ILog Log { get; } = new Log("Tst.DSRelF");
 
 
 
