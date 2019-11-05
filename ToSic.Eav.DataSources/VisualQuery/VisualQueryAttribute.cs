@@ -3,7 +3,6 @@ using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.DataSources.VisualQuery
 {
-	/// <inheritdoc />
 	/// <summary>
 	/// Custom Attribute for DataSources and usage in Pipeline Designer.
 	/// Will add information about help, configuration-content-types etc.
@@ -13,6 +12,15 @@ namespace ToSic.Eav.DataSources.VisualQuery
 	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
 	public class VisualQueryAttribute : Attribute
 	{
+        /// <summary>
+        /// Empty constructor - necessary, so DocFx includes this attribute in documentation.
+        /// </summary>
+        [PrivateApi]
+        public VisualQueryAttribute()
+        {
+
+        }
+
 	    /// <summary>
 	    /// A primary type of this source, which determines a default icon + some standard help-text
 	    /// </summary>
