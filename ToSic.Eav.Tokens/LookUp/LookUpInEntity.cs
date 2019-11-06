@@ -1,21 +1,19 @@
 ﻿using System;
 using System.Linq;
-using ToSic.Eav.Data;
-using ToSic.Eav.Interfaces;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.ValueProviders
+namespace ToSic.Eav.LookUp
 {
 	/// <inheritdoc />
 	/// <summary>
 	/// Get Values from Assigned Entities
 	/// </summary>
-	public class EntityValueProvider : BaseValueProvider
+	public class LookUpInEntity : LookUpBase
     {
         protected IEntity Entity;
 	    private readonly string[] _dimensions = {""};
 
-	    public EntityValueProvider()
+	    public LookUpInEntity()
 	    {
 	        
 	    }
@@ -25,14 +23,14 @@ namespace ToSic.Eav.ValueProviders
 	    /// </summary>
 	    /// <param name="source"></param>
 	    /// <param name="name">Name of the PropertyAccess, e.g. pipelinesettings</param>
-	    public EntityValueProvider(IEntity source, string name = "entity source without name")
+	    public LookUpInEntity(IEntity source, string name = "entity source without name")
 		{
             Entity = source;
 		    Name = name;
 		}
 
-        // todo: might need to clarify what language/culture the property is taken from in an entity
-        public string Get(string property, string format, System.Globalization.CultureInfo formatProvider, ref bool propertyNotFound)
+        // todo: might need to clarify what language/culture the key is taken from in an entity
+        public string Get(string key, string format, System.Globalization.CultureInfo formatProvider, ref bool propertyNotFound)
         {
             // Return empty string if Entity is null
             if (Entity == null)
@@ -42,7 +40,7 @@ namespace ToSic.Eav.ValueProviders
             }
 
             // bool propertyNotFound;
-            var valueObject = Entity.GetBestValue(property, _dimensions);
+            var valueObject = Entity.GetBestValue(key, _dimensions);
             propertyNotFound = valueObject == null; // this is used multiple times
 
             if (!propertyNotFound)
@@ -75,7 +73,7 @@ namespace ToSic.Eav.ValueProviders
 
             #region Not found yet, so check for Navigation-Property (e.g. Manager:Name)
 
-            var subTokens = CheckAndGetSubToken(property);
+            var subTokens = CheckAndGetSubToken(key);
             if (subTokens.HasSubtoken)
             {
                 valueObject = Entity.GetBestValue(subTokens.Source, _dimensions);
@@ -87,7 +85,7 @@ namespace ToSic.Eav.ValueProviders
                     if (relationshipList != null)
                         return !relationshipList.Any()
                             ? string.Empty
-                            : new EntityValueProvider(relationshipList.First())
+                            : new LookUpInEntity(relationshipList.First())
                                 .Get(subTokens.Rest, format, formatProvider, ref propertyNotFound);
 
                     #endregion
@@ -101,16 +99,16 @@ namespace ToSic.Eav.ValueProviders
         }
 
 
-	    public override string Get(string property, string format, ref bool propertyNotFound)
-	        => Get(property, format, System.Threading.Thread.CurrentThread.CurrentCulture, ref propertyNotFound);
+	    public override string Get(string key, string format, ref bool propertyNotFound)
+	        => Get(key, format, System.Threading.Thread.CurrentThread.CurrentCulture, ref propertyNotFound);
         
 
-	    public override bool Has(string property)
+	    public override bool Has(string key)
 	    {
-	        var notFound = !Entity?.Attributes.ContainsKey(property) ?? false; // always false if no entity attached
+	        var notFound = !Entity?.Attributes.ContainsKey(key) ?? false; // always false if no entity attached
             // if it's not a standard attribute, check for dynamically provided values like EntityId
             if (notFound)
-	            Get(property, "", ref notFound);
+	            Get(key, "", ref notFound);
 	        return !notFound;
 
 	    }

@@ -33,7 +33,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
-using ToSic.Eav.ValueProviders;
+using ToSic.Eav.LookUp;
 
 namespace ToSic.Eav.Tokens
 {
@@ -80,11 +80,11 @@ namespace ToSic.Eav.Tokens
         #endregion
 
         #region constructor
-        public Dictionary<string, IValueProvider> ValueSources { get; }
-	    public TokenReplace(Dictionary<string, IValueProvider> valueSources = null)
+        public Dictionary<string, ILookUp> ValueSources { get; }
+	    public TokenReplace(Dictionary<string, ILookUp> valueSources = null)
 	    {
             if(valueSources == null)
-                valueSources = new Dictionary<string, IValueProvider>(StringComparer.OrdinalIgnoreCase);
+                valueSources = new Dictionary<string, ILookUp>(StringComparer.OrdinalIgnoreCase);
 	        ValueSources = valueSources;
 	    }
         #endregion

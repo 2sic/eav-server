@@ -7,6 +7,7 @@ using ToSic.Eav.Data.Query;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
+using ToSic.Eav.LookUp;
 using ToSic.Eav.ValueProviders;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -28,7 +29,7 @@ namespace ToSic.Eav.DataSources.Pipeline
 	    /// <param name="outSource">DataSource to attach the Out-Streams</param>
 	    /// <param name="showDrafts"></param>
 	    /// <returns>A single DataSource Out with wirings and configurations loaded, ready to use</returns>
-	    public IDataSource GetAsDataSource(int appId, IEntity query, IValueCollectionProvider valueCollection, IDataSource outSource = null, bool showDrafts = false)
+	    public IDataSource GetAsDataSource(int appId, IEntity query, ITokenListFiller valueCollection, IDataSource outSource = null, bool showDrafts = false)
 	    {
 		    Log.Add($"build pipe#{query.EntityId} for a#{appId}, draft:{showDrafts}");
             var qdef = new QueryDefinition(query, appId);
@@ -66,8 +67,8 @@ namespace ToSic.Eav.DataSources.Pipeline
 	    public const string ConfigKeyPipelineSettings = "pipelinesettings";
 
 	    private IDataSource GetAsDataSource(QueryDefinition qdef,
-            IValueCollectionProvider providerToClone,
-            IEnumerable<IValueProvider> propertyProviders = null,
+            ITokenListFiller providerToClone,
+            IEnumerable<ILookUp> propertyProviders = null,
             IDataSource outSource = null,
             bool showDrafts = false)
         {
@@ -82,14 +83,14 @@ namespace ToSic.Eav.DataSources.Pipeline
 
 	        // the query settings which apply to the whole query
             // todo 2017-12-05 2dm - this is probably where I will apply parameters, I think it's not used yet!
-	        var querySettingsProvider = new AssignedEntityValueProvider(ConfigKeyPipelineSettings, qdef.Header);
+	        var querySettingsProvider = new LookUpInMetadata(ConfigKeyPipelineSettings, qdef.Header);
 
             // 2018-09-30 2dm - centralizing building of the primary configuration template for each part
             if (providerToClone != null)
                 Log.Add(() =>
                     $"Sources in original provider: {providerToClone.Sources.Count} " +
                     $"[{string.Join(",", providerToClone.Sources.Keys)}]");
-            var templateConfig = new ValueCollectionProvider(providerToClone);
+            var templateConfig = new TokenListFiller(providerToClone);
             templateConfig.Add(querySettingsProvider);  
             templateConfig.AddOverride(propertyProviders);
 
@@ -105,7 +106,7 @@ namespace ToSic.Eav.DataSources.Pipeline
             // tell the primary-out that it has this guid, for better debugging
             if (outSource == null)
 	        {
-	            var passThroughConfig = new ValueCollectionProvider(templateConfig);
+	            var passThroughConfig = new TokenListFiller(templateConfig);
 	            outSource = new PassThrough {ConfigurationProvider = passThroughConfig};
 	        }
             if (outSource.DataSourceGuid == Guid.Empty)
@@ -122,13 +123,13 @@ namespace ToSic.Eav.DataSources.Pipeline
 	        {
 	            #region Init Configuration Provider
 
-	            var partConfig = new ValueCollectionProvider(templateConfig);
+	            var partConfig = new TokenListFiller(templateConfig);
                 // add / set item part configuration
-	            partConfig.Add(new AssignedEntityValueProvider(ConfigKeyPartSettings, dataQueryPart));
+	            partConfig.Add(new LookUpInMetadata(ConfigKeyPartSettings, dataQueryPart));
 
 	            // if show-draft in overridden, add that to the settings
 	            if (itemSettingsShowDrafts != null)
-	                partConfig.AddOverride(new StaticValueProvider(ConfigKeyPartSettings, itemSettingsShowDrafts));
+	                partConfig.AddOverride(new LookUpInDictionary(ConfigKeyPartSettings, itemSettingsShowDrafts));
 
                 #endregion
 
@@ -138,7 +139,7 @@ namespace ToSic.Eav.DataSources.Pipeline
 	            assemblyAndType = RewriteOldAssemblyNames(assemblyAndType);
 
 	            var dataSource = DataSource.GetDataSource(assemblyAndType, null, qdef.AppId,
-	                valueCollectionProvider: partConfig, parentLog: Log);
+	                configLookUp: partConfig, parentLog: Log);
 	            dataSource.DataSourceGuid = dataQueryPart.EntityGuid;
 
 	            Log.Add($"add '{assemblyAndType}' as " +
@@ -238,7 +239,7 @@ namespace ToSic.Eav.DataSources.Pipeline
 		}
 
 
-	    public IDataSource GetDataSourceForTesting(QueryDefinition qdef, bool showDrafts, IValueCollectionProvider configuration = null)
+	    public IDataSource GetDataSourceForTesting(QueryDefinition qdef, bool showDrafts, ITokenListFiller configuration = null)
 	    {
 	        Log.Add($"construct test query a#{qdef.AppId}, pipe:{qdef.Header.EntityGuid} ({qdef.Header.EntityId}), drafts:{showDrafts}");
 
@@ -253,7 +254,7 @@ namespace ToSic.Eav.DataSources.Pipeline
         /// They are in the format [source:key]=value
         /// </summary>
         /// <returns></returns>
-        private IEnumerable<IValueProvider> GenerateTestValueProviders(QueryDefinition qdef)
+        private IEnumerable<ILookUp> GenerateTestValueProviders(QueryDefinition qdef)
         {
             var wrapLog = Log.Call("GenerateTestValueProviders", $"{qdef.Header.EntityId}");
             // Parse Test-Parameters in Format [Token:Property]=Value
@@ -267,15 +268,15 @@ namespace ToSic.Eav.DataSources.Pipeline
             var paramMatches = Regex.Matches(testParameters, @"(?:\[(?<Token>\w+):(?<Property>\w+)\])=(?<Value>[^\r\n]*)");
 
             // Create a list of static Property Accessors
-            var result = new List<IValueProvider>();
+            var result = new List<ILookUp>();
             foreach (Match testParam in paramMatches)
             {
                 var token = testParam.Groups[keyToken].Value.ToLower();
 
                 // Ensure a PropertyAccess exists
-                if (!(result.FirstOrDefault(i => i.Name == token) is StaticValueProvider propertyAccess))
+                if (!(result.FirstOrDefault(i => i.Name == token) is LookUpInDictionary propertyAccess))
                 {
-                    propertyAccess = new StaticValueProvider(token);
+                    propertyAccess = new LookUpInDictionary(token);
                     result.Add(propertyAccess);
                 }
 

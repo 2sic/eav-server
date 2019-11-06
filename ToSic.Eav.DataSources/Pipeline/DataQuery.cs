@@ -4,6 +4,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Query;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
+using ToSic.Eav.LookUp;
 using ToSic.Eav.ValueProviders;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -41,7 +42,7 @@ namespace ToSic.Eav.DataSources.Pipeline
         /// ...but will be auto-assembled the moment they are accessed
         /// </summary>
         /// <returns></returns>
-	    public static Dictionary<string, IDataSource> AllQueries(int zoneId, int appId, IValueCollectionProvider valuesCollectionProvider, ILog parentLog, bool showDrafts)
+	    public static Dictionary<string, IDataSource> AllQueries(int zoneId, int appId, ITokenListFiller valuesCollectionProvider, ILog parentLog, bool showDrafts)
 	    {
 	        var dict = new Dictionary<string, IDataSource>(StringComparer.OrdinalIgnoreCase);
 	        foreach (var entQuery in AllQueryItems(appId, parentLog))

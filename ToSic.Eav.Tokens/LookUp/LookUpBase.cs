@@ -1,18 +1,18 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace ToSic.Eav.ValueProviders
+namespace ToSic.Eav.LookUp
 {
 	/// <summary>
 	/// Property Accessor to test a Pipeline with Static Values
 	/// </summary>
-	public abstract class BaseValueProvider : IValueProvider
+	public abstract class LookUpBase : ILookUp
     {
         #region default methods of interface
         // note: set should be private, but hard to define through an interface
         public string Name { get; set; }
 
         #region Sub-Token analysis and splitting
-        // this is needed by some property accesses which support sub-properties like Content:Publisher:Location:City...
+        // this is needed by some key accesses which support sub-properties like Content:Publisher:Location:City...
         // todo: should optimize to use named matches, to ensure that reg-ex changes doesn't change numbering...
         private static readonly Regex SubProperties = new Regex("([a-z]+):([a-z:]+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         /// <summary>
@@ -45,24 +45,24 @@ namespace ToSic.Eav.ValueProviders
         /// <summary>
         /// Default Get... must be overridden
         /// </summary>
-        /// <param name="property"></param>
+        /// <param name="key"></param>
         /// <param name="format"></param>
         /// <param name="propertyNotFound"></param>
         /// <returns></returns>
-	    public abstract string Get(string property, string format, ref bool propertyNotFound);
+	    public abstract string Get(string key, string format, ref bool propertyNotFound);
 
         /// <summary>
         /// Shorthand version, will return the string value or a null if not found. 
         /// </summary>
-        /// <param name="property"></param>
+        /// <param name="key"></param>
         /// <returns></returns>
-	    public virtual string Get(string property)
+	    public virtual string Get(string key)
 	    {
 	        var temp = false;
-	        return Get(property, "", ref temp);
+	        return Get(key, "", ref temp);
 	    }
 
-	    public abstract bool Has(string property);
+	    public abstract bool Has(string key);
         #endregion
 
         #region Helper functions

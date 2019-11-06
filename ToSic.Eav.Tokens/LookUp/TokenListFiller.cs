@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Tokens;
 
-namespace ToSic.Eav.ValueProviders
+namespace ToSic.Eav.LookUp
 {
 	/// <inheritdoc />
 	/// <summary>
 	/// Provides Configuration for a configurable DataSource
 	/// </summary>
-	public class ValueCollectionProvider : IValueCollectionProvider
+	public class TokenListFiller : ITokenListFiller
 	{
-	    public Dictionary<string, IValueProvider> Sources { get; }
-	        = new Dictionary<string, IValueProvider>(StringComparer.OrdinalIgnoreCase);
+	    public Dictionary<string, ILookUp> Sources { get; }
+	        = new Dictionary<string, ILookUp>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// List of all Configurations for this DataSource
@@ -22,7 +22,7 @@ namespace ToSic.Eav.ValueProviders
 		/// <summary>
 		/// Constructs a new Configuration Provider
 		/// </summary>
-		public ValueCollectionProvider()
+		public TokenListFiller()
 		{
 			_reusableTokenReplace = new TokenReplace(Sources);
 		}
@@ -31,7 +31,7 @@ namespace ToSic.Eav.ValueProviders
 		/// <summary>
 		/// ...cloning an original
 		/// </summary>
-		public ValueCollectionProvider(IValueCollectionProvider original): this()
+		public TokenListFiller(ITokenListFiller original): this()
 		{
 		    if (original == null) return;
 		    foreach (var srcSet in original.Sources)
@@ -46,7 +46,7 @@ namespace ToSic.Eav.ValueProviders
 	    /// <param name="configList">Dictionary of configuration strings</param>
 	    /// <param name="instanceSpecificPropertyAccesses">Instance specific additional value-dictionaries</param>
 	    /// <param name="repeat">max repeater in case of recursions</param>
-	    public void LoadConfiguration(IDictionary<string, string> configList, Dictionary<string, IValueProvider> instanceSpecificPropertyAccesses = null, int repeat = 2)
+	    public void LoadConfiguration(IDictionary<string, string> configList, Dictionary<string, ILookUp> instanceSpecificPropertyAccesses = null, int repeat = 2)
 		{
             #region if there are instance-specific additional Property-Access objects, add them to the sources-list
             // note: it's important to create a one-time use list of sources if instance-specific sources are needed, to never modify the "global" list.
@@ -72,23 +72,23 @@ namespace ToSic.Eav.ValueProviders
 
 	    public string Replace(string sourceText) => _reusableTokenReplace.ReplaceTokens(sourceText);
 
-	    public void Add(IValueProvider newSource) => Sources[newSource.Name] = newSource;
+	    public void Add(ILookUp lookUp) => Sources[lookUp.Name] = lookUp;
 
-        public void AddOverride(IValueProvider propertyProvider)
+        public void AddOverride(ILookUp lookUp)
 	    {
-	        if (Sources.ContainsKey(propertyProvider.Name))
-	            Sources[propertyProvider.Name] =
-	                new OverrideValueProvider(propertyProvider.Name, propertyProvider,
-	                    Sources[propertyProvider.Name]);
+	        if (Sources.ContainsKey(lookUp.Name))
+	            Sources[lookUp.Name] =
+	                new LookUpInLookUps(lookUp.Name, lookUp,
+	                    Sources[lookUp.Name]);
 	        else
-	            Sources.Add(propertyProvider.Name, propertyProvider);
+	            Sources.Add(lookUp.Name, lookUp);
 
         }
 
-	    public void AddOverride(IEnumerable<IValueProvider> providers)
+	    public void AddOverride(IEnumerable<ILookUp> lookUps)
 	    {
-	        if (providers == null) return;
-	        foreach (var provider in providers)
+	        if (lookUps == null) return;
+	        foreach (var provider in lookUps)
 
 	            if (provider.Name == null)
 	                throw new NullReferenceException("PropertyProvider must have a Name");

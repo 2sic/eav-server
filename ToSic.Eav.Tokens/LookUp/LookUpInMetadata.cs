@@ -1,42 +1,37 @@
 ﻿using System;
 using System.Linq;
-using ToSic.Eav.Data;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Metadata;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.ValueProviders
+namespace ToSic.Eav.LookUp
 {
 	/// <inheritdoc />
 	/// <summary>
 	/// Get Values from Assigned Entities
 	/// </summary>
-	public class AssignedEntityValueProvider : EntityValueProvider
+	public class LookUpInMetadata : LookUpInEntity
 	{
-	    private readonly IMetadataProvider _metaDataSource = null;
+	    private readonly IMetadataProvider _metaDataSource;
 		private readonly Guid _objectToProvideSettingsTo;
 		private bool _entityLoaded;
-	    private IEntity _parent = null;
-
-		//public new string Name { get; }
-
+	    private readonly IEntity _parent;
 
 
 	    /// <summary>
-		/// Constructs the object with prefilled parameters. It won't access the entity yet, because 
+		/// Constructs the object with pre-filled parameters. It won't access the entity yet, because 
 		/// it's possible that the data-source wouldn't be ready yet. The access to the entity will 
 		/// only occur if it's really needed. 
 		/// </summary>
-		/// <param name="name">Name of the PropertyAccess, e.g. pipelinesettings</param>
+		/// <param name="name">Name of the PropertyAccess, e.g. PipelineSettings</param>
 		/// <param name="objectId">EntityGuid of the Entity to get assigned Entities of</param>
 		/// <param name="metaDataSource">DataSource that provides MetaData</param>
-		public AssignedEntityValueProvider(string name, Guid objectId, IMetadataProvider metaDataSource)
+		public LookUpInMetadata(string name, Guid objectId, IMetadataProvider metaDataSource)
 		{
 			Name = name;
 			_objectToProvideSettingsTo = objectId;
 			_metaDataSource = metaDataSource;
 		}
-		public AssignedEntityValueProvider(string name, IEntity entityWithMetadata)
+		public LookUpInMetadata(string name, IEntity entityWithMetadata)
 		{
 			Name = name;
 		    _parent = entityWithMetadata;
@@ -57,15 +52,15 @@ namespace ToSic.Eav.ValueProviders
         /// <summary>
         /// Get Property of AssignedEntity
         /// </summary>
-        /// <param name="property">Name of the Property</param>
+        /// <param name="key">Name of the Property</param>
         /// <param name="format">Format String</param>
         /// <param name="propertyNotFound">referenced Bool to set if Property was not found on AssignedEntity</param>
-        public override string Get(string property, string format, ref bool propertyNotFound)
+        public override string Get(string key, string format, ref bool propertyNotFound)
         {
             if (!_entityLoaded)
                 LoadEntity();
 
-            return base.Get(property, format, ref propertyNotFound);
+            return base.Get(key, format, ref propertyNotFound);
         }
 	}
 }

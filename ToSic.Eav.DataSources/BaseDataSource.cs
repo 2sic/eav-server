@@ -6,6 +6,7 @@ using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
+using ToSic.Eav.LookUp;
 using ToSic.Eav.ValueProviders;
 using ICache = ToSic.Eav.DataSources.Caches.ICache;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -131,7 +132,7 @@ namespace ToSic.Eav.DataSources
 
 
         /// <inheritdoc />
-        public IValueCollectionProvider ConfigurationProvider { get; protected internal set; }
+        public ITokenListFiller ConfigurationProvider { get; protected internal set; }
 
         /// <inheritdoc />
         public IDictionary<string, string> Configuration { get; internal set; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -155,7 +156,7 @@ namespace ToSic.Eav.DataSources
                 throw new Exception("No ConfigurationProvider configured on this data-source. Cannot EnsureConfigurationIsLoaded");
 
             // construct a property access for in, use it in the config provider
-            var instancePAs = new Dictionary<string, IValueProvider> { { "In".ToLower(), new DataTargetValueProvider(this) } };
+            var instancePAs = new Dictionary<string, ILookUp> { { "In".ToLower(), new LookUpInDataTarget(this) } };
             ConfigurationProvider.LoadConfiguration(Configuration, instancePAs);
             ConfigurationIsLoaded = true;
         }

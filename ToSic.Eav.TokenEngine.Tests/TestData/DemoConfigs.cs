@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.LookUp;
 using ToSic.Eav.TokenEngine.Tests.ValueProvider;
-using ToSic.Eav.ValueProviders;
 
 namespace ToSic.Eav.TokenEngine.Tests.TestData
 {
@@ -10,22 +10,22 @@ namespace ToSic.Eav.TokenEngine.Tests.TestData
     {
         private const int AppIdX = -1;
 
-        public static ValueCollectionProvider AppSetAndRes(int appId = AppIdX)
+        public static TokenListFiller AppSetAndRes(int appId = AppIdX)
         {
-            var vc = new ValueCollectionProvider();
+            var vc = new TokenListFiller();
             vc.Add(AppSettings(appId));
             vc.Add(AppResources(appId));
 
             return vc;
         }
 
-        public static EntityValueProvider BuildValueProvider(string name, Dictionary<string, object> vals, int appId = AppIdX)
+        public static LookUpInEntity BuildValueProvider(string name, Dictionary<string, object> vals, int appId = AppIdX)
         {
             var ent = new Data.Entity(appId, 0, ContentTypeBuilder.Fake(name), vals, vals.FirstOrDefault().Key);
-            return new EntityValueProvider(ent, name);
+            return new LookUpInEntity(ent, name);
         }
 
-        public static EntityValueProvider AppSettings(int appId)
+        public static LookUpInEntity AppSettings(int appId)
         {
             var vals = new Dictionary<string, object>
             {
@@ -39,7 +39,7 @@ namespace ToSic.Eav.TokenEngine.Tests.TestData
             //return ent;
         }
 
-        public static EntityValueProvider AppResources(int appId)
+        public static LookUpInEntity AppResources(int appId)
         {
             var vals = new Dictionary<string, object>
             {

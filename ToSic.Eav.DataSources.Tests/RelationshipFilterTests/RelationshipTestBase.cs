@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data.Query;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.LookUp;
 using ToSic.Eav.TokenEngine.Tests.TestData;
 
 using ToSic.Eav.ValueProviders;
@@ -89,7 +90,7 @@ namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
 
 
 
-        protected RelationshipFilter BuildRelationshipFilter(int zone, int app, string primaryType, IValueCollectionProvider config = null)
+        protected RelationshipFilter BuildRelationshipFilter(int zone, int app, string primaryType, ITokenListFiller config = null)
         {
             var baseDs = DataSource.GetInitialDataSource(zone, app, configProvider: config, parentLog: Log);
             var appDs = DataSource.GetDataSource<App>(zone, app, baseDs, parentLog: Log);
@@ -111,14 +112,14 @@ namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
         }
 
 
-        protected static ValueCollectionProvider BuildConfigurationProvider(string name, Dictionary<string, object> vals)
+        protected static TokenListFiller BuildConfigurationProvider(string name, Dictionary<string, object> vals)
         {
             var vc = BuildConfigurationProvider();
             vc.Add(DemoConfigs.BuildValueProvider("Settings", vals));
             return vc;
         }
 
-        protected static ValueCollectionProvider BuildConfigurationProvider()
+        protected static TokenListFiller BuildConfigurationProvider()
         {
             var vc = DemoConfigs.AppSetAndRes();
             return vc;

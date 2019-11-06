@@ -1,5 +1,6 @@
 ﻿
 using ToSic.Eav.Documentation;
+using ToSic.Eav.LookUp;
 using ToSic.Eav.ValueProviders;
 
 namespace ToSic.Eav.Apps
@@ -24,6 +25,6 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// Configuration used to query data - will deliver url-parameters and other important configuration values.
         /// </summary>
-        IValueCollectionProvider Configuration { get; }
+        ITokenListFiller Configuration { get; }
     }
 }

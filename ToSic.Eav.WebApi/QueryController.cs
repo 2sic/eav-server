@@ -11,7 +11,7 @@ using ToSic.Eav.DataSources.Pipeline;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
-
+using ToSic.Eav.LookUp;
 using ToSic.Eav.ValueProviders;
 using ToSic.Eav.WebApi.Formats;
 
@@ -107,7 +107,7 @@ namespace ToSic.Eav.WebApi
 		/// <summary>
 		/// Query the Result of a Pipline using Test-Parameters
 		/// </summary>
-		public dynamic QueryPipeline(int appId, int id, ValueCollectionProvider config)
+		public dynamic QueryPipeline(int appId, int id, TokenListFiller config)
 		{
 		    Log.Add($"queryy pipe: a#{appId}, id:{id}");
             // Get the query, run it and track how much time this took

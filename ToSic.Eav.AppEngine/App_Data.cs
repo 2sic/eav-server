@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using ToSic.Eav.LookUp;
 using ToSic.Eav.ValueProviders;
 
 namespace ToSic.Eav.Apps
@@ -7,7 +8,7 @@ namespace ToSic.Eav.Apps
     public partial class App
     {
 
-        public IValueCollectionProvider ConfigurationProvider
+        public ITokenListFiller ConfigurationProvider
         {
             get
             {
@@ -24,7 +25,7 @@ namespace ToSic.Eav.Apps
                 return _configurationProvider;
             }
         }
-        private IValueCollectionProvider _configurationProvider;
+        private ITokenListFiller _configurationProvider;
         private bool _configurationProviderBuilt;
 
 
@@ -40,7 +41,7 @@ namespace ToSic.Eav.Apps
         /// <param name="showDrafts"></param>
         /// <param name="versioningEnabled"></param>
         /// <param name="configurationValues">this is needed for providing parameters to the data-query-system</param>
-        private void InitData(bool showDrafts, bool versioningEnabled, IValueCollectionProvider configurationValues)
+        private void InitData(bool showDrafts, bool versioningEnabled, ITokenListFiller configurationValues)
         {
             Log.Add($"init data drafts:{showDrafts}, vers:{versioningEnabled}, hasConf:{configurationValues != null}");
             _configurationProvider = configurationValues;
@@ -61,7 +62,7 @@ namespace ToSic.Eav.Apps
 
             // ModulePermissionController does not work when indexing, return false for search
             var initialSource = DataSource.GetInitialDataSource(ZoneId, AppId, ShowDraftsInData,
-                ConfigurationProvider as ValueCollectionProvider, Log);
+                ConfigurationProvider as TokenListFiller, Log);
 
             // todo: probably use the full configuration provider from function params, not from initial source?
             var xData = DataSource.GetDataSource<DataSources.App>(initialSource.ZoneId,

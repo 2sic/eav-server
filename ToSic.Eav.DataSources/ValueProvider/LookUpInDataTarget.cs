@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.LookUp;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.ValueProviders
@@ -8,7 +9,7 @@ namespace ToSic.Eav.ValueProviders
 	/// <summary>
 	/// Property Accessor to test a Pipeline with Static Values
 	/// </summary>
-	public class DataTargetValueProvider : BaseValueProvider
+	public class LookUpInDataTarget : LookUpBase
 	{
 	    private readonly IDataTarget _dataTarget;
 
@@ -19,7 +20,7 @@ namespace ToSic.Eav.ValueProviders
 		/// <summary>
 		/// The class constructor
 		/// </summary>
-		public DataTargetValueProvider(IDataTarget dataTarget)
+		public LookUpInDataTarget(IDataTarget dataTarget)
 		{
 		    _dataTarget = dataTarget;
 			Name = "In";
@@ -29,15 +30,15 @@ namespace ToSic.Eav.ValueProviders
         /// Will check if any streams in In matches the requested next key-part and will retrieve the first entity in that stream
         /// to deliver the required sub-key (or even sub-sub-key)
         /// </summary>
-        /// <param name="property"></param>
+        /// <param name="key"></param>
         /// <param name="format"></param>
         /// <param name="propertyNotFound"></param>
         /// <returns></returns>
-		public override string Get(string property, string format, ref bool propertyNotFound)
+		public override string Get(string key, string format, ref bool propertyNotFound)
 		{
             // Check if it has sub-keys to see if it's trying to match a inbound stream
-            var subTokens = CheckAndGetSubToken(property);
-            // var propertyMatch = SubProperties.Match(property);
+            var subTokens = CheckAndGetSubToken(key);
+            // var propertyMatch = SubProperties.Match(key);
 		    if (!subTokens.HasSubtoken)
 		    {
 		        propertyNotFound = true;
@@ -59,13 +60,13 @@ namespace ToSic.Eav.ValueProviders
                 return string.Empty;
             }
 
-            // Create an EntityValueProvider based on the first item, return its Get
+            // Create an LookUpInEntity based on the first item, return its Get
 		    var first = entityStream.List.First();
-		    return new EntityValueProvider(first).Get(subTokens.Rest, format, ref propertyNotFound);
+		    return new LookUpInEntity(first).Get(subTokens.Rest, format, ref propertyNotFound);
 
 		}
 
-	    public override bool Has(string property)
+	    public override bool Has(string key)
 	    {
 	        throw new System.NotImplementedException();
 	    }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.LookUp;
 using ToSic.Eav.UnitTests.DataSources;
 
 using ToSic.Eav.ValueProviders;
@@ -14,7 +15,7 @@ namespace ToSic.Eav.DataSources.Tests.ItemFilterDuplicates
         public void ItemFilterDuplicates_In0()
         {
             var desiredFinds = 0;
-            var sf = DataSource.GetDataSource<DataSources.ItemFilterDuplicates>(0, 0, valueCollectionProvider: new ValueCollectionProvider());
+            var sf = DataSource.GetDataSource<DataSources.ItemFilterDuplicates>(0, 0, configLookUp: new TokenListFiller());
             var found = sf.List.Count();
             Assert.AreEqual(desiredFinds, found, "Should find exactly this amount people");
 

@@ -1,10 +1,11 @@
-﻿using ToSic.Eav.ValueProviders;
+﻿using ToSic.Eav.LookUp;
+using ToSic.Eav.ValueProviders;
 
 namespace ToSic.Eav.Apps
 {
     public class AppDataConfiguration: IAppDataConfiguration
     {
-        public AppDataConfiguration(bool showDrafts, bool versioningEnabled, IValueCollectionProvider configuration)
+        public AppDataConfiguration(bool showDrafts, bool versioningEnabled, ITokenListFiller configuration)
         {
             ShowDrafts = showDrafts;
             VersioningEnabled = versioningEnabled;
@@ -15,7 +16,7 @@ namespace ToSic.Eav.Apps
 
         public bool VersioningEnabled { get; }
 
-        public IValueCollectionProvider Configuration { get; }
+        public ITokenListFiller Configuration { get; }
 
     }
 }

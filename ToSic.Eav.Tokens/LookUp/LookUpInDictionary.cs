@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ToSic.Eav.ValueProviders
+namespace ToSic.Eav.LookUp
 {
 	/// <inheritdoc />
 	/// <summary>
 	/// Property Accessor to test a Pipeline with Static Values
 	/// </summary>
-	public class StaticValueProvider : BaseValueProvider
+	public class LookUpInDictionary : LookUpBase
 	{
 		/// <summary>
 		/// List with static properties and Test-Values
@@ -17,17 +17,17 @@ namespace ToSic.Eav.ValueProviders
 		/// <summary>
 		/// The class constructor, can optionally take a dictionary to reference with, otherwise creates a new one
 		/// </summary>
-		public StaticValueProvider(string name, Dictionary<string, string> valueList = null)
+		public LookUpInDictionary(string name, Dictionary<string, string> valueList = null)
 		{
 			Properties = valueList ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 			Name = name;
 		}
 
-		public override string Get(string property, string format, ref bool propertyNotFound)
+		public override string Get(string key, string format, ref bool propertyNotFound)
 		{
 			try
 			{
-				return Properties[property];
+				return Properties[key];
 			}
 			catch (KeyNotFoundException)
 			{
@@ -36,9 +36,9 @@ namespace ToSic.Eav.ValueProviders
 			}
 		}
 
-        public override bool Has(string property)
+        public override bool Has(string key)
         {
-            return Properties.ContainsKey(property);
+            return Properties.ContainsKey(key);
         }
 	}
 }

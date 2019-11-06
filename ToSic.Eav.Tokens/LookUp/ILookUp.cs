@@ -1,38 +1,38 @@
 ﻿using ToSic.Eav.Documentation;
 
-namespace ToSic.Eav.ValueProviders
+namespace ToSic.Eav.LookUp
 {
     /// <summary>
     /// A key-value map which resolves keys like "SortOrder" to "asc". <br/>
     /// It's usually used to get pre-stored configuration or to get settings from the context.
     /// </summary>
     [PublicApi]
-	public interface IValueProvider
+	public interface ILookUp
 	{
 		/// <summary>
-		/// Gets the Name of this ValueProvider, e.g. QueryString or PipelineSettings
+		/// Gets the Name of this LookUp, e.g. QueryString or PipelineSettings
 		/// </summary>
-		/// <returns>The name which is used in a <see cref="IValueCollectionProvider"/> to identify this source. </returns>
+		/// <returns>The name which is used to identify this LookUp, like in a <see cref="ITokenListFiller"/></returns>
 		string Name { get; }
 
 		/// <summary>
-		/// Gets a Property by Name and format it in a special way (like for dates)
+		/// Gets a value by Name and tries to format it in a special way (like for dates)
 		/// </summary>
 		/// <returns>A string with the result, empty-string if not found.</returns>
-		string Get(string property, string format, ref bool propertyNotFound);
+		string Get(string key, string format, ref bool propertyNotFound);
 
         /// <summary>
         /// Shorthand version, will simply return the string or a null-value
         /// </summary>
-        /// <param name="property"></param>
+        /// <param name="key"></param>
         /// <returns>The resolved value, or an empty string if not found. Note that it could also resolve to an empty string if found - use Has to check for that case.</returns>
-	    string Get(string property);
+	    string Get(string key);
 
         /// <summary>
         /// Checks if this value provider has a key.
         /// </summary>
-        /// <param name="property">The key to check</param>
+        /// <param name="key">The key to check</param>
         /// <returns>true if found, false if not</returns>
-	    bool Has(string property);
+	    bool Has(string key);
 	}
 }

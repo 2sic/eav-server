@@ -4,6 +4,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.LookUp;
 using ToSic.Eav.ValueProviders;
 using ICache = ToSic.Eav.DataSources.Caches.ICache;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -51,7 +52,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
 		/// Gets the ConfigurationProvider for this DataSource
 		/// </summary>
-        IValueCollectionProvider ConfigurationProvider { get; }
+        ITokenListFiller ConfigurationProvider { get; }
 
 		/// <summary>
 		/// Gets a Dictionary of Configurations for this DataSource, e.g. Key: EntityId, Value: [QueryString:EntityId]
