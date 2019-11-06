@@ -4,6 +4,7 @@ using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.DataSources.VisualQuery;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Metadata;
 using static System.Int32;
 
 namespace ToSic.Eav.DataSources

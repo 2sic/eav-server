@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Interfaces;
 
-namespace ToSic.Eav.Interfaces
+namespace ToSic.Eav.Metadata
 {
     /// <summary>
     /// This interface provides a standard for accessing hidden metadata items

@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Interfaces;
 using ToSic.Eav.Security.Permissions;
 
-namespace ToSic.Eav.Interfaces
+namespace ToSic.Eav.Metadata
 {
     /// <summary>
     /// A provider for metadata for something.

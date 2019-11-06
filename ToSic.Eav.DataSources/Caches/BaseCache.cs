@@ -8,6 +8,7 @@ using ToSic.Eav.DataSources.RootSources;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.DataSources.Caches
 {

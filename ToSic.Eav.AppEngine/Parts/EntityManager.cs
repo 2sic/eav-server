@@ -10,6 +10,7 @@ using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.Apps.Parts

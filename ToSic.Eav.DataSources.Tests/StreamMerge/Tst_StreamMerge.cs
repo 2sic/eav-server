@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.UnitTests.DataSources;
-using ToSic.Eav.ValueProvider;
+
 using ToSic.Eav.ValueProviders;
 
 namespace ToSic.Eav.DataSources.Tests.StreamMerge

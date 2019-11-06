@@ -6,6 +6,7 @@ namespace ToSic.Eav.Apps.Assets
     /// An ADAM (Automatic Digital Asset Management) file
     /// </summary>
     [PublicApi]
+    
     public interface IAdamFile: IAdamAsset, IFile
     {
     }

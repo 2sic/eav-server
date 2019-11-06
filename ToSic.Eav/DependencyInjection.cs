@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.DataSources.Metadata;
 using ToSic.Eav.ImportExport.Json;
+using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Xml;
 using ICache = ToSic.Eav.DataSources.Caches.ICache;
 
