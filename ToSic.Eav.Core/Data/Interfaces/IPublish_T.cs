@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Documentation;
 
-namespace ToSic.Eav.Interfaces
+namespace ToSic.Eav.Data
 {
     /// <remarks>
     /// Still a private API, because the naming / typing could change

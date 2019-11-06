@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Serializers

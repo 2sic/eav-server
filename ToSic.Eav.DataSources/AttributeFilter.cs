@@ -5,6 +5,7 @@ using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources.VisualQuery;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
 {

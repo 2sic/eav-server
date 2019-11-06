@@ -12,6 +12,7 @@ using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Types;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Persistence.File

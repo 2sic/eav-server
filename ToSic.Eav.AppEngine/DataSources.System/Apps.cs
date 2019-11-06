@@ -5,6 +5,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.DataSources.VisualQuery;
 using ToSic.Eav.Interfaces;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataSources.System

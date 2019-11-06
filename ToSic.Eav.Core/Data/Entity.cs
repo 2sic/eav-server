@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using ToSic.Eav.Data.Builder;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Data
@@ -18,6 +17,7 @@ namespace ToSic.Eav.Data
         public new IAttribute Title => TitleFieldName == null
             ? null
             : (Attributes?.ContainsKey(TitleFieldName) ?? false ? Attributes[TitleFieldName] : null);
+
 
 
         /// <summary>
@@ -74,15 +74,17 @@ namespace ToSic.Eav.Data
 
         #region simple direct accessors
 
-        /// <inheritdoc />
-        /// <summary>
-        /// Shorthand accessor to retrieve an attribute
-        /// </summary>
-        /// <param name="attributeName"></param>
-        /// <returns></returns>
-        IAttribute IEntity.this[string attributeName] => Attributes.ContainsKey(attributeName) ? Attributes[attributeName] : null;
+        /// <inheritdoc cref="IEntity" />
+        public new IAttribute this[string attributeName] => Attributes.ContainsKey(attributeName) ? Attributes[attributeName] : null;
 
         #endregion
+
+        //#region Explicit Interfaces.IEntity implementation for compatibility
+
+        //IAttribute Interfaces.IEntity.this[string attributeName] => (this as Data.IEntity)[attributeName];
+
+        //#endregion
+
 
         /// <inheritdoc />
         /// <summary>
@@ -248,6 +250,7 @@ namespace ToSic.Eav.Data
                 .ToList();
             return list;
         }
+
 
         public List<IEntity> Parents(string type = null, string field = null)
         {

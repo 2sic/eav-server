@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Caching;
-using ToSic.Eav.Data;
 using ToSic.Eav.Metadata;
 
-namespace ToSic.Eav.Interfaces
+namespace ToSic.Eav.Data
 {
     public interface IDeferredEntitiesList: ICacheExpiring
     {

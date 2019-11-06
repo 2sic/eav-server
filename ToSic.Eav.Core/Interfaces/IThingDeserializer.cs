@@ -2,6 +2,7 @@
 using ToSic.Eav.App;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Interfaces
 {
@@ -11,8 +12,8 @@ namespace ToSic.Eav.Interfaces
 
         void Initialize(int appId, IEnumerable<IContentType> types, IDeferredEntitiesList allEntities, ILog parentLog);
 
-        IEntity Deserialize(string serialized, bool allowDynamic = false, bool skipUnknownType = false);
+        Data.IEntity Deserialize(string serialized, bool allowDynamic = false, bool skipUnknownType = false);
 
-        List<IEntity> Deserialize(List<string> serialized, bool allowDynamic = false);
+        List<Data.IEntity> Deserialize(List<string> serialized, bool allowDynamic = false);
     }
 }

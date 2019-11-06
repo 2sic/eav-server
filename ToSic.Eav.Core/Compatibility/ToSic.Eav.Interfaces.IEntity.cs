@@ -13,7 +13,9 @@ namespace ToSic.Eav.Interfaces
     /// versioning, publishing etc.
     /// </summary>
     [PrivateApi]
-    public interface IEntity: IEntityLight, IPublish<IEntity>, IHasPermissions
+    public interface IEntity: IEntityLight, 
+        IPublish<Data.IEntity>, // needed to disable this for compatibility with entities - but must be typed to the new interface
+        IHasPermissions
     {
         /// <summary>
         /// Retrieves the best possible value for an attribute or virtual attribute (like EntityTitle)
@@ -94,9 +96,9 @@ namespace ToSic.Eav.Interfaces
 
         #region experimental IEntity Queryable / Quick
         [PrivateApi]
-        List<IEntity> Children(string field = null, string type = null);
+        List<Data.IEntity> Children(string field = null, string type = null);
         [PrivateApi]
-        List<IEntity> Parents(string type = null, string field = null);
+        List<Data.IEntity> Parents(string type = null, string field = null);
 
         [PrivateApi]
         object Value(string field, bool resolve = true);

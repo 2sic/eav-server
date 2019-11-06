@@ -8,6 +8,7 @@ using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.ValueProviders;
 using ICache = ToSic.Eav.DataSources.Caches.ICache;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
 {

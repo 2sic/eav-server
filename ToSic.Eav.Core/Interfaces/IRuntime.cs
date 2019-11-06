@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Interfaces
 {
@@ -8,7 +9,7 @@ namespace ToSic.Eav.Interfaces
     {
         IEnumerable<IContentType> LoadGlobalContentTypes();
 
-        IEnumerable<IEntity> LoadGlobalItems(string groupIdentifier);
+        IEnumerable<Data.IEntity> LoadGlobalItems(string groupIdentifier);
 
     }
 }

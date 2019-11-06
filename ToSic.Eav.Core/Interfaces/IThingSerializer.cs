@@ -14,9 +14,9 @@ namespace ToSic.Eav.Interfaces
         string Serialize(int entityId);
         Dictionary<int, string> Serialize(List<int> entities);
 
-        string Serialize(IEntity entity);
+        string Serialize(Data.IEntity entity);
 
-        Dictionary<int, string> Serialize(List<IEntity> entities);
+        Dictionary<int, string> Serialize(List<Data.IEntity> entities);
 
 
     }

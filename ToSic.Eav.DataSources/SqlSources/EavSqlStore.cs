@@ -3,6 +3,7 @@ using ToSic.Eav.App;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.RootSources;
 using ToSic.Eav.Interfaces;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 // important: don't change the namespace just like that, as there are strings referencing it for this loader
 // ReSharper disable once CheckNamespace

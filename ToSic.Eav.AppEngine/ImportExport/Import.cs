@@ -11,6 +11,7 @@ using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
 using Entity = ToSic.Eav.Data.Entity;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps.ImportExport
 {

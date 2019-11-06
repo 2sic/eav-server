@@ -10,6 +10,7 @@ using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repositories;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {

@@ -8,6 +8,7 @@ using ToSic.Eav.Enums;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Repository.Efc.Tests
 {

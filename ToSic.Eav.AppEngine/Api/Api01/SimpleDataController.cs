@@ -8,6 +8,7 @@ using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Repository.Efc;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 // This is the simple API used to quickly create/edit/delete entities
 

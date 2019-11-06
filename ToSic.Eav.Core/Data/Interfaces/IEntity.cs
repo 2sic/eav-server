@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Security.Permissions;
 
@@ -26,7 +25,7 @@ namespace ToSic.Eav.Data
         /// An object OR a null - for example when retrieving the title and no title exists
         /// the object is string, int or even a EntityRelationship
         /// </returns>
-        object GetBestValue(string attributeName, string[] languages, bool resolveHyperlinks = false);
+        new object GetBestValue(string attributeName, string[] languages, bool resolveHyperlinks = false);
 
         /// <summary>
         /// Retrieves the best possible value for an attribute or virtual attribute (like EntityTitle)
@@ -40,24 +39,24 @@ namespace ToSic.Eav.Data
         /// An object OR a null - for example when retrieving the title and no title exists
         /// the object is string, int or even a EntityRelationship
         /// </returns>
-        T GetBestValue<T>(string attributeName, string[] languages, bool resolveHyperlinks = false);
+        new T GetBestValue<T>(string attributeName, string[] languages, bool resolveHyperlinks = false);
 
         [PrivateApi]
-        object PrimaryValue(string attributeName, bool resolveHyperlinks = false);
+        new object PrimaryValue(string attributeName, bool resolveHyperlinks = false);
         [PrivateApi]
-        T PrimaryValue<T>(string attributeName, bool resolveHyperlinks = false);
+        new T PrimaryValue<T>(string attributeName, bool resolveHyperlinks = false);
 
         /// <summary>
         /// Best way to get the current entities title
         /// </summary>
         /// <param name="dimensions">Array of dimensions/languages to use in the lookup</param>
         /// <returns>The entity title as a string</returns>
-        string GetBestTitle(string[] dimensions);
+        new string GetBestTitle(string[] dimensions);
 
         /// <summary>
         /// All the attributes of the current Entity.
         /// </summary>
-        Dictionary<string, IAttribute> Attributes { get; }
+        new Dictionary<string, IAttribute> Attributes { get; }
 
         /// <summary>
         /// Gets the "official" Title-Attribute <see cref="IAttribute{T}"/>
@@ -80,7 +79,7 @@ namespace ToSic.Eav.Data
         /// version of this entity in the repository
         /// </summary>
         /// <returns>The version number.</returns>
-        int Version { get; }
+        new int Version { get; }
 
 
         /// <summary>
@@ -90,18 +89,18 @@ namespace ToSic.Eav.Data
         /// The metadata is either already prepared, from the same app, or from a remote app
         /// </remarks>
         /// <returns>A typed Metadata provider for this Entity</returns>
-        IMetadataOfItem Metadata { get; }
+        new IMetadataOfItem Metadata { get; }
 
         #region experimental IEntity Queryable / Quick
         [PrivateApi]
-        List<IEntity> Children(string field = null, string type = null);
+        new List<IEntity> Children(string field = null, string type = null);
         [PrivateApi]
-        List<IEntity> Parents(string type = null, string field = null);
+        new List<IEntity> Parents(string type = null, string field = null);
 
         [PrivateApi]
-        object Value(string field, bool resolve = true);
+        new object Value(string field, bool resolve = true);
         [PrivateApi]
-        T Value<T>(string field, bool resolve = true);
+        new T Value<T>(string field, bool resolve = true);
 
         #endregion experimental
     }

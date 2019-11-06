@@ -6,6 +6,6 @@ namespace ToSic.Eav.Interfaces
     {
         void SaveContentType(IContentType type);
 
-        void SaveEntity(IEntity item);
+        void SaveEntity(Data.IEntity item);
     }
 }

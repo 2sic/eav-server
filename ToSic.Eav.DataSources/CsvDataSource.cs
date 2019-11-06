@@ -9,6 +9,7 @@ using ToSic.Eav.DataSources.VisualQuery;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
 using ContentTypeBuilder = ToSic.Eav.Data.Builder.ContentTypeBuilder;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 
 namespace ToSic.Eav.DataSources

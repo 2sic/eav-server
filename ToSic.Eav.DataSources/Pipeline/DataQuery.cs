@@ -5,6 +5,7 @@ using ToSic.Eav.Data.Query;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.ValueProviders;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.Pipeline
 {

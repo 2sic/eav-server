@@ -6,8 +6,8 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Enums;
 using ToSic.Eav.ImportExport.Json.Format;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.ImportExport.Json
 {
