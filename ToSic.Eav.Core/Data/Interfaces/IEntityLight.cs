@@ -1,8 +1,9 @@
 ﻿using System;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Interfaces;
 using ToSic.Eav.Metadata;
 
-namespace ToSic.Eav.Interfaces
+namespace ToSic.Eav.Data
 {
 	/// <summary>
 	/// Represents a light Entity, which is a very basic entity
