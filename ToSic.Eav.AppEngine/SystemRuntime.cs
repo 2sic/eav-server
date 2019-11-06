@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.DataSources.Caches;
-using ToSic.Eav.Interfaces;
+using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Apps
 {

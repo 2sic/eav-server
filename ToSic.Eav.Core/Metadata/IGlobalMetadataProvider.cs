@@ -1,7 +1,7 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Documentation;
 
-namespace ToSic.Eav.Interfaces
+namespace ToSic.Eav.Metadata
 {
     /// <summary>
     /// This interface allows objects to provide metadata from "remote" systems

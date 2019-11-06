@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Interfaces
+﻿namespace ToSic.Eav.Caching
 {
     public interface ICacheDependent
     {
