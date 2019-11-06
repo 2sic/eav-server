@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
 
@@ -15,7 +16,8 @@ namespace ToSic.Eav.Core.Tests.Data
                 new AttributeDefinition(AppId, "FirstName", "String", true, 0, 0),
                 new AttributeDefinition(AppId, "LastName", "String", false, 0, 0),
                 new AttributeDefinition(AppId, "Phone", "String", false, 0, 0),
-                new AttributeDefinition(AppId, "Age", "Number", false, 0,0)
+                new AttributeDefinition(AppId, "Age", "Number", false, 0,0),
+                 new AttributeDefinition(AppId, "AnyDate", "DateTime", false, 0,0)
             }
         };
 
@@ -39,7 +41,8 @@ namespace ToSic.Eav.Core.Tests.Data
                 {"FirstName", "Daniel"},
                 {"LastName", "Mettler"},
                 {"Phone", "+41 81 750 67 70"},
-                {"Age", 37}
+                {"Age", 37},
+                {"AnyDate", DateTime.Parse("2019-11-06T01:00:05Z") }
             };
             var entDaniel = new Entity(AppId, 1, CtTestType, valDaniel, "FirstName");
             return entDaniel;

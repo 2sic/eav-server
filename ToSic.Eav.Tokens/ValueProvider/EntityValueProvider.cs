@@ -39,8 +39,6 @@ namespace ToSic.Eav.ValueProvider
                 return string.Empty;
             }
 
-            var outputFormat = format == string.Empty ? "g" : format;
-
             // bool propertyNotFound;
             var valueObject = Entity.GetBestValue(property, _dimensions);
             propertyNotFound = valueObject == null; // this is used multiple times
@@ -54,12 +52,19 @@ namespace ToSic.Eav.ValueProvider
                     case TypeCode.Boolean:
                         return ((bool)valueObject).ToString(formatProvider).ToLower();
                     case TypeCode.DateTime:
+                        if (String.IsNullOrEmpty(format))
+                        {
+                            // make sure datetime is converted as universal time with the correct format specifier if no format is given
+                            return ((DateTime)valueObject).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ", System.Globalization.CultureInfo.InvariantCulture);
+                        }
+                        return ((DateTime)valueObject).ToString(format, formatProvider);
                     case TypeCode.Double:
                     case TypeCode.Single:
                     case TypeCode.Int16:
                     case TypeCode.Int32:
                     case TypeCode.Int64:
                     case TypeCode.Decimal:
+                        var outputFormat = format == string.Empty ? "g" : format;
                         return ((IFormattable)valueObject).ToString(outputFormat, formatProvider);
                     default:
                         return FormatString(valueObject.ToString(), format);
