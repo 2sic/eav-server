@@ -48,6 +48,15 @@ namespace ToSic.Eav.TokenEngine.Tests.ValueProvider
         }
 
         [TestMethod]
+        public void ValueProvider_EntityValueProvider_DateTimeFormat()
+        {
+            IValueProvider valProv = new EntityValueProvider(SampleData.TestEntityDaniel());
+            
+            Assert.AreEqual(DateTime.Parse("2019-11-06T01:00:05Z"), DateTime.Parse(valProv.Get("AnyDate")));
+            Assert.AreEqual("TestType", valProv.Get("EntityType"));
+        }
+
+        [TestMethod]
         public void ValueProvider_EntityValueProvider_SubProperty_TODO()
         {
             // todo
