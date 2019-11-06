@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.ValueProviders;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.ValueProvider

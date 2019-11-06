@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Documentation;
 
-namespace ToSic.Eav.ValueProvider
+namespace ToSic.Eav.ValueProviders
 {
 	/// <summary>
 	/// Provides Configuration for a configurable DataSource

@@ -33,7 +33,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
-using ToSic.Eav.ValueProvider;
+using ToSic.Eav.ValueProviders;
 
 namespace ToSic.Eav.Tokens
 {

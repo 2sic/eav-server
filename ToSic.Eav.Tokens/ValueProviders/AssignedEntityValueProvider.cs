@@ -2,8 +2,7 @@
 using System.Linq;
 using ToSic.Eav.Interfaces;
 
-// ReSharper disable once CheckNamespace
-namespace ToSic.Eav.ValueProvider
+namespace ToSic.Eav.ValueProviders
 {
 	/// <inheritdoc />
 	/// <summary>

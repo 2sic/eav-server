@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace ToSic.Eav.ValueProvider
+namespace ToSic.Eav.ValueProviders
 {
     // This Value Provider chains two value providers and tries one or the other to deliver a result
     // It's mainly used to override values which are given, by a special situation

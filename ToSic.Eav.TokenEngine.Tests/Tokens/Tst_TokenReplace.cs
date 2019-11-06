@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Tokens;
-using ToSic.Eav.ValueProvider;
+using ToSic.Eav.ValueProviders;
 
 namespace ToSic.Eav.TokenEngine.Tests.Tokens
 {

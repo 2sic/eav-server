@@ -5,6 +5,7 @@ using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.ValueProvider;
+using ToSic.Eav.ValueProviders;
 using ICache = ToSic.Eav.DataSources.Caches.ICache;
 
 namespace ToSic.Eav.DataSources

@@ -2,7 +2,7 @@
 using System.Linq;
 using ToSic.Eav.Interfaces;
 
-namespace ToSic.Eav.ValueProvider
+namespace ToSic.Eav.ValueProviders
 {
 	/// <inheritdoc />
 	/// <summary>

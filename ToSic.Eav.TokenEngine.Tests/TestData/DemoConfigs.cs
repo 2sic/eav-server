@@ -2,7 +2,7 @@
 using System.Linq;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.TokenEngine.Tests.ValueProvider;
-using ToSic.Eav.ValueProvider;
+using ToSic.Eav.ValueProviders;
 
 namespace ToSic.Eav.TokenEngine.Tests.TestData
 {
