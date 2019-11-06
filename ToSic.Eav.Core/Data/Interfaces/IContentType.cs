@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Interfaces;
 using ToSic.Eav.Repositories;
 
-namespace ToSic.Eav.Interfaces
+namespace ToSic.Eav.Data
 {
 	/// <summary>
 	/// Represents a Content Type information (the schema) used for <see cref="IEntity"/> objects.

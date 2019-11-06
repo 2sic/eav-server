@@ -5,6 +5,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Parts;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Pipeline;
 using ToSic.Eav.DataSources.Queries;
@@ -62,7 +63,7 @@ namespace ToSic.Eav.WebApi
 
             return query;
 
-            Dictionary<string, object> EntityToDictionary(Interfaces.IEntity entity)
+            Dictionary<string, object> EntityToDictionary(IEntity entity)
             {
                 var attributes = entity.Attributes.ToDictionary(k => k.Value.Name, v =>  v.Value[0]);
                 attributes.Add("EntityId", entity.EntityId);

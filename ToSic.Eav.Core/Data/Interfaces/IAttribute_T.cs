@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.Interfaces;
 
-namespace ToSic.Eav
+namespace ToSic.Eav.Data
 {/// <summary>
 	/// Represents an Attribute of a Generic Type
 	/// </summary>

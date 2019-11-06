@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Documentation;
 using ToSic.Eav.Enums;
 
-namespace ToSic.Eav.Interfaces
+namespace ToSic.Eav.Data
 {
 	/// <summary>
 	/// Represents an Attribute. This is the base for both

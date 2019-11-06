@@ -1,19 +1,19 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Security.Permissions;
 
-namespace ToSic.Eav.Data
+// ReSharper disable once CheckNamespace
+namespace ToSic.Eav.Interfaces
 {
     /// <summary>
     /// The primary data-item in the system, IEntity is a generic data-item for any kind of information.
     /// Note that it inherits <see cref="IEntityLight"/> which is the basic definition without languages,
     /// versioning, publishing etc.
     /// </summary>
-    [PublicApi]
-    public interface IEntity: ToSic.Eav.Interfaces.IEntity, // compatibility
-        IEntityLight, IPublish<IEntity>, IHasPermissions
+    [PrivateApi]
+    public interface IEntity: IEntityLight, IPublish<IEntity>, IHasPermissions
     {
         /// <summary>
         /// Retrieves the best possible value for an attribute or virtual attribute (like EntityTitle)

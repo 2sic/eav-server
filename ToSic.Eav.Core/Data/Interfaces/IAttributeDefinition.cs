@@ -3,7 +3,7 @@ using ToSic.Eav.Documentation;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Security.Permissions;
 
-namespace ToSic.Eav.Interfaces
+namespace ToSic.Eav.Data
 {
     /// <inheritdoc cref="IAttributeBase" />
     /// <summary>

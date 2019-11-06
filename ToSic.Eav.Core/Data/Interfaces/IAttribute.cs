@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ToSic.Eav.Interfaces
+namespace ToSic.Eav.Data
 {
     /// <inheritdoc />
     /// <summary>
