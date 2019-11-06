@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Core.Tests.Data;
-using ToSic.Eav.ValueProvider;
+using ToSic.Eav.ValueProviders;
 
 namespace ToSic.Eav.TokenEngine.Tests.ValueProvider
 {

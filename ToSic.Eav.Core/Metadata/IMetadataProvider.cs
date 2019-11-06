@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Caching;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Interfaces;
 
-namespace ToSic.Eav.Interfaces
+namespace ToSic.Eav.Metadata
 {
     /// <summary>
     /// For querying metadata from the data source.

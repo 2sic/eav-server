@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Metadata;
 
-// ReSharper disable once CheckNamespace
-namespace ToSic.Eav.ValueProvider
+namespace ToSic.Eav.ValueProviders
 {
 	/// <inheritdoc />
 	/// <summary>

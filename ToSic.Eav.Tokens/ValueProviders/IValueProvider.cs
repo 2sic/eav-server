@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Documentation;
 
-namespace ToSic.Eav.ValueProvider
+namespace ToSic.Eav.ValueProviders
 {
     /// <summary>
     /// A key-value map which resolves keys like "SortOrder" to "asc". <br/>

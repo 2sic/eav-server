@@ -1,7 +1,7 @@
 ﻿using System;
 using ToSic.Eav.Documentation;
 
-namespace ToSic.Eav.Interfaces
+namespace ToSic.Eav.Metadata
 {
 	/// <summary>
 	/// Enhances an Entity to say if it's used as metadata to describe something else.

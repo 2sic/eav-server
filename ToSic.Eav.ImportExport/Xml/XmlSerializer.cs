@@ -5,6 +5,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Serializers;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Metadata;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Persistence.Xml

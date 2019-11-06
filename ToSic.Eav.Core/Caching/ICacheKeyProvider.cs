@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Documentation;
 
-namespace ToSic.Eav.Interfaces
+namespace ToSic.Eav.Caching
 {
     /// <summary>
     /// Marks objects which can identify what cache it's for. <br/>

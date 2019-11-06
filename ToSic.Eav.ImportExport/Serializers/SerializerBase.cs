@@ -5,6 +5,7 @@ using ToSic.Eav.App;
 using ToSic.Eav.Data.Query;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Metadata;
 using ToSic.Eav.Types;
 
 namespace ToSic.Eav.ImportExport.Serializers

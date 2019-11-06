@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Metadata;
 using ToSic.Eav.Security.Permissions;
 
 namespace ToSic.Eav.Interfaces

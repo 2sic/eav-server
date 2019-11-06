@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Caching;
+using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Interfaces
 {

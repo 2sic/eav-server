@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ToSic.Eav.ValueProvider
+namespace ToSic.Eav.ValueProviders
 {
 	/// <inheritdoc />
 	/// <summary>

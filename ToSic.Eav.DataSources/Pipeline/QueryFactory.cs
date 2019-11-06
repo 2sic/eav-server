@@ -6,8 +6,7 @@ using ToSic.Eav.Data.Query;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
-using ToSic.Eav.ValueProvider;
+using ToSic.Eav.ValueProviders;
 
 namespace ToSic.Eav.DataSources.Pipeline
 {
@@ -30,9 +29,8 @@ namespace ToSic.Eav.DataSources.Pipeline
 	    public IDataSource GetAsDataSource(int appId, IEntity query, IValueCollectionProvider valueCollection, IDataSource outSource = null, bool showDrafts = false)
 	    {
 		    Log.Add($"build pipe#{query.EntityId} for a#{appId}, draft:{showDrafts}");
-		    //var configurationPropertyAccesses = valueCollection.Sources.Select(s => s.Value);
             var qdef = new QueryDefinition(query, appId);
-	        return GetAsDataSource(qdef,  valueCollection,/*configurationPropertyAccesses*/ null, outSource, showDrafts);
+	        return GetAsDataSource(qdef,  valueCollection, null, outSource, showDrafts);
 		}
 
 

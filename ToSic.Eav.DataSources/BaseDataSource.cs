@@ -5,7 +5,7 @@ using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
-using ToSic.Eav.ValueProvider;
+using ToSic.Eav.ValueProviders;
 using ICache = ToSic.Eav.DataSources.Caches.ICache;
 
 namespace ToSic.Eav.DataSources
@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSources
         /// The name to be used in logging. It's set in the code, and then used to initialize the logger. 
         /// </summary>
         [PrivateApi]
-        public new abstract string LogId { get; }
+        public abstract string LogId { get; }
 
         /// <summary>
         /// Constructor

@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Linq;
 using ToSic.Eav.Apps.Interfaces;
-using ToSic.Eav.ValueProvider;
+
+using ToSic.Eav.ValueProviders;
 
 namespace ToSic.Eav.Apps
 {
