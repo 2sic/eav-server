@@ -1,11 +1,12 @@
 ﻿using ToSic.Eav.Data;
-using ToSic.Eav.Interfaces;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Security.Permissions;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.Apps.Interfaces
+namespace ToSic.Eav.Apps
 {
+    [PrivateApi]
     public interface IEnvironmentFactory
     {
         /// <summary>

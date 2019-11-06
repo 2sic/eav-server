@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Apps.Interfaces;
-
-namespace ToSic.Eav.Apps
+﻿namespace ToSic.Eav.Apps
 {
     public static class ExtensionMethods
     {

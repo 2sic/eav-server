@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Apps.Interfaces;
-
-namespace ToSic.Eav.Apps.Environment
+﻿namespace ToSic.Eav.Apps.Environment
 {
     public abstract class Tenant<T> :ITenant
     {

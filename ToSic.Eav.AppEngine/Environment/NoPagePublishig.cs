@@ -1,6 +1,5 @@
 ﻿using System;
 using ToSic.Eav.Apps.Enums;
-using ToSic.Eav.Apps.Interfaces;
 
 namespace ToSic.Eav.Apps.Environment
 {

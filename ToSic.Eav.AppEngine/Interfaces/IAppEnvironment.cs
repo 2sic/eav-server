@@ -1,11 +1,13 @@
-﻿using ToSic.Eav.Interfaces;
+﻿using ToSic.Eav.Documentation;
+using ToSic.Eav.Interfaces;
 
-namespace ToSic.Eav.Apps.Interfaces
+namespace ToSic.Eav.Apps
 {
     /// <inheritdoc />
     /// <summary>
     /// Any object implementing this can provide more information which are app/zone specific. 
     /// </summary>
+    [PrivateApi]
     public interface IAppEnvironment : IEnvironment
     {
         /// <summary>

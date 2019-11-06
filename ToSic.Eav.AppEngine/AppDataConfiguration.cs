@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Apps.Interfaces;
-
-using ToSic.Eav.ValueProviders;
+﻿using ToSic.Eav.ValueProviders;
 
 namespace ToSic.Eav.Apps
 {

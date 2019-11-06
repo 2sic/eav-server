@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Apps.Interfaces;
-using ToSic.Eav.Logging;
+﻿using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps
 {
