@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Apps.Environment;
 
-namespace ToSic.Eav.Apps.Interfaces
+namespace ToSic.Eav.Apps
 {
     public interface IZoneMapper
     {

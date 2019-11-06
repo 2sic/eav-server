@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Documentation;
 
-namespace ToSic.Eav.Apps.Interfaces
+namespace ToSic.Eav.Apps
 {
     /// <summary>
     /// This things belongs to a zone

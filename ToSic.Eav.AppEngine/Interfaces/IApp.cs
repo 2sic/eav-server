@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Apps.Interfaces;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Metadata;
 
-namespace ToSic.Eav.Apps.Interfaces
+namespace ToSic.Eav.Apps
 {
     /// <summary>
     /// An App in memory - for quickly getting things done with the app data, queries etc.
