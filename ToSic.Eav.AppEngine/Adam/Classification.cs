@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Apps.Assets
+﻿namespace ToSic.Eav.Apps.Adam
 {
     public class Classification
     {

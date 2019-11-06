@@ -1,13 +1,13 @@
 ﻿using ToSic.Eav.Documentation;
 
-namespace ToSic.Eav.Apps.Assets
+namespace ToSic.Eav.Apps.Adam
 {
     /// <summary>
     /// An ADAM (Automatic Digital Asset Management) file
     /// </summary>
     [PublicApi]
     
-    public interface IAdamFile: IAdamAsset, IFile
+    public interface IFile: ICmsAsset, Assets.IFile
     {
     }
 }

@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Documentation;
 
-namespace ToSic.Eav.Apps.Assets
+namespace ToSic.Eav.Apps.Adam
 {
     /// <summary>
     /// Future interface, to handle the adam context
@@ -8,7 +8,7 @@ namespace ToSic.Eav.Apps.Assets
     /// and the SxcInstance shouldn't be part of the App system
     /// </summary>
     [PrivateApi]
-    public interface IAdamContext
+    public interface IContext
     {
     }
 }

@@ -1,13 +1,13 @@
 ﻿using ToSic.Eav.Documentation;
 
-namespace ToSic.Eav.Apps.Assets
+namespace ToSic.Eav.Apps.Adam
 {
     /// <summary>
     /// Describes an ADAM (Automatic Digital Asset Management) asset. <br/>
-    /// This contains properties which both <see cref="IAdamFolder"/> and <see cref="IAdamFile"/> have in common.
+    /// This contains properties which both <see cref="IFolder"/> and <see cref="IFile"/> have in common.
     /// </summary>
     [PublicApi]
-    public interface IAdamAsset
+    public interface ICmsAsset
         : Sxc.Adam.IFile // for compatibility with old code
     {
         #region Metadata
