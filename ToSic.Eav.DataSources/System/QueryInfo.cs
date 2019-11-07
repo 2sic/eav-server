@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Pipeline;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSources.System.Types;
 using ToSic.Eav.DataSources.VisualQuery;
 using ToSic.Eav.Interfaces;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.System
 {
@@ -96,7 +98,7 @@ namespace ToSic.Eav.DataSources.System
             if(!_query.Out.ContainsKey(StreamName))
                 return new List<IEntity>();
 
-	        var attribInfo = DataSource.GetDataSource<Attributes>(upstream: _query, valueCollectionProvider:_query.ConfigurationProvider);
+	        var attribInfo = DataSource.GetDataSource<Attributes>(upstream: _query, configLookUp:_query.ConfigurationProvider);
             if(StreamName != Constants.DefaultStreamName)
                 attribInfo.Attach(Constants.DefaultStreamName, _query[StreamName]);
 

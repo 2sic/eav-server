@@ -1,9 +1,12 @@
 ﻿using System;
 using ToSic.Eav.Apps.Enums;
 using ToSic.Eav.Apps.Environment;
+using ToSic.Eav.Documentation;
 
-namespace ToSic.Eav.Apps.Interfaces
+namespace ToSic.Eav.Apps
 {
+    // Note: maybe some day this should go into a .Cms namespace
+    [PrivateApi]
     public interface IPagePublishing
     {
         bool Supported { get; }

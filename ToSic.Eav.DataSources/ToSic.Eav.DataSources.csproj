@@ -137,7 +137,7 @@
     <Compile Include="StreamMerge.cs" />
     <Compile Include="StreamFallback.cs" />
     <Compile Include="ValueFilter.cs" />
-    <Compile Include="ValueProvider\DataTargetValueProvider.cs" />
+    <Compile Include="ValueProvider\LookUpInDataTarget.cs" />
     <Compile Include="ValueSort.cs" />
   </ItemGroup>
   <ItemGroup>

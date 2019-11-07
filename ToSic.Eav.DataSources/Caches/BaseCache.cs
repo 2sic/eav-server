@@ -6,7 +6,10 @@ using ToSic.Eav.App;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.RootSources;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.Metadata;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.Caches
 {
@@ -140,7 +143,7 @@ namespace ToSic.Eav.DataSources.Caches
 	    #region Cache-Chain
 
 	    public override long CacheTimestamp => AppDataPackage.CacheTimestamp;
-	    public override bool CacheChanged(long prevCacheTimestamp) => AppDataPackage.CacheChanged(prevCacheTimestamp);
+	    public override bool CacheChanged(long newCacheTimeStamp) => AppDataPackage.CacheChanged(newCacheTimeStamp);
 
         private string _cachePartialKey;
 	    public override string CachePartialKey
@@ -216,7 +219,7 @@ namespace ToSic.Eav.DataSources.Caches
 
         #endregion
 
-        public override void InitLog(string name, Log parentLog = null, string initialMessage = null)
+        public override void InitLog(string name, ILog parentLog = null, string initialMessage = null)
 	    {
 	        // ignore
 	    }

@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.Interfaces;
+using ToSic.Eav.Metadata;
 using ToSic.Eav.Security.Permissions;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps
 {

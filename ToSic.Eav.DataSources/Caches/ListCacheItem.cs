@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.Interfaces;
+using ToSic.Eav.Data;
+
 
 namespace ToSic.Eav.DataSources.Caches
 {

@@ -1,9 +1,11 @@
-﻿namespace ToSic.Eav.Interfaces
+﻿using ToSic.Eav.Data;
+
+namespace ToSic.Eav.Interfaces
 {
     public interface IRepositorySaver
     {
         void SaveContentType(IContentType type);
 
-        void SaveEntity(IEntity item);
+        void SaveEntity(Data.IEntity item);
     }
 }

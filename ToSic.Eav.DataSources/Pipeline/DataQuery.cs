@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.Data.Query;
-using ToSic.Eav.Interfaces;
-using ToSic.Eav.Logging.Simple;
-using ToSic.Eav.ValueProvider;
+using ToSic.Eav.Logging;
+using ToSic.Eav.LookUp;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.Pipeline
 {
@@ -39,7 +39,7 @@ namespace ToSic.Eav.DataSources.Pipeline
         /// ...but will be auto-assembled the moment they are accessed
         /// </summary>
         /// <returns></returns>
-	    public static Dictionary<string, IDataSource> AllQueries(int zoneId, int appId, IValueCollectionProvider valuesCollectionProvider, Log parentLog, bool showDrafts)
+	    public static Dictionary<string, IDataSource> AllQueries(int zoneId, int appId, ITokenListFiller valuesCollectionProvider, ILog parentLog, bool showDrafts)
 	    {
 	        var dict = new Dictionary<string, IDataSource>(StringComparer.OrdinalIgnoreCase);
 	        foreach (var entQuery in AllQueryItems(appId, parentLog))
@@ -53,7 +53,7 @@ namespace ToSic.Eav.DataSources.Pipeline
 	        return dict;
 	    }
 
-	    public static IEnumerable<IEntity> AllQueryItems(int appId, Log parentLog)
+	    public static IEnumerable<IEntity> AllQueryItems(int appId, ILog parentLog)
 	    {
 	        var source = DataSource.GetInitialDataSource(appId: appId, parentLog: parentLog);
 	        var typeFilter = DataSource.GetDataSource<EntityTypeFilter>(appId: appId, upstream: source);

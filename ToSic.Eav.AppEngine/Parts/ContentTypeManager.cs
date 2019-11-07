@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Data;
-using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps.Parts
 {
     public class ContentTypeManager : ManagerBase
     {
-        public ContentTypeManager(AppManager app, Log parentLog) : base(app, parentLog, "App.TypMng")
+        public ContentTypeManager(AppManager app, ILog parentLog) : base(app, parentLog, "App.TypMng")
         {
         }
 

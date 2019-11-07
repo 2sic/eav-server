@@ -2,33 +2,39 @@
 using System.Collections.Generic;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.DataSources.VisualQuery;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Metadata;
 using static System.Int32;
 
 namespace ToSic.Eav.DataSources
 {
 	/// <inheritdoc />
 	/// <summary>
-	/// Return all Entities from a specific App
+	/// Represents an App with all the data inside it.
+	/// For example, it has a variable amount of Out-streams, one for each content-type in the app.
 	/// </summary>
 
+    [PublicApi]
 	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.App, ToSic.Eav.DataSources",
         Type = DataSourceType.Source, 
         Icon = "app",
         DynamicOut = true,
         ExpectsDataOfType = "|Config ToSic.Eav.DataSources.App",
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-App")]
-
     public class App : BaseDataSource
 	{
 		#region Configuration-properties
 		private const string AppSwitchKey = "AppSwitch";
 		private const string ZoneSwitchKey = "ZoneSwitch";
 
+        /// <inheritdoc/>
+        [PrivateApi]
 	    public override string LogId => "DS.EavApp";
 
 	    /// <summary>
-        /// An alternate app to switch to
+        /// Use this to re-target the app-source to another app. <br/>
+        /// Note that this can only be done before ever accessing the app - once the object has started reading data, switching has no more effect.
         /// </summary>
         public int AppSwitch
 		{
@@ -41,9 +47,10 @@ namespace ToSic.Eav.DataSources
 			}
 		}
 
-		/// <summary>
-		/// An alternate zone to switch to
-		/// </summary>
+        /// <summary>
+        /// Use this to re-target the app-source to another zone. <br/>
+        /// Note that this can only be done before ever accessing the app - once the object has started reading data, switching has no more effect.
+        /// </summary>
 		public int ZoneSwitch
 		{
 			get => Parse(Configuration[ZoneSwitchKey]);
@@ -60,6 +67,7 @@ namespace ToSic.Eav.DataSources
 
 
 
+        /// <inheritdoc/>
 	    public override IDictionary<string, IDataStream> Out
 		{
 			get
@@ -79,21 +87,21 @@ namespace ToSic.Eav.DataSources
 		}
 		#endregion
 
-		/// <inheritdoc />
 		/// <summary>
 		/// Constructs a new App DataSource
 		/// </summary>
+		[PrivateApi]
 		public App()
 		{
 			// this one is unusual, so don't pre-attach a default data stream
-			//Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntities));
+            // Don't delete this comment, as it's important we don't accidentally re-introduce this
+			// Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntities));
 
 			// Set default switch-keys to 0 = no switch
             
 			ConfigMask(AppSwitchKey, "[Settings:" + AppSwitchKey + "||0]");
 			ConfigMask(ZoneSwitchKey, "[Settings:" + ZoneSwitchKey + "||0]");
 
-            //CacheRelevantConfigurations = new[] { AppSwitchKey, ZoneSwitchKey };
             TempUsesDynamicOut = true;
         }
 
@@ -160,9 +168,14 @@ namespace ToSic.Eav.DataSources
 		    }
 		}
 
-	    private IMetadataProvider _metadata;
-
-	    public IMetadataProvider Metadata => _metadata ?? (_metadata = DataSource.GetMetaDataSource(ZoneId, AppId));
-	}
+        /// <summary>
+        /// Metadata is an important feature of apps. <br/>
+        /// The App DataSource automatically provides direct access to the metadata system.
+        /// This allows users of the App to query metadata directly through this object. 
+        /// </summary>
+        /// <returns>An initialized <see cref="IMetadataProvider"/> for this app</returns>
+        public IMetadataProvider Metadata => _metadata ?? (_metadata = DataSource.GetMetaDataSource(ZoneId, AppId));
+        private IMetadataProvider _metadata;
+    }
 
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Data;
 
 namespace ToSic.Eav.DataSources.Tests
 {
@@ -96,7 +97,7 @@ namespace ToSic.Eav.DataSources.Tests
             TestSortFieldAndDirection(City, ">", false);
         }
 
-        private void ValidateFieldIsSorted(List<ToSic.Eav.Interfaces.IEntity> list, string field, bool asc)
+        private void ValidateFieldIsSorted(List<IEntity> list, string field, bool asc)
         {
             var previous = list.First().GetBestValue(field).ToString();
             foreach (var entity in list)

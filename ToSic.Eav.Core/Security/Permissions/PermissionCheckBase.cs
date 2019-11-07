@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Security.Permissions
 {
@@ -55,7 +56,7 @@ namespace ToSic.Eav.Security.Permissions
         /// Uses a GUID as identifier because that survives export/import. 
         /// </summary>
         protected PermissionCheckBase(
-            Log parentLog,
+            ILog parentLog,
             IContentType targetType = null, // optional type to check
             IEntity targetItem = null,      // optional entity to check
             IEnumerable<IEntity> permissions1 = null,

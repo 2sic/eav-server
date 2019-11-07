@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
@@ -10,7 +11,7 @@ namespace ToSic.Eav.Types
 {
     internal class GlobalTypeLoader: HasLog
     {
-        public GlobalTypeLoader(Log parentLog) 
+        public GlobalTypeLoader(ILog parentLog) 
             : base("Eav.GlTLdr", parentLog, "Start Loading")
         {
             BuildCache();

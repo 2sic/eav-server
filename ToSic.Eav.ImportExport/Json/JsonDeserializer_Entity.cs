@@ -6,12 +6,12 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Enums;
 using ToSic.Eav.ImportExport.Json.Format;
-using ToSic.Eav.Interfaces;
-using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.Logging;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.ImportExport.Json
 {
-    public partial class JsonSerializer: IThingDeserializer
+    public partial class JsonSerializer
     {
 
         public IEntity Deserialize(string serialized, bool allowDynamic = false, bool skipUnknownType = false) 
@@ -184,7 +184,7 @@ namespace ToSic.Eav.ImportExport.Json
                 .ToList();
 
 
-        private static Dictionary<string, Dictionary<string, T>> ToTypedDictionary<T>(List<IAttribute> attribs, Log log)
+        private static Dictionary<string, Dictionary<string, T>> ToTypedDictionary<T>(List<IAttribute> attribs, ILog log)
         {
             var result = new Dictionary<string, Dictionary<string, T>>();
             attribs.Cast<IAttribute<T>>().ToList().ForEach(a =>

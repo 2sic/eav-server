@@ -2,6 +2,7 @@
 using System.Linq;
 using ToSic.Eav.App;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Data
 {
@@ -45,7 +46,7 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Get Children of a specified Attribute Name
         /// </summary>
-        public IRelatedEntities Children 
+        public IChildEntities Children 
             => _entity is IEntity ? new RelatedEntities(((IEntity) _entity).Attributes) : null ;
 
         // special note: ATM everything is an IEntity, so EntityLight is currently not supported
@@ -53,7 +54,7 @@ namespace ToSic.Eav.Data
 
 	    #region Relationship-Navigation - Experimental
 
-	    public List<IEntity> FindChildren(string field = null, string type = null, string useNamedParameters = "xyz", Logging.Simple.Log log = null)
+	    public List<IEntity> FindChildren(string field = null, string type = null, string useNamedParameters = "xyz", ILog log = null)
 	    {
             var wrap = log?.Call("RelMan.FindChildren", $"field:{field}; type:{type}");
 	        List<IEntity> rels;
@@ -83,7 +84,7 @@ namespace ToSic.Eav.Data
 	        return rels;
 	    }
 
-	    public List<IEntity> FindParents(string type = null, string field = null, string useNamedParameters = "xyz", Logging.Simple.Log log = null)
+	    public List<IEntity> FindParents(string type = null, string field = null, string useNamedParameters = "xyz", ILog log = null)
 	    {
 	        var wrap = log?.Call("RelMan.FindParents", $"type:{type}; field:{field}");
             var list = ParentRelationships();

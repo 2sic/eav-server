@@ -1,5 +1,8 @@
-﻿namespace ToSic.Eav.Apps.Interfaces
+﻿namespace ToSic.Eav.Apps
 {
+    // TODO
+    // probably also move to .Cms
+    // Probably rename etc. - this is the container instance (module), not the SxcInstance
     public interface IInstanceInfo
     {
         int Id { get; }

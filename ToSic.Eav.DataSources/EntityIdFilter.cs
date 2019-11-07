@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Data;
 using ToSic.Eav.Data.Query;
 using ToSic.Eav.DataSources.VisualQuery;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
 {
@@ -11,7 +14,7 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// A DataSource that filters Entities by Ids
 	/// </summary>
-
+    [PublicApi]
 	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.EntityIdFilter, ToSic.Eav.DataSources",
         Type = DataSourceType.Filter, 
         DynamicOut = false,
@@ -22,6 +25,8 @@ namespace ToSic.Eav.DataSources
     public class EntityIdFilter : BaseDataSource
 	{
         #region Configuration-properties
+        /// <inheritdoc/>
+        [PrivateApi]
 	    public override string LogId => "DS.EntIdF";
 
         private const string EntityIdKey = "EntityIds";
@@ -41,12 +46,11 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// Constructs a new EntityIdFilter
 		/// </summary>
+		[PrivateApi]
 		public EntityIdFilter()
 		{
             Provide(GetList);
-            //Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
 		    ConfigMask(EntityIdKey, "[Settings:EntityIds]");
-            //CacheRelevantConfigurations = new[] { EntityIdKey };
 		}
 
 		private IEnumerable<IEntity> GetList()
@@ -66,7 +70,9 @@ namespace ToSic.Eav.DataSources
 
 	    private IEnumerable<int> _cleanedIds;
 
-	    protected internal override void EnsureConfigurationIsLoaded()
+        /// <inheritdoc/>
+        [PrivateApi]
+        protected internal override void EnsureConfigurationIsLoaded()
         {
             base.EnsureConfigurationIsLoaded();
 

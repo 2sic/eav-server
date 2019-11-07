@@ -23,7 +23,7 @@ namespace ToSic.Eav.WebApi
 	/// </summary>
 	public class ContentTypeController : HasLog
     {
-        public ContentTypeController(Log parentLog = null) : base("Api.EavCTC", parentLog)
+        public ContentTypeController(ILog parentLog = null) : base("Api.EavCTC", parentLog)
         {
         }
 

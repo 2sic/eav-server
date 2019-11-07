@@ -2,6 +2,7 @@
 using System.Linq;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Apps
@@ -10,7 +11,7 @@ namespace ToSic.Eav.Apps
     {
         #region Constructor and simple properties
 
-        public ZoneRuntime(int zoneId, Log parentLog) : base(zoneId, parentLog, "App.Zone") {}
+        public ZoneRuntime(int zoneId, ILog parentLog) : base(zoneId, parentLog, "App.Zone") {}
 
         #endregion
 

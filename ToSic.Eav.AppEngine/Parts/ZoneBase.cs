@@ -1,5 +1,5 @@
-﻿using ToSic.Eav.Apps.Interfaces;
-using ToSic.Eav.DataSources.Caches;
+﻿using ToSic.Eav.DataSources.Caches;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Apps.Parts
@@ -9,9 +9,9 @@ namespace ToSic.Eav.Apps.Parts
         #region Constructor and simple properties
         public int ZoneId { get; }
 
-        protected Log Log;
+        protected ILog Log;
 
-        public ZoneBase(int zoneId, Log parentLog, string logName)
+        public ZoneBase(int zoneId, ILog parentLog, string logName)
         {
             ZoneId = zoneId;
             Log = new Log(logName, parentLog, $"zone base for z#{zoneId}");

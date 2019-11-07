@@ -2,7 +2,6 @@
 using System.IO;
 using ICSharpCode.SharpZipLib.Zip;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Security.Files;
 
 namespace ToSic.Eav.ImportExport.Zip
@@ -10,7 +9,7 @@ namespace ToSic.Eav.ImportExport.Zip
     public class Zipping: HasLog
     {
 
-        public Zipping(Log parentLog) : base("Zip.Abstrc", parentLog, "starting")
+        public Zipping(ILog parentLog) : base("Zip.Abstrc", parentLog, "starting")
         {
         }
 

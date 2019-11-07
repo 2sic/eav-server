@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
+using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps
 {
@@ -11,7 +12,7 @@ namespace ToSic.Eav.Apps
     {
         public readonly IEntity Entity;
 
-        public Template(IEntity templateEntity, Log parentLog): base("App.Templt", parentLog)
+        public Template(IEntity templateEntity, ILog parentLog): base("App.Templt", parentLog)
         {
             Entity = templateEntity ?? throw new Exception("Template entity is null");
         }

@@ -7,11 +7,11 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
 using Entity = ToSic.Eav.Data.Entity;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps.ImportExport
 {
@@ -36,7 +36,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <summary>
         /// Initializes a new instance of the Import class.
         /// </summary>
-        public Import(int? zoneId, int appId, bool skipExistingAttributes = true, bool preserveUntouchedAttributes = true, Log parentLog = null): base("Eav.Import", parentLog, "constructor")
+        public Import(int? zoneId, int appId, bool skipExistingAttributes = true, bool preserveUntouchedAttributes = true, ILog parentLog = null): base("Eav.Import", parentLog, "constructor")
         {
             App = zoneId.HasValue ? new AppManager(zoneId.Value, appId) : new AppManager(appId, Log);
             Storage = App.Storage;

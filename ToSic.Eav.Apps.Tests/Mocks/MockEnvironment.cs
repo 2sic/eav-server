@@ -1,9 +1,8 @@
-﻿using ToSic.Eav.Apps.Interfaces;
-using ToSic.Eav.Interfaces;
+﻿using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Apps.Tests.Mocks
 {
-    public class MockEnvironment: Interfaces.IAppEnvironment
+    public class MockEnvironment: IAppEnvironment
     {
         public IZoneMapper ZoneMapper => new MockZoneMapper();
 

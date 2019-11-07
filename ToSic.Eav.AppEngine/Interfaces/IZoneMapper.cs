@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Apps.Environment;
+using ToSic.Eav.Documentation;
 
-namespace ToSic.Eav.Apps.Interfaces
+namespace ToSic.Eav.Apps
 {
+    [PrivateApi]
     public interface IZoneMapper
     {
         /// <summary>

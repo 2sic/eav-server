@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.ImportExport.Tests.Persistence.File;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.DataSources.Tests.Query

@@ -9,12 +9,13 @@ using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.WebApi.Formats;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.WebApi.SaveHelpers
 {
     public class SaveEntities: HasLog
     {
-        public SaveEntities(Log parentLog) : base("Eav.SavHlp", parentLog) {}
+        public SaveEntities(ILog parentLog) : base("Eav.SavHlp", parentLog) {}
 
 
         public void UpdateGuidAndPublishedAndSaveMany(AppManager appMan, List<BundleWithHeader<IEntity>> itemsToImport, bool enforceDraft)

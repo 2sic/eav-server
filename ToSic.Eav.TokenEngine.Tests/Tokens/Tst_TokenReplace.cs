@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.LookUp;
 using ToSic.Eav.Tokens;
-using ToSic.Eav.ValueProvider;
 
 namespace ToSic.Eav.TokenEngine.Tests.Tokens
 {
@@ -93,9 +93,9 @@ but this should [token:key] again"
             {"Value", "Whatever"},
             {"View", "Details"}
         };
-        private readonly StaticValueProvider QueryString = new StaticValueProvider("QueryString");
-        private readonly StaticValueProvider Source = new StaticValueProvider("Source");
-        private readonly Dictionary<string, IValueProvider> AllSources = new Dictionary<string, IValueProvider>(); 
+        private readonly LookUpInDictionary QueryString = new LookUpInDictionary("QueryString");
+        private readonly LookUpInDictionary Source = new LookUpInDictionary("Source");
+        private readonly Dictionary<string, ILookUp> AllSources = new Dictionary<string, ILookUp>(); 
 
         #endregion
 
@@ -251,18 +251,18 @@ and a [bad token without property] and a [Source::SubkeyWithoutKey]
 but this should What a Token! again
 Now try a token which returns a token: Daniel";
 
-            var qs = new StaticValueProvider("QueryString");
+            var qs = new LookUpInDictionary("QueryString");
             qs.Properties.Add("UserName", "Daniel");
             //qs.Properties.Add("Id", "7");
-            var mod = new StaticValueProvider("Module");
+            var mod = new LookUpInDictionary("Module");
             mod.Properties.Add("SubId", "4567");
-            var appS = new StaticValueProvider("AppSettings");
+            var appS = new LookUpInDictionary("AppSettings");
             appS.Properties.Add("DefaultUserName", "Name Unknown");
             appS.Properties.Add("RootUserId", "-1");
             appS.Properties.Add("UserNameMaybeFromUrl", "[QueryString:UserName||Samantha]");
-            var tok = new StaticValueProvider("token");
+            var tok = new LookUpInDictionary("token");
             tok.Properties.Add("key", "What a Token!");
-            var sources = new Dictionary<string, IValueProvider>();
+            var sources = new Dictionary<string, ILookUp>();
             sources.Add(qs.Name.ToLower(),qs);
             sources.Add(mod.Name.ToLower(), mod);
             sources.Add(appS.Name.ToLower(), appS);

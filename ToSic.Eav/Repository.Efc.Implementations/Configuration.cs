@@ -38,6 +38,11 @@ namespace ToSic.Eav.Repository.Efc.Implementations
 	    private static string _featuresHelpLink;
 	    private static string _featureInfoLinkRoot;
 
+	    /// <summary>
+	    /// TODO
+	    /// </summary>
+	    /// <param name="helpLink"></param>
+	    /// <param name="infoLink"></param>
 	    public static void SetFeaturesHelpLink(string helpLink, string infoLink)
 	    {
 	        _featuresHelpLink = helpLink;

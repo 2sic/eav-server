@@ -71,14 +71,14 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tokens\TokenReplace.cs" />
-    <Compile Include="ValueProvider\AssignedEntityValueProvider.cs" />
-    <Compile Include="ValueProvider\BaseValueProvider.cs" />
-    <Compile Include="ValueProvider\EntityValueProvider.cs" />
-    <Compile Include="ValueProvider\IValueCollectionProvider.cs" />
-    <Compile Include="ValueProvider\IValueProvider.cs" />
-    <Compile Include="ValueProvider\OverrideValueProvider.cs" />
-    <Compile Include="ValueProvider\StaticValueProvider.cs" />
-    <Compile Include="ValueProvider\ValueCollectionProvider.cs" />
+    <Compile Include="LookUp\LookUpInMetadata.cs" />
+    <Compile Include="LookUp\LookUpBase.cs" />
+    <Compile Include="LookUp\LookUpInEntity.cs" />
+    <Compile Include="LookUp\ITokenListFiller.cs" />
+    <Compile Include="LookUp\ILookUp.cs" />
+    <Compile Include="LookUp\LookUpInLookUps.cs" />
+    <Compile Include="LookUp\LookUpInDictionary.cs" />
+    <Compile Include="LookUp\TokenListFiller.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj">

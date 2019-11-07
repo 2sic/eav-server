@@ -1,6 +1,8 @@
 ﻿using System.Linq;
 using ToSic.Eav.Configuration;
+using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Security.Permissions
 {

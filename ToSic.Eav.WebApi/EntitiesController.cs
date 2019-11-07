@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Data;
 using ToSic.Eav.WebApi.Formats;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.WebApi
 {
@@ -15,7 +17,7 @@ namespace ToSic.Eav.WebApi
     /// </summary>
     public class EntitiesController : HasLog
     {
-        public EntitiesController(Log parentLog) : base("Api.EntCtl", parentLog) { }
+        public EntitiesController(ILog parentLog) : base("Api.EntCtl", parentLog) { }
 
         public Dictionary<Guid, int> SaveMany(int appId, 
             List<BundleWithHeader<EntityWithLanguages>> items,

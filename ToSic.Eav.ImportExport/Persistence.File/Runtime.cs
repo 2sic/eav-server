@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.ImportExport.Persistence.File
 {
@@ -71,7 +73,7 @@ namespace ToSic.Eav.ImportExport.Persistence.File
         private List<FileSystemLoader> _loader;
 
 
-        public IEnumerable<IEntity> LoadGlobalItems(string groupIdentifier)
+        public IEnumerable<Data.IEntity> LoadGlobalItems(string groupIdentifier)
         {
             Log.Add($"loading items for {groupIdentifier}");
 

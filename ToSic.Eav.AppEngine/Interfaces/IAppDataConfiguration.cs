@@ -1,7 +1,12 @@
-﻿using ToSic.Eav.ValueProvider;
+﻿using ToSic.Eav.Documentation;
+using ToSic.Eav.LookUp;
 
-namespace ToSic.Eav.Apps.Interfaces
+namespace ToSic.Eav.Apps
 {
+    /// <summary>
+    /// The configuration of an app-data - usually relevant so the source will auto-filter out unpublished data for normal viewers.
+    /// </summary>
+    [PublicApi]
     public interface IAppDataConfiguration
     {
         /// <summary>
@@ -16,8 +21,8 @@ namespace ToSic.Eav.Apps.Interfaces
         bool VersioningEnabled { get; }
 
         /// <summary>
-        /// Configuration used to query data
+        /// Configuration used to query data - will deliver url-parameters and other important configuration values.
         /// </summary>
-        IValueCollectionProvider Configuration { get; }
+        ITokenListFiller Configuration { get; }
     }
 }

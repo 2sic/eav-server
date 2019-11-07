@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.VisualQuery;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
 {
@@ -10,7 +13,7 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// Sort Entity by values in specified Attributes
 	/// </summary>
-
+    [PublicApi]
 	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.ValueSort, ToSic.Eav.DataSources",
         Type = DataSourceType.Sort,
         DynamicOut = false,
@@ -20,6 +23,8 @@ namespace ToSic.Eav.DataSources
     public sealed class ValueSort : BaseDataSource
 	{
         #region Configuration-properties
+        /// <inheritdoc/>
+        [PrivateApi]
 	    public override string LogId => "DS.ValueS";
 
         private const string AttrKey = "Attributes";
@@ -27,7 +32,7 @@ namespace ToSic.Eav.DataSources
 		private const string LangKey = "Language";
         
 		/// <summary>
-		/// The attribute whoose value will be filtered
+		/// The attribute whose value will be sorted by.
 		/// </summary>
 		public string Attributes
 		{
@@ -36,7 +41,7 @@ namespace ToSic.Eav.DataSources
 		}
 
 		/// <summary>
-		/// The filter that will be used - for example "Daniel" when looking for an entity w/the value Daniel
+		/// The sorting direction like 'asc' or 'desc', can also be 0, 1
 		/// </summary>
 		public string Directions
 		{
@@ -58,12 +63,13 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// Constructs a new ValueSort
 		/// </summary>
+		[PrivateApi]
 		public ValueSort()
 		{
 			Provide(GetList);
 		    ConfigMask(AttrKey, "[Settings:Attributes]");
 		    ConfigMask(DirectionKey, "[Settings:Directions]");
-		    ConfigMask(LangKey, "Default"); // "[Settings:Language|Default]"); // use setting, but by default, expect "any"
+		    ConfigMask(LangKey, "Default");
         }
 
 		private IEnumerable<IEntity> GetList()

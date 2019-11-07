@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.DataSources.Types;
-using ToSic.Eav.Apps.Interfaces;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.DataSources.VisualQuery;
 using ToSic.Eav.Interfaces;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataSources.System
@@ -48,7 +50,7 @@ namespace ToSic.Eav.DataSources.System
             // Get cache, which manages a list of zones
 	        var cache = (BaseCache)DataSource.GetCache(ZoneId, AppId);
 
-	        var env = Factory.Resolve<ToSic.Eav.Apps.Interfaces.IAppEnvironment>();
+	        var env = Factory.Resolve<IAppEnvironment>();
 
 	        var list = cache.ZoneApps.Values.OrderBy(z => z.ZoneId).Select(zone =>
 	        {

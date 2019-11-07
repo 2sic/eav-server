@@ -1,8 +1,7 @@
 ﻿using ToSic.Eav.App;
-using ToSic.Eav.Apps.Interfaces;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
-using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -17,15 +16,16 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="zoneId"></param>
         /// <param name="appId"></param>
         /// <param name="parentLog"></param>
-        protected AppBase(int zoneId, int appId, Log parentLog) : base(zoneId, appId, parentLog, "App.Base")
+        protected AppBase(int zoneId, int appId, ILog parentLog) 
+            : base(zoneId, appId, parentLog, "App.Base")
         {
         }
 
-        protected AppBase(IAppIdentity app, Log parentLog) : this(app.ZoneId, app.AppId, parentLog) { }
+        protected AppBase(IAppIdentity app, ILog parentLog) : this(app.ZoneId, app.AppId, parentLog) { }
 
-        protected AppBase(int appId, Log parentLog) : this(((BaseCache) DataSource.GetCache(null)).GetZoneAppId(appId: appId).Item1, appId, parentLog) { }
+        protected AppBase(int appId, ILog parentLog) : this(((BaseCache) DataSource.GetCache(null)).GetZoneAppId(appId: appId).Item1, appId, parentLog) { }
 
-        protected AppBase(IDataSource data, Log parentLog) : this(data.ZoneId, data.AppId, parentLog)
+        protected AppBase(IDataSource data, ILog parentLog) : this(data.ZoneId, data.AppId, parentLog)
         {
             _data = data;
         }

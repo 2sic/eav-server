@@ -8,6 +8,7 @@ using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Repository.Efc;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 // This is the simple API used to quickly create/edit/delete entities
 
@@ -41,7 +42,7 @@ namespace ToSic.Eav.Api.Api01
         /// <param name="appId">App ID</param>
         /// <param name="defaultLanguageCode">Default language of system</param>
         /// <param name="parentLog"></param>
-        public SimpleDataController(int zoneId, int appId, string defaultLanguageCode, Log parentLog): base("Dta.Simple", parentLog)
+        public SimpleDataController(int zoneId, int appId, string defaultLanguageCode, ILog parentLog): base("Dta.Simple", parentLog)
         {
             //_zoneId = zoneId;
             _appId = appId;

@@ -8,14 +8,13 @@ using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Enums;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.WebApi.Formats;
 
 namespace ToSic.Eav.WebApi.SaveHelpers
 {
     internal class OldSave: HasLog
     {
-        public OldSave(Log parentLog) : base("Eav.OldSav", parentLog) { }
+        public OldSave(ILog parentLog) : base("Eav.OldSav", parentLog) { }
 
 
         public Entity CreateEntityFromTransferObject(AppManager appMan, BundleWithHeader<EntityWithLanguages> editInfo)

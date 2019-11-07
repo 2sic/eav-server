@@ -9,6 +9,7 @@ using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Logging;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps.ImportExport
 {

@@ -1,16 +1,19 @@
-﻿namespace ToSic.Eav.Logging.Simple
+﻿using ToSic.Eav.Documentation;
+
+namespace ToSic.Eav.Logging.Simple
 {
+    [PrivateApi]
     public class Entry
     {
         public string Message { get; }
         public string Result { get; private set; }
         public int Depth;
 
-        private readonly Log _log;
+        private readonly ILog _log;
 
         public string Source => _log.FullIdentifier;
 
-        public Entry(Log log, string message, int depth)
+        public Entry(ILog log, string message, int depth)
         {
             _log = log;
             Message = message;

@@ -1,7 +1,9 @@
 ﻿using System;
+using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Validation;
 using ToSic.Eav.Interfaces;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Persistence.File

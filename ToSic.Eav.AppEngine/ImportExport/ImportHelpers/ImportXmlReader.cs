@@ -4,7 +4,6 @@ using System.Linq;
 using System.Xml.Linq;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
 {
@@ -13,7 +12,7 @@ namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
     /// </summary>
     internal class ImportXmlReader: HasLog
     {
-        public ImportXmlReader(string xmlPath, XmlImportWithFiles importer, Log parentLog) : base("Imp.XmlPrt", parentLog, nameof(ImportXmlReader))
+        public ImportXmlReader(string xmlPath, XmlImportWithFiles importer, ILog parentLog) : base("Imp.XmlPrt", parentLog, nameof(ImportXmlReader))
         {
             XmlPath = xmlPath;
 

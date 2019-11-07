@@ -5,8 +5,9 @@ using Newtonsoft.Json;
 using ToSic.Eav.Data;
 using ToSic.Eav.Enums;
 using ToSic.Eav.ImportExport.Json.Format;
-using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.ImportExport.Json
 {
@@ -19,7 +20,7 @@ namespace ToSic.Eav.ImportExport.Json
             Entity = ToJson(entity, metadataDepth, Log)
         }, JsonSerializerSettings());
 
-        public JsonEntity ToJson(IEntity entity, int metadataDepth = 0, Log parentLog = null)
+        public JsonEntity ToJson(IEntity entity, int metadataDepth = 0, ILog parentLog = null)
         {
             var log = new Log("Jsn.Serlzr", parent: parentLog, className:"JsonSerializer");
             var wrapLog = log.Call("ToJson", $"id:{entity?.EntityId}, meta-depth:{metadataDepth}");
@@ -108,7 +109,7 @@ namespace ToSic.Eav.ImportExport.Json
         /// this is a special helper to create typed entities-dictionaries
         /// </summary>
         /// <returns></returns>
-        private static Dictionary<string, Dictionary<string, List<Guid?>>> ToTypedDictionaryEntity(List<IAttribute> gList, Log log)
+        private static Dictionary<string, Dictionary<string, List<Guid?>>> ToTypedDictionaryEntity(List<IAttribute> gList, ILog log)
         {
             // the following is a bit complex for the following reason
             // 1. either the relationship is guid based, and in that case, 

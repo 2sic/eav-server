@@ -5,12 +5,14 @@ using System.Linq;
 using Newtonsoft.Json;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Parts;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Pipeline;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
-using ToSic.Eav.ValueProvider;
+using ToSic.Eav.LookUp;
+
 using ToSic.Eav.WebApi.Formats;
 
 namespace ToSic.Eav.WebApi
@@ -22,7 +24,7 @@ namespace ToSic.Eav.WebApi
 	public class QueryController : HasLog
     {
         #region initializers etc. - work on later
-        public QueryController(Log parentLog): base("Api.EaPipe", parentLog)
+        public QueryController(ILog parentLog): base("Api.EaPipe", parentLog)
 		{
 		}
 
@@ -61,7 +63,7 @@ namespace ToSic.Eav.WebApi
 
             return query;
 
-            Dictionary<string, object> EntityToDictionary(Interfaces.IEntity entity)
+            Dictionary<string, object> EntityToDictionary(IEntity entity)
             {
                 var attributes = entity.Attributes.ToDictionary(k => k.Value.Name, v =>  v.Value[0]);
                 attributes.Add("EntityId", entity.EntityId);
@@ -105,7 +107,7 @@ namespace ToSic.Eav.WebApi
 		/// <summary>
 		/// Query the Result of a Pipline using Test-Parameters
 		/// </summary>
-		public dynamic QueryPipeline(int appId, int id, ValueCollectionProvider config)
+		public dynamic QueryPipeline(int appId, int id, TokenListFiller config)
 		{
 		    Log.Add($"queryy pipe: a#{appId}, id:{id}");
             // Get the query, run it and track how much time this took

@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -9,7 +8,7 @@ namespace ToSic.Eav.Apps.Parts
     public abstract class RuntimeBase: HasLog
     {
         internal readonly AppRuntime App;
-        internal RuntimeBase(AppRuntime app, Log parentLog): base("App.RunTB", parentLog)
+        internal RuntimeBase(AppRuntime app, ILog parentLog): base("App.RunTB", parentLog)
         {
             App = app;
         }

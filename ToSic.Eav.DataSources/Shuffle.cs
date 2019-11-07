@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.VisualQuery;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
-using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.Logging;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
 {
@@ -11,7 +14,7 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// A DataSource that filters Entities by Ids
 	/// </summary>
-
+    [PublicApi]
     [VisualQuery(GlobalName = "ToSic.Eav.DataSources.Shuffle, ToSic.Eav.DataSources",
         Type = DataSourceType.Sort, 
         DynamicOut = false, 
@@ -21,12 +24,14 @@ namespace ToSic.Eav.DataSources
 	public sealed class Shuffle: BaseDataSource
 	{
         #region Configuration-properties (no config)
+        /// <inheritdoc/>
+        [PrivateApi]
 	    public override string LogId => "DS.Shuffl";
 
         private const string TakeKey = "Take";
 
         /// <summary>
-        /// Amount of items to take 
+        /// Amount of items to take / return when shuffling. Defaults to 0.
         /// </summary>
 		public int Take
         {
@@ -40,13 +45,14 @@ namespace ToSic.Eav.DataSources
 
 
         #endregion
-
-        protected static readonly bool DebugShuffleDs = false;
+        [PrivateApi] 
+        private static readonly bool DebugShuffleDs = false;
 
         /// <inheritdoc />
         /// <summary>
         /// Constructs a new EntityIdFilter
         /// </summary>
+        [PrivateApi]
         public Shuffle()
 		{
             Provide(GetList);
@@ -65,7 +71,7 @@ namespace ToSic.Eav.DataSources
         #region Experiment based on http://stackoverflow.com/questions/375351/most-efficient-way-to-randomly-sort-shuffle-a-list-of-integers-in-c-sharp/375446#375446
         static readonly Random Generator = new Random();
 
-        private static IEnumerable<T> ShuffleInternal<T>(IEnumerable<T> sequence, int take, Log log)
+        private static IEnumerable<T> ShuffleInternal<T>(IEnumerable<T> sequence, int take, ILog log)
         {
             var wrapLog = log.Call("ShuffleInternal");
             var retArray = sequence.ToArray();

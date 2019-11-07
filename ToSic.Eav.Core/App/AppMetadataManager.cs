@@ -5,7 +5,8 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.Metadata;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.App
 {
@@ -36,7 +37,7 @@ namespace ToSic.Eav.App
 
         #endregion
 
-        public AppMetadataManager(AppDataPackage app, ImmutableDictionary<int, string> metadataTypes, Log parentLog) 
+        public AppMetadataManager(AppDataPackage app, ImmutableDictionary<int, string> metadataTypes, ILog parentLog) 
             : base("App.MDMan", parentLog, "initialize")
         {
             _app = app;
@@ -67,7 +68,7 @@ namespace ToSic.Eav.App
         #region Cache Timestamp & Invalidation
 
         public long CacheTimestamp => _app.CacheTimestamp;
-        public bool CacheChanged(long prevCacheTimestamp) => _app.CacheChanged(prevCacheTimestamp);
+        public bool CacheChanged(long newCacheTimeStamp) => _app.CacheChanged(newCacheTimeStamp);
 
         #endregion
 

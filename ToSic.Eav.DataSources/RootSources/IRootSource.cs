@@ -19,11 +19,6 @@ namespace ToSic.Eav.DataSources.RootSources
 		/// </summary>
 		Dictionary<int, Zone> GetAllZones();
 
-		/// <summary>
-		/// Get a Dictionary of all AssignmentObjectTypes
-		/// </summary>
-		//Dictionary<int, string> GetAssignmentObjectTypes();
-
 	    /// <summary>
 	    /// Initialize a zone/app combination
 	    /// </summary>

@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Apps.Interfaces;
-
-namespace ToSic.Eav.Apps.Tests.Mocks
+﻿namespace ToSic.Eav.Apps.Tests.Mocks
 {
     public class MockTenant: ITenant
     {

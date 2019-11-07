@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Metadata;
 using ToSic.Eav.Security.Permissions;
 
 namespace ToSic.Eav.Data
@@ -112,10 +113,8 @@ namespace ToSic.Eav.Data
         private bool _alreadyTriedToGetProvider;
         private IMetadataProvider _metadataProvider;
 
-        // 2018-03-09 2dm - this was used when we tried creating code-based content-types, but I believe it's dead code now
-        //public void Add(string type, Dictionary<string, object> values) => Add(new Entity(AppId, 0, Guid.Empty, type, values));
-
-        public void Add(IEntity additionalItem) => AllWithHidden.Add(additionalItem);
+        // 2019-10-27 2dm - I think this is a leftover of old times, I believe it's not needed any more
+        //public void Add(IEntity additionalItem) => AllWithHidden.Add(additionalItem);
 
         public void Use(List<IEntity> items)
         {

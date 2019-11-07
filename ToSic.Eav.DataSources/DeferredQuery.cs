@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.DataSources.Pipeline;
-using ToSic.Eav.Interfaces;
-using ToSic.Eav.ValueProvider;
+using ToSic.Eav.LookUp;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
 {
@@ -39,7 +39,7 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// Constructs a new App DataSource
 		/// </summary>
-		public DeferredQuery(int zoneId, int appId, IEntity queryDef, IValueCollectionProvider config, bool showDrafts)
+		public DeferredQuery(int zoneId, int appId, IEntity queryDef, ITokenListFiller config, bool showDrafts)
 		{
 		    ZoneId = zoneId;
 		    AppId = appId;

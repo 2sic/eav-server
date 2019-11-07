@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Immutable;
+using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
@@ -8,7 +9,7 @@ namespace ToSic.Eav.Types
 {
     public class Global
     {
-        public static Log Log = new Log("Eav.GlbTyp");
+        public static ILog Log = new Log("Eav.GlbTyp");
 
         /// <summary>
         /// The constructor is automatically run exactly 1x when the first bit of code

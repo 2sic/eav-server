@@ -8,11 +8,10 @@ using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.ImportExport.Xml;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Logging;
 using Entity = ToSic.Eav.Data.Entity;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps.ImportExport
 {
@@ -42,7 +41,7 @@ namespace ToSic.Eav.Apps.ImportExport
         public ImportListXml(AppManager appMan, IContentType contentType, Stream dataStream, IEnumerable<string> languages, string documentLanguageFallback, 
             ImportDeleteUnmentionedItems deleteSetting, 
             ImportResourceReferenceMode resolveReferenceMode, 
-            Log parentLog): base("App.ImpVT", parentLog, "building xml vtable import")
+            ILog parentLog): base("App.ImpVT", parentLog, "building xml vtable import")
         {
             ImportEntities = new List<Entity>();
             ErrorLog = new ImportErrorLog();

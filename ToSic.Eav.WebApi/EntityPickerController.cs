@@ -2,17 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.WebApi.Formats;
 using static System.String;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.WebApi
 {
     public class EntityPickerController : HasLog
     {
-        public EntityPickerController(Log parentLog) : base("Api.EntPck", parentLog)
+        public EntityPickerController(ILog parentLog) : base("Api.EntPck", parentLog)
         {
         }
 

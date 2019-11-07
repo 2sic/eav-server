@@ -1,11 +1,12 @@
 ﻿using Newtonsoft.Json;
 using ToSic.Eav.App;
 using ToSic.Eav.ImportExport.Serializers;
-using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.ImportExport.Json
 {
-    public partial class JsonSerializer: SerializerBase
+    public partial class JsonSerializer: SerializerBase, IThingDeserializer
     {
         public const string ReadOnlyMarker = "~";
         public const string NoLanguage = "*";
@@ -15,7 +16,7 @@ namespace ToSic.Eav.ImportExport.Json
         /// </summary>
         public JsonSerializer() : base("Jsn.Serlzr") {}
 
-        public JsonSerializer(AppDataPackage package, Log parentLog): this()
+        public JsonSerializer(AppDataPackage package, ILog parentLog): this()
         {
             Initialize(package, parentLog);
         }

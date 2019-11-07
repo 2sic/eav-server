@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ToSic.Eav.Logging.Simple
 {
-    public partial class Log
+    public partial class Log: ILog
     {
         // unique ID of this logger, to not confuse it with other loggers
         private readonly string _id = Guid.NewGuid().ToString().Substring(0, 2);
@@ -12,10 +12,11 @@ namespace ToSic.Eav.Logging.Simple
         protected string Scope = "tdo";
         private const int MaxScopeLen = 3;
         private const int MaxNameLen = 6;
-        public readonly DateTime Created = DateTime.Now;
-        public int WrapDepth;
+        public DateTime Created => _created;
+        private readonly DateTime _created = DateTime.Now;
+            public int WrapDepth;
         public  List<Entry> Entries { get; } = new List<Entry>();
-        private Log _parent;
+        private ILog _parent;
 
         private string Identifier => $"{Scope}{Name}[{_id}]";
 
@@ -25,10 +26,10 @@ namespace ToSic.Eav.Logging.Simple
         /// Create a logger and optionally attach it to a parent logger
         /// </summary>
         /// <param name="name">name this logger should use</param>
-        /// <param name="parent">optional parrent logger to attach to</param>
+        /// <param name="parent">optional parent logger to attach to</param>
         /// <param name="initialMessage">optional initial message to log</param>
         /// <param name="className">optional class-name, will change how the initial log is created</param>
-        public Log(string name, Log parent = null, string initialMessage = null, string className = null)
+        public Log(string name, ILog parent = null, string initialMessage = null, string className = null)
         {
             Rename(name);
             LinkTo(parent);
@@ -39,7 +40,7 @@ namespace ToSic.Eav.Logging.Simple
                 New(className, initialMessage);
         }
 
-        public Log AddChild(string name, string message) => new Log(name, this, message);
+        public ILog AddChild(string name, string message) => new Log(name, this, message);
 
         /// <summary>
         /// Rename this logger - usually used when a base-class has a logger, 
@@ -69,7 +70,7 @@ namespace ToSic.Eav.Logging.Simple
         /// </summary>
         /// <param name="parent">parent log to attach to</param>
         /// <param name="name">optional new name</param>
-        public void LinkTo(Log parent, string name = null)
+        public void LinkTo(ILog parent, string name = null)
         {
             _parent = parent ?? _parent;
             if (name != null)

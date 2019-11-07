@@ -4,17 +4,22 @@ namespace ToSic.Eav.Apps.Assets
 {
     public class Folder : IFolder
     {
-        /// <summary>
-        /// An Id - only relevant if the environment uses Ids
-        /// </summary>
+        /// <inheritdoc/>
         public int Id { get; set; }
 
+        /// <inheritdoc/>
         public bool HasChildren { get; set; }
 
+        /// <inheritdoc/>
         public DateTime Created { get; set; }
+
+        /// <inheritdoc/>
         public DateTime Modified { get; set; }
 
+        /// <inheritdoc/>
         public string Path { get; set; }
+        
+        /// <inheritdoc/>
         public string Name { get; set; }
 
 

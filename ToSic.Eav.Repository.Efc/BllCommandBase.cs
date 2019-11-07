@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Logging.Simple;
+﻿using ToSic.Eav.Logging;
+using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Repository.Efc
 {
@@ -14,7 +15,7 @@ namespace ToSic.Eav.Repository.Efc
 
         #region Logging
 
-        protected Log Log;
+        protected ILog Log;
 
         #endregion
 

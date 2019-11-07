@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Versions;
@@ -13,7 +14,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
     [TestClass]
     public class VersioningTests
     {
-        public static Log Log = new Log("TstVer");
+        public static ILog Log = new Log("TstVer");
 
         #region Test Data
 

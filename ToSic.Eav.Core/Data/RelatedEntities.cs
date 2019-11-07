@@ -6,7 +6,7 @@ namespace ToSic.Eav.Data
     /// <summary>
     /// Represents Child Entities by attribute name
     /// </summary>
-    public class RelatedEntities : IRelatedEntities
+    public class RelatedEntities : IChildEntities
     {
         private readonly Dictionary<string, IAttribute> _attributes;
         private readonly Dictionary<string, object> _objects;

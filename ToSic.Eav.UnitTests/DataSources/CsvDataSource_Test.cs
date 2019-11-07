@@ -1,9 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Linq;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.TokenEngine.Tests.TestData;
-using ToSic.Eav.TokenEngine.Tests.ValueProvider;
 
 namespace ToSic.Eav.UnitTests.DataSources
 {
@@ -110,7 +110,7 @@ namespace ToSic.Eav.UnitTests.DataSources
             }
         }
 
-        private static object GetAttributeValue(ToSic.Eav.Interfaces.IEntity entity, string name)
+        private static object GetAttributeValue(IEntity entity, string name)
         {
             return entity.GetBestValue(entity.Attributes[name].Name);
         }

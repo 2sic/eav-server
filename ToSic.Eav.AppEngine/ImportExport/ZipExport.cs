@@ -7,6 +7,7 @@ using System.Xml.XPath;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Zip;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Logging;
 
@@ -30,9 +31,9 @@ namespace ToSic.Eav.Apps.ImportExport
         private readonly string _physicalAppPath;
         private readonly string _appFolder;
 
-        protected Log Log;
+        protected ILog Log;
 
-        public ZipExport(int zoneId, int appId, string appFolder, string physicalAppPath, Log parentLog)
+        public ZipExport(int zoneId, int appId, string appFolder, string physicalAppPath, ILog parentLog)
         {
             _appId = appId;
             _zoneId = zoneId;

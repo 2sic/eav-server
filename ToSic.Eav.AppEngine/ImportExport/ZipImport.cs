@@ -19,7 +19,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
         public readonly bool AllowCodeImport;
 
-        public ZipImport(IImportExportEnvironment environment, int zoneId, int? appId, bool allowCode, Log parentLog)
+        public ZipImport(IImportExportEnvironment environment, int zoneId, int? appId, bool allowCode, ILog parentLog)
             :base("Zip.Imp", parentLog)
         {
             _initialAppId = appId;

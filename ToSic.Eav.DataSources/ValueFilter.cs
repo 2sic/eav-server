@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Exceptions;
 using ToSic.Eav.DataSources.VisualQuery;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
 {
@@ -11,6 +14,7 @@ namespace ToSic.Eav.DataSources
     /// <summary>
     /// Return only Entities having a specific value in an Attribute
     /// </summary>
+    [PublicApi]
     [VisualQuery(GlobalName = "ToSic.Eav.DataSources.ValueFilter, ToSic.Eav.DataSources",
         Type = DataSourceType.Filter, 
         In = new[] { Constants.DefaultStreamName, Constants.FallbackStreamName },
@@ -21,6 +25,8 @@ namespace ToSic.Eav.DataSources
     public sealed class ValueFilter : BaseDataSource
     {
         #region Configuration-properties Attribute, Value, Language, Operator
+        /// <inheritdoc/>
+        [PrivateApi]
         public override string LogId => "DS.ValueF";
 
         private const string AttrKey = "Attribute";
@@ -30,7 +36,7 @@ namespace ToSic.Eav.DataSources
         private const string TakeKey = "Take";
 
         /// <summary>
-		/// The attribute whoose value will be filtered
+		/// The attribute whose value will be scanned / filtered.
 		/// </summary>
 		public string Attribute
 		{
@@ -65,6 +71,10 @@ namespace ToSic.Eav.DataSources
 			get => Configuration[OperatorKey];
             set => Configuration[OperatorKey] = value;
         }
+
+        /// <summary>
+        /// Amount of items to take - then stop filtering. For performance optimization.
+        /// </summary>
 		public string Take
 		{
 			get => Configuration[TakeKey];
@@ -76,6 +86,7 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// Constructs a new ValueFilter
 		/// </summary>
+		[PrivateApi]
 		public ValueFilter()
 		{
 			Provide(GetEntitiesOrFallback);
@@ -83,7 +94,7 @@ namespace ToSic.Eav.DataSources
 		    ConfigMask(FilterKey, "[Settings:Value]");
 		    ConfigMask(OperatorKey, "[Settings:Operator||==]");
 		    ConfigMask(TakeKey, "[Settings:Take]");
-		    ConfigMask(LangKey, "Default"); // "[Settings:Language|Any]"); // use setting, but by default, expect "any"
+		    ConfigMask(LangKey, "Default");
         }
 
         private IEnumerable<IEntity> GetEntitiesOrFallback()

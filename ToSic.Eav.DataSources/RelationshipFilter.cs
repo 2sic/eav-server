@@ -1,16 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.VisualQuery;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
 {
 	/// <inheritdoc />
 	/// <summary>
-	/// Filter Entities by Value in a Related Entity
+	/// Filter Entities by Value in a Related Entity. For example:
+	/// Find all Books (desired Entity), whose Authors (related Entity) have a Country (Attribute) with 'Switzerland' (Value). 
 	/// </summary>
-
+    [PublicApi]
 	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.RelationshipFilter, ToSic.Eav.DataSources",
         Type = DataSourceType.Lookup, 
         In = new[] { Constants.DefaultStreamName, Constants.FallbackStreamName }, 
@@ -20,6 +24,8 @@ namespace ToSic.Eav.DataSources
     public sealed class RelationshipFilter : BaseDataSource
 	{
         #region Configuration-properties
+        /// <inheritdoc/>
+        [PrivateApi]
 	    public override string LogId => "DS.RelatF";
 
         /// <summary>
@@ -47,13 +53,11 @@ namespace ToSic.Eav.DataSources
 		private const string ChildOrParentKey = "ChildOrParent";
 	    private const string DefaultDirection = "child";
 	    private const string DefaultSeparator = "ignore"; // by default, don't separate!
-		private readonly string[] _directionPossibleValues = { DefaultDirection };//, "parent"};
-		//private readonly string[] _compareModeValues = { "default", "contains" };
-		//private const string ParentTypeKey = "ParentType";
-		//private const string PassThroughOnEmptyFilterKey = "PassThroughOnEmptyFilter";
+		private readonly string[] _directionPossibleValues = { DefaultDirection };
 
 
         // ReSharper disable InconsistentNaming
+        // ReSharper disable IdentifierTypo
         // this must all be in lower-case, to make further case-changes irrelevant
         public enum CompareModes
         {
@@ -63,13 +67,13 @@ namespace ToSic.Eav.DataSources
             first, // first item must match provided filter-values
             count
         }
+        // ReSharper restore IdentifierTypo
         // ReSharper restore InconsistentNaming
 
 	    private enum CompareType { Any, Id, Title, Auto }
 
-		//private const string LangKey = "Language";
 		/// <summary>
-		/// The attribute whoose value will be filtered
+		/// Relationship-attribute - in the example this would be 'Author' as we're checking values in related Author items. 
 		/// </summary>
 		public string Relationship
 		{
@@ -78,7 +82,7 @@ namespace ToSic.Eav.DataSources
 		}
 
 		/// <summary>
-		/// The filter that will be used - for example "Daniel" when looking for an entity w/the value Daniel
+		/// The filter-value that will be used - for example "Switzerland" when looking for authors from there
 		/// </summary>
 		public string Filter
 		{
@@ -86,6 +90,9 @@ namespace ToSic.Eav.DataSources
 		    set => Configuration[FilterKey] = value;
 		}
 
+        /// <summary>
+        /// The attribute we're looking into, in this case it would be 'Country' because we're checking what Authors are from Switzerland.
+        /// </summary>
 		public string CompareAttribute
 		{
 			get => Configuration[CompareAttributeKey];
@@ -102,12 +109,19 @@ namespace ToSic.Eav.DataSources
 			get => Configuration[CompareModeKey];
 		    set => Configuration[CompareModeKey] = value.ToLower();
 		}
+
+        /// <summary>
+        /// Separator value where we have multiple values / IDs to compare. Default is 'ignore' = no separator
+        /// </summary>
 		public string Separator
 		{
 			get => Configuration[SeparatorKey];
 		    set => Configuration[SeparatorKey] = value.ToLower();
 		}
 
+        /// <summary>
+        /// Determines if the relationship we're looking into is a 'child'-relationship (default) or 'parent' relationship.
+        /// </summary>
 		public string ChildOrParent
 		{
 			get => Configuration[ChildOrParentKey];
@@ -122,25 +136,19 @@ namespace ToSic.Eav.DataSources
 
         #endregion
 
-        /// <inheritdoc />
-        /// <summary>
-        /// Language to filter for. At the moment it is not used, or it is trying to find "any"
-        /// </summary>
         /// <summary>
         /// Constructs a new RelationshipFilter
         /// </summary>
+        [PrivateApi]
         public RelationshipFilter()
 		{
             Provide(GetEntitiesOrFallback);
-            //Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntitiesOrFallback));
 		    ConfigMask(RelationshipKey, $"[Settings:{Settings.Relationship}]");
 		    ConfigMask(FilterKey, $"[Settings:{Settings.Filter}]");
 		    ConfigMask(CompareAttributeKey, $"[Settings:{Settings.AttributeOnRelationship}||{Constants.EntityFieldTitle}]");
 		    ConfigMask(CompareModeKey, $"[Settings:{Settings.Comparison}||{CompareModes.contains}]");
 		    ConfigMask(SeparatorKey, $"[Settings:{Settings.Separator}||{DefaultSeparator}]");
 		    ConfigMask(ChildOrParentKey, $"[Settings:{Settings.Direction}||{DefaultDirection}]");
-
-            //CacheRelevantConfigurations = new[] { RelationshipKey, FilterKey, CompareAttributeKey, CompareModeKey, SeparatorKey, ChildOrParentKey};
         }
 
         private IEnumerable<IEntity> GetEntitiesOrFallback()
@@ -318,19 +326,5 @@ namespace ToSic.Eav.DataSources
 	        }
 	    }
 
-  //      private string getStringToCompare(IEntity e, string a, CompareType special)
-		//{
-		//	try
-		//	{
-		//		// get either the special id or title, if title or normal field, then use language [0] = default
-		//	    if (e == null) return null;
-		//		return special == CompareType.Id ? e.EntityId.ToString() : (special == CompareType.Title ? e.Title : e[a])?[0]?.ToString();
-		//}
-		//	catch
-		//	{
-		//		throw new Exception(
-		//		    $"Error while trying to filter for related entities. Probably comparing an attribute on the related entity that doesn\'t exist. Was trying to compare the attribute \'{a}\'");
-		//	}
-		//}
 	}
 }

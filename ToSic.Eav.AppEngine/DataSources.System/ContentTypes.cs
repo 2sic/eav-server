@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.DataSources.Types;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.VisualQuery;
 using ToSic.Eav.Interfaces;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataSources.System

@@ -4,6 +4,7 @@ using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Versions;
+using IEntity = ToSic.Eav.Data.IEntity;
 using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
 
 namespace ToSic.Eav.Apps.Parts

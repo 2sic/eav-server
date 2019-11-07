@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Core.Tests.Data;
-using ToSic.Eav.ValueProvider;
+using ToSic.Eav.LookUp;
 
 namespace ToSic.Eav.TokenEngine.Tests.ValueProvider
 {
@@ -11,7 +11,7 @@ namespace ToSic.Eav.TokenEngine.Tests.ValueProvider
         [TestMethod]
         public void ValueProvider_StaticValueProvider()
         {
-            var sv = new StaticValueProvider("Demo");
+            var sv = new LookUpInDictionary("Demo");
             sv.Properties.Add("Alpha", "found");
             sv.Properties.Add("Bravo", "found it too");
             sv.Properties.Add("Child:Grandchild", "found");
@@ -31,7 +31,7 @@ namespace ToSic.Eav.TokenEngine.Tests.ValueProvider
         [TestMethod]
         public void ValueProvider_EntityValueProvider()
         {
-            IValueProvider valProv = new EntityValueProvider(SampleData.TestEntityDaniel());
+            ILookUp valProv = new LookUpInEntity(SampleData.TestEntityDaniel());
             var found = false;
 
             Assert.IsTrue(valProv.Has("FirstName"), "Has first name");
@@ -44,6 +44,15 @@ namespace ToSic.Eav.TokenEngine.Tests.ValueProvider
             // this test can't work, because ispublished is blank on a light entity
             // Assert.IsTrue(Convert.ToBoolean(valProv.Get("IsPublished")));
             Assert.AreEqual(Guid.Empty, Guid.Parse(valProv.Get("EntityGuid")));
+            Assert.AreEqual("TestType", valProv.Get("EntityType"));
+        }
+
+        [TestMethod]
+        public void ValueProvider_EntityValueProvider_DateTimeFormat()
+        {
+            ILookUp valProv = new LookUpInEntity(SampleData.TestEntityDaniel());
+            
+            Assert.AreEqual(DateTime.Parse("2019-11-06T01:00:05Z"), DateTime.Parse(valProv.Get("AnyDate")));
             Assert.AreEqual("TestType", valProv.Get("EntityType"));
         }
 

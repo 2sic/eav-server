@@ -1,10 +1,11 @@
 ﻿using System.Collections.Concurrent;
 using System.Linq;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging.Internals;
-using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Logging
 {
+    [PrivateApi]
     public static class History
     {
         public static int Size { get; set; } = 25;
@@ -22,9 +23,9 @@ namespace ToSic.Eav.Logging
         private static bool _pause;
         public static int Count { get; private set; }
 
-        public static ConcurrentDictionary<string, FixedSizedQueue<Log>> Logs = new ConcurrentDictionary<string, FixedSizedQueue<Log>>();
+        public static ConcurrentDictionary<string, FixedSizedQueue<ILog>> Logs = new ConcurrentDictionary<string, FixedSizedQueue<ILog>>();
 
-        public static void Add(string key, Log log)
+        public static void Add(string key, ILog log)
         {
             // only add if not paused
             if (Pause) return;
@@ -34,7 +35,7 @@ namespace ToSic.Eav.Logging
 
             // make sure we have a queue
             if (!Logs.ContainsKey(key))
-                Logs.TryAdd(key, new FixedSizedQueue<Log>(Size));
+                Logs.TryAdd(key, new FixedSizedQueue<ILog>(Size));
 
             // add the current item
             if (Logs.TryGetValue(key, out var queue))

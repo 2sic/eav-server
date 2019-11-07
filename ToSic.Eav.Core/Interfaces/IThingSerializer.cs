@@ -1,21 +1,22 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.App;
-using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.Data;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Interfaces
 {
     public interface IThingSerializer
     {
-        void Initialize(AppDataPackage app, Log parentLog);
+        void Initialize(AppDataPackage app, ILog parentLog);
 
         //void Initialize(int appId, IEnumerable<IContentType> types);
 
         string Serialize(int entityId);
         Dictionary<int, string> Serialize(List<int> entities);
 
-        string Serialize(IEntity entity);
+        string Serialize(Data.IEntity entity);
 
-        Dictionary<int, string> Serialize(List<IEntity> entities);
+        Dictionary<int, string> Serialize(List<Data.IEntity> entities);
 
 
     }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Apps.Parts
@@ -9,7 +10,7 @@ namespace ToSic.Eav.Apps.Parts
     /// </summary>
     public class TemplatesManager: ManagerBase
     {
-        public TemplatesManager(AppManager app, Log parentLog) : base(app, parentLog, "App.TplMng") {}
+        public TemplatesManager(AppManager app, ILog parentLog) : base(app, parentLog, "App.TplMng") {}
 
         #region Template
 

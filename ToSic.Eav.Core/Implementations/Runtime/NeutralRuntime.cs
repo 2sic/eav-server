@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Implementations.Runtime
 {
@@ -10,9 +13,9 @@ namespace ToSic.Eav.Implementations.Runtime
 
         public IEnumerable<IEntity> LoadGlobalItems(string groupIdentifier) => new List<IEntity>();
 
-        public Log Log { get; } = new Log("empty");
+        public ILog Log { get; } = new Log("empty");
 
 
-        public void LinkLog(Log parentLog) => Log.LinkTo(parentLog);
+        public void LinkLog(ILog parentLog) => Log.LinkTo(parentLog);
     }
 }

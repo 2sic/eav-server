@@ -16,7 +16,7 @@ namespace ToSic.Eav.WebApi
 {
     public class ContentExportController : HasLog
     {
-        public ContentExportController(Log parentLog = null) : base("Api.EaCtEx", parentLog)
+        public ContentExportController(ILog parentLog = null) : base("Api.EaCtEx", parentLog)
         {
         }
 

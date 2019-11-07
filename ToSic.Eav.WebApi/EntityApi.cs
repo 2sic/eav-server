@@ -9,6 +9,7 @@ using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Serializers;
 using ToSic.Eav.WebApi.Formats;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.WebApi
 {
@@ -16,7 +17,7 @@ namespace ToSic.Eav.WebApi
     {
         public AppManager AppManager;
 
-        public EntityApi(int appId, Log parentLog): base("Api.EntPrc", parentLog)
+        public EntityApi(int appId, ILog parentLog): base("Api.EntPrc", parentLog)
         {
             AppManager = new AppManager(appId, Log);
         }

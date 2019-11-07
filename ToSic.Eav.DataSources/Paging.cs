@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources.VisualQuery;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
 {
@@ -11,7 +14,7 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// A DataSource that filters Entities by Ids
 	/// </summary>
-
+    [PublicApi]
 	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.Paging, ToSic.Eav.DataSources",
         Type = DataSourceType.Logic, 
         DynamicOut = false,
@@ -21,6 +24,8 @@ namespace ToSic.Eav.DataSources
     public sealed class Paging: BaseDataSource
 	{
         #region Configuration-properties (no config)
+        /// <inheritdoc/>
+        [PrivateApi]
 	    public override string LogId => "DS.Page";
 
         private const string PageSizeKey = "PageSize";
@@ -29,7 +34,7 @@ namespace ToSic.Eav.DataSources
 	    private const int DefPageNum = 1;
 
         /// <summary>
-        /// The Page size
+        /// The Page size in the paging. Defaults to 10.
         /// </summary>
         public int PageSize
         {
@@ -42,7 +47,7 @@ namespace ToSic.Eav.DataSources
         }
 
         /// <summary>
-        /// The Page number
+        /// The Page number to show - defaults to 1
         /// </summary>
         public int PageNumber
         {
@@ -57,7 +62,7 @@ namespace ToSic.Eav.DataSources
 		#endregion
 
         #region Debug-Properties
-
+        [PrivateApi]
 	    public string ReturnedStreamName { get; private set; }
         #endregion
 
@@ -66,16 +71,13 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Constructs a new EntityIdFilter
         /// </summary>
+        [PrivateApi]
 		public Paging()
 		{
             Provide(GetList);
             Provide("Paging", GetPaging);
-            //Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
-            //Out.Add("Paging", new DataStream(this, "Paging", GetPaging));
 		    ConfigMask(PageSizeKey, "[Settings:" + PageSizeKey + "||" + DefPageSize + "]");
 		    ConfigMask(PageNumberKey, "[Settings:" + PageNumberKey + "||" + DefPageNum + "]");
-
-            //CacheRelevantConfigurations = new[] {PageSizeKey, PageNumberKey};
 		}
 
 

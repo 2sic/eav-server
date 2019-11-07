@@ -3,7 +3,6 @@ using System.Linq;
 using System.Xml.Linq;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Interfaces;
 
 namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
@@ -12,7 +11,7 @@ namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
     {
         private readonly IImportExportEnvironment _environment;
 
-        public VersionCheck(IImportExportEnvironment env, Log parentLog) : base("Imp.VerChk", parentLog)
+        public VersionCheck(IImportExportEnvironment env, ILog parentLog) : base("Imp.VerChk", parentLog)
         {
             _environment = env;
         }

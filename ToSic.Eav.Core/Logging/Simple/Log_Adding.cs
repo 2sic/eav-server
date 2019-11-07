@@ -55,7 +55,7 @@ namespace ToSic.Eav.Logging.Simple
         private void AddToEntriesAndParent(Entry entry)
         {
             Entries.Add(entry);
-            _parent?.AddToEntriesAndParent(entry);
+            (_parent as Log)?.AddToEntriesAndParent(entry);
         }
 
         /// <summary>

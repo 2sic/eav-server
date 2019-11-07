@@ -1,11 +1,17 @@
-﻿namespace ToSic.Eav.Apps.Interfaces
+﻿using ToSic.Eav.Documentation;
+
+namespace ToSic.Eav.Apps
 {
+    /// <summary>
+    /// Describes a tenant - this is what the Environment calls a tenant (like a portal in DNN)
+    /// </summary>
+    [PublicApi]
     public interface ITenant
     {
         /// <summary>
         /// The tenant ID as a number (if the tenant supports it)
-        /// Usually the DNN PortalId
         /// </summary>
+        /// <returns>The DNN PortalId</returns>
         int Id { get; }
 
         /// <summary>
@@ -15,7 +21,7 @@
 
 
         /// <summary>
-        /// The tenant name for human readibility (UIs)
+        /// The tenant name for human readability (UIs)
         /// Usually the DNN PortalName
         /// </summary>
         string Name { get; }
@@ -24,11 +30,13 @@
         /// <summary>
         /// The root path of the tenant
         /// </summary>
+        [PrivateApi]
         string SxcPath { get; }
 
-
+        [PrivateApi]
         bool RefactorUserIsAdmin { get; }
 
+        [PrivateApi]
         string ContentPath { get; }
     }
 }

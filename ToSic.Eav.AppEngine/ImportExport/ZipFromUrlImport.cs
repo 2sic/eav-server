@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using System.Web;
 using ToSic.Eav.ImportExport;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Interfaces;
 
@@ -10,7 +11,7 @@ namespace ToSic.Eav.Apps.ImportExport
 {
     public class ZipFromUrlImport: ZipImport
     {
-        public ZipFromUrlImport(IImportExportEnvironment environment, int zoneId, int? appId, bool allowCode, Log parentLog) 
+        public ZipFromUrlImport(IImportExportEnvironment environment, int zoneId, int? appId, bool allowCode, ILog parentLog) 
             : base(environment, zoneId, appId, allowCode, parentLog)
         {
         }

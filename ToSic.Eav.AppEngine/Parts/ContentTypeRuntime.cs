@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Types;
 
 namespace ToSic.Eav.Apps.Parts
@@ -12,7 +13,7 @@ namespace ToSic.Eav.Apps.Parts
     // ReSharper disable once InheritdocConsiderUsage
     public class ContentTypeRuntime : RuntimeBase
     {
-        public ContentTypeRuntime(AppRuntime app, Log parentLog) : base(app, parentLog){}
+        public ContentTypeRuntime(AppRuntime app, ILog parentLog) : base(app, parentLog){}
 
         public IEnumerable<IContentType> All => App.Cache.GetContentTypes();
 

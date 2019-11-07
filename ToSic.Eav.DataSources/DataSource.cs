@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.DataSources.VisualQuery;
-using ToSic.Eav.Interfaces;
-using ToSic.Eav.Logging.Simple;
-using ToSic.Eav.ValueProvider;
+using ToSic.Eav.Logging;
+using ToSic.Eav.LookUp;
+using ToSic.Eav.Metadata;
 using ICache = ToSic.Eav.DataSources.Caches.ICache;
 
 // ReSharper disable once CheckNamespace
@@ -25,14 +24,14 @@ namespace ToSic.Eav
 		/// <param name="chain">Array of Full Qualified Names of DataSources</param>
 		/// <param name="zoneId">ZoneId for this DataSource</param>
 		/// <param name="appId">AppId for this DataSource</param>
-		/// <param name="valueCollectionProvider">Configuration Provider used for all DataSources</param>
+		/// <param name="configLookUp">Configuration Provider used for all DataSources</param>
 		/// <returns>A single DataSource that has attached </returns>
-		private static IDataSource AssembleDataSourceReverse(IList<string> chain, int zoneId, int appId, IValueCollectionProvider valueCollectionProvider)
+		private static IDataSource AssembleDataSourceReverse(IList<string> chain, int zoneId, int appId, ITokenListFiller configLookUp)
 		{
-			var newSource = GetDataSource(chain[0], zoneId, appId, valueCollectionProvider: valueCollectionProvider);
+			var newSource = GetDataSource(chain[0], zoneId, appId, configLookUp: configLookUp);
 			if (chain.Count > 1)
 			{
-				var source = AssembleDataSourceReverse(chain.Skip(1).ToArray(), zoneId, appId, valueCollectionProvider);
+				var source = AssembleDataSourceReverse(chain.Skip(1).ToArray(), zoneId, appId, configLookUp);
 				((IDataTarget)newSource).Attach(source);
 			}
 			return newSource;
@@ -45,10 +44,10 @@ namespace ToSic.Eav
 	    /// <param name="zoneId">ZoneId for this DataSource</param>
 	    /// <param name="appId">AppId for this DataSource</param>
 	    /// <param name="upstream">In-Connection</param>
-	    /// <param name="valueCollectionProvider">Provides configuration values if needed</param>
+	    /// <param name="configLookUp">Provides configuration values if needed</param>
 	    /// <param name="parentLog"></param>
 	    /// <returns>A single DataSource</returns>
-	    public static IDataSource GetDataSource(string sourceName, int? zoneId = null, int? appId = null, IDataSource upstream = null, IValueCollectionProvider valueCollectionProvider = null, Log parentLog = null)
+	    public static IDataSource GetDataSource(string sourceName, int? zoneId = null, int? appId = null, IDataSource upstream = null, ITokenListFiller configLookUp = null, ILog parentLog = null)
 		{
 		    // try to find with assembly name, or otherwise with GlobalName / previous names
             var type = Type.GetType(sourceName) 
@@ -58,7 +57,7 @@ namespace ToSic.Eav
 			if (type == null)
 			    throw new Exception("DataSource not installed on Server: " + sourceName);
 
-			return GetDataSource(type, zoneId, appId, upstream, valueCollectionProvider, parentLog);
+			return GetDataSource(type, zoneId, appId, upstream, configLookUp, parentLog);
 		}
 
 
@@ -69,14 +68,14 @@ namespace ToSic.Eav
 	    /// <param name="zoneId">ZoneId for this DataSource</param>
 	    /// <param name="appId">AppId for this DataSource</param>
 	    /// <param name="upstream">In-Connection</param>
-	    /// <param name="valueCollectionProvider">Provides configuration values if needed</param>
+	    /// <param name="configLookUp">Provides configuration values if needed</param>
 	    /// <param name="parentLog"></param>
 	    /// <returns>A single DataSource</returns>
 	    private static IDataSource GetDataSource(Type type, int? zoneId, int? appId, IDataSource upstream,
-	        IValueCollectionProvider valueCollectionProvider, Log parentLog)
+	        ITokenListFiller configLookUp, ILog parentLog)
 	    {
 	        var newDs = (BaseDataSource) Factory.Resolve(type);
-	        ConfigureNewDataSource(newDs, zoneId, appId, upstream, valueCollectionProvider, parentLog);
+	        ConfigureNewDataSource(newDs, zoneId, appId, upstream, configLookUp, parentLog);
 	        return newDs;
 	    }
 
@@ -86,16 +85,16 @@ namespace ToSic.Eav
 	    /// <param name="zoneId">ZoneId for this DataSource</param>
 	    /// <param name="appId">AppId for this DataSource</param>
 	    /// <param name="upstream">In-Connection</param>
-	    /// <param name="valueCollectionProvider">Provides configuration values if needed</param>
+	    /// <param name="configLookUp">Provides configuration values if needed</param>
 	    /// <param name="parentLog"></param>
 	    /// <returns>A single DataSource</returns>
 	    public static T GetDataSource<T>(int? zoneId = null, int? appId = null, IDataSource upstream = null,
-			IValueCollectionProvider valueCollectionProvider = null, Log parentLog = null)
+			ITokenListFiller configLookUp = null, ILog parentLog = null)
 		{
-            if(upstream == null && valueCollectionProvider == null)
+            if(upstream == null && configLookUp == null)
                     throw new Exception("Trying to GetDataSource<T> but cannot do so if both upstream and ConfigurationProvider are null.");
 			var newDs = (BaseDataSource)Factory.Resolve(typeof(T));
-			ConfigureNewDataSource(newDs, zoneId, appId, upstream, valueCollectionProvider ?? upstream.ConfigurationProvider, parentLog);
+			ConfigureNewDataSource(newDs, zoneId, appId, upstream, configLookUp ?? upstream.ConfigurationProvider, parentLog);
 			return (T)Convert.ChangeType(newDs, typeof(T));
 		}
 
@@ -106,21 +105,21 @@ namespace ToSic.Eav
 	    /// <param name="zoneId">optional Zone #</param>
 	    /// <param name="appId">optional app #</param>
 	    /// <param name="upstream">upstream data source - for auto-attaching</param>
-	    /// <param name="valueCollectionProvider">optional configuration provider - for auto-attaching</param>
+	    /// <param name="configLookUp">optional configuration provider - for auto-attaching</param>
 	    /// <param name="parentLog"></param>
 	    private static void ConfigureNewDataSource(BaseDataSource newDs, 
             int? zoneId = null, int? appId = null,
 			IDataSource upstream = null,
-			IValueCollectionProvider valueCollectionProvider = null, 
-            Log parentLog = null)
+			ITokenListFiller configLookUp = null, 
+            ILog parentLog = null)
 		{
 			var zoneAppId = GetZoneAppId(zoneId, appId);
 			newDs.ZoneId = zoneAppId.Item1;
 			newDs.AppId = zoneAppId.Item2;
 			if (upstream != null)
 				((IDataTarget)newDs).Attach(upstream);
-			if (valueCollectionProvider != null)
-				newDs.ConfigurationProvider = valueCollectionProvider;
+			if (configLookUp != null)
+				newDs.ConfigurationProvider = configLookUp;
 
             if(parentLog != null)
                 newDs.InitLog(newDs.LogId, parentLog);
@@ -137,12 +136,12 @@ namespace ToSic.Eav
 	    /// <param name="configProvider"></param>
 	    /// <param name="parentLog"></param>
 	    /// <returns>A single DataSource</returns>
-	    public static IDataSource GetInitialDataSource(int? zoneId = null, int? appId = null, bool showDrafts = false, IValueCollectionProvider configProvider = null, Log parentLog = null)
+	    public static IDataSource GetInitialDataSource(int? zoneId = null, int? appId = null, bool showDrafts = false, ITokenListFiller configProvider = null, ILog parentLog = null)
 	    {
             parentLog?.AddChild(LogKey, $"get init #{zoneId}/{appId}, draft:{showDrafts}, config:{configProvider != null}");
 	        var zoneAppId = GetZoneAppId(zoneId, appId);
 
-			configProvider = configProvider ?? new ValueCollectionProvider();
+			configProvider = configProvider ?? new TokenListFiller();
 			var dataSource = AssembleDataSourceReverse(InitialDataSourceQuery, zoneAppId.Item1, zoneAppId.Item2, configProvider);
 
 			var publishingFilter = GetDataSource<PublishingFilter>(zoneAppId.Item1, zoneAppId.Item2, dataSource, configProvider, parentLog);

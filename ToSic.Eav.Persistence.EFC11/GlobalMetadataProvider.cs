@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Persistence.Efc

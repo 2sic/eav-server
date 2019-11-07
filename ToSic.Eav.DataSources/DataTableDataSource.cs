@@ -2,19 +2,26 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using ToSic.Eav.Data;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
 {
 	/// <inheritdoc />
 	/// <summary>
-	/// Provide Entities from a System.Data.DataTable
+	/// Provide Entities from a System.Data.DataTable. <br/>
+	/// This is not meant for VisualQuery, but for code which pre-processes data in a DataTable and then wants to provide it as entities. 
 	/// </summary>
+	[PublicApi]
 	public sealed class DataTableDataSource : ExternalDataDataSource
 	{
         #region Configuration-properties
 
-	    public override string LogId => "DS.DtaTbl";
+        /// <inheritdoc/>
+        [PrivateApi]
+        public override string LogId => "DS.DtaTbl";
 
         private const string TitleFieldKey = "TitleField";
 		private const string EntityIdFieldKey = "EntityIdField";
@@ -24,20 +31,20 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// Default Name of the EntityId Column
 		/// </summary>
-		public static readonly string EntityIdDefaultColumnName = "EntityId";
+		internal static readonly string EntityIdDefaultColumnName = "EntityId";
 
 	    /// <summary>
 	    /// Default Name of the EntityTitle Column
 	    /// </summary>
-	    public static readonly string EntityTitleDefaultColumnName = Constants.EntityFieldTitle; 
+	    internal static readonly string EntityTitleDefaultColumnName = Constants.EntityFieldTitle; 
 
 		/// <summary>
 		/// Source DataTable
 		/// </summary>
-		public DataTable Source { get; set; }
+        public DataTable Source { get; set; }
 
 		/// <summary>
-		/// Gets or sets the Name of the ContentType
+		/// Name of the ContentType
 		/// </summary>
 		public string ContentType
 		{
@@ -46,7 +53,7 @@ namespace ToSic.Eav.DataSources
 		}
 
 		/// <summary>
-		/// Gets or sets the Name of the Title Attribute of the Source DataTable
+		/// Name of the Title Attribute of the Source DataTable
 		/// </summary>
 		public string TitleField
 		{
@@ -55,7 +62,7 @@ namespace ToSic.Eav.DataSources
 		}
 
 		/// <summary>
-		/// Gets or sets the Name of the Column used as EntityId
+		/// Name of the Column used as EntityId
 		/// </summary>
 		public string EntityIdField
 		{
@@ -63,6 +70,9 @@ namespace ToSic.Eav.DataSources
 		    set => Configuration[EntityIdFieldKey] = value;
 		}
 
+        /// <summary>
+        /// Name of the field which would contain a modified timestamp (date/time)
+        /// </summary>
 		public string ModifiedField
 		{
 			get => Configuration[ModifiedFieldKey];
@@ -75,6 +85,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Initializes a new instance of the DataTableDataSource class
         /// </summary>
+        [PrivateApi]
         public DataTableDataSource()
 		{
 			Provide(GetEntities);
@@ -84,11 +95,16 @@ namespace ToSic.Eav.DataSources
 		    ConfigMask(ContentTypeKey, "[Settings:ContentType]");
         }
 
-		/// <inheritdoc />
-		/// <summary>
-		/// Initializes a new instance of the DataTableDataSource class
-		/// </summary>
-		public DataTableDataSource(DataTable source, string contentType, string entityIdField = null, string titleField = null, string modifiedField = null)
+        /// <inheritdoc />
+        /// <summary>
+        /// Initializes a new instance of the DataTableDataSource class with all important parameters.
+        /// </summary>
+        /// <param name="source">Source object containing the table</param>
+        /// <param name="contentType">Type-name to use</param>
+        /// <param name="entityIdField">ID column in the table</param>
+        /// <param name="titleField">Title column in the table</param>
+        /// <param name="modifiedField">modified column in the table</param>
+        public DataTableDataSource(DataTable source, string contentType, string entityIdField = null, string titleField = null, string modifiedField = null)
 			: this()
 		{
 			Source = source;
@@ -119,7 +135,7 @@ namespace ToSic.Eav.DataSources
 			if (!source.Columns.Contains(titleField))
 				throw new Exception($"DataTable doesn't contain an EntityTitle Column with Name \"{titleField}\"");
 
-			// Pupulate a new Dictionary with EntityModels
+			// Populate a new Dictionary with EntityModels
 			var result = new List<IEntity>();
 			foreach (DataRow row in source.Rows)
 			{

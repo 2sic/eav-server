@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.WebApi
 {
@@ -14,7 +16,7 @@ namespace ToSic.Eav.WebApi
 	/// </summary>
 	public class MetadataController : HasLog
     {
-        public MetadataController(Log parentLog) : base("Api.MetaCn", parentLog)
+        public MetadataController(ILog parentLog) : base("Api.MetaCn", parentLog)
         {}
 
         /// <summary>

@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.App;
+using ToSic.Eav.Data;
 using ToSic.Eav.Data.Query;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.Metadata;
 using ToSic.Eav.Types;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.ImportExport.Serializers
 {
@@ -42,7 +44,7 @@ namespace ToSic.Eav.ImportExport.Serializers
                            : App.GetContentType(staticName));
         }
 
-        public void Initialize(AppDataPackage app, Log parentLog)
+        public void Initialize(AppDataPackage app, ILog parentLog)
         {
             App = app;
             AppId = app.AppId;
@@ -51,7 +53,7 @@ namespace ToSic.Eav.ImportExport.Serializers
 
         protected int AppId;
         private IEnumerable<IContentType> _types;
-        public void Initialize(int appId, IEnumerable<IContentType> types, IDeferredEntitiesList allEntities, Log parentLog)
+        public void Initialize(int appId, IEnumerable<IContentType> types, IDeferredEntitiesList allEntities, ILog parentLog)
         {
             AppId = appId;
             _types = types;

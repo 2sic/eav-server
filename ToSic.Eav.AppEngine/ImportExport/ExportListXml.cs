@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using ToSic.Eav.App;
+using ToSic.Eav.Data;
 using ToSic.Eav.Implementations.ValueConverter;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Options;
@@ -10,6 +11,7 @@ using ToSic.Eav.ImportExport.Xml;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps.ImportExport
 {
@@ -23,7 +25,7 @@ namespace ToSic.Eav.Apps.ImportExport
         private AppDataPackage App { get; }
         public IContentType ContentType { get; }
 
-        public ExportListXml(AppDataPackage app, IContentType contentType, Log parentLog): base("App.LstExp", parentLog)
+        public ExportListXml(AppDataPackage app, IContentType contentType, ILog parentLog): base("App.LstExp", parentLog)
         {
             App = app;
             ContentType = contentType;

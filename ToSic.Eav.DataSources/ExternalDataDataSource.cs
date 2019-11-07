@@ -1,23 +1,31 @@
 ﻿using System;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.DataSources
 {
     /// <inheritdoc />
     /// <summary>
-    /// Data source base class for providing data from external systems
+    /// Base DataSource class for providing data from external systems
     /// </summary>
-    public class ExternalDataDataSource: BaseDataSource
+    [PublicApi]
+    public abstract class ExternalDataDataSource: BaseDataSource
     {
+        /// <inheritdoc/>
+        [PrivateApi]
         public override string LogId => "DS.Extern";
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Initializes an external data source.
+        /// </summary>
         /// <remarks>
         /// set the creation date to the moment the object is constructed
         /// this is important, because the date should stay fixed throughout the lifetime of this object
         /// but renew when it is updates
         /// </remarks>
-        public ExternalDataDataSource() => CacheTimestamp = DateTime.Now.Ticks;
+        [PrivateApi]
+        protected ExternalDataDataSource() => CacheTimestamp = DateTime.Now.Ticks;
 
+        /// <inheritdoc />
         public override long CacheTimestamp { get; }
     }
 }

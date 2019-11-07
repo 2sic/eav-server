@@ -1,5 +1,5 @@
 ﻿using System;
-using ToSic.Eav.Apps.Interfaces;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Apps
@@ -12,7 +12,7 @@ namespace ToSic.Eav.Apps
 
         public App(ITenant tenant, int zoneId, int appId, bool allowSideEffects,
             Func<App, IAppDataConfiguration> buildConfiguration,
-            Log parentLog)
+            ILog parentLog)
             : this(Factory.Resolve<IEnvironmentFactory>().Environment(parentLog), tenant, zoneId, appId,
                 allowSideEffects, buildConfiguration, parentLog)
         {
@@ -24,7 +24,7 @@ namespace ToSic.Eav.Apps
             int appId, 
             bool allowSideEffects,
             Func<App, IAppDataConfiguration> buildConfiguration,
-            Log parentLog)
+            ILog parentLog)
             : this(zoneId != AutoLookupZone    // if zone is missing, try to find it; if still missing, throw error
                   ? zoneId
                   : env.ZoneMapper.GetZoneId(tenant.Id), 
