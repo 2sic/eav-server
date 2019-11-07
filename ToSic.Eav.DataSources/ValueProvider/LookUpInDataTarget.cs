@@ -32,23 +32,23 @@ namespace ToSic.Eav.ValueProviders
         /// </summary>
         /// <param name="key"></param>
         /// <param name="format"></param>
-        /// <param name="propertyNotFound"></param>
+        /// <param name="notFound"></param>
         /// <returns></returns>
-		public override string Get(string key, string format, ref bool propertyNotFound)
+		public override string Get(string key, string format, ref bool notFound)
 		{
             // Check if it has sub-keys to see if it's trying to match a inbound stream
             var subTokens = CheckAndGetSubToken(key);
             // var propertyMatch = SubProperties.Match(key);
 		    if (!subTokens.HasSubtoken)
 		    {
-		        propertyNotFound = true;
+		        notFound = true;
 		        return string.Empty;
 		    }
 
             // check if this stream exists
 		    if (!_dataTarget.In.ContainsKey(subTokens.Source))
 		    {
-                propertyNotFound = true;
+                notFound = true;
                 return string.Empty;
             }
 
@@ -56,13 +56,13 @@ namespace ToSic.Eav.ValueProviders
             var entityStream = _dataTarget.In[subTokens.Source];
             if (!entityStream.List.Any())
 		    {
-                propertyNotFound = true;
+                notFound = true;
                 return string.Empty;
             }
 
             // Create an LookUpInEntity based on the first item, return its Get
 		    var first = entityStream.List.First();
-		    return new LookUpInEntity(first).Get(subTokens.Rest, format, ref propertyNotFound);
+		    return new LookUpInEntity(first).Get(subTokens.Rest, format, ref notFound);
 
 		}
 

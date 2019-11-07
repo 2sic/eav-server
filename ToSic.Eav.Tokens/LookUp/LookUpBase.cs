@@ -1,15 +1,17 @@
 ﻿using System.Text.RegularExpressions;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.LookUp
 {
 	/// <summary>
-	/// Property Accessor to test a Pipeline with Static Values
+	/// Base Class to create your own LookUp Class - used by all Look-Ups.
 	/// </summary>
+	[PublicApi]
 	public abstract class LookUpBase : ILookUp
     {
         #region default methods of interface
-        // note: set should be private, but hard to define through an interface
-        public string Name { get; set; }
+        /// <inheritdoc/>
+        public string Name { get; protected set; }
 
         #region Sub-Token analysis and splitting
         // this is needed by some key accesses which support sub-properties like Content:Publisher:Location:City...
@@ -20,7 +22,8 @@ namespace ToSic.Eav.LookUp
         /// </summary>
         /// <param name="original"></param>
         /// <returns></returns>
-        public SubToken CheckAndGetSubToken(string original)
+        [PrivateApi]
+        protected SubToken CheckAndGetSubToken(string original)
         {
             var result = new SubToken();
 
@@ -42,26 +45,17 @@ namespace ToSic.Eav.LookUp
         #endregion
 
 
-        /// <summary>
-        /// Default Get... must be overridden
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="format"></param>
-        /// <param name="propertyNotFound"></param>
-        /// <returns></returns>
-	    public abstract string Get(string key, string format, ref bool propertyNotFound);
+        /// <inheritdoc/>
+	    public abstract string Get(string key, string format, ref bool notFound);
 
-        /// <summary>
-        /// Shorthand version, will return the string value or a null if not found. 
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
+        /// <inheritdoc/>
 	    public virtual string Get(string key)
 	    {
 	        var temp = false;
 	        return Get(key, "", ref temp);
 	    }
 
+        /// <inheritdoc/>
 	    public abstract bool Has(string key);
         #endregion
 
@@ -73,6 +67,7 @@ namespace ToSic.Eav.LookUp
         /// <param name="format">format specification</param>
         /// <returns>formatted string</returns>
         /// <remarks></remarks>
+        [PrivateApi]
         public static string FormatString(string value, string format)
         {
             if (string.IsNullOrWhiteSpace(format))// format.Trim() == string.Empty)
@@ -92,6 +87,7 @@ namespace ToSic.Eav.LookUp
         #endregion
     }
 
+    [PrivateApi]
     public class SubToken
     {
         public bool HasSubtoken = false;

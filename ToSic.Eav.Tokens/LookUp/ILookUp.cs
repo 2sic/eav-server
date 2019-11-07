@@ -15,11 +15,14 @@ namespace ToSic.Eav.LookUp
 		/// <returns>The name which is used to identify this LookUp, like in a <see cref="ITokenListFiller"/></returns>
 		string Name { get; }
 
-		/// <summary>
-		/// Gets a value by Name and tries to format it in a special way (like for dates)
-		/// </summary>
-		/// <returns>A string with the result, empty-string if not found.</returns>
-		string Get(string key, string format, ref bool propertyNotFound);
+        /// <summary>
+        /// Gets a value by Name/key and tries to format it in a special way (like for dates)
+        /// </summary>
+        /// <param name="key">Name of the Property</param>
+        /// <param name="format">Format String</param>
+        /// <param name="notFound">referenced Bool to set if Property was not found on AssignedEntity</param>
+        /// <returns>A string with the result, empty-string if not found.</returns>
+        string Get(string key, string format, ref bool notFound);
 
         /// <summary>
         /// Shorthand version, will simply return the string or a null-value

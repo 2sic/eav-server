@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Linq;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Metadata;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.LookUp
 {
-	/// <inheritdoc />
 	/// <summary>
-	/// Get Values from Assigned Entities
+	/// LookUp things from metadata. This uses EAV Metadata system and will look up Metadata for something.
+	/// As of now it's hardwired to look up Metadata of Entities
 	/// </summary>
+	[PublicApi]
 	public class LookUpInMetadata : LookUpInEntity
 	{
 	    private readonly IMetadataProvider _metaDataSource;
@@ -31,14 +33,23 @@ namespace ToSic.Eav.LookUp
 			_objectToProvideSettingsTo = objectId;
 			_metaDataSource = metaDataSource;
 		}
+
+        /// <summary>
+        /// Alternate constructor where the entity with attached metadata is already known.
+        /// The attached metadata will be used as source for the look-up
+        /// </summary>
+        /// <param name="name">Source name</param>
+        /// <param name="entityWithMetadata">Entity whose metadata we'll use</param>
 		public LookUpInMetadata(string name, IEntity entityWithMetadata)
 		{
 			Name = name;
 		    _parent = entityWithMetadata;
 		}
+
         /// <summary>
         /// For late-loading the entity. Will be called automatically by the Get if not loaded yet. 
         /// </summary>
+        [PrivateApi]
 		protected void LoadEntity()
         {
             var md = _parent?.Metadata ??
@@ -49,18 +60,13 @@ namespace ToSic.Eav.LookUp
 			_entityLoaded = true;
 		}
 
-        /// <summary>
-        /// Get Property of AssignedEntity
-        /// </summary>
-        /// <param name="key">Name of the Property</param>
-        /// <param name="format">Format String</param>
-        /// <param name="propertyNotFound">referenced Bool to set if Property was not found on AssignedEntity</param>
-        public override string Get(string key, string format, ref bool propertyNotFound)
+        /// <inheritdoc/>
+        public override string Get(string key, string format, ref bool notFound)
         {
             if (!_entityLoaded)
                 LoadEntity();
 
-            return base.Get(key, format, ref propertyNotFound);
+            return base.Get(key, format, ref notFound);
         }
 	}
 }

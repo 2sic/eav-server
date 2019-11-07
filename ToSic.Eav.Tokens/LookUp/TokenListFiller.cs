@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Tokens;
 
 namespace ToSic.Eav.LookUp
 {
-	/// <inheritdoc />
 	/// <summary>
-	/// Provides Configuration for a configurable DataSource
+	/// Takes a list of configuration masks (list of tokens) and resolves them with a bunch of LookUps.
 	/// </summary>
+	[PublicApi]
 	public class TokenListFiller : ITokenListFiller
 	{
+        // todo: probably change and not let the outside modify directly
+        [PrivateApi]
 	    public Dictionary<string, ILookUp> Sources { get; }
 	        = new Dictionary<string, ILookUp>(StringComparer.OrdinalIgnoreCase);
 
@@ -20,7 +23,7 @@ namespace ToSic.Eav.LookUp
         private readonly TokenReplace _reusableTokenReplace;
 
 		/// <summary>
-		/// Constructs a new Configuration Provider
+		/// Constructs a new TokenListFiller
 		/// </summary>
 		public TokenListFiller()
 		{
@@ -29,7 +32,8 @@ namespace ToSic.Eav.LookUp
 
 		/// <inheritdoc />
 		/// <summary>
-		/// ...cloning an original
+		/// Cloning another TokenListFiller and keep the sources.
+		/// BUT: Don't keep the overrides, as these will be unique in the clone. 
 		/// </summary>
 		public TokenListFiller(ITokenListFiller original): this()
 		{
@@ -70,10 +74,14 @@ namespace ToSic.Eav.LookUp
             #endregion
         }
 
-	    public string Replace(string sourceText) => _reusableTokenReplace.ReplaceTokens(sourceText);
+        // 2019-11-07 2dm doesn't seem used
+	    //public string Replace(string sourceText) => _reusableTokenReplace.ReplaceTokens(sourceText);
 
+
+        /// <inheritdoc />
 	    public void Add(ILookUp lookUp) => Sources[lookUp.Name] = lookUp;
 
+        /// <inheritdoc />
         public void AddOverride(ILookUp lookUp)
 	    {
 	        if (Sources.ContainsKey(lookUp.Name))
@@ -85,6 +93,7 @@ namespace ToSic.Eav.LookUp
 
         }
 
+        /// <inheritdoc />
 	    public void AddOverride(IEnumerable<ILookUp> lookUps)
 	    {
 	        if (lookUps == null) return;

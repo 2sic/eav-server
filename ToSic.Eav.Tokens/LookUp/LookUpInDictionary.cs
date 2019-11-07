@@ -3,9 +3,8 @@ using System.Collections.Generic;
 
 namespace ToSic.Eav.LookUp
 {
-	/// <inheritdoc />
 	/// <summary>
-	/// Property Accessor to test a Pipeline with Static Values
+	/// Look Up values from a dictionary
 	/// </summary>
 	public class LookUpInDictionary : LookUpBase
 	{
@@ -14,16 +13,19 @@ namespace ToSic.Eav.LookUp
 		/// </summary>
 		public Dictionary<string, string> Properties { get; }
 
-		/// <summary>
-		/// The class constructor, can optionally take a dictionary to reference with, otherwise creates a new one
-		/// </summary>
-		public LookUpInDictionary(string name, Dictionary<string, string> valueList = null)
+        /// <summary>
+        /// Constructor, can optionally take a dictionary to reference with, otherwise creates a new one
+        /// </summary>
+        /// <param name="name">Name to use</param>
+        /// <param name="valueList">value list (dictionary) to reference</param>
+        public LookUpInDictionary(string name, Dictionary<string, string> valueList = null)
 		{
 			Properties = valueList ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 			Name = name;
 		}
 
-		public override string Get(string key, string format, ref bool propertyNotFound)
+        /// <inheritdoc/>
+        public override string Get(string key, string format, ref bool notFound)
 		{
 			try
 			{
@@ -31,11 +33,12 @@ namespace ToSic.Eav.LookUp
 			}
 			catch (KeyNotFoundException)
 			{
-				propertyNotFound = true;
+				notFound = true;
 				return null;
 			}
 		}
 
+        /// <inheritdoc/>
         public override bool Has(string key)
         {
             return Properties.ContainsKey(key);

@@ -1,28 +1,33 @@
 ﻿using System;
 using System.Linq;
+using ToSic.Eav.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.LookUp
 {
-	/// <inheritdoc />
 	/// <summary>
 	/// Get Values from Assigned Entities
 	/// </summary>
+	[PublicApi]
 	public class LookUpInEntity : LookUpBase
     {
         protected IEntity Entity;
 	    private readonly string[] _dimensions = {""};
 
+        /// <summary>
+        /// not sure if I can drop this - or if the empty constructor is needed for DI
+        /// </summary>
+        [PrivateApi]
 	    public LookUpInEntity()
 	    {
 	        
 	    }
 
 	    /// <summary>
-	    /// Constructs a new AssignedEntity AttributePropertyAccess
+	    /// Constructs a new Entity LookUp
 	    /// </summary>
 	    /// <param name="source"></param>
-	    /// <param name="name">Name of the PropertyAccess, e.g. pipelinesettings</param>
+	    /// <param name="name">Name of the LookUp, e.g. Settings</param>
 	    public LookUpInEntity(IEntity source, string name = "entity source without name")
 		{
             Entity = source;
@@ -30,20 +35,28 @@ namespace ToSic.Eav.LookUp
 		}
 
         // todo: might need to clarify what language/culture the key is taken from in an entity
-        public string Get(string key, string format, System.Globalization.CultureInfo formatProvider, ref bool propertyNotFound)
+        /// <summary>
+        /// Special lookup command with format-provider.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="format"></param>
+        /// <param name="formatProvider"></param>
+        /// <param name="notFound"></param>
+        /// <returns></returns>
+        private string Get(string key, string format, System.Globalization.CultureInfo formatProvider, ref bool notFound)
         {
             // Return empty string if Entity is null
             if (Entity == null)
             {
-                propertyNotFound = true;
+                notFound = true;
                 return string.Empty;
             }
 
-            // bool propertyNotFound;
+            // bool notFound;
             var valueObject = Entity.GetBestValue(key, _dimensions);
-            propertyNotFound = valueObject == null; // this is used multiple times
+            notFound = valueObject == null; // this is used multiple times
 
-            if (!propertyNotFound)
+            if (!notFound)
             {
                 switch (Type.GetTypeCode(valueObject.GetType()))
                 {
@@ -52,7 +65,7 @@ namespace ToSic.Eav.LookUp
                     case TypeCode.Boolean:
                         return ((bool)valueObject).ToString(formatProvider).ToLower();
                     case TypeCode.DateTime:
-                        if (String.IsNullOrEmpty(format))
+                        if (string.IsNullOrEmpty(format))
                         {
                             // make sure datetime is converted as universal time with the correct format specifier if no format is given
                             return ((DateTime)valueObject).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ", System.Globalization.CultureInfo.InvariantCulture);
@@ -86,7 +99,7 @@ namespace ToSic.Eav.LookUp
                         return !relationshipList.Any()
                             ? string.Empty
                             : new LookUpInEntity(relationshipList.First())
-                                .Get(subTokens.Rest, format, formatProvider, ref propertyNotFound);
+                                .Get(subTokens.Rest, format, formatProvider, ref notFound);
 
                     #endregion
                 }
@@ -94,16 +107,16 @@ namespace ToSic.Eav.LookUp
             }
             #endregion
 
-            propertyNotFound = true;
+            notFound = true;
             return string.Empty;
         }
 
+        /// <inheritdoc/>
+        public override string Get(string key, string format, ref bool notFound)
+	        => Get(key, format, System.Threading.Thread.CurrentThread.CurrentCulture, ref notFound);
 
-	    public override string Get(string key, string format, ref bool propertyNotFound)
-	        => Get(key, format, System.Threading.Thread.CurrentThread.CurrentCulture, ref propertyNotFound);
-        
-
-	    public override bool Has(string key)
+        /// <inheritdoc/>
+        public override bool Has(string key)
 	    {
 	        var notFound = !Entity?.Attributes.ContainsKey(key) ?? false; // always false if no entity attached
             // if it's not a standard attribute, check for dynamically provided values like EntityId
