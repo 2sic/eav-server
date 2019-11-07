@@ -1,4 +1,5 @@
 ﻿using System;
+using ToSic.Eav.Apps.Adam;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Sxc.Adam
@@ -6,17 +7,17 @@ namespace ToSic.Sxc.Adam
     /// <summary>
     /// Old compatibility class - was previously in public use for example in Mobius Forms
     /// </summary>
-    public interface IFile
+    public interface IFile: ICmsAsset
     {
-        #region Metadata
-        bool HasMetadata { get; }
+        //#region Metadata
+        //bool HasMetadata { get; }
 
-        dynamic Metadata { get; }
-        #endregion
+        //dynamic Metadata { get; }
+        //#endregion
 
-        string Url { get; }
+        //string Url { get; }
 
-        string Type { get; }
+        //string Type { get; }
 
         [Obsolete("use Id instead")]
         int FileId { get; }
@@ -24,6 +25,7 @@ namespace ToSic.Sxc.Adam
         [Obsolete("use FullName instead")]
         string FileName { get; }
 
+        string FullName { get; }
     };
 }
 
