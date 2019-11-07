@@ -1,34 +1,3 @@
-#region Copyright
-// 
-// DotNetNuke® - http://www.dotnetnuke.com
-// Copyright (c) 2002-2013
-// by DotNetNuke Corporation
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated 
-// documentation files (the "Software"), to deal in the Software without restriction, including without limitation 
-// the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and 
-// to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all copies or substantial portions 
-// of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED 
-// TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
-// THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
-// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
-// DEALINGS IN THE SOFTWARE.
-#endregion
-#region Usings
-
-//using System.Globalization;
-
-//using System.Threading;
-
-//using DotNetNuke.Common.Utilities;
-
-#endregion
-
-//namespace DotNetNuke.Services.Tokens
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -43,7 +12,7 @@ namespace ToSic.Eav.Tokens
 	/// with the appropriate current property/custom values.
 	/// </summary>
 	/// <remarks></remarks>
-	public /* abstract */ class TokenReplace
+	public class TokenReplace
     {
         #region RegEx - the core formula
         // 2dm 2015-03-09 new, commented version not capturing non-tokens
@@ -124,7 +93,7 @@ namespace ToSic.Eav.Tokens
             if (string.IsNullOrEmpty(sourceText))
                 return string.Empty;
 
-            var Result = new StringBuilder();
+            var result = new StringBuilder();
             var charProgress = 0;
             var matches = Tokenizer.Matches(sourceText);
             if (matches.Count > 0)
@@ -133,36 +102,34 @@ namespace ToSic.Eav.Tokens
                 {
                     // Get characters before the first match
                     if (curMatch.Index > charProgress)
-                        Result.Append(sourceText.Substring(charProgress, curMatch.Index - charProgress));
+                        result.Append(sourceText.Substring(charProgress, curMatch.Index - charProgress));
                     charProgress = curMatch.Index + curMatch.Length;
 
                     // get the infos we need to retrieve the value, get it. 
                     var strObjectName = curMatch.Result("${object}");
-                    if (!String.IsNullOrEmpty(strObjectName))
+                    if (!string.IsNullOrEmpty(strObjectName))
                     {
                         var strPropertyName = curMatch.Result("${property}");
                         var strFormat = curMatch.Result("${format}");
-                        var strIfEmptyReplacment = curMatch.Result("${ifEmpty}");
+                        var strIfEmptyReplacement = curMatch.Result("${ifEmpty}");
                         var strConversion = RetrieveTokenValue(strObjectName, strPropertyName, strFormat);
 
                         var useFallback = string.IsNullOrEmpty(strConversion);
                         if (useFallback)
-                            strConversion = strIfEmptyReplacment; 
+                            strConversion = strIfEmptyReplacement; 
                         
                         if (repeat > 0 || useFallback) // note: when using fallback, always re-run tokens, even if no repeat left
                             strConversion = ReplaceTokens(strConversion, repeat - 1);
 
-                        Result.Append(strConversion);
+                        result.Append(strConversion);
                     }
                 }
 
                 // attach the rest of the text (after the last match)
-                Result.Append(sourceText.Substring(charProgress));
+                result.Append(sourceText.Substring(charProgress));
                 
                 // Ready to finish, but first, ensure repeating if desired
-                var finalResult = Result.ToString();
-                //if (!repeatFallbackOnly && repeat > 0)
-                //    finalResult = ReplaceTokens(finalResult, repeat - 1, repeatFallbackOnly);
+                var finalResult = result.ToString();
                 return finalResult;
             }
 

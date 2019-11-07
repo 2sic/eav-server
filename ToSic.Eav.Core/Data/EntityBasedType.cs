@@ -1,10 +1,15 @@
 ﻿using System;
-using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data
 {
     /// <summary>
     /// Temporary, name / etc. still WIP!
+    /// Maybe better
+    /// - EntityTyped
+    /// - TypedEntity
+    /// - SafeEntity
+    /// - SafeEntityBase
+    /// - ???
     /// </summary>
     public abstract class EntityBasedType
     {
@@ -15,14 +20,14 @@ namespace ToSic.Eav.Data
             Entity = entity;
         }
 
-        public virtual string EntityTitle
+        public virtual string Title
         {
             get => _name ?? (_name = Entity?.GetBestTitle());
             set => _name = value;
         }
         private string _name;
 
-        public int EntityId => Entity?.EntityId ?? 0;
-        public Guid EntityGuid => Entity?.EntityGuid ?? Guid.Empty;
+        public int Id => Entity?.EntityId ?? 0;
+        public Guid Guid => Entity?.EntityGuid ?? Guid.Empty;
     }
 }
