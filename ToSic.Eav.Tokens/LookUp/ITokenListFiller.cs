@@ -6,7 +6,8 @@ namespace ToSic.Eav.LookUp
 	/// <summary>
 	/// Resolves Configurations from LookUps. Common use is for configurable DataSources
 	/// </summary>
-	[PublicApi]
+	// [PublicApi]
+    // TODO: PROBABLY change to be a list-of-sources with add etc.
 	public interface ITokenListFiller
 	{
 		/// <summary>

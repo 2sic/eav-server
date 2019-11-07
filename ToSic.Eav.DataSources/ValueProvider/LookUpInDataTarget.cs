@@ -1,9 +1,8 @@
 ﻿using System.Linq;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.LookUp;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.ValueProviders
+namespace ToSic.Eav.LookUp
 {
 	/// <inheritdoc />
 	/// <summary>

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using ToSic.Eav.LookUp;
-using ToSic.Eav.ValueProviders;
 
 namespace ToSic.Eav.Apps
 {

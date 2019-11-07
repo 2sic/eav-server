@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.LookUp
 {
@@ -11,6 +12,7 @@ namespace ToSic.Eav.LookUp
 		/// <summary>
 		/// List with static properties and Test-Values
 		/// </summary>
+		[PublicApi]
 		public Dictionary<string, string> Properties { get; }
 
         /// <summary>

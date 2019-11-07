@@ -1,7 +1,5 @@
-﻿
-using ToSic.Eav.Documentation;
+﻿using ToSic.Eav.Documentation;
 using ToSic.Eav.LookUp;
-using ToSic.Eav.ValueProviders;
 
 namespace ToSic.Eav.Apps
 {

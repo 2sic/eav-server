@@ -9,7 +9,8 @@ namespace ToSic.Eav.LookUp
 	/// <summary>
 	/// Takes a list of configuration masks (list of tokens) and resolves them with a bunch of LookUps.
 	/// </summary>
-	[PublicApi]
+	// [PublicApi]
+    // TODO: AWAIT CHANGES TO INTERFACE BEFORE WE PUBLISH
 	public class TokenListFiller : ITokenListFiller
 	{
         // todo: probably change and not let the outside modify directly

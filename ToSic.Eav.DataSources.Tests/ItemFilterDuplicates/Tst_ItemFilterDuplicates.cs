@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.UnitTests.DataSources;
 
-using ToSic.Eav.ValueProviders;
+
 
 namespace ToSic.Eav.DataSources.Tests.ItemFilterDuplicates
 {

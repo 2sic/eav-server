@@ -8,6 +8,7 @@ namespace ToSic.Eav.LookUp
     /// This Value Provider chains two or more LookUps and tries one after another to deliver a result
     /// It's mainly used to override values which are given, by a special situation
     /// </summary>
+    [PublicApi]
     public class LookUpInLookUps: LookUpBase
     {
         protected List<ILookUp> Providers = new List<ILookUp>(); 

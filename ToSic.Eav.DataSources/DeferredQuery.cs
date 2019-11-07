@@ -1,9 +1,6 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Pipeline;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.LookUp;
-using ToSic.Eav.ValueProviders;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
