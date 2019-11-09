@@ -32,7 +32,7 @@ namespace ToSic.Eav.Repository.Efc.Tests.Mocks
 
         public string DefaultLanguage => "en-US";
 
-        public string TemplatesRoot(int zoneId, int appId) => BasePath + @"Destination\" + appId + @"Templates";
+        public string TemplatesRoot(int zoneId, int appId) => BasePath + @"Destination\" + appId + @"Views";
 
         public string TargetPath(string folder) => BasePath + @"Destination\" + folder;
 
