@@ -9,5 +9,7 @@ namespace ToSic.Eav.Documentation
     [AttributeUsage(AttributeTargets.All, AllowMultiple = true, Inherited = false)]
     public class PrivateApi: Attribute
     {
+        public PrivateApi() { }
+        public PrivateApi(string comment = null) { }
     }
 }
