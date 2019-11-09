@@ -32,7 +32,7 @@ namespace ToSic.Eav.Apps
             }
         }
 
-        internal DeferredQuery GetQuery(string name)
+        public DeferredQuery GetQuery(string name)
         {
             if (name.StartsWith(Global.GlobalQueryPrefix))
                 return GetGlobalQuery(name);
