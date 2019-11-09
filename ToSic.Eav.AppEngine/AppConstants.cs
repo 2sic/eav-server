@@ -4,23 +4,7 @@
     {
         public const string AppIconFile = "app-icon.png";
 
-
         #region List / Content / Presentation capabilities
-        // todo: move to 2sxc
-        public const string Content = "Content";
-        public const string ContentLower = "content";
-
-        public const string Presentation = "Presentation";
-        public const string PresentationLower = "presentation";
-
-
-        public const string ListContent = "ListContent";
-        public const string ListContentLower = "listcontent";
-
-        public const string ListPresentation = "ListPresentation";
-        public const string ListPresentationLower = "listpresentation";
-
-
 
         // Known App Content Types
         public const string TypeAppConfig = "2SexyContent-App";
