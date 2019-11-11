@@ -27,5 +27,20 @@ namespace ToSic.Eav.Data
 
          /// <inheritdoc />
         public Guid Guid => Entity?.EntityGuid ?? Guid.Empty;
+
+        /// <summary>
+        /// Get a value from the underlying entity. 
+        /// </summary>
+        /// <typeparam name="T">type, should only be string, decimal, bool</typeparam>
+        /// <param name="fieldName">field name</param>
+        /// <param name="fallback">fallback value</param>
+        /// <returns>The value. If the Entity is missing, will return the fallback result. </returns>
+        protected T Get<T>(string fieldName, T fallback)
+         {
+             if (Entity == null) return fallback;
+             var result = Entity.GetBestValue<T>(fieldName);
+             if (result == null) return fallback;
+             return result;
+         }
     }
 }
