@@ -18,9 +18,9 @@ namespace ToSic.Eav.Data
         protected EntityBasedType(IEntity entity) => Entity = entity;
 
          /// <inheritdoc />
-        public virtual string Title => _title ?? (_title = Entity?.GetBestTitle());
+        public virtual string Title => _title ?? (_title = Entity?.GetBestTitle() ?? "");
         [PrivateApi]
-        protected string _title;
+        private string _title;
 
          /// <inheritdoc />
         public int Id => Entity?.EntityId ?? 0;

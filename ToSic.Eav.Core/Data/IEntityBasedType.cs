@@ -14,22 +14,26 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// The underlying entity. 
         /// </summary>
+        /// <returns>The entity, or null if not provided</returns>
         IEntity Entity { get; }
 
         /// <summary>
         /// The title as string.
         /// </summary>
         /// <remarks>Can be overriden by other parts, if necessary.</remarks>
+        /// <returns>The title, or an empty string if not available or not string-able</returns>
         string Title { get; }
 
         /// <summary>
         /// The entity id, as quick, nice accessor.
         /// </summary>
+        /// <returns>The id, or 0 if no entity available</returns>
         int Id { get; }
 
         /// <summary>
         /// The entity guid, as quick, nice accessor. 
         /// </summary>
+        /// <returns>The guid, or an empty-guid of no entity available</returns>
         Guid Guid { get; }
     }
 }
