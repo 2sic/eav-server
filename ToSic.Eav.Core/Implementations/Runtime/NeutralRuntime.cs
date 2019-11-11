@@ -15,7 +15,5 @@ namespace ToSic.Eav.Implementations.Runtime
 
         public ILog Log { get; } = new Log("empty");
 
-
-        public void LinkLog(ILog parentLog) => Log.LinkTo(parentLog);
     }
 }

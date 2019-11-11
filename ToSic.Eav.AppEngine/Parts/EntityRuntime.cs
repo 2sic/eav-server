@@ -5,7 +5,6 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Query;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Apps.Parts
 {

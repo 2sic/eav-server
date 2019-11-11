@@ -13,10 +13,10 @@ namespace ToSic.Eav.Logging
         /// </summary>
         ILog Log { get; }
 
-        /// <summary>
-        /// Attach this log to another parent log, which should also know about events logged here.
-        /// </summary>
-        /// <param name="parentLog">The parent log</param>
-        void LinkLog(ILog parentLog);
+        ///// <summary>
+        ///// Attach this log to another parent log, which should also know about events logged here.
+        ///// </summary>
+        ///// <param name="parentLog">The parent log</param>
+        //void LinkLog(ILog parentLog);
     }
 }

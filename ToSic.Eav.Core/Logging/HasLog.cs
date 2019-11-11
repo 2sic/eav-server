@@ -53,7 +53,7 @@ namespace ToSic.Eav.Logging
             {
                 // late-init case, where the log was already created - just reconfig keeping what was in it
                 Log.Rename(name);
-                LinkLog(parentLog);
+                this.LinkLog(parentLog);
                 if (initialMessage == null) return;
                 if (className == null)
                     Log.Add(initialMessage);
@@ -62,8 +62,5 @@ namespace ToSic.Eav.Logging
             }
         }
 
-
-        /// <inheritdoc/>
-        public void LinkLog(ILog parentLog) => Log.LinkTo(parentLog);
     }
 }
