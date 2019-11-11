@@ -8,7 +8,7 @@ namespace ToSic.Eav.Logging
     /// Base class for most objects which simply want to implement log and log-chaining.
     /// </summary>
     [PublicApi]
-    public class HasLog : IHasLog
+    public abstract class HasLog : IHasLog
     {
         ///// <summary>
         ///// The unique ID of this logging item. <br/>
@@ -30,7 +30,7 @@ namespace ToSic.Eav.Logging
         /// <param name="parentLog">Parent log (if available) for log-chaining</param>
         /// <param name="initialMessage">First message to be added</param>
         /// <param name="className">Class name it's for</param>
-        public HasLog(string logName, ILog parentLog = null, string initialMessage = null, string className = null) 
+        protected HasLog(string logName, ILog parentLog = null, string initialMessage = null, string className = null) 
             => InitLogInternal(logName, parentLog, initialMessage, className);
 
         /// <summary>
