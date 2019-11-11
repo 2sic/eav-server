@@ -44,8 +44,8 @@ namespace ToSic.Eav.Apps
         {
             Log.Add($"init data drafts:{showDrafts}, vers:{versioningEnabled}, hasConf:{configurationValues != null}");
             _configurationProvider = configurationValues;
-            ShowDraftsInData = showDrafts;
-            VersioningEnabled = versioningEnabled;
+            ShowDrafts = showDrafts;
+            EnablePublishing = versioningEnabled;
         }
 
 
@@ -60,7 +60,7 @@ namespace ToSic.Eav.Apps
                                     "Please call InitData first to provide this data.");
 
             // ModulePermissionController does not work when indexing, return false for search
-            var initialSource = DataSource.GetInitialDataSource(ZoneId, AppId, ShowDraftsInData,
+            var initialSource = DataSource.GetInitialDataSource(ZoneId, AppId, ShowDrafts,
                 ConfigurationProvider as TokenListFiller, Log);
 
             // todo: probably use the full configuration provider from function params, not from initial source?
