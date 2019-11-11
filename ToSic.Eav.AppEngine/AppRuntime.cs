@@ -1,7 +1,6 @@
 ﻿using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Apps
 {

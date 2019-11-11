@@ -32,10 +32,10 @@ namespace ToSic.Eav.Apps.Parts
 
 
         #region Data & Cache
-        internal BaseCache Cache => _cache ?? (_cache = (BaseCache) Data.Cache);
+        public BaseCache Cache => _cache ?? (_cache = (BaseCache) Data.Cache);
         private BaseCache _cache;
 
-        internal IDataSource Data => _data ?? (_data = DataSource.GetInitialDataSource(ZoneId, AppId));
+        public IDataSource Data => _data ?? (_data = DataSource.GetInitialDataSource(ZoneId, AppId));
         private IDataSource _data;
 
         /// <summary>

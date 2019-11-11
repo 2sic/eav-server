@@ -10,7 +10,7 @@ namespace ToSic.Eav.Apps
     /// An App in memory - for quickly getting things done with the app data, queries etc.
     /// </summary>
     [PublicApi]
-    public interface IApp : IAppIdentity
+    public interface IApp : IAppIdentityWithPublishingState
     {
         /// <summary>
         /// App Name
@@ -56,6 +56,7 @@ namespace ToSic.Eav.Apps
 
 
         #region Experimental / new
+
 
         /// <summary>
         /// The tenant this app belongs to - for example, a DNN portal

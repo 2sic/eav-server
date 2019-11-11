@@ -18,8 +18,8 @@ namespace ToSic.Eav.Apps
 
         public string AppGuid { get; }
 
-        protected bool ShowDraftsInData { get; private set; }
-        protected bool VersioningEnabled { get; private set; }
+        public bool ShowDraftsInData { get; private set; }
+        public bool VersioningEnabled { get; private set; }
 
         protected const string IconFile = "/" + AppConstants.AppIconFile;
 

@@ -7,8 +7,8 @@ namespace ToSic.Eav.Apps.Parts
     /// </summary>
     public abstract class RuntimeBase: HasLog
     {
-        internal readonly AppRuntime App;
-        internal RuntimeBase(AppRuntime app, ILog parentLog): base("App.RunTB", parentLog)
+        protected readonly AppRuntime App;
+        protected RuntimeBase(AppRuntime app, ILog parentLog, string logName = null): base(logName ?? "App.RunTB", parentLog)
         {
             App = app;
         }
