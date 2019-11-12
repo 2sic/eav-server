@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Documentation;
+using ToSic.Eav.Interfaces;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Environment
@@ -8,7 +9,7 @@ namespace ToSic.Eav.Environment
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [PublicApi]
-    public abstract class Tenant<T> :ITenant
+    public abstract class Tenant<T> :ITenant, IHasOriginal<T>
     {
         /// <summary>
         /// The tenant settings - usually the DNN PortalSettings

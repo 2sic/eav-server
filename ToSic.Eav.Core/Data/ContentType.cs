@@ -9,7 +9,7 @@ namespace ToSic.Eav.Data
     /// <summary>
     /// Represents a Content Type
     /// </summary>
-    public class ContentType : IContentType, IUsesSharedDefinition, IHasExternalI18n
+    public class ContentType : IContentType, IContentTypeShared, IHasExternalI18n
     {
         #region simple properties
 

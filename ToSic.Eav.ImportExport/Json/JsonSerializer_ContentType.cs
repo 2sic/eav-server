@@ -21,7 +21,7 @@ namespace ToSic.Eav.ImportExport.Json
 
         public static JsonContentType ToJson(IContentType contentType, bool includeSharedTypes)
         {
-            var sharableCt = contentType as IUsesSharedDefinition;
+            var sharableCt = contentType as IContentTypeShared;
             JsonContentTypeShareable jctShare = null;
 
             var jsonSerializer = new JsonSerializer();

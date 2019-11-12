@@ -1,9 +1,12 @@
-﻿namespace ToSic.Eav.Interfaces
+﻿using ToSic.Eav.Documentation;
+
+namespace ToSic.Eav.Data
 {
 	/// <summary>
-	/// Represents a Content Type
+	/// Represents a Content Type which is available somewhere, but is defined elsewhere
 	/// </summary>
-	public interface IUsesSharedDefinition
+	[PrivateApi("not yet ready to publish, names will probably change some day")]
+	public interface IContentTypeShared
     {
         /// <summary>
         /// The parent zone

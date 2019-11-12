@@ -59,7 +59,7 @@ namespace ToSic.Eav.WebApi
 	            nameOverride = t.Name;
             var ser = new Serializer();
 
-	        var share = (IUsesSharedDefinition) t;
+	        var share = (IContentTypeShared) t;
 
 	        var jsonReady = new ContentTypeInfo
 	        {
