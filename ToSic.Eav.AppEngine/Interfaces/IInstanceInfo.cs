@@ -1,7 +1,7 @@
 ﻿namespace ToSic.Eav.Apps
 {
     // TODO
-    // probably also move to .Cms
+    // probably also move to .Blocks
     // Probably rename etc. - this is the container instance (module), not the SxcInstance
     public interface IInstanceInfo
     {
