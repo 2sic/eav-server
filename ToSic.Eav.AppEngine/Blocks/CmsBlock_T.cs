@@ -1,10 +1,10 @@
-﻿namespace ToSic.Eav.Apps.Environment
+﻿namespace ToSic.Eav.Apps.Blocks
 {
-    public abstract class EnvironmentInstance<T>: IInstanceInfo
+    public abstract class CmsBlock<T>: ICmsBlock
     {
         public T Original { get; }
 
-        protected EnvironmentInstance(T item)
+        protected CmsBlock(T item)
         {
             Original = item;
         }
