@@ -18,16 +18,16 @@ namespace ToSic.Eav.Apps.Blocks
             Original = item;
         }
 
-        /// <inheritdoc cref="ICmsBlock" />
+        /// <inheritdoc />
         public abstract int Id { get; }
 
-        /// <inheritdoc cref="ICmsBlock" />
+        /// <inheritdoc />
         public abstract int PageId { get; }
 
-        /// <inheritdoc cref="ICmsBlock" />
+        /// <inheritdoc />
         public abstract int TenantId { get; }
 
-        /// <inheritdoc cref="ICmsBlock" />
+        /// <inheritdoc />
         public abstract bool IsPrimary { get; }
     }
 }
