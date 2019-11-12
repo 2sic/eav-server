@@ -76,8 +76,8 @@ namespace ToSic.Eav.Apps.ImportExport
 
 			Messages.AddRange(GetExportImportMessagesFromImportLog(import.Storage.ImportLogToBeRefactored));
 
-			if (xmlSource.Elements(XmlConstants.Templates).Any())
-				ImportXmlTemplates(xmlSource);
+			//if (xmlSource.Elements(XmlConstants.Templates).Any())
+			//	ImportXmlTemplates(xmlSource);
 
 		    Log.Add("import xml completed");
 			return true;

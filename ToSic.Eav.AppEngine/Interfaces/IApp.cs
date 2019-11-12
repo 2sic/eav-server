@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Environment;
+using ToSic.Eav.LookUp;
 using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Apps
@@ -9,7 +11,7 @@ namespace ToSic.Eav.Apps
     /// An App in memory - for quickly getting things done with the app data, queries etc.
     /// </summary>
     [PublicApi]
-    public interface IApp : IAppIdentity
+    public interface IApp : IAppIdentityWithPublishingState
     {
         /// <summary>
         /// App Name
@@ -52,5 +54,23 @@ namespace ToSic.Eav.Apps
         /// </summary>
         /// <returns>A metadata provider for the app</returns>
         IMetadataOfItem Metadata { get; }
+
+
+        #region Experimental / new
+
+
+        /// <summary>
+        /// The tenant this app belongs to - for example, a DNN portal
+        /// </summary>
+        [PrivateApi]
+        ITenant Tenant { get; }
+
+        [PrivateApi]
+        ITokenListFiller ConfigurationProvider { get; }
+
+        [PrivateApi]
+        DeferredQuery GetQuery(string name);
+
+        #endregion
     }
 }

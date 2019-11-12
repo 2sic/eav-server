@@ -1,8 +1,11 @@
-﻿namespace ToSic.Eav.Interfaces
+﻿using ToSic.Eav.Documentation;
+
+namespace ToSic.Eav.Interfaces
 {
     /// <summary>
     /// Any object implementing this interface can provide the EAV with information about the environment it's running in.
     /// </summary>
+    [PrivateApi("this is not yet ready for publishing, as it's unclear what it actually is")]
     public interface IEnvironment
     {
         /// <summary>

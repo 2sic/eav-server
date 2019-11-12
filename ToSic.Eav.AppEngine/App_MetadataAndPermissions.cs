@@ -29,7 +29,7 @@ namespace ToSic.Eav.Apps
         #endregion
 
         #region Settings, Config, Metadata
-        protected IEntity AppMetadata;
+        protected IEntity AppConfiguration;
         protected IEntity AppSettings;
         protected IEntity AppResources;
 
@@ -43,12 +43,12 @@ namespace ToSic.Eav.Apps
             // Get the content-items describing various aspects of this app
             AppResources = Metadata.FirstOrDefault(md => md.Type.StaticName == AppConstants.TypeAppResources);
             AppSettings = Metadata.FirstOrDefault(md => md.Type.StaticName == AppConstants.TypeAppSettings);
-            AppMetadata = Metadata.FirstOrDefault(md => md.Type.StaticName == AppConstants.TypeAppConfig);
+            AppConfiguration = Metadata.FirstOrDefault(md => md.Type.StaticName == AppConstants.TypeAppConfig);
 
             // resolve some values for easier access
-            Name = AppMetadata?.GetBestValue("DisplayName")?.ToString() ?? "Error";
-            Folder = AppMetadata?.GetBestValue("Folder")?.ToString() ?? "Error";
-            if (bool.TryParse(AppMetadata?.GetBestValue("Hidden")?.ToString(), out var hidden))
+            Name = AppConfiguration?.GetBestValue("DisplayName")?.ToString() ?? "Error";
+            Folder = AppConfiguration?.GetBestValue("Folder")?.ToString() ?? "Error";
+            if (bool.TryParse(AppConfiguration?.GetBestValue("Hidden")?.ToString(), out var hidden))
                 Hidden = hidden;
         }
         #endregion

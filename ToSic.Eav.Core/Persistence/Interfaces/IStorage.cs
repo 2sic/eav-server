@@ -11,7 +11,7 @@ namespace ToSic.Eav.Persistence.Interfaces
     /// <summary>
     /// This interface should ensure that storage layers can be swapped out as is necessary
     /// </summary>
-    public interface IStorage
+    public interface IStorage: IHasLog
     {
         #region Transaction Support
 
@@ -55,11 +55,6 @@ namespace ToSic.Eav.Persistence.Interfaces
         List<LogItem> ImportLogToBeRefactored { get; }
         #endregion
 
-        #region Logging new
-
-        ILog Log { get; }
-
-        #endregion
 
         #region Relationship Import / Queue
 
@@ -70,7 +65,7 @@ namespace ToSic.Eav.Persistence.Interfaces
         #region Entities
 
         List<int> Save(List<IEntity> entities, SaveOptions saveOptions);
-        //int Save(IEntity entity, SaveOptions saveOptions);
+
         #endregion
 
 

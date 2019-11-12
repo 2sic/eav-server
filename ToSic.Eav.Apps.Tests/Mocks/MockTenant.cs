@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Apps.Tests.Mocks
+﻿using ToSic.Eav.Environment;
+
+namespace ToSic.Eav.Apps.Tests.Mocks
 {
     public class MockTenant: ITenant
     {

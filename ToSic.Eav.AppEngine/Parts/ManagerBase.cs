@@ -10,8 +10,8 @@ namespace ToSic.Eav.Apps.Parts
     {
         protected ILog Log = new Log("App.MBase");
 
-        internal readonly AppManager AppManager;
-        internal ManagerBase(AppManager app, ILog parentLog, string logRename = null)
+        protected internal readonly AppManager AppManager;
+        protected internal ManagerBase(AppManager app, ILog parentLog, string logRename = null)
         {
             AppManager = app;
             Log.LinkTo(parentLog);

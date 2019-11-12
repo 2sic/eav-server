@@ -12,9 +12,5 @@ namespace ToSic.Eav.Persistence.Efc
 
         public ILog Log { get; private set; }
 
-
-        #region IHasLog interface
-        public void LinkLog(ILog parentLog) => Log.LinkTo(parentLog);
-        #endregion
     }
 }

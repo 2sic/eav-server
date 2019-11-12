@@ -7,7 +7,7 @@ namespace ToSic.Eav.Data
     /// </remarks>
     /// <typeparam name="T"></typeparam>
     [PrivateApi]
-    public interface IPublish<T>
+    public interface IPublish<out T>
     {
         /// <summary>
         /// Gets the RepositoryId - which is the ID in the database.

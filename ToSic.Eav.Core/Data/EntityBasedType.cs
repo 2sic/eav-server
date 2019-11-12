@@ -1,28 +1,46 @@
 ﻿using System;
-using ToSic.Eav.Interfaces;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Data
 {
     /// <summary>
-    /// Temporary, name / etc. still WIP!
+    /// Foundation for a class which gets its data from an Entity. <br/>
+    /// This is used for more type safety - because some internal objects need entities for data-storage,
+    /// but when programming they should use typed objects to not accidentally access invalid properties. 
     /// </summary>
-    public abstract class EntityBasedType
+    [PublicApi]
+    public abstract class EntityBasedType : IEntityBasedType
     {
-        public readonly IEntity Entity;
+        /// <inheritdoc />
+        public IEntity Entity { get; }
 
-        protected EntityBasedType(IEntity entity)
-        {
-            Entity = entity;
-        }
+         /// <inheritdoc />
+        protected EntityBasedType(IEntity entity) => Entity = entity;
 
-        public virtual string EntityTitle
-        {
-            get => _name ?? (_name = Entity?.GetBestTitle());
-            set => _name = value;
-        }
-        private string _name;
+         /// <inheritdoc />
+        public virtual string Title => _title ?? (_title = Entity?.GetBestTitle() ?? "");
+        [PrivateApi]
+        private string _title;
 
-        public int EntityId => Entity?.EntityId ?? 0;
-        public Guid EntityGuid => Entity?.EntityGuid ?? Guid.Empty;
+         /// <inheritdoc />
+        public int Id => Entity?.EntityId ?? 0;
+
+         /// <inheritdoc />
+        public Guid Guid => Entity?.EntityGuid ?? Guid.Empty;
+
+        /// <summary>
+        /// Get a value from the underlying entity. 
+        /// </summary>
+        /// <typeparam name="T">type, should only be string, decimal, bool</typeparam>
+        /// <param name="fieldName">field name</param>
+        /// <param name="fallback">fallback value</param>
+        /// <returns>The value. If the Entity is missing, will return the fallback result. </returns>
+        protected T Get<T>(string fieldName, T fallback)
+         {
+             if (Entity == null) return fallback;
+             var result = Entity.GetBestValue<T>(fieldName);
+             if (result == null) return fallback;
+             return result;
+         }
     }
 }

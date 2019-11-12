@@ -27,12 +27,12 @@ namespace ToSic.Eav.Apps
 
                 if (ConfigurationProvider == null)
                     throw new Exception("Can't use app-queries, because the necessary configuration provider hasn't been initialized. Call InitData first.");
-                Queries = DataQuery.AllQueries(ZoneId, AppId, ConfigurationProvider, Log, ShowDraftsInData);
+                Queries = DataQuery.AllQueries(ZoneId, AppId, ConfigurationProvider, Log, ShowDrafts);
                 return Queries;
             }
         }
 
-        internal DeferredQuery GetQuery(string name)
+        public DeferredQuery GetQuery(string name)
         {
             if (name.StartsWith(Global.GlobalQueryPrefix))
                 return GetGlobalQuery(name);
@@ -49,7 +49,7 @@ namespace ToSic.Eav.Apps
         {
             var qent = Global.FindQuery(name) 
                 ?? throw new Exception($"can't find global query {name}");
-            return new DeferredQuery(ZoneId, AppId, qent, ConfigurationProvider, ShowDraftsInData);
+            return new DeferredQuery(ZoneId, AppId, qent, ConfigurationProvider, ShowDrafts);
         }
     }
 }

@@ -4,7 +4,6 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Efc.Models;
@@ -17,7 +16,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 namespace ToSic.Eav.Repository.Efc
 {
 
-    public class DbDataController : IStorage
+    public class DbDataController : HasLog, IStorage
     {
         #region Extracted, now externalized objects with actions and private fields
 
@@ -87,7 +86,7 @@ namespace ToSic.Eav.Repository.Efc
         #region shared logs in case of write commands
         public List<LogItem> ImportLogToBeRefactored { get; }=  new List<LogItem>();
 
-        public ILog Log { get; private set; }
+        //public ILog Log { get; private set; }
 
         #endregion
 
@@ -95,7 +94,7 @@ namespace ToSic.Eav.Repository.Efc
 
         public EavDbContext SqlDb { get; private set; }
 
-        private DbDataController()
+        private DbDataController(): base("Db.Data")
         {
         }
 
@@ -106,7 +105,7 @@ namespace ToSic.Eav.Repository.Efc
         #region Constructor and Init
 
         /// <summary>
-        /// Returns a new instace of the Eav Context. InitZoneApp must be called afterward.
+        /// Returns a new instance of the Eav Context. InitZoneApp must be called afterward.
         /// </summary>
         private static DbDataController Instance()
         {
@@ -114,7 +113,7 @@ namespace ToSic.Eav.Repository.Efc
             var dc = new DbDataController
             {
                 SqlDb = context,
-                Log = new Log("Db.Data")
+                //Log = new Log("Db.Data")
             };
             dc.Versioning = new DbVersioning(dc);
             dc.Entities = new DbEntity(dc);

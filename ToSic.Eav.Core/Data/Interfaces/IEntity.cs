@@ -92,9 +92,20 @@ namespace ToSic.Eav.Data
         new IMetadataOfItem Metadata { get; }
 
         #region experimental IEntity Queryable / Quick
-        [PrivateApi]
+        /// <summary>
+        /// Get all the children <see cref="IEntity"/> items - optionally only of a specific field and/or type
+        /// </summary>
+        /// <param name="field">Optional field name to access</param>
+        /// <param name="type">Optional type to filter for</param>
+        /// <returns>List of children, or empty list if not found</returns>
         new List<IEntity> Children(string field = null, string type = null);
-        [PrivateApi]
+
+        /// <summary>
+        /// Get all the parent <see cref="IEntity"/> items - optionally only of a specific type and/or referenced in a specific field
+        /// </summary>
+        /// <param name="type">The type name to filter for</param>
+        /// <param name="field">The field name where a parent references this item</param>
+        /// <returns>List of children, or empty list if not found</returns>
         new List<IEntity> Parents(string type = null, string field = null);
 
         [PrivateApi]

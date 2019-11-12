@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Interfaces;
+using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Data.Builder
 {
@@ -15,7 +15,7 @@ namespace ToSic.Eav.Data.Builder
 
         public static void SetTitleField(this Entity entity, string name) => entity.TitleFieldName = name;
 
-        public static void SetMetadata(this Entity entity, MetadataFor meta) => entity.MetadataFor = meta;
+        public static void SetMetadata(this Entity entity, IMetadataFor meta) => entity.MetadataFor = meta;
 
         public static void Retarget(this Entity entity, Guid newTarget)
             => entity.SetMetadata(new MetadataFor(entity.MetadataFor) {KeyGuid = newTarget});

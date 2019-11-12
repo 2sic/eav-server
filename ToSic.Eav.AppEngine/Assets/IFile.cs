@@ -1,5 +1,4 @@
-﻿using System;
-using ToSic.Eav.Documentation;
+﻿using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Apps.Assets
 {

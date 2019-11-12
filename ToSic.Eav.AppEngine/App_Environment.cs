@@ -1,6 +1,6 @@
 ﻿using System;
+using ToSic.Eav.Environment;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Apps
 {
@@ -8,7 +8,7 @@ namespace ToSic.Eav.Apps
     {
 
         protected IAppEnvironment Env;
-        public ITenant Tenant;
+        public ITenant Tenant { get; }
 
         public App(ITenant tenant, int zoneId, int appId, bool allowSideEffects,
             Func<App, IAppDataConfiguration> buildConfiguration,

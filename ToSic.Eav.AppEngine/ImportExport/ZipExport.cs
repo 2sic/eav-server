@@ -4,14 +4,12 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Xml.XPath;
+using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Zip;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Logging;
-
-// needed for the static Resolve<...>
 
 namespace ToSic.Eav.Apps.ImportExport
 {
@@ -129,7 +127,7 @@ namespace ToSic.Eav.Apps.ImportExport
             // Get Export XML
             var runtime = new AppRuntime(_zoneId, _appId, Log);
             var attributeSets = runtime.ContentTypes.FromScope(includeAttributeTypes: true);
-            attributeSets = attributeSets.Where(a => !((a as IUsesSharedDefinition)?.AlwaysShareConfiguration ?? false));
+            attributeSets = attributeSets.Where(a => !((a as IContentTypeShared)?.AlwaysShareConfiguration ?? false));
 
             var contentTypeNames = attributeSets.Select(p => p.StaticName).ToArray();
             var templateTypeId = SystemRuntime.MetadataType(Settings.TemplateContentType);

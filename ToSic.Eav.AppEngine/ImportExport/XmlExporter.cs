@@ -357,7 +357,5 @@ namespace ToSic.Eav.Apps.ImportExport
         {
             public override Encoding Encoding => Encoding.UTF8;
         }
-
-        public void LinkLog(ILog parentLog) => Log.LinkTo(parentLog);
     }
 }

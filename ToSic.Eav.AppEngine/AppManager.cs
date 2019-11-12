@@ -7,7 +7,6 @@ using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Types;
@@ -42,12 +41,6 @@ namespace ToSic.Eav.Apps
 
 
         internal IStorage Storage => DataController;
-
-        /// <summary>
-        /// The template management subsystem
-        /// </summary>
-        public TemplatesManager Templates => _templates ?? (_templates = new TemplatesManager(this, Log));
-        private TemplatesManager _templates;
 
         /// <summary>
         /// The entity-management subsystem

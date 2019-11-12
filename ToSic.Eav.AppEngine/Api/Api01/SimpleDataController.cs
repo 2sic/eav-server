@@ -4,9 +4,8 @@ using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.Metadata;
 using ToSic.Eav.Repository.Efc;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -63,7 +62,7 @@ namespace ToSic.Eav.Api.Api01
         /// </param>
         /// <param name="target"></param>
         /// <exception cref="ArgumentException">Content-type does not exist, or an attribute in values</exception>
-        public void Create(string contentTypeName, IEnumerable<Dictionary<string, object>> multiValues, MetadataFor target = null)
+        public void Create(string contentTypeName, IEnumerable<Dictionary<string, object>> multiValues, IMetadataFor target = null)
         {
             Log.Add($"create type:{contentTypeName}");
 
@@ -77,7 +76,7 @@ namespace ToSic.Eav.Api.Api01
             _appManager.Entities.Save(importEntity);
         }
 
-        private IEntity BuildEntity(IContentType type, Dictionary<string, object> values, MetadataFor target)
+        private IEntity BuildEntity(IContentType type, Dictionary<string, object> values, IMetadataFor target)
         {
             // ensure it's case insensitive...
             values = new Dictionary<string, object>(values, StringComparer.OrdinalIgnoreCase);
