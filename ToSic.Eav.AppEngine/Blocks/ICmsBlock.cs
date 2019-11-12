@@ -1,8 +1,11 @@
-﻿namespace ToSic.Eav.Apps.Blocks
+﻿using ToSic.Eav.Documentation;
+
+namespace ToSic.Eav.Apps.Blocks
 {
     /// <summary>
     /// A unit / block within the CMS. Contains all necessary identification to pass around. 
     /// </summary>
+    [PublicApi]
     public interface ICmsBlock
     {
         /// <summary>
