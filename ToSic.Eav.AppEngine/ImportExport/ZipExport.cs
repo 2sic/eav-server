@@ -11,8 +11,6 @@ using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Logging;
 
-// needed for the static Resolve<...>
-
 namespace ToSic.Eav.Apps.ImportExport
 {
     public class ZipExport

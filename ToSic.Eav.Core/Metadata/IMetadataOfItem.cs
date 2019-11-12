@@ -7,7 +7,7 @@ namespace ToSic.Eav.Metadata
 {
     /// <summary>
     /// A provider for metadata for something.
-    /// So if an <see cref="IEntity"/> or an <see cref="ToSic.Eav.Apps.IApp"/> has metadata, this will provide it. 
+    /// So if an <see cref="IEntity"/> or an IApp has metadata, this will provide it. 
     /// </summary>
     [PublicApi]
     public interface IMetadataOfItem: IEnumerable<IEntity>, IHasPermissions
