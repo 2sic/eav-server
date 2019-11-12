@@ -1,19 +1,20 @@
 ﻿using ToSic.Eav.Documentation;
 
-namespace ToSic.Eav.Apps.Blocks
+// ReSharper disable once CheckNamespace
+namespace ToSic.Eav.Environment
 {
     /// <summary>
     /// A base implementation of the block information wrapping the CMS specific object along with it.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [PublicApi]
-    public abstract class CmsBlock<T>: ICmsBlock<T>
+    public abstract class Container<T>: IContainer<T>
     {
         /// <inheritdoc />
         public T Original { get; }
 
 
-        protected CmsBlock(T item)
+        protected Container(T item)
         {
             Original = item;
         }

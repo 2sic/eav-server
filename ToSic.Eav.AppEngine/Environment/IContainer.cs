@@ -1,12 +1,13 @@
 ﻿using ToSic.Eav.Documentation;
 
-namespace ToSic.Eav.Apps.Blocks
+// ReSharper disable once CheckNamespace
+namespace ToSic.Eav.Environment
 {
     /// <summary>
     /// A unit / block within the CMS. Contains all necessary identification to pass around. 
     /// </summary>
     [PublicApi]
-    public interface ICmsBlock
+    public interface IContainer
     {
         /// <summary>
         /// Block ID
