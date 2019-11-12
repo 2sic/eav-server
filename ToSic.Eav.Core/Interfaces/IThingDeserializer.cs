@@ -2,7 +2,6 @@
 using ToSic.Eav.App;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
-using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Interfaces
 {

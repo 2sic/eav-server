@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Enums;
 using ToSic.Eav.Implementations.ValueConverter;
-using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data.Builder
 {
@@ -80,7 +78,7 @@ namespace ToSic.Eav.Data.Builder
             bool resolveHyperlink = false, IDeferredEntitiesList allEntitiesForRelationships = null)
         {
             // pre-convert links if necessary...
-            if (resolveHyperlink && valueType == AttributeTypeEnum.Hyperlink.ToString())
+            if (resolveHyperlink && valueType == ValueTypes.Hyperlink.ToString())
             {
                 var valueConverter = Factory.Resolve<IEavValueConverter>();
                 value = valueConverter.ToReference(valueType);//  valueConverter.Convert(ConversionScenario.ConvertFriendlyToData, valueType, (string)value);

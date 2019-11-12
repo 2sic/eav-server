@@ -20,7 +20,6 @@ namespace ToSic.Eav.Data
         public string Scope { get; protected set; }
         public int ContentTypeId { get; }
         public IList<IAttributeDefinition> Attributes { get; set; }
-        //public bool IsInstalledInPrimaryStorage { get; protected set; } = true;
         public RepositoryTypes RepositoryType { get; internal set; } = RepositoryTypes.Sql;
 
         public string RepositoryAddress { get; internal set; } = "";

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Interfaces;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Data
 {
@@ -11,37 +11,52 @@ namespace ToSic.Eav.Data
     /// <typeparam name="TType">Type of the Value</typeparam>
     public class Attribute<TType> : AttributeBase, IAttribute<TType>
     {
-        public Attribute(string name, string type/*, bool isTitle*/) : base(name, type/*, isTitle*/) { }
+        public Attribute(string name, string type) : base(name, type) { }
 
+        /// <inheritdoc/>
         public IList<IValue> Values { get; set; } = new List<IValue>();
 
+        /// <inheritdoc/>
         public TType TypedContents
         {
             get
             {
 				// Prevent Exception if Values is null
 	            if (Values == null)
-		            return default(TType);
+		            return default;
 
                 try
                 {
                     var value = (IValue<TType>)Values.FirstOrDefault();
-                    return value != null ? value.TypedContents : default(TType);
+                    return value != null ? value.TypedContents : default;
                 }
                 catch
                 {
-                    return default(TType);
+                    return default;
                 }
             }
         }
 
-        //public IValueOfDimension<TType> Typed => new TypedValue<TType>(Values, TypedContents);
+        /// <inheritdoc/>
         public IList<IValue<TType>> Typed => Values.Cast<IValue<TType>>().ToList();
 
+        /// <inheritdoc/>
+        public TType this[int languageId] => this[new[] { languageId }];
 
-        public object this[int languageId] => this[new[] { languageId }];
+        #region IAttribute Implementations
+        [PrivateApi]
+        object IAttribute.this[int[] languageIds] => this[languageIds];
 
-        public object this[int[] languageIds]
+        [PrivateApi]
+        object IAttribute.this[string languageKey] => this[languageKey];
+        [PrivateApi]
+        object IAttribute.this[string[] languageKeys] => this[languageKeys];
+        [PrivateApi]
+        object IAttribute.this[int languageId] => this[languageId];
+        #endregion
+
+        /// <inheritdoc/>
+        public TType this[int[] languageIds]
         {
             get
             {
@@ -60,13 +75,15 @@ namespace ToSic.Eav.Data
                         } // may occour for nullable types
                 }
                 // use Default
-                return TypedContents == null ? default(TType) : TypedContents;
+                return TypedContents == null ? default : TypedContents;
             }
         }
 
-        public object this[string languageKey] => this[new[] { languageKey }];
+        /// <inheritdoc/>
+        public TType this[string languageKey] => this[new[] { languageKey }];
 
-        public object this[string[] languageKeys]
+        /// <inheritdoc/>
+        public TType this[string[] languageKeys]
         {
             get
             {
@@ -82,13 +99,14 @@ namespace ToSic.Eav.Data
                         }
                         catch (InvalidCastException)
                         {
-                        } // may occour for nullable types
+                        } // may occur for nullable types
                 }
                 // use Default
                 return TypedContents == null ? default(TType) : TypedContents;
             }
         }
 
+        [PrivateApi]
         public IAttribute Copy() => new Attribute<TType>(Name, Type) { Values = Values.Select(v => v.Copy(Type)).ToList()};
     }
 }

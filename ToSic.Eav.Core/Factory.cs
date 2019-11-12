@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics;
-using System.Web;
 
 namespace ToSic.Eav
 {
@@ -11,7 +10,8 @@ namespace ToSic.Eav
 	/// </summary>
 	public class Factory
 	{
-	    private const string ServiceProviderKey = "2sxc-scoped-serviceprovider";
+        // ReSharper disable once UnusedMember.Local - needed in .net core code, so it's actually used
+        private const string ServiceProviderKey = "2sxc-scoped-serviceprovider";
 	    private static readonly IServiceCollection ServiceCollection = new ServiceCollection();
 
         public delegate void ServiceConfigurator(IServiceCollection service);

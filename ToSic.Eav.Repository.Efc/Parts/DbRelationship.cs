@@ -219,7 +219,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     // find attribute definition - will be null if the attribute cannot be found - in which case ignore
                     var attribDef = attributeDefs.SingleOrDefault(a =>
                                 string.Equals(a.StaticName, attribute.Name, StringComparison.InvariantCultureIgnoreCase));
-                    if (attribDef == null || attribDef.Type != AttributeTypeEnum.Entity.ToString()) continue;
+                    if (attribDef == null || attribDef.Type != ValueTypes.Entity.ToString()) continue;
 
                     // check if there is anything at all (type doesn't matter yet)
                     var list = attribute.Values?.FirstOrDefault()?.ObjectContents;

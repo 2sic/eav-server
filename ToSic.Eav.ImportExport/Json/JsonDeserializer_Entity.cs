@@ -96,17 +96,17 @@ namespace ToSic.Eav.ImportExport.Json
         private void BuildAttribsOfUnknownContentType(JsonAttributes jAtts, Entity newEntity)
         {
             var wrapLog = Log.Call("BuildAttribsOfUnknownContentType");
-            BuildAttrib(jAtts.DateTime, AttributeTypeEnum.DateTime, newEntity);
-            BuildAttrib(jAtts.Boolean, AttributeTypeEnum.Boolean, newEntity);
-            BuildAttrib(jAtts.Custom, AttributeTypeEnum.Custom, newEntity);
-            BuildAttrib(jAtts.Entity, AttributeTypeEnum.Entity, newEntity);
-            BuildAttrib(jAtts.Hyperlink, AttributeTypeEnum.Hyperlink, newEntity);
-            BuildAttrib(jAtts.Number, AttributeTypeEnum.Number, newEntity);
-            BuildAttrib(jAtts.String, AttributeTypeEnum.String, newEntity);
+            BuildAttrib(jAtts.DateTime, ValueTypes.DateTime, newEntity);
+            BuildAttrib(jAtts.Boolean, ValueTypes.Boolean, newEntity);
+            BuildAttrib(jAtts.Custom, ValueTypes.Custom, newEntity);
+            BuildAttrib(jAtts.Entity, ValueTypes.Entity, newEntity);
+            BuildAttrib(jAtts.Hyperlink, ValueTypes.Hyperlink, newEntity);
+            BuildAttrib(jAtts.Number, ValueTypes.Number, newEntity);
+            BuildAttrib(jAtts.String, ValueTypes.String, newEntity);
             wrapLog("ok");
         }
 
-        private void BuildAttrib<T>(Dictionary<string, Dictionary<string, T>> list, AttributeTypeEnum type, Entity newEntity)
+        private void BuildAttrib<T>(Dictionary<string, Dictionary<string, T>> list, ValueTypes type, Entity newEntity)
         {
             if (list == null) return;
 
@@ -126,34 +126,34 @@ namespace ToSic.Eav.ImportExport.Json
                 var newAtt = ((AttributeDefinition) definition).CreateAttribute();
                 switch (definition.ControlledType)
                 {
-                    case AttributeTypeEnum.Boolean:
+                    case ValueTypes.Boolean:
                         BuildValues(jAtts.Boolean, definition, newAtt);
                         break;
-                    case AttributeTypeEnum.DateTime:
+                    case ValueTypes.DateTime:
                         BuildValues(jAtts.DateTime, definition, newAtt);
                         break;
-                    case AttributeTypeEnum.Entity:
+                    case ValueTypes.Entity:
                         if (!jAtts.Entity?.ContainsKey(definition.Name) ?? true)
                             break; // just keep the empty definition, as that's fine
                         newAtt.Values = jAtts.Entity[definition.Name]
                             .Select(v => ValueBuilder.Build(definition.Type, v.Value, RecreateLanguageList(v.Key),
                                 RelLookupList)).ToList();
                         break;
-                    case AttributeTypeEnum.Hyperlink:
+                    case ValueTypes.Hyperlink:
                         BuildValues(jAtts.Hyperlink, definition,newAtt);
                         break;
-                    case AttributeTypeEnum.Number:
+                    case ValueTypes.Number:
                         BuildValues(jAtts.Number, definition, newAtt);
                         break;
-                    case AttributeTypeEnum.String:
+                    case ValueTypes.String:
                         BuildValues(jAtts.String, definition, newAtt);
                         break;
-                    case AttributeTypeEnum.Custom:
+                    case ValueTypes.Custom:
                         BuildValues(jAtts.Custom, definition, newAtt);
                         break;
                     // ReSharper disable RedundantCaseLabel
-                    case AttributeTypeEnum.Empty:
-                    case AttributeTypeEnum.Undefined:
+                    case ValueTypes.Empty:
+                    case ValueTypes.Undefined:
                         // ReSharper restore RedundantCaseLabel
                         break;
                     default:

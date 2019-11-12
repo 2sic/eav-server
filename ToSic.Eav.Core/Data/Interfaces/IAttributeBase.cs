@@ -1,11 +1,10 @@
 ﻿using ToSic.Eav.Documentation;
-using ToSic.Eav.Enums;
 
 namespace ToSic.Eav.Data
 {
 	/// <summary>
-	/// Represents an Attribute. This is the base for both
-	/// - attribute definition (in the IContentType)
+	/// Represents properties we should know about Attributes. This is the base for both
+	/// - <see cref="IAttributeDefinition"/> (in the IContentType)
 	/// - attribute with values-list (in the IEntity)
 	/// </summary>
 	[PublicApi]
@@ -24,7 +23,7 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// The official type, as a controlled value
         /// </summary>
-        AttributeTypeEnum ControlledType { get; }
+        ValueTypes ControlledType { get; }
 
     }
 }

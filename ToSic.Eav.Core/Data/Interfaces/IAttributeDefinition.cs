@@ -7,9 +7,7 @@ namespace ToSic.Eav.Data
 {
     /// <inheritdoc cref="IAttributeBase" />
     /// <summary>
-    /// Represents an Attribute. This is the base for both
-    /// - attribute definition (in the IContentType)
-    /// - attribute with values-list (in the IEntity)
+    /// Represents an Attribute definition in a ContentType. This is the base for attributes in <see cref="IContentType"/>
     /// </summary>
     [PublicApi]
     public interface IAttributeDefinition: IAttributeBase, IHasPermissions
@@ -34,6 +32,9 @@ namespace ToSic.Eav.Data
         /// </summary>
         bool IsTitle { get; }
 
+        /// <summary>
+        /// Additional information, specs etc. about this attribute
+        /// </summary>
         IMetadataOfItem Metadata { get; }
 
         [PrivateApi]

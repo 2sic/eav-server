@@ -35,7 +35,7 @@ namespace ToSic.Eav.WebApi.SaveHelpers
                 var attributeType = attDef.Type;
 
                 // don't save anything of the type empty - this is headings-items-only
-                if (attributeType == AttributeTypeEnum.Empty.ToString())
+                if (attributeType == ValueTypes.Empty.ToString())
                     continue;
 
                 foreach (var value in attribute.Value.Values)
@@ -43,7 +43,7 @@ namespace ToSic.Eav.WebApi.SaveHelpers
                     var objValue = value.Value;
 
                     // special situation: if it's an array of Guids, mixed with NULLs, then it's not correctly auto-de-serialized
-                    if (attributeType == AttributeTypeEnum.Entity.ToString() && objValue is Newtonsoft.Json.Linq.JArray)
+                    if (attributeType == ValueTypes.Entity.ToString() && objValue is Newtonsoft.Json.Linq.JArray)
                         objValue = JsonConvert.DeserializeObject<Guid?[]>(objValue.ToString());// manually de-serialize
 
                     var importValue = attribs.AddValue(attribute.Key, objValue, attributeType,

@@ -18,7 +18,7 @@ namespace ToSic.Eav.Interfaces
         /// <returns>A single IEntity or throws InvalidOperationException</returns>
         /// <summary>Get Data to populate ICache</summary>
         /// <param name="appId">AppId (can be different than the appId on current context (e.g. if something is needed from the default appId, like MetaData)</param>
-        /// <param name="entityIds">null or a List of EntitiIds</param>
+        /// <param name="entityIds">null or a List of EntityIds</param>
         /// <param name="parentLog">parent logger</param>
         /// <returns>An object with everything which an app has, usually for caching</returns>
         AppDataPackage AppPackage(int appId, int[] entityIds = null, ILog parentLog = null);

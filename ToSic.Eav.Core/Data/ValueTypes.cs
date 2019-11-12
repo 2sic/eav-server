@@ -1,9 +1,12 @@
-﻿namespace ToSic.Eav.Enums
+﻿using ToSic.Eav.Documentation;
+
+namespace ToSic.Eav.Data
 {
 	/// <summary>
 	/// Attribute Type Enum
 	/// </summary>
-	public enum AttributeTypeEnum
+	[PublicApi]
+	public enum ValueTypes
 	{
         /// <summary> Used for unknown cases, where you would otherwise use null </summary>
         Undefined,  // note: must be first! this is important, otherwise certain code will break as the first value is the "default" / null-value

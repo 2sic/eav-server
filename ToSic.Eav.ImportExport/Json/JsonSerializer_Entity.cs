@@ -52,29 +52,29 @@ namespace ToSic.Eav.ImportExport.Json
                 var gList = g.ToList();
                 switch (g.Key)
                 {
-                    case AttributeTypeEnum.String:
+                    case ValueTypes.String:
                         attribs.String = ToTypedDictionary<string>(gList, log);
                         break;
-                    case AttributeTypeEnum.Hyperlink:
+                    case ValueTypes.Hyperlink:
                         attribs.Hyperlink = ToTypedDictionary<string>(gList, log);
                         break;
-                    case AttributeTypeEnum.Custom:
+                    case ValueTypes.Custom:
                         attribs.Custom = ToTypedDictionary<string>(gList, log);
                         break;
-                    case AttributeTypeEnum.Number:
+                    case ValueTypes.Number:
                         attribs.Number = ToTypedDictionary<decimal?>(gList, log);
                         break;
-                    case AttributeTypeEnum.DateTime:
+                    case ValueTypes.DateTime:
                         attribs.DateTime = ToTypedDictionary<DateTime?>(gList, log);
                         break;
-                    case AttributeTypeEnum.Boolean:
+                    case ValueTypes.Boolean:
                         attribs.Boolean = ToTypedDictionary<bool?>(gList, log);
                         break;
-                    case AttributeTypeEnum.Entity:
+                    case ValueTypes.Entity:
                         attribs.Entity = ToTypedDictionaryEntity(gList, log);
                         break;
-                    case AttributeTypeEnum.Empty:
-                    case AttributeTypeEnum.Undefined:
+                    case ValueTypes.Empty:
+                    case ValueTypes.Undefined:
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();

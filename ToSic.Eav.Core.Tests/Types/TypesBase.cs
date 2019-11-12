@@ -8,12 +8,12 @@ namespace ToSic.Eav.Core.Tests.Types
 {
     public abstract class TypesBase: ContentType
     {
-        protected const AttributeTypeEnum Str = AttributeTypeEnum.String;
-        protected const AttributeTypeEnum Bln = AttributeTypeEnum.Boolean;
-        protected const AttributeTypeEnum Num = AttributeTypeEnum.Number;
-        protected const AttributeTypeEnum Dtm = AttributeTypeEnum.DateTime;
-        protected const AttributeTypeEnum Grp = AttributeTypeEnum.Empty;
-        protected const AttributeTypeEnum Ent = AttributeTypeEnum.Entity;
+        protected const ValueTypes Str = ValueTypes.String;
+        protected const ValueTypes Bln = ValueTypes.Boolean;
+        protected const ValueTypes Num = ValueTypes.Number;
+        protected const ValueTypes Dtm = ValueTypes.DateTime;
+        protected const ValueTypes Grp = ValueTypes.Empty;
+        protected const ValueTypes Ent = ValueTypes.Entity;
 
         protected const string DefInp = "default";
         public const string UndefinedScope = "Undefined";
@@ -35,7 +35,7 @@ namespace ToSic.Eav.Core.Tests.Types
             return attDef;
         }
 
-        protected AttributeDefinition AttDef(AttributeTypeEnum type, string input, string name, string niceName = null, string description = null, string defaultValue = null)
+        protected AttributeDefinition AttDef(ValueTypes type, string input, string name, string niceName = null, string description = null, string defaultValue = null)
         {
             var correctedInput = type.ToString().ToLowerInvariant() + "-" + input;
             var attDef = new AttributeDefinition(AppId, name, niceName, type.ToString(), correctedInput, description, true, defaultValue);

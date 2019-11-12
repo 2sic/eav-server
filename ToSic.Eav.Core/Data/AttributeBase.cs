@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
 using ToSic.Eav.Data.Builder;
-using ToSic.Eav.Enums;
-using ToSic.Eav.Interfaces;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Data
 {
@@ -12,26 +11,25 @@ namespace ToSic.Eav.Data
     /// </summary>
     public class AttributeBase : IAttributeBase
     {
-        //public int TempAppId { get; }
         public string Name { get; set; }
         public string Type { get; set; }
 
-        private AttributeTypeEnum _controlledType = AttributeTypeEnum.Undefined;
+        private ValueTypes _controlledType = ValueTypes.Undefined;
 
-        public AttributeTypeEnum ControlledType
+        public ValueTypes ControlledType
         {
-            get => _controlledType != AttributeTypeEnum.Undefined 
+            get => _controlledType != ValueTypes.Undefined 
                 ? _controlledType
                 : _controlledType = ParseToAttributeTypeEnum(Type);
             internal set => _controlledType = value;
         }
 
-        private static AttributeTypeEnum ParseToAttributeTypeEnum(string typeName)
+        private static ValueTypes ParseToAttributeTypeEnum(string typeName)
         {
             // if the type has not been set yet, try to look it up...
-            if (typeName != null && Enum.IsDefined(typeof(AttributeTypeEnum), typeName))
-                return (AttributeTypeEnum) Enum.Parse(typeof(AttributeTypeEnum), typeName);
-            return AttributeTypeEnum.Undefined;
+            if (typeName != null && Enum.IsDefined(typeof(ValueTypes), typeName))
+                return (ValueTypes) Enum.Parse(typeof(ValueTypes), typeName);
+            return ValueTypes.Undefined;
         }
 
         /// <summary>
@@ -39,6 +37,7 @@ namespace ToSic.Eav.Data
         /// </summary>
         /// <param name="name"></param>
         /// <param name="type"></param>
+        [PrivateApi]
         public AttributeBase(string name, string type)
         {
             Name = name;
@@ -49,26 +48,27 @@ namespace ToSic.Eav.Data
         /// Get Attribute for specified Typ
         /// </summary>
         /// <returns><see cref="Attribute{ValueType}"/></returns>
-        public static IAttribute CreateTypedAttribute(string name, AttributeTypeEnum type, List<IValue> values = null)
+        [PrivateApi("probably move to some attribute-builder or something")]
+        public static IAttribute CreateTypedAttribute(string name, ValueTypes type, List<IValue> values = null)
         {
             var typeName = type.ToString();
             var result = ((Func<IAttribute>)(() => { 
             switch (type)
             {
-                case AttributeTypeEnum.Boolean:
+                case ValueTypes.Boolean:
                     return new Attribute<bool?>(name, typeName);
-                case AttributeTypeEnum.DateTime:
+                case ValueTypes.DateTime:
                     return new Attribute<DateTime?>(name, typeName);
-                case AttributeTypeEnum.Number:
+                case ValueTypes.Number:
                     return new Attribute<decimal?>(name, typeName);
-                case AttributeTypeEnum.Entity:
+                case ValueTypes.Entity:
                     return new Attribute<EntityRelationship>(name, typeName) { Values = new List<IValue> { ValueBuilder.NullRelationship } };
                 // ReSharper disable RedundantCaseLabel
-                case AttributeTypeEnum.String:
-                case AttributeTypeEnum.Hyperlink:
-                case AttributeTypeEnum.Custom:
-                case AttributeTypeEnum.Undefined:
-                case AttributeTypeEnum.Empty:
+                case ValueTypes.String:
+                case ValueTypes.Hyperlink:
+                case ValueTypes.Custom:
+                case ValueTypes.Undefined:
+                case ValueTypes.Empty:
                 // ReSharper restore RedundantCaseLabel
                 default:
                     return new Attribute<string>(name, typeName);
@@ -80,11 +80,9 @@ namespace ToSic.Eav.Data
             return result;
         }
 
+        [PrivateApi]
         public static IAttribute CreateTypedAttribute(string name, string type, List<IValue> values = null) 
             => CreateTypedAttribute(name, ParseToAttributeTypeEnum(type), values);
-
-
-        
 
     }
 }

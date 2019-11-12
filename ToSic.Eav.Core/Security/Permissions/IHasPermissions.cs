@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Interfaces;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Security.Permissions

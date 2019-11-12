@@ -43,7 +43,7 @@ namespace ToSic.Eav.Apps.Parts
 
             newQuery.Attributes[Constants.QueryStreamWiringAttributeName].Values = new List<IValue>
             {
-                ValueBuilder.Build(AttributeTypeEnum.String, newWiring, new List<ILanguage>())
+                ValueBuilder.Build(ValueTypes.String, newWiring, new List<ILanguage>())
             };
 
             var saveList = newParts.Select(p => p.Value).Concat(newMetadata).Cast<IEntity>().ToList();

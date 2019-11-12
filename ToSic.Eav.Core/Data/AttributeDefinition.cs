@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using ToSic.Eav.Data.Builder;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Data
@@ -9,7 +8,7 @@ namespace ToSic.Eav.Data
     /// <summary>
     /// Represents an Attribute with Values of a Generic Type
     /// </summary>
-    public partial class AttributeDefinition : AttributeBase, IAttributeDefinition
+    public class AttributeDefinition : AttributeBase, IAttributeDefinition
     {
         public int AppId { get; }
         // additional info for the persistence layer

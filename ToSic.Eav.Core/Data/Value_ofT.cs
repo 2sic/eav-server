@@ -2,19 +2,21 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data.Builder;
-using ToSic.Eav.Interfaces;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Data
 {
-    /// <inheritdoc cref="IValue{T}" />
     /// <summary>
-    /// Represents a Value
+    /// Represents a typed Value object in the memory model
     /// </summary>
     /// <typeparam name="T">Type of the actual Value</typeparam>
+    [PublicApi]
     public class Value<T> : Value, IValue<T>
     {
+        /// <inheritdoc />
         public T TypedContents { get; internal set; }
 
+        /// <inheritdoc />
         public object SerializableObject
         {
             get
@@ -33,6 +35,7 @@ namespace ToSic.Eav.Data
             }
         }
 
+        [PrivateApi("used only for xml-serialization, does very specific date-to-string conversions")]
         public string Serialized
         {
             get
@@ -48,14 +51,19 @@ namespace ToSic.Eav.Data
             }
         }
 
+        /// <summary>
+        /// The default constructor to create a value object. Used internally to build the memory model. 
+        /// </summary>
+        /// <param name="typedContents"></param>
         public Value(T typedContents)
         {
             TypedContents = typedContents;
         }
 
+        [PrivateApi]
         public object ObjectContents => TypedContents;
 
-
+        [PrivateApi]
         public IValue Copy(string type) => ValueBuilder.Build(type, ObjectContents,
             Languages.Select(l => new Dimension {DimensionId = l.DimensionId, Key = l.Key} as ILanguage).ToList(), null);
     }

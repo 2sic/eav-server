@@ -1,13 +1,16 @@
-﻿namespace ToSic.Eav.Data
+﻿using ToSic.Eav.Documentation;
+
+namespace ToSic.Eav.Data
 {
 	/// <summary>
-	/// Represents a Value
+	/// Represents a Value with a specific type (string, decimal, etc.).
 	/// </summary>
 	/// <typeparam name="T">Type of the actual Value</typeparam>
-	public interface IValue<T> : IValue
+	[PublicApi]
+	public interface IValue<out T> : IValue
 	{
 		/// <summary>
-		/// Typed contents
+		/// Typed contents of the value as stored
 		/// </summary>
 		T TypedContents { get; }
 	}
