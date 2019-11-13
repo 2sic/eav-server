@@ -113,7 +113,7 @@ namespace ToSic.Eav.ImportExport.Xml
         /// </summary>
         /// <param name="xEntity">xEntity to parse</param>
         /// <param name="metadataForFor"></param>
-        public Entity BuildEntityFromXml(XElement xEntity, Metadata.MetadataFor metadataForFor)
+        public Entity BuildEntityFromXml(XElement xEntity, Metadata.Target metadataForFor)
         {
             var wrap = Log.Call("BuildEntityFromXml");
 		    var finalAttributes = new Dictionary<string, IAttribute>();

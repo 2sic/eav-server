@@ -7,7 +7,7 @@ namespace ToSic.Eav.Metadata
     /// This interface allows objects to lookup metadata-target id / name of the system. 
     /// </summary>
     [PublicApi]
-    public interface ITargets
+    public interface ITargetTypes
     {
         /// <summary>
         /// Look up the target Id of a metadata target. These are registered somewhere (DB, file-system, etc.)

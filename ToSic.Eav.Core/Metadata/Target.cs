@@ -4,16 +4,14 @@ using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Metadata
 {
-    /// <summary>
-    /// This describes the relationship of an item (usually an <see cref="IEntity"/>) which describes something else. <br/>
-    /// Basically it contains all the references necessary to identify what it belongs to.
-    /// </summary>
+    /// <inheritdoc />
     [PublicApi]
-    public class MetadataFor : IMetadataFor
+    public class Target : ITarget
     {
         /// <summary>
         /// Will return true if a target-type was assigned
         /// </summary>
+        [Newtonsoft.Json.JsonIgnore]
         public bool IsMetadata => TargetType != Constants.NotMetadata;
 
         /// <summary>
@@ -40,13 +38,13 @@ namespace ToSic.Eav.Metadata
         /// Constructor for a new MetadataFor, which is empty.
         /// So it's not for anything, or the specs will be added afterwards.
         /// </summary>
-        public MetadataFor() { }
+        public Target() { }
 
         /// <summary>
         /// Constructor to copy an existing MetadataFor object. 
         /// </summary>
         /// <param name="originalToCopy"></param>
-        public MetadataFor(IMetadataFor originalToCopy)
+        public Target(ITarget originalToCopy)
         {
             TargetType = originalToCopy.TargetType;
             KeyString = originalToCopy.KeyString;

@@ -1,13 +1,15 @@
 ﻿using System;
+using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Metadata
 {
-	/// <summary>
-	/// Enhances an Entity to say if it's used as metadata to describe something else.
-	/// </summary>
-	[PublicApi]
-	public interface IMetadataFor
+    /// <summary>
+    /// Reference to target. Usually used on <see cref="IEntity"/> to define what thing it provides additional metadata for.
+    /// Basically it contains all the references necessary to identify what it belongs to.
+    /// </summary>
+    [PublicApi]
+	public interface ITarget
 	{
         /// <summary>
         /// Determines if the current thing is used as Metadata.
@@ -20,7 +22,7 @@ namespace ToSic.Eav.Metadata
         /// If this is metadata, then the target could be anything.
         /// This is an ID telling what kind of thing we're enhancing. 
         /// </summary>
-        /// <returns>An ID from the system which registers all the types of things that can be described. See also <see cref="ITargets"/>.</returns>
+        /// <returns>An ID from the system which registers all the types of things that can be described. See also <see cref="ITargetTypes"/>.</returns>
         int TargetType { get; }
 
         /// <summary>

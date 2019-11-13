@@ -19,7 +19,7 @@ namespace ToSic.Eav.Apps
         /// <param name="values">a dictionary of values to be stored</param>
         /// <param name="userName">the current user name - will be logged as the author</param>
         /// <param name="target">information if this new item is to be metadata for something</param>
-        void Create(string contentTypeName, Dictionary<string, object> values, string userName = null, IMetadataFor target = null);
+        void Create(string contentTypeName, Dictionary<string, object> values, string userName = null, ITarget target = null);
 
         /// <summary>
         /// Create a bunch of new entities in one single call (much faster, because cache doesn't need to repopulate in the mean time).

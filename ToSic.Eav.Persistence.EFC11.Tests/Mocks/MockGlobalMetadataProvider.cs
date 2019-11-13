@@ -4,7 +4,7 @@ using ToSic.Eav.Persistence.Efc;
 
 namespace ToSic.Eav.ImportExport.Tests.Mocks
 {
-    public class MockGlobalMetadataProvider : EfcMetadataTargets
+    public class MockGlobalMetadataProvider : EfcMetadataTargetTypes
     {        
         protected override ImmutableDictionary<int, string> GetTargetTypes()
         {

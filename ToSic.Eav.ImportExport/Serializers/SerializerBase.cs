@@ -90,8 +90,8 @@ namespace ToSic.Eav.ImportExport.Serializers
 
         protected string GetMetadataName(int id) => MetadataProvider.GetName(id);
 
-        public ITargets MetadataProvider =>
-            _mdProvider ?? (_mdProvider = Factory.Resolve<ITargets>());
-        private ITargets _mdProvider;
+        public ITargetTypes MetadataProvider =>
+            _mdProvider ?? (_mdProvider = Factory.Resolve<ITargetTypes>());
+        private ITargetTypes _mdProvider;
     }
 }

@@ -167,18 +167,18 @@ namespace ToSic.Eav.Apps.Parts
             return ids;
         }
 
-        public Tuple<int, Guid> Create(string typeName, Dictionary<string, object> values, IMetadataFor metadataFor = null)
+        public Tuple<int, Guid> Create(string typeName, Dictionary<string, object> values, ITarget metadataFor = null)
         {
             var wrapLog = Log.Call("Create", $"type:{typeName}, val-count:{values.Count}, meta:{metadataFor}");
             var newEnt = new Entity(AppManager.AppId, Guid.NewGuid(), AppManager.Read.ContentTypes.Get(typeName), values);
-            if (metadataFor != null) newEnt.SetMetadata(metadataFor as Metadata.MetadataFor);
+            if (metadataFor != null) newEnt.SetMetadata(metadataFor as Metadata.Target);
             var eid = Save(newEnt);
             var guid = AppManager.DataController.Entities.TempLastSaveGuid;
             wrapLog($"id:{eid}, guid:{guid}");
             return new Tuple<int, Guid>(eid, guid);
         }
 
-        public void SaveMetadata(Metadata.MetadataFor target, string typeName, Dictionary<string, object> values)
+        public void SaveMetadata(Metadata.Target target, string typeName, Dictionary<string, object> values)
         {
             var wrapLog = Log.Call("SaveMetadata", "target:" + target.KeyNumber + "/" + target.KeyGuid + ", values count:" + values.Count);
 

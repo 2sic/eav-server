@@ -25,7 +25,7 @@ namespace ToSic.Eav.Apps.DataSources
         public void Create(string contentTypeName,
             Dictionary<string, object> values, 
             string userName = null,
-            IMetadataFor target = null)
+            ITarget target = null)
         {
             Log.Add($"app create new entity of type:{contentTypeName}");
             DataController().Create(contentTypeName, new List<Dictionary<string, object>> { values}, target); 

@@ -5,7 +5,7 @@ using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Persistence.Efc
 {
-    public class EfcMetadataTargets : ITargets
+    public class EfcMetadataTargetTypes : ITargetTypes
     {
 
         public int GetId(string typeName) => TargetTypes.First(mt => mt.Value == typeName).Key;

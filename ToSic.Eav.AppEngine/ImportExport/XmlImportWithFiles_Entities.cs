@@ -103,7 +103,7 @@ namespace ToSic.Eav.Apps.ImportExport
 			    }
 			}
 
-            var metadata = new Metadata.MetadataFor
+            var metadata = new Metadata.Target
             {
                 TargetType = assignmentObjectTypeId,
                 KeyNumber = keyNumber,

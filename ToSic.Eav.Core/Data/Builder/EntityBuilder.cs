@@ -17,7 +17,7 @@ namespace ToSic.Eav.Data.Builder
         /// Create a new Entity from a data store (usually SQL backend)
         /// </summary>
         public static Entity EntityFromRepository(int appId, Guid entityGuid, int entityId, 
-            int repositoryId, IMetadataFor metadataFor, IContentType type, 
+            int repositoryId, ITarget metadataFor, IContentType type, 
             bool isPublished, 
             AppDataPackage source,
             DateTime modified, string owner, int version)
@@ -41,7 +41,7 @@ namespace ToSic.Eav.Data.Builder
             var ent = EntityWithAllIdsAndType(appId, entityGuid, entityId, repositoryId, 
                 type, isPublished, modified ?? DateTime.Now, owner, version);
 
-            ent.MetadataFor = new MetadataFor();
+            ent.MetadataFor = new Metadata.Target();
 
             var titleAttrib = ent.GenerateAttributesOfContentType(type);
             if (titleAttrib != null)
@@ -80,7 +80,7 @@ namespace ToSic.Eav.Data.Builder
             var lookupApp = (entity as Entity)?.DeferredLookupData as AppDataPackage;
             e.Relationships = new RelationshipManager(e, lookupApp, allRelationships);
 
-            e.MetadataFor = new Metadata.MetadataFor(entity.MetadataFor);
+            e.MetadataFor = new Metadata.Target(entity.MetadataFor);
 
             e.DeferredLookupData = lookupApp;
             return e;

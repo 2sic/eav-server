@@ -18,7 +18,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
         public static void ConfigureEfcDi(Factory.ServiceConfigurator configure, string optionalConnection = null)
         {
             Testing.Shared.InitializeTests.ConfigureEfcDi(sc => {
-                sc.AddTransient<ITargets, MockGlobalMetadataProvider>();
+                sc.AddTransient<ITargetTypes, MockGlobalMetadataProvider>();
                 configure.Invoke(sc);
             }, optionalConnection);
         }

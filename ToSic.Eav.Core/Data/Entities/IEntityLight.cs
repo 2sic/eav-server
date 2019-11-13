@@ -30,8 +30,8 @@ namespace ToSic.Eav.Data
         /// Information which is relevant if this current entity is actually mapped to something else.
         /// If it is mapped, then it's describing another thing, which is identified in this MetadataFor.
         /// </summary>
-        /// <returns>A <see cref="IMetadataFor"/> object describing the target.</returns>
-        IMetadataFor MetadataFor { get; }
+        /// <returns>A <see cref="ITarget"/> object describing the target.</returns>
+        ITarget MetadataFor { get; }
 
 		/// <summary>
 		/// Gets the ContentType of this Entity

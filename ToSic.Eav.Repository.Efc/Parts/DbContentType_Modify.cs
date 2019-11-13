@@ -145,7 +145,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                              ?? metadata;
             foreach (var entity in sourceList)
             {
-                var md = (Metadata.MetadataFor)entity.MetadataFor;
+                var md = (Metadata.Target)entity.MetadataFor;
                 // Validate Entity
                 md.TargetType = Constants.MetadataForAttribute;
 

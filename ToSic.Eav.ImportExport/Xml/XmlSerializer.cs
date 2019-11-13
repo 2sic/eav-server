@@ -35,7 +35,7 @@ namespace ToSic.Eav.Persistence.Xml
 
             // create Entity-XElement
             var entityXElement = new XElement(XmlConstants.Entity,
-                new XAttribute(XmlConstants.KeyTargetType, Factory.Resolve<ITargets>().GetName(entity.MetadataFor.TargetType)),
+                new XAttribute(XmlConstants.KeyTargetType, Factory.Resolve<ITargetTypes>().GetName(entity.MetadataFor.TargetType)),
                 new XAttribute(XmlConstants.AttSetStatic, entity.Type.StaticName),
                 new XAttribute(XmlConstants.AttSetNiceName, entity.Type.Name),
                 new XAttribute(XmlConstants.GuidNode, entity.EntityGuid),

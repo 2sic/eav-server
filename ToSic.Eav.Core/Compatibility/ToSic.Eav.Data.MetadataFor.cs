@@ -4,7 +4,7 @@
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Data
 {
-    public class MetadataFor: Metadata.MetadataFor
+    public class MetadataFor: Metadata.Target
     {
     }
 }
