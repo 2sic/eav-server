@@ -92,7 +92,7 @@ namespace ToSic.Eav.Data.Builder
             IAttribute titleAttrib = null;
             foreach (var definition in contentType.Attributes)
             {
-                var entityAttribute = ((AttributeDefinition)definition).CreateAttribute();
+                var entityAttribute = ((ContentTypeAttribute)definition).CreateAttribute();
                 newEntity.Attributes.Add(entityAttribute.Name, entityAttribute);
                 if (definition.IsTitle)
                     titleAttrib = entityAttribute;

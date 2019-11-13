@@ -73,7 +73,7 @@ namespace ToSic.Eav.Persistence.Efc
                         set.Description,
                         Attributes = set.ToSicEavAttributesInSets
                             .Where(a => a.Attribute.ChangeLogDeleted == null) // only not-deleted attributes!
-                            .Select(a => new AttributeDefinition(appId, a.Attribute.StaticName, a.Attribute.Type, a.IsTitle, a.AttributeId, a.SortOrder, source)),
+                            .Select(a => new ContentTypeAttribute(appId, a.Attribute.StaticName, a.Attribute.Type, a.IsTitle, a.AttributeId, a.SortOrder, source)),
                         IsGhost = set.UsesConfigurationOfAttributeSet,
                         SharedDefinitionId = set.UsesConfigurationOfAttributeSet,
                         AppId = set.UsesConfigurationOfAttributeSetNavigation?.AppId ?? set.AppId,
@@ -91,7 +91,7 @@ namespace ToSic.Eav.Persistence.Efc
                 .ThenInclude(a => a.Attribute)
                 .Where(s => shareids.Contains(s.AttributeSetId))
                 .ToDictionary(s => s.AttributeSetId, s => s.ToSicEavAttributesInSets.Select(a
-                    => new AttributeDefinition(appId, a.Attribute.StaticName, a.Attribute.Type, a.IsTitle,
+                    => new ContentTypeAttribute(appId, a.Attribute.StaticName, a.Attribute.Type, a.IsTitle,
                         a.AttributeId, a.SortOrder, parentApp: s.AppId)));
             sqlTime.Stop();
 
@@ -103,7 +103,7 @@ namespace ToSic.Eav.Persistence.Efc
                             ? sharedAttribs[set.SharedDefinitionId.Value]
                             : set.Attributes)
                         // ReSharper disable once RedundantEnumerableCastCall
-                        .Cast<IAttributeDefinition>()
+                        .Cast<IContentTypeAttribute>()
                         .ToList()
                 }
             );

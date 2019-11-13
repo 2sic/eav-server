@@ -123,7 +123,7 @@ namespace ToSic.Eav.ImportExport.Json
             var wrapLog = Log.Call("BuildAttribsOfKnownType");
             foreach (var definition in contentType.Attributes)
             {
-                var newAtt = ((AttributeDefinition) definition).CreateAttribute();
+                var newAtt = ((ContentTypeAttribute) definition).CreateAttribute();
                 switch (definition.ControlledType)
                 {
                     case ValueTypes.Boolean:
@@ -168,7 +168,7 @@ namespace ToSic.Eav.ImportExport.Json
             wrapLog("ok");
         }
 
-        private void BuildValues<T>(Dictionary<string, Dictionary<string, T>> list, IAttributeDefinition attrDef, IAttribute target)
+        private void BuildValues<T>(Dictionary<string, Dictionary<string, T>> list, IContentTypeAttribute attrDef, IAttribute target)
         {
             if (!list?.ContainsKey(attrDef.Name) ?? true) return;
             target.Values = list[attrDef.Name]

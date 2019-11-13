@@ -23,7 +23,7 @@ namespace ToSic.Eav.Apps.Parts
         /// Append a new Attribute to an AttributeSet
         /// Simple overload returning int so it can be used from outside
         /// </summary>
-        public int CreateAttributeAndInitializeAndSave(int attributeSetId, AttributeDefinition attDef, string inputType)
+        public int CreateAttributeAndInitializeAndSave(int attributeSetId, ContentTypeAttribute attDef, string inputType)
         {
             Log.Add($"create attrib+init+save type:{attributeSetId}, input:{inputType}");
             var newAttribute = AppManager.DataController.AttributesDefinition.AddAttributeAndSave(attributeSetId, attDef);

@@ -2,7 +2,6 @@
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.VisualQuery;
-using ToSic.Eav.Interfaces;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.System
@@ -102,7 +101,7 @@ namespace ToSic.Eav.DataSources.System
 	        {AttributeType.SortOrder.ToString(), 0}
 	    };
 
-	    private static Dictionary<string, object> BuildDictionary(IAttributeDefinition at) => new Dictionary<string, object>
+	    private static Dictionary<string, object> BuildDictionary(IContentTypeAttribute at) => new Dictionary<string, object>
 	    {
 	        {AttributeType.Name.ToString(), at.Name},
 	        {AttributeType.Type.ToString(), at.Type},

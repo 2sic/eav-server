@@ -29,7 +29,7 @@ namespace ToSic.Eav.ImportExport.Json
             {
                 Name = a.Name,
                 Type = a.Type,
-                InputType = a.InputTypeTempBetterForNewUi,
+                InputType = a.InputType(),
                 IsTitle = a.IsTitle,
                 Metadata = a.Metadata
                     ?.Select(dt => jsonSerializer.ToJson(dt)) /* important: must write the method with params, otherwise default param metadata = 1 instead of 0*/

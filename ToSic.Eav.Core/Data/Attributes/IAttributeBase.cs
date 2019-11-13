@@ -4,7 +4,7 @@ namespace ToSic.Eav.Data
 {
 	/// <summary>
 	/// Represents properties we should know about Attributes. This is the base for both
-	/// - <see cref="IAttributeDefinition"/> (in the IContentType)
+	/// - <see cref="IContentTypeAttribute"/> (in the IContentType)
 	/// - attribute with values-list (in the IEntity)
 	/// </summary>
 	[PublicApi]

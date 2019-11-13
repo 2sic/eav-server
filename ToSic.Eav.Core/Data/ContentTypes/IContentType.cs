@@ -11,10 +11,6 @@ namespace ToSic.Eav.Data
 	[PublicApi]
 	public interface IContentType: IInApp
 	{
-        ///// <summary>
-        ///// The app to which this content type belongs
-        ///// </summary>
-        //int AppId { get; }
 
         /// <summary>
         /// Gets the Display Name of the Content Type
@@ -44,14 +40,14 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Dictionary with all Attribute Definitions
         /// </summary>
-        IList<IAttributeDefinition> Attributes { get; set; }
+        IList<IContentTypeAttribute> Attributes { get; set; }
 
         /// <summary>
         /// A simple indexer to get an attribute
         /// </summary>
         /// <param name="fieldName"></param>
-        /// <returns>The <see cref="IAttributeDefinition"/> of the field name</returns>
-        IAttributeDefinition this[string fieldName] { get; }
+        /// <returns>The <see cref="IContentTypeAttribute"/> of the field name</returns>
+        IContentTypeAttribute this[string fieldName] { get; }
 
         /// <summary>
         /// Information where the Content-Type was stored (file system, DB, etc.)

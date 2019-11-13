@@ -147,7 +147,7 @@ namespace ToSic.Eav.WebApi
             var ser = new Serializer();
             return fields.Select(a =>
             {
-                var inputtype = a.InputType;
+                var inputtype = FindInputType(a);// a.InputType;
                 return new ContentTypeFieldInfo
                 {
                     Id = a.AttributeId,
@@ -165,6 +165,24 @@ namespace ToSic.Eav.WebApi
             });
             
         }
+
+        /// <summary>
+        /// The old method, which returns the text "unknown" if not known. 
+        /// As soon as the new UI is used, this must be removed / deprecated
+        /// </summary>
+        /// <returns></returns>
+        /// <remarks>
+        /// It's important to NOT cache this result, because it can change during runtime, and then a cached info would be wrong. 
+        /// </remarks>
+        private string FindInputType(IContentTypeAttribute attribute)
+        {
+            var inputType = attribute.Metadata.GetBestValue<string>(Constants.MetadataFieldAllInputType, Constants.MetadataFieldTypeAll);
+
+            return string.IsNullOrEmpty(inputType)
+                ? "unknown" // unknown will let the UI fallback on other mechanisms
+                : inputType;
+        }
+
 
 
 
@@ -202,7 +220,7 @@ namespace ToSic.Eav.WebApi
         public int AddField(int appId, int contentTypeId, string staticName, string type, string inputType, int sortOrder)
 	    {
 	        Log.Add($"add field a#{appId}, type#{contentTypeId}, name:{staticName}, type:{type}, input:{inputType}, order:{sortOrder}");
-            var attDef = new AttributeDefinition(appId, staticName, type, false, 0, sortOrder);
+            var attDef = new ContentTypeAttribute(appId, staticName, type, false, 0, sortOrder);
 	        var appManager = new AppManager(appId, Log);
 
             return appManager.ContentTypes.CreateAttributeAndInitializeAndSave(contentTypeId, attDef, inputType);

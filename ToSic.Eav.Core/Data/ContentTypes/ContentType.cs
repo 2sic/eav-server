@@ -6,9 +6,8 @@ using ToSic.Eav.Repositories;
 
 namespace ToSic.Eav.Data
 {
-    /// <inheritdoc cref="IContentType" />
     /// <summary>
-    /// Represents a Content Type
+    /// Represents a ContentType
     /// </summary>
     [PublicApi]
     public class ContentType : IContentType, IContentTypeShared, IHasExternalI18n
@@ -34,7 +33,7 @@ namespace ToSic.Eav.Data
         public int ContentTypeId { get; }
 
         /// <inheritdoc />
-        public IList<IAttributeDefinition> Attributes { get; set; }
+        public IList<IContentTypeAttribute> Attributes { get; set; }
 
         /// <inheritdoc />
         public RepositoryTypes RepositoryType { get; internal set; } = RepositoryTypes.Sql;
@@ -49,7 +48,7 @@ namespace ToSic.Eav.Data
         public bool Is(string name) => Name == name || StaticName == name;
 
         /// <inheritdoc />
-        public IAttributeDefinition this[string fieldName] => Attributes.FirstOrDefault(a => a.Name == fieldName);
+        public IContentTypeAttribute this[string fieldName] => Attributes.FirstOrDefault(a => a.Name == fieldName);
 
 
         #endregion

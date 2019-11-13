@@ -29,7 +29,7 @@ namespace ToSic.Eav.Data
         /// Gets the Value for this Languages, typed
         /// </summary>
         /// <param name="languageIds">list of languages to check</param>
-        new T this[int[] languageIds] { get; }
+        /*new*/ T this[int[] languageIds] { get; }
 
         /// <summary>
         /// Get the best/first matching value for the specified language key - typed

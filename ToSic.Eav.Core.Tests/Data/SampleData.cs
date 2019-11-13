@@ -12,26 +12,26 @@ namespace ToSic.Eav.Core.Tests.Data
 
         static readonly ContentType CtTestType = new ContentType(AppId, "TestType")
         {
-            Attributes = new List<IAttributeDefinition>
+            Attributes = new List<IContentTypeAttribute>
             {
-                new AttributeDefinition(AppId, "FirstName", "String", true, 0, 0),
-                new AttributeDefinition(AppId, "LastName", "String", false, 0, 0),
-                new AttributeDefinition(AppId, "Phone", "String", false, 0, 0),
-                new AttributeDefinition(AppId, "Age", "Number", false, 0,0),
-                 new AttributeDefinition(AppId, "AnyDate", "DateTime", false, 0,0)
+                new ContentTypeAttribute(AppId, "FirstName", "String", true, 0, 0),
+                new ContentTypeAttribute(AppId, "LastName", "String", false, 0, 0),
+                new ContentTypeAttribute(AppId, "Phone", "String", false, 0, 0),
+                new ContentTypeAttribute(AppId, "Age", "Number", false, 0,0),
+                 new ContentTypeAttribute(AppId, "AnyDate", "DateTime", false, 0,0)
             }
         };
 
 
         static readonly ContentType CtPet = new ContentType(AppId, "Pet")
         {
-            Attributes = new List<IAttributeDefinition>
+            Attributes = new List<IContentTypeAttribute>
             {
-                new AttributeDefinition(AppId, "FirstName", "String", true, 0, 0),
-                new AttributeDefinition(AppId, "LastName", "String", false, 0, 0),
+                new ContentTypeAttribute(AppId, "FirstName", "String", true, 0, 0),
+                new ContentTypeAttribute(AppId, "LastName", "String", false, 0, 0),
                 //new AttributeDefinition(AppId, "Birthday", "DateTime", true, 0, 0),
-                new AttributeDefinition(AppId, "Phone", "String", false, 0, 0),
-                new AttributeDefinition(AppId, "Age", "Number", false, 0,0)
+                new ContentTypeAttribute(AppId, "Phone", "String", false, 0, 0),
+                new ContentTypeAttribute(AppId, "Age", "Number", false, 0,0)
             }
         };
 

@@ -134,7 +134,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// Append an element to this. If the attribute is named xxx and the value is 4711 in the language specified, 
         /// the element appended will be <xxx>4711</xxx>. File and page references can be resolved optionally.
         /// </summary>
-        private static string ValueWithFullFallback(IEntity entity, IAttributeDefinition attribute, string language, string languageFallback, bool resolveLinks, IEavValueConverter resolver)
+        private static string ValueWithFullFallback(IEntity entity, IContentTypeAttribute attribute, string language, string languageFallback, bool resolveLinks, IEavValueConverter resolver)
         {
             var value = entity.GetBestValue(attribute.Name, new []{ language, languageFallback } ).ToString();
             return ResolveValue(entity, attribute.Type, value, resolveLinks, resolver);
@@ -144,7 +144,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// Append an element to this. The element will get the name of the attribute, and if possible the value will 
         /// be referenced to another language (for example [ref(en-US,ro)].
         /// </summary>
-        private static string ValueOrLookupCode(IEntity entity, IAttributeDefinition attribute, string language, string languageFallback, string[] sysLanguages, bool useRefToParentLanguage, bool resolveLinks, IEavValueConverter resolver)
+        private static string ValueOrLookupCode(IEntity entity, IContentTypeAttribute attribute, string language, string languageFallback, string[] sysLanguages, bool useRefToParentLanguage, bool resolveLinks, IEavValueConverter resolver)
         {
             var attrib = entity.Attributes[attribute.Name];
 

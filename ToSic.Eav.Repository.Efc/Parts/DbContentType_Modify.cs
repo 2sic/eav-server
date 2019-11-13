@@ -116,7 +116,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             var contentTypeId = foundSet.Value;
 
             // append all Attributes
-            foreach (var newAtt in contentType.Attributes.Cast<AttributeDefinition>())
+            foreach (var newAtt in contentType.Attributes.Cast<ContentTypeAttribute>())
             {
                 var destAttribId = DbContext.AttributesDefinition.GetOrCreateAttributeDefinition(contentTypeId, newAtt);
 

@@ -1,5 +1,4 @@
-﻿using System;
-using ToSic.Eav.Apps;
+﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Security.Permissions;
@@ -11,7 +10,7 @@ namespace ToSic.Eav.Data
     /// Represents an Attribute definition in a ContentType. This is the base for attributes in <see cref="IContentType"/>
     /// </summary>
     [PublicApi]
-    public interface IAttributeDefinition: IAttributeBase, IHasPermissions, IInApp
+    public interface IContentTypeAttribute: IAttributeBase, IHasPermissions, IInApp
 	{
         ///// <summary>
         ///// AppId for this attribute
@@ -37,14 +36,6 @@ namespace ToSic.Eav.Data
         /// Additional information, specs etc. about this attribute
         /// </summary>
         IMetadataOfItem Metadata { get; }
-
-        [PrivateApi]
-	    [Obsolete("this is the old call - which returns unknown. for the new UI, we should use the #2, which will later replace this")]
-        string InputType { get; }
-
-        [PrivateApi]
-        // 2018-08-26 2dm new version temporary, will later replace the InputType
-	    string InputTypeTempBetterForNewUi { get; }
 
 	}
 }

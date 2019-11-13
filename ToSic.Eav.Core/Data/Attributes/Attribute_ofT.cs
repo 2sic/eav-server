@@ -8,16 +8,22 @@ namespace ToSic.Eav.Data
     /// <summary>
     /// Represents an Attribute / Property of an Entity with Values of a Generic Type
     /// </summary>
-    /// <typeparam name="TType">Type of the Value</typeparam>
-    public class Attribute<TType> : AttributeBase, IAttribute<TType>
+    /// <typeparam name="T">Type of the Value</typeparam>
+    [PublicApi]
+    public class Attribute<T> : AttributeBase, IAttribute<T>
     {
+        /// <summary>
+        /// Create an attribute object - usually when building up the data-model for caching.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="type"></param>
         public Attribute(string name, string type) : base(name, type) { }
 
         /// <inheritdoc/>
         public IList<IValue> Values { get; set; } = new List<IValue>();
 
         /// <inheritdoc/>
-        public TType TypedContents
+        public T TypedContents
         {
             get
             {
@@ -27,7 +33,7 @@ namespace ToSic.Eav.Data
 
                 try
                 {
-                    var value = (IValue<TType>)Values.FirstOrDefault();
+                    var value = (IValue<T>)Values.FirstOrDefault();
                     return value != null ? value.TypedContents : default;
                 }
                 catch
@@ -38,14 +44,14 @@ namespace ToSic.Eav.Data
         }
 
         /// <inheritdoc/>
-        public IList<IValue<TType>> Typed => Values.Cast<IValue<TType>>().ToList();
+        public IList<IValue<T>> Typed => Values.Cast<IValue<T>>().ToList();
 
         /// <inheritdoc/>
-        public TType this[int languageId] => this[new[] { languageId }];
+        public T this[int languageId] => this[new[] { languageId }];
 
         #region IAttribute Implementations
         [PrivateApi]
-        object IAttribute.this[int[] languageIds] => this[languageIds];
+        //object IAttribute.this[int[] languageIds] => this[languageIds];
 
         [PrivateApi]
         object IAttribute.this[string languageKey] => this[languageKey];
@@ -56,7 +62,7 @@ namespace ToSic.Eav.Data
         #endregion
 
         /// <inheritdoc/>
-        public TType this[int[] languageIds]
+        public T this[int[] languageIds]
         {
             get
             {
@@ -68,7 +74,7 @@ namespace ToSic.Eav.Data
                     if (valueHavingSpecifiedLanguages != null)
                         try
                         {
-                            return ((IValue<TType>) valueHavingSpecifiedLanguages).TypedContents;
+                            return ((IValue<T>) valueHavingSpecifiedLanguages).TypedContents;
                         }
                         catch (InvalidCastException)
                         {
@@ -80,10 +86,10 @@ namespace ToSic.Eav.Data
         }
 
         /// <inheritdoc/>
-        public TType this[string languageKey] => this[new[] { languageKey }];
+        public T this[string languageKey] => this[new[] { languageKey }];
 
         /// <inheritdoc/>
-        public TType this[string[] languageKeys]
+        public T this[string[] languageKeys]
         {
             get
             {
@@ -95,18 +101,18 @@ namespace ToSic.Eav.Data
                     if (valueHavingSpecifiedLanguages != null)
                         try
                         {
-                            return ((IValue<TType>) valueHavingSpecifiedLanguages).TypedContents;
+                            return ((IValue<T>) valueHavingSpecifiedLanguages).TypedContents;
                         }
                         catch (InvalidCastException)
                         {
                         } // may occur for nullable types
                 }
                 // use Default
-                return TypedContents == null ? default(TType) : TypedContents;
+                return TypedContents == null ? default(T) : TypedContents;
             }
         }
 
         [PrivateApi]
-        public IAttribute Copy() => new Attribute<TType>(Name, Type) { Values = Values.Select(v => v.Copy(Type)).ToList()};
+        public IAttribute Copy() => new Attribute<T>(Name, Type) { Values = Values.Select(v => v.Copy(Type)).ToList()};
     }
 }

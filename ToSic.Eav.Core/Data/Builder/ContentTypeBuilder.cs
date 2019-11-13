@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.Enums;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Repositories;
 
 namespace ToSic.Eav.Data.Builder
@@ -11,7 +9,7 @@ namespace ToSic.Eav.Data.Builder
         /// Shortcut go get a new AttributeSet with Scope=System and Name=StaticName
         /// </summary>
         public static ContentType SystemAttributeSet(int appId, string staticName, string description,
-            List<IAttributeDefinition> attributes, bool alwaysShareConfiguration = false)
+            List<IContentTypeAttribute> attributes, bool alwaysShareConfiguration = false)
             => new ContentType(appId, staticName, staticName, 0, "System", description, null, 0, 0,
                 alwaysShareConfiguration, null)
             {
@@ -29,7 +27,7 @@ namespace ToSic.Eav.Data.Builder
             => new ContentType(appId, typeName, typeIdentifier, DynTypeId, scope, DynTypeDefDescription, null, 0, 0,
                 false, null)
             {
-                Attributes = new List<IAttributeDefinition>(),
+                Attributes = new List<IContentTypeAttribute>(),
                 IsDynamic = true
             };
 

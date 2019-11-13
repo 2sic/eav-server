@@ -13,19 +13,31 @@ namespace ToSic.Eav.Data
     public class ContentTypeMetadata : MetadataOf<string>
     {
 
-        #region empty constructors
-        public ContentTypeMetadata(string key, IDeferredEntitiesList metaProvider)
-            : base(Constants.MetadataForContentType, key, metaProvider)
+        #region constructors
+
+        /// <summary>
+        /// Used in cases where the metadata-provider is already known
+        /// </summary>
+        /// <param name="typeId">type id / static-name</param>
+        /// <param name="metaProvider">remote / deferred metadata provider</param>
+        public ContentTypeMetadata(string typeId, IDeferredEntitiesList metaProvider)
+            : base(Constants.MetadataForContentType, typeId, metaProvider)
         { }
 
-        public ContentTypeMetadata(string key, int remoteZoneId, int remoteAppId)
-            : base(Constants.MetadataForContentType, key, remoteZoneId, remoteAppId)
+        /// <summary>
+        /// Used in cases where the metadata provider isn't known, but the IDs are known
+        /// </summary>
+        /// <param name="typeId">type id / static-name</param>
+        /// <param name="sourceZoneId">the zone which has the metadata</param>
+        /// <param name="sourceAppId">the app which has the metadata</param>
+        public ContentTypeMetadata(string typeId, int sourceZoneId, int sourceAppId)
+            : base(Constants.MetadataForContentType, typeId, sourceZoneId, sourceAppId)
         { }
 
         #endregion
 
         /// <summary>
-        /// Description of this content-type
+        /// Description <see cref="IEntity"/> metadata of this content-type.
         /// </summary>
         public IEntity Description => this
             .FirstOrDefault(md => md.Type.StaticName == Constants.ContentTypeTypeName);

@@ -10,7 +10,7 @@ namespace ToSic.Eav.Data
 	public interface IValue<out T> : IValue
 	{
 		/// <summary>
-		/// Typed contents of the value as stored
+		/// Typed contents of the value
 		/// </summary>
 		T TypedContents { get; }
 	}
