@@ -15,30 +15,30 @@ namespace ToSic.Eav.Data
         // special note: ATM everything is an IEntity, so EntityLight is currently not supported
 
         private readonly IEntityLight _entity;
-	    public readonly IEnumerable<EntityRelationshipItem> AllRelationships;
+	    public readonly IEnumerable<EntityRelationship> AllRelationships;
 
 		/// <summary>
 		/// Initializes a new instance of the RelationshipManager class.
 		/// </summary>
-		public RelationshipManager(IEntityLight entity, AppDataPackage app, IEnumerable<EntityRelationshipItem> allRelationships)
+		public RelationshipManager(IEntityLight entity, AppDataPackage app, IEnumerable<EntityRelationship> allRelationships)
         {
 			_entity = entity;
 		    if (app != null)
-		        AllRelationships = new CacheChainedIEnumerable<EntityRelationshipItem>(app,
+		        AllRelationships = new CacheChainedIEnumerable<EntityRelationship>(app,
 		            () => app.Relationships.ToList());
 		    else
-		        AllRelationships = allRelationships ?? new List<EntityRelationshipItem>();
+		        AllRelationships = allRelationships ?? new List<EntityRelationship>();
 		}
 
 		/// <inheritdoc />
 		public IEnumerable<IEntity> AllChildren => ChildRelationships().Select(r => r.Child);
 
-	    private IEnumerable<EntityRelationshipItem> ChildRelationships() => AllRelationships.Where(r => r.Parent == _entity);
+	    private IEnumerable<EntityRelationship> ChildRelationships() => AllRelationships.Where(r => r.Parent == _entity);
 
 
         /// <inheritdoc />
         public IEnumerable<IEntity> AllParents => ParentRelationships().Select(r => r.Parent);
-	    private IEnumerable<EntityRelationshipItem> ParentRelationships() => AllRelationships.Where(r => r.Child == _entity);
+	    private IEnumerable<EntityRelationship> ParentRelationships() => AllRelationships.Where(r => r.Child == _entity);
 
         /// <inheritdoc />
         public IChildEntities Children 

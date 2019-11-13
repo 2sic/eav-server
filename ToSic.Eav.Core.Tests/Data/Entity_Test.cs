@@ -26,11 +26,11 @@ namespace ToSic.Eav.Core.Tests.Data
         public void Entity_EntityRelationship()
         {
             var dan = SampleData.TestEntityDaniel();
-            var relDtoL = new EntityRelationshipItem(dan, SampleData.TestEntityLeonie());
-            var relationshipList = new List<EntityRelationshipItem> {relDtoL};
+            var relDtoL = new EntityRelationship(dan, SampleData.TestEntityLeonie());
+            var relationshipList = new List<EntityRelationship> {relDtoL};
             for (var p = 0; p < 15; p++)
             {
-                var relPet = new EntityRelationshipItem(dan, SampleData.TestEntityPet(p));
+                var relPet = new EntityRelationship(dan, SampleData.TestEntityPet(p));
                 relationshipList.Add(relPet);
             }
 

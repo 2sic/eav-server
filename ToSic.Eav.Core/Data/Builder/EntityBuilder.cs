@@ -72,7 +72,7 @@ namespace ToSic.Eav.Data.Builder
         /// Used in the Attribute-Filter, which generates a new entity with less properties
         /// </summary>
         public static Entity FullClone(IEntity entity, Dictionary<string, IAttribute> attributes, 
-            IEnumerable<EntityRelationshipItem> allRelationships)
+            IEnumerable<EntityRelationship> allRelationships)
         {
             var e = EntityWithAllIdsAndType(entity.AppId, entity.EntityGuid, entity.EntityId, entity.RepositoryId, entity.Type, 
                 entity.IsPublished, entity.Modified, entity.Owner, entity.Version, attributes);

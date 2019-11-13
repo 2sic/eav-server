@@ -7,7 +7,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.App
 {
-    public class AppRelationshipManager: CacheChainedIEnumerable<EntityRelationshipItem>
+    public class AppRelationshipManager: CacheChainedIEnumerable<EntityRelationship>
     {
         AppDataPackage App;
         public AppRelationshipManager(AppDataPackage upstream) : base(upstream, () => Rebuild(upstream))
@@ -16,13 +16,13 @@ namespace ToSic.Eav.App
         }
 
 
-        private static List<EntityRelationshipItem> Rebuild(AppDataPackage appDataPackage)
+        private static List<EntityRelationship> Rebuild(AppDataPackage appDataPackage)
         {
             // todo: could be optimized (minor)
             // atm guid-relationships (like in json-objects) 
             // will have multiple lookups - first to find the json, then to add to relationship index
 
-            var cache = new List<EntityRelationshipItem>();
+            var cache = new List<EntityRelationship>();
 
             foreach (var entity in appDataPackage.List)
             foreach (var attrib in entity.Attributes.Select(a => a.Value)
@@ -43,12 +43,12 @@ namespace ToSic.Eav.App
                 attrib.TypedContents.AttachLookupList(App);
         }
 
-        public static void Add(AppDataPackage appDataPackage, List<EntityRelationshipItem> list, int parent, int? child)
+        public static void Add(AppDataPackage appDataPackage, List<EntityRelationship> list, int parent, int? child)
         {
             var lookup = appDataPackage.Index;
             if (lookup.ContainsKey(parent) &&
                 (!child.HasValue || lookup.ContainsKey(child.Value)))
-                list.Add(new EntityRelationshipItem(lookup[parent],
+                list.Add(new EntityRelationship(lookup[parent],
                     child.HasValue ? lookup[child.Value] : null));
         }
     }
