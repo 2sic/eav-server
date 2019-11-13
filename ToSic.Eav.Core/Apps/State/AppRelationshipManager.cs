@@ -2,21 +2,22 @@
 using System.Linq;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
-using ToSic.Eav.Interfaces;
+using ToSic.Eav.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.App
+namespace ToSic.Eav.Apps
 {
+    [PrivateApi("don't publish this - too internal, special, complicated")]
     public class AppRelationshipManager: CacheChainedIEnumerable<EntityRelationship>
     {
-        AppDataPackage App;
-        public AppRelationshipManager(AppDataPackage upstream) : base(upstream, () => Rebuild(upstream))
+        AppState App;
+        public AppRelationshipManager(AppState upstream) : base(upstream, () => Rebuild(upstream))
         {
             App = upstream;
         }
 
 
-        private static List<EntityRelationship> Rebuild(AppDataPackage appDataPackage)
+        private static List<EntityRelationship> Rebuild(AppState appState)
         {
             // todo: could be optimized (minor)
             // atm guid-relationships (like in json-objects) 
@@ -24,16 +25,17 @@ namespace ToSic.Eav.App
 
             var cache = new List<EntityRelationship>();
 
-            foreach (var entity in appDataPackage.List)
+            foreach (var entity in appState.List)
             foreach (var attrib in entity.Attributes.Select(a => a.Value)
                 .Where(a => a is IAttribute<IEnumerable<IEntity>>)
                 .Cast<IAttribute<IEnumerable<IEntity>>>())
             foreach (var val in ((LazyEntities)attrib.Typed[0].TypedContents).EntityIds.Where(e => e != null))
-                Add(appDataPackage, cache, entity.EntityId, val);
+                Add(appState, cache, entity.EntityId, val);
 
             return cache;
         }
 
+        [PrivateApi]
         public void AttachRelationshipResolver(IEntity entity)
         {
             foreach (var attrib in entity.Attributes.Select(a => a.Value)
@@ -43,9 +45,9 @@ namespace ToSic.Eav.App
                 (attrib.TypedContents as LazyEntities).AttachLookupList(App);
         }
 
-        public static void Add(AppDataPackage appDataPackage, List<EntityRelationship> list, int parent, int? child)
+        private static void Add(AppState appState, List<EntityRelationship> list, int parent, int? child)
         {
-            var lookup = appDataPackage.Index;
+            var lookup = appState.Index;
             if (lookup.ContainsKey(parent) &&
                 (!child.HasValue || lookup.ContainsKey(child.Value)))
                 list.Add(new EntityRelationship(lookup[parent],

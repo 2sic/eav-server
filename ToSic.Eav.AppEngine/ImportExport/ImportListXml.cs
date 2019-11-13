@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using ToSic.Eav.App;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport;
@@ -23,7 +22,7 @@ namespace ToSic.Eav.Apps.ImportExport
         private IContentType ContentType { get; }
         private List<IEntity> ExistingEntities { get; }
 
-        private AppDataPackage App { get; }
+        private AppState App { get; }
         private AppManager AppMan { get; }
 
         /// <summary>
@@ -47,7 +46,7 @@ namespace ToSic.Eav.Apps.ImportExport
             ErrorLog = new ImportErrorLog();
 
             AppMan = appMan;
-            App = appMan.Cache.AppDataPackage;
+            App = appMan.Cache.AppState;
 
             _appId = App.AppId;
 

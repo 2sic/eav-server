@@ -4,16 +4,17 @@ using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.App
+namespace ToSic.Eav.Apps
 {
     /// <inheritdoc cref="HasLog" />
     /// <summary>
     /// Cache Object for a specific App
     /// </summary>
-    public partial class AppDataPackage: HasLog
+    public partial class AppState: HasLog, IInApp
 	{
 
 		#region public properties like AppId, Entities, List, Publisheentities, DraftEntities, 
@@ -48,17 +49,10 @@ namespace ToSic.Eav.App
 	                   () => List.Where(e => e.GetDraft() == null).ToList()));
 	    private IEnumerable<IEntity> _listNotHavingDrafts;
 
-	    ///// <summary>
-	    ///// Get all Entities not having a Draft (Entities that are Published (not having a draft) or draft itself)
-	    ///// </summary>
-	    //public IEnumerable<IEntity> ListDraft
-	    //    => _listDraft ?? (_listDraft = new UpstreamDependentIEnumerable<IEntity>(this,
-	    //           () => List.Where(e => !e.IsPublished).ToList()));
-	    //private IEnumerable<IEntity> _listDraft;
-
         /// <summary>
         /// Get all Relationships between Entities
         /// </summary>
+        [PrivateApi]
         public AppRelationshipManager Relationships { get; }
 
 	    private bool _loading;
@@ -68,7 +62,7 @@ namespace ToSic.Eav.App
 
 
 
-        internal AppDataPackage(int appId, ILog parentLog): base($"App.Pkg{appId}", parentLog, $"start build package for {appId}")
+        internal AppState(int appId, ILog parentLog): base($"App.Pkg{appId}", parentLog, $"start build package for {appId}")
 	    {
 	        AppId = appId;
             CacheResetTimestamp();  // do this very early, as this number is needed elsewhere

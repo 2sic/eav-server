@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using ToSic.Eav.App;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
@@ -22,7 +21,7 @@ namespace ToSic.Eav.Apps.ImportExport
     {
         #region Private Fields
         //private readonly DbDataController _dbDeepAccess;
-        private AppDataPackage _entireApp;
+        private AppState _entireApp;
         
         internal AppManager App;
         internal IStorage Storage;
@@ -143,11 +142,11 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <summary>
         /// Import an Entity with all values
         /// </summary>
-        private Entity CreateMergedForSaving(Entity update, AppDataPackage appDataPackage, SaveOptions saveOptions)
+        private Entity CreateMergedForSaving(Entity update, AppState appState, SaveOptions saveOptions)
         {
            #region try to get AttributeSet or otherwise cancel & log error
 
-            var dbAttrSet = appDataPackage.GetContentType(update.Type.StaticName); 
+            var dbAttrSet = appState.GetContentType(update.Type.StaticName); 
             // .ContentTypes.Values.FirstOrDefault(ct => String.Equals(ct.StaticName, update.Type.StaticName, StringComparison.InvariantCultureIgnoreCase));
 
             if (dbAttrSet == null) // AttributeSet not Found
@@ -161,7 +160,7 @@ namespace ToSic.Eav.Apps.ImportExport
             // Find existing Enties - meaning both draft and non-draft
             List<IEntity> existingEntities = null;
             if (update.EntityGuid != Guid.Empty)
-                existingEntities = appDataPackage.List.Where(e => e.EntityGuid == update.EntityGuid).ToList();
+                existingEntities = appState.List.Where(e => e.EntityGuid == update.EntityGuid).ToList();
 
             #region Simplest case - nothing existing to update: return entity
 

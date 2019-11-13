@@ -6,7 +6,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
-using ToSic.Eav.App;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Query;
 using ToSic.Eav.ImportExport;
@@ -34,7 +33,7 @@ namespace ToSic.Eav.Apps.ImportExport
         public string[] EntityIDs;
         public List<Message> Messages = new List<Message>();
 
-        public AppDataPackage AppPackage { get; private set; }
+        public AppState AppPackage { get; private set; }
         public XmlSerializer Serializer { get; private set; }
 
         public int ZoneId { get; private set; }

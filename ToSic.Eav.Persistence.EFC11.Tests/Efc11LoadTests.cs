@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.App;
 using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Metadata;
+using AppState = ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.Persistence.Efc.Tests
 {
@@ -103,7 +103,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
 
         }
 
-        private AppDataPackage TestLoadApp(int appId) => Loader.AppPackage(appId);
+        private AppState TestLoadApp(int appId) => Loader.AppPackage(appId);
 
         private IList<IContentType> TestLoadCts(int appId) => Loader.ContentTypes(appId, null);
     }

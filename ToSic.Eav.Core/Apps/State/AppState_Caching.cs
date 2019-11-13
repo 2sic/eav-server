@@ -1,10 +1,9 @@
 ﻿using System;
 using ToSic.Eav.Caching;
-using ToSic.Eav.Interfaces;
 
-namespace ToSic.Eav.App
+namespace ToSic.Eav.Apps
 {
-    public partial class AppDataPackage: ICacheExpiring
+    public partial class AppState: ICacheExpiring
     {
         public int CacheUpdateCount { get; private set; }
         public long CacheTimestamp { get; private set; }

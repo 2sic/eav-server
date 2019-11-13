@@ -1,8 +1,9 @@
 using System.Collections.Generic;
-using ToSic.Eav.App;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
+using AppState = ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.Interfaces
 {
@@ -22,9 +23,9 @@ namespace ToSic.Eav.Interfaces
         /// <param name="entityIds">null or a List of EntityIds</param>
         /// <param name="parentLog">parent logger</param>
         /// <returns>An object with everything which an app has, usually for caching</returns>
-        AppDataPackage AppPackage(int appId, int[] entityIds = null, ILog parentLog = null);
+        AppState AppPackage(int appId, int[] entityIds = null, ILog parentLog = null);
 
-        AppDataPackage Update(AppDataPackage app, AppPackageLoadingSteps startAt, int[] entityIds = null, ILog parentLog = null);
+        AppState Update(AppState app, AppStateLoadSequence startAt, int[] entityIds = null, ILog parentLog = null);
 
 
         Dictionary<int, Zone> Zones();

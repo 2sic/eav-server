@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.App;
 using ToSic.Eav.Data;
+using AppState = ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.DataSources.Caches
 {
@@ -39,12 +39,12 @@ namespace ToSic.Eav.DataSources.Caches
         public override string CacheKeySchema => "Z{0}A{1}";
 
         #region The cache-variable + HasCacheItem, SetCacheItem, Get, Remove
-        private static readonly IDictionary<string, AppDataPackage> Caches = new Dictionary<string, AppDataPackage>();
+        private static readonly IDictionary<string, AppState> Caches = new Dictionary<string, AppState>();
 
 
         protected override bool HasCacheItem(string cacheKey) => Caches.ContainsKey(cacheKey);
 
-        protected override void SetCacheItem(string cacheKey, AppDataPackage item)
+        protected override void SetCacheItem(string cacheKey, AppState item)
         {
             try
             {
@@ -63,7 +63,7 @@ namespace ToSic.Eav.DataSources.Caches
             }
         }
 
-        protected override AppDataPackage GetCacheItem(string cacheKey) => Caches[cacheKey];
+        protected override AppState GetCacheItem(string cacheKey) => Caches[cacheKey];
 
         protected override void RemoveCacheItem(string cacheKey) => Caches.Remove(cacheKey);    // returns false if key was not found (no Exception)
 

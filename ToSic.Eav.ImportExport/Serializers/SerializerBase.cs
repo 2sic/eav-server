@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.App;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Query;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Types;
+using AppState = ToSic.Eav.Apps.AppState;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.ImportExport.Serializers
@@ -18,12 +18,12 @@ namespace ToSic.Eav.ImportExport.Serializers
 
         protected SerializerBase() : this("Srl.Default") { }
 
-        public AppDataPackage App
+        public AppState App
         {
             get => AppPackageOrNull ?? throw new Exception("cannot use app in serializer without initializing it first, make sure you call Initialize(...)");
             set => AppPackageOrNull = value;
         }
-        protected AppDataPackage AppPackageOrNull { get; private set; }
+        protected AppState AppPackageOrNull { get; private set; }
 
         public bool PreferLocalAppTypes = false;
 
@@ -44,7 +44,7 @@ namespace ToSic.Eav.ImportExport.Serializers
                            : App.GetContentType(staticName));
         }
 
-        public void Initialize(AppDataPackage app, ILog parentLog)
+        public void Initialize(AppState app, ILog parentLog)
         {
             App = app;
             AppId = app.AppId;

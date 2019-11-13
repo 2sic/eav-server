@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using ToSic.Eav.App;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport;
@@ -13,6 +13,7 @@ using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Types;
+using AppState = ToSic.Eav.Apps.AppState;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 // ReSharper disable once CheckNamespace
@@ -208,10 +209,10 @@ namespace ToSic.Eav.Persistence.File
 
 
         #region not implemented stuff
-        public AppDataPackage AppPackage(int appId, int[] entityIds = null, ILog parentLog = null) 
+        public AppState AppPackage(int appId, int[] entityIds = null, ILog parentLog = null) 
             => throw new NotImplementedException();
 
-        public AppDataPackage Update(AppDataPackage app, AppPackageLoadingSteps startAt, int[] entityIds = null,
+        public AppState Update(AppState app, AppStateLoadSequence startAt, int[] entityIds = null,
             ILog parentLog = null) 
             => throw new NotImplementedException();
 

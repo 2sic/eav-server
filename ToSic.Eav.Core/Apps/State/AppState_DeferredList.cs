@@ -1,13 +1,13 @@
 ﻿using ToSic.Eav.Data;
 using ToSic.Eav.Metadata;
 
-namespace ToSic.Eav.App
+namespace ToSic.Eav.Apps
 {
 	/// <inheritdoc cref="IEntitiesSource" />
 	/// <summary>
 	/// Cache Object for a specific App
 	/// </summary>
-	public partial class AppDataPackage : IEntitiesSource, IHasMetadataSource
+	public partial class AppState : IEntitiesSource, IHasMetadataSource
     {
 
         IMetadataSource IHasMetadataSource.Metadata => Metadata;

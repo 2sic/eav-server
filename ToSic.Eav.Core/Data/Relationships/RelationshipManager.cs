@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.App;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
+using AppState = ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.Data
 {
@@ -20,7 +20,7 @@ namespace ToSic.Eav.Data
 		/// <summary>
 		/// Initializes a new instance of the RelationshipManager class.
 		/// </summary>
-		public RelationshipManager(IEntityLight entity, AppDataPackage app, IEnumerable<EntityRelationship> allRelationships)
+		public RelationshipManager(IEntityLight entity, AppState app, IEnumerable<EntityRelationship> allRelationships)
         {
 			_entity = entity;
 		    if (app != null)

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.App;
 using ToSic.Eav.Data;
+using AppState = ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.DataSources.RootSources
 {
@@ -12,7 +12,7 @@ namespace ToSic.Eav.DataSources.RootSources
 		/// <summary>
 		/// Get a CacheItem to build Cache for this App
 		/// </summary>
-		AppDataPackage GetDataForCache(string primaryLanguage = null);
+		AppState GetDataForCache(string primaryLanguage = null);
 
 		/// <summary>
 		/// Get a Dictionary of all Zones and Apps

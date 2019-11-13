@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
-using ToSic.Eav.App;
 using ToSic.Eav.ImportExport.Serializers;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
+using AppState = ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.ImportExport.Json
 {
@@ -16,7 +16,7 @@ namespace ToSic.Eav.ImportExport.Json
         /// </summary>
         public JsonSerializer() : base("Jsn.Serlzr") {}
 
-        public JsonSerializer(AppDataPackage package, ILog parentLog): this()
+        public JsonSerializer(AppState package, ILog parentLog): this()
         {
             Initialize(package, parentLog);
         }

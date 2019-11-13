@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using ToSic.Eav.App;
 using ToSic.Eav.Data;
 using ToSic.Eav.Implementations.ValueConverter;
 using ToSic.Eav.ImportExport;
@@ -22,10 +21,10 @@ namespace ToSic.Eav.Apps.ImportExport
     {
         private readonly XmlBuilder _xBuilder = new XmlBuilder();
 
-        private AppDataPackage App { get; }
+        private AppState App { get; }
         public IContentType ContentType { get; }
 
-        public ExportListXml(AppDataPackage app, IContentType contentType, ILog parentLog): base("App.LstExp", parentLog)
+        public ExportListXml(AppState app, IContentType contentType, ILog parentLog): base("App.LstExp", parentLog)
         {
             App = app;
             ContentType = contentType;

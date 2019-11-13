@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Types;
 
-namespace ToSic.Eav.App
+namespace ToSic.Eav.Apps
 {
     /// <summary>
     /// Cache Object for a specific App
     /// </summary>
-    public partial class AppDataPackage
+    public partial class AppState
 	{
 	    /// <summary>
 	    /// Gets all ContentTypes in this App

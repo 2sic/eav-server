@@ -37,7 +37,7 @@ namespace ToSic.Eav.Apps
 
             // Look up name in cache
             var cache = (BaseCache) DataSource.GetCache(zoneId, appId);
-            AppDataPackage = cache.AppDataPackage; // for metadata
+            AppDataPackage = cache.AppState; // for metadata
 
             AppGuid = cache.ZoneApps[zoneId].Apps[appId];
 

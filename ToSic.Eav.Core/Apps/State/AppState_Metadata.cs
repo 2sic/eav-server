@@ -2,13 +2,13 @@
 using ToSic.Eav.Metadata;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.App
+namespace ToSic.Eav.Apps
 {
     /// <inheritdoc cref="IMetadataSource" />
     /// <summary>
     /// Cache Object for a specific App
     /// </summary>
-    public partial class AppDataPackage: IMetadataSource
+    public partial class AppState: IMetadataSource
 	{
         internal AppMetadataManager Metadata { get; set; }
 

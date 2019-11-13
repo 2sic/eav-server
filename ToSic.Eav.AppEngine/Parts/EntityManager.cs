@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using ToSic.Eav.App;
 using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
@@ -160,7 +159,7 @@ namespace ToSic.Eav.Apps.Parts
 
             // todo: continue here
             AppManager.DataController.Loader.Update(AppManager.Package, 
-                AppPackageLoadingSteps.ItemLoad, ids.ToArray(), Log);
+                AppStateLoadSequence.ItemLoad, ids.ToArray(), Log);
             // clear cache of this app
             //SystemManager.Purge(AppManager.AppId);
             wrapLog($"ids:{ids.Count}");
@@ -265,9 +264,9 @@ namespace ToSic.Eav.Apps.Parts
 
 
         public ExportListXml Exporter(IContentType contentType) 
-            => new ExportListXml(AppManager.Cache.AppDataPackage, contentType, Log);
+            => new ExportListXml(AppManager.Cache.AppState, contentType, Log);
         public ExportListXml Exporter(string contentType) 
-            => new ExportListXml(AppManager.Cache.AppDataPackage, AppManager.Read.ContentTypes.Get(contentType), Log);
+            => new ExportListXml(AppManager.Cache.AppState, AppManager.Read.ContentTypes.Get(contentType), Log);
 
         public ImportListXml Importer(
             string contentTypeName,

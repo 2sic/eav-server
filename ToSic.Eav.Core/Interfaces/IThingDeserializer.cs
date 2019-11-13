@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.App;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
+using AppState = ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.Interfaces
 {
     public interface IThingDeserializer: IHasLog
     {
-        void Initialize(AppDataPackage app, ILog parentLog);
+        void Initialize(AppState app, ILog parentLog);
 
         void Initialize(int appId, IEnumerable<IContentType> types, IEntitiesSource allEntities, ILog parentLog);
 

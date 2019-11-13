@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.Interfaces;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.App
+namespace ToSic.Eav.Apps
 {
-    internal class AppMetadataManager: HasLog, IMetadataSource//, ICacheDependent
+    [PrivateApi("internal use only, don't publish this object")]
+    internal class AppMetadataManager: HasLog, IMetadataSource
     {
         #region cache value objects: Types, _guid, _number, _string
         /// <summary>
@@ -33,11 +34,11 @@ namespace ToSic.Eav.App
         /// </summary>
         private Dictionary<int, Dictionary<string, List<IEntity>>> _string;
 
-        private readonly AppDataPackage _app;
+        private readonly AppState _app;
 
         #endregion
 
-        public AppMetadataManager(AppDataPackage app, ImmutableDictionary<int, string> metadataTypes, ILog parentLog) 
+        public AppMetadataManager(AppState app, ImmutableDictionary<int, string> metadataTypes, ILog parentLog) 
             : base("App.MDMan", parentLog, "initialize")
         {
             _app = app;
