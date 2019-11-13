@@ -83,8 +83,15 @@ namespace ToSic.Eav.Metadata
         }
         private List<IEntity> _filteredEntities;
 
-        public IEnumerable<IEntity> Permissions =>
-            AllWithHidden.Where(md => md.Type.StaticName == Permission.TypeName);
+        /// <inheritdoc />
+        public IEnumerable<Permission> Permissions =>
+            _permissions ?? (_permissions =
+            AllWithHidden
+                .Where(md => md.Type.StaticName == Permission.TypeName)
+                .Select(e => new Permission(e))
+            );
+
+        private IEnumerable<Permission> _permissions;
 
         private long _cacheTimestamp;
 

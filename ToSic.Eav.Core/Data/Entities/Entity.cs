@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Security.Permissions;
 
 namespace ToSic.Eav.Data
 {
@@ -216,7 +217,7 @@ namespace ToSic.Eav.Data
         private IMetadataOf _metadata;
         internal IHasMetadataSource DeferredLookupData = null;
 
-        public IEnumerable<IEntity> Permissions => Metadata.Permissions;
+        public IEnumerable<Permission> Permissions => Metadata.Permissions;
         #endregion
 
 

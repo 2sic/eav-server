@@ -13,14 +13,14 @@ namespace ToSic.Eav.Security.Permissions
         /// Check if the current user fits the reason for this grant
         /// </summary>
         /// <returns></returns>
-        private bool VerifyConditionApplies(IEntity permissionEntity)
+        private bool VerifyConditionApplies(Permission permission)
         {
             //var wrapLog = Log.Call<bool>("VerifyConditionApplies");
             try
             {
                 // check general permissions
-                var condition = permissionEntity.GetBestValue<string>(Permission.FieldCondition);
-                var identity = permissionEntity.GetBestValue<string>(Permission.FieldIdentity);
+                var condition = permission.Condition;// permissionEntity.GetBestValue<string>(Permission.FieldCondition);
+                var identity = permission.Identity;// permissionEntity.GetBestValue<string>(Permission.FieldIdentity);
                 Log.Add($"condition:{condition}, identity:{identity}");
 
                 // check custom permission based on the user Guid or owner

@@ -10,8 +10,6 @@ namespace ToSic.Eav.Security.Permissions
 
         bool UserMay(List<Grants> grants);
 
-        //bool UserMay(Grants grant);
-
         ConditionType GrantedBecause { get; }
     }
 }

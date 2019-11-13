@@ -23,7 +23,7 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// Permissions of this app
         /// </summary>
-        public IEnumerable<IEntity> Permissions => Metadata.Permissions;
+        public IEnumerable<Permission> Permissions => Metadata.Permissions;
 
         #endregion
 

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Security.Permissions;
 
 namespace ToSic.Eav.Data
 {
@@ -78,7 +79,7 @@ namespace ToSic.Eav.Data
 
         /// <inheritdoc />
         [PrivateApi("because permissions will probably become an entity-based type")]
-        public IEnumerable<IEntity> Permissions => Metadata.Permissions;
+        public IEnumerable<Permission> Permissions => Metadata.Permissions;
 
         #endregion
 
