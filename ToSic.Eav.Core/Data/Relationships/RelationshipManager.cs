@@ -24,7 +24,7 @@ namespace ToSic.Eav.Data
         {
 			_entity = entity;
 		    if (app != null)
-		        AllRelationships = new CacheChainedIEnumerable<EntityRelationship>(app,
+		        AllRelationships = new SynchronizedList<EntityRelationship>(app,
 		            () => app.Relationships.ToList());
 		    else
 		        AllRelationships = allRelationships ?? new List<EntityRelationship>();

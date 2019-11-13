@@ -27,8 +27,8 @@ namespace ToSic.Eav.Apps
 	    /// The simple list of entities, used in many query parts
 	    /// </summary>
 	    public IEnumerable<IEntity> List => _list 
-            ?? (_list = new CacheChainedIEnumerable<IEntity>(this, () => Index.Values.ToList()));
-	    private CacheChainedIEnumerable<IEntity> _list;
+            ?? (_list = new SynchronizedList<IEntity>(this, () => Index.Values.ToList()));
+	    private SynchronizedList<IEntity> _list;
 
         internal Dictionary<int, IEntity> Index { get; }
 
@@ -36,7 +36,7 @@ namespace ToSic.Eav.Apps
 	    /// Get all Published Entities in this App (excluding Drafts)
 	    /// </summary>
 	    public IEnumerable<IEntity> ListPublished
-	        => _listPublished ?? (_listPublished = new CacheChainedIEnumerable<IEntity>(this,
+	        => _listPublished ?? (_listPublished = new SynchronizedList<IEntity>(this,
 	               () => List.Where(e => e.IsPublished).ToList()));
 	    private IEnumerable<IEntity> _listPublished;
 
@@ -45,7 +45,7 @@ namespace ToSic.Eav.Apps
 	    /// </summary>
 	    public IEnumerable<IEntity> ListNotHavingDrafts
 	        => _listNotHavingDrafts ?? (_listNotHavingDrafts =
-	               new CacheChainedIEnumerable<IEntity>(this,
+	               new SynchronizedList<IEntity>(this,
 	                   () => List.Where(e => e.GetDraft() == null).ToList()));
 	    private IEnumerable<IEntity> _listNotHavingDrafts;
 

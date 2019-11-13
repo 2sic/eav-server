@@ -1,8 +1,11 @@
-﻿namespace ToSic.Eav.Caching
+﻿using ToSic.Eav.Documentation;
+
+namespace ToSic.Eav.Caching
 {
     /// <summary>
     /// Provides a time stamp when something was created / updated for caching. 
     /// </summary>
+    [PublicApi]
     public interface ITimestamped
     {
         /// <summary>

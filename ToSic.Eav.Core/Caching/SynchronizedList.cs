@@ -11,7 +11,7 @@ namespace ToSic.Eav.Caching
     /// </summary>
     /// <typeparam name="T">The type which is enumerated, usually an <see cref="IEntity"/></typeparam>
     [PublicApi]
-    public class CacheChainedIEnumerable<T>: IEnumerable<T>, ICacheDependent, ICacheExpiring
+    public class SynchronizedList<T>: IEnumerable<T>, ICacheDependent, ICacheExpiring
     {
         /// <summary>
         /// Upstream source which implements <see cref="ICacheExpiring"/> to tell this object when the data must be refreshed
@@ -27,7 +27,7 @@ namespace ToSic.Eav.Caching
         /// </summary>
         /// <param name="upstream">the upstream cache which can tell us if a refresh is necessary</param>
         /// <param name="rebuild">the method which rebuilds the list</param>
-        public CacheChainedIEnumerable(ICacheExpiring upstream, Func<List<T>> rebuild)
+        public SynchronizedList(ICacheExpiring upstream, Func<List<T>> rebuild)
         {
             Upstream = upstream;
             _rebuild = rebuild;

@@ -8,7 +8,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 namespace ToSic.Eav.Apps
 {
     [PrivateApi("don't publish this - too internal, special, complicated")]
-    public class AppRelationshipManager: CacheChainedIEnumerable<EntityRelationship>
+    public class AppRelationshipManager: SynchronizedList<EntityRelationship>
     {
         AppState App;
         public AppRelationshipManager(AppState upstream) : base(upstream, () => Rebuild(upstream))

@@ -8,7 +8,7 @@ namespace ToSic.Eav.Caching
     /// so that a different cache is used based on changing parameters. 
     /// </summary>
     [PublicApi]
-    public interface ICacheKeyProvider
+    public interface ICacheKey
     {
         /// <summary>
         /// Unique key-id for this specific situation - could be the same for all instances, or could vary by some parameter.
