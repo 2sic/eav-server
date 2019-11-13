@@ -25,26 +25,25 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Get Children of a specified Attribute Name
         /// </summary>
-        IChildren Children { get; }
+        [PrivateApi("not very useful for the outside, they should use FindChildren instead")]
+        IRelationshipChildren Children { get; }
 
         /// <summary>
-        /// WIP!
+        /// Find the children with optional criteria.
         /// </summary>
-        /// <param name="field"></param>
-        /// <param name="type"></param>
-        /// <param name="useNamedParameters"></param>
-        /// <param name="log"></param>
-        /// <returns></returns>
-        [PrivateApi]
-        List<IEntity> FindChildren(string field = null, string type = null, string useNamedParameters = "xyz", ILog log = null);
+        /// <param name="field">Get only the children of a specific field</param>
+        /// <param name="type">Restrict the results to a specific ContentType</param>
+        /// <param name="log">Optional logger, to debug what happens internally</param>
+        /// <returns>Always returns a list - empty or containing results</returns>
+        List<IEntity> FindChildren(string field = null, string type = null, ILog log = null);
 
         /// <summary>
-        /// WIP!
+        /// Find the parents with optional criteria.
         /// </summary>
-        /// <param name="type"></param>
-        /// <param name="field"></param>
-        /// <returns></returns>
-        [PrivateApi]
-        List<IEntity> FindParents(string type = null, string field = null, string useNamedParameters = "xyz", ILog log = null);
+        /// <param name="field">Get only the children of a specific field</param>
+        /// <param name="type">Restrict the results to a specific ContentType</param>
+        /// <param name="log">Optional logger, to debug what happens internally</param>
+        /// <returns>Always returns a list - empty or containing results</returns>
+        List<IEntity> FindParents(string type = null, string field = null, ILog log = null);
     }
 }

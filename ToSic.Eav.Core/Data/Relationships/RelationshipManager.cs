@@ -31,24 +31,33 @@ namespace ToSic.Eav.Data
 		}
 
 		/// <inheritdoc />
-		public IEnumerable<IEntity> AllChildren => ChildRelationships().Select(r => r.Child);
+		// note: don't cache the result, as it's already cache-chained
+		public IEnumerable<IEntity> AllChildren 
+            => ChildRelationships().Select(r => r.Child);
 
-	    private IEnumerable<EntityRelationship> ChildRelationships() => AllRelationships.Where(r => r.Parent == _entity);
+        // note: don't cache the result, as it's already cache-chained
+	    private IEnumerable<EntityRelationship> ChildRelationships() 
+            => AllRelationships.Where(r => r.Parent == _entity);
 
 
         /// <inheritdoc />
-        public IEnumerable<IEntity> AllParents => ParentRelationships().Select(r => r.Parent);
-	    private IEnumerable<EntityRelationship> ParentRelationships() => AllRelationships.Where(r => r.Child == _entity);
+        // note: don't cache the result, as it's already cache-chained
+        public IEnumerable<IEntity> AllParents 
+            => ParentRelationships().Select(r => r.Parent);
+        // note: don't cache the result, as it's already cache-chained
+	    private IEnumerable<EntityRelationship> ParentRelationships() 
+            => AllRelationships.Where(r => r.Child == _entity);
 
         /// <inheritdoc />
-        public IChildren Children 
-            => _entity is IEntity ? new Children(((IEntity) _entity).Attributes) : null ;
-
-
-
-	    #region Relationship-Navigation - experimental?
         [PrivateApi]
-	    public List<IEntity> FindChildren(string field = null, string type = null, string useNamedParameters = "xyz", ILog log = null)
+        public IRelationshipChildren Children 
+            => _entity is IEntity entity ? new RelationshipChildren(entity.Attributes) : null ;
+
+
+
+	    #region Relationship-Navigation
+        /// <inheritdoc />
+	    public List<IEntity> FindChildren(string field = null, string type = null, ILog log = null)
 	    {
             var wrap = log?.Call("RelMan.FindChildren", $"field:{field}; type:{type}");
 	        List<IEntity> rels;
@@ -78,8 +87,8 @@ namespace ToSic.Eav.Data
 	        return rels;
 	    }
 
-        [PrivateApi]
-	    public List<IEntity> FindParents(string type = null, string field = null, string useNamedParameters = "xyz", ILog log = null)
+        /// <inheritdoc />
+        public List<IEntity> FindParents(string type = null, string field = null, ILog log = null)
 	    {
 	        var wrap = log?.Call("RelMan.FindParents", $"type:{type}; field:{field}");
             var list = ParentRelationships();

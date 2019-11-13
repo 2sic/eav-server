@@ -7,8 +7,8 @@ namespace ToSic.Eav.Data
     /// A dictionary-style children accessor containing all fields which have child-entities. <br/>
     /// Used on the <see cref="IEntity"/> Children property.
     /// </summary>
-    [PublicApi]
-    public class Children : IChildren
+    [PrivateApi("this is for the Relationship.Children API, not recommended for others")]
+    public class RelationshipChildren : IRelationshipChildren
     {
         private readonly Dictionary<string, IAttribute> _attributes;
 
@@ -16,7 +16,7 @@ namespace ToSic.Eav.Data
         /// Initializes a new instance of the Children class.
         /// </summary>
         /// <param name="attributes"></param>
-        internal Children(Dictionary<string, IAttribute> attributes)
+        internal RelationshipChildren(Dictionary<string, IAttribute> attributes)
         {
             _attributes = attributes;
         }
@@ -30,14 +30,10 @@ namespace ToSic.Eav.Data
         {
             get
             {
-                if (_attributes != null)
-                {
-                    if (_attributes.ContainsKey(attributeName))
-                        return (_attributes[attributeName] as Attribute<IEnumerable<IEntity>>)?.TypedContents;
-                    return new List<IEntity>();
-                }
-                // 2019-11-13 2dm - seems like the _objects was never used, so should always have been null
-                return null;
+                if (_attributes == null) return null;
+                return _attributes.ContainsKey(attributeName) 
+                    ? (_attributes[attributeName] as Attribute<IEnumerable<IEntity>>)?.TypedContents 
+                    : new List<IEntity>();
             }
         }
     }

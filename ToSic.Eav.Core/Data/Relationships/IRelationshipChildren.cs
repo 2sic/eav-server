@@ -6,8 +6,8 @@ namespace ToSic.Eav.Data
     /// <summary>
     /// This manages child entities - so entities referenced in a field of an Entity
     /// </summary>
-    [PublicApi]
-    public interface IChildren
+    [PrivateApi("this is for the Relationship.Children API, not recommended for others")]
+    public interface IRelationshipChildren
     {
         /// <summary>
         /// Get Children of a specified Attribute Name
