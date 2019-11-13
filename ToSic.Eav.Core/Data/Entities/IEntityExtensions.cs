@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Documentation;
 
-namespace ToSic.Eav.Data.Query
+namespace ToSic.Eav.Data
 {
+    [PrivateApi]
     public static class IEntityExtensions
     {
         /// <summary>

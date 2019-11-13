@@ -36,7 +36,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             // load an entity
             var loader1 = new Efc11Loader(dbi.SqlDb);
             var app1 = loader1.AppPackage(test.AppId);
-            var itm1 = Data.Query.IEntityExtensions.One(app1.List, test.ItemOnHomeId);
+            var itm1 = IEntityExtensions.One(app1.List, test.ItemOnHomeId);
 
             // save it
             dbi.Save(new List<IEntity> {itm1}, so);
@@ -44,7 +44,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             // re-load it
             var loader2 = new Efc11Loader(dbi.SqlDb); // use existing db context because the transaction is still open
             var app2 = loader2.AppPackage(test.AppId);
-            var itm2 = Data.Query.IEntityExtensions.One(app2.List, test.ItemOnHomeId);
+            var itm2 = IEntityExtensions.One(app2.List, test.ItemOnHomeId);
 
 
             // validate that they are still the same!
@@ -67,7 +67,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             // todo: load a simple, 1 language entity
             var loader1 = new Efc11Loader(dbi.SqlDb);
             var app1 = loader1.AppPackage(test.AppId);
-            var itm1 = Data.Query.IEntityExtensions.One(app1.List, test.ItemOnHomeId);
+            var itm1 = IEntityExtensions.One(app1.List, test.ItemOnHomeId);
 
             // todo: make some minor changes
             var itmNewTitle = new Entity(test.AppId, 0, itm1.Type, new Dictionary<string, object>()
@@ -82,7 +82,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             // reload it
             var loader2 = new Efc11Loader(dbi.SqlDb); // use existing db context because the transaction is still open
             var app2 = loader2.AppPackage(test.AppId);
-            var itm2 = Data.Query.IEntityExtensions.One(app2.List, test.ItemOnHomeId);
+            var itm2 = IEntityExtensions.One(app2.List, test.ItemOnHomeId);
 
 
             // todo: validate that they are almost the same, but clearly different
@@ -123,7 +123,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             // reload it
             var loader2 = new Efc11Loader(dbi.SqlDb); // use existing db context because the transaction is still open
             var app2 = loader2.AppPackage(test.AppId);
-            var itm2 = Data.Query.IEntityExtensions.One(app2.List, newId.First());
+            var itm2 = IEntityExtensions.One(app2.List, newId.First());
 
             Assert.AreEqual(itm2.GetBestTitle(), ctTitle, "title should be loaded as saved" );
 

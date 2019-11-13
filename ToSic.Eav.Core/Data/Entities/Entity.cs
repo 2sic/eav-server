@@ -79,12 +79,6 @@ namespace ToSic.Eav.Data
 
         #endregion
 
-        //#region Explicit Interfaces.IEntity implementation for compatibility
-
-        //IAttribute Interfaces.IEntity.this[string attributeName] => (this as Data.IEntity)[attributeName];
-
-        //#endregion
-
 
         /// <inheritdoc />
         /// <summary>
@@ -225,15 +219,6 @@ namespace ToSic.Eav.Data
         public IEnumerable<IEntity> Permissions => Metadata.Permissions;
         #endregion
 
-
-        #region Obsolete / Special breaking changes
-
-        //public object Value 
-        //    => throw new Exception("Error: You're seeing this because of a breaking change " +
-        //                           "in EAV 4.5 / 2sxc 9.8. Please read this to fix: " +
-        //                           "https://2sxc.org/en/blog/post/fixing-the-breaking-change-in-2sxc-9-8-list-instead-of-dictionary");
-
-        #endregion
 
         public object Value(string field, bool resolve = true)
             => GetBestValue(field, new[] { Thread.CurrentThread.CurrentCulture.Name }, resolve);

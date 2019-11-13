@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Caching;
-using ToSic.Eav.Data.Query;
 using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Data
