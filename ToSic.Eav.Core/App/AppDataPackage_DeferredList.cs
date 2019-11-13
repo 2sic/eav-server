@@ -3,11 +3,11 @@ using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.App
 {
-	/// <inheritdoc cref="IDeferredEntitiesList" />
+	/// <inheritdoc cref="IEntitiesSource" />
 	/// <summary>
 	/// Cache Object for a specific App
 	/// </summary>
-	public partial class AppDataPackage : IDeferredEntitiesList, IHasMetadataSource
+	public partial class AppDataPackage : IEntitiesSource, IHasMetadataSource
     {
 
         IMetadataSource IHasMetadataSource.Metadata => Metadata;

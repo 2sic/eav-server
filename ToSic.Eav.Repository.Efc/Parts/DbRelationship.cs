@@ -227,14 +227,14 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     {
                         case null:
                             continue;
-                        case EntityRelationship _:
-                            list = ((EntityRelationship) list).Identifiers;
+                        case LazyEntities entities:
+                            list = entities.Identifiers;
                             break;
-                        case Guid _:
-                            list = new List<Guid> {(Guid) list};
+                        case Guid guid:
+                            list = new List<Guid> {guid};
                             break;
-                        case int _:
-                            list = new List<int> {(int) list};
+                        case int i:
+                            list = new List<int> {i};
                             break;
                     }
 

@@ -24,8 +24,7 @@ namespace ToSic.Eav.Data
                 var typedObject = ((IValue<T>)this).TypedContents;
 
                 // special case with list of related entities - should return array of guids
-                var maybeRelationshipList = typedObject as EntityRelationship;
-                if (maybeRelationshipList != null)
+                if (typedObject is IEnumerable<IEntity> maybeRelationshipList)
                 {
                     var entityGuids = maybeRelationshipList.Select(e => e?.EntityGuid);
                     return entityGuids.ToList();

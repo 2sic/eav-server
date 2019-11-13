@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.App;
-using ToSic.Eav.Interfaces;
+using ToSic.Eav.Caching;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Data
@@ -11,7 +12,9 @@ namespace ToSic.Eav.Data
 	/// </summary>
 	public class RelationshipManager: IRelationshipManager
 	{
-		private readonly IEntityLight _entity;
+        // special note: ATM everything is an IEntity, so EntityLight is currently not supported
+
+        private readonly IEntityLight _entity;
 	    public readonly IEnumerable<EntityRelationshipItem> AllRelationships;
 
 		/// <summary>
@@ -28,32 +31,23 @@ namespace ToSic.Eav.Data
 		}
 
 		/// <inheritdoc />
-		/// <summary>
-		/// Get all Child Entities
-		/// </summary>
 		public IEnumerable<IEntity> AllChildren => ChildRelationships().Select(r => r.Child);
+
 	    private IEnumerable<EntityRelationshipItem> ChildRelationships() => AllRelationships.Where(r => r.Parent == _entity);
 
 
         /// <inheritdoc />
-        /// <summary>
-        /// Get all Parent Entities
-        /// </summary>
         public IEnumerable<IEntity> AllParents => ParentRelationships().Select(r => r.Parent);
 	    private IEnumerable<EntityRelationshipItem> ParentRelationships() => AllRelationships.Where(r => r.Child == _entity);
 
         /// <inheritdoc />
-        /// <summary>
-        /// Get Children of a specified Attribute Name
-        /// </summary>
         public IChildEntities Children 
-            => _entity is IEntity ? new RelatedEntities(((IEntity) _entity).Attributes) : null ;
-
-        // special note: ATM everything is an IEntity, so EntityLight is currently not supported
+            => _entity is IEntity ? new Children(((IEntity) _entity).Attributes) : null ;
 
 
-	    #region Relationship-Navigation - Experimental
 
+	    #region Relationship-Navigation - experimental?
+        [PrivateApi]
 	    public List<IEntity> FindChildren(string field = null, string type = null, string useNamedParameters = "xyz", ILog log = null)
 	    {
             var wrap = log?.Call("RelMan.FindChildren", $"field:{field}; type:{type}");
@@ -84,6 +78,7 @@ namespace ToSic.Eav.Data
 	        return rels;
 	    }
 
+        [PrivateApi]
 	    public List<IEntity> FindParents(string type = null, string field = null, string useNamedParameters = "xyz", ILog log = null)
 	    {
 	        var wrap = log?.Call("RelMan.FindParents", $"type:{type}; field:{field}");

@@ -1,5 +1,8 @@
-﻿namespace ToSic.Eav.Data
+﻿using ToSic.Eav.Documentation;
+
+namespace ToSic.Eav.Data
 {
+    [PrivateApi]
     public static class AttributeDefinitionExtensions
     {
         /// <summary>

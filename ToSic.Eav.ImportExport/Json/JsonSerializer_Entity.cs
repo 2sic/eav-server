@@ -118,10 +118,10 @@ namespace ToSic.Eav.ImportExport.Json
             //    but the relationship manager doesn't have a direct reference to the guid,
             //    but only to the items directly
             // so it tries to get the guids first, and otherwise uses the items
-            var ents = ToTypedDictionary<EntityRelationship>(gList, log)
+            var entities = ToTypedDictionary<LazyEntities>(gList, log)
                 .ToDictionary(a => a.Key, a => a.Value
                     .ToDictionary(b => b.Key, b => b.Value.ResolveGuids()));
-            return ents;
+            return entities;
         }
 
         private static string LanguageKey(IValue v)

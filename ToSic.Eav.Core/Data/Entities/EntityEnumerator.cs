@@ -1,11 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Data
 {
     /// <inheritdoc />
     /// <remarks>Source: http://msdn.microsoft.com/en-us/library/system.collections.ienumerable.getenumerator.aspx </remarks>
+    [PrivateApi]
     internal class EntityEnumerator : IEnumerator<IEntity>
     {
         private readonly List<IEntity> _entities;

@@ -210,7 +210,7 @@ namespace ToSic.Eav.Apps.Parts
             saveOptions.PreserveUntouchedAttributes = true;
             saveOptions.PreserveUnknownLanguages = true;
 
-            var orig = Data.Query.Entity.FindRepoId(AppManager.Cache.List,id);
+            var orig = Data.Query.IEntityExtensions.FindRepoId(AppManager.Cache.List,id);
             var tempEnt = new Entity(AppManager.AppId, 0, orig.Type, values);
             var saveEnt = new EntitySaver(Log).CreateMergedForSaving(orig, tempEnt, saveOptions);
             Save(saveEnt, saveOptions);
@@ -251,7 +251,7 @@ namespace ToSic.Eav.Apps.Parts
             var parentEntity = AppManager.Read.Entities.Get(parentId);
             var parentField = parentEntity.GetBestValue(field);
 
-            if (!(parentField is EntityRelationship fieldList))
+            if (!(parentField is IEnumerable<IEntity> fieldList))
                 throw new Exception("field " + field + " doesn't seem to be a list of content-items, must abort");
 
             var ids = actionToPerform.Change(fieldList.ToList());

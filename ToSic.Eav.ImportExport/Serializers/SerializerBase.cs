@@ -53,7 +53,7 @@ namespace ToSic.Eav.ImportExport.Serializers
 
         protected int AppId;
         private IEnumerable<IContentType> _types;
-        public void Initialize(int appId, IEnumerable<IContentType> types, IDeferredEntitiesList allEntities, ILog parentLog)
+        public void Initialize(int appId, IEnumerable<IContentType> types, IEntitiesSource allEntities, ILog parentLog)
         {
             AppId = appId;
             _types = types;
@@ -73,7 +73,7 @@ namespace ToSic.Eav.ImportExport.Serializers
 
 
 
-        protected IDeferredEntitiesList RelLookupList
+        protected IEntitiesSource RelLookupList
         {
             get
             {
@@ -84,7 +84,7 @@ namespace ToSic.Eav.ImportExport.Serializers
                 return _relList;
             }
         }
-        private IDeferredEntitiesList _relList;
+        private IEntitiesSource _relList;
 
         protected int GetMetadataNumber(string name) => MetadataProvider.GetId(name);
 

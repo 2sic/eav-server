@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -25,8 +26,8 @@ namespace ToSic.Eav.App
 
             foreach (var entity in appDataPackage.List)
             foreach (var attrib in entity.Attributes.Select(a => a.Value)
-                .Where(a => a is IAttribute<EntityRelationship>)
-                .Cast<IAttribute<EntityRelationship>>())
+                .Where(a => a is IAttribute<LazyEntities>)
+                .Cast<IAttribute<LazyEntities>>())
             foreach (var val in attrib.Typed[0].TypedContents.EntityIds.Where(e => e != null))
                 Add(appDataPackage, cache, entity.EntityId, val);
 
@@ -36,9 +37,10 @@ namespace ToSic.Eav.App
         public void AttachRelationshipResolver(IEntity entity)
         {
             foreach (var attrib in entity.Attributes.Select(a => a.Value)
-                .Where(a => a is IAttribute<EntityRelationship>)
-                .Cast<IAttribute<EntityRelationship>>())
-                    attrib.TypedContents.AttachLookupList(App);
+                .Where(a => a is IAttribute<LazyEntities>)
+                .Cast<IAttribute<LazyEntities>>()
+            )
+                attrib.TypedContents.AttachLookupList(App);
         }
 
         public static void Add(AppDataPackage appDataPackage, List<EntityRelationshipItem> list, int parent, int? child)

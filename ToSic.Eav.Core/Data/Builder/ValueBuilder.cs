@@ -13,14 +13,14 @@ namespace ToSic.Eav.Data.Builder
         /// Creates a Typed Value Model
         /// </summary>
         public static IValue Build(string attributeType, object value, List<ILanguage> languages,
-            IDeferredEntitiesList fullEntityListForLookup = null)
+            IEntitiesSource fullEntityListForLookup = null)
             => Build((ValueTypes)Enum.Parse(typeof(ValueTypes), attributeType), value, languages, fullEntityListForLookup);
 
 
         /// <summary>
         /// Creates a Typed Value Model
         /// </summary>
-        public static IValue Build(ValueTypes type, object value, List<ILanguage> languages, IDeferredEntitiesList fullEntityListForLookup = null)
+        public static IValue Build(ValueTypes type, object value, List<ILanguage> languages, IEntitiesSource fullEntityListForLookup = null)
         {
             if (languages == null) languages = new List<ILanguage>();
             Value typedModel;
@@ -57,18 +57,18 @@ namespace ToSic.Eav.Data.Builder
 
                     case ValueTypes.Entity:
                         var entityIds = value as IEnumerable<int?> ?? (value as IEnumerable<int>)?.Select(x => (int?)x).ToList();
-                        EntityRelationship rel;
+                        LazyEntities rel;
                         if (entityIds != null)
-                            rel = new EntityRelationship(fullEntityListForLookup, entityIds.ToList());
-                        else if (value is EntityRelationship rels)
+                            rel = new LazyEntities(fullEntityListForLookup, entityIds.ToList());
+                        else if (value is LazyEntities rels)
                             rel = rels.Guids != null
-                                ? new EntityRelationship(fullEntityListForLookup, rels.Guids)
-                                : new EntityRelationship(fullEntityListForLookup, rels.EntityIds);
+                                ? new LazyEntities(fullEntityListForLookup, rels.Guids)
+                                : new LazyEntities(fullEntityListForLookup, rels.EntityIds);
                         else if (value is List<Guid?> guids)
-                            rel = new EntityRelationship(fullEntityListForLookup, guids);
+                            rel = new LazyEntities(fullEntityListForLookup, guids);
                         else
-                            rel = new EntityRelationship(fullEntityListForLookup, GuidCsvToList(value)); 
-                        typedModel = new Value<EntityRelationship>(rel);
+                            rel = new LazyEntities(fullEntityListForLookup, GuidCsvToList(value)); 
+                        typedModel = new Value<LazyEntities>(rel);
                         break;
                     // ReSharper disable RedundantCaseLabel
                     case ValueTypes.String:  // most common case
@@ -119,7 +119,7 @@ namespace ToSic.Eav.Data.Builder
         /// ...and then it must be a new object every time, 
         /// because the object could be changed at runtime, and if it were shared, then it would be changed in many places
         /// </summary>
-        internal static Value<EntityRelationship> NullRelationship => new Value<EntityRelationship>(new EntityRelationship(null, identifiers: null))
+        internal static Value<LazyEntities> NullRelationship => new Value<LazyEntities>(new LazyEntities(null, identifiers: null))
         {
             Languages = new List<ILanguage>()
         };

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Implementations.ValueConverter;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Data
@@ -191,7 +190,7 @@ namespace ToSic.Eav.Data
 
             // in case the title is an entity-picker and has items, try to ask it for the title
             // note that we're counting recursions, just to be sure it won't loop forever
-            var maybeRelationship = bestTitle as EntityRelationship;
+            var maybeRelationship = bestTitle as IEnumerable<IEntity>;
             if (recursionCount < 3 && (maybeRelationship?.Any() ?? false))
                 bestTitle = (maybeRelationship.FirstOrDefault() as Entity)?
                     .GetBestTitle(recursionCount + 1)

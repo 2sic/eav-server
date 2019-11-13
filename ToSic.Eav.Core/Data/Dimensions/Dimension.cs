@@ -1,16 +1,21 @@
-using ToSic.Eav.Interfaces;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Data
 {
     /// <inheritdoc />
     /// <summary>
-    /// Represents a Dimension Assignment
+    /// Represents a Dimension / Language Assignment
     /// </summary>
+    [PublicApi]
     public class Dimension : ILanguage
     {
+        /// <inheritdoc />
         public int DimensionId { get; set; }
+
+        /// <inheritdoc />
         public bool ReadOnly { get; set; }
 
+        /// <inheritdoc />
         public string Key
         {
             get => _key;

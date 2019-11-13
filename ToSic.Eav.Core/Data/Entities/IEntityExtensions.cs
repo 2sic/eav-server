@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data.Query
 {
-    public static class Entity
+    public static class IEntityExtensions
     {
         /// <summary>
         /// Get an entity with an entity-id

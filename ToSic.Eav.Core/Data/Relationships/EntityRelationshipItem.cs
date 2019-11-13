@@ -1,10 +1,11 @@
-﻿using ToSic.Eav.Interfaces;
+﻿using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Data
 {
 	/// <summary>
-	/// Represents a Relation between two entities
+	/// Represents a Relation between two entities, connecting a parent to a child.
 	/// </summary>
+	[PublicApi]
 	public class EntityRelationshipItem
 	{
 		/// <summary>
@@ -18,7 +19,14 @@ namespace ToSic.Eav.Data
 			Child = child;
 		}
 
+        /// <summary>
+        /// The parent item, which has a reference to the child
+        /// </summary>
 		public IEntity Parent { get; internal set; }
+
+        /// <summary>
+        /// The child item, which is referenced by the parent
+        /// </summary>
 		public IEntity Child { get; internal set; }
 	}
 }

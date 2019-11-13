@@ -80,7 +80,7 @@ namespace ToSic.Eav.WebApi
             // of the chosen title-item
             if (l.Title != null && l.Title.Type == "Entity")
             {
-                var val = l.GetBestValue(Constants.EntityFieldTitle) as Data.EntityRelationship;
+                var val = l.GetBestValue(Constants.EntityFieldTitle) as IEnumerable<IEntity>;
                 title = val?.FirstOrDefault()?.GetBestTitle();
             }
             else

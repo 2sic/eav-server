@@ -62,7 +62,7 @@ namespace ToSic.Eav.Data
                 case ValueTypes.Number:
                     return new Attribute<decimal?>(name, typeName);
                 case ValueTypes.Entity:
-                    return new Attribute<EntityRelationship>(name, typeName) { Values = new List<IValue> { ValueBuilder.NullRelationship } };
+                    return new Attribute<LazyEntities>(name, typeName) { Values = new List<IValue> { ValueBuilder.NullRelationship } };
                 // ReSharper disable RedundantCaseLabel
                 case ValueTypes.String:
                 case ValueTypes.Hyperlink:

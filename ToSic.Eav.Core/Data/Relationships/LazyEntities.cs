@@ -4,14 +4,17 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data.Query;
-using ToSic.Eav.Interfaces;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Data
 {
     /// <summary>
-    /// Represents Relationships to Child Entities
+    /// Delivers entities which are needed. <br/>
+    /// It's lazy, because on initialization it only knows the Ids (int/guid) of the items to pick up, and only retrieves them when needed. <br/>
+    /// Once retrieved, it will cache the result, until the up-stream reports changes.
     /// </summary>
-    public class EntityRelationship : IEnumerable<IEntity>, ICacheDependent
+    [PublicApi]
+    public class LazyEntities : IEnumerable<IEntity>, ICacheDependent
     {
         /// <summary>
         /// Blank value, just for marking the list as empty
@@ -21,19 +24,28 @@ namespace ToSic.Eav.Data
         private readonly bool _useGuid;
 
         /// <summary>
-        /// List of Child EntityIds
+        /// List of Child EntityIds - int-based.
         /// </summary>
-        public List<int?> EntityIds 
+        /// <remarks>
+        /// Note that only the EntityIds <em>or</em> the Guids should be populated.
+        /// </remarks>
+        internal List<int?> EntityIds 
             => _entityIds ?? (_entityIds = this.Select(e => e?.EntityId).ToList());
 
         /// <summary>
-        /// Identifiers
+        /// Identifiers of the items in the list. Build with either the Guids or the Ids, depending on what was used. 
         /// </summary>
         public IList Identifiers
             => _useGuid ? Guids.ToList() as IList : EntityIds.ToList();
 
         private List<int?> _entityIds;
 
+        /// <summary>
+        /// List of Child EntityIds - int-based.
+        /// </summary>
+        /// <remarks>
+        /// Note that only the EntityIds <em>or</em> the Guids should be populated.
+        /// </remarks>
         internal List<Guid?> Guids { get; }
 
         /// <summary>
@@ -46,6 +58,7 @@ namespace ToSic.Eav.Data
         /// This is important for serializing to json, because there we need the guids, 
         /// and the serializer shouldn't have know about the internals of relationship management
         /// </remarks>
+        [PrivateApi]
         public List<Guid?> ResolveGuids()
         {
             if (_useGuid) return Guids;
@@ -57,14 +70,15 @@ namespace ToSic.Eav.Data
             return this.Select(e => e?.EntityGuid).ToList();
         }
 
-        public void AttachLookupList(IDeferredEntitiesList lookupList)
+        [PrivateApi]
+        internal void AttachLookupList(IEntitiesSource lookupList)
         {
             _lookupList = lookupList
                 ?? throw new ArgumentNullException(nameof(lookupList), "Trying to resolve relationship guids, which requires a full list of the app-items, but didn't receive it.");
             _entities = null; // reset possibly cached list of entities from before, so it will be rebuilt
         }
 
-        private IDeferredEntitiesList _lookupList;
+        private IEntitiesSource _lookupList;
         private List<IEntity> _entities;
 
 
@@ -73,7 +87,8 @@ namespace ToSic.Eav.Data
         /// </summary>
         /// <param name="allEntities">DataSource to retrieve child entities</param>
         /// <param name="identifiers">List of IDs to initialize with</param>
-        public EntityRelationship(IDeferredEntitiesList allEntities, IList identifiers)
+        [PrivateApi]
+        internal LazyEntities(IEntitiesSource allEntities, IList identifiers)
         {
             _lookupList = allEntities;
             switch (identifiers)
@@ -97,6 +112,7 @@ namespace ToSic.Eav.Data
         }
 
         // todo: unclear when this is actually needed / used?
+        [PrivateApi]
         public override string ToString()
         {
             return !_useGuid
@@ -133,8 +149,10 @@ namespace ToSic.Eav.Data
             return result;
         }
 
+        /// <inheritdoc />
         public long CacheTimestamp { get; private set; }
 
+        /// <inheritdoc />
         public bool CacheChanged() => _lookupList?.CacheChanged(CacheTimestamp) ?? false;
     }
 }

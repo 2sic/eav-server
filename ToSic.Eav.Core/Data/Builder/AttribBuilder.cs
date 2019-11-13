@@ -75,7 +75,7 @@ namespace ToSic.Eav.Data.Builder
         /// </summary>
         public static IValue AddValue(this Dictionary<string, IAttribute> target, string attributeName,
             object value, string valueType, string language = null, bool languageReadOnly = false,
-            bool resolveHyperlink = false, IDeferredEntitiesList allEntitiesForRelationships = null)
+            bool resolveHyperlink = false, IEntitiesSource allEntitiesForRelationships = null)
         {
             // pre-convert links if necessary...
             if (resolveHyperlink && valueType == ValueTypes.Hyperlink.ToString())
@@ -126,7 +126,7 @@ namespace ToSic.Eav.Data.Builder
 
 
         public static void BuildReferenceAttribute(this IEntity newEntity, string attribName, IEnumerable<int?> references,
-            IDeferredEntitiesList app)
+            IEntitiesSource app)
         {
             var attrib = newEntity.Attributes[attribName];
             attrib.Values = new List<IValue> { ValueBuilder.Build(attrib.Type, references, null, app) };
