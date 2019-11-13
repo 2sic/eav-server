@@ -73,10 +73,10 @@ namespace ToSic.Eav.Repository.Efc.Tests
         #endregion
 
         #region languge definitions
-        private static Dimension langEn = new Dimension {DimensionId = 1, Key = "en-US"};
-        private static Dimension langDeDe = new Dimension {DimensionId = 42, Key = "de-DE"};
-        private static Dimension langDeCh = new Dimension {DimensionId = 39, Key = "de-CH"};
-        private static Dimension langFr = new Dimension {DimensionId = 99, Key = "fr-FR"};
+        private static Language langEn = new Language {DimensionId = 1, Key = "en-US"};
+        private static Language langDeDe = new Language {DimensionId = 42, Key = "de-DE"};
+        private static Language langDeCh = new Language {DimensionId = 39, Key = "de-CH"};
+        private static Language langFr = new Language {DimensionId = 99, Key = "fr-FR"};
 
         private static DimensionDefinition langEnDef = new DimensionDefinition { DimensionId = 1, EnvironmentKey = "en-US" };
         private static DimensionDefinition langDeDeDef = new DimensionDefinition { DimensionId = 42, EnvironmentKey = "de-DE" };

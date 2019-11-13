@@ -53,7 +53,7 @@ namespace ToSic.Eav.WebApi.SaveHelpers
                     // append languages OR empty language as fallback
                     if (value.Dimensions != null)
                         foreach (var dimension in value.Dimensions)
-                            importValue.Languages.Add(new Dimension { Key = dimension.Key, ReadOnly = dimension.Value });
+                            importValue.Languages.Add(new Language { Key = dimension.Key, ReadOnly = dimension.Value });
                 }
             }
 

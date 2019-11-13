@@ -25,7 +25,7 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Get Children of a specified Attribute Name
         /// </summary>
-        IChildEntities Children { get; }
+        IChildren Children { get; }
 
         /// <summary>
         /// WIP!

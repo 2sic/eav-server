@@ -7,7 +7,7 @@ namespace ToSic.Eav.Data
     /// Represents a Dimension / Language Assignment
     /// </summary>
     [PublicApi]
-    public class Dimension : ILanguage
+    public class Language : ILanguage
     {
         /// <inheritdoc />
         public int DimensionId { get; set; }

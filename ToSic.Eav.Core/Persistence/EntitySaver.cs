@@ -188,7 +188,7 @@ namespace ToSic.Eav.Persistence
 
                 // Add the value with the remaining languages / relationships
                 var val = orgVal.Copy(original.Type);
-                val.Languages = remainingLanguages.Select(l => ((Dimension)l).Copy() as ILanguage).ToList();
+                val.Languages = remainingLanguages.Select(l => ((Language)l).Copy() as ILanguage).ToList();
                 result.Values.Add(val);
             }
             return result;

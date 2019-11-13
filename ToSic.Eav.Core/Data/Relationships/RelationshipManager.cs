@@ -41,7 +41,7 @@ namespace ToSic.Eav.Data
 	    private IEnumerable<EntityRelationship> ParentRelationships() => AllRelationships.Where(r => r.Child == _entity);
 
         /// <inheritdoc />
-        public IChildEntities Children 
+        public IChildren Children 
             => _entity is IEntity ? new Children(((IEntity) _entity).Attributes) : null ;
 
 

@@ -8,10 +8,9 @@ namespace ToSic.Eav.Data
     /// Used on the <see cref="IEntity"/> Children property.
     /// </summary>
     [PublicApi]
-    public class Children : IChildEntities
+    public class Children : IChildren
     {
         private readonly Dictionary<string, IAttribute> _attributes;
-        //private readonly Dictionary<string, object> _objects;
 
         /// <summary>
         /// Initializes a new instance of the Children class.
@@ -21,15 +20,6 @@ namespace ToSic.Eav.Data
         {
             _attributes = attributes;
         }
-
-        ///// <summary>
-        ///// Initializes a new instance of the ChildEntities class.
-        ///// </summary>
-        ///// <param name="objects"></param>
-        //public RelatedEntities(Dictionary<string, object> objects)
-        //{
-        //    _objects = objects;
-        //}
 
         /// <inheritdoc />
         /// <summary>
@@ -48,8 +38,6 @@ namespace ToSic.Eav.Data
                 }
                 // 2019-11-13 2dm - seems like the _objects was never used, so should always have been null
                 return null;
-                //var objRelationships = _objects[attributeName] as EntityRelationship;
-                //return objRelationships;
             }
         }
     }

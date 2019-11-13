@@ -88,7 +88,7 @@ namespace ToSic.Eav.Data.Builder
             if (string.IsNullOrWhiteSpace(language)) language = null;
 
             var valueWithLanguages = ValueBuilder.Build(valueType, value, language == null
-                ? null : new List<ILanguage> { new Dimension { Key = language, ReadOnly = languageReadOnly } }, allEntitiesForRelationships);
+                ? null : new List<ILanguage> { new Language { Key = language, ReadOnly = languageReadOnly } }, allEntitiesForRelationships);
 
 
             // add or replace to the collection

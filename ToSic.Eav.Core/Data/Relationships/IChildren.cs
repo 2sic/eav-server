@@ -7,7 +7,7 @@ namespace ToSic.Eav.Data
     /// This manages child entities - so entities referenced in a field of an Entity
     /// </summary>
     [PublicApi]
-    public interface IChildEntities
+    public interface IChildren
     {
         /// <summary>
         /// Get Children of a specified Attribute Name

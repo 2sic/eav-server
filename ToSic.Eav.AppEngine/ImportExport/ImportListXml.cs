@@ -156,7 +156,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     var entityValue = entity.Attributes.FindItemOfLanguage(valueName, valueReferenceLanguage);
                     if (entityValue != null)
                     {
-                        entityValue.Languages.Add(new Dimension { Key = nodeLang, ReadOnly = valueReadOnly });
+                        entityValue.Languages.Add(new Language { Key = nodeLang, ReadOnly = valueReadOnly });
                         continue;
                     }
 
@@ -182,7 +182,7 @@ namespace ToSic.Eav.Apps.ImportExport
                             valExisting.Languages.FirstOrDefault(l => l.Key == valueReferenceLanguage)?.ReadOnly ?? false,
                             _resolveReferenceMode == ImportResourceReferenceMode.Resolve)
                         //.AddLanguageReference(documentElementLanguage, valueReadOnly);
-                        .Languages.Add(new Dimension { Key = nodeLang, ReadOnly = valueReadOnly });
+                        .Languages.Add(new Language { Key = nodeLang, ReadOnly = valueReadOnly });
                 }
             }
 

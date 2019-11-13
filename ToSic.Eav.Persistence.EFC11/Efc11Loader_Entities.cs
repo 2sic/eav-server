@@ -146,7 +146,7 @@ namespace ToSic.Eav.Persistence.Efc
                             .Select(v2 => new
                             {
                                 v2.Value,
-                                Languages = v2.ToSicEavValuesDimensions.Select(l => new Dimension
+                                Languages = v2.ToSicEavValuesDimensions.Select(l => new Language
                                 {
                                     DimensionId = l.DimensionId,
                                     ReadOnly = l.ReadOnly,

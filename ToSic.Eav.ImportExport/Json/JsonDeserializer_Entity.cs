@@ -179,7 +179,7 @@ namespace ToSic.Eav.ImportExport.Json
             => languages == NoLanguage
             ? new List<ILanguage>()
             : languages.Split(',')
-                .Select(a => new Dimension {Key = a.Replace(ReadOnlyMarker, ""), ReadOnly = a.StartsWith(ReadOnlyMarker)} as ILanguage)
+                .Select(a => new Language {Key = a.Replace(ReadOnlyMarker, ""), ReadOnly = a.StartsWith(ReadOnlyMarker)} as ILanguage)
                 .ToList();
 
 
