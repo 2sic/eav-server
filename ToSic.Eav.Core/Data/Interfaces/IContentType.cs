@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Repositories;
 
 namespace ToSic.Eav.Data

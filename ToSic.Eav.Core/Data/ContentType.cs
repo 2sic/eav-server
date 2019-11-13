@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Repositories;
 
@@ -9,23 +10,42 @@ namespace ToSic.Eav.Data
     /// <summary>
     /// Represents a Content Type
     /// </summary>
+    [PublicApi]
     public class ContentType : IContentType, IContentTypeShared, IHasExternalI18n
     {
         #region simple properties
 
+        /// <inheritdoc />
         public int AppId { get; }
+
+        /// <inheritdoc />
         public string Name { get; protected set; }
+
+        /// <inheritdoc />
         public string StaticName { get; protected set; }
+
+        /// <inheritdoc />
         public string Description { get; protected set; }
+
+        /// <inheritdoc />
         public string Scope { get; protected set; }
+
+        /// <inheritdoc />
         public int ContentTypeId { get; }
+
+        /// <inheritdoc />
         public IList<IAttributeDefinition> Attributes { get; set; }
+
+        /// <inheritdoc />
         public RepositoryTypes RepositoryType { get; internal set; } = RepositoryTypes.Sql;
 
+        /// <inheritdoc />
         public string RepositoryAddress { get; internal set; } = "";
 
+        /// <inheritdoc />
         public bool IsDynamic { get; internal set; }
 
+        /// <inheritdoc />
         public bool Is(string name) => Name == name || StaticName == name;
 
         /// <inheritdoc />
@@ -35,9 +55,13 @@ namespace ToSic.Eav.Data
         #endregion
 
         #region Sharing Content Types
+        /// <inheritdoc />
         public int? ParentId { get; internal set; }
+        /// <inheritdoc />
         public int ParentAppId { get; }
+        /// <inheritdoc />
         public int ParentZoneId { get; }
+        /// <inheritdoc />
         public bool AlwaysShareConfiguration { get; protected set; }
 
         #endregion
@@ -47,7 +71,7 @@ namespace ToSic.Eav.Data
 
         /// <inheritdoc />
         /// <summary>
-        /// Initializes a new instance of the ContentType class.
+        /// Initializes a new ContentType - usually when building the cache
         /// </summary>
         public ContentType(int appId, string name, string staticName, int attributeSetId, string scope,
             string description, int? usesConfigurationOfAttributeSet, int configZoneId, int configAppId,
@@ -81,7 +105,7 @@ namespace ToSic.Eav.Data
 
 
         #region Helpers just for creating ContentTypes which will be imported
-
+        [PrivateApi]
         public void SetImportParameters(string scope, string staticName, string description, bool alwaysShareDef)
         {
             Scope = scope;
@@ -92,8 +116,10 @@ namespace ToSic.Eav.Data
 
         // special values just needed for import / save 
         // todo: try to place in a sub-object to un-clutter this ContentType object
+        [PrivateApi]
         public bool OnSaveSortAttributes { get; set; } = false;
 
+        [PrivateApi]
         public string OnSaveUseParentStaticName { get; set; }
 
 
@@ -103,6 +129,7 @@ namespace ToSic.Eav.Data
 
 
 
+        /// <inheritdoc />
         public ContentTypeMetadata Metadata
             => _metadata ?? (_metadata = ParentAppId == AppId
                    ? new ContentTypeMetadata(StaticName,
@@ -114,6 +141,7 @@ namespace ToSic.Eav.Data
         #endregion
 
         #region external i18n
+        [PrivateApi]
         public string I18nKey { get; protected set; } = null;
         #endregion
 
