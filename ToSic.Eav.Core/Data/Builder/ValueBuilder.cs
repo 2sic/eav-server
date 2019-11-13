@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using ToSic.Eav.Enums;
 
 namespace ToSic.Eav.Data.Builder
 {
@@ -20,6 +19,9 @@ namespace ToSic.Eav.Data.Builder
         /// <summary>
         /// Creates a Typed Value Model
         /// </summary>
+        /// <returns>
+        /// An IValue, which is actually an IValue<string>, IValue<decimal>, IValue<IEnumerable<IEntity>> etc.
+        /// </returns>
         public static IValue Build(ValueTypes type, object value, List<ILanguage> languages, IEntitiesSource fullEntityListForLookup = null)
         {
             if (languages == null) languages = new List<ILanguage>();
@@ -30,7 +32,7 @@ namespace ToSic.Eav.Data.Builder
                 switch (type)
                 {
                     case ValueTypes.Boolean:
-                        typedModel = new Value<bool?>(value as bool? ?? (Boolean.TryParse(stringValue, out var typedBoolean)
+                        typedModel = new Value<bool?>(value as bool? ?? (bool.TryParse(stringValue, out var typedBoolean)
                             ? typedBoolean
                             : new bool?()));
                         break;
@@ -43,32 +45,36 @@ namespace ToSic.Eav.Data.Builder
 
                     case ValueTypes.Number:
                         decimal? newDec = null;
-                        if(value != null) 
-                            if (!(value is string && String.IsNullOrEmpty(value as string))) // only try converting if it's not an empty string
+                        if(value != null && !(value is string s && string.IsNullOrEmpty(s)))
+                        {
+                            // only try converting if it's not an empty string
+                            try
                             {
-                                try
-                                {
-                                    newDec = Convert.ToDecimal(value, CultureInfo.InvariantCulture);
-                                }
-                                catch { /* ignored */ }
+                                newDec = Convert.ToDecimal(value, CultureInfo.InvariantCulture);
                             }
+                            catch { /* ignored */ }
+                        }
+
                         typedModel = new Value<decimal?>(newDec);
                         break;
 
                     case ValueTypes.Entity:
-                        var entityIds = value as IEnumerable<int?> ?? (value as IEnumerable<int>)?.Select(x => (int?)x).ToList();
-                        LazyEntities rel;
+                        IEnumerable<IEntity> rel;
+                        var entityIds = value as IEnumerable<int?> ?? (value as IEnumerable<int>)
+                                        ?.Select(x => (int?) x).ToList();
                         if (entityIds != null)
                             rel = new LazyEntities(fullEntityListForLookup, entityIds.ToList());
-                        else if (value is LazyEntities rels)
-                            rel = rels.Guids != null
-                                ? new LazyEntities(fullEntityListForLookup, rels.Guids)
-                                : new LazyEntities(fullEntityListForLookup, rels.EntityIds);
+                        else if (value is IEnumerable<IEntity> relList)
+                            //var lazy = (LazyEntities) relList;
+                            //rel = lazy.Guids != null
+                            //    ? new LazyEntities(fullEntityListForLookup, lazy.Guids)
+                            //    : new LazyEntities(fullEntityListForLookup, lazy.EntityIds);
+                            rel = new LazyEntities(fullEntityListForLookup, ((LazyEntities)relList).Identifiers);
                         else if (value is List<Guid?> guids)
                             rel = new LazyEntities(fullEntityListForLookup, guids);
                         else
                             rel = new LazyEntities(fullEntityListForLookup, GuidCsvToList(value)); 
-                        typedModel = new Value<LazyEntities>(rel);
+                        typedModel = new Value<IEnumerable<IEntity>>(rel);
                         break;
                     // ReSharper disable RedundantCaseLabel
                     case ValueTypes.String:  // most common case
@@ -119,7 +125,8 @@ namespace ToSic.Eav.Data.Builder
         /// ...and then it must be a new object every time, 
         /// because the object could be changed at runtime, and if it were shared, then it would be changed in many places
         /// </summary>
-        internal static Value<LazyEntities> NullRelationship => new Value<LazyEntities>(new LazyEntities(null, identifiers: null))
+        internal static Value</*LazyEntities*/IEnumerable<IEntity>> NullRelationship 
+            => new Value</*LazyEntities*/IEnumerable<IEntity>>(new LazyEntities(null, identifiers: null))
         {
             Languages = new List<ILanguage>()
         };

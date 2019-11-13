@@ -109,7 +109,8 @@ namespace ToSic.Eav.ImportExport.Json
         /// this is a special helper to create typed entities-dictionaries
         /// </summary>
         /// <returns></returns>
-        private static Dictionary<string, Dictionary<string, List<Guid?>>> ToTypedDictionaryEntity(List<IAttribute> gList, ILog log)
+        private static Dictionary<string, Dictionary<string, List<Guid?>>> 
+            ToTypedDictionaryEntity(List<IAttribute> gList, ILog log)
         {
             // the following is a bit complex for the following reason
             // 1. either the relationship is guid based, and in that case, 
@@ -118,9 +119,9 @@ namespace ToSic.Eav.ImportExport.Json
             //    but the relationship manager doesn't have a direct reference to the guid,
             //    but only to the items directly
             // so it tries to get the guids first, and otherwise uses the items
-            var entities = ToTypedDictionary<LazyEntities>(gList, log)
+            var entities = ToTypedDictionary</*LazyEntities*/IEnumerable<IEntity>>(gList, log)
                 .ToDictionary(a => a.Key, a => a.Value
-                    .ToDictionary(b => b.Key, b => b.Value.ResolveGuids()));
+                    .ToDictionary(b => b.Key, b => ((LazyEntities)b.Value).ResolveGuids()));
             return entities;
         }
 

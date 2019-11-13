@@ -29,7 +29,7 @@ namespace ToSic.Eav.Persistence.Xml
         public XElement ToXml(IEntity entity)
         {
             var valuesXElement = entity.Attributes.Values
-                .Where(a => a.Type != "Entity" || ((a.Values.FirstOrDefault() as IValue<LazyEntities>)?.TypedContents?.Any() ?? false))
+                .Where(a => a.Type != "Entity" || ((a.Values.FirstOrDefault() as IValue</*LazyEntities*/IEnumerable<IEntity>>)?.TypedContents?.Any() ?? false))
                 .OrderBy(a => a.Name)
                 .SelectMany(a => a.Values.Select(v => XmlValue(a, v)));
 
