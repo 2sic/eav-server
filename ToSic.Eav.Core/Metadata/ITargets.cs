@@ -4,27 +4,26 @@ using ToSic.Eav.Documentation;
 namespace ToSic.Eav.Metadata
 {
     /// <summary>
-    /// This interface allows objects to provide metadata from "remote" systems
-    /// meaning from apps / sources which the original source doesn't know about
+    /// This interface allows objects to lookup metadata-target id / name of the system. 
     /// </summary>
     [PublicApi]
-    public interface IGlobalMetadataProvider
+    public interface ITargets
     {
         /// <summary>
-        /// Look up the type-number of a metadata target type. These are registered in the DB. 
+        /// Look up the target Id of a metadata target. These are registered somewhere (DB, file-system, etc.)
         /// Use this if you know the type-name, but need the type ID
         /// </summary>
         /// <param name="typeName"></param>
         /// <returns>the id of the target type</returns>
-        int GetType(string typeName);
+        int GetId(string typeName);
 
         /// <summary>
-        /// Look up the type-name of a metadata target type. These are registered in the DB. 
+        /// Look up the target name of a metadata target. These are registered somewhere (Db, file-system, etc.)
         /// Use this if you know the type-ID, but need the type name
         /// </summary>
         /// <param name="typeId">the type id</param>
         /// <returns>the name of the target type</returns>
-        string GetType(int typeId);
+        string GetName(int typeId);
 
         [PrivateApi]
         ImmutableDictionary<int, string> TargetTypes { get; }

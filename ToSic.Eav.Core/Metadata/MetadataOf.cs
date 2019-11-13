@@ -1,22 +1,24 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Metadata;
+using ToSic.Eav.Data;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Security.Permissions;
 
-namespace ToSic.Eav.Data
+namespace ToSic.Eav.Metadata
 {
-    /// <inheritdoc cref="IMetadataOfItem" />
     /// <summary>
-    /// Metadata entities of an item (a content-type or another entity)
+    /// Metadata of an item (a content-type or another entity). <br/>
+    /// It's usually on a <strong>Metadata</strong> property of things that can have metadata.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class MetadataOf<T> : IMetadataOfItem, IMetadataWithHiddenItems
+    /// <typeparam name="T">The type this metadata uses as a key - int, string, guid</typeparam>
+    [PublicApi]
+    public class MetadataOf<T> : IMetadataOf, IMetadataInternals
     {
         /// <summary>
-        /// initialize using a prepared metadata provider
+        /// initialize using a prepared metadata source
         /// </summary>
-        public MetadataOf(int itemType, T key, IDeferredEntitiesList metaProvider) : this(itemType, key)
+        public MetadataOf(int itemType, T key, IHasMetadataSource metaProvider) : this(itemType, key)
         {
             _appMetadataProvider = metaProvider;
         }
@@ -36,19 +38,22 @@ namespace ToSic.Eav.Data
             Key = key;
         }
 
-
-        //private int AppId = 0; 
         private readonly int _remoteAppId;
         private readonly int _remoteZoneId;
 
-        private readonly IDeferredEntitiesList _appMetadataProvider;
+        private readonly IHasMetadataSource _appMetadataProvider;
         private readonly int _itemType;
-        protected readonly T Key;
+
+        /// <summary>
+        /// The key which identifies the item we're enriching with metadata
+        /// </summary>
+        public T Key { get; }
 
         /// <summary>
         /// All entities is internal - because it contains everything
         /// including permissions-metadata
         /// </summary>
+        [PrivateApi]
         public List<IEntity> AllWithHidden {
             get
             {             
@@ -83,44 +88,50 @@ namespace ToSic.Eav.Data
 
         private long _cacheTimestamp;
 
+        [PrivateApi]
         protected bool RequiresReload()
-            => _metadataProvider != null && _metadataProvider.CacheChanged(_cacheTimestamp);
+            => _metadataSource != null && _metadataSource.CacheChanged(_cacheTimestamp);
         
-
+        [PrivateApi]
         protected virtual void LoadFromProvider()
         {
             var mdProvider = GetMetadataProvider();
-            Use(mdProvider?.GetMetadata(_itemType, Key).ToList()
+            Use(mdProvider?.Get(_itemType, Key).ToList()
                        ?? new List<IEntity>());
             if (mdProvider != null)
                 _cacheTimestamp = mdProvider.CacheTimestamp;
         }
 
-        protected IMetadataProvider GetMetadataProvider()
+        [PrivateApi]
+        protected IMetadataSource GetMetadataProvider()
         {
             // check if already retrieved
-            if (_alreadyTriedToGetProvider) return _metadataProvider;
+            if (_alreadyTriedToGetProvider) return _metadataSource;
 
-            _metadataProvider = _remoteAppId != 0
+            _metadataSource = _remoteAppId != 0
                 ? (_remoteZoneId != 0
-                    ? Factory.Resolve<IRemoteMetadataProvider>()?.OfZoneAndApp(_remoteZoneId, _remoteAppId)
-                    : Factory.Resolve<IRemoteMetadataProvider>()?.OfApp(_remoteAppId))
+                    ? Factory.Resolve<IRemoteMetadata>()?.OfZoneAndApp(_remoteZoneId, _remoteAppId)
+                    : Factory.Resolve<IRemoteMetadata>()?.OfApp(_remoteAppId))
                 : _appMetadataProvider?.Metadata;
             _alreadyTriedToGetProvider = true;
-            return _metadataProvider;
+            return _metadataSource;
         }
         private bool _alreadyTriedToGetProvider;
-        private IMetadataProvider _metadataProvider;
+        private IMetadataSource _metadataSource;
 
         // 2019-10-27 2dm - I think this is a leftover of old times, I believe it's not needed any more
         //public void Add(IEntity additionalItem) => AllWithHidden.Add(additionalItem);
 
+        [PrivateApi]
         public void Use(List<IEntity> items)
         {
             _allEntities = items;
             _filteredEntities = null; // ensure this will be re-built when accessed
         }
 
+        #region GetBestValue
+
+        /// <inheritdoc />
         public TVal GetBestValue<TVal>(string name, string type = null)
         {
             var list = type == null ? this : this.Where(md => md.Type.StaticName == type || md.Type.Name == type);
@@ -128,6 +139,7 @@ namespace ToSic.Eav.Data
             return found == null ? default : found.GetBestValue<TVal>(name);
         }
 
+        /// <inheritdoc />
         public TVal GetBestValue<TVal>(string name, string[] types)
         {
             foreach (var type in types)
@@ -139,9 +151,13 @@ namespace ToSic.Eav.Data
             return default;
         }
 
+        #endregion
+
         #region enumerators
+        [PrivateApi]
         public IEnumerator<IEntity> GetEnumerator() => new EntityEnumerator(FilteredEntities);
 
+        [PrivateApi]
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         #endregion
     }

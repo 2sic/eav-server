@@ -1,17 +1,16 @@
 ﻿using System.Collections.Immutable;
 using System.Linq;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Persistence.Efc
 {
-    public class GlobalMetadataProvider : IGlobalMetadataProvider
+    public class EfcMetadataTargets : ITargets
     {
 
-        public int GetType(string typeName) => TargetTypes.First(mt => mt.Value == typeName).Key;
+        public int GetId(string typeName) => TargetTypes.First(mt => mt.Value == typeName).Key;
 
-        public string GetType(int typeId) => TargetTypes[typeId];
+        public string GetName(int typeId) => TargetTypes[typeId];
 
         public ImmutableDictionary<int, string> TargetTypes => _targetTypes ?? (_targetTypes = GetTargetTypes());
         private static ImmutableDictionary<int, string> _targetTypes;

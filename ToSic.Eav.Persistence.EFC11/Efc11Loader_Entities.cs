@@ -6,6 +6,7 @@ using ToSic.Eav.App;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Persistence.Efc
 {
@@ -86,7 +87,7 @@ namespace ToSic.Eav.Persistence.Efc
                     e.EntityGuid,
                     e.Version,
                     e.AttributeSetId,
-                    Metadata = new MetadataFor
+                    Metadata = new Metadata.MetadataFor
                     {
                         TargetType = e.AssignmentObjectTypeId,
                         KeyGuid = e.KeyGuid,

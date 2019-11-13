@@ -4,7 +4,6 @@ using System.Linq;
 using Newtonsoft.Json;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
-using ToSic.Eav.Enums;
 using ToSic.Eav.ImportExport.Json.Format;
 using ToSic.Eav.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -53,12 +52,12 @@ namespace ToSic.Eav.ImportExport.Json
                                        );
 
             // Metadata
-            var ismeta = new MetadataFor();
+            var ismeta = new Metadata.MetadataFor();
             if (jEnt.For != null)
             {
                 var md = jEnt.For;
                 Log.Add($"this is metadata; will construct 'For' object. Type: {md.Target}");
-                ismeta.TargetType = GetMetadataNumber(md.Target);// Factory.Resolve<IGlobalMetadataProvider>().GetType(md.Target);
+                ismeta.TargetType = GetMetadataNumber(md.Target);
                 ismeta.KeyGuid = md.Guid;
                 ismeta.KeyNumber = md.Number;
                 ismeta.KeyString = md.String;

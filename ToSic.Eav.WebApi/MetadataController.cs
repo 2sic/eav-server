@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Data;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.WebApi
@@ -32,14 +29,14 @@ namespace ToSic.Eav.WebApi
             {
                 case "guid":
                     if(Guid.TryParse(key, out var guidKey))
-                        entityList = appRun.Package.GetMetadata(targetType, guidKey, contentType);
+                        entityList = appRun.Package.Get(targetType, guidKey, contentType);
                     break;
                 case "string":
-                    entityList = appRun.Package.GetMetadata(targetType, key, contentType);
+                    entityList = appRun.Package.Get(targetType, key, contentType);
                     break;
                 case "number":
                     if(int.TryParse(key, out var keyInt))
-                        entityList = appRun.Package.GetMetadata(targetType, keyInt, contentType);
+                        entityList = appRun.Package.Get(targetType, keyInt, contentType);
                     break;
                 default:
                     throw new Exception("keytype unknown:" + keyType);

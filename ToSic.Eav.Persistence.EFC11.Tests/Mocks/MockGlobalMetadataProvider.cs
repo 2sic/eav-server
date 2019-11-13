@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Efc;
 
 namespace ToSic.Eav.ImportExport.Tests.Mocks
 {
-    public class MockGlobalMetadataProvider : GlobalMetadataProvider
+    public class MockGlobalMetadataProvider : EfcMetadataTargets
     {        
         protected override ImmutableDictionary<int, string> GetTargetTypes()
         {

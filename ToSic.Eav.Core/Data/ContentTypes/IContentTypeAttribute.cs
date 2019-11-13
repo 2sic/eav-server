@@ -35,7 +35,7 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Additional information, specs etc. about this attribute
         /// </summary>
-        IMetadataOfItem Metadata { get; }
+        IMetadataOf Metadata { get; }
 
 	}
 }

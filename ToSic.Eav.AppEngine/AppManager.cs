@@ -7,6 +7,7 @@ using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Types;
@@ -83,7 +84,7 @@ namespace ToSic.Eav.Apps
             values = values ?? new Dictionary<string, object>();
 
             var newEnt = new Entity(AppId, Guid.NewGuid(), ct, values);
-            newEnt.SetMetadata(new MetadataFor { KeyNumber = DataController.AppId, TargetType = appAssignment });
+            newEnt.SetMetadata(new Metadata.MetadataFor { KeyNumber = DataController.AppId, TargetType = appAssignment });
             Entities.Save(newEnt);
 
             SystemManager.Purge(ZoneId, AppId);
@@ -111,9 +112,9 @@ namespace ToSic.Eav.Apps
         internal static void EnsureAppIsConfigured(int zoneId, int appId, ILog parentLog, string appName = null)
         {
             var mds = DataSource.GetMetaDataSource(zoneId, appId);
-            var appMetaData = mds.GetMetadata(Constants.MetadataForApp, appId, AppConstants.TypeAppConfig).FirstOrDefault();
-            var appResources = mds.GetMetadata(Constants.MetadataForApp, appId, AppConstants.TypeAppResources).FirstOrDefault();
-            var appSettings = mds.GetMetadata(Constants.MetadataForApp, appId, AppConstants.TypeAppSettings).FirstOrDefault();
+            var appMetaData = mds.Get(Constants.MetadataForApp, appId, AppConstants.TypeAppConfig).FirstOrDefault();
+            var appResources = mds.Get(Constants.MetadataForApp, appId, AppConstants.TypeAppResources).FirstOrDefault();
+            var appSettings = mds.Get(Constants.MetadataForApp, appId, AppConstants.TypeAppSettings).FirstOrDefault();
 
             // Get appName from cache - stop if it's a "Default" app
             var eavAppName = new ZoneRuntime(zoneId, parentLog).GetName(appId);

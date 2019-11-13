@@ -1,8 +1,14 @@
 using System;
-using ToSic.Eav.Metadata;
+using ToSic.Eav.Data;
+using ToSic.Eav.Documentation;
 
-namespace ToSic.Eav.Data
+namespace ToSic.Eav.Metadata
 {
+    /// <summary>
+    /// This describes the relationship of an item (usually an <see cref="IEntity"/>) which describes something else. <br/>
+    /// Basically it contains all the references necessary to identify what it belongs to.
+    /// </summary>
+    [PublicApi]
     public class MetadataFor : IMetadataFor
     {
         /// <summary>
@@ -31,10 +37,15 @@ namespace ToSic.Eav.Data
         public string KeyString { get; set; }
 
         /// <summary>
-        /// Constructor for a new MetadataFor, which is empty (so not defining any metadata relationship ATM
+        /// Constructor for a new MetadataFor, which is empty.
+        /// So it's not for anything, or the specs will be added afterwards.
         /// </summary>
         public MetadataFor() { }
 
+        /// <summary>
+        /// Constructor to copy an existing MetadataFor object. 
+        /// </summary>
+        /// <param name="originalToCopy"></param>
         public MetadataFor(IMetadataFor originalToCopy)
         {
             TargetType = originalToCopy.TargetType;

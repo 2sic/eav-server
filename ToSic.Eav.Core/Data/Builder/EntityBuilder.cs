@@ -80,7 +80,7 @@ namespace ToSic.Eav.Data.Builder
             var lookupApp = (entity as Entity)?.DeferredLookupData as AppDataPackage;
             e.Relationships = new RelationshipManager(e, lookupApp, allRelationships);
 
-            e.MetadataFor = new MetadataFor(entity.MetadataFor);
+            e.MetadataFor = new Metadata.MetadataFor(entity.MetadataFor);
 
             e.DeferredLookupData = lookupApp;
             return e;

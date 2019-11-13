@@ -19,9 +19,9 @@ namespace ToSic.Eav.Apps
         /// </summary>
         /// <param name="typeName"></param>
         /// <returns></returns>
-        public static int MetadataType(string typeName) => Factory.Resolve<IGlobalMetadataProvider>().GetType(typeName);
+        public static int MetadataType(string typeName) => Factory.Resolve<ITargets>().GetId(typeName);
 
-        public static string MetadataType(int typeNumber) => Factory.Resolve<IGlobalMetadataProvider>().GetType(typeNumber);
+        public static string MetadataType(int typeNumber) => Factory.Resolve<ITargets>().GetName(typeNumber);
 
     }
 }

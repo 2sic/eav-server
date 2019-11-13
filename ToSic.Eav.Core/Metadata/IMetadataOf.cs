@@ -10,7 +10,7 @@ namespace ToSic.Eav.Metadata
     /// So if an <see cref="IEntity"/> or an IApp has metadata, this will provide it. 
     /// </summary>
     [PublicApi]
-    public interface IMetadataOfItem: IEnumerable<IEntity>, IHasPermissions
+    public interface IMetadataOf: IEnumerable<IEntity>, IHasPermissions
     {
         // 2019-10-27 2dm - I think this is a leftover of old times, I believe it's not needed any more
         //void Add(IEntity additionalItem);

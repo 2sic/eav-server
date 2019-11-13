@@ -8,6 +8,7 @@ using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Enums;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Metadata;
 using ToSic.Eav.WebApi.Formats;
 
 namespace ToSic.Eav.WebApi.SaveHelpers
@@ -80,7 +81,7 @@ namespace ToSic.Eav.WebApi.SaveHelpers
             if (newMd != null && newMd.HasMetadata)
             {
                 Log.Add($"will set metadata based on input type:{newMd.TargetType} guid:{newMd.KeyGuid} #:{newMd.KeyNumber} $:{newMd.KeyString}");
-                importEntity.SetMetadata(new MetadataFor
+                importEntity.SetMetadata(new Metadata.MetadataFor
                 {
                     TargetType = newMd.TargetType,
                     KeyGuid = newMd.KeyGuid,
@@ -96,7 +97,7 @@ namespace ToSic.Eav.WebApi.SaveHelpers
                 if (original != null)
                 {
                     Log.Add("found original - will use to re-attach metadata");
-                    importEntity.SetMetadata(new MetadataFor(original.MetadataFor));
+                    importEntity.SetMetadata(new Metadata.MetadataFor(original.MetadataFor));
                 }
                 else
                     Log.Add("no original found, will not attach metadata");

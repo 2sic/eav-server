@@ -24,13 +24,13 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         public bool IsTitle { get; set; }
 
-        private readonly IDeferredEntitiesList _metaOfThisApp;
+        private readonly IHasMetadataSource _metaOfThisApp;
 
         /// <inheritdoc />
         /// <summary>
         /// Extended constructor when also storing the persistence Id
         /// </summary>
-        public ContentTypeAttribute(int appId, string name, string type, bool isTitle, int attributeId, int sortOrder, IDeferredEntitiesList metaProvider = null, int parentApp = 0) : base(name, type)
+        public ContentTypeAttribute(int appId, string name, string type, bool isTitle, int attributeId, int sortOrder, IHasMetadataSource metaProvider = null, int parentApp = 0) : base(name, type)
         {
             AppId = appId;
             IsTitle = isTitle;
@@ -68,13 +68,13 @@ namespace ToSic.Eav.Data
 
         #region Metadata and Permissions
         /// <inheritdoc />
-        public IMetadataOfItem Metadata
+        public IMetadataOf Metadata
             => _metadata ?? (_metadata = !_isShared
                    ? new MetadataOf<int>(Constants.MetadataForAttribute, AttributeId, _metaOfThisApp)
                    : new MetadataOf<int>(Constants.MetadataForAttribute, AttributeId, 0, _parentAppId)
                );
 
-        private IMetadataOfItem _metadata;
+        private IMetadataOf _metadata;
 
         /// <inheritdoc />
         [PrivateApi("because permissions will probably become an entity-based type")]

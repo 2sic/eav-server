@@ -50,6 +50,6 @@ namespace ToSic.Eav.Apps
         /// So the App DataSource automatically provides direct access to the metadata system.
         /// This allows users of the App to query metadata directly through this object. 
         /// </summary>
-        IMetadataProvider Metadata { get; }
+        IMetadataSource Metadata { get; }
     }
 }

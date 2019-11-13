@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Data;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.App
@@ -8,9 +7,9 @@ namespace ToSic.Eav.App
 	/// <summary>
 	/// Cache Object for a specific App
 	/// </summary>
-	public partial class AppDataPackage : IDeferredEntitiesList
+	public partial class AppDataPackage : IDeferredEntitiesList, IHasMetadataSource
     {
 
-        IMetadataProvider IDeferredEntitiesList.Metadata => Metadata;
+        IMetadataSource IHasMetadataSource.Metadata => Metadata;
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Caching;
-using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Data
 {
@@ -11,6 +10,6 @@ namespace ToSic.Eav.Data
         IEnumerable<IEntity> List { get; }  
 
 
-        IMetadataProvider Metadata { get; }
+        //IMetadataProvider Metadata { get; }
     }
 }

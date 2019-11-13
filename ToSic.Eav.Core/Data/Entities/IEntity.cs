@@ -89,7 +89,7 @@ namespace ToSic.Eav.Data
         /// The metadata is either already prepared, from the same app, or from a remote app
         /// </remarks>
         /// <returns>A typed Metadata provider for this Entity</returns>
-        new IMetadataOfItem Metadata { get; }
+        new IMetadataOf Metadata { get; }
 
         #region experimental IEntity Queryable / Quick
         /// <summary>

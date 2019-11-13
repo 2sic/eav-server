@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Data
 {
@@ -20,7 +21,7 @@ namespace ToSic.Eav.Data
         /// </summary>
         /// <param name="typeId">type id / static-name</param>
         /// <param name="metaProvider">remote / deferred metadata provider</param>
-        public ContentTypeMetadata(string typeId, IDeferredEntitiesList metaProvider)
+        public ContentTypeMetadata(string typeId, IHasMetadataSource metaProvider)
             : base(Constants.MetadataForContentType, typeId, metaProvider)
         { }
 
@@ -55,7 +56,7 @@ namespace ToSic.Eav.Data
             if (!Guid.TryParse(Key, out var ctGuid)) return;
 
             // add the guid metadata on entity if it has a real guid
-            var additional = GetMetadataProvider()?.GetMetadata(Constants.MetadataForEntity, ctGuid)
+            var additional = GetMetadataProvider()?.Get(Constants.MetadataForEntity, ctGuid)
                                  .ToList()
                              ?? new List<IEntity>();
             Use(AllWithHidden.Concat(additional).ToList());

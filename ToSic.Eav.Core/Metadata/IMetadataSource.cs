@@ -10,7 +10,7 @@ namespace ToSic.Eav.Metadata
     /// Mainly used in the Store, Cache-Systems and Apps.
     /// </summary>
     [PublicApi]
-    public interface IMetadataProvider: ICacheExpiring
+    public interface IMetadataSource: ICacheExpiring
     {
         /// <summary>
         /// Get any metadata of the current data source (usually an app)
@@ -20,7 +20,7 @@ namespace ToSic.Eav.Metadata
         /// <param name="key">The key which is used for lookup</param>
         /// <param name="contentTypeName">Optional content-type name, to only retrieve metadata of that type</param>
         /// <returns>A list (may be empty) of metadata items found for this target</returns>
-        IEnumerable<IEntity> GetMetadata<T>(int targetType, T key, string contentTypeName = null);
+        IEnumerable<IEntity> Get<T>(int targetType, T key, string contentTypeName = null);
 
     }
 }

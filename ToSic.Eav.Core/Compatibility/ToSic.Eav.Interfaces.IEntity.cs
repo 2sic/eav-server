@@ -92,7 +92,7 @@ namespace ToSic.Eav.Interfaces
         /// The metadata is either already prepared, from the same app, or from a remote app
         /// </remarks>
         /// <returns>A typed Metadata provider for this Entity</returns>
-        IMetadataOfItem Metadata { get; }
+        IMetadataOf Metadata { get; }
 
         #region experimental IEntity Queryable / Quick
         [PrivateApi]

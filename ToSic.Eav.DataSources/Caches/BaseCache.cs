@@ -15,7 +15,7 @@ namespace ToSic.Eav.DataSources.Caches
     /// <summary>
     /// Represents an abstract Cache DataSource
     /// </summary>
-    public abstract class BaseCache : BaseDataSource, IMetadataProvider, ICache
+    public abstract class BaseCache : BaseDataSource, IMetadataSource, ICache
 	{
 
         protected new BaseCache Cache { get; set; }
@@ -204,8 +204,8 @@ namespace ToSic.Eav.DataSources.Caches
 
         #region GetAssignedEntities by Guid, string and int
 
-        public IEnumerable<IEntity> GetMetadata<T>(int targetType, T key, string contentTypeName = null) 
-            => AppDataPackage.GetMetadata(targetType, key, contentTypeName);
+        public IEnumerable<IEntity> Get<T>(int targetType, T key, string contentTypeName = null) 
+            => AppDataPackage.Get(targetType, key, contentTypeName);
 
 	    #endregion
 

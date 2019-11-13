@@ -12,7 +12,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.DataSources.Metadata;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Metadata;
-using ToSic.Eav.Persistence.Xml;
 using ICache = ToSic.Eav.DataSources.Caches.ICache;
 
 namespace ToSic.Eav
@@ -32,8 +31,8 @@ namespace ToSic.Eav
 	    {
             serviceCollection.TryAddTransient<ICache, QuickCache>();
             serviceCollection.TryAddTransient<IRootSource, EavSqlStore>();
-	        serviceCollection.TryAddTransient<IRemoteMetadataProvider, MetadataFromDataSource>();
-	        serviceCollection.TryAddTransient<IGlobalMetadataProvider, GlobalMetadataProvider>();
+	        serviceCollection.TryAddTransient<IRemoteMetadata, MetadataFromDataSource>();
+	        serviceCollection.TryAddTransient<ITargets, EfcMetadataTargets>();
 
             serviceCollection.TryAddTransient<IRepositoryImporter, RepositoryImporter>();
 

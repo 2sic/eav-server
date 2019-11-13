@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Metadata;
 using ToSic.Eav.Repositories;
 
 namespace ToSic.Eav.Data
@@ -74,7 +75,7 @@ namespace ToSic.Eav.Data
         /// </summary>
         public ContentType(int appId, string name, string staticName, int attributeSetId, string scope,
             string description, int? usesConfigurationOfAttributeSet, int configZoneId, int configAppId,
-            bool configurationIsOmnipresent, IDeferredEntitiesList metaProviderOfThisApp): this(appId, name, staticName)
+            bool configurationIsOmnipresent, IHasMetadataSource metaProviderOfThisApp): this(appId, name, staticName)
         {
             ContentTypeId = attributeSetId;
             Description = description;
@@ -135,7 +136,7 @@ namespace ToSic.Eav.Data
                        _metaOfThisApp)
                        : new ContentTypeMetadata(StaticName, ParentZoneId, ParentAppId));
         private ContentTypeMetadata _metadata;
-        private readonly IDeferredEntitiesList _metaOfThisApp;
+        private readonly IHasMetadataSource _metaOfThisApp;
 
         #endregion
 

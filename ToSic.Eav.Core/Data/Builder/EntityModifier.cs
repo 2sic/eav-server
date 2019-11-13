@@ -18,7 +18,7 @@ namespace ToSic.Eav.Data.Builder
         public static void SetMetadata(this Entity entity, IMetadataFor meta) => entity.MetadataFor = meta;
 
         public static void Retarget(this Entity entity, Guid newTarget)
-            => entity.SetMetadata(new MetadataFor(entity.MetadataFor) {KeyGuid = newTarget});
+            => entity.SetMetadata(new Metadata.MetadataFor(entity.MetadataFor) {KeyGuid = newTarget});
 
         public static void UpdateType(this Entity entity, IContentType newType)
         {

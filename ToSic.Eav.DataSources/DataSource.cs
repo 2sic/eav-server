@@ -178,10 +178,10 @@ namespace ToSic.Eav
 		/// Get DataSource having common MetaData, like Field MetaData
 		/// </summary>
 		/// <returns>IMetaDataSource (from ICache)</returns>
-		public static IMetadataProvider GetMetaDataSource(int? zoneId = null, int? appId = null)
+		public static IMetadataSource GetMetaDataSource(int? zoneId = null, int? appId = null)
 		{
 			var zoneAppId = GetZoneAppId(zoneId, appId);
-			return (IMetadataProvider)GetCache(zoneAppId.Item1, zoneAppId.Item2);
+			return (IMetadataSource)GetCache(zoneAppId.Item1, zoneAppId.Item2);
 		}
 
 

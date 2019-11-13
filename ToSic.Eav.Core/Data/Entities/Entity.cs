@@ -217,10 +217,10 @@ namespace ToSic.Eav.Data
 
         #region Metadata & Permissions
 
-        public IMetadataOfItem Metadata => _metadata ?? (_metadata =
+        public IMetadataOf Metadata => _metadata ?? (_metadata =
                                                new MetadataOf<Guid>(Constants.MetadataForEntity, EntityGuid, DeferredLookupData));
-        private IMetadataOfItem _metadata;
-        internal IDeferredEntitiesList DeferredLookupData = null;
+        private IMetadataOf _metadata;
+        internal IHasMetadataSource DeferredLookupData = null;
 
         public IEnumerable<IEntity> Permissions => Metadata.Permissions;
         #endregion

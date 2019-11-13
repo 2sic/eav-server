@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using ToSic.Eav.Data;
-
+﻿using System.Collections.Generic;
 using ToSic.Eav.Metadata;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.App
 {
-    /// <inheritdoc cref="IMetadataProvider" />
+    /// <inheritdoc cref="IMetadataSource" />
     /// <summary>
     /// Cache Object for a specific App
     /// </summary>
-    public partial class AppDataPackage: IMetadataProvider
+    public partial class AppDataPackage: IMetadataSource
 	{
         internal AppMetadataManager Metadata { get; set; }
 
@@ -23,8 +20,8 @@ namespace ToSic.Eav.App
         /// <param name="key">the (int/guid/string) key we're looking for</param>
         /// <param name="contentTypeName">an optional type name, if we only want the items of a specific type</param>
         /// <returns></returns>
-	    public IEnumerable<IEntity> GetMetadata<TMetadataKey>(int targetType, TMetadataKey key, string contentTypeName = null) 
-            => Metadata.GetMetadata(targetType, key, contentTypeName);
+	    public IEnumerable<IEntity> Get<TMetadataKey>(int targetType, TMetadataKey key, string contentTypeName = null) 
+            => Metadata.Get(targetType, key, contentTypeName);
 
 
     }

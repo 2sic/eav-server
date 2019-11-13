@@ -53,7 +53,7 @@ namespace ToSic.Eav.Apps
         /// The app metadata - like settings, resources etc.
         /// </summary>
         /// <returns>A metadata provider for the app</returns>
-        IMetadataOfItem Metadata { get; }
+        IMetadataOf Metadata { get; }
 
 
         #region Experimental / new

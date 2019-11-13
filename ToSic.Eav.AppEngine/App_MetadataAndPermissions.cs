@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Data;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Security.Permissions;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -14,12 +13,12 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// Metadata for this app (describing the app itself)
         /// </summary>
-        public IMetadataOfItem Metadata
+        public IMetadataOf Metadata
             => _metadata ?? (_metadata = new MetadataOf<int>(Constants.MetadataForApp, AppId,
                    AppDataPackage));
 
-        private IMetadataOfItem _metadata;
-        protected readonly IDeferredEntitiesList AppDataPackage;
+        private IMetadataOf _metadata;
+        protected readonly IHasMetadataSource AppDataPackage;
 
         /// <summary>
         /// Permissions of this app

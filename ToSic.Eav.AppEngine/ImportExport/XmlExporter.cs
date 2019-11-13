@@ -178,7 +178,7 @@ namespace ToSic.Eav.Apps.ImportExport
                         new XAttribute(XmlConstants.Type, x.Type),
                         new XAttribute(XmlConstants.IsTitle, x.IsTitle),
                         // Add Attribute MetaData
-                        from c in AppPackage.GetMetadata(Constants.MetadataForAttribute, x.AttributeId).ToList()
+                        from c in AppPackage.Get(Constants.MetadataForAttribute, x.AttributeId).ToList()
                         select GetEntityXElement(c.EntityId, c.Type.StaticName)
                     );
 

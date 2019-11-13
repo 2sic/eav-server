@@ -20,7 +20,7 @@ namespace ToSic.Eav.Metadata
         /// If this is metadata, then the target could be anything.
         /// This is an ID telling what kind of thing we're enhancing. 
         /// </summary>
-        /// <returns>An ID from the DB which registers all the types of things that can be described. </returns>
+        /// <returns>An ID from the system which registers all the types of things that can be described. See also <see cref="ITargets"/>.</returns>
         int TargetType { get; }
 
         /// <summary>

@@ -10,6 +10,7 @@ using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.Metadata;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Types;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -100,7 +101,7 @@ namespace ToSic.Eav.Persistence.File
         /// <param name="appId">this is not used ATM - just for interface compatibility, must always be 0</param>
         /// <param name="source">this is not used ATM - just for interface compatibility</param>
         /// <returns></returns>
-        public IList<IContentType> ContentTypes(int appId, IDeferredEntitiesList source)
+        public IList<IContentType> ContentTypes(int appId, IHasMetadataSource source)
         {
             if(appId != 0)
                 throw new ArgumentOutOfRangeException(nameof(appId), appId, "appid should only be 0 for now");

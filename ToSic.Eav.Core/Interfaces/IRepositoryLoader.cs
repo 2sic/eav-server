@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using ToSic.Eav.App;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Interfaces
 {
@@ -10,7 +11,7 @@ namespace ToSic.Eav.Interfaces
         /// <summary>
         /// Get all ContentTypes for specified AppId.
         /// </summary>
-        IList<IContentType> ContentTypes(int appId, IDeferredEntitiesList source);
+        IList<IContentType> ContentTypes(int appId, IHasMetadataSource source);
 
         /// <summary>
         /// Get EntityModel for specified EntityId

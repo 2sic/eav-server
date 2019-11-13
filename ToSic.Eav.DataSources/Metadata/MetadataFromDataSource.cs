@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Interfaces;
-using ToSic.Eav.Metadata;
+﻿using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.DataSources.Metadata
 {
@@ -9,10 +8,10 @@ namespace ToSic.Eav.DataSources.Metadata
     /// even if they do not know about data-sources
     /// this will then be provided through dependency injection
     /// </summary>
-    public class MetadataFromDataSource: IRemoteMetadataProvider
+    public class MetadataFromDataSource: IRemoteMetadata
     {
-        public IMetadataProvider OfZoneAndApp(int zoneId, int appId) => DataSource.GetMetaDataSource(zoneId, appId);
+        public IMetadataSource OfZoneAndApp(int zoneId, int appId) => DataSource.GetMetaDataSource(zoneId, appId);
 
-        public IMetadataProvider OfApp(int appId) => DataSource.GetMetaDataSource(null, appId);
+        public IMetadataSource OfApp(int appId) => DataSource.GetMetaDataSource(null, appId);
     }
 }

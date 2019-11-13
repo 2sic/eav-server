@@ -10,7 +10,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.App
 {
-    internal class AppMetadataManager: HasLog, IMetadataProvider//, ICacheDependent
+    internal class AppMetadataManager: HasLog, IMetadataSource//, ICacheDependent
     {
         #region cache value objects: Types, _guid, _number, _string
         /// <summary>
@@ -119,7 +119,7 @@ namespace ToSic.Eav.App
         /// <param name="key">the (int/guid/string) key we're looking for</param>
         /// <param name="contentTypeName">an optional type name, if we only want the items of a specific type</param>
         /// <returns></returns>
-        public IEnumerable<IEntity> GetMetadata<TMetadataKey>(int targetType, TMetadataKey key, string contentTypeName = null)
+        public IEnumerable<IEntity> Get<TMetadataKey>(int targetType, TMetadataKey key, string contentTypeName = null)
         {
             if (typeof(TMetadataKey) == typeof(Guid))
                 return Lookup(_guid, targetType, key as Guid? ?? Guid.Empty, contentTypeName);

@@ -7,6 +7,7 @@ using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.Metadata;
 using ToSic.Eav.Types;
 
 namespace ToSic.Eav.ImportExport.Xml
@@ -112,7 +113,7 @@ namespace ToSic.Eav.ImportExport.Xml
         /// </summary>
         /// <param name="xEntity">xEntity to parse</param>
         /// <param name="metadataForFor"></param>
-        public Entity BuildEntityFromXml(XElement xEntity, MetadataFor metadataForFor)
+        public Entity BuildEntityFromXml(XElement xEntity, Metadata.MetadataFor metadataForFor)
         {
             var wrap = Log.Call("BuildEntityFromXml");
 		    var finalAttributes = new Dictionary<string, IAttribute>();

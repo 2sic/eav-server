@@ -86,12 +86,12 @@ namespace ToSic.Eav.ImportExport.Serializers
         }
         private IDeferredEntitiesList _relList;
 
-        protected int GetMetadataNumber(string name) => MetadataProvider.GetType(name);
+        protected int GetMetadataNumber(string name) => MetadataProvider.GetId(name);
 
-        protected string GetMetadataName(int id) => MetadataProvider.GetType(id);
+        protected string GetMetadataName(int id) => MetadataProvider.GetName(id);
 
-        public IGlobalMetadataProvider MetadataProvider =>
-            _mdProvider ?? (_mdProvider = Factory.Resolve<IGlobalMetadataProvider>());
-        private IGlobalMetadataProvider _mdProvider;
+        public ITargets MetadataProvider =>
+            _mdProvider ?? (_mdProvider = Factory.Resolve<ITargets>());
+        private ITargets _mdProvider;
     }
 }
