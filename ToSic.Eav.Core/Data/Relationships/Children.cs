@@ -43,7 +43,7 @@ namespace ToSic.Eav.Data
                 if (_attributes != null)
                 {
                     if (_attributes.ContainsKey(attributeName))
-                        return (_attributes[attributeName] as Attribute</*LazyEntities*/IEnumerable<IEntity>>)?.TypedContents;
+                        return (_attributes[attributeName] as Attribute<IEnumerable<IEntity>>)?.TypedContents;
                     return new List<IEntity>();
                 }
                 // 2019-11-13 2dm - seems like the _objects was never used, so should always have been null
