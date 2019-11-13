@@ -24,7 +24,7 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Extended constructor when also storing the persistance ID-Info
         /// </summary>
-        public AttributeDefinition(int appId, string name, string type, bool isTitle, int attributeId, int sortOrder, IDeferredEntitiesList metaProvider = null, int parentApp = 0/*, int parentId = 0*/) : base(name, type)
+        public AttributeDefinition(int appId, string name, string type, bool isTitle, int attributeId, int sortOrder, IDeferredEntitiesList metaProvider = null, int parentApp = 0) : base(name, type)
         {
             AppId = appId;
             IsTitle = isTitle;

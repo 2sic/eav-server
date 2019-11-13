@@ -1,4 +1,5 @@
 ﻿using System;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Security.Permissions;
@@ -10,12 +11,12 @@ namespace ToSic.Eav.Data
     /// Represents an Attribute definition in a ContentType. This is the base for attributes in <see cref="IContentType"/>
     /// </summary>
     [PublicApi]
-    public interface IAttributeDefinition: IAttributeBase, IHasPermissions
+    public interface IAttributeDefinition: IAttributeBase, IHasPermissions, IInApp
 	{
-        /// <summary>
-        /// AppId for this attribute
-        /// </summary>
-        int AppId { get; }
+        ///// <summary>
+        ///// AppId for this attribute
+        ///// </summary>
+        //int AppId { get; }
 
         /// <summary>
         /// additional info for the persistence layer

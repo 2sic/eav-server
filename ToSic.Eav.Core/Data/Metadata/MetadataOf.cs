@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Security.Permissions;
 
@@ -72,7 +71,7 @@ namespace ToSic.Eav.Data
                 // If necessary, initialize first. Note that it will only add Ids which really exist in the source (the source should be the cache)
                 if (_filteredEntities == null || RequiresReload())
                     _filteredEntities = AllWithHidden
-                        .Where(md => new[] { /*Constants.PermissionTypeName*/ Permission.TypeName  }.Any(e => e != md.Type.Name && e != md.Type.StaticName))
+                        .Where(md => new[] {Permission.TypeName  }.Any(e => e != md.Type.Name && e != md.Type.StaticName))
                         .ToList();
                 return _filteredEntities;
             }
@@ -80,7 +79,7 @@ namespace ToSic.Eav.Data
         private List<IEntity> _filteredEntities;
 
         public IEnumerable<IEntity> Permissions =>
-            AllWithHidden.Where(md => md.Type.StaticName == /*Constants.PermissionTypeName*/ Permission.TypeName);
+            AllWithHidden.Where(md => md.Type.StaticName == Permission.TypeName);
 
         private long _cacheTimestamp;
 
@@ -126,7 +125,7 @@ namespace ToSic.Eav.Data
         {
             var list = type == null ? this : this.Where(md => md.Type.StaticName == type || md.Type.Name == type);
             var found = list.FirstOrDefault(md => md.Attributes.ContainsKey(name));
-            return found == null ? default(TVal) : found.GetBestValue<TVal>(name);
+            return found == null ? default : found.GetBestValue<TVal>(name);
         }
 
         public TVal GetBestValue<TVal>(string name, string[] types)
@@ -134,10 +133,10 @@ namespace ToSic.Eav.Data
             foreach (var type in types)
             {
                 var result = GetBestValue<TVal>(name, type);
-                if (!EqualityComparer<TVal>.Default.Equals(result, default(TVal)))
+                if (!EqualityComparer<TVal>.Default.Equals(result, default))
                     return result;
             }
-            return default(TVal);
+            return default;
         }
 
         #region enumerators

@@ -3,15 +3,15 @@
 namespace ToSic.Eav.Apps
 {
     /// <summary>
-    /// This thing belongs to an App (which also always belongs to a zone)
+    /// This thing belongs to an App
     /// </summary>
     [PublicApi]
-    public interface IAppIdentity: IZoneIdentity
+    public interface IInApp
     {
         /// <summary>
         /// The app id as used internally
         /// </summary>
-        /// <returns>The App ID</returns>
+        /// <returns>The App ID this thing belongs to</returns>
         int AppId { get; }
     }
 }

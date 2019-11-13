@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Repositories;
 
@@ -8,12 +9,12 @@ namespace ToSic.Eav.Data
 	/// Represents a Content Type information (the schema) used for <see cref="IEntity"/> objects.
 	/// </summary>
 	[PublicApi]
-	public interface IContentType
+	public interface IContentType: IInApp
 	{
-        /// <summary>
-        /// The app to which this content type belongs
-        /// </summary>
-        int AppId { get; }
+        ///// <summary>
+        ///// The app to which this content type belongs
+        ///// </summary>
+        //int AppId { get; }
 
         /// <summary>
         /// Gets the Display Name of the Content Type

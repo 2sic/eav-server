@@ -21,7 +21,7 @@ namespace ToSic.Eav.Apps.Parts
         {
         }
 
-        protected AppBase(IAppIdentity app, ILog parentLog) : this(app.ZoneId, app.AppId, parentLog) { }
+        protected AppBase(IInAppAndZone app, ILog parentLog) : this(app.ZoneId, app.AppId, parentLog) { }
 
         protected AppBase(int appId, ILog parentLog) : this(((BaseCache) DataSource.GetCache(null)).GetZoneAppId(appId: appId).Item1, appId, parentLog) { }
 

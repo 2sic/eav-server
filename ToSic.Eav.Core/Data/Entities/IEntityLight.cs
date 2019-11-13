@@ -1,4 +1,5 @@
 ﻿using System;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Metadata;
@@ -11,13 +12,13 @@ namespace ToSic.Eav.Data
 	/// For the more powerful Entity, use <see cref="IEntity"/>.
 	/// </summary>
 	[PublicApi]
-	public interface IEntityLight
+	public interface IEntityLight: IInApp
 	{
-        /// <summary>
-        /// New test value - let the entity know where it belongs to, making it complete and allowing further data lookup if necessary...
-        /// </summary>
-        /// <returns>The App ID this entity belongs to.</returns>
-        int AppId { get; }
+        ///// <summary>
+        ///// New test value - let the entity know where it belongs to, making it complete and allowing further data lookup if necessary...
+        ///// </summary>
+        ///// <returns>The App ID this entity belongs to.</returns>
+        //int AppId { get; }
 
         /// <summary>
         /// Gets the EntityId

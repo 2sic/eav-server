@@ -6,12 +6,12 @@ namespace ToSic.Eav.Apps
     /// This things belongs to a zone
     /// </summary>
     [PublicApi]
-    public interface IZoneIdentity
+    public interface IInZone
     {
         /// <summary>
         /// ID of the zone (EAV Tenant)
         /// </summary>
-        /// <returns>The zone ID</returns>
+        /// <returns>The zone ID this thing belongs to</returns>
         int ZoneId { get; }
     }
 }

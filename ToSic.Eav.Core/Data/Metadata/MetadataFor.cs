@@ -16,7 +16,7 @@ namespace ToSic.Eav.Data
         public int TargetType { get; set; } = Constants.NotMetadata;
 
         /// <summary>
-        /// The Keynumber is null or the int of the key as stored in "Key"
+        /// The KeyNumber is null or the int of the key as stored in "Key"
         /// </summary>
         public int? KeyNumber { get; set; }
 
@@ -30,6 +30,9 @@ namespace ToSic.Eav.Data
         /// </summary>
         public string KeyString { get; set; }
 
+        /// <summary>
+        /// Constructor for a new MetadataFor, which is empty (so not defining any metadata relationship ATM
+        /// </summary>
         public MetadataFor() { }
 
         public MetadataFor(IMetadataFor originalToCopy)
@@ -41,13 +44,6 @@ namespace ToSic.Eav.Data
 
         }
 
-        //public MetadataFor CloneMetadataFor() => new MetadataFor
-        //{
-        //    TargetType = TargetType,
-        //    KeyString = KeyString,
-        //    KeyNumber = KeyNumber,
-        //    KeyGuid = KeyGuid
-        //};
 
     }
 }

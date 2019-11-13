@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Apps
 {
-    public class AppIdentity: HasLog, IAppIdentity
+    public class AppIdentity: HasLog, IInAppAndZone
     {
         /// <inheritdoc />
         public int ZoneId { get; }
