@@ -9,7 +9,11 @@ namespace ToSic.Eav.Data
     /// The primary data-item in the system, IEntity is a generic data-item for any kind of information.
     /// Note that it inherits <see cref="IEntityLight"/> which is the basic definition without languages,
     /// versioning, publishing etc.
+    /// > We recommend you read about the @Articles.EavCoreDataModels
     /// </summary>
+    /// <example>
+    /// > We recommend you read about the @Articles.EavCoreDataModels
+    /// </example>
     [PublicApi]
     public interface IEntity: ToSic.Eav.Interfaces.IEntity, // compatibility
         IEntityLight, IPublish<IEntity>, IHasPermissions

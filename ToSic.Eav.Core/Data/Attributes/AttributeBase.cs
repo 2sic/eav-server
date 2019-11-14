@@ -5,10 +5,12 @@ using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Data
 {
-    /// <inheritdoc />
     /// <summary>
-    /// Represents an Attribute with Values of a Generic Type
+    /// Represents an Attribute containing <see cref="IValue"/> of a Generic (unknown) inner type
     /// </summary>
+    /// <remarks>
+    /// > We recommend you read about the @Articles.EavCoreDataModels
+    /// </remarks>
     public class AttributeBase : IAttributeBase
     {
         public string Name { get; set; }
@@ -33,7 +35,7 @@ namespace ToSic.Eav.Data
         }
 
         /// <summary>
-        /// Extended constructor when also storing the persistance ID-Info
+        /// Extended constructor when also storing the persistence ID-Info
         /// </summary>
         /// <param name="name"></param>
         /// <param name="type"></param>

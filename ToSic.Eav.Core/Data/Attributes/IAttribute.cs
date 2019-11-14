@@ -7,6 +7,9 @@ namespace ToSic.Eav.Data
     /// Represents an Attribute with Values - without knowing what data type is in the value.
     /// Usually we'll extend this and use <see cref="IAttribute{T}"/> instead.
     /// </summary>
+    /// <remarks>
+    /// > We recommend you read about the @Articles.EavCoreDataModels
+    /// </remarks>
     [PublicApi]
     public interface IAttribute : IAttributeBase
 	{

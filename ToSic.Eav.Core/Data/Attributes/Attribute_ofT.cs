@@ -8,6 +8,9 @@ namespace ToSic.Eav.Data
     /// <summary>
     /// Represents an Attribute / Property of an Entity with Values of a Generic Type
     /// </summary>
+    /// <remarks>
+    /// > We recommend you read about the @Articles.EavCoreDataModels
+    /// </remarks>
     /// <typeparam name="T">Type of the Value</typeparam>
     [PublicApi]
     public class Attribute<T> : AttributeBase, IAttribute<T>
