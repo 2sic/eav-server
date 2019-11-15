@@ -118,14 +118,14 @@
     <Compile Include="IDeferredDataSource.cs" />
     <Compile Include="Metadata\MetadataFromDataSource.cs" />
     <Compile Include="System\Attributes.cs" />
-    <Compile Include="Pipeline\QueryConstants.cs" />
+    <Compile Include="Queries\QueryConstants.cs" />
     <Compile Include="Queries\QueryDefinition.cs" />
     <Compile Include="Shuffle.cs" />
     <Compile Include="Paging.cs" />
     <Compile Include="PassThrough.cs" />
-    <Compile Include="Pipeline\DataQuery.cs" />
-    <Compile Include="Pipeline\QueryFactory.cs" />
-    <Compile Include="Pipeline\QueryWiring.cs" />
+    <Compile Include="Queries\QueryManager.cs" />
+    <Compile Include="Queries\Factory.cs" />
+    <Compile Include="Queries\Wiring.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="OwnerFilter.cs" />
     <Compile Include="PublishingFilter.cs" />
@@ -137,7 +137,7 @@
     <Compile Include="StreamMerge.cs" />
     <Compile Include="StreamFallback.cs" />
     <Compile Include="ValueFilter.cs" />
-    <Compile Include="ValueProvider\LookUpInDataTarget.cs" />
+    <Compile Include="LookUp\LookUpInDataTarget.cs" />
     <Compile Include="ValueSort.cs" />
   </ItemGroup>
   <ItemGroup>
