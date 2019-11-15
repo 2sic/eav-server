@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSources.Pipeline;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Interfaces;
@@ -32,7 +31,7 @@ namespace ToSic.Eav.DataSources.Tests.Query
         private QueryDefinition LoadQueryDef(int appId, int queryId)
         {
             var source = DataSource.GetInitialDataSource(appId: appId);
-            var pipelineEntity = DataQuery.GetQueryEntity(queryId, source);
+            var pipelineEntity = QueryManager.GetQueryEntity(queryId, source);
             return new QueryDefinition(pipelineEntity);
         }
 
@@ -87,7 +86,7 @@ namespace ToSic.Eav.DataSources.Tests.Query
         public void Query_Run_And_Run_Materialized()
         {
             var qdef = LoadQueryDef(TestConfig.AppForQueryTests, basicId);
-            var query = new QueryFactory(null).GetDataSourceForTesting(qdef, false);
+            var query = new QueryBuilder(null).GetDataSourceForTesting(qdef, false);
             var countDef = query.List.Count();
             Assert.IsTrue(countDef > 0, "result > 0");
             Assert.AreEqual(basicCount, countDef);
@@ -97,7 +96,7 @@ namespace ToSic.Eav.DataSources.Tests.Query
             var eDef2 = ser.Deserialize(strQuery, true);
 
             var qdef2 = new QueryDefinition(eDef2);
-            var query2 = new QueryFactory(null).GetDataSourceForTesting(qdef2, false);
+            var query2 = new QueryBuilder(null).GetDataSourceForTesting(qdef2, false);
             var countDef2 = query2.List.Count();
             Assert.AreEqual(countDef2, countDef, "countdefs should be same");
         }

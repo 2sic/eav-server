@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSources.Pipeline;
 using ToSic.Eav.DataSources.Queries;
 
 namespace ToSic.Eav.Apps
@@ -27,7 +26,7 @@ namespace ToSic.Eav.Apps
 
                 if (ConfigurationProvider == null)
                     throw new Exception("Can't use app-queries, because the necessary configuration provider hasn't been initialized. Call InitData first.");
-                Queries = DataQuery.AllQueries(ZoneId, AppId, ConfigurationProvider, Log, ShowDrafts);
+                Queries = QueryManager.AllQueries(ZoneId, AppId, ConfigurationProvider, Log, ShowDrafts);
                 return Queries;
             }
         }

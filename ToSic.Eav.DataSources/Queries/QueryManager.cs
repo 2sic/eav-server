@@ -5,12 +5,12 @@ using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.DataSources.Pipeline
+namespace ToSic.Eav.DataSources.Queries
 {
 	/// <summary>
 	/// Helpers to work with Data Queries
 	/// </summary>
-	public class DataQuery
+	public static class QueryManager
 	{
 	    /// <summary>
 		/// Get an Entity Describing a Query

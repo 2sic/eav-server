@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.DataSources.Pipeline;
+using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.LookUp;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -56,7 +56,7 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		private void CreateOutWithAllStreams()
 		{
-		    var pipeln = new QueryFactory(Log).GetAsDataSource(AppId, QueryDefinition, ConfigurationProvider, null, _showDrafts);
+		    var pipeln = new QueryBuilder(Log).GetAsDataSource(AppId, QueryDefinition, ConfigurationProvider, null, _showDrafts);
 		    _out = pipeln.Out;
 		}
 	}

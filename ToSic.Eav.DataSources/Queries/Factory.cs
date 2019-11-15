@@ -3,19 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.DataSources.Pipeline
+namespace ToSic.Eav.DataSources.Queries
 {
 	/// <summary>
 	/// Factory to create a Data Query
 	/// </summary>
-	public class QueryFactory: HasLog
+	public class QueryBuilder: HasLog
 	{
-	    public QueryFactory(ILog parentLog) : base("DS.PipeFt", parentLog) {}
+	    public QueryBuilder(ILog parentLog) : base("DS.PipeFt", parentLog) {}
 
 	    /// <summary>
 	    /// Creates a Query DataSource from a QueryEntity for specified App
@@ -29,8 +28,8 @@ namespace ToSic.Eav.DataSources.Pipeline
 	    public IDataSource GetAsDataSource(int appId, IEntity query, ITokenListFiller valueCollection, IDataSource outSource = null, bool showDrafts = false)
 	    {
 		    Log.Add($"build pipe#{query.EntityId} for a#{appId}, draft:{showDrafts}");
-            var qdef = new QueryDefinition(query, appId);
-	        return GetAsDataSource(qdef,  valueCollection, null, outSource, showDrafts);
+            var queryDef = new QueryDefinition(query, appId);
+	        return GetAsDataSource(queryDef,  valueCollection, null, outSource, showDrafts);
 		}
 
 

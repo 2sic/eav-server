@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSources.Pipeline;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSources.VisualQuery;
 using ToSic.Eav.Logging;
@@ -64,7 +63,7 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="queryId"></param>
         /// <returns></returns>
         public QueryDefinition Get(int queryId) =>
-            new QueryDefinition(DataQuery.GetQueryEntity(queryId, App.Cache));
+            new QueryDefinition(Eav.DataSources.Queries.QueryManager.GetQueryEntity(queryId, App.Cache));
 
         public class DataSourceInfo
         {

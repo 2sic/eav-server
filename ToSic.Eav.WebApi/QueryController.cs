@@ -7,7 +7,6 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSources.Pipeline;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
@@ -55,7 +54,7 @@ namespace ToSic.Eav.WebApi
 					
                     // Replace ToSic.Eav with ToSic.Eav.DataSources because they moved to a different DLL
 				    part[QueryConstants.PartAssemblyAndType] 
-                        = QueryFactory.RewriteOldAssemblyNames((string)part[QueryConstants.PartAssemblyAndType]);
+                        = QueryBuilder.RewriteOldAssemblyNames((string)part[QueryConstants.PartAssemblyAndType]);
                     query.DataSources.Add(part);
 				}
 				#endregion
@@ -111,7 +110,7 @@ namespace ToSic.Eav.WebApi
 		{
 		    Log.Add($"queryy pipe: a#{appId}, id:{id}");
             // Get the query, run it and track how much time this took
-		    var queryFactory = new QueryFactory(Log);
+		    var queryFactory = new QueryBuilder(Log);
 		    var qDef = queryFactory.GetQueryDefinition(appId, id);
 			var outStreams = queryFactory.GetDataSourceForTesting(qDef, true, config);// ConstructPipeline(appId, id, true, config);
             var timer = new Stopwatch();

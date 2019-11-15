@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSources.Pipeline;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSources.System.Types;
 using ToSic.Eav.DataSources.VisualQuery;
@@ -120,13 +119,13 @@ namespace ToSic.Eav.DataSources.System
             // important, use "Name" and not get-best-title, as some queries may not be correctly typed, so missing title-info
             var found = QueryName.StartsWith(Global.GlobalQueryPrefix)
                 ? Global.FindQuery(QueryName)
-                : DataQuery.AllQueryItems(AppId, Log)
+                : QueryManager.AllQueryItems(AppId, Log)
                     .FirstOrDefault(q => string.Equals(q.GetBestValue("Name").ToString(), QueryName,
                         StringComparison.InvariantCultureIgnoreCase));
 
             if (found == null) throw new Exception($"Can't build information about query - couldn't find query '{QueryName}'");
 
-            _query = new QueryFactory(Log).GetDataSourceForTesting(new QueryDefinition(found, AppId), false, ConfigurationProvider);
+            _query = new QueryBuilder(Log).GetDataSourceForTesting(new QueryDefinition(found, AppId), false, ConfigurationProvider);
         }
 
 	    private IDataSource _query;

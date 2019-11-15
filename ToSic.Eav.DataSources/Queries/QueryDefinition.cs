@@ -4,6 +4,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.Queries
 {
+    // Todo: maybe change to entity-based-type?
     public class QueryDefinition
     {
         /// <summary>
