@@ -62,7 +62,7 @@ namespace ToSic.Eav.Api.Api01
         /// </param>
         /// <param name="target"></param>
         /// <exception cref="ArgumentException">Content-type does not exist, or an attribute in values</exception>
-        public void Create(string contentTypeName, IEnumerable<Dictionary<string, object>> multiValues, IMetadataFor target = null)
+        public void Create(string contentTypeName, IEnumerable<Dictionary<string, object>> multiValues, ITarget target = null)
         {
             Log.Add($"create type:{contentTypeName}");
 
@@ -76,7 +76,7 @@ namespace ToSic.Eav.Api.Api01
             _appManager.Entities.Save(importEntity);
         }
 
-        private IEntity BuildEntity(IContentType type, Dictionary<string, object> values, IMetadataFor target)
+        private IEntity BuildEntity(IContentType type, Dictionary<string, object> values, ITarget target)
         {
             // ensure it's case insensitive...
             values = new Dictionary<string, object>(values, StringComparer.OrdinalIgnoreCase);

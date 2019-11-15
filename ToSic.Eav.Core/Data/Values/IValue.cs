@@ -1,0 +1,44 @@
+﻿using System.Collections.Generic;
+using ToSic.Eav.Documentation;
+
+namespace ToSic.Eav.Data
+{
+    /// <summary>
+    /// Represents a Value in the EAV system. Values belong to an attribute and can belong to multiple languages. 
+    /// </summary>
+    [PublicApi]
+    public interface IValue
+    {
+        /// <summary>
+        /// Gets the Language (<see cref="ILanguage"/>) assigned to this Value. Can be one or many. 
+        /// </summary>
+        IList<ILanguage> Languages { get; set; }
+
+        /// <summary>
+        /// The internal contents of the value as a .net object.
+        /// Should usually not be used, it's more for internal use.
+        /// </summary>
+        [PrivateApi]
+        object ObjectContents { get; }
+
+        /// <summary>
+        /// Returns the inner value in a form that can be serialized, for JSON serialization etc.
+        /// </summary>
+        object SerializableObject { get; }
+
+        /// <summary>
+        /// Older way to serialize the value - used for the XML export/import and save to DB but shouldn't be used elsewhere.
+        /// </summary>
+        [PrivateApi("not sure why we have two serialization systems, probably will deprecate this some day")]
+        string Serialized { get; }
+
+        /// <summary>
+        /// Copy the value 
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        [PrivateApi("not sure if this is here to stay, or if we'll change to use a T based type instead of string-based")]
+        IValue Copy(string type);
+    }
+
+}

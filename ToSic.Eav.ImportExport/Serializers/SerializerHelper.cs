@@ -90,8 +90,8 @@ namespace ToSic.Eav.Serializers
             var entityValues = (from d in entity.Attributes select d.Value).ToDictionary(k => k.Name, v =>
             {
 				var value = entity.GetBestValue(v.Name, Languages, true);
-                if (v.Type == "Entity" && value is Data.EntityRelationship)
-                    return ((Data.EntityRelationship) value).Select(p => new SerializableRelationship
+                if (v.Type == "Entity" && value is IEnumerable<IEntity> entities)
+                    return entities.Select(p => new SerializableRelationship
                     {
                         Id = p?.EntityId,
                         Title = p?.GetBestTitle(Languages)

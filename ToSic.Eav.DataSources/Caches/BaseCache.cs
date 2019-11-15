@@ -2,11 +2,11 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.App;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.RootSources;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
+using AppState = ToSic.Eav.Apps.AppState;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.Caches
@@ -15,7 +15,7 @@ namespace ToSic.Eav.DataSources.Caches
     /// <summary>
     /// Represents an abstract Cache DataSource
     /// </summary>
-    public abstract class BaseCache : BaseDataSource, IMetadataProvider, ICache
+    public abstract class BaseCache : BaseDataSource, IMetadataSource, ICache
 	{
 
         protected new BaseCache Cache { get; set; }
@@ -23,9 +23,9 @@ namespace ToSic.Eav.DataSources.Caches
 		protected BaseCache()
 		{
 		    // ReSharper disable VirtualMemberCallInConstructor
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, () => AppDataPackage.List));
-			Out.Add(Constants.PublishedStreamName, new DataStream(this, Constants.PublishedStreamName, () => AppDataPackage.ListPublished));
-			Out.Add(Constants.DraftsStreamName, new DataStream(this, Constants.DraftsStreamName, () => AppDataPackage.ListNotHavingDrafts));
+			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, () => AppState.List));
+			Out.Add(Constants.PublishedStreamName, new DataStream(this, Constants.PublishedStreamName, () => AppState.ListPublished));
+			Out.Add(Constants.DraftsStreamName, new DataStream(this, Constants.DraftsStreamName, () => AppState.ListNotHavingDrafts));
 		    // ReSharper restore VirtualMemberCallInConstructor
 
             Lists.ListDefaultRetentionTimeInSeconds = 60 * 60;
@@ -61,12 +61,12 @@ namespace ToSic.Eav.DataSources.Caches
         /// <summary>
         /// Sets the CacheItem with specified CacheKey
         /// </summary>
-        protected abstract void SetCacheItem(string cacheKey, AppDataPackage item);
+        protected abstract void SetCacheItem(string cacheKey, AppState item);
 
 		/// <summary>
 		/// Get CacheItem with specified CacheKey
 		/// </summary>
-		protected abstract AppDataPackage GetCacheItem(string cacheKey);
+		protected abstract AppState GetCacheItem(string cacheKey);
 
 		/// <summary>
 		/// Remove the CacheItem with specified CacheKey
@@ -78,7 +78,7 @@ namespace ToSic.Eav.DataSources.Caches
 		/// Ensure cache for current AppId
         /// In this case, the system will pick up the primary language from the surrounding context (e.g. HttpContext)
 		/// </summary>
-		protected AppDataPackage EnsureCache()
+		protected AppState EnsureCache()
 		{
             return EnsureCacheInternal();
         }
@@ -94,7 +94,7 @@ namespace ToSic.Eav.DataSources.Caches
             EnsureCacheInternal(primaryLanguage);
         }
 
-        private AppDataPackage EnsureCacheInternal(string primaryLanguage = null)
+        private AppState EnsureCacheInternal(string primaryLanguage = null)
         {
             if (ZoneId == 0 || AppId == 0)
                 return null;
@@ -124,7 +124,7 @@ namespace ToSic.Eav.DataSources.Caches
         private static readonly ConcurrentDictionary<string, object> LoadLocks 
             = new ConcurrentDictionary<string, object>();
 
-	    public AppDataPackage AppDataPackage => EnsureCache();
+	    public AppState AppState => EnsureCache();
 
 		/// <inheritdoc />
 		/// <summary>
@@ -140,8 +140,8 @@ namespace ToSic.Eav.DataSources.Caches
 
 	    #region Cache-Chain
 
-	    public override long CacheTimestamp => AppDataPackage.CacheTimestamp;
-	    public override bool CacheChanged(long newCacheTimeStamp) => AppDataPackage.CacheChanged(newCacheTimeStamp);
+	    public override long CacheTimestamp => AppState.CacheTimestamp;
+	    public override bool CacheChanged(long newCacheTimeStamp) => AppState.CacheChanged(newCacheTimeStamp);
 
         private string _cachePartialKey;
 	    public override string CachePartialKey
@@ -164,18 +164,18 @@ namespace ToSic.Eav.DataSources.Caches
 	    /// </summary>
 	    /// <param name="name">Either StaticName or DisplayName</param>
 	    /// <returns>a content-type OR null</returns>
-	    public IContentType GetContentType(string name) => AppDataPackage.GetContentType(name);
+	    public IContentType GetContentType(string name) => AppState.GetContentType(name);
 
 		/// <inheritdoc />
 		/// <summary>
 		/// Get a ContentType by Id
 		/// </summary>
-		public IContentType GetContentType(int contentTypeId) => AppDataPackage.GetContentType(contentTypeId);
+		public IContentType GetContentType(int contentTypeId) => AppState.GetContentType(contentTypeId);
 
 	    /// <summary>
 		/// Get all Content Types
 		/// </summary>
-		public IEnumerable<IContentType> GetContentTypes() => AppDataPackage.ContentTypes;
+		public IEnumerable<IContentType> GetContentTypes() => AppState.ContentTypes;
 
 	    /// <inheritdoc />
 	    /// <summary>
@@ -204,8 +204,8 @@ namespace ToSic.Eav.DataSources.Caches
 
         #region GetAssignedEntities by Guid, string and int
 
-        public IEnumerable<IEntity> GetMetadata<T>(int targetType, T key, string contentTypeName = null) 
-            => AppDataPackage.GetMetadata(targetType, key, contentTypeName);
+        public IEnumerable<IEntity> Get<T>(int targetType, T key, string contentTypeName = null) 
+            => AppState.Get(targetType, key, contentTypeName);
 
 	    #endregion
 

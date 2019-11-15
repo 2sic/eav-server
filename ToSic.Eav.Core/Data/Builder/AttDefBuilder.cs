@@ -23,7 +23,7 @@ namespace ToSic.Eav.Data.Builder
         }
 
 
-        public static void SetSortOrder(this AttributeDefinition attDef, int sortOrder) => attDef.SortOrder = sortOrder;
+        public static void SetSortOrder(this ContentTypeAttribute attDef, int sortOrder) => attDef.SortOrder = sortOrder;
 
     }
 }

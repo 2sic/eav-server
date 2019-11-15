@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -94,8 +95,8 @@ namespace ToSic.Eav.LookUp
                 if (valueObject != null)
                 {
                     #region Handle child-Entity-Field (sorted list of related entities)
-                    var relationshipList = valueObject as Data.EntityRelationship;
-                    if (relationshipList != null)
+
+                    if (valueObject is IEnumerable<IEntity> relationshipList)
                         return !relationshipList.Any()
                             ? string.Empty
                             : new LookUpInEntity(relationshipList.First())

@@ -8,6 +8,7 @@ using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Enums;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Metadata;
 using ToSic.Eav.WebApi.Formats;
 
 namespace ToSic.Eav.WebApi.SaveHelpers
@@ -35,7 +36,7 @@ namespace ToSic.Eav.WebApi.SaveHelpers
                 var attributeType = attDef.Type;
 
                 // don't save anything of the type empty - this is headings-items-only
-                if (attributeType == AttributeTypeEnum.Empty.ToString())
+                if (attributeType == ValueTypes.Empty.ToString())
                     continue;
 
                 foreach (var value in attribute.Value.Values)
@@ -43,7 +44,7 @@ namespace ToSic.Eav.WebApi.SaveHelpers
                     var objValue = value.Value;
 
                     // special situation: if it's an array of Guids, mixed with NULLs, then it's not correctly auto-de-serialized
-                    if (attributeType == AttributeTypeEnum.Entity.ToString() && objValue is Newtonsoft.Json.Linq.JArray)
+                    if (attributeType == ValueTypes.Entity.ToString() && objValue is Newtonsoft.Json.Linq.JArray)
                         objValue = JsonConvert.DeserializeObject<Guid?[]>(objValue.ToString());// manually de-serialize
 
                     var importValue = attribs.AddValue(attribute.Key, objValue, attributeType,
@@ -52,7 +53,7 @@ namespace ToSic.Eav.WebApi.SaveHelpers
                     // append languages OR empty language as fallback
                     if (value.Dimensions != null)
                         foreach (var dimension in value.Dimensions)
-                            importValue.Languages.Add(new Dimension { Key = dimension.Key, ReadOnly = dimension.Value });
+                            importValue.Languages.Add(new Language { Key = dimension.Key, ReadOnly = dimension.Value });
                 }
             }
 
@@ -80,7 +81,7 @@ namespace ToSic.Eav.WebApi.SaveHelpers
             if (newMd != null && newMd.HasMetadata)
             {
                 Log.Add($"will set metadata based on input type:{newMd.TargetType} guid:{newMd.KeyGuid} #:{newMd.KeyNumber} $:{newMd.KeyString}");
-                importEntity.SetMetadata(new MetadataFor
+                importEntity.SetMetadata(new Metadata.Target
                 {
                     TargetType = newMd.TargetType,
                     KeyGuid = newMd.KeyGuid,
@@ -96,7 +97,7 @@ namespace ToSic.Eav.WebApi.SaveHelpers
                 if (original != null)
                 {
                     Log.Add("found original - will use to re-attach metadata");
-                    importEntity.SetMetadata(new MetadataFor(original.MetadataFor));
+                    importEntity.SetMetadata(new Metadata.Target(original.MetadataFor));
                 }
                 else
                     Log.Add("no original found, will not attach metadata");

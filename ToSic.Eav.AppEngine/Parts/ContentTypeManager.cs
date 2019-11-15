@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -23,7 +24,7 @@ namespace ToSic.Eav.Apps.Parts
         /// Append a new Attribute to an AttributeSet
         /// Simple overload returning int so it can be used from outside
         /// </summary>
-        public int CreateAttributeAndInitializeAndSave(int attributeSetId, AttributeDefinition attDef, string inputType)
+        public int CreateAttributeAndInitializeAndSave(int attributeSetId, ContentTypeAttribute attDef, string inputType)
         {
             Log.Add($"create attrib+init+save type:{attributeSetId}, input:{inputType}");
             var newAttribute = AppManager.DataController.AttributesDefinition.AddAttributeAndSave(attributeSetId, attDef);
@@ -44,7 +45,7 @@ namespace ToSic.Eav.Apps.Parts
                 {"Name", staticName},
                 {Constants.MetadataFieldAllInputType, inputType}
             };
-            var meta = new MetadataFor
+            var meta = new Metadata.Target
             {
                 TargetType = Constants.MetadataForAttribute,
                 KeyNumber = attributeId
@@ -57,7 +58,7 @@ namespace ToSic.Eav.Apps.Parts
             Log.Add($"update input type attrib:{attributeId}, input:{inputType}");
             var newValues = new Dictionary<string, object> { { Constants.MetadataFieldAllInputType, inputType } };
 
-            var meta = new MetadataFor
+            var meta = new Metadata.Target
             {
                 TargetType = Constants.MetadataForAttribute,
                 KeyNumber = attributeId

@@ -1,8 +1,8 @@
 ﻿using System;
-using ToSic.Eav.App;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.VisualQuery;
 using ToSic.Eav.Interfaces;
+using AppState = ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.DataSources.Caches
 {
@@ -42,7 +42,7 @@ namespace ToSic.Eav.DataSources.Caches
 
         IListsCache Lists { get; }
 
-        AppDataPackage AppDataPackage { get; }
+        AppState AppState { get; }
 
         void PreLoadCache(string primaryLanguage);
 

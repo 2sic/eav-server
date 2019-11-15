@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.App;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.RootSources;
 using ToSic.Eav.Interfaces;
+using AppState = ToSic.Eav.Apps.AppState;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 // important: don't change the namespace just like that, as there are strings referencing it for this loader
@@ -50,7 +50,7 @@ namespace ToSic.Eav.DataSources.SqlSources
 
 		public override bool Ready => _ready;
 
-        public AppDataPackage GetDataForCache(string primaryLanguage = null)
+        public AppState GetDataForCache(string primaryLanguage = null)
         {
             if (primaryLanguage != null) Loader.PrimaryLanguage = primaryLanguage;
             return Loader.AppPackage(AppId, parentLog: Log);

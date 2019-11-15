@@ -52,29 +52,29 @@ namespace ToSic.Eav.ImportExport.Json
                 var gList = g.ToList();
                 switch (g.Key)
                 {
-                    case AttributeTypeEnum.String:
+                    case ValueTypes.String:
                         attribs.String = ToTypedDictionary<string>(gList, log);
                         break;
-                    case AttributeTypeEnum.Hyperlink:
+                    case ValueTypes.Hyperlink:
                         attribs.Hyperlink = ToTypedDictionary<string>(gList, log);
                         break;
-                    case AttributeTypeEnum.Custom:
+                    case ValueTypes.Custom:
                         attribs.Custom = ToTypedDictionary<string>(gList, log);
                         break;
-                    case AttributeTypeEnum.Number:
+                    case ValueTypes.Number:
                         attribs.Number = ToTypedDictionary<decimal?>(gList, log);
                         break;
-                    case AttributeTypeEnum.DateTime:
+                    case ValueTypes.DateTime:
                         attribs.DateTime = ToTypedDictionary<DateTime?>(gList, log);
                         break;
-                    case AttributeTypeEnum.Boolean:
+                    case ValueTypes.Boolean:
                         attribs.Boolean = ToTypedDictionary<bool?>(gList, log);
                         break;
-                    case AttributeTypeEnum.Entity:
+                    case ValueTypes.Entity:
                         attribs.Entity = ToTypedDictionaryEntity(gList, log);
                         break;
-                    case AttributeTypeEnum.Empty:
-                    case AttributeTypeEnum.Undefined:
+                    case ValueTypes.Empty:
+                    case ValueTypes.Undefined:
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -109,7 +109,8 @@ namespace ToSic.Eav.ImportExport.Json
         /// this is a special helper to create typed entities-dictionaries
         /// </summary>
         /// <returns></returns>
-        private static Dictionary<string, Dictionary<string, List<Guid?>>> ToTypedDictionaryEntity(List<IAttribute> gList, ILog log)
+        private static Dictionary<string, Dictionary<string, List<Guid?>>> 
+            ToTypedDictionaryEntity(List<IAttribute> gList, ILog log)
         {
             // the following is a bit complex for the following reason
             // 1. either the relationship is guid based, and in that case, 
@@ -118,10 +119,10 @@ namespace ToSic.Eav.ImportExport.Json
             //    but the relationship manager doesn't have a direct reference to the guid,
             //    but only to the items directly
             // so it tries to get the guids first, and otherwise uses the items
-            var ents = ToTypedDictionary<EntityRelationship>(gList, log)
+            var entities = ToTypedDictionary</*LazyEntities*/IEnumerable<IEntity>>(gList, log)
                 .ToDictionary(a => a.Key, a => a.Value
-                    .ToDictionary(b => b.Key, b => b.Value.ResolveGuids()));
-            return ents;
+                    .ToDictionary(b => b.Key, b => ((LazyEntities)b.Value).ResolveGuids()));
+            return entities;
         }
 
         private static string LanguageKey(IValue v)

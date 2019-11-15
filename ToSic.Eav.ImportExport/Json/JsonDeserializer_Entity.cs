@@ -4,7 +4,6 @@ using System.Linq;
 using Newtonsoft.Json;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
-using ToSic.Eav.Enums;
 using ToSic.Eav.ImportExport.Json.Format;
 using ToSic.Eav.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -53,12 +52,12 @@ namespace ToSic.Eav.ImportExport.Json
                                        );
 
             // Metadata
-            var ismeta = new MetadataFor();
+            var ismeta = new Metadata.Target();
             if (jEnt.For != null)
             {
                 var md = jEnt.For;
                 Log.Add($"this is metadata; will construct 'For' object. Type: {md.Target}");
-                ismeta.TargetType = GetMetadataNumber(md.Target);// Factory.Resolve<IGlobalMetadataProvider>().GetType(md.Target);
+                ismeta.TargetType = GetMetadataNumber(md.Target);
                 ismeta.KeyGuid = md.Guid;
                 ismeta.KeyNumber = md.Number;
                 ismeta.KeyString = md.String;
@@ -96,17 +95,17 @@ namespace ToSic.Eav.ImportExport.Json
         private void BuildAttribsOfUnknownContentType(JsonAttributes jAtts, Entity newEntity)
         {
             var wrapLog = Log.Call("BuildAttribsOfUnknownContentType");
-            BuildAttrib(jAtts.DateTime, AttributeTypeEnum.DateTime, newEntity);
-            BuildAttrib(jAtts.Boolean, AttributeTypeEnum.Boolean, newEntity);
-            BuildAttrib(jAtts.Custom, AttributeTypeEnum.Custom, newEntity);
-            BuildAttrib(jAtts.Entity, AttributeTypeEnum.Entity, newEntity);
-            BuildAttrib(jAtts.Hyperlink, AttributeTypeEnum.Hyperlink, newEntity);
-            BuildAttrib(jAtts.Number, AttributeTypeEnum.Number, newEntity);
-            BuildAttrib(jAtts.String, AttributeTypeEnum.String, newEntity);
+            BuildAttrib(jAtts.DateTime, ValueTypes.DateTime, newEntity);
+            BuildAttrib(jAtts.Boolean, ValueTypes.Boolean, newEntity);
+            BuildAttrib(jAtts.Custom, ValueTypes.Custom, newEntity);
+            BuildAttrib(jAtts.Entity, ValueTypes.Entity, newEntity);
+            BuildAttrib(jAtts.Hyperlink, ValueTypes.Hyperlink, newEntity);
+            BuildAttrib(jAtts.Number, ValueTypes.Number, newEntity);
+            BuildAttrib(jAtts.String, ValueTypes.String, newEntity);
             wrapLog("ok");
         }
 
-        private void BuildAttrib<T>(Dictionary<string, Dictionary<string, T>> list, AttributeTypeEnum type, Entity newEntity)
+        private void BuildAttrib<T>(Dictionary<string, Dictionary<string, T>> list, ValueTypes type, Entity newEntity)
         {
             if (list == null) return;
 
@@ -123,37 +122,37 @@ namespace ToSic.Eav.ImportExport.Json
             var wrapLog = Log.Call("BuildAttribsOfKnownType");
             foreach (var definition in contentType.Attributes)
             {
-                var newAtt = ((AttributeDefinition) definition).CreateAttribute();
+                var newAtt = ((ContentTypeAttribute) definition).CreateAttribute();
                 switch (definition.ControlledType)
                 {
-                    case AttributeTypeEnum.Boolean:
+                    case ValueTypes.Boolean:
                         BuildValues(jAtts.Boolean, definition, newAtt);
                         break;
-                    case AttributeTypeEnum.DateTime:
+                    case ValueTypes.DateTime:
                         BuildValues(jAtts.DateTime, definition, newAtt);
                         break;
-                    case AttributeTypeEnum.Entity:
+                    case ValueTypes.Entity:
                         if (!jAtts.Entity?.ContainsKey(definition.Name) ?? true)
                             break; // just keep the empty definition, as that's fine
                         newAtt.Values = jAtts.Entity[definition.Name]
                             .Select(v => ValueBuilder.Build(definition.Type, v.Value, RecreateLanguageList(v.Key),
                                 RelLookupList)).ToList();
                         break;
-                    case AttributeTypeEnum.Hyperlink:
+                    case ValueTypes.Hyperlink:
                         BuildValues(jAtts.Hyperlink, definition,newAtt);
                         break;
-                    case AttributeTypeEnum.Number:
+                    case ValueTypes.Number:
                         BuildValues(jAtts.Number, definition, newAtt);
                         break;
-                    case AttributeTypeEnum.String:
+                    case ValueTypes.String:
                         BuildValues(jAtts.String, definition, newAtt);
                         break;
-                    case AttributeTypeEnum.Custom:
+                    case ValueTypes.Custom:
                         BuildValues(jAtts.Custom, definition, newAtt);
                         break;
                     // ReSharper disable RedundantCaseLabel
-                    case AttributeTypeEnum.Empty:
-                    case AttributeTypeEnum.Undefined:
+                    case ValueTypes.Empty:
+                    case ValueTypes.Undefined:
                         // ReSharper restore RedundantCaseLabel
                         break;
                     default:
@@ -168,7 +167,7 @@ namespace ToSic.Eav.ImportExport.Json
             wrapLog("ok");
         }
 
-        private void BuildValues<T>(Dictionary<string, Dictionary<string, T>> list, IAttributeDefinition attrDef, IAttribute target)
+        private void BuildValues<T>(Dictionary<string, Dictionary<string, T>> list, IContentTypeAttribute attrDef, IAttribute target)
         {
             if (!list?.ContainsKey(attrDef.Name) ?? true) return;
             target.Values = list[attrDef.Name]
@@ -180,7 +179,7 @@ namespace ToSic.Eav.ImportExport.Json
             => languages == NoLanguage
             ? new List<ILanguage>()
             : languages.Split(',')
-                .Select(a => new Dimension {Key = a.Replace(ReadOnlyMarker, ""), ReadOnly = a.StartsWith(ReadOnlyMarker)} as ILanguage)
+                .Select(a => new Language {Key = a.Replace(ReadOnlyMarker, ""), ReadOnly = a.StartsWith(ReadOnlyMarker)} as ILanguage)
                 .ToList();
 
 

@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.App;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Persistence.Efc.Tests;
+using AppState = ToSic.Eav.Apps.AppState;
+
 //using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ToSic.Testing.Performance.json
@@ -31,7 +32,7 @@ namespace ToSic.Testing.Performance.json
             Package = Loader.AppPackage(TestAppId, parentLog: Log);   
         }
 
-        internal AppDataPackage Package;
+        internal AppState Package;
         internal List<string> EntitiesAsJson;
 
         internal JsonSerializer GetSerializer() => new JsonSerializer(Package, Log);

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.App;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Metadata;
+using AppState = ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.Data.Builder
 {
@@ -17,9 +17,9 @@ namespace ToSic.Eav.Data.Builder
         /// Create a new Entity from a data store (usually SQL backend)
         /// </summary>
         public static Entity EntityFromRepository(int appId, Guid entityGuid, int entityId, 
-            int repositoryId, IMetadataFor metadataFor, IContentType type, 
+            int repositoryId, ITarget metadataFor, IContentType type, 
             bool isPublished, 
-            AppDataPackage source,
+            AppState source,
             DateTime modified, string owner, int version)
         {
             var e = EntityWithAllIdsAndType(appId, entityGuid, entityId, repositoryId,
@@ -41,7 +41,7 @@ namespace ToSic.Eav.Data.Builder
             var ent = EntityWithAllIdsAndType(appId, entityGuid, entityId, repositoryId, 
                 type, isPublished, modified ?? DateTime.Now, owner, version);
 
-            ent.MetadataFor = new MetadataFor();
+            ent.MetadataFor = new Metadata.Target();
 
             var titleAttrib = ent.GenerateAttributesOfContentType(type);
             if (titleAttrib != null)
@@ -72,15 +72,15 @@ namespace ToSic.Eav.Data.Builder
         /// Used in the Attribute-Filter, which generates a new entity with less properties
         /// </summary>
         public static Entity FullClone(IEntity entity, Dictionary<string, IAttribute> attributes, 
-            IEnumerable<EntityRelationshipItem> allRelationships)
+            IEnumerable<EntityRelationship> allRelationships)
         {
             var e = EntityWithAllIdsAndType(entity.AppId, entity.EntityGuid, entity.EntityId, entity.RepositoryId, entity.Type, 
                 entity.IsPublished, entity.Modified, entity.Owner, entity.Version, attributes);
             e.TitleFieldName = entity.Title?.Name;
-            var lookupApp = (entity as Entity)?.DeferredLookupData as AppDataPackage;
+            var lookupApp = (entity as Entity)?.DeferredLookupData as AppState;
             e.Relationships = new RelationshipManager(e, lookupApp, allRelationships);
 
-            e.MetadataFor = new MetadataFor(entity.MetadataFor);
+            e.MetadataFor = new Metadata.Target(entity.MetadataFor);
 
             e.DeferredLookupData = lookupApp;
             return e;
@@ -92,7 +92,7 @@ namespace ToSic.Eav.Data.Builder
             IAttribute titleAttrib = null;
             foreach (var definition in contentType.Attributes)
             {
-                var entityAttribute = ((AttributeDefinition)definition).CreateAttribute();
+                var entityAttribute = ((ContentTypeAttribute)definition).CreateAttribute();
                 newEntity.Attributes.Add(entityAttribute.Name, entityAttribute);
                 if (definition.IsTitle)
                     titleAttrib = entityAttribute;

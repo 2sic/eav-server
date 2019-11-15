@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using ToSic.Eav.App;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport;
@@ -10,8 +10,10 @@ using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.Metadata;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Types;
+using AppState = ToSic.Eav.Apps.AppState;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 // ReSharper disable once CheckNamespace
@@ -100,7 +102,7 @@ namespace ToSic.Eav.Persistence.File
         /// <param name="appId">this is not used ATM - just for interface compatibility, must always be 0</param>
         /// <param name="source">this is not used ATM - just for interface compatibility</param>
         /// <returns></returns>
-        public IList<IContentType> ContentTypes(int appId, IDeferredEntitiesList source)
+        public IList<IContentType> ContentTypes(int appId, IHasMetadataSource source)
         {
             if(appId != 0)
                 throw new ArgumentOutOfRangeException(nameof(appId), appId, "appid should only be 0 for now");
@@ -207,10 +209,10 @@ namespace ToSic.Eav.Persistence.File
 
 
         #region not implemented stuff
-        public AppDataPackage AppPackage(int appId, int[] entityIds = null, ILog parentLog = null) 
+        public AppState AppPackage(int appId, int[] entityIds = null, ILog parentLog = null) 
             => throw new NotImplementedException();
 
-        public AppDataPackage Update(AppDataPackage app, AppPackageLoadingSteps startAt, int[] entityIds = null,
+        public AppState Update(AppState app, AppStateLoadSequence startAt, int[] entityIds = null,
             ILog parentLog = null) 
             => throw new NotImplementedException();
 

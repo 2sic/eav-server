@@ -2,10 +2,11 @@
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using ToSic.Eav.App;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Metadata;
+using AppState = ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.Persistence.Efc
 {
@@ -40,7 +41,7 @@ namespace ToSic.Eav.Persistence.Efc
             return combined;
         }
 
-        private void LoadEntities(AppDataPackage app, int[] entityIds = null)
+        private void LoadEntities(AppState app, int[] entityIds = null)
         {
             // ToDo: do not use importexportenvironment - should create a IEnvironment (discuss w/2dm)
             
@@ -86,7 +87,7 @@ namespace ToSic.Eav.Persistence.Efc
                     e.EntityGuid,
                     e.Version,
                     e.AttributeSetId,
-                    Metadata = new MetadataFor
+                    Metadata = new Metadata.Target
                     {
                         TargetType = e.AssignmentObjectTypeId,
                         KeyGuid = e.KeyGuid,
@@ -145,7 +146,7 @@ namespace ToSic.Eav.Persistence.Efc
                             .Select(v2 => new
                             {
                                 v2.Value,
-                                Languages = v2.ToSicEavValuesDimensions.Select(l => new Dimension
+                                Languages = v2.ToSicEavValuesDimensions.Select(l => new Language
                                 {
                                     DimensionId = l.DimensionId,
                                     ReadOnly = l.ReadOnly,

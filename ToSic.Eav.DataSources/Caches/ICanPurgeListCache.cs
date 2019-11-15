@@ -5,7 +5,7 @@ namespace ToSic.Eav.DataSources.Caches
     /// <summary>
     /// Marks objects which can purge it's own cache, and also force upstream caches to be purged.
     /// </summary>
-    [PublicApi]
+    [PrivateApi("probably will change namespace 'Caches' to 'Cache' or 'Caching'")]
     public interface ICanPurgeListCache
     {
         /// <summary>

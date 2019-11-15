@@ -344,7 +344,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     Log.Add("attribute not found, will skip according to save-options");
                     continue;
                 }
-                if (attribDef.Type == AttributeTypeEnum.Entity.ToString())
+                if (attribDef.Type == ValueTypes.Entity.ToString())
                 {
                     Log.Add("type is entity, skip for now as relationships are processed later");
                     continue;

@@ -13,7 +13,7 @@ namespace ToSic.Eav.LookUp
 	[PublicApi]
 	public class LookUpInMetadata : LookUpInEntity
 	{
-	    private readonly IMetadataProvider _metaDataSource;
+	    private readonly IMetadataSource _metaDataSource;
 		private readonly Guid _objectToProvideSettingsTo;
 		private bool _entityLoaded;
 	    private readonly IEntity _parent;
@@ -27,7 +27,7 @@ namespace ToSic.Eav.LookUp
 		/// <param name="name">Name of the PropertyAccess, e.g. PipelineSettings</param>
 		/// <param name="objectId">EntityGuid of the Entity to get assigned Entities of</param>
 		/// <param name="metaDataSource">DataSource that provides MetaData</param>
-		public LookUpInMetadata(string name, Guid objectId, IMetadataProvider metaDataSource)
+		public LookUpInMetadata(string name, Guid objectId, IMetadataSource metaDataSource)
 		{
 			Name = name;
 			_objectToProvideSettingsTo = objectId;
@@ -53,7 +53,7 @@ namespace ToSic.Eav.LookUp
 		protected void LoadEntity()
         {
             var md = _parent?.Metadata ??
-                     _metaDataSource.GetMetadata(Constants.MetadataForEntity, _objectToProvideSettingsTo);
+                     _metaDataSource.Get(Constants.MetadataForEntity, _objectToProvideSettingsTo);
 
             // make sure we get the settings, but not the pipeline-parts, which may also be assigned
 			Entity = md.FirstOrDefault(e => e.Type.StaticName != Constants.QueryPartTypeName);

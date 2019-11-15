@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Enums;
 using ToSic.Eav.Implementations.ValueConverter;
-using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data.Builder
 {
@@ -77,10 +75,10 @@ namespace ToSic.Eav.Data.Builder
         /// </summary>
         public static IValue AddValue(this Dictionary<string, IAttribute> target, string attributeName,
             object value, string valueType, string language = null, bool languageReadOnly = false,
-            bool resolveHyperlink = false, IDeferredEntitiesList allEntitiesForRelationships = null)
+            bool resolveHyperlink = false, IEntitiesSource allEntitiesForRelationships = null)
         {
             // pre-convert links if necessary...
-            if (resolveHyperlink && valueType == AttributeTypeEnum.Hyperlink.ToString())
+            if (resolveHyperlink && valueType == ValueTypes.Hyperlink.ToString())
             {
                 var valueConverter = Factory.Resolve<IEavValueConverter>();
                 value = valueConverter.ToReference(valueType);//  valueConverter.Convert(ConversionScenario.ConvertFriendlyToData, valueType, (string)value);
@@ -90,7 +88,7 @@ namespace ToSic.Eav.Data.Builder
             if (string.IsNullOrWhiteSpace(language)) language = null;
 
             var valueWithLanguages = ValueBuilder.Build(valueType, value, language == null
-                ? null : new List<ILanguage> { new Dimension { Key = language, ReadOnly = languageReadOnly } }, allEntitiesForRelationships);
+                ? null : new List<ILanguage> { new Language { Key = language, ReadOnly = languageReadOnly } }, allEntitiesForRelationships);
 
 
             // add or replace to the collection
@@ -128,7 +126,7 @@ namespace ToSic.Eav.Data.Builder
 
 
         public static void BuildReferenceAttribute(this IEntity newEntity, string attribName, IEnumerable<int?> references,
-            IDeferredEntitiesList app)
+            IEntitiesSource app)
         {
             var attrib = newEntity.Attributes[attribName];
             attrib.Values = new List<IValue> { ValueBuilder.Build(attrib.Type, references, null, app) };

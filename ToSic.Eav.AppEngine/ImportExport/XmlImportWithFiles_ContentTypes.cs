@@ -40,14 +40,14 @@ namespace ToSic.Eav.Apps.ImportExport
 	        var typeName = xmlContentType.Attribute(XmlConstants.Name).Value;
 	        var wrap = Log.Call("BuildContentTypeFromXml", typeName);
 
-	        var attributes = new List<IAttributeDefinition>();
+	        var attributes = new List<IContentTypeAttribute>();
             if (ctElement != null)
             {
                 foreach (var xmlField in ctElement.Elements(XmlConstants.Attribute))
                 {
                     var name = xmlField.Attribute(XmlConstants.Static).Value;
                     var fieldTypeName = xmlField.Attribute(XmlConstants.EntityTypeAttribute).Value;
-                    var attribute = new AttributeDefinition(AppId, name, null, fieldTypeName, 
+                    var attribute = new ContentTypeAttribute(AppId, name, null, fieldTypeName, 
                         null, null, null, null);
                     var md = xmlField.Elements(XmlConstants.Entity).ToList();
                     attribute.Metadata.Use(BuildEntities(md, Constants.MetadataForAttribute));
@@ -65,7 +65,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
                 // check if it's normal (not a ghost) but still missing a title
                 if (attributes.Any() && !attributes.Any(a => a.IsTitle))
-                    (attributes.First() as AttributeDefinition).IsTitle = true;
+                    (attributes.First() as ContentTypeAttribute).IsTitle = true;
             }
 
             // create ContentType

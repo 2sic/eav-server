@@ -6,6 +6,7 @@ using System.Xml.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Metadata;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 // 2dm: must disable NullRef warnings, because there a lot of warnings when processing XML, 
@@ -102,7 +103,7 @@ namespace ToSic.Eav.Apps.ImportExport
 			    }
 			}
 
-            var metadata = new MetadataFor
+            var metadata = new Metadata.Target
             {
                 TargetType = assignmentObjectTypeId,
                 KeyNumber = keyNumber,

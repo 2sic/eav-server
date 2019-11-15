@@ -29,14 +29,14 @@ namespace ToSic.Eav.Repository.Efc.Tests
         private const int AppId = Constants.TransientAppId;
         ContentType _ctNull = null;
 
-        ContentType _ctPerson = new ContentType(AppId, "Person") {Attributes = new List<IAttributeDefinition>
+        ContentType _ctPerson = new ContentType(AppId, "Person") {Attributes = new List<IContentTypeAttribute>
         {
-            new AttributeDefinition(AppId, "FullName", "String", true, 0, 0),
-            new AttributeDefinition(AppId, "FirstName", "String", true, 0, 0),
-            new AttributeDefinition(AppId, "LastName", "String", true, 0, 0),
-            new AttributeDefinition(AppId, "Birthday", "DateTime", true, 0, 0),
-            new AttributeDefinition(AppId, "Husband", "String", true, 0, 0),
-            new AttributeDefinition(AppId, "UnusedField", "String", true, 0,0)
+            new ContentTypeAttribute(AppId, "FullName", "String", true, 0, 0),
+            new ContentTypeAttribute(AppId, "FirstName", "String", true, 0, 0),
+            new ContentTypeAttribute(AppId, "LastName", "String", true, 0, 0),
+            new ContentTypeAttribute(AppId, "Birthday", "DateTime", true, 0, 0),
+            new ContentTypeAttribute(AppId, "Husband", "String", true, 0, 0),
+            new ContentTypeAttribute(AppId, "UnusedField", "String", true, 0,0)
         }};
         Entity _origENull = null;
 
@@ -73,10 +73,10 @@ namespace ToSic.Eav.Repository.Efc.Tests
         #endregion
 
         #region languge definitions
-        private static Dimension langEn = new Dimension {DimensionId = 1, Key = "en-US"};
-        private static Dimension langDeDe = new Dimension {DimensionId = 42, Key = "de-DE"};
-        private static Dimension langDeCh = new Dimension {DimensionId = 39, Key = "de-CH"};
-        private static Dimension langFr = new Dimension {DimensionId = 99, Key = "fr-FR"};
+        private static Language langEn = new Language {DimensionId = 1, Key = "en-US"};
+        private static Language langDeDe = new Language {DimensionId = 42, Key = "de-DE"};
+        private static Language langDeCh = new Language {DimensionId = 39, Key = "de-CH"};
+        private static Language langFr = new Language {DimensionId = 99, Key = "fr-FR"};
 
         private static DimensionDefinition langEnDef = new DimensionDefinition { DimensionId = 1, EnvironmentKey = "en-US" };
         private static DimensionDefinition langDeDeDef = new DimensionDefinition { DimensionId = 42, EnvironmentKey = "de-DE" };
@@ -116,11 +116,11 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         private readonly ContentType _ctMlProduct = new ContentType(-1, "Product")
         {
-            Attributes = new List<IAttributeDefinition>
+            Attributes = new List<IContentTypeAttribute>
             {
-                new AttributeDefinition(AppId, "Title", "String", true, 0, 0),
-                new AttributeDefinition(AppId, "Teaser", "String", false, 0, 0),
-                new AttributeDefinition(AppId, "Image", "Hyperlink", false, 0, 0),
+                new ContentTypeAttribute(AppId, "Title", "String", true, 0, 0),
+                new ContentTypeAttribute(AppId, "Teaser", "String", false, 0, 0),
+                new ContentTypeAttribute(AppId, "Image", "Hyperlink", false, 0, 0),
             }
         };
 
@@ -136,15 +136,15 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             var title = AttributeBase.CreateTypedAttribute("Title", "String", new List<IValue>
             {
-                ValueBuilder.Build(AttributeTypeEnum.String, "TitleEn, language En", new List<ILanguage> {langEn.Copy()}),
+                ValueBuilder.Build(ValueTypes.String, "TitleEn, language En", new List<ILanguage> {langEn.Copy()}),
             });
             var teaser = AttributeBase.CreateTypedAttribute("Teaser", "String", new List<IValue>
             {
-                ValueBuilder.Build(AttributeTypeEnum.String, "Teaser EN, lang en", new List<ILanguage> {langEn.Copy()}),
+                ValueBuilder.Build(ValueTypes.String, "Teaser EN, lang en", new List<ILanguage> {langEn.Copy()}),
             });
             var file = AttributeBase.CreateTypedAttribute("File", "String", new List<IValue>
             {
-                ValueBuilder.Build(AttributeTypeEnum.String, "File EN, lang en + ch RW", new List<ILanguage> {langEn.Copy() }),
+                ValueBuilder.Build(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> {langEn.Copy() }),
             });
 
             return new Entity(AppId, 3006, ContentTypeBuilder.Fake("Product"), new Dictionary<string, object>
@@ -159,31 +159,31 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             var title = AttributeBase.CreateTypedAttribute("Title", "String", new List<IValue>
             {
-                ValueBuilder.Build(AttributeTypeEnum.String, "TitleEn, language En", new List<ILanguage> {langEn.Copy()}),
-                ValueBuilder.Build(AttributeTypeEnum.String, "Title DE",
+                ValueBuilder.Build(ValueTypes.String, "TitleEn, language En", new List<ILanguage> {langEn.Copy()}),
+                ValueBuilder.Build(ValueTypes.String, "Title DE",
                     new List<ILanguage> {langDeDe.Copy(), langDeCh.Copy(readOnly: true)}),
-                ValueBuilder.Build(AttributeTypeEnum.String, "titre FR", new List<ILanguage> {langFr.Copy()})
+                ValueBuilder.Build(ValueTypes.String, "titre FR", new List<ILanguage> {langFr.Copy()})
             });
 
             var teaser = AttributeBase.CreateTypedAttribute("Teaser", "String", new List<IValue>
             {
-                ValueBuilder.Build(AttributeTypeEnum.String, "teaser de de",
+                ValueBuilder.Build(ValueTypes.String, "teaser de de",
                     new List<ILanguage> {langDeDe.Copy() }),
-                ValueBuilder.Build(AttributeTypeEnum.String, "teaser de CH",
+                ValueBuilder.Build(ValueTypes.String, "teaser de CH",
                     new List<ILanguage> {langDeCh.Copy()}),
-                ValueBuilder.Build(AttributeTypeEnum.String, "teaser FR", new List<ILanguage> {langFr.Copy( readOnly:true)}),
+                ValueBuilder.Build(ValueTypes.String, "teaser FR", new List<ILanguage> {langFr.Copy( readOnly:true)}),
                 // special test: leave EN (primary) at end of list, as this could happen in real life
-                ValueBuilder.Build(AttributeTypeEnum.String, "Teaser EN, lang en", new List<ILanguage> {langEn.Copy()}),
+                ValueBuilder.Build(ValueTypes.String, "Teaser EN, lang en", new List<ILanguage> {langEn.Copy()}),
             });
             var file = AttributeBase.CreateTypedAttribute("File", "String", new List<IValue>
             {
-                ValueBuilder.Build(AttributeTypeEnum.String, "Filen EN, lang en + ch RW", new List<ILanguage> {langEn.Copy(), langDeCh.Copy()}),
-                ValueBuilder.Build(AttributeTypeEnum.String, "File de de",
+                ValueBuilder.Build(ValueTypes.String, "Filen EN, lang en + ch RW", new List<ILanguage> {langEn.Copy(), langDeCh.Copy()}),
+                ValueBuilder.Build(ValueTypes.String, "File de de",
                     new List<ILanguage> {langDeDe.Copy(), langFr.Copy() }),
-                ValueBuilder.Build(AttributeTypeEnum.String, "File FR", new List<ILanguage> {langFr.Copy()}),
+                ValueBuilder.Build(ValueTypes.String, "File FR", new List<ILanguage> {langFr.Copy()}),
                 // special test - empty language item
-                ValueBuilder.Build(AttributeTypeEnum.String, "File without language!", new List<ILanguage>()),
-                ValueBuilder.Build(AttributeTypeEnum.String, "Filen EN, lang en + ch RW", new List<ILanguage> {langEn.Copy(), langDeCh.Copy()}),
+                ValueBuilder.Build(ValueTypes.String, "File without language!", new List<ILanguage>()),
+                ValueBuilder.Build(ValueTypes.String, "Filen EN, lang en + ch RW", new List<ILanguage> {langEn.Copy(), langDeCh.Copy()}),
             });
 
             return new Entity(AppId, 430, ContentTypeBuilder.Fake("Product"), new Dictionary<string, object>

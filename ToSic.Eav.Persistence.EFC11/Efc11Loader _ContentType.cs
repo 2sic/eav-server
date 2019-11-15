@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Persistence.Efc
 {
@@ -25,13 +26,10 @@ namespace ToSic.Eav.Persistence.Efc
         /// Get all ContentTypes for specified AppId. 
         /// If uses temporary caching, so if called multiple times it loads from a private field.
         /// </summary>
-        public IList<IContentType> ContentTypes(int appId, IDeferredEntitiesList source)
+        public IList<IContentType> ContentTypes(int appId, IHasMetadataSource source)
         {
             return LoadContentTypesIntoLocalCache(appId, source);
             
-            //if (!_contentTypes.ContainsKey(appId))
-            //    _contentTypes[appId] = LoadContentTypesIntoLocalCache(appId, source, false);
-            //return _contentTypes[appId];
         }
 
 
@@ -39,23 +37,12 @@ namespace ToSic.Eav.Persistence.Efc
         /// Load DB content-types into loader-cache
         /// </summary>
         private ImmutableList<IContentType> LoadContentTypesIntoLocalCache(int appId, 
-            IDeferredEntitiesList source/*, bool justAddNewOnes*/)
+            IHasMetadataSource source)
         {
             // Load from DB
             var sqlTime = Stopwatch.StartNew();
             var query = _dbContext.ToSicEavAttributeSets
                 .Where(set => set.AppId == appId && set.ChangeLogDeleted == null);
-
-            //IEnumerable<IContentType> prevList;
-
-            //if (justAddNewOnes)
-            //{
-            //    var typedSource = ((AppDataPackage) source);
-            //    prevList = .ContentTypes;
-            //    var listOfExisting = prevList?.Select(ct => ct.ContentTypeId).ToList();
-            //    if (listOfExisting != null)
-            //        query = query.Where(set => !listOfExisting.Contains(set.AttributeSetId));
-            //}
 
             var contentTypes = query
                     .Include(set => set.ToSicEavAttributesInSets)
@@ -73,7 +60,7 @@ namespace ToSic.Eav.Persistence.Efc
                         set.Description,
                         Attributes = set.ToSicEavAttributesInSets
                             .Where(a => a.Attribute.ChangeLogDeleted == null) // only not-deleted attributes!
-                            .Select(a => new AttributeDefinition(appId, a.Attribute.StaticName, a.Attribute.Type, a.IsTitle, a.AttributeId, a.SortOrder, source)),
+                            .Select(a => new ContentTypeAttribute(appId, a.Attribute.StaticName, a.Attribute.Type, a.IsTitle, a.AttributeId, a.SortOrder, source)),
                         IsGhost = set.UsesConfigurationOfAttributeSet,
                         SharedDefinitionId = set.UsesConfigurationOfAttributeSet,
                         AppId = set.UsesConfigurationOfAttributeSetNavigation?.AppId ?? set.AppId,
@@ -91,7 +78,7 @@ namespace ToSic.Eav.Persistence.Efc
                 .ThenInclude(a => a.Attribute)
                 .Where(s => shareids.Contains(s.AttributeSetId))
                 .ToDictionary(s => s.AttributeSetId, s => s.ToSicEavAttributesInSets.Select(a
-                    => new AttributeDefinition(appId, a.Attribute.StaticName, a.Attribute.Type, a.IsTitle,
+                    => new ContentTypeAttribute(appId, a.Attribute.StaticName, a.Attribute.Type, a.IsTitle,
                         a.AttributeId, a.SortOrder, parentApp: s.AppId)));
             sqlTime.Stop();
 
@@ -103,7 +90,7 @@ namespace ToSic.Eav.Persistence.Efc
                             ? sharedAttribs[set.SharedDefinitionId.Value]
                             : set.Attributes)
                         // ReSharper disable once RedundantEnumerableCastCall
-                        .Cast<IAttributeDefinition>()
+                        .Cast<IContentTypeAttribute>()
                         .ToList()
                 }
             );

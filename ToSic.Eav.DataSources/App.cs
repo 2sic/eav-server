@@ -173,9 +173,9 @@ namespace ToSic.Eav.DataSources
         /// The App DataSource automatically provides direct access to the metadata system.
         /// This allows users of the App to query metadata directly through this object. 
         /// </summary>
-        /// <returns>An initialized <see cref="IMetadataProvider"/> for this app</returns>
-        public IMetadataProvider Metadata => _metadata ?? (_metadata = DataSource.GetMetaDataSource(ZoneId, AppId));
-        private IMetadataProvider _metadata;
+        /// <returns>An initialized <see cref="IMetadataSource"/> for this app</returns>
+        public IMetadataSource Metadata => _metadata ?? (_metadata = DataSource.GetMetaDataSource(ZoneId, AppId));
+        private IMetadataSource _metadata;
     }
 
 }

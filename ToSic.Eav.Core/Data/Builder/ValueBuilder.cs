@@ -3,8 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using ToSic.Eav.Enums;
-using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Data.Builder
 {
@@ -14,14 +12,17 @@ namespace ToSic.Eav.Data.Builder
         /// Creates a Typed Value Model
         /// </summary>
         public static IValue Build(string attributeType, object value, List<ILanguage> languages,
-            IDeferredEntitiesList fullEntityListForLookup = null)
-            => Build((AttributeTypeEnum)Enum.Parse(typeof(AttributeTypeEnum), attributeType), value, languages, fullEntityListForLookup);
+            IEntitiesSource fullEntityListForLookup = null)
+            => Build((ValueTypes)Enum.Parse(typeof(ValueTypes), attributeType), value, languages, fullEntityListForLookup);
 
 
         /// <summary>
         /// Creates a Typed Value Model
         /// </summary>
-        public static IValue Build(AttributeTypeEnum type, object value, List<ILanguage> languages, IDeferredEntitiesList fullEntityListForLookup = null)
+        /// <returns>
+        /// An IValue, which is actually an IValue<string>, IValue<decimal>, IValue<IEnumerable<IEntity>> etc.
+        /// </returns>
+        public static IValue Build(ValueTypes type, object value, List<ILanguage> languages, IEntitiesSource fullEntityListForLookup = null)
         {
             if (languages == null) languages = new List<ILanguage>();
             Value typedModel;
@@ -30,53 +31,57 @@ namespace ToSic.Eav.Data.Builder
             {
                 switch (type)
                 {
-                    case AttributeTypeEnum.Boolean:
-                        typedModel = new Value<bool?>(value as bool? ?? (Boolean.TryParse(stringValue, out var typedBoolean)
+                    case ValueTypes.Boolean:
+                        typedModel = new Value<bool?>(value as bool? ?? (bool.TryParse(stringValue, out var typedBoolean)
                             ? typedBoolean
                             : new bool?()));
                         break;
-                    case AttributeTypeEnum.DateTime:
+                    case ValueTypes.DateTime:
                         typedModel = new Value<DateTime?>(value as DateTime? ?? (DateTime.TryParse(stringValue, CultureInfo.InvariantCulture,
                                                      DateTimeStyles.None, out var typedDateTime)
                                                      ? typedDateTime
                                                      : new DateTime?()));
                         break;
 
-                    case AttributeTypeEnum.Number:
+                    case ValueTypes.Number:
                         decimal? newDec = null;
-                        if(value != null) 
-                            if (!(value is string && String.IsNullOrEmpty(value as string))) // only try converting if it's not an empty string
+                        if(value != null && !(value is string s && string.IsNullOrEmpty(s)))
+                        {
+                            // only try converting if it's not an empty string
+                            try
                             {
-                                try
-                                {
-                                    newDec = Convert.ToDecimal(value, CultureInfo.InvariantCulture);
-                                }
-                                catch { /* ignored */ }
+                                newDec = Convert.ToDecimal(value, CultureInfo.InvariantCulture);
                             }
+                            catch { /* ignored */ }
+                        }
+
                         typedModel = new Value<decimal?>(newDec);
                         break;
 
-                    case AttributeTypeEnum.Entity:
-                        var entityIds = value as IEnumerable<int?> ?? (value as IEnumerable<int>)?.Select(x => (int?)x).ToList();
-                        EntityRelationship rel;
+                    case ValueTypes.Entity:
+                        IEnumerable<IEntity> rel;
+                        var entityIds = value as IEnumerable<int?> ?? (value as IEnumerable<int>)
+                                        ?.Select(x => (int?) x).ToList();
                         if (entityIds != null)
-                            rel = new EntityRelationship(fullEntityListForLookup, entityIds.ToList());
-                        else if (value is EntityRelationship rels)
-                            rel = rels.Guids != null
-                                ? new EntityRelationship(fullEntityListForLookup, rels.Guids)
-                                : new EntityRelationship(fullEntityListForLookup, rels.EntityIds);
+                            rel = new LazyEntities(fullEntityListForLookup, entityIds.ToList());
+                        else if (value is IEnumerable<IEntity> relList)
+                            //var lazy = (LazyEntities) relList;
+                            //rel = lazy.Guids != null
+                            //    ? new LazyEntities(fullEntityListForLookup, lazy.Guids)
+                            //    : new LazyEntities(fullEntityListForLookup, lazy.EntityIds);
+                            rel = new LazyEntities(fullEntityListForLookup, ((LazyEntities)relList).Identifiers);
                         else if (value is List<Guid?> guids)
-                            rel = new EntityRelationship(fullEntityListForLookup, guids);
+                            rel = new LazyEntities(fullEntityListForLookup, guids);
                         else
-                            rel = new EntityRelationship(fullEntityListForLookup, GuidCsvToList(value)); 
-                        typedModel = new Value<EntityRelationship>(rel);
+                            rel = new LazyEntities(fullEntityListForLookup, GuidCsvToList(value)); 
+                        typedModel = new Value<IEnumerable<IEntity>>(rel);
                         break;
                     // ReSharper disable RedundantCaseLabel
-                    case AttributeTypeEnum.String:  // most common case
-                    case AttributeTypeEnum.Empty:   // empty - should actually not contain anything!
-                    case AttributeTypeEnum.Custom:  // custom value, currently just parsed as string for manual processing as needed
-                    case AttributeTypeEnum.Hyperlink:// special case, handled as string
-                    case AttributeTypeEnum.Undefined:// backup case, where it's not known...
+                    case ValueTypes.String:  // most common case
+                    case ValueTypes.Empty:   // empty - should actually not contain anything!
+                    case ValueTypes.Custom:  // custom value, currently just parsed as string for manual processing as needed
+                    case ValueTypes.Hyperlink:// special case, handled as string
+                    case ValueTypes.Undefined:// backup case, where it's not known...
                     // ReSharper restore RedundantCaseLabel
                     default:
                         typedModel = new Value<string>(stringValue);
@@ -120,7 +125,8 @@ namespace ToSic.Eav.Data.Builder
         /// ...and then it must be a new object every time, 
         /// because the object could be changed at runtime, and if it were shared, then it would be changed in many places
         /// </summary>
-        internal static Value<EntityRelationship> NullRelationship => new Value<EntityRelationship>(new EntityRelationship(null, identifiers: null))
+        internal static Value</*LazyEntities*/IEnumerable<IEntity>> NullRelationship 
+            => new Value</*LazyEntities*/IEnumerable<IEntity>>(new LazyEntities(null, identifiers: null))
         {
             Languages = new List<ILanguage>()
         };

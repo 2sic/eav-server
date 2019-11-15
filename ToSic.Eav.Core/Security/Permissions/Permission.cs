@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data;
+using ToSic.Eav.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Security.Permissions
@@ -6,7 +7,7 @@ namespace ToSic.Eav.Security.Permissions
     /// <summary>
     /// Helper object for constants related to the permissions-type
     /// </summary>
-    // ReSharper disable once InheritdocConsiderUsage
+    [PublicApi]
     public class Permission: EntityBasedType
     {
         public const string TypeName = "PermissionConfiguration";

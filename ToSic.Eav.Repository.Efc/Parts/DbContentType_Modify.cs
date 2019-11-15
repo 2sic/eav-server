@@ -116,7 +116,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             var contentTypeId = foundSet.Value;
 
             // append all Attributes
-            foreach (var newAtt in contentType.Attributes.Cast<AttributeDefinition>())
+            foreach (var newAtt in contentType.Attributes.Cast<ContentTypeAttribute>())
             {
                 var destAttribId = DbContext.AttributesDefinition.GetOrCreateAttributeDefinition(contentTypeId, newAtt);
 
@@ -137,15 +137,15 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <param name="attributeId"></param>
         /// <param name="metadata"></param>
         /// <param name="saveOptions"></param>
-        private void SaveAttributeMetadata(int attributeId, IMetadataOfItem metadata, SaveOptions saveOptions)
+        private void SaveAttributeMetadata(int attributeId, IMetadataOf metadata, SaveOptions saveOptions)
         {
             var entities = new List<IEntity>();
             // if possible, try to get the complete list which is usually hidden in IMetadataOfItem
-            var sourceList = (metadata as IMetadataWithHiddenItems)?.AllWithHidden as IEnumerable<IEntity> 
+            var sourceList = (metadata as IMetadataInternals)?.AllWithHidden as IEnumerable<IEntity> 
                              ?? metadata;
             foreach (var entity in sourceList)
             {
-                var md = (MetadataFor)entity.MetadataFor;
+                var md = (Metadata.Target)entity.MetadataFor;
                 // Validate Entity
                 md.TargetType = Constants.MetadataForAttribute;
 

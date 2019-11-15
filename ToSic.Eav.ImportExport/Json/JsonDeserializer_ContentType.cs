@@ -37,11 +37,11 @@ namespace ToSic.Eav.ImportExport.Json
                 Log.Add("deserialize attributes");
                 var attribs = jsonType.Attributes.Select((attr, pos) =>
                 {
-                    var attDef = new AttributeDefinition(AppId, attr.Name, attr.Type, attr.IsTitle, 0, pos);
+                    var attDef = new ContentTypeAttribute(AppId, attr.Name, attr.Type, attr.IsTitle, 0, pos);
                     var md = attr.Metadata?.Select(m => Deserialize(m, AssumeUnknownTypesAreDynamic, false)).ToList() ??
                              new List<IEntity>();
                     attDef.Metadata.Use(md);
-                    return (IAttributeDefinition) attDef;
+                    return (IContentTypeAttribute) attDef;
                 }).ToList();
 
                 type.Attributes = attribs;

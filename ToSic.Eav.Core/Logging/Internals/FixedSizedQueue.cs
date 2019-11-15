@@ -18,7 +18,7 @@ namespace ToSic.Eav.Logging.Internals
         public new void Enqueue(T obj)
         {
             base.Enqueue(obj);
-            // 2018-03 removed lock statement because it's recommended agains here https://stackoverflow.com/questions/5852863/fixed-size-queue-which-automatically-dequeues-old-values-upon-new-enques
+            // 2018-03 removed lock statement because it's recommended against here https://stackoverflow.com/questions/5852863/fixed-size-queue-which-automatically-dequeues-old-values-upon-new-enques
             //lock (_syncObject)
             //{
                 while (Count > Size)

@@ -1,9 +1,10 @@
 ﻿using System.Diagnostics;
-using ToSic.Eav.App;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc.Models;
+using AppState = ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.Persistence.Efc
 {
@@ -31,10 +32,10 @@ namespace ToSic.Eav.Persistence.Efc
         /// <param name="entityIds">null or a List of EntitiIds</param>
         /// <param name="parentLog"></param>
         /// <returns>app package with initialized app</returns>
-        public AppDataPackage AppPackage(int appId, int[] entityIds = null, ILog parentLog = null) 
-            => Update(new AppDataPackage(appId, parentLog), AppPackageLoadingSteps.Start, entityIds, parentLog);
+        public AppState AppPackage(int appId, int[] entityIds = null, ILog parentLog = null) 
+            => Update(new AppState(appId, parentLog), AppStateLoadSequence.Start, entityIds, parentLog);
 
-        public AppDataPackage Update(AppDataPackage app, AppPackageLoadingSteps startAt, int[] entityIds = null, ILog parentLog = null)
+        public AppState Update(AppState app, AppStateLoadSequence startAt, int[] entityIds = null, ILog parentLog = null)
         {
             app.Load(parentLog, () =>
             {
@@ -43,16 +44,16 @@ namespace ToSic.Eav.Persistence.Efc
                                                     $"ids only:{entityIds != null}");
 
                 // prepare metadata lists & relationships etc.
-                if (startAt <= AppPackageLoadingSteps.MetadataInit)
+                if (startAt <= AppStateLoadSequence.MetadataInit)
                     _sqlTotalTime = _sqlTotalTime.Add(InitMetadataLists(app, _dbContext));
                 else
                     Log.Add("skipping metadata load");
 
-                if (startAt <= AppPackageLoadingSteps.ContentTypeLoad && app.ContentTypesShouldBeReloaded)
-                    startAt = AppPackageLoadingSteps.ContentTypeLoad;
+                if (startAt <= AppStateLoadSequence.ContentTypeLoad && app.ContentTypesShouldBeReloaded)
+                    startAt = AppStateLoadSequence.ContentTypeLoad;
 
                 // prepare content-types
-                if (startAt <= AppPackageLoadingSteps.ContentTypeLoad)
+                if (startAt <= AppStateLoadSequence.ContentTypeLoad)
                 {
                     var typeTimer = Stopwatch.StartNew();
                     app.InitContentTypes(ContentTypes(app.AppId, app));
@@ -63,7 +64,7 @@ namespace ToSic.Eav.Persistence.Efc
                     Log.Add("skipping content-type load");
 
                 // load data
-                if (startAt <= AppPackageLoadingSteps.ItemLoad)
+                if (startAt <= AppStateLoadSequence.ItemLoad)
                     LoadEntities(app, entityIds);
                 else
                     Log.Add("skipping items load");

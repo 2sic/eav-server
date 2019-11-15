@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using ToSic.Eav.App;
 using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
@@ -160,25 +159,25 @@ namespace ToSic.Eav.Apps.Parts
 
             // todo: continue here
             AppManager.DataController.Loader.Update(AppManager.Package, 
-                AppPackageLoadingSteps.ItemLoad, ids.ToArray(), Log);
+                AppStateLoadSequence.ItemLoad, ids.ToArray(), Log);
             // clear cache of this app
             //SystemManager.Purge(AppManager.AppId);
             wrapLog($"ids:{ids.Count}");
             return ids;
         }
 
-        public Tuple<int, Guid> Create(string typeName, Dictionary<string, object> values, IMetadataFor metadataFor = null)
+        public Tuple<int, Guid> Create(string typeName, Dictionary<string, object> values, ITarget metadataFor = null)
         {
             var wrapLog = Log.Call("Create", $"type:{typeName}, val-count:{values.Count}, meta:{metadataFor}");
             var newEnt = new Entity(AppManager.AppId, Guid.NewGuid(), AppManager.Read.ContentTypes.Get(typeName), values);
-            if (metadataFor != null) newEnt.SetMetadata(metadataFor as MetadataFor);
+            if (metadataFor != null) newEnt.SetMetadata(metadataFor as Metadata.Target);
             var eid = Save(newEnt);
             var guid = AppManager.DataController.Entities.TempLastSaveGuid;
             wrapLog($"id:{eid}, guid:{guid}");
             return new Tuple<int, Guid>(eid, guid);
         }
 
-        public void SaveMetadata(MetadataFor target, string typeName, Dictionary<string, object> values)
+        public void SaveMetadata(Metadata.Target target, string typeName, Dictionary<string, object> values)
         {
             var wrapLog = Log.Call("SaveMetadata", "target:" + target.KeyNumber + "/" + target.KeyGuid + ", values count:" + values.Count);
 
@@ -210,7 +209,7 @@ namespace ToSic.Eav.Apps.Parts
             saveOptions.PreserveUntouchedAttributes = true;
             saveOptions.PreserveUnknownLanguages = true;
 
-            var orig = Data.Query.Entity.FindRepoId(AppManager.Cache.List,id);
+            var orig = IEntityExtensions.FindRepoId(AppManager.Cache.List,id);
             var tempEnt = new Entity(AppManager.AppId, 0, orig.Type, values);
             var saveEnt = new EntitySaver(Log).CreateMergedForSaving(orig, tempEnt, saveOptions);
             Save(saveEnt, saveOptions);
@@ -251,7 +250,7 @@ namespace ToSic.Eav.Apps.Parts
             var parentEntity = AppManager.Read.Entities.Get(parentId);
             var parentField = parentEntity.GetBestValue(field);
 
-            if (!(parentField is EntityRelationship fieldList))
+            if (!(parentField is IEnumerable<IEntity> fieldList))
                 throw new Exception("field " + field + " doesn't seem to be a list of content-items, must abort");
 
             var ids = actionToPerform.Change(fieldList.ToList());
@@ -265,9 +264,9 @@ namespace ToSic.Eav.Apps.Parts
 
 
         public ExportListXml Exporter(IContentType contentType) 
-            => new ExportListXml(AppManager.Cache.AppDataPackage, contentType, Log);
+            => new ExportListXml(AppManager.Cache.AppState, contentType, Log);
         public ExportListXml Exporter(string contentType) 
-            => new ExportListXml(AppManager.Cache.AppDataPackage, AppManager.Read.ContentTypes.Get(contentType), Log);
+            => new ExportListXml(AppManager.Cache.AppState, AppManager.Read.ContentTypes.Get(contentType), Log);
 
         public ImportListXml Importer(
             string contentTypeName,

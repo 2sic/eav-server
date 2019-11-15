@@ -1,16 +1,17 @@
-﻿namespace ToSic.Eav.Caching
+﻿using ToSic.Eav.Documentation;
+
+namespace ToSic.Eav.Caching
 {
-    public interface ICacheDependent
+    /// <summary>
+    /// Marks something that is cache-dependent. Used for things that are themselves cached, but rely on an upstream cache. 
+    /// </summary>
+    [PublicApi]
+    public interface ICacheDependent: ITimestamped
     {
         /// <summary>
-        /// System time of last refresh
+        /// Find out if the source it depends on has changed.
         /// </summary>
-        long CacheTimestamp { get; }
-
-        /// <summary>
-        /// Find out if it changed
-        /// </summary>
-        /// <returns></returns>
+        /// <returns>True if the upstream cache returns a newer timestamp</returns>
         bool CacheChanged();
     }
 }

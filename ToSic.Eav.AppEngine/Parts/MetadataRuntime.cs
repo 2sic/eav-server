@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.Data;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -11,7 +9,7 @@ namespace ToSic.Eav.Apps.Parts
         internal MetadataRuntime(AppRuntime app, ILog parentLog) : base(app, parentLog) { }
 
         public IEnumerable<IEntity> Get<T>(int targetType, T key, string contentTypeName = null)
-            => App.Cache.GetMetadata(targetType, key, contentTypeName);
+            => App.Cache.Get(targetType, key, contentTypeName);
 
 
     }

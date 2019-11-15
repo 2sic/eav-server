@@ -15,7 +15,7 @@ namespace ToSic.Eav.Security.Permissions
 
         private IEntity TargetItem { get; }
 
-        protected IEnumerable<IEntity> PermissionList
+        protected IEnumerable<Permission> PermissionList
         {
             get
             {
@@ -31,7 +31,7 @@ namespace ToSic.Eav.Security.Permissions
                 // bundle all permission metadata items
                 _permissionList = partsToConsider
                     .Where(permList => permList != null)
-                    .Aggregate(_permissionList = new List<IEntity>(), (current, permList)
+                    .Aggregate(_permissionList = new List<Permission>(), (current, permList)
                         => current.Concat(permList))
                     .ToList();
 
@@ -40,9 +40,9 @@ namespace ToSic.Eav.Security.Permissions
             }
         }
 
-        private IEnumerable<IEntity> _permissionList;
+        private IEnumerable<Permission> _permissionList;
 
-        private readonly IEnumerable<IEntity> _additionalMetadata;
+        private readonly IEnumerable<Permission> _additionalMetadata;
 
         public bool HasPermissions => PermissionList.Any();
 
@@ -59,12 +59,12 @@ namespace ToSic.Eav.Security.Permissions
             ILog parentLog,
             IContentType targetType = null, // optional type to check
             IEntity targetItem = null,      // optional entity to check
-            IEnumerable<IEntity> permissions1 = null,
-            IEnumerable<IEntity> permissions2 = null
+            IEnumerable<Permission> permissions1 = null,
+            IEnumerable<Permission> permissions2 = null
             ) 
             : base("App.PermCk", parentLog)
         {
-            var permList2 = permissions2 as IList<IEntity> ?? permissions2?.ToList();
+            var permList2 = permissions2 as IList<Permission> ?? permissions2?.ToList();
 
             var wrapLog = Log.New("PermissionCheckBase", $"type:{targetType?.StaticName}, " +
                     $"itm:{targetItem?.EntityGuid} ({targetItem?.EntityId}), " +
@@ -74,7 +74,7 @@ namespace ToSic.Eav.Security.Permissions
             TargetType = targetType;
             TargetItem = targetItem;
 
-            _additionalMetadata = permissions1 ?? new List<IEntity>();
+            _additionalMetadata = permissions1 ?? new List<Permission>();
             if (permList2 != null)
                 _additionalMetadata = _additionalMetadata.Concat(permList2);
 
@@ -125,11 +125,11 @@ namespace ToSic.Eav.Security.Permissions
         /// <param name="permissionEntity">The entity describing a permission</param>
         /// <param name="desiredActionCode">A key like r (for read), u (for update) etc. which is the level you want to check</param>
         /// <returns></returns>
-        private bool DoesPermissionAllow(IEntity permissionEntity, char[] desiredActionCode)
+        private bool DoesPermissionAllow(Permission permissionEntity, char[] desiredActionCode)
         {
             var wrapLog = Log.Call("DoesPermissionAllow", $"{new string(desiredActionCode)}");
             // Check if it's a grant for the desired action - otherwise stop here
-            var grnt = permissionEntity.GetBestValue(Permission.FieldGrant).ToString();
+            var grnt = permissionEntity.Grant;// permissionEntity.GetBestValue(Permission.FieldGrant).ToString();
             // If Grant doesn't contain desired action, stop here
             // otherwise check if it applies
             var result = grnt.IndexOfAny(desiredActionCode) != -1 

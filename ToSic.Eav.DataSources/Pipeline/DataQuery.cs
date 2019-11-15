@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.Data.Query;
+using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 using IEntity = ToSic.Eav.Data.IEntity;

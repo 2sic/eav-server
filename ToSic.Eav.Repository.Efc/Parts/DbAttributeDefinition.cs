@@ -29,7 +29,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             DbContext.SqlDb.SaveChanges();
         }
 
-        internal int GetOrCreateAttributeDefinition(int contentTypeId, AttributeDefinition newAtt)
+        internal int GetOrCreateAttributeDefinition(int contentTypeId, ContentTypeAttribute newAtt)
         {
             int destAttribId;
             if (!AttributeExistsInSet(contentTypeId, newAtt.Name))
@@ -85,27 +85,27 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Append a new Attribute to an AttributeSet
         /// </summary>
-        internal int AppendToEndAndSave(int attributeSetId, AttributeDefinition attributeDefinition)
+        internal int AppendToEndAndSave(int attributeSetId, ContentTypeAttribute contentTypeAttribute)
         {
             var maxIndex = DbContext.SqlDb.ToSicEavAttributesInSets
                 .Where(a => a.AttributeSetId == attributeSetId)
                 .ToList() // important because it otherwise has problems with the next step...
                 .Max(s => (int?) s.SortOrder);
 
-            attributeDefinition.SetSortOrder(maxIndex + 1 ?? 0);
+            contentTypeAttribute.SetSortOrder(maxIndex + 1 ?? 0);
 
-            return AddAttributeAndSave(attributeSetId, attributeDefinition);
+            return AddAttributeAndSave(attributeSetId, contentTypeAttribute);
         }
         
         /// <summary>
         /// Append a new Attribute to an AttributeSet
         /// </summary>
-        public int AddAttributeAndSave(int attributeSetId, AttributeDefinition attributeDefinition)
+        public int AddAttributeAndSave(int attributeSetId, ContentTypeAttribute contentTypeAttribute)
         {
-            var staticName = attributeDefinition.Name;
-            var type = attributeDefinition.Type;
-            var isTitle = attributeDefinition.IsTitle;
-            var sortOrder = attributeDefinition.SortOrder;
+            var staticName = contentTypeAttribute.Name;
+            var type = contentTypeAttribute.Type;
+            var isTitle = contentTypeAttribute.IsTitle;
+            var sortOrder = contentTypeAttribute.SortOrder;
 
             var attributeSet = DbContext.AttribSet.GetDbAttribSet(attributeSetId);
 

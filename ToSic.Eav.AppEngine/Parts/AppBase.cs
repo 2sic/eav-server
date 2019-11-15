@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.App;
-using ToSic.Eav.DataSources;
+﻿using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.Logging;
 
@@ -21,7 +20,7 @@ namespace ToSic.Eav.Apps.Parts
         {
         }
 
-        protected AppBase(IAppIdentity app, ILog parentLog) : this(app.ZoneId, app.AppId, parentLog) { }
+        protected AppBase(IInAppAndZone app, ILog parentLog) : this(app.ZoneId, app.AppId, parentLog) { }
 
         protected AppBase(int appId, ILog parentLog) : this(((BaseCache) DataSource.GetCache(null)).GetZoneAppId(appId: appId).Item1, appId, parentLog) { }
 
@@ -41,7 +40,7 @@ namespace ToSic.Eav.Apps.Parts
         /// <summary>
         /// The cache-package if needed (mainly for export/import, where the full data is necessary)
         /// </summary>
-        public AppDataPackage Package => Cache.AppDataPackage;
+        public AppState Package => Cache.AppState;
 
 
         #endregion
