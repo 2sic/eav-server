@@ -32,7 +32,7 @@ namespace ToSic.Eav.Apps
                   allowSideEffects, 
                   buildConfiguration,
                   parentLog,
-                  $"P:{tenant?.Id}")
+                  $"t#{tenant?.Id}")
         {
             Env = env ?? throw new Exception("no environment received");
             Tenant = tenant ?? throw new Exception("no tenant (portal settings) received");
