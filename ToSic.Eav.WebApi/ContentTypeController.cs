@@ -21,7 +21,7 @@ namespace ToSic.Eav.WebApi
 	/// </summary>
 	public class ContentTypeController : HasLog
     {
-        public ContentTypeController(ILog parentLog = null) : base("Api.EavCTC", parentLog)
+        public ContentTypeController(ILog parentLog = null) : base("Api.EavCTC", parentLog, "get EavCTC")
         {
         }
 
@@ -38,7 +38,6 @@ namespace ToSic.Eav.WebApi
             // 2017-10-23 old...
             // scope can be null (eav) or alternatives would be "System", "2SexyContent-System", "2SexyContent-App", "2SexyContent"
             var cache = (BaseCache)DataSource.GetCache(null, appId); // needed to count items
-            //var allTypes = cache.GetContentTypes();
 
             var filteredType = allTypes.Where(t => t.Scope == scope)
                 .OrderBy(t => t.Name)
