@@ -5,7 +5,7 @@ namespace ToSic.Eav.DataSources.VisualQuery
     /// <summary>
     /// Describes what a DataSource is for in the visual query (for logical grouping)
     /// </summary>
-    [PublicApi]
+    [PrivateApi("don't publish yet, might change namespace")]
     public enum DataSourceType
     {
         Cache,

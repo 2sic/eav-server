@@ -3,13 +3,14 @@ using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.DataSources.VisualQuery
 {
-	/// <summary>
-	/// Custom Attribute for DataSources and usage in Pipeline Designer.
-	/// Will add information about help, configuration-content-types etc.
-	/// Only DataSources which have this attribute will be listed in the designer-tool
-	/// </summary>
-	[PublicApi]
-	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
+    /// <summary>
+    /// Custom Attribute for DataSources and usage in Pipeline Designer.
+    /// Will add information about help, configuration-content-types etc.
+    /// Only DataSources which have this attribute will be listed in the designer-tool
+    /// </summary>
+    [PrivateApi("don't publish yet, might change namespace")]
+
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
 	public class VisualQueryAttribute : Attribute
 	{
         /// <summary>
