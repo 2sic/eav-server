@@ -117,8 +117,8 @@ namespace ToSic.Eav.DataSources.System
                 return;
 
             // important, use "Name" and not get-best-title, as some queries may not be correctly typed, so missing title-info
-            var found = QueryName.StartsWith(Global.GlobalQueryPrefix)
-                ? Global.FindQuery(QueryName)
+            var found = QueryName.StartsWith(GlobalQueries.GlobalQueryPrefix)
+                ? GlobalQueries.FindQuery(QueryName)
                 : QueryManager.AllQueryItems(AppId, Log)
                     .FirstOrDefault(q => string.Equals(q.GetBestValue("Name").ToString(), QueryName,
                         StringComparison.InvariantCultureIgnoreCase));

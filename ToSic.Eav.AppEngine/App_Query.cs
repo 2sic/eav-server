@@ -33,7 +33,7 @@ namespace ToSic.Eav.Apps
 
         public DeferredQuery GetQuery(string name)
         {
-            if (name.StartsWith(Global.GlobalQueryPrefix))
+            if (name.StartsWith(GlobalQueries.GlobalQueryPrefix))
                 return GetGlobalQuery(name);
 
             // Try to find the query, abort if not found
@@ -46,7 +46,7 @@ namespace ToSic.Eav.Apps
 
         private DeferredQuery GetGlobalQuery(string name)
         {
-            var qent = Global.FindQuery(name) 
+            var qent = GlobalQueries.FindQuery(name) 
                 ?? throw new Exception($"can't find global query {name}");
             return new DeferredQuery(ZoneId, AppId, qent, ConfigurationProvider, ShowDrafts);
         }

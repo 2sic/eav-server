@@ -5,7 +5,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.Queries
 {
-    public static class Global
+    public static class GlobalQueries
     {
         public const string GlobalQueryPrefix = "Eav.Queries.Global.";
 
