@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Configuration
 {
+    /// <summary>
+    /// Typed exception so code can check if the exception was a feature-exeption
+    /// </summary>
+    [PrivateApi]
     public class FeaturesDisabledException : Exception
     {
-        //public FeaturesDisabledException(Guid feature): base(Features.MsgMissingSome(feature))
-        //{ }
-
         public FeaturesDisabledException(string message, IEnumerable<Guid> features): base(message + " - " + Features.MsgMissingSome(features))
         { }
     }

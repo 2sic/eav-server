@@ -1,8 +1,10 @@
 ﻿using System;
 using Newtonsoft.Json;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Configuration
 {
+    [PrivateApi("no good reason to publish this")]
     public class Feature
     {
         /// <summary>
