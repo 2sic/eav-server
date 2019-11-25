@@ -8,7 +8,7 @@ namespace ToSic.Eav.DataSources.VisualQuery
     /// Will add information about help, configuration-content-types etc.
     /// Only DataSources which have this attribute will be listed in the designer-tool
     /// </summary>
-    [PrivateApi("don't publish yet, might change namespace")]
+    [PublicApi]
 
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
 	public class VisualQueryAttribute : Attribute
@@ -34,7 +34,7 @@ namespace ToSic.Eav.DataSources.VisualQuery
         public string Icon { get; set; }
 
         /// <summary>
-        /// List of in-streams expected by this data-source
+        /// List of in-streams expected by this data-source - will be shown in the UI. Default is empty. 
         /// </summary>
         public string[] In { get; set; } = new string[0];
 
@@ -45,7 +45,7 @@ namespace ToSic.Eav.DataSources.VisualQuery
         public bool DynamicOut { get; set; } = false;
 
         /// <summary>
-        /// The help-link to get help for this data source
+        /// The help-link to get help for this data source. The UI will offer a help-button if provided. 
         /// </summary>
 	    public string HelpLink { get; set; } = "";
 
@@ -56,8 +56,9 @@ namespace ToSic.Eav.DataSources.VisualQuery
 	    public bool EnableConfig => !string.IsNullOrWhiteSpace(ExpectsDataOfType);
 
         /// <summary>
-        /// Name of the content-type used to configure this data-source in the visual-query designer.
-        /// Note that older data sources have a name like "|Config ToSic.Eav.DataSources.App", whereas newer sources have a GUID.
+        /// Name of the content-type used to configure this data-source in the visual-query designer. <br/>
+        /// The UI will then open an edit-dialog for this content type. 
+        /// _Should be a GUID. Older data sources have a name like "|Config ToSic.Eav.DataSources.App", but that's deprecated._
         /// </summary>
         public string ExpectsDataOfType { get; set; }
 
@@ -70,13 +71,14 @@ namespace ToSic.Eav.DataSources.VisualQuery
         public string NiceName { get; set; }
 
         /// <summary>
-        /// The name needed to instantiate this class from a DLL. 
-        /// </summary>
+        /// **required** this should be a unique id, ideally a GUID. <br/>
+        /// _important: old code use string names like a.net namespace. This should not be done any more and will be deprecated in future._
+               /// </summary>
 	    public string GlobalName { get; set; } = "";
 
         /// <summary>
         /// Names this DataSource may have had previously. <br/>
-        /// This was introduced when we standardized the names, and still had historic data using old names. 
+        /// This was introduced when we standardized the names, and still had historic data using old names or old namespaces. 
         /// </summary>
 	    public string[] PreviousNames { get; set; } = new string[0];
 
