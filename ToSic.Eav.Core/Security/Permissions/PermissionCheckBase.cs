@@ -78,7 +78,7 @@ namespace ToSic.Eav.Security
             if (permList2 != null)
                 _additionalMetadata = _additionalMetadata.Concat(permList2);
 
-            GrantedBecause = ConditionType.Undefined;
+            GrantedBecause = Conditions.Undefined;
             wrapLog("ready");
         }
 
@@ -87,7 +87,7 @@ namespace ToSic.Eav.Security
         //public bool UserMay(Grants grant) 
         //    => UserMay(new List<Grants> {grant});
 
-        public ConditionType GrantedBecause
+        public Conditions GrantedBecause
         {
             get;
             protected set;
@@ -96,7 +96,7 @@ namespace ToSic.Eav.Security
         public bool UserMay(List<Grants> grants)
         {
             var wrapLog = Log.Call("UserMay", () => $"[{string.Join(",", grants)}]");
-            GrantedBecause = ConditionType.Undefined;
+            GrantedBecause = Conditions.Undefined;
             var result = EnvironmentAllows(grants)
                    || DoesPermissionsListAllow(grants);
             wrapLog($"{result} ({GrantedBecause})");

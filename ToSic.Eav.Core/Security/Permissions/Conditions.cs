@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.Security
 {
-    public enum ConditionType
+    public enum Conditions
     {
         Undefined,
         Owner,

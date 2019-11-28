@@ -27,23 +27,23 @@ namespace ToSic.Eav.Security
                 {
                     // check owner conditions (only possible on target entities, not content-types)
                     if (VerifyUserIsItemOwner(condition, TargetItem, User))
-                        return IsGrantedBecause(ConditionType.Identity);
+                        return IsGrantedBecause(Conditions.Identity);
 
                     // check if an identity was provided
                     if (!string.IsNullOrWhiteSpace(identity))
                     {
                         if (VerifyUserIsThisUser(identity, User))
-                            return IsGrantedBecause(ConditionType.Owner);
+                            return IsGrantedBecause(Conditions.Owner);
 
                         if (VerifyUserIsInGroup(identity, User))
-                            return IsGrantedBecause(ConditionType.Group);
+                            return IsGrantedBecause(Conditions.Group);
                     }
                 }
 
                 // this checks if the condition is a environment condition
                 // for example, if it's a DNN code for "user may view something"
                 if (VerifyConditionOfEnvironment(condition))
-                    return IsGrantedBecause(ConditionType.EnvironmentInstance);
+                    return IsGrantedBecause(Conditions.EnvironmentInstance);
 
                 return false;
             }
@@ -54,7 +54,7 @@ namespace ToSic.Eav.Security
             }
         }
 
-        private bool IsGrantedBecause(ConditionType reason)
+        private bool IsGrantedBecause(Conditions reason)
         {
             GrantedBecause = reason;
             return true;
