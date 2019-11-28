@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Logging;
 
-namespace ToSic.Eav.Security.Permissions
+namespace ToSic.Eav.Security
 {
     public interface IPermissionCheck: IHasLog
     {

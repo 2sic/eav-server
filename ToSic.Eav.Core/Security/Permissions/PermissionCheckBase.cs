@@ -5,7 +5,7 @@ using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.Security.Permissions
+namespace ToSic.Eav.Security
 {
     public abstract partial class PermissionCheckBase : HasLog, IPermissionCheck
     {

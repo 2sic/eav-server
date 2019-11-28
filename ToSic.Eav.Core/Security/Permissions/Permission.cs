@@ -2,7 +2,7 @@
 using ToSic.Eav.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.Security.Permissions
+namespace ToSic.Eav.Security
 {
     /// <summary>
     /// Helper object for constants related to the permissions-type

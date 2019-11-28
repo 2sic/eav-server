@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Security;
 using ToSic.Eav.Security.Permissions;
 using IEntity = ToSic.Eav.Data.IEntity;
 
