@@ -92,7 +92,7 @@
     <Compile Include="System\Types\ZoneType.cs" />
     <Compile Include="Query\VisualQuery\DifficultyBeta.cs" />
     <Compile Include="Query\VisualQuery\DataSourceType.cs" />
-    <Compile Include="Query\VisualQuery\VisualQueryAttribute.cs" />
+    <Compile Include="Query\VisualQuery\VisualQuery.cs" />
     <Compile Include="BaseDataSource.cs" />
     <Compile Include="Caches\BaseCache.cs" />
     <Compile Include="Caches\CacheAllStreams.cs" />
