@@ -52,7 +52,7 @@ namespace ToSic.Eav
 
             // register some Default Constructors
             serviceCollection.TryAddTransient<SqlDataSource>();
-            serviceCollection.TryAddTransient<DataTableDataSource>();
+            serviceCollection.TryAddTransient<DataTable>();
 
             
         }

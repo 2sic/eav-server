@@ -15,7 +15,7 @@ namespace ToSic.Eav.DataSources
 	/// This is not meant for VisualQuery, but for code which pre-processes data in a DataTable and then wants to provide it as entities. 
 	/// </summary>
 	[PublicApi]
-	public sealed class DataTableDataSource : ExternalDataDataSource
+	public sealed class DataTable : ExternalDataDataSource
 	{
         #region Configuration-properties
 
@@ -41,7 +41,7 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// Source DataTable
 		/// </summary>
-        public DataTable Source { get; set; }
+        public global::System.Data.DataTable Source { get; set; }
 
 		/// <summary>
 		/// Name of the ContentType
@@ -86,7 +86,7 @@ namespace ToSic.Eav.DataSources
         /// Initializes a new instance of the DataTableDataSource class
         /// </summary>
         [PrivateApi]
-        public DataTableDataSource()
+        public DataTable()
 		{
 			Provide(GetEntities);
 		    ConfigMask(TitleFieldKey, EntityTitleDefaultColumnName);
@@ -104,7 +104,7 @@ namespace ToSic.Eav.DataSources
         /// <param name="entityIdField">ID column in the table</param>
         /// <param name="titleField">Title column in the table</param>
         /// <param name="modifiedField">modified column in the table</param>
-        public DataTableDataSource(DataTable source, string contentType, string entityIdField = null, string titleField = null, string modifiedField = null)
+        public DataTable(global::System.Data.DataTable source, string contentType, string entityIdField = null, string titleField = null, string modifiedField = null)
 			: this()
 		{
 			Source = source;
@@ -127,7 +127,7 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// Convert a DataTable to a Dictionary of EntityModels
 		/// </summary>
-		private IEnumerable<IEntity> ConvertToEntityDictionary(DataTable source, string contentType, string entityIdField, string titleField, string modifiedField = null)
+		private IEnumerable<IEntity> ConvertToEntityDictionary(global::System.Data.DataTable source, string contentType, string entityIdField, string titleField, string modifiedField = null)
 		{
 			// Validate Columns
 			if (!source.Columns.Contains(entityIdField))
