@@ -1,6 +1,6 @@
 ﻿using System;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSources.VisualQuery;
+using ToSic.Eav.DataSources.Query;
 using ToSic.Eav.Interfaces;
 using AppState = ToSic.Eav.Apps.AppState;
 

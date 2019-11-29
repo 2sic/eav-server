@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.DataSources.Queries
+﻿namespace ToSic.Eav.DataSources.Query
 {
     public class QueryConstants
     {

@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Documentation;
 
-namespace ToSic.Eav.DataSources.VisualQuery
+namespace ToSic.Eav.DataSources.Query
 {
     /// <summary>
     /// Describes what a DataSource is for in the visual query (for logical grouping)

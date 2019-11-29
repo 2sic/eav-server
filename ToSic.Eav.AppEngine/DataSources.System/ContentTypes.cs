@@ -4,7 +4,7 @@ using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.DataSources.Types;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSources.VisualQuery;
+using ToSic.Eav.DataSources.Query;
 using ToSic.Eav.Interfaces;
 using IEntity = ToSic.Eav.Data.IEntity;
 

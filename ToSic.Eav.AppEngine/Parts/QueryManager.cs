@@ -4,7 +4,7 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.DataSources.Query;
 using ToSic.Eav.Enums;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Interfaces;
@@ -94,7 +94,7 @@ namespace ToSic.Eav.Apps.Parts
 
 
             // Get the Entity describing the Query and Query Parts (DataSources)
-            var queryEntity = Eav.DataSources.Queries.QueryManager.GetQueryEntity(id, AppManager.Cache);
+            var queryEntity = Eav.DataSources.Query.QueryManager.GetQueryEntity(id, AppManager.Cache);
             var qdef = new QueryDefinition(queryEntity);
 
             var mdItems = qdef.Parts// parts

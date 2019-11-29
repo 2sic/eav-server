@@ -2,7 +2,7 @@
 using System.Linq;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.DataSources.Queries
+namespace ToSic.Eav.DataSources.Query
 {
     // Todo: maybe change to entity-based-type?
     public class QueryDefinition

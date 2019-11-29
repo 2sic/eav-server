@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace ToSic.Eav.DataSources.Queries
+namespace ToSic.Eav.DataSources.Query
 {
 	/// <summary>
 	/// Helper for DataPipeline Wiring of DataSources

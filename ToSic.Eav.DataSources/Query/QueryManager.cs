@@ -5,7 +5,7 @@ using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.DataSources.Queries
+namespace ToSic.Eav.DataSources.Query
 {
 	/// <summary>
 	/// Helpers to work with Data Queries
