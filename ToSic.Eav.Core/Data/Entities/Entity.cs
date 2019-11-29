@@ -5,7 +5,6 @@ using System.Threading;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Security;
-using ToSic.Eav.Security.Permissions;
 
 namespace ToSic.Eav.Data
 {
@@ -76,7 +75,7 @@ namespace ToSic.Eav.Data
 
         #region simple direct accessors
 
-        /// <inheritdoc cref="IEntity" />
+        /// <inheritdoc />
         public new IAttribute this[string attributeName] => Attributes.ContainsKey(attributeName) ? Attributes[attributeName] : null;
 
         #endregion

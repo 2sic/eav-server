@@ -185,21 +185,7 @@ namespace ToSic.Eav
 		}
 
 
-        // 2017-12-11 2dm - turning this off...
-        ///// <summary>
-        ///// Get all Installed DataSources
-        ///// </summary>
-        ///// <remarks>Objects that implement IDataSource</remarks>
-        //public static IEnumerable<Type> GetInstalledDataSources(bool onlyForVisualQuery)
-        //    => onlyForVisualQuery
-        //        ? Plumbing.AssemblyHandling.FindClassesWithAttribute(
-        //               typeof(IDataSource),
-        //            typeof(VisualQueryAttribute), false)
-        //        : Plumbing.AssemblyHandling.FindInherited(typeof(IDataSource));
-
-
-
-	    private static DataSourceInfo FindInDsTypeCache(string name)
+        private static DataSourceInfo FindInDsTypeCache(string name)
 	        => DsTypeCache
 	               .FirstOrDefault(dst => string.Equals(dst.GlobalName, name, StringComparison.InvariantCultureIgnoreCase))
 	           ?? DsTypeCache

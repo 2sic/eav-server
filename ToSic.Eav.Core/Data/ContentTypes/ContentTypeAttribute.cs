@@ -3,11 +3,9 @@ using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Security;
-using ToSic.Eav.Security.Permissions;
 
 namespace ToSic.Eav.Data
 {
-    /// <inheritdoc cref="AttributeBase" />
     /// <summary>
     /// Defines an attribute with name and the type this attribute has. Part of of a <see cref="IContentType"/> definition.
     /// </summary>

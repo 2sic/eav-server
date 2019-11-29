@@ -6,7 +6,6 @@ using AppState = ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.DataSources.Caches
 {
-    /// <inheritdoc cref="IDataSource" />
     /// <summary>
     /// Caching interface for Root Eav Cache. 
     /// </summary>
