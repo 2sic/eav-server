@@ -78,8 +78,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App.cs" />
-    <Compile Include="AttributeFilter.cs" />
+    <Compile Include="DataSources\App.cs" />
+    <Compile Include="DataSources\AttributeFilter.cs" />
     <Compile Include="Caches\ICanPurgeListCache.cs" />
     <Compile Include="Caches\IListsCache.cs" />
     <Compile Include="Caches\ListsCache.cs" />
@@ -99,19 +99,19 @@
     <Compile Include="Caches\ICache.cs" />
     <Compile Include="Caches\ListCacheItem.cs" />
     <Compile Include="Caches\QuickCache.cs" />
-    <Compile Include="CsvDataSource.cs" />
+    <Compile Include="DataSources\CsvDataSource.cs" />
     <Compile Include="DataSource.cs" />
     <Compile Include="DataStream.cs" />
     <Compile Include="DataStreamDeferred.cs" />
-    <Compile Include="DataTableDataSource.cs" />
+    <Compile Include="DataSources\DataTableDataSource.cs" />
     <Compile Include="Debug\DataSourceInfo.cs" />
     <Compile Include="Debug\QueryInfo.cs" />
     <Compile Include="Debug\StreamInfo.cs" />
     <Compile Include="DeferredQuery.cs" />
-    <Compile Include="EntityIdFilter.cs" />
-    <Compile Include="EntityTypeFilter.cs" />
+    <Compile Include="DataSources\EntityIdFilter.cs" />
+    <Compile Include="DataSources\EntityTypeFilter.cs" />
     <Compile Include="Exceptions\DataSourceException.cs" />
-    <Compile Include="ExternalDataDataSource.cs" />
+    <Compile Include="DataSources\ExternalDataDataSource.cs" />
     <Compile Include="IDataSource.cs" />
     <Compile Include="IDataStream.cs" />
     <Compile Include="IDataTarget.cs" />
@@ -120,25 +120,25 @@
     <Compile Include="System\Attributes.cs" />
     <Compile Include="Queries\QueryConstants.cs" />
     <Compile Include="Queries\QueryDefinition.cs" />
-    <Compile Include="Shuffle.cs" />
-    <Compile Include="Paging.cs" />
-    <Compile Include="PassThrough.cs" />
+    <Compile Include="DataSources\Shuffle.cs" />
+    <Compile Include="DataSources\Paging.cs" />
+    <Compile Include="DataSources\PassThrough.cs" />
     <Compile Include="Queries\QueryManager.cs" />
     <Compile Include="Queries\QueryBuilder.cs" />
     <Compile Include="Queries\Wiring.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="OwnerFilter.cs" />
-    <Compile Include="PublishingFilter.cs" />
-    <Compile Include="RelationshipFilter.cs" />
+    <Compile Include="DataSources\OwnerFilter.cs" />
+    <Compile Include="DataSources\PublishingFilter.cs" />
+    <Compile Include="DataSources\RelationshipFilter.cs" />
     <Compile Include="RootSources\IRootSource.cs" />
-    <Compile Include="SqlDataSource.cs" />
+    <Compile Include="DataSources\SqlDataSource.cs" />
     <Compile Include="SqlSources\EavSqlStore.cs" />
-    <Compile Include="ItemFilterDuplicates.cs" />
-    <Compile Include="StreamMerge.cs" />
-    <Compile Include="StreamFallback.cs" />
-    <Compile Include="ValueFilter.cs" />
+    <Compile Include="DataSources\ItemFilterDuplicates.cs" />
+    <Compile Include="DataSources\StreamMerge.cs" />
+    <Compile Include="DataSources\StreamFallback.cs" />
+    <Compile Include="DataSources\ValueFilter.cs" />
     <Compile Include="LookUp\LookUpInDataTarget.cs" />
-    <Compile Include="ValueSort.cs" />
+    <Compile Include="DataSources\ValueSort.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj">
@@ -154,9 +154,7 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="DataSources\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
