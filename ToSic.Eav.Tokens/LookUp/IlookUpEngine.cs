@@ -9,11 +9,13 @@ namespace ToSic.Eav.LookUp
     [PublicApi]
     public interface ILookUpEngine
 	{
-		/// <summary>
-		/// Property Sources this Provider can use. Sources are various dictionaries which can resolve a key to a value. 
-		/// </summary>
-		/// <returns><see cref="Dictionary{TKey,TValue}"/> of <see cref="ILookUp"/> items.</returns>
-		Dictionary<string, ILookUp> Sources { get; }
+        /// <summary>
+        /// Property Sources this Provider can use.
+        /// Sources are various dictionaries which can resolve a key to a value. <br/>
+        /// Read more about this in @Specs.LookUp
+        /// </summary>
+        /// <returns><see cref="Dictionary{TKey,TValue}"/> of <see cref="ILookUp"/> items.</returns>
+        Dictionary<string, ILookUp> Sources { get; }
 
 	    /// <summary>
 	    /// Replaces all Tokens in the ConfigList with actual values provided by the LookUps in the Sources

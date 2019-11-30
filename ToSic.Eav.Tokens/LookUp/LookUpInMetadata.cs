@@ -6,11 +6,12 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.LookUp
 {
-	/// <summary>
-	/// LookUp things from metadata. This uses EAV Metadata system and will look up Metadata for something.
-	/// As of now it's hardwired to look up Metadata of Entities
-	/// </summary>
-	[PublicApi]
+    /// <summary>
+    /// LookUp things from metadata. This uses EAV Metadata system and will look up Metadata for something.
+    /// As of now it's hardwired to look up Metadata of Entities. <br/>
+    /// Read more about this in @Specs.LookUp
+    /// </summary>
+    [PublicApi]
 	public class LookUpInMetadata : LookUpInEntity
 	{
 	    private readonly IMetadataSource _metaDataSource;

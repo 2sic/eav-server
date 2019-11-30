@@ -4,10 +4,11 @@ using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.LookUp
 {
-	/// <summary>
-	/// Look Up values from a dictionary
-	/// </summary>
-	public class LookUpInDictionary : LookUpBase
+    /// <summary>
+    /// Look Up values from a .net dictionary. <br/>
+    /// Read more about this in @Specs.LookUp
+    /// </summary>
+    public class LookUpInDictionary : LookUpBase
 	{
 		/// <summary>
 		/// List with static properties and Test-Values

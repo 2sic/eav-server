@@ -7,7 +7,8 @@ using ToSic.Eav.Tokens;
 namespace ToSic.Eav.LookUp
 {
     /// <summary>
-    /// Takes a list of configuration masks (list of tokens) and resolves them with a bunch of LookUps.
+    /// Takes a list of configuration masks (list of tokens) and resolves them with a bunch of LookUps. <br/>
+    /// Read more about this in @Specs.LookUp
     /// </summary>
     [PublicApi]
     public class LookUpEngine : ILookUpEngine
@@ -23,19 +24,19 @@ namespace ToSic.Eav.LookUp
         private readonly TokenReplace _reusableTokenReplace;
 
 		/// <summary>
-		/// Constructs a new TokenListFiller
+		/// Constructs a new LookUpEngine
 		/// </summary>
 		public LookUpEngine()
 		{
 			_reusableTokenReplace = new TokenReplace(Sources);
 		}
 
-		/// <inheritdoc />
-		/// <summary>
-		/// Cloning another TokenListFiller and keep the sources.
-		/// BUT: Don't keep the overrides, as these will be unique in the clone. 
-		/// </summary>
-		public LookUpEngine(ILookUpEngine original): this()
+        /// <inheritdoc />
+        /// <summary>
+        /// Cloning another LookUpEngine and keep the sources.
+        /// BUT: Don't keep the overrides, as these will be unique in the clone. 
+        /// </summary>
+        public LookUpEngine(ILookUpEngine original): this()
 		{
 		    if (original == null) return;
 		    foreach (var srcSet in original.Sources)

@@ -6,10 +6,11 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.LookUp
 {
-	/// <summary>
-	/// Get Values from Assigned Entities
-	/// </summary>
-	[PublicApi]
+    /// <summary>
+    /// Get Values from an <see cref="IEntity"/>. <br/>
+    /// Read more about this in @Specs.LookUp
+    /// </summary>
+    [PublicApi]
 	public class LookUpInEntity : LookUpBase
     {
         protected IEntity Entity;

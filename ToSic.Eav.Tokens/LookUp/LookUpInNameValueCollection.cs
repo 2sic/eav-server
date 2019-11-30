@@ -4,7 +4,8 @@ using ToSic.Eav.Documentation;
 namespace ToSic.Eav.LookUp
 {
     /// <summary>
-    /// Look-Up helper to get something from a standard .net NameValueCollection
+    /// Look-Up helper to get something from a standard .net NameValueCollection. <br/>
+    /// Read more about this in @Specs.LookUp
     /// </summary>
     [PublicApi]
     public class LookUpInNameValueCollection : LookUpBase

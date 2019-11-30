@@ -3,10 +3,11 @@ using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.LookUp
 {
-	/// <summary>
-	/// Base Class to create your own LookUp Class - used by all Look-Ups.
-	/// </summary>
-	[PublicApi]
+    /// <summary>
+    /// Base Class to create your own LookUp Class - used by all Look-Ups. <br/>
+    /// Read more about this in @Specs.LookUp
+    /// </summary>
+    [PublicApi]
 	public abstract class LookUpBase : ILookUp
     {
         #region default methods of interface
