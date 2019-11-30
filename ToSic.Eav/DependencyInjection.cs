@@ -51,7 +51,7 @@ namespace ToSic.Eav
                 ServiceLifetime.Transient); // transient lifetime is important, otherwise 2-3x slower!
 
             // register some Default Constructors
-            serviceCollection.TryAddTransient<SqlDataSource>();
+            serviceCollection.TryAddTransient<Sql>();
             serviceCollection.TryAddTransient<DataTable>();
 
             

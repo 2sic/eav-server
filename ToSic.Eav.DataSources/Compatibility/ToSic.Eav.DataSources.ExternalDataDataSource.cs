@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.DataSources
 {
-    [Obsolete("replaced by DataSourceBase for consistency")]
+    [Obsolete("replaced by ExternalData for consistency")]
     public class ExternalDataDataSource: ExternalData
     {
     }

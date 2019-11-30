@@ -78,6 +78,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Compatibility\ToSic.Eav.DataSources.SqlDataSource.cs" />
     <Compile Include="Compatibility\ToSic.Eav.DataSources.DataTableDataSource.cs" />
     <Compile Include="Compatibility\ToSic.Eav.DataSources.ExternalDataDataSource.cs" />
     <Compile Include="Compatibility\ToSic.Eav.DataSources.BaseDataSource.cs" />

@@ -4,11 +4,9 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources.Query;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Interfaces;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -18,14 +16,18 @@ namespace ToSic.Eav.DataSources
     /// Provide Entities from a SQL Server
     /// </summary>
     [PublicApi]
-    [Query.VisualQuery(GlobalName = "ToSic.Eav.DataSources.SqlDataSource, ToSic.Eav.DataSources",
+    [Query.VisualQuery(GlobalName = "ToSic.Eav.DataSources.Sql, ToSic.Eav.DataSources",
         Type = DataSourceType.Source, 
         DynamicOut = false,
         Icon = "database",
         ExpectsDataOfType = "c76901b5-0345-4866-9fa3-6208de7f8543",
+        PreviousNames = new []
+            {
+                "ToSic.Eav.DataSources.SqlDataSource, ToSic.Eav.DataSources"
+            },
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-SqlDataSource")]
 
-	public class SqlDataSource : ExternalData
+	public class Sql : ExternalData
 	{
         /// <inheritdoc/>
         [PrivateApi]
@@ -112,7 +114,7 @@ namespace ToSic.Eav.DataSources
 		/// Initializes a new instance of the SqlDataSource class
 		/// </summary>
 		[PrivateApi]
-		public SqlDataSource()
+		public Sql()
 		{
             // ReSharper disable once DoNotCallOverridableMethodsInConstructor
 			Provide(GetList);
@@ -134,7 +136,7 @@ namespace ToSic.Eav.DataSources
         /// <param name="contentType">Name of virtual content-type we'll return</param>
         /// <param name="entityIdField">ID-field in the DB to use</param>
         /// <param name="titleField">Title-field in the DB to use</param>
-        public SqlDataSource(string connectionString, string selectCommand, string contentType, string entityIdField = null, string titleField = null)
+        public Sql(string connectionString, string selectCommand, string contentType, string entityIdField = null, string titleField = null)
 			: this()
 		{
 			ConnectionString = connectionString;
