@@ -22,7 +22,7 @@ namespace ToSic.Eav.DataSources
         Type = DataSourceType.Source, 
         DynamicOut = false,
         ExpectsDataOfType = "|Config ToSic.Eav.DataSources.CsvDataSource")]
-    public class CsvDataSource : ExternalDataDataSource
+    public class CsvDataSource : ExternalData
     {
         /// <inheritdoc/>
         [PrivateApi]

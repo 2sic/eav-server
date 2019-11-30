@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Interfaces;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -15,7 +13,7 @@ namespace ToSic.Eav.DataSources
 	/// This is not meant for VisualQuery, but for code which pre-processes data in a DataTable and then wants to provide it as entities. 
 	/// </summary>
 	[PublicApi]
-	public sealed class DataTable : ExternalDataDataSource
+	public class DataTable : ExternalData
 	{
         #region Configuration-properties
 

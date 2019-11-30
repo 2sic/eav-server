@@ -8,7 +8,7 @@ namespace ToSic.Eav.DataSources
     /// Base DataSource class for providing data from external systems
     /// </summary>
     [PublicApi]
-    public abstract class ExternalDataDataSource: DataSourceBase
+    public abstract class ExternalData: DataSourceBase
     {
         /// <inheritdoc/>
         [PrivateApi]
@@ -23,7 +23,7 @@ namespace ToSic.Eav.DataSources
         /// but renew when it is updates
         /// </remarks>
         [PrivateApi]
-        protected ExternalDataDataSource() => CacheTimestamp = DateTime.Now.Ticks;
+        protected ExternalData() => CacheTimestamp = DateTime.Now.Ticks;
 
         /// <inheritdoc />
         public override long CacheTimestamp { get; }

@@ -25,7 +25,7 @@ namespace ToSic.Eav.DataSources
         ExpectsDataOfType = "c76901b5-0345-4866-9fa3-6208de7f8543",
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-SqlDataSource")]
 
-	public class SqlDataSource : ExternalDataDataSource
+	public class SqlDataSource : ExternalData
 	{
         /// <inheritdoc/>
         [PrivateApi]
