@@ -12,7 +12,7 @@ namespace ToSic.Eav.DataSources
 	[Query.VisualQuery(GlobalName = "ToSic.Eav.DataSources.PassThrough, ToSic.Eav.DataSources",
         Type = DataSourceType.Source, DynamicOut = true)]
 
-    public class PassThrough : BaseDataSource
+    public class PassThrough : DataSourceBase
 	{
         /// <inheritdoc/>
         [PrivateApi]

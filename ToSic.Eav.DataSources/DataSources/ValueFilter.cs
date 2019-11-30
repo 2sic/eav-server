@@ -22,7 +22,7 @@ namespace ToSic.Eav.DataSources
         ExpectsDataOfType = "|Config ToSic.Eav.DataSources.ValueFilter",
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-ValueFilter")]
 
-    public sealed class ValueFilter : BaseDataSource
+    public sealed class ValueFilter : DataSourceBase
     {
         #region Configuration-properties Attribute, Value, Language, Operator
         /// <inheritdoc/>

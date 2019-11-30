@@ -21,7 +21,7 @@ namespace ToSic.Eav.DataSources
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.Paging",
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Paging")]
 
-    public sealed class Paging: BaseDataSource
+    public sealed class Paging: DataSourceBase
 	{
         #region Configuration-properties (no config)
         /// <inheritdoc/>

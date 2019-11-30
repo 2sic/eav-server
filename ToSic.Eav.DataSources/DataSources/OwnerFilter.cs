@@ -19,7 +19,7 @@ namespace ToSic.Eav.DataSources
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.OwnerFilter",
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-OwnerFilter")]
 
-    public class OwnerFilter : BaseDataSource
+    public class OwnerFilter : DataSourceBase
 	{
         #region Configuration-properties
         /// <inheritdoc/>

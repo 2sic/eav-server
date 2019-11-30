@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSources
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.ValueSort",
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-ValueSort")]
 
-    public sealed class ValueSort : BaseDataSource
+    public sealed class ValueSort : DataSourceBase
 	{
         #region Configuration-properties
         /// <inheritdoc/>

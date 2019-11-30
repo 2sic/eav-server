@@ -22,7 +22,7 @@ namespace ToSic.Eav.DataSources.System
         ExpectsDataOfType = "37b25044-29bb-4c78-85e4-7b89f0abaa2c",
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-ContentTypes")]
 
-    public sealed class ContentTypes: BaseDataSource
+    public sealed class ContentTypes: DataSourceBase
 	{
         #region Configuration-properties (no config)
 	    public override string LogId => "DS.EavCTs";

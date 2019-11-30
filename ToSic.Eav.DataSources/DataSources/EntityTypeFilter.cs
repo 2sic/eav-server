@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSources
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.EntityTypeFilter",
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-ContentTypeFilter")]
 
-    public class EntityTypeFilter : BaseDataSource
+    public class EntityTypeFilter : DataSourceBase
 	{
         #region Configuration-properties
         /// <inheritdoc/>

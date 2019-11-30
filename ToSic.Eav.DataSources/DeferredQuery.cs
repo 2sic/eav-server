@@ -9,7 +9,7 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// Provides a data-source to a query, but won't assemble the query unless accessed
 	/// </summary>
-	public sealed class DeferredQuery : BaseDataSource
+	public sealed class DeferredQuery : DataSourceBase
 	{
         #region Configuration-properties
 	    public override string LogId => "DS.DefQry";

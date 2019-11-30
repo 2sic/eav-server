@@ -18,7 +18,7 @@ namespace ToSic.Eav.DataSources
         DynamicOut = false, 
 	    HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-StreamFallback")]
 
-    public sealed class StreamFallback : BaseDataSource
+    public sealed class StreamFallback : DataSourceBase
 	{
         #region Configuration-properties (no config)
         /// <inheritdoc/>

@@ -13,7 +13,7 @@ namespace ToSic.Eav.DataSources.SqlSources
     /// <summary>
     /// A DataSource that uses SQL Server as Backend
     /// </summary>
-    public sealed class EavSqlStore : BaseDataSource, IRootSource
+    public sealed class EavSqlStore : DataSourceBase, IRootSource
 	{
         [PrivateApi]
 	    public override string LogId => "DS.EavSql";

@@ -18,7 +18,7 @@ namespace ToSic.Eav.DataSources
         DynamicOut = false, 
 	    HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-StreamMerge")]
 
-    public sealed class StreamMerge: BaseDataSource
+    public sealed class StreamMerge: DataSourceBase
 	{
         #region Configuration-properties (no config)
         /// <inheritdoc/>

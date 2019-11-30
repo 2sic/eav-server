@@ -21,7 +21,7 @@ namespace ToSic.Eav.DataSources
         DynamicOut = false,
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.RelationshipFilter",
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-RelationshipFilter")]
-    public sealed class RelationshipFilter : BaseDataSource
+    public sealed class RelationshipFilter : DataSourceBase
 	{
         #region Configuration-properties
         /// <inheritdoc/>

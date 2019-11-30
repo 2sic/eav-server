@@ -22,7 +22,7 @@ namespace ToSic.Eav.DataSources
         DynamicOut = true,
         ExpectsDataOfType = "|Config ToSic.Eav.DataSources.App",
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-App")]
-    public class App : BaseDataSource
+    public class App : DataSourceBase
 	{
 		#region Configuration-properties
 		private const string AppSwitchKey = "AppSwitch";

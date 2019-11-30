@@ -14,7 +14,7 @@ namespace ToSic.Eav.DataSources
     /// The base class, which should always be inherited. Already implements things like Get One / Get many, Caching and a lot more.
     /// </summary>
     [PublicApi]
-    public abstract class BaseDataSource : HasLog, IDataSource, IDataTarget
+    public abstract class DataSourceBase : HasLog, IDataSource, IDataTarget
     {
         /// <summary>
         /// The name to be used in logging. It's set in the code, and then used to initialize the logger. 
@@ -26,7 +26,7 @@ namespace ToSic.Eav.DataSources
         /// Constructor
         /// </summary>
         [PrivateApi]
-        protected BaseDataSource() : base("DS.Base") { }
+        protected DataSourceBase() : base("DS.Base") { }
 
         /// <inheritdoc />
         /// <summary>

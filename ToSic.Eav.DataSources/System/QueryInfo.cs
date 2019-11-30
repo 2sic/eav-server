@@ -18,7 +18,7 @@ namespace ToSic.Eav.DataSources.System
         ExpectsDataOfType = "4638668f-d506-4f5c-ae37-aa7fdbbb5540",
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-QueryInfo")]
 
-    public sealed class QueryInfo: BaseDataSource
+    public sealed class QueryInfo: DataSourceBase
 	{
         #region Configuration-properties (no config)
 	    public override string LogId => "DS.EavQIn";

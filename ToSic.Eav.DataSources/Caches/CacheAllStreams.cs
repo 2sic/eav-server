@@ -5,7 +5,7 @@ using ToSic.Eav.DataSources.Query;
 
 namespace ToSic.Eav.DataSources.Caches
 {
-	/// <inheritdoc cref="BaseDataSource" />
+	/// <inheritdoc cref="DataSourceBase" />
 	/// <summary>
 	/// Return all Entities from a specific App
 	/// </summary>
@@ -15,7 +15,7 @@ namespace ToSic.Eav.DataSources.Caches
         DynamicOut = true,
         ExpectsDataOfType = "|Config ToSic.Eav.DataSources.Caches.CacheAllStreams",
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-CacheAllStreams")]
-	public class CacheAllStreams : BaseDataSource, IDeferredDataSource
+	public class CacheAllStreams : DataSourceBase, IDeferredDataSource
 	{
 
         // Todo: caching parameters

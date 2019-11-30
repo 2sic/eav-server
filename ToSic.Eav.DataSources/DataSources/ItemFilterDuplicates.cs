@@ -18,7 +18,7 @@ namespace ToSic.Eav.DataSources
         DynamicOut = false, 
 	    HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-ItemFilterDuplicates")]
 
-    public sealed class ItemFilterDuplicates: BaseDataSource
+    public sealed class ItemFilterDuplicates: DataSourceBase
 	{
         #region Configuration-properties (no config)
         /// <inheritdoc/>

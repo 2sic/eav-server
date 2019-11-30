@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSources.System
         DynamicOut = false,
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Zones")]
 
-    public sealed class Zones: BaseDataSource
+    public sealed class Zones: DataSourceBase
 	{
         #region Configuration-properties (no config)
 	    public override string LogId => "DS.EavZns";

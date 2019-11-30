@@ -74,7 +74,7 @@ namespace ToSic.Eav
 	    private static IDataSource GetDataSource(Type type, int? zoneId, int? appId, IDataSource upstream,
 	        ILookUpEngine configLookUp, ILog parentLog)
 	    {
-	        var newDs = (BaseDataSource) Factory.Resolve(type);
+	        var newDs = (DataSourceBase) Factory.Resolve(type);
 	        ConfigureNewDataSource(newDs, zoneId, appId, upstream, configLookUp, parentLog);
 	        return newDs;
 	    }
@@ -93,7 +93,7 @@ namespace ToSic.Eav
 		{
             if(upstream == null && configLookUp == null)
                     throw new Exception("Trying to GetDataSource<T> but cannot do so if both upstream and ConfigurationProvider are null.");
-			var newDs = (BaseDataSource)Factory.Resolve(typeof(T));
+			var newDs = (DataSourceBase)Factory.Resolve(typeof(T));
 			ConfigureNewDataSource(newDs, zoneId, appId, upstream, configLookUp ?? upstream.ConfigurationProvider, parentLog);
 			return (T)Convert.ChangeType(newDs, typeof(T));
 		}
@@ -107,7 +107,7 @@ namespace ToSic.Eav
 	    /// <param name="upstream">upstream data source - for auto-attaching</param>
 	    /// <param name="configLookUp">optional configuration provider - for auto-attaching</param>
 	    /// <param name="parentLog"></param>
-	    private static void ConfigureNewDataSource(BaseDataSource newDs, 
+	    private static void ConfigureNewDataSource(DataSourceBase newDs, 
             int? zoneId = null, int? appId = null,
 			IDataSource upstream = null,
 			ILookUpEngine configLookUp = null, 

@@ -21,7 +21,7 @@ namespace ToSic.Eav.DataSources
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.AttributeFilter",
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-AttributeFilter")]
 
-    public class AttributeFilter : BaseDataSource
+    public class AttributeFilter : DataSourceBase
 	{
 		#region Configuration-properties
 		private const string AttributeNamesKey = "AttributeNames";

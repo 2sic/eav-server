@@ -11,11 +11,11 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.Caches
 {
-    /// <inheritdoc cref="BaseDataSource" />
+    /// <inheritdoc cref="DataSourceBase" />
     /// <summary>
     /// Represents an abstract Cache DataSource
     /// </summary>
-    public abstract class BaseCache : BaseDataSource, IMetadataSource, ICache
+    public abstract class BaseCache : DataSourceBase, IMetadataSource, ICache
 	{
 
         protected new BaseCache Cache { get; set; }

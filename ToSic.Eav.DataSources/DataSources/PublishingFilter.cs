@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSources
         DynamicOut = false, 
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-PublishingFilter")]
 
-    public class PublishingFilter : BaseDataSource
+    public class PublishingFilter : DataSourceBase
 	{
         #region Configuration-properties
         /// <inheritdoc/>
