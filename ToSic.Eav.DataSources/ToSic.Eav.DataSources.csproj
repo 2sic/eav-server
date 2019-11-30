@@ -93,7 +93,7 @@
     <Compile Include="Query\VisualQuery\DifficultyBeta.cs" />
     <Compile Include="Query\VisualQuery\DataSourceType.cs" />
     <Compile Include="Query\VisualQuery\VisualQueryAttribute.cs" />
-    <Compile Include="BaseDataSource.cs" />
+    <Compile Include="DataSourceBase.cs" />
     <Compile Include="Caches\BaseCache.cs" />
     <Compile Include="Caches\CacheAllStreams.cs" />
     <Compile Include="Caches\ICache.cs" />
