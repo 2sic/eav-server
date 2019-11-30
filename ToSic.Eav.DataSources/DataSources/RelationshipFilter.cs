@@ -15,7 +15,7 @@ namespace ToSic.Eav.DataSources
 	/// Find all Books (desired Entity), whose Authors (related Entity) have a Country (Attribute) with 'Switzerland' (Value). 
 	/// </summary>
     [PublicApi]
-	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.RelationshipFilter, ToSic.Eav.DataSources",
+	[Query.VisualQuery(GlobalName = "ToSic.Eav.DataSources.RelationshipFilter, ToSic.Eav.DataSources",
         Type = DataSourceType.Lookup, 
         In = new[] { Constants.DefaultStreamName, Constants.FallbackStreamName }, 
         DynamicOut = false,

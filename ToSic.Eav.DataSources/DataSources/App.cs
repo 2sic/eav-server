@@ -16,7 +16,7 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
 
     [PublicApi]
-	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.App, ToSic.Eav.DataSources",
+	[Query.VisualQuery(GlobalName = "ToSic.Eav.DataSources.App, ToSic.Eav.DataSources",
         Type = DataSourceType.Source, 
         Icon = "app",
         DynamicOut = true,

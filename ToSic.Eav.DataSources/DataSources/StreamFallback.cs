@@ -13,7 +13,7 @@ namespace ToSic.Eav.DataSources
 	/// A DataSource that returns the first stream which has content
 	/// </summary>
     [PublicApi]
-	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.StreamFallback, ToSic.Eav.DataSources",
+	[Query.VisualQuery(GlobalName = "ToSic.Eav.DataSources.StreamFallback, ToSic.Eav.DataSources",
         Type = DataSourceType.Logic, 
         DynamicOut = false, 
 	    HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-StreamFallback")]

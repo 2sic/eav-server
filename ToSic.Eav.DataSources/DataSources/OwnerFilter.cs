@@ -13,7 +13,7 @@ namespace ToSic.Eav.DataSources
 	/// Filter entities to show Drafts or only Published Entities
 	/// </summary>
     [PublicApi]
-	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.OwnerFilter, ToSic.Eav.DataSources",
+	[Query.VisualQuery(GlobalName = "ToSic.Eav.DataSources.OwnerFilter, ToSic.Eav.DataSources",
         Type = DataSourceType.Security,
         DynamicOut = false,
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.OwnerFilter",

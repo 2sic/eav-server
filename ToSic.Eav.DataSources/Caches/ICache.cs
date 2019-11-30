@@ -9,7 +9,7 @@ namespace ToSic.Eav.DataSources.Caches
     /// <summary>
     /// Caching interface for Root Eav Cache. 
     /// </summary>
-    [VisualQuery(GlobalName = "ToSic.Eav.DataSources.Caches.ICache, ToSic.Eav.DataSources",
+    [Query.VisualQuery(GlobalName = "ToSic.Eav.DataSources.Caches.ICache, ToSic.Eav.DataSources",
         Type = DataSourceType.Source)]
     public interface ICache : IDataSource
     {

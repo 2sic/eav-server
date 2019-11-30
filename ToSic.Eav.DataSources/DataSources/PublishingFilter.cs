@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Query;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Interfaces;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -13,7 +11,7 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
 	[PublicApi]
 
-	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.PublishingFilter, ToSic.Eav.DataSources",
+	[Query.VisualQuery(GlobalName = "ToSic.Eav.DataSources.PublishingFilter, ToSic.Eav.DataSources",
         Type = DataSourceType.Security, 
         Icon = "eye", 
         DynamicOut = false, 

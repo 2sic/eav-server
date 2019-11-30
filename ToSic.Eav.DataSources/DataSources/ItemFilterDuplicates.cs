@@ -13,7 +13,7 @@ namespace ToSic.Eav.DataSources
 	/// A DataSource that merges two streams
 	/// </summary>
     [PublicApi]
-	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.ItemFilterDuplicates, ToSic.Eav.DataSources",
+	[Query.VisualQuery(GlobalName = "ToSic.Eav.DataSources.ItemFilterDuplicates, ToSic.Eav.DataSources",
         Type = DataSourceType.Logic, 
         DynamicOut = false, 
 	    HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-ItemFilterDuplicates")]

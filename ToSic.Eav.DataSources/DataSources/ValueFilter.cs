@@ -15,7 +15,7 @@ namespace ToSic.Eav.DataSources
     /// Return only Entities having a specific value in an Attribute
     /// </summary>
     [PublicApi]
-    [VisualQuery(GlobalName = "ToSic.Eav.DataSources.ValueFilter, ToSic.Eav.DataSources",
+    [Query.VisualQuery(GlobalName = "ToSic.Eav.DataSources.ValueFilter, ToSic.Eav.DataSources",
         Type = DataSourceType.Filter, 
         In = new[] { Constants.DefaultStreamName, Constants.FallbackStreamName },
         DynamicOut = false,

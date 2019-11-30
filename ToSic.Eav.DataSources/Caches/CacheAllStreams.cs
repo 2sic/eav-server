@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSources.Caches
 	/// Return all Entities from a specific App
 	/// </summary>
 
-    [VisualQuery(GlobalName = "ToSic.Eav.DataSources.Caches.CacheAllStreams, ToSic.Eav.DataSources",
+    [Query.VisualQuery(GlobalName = "ToSic.Eav.DataSources.Caches.CacheAllStreams, ToSic.Eav.DataSources",
         Type = DataSourceType.Cache, 
         DynamicOut = true,
         ExpectsDataOfType = "|Config ToSic.Eav.DataSources.Caches.CacheAllStreams",

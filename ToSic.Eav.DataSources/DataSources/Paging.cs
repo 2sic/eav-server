@@ -15,7 +15,7 @@ namespace ToSic.Eav.DataSources
 	/// A DataSource that filters Entities by Ids
 	/// </summary>
     [PublicApi]
-	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.Paging, ToSic.Eav.DataSources",
+	[Query.VisualQuery(GlobalName = "ToSic.Eav.DataSources.Paging, ToSic.Eav.DataSources",
         Type = DataSourceType.Logic, 
         DynamicOut = false,
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.Paging",

@@ -18,7 +18,7 @@ namespace ToSic.Eav.DataSources
     /// Provide Entities from a SQL Server
     /// </summary>
     [PublicApi]
-    [VisualQuery(GlobalName = "ToSic.Eav.DataSources.SqlDataSource, ToSic.Eav.DataSources",
+    [Query.VisualQuery(GlobalName = "ToSic.Eav.DataSources.SqlDataSource, ToSic.Eav.DataSources",
         Type = DataSourceType.Source, 
         DynamicOut = false,
         Icon = "database",

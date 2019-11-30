@@ -15,7 +15,7 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
 	/// <remarks>Uses Configuration "AttributeNames"</remarks>
     [PublicApi]
-	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.AttributeFilter, ToSic.Eav.DataSources",
+	[Query.VisualQuery(GlobalName = "ToSic.Eav.DataSources.AttributeFilter, ToSic.Eav.DataSources",
         Type = DataSourceType.Modify, 
         DynamicOut = false,
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.AttributeFilter",

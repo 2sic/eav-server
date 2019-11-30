@@ -9,7 +9,7 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
 	[PublicApi]
 
-	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.PassThrough, ToSic.Eav.DataSources",
+	[Query.VisualQuery(GlobalName = "ToSic.Eav.DataSources.PassThrough, ToSic.Eav.DataSources",
         Type = DataSourceType.Source, DynamicOut = true)]
 
     public class PassThrough : BaseDataSource

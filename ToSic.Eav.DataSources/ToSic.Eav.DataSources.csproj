@@ -152,6 +152,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <Compile Include="Compatibility\ToSic.SexyContent.DataSources.VisualQuery.VisualQueryAttribute.cs" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />

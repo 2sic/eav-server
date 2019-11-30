@@ -213,7 +213,7 @@ namespace ToSic.Eav
 	    public class DataSourceInfo
 	    {
 	        public Type Type { get; }
-            public VisualQuery VisualQuery { get; }
+            public VisualQueryAttribute VisualQuery { get; }
 	        public string GlobalName => VisualQuery?.GlobalName;
 
 	        public DataSourceInfo(Type dsType)
@@ -224,8 +224,8 @@ namespace ToSic.Eav
 	            try
 	            {
 	                VisualQuery =
-	                    Type.GetCustomAttributes(typeof(VisualQuery), false).FirstOrDefault() as
-	                        VisualQuery;
+	                    Type.GetCustomAttributes(typeof(VisualQueryAttribute), false).FirstOrDefault() as
+	                        VisualQueryAttribute;
 	            }
 
                 catch {  /*ignore */ }

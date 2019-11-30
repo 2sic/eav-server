@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSources.System
     /// <summary>
     /// A DataSource that returns the attributes of a content-type
     /// </summary>
-    [VisualQuery(GlobalName = "ToSic.Eav.DataSources.System.Attributes, ToSic.Eav.DataSources",
+    [Query.VisualQuery(GlobalName = "ToSic.Eav.DataSources.System.Attributes, ToSic.Eav.DataSources",
         Type = DataSourceType.Source,
         Difficulty = DifficultyBeta.Advanced,
         DynamicOut = false,

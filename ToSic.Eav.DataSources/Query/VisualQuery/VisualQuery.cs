@@ -11,13 +11,13 @@ namespace ToSic.Eav.DataSources.Query
     [PublicApi]
 
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
-	public class VisualQuery : Attribute
+	public class VisualQueryAttribute : Attribute
 	{
         /// <summary>
         /// Empty constructor - necessary, so DocFx includes this attribute in documentation.
         /// </summary>
         [PrivateApi]
-        public VisualQuery()
+        public VisualQueryAttribute()
         {
 
         }

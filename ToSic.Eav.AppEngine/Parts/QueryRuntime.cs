@@ -79,7 +79,7 @@ namespace ToSic.Eav.Apps.Parts
             public string Name;
             public int Difficulty;
 
-            public DataSourceInfo(string fallbackName, VisualQuery dsInfo)
+            public DataSourceInfo(string fallbackName, VisualQueryAttribute dsInfo)
             {
                 Name = fallbackName; // will override further down if dsInfo is provided
                 if (dsInfo == null) return;

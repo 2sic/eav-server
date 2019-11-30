@@ -4,7 +4,6 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Query;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Interfaces;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -14,7 +13,7 @@ namespace ToSic.Eav.DataSources
 	/// A DataSource that filters Entities by Ids
 	/// </summary>
     [PublicApi]
-	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.EntityIdFilter, ToSic.Eav.DataSources",
+	[Query.VisualQuery(GlobalName = "ToSic.Eav.DataSources.EntityIdFilter, ToSic.Eav.DataSources",
         Type = DataSourceType.Filter, 
         DynamicOut = false,
         NiceName = "ItemIdFilter",
