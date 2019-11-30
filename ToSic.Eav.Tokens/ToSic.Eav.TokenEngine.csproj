@@ -73,13 +73,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tokens\TokenReplace.cs" />
     <Compile Include="LookUp\LookUpInMetadata.cs" />
-    <Compile Include="LookUp\LookUpInBase.cs" />
+    <Compile Include="LookUp\LookUpBase.cs" />
     <Compile Include="LookUp\LookUpInEntity.cs" />
-    <Compile Include="LookUp\IlookUpEngine.cs" />
-    <Compile Include="LookUp\ILookUpIn.cs" />
+    <Compile Include="LookUp\ILookUpEngine.cs" />
+    <Compile Include="LookUp\ILookUp.cs" />
     <Compile Include="LookUp\LookUpInLookUps.cs" />
     <Compile Include="LookUp\LookUpInDictionary.cs" />
-    <Compile Include="LookUp\TokenListFiller.cs" />
+    <Compile Include="LookUp\LookUpEngine.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj">
