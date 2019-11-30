@@ -4,7 +4,7 @@ namespace ToSic.Eav.Apps
 {
     public class AppDataConfiguration: IAppDataConfiguration
     {
-        public AppDataConfiguration(bool showDrafts, bool publishingEnabled, ITokenListFiller configuration)
+        public AppDataConfiguration(bool showDrafts, bool publishingEnabled, ILookUpEngine configuration)
         {
             ShowDrafts = showDrafts;
             PublishingEnabled = publishingEnabled;
@@ -15,7 +15,7 @@ namespace ToSic.Eav.Apps
 
         public bool PublishingEnabled { get; }
 
-        public ITokenListFiller Configuration { get; }
+        public ILookUpEngine Configuration { get; }
 
     }
 }

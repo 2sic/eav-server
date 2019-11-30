@@ -90,7 +90,7 @@ namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
 
 
 
-        protected RelationshipFilter BuildRelationshipFilter(int zone, int app, string primaryType, ITokenListFiller config = null)
+        protected RelationshipFilter BuildRelationshipFilter(int zone, int app, string primaryType, ILookUpEngine config = null)
         {
             var baseDs = DataSource.GetInitialDataSource(zone, app, configProvider: config, parentLog: Log);
             var appDs = DataSource.GetDataSource<App>(zone, app, baseDs, parentLog: Log);
@@ -112,14 +112,14 @@ namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
         }
 
 
-        protected static TokenListFiller BuildConfigurationProvider(string name, Dictionary<string, object> vals)
+        protected static LookUpEngine BuildConfigurationProvider(string name, Dictionary<string, object> vals)
         {
             var vc = BuildConfigurationProvider();
             vc.Add(DemoConfigs.BuildValueProvider("Settings", vals));
             return vc;
         }
 
-        protected static TokenListFiller BuildConfigurationProvider()
+        protected static LookUpEngine BuildConfigurationProvider()
         {
             var vc = DemoConfigs.AppSetAndRes();
             return vc;

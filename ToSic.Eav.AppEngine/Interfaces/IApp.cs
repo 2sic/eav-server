@@ -66,7 +66,7 @@ namespace ToSic.Eav.Apps
         ITenant Tenant { get; }
 
         [PrivateApi]
-        ITokenListFiller ConfigurationProvider { get; }
+        ILookUpEngine ConfigurationProvider { get; }
 
         [PrivateApi]
         DeferredQuery GetQuery(string name);

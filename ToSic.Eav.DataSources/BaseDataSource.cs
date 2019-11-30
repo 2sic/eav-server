@@ -129,7 +129,7 @@ namespace ToSic.Eav.DataSources
 
 
         /// <inheritdoc />
-        public ITokenListFiller ConfigurationProvider { get; protected internal set; }
+        public ILookUpEngine ConfigurationProvider { get; protected internal set; }
 
         /// <inheritdoc />
         public IDictionary<string, string> Configuration { get; internal set; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);

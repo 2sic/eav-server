@@ -25,7 +25,7 @@ namespace ToSic.Eav.DataSources.Query
 	    /// <param name="outSource">DataSource to attach the Out-Streams</param>
 	    /// <param name="showDrafts"></param>
 	    /// <returns>A single DataSource Out with wirings and configurations loaded, ready to use</returns>
-	    public IDataSource GetAsDataSource(int appId, IEntity query, ITokenListFiller valueCollection, IDataSource outSource = null, bool showDrafts = false)
+	    public IDataSource GetAsDataSource(int appId, IEntity query, ILookUpEngine valueCollection, IDataSource outSource = null, bool showDrafts = false)
 	    {
 		    Log.Add($"build pipe#{query.EntityId} for a#{appId}, draft:{showDrafts}");
             var queryDef = new QueryDefinition(query, appId);
@@ -63,7 +63,7 @@ namespace ToSic.Eav.DataSources.Query
 	    public const string ConfigKeyPipelineSettings = "pipelinesettings";
 
 	    private IDataSource GetAsDataSource(QueryDefinition qdef,
-            ITokenListFiller providerToClone,
+            ILookUpEngine providerToClone,
             IEnumerable<ILookUp> propertyProviders = null,
             IDataSource outSource = null,
             bool showDrafts = false)
@@ -86,7 +86,7 @@ namespace ToSic.Eav.DataSources.Query
                 Log.Add(() =>
                     $"Sources in original provider: {providerToClone.Sources.Count} " +
                     $"[{string.Join(",", providerToClone.Sources.Keys)}]");
-            var templateConfig = new TokenListFiller(providerToClone);
+            var templateConfig = new LookUpEngine(providerToClone);
             templateConfig.Add(querySettingsProvider);  
             templateConfig.AddOverride(propertyProviders);
 
@@ -102,7 +102,7 @@ namespace ToSic.Eav.DataSources.Query
             // tell the primary-out that it has this guid, for better debugging
             if (outSource == null)
 	        {
-	            var passThroughConfig = new TokenListFiller(templateConfig);
+	            var passThroughConfig = new LookUpEngine(templateConfig);
 	            outSource = new PassThrough {ConfigurationProvider = passThroughConfig};
 	        }
             if (outSource.DataSourceGuid == Guid.Empty)
@@ -119,7 +119,7 @@ namespace ToSic.Eav.DataSources.Query
 	        {
 	            #region Init Configuration Provider
 
-	            var partConfig = new TokenListFiller(templateConfig);
+	            var partConfig = new LookUpEngine(templateConfig);
                 // add / set item part configuration
 	            partConfig.Add(new LookUpInMetadata(ConfigKeyPartSettings, dataQueryPart));
 
@@ -235,7 +235,7 @@ namespace ToSic.Eav.DataSources.Query
 		}
 
 
-	    public IDataSource GetDataSourceForTesting(QueryDefinition qdef, bool showDrafts, ITokenListFiller configuration = null)
+	    public IDataSource GetDataSourceForTesting(QueryDefinition qdef, bool showDrafts, ILookUpEngine configuration = null)
 	    {
 	        Log.Add($"construct test query a#{qdef.AppId}, pipe:{qdef.Header.EntityGuid} ({qdef.Header.EntityId}), drafts:{showDrafts}");
 

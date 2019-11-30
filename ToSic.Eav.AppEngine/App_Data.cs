@@ -7,7 +7,7 @@ namespace ToSic.Eav.Apps
     public partial class App
     {
 
-        public ITokenListFiller ConfigurationProvider
+        public ILookUpEngine ConfigurationProvider
         {
             get
             {
@@ -24,7 +24,7 @@ namespace ToSic.Eav.Apps
                 return _configurationProvider;
             }
         }
-        private ITokenListFiller _configurationProvider;
+        private ILookUpEngine _configurationProvider;
         private bool _configurationProviderBuilt;
 
 
@@ -40,7 +40,7 @@ namespace ToSic.Eav.Apps
         /// <param name="showDrafts"></param>
         /// <param name="versioningEnabled"></param>
         /// <param name="configurationValues">this is needed for providing parameters to the data-query-system</param>
-        private void InitData(bool showDrafts, bool versioningEnabled, ITokenListFiller configurationValues)
+        private void InitData(bool showDrafts, bool versioningEnabled, ILookUpEngine configurationValues)
         {
             Log.Add($"init data drafts:{showDrafts}, vers:{versioningEnabled}, hasConf:{configurationValues != null}");
             _configurationProvider = configurationValues;

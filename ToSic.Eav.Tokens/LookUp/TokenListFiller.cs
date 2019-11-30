@@ -11,7 +11,7 @@ namespace ToSic.Eav.LookUp
 	/// </summary>
 	// [PublicApi]
     // TODO: AWAIT CHANGES TO INTERFACE BEFORE WE PUBLISH
-	public class TokenListFiller : ITokenListFiller
+	public class TokenListFiller : ILookUpEngine
 	{
         // todo: probably change and not let the outside modify directly
         [PrivateApi]
@@ -36,7 +36,7 @@ namespace ToSic.Eav.LookUp
 		/// Cloning another TokenListFiller and keep the sources.
 		/// BUT: Don't keep the overrides, as these will be unique in the clone. 
 		/// </summary>
-		public TokenListFiller(ITokenListFiller original): this()
+		public TokenListFiller(ILookUpEngine original): this()
 		{
 		    if (original == null) return;
 		    foreach (var srcSet in original.Sources)

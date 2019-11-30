@@ -12,7 +12,7 @@ namespace ToSic.Eav.LookUp
 		/// <summary>
 		/// Gets the Name of this LookUp, e.g. QueryString or PipelineSettings
 		/// </summary>
-		/// <returns>The name which is used to identify this LookUp, like in a <see cref="ITokenListFiller"/></returns>
+		/// <returns>The name which is used to identify this LookUp, like in a <see cref="ILookUpEngine"/></returns>
 		string Name { get; }
 
         /// <summary>

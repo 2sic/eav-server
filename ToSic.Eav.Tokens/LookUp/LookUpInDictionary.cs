@@ -7,7 +7,7 @@ namespace ToSic.Eav.LookUp
 	/// <summary>
 	/// Look Up values from a dictionary
 	/// </summary>
-	public class LookUpInDictionary : LookUpBase
+	public class LookUpInDictionary : LookUpInBase
 	{
 		/// <summary>
 		/// List with static properties and Test-Values

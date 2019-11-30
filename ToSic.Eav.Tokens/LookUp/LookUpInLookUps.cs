@@ -9,7 +9,7 @@ namespace ToSic.Eav.LookUp
     /// It's mainly used to override values which are given, by a special situation
     /// </summary>
     [PublicApi]
-    public class LookUpInLookUps: LookUpBase
+    public class LookUpInLookUps: LookUpInBase
     {
         protected List<ILookUp> Providers = new List<ILookUp>(); 
 

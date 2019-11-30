@@ -15,7 +15,7 @@ namespace ToSic.Eav.DataSources.Tests.ItemFilterDuplicates
         public void ItemFilterDuplicates_In0()
         {
             var desiredFinds = 0;
-            var sf = DataSource.GetDataSource<DataSources.ItemFilterDuplicates>(0, 0, configLookUp: new TokenListFiller());
+            var sf = DataSource.GetDataSource<DataSources.ItemFilterDuplicates>(0, 0, configLookUp: new LookUpEngine());
             var found = sf.List.Count();
             Assert.AreEqual(desiredFinds, found, "Should find exactly this amount people");
 

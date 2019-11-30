@@ -51,7 +51,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
 		/// Gets the ConfigurationProvider for this DataSource
 		/// </summary>
-        ITokenListFiller ConfigurationProvider { get; }
+        ILookUpEngine ConfigurationProvider { get; }
 
 		/// <summary>
 		/// Gets a Dictionary of Configurations for this DataSource, e.g. Key: EntityId, Value: [QueryString:EntityId]

@@ -3,12 +3,11 @@ using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.LookUp
 {
-	/// <summary>
-	/// Resolves Configurations from LookUps. Common use is for configurable DataSources
-	/// </summary>
-	// [PublicApi]
-    // TODO: PROBABLY change to be a list-of-sources with add etc.
-	public interface ITokenListFiller
+    /// <summary>
+    /// Resolves Configurations from LookUps. Common use is for configurable DataSources
+    /// </summary>
+    [PublicApi]
+    public interface ILookUpEngine
 	{
 		/// <summary>
 		/// Property Sources this Provider can use. Sources are various dictionaries which can resolve a key to a value. 

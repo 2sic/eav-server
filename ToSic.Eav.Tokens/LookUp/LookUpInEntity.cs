@@ -10,7 +10,7 @@ namespace ToSic.Eav.LookUp
 	/// Get Values from Assigned Entities
 	/// </summary>
 	[PublicApi]
-	public class LookUpInEntity : LookUpBase
+	public class LookUpInEntity : LookUpInBase
     {
         protected IEntity Entity;
 	    private readonly string[] _dimensions = {""};

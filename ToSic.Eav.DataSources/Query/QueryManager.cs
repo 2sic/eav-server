@@ -39,7 +39,7 @@ namespace ToSic.Eav.DataSources.Query
         /// ...but will be auto-assembled the moment they are accessed
         /// </summary>
         /// <returns></returns>
-	    public static Dictionary<string, IDataSource> AllQueries(int zoneId, int appId, ITokenListFiller valuesCollectionProvider, ILog parentLog, bool showDrafts)
+	    public static Dictionary<string, IDataSource> AllQueries(int zoneId, int appId, ILookUpEngine valuesCollectionProvider, ILog parentLog, bool showDrafts)
 	    {
 	        var dict = new Dictionary<string, IDataSource>(StringComparer.OrdinalIgnoreCase);
 	        foreach (var entQuery in AllQueryItems(appId, parentLog))

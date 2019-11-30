@@ -39,7 +39,7 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// Constructs a new App DataSource
 		/// </summary>
-		public DeferredQuery(int zoneId, int appId, IEntity queryDef, ITokenListFiller config, bool showDrafts)
+		public DeferredQuery(int zoneId, int appId, IEntity queryDef, ILookUpEngine config, bool showDrafts)
 		{
 		    ZoneId = zoneId;
 		    AppId = appId;

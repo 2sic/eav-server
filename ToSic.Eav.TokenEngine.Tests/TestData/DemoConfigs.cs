@@ -10,9 +10,9 @@ namespace ToSic.Eav.TokenEngine.Tests.TestData
     {
         private const int AppIdX = -1;
 
-        public static TokenListFiller AppSetAndRes(int appId = AppIdX)
+        public static LookUpEngine AppSetAndRes(int appId = AppIdX)
         {
-            var vc = new TokenListFiller();
+            var vc = new LookUpEngine();
             vc.Add(AppSettings(appId));
             vc.Add(AppResources(appId));
 

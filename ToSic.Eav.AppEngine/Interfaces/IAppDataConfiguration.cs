@@ -23,6 +23,6 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// Configuration used to query data - will deliver url-parameters and other important configuration values.
         /// </summary>
-        ITokenListFiller Configuration { get; }
+        ILookUpEngine Configuration { get; }
     }
 }
