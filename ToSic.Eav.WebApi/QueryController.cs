@@ -104,7 +104,7 @@ namespace ToSic.Eav.WebApi
 		/// <summary>
 		/// Query the Result of a Pipline using Test-Parameters
 		/// </summary>
-		public dynamic QueryPipeline(int appId, int id, LookUpEngine config)
+		public dynamic QueryPipeline(int appId, int id, ILookUpEngine config)
 		{
 		    Log.Add($"query pipe: a#{appId}, id:{id}");
             // Get the query, run it and track how much time this took

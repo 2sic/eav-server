@@ -69,6 +69,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LookUp\IGetEngine.cs" />
     <Compile Include="LookUp\LookUpInNameValueCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tokens\TokenReplace.cs" />
