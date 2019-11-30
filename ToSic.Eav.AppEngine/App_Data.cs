@@ -18,7 +18,7 @@ namespace ToSic.Eav.Apps
                 if (_dataConfigurationBuilder != null)
                 {
                     var config = _dataConfigurationBuilder.Invoke(this);
-                    InitData(config.ShowDrafts, config.VersioningEnabled, config.Configuration);
+                    InitData(config.ShowDrafts, config.PublishingEnabled, config.Configuration);
                 }
                 _configurationProviderBuilt = true;
                 return _configurationProvider;

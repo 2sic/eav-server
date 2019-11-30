@@ -6,10 +6,8 @@ using Newtonsoft.Json;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Query;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.LookUp;
 
 using ToSic.Eav.WebApi.Formats;
@@ -108,7 +106,7 @@ namespace ToSic.Eav.WebApi
 		/// </summary>
 		public dynamic QueryPipeline(int appId, int id, TokenListFiller config)
 		{
-		    Log.Add($"queryy pipe: a#{appId}, id:{id}");
+		    Log.Add($"query pipe: a#{appId}, id:{id}");
             // Get the query, run it and track how much time this took
 		    var queryFactory = new QueryBuilder(Log);
 		    var qDef = queryFactory.GetQueryDefinition(appId, id);
