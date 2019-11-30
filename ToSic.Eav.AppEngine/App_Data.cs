@@ -61,7 +61,7 @@ namespace ToSic.Eav.Apps
 
             // ModulePermissionController does not work when indexing, return false for search
             var initialSource = DataSource.GetInitialDataSource(ZoneId, AppId, ShowDrafts,
-                ConfigurationProvider as TokenListFiller, Log);
+                ConfigurationProvider as LookUpEngine, Log);
 
             // todo: probably use the full configuration provider from function params, not from initial source?
             var xData = DataSource.GetDataSource<DataSources.App>(initialSource.ZoneId,

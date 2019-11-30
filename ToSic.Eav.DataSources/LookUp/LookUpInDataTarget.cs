@@ -8,7 +8,7 @@ namespace ToSic.Eav.LookUp
 	/// <summary>
 	/// Property Accessor to test a Pipeline with Static Values
 	/// </summary>
-	public class LookUpInDataTarget : LookUpInBase
+	public class LookUpInDataTarget : LookUpBase
 	{
 	    private readonly IDataTarget _dataTarget;
 

@@ -7,7 +7,7 @@ namespace ToSic.Eav.LookUp
 	/// Base Class to create your own LookUp Class - used by all Look-Ups.
 	/// </summary>
 	[PublicApi]
-	public abstract class LookUpInBase : ILookUp
+	public abstract class LookUpBase : ILookUp
     {
         #region default methods of interface
         /// <inheritdoc/>

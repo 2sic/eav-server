@@ -6,12 +6,11 @@ using ToSic.Eav.Tokens;
 
 namespace ToSic.Eav.LookUp
 {
-	/// <summary>
-	/// Takes a list of configuration masks (list of tokens) and resolves them with a bunch of LookUps.
-	/// </summary>
-	// [PublicApi]
-    // TODO: AWAIT CHANGES TO INTERFACE BEFORE WE PUBLISH
-	public class TokenListFiller : ILookUpEngine
+    /// <summary>
+    /// Takes a list of configuration masks (list of tokens) and resolves them with a bunch of LookUps.
+    /// </summary>
+    [PublicApi]
+    public class LookUpEngine : ILookUpEngine
 	{
         // todo: probably change and not let the outside modify directly
         [PrivateApi]
@@ -26,7 +25,7 @@ namespace ToSic.Eav.LookUp
 		/// <summary>
 		/// Constructs a new TokenListFiller
 		/// </summary>
-		public TokenListFiller()
+		public LookUpEngine()
 		{
 			_reusableTokenReplace = new TokenReplace(Sources);
 		}
@@ -36,7 +35,7 @@ namespace ToSic.Eav.LookUp
 		/// Cloning another TokenListFiller and keep the sources.
 		/// BUT: Don't keep the overrides, as these will be unique in the clone. 
 		/// </summary>
-		public TokenListFiller(ILookUpEngine original): this()
+		public LookUpEngine(ILookUpEngine original): this()
 		{
 		    if (original == null) return;
 		    foreach (var srcSet in original.Sources)
