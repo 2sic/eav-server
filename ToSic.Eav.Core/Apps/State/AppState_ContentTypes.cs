@@ -3,17 +3,15 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Types;
 
 namespace ToSic.Eav.Apps
 {
-    /// <summary>
-    /// Cache Object for a specific App
-    /// </summary>
     public partial class AppState
 	{
 	    /// <summary>
-	    /// Gets all ContentTypes in this App
+	    /// All ContentTypes in this App
 	    /// </summary>
 	    public IEnumerable<IContentType> ContentTypes 
             => _appTypesFromRepository.Union(Global.AllContentTypes().Values);
@@ -75,7 +73,7 @@ namespace ToSic.Eav.Apps
 	    private ImmutableDictionary<int, string> _appTypeMap;
 
         /// <summary>
-        /// Get a content-type by name
+        /// Get a content-type by name. Will also check global types if needed.
         /// </summary>
         /// <param name="name">name of the type</param>
         /// <returns>a type object or null if not found</returns>
@@ -85,7 +83,7 @@ namespace ToSic.Eav.Apps
 	            : Global.FindContentType(name); // note: will return null if not found
 
 	    /// <summary>
-	    /// Get a content-type by number / id
+	    /// Get a content-type by number / id. Will also check global types if needed.
 	    /// </summary>
 	    /// <param name="contentTypeId">id of the type as stored in the repository</param>
 	    /// <returns>a type object or null if not found</returns>
@@ -99,6 +97,7 @@ namespace ToSic.Eav.Apps
 	    }
 
         
+        [PrivateApi]
 	    public bool ContentTypesShouldBeReloaded = true;
 	}
 }

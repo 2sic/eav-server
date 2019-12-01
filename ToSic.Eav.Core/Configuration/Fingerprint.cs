@@ -1,6 +1,5 @@
 ﻿using System;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Configuration
 {
