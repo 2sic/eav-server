@@ -5,15 +5,18 @@ namespace ToSic.Eav.Metadata
 {
     /// <inheritdoc />
     /// <summary>
-    /// This is a simple helper to ensure that objects can get metadata
+    /// Implementation of <see cref="IRemoteMetadata"/> to provide metadata globally. <br/>
+    /// This ensures that EAV core objects can get metadata,
     /// even if they do not know about data-sources
-    /// this will then be provided through dependency injection
+    /// which will then be provided through dependency injection.
     /// </summary>
     [PublicApi]
-    public class RemoteMetadataFromDataSource: IRemoteMetadata
+    public class RemoteMetadata: IRemoteMetadata
     {
-        public IMetadataSource OfZoneAndApp(int zoneId, int appId) => DataSource.GetMetaDataSource(zoneId, appId);
+        public IMetadataSource OfZoneAndApp(int zoneId, int appId) 
+            => DataSource.GetMetaDataSource(zoneId, appId);
 
-        public IMetadataSource OfApp(int appId) => DataSource.GetMetaDataSource(null, appId);
+        public IMetadataSource OfApp(int appId) 
+            => DataSource.GetMetaDataSource(null, appId);
     }
 }

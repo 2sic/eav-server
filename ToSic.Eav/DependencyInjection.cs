@@ -29,7 +29,7 @@ namespace ToSic.Eav
 	    {
             serviceCollection.TryAddTransient<ICache, QuickCache>();
             serviceCollection.TryAddTransient<IRootSource, EavSqlStore>();
-	        serviceCollection.TryAddTransient<IRemoteMetadata, RemoteMetadataFromDataSource>();
+	        serviceCollection.TryAddTransient<IRemoteMetadata, RemoteMetadata>();
 	        serviceCollection.TryAddTransient<ITargetTypes, EfcMetadataTargetTypes>();
 
             serviceCollection.TryAddTransient<IRepositoryImporter, RepositoryImporter>();
