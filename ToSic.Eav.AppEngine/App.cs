@@ -1,26 +1,36 @@
 ﻿using System;
 using ToSic.Eav.DataSources.Caches;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps
 {
     /// <summary>
-    /// A populated app-object providing quick simple api to access
+    /// A <em>single-use</em> app-object providing quick simple api to access
     /// name, folder, data, metadata etc.
     /// </summary>
+    [PublicApi]
     public partial class App: AppIdentity, IApp
     {
+        [PrivateApi]
         public const int AutoLookupZone = -1;
 
+        /// <inheritdoc />
         public string Name { get; private set; }
+        /// <inheritdoc />
         public string Folder { get; private set; }
+        /// <inheritdoc />
         public bool Hidden { get; private set; }
 
+        /// <inheritdoc />
         public string AppGuid { get; }
 
+        /// <inheritdoc />
         public bool ShowDrafts { get; private set; }
+        /// <inheritdoc />
         public bool EnablePublishing { get; private set; }
 
+        [PrivateApi]
         protected const string IconFile = "/" + AppConstants.AppIconFile;
 
         internal App(int zoneId, 

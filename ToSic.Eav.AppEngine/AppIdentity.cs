@@ -1,8 +1,12 @@
-﻿using ToSic.Eav.Logging;
+﻿using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps
 {
-    // todo: maybe rename to InAppAndZone
+    /// <summary>
+    /// Base object for things that have a full app-identity (app-id and zone-id)
+    /// </summary>
+    [PublicApi]
     public class AppIdentity: HasLog, IInAppAndZone
     {
         /// <inheritdoc />

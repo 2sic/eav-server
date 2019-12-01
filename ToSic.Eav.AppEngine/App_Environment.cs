@@ -1,4 +1,5 @@
 ﻿using System;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Environment;
 using ToSic.Eav.Logging;
 
@@ -6,11 +7,14 @@ namespace ToSic.Eav.Apps
 {
     public partial class App
     {
-
+        [PrivateApi]
         protected IAppEnvironment Env;
+        
+        /// <inheritdoc />
         public ITenant Tenant { get; }
 
-        public App(ITenant tenant, int zoneId, int appId, bool allowSideEffects,
+        [PrivateApi]
+        protected App(ITenant tenant, int zoneId, int appId, bool allowSideEffects,
             Func<App, IAppDataConfiguration> buildConfiguration,
             ILog parentLog)
             : this(Factory.Resolve<IEnvironmentFactory>().Environment(parentLog), tenant, zoneId, appId,
@@ -18,6 +22,7 @@ namespace ToSic.Eav.Apps
         {
         }
 
+        [PrivateApi]
         protected App(IAppEnvironment env, 
             ITenant tenant, 
             int zoneId, 
@@ -39,8 +44,10 @@ namespace ToSic.Eav.Apps
         }
 
         #region Paths
+        [PrivateApi]
         protected string GetRootPath() => System.IO.Path.Combine(Tenant.SxcPath, Folder);
 
+        [PrivateApi]
         public string PhysicalPath => Env.MapAppPath(GetRootPath());
 
         #endregion

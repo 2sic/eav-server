@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Query;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Apps
 {
@@ -10,6 +11,7 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// Cached list of queries
         /// </summary>
+        [PrivateApi]
         protected IDictionary<string, IDataSource> Queries;
 
         /// <summary>
@@ -18,6 +20,7 @@ namespace ToSic.Eav.Apps
         /// - App.Query.ContainsKey(...)
         /// - App.Query["One Event"].List
         /// </summary>
+        /// <inheritdoc />
         public IDictionary<string, IDataSource> Query
         {
             get
@@ -31,6 +34,7 @@ namespace ToSic.Eav.Apps
             }
         }
 
+        /// <inheritdoc />
         public DeferredQuery GetQuery(string name)
         {
             if (name.StartsWith(GlobalQueries.GlobalQueryPrefix))

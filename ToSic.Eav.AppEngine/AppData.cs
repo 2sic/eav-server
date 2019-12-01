@@ -1,19 +1,30 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Api.Api01;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
 
-namespace ToSic.Eav.Apps.DataSources
+namespace ToSic.Eav.Apps
 {
-    public sealed class App: Eav.DataSources.App, IAppData
+    /// <summary>
+    /// The Data object on an App. It's also a data-source of type <see cref="ToSic.Eav.DataSources.App"/>,
+    /// so it has many streams, one for each content-type so you can use it in combination with other DataSources. <br/>
+    /// The special feature is that it also has methods for data-manipulation,
+    /// including Create, Update and Delete
+    /// </summary>
+    [PublicApi]
+    public sealed class AppData: Eav.DataSources.App, IAppData
     {
-        public App(ILog parentLog = null)
+        [PrivateApi]
+        public AppData(ILog parentLog = null)
         {
             InitLog("DS.EavApp", parentLog);
         }
 
+        [PrivateApi]
         internal string DefaultLanguage { get; set; }
+        [PrivateApi]
         internal string CurrentUserName { get; set; }
 
         /// <summary>
@@ -22,6 +33,7 @@ namespace ToSic.Eav.Apps.DataSources
         /// <returns>An data controller to create, update and delete entities</returns>
         private SimpleDataController DataController() => new SimpleDataController(ZoneId, AppId, DefaultLanguage, Log);
 
+        /// <inheritdoc />
         public void Create(string contentTypeName,
             Dictionary<string, object> values, 
             string userName = null,
@@ -31,6 +43,7 @@ namespace ToSic.Eav.Apps.DataSources
             DataController().Create(contentTypeName, new List<Dictionary<string, object>> { values}, target); 
         }
 
+        /// <inheritdoc />
         public void Create(string contentTypeName, 
             IEnumerable<Dictionary<string, object>> multiValues, 
             string userName = null)
@@ -39,6 +52,7 @@ namespace ToSic.Eav.Apps.DataSources
             DataController().Create(contentTypeName, multiValues); 
         }
 
+        /// <inheritdoc />
         public void Update(int entityId, Dictionary<string, object> values,
             string userName = null)
         {
@@ -47,6 +61,7 @@ namespace ToSic.Eav.Apps.DataSources
         }
 
 
+        /// <inheritdoc />
         public void Delete(int entityId, string userName = null)
         {
             Log.Add($"app delete i:{entityId}");

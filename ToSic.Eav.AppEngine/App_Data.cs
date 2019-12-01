@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Linq;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.LookUp;
 
 namespace ToSic.Eav.Apps
 {
     public partial class App
     {
-
+        [PrivateApi]
         public ILookUpEngine ConfigurationProvider
         {
             get
@@ -48,11 +49,12 @@ namespace ToSic.Eav.Apps
             EnablePublishing = versioningEnabled;
         }
 
-
+        /// <inheritdoc />
         public IAppData Data => _data ?? (_data = BuildData());
         private IAppData _data;
 
-        protected virtual DataSources.App BuildData()
+        [PrivateApi]
+        protected virtual AppData BuildData()
         {
             Log.Add("configure on demand start");
             if (ConfigurationProvider == null)
@@ -64,7 +66,7 @@ namespace ToSic.Eav.Apps
                 ConfigurationProvider as LookUpEngine, Log);
 
             // todo: probably use the full configuration provider from function params, not from initial source?
-            var xData = DataSource.GetDataSource<DataSources.App>(initialSource.ZoneId,
+            var xData = DataSource.GetDataSource<AppData>(initialSource.ZoneId,
                 initialSource.AppId, initialSource, initialSource.ConfigurationProvider, Log);
 
             Log.Add("configure on demand completed");
@@ -77,7 +79,8 @@ namespace ToSic.Eav.Apps
         /// Override and enhance with environment data like current user, languages, etc.
         /// </summary>
         /// <returns></returns>
-        protected void GetLanguageAndUser(DataSources.App xData)
+        [PrivateApi]
+        protected void GetLanguageAndUser(AppData xData)
         {
             var languagesActive = Env.ZoneMapper.CulturesWithState(Tenant.Id, ZoneId)
                 .Any(c => c.Active);
