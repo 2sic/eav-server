@@ -120,7 +120,7 @@
     <Compile Include="Interfaces\IDataStream.cs" />
     <Compile Include="Interfaces\IDataTarget.cs" />
     <Compile Include="Interfaces\IDeferredDataSource.cs" />
-    <Compile Include="Metadata\RemoteMetadataFromDataSource.cs" />
+    <Compile Include="Metadata\RemoteMetadata.cs" />
     <Compile Include="System\Attributes.cs" />
     <Compile Include="Query\QueryConstants.cs" />
     <Compile Include="Query\QueryDefinition.cs" />
