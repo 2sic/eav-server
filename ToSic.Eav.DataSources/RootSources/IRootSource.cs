@@ -1,12 +1,15 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Data;
+using ToSic.Eav.Documentation;
 using AppState = ToSic.Eav.Apps.AppState;
 
-namespace ToSic.Eav.DataSources.RootSources
+namespace ToSic.Eav.DataSources
 {
 	/// <summary>
-	/// Root data source interface for standard Eav Cache
+	/// Root data source interface. This is for DataSources that can load entire apps into memory,
+	/// so they have additional functionality compared to standard data sources. 
 	/// </summary>
+	[PrivateApi("not sure about namespace and if this functionality will remain a DataSource")]
 	public interface IRootSource
 	{
 		/// <summary>

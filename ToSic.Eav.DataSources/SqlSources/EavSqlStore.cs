@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSources.RootSources;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
 using AppState = ToSic.Eav.Apps.AppState;
@@ -13,6 +12,7 @@ namespace ToSic.Eav.DataSources.SqlSources
     /// <summary>
     /// A DataSource that uses SQL Server as Backend
     /// </summary>
+    [PrivateApi("not sure if this should be as a data-source, since it's probably never really used as a DS")]
     public sealed class EavSqlStore : DataSourceBase, IRootSource
 	{
         [PrivateApi]

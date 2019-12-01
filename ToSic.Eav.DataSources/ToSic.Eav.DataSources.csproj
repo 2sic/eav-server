@@ -135,7 +135,7 @@
     <Compile Include="DataSources\PublishingFilter.cs" />
     <Compile Include="DataSources\RelationshipFilter.cs" />
     <Compile Include="RootSources\IRootSource.cs" />
-    <Compile Include="DataSources\SqlDataSource.cs" />
+    <Compile Include="DataSources\Sql.cs" />
     <Compile Include="SqlSources\EavSqlStore.cs" />
     <Compile Include="DataSources\ItemFilterDuplicates.cs" />
     <Compile Include="DataSources\StreamMerge.cs" />
