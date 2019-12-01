@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSources.System
 {
     /// <inheritdoc />
     /// <summary>
-    /// A DataSource that returns the attributes of a content-type
+    /// A DataSource that gets all Apps of a zone
     /// </summary>
     [VisualQuery(
         GlobalName = "ToSic.Eav.DataSources.System.Apps, ToSic.Eav.Apps",
@@ -35,7 +35,7 @@ namespace ToSic.Eav.DataSources.System
 
 
 	    /// <summary>
-	    /// The attribute whoose value will be filtered
+	    /// The attribute whose value will be filtered
 	    /// </summary>
 	    public int ZoneNumber
 	    {

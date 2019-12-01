@@ -12,7 +12,7 @@ namespace ToSic.Eav.DataSources.System
 {
     /// <inheritdoc />
     /// <summary>
-    /// A DataSource that returns the attributes of a content-type
+    /// A DataSource that all content-types of an app
     /// </summary>
     [VisualQuery(
         GlobalName = "ToSic.Eav.DataSources.System.ContentTypes, ToSic.Eav.Apps",

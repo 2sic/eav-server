@@ -11,7 +11,7 @@ namespace ToSic.Eav.DataSources.System
 {
     /// <inheritdoc />
     /// <summary>
-    /// A DataSource that returns the attributes of a content-type
+    /// A DataSource that gets all zones in the system
     /// </summary>
     [VisualQuery(
         GlobalName = "ToSic.Eav.DataSources.System.Zones, ToSic.Eav.Apps",

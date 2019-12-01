@@ -37,8 +37,4 @@
     <PackageReference Include="SharpZipLib" Version="0.86.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="DataSources\" />
-  </ItemGroup>
-
 </Project>
