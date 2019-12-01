@@ -1,12 +1,12 @@
 ﻿using System;
-using ToSic.Eav.Implementations.ValueConverter;
+using ToSic.Eav.Data;
 
 namespace ToSic.Eav.Core.Tests.Mocks
 {
     /// <summary>
     /// Will pretend to convert links beginning with "page:" or "link:"
     /// </summary>
-    public class MockValueConverter:IEavValueConverter
+    public class MockValueConverter:IValueConverter
     {
 
         public string ToReference(string value)

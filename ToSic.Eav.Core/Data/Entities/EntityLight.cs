@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Implementations.ValueConverter;
 using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Data
@@ -179,7 +178,7 @@ namespace ToSic.Eav.Data
         }
 
         protected static string TryToResolveLink(Guid itemGuid, string result) 
-            => Factory.Resolve<IEavValueConverter>().ToValue(itemGuid, result);
+            => Factory.Resolve<IValueConverter>().ToValue(itemGuid, result);
 
         /// <inheritdoc />
 	    public string GetBestTitle() => GetBestTitle(0);

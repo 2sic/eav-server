@@ -1,8 +1,11 @@
 ﻿using System;
 
-namespace ToSic.Eav.Implementations.ValueConverter
+namespace ToSic.Eav.Data
 {
-    public interface IEavValueConverter
+    /// <summary>
+    /// Marks objects that can convert values - like "file:22" to "/images/logo.jpg" and back.
+    /// </summary>
+    public interface IValueConverter
     {
         /// <summary>
         /// Resolve a value to a reference which is managed by the environment

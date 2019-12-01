@@ -2,7 +2,7 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps.ImportExport;
-using ToSic.Eav.Implementations.ValueConverter;
+using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
@@ -41,7 +41,7 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
         [TestMethod]
         public void XmlTable_ResolveHyperlink()
         {
-            var resolver = Factory.Resolve<IEavValueConverter>();
+            var resolver = Factory.Resolve<IValueConverter>();
 
             // test the Resolve Hyperlink
             string link = "";
@@ -72,7 +72,7 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
             TestResolvesWithNonLinkType(Constants.DataTypeHyperlink, false);
 
             var attrType = Constants.DataTypeHyperlink;
-            var resolver = Factory.Resolve<IEavValueConverter>();
+            var resolver = Factory.Resolve<IValueConverter>();
             // test resolves on any value, just certainly not a link, with "no-resolve"
             Assert.AreEqual(XmlConstants.Null, ExportListXml.ResolveValue(AppId, ItemGuid, attrType, null, true, resolver), "test null resolve");
             Assert.AreEqual(XmlConstants.Empty, ExportListXml.ResolveValue(AppId, ItemGuid, attrType, "", true, resolver), "test empty resolve");
@@ -84,7 +84,7 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
 
         private void TestResolvesWithNonLinkType(string attrType, bool tryResolve)
         {
-            var resolver = Factory.Resolve<IEavValueConverter>();
+            var resolver = Factory.Resolve<IValueConverter>();
 
             Assert.AreEqual(XmlConstants.Null, ExportListXml.ResolveValue(AppId, ItemGuid, attrType, null, tryResolve, resolver), "test null resolve");
             Assert.AreEqual(XmlConstants.Empty, ExportListXml.ResolveValue(AppId, ItemGuid, attrType, "", tryResolve, resolver), "test empty resolve");
