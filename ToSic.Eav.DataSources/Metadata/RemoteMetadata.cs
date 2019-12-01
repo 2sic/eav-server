@@ -13,9 +13,11 @@ namespace ToSic.Eav.Metadata
     [PublicApi]
     public class RemoteMetadata: IRemoteMetadata
     {
-        public IMetadataSource OfZoneAndApp(int zoneId, int appId) 
+        /// <inheritdoc />
+       public IMetadataSource OfZoneAndApp(int zoneId, int appId) 
             => DataSource.GetMetaDataSource(zoneId, appId);
 
+        /// <inheritdoc />
         public IMetadataSource OfApp(int appId) 
             => DataSource.GetMetaDataSource(null, appId);
     }

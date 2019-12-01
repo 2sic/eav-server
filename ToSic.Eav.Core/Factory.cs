@@ -2,17 +2,21 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav
 {
 	/// <summary>
-	/// The Eav Factory, used to construct a DataSource
+	/// The Eav DI Factory, used to construct various objects through Dependency Injection.
 	/// </summary>
+	[PublicApi]
 	public class Factory
 	{
-        // ReSharper disable once UnusedMember.Local - needed in .net core code, so it's actually used
+#pragma warning disable IDE0051 // Remove unused private members
+        // ReSharper disable once UnusedMember.Local
         private const string ServiceProviderKey = "2sxc-scoped-serviceprovider";
-	    private static readonly IServiceCollection ServiceCollection = new ServiceCollection();
+#pragma warning restore IDE0051 // Remove unused private members
+        private static readonly IServiceCollection ServiceCollection = new ServiceCollection();
 
         public delegate void ServiceConfigurator(IServiceCollection service);
 
@@ -28,12 +32,12 @@ namespace ToSic.Eav
 	        get
 	        {
                 // Because 2sxc runs inside DNN as a webforms project and not asp.net core mvc, we have
-                // to make sure the serviceprovider object is disposed correctly. If we don't do this,
+                // to make sure the service-provider object is disposed correctly. If we don't do this,
                 // connections to the database are kept open, and this leads to errors like "SQL timeout:
                 // "All pooled connections were in use". https://github.com/2sic/2sxc/issues/1200
 
 #if NETFULL
-                // Scope serviceprovider based on request
+                // Scope service-provider based on request
                 var httpContext = HttpContext.Current;
                 if (httpContext == null) return _sp.CreateScope().ServiceProvider;
 
@@ -51,48 +55,63 @@ namespace ToSic.Eav
                 return (IServiceProvider)httpContext.Items[ServiceProviderKey];
 
 #else
-	            // 2017-06-01 2dm attempt to use "child" scoped provider
-	            //return _sp.CreateScope().ServiceProvider;
-
                 // 2017-05-31 2rm Quick work-around for issue https://github.com/2sic/2sxc/issues/1200
                 return ServiceCollection.BuildServiceProvider();
 
-                //if (_sp != null) return _sp;
-                //throw new Exception("service provider not built yet");
 #endif
             }
         }
 
-	    private static IServiceProvider _sp;
-        
 
-	    public static bool Debug = false;
-        public static t Resolve<t>()
+#pragma warning disable IDE0052 // Remove unread private members
+        // ReSharper disable once NotAccessedField.Local
+        private static IServiceProvider _sp;
+#pragma warning restore IDE0052 // Remove unread private members
+
+        /// <summary>
+        /// Internal debugging, disabled by default.
+        /// </summary>
+        public static bool Debug = false;
+
+        /// <summary>
+        /// Dependency Injection resolver with a known type as a parameter.
+        /// </summary>
+        /// <typeparam name="T">The type / interface we need.</typeparam>
+        public static T Resolve<T>()
         {
-            if (Debug) LogResolve(typeof(t), true);
+            if (Debug) LogResolve(typeof(T), true);
 
-            var found = ServiceProvider.GetService<t>();
+            var found = ServiceProvider.GetService<T>();
 
             // ReSharper disable once ConvertIfStatementToNullCoalescingExpression
             if (found == null) // unregistered type
-                found = ActivatorUtilities.CreateInstance<t>(ServiceProvider);
+                found = ActivatorUtilities.CreateInstance<T>(ServiceProvider);
             return found;
         }
 
-        public static object Resolve(Type t)
+        /// <summary>
+        /// Dependency Injection resolver with a known type as a parameter.
+        /// </summary>
+        /// <param name="T">The type or interface we need</param>
+        /// <returns></returns>
+        public static object Resolve(Type T)
         {
-            if (Debug) LogResolve(t, false);
+            if (Debug) LogResolve(T, false);
 
-            var found = ServiceProvider.GetService(t);
+            var found = ServiceProvider.GetService(T);
 
             // ReSharper disable once ConvertIfStatementToNullCoalescingExpression
             if (found == null) // unregistered type
-                found = ActivatorUtilities.CreateInstance(ServiceProvider, t);
+                found = ActivatorUtilities.CreateInstance(ServiceProvider, T);
 
             return found;
 	    }
 
+        /// <summary>
+        /// Counter for internal statistics and debugging.
+        /// </summary>
 	    public static int CountResolves;
+
         public static List<string> ResolvesList = new List<string>();
 
 	    public static void LogResolve(Type t, bool generic)
@@ -100,7 +119,7 @@ namespace ToSic.Eav
             CountResolves++;
 
             // Get call stack
-            StackTrace stackTrace = new StackTrace();
+            var stackTrace = new StackTrace();
 
             // Get calling method name
 	        var mName = stackTrace.GetFrame(2).GetMethod().Name;
