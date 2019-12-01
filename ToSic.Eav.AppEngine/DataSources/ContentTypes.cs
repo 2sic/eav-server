@@ -5,23 +5,28 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.DataSources.Types;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Query;
+using ToSic.Eav.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.DataSources.System
+namespace ToSic.Eav.DataSources
 {
     /// <inheritdoc />
     /// <summary>
-    /// A DataSource that all content-types of an app
+    /// A DataSource that all content-types of an app.
     /// </summary>
     [VisualQuery(
-        GlobalName = "ToSic.Eav.DataSources.System.ContentTypes, ToSic.Eav.Apps",
+        GlobalName = "ToSic.Eav.DataSources.ContentTypes, ToSic.Eav.Apps",
         Type = DataSourceType.Source,
         Difficulty = DifficultyBeta.Advanced,
         DynamicOut = false,
         ExpectsDataOfType = "37b25044-29bb-4c78-85e4-7b89f0abaa2c",
+        PreviousNames = new []
+            {
+                "ToSic.Eav.DataSources.System.ContentTypes, ToSic.Eav.Apps"
+            },
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-ContentTypes")]
-
+    [PublicApi]
     public sealed class ContentTypes: DataSourceBase
 	{
         #region Configuration-properties (no config)
@@ -42,7 +47,7 @@ namespace ToSic.Eav.DataSources.System
         /// <summary>
         /// The app id
         /// </summary>
-        public int DesiredAppId
+        public int OfAppId
         {
             get => int.TryParse(Configuration[AppIdKey], out int aid) ? aid : AppId;
             set => Configuration[AppIdKey] = value.ToString();
@@ -51,7 +56,7 @@ namespace ToSic.Eav.DataSources.System
 	    /// <summary>
 	    /// The content-type name
 	    /// </summary>
-	    public string ScopeName
+	    public string OfScope
 	    {
 	        get => Configuration[ScopeKey];
 	        set => Configuration[ScopeKey] = value;
@@ -74,10 +79,10 @@ namespace ToSic.Eav.DataSources.System
 	    {
             EnsureConfigurationIsLoaded();
 
-	        var appId = DesiredAppId;
+	        var appId = OfAppId;
 
             var read = new AppRuntime(appId, Log);
-	        var scp = ScopeName;
+	        var scp = OfScope;
 	        if (string.IsNullOrWhiteSpace(scp) || string.Equals(scp, "Default", StringComparison.InvariantCultureIgnoreCase))
 	            scp = "2SexyContent";
 
@@ -95,7 +100,7 @@ namespace ToSic.Eav.DataSources.System
 	                /* ignore */
 	            }
 
-	            return AsEntity(BuildDictionary(t), ContentTypeType.Name.ToString(), ContentTypeTypeName, t.ContentTypeId, guid, appId: DesiredAppId);// new Data.Entity(DesiredAppId, t.ContentTypeId, ContentTypeTypeName, BuildDictionary(t), ContentTypeType.Name.ToString(), entityGuid: guid);
+	            return AsEntity(BuildDictionary(t), ContentTypeType.Name.ToString(), ContentTypeTypeName, t.ContentTypeId, guid, appId: OfAppId);// new Data.Entity(DesiredAppId, t.ContentTypeId, ContentTypeTypeName, BuildDictionary(t), ContentTypeType.Name.ToString(), entityGuid: guid);
 	        });
 
 	        return list;

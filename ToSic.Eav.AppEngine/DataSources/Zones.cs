@@ -4,22 +4,27 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.DataSources.Types;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.DataSources.Query;
+using ToSic.Eav.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.DataSources.System
+namespace ToSic.Eav.DataSources
 {
     /// <inheritdoc />
     /// <summary>
-    /// A DataSource that gets all zones in the system
+    /// A DataSource that gets all zones in the system.
     /// </summary>
     [VisualQuery(
-        GlobalName = "ToSic.Eav.DataSources.System.Zones, ToSic.Eav.Apps",
+        GlobalName = "ToSic.Eav.DataSources.Zones, ToSic.Eav.Apps",
         Type = DataSourceType.Source,
         Difficulty = DifficultyBeta.Advanced,
         DynamicOut = false,
+        PreviousNames = new []
+            {
+                "ToSic.Eav.DataSources.System.Zones, ToSic.Eav.Apps"
+            },
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Zones")]
-
+    [PublicApi]
     public sealed class Zones: DataSourceBase
 	{
         #region Configuration-properties (no config)

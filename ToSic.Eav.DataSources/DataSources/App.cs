@@ -9,9 +9,8 @@ using static System.Int32;
 
 namespace ToSic.Eav.DataSources
 {
-	/// <inheritdoc />
 	/// <summary>
-	/// Represents an App with all the data inside it.
+	/// All the data inside an App. <br/>
 	/// For example, it has a variable amount of Out-streams, one for each content-type in the app.
 	/// </summary>
 

@@ -3,23 +3,29 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.DataSources.Query;
+using ToSic.Eav.DataSources.System;
+using ToSic.Eav.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.DataSources.System
+namespace ToSic.Eav.DataSources
 {
     /// <inheritdoc />
     /// <summary>
-    /// A DataSource that gets all Apps of a zone
+    /// A DataSource that gets all Apps of a zone.
     /// </summary>
     [VisualQuery(
-        GlobalName = "ToSic.Eav.DataSources.System.Apps, ToSic.Eav.Apps",
+        GlobalName = "ToSic.Eav.DataSources.Apps, ToSic.Eav.Apps",
         Type = DataSourceType.Source,
         DynamicOut = false,
         Difficulty = DifficultyBeta.Advanced,
         ExpectsDataOfType = "fabc849e-b426-42ea-8e1c-c04e69facd9b",
+        PreviousNames = new []
+            {
+                "ToSic.Eav.DataSources.System.Apps, ToSic.Eav.Apps"
+            },
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Apps")]
-
+    [PublicApi]
     public sealed class Apps: DataSourceBase
 	{
         #region Configuration-properties (no config)
@@ -37,7 +43,7 @@ namespace ToSic.Eav.DataSources.System
 	    /// <summary>
 	    /// The attribute whose value will be filtered
 	    /// </summary>
-	    public int ZoneNumber
+	    public int OfZoneId
 	    {
 	        get => int.TryParse(Configuration[ZoneKey], out int zid) ? zid : ZoneId;
 	        set => Configuration[ZoneKey] = value.ToString();
@@ -66,8 +72,8 @@ namespace ToSic.Eav.DataSources.System
 
             // try to load the content-type - if it fails, return empty list
 	        var cache = (BaseCache)DataSource.GetCache(ZoneId, AppId);
-	        if (!cache.ZoneApps.ContainsKey(ZoneNumber)) return new List<IEntity>();
-	        var zone = cache.ZoneApps[ZoneNumber];
+	        if (!cache.ZoneApps.ContainsKey(OfZoneId)) return new List<IEntity>();
+	        var zone = cache.ZoneApps[OfZoneId];
 
 	        var list = zone.Apps.OrderBy(a => a.Key).Select(app =>
 	        {
