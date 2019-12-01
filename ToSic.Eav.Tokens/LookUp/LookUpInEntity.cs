@@ -8,7 +8,7 @@ namespace ToSic.Eav.LookUp
 {
     /// <summary>
     /// Get Values from an <see cref="IEntity"/>. <br/>
-    /// Read more about this in @Specs.LookUp
+    /// Read more about this in @Specs.LookUp.Intro
     /// </summary>
     [PublicApi]
 	public class LookUpInEntity : LookUpBase

@@ -17,7 +17,7 @@ namespace ToSic.Eav.Apps.Parts
         public static IEnumerable<DataSourceInfo> GetInstalledDataSources()
         {
             var result = new List<DataSourceInfo>();
-            var installedDataSources = DataSource.GetInstalledDataSources2(true);
+            var installedDataSources = DataSource.GetInstalledDataSources(true);
             foreach (var dataSource in installedDataSources)
             {
                 #region Create Instance of DataSource to get In- and Out-Streams

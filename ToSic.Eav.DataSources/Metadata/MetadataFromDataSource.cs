@@ -1,6 +1,7 @@
-﻿using ToSic.Eav.Metadata;
+﻿using ToSic.Eav.Documentation;
 
-namespace ToSic.Eav.DataSources.Metadata
+// ReSharper disable once CheckNamespace
+namespace ToSic.Eav.Metadata
 {
     /// <inheritdoc />
     /// <summary>
@@ -8,7 +9,8 @@ namespace ToSic.Eav.DataSources.Metadata
     /// even if they do not know about data-sources
     /// this will then be provided through dependency injection
     /// </summary>
-    public class MetadataFromDataSource: IRemoteMetadata
+    [PublicApi]
+    public class RemoteMetadataFromDataSource: IRemoteMetadata
     {
         public IMetadataSource OfZoneAndApp(int zoneId, int appId) => DataSource.GetMetaDataSource(zoneId, appId);
 

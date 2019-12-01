@@ -6,7 +6,7 @@ namespace ToSic.Eav.LookUp
 {
     /// <summary>
     /// Look Up values from a .net dictionary. <br/>
-    /// Read more about this in @Specs.LookUp
+    /// Read more about this in @Specs.LookUp.Intro
     /// </summary>
     public class LookUpInDictionary : LookUpBase
 	{

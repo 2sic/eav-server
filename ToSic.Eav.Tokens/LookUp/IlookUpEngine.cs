@@ -12,7 +12,7 @@ namespace ToSic.Eav.LookUp
         /// <summary>
         /// Property Sources this Provider can use.
         /// Sources are various dictionaries which can resolve a key to a value. <br/>
-        /// Read more about this in @Specs.LookUp
+        /// Read more about this in @Specs.LookUp.Intro
         /// </summary>
         /// <returns><see cref="Dictionary{TKey,TValue}"/> of <see cref="ILookUp"/> items.</returns>
         Dictionary<string, ILookUp> Sources { get; }

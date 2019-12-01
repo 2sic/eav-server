@@ -8,7 +8,7 @@ namespace ToSic.Eav.LookUp
 {
     /// <summary>
     /// Takes a list of configuration masks (list of tokens) and resolves them with a bunch of LookUps. <br/>
-    /// Read more about this in @Specs.LookUp
+    /// Read more about this in @Specs.LookUp.Intro
     /// </summary>
     [PublicApi]
     public class LookUpEngine : ILookUpEngine

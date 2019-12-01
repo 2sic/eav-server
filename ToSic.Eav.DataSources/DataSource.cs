@@ -125,14 +125,18 @@ namespace ToSic.Eav
                 newDs.InitLog(newDs.LogId, parentLog);
 		}
 
-		private static readonly string[] InitialDataSourceQuery = { "ToSic.Eav.DataSources.Caches.ICache, ToSic.Eav.DataSources", "ToSic.Eav.DataSources.RootSources.IRootSource, ToSic.Eav.DataSources" };
+		private static readonly string[] InitialDataSourceQuery =
+        {
+            "ToSic.Eav.DataSources.Caches.ICache, ToSic.Eav.DataSources", 
+            "ToSic.Eav.DataSources.IRootSource, ToSic.Eav.DataSources"
+        };
 
 	    /// <summary>
 	    /// Gets a DataSource with Query having PublishingFilter, ICache and IRootSource.
 	    /// </summary>
 	    /// <param name="zoneId">ZoneId for this DataSource</param>
 	    /// <param name="appId">AppId for this DataSource</param>
-	    /// <param name="showDrafts">Indicates whehter Draft Entities should be returned</param>
+	    /// <param name="showDrafts">Indicates whether Draft Entities should be returned</param>
 	    /// <param name="configProvider"></param>
 	    /// <param name="parentLog"></param>
 	    /// <returns>A single DataSource</returns>
@@ -165,6 +169,7 @@ namespace ToSic.Eav
 		}
 
 	    private static string _ICacheId = "ToSic.Eav.DataSources.Caches.ICache, ToSic.Eav.DataSources";
+
         /// <summary>
         /// Get a new ICache DataSource
         /// </summary>
@@ -197,7 +202,7 @@ namespace ToSic.Eav
 	    /// Get all Installed DataSources
 	    /// </summary>
 	    /// <remarks>Objects that implement IDataSource</remarks>
-	    public static IEnumerable<DataSourceInfo> GetInstalledDataSources2(bool onlyForVisualQuery)
+	    internal static IEnumerable<DataSourceInfo> GetInstalledDataSources(bool onlyForVisualQuery)
 	        => onlyForVisualQuery
 	            ? DsTypeCache.Where(dsi => !string.IsNullOrEmpty(dsi.VisualQuery?.GlobalName))
 	            : DsTypeCache;
