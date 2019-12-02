@@ -6,7 +6,6 @@ using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.LookUp;
-using ICache = ToSic.Eav.DataSources.Caching.ICache;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -98,8 +97,8 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Direct access to the root cache underlying all data provided by this data source. 
         /// </summary>
-        /// <returns>An <see cref="ICache"/> data source to the root cache.</returns>
-        ICache Cache { get; }
+        /// <returns>An <see cref="IRootCache"/> data source to the root cache.</returns>
+        IRootCache Cache { get; }
 
         /// <summary>
         /// Some configuration of the data source is cache-relevant, others are not.

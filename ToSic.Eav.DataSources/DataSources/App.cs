@@ -147,7 +147,7 @@ namespace ToSic.Eav.DataSources
 
 			// now provide all data streams for all data types; only need the cache for the content-types list, don't use it as the source...
 			// because the "real" source already applies filters like published
-			var cache = (RootCache)DataSource.GetCache(ZoneId, AppId);
+			var cache = (RootCacheBase)DataSource.GetCache(ZoneId, AppId);
 			var listOfTypes = cache.GetContentTypes();
 		    foreach (var contentType in listOfTypes)
 		    {

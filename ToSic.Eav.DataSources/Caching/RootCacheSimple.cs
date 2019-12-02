@@ -1,23 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.Data;
+using ToSic.Eav.Documentation;
 using AppState = ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.DataSources.Caching
 {
-    /// <inheritdoc />
     /// <summary>
-    /// simple, quick cache using static variables to store the cache
+    /// Simple, quick cache using static variables to store the cache. It's platform independent and very simple. 
     /// </summary>
-    public class SimpleRootCache : RootCache
+    [PublicApi]
+    public class RootCacheSimple : RootCacheBase
     {
+        [PrivateApi]
         public override string LogId => "DS.QCache";
 
-        public SimpleRootCache()
+        [PrivateApi]
+        public RootCacheSimple()
         {
             Cache = this;
         }
 
+        [PrivateApi]
         public override Dictionary<int, Zone> ZoneApps
         {
             get
@@ -36,14 +40,17 @@ namespace ToSic.Eav.DataSources.Caching
 
         public override void PurgeGlobalCache() => _zoneAppsCache = null;
 
+        /// <inheritdoc />
         public override string CacheKeySchema => "Z{0}A{1}";
 
         #region The cache-variable + HasCacheItem, SetCacheItem, Get, Remove
         private static readonly IDictionary<string, AppState> Caches = new Dictionary<string, AppState>();
 
 
+        /// <inheritdoc />
         protected override bool HasCacheItem(string cacheKey) => Caches.ContainsKey(cacheKey);
 
+        /// <inheritdoc />
         protected override void SetCacheItem(string cacheKey, AppState item)
         {
             try
@@ -63,8 +70,10 @@ namespace ToSic.Eav.DataSources.Caching
             }
         }
 
+        [PrivateApi]
         protected override AppState GetCacheItem(string cacheKey) => Caches[cacheKey];
 
+        [PrivateApi]
         protected override void RemoveCacheItem(string cacheKey) => Caches.Remove(cacheKey);    // returns false if key was not found (no Exception)
 
         #endregion

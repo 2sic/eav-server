@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Metadata;
-using ICache = ToSic.Eav.DataSources.Caching.ICache;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav
@@ -127,7 +127,7 @@ namespace ToSic.Eav
 
 		private static readonly string[] InitialDataSourceQuery =
         {
-            "ToSic.Eav.DataSources.Caches.ICache, ToSic.Eav.DataSources", 
+            "ToSic.Eav.DataSources.Caching.IRootCache, ToSic.Eav.DataSources", 
             "ToSic.Eav.DataSources.IRootSource, ToSic.Eav.DataSources"
         };
 
@@ -168,16 +168,16 @@ namespace ToSic.Eav
 			return Tuple.Create(zoneId.Value, appId.Value);
 		}
 
-	    private static string _ICacheId = "ToSic.Eav.DataSources.Caches.ICache, ToSic.Eav.DataSources";
+	    private static string _IRootCacheId = "ToSic.Eav.DataSources.Caching.IRootCache, ToSic.Eav.DataSources";
 
         /// <summary>
         /// Get a new ICache DataSource
         /// </summary>
         /// <param name="zoneId">ZoneId for this DataSource</param>
         /// <param name="appId">AppId for this DataSource</param>
-        /// <returns>A new ICache</returns>
-        public static ICache GetCache(int? zoneId, int? appId = null) 
-            => (ICache)GetDataSource(_ICacheId, zoneId, appId);
+        /// <returns>A new IRootCache</returns>
+        public static IRootCache GetCache(int? zoneId, int? appId = null) 
+            => (IRootCache)GetDataSource(_IRootCacheId, zoneId, appId);
 
 	    /// <summary>
 		/// Get DataSource having common MetaData, like Field MetaData

@@ -52,7 +52,7 @@ namespace ToSic.Eav.DataSources
 	    private IEnumerable<IEntity> GetList()
 	    {
             // Get cache, which manages a list of zones
-	        var cache = (RootCache)DataSource.GetCache(ZoneId, AppId);
+	        var cache = (RootCacheBase)DataSource.GetCache(ZoneId, AppId);
 
 	        var env = Factory.Resolve<IAppEnvironment>();
 

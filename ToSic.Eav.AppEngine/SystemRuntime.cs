@@ -12,7 +12,7 @@ namespace ToSic.Eav.Apps
         /// <param name="appId"></param>
         /// <returns></returns>
         public static int ZoneIdOfApp(int appId)
-            => ((RootCache)DataSource.GetCache(null)).GetZoneAppId(appId: appId).Item1;
+            => ((RootCacheBase)DataSource.GetCache(null)).GetZoneAppId(appId: appId).Item1;
 
         /// <summary>
         /// Retrieve the Assignment-Type-ID which is used to determine which type of object

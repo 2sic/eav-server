@@ -72,7 +72,7 @@ namespace ToSic.Eav.DataSources
             EnsureConfigurationIsLoaded();
 
             // try to load the content-type - if it fails, return empty list
-	        var cache = (RootCache)DataSource.GetCache(ZoneId, AppId);
+	        var cache = (RootCacheBase)DataSource.GetCache(ZoneId, AppId);
 	        if (!cache.ZoneApps.ContainsKey(OfZoneId)) return new List<IEntity>();
 	        var zone = cache.ZoneApps[OfZoneId];
 

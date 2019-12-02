@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.DataSources.Caching
 {
@@ -10,10 +11,14 @@ namespace ToSic.Eav.DataSources.Caching
 	/// Return all Entities from a specific App
 	/// </summary>
 
-    [VisualQuery(GlobalName = "ToSic.Eav.DataSources.Caches.CacheAllStreams, ToSic.Eav.DataSources",
+    [VisualQuery(GlobalName = "ToSic.Eav.DataSources.Caching.CacheAllStreams, ToSic.Eav.DataSources",
         Type = DataSourceType.Cache, 
         DynamicOut = true,
         ExpectsDataOfType = "|Config ToSic.Eav.DataSources.Caches.CacheAllStreams",
+        PreviousNames = new []
+            {
+                "ToSic.Eav.DataSources.Caches.CacheAllStreams, ToSic.Eav.DataSources"
+            },
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-CacheAllStreams")]
 	public class CacheAllStreams : DataSourceBase, IDeferredDataSource
 	{
@@ -21,6 +26,7 @@ namespace ToSic.Eav.DataSources.Caching
         // Todo: caching parameters
         // Time
         // Reload in BG
+        [PrivateApi]
 	    public override string LogId => "DS.CachAl";
 
         #region Configuration-properties

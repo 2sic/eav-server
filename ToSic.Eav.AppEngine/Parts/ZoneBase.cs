@@ -18,8 +18,8 @@ namespace ToSic.Eav.Apps.Parts
             Log = new Log(logName, parentLog, $"zone base for z#{zoneId}");
         }
 
-        internal RootCache Cache => _cache ?? (_cache = (RootCache)DataSource.GetCache(ZoneId));
-        private RootCache _cache;
+        internal RootCacheBase Cache => _cache ?? (_cache = (RootCacheBase)DataSource.GetCache(ZoneId));
+        private RootCacheBase _cache;
 
         #endregion
 

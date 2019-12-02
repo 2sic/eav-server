@@ -23,7 +23,7 @@ namespace ToSic.Eav.Apps.Parts
 
         protected AppBase(IInAppAndZone app, ILog parentLog) : this(app.ZoneId, app.AppId, parentLog) { }
 
-        protected AppBase(int appId, ILog parentLog) : this(((RootCache) DataSource.GetCache(null)).GetZoneAppId(appId: appId).Item1, appId, parentLog) { }
+        protected AppBase(int appId, ILog parentLog) : this(((RootCacheBase) DataSource.GetCache(null)).GetZoneAppId(appId: appId).Item1, appId, parentLog) { }
 
         protected AppBase(IDataSource data, ILog parentLog) : this(data.ZoneId, data.AppId, parentLog)
         {
@@ -32,8 +32,8 @@ namespace ToSic.Eav.Apps.Parts
 
 
         #region Data & Cache
-        public RootCache Cache => _cache ?? (_cache = (RootCache) Data.Cache);
-        private RootCache _cache;
+        public RootCacheBase Cache => _cache ?? (_cache = (RootCacheBase) Data.Cache);
+        private RootCacheBase _cache;
 
         public IDataSource Data => _data ?? (_data = DataSource.GetInitialDataSource(ZoneId, AppId));
         private IDataSource _data;

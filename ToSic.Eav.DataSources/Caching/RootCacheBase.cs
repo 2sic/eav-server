@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Caches;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
 using AppState = ToSic.Eav.Apps.AppState;
@@ -11,16 +12,18 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.Caching
 {
-    /// <inheritdoc cref="DataSourceBase" />
     /// <summary>
-    /// Represents an abstract Cache DataSource
+    /// The Root Cache is the main cache for App States. It's implemented as a DataSource so that other DataSources can easily attach to it. <br/>
+    /// This is just the abstract base implementation.
+    /// The real cache must implement this and also provide platform specific adjustments so that the caching is in sync with the Environment.
     /// </summary>
-    public abstract class RootCache : DataSourceBase, IMetadataSource, ICache
+    [PublicApi]
+    public abstract class RootCacheBase : DataSourceBase, IMetadataSource, IRootCache
 	{
+        [PrivateApi]
+        protected new RootCacheBase Cache { get; set; }
 
-        protected new RootCache Cache { get; set; }
-
-		protected RootCache()
+		protected RootCacheBase()
 		{
 		    // ReSharper disable VirtualMemberCallInConstructor
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, () => AppState.List));
@@ -32,7 +35,7 @@ namespace ToSic.Eav.DataSources.Caching
 		}
 
         /// <summary>
-		/// The root DataSource
+		/// The root / backend DataSource which can load apps as needed.
 		/// </summary>
 		private IRootSource Backend => _backend ?? (_backend = Factory.Resolve<IRootSource>());
 	    private IRootSource _backend;
@@ -40,23 +43,32 @@ namespace ToSic.Eav.DataSources.Caching
 	    /// <summary>
 	    /// Gets or sets the Dictionary of all Zones an Apps
 	    /// </summary>
+	    [PrivateApi("might rename this some day")]
 	    public abstract Dictionary<int, Zone> ZoneApps { get; }
 
+	    [PrivateApi("might rename this some day")]
         protected Dictionary<int, Zone> LoadZoneApps() => Backend.GetAllZones();
 
 	    /// <summary>
 		/// Gets the KeySchema used to store values for a specific Zone and App. Must contain {0} for ZoneId and {1} for AppId
 		/// </summary>
+		[PrivateApi]
 		public abstract string CacheKeySchema { get; }
 
 
 	    #region Definition of the abstract Has-Item, Set, Get, Remove
         /// <summary>
-		/// Test whether CacheKey exists in Cache
+		/// Test whether CacheKey exists in the Cache
 		/// </summary>
 		protected abstract bool HasCacheItem(string cacheKey);
 
-	    public bool HasCacheItem(int zoneId, int appId) => HasCacheItem(string.Format(CacheKeySchema, zoneId, appId));
+        /// <summary>
+        /// Check if an app is already in the global cache.
+        /// </summary>
+        /// <param name="zoneId"></param>
+        /// <param name="appId"></param>
+        /// <returns></returns>
+        public bool HasCacheItem(int zoneId, int appId) => HasCacheItem(string.Format(CacheKeySchema, zoneId, appId));
 
         /// <summary>
         /// Sets the CacheItem with specified CacheKey
@@ -78,10 +90,7 @@ namespace ToSic.Eav.DataSources.Caching
 		/// Ensure cache for current AppId
         /// In this case, the system will pick up the primary language from the surrounding context (e.g. HttpContext)
 		/// </summary>
-		protected AppState EnsureCache()
-		{
-            return EnsureCacheInternal();
-        }
+		protected AppState EnsureCache() => EnsureCacheInternal();
 
         /// <summary>
         /// Preload the cache with the given primary language
@@ -89,10 +98,7 @@ namespace ToSic.Eav.DataSources.Caching
         /// </summary>
         /// <param name="primaryLanguage"></param>
         /// <returns></returns>
-        public void PreLoadCache(string primaryLanguage)
-        {
-            EnsureCacheInternal(primaryLanguage);
-        }
+        public void PreLoadCache(string primaryLanguage) => EnsureCacheInternal(primaryLanguage);
 
         private AppState EnsureCacheInternal(string primaryLanguage = null)
         {
@@ -124,6 +130,9 @@ namespace ToSic.Eav.DataSources.Caching
         private static readonly ConcurrentDictionary<string, object> LoadLocks 
             = new ConcurrentDictionary<string, object>();
 
+        /// <summary>
+        /// Get the <see cref="AppState"/> of this app from the cache.
+        /// </summary>
 	    public AppState AppState => EnsureCache();
 
 		/// <inheritdoc />
@@ -140,10 +149,12 @@ namespace ToSic.Eav.DataSources.Caching
 
 	    #region Cache-Chain
 
+	    /// <inheritdoc />
 	    public override long CacheTimestamp => AppState.CacheTimestamp;
+	    /// <inheritdoc />
 	    public override bool CacheChanged(long newCacheTimeStamp) => AppState.CacheChanged(newCacheTimeStamp);
 
-        private string _cachePartialKey;
+	    /// <inheritdoc />
 	    public override string CachePartialKey
 	    {
             get
@@ -153,7 +164,9 @@ namespace ToSic.Eav.DataSources.Caching
                 return _cachePartialKey;
             }
 	    }
+        private string _cachePartialKey;
 
+	    /// <inheritdoc />
 	    public override string CacheFullKey => CachePartialKey;
 
 	    #endregion
@@ -164,17 +177,20 @@ namespace ToSic.Eav.DataSources.Caching
 	    /// </summary>
 	    /// <param name="name">Either StaticName or DisplayName</param>
 	    /// <returns>a content-type OR null</returns>
+	    [PrivateApi("probably deprecate, as you should only use the AppState?")]
 	    public IContentType GetContentType(string name) => AppState.GetContentType(name);
 
-		/// <inheritdoc />
-		/// <summary>
-		/// Get a ContentType by Id
-		/// </summary>
+        /// <inheritdoc />
+        /// <summary>
+        /// Get a ContentType by Id
+        /// </summary>
+        [PrivateApi("probably deprecate, as you should only use the AppState?")]
 		public IContentType GetContentType(int contentTypeId) => AppState.GetContentType(contentTypeId);
 
 	    /// <summary>
 		/// Get all Content Types
 		/// </summary>
+        [PrivateApi("probably deprecate, as you should only use the AppState?")]
 		public IEnumerable<IContentType> GetContentTypes() => AppState.ContentTypes;
 
 	    /// <inheritdoc />
@@ -182,6 +198,7 @@ namespace ToSic.Eav.DataSources.Caching
 	    /// Get/Resolve ZoneId and AppId for specified ZoneId and/or AppId. If both are null, default ZoneId with it's default App is returned.
 	    /// </summary>
 	    /// <returns>Item1 = ZoneId, Item2 = AppId</returns>
+        [PrivateApi]
 		public Tuple<int, int> GetZoneAppId(int? zoneId = null, int? appId = null)
 		{
 			EnsureCache();
@@ -204,6 +221,7 @@ namespace ToSic.Eav.DataSources.Caching
 
         #region GetAssignedEntities by Guid, string and int
 
+	    /// <inheritdoc />
         public IEnumerable<IEntity> Get<T>(int targetType, T key, string contentTypeName = null) 
             => AppState.Get(targetType, key, contentTypeName);
 
@@ -212,11 +230,13 @@ namespace ToSic.Eav.DataSources.Caching
 
         #region Additional Stream Caching
 
+	    /// <inheritdoc />
         public IListsCache Lists => _listsCache ?? (_listsCache = new ListsCache());
 	    private IListsCache _listsCache;
 
         #endregion
 
+	    /// <inheritdoc />
         public override void InitLog(string name, ILog parentLog = null, string initialMessage = null)
 	    {
 	        // ignore
