@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.DataSources.Caches;
+using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 
@@ -17,8 +18,8 @@ namespace ToSic.Eav.Apps.Parts
             Log = new Log(logName, parentLog, $"zone base for z#{zoneId}");
         }
 
-        internal BaseCache Cache => _cache ?? (_cache = (BaseCache)DataSource.GetCache(ZoneId));
-        private BaseCache _cache;
+        internal RootCache Cache => _cache ?? (_cache = (RootCache)DataSource.GetCache(ZoneId));
+        private RootCache _cache;
 
         #endregion
 

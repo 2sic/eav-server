@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using ToSic.Eav.Data;
 using AppState = ToSic.Eav.Apps.AppState;
 
-namespace ToSic.Eav.DataSources.Caches
+namespace ToSic.Eav.DataSources.Caching
 {
     /// <inheritdoc />
     /// <summary>
     /// simple, quick cache using static variables to store the cache
     /// </summary>
-    public class QuickCache : BaseCache
+    public class SimpleRootCache : RootCache
     {
         public override string LogId => "DS.QCache";
 
-        public QuickCache()
+        public SimpleRootCache()
         {
             Cache = this;
         }

@@ -8,9 +8,10 @@ using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repository.Efc.Implementations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.ImportExport.Json;
-using ICache = ToSic.Eav.DataSources.Caches.ICache;
+using ICache = ToSic.Eav.DataSources.Caching.ICache;
 
 namespace ToSic.Eav
 {
@@ -27,7 +28,7 @@ namespace ToSic.Eav
 	    /// <param name="serviceCollection"></param>
 	    public void ConfigureNetCoreContainer(IServiceCollection serviceCollection)
 	    {
-            serviceCollection.TryAddTransient<ICache, QuickCache>();
+            serviceCollection.TryAddTransient<ICache, SimpleRootCache>();
             serviceCollection.TryAddTransient<IRootSource, EavSqlStore>();
 	        serviceCollection.TryAddTransient<IRemoteMetadata, RemoteMetadata>();
 	        serviceCollection.TryAddTransient<ITargetTypes, EfcMetadataTargetTypes>();

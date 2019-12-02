@@ -5,7 +5,7 @@ using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
-using ICache = ToSic.Eav.DataSources.Caches.ICache;
+using ICache = ToSic.Eav.DataSources.Caching.ICache;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources

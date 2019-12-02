@@ -3,6 +3,7 @@ using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caches;
+using ToSic.Eav.DataSources.Caching;
 
 namespace ToSic.Eav.UnitTests.DataSources
 {
@@ -57,7 +58,7 @@ namespace ToSic.Eav.UnitTests.DataSources
 
             CreateCacheDS(filtered);
 
-            Assert.IsFalse((filtered.Cache as QuickCache).Lists.Has(filtered.Out[Constants.DefaultStreamName]),
+            Assert.IsFalse((filtered.Cache as SimpleRootCache).Lists.Has(filtered.Out[Constants.DefaultStreamName]),
                 "Should not be in because the previous test added different item");
 
         }
@@ -85,7 +86,7 @@ namespace ToSic.Eav.UnitTests.DataSources
                             ">EntityIdFilter-NoGuid&EntityIds=1067" +
                             ">EntityTypeFilter-NoGuid&TypeName=Person", secondFilter.CacheFullKey);
 
-            Assert.IsFalse((cacher.Cache as QuickCache).Lists.Has(secondFilter.Out[Constants.DefaultStreamName]),
+            Assert.IsFalse((cacher.Cache as SimpleRootCache).Lists.Has(secondFilter.Out[Constants.DefaultStreamName]),
                 "Should not be in because the previous test added a shorter key");
         }
 

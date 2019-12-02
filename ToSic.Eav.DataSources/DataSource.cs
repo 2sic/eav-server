@@ -6,7 +6,7 @@ using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Metadata;
-using ICache = ToSic.Eav.DataSources.Caches.ICache;
+using ICache = ToSic.Eav.DataSources.Caching.ICache;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav

@@ -1,10 +1,10 @@
 ﻿using System;
 using ToSic.Eav.Data;
+using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.DataSources.Queries;
-using ToSic.Eav.Interfaces;
 using AppState = ToSic.Eav.Apps.AppState;
 
-namespace ToSic.Eav.DataSources.Caches
+namespace ToSic.Eav.DataSources.Caching
 {
     /// <summary>
     /// Caching interface for Root Eav Cache. 

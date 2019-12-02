@@ -3,23 +3,24 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
+using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
 using AppState = ToSic.Eav.Apps.AppState;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.DataSources.Caches
+namespace ToSic.Eav.DataSources.Caching
 {
     /// <inheritdoc cref="DataSourceBase" />
     /// <summary>
     /// Represents an abstract Cache DataSource
     /// </summary>
-    public abstract class BaseCache : DataSourceBase, IMetadataSource, ICache
+    public abstract class RootCache : DataSourceBase, IMetadataSource, ICache
 	{
 
-        protected new BaseCache Cache { get; set; }
+        protected new RootCache Cache { get; set; }
 
-		protected BaseCache()
+		protected RootCache()
 		{
 		    // ReSharper disable VirtualMemberCallInConstructor
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, () => AppState.List));

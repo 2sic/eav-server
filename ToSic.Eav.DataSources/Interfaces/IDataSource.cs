@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
 using ToSic.Eav.DataSources.Caches;
+using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.LookUp;
-using ICache = ToSic.Eav.DataSources.Caches.ICache;
+using ICache = ToSic.Eav.DataSources.Caching.ICache;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources

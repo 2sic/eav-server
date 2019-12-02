@@ -3,6 +3,7 @@ using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.DataSources.Types;
 using ToSic.Eav.DataSources.Caches;
+using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -51,7 +52,7 @@ namespace ToSic.Eav.DataSources
 	    private IEnumerable<IEntity> GetList()
 	    {
             // Get cache, which manages a list of zones
-	        var cache = (BaseCache)DataSource.GetCache(ZoneId, AppId);
+	        var cache = (RootCache)DataSource.GetCache(ZoneId, AppId);
 
 	        var env = Factory.Resolve<IAppEnvironment>();
 

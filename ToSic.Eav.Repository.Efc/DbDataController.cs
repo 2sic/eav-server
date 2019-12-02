@@ -10,7 +10,7 @@ using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Repository.Efc.Parts;
-using ICache = ToSic.Eav.DataSources.Caches.ICache;
+using ICache = ToSic.Eav.DataSources.Caching.ICache;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Repository.Efc
