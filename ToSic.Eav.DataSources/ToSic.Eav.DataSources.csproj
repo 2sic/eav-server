@@ -111,7 +111,7 @@
     <Compile Include="Debug\DataSourceInfo.cs" />
     <Compile Include="Debug\QueryInfo.cs" />
     <Compile Include="Debug\StreamInfo.cs" />
-    <Compile Include="DataSources\DeferredQuery.cs" />
+    <Compile Include="DataSources\Query.cs" />
     <Compile Include="DataSources\EntityIdFilter.cs" />
     <Compile Include="DataSources\EntityTypeFilter.cs" />
     <Compile Include="Exceptions\DataSourceException.cs" />
