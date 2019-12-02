@@ -81,7 +81,8 @@ namespace ToSic.Eav.DataSources
                 if (_list != null && ReuseInitialResults)
                     return _list;
 
-                Func<IEnumerable<IEntity>> entityListDelegate = () => {
+                IEnumerable<IEntity> entityListDelegate()
+                {
                     #region Assemble the list - either from the DictionaryDelegate or from the LightListDelegate
                     // try to use the built-in Entities-Delegate, but if not defined, use other delegate; just make sure we test both, to prevent infinite loops
                     if (_lightListDelegate == null)
@@ -102,16 +103,12 @@ namespace ToSic.Eav.DataSources
                     }
 
                     #endregion
-                };
+                }
 
                 #region Check if it's in the cache - and if yes, if it's still valid and should be re-used --> return if found
                 if (AutoCaching && ReuseInitialResults)
 			    {
-                    // ToDo 2rm: Move to ListsCache.cs
-                    Func<Caches.ListCacheItem, bool> reloadCacheNeeded = item =>
-                        (CacheRefreshOnSourceRefresh && Source.CacheTimestamp > item.SourceRefresh);
-
-                    var cacheItem = Source.Cache.Lists.GetOrBuildLocked(this, CacheDurationInSeconds, reloadCacheNeeded, entityListDelegate);
+                    var cacheItem = Source.Cache.Lists.GetOrBuildLocked(this, CacheDurationInSeconds, entityListDelegate);
                     return _list = cacheItem.LightList;
                 }
                 #endregion

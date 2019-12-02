@@ -28,7 +28,15 @@ namespace ToSic.Eav.DataSources.Caches
         /// <returns></returns>
         ListCacheItem Get(IDataStream dataStream);
 
-        ListCacheItem GetOrBuildLocked(IDataStream stream, int cacheDurationInSeconds, Func<ListCacheItem, bool> reloadCacheNeeded, Func<IEnumerable<IEntity>> lockAndBuild);
+        /// <summary>
+        /// Get cached item if available and valid, or rebuild cache using a mutual lock
+        /// </summary>
+        /// <param name="dataStream">The data stream on a data-source object</param>
+        /// <param name="cacheDurationInSeconds">The cache validity duration in seconds</param>
+        /// <param name="reloadCacheNeeded"></param>
+        /// <param name="lockAndBuild"></param>
+        /// <returns></returns>
+        ListCacheItem GetOrBuildLocked(IDataStream stream, int cacheDurationInSeconds, Func<IEnumerable<IEntity>> lockAndBuild);
 
         /// <summary>
         /// Set an item in the list-cache

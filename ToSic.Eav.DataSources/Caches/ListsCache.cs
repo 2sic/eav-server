@@ -33,14 +33,14 @@ namespace ToSic.Eav.DataSources.Caches
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public ListCacheItem GetOrBuildLocked(IDataStream dataStream, int cacheDurationInSeconds, Func<ListCacheItem, bool> reloadCacheNeeded, Func<IEnumerable<IEntity>> lockAndBuild)
+        public ListCacheItem GetOrBuildLocked(IDataStream dataStream, int cacheDurationInSeconds, Func<IEnumerable<IEntity>> lockAndBuild)
         {
             var key = dataStream.Source.CacheFullKey + "|" + dataStream.Name;
 
             var itemInCache = Get(key);
             var isInCache = itemInCache != null;
-
-            if (isInCache && !reloadCacheNeeded(itemInCache))
+            var reloadCacheNeeded = dataStream.CacheRefreshOnSourceRefresh && (dataStream.Source.CacheTimestamp > itemInCache.SourceRefresh);
+            if (isInCache && reloadCacheNeeded)
                 return itemInCache;
 
             var lockKey = LoadLocks.GetOrAdd(key, new object());
