@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Exceptions;
-using ToSic.Eav.DataSources.Query;
+using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -15,7 +15,7 @@ namespace ToSic.Eav.DataSources
     /// Return only Entities having a specific value in an Attribute
     /// </summary>
     [PublicApi]
-    [Query.VisualQuery(GlobalName = "ToSic.Eav.DataSources.ValueFilter, ToSic.Eav.DataSources",
+    [VisualQuery(GlobalName = "ToSic.Eav.DataSources.ValueFilter, ToSic.Eav.DataSources",
         Type = DataSourceType.Filter, 
         In = new[] { Constants.DefaultStreamName, Constants.FallbackStreamName },
         DynamicOut = false,

@@ -8,7 +8,7 @@ namespace ToSic.Eav.DataSources.VisualQuery
     /// Otherwise DNN fails to start, as the 
     /// </summary>
     [Obsolete("Use the new VisualQuery attribute instead")]
-    public class VisualQueryAttribute: Eav.DataSources.Query.VisualQueryAttribute
+    public class VisualQueryAttribute: Queries.VisualQueryAttribute
     {
     }
 }

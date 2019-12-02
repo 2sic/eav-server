@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSources.Query;
+using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 
@@ -41,7 +41,7 @@ namespace ToSic.Eav.WebApi
 			    var qdef = appManager.Read.Queries.Get(id.Value);
 
                 #region Deserialize some Entity-Values
-                query.Pipeline = EntityToDictionary(qdef.Header);
+                query.Pipeline = EntityToDictionary(qdef.Entity);
 			    query.Pipeline[Constants.QueryStreamWiringAttributeName] = QueryWiring
                     .Deserialize((string)query.Pipeline[Constants.QueryStreamWiringAttributeName]);
 
@@ -160,7 +160,7 @@ namespace ToSic.Eav.WebApi
 
                 var deser = new Eav.ImportExport.Json.JsonSerializer(appManager.Package, Log);
                 var ents = deser.Deserialize(args.GetContentString());
-                var qdef = new QueryDefinition(ents);
+                var qdef = new QueryDefinition(ents, args.AppId);
                 appManager.Queries.SaveCopy(qdef);
 
                 return true;

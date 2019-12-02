@@ -7,7 +7,7 @@ using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.DataSources.Query
+namespace ToSic.Eav.DataSources.Queries
 {
 	/// <summary>
 	/// Factory to create a Data Query
@@ -71,7 +71,7 @@ namespace ToSic.Eav.DataSources.Query
 	        #region prepare shared / global value providers
 
 	        propertyProviders = propertyProviders?.ToList();
-	        var wrapLog = Log.Call("GetAsDataSource", $"{qdef.Header.EntityId}, " +
+	        var wrapLog = Log.Call("GetAsDataSource", $"{qdef.Entity.EntityId}, " +
 	                                                  $"hasProv:{providerToClone != null}, " +
 	                                                  $"{propertyProviders?.Count()}, " +
 	                                                  $"out:{outSource != null}, " +
@@ -79,7 +79,7 @@ namespace ToSic.Eav.DataSources.Query
 
 	        // the query settings which apply to the whole query
             // todo 2017-12-05 2dm - this is probably where I will apply parameters, I think it's not used yet!
-	        var querySettingsProvider = new LookUpInMetadata(ConfigKeyPipelineSettings, qdef.Header);
+	        var querySettingsProvider = new LookUpInMetadata(ConfigKeyPipelineSettings, qdef.Entity);
 
             // 2018-09-30 2dm - centralizing building of the primary configuration template for each part
             if (providerToClone != null)
@@ -106,13 +106,13 @@ namespace ToSic.Eav.DataSources.Query
 	            outSource = new PassThrough {ConfigurationProvider = passThroughConfig};
 	        }
             if (outSource.DataSourceGuid == Guid.Empty)
-	            outSource.DataSourceGuid = qdef.Header.EntityGuid;
+	            outSource.DataSourceGuid = qdef.Entity.EntityGuid;
 
 	        #endregion
 
 	        #region init all DataQueryParts
 
-	        Log.Add($"add parts to pipe#{qdef.Header.EntityId} ");
+	        Log.Add($"add parts to pipe#{qdef.Entity.EntityId} ");
 	        var dataSources = new Dictionary<string, IDataSource>();
 
 	        foreach (var dataQueryPart in qdef.Parts)
@@ -146,7 +146,7 @@ namespace ToSic.Eav.DataSources.Query
 
 	        #endregion
 
-	        InitWirings(qdef.Header, dataSources);
+	        InitWirings(qdef.Entity, dataSources);
 
 	        wrapLog($"parts:{qdef.Parts.Count}");
 	        return outSource;
@@ -237,7 +237,7 @@ namespace ToSic.Eav.DataSources.Query
 
 	    public IDataSource GetDataSourceForTesting(QueryDefinition qdef, bool showDrafts, ILookUpEngine configuration = null)
 	    {
-	        Log.Add($"construct test query a#{qdef.AppId}, pipe:{qdef.Header.EntityGuid} ({qdef.Header.EntityId}), drafts:{showDrafts}");
+	        Log.Add($"construct test query a#{qdef.AppId}, pipe:{qdef.Entity.EntityGuid} ({qdef.Entity.EntityId}), drafts:{showDrafts}");
 
             var testValueProviders = GenerateTestValueProviders(qdef).ToList();
 	        return GetAsDataSource(qdef, configuration, testValueProviders, showDrafts: showDrafts);
@@ -252,9 +252,9 @@ namespace ToSic.Eav.DataSources.Query
         /// <returns></returns>
         private IEnumerable<ILookUp> GenerateTestValueProviders(QueryDefinition qdef)
         {
-            var wrapLog = Log.Call("GenerateTestValueProviders", $"{qdef.Header.EntityId}");
+            var wrapLog = Log.Call("GenerateTestValueProviders", $"{qdef.Entity.EntityId}");
             // Parse Test-Parameters in Format [Token:Property]=Value
-            var testParameters = ((IAttribute<string>) qdef.Header[FieldTestParams]).TypedContents;
+            var testParameters = ((IAttribute<string>) qdef.Entity[FieldTestParams]).TypedContents;
             if (testParameters == null)
                 return null;
             // extract the lines which look like [source:property]=value

@@ -1,23 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.Data;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.DataSources.Query
+namespace ToSic.Eav.DataSources.Queries
 {
 	/// <summary>
 	/// Helpers to work with Data Queries
 	/// </summary>
-	public static class QueryManager
+	[PrivateApi]
+	internal static class QueryManager
 	{
 	    /// <summary>
 		/// Get an Entity Describing a Query
 		/// </summary>
 		/// <param name="entityId">EntityId</param>
 		/// <param name="dataSource">DataSource to load Entity from</param>
-		public static IEntity GetQueryEntity(int entityId, IDataSource dataSource)
+		internal static IEntity GetQueryEntity(int entityId, IDataSource dataSource)
 		{
 			try
 			{
@@ -39,12 +41,12 @@ namespace ToSic.Eav.DataSources.Query
         /// ...but will be auto-assembled the moment they are accessed
         /// </summary>
         /// <returns></returns>
-	    public static Dictionary<string, IDataSource> AllQueries(int zoneId, int appId, ILookUpEngine valuesCollectionProvider, ILog parentLog, bool showDrafts)
+	    internal static Dictionary<string, IDataSource> AllQueries(int zoneId, int appId, ILookUpEngine valuesCollectionProvider, ILog parentLog, bool showDrafts)
 	    {
 	        var dict = new Dictionary<string, IDataSource>(StringComparer.OrdinalIgnoreCase);
 	        foreach (var entQuery in AllQueryItems(appId, parentLog))
 	        {
-	            var delayedQuery = new DeferredQuery(zoneId, appId, entQuery, valuesCollectionProvider, showDrafts);
+	            var delayedQuery = new Query(zoneId, appId, entQuery, valuesCollectionProvider, showDrafts);
                 // make sure it doesn't break if two queries have the same name...
 	            var name = entQuery.Title[0].ToString();
 	            if (!dict.ContainsKey(name))
@@ -53,7 +55,7 @@ namespace ToSic.Eav.DataSources.Query
 	        return dict;
 	    }
 
-	    public static IEnumerable<IEntity> AllQueryItems(int appId, ILog parentLog)
+	    internal static IEnumerable<IEntity> AllQueryItems(int appId, ILog parentLog)
 	    {
 	        var source = DataSource.GetInitialDataSource(appId: appId, parentLog: parentLog);
 	        var typeFilter = DataSource.GetDataSource<EntityTypeFilter>(appId: appId, upstream: source);

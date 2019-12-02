@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.DataSources.Caches;
-using ToSic.Eav.DataSources.Query;
+using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSources.System;
 using ToSic.Eav.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;

@@ -3,7 +3,7 @@ using System.Linq;
 using ToSic.Eav.Interfaces;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.DataSources.Query
+namespace ToSic.Eav.DataSources.Queries
 {
     public static class GlobalQueries
     {

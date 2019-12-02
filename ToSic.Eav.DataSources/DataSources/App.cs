@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.DataSources.Caches;
-using ToSic.Eav.DataSources.Query;
+using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Metadata;
@@ -15,7 +15,7 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
 
     [PublicApi]
-	[Query.VisualQuery(GlobalName = "ToSic.Eav.DataSources.App, ToSic.Eav.DataSources",
+	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.App, ToSic.Eav.DataSources",
         Type = DataSourceType.Source, 
         Icon = "app",
         DynamicOut = true,

@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.DataSources.Query;
+using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.ImportExport.Tests.Persistence.File;
 using ToSic.Eav.Logging;
 
@@ -35,7 +35,7 @@ namespace ToSic.Eav.DataSources.Tests.Query
             var queryEnt = GlobalQueries.FindQuery(queryName);
             Assert.AreEqual(queryName, queryEnt.GetBestValue("Name").ToString(), "should find zones");
 
-            var qdef = new QueryDefinition(queryEnt);
+            var qdef = new QueryDefinition(queryEnt, queryEnt.AppId);
             Assert.AreEqual(2, qdef.Parts.Count, "counting parts of the qdef, should have the zone + sort = 2 parts");
         }
 

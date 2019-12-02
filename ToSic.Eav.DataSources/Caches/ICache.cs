@@ -1,6 +1,6 @@
 ﻿using System;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSources.Query;
+using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Interfaces;
 using AppState = ToSic.Eav.Apps.AppState;
 
@@ -9,7 +9,7 @@ namespace ToSic.Eav.DataSources.Caches
     /// <summary>
     /// Caching interface for Root Eav Cache. 
     /// </summary>
-    [Query.VisualQuery(GlobalName = "ToSic.Eav.DataSources.Caches.ICache, ToSic.Eav.DataSources",
+    [VisualQuery(GlobalName = "ToSic.Eav.DataSources.Caches.ICache, ToSic.Eav.DataSources",
         Type = DataSourceType.Source)]
     public interface ICache : IDataSource
     {

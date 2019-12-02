@@ -69,7 +69,7 @@ namespace ToSic.Eav.Apps
         ILookUpEngine ConfigurationProvider { get; }
 
         [PrivateApi]
-        DeferredQuery GetQuery(string name);
+        Query GetQuery(string name);
 
         #endregion
     }

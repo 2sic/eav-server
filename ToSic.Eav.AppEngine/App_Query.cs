@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSources.Query;
+using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Apps
@@ -35,24 +35,24 @@ namespace ToSic.Eav.Apps
         }
 
         /// <inheritdoc />
-        public DeferredQuery GetQuery(string name)
+        public Query GetQuery(string name)
         {
             if (name.StartsWith(GlobalQueries.GlobalQueryPrefix))
                 return GetGlobalQuery(name);
 
             // Try to find the query, abort if not found
-            if (Query.ContainsKey(name) && Query[name] is DeferredQuery query)
+            if (Query.ContainsKey(name) && Query[name] is Query query)
                 return query;
 
             // not found
             return null;
         }
 
-        private DeferredQuery GetGlobalQuery(string name)
+        private Query GetGlobalQuery(string name)
         {
             var qent = GlobalQueries.FindQuery(name) 
                 ?? throw new Exception($"can't find global query {name}");
-            return new DeferredQuery(ZoneId, AppId, qent, ConfigurationProvider, ShowDrafts);
+            return new Query(ZoneId, AppId, qent, ConfigurationProvider, ShowDrafts);
         }
     }
 }

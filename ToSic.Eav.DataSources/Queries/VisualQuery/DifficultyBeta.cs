@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.DataSources.Query
+﻿namespace ToSic.Eav.DataSources.Queries
 {
     public enum DifficultyBeta
     {

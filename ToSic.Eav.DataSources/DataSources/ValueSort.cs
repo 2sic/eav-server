@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSources.Query;
+using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -14,7 +14,7 @@ namespace ToSic.Eav.DataSources
 	/// Sort Entity by values in specified Attributes
 	/// </summary>
     [PublicApi]
-	[Query.VisualQuery(GlobalName = "ToSic.Eav.DataSources.ValueSort, ToSic.Eav.DataSources",
+	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.ValueSort, ToSic.Eav.DataSources",
         Type = DataSourceType.Sort,
         DynamicOut = false,
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.ValueSort",

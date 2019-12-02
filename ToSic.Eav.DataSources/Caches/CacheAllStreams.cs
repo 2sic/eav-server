@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.DataSources.Query;
+using ToSic.Eav.DataSources.Queries;
 
 namespace ToSic.Eav.DataSources.Caches
 {
@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSources.Caches
 	/// Return all Entities from a specific App
 	/// </summary>
 
-    [Query.VisualQuery(GlobalName = "ToSic.Eav.DataSources.Caches.CacheAllStreams, ToSic.Eav.DataSources",
+    [VisualQuery(GlobalName = "ToSic.Eav.DataSources.Caches.CacheAllStreams, ToSic.Eav.DataSources",
         Type = DataSourceType.Cache, 
         DynamicOut = true,
         ExpectsDataOfType = "|Config ToSic.Eav.DataSources.Caches.CacheAllStreams",

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSources.Query;
+using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -13,7 +13,7 @@ namespace ToSic.Eav.DataSources
 	/// Return only entities of a specific content-type
 	/// </summary>
     [PublicApi]
-	[Query.VisualQuery(GlobalName = "ToSic.Eav.DataSources.EntityTypeFilter, ToSic.Eav.DataSources",
+	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.EntityTypeFilter, ToSic.Eav.DataSources",
         Type = DataSourceType.Filter, 
         DynamicOut = false,
         NiceName = "ContentTypeFilter",

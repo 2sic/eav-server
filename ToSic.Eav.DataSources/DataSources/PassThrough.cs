@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.DataSources.Query;
+﻿using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.DataSources
@@ -9,7 +9,7 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
 	[PublicApi]
 
-	[Query.VisualQuery(GlobalName = "ToSic.Eav.DataSources.PassThrough, ToSic.Eav.DataSources",
+	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.PassThrough, ToSic.Eav.DataSources",
         Type = DataSourceType.Source, DynamicOut = true)]
 
     public class PassThrough : DataSourceBase

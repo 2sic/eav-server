@@ -1,7 +1,7 @@
 ﻿using System;
 using ToSic.Eav.Documentation;
 
-namespace ToSic.Eav.DataSources.Query
+namespace ToSic.Eav.DataSources.Queries
 {
     /// <summary>
     /// Custom Attribute for DataSources and usage in Pipeline Designer.

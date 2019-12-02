@@ -4,7 +4,7 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSources.Query;
+using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Enums;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Interfaces;
@@ -27,7 +27,7 @@ namespace ToSic.Eav.Apps.Parts
 
         public void SaveCopy(QueryDefinition query)
         {
-            var newQuery = CopyAndResetIds(query.Header);
+            var newQuery = CopyAndResetIds(query.Entity);
             var newParts = query.Parts.ToDictionary(o => o.EntityGuid, o => CopyAndResetIds(o, newQuery.EntityGuid));
 
             var origMetadata = query.Parts
@@ -37,7 +37,7 @@ namespace ToSic.Eav.Apps.Parts
             var newMetadata = origMetadata.Select(o => CopyAndResetIds(o.Value, newParts[o.Key].EntityGuid));
 
             // now update wiring...
-            var origWiring = query.Header.GetBestValue(Constants.QueryStreamWiringAttributeName).ToString();
+            var origWiring = query.Entity.GetBestValue(Constants.QueryStreamWiringAttributeName).ToString();
             var keyMap = newParts.ToDictionary(o => o.Key.ToString(), o => o.Value.EntityGuid.ToString());
             var newWiring = RemapWiringToCopy(origWiring, keyMap);
 
@@ -94,18 +94,18 @@ namespace ToSic.Eav.Apps.Parts
 
 
             // Get the Entity describing the Query and Query Parts (DataSources)
-            var queryEntity = Eav.DataSources.Query.QueryManager.GetQueryEntity(id, AppManager.Cache);
-            var qdef = new QueryDefinition(queryEntity);
+            var queryEntity = Eav.DataSources.Queries.QueryManager.GetQueryEntity(id, AppManager.Cache);
+            var qDef = new QueryDefinition(queryEntity, AppManager.AppId);
 
-            var mdItems = qdef.Parts// parts
+            var mdItems = qDef.Parts// parts
                 .Select(ds => ds.Metadata.FirstOrDefault())
                 .Where(md => md != null)
                 .Select(md => md.EntityId)
                 .ToList();
 
-            // delete in the right order - first the outermost-dependants, then a layer in, and finally the top node
+            // delete in the right order - first the outermost-dependents, then a layer in, and finally the top node
             AppManager.Entities.Delete(mdItems);
-            AppManager.Entities.Delete(qdef.Parts.Select(p => p.EntityId).ToList());
+            AppManager.Entities.Delete(qDef.Parts.Select(p => p.EntityId).ToList());
             AppManager.Entities.Delete(id);
 
             // flush cache
@@ -130,11 +130,11 @@ namespace ToSic.Eav.Apps.Parts
             var qdef = AppManager.Read.Queries.Get(queryId);
 
             // todo: maybe create a GetBestValue<typed> ? 
-            if (((IAttribute<bool?>)qdef.Header["AllowEdit"]).TypedContents == false)
+            if (((IAttribute<bool?>)qdef.Entity["AllowEdit"]).TypedContents == false)
                 throw new InvalidOperationException("Query has AllowEdit set to false");
 
             Dictionary<string, Guid> addedSources = SavePartsAndGenerateRenameMap(
-                partDefs, qdef.Header.EntityGuid);
+                partDefs, qdef.Entity.EntityGuid);
 
             DeletedRemovedParts(newDsGuids, addedSources.Values, qdef);
 
@@ -204,7 +204,7 @@ namespace ToSic.Eav.Apps.Parts
             IEnumerable<Guid> newDataSources, 
             QueryDefinition qdef)
         {
-            Log.Add($"delete part a#{AppManager.AppId}, pipe:{qdef.Header.EntityGuid}");
+            Log.Add($"delete part a#{AppManager.AppId}, pipe:{qdef.Entity.EntityGuid}");
             // Get EntityGuids currently stored in EAV
             var existingEntityGuids = qdef.Parts.Select(e => e.EntityGuid);
 

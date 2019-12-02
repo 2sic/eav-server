@@ -5,7 +5,7 @@ using CsvHelper;
 using System.IO;
 using System.Web;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSources.Query;
+using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
 using ContentTypeBuilder = ToSic.Eav.Data.Builder.ContentTypeBuilder;
@@ -18,7 +18,7 @@ namespace ToSic.Eav.DataSources
     /// DataSource for importing/reading CSV files. 
     /// </summary>
     [PublicApi]
-    [Query.VisualQuery(GlobalName = "ToSic.Eav.DataSources.CsvDataSource, ToSic.Eav.DataSources",
+    [VisualQuery(GlobalName = "ToSic.Eav.DataSources.CsvDataSource, ToSic.Eav.DataSources",
         Type = DataSourceType.Source, 
         DynamicOut = false,
         ExpectsDataOfType = "|Config ToSic.Eav.DataSources.CsvDataSource")]

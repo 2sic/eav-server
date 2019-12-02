@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using ToSic.Eav.Documentation;
 
-namespace ToSic.Eav.DataSources.Query
+namespace ToSic.Eav.DataSources.Queries
 {
 	/// <summary>
 	/// Helper for DataPipeline Wiring of DataSources
 	/// </summary>
+	[PrivateApi]
 	public static class QueryWiring
 	{
 		private static readonly Regex WireRegex = new Regex("(?<From>.+):(?<Out>.+)>(?<To>.+):(?<In>.+)", RegexOptions.Compiled);
