@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using ToSic.Eav.Data;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -25,6 +26,7 @@ namespace ToSic.Eav.DataSources.Queries
 	    /// <param name="outSource">DataSource to attach the Out-Streams</param>
 	    /// <param name="showDrafts"></param>
 	    /// <returns>A single DataSource Out with wirings and configurations loaded, ready to use</returns>
+	    [PrivateApi("deprecate soon, not really needed")]
 	    public IDataSource GetAsDataSource(int appId, IEntity query, ILookUpEngine valueCollection, IDataSource outSource = null, bool showDrafts = false)
 	    {
 		    Log.Add($"build pipe#{query.EntityId} for a#{appId}, draft:{showDrafts}");
@@ -62,33 +64,32 @@ namespace ToSic.Eav.DataSources.Queries
         public const string ConfigKeyPartSettings = "settings";
 	    public const string ConfigKeyPipelineSettings = "pipelinesettings";
 
-	    private IDataSource GetAsDataSource(QueryDefinition qdef,
-            ILookUpEngine providerToClone,
-            IEnumerable<ILookUp> propertyProviders = null,
+	    internal IDataSource GetAsDataSource(QueryDefinition qDef,
+            ILookUpEngine lookUpEngineToClone,
+            IEnumerable<ILookUp> lookUpsToAdd = null,
             IDataSource outSource = null,
             bool showDrafts = false)
         {
 	        #region prepare shared / global value providers
 
-	        propertyProviders = propertyProviders?.ToList();
-	        var wrapLog = Log.Call("GetAsDataSource", $"{qdef.Entity.EntityId}, " +
-	                                                  $"hasProv:{providerToClone != null}, " +
-	                                                  $"{propertyProviders?.Count()}, " +
+	        lookUpsToAdd = lookUpsToAdd?.ToList();
+	        var wrapLog = Log.Call("GetAsDataSource", $"{qDef.Entity.EntityId}, " +
+	                                                  $"hasProv:{lookUpEngineToClone != null}, " +
+	                                                  $"{lookUpsToAdd?.Count()}, " +
 	                                                  $"out:{outSource != null}, " +
 	                                                  $"drafts:{showDrafts}");
 
 	        // the query settings which apply to the whole query
-            // todo 2017-12-05 2dm - this is probably where I will apply parameters, I think it's not used yet!
-	        var querySettingsProvider = new LookUpInMetadata(ConfigKeyPipelineSettings, qdef.Entity);
+	        var querySettingsProvider = new LookUpInMetadata(ConfigKeyPipelineSettings, qDef.Entity);
 
-            // 2018-09-30 2dm - centralizing building of the primary configuration template for each part
-            if (providerToClone != null)
+            // centralizing building of the primary configuration template for each part
+            if (lookUpEngineToClone != null)
                 Log.Add(() =>
-                    $"Sources in original provider: {providerToClone.Sources.Count} " +
-                    $"[{string.Join(",", providerToClone.Sources.Keys)}]");
-            var templateConfig = new LookUpEngine(providerToClone);
+                    $"Sources in original provider: {lookUpEngineToClone.Sources.Count} " +
+                    $"[{string.Join(",", lookUpEngineToClone.Sources.Keys)}]");
+            var templateConfig = new LookUpEngine(lookUpEngineToClone);
             templateConfig.Add(querySettingsProvider);  
-            templateConfig.AddOverride(propertyProviders);
+            templateConfig.AddOverride(lookUpsToAdd);
 
 	        var itemSettingsShowDrafts = showDrafts
 	            ? new Dictionary<string, string> {{"ShowDrafts", true.ToString()}}
@@ -106,22 +107,22 @@ namespace ToSic.Eav.DataSources.Queries
 	            outSource = new PassThrough {ConfigurationProvider = passThroughConfig};
 	        }
             if (outSource.DataSourceGuid == Guid.Empty)
-	            outSource.DataSourceGuid = qdef.Entity.EntityGuid;
+	            outSource.DataSourceGuid = qDef.Entity.EntityGuid;
 
 	        #endregion
 
 	        #region init all DataQueryParts
 
-	        Log.Add($"add parts to pipe#{qdef.Entity.EntityId} ");
+	        Log.Add($"add parts to pipe#{qDef.Entity.EntityId} ");
 	        var dataSources = new Dictionary<string, IDataSource>();
 
-	        foreach (var dataQueryPart in qdef.Parts)
+	        foreach (var dataQueryPart in qDef.Parts)
 	        {
 	            #region Init Configuration Provider
 
 	            var partConfig = new LookUpEngine(templateConfig);
                 // add / set item part configuration
-	            partConfig.Add(new LookUpInMetadata(ConfigKeyPartSettings, dataQueryPart));
+	            partConfig.Add(new LookUpInMetadata(ConfigKeyPartSettings, dataQueryPart.Entity));
 
 	            // if show-draft in overridden, add that to the settings
 	            if (itemSettingsShowDrafts != null)
@@ -131,24 +132,24 @@ namespace ToSic.Eav.DataSources.Queries
 
 
                 // Check type because we renamed the DLL with the parts, and sometimes the old dll-name had been saved
-                var assemblyAndType = dataQueryPart[QueryConstants.PartAssemblyAndType][0].ToString();
-	            assemblyAndType = RewriteOldAssemblyNames(assemblyAndType);
+                var assemblyAndType = dataQueryPart.DataSourceType;// dataQueryPart[QueryConstants.PartAssemblyAndType][0].ToString();
+	            //assemblyAndType = RewriteOldAssemblyNames(assemblyAndType);
 
-	            var dataSource = DataSource.GetDataSource(assemblyAndType, null, qdef.AppId,
+	            var dataSource = DataSource.GetDataSource(assemblyAndType, null, qDef.AppId,
 	                configLookUp: partConfig, parentLog: Log);
-	            dataSource.DataSourceGuid = dataQueryPart.EntityGuid;
+	            dataSource.DataSourceGuid = dataQueryPart.Guid;
 
 	            Log.Add($"add '{assemblyAndType}' as " +
-	                    $"part#{dataQueryPart.EntityId}({dataQueryPart.EntityGuid.ToString().Substring(0, 6)}...)");
-	            dataSources.Add(dataQueryPart.EntityGuid.ToString(), dataSource);
+	                    $"part#{dataQueryPart.Id}({dataQueryPart.Guid.ToString().Substring(0, 6)}...)");
+	            dataSources.Add(dataQueryPart.Guid.ToString(), dataSource);
 	        }
 	        dataSources.Add("Out", outSource);
 
 	        #endregion
 
-	        InitWirings(qdef.Entity, dataSources);
+	        InitWirings(qDef/*.Entity*/, dataSources);
 
-	        wrapLog($"parts:{qdef.Parts.Count}");
+	        wrapLog($"parts:{qDef.Parts.Count}");
 	        return outSource;
 	    }
 
@@ -163,13 +164,13 @@ namespace ToSic.Eav.DataSources.Queries
 	            : assemblyAndType;
 
 	    /// <summary>
-		/// Init Stream Wirings between Query-Parts (Buttom-Up)
+		/// Init Stream Wirings between Query-Parts (Bottom-Up)
 		/// </summary>
-		private void InitWirings(IEntity dataQuery, IDictionary<string, IDataSource> dataSources)
+		private void InitWirings(/*IEntity*/QueryDefinition dataQuery, IDictionary<string, IDataSource> dataSources)
 		{
 			// Init
-			var wirings = QueryWiring.Deserialize((string)dataQuery[Constants.QueryStreamWiringAttributeName][0]).ToList();
-			var initializedWirings = new List<WireInfo>();
+            var wirings = dataQuery.Connections;// QueryWiring.Deserialize((string)dataQuery[Constants.QueryStreamWiringAttributeName][0]).ToList();
+			var initializedWirings = new List<Connection>();
 		    var logWrap = Log.Call("InitWirings", $"count⋮{wirings.Count}");
 
 			// 1. wire Out-Streams of DataSources with no In-Streams
@@ -202,7 +203,7 @@ namespace ToSic.Eav.DataSources.Queries
 		/// <summary>
 		/// Wire all Out-Wirings on specified DataSources
 		/// </summary>
-		private static bool ConnectOutStreams(IEnumerable<KeyValuePair<string, IDataSource>> dataSourcesToInit, IDictionary<string, IDataSource> allDataSources, List<WireInfo> allWirings, List<WireInfo> initializedWirings)
+		private static bool ConnectOutStreams(IEnumerable<KeyValuePair<string, IDataSource>> dataSourcesToInit, IDictionary<string, IDataSource> allDataSources, IList<Connection> allWirings, List<Connection> initializedWirings)
 		{
 			var wiringsCreated = false;
 

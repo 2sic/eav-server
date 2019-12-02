@@ -7,8 +7,9 @@ using IEntity = ToSic.Eav.Data.IEntity;
 namespace ToSic.Eav.DataSources
 {
 	/// <summary>
-	/// Provides a data-source to a query, but won't assemble the query unless accessed
+	/// Provides a data-source to a query, but won't assemble the query unless accessed. 
 	/// </summary>
+	[PublicApi]
 	public sealed class Query : DataSourceBase
 	{
         #region Configuration-properties
@@ -16,7 +17,7 @@ namespace ToSic.Eav.DataSources
 	    public override string LogId => "DS.DefQry";
 
         [PrivateApi("todo: improve typing")]
-        public IEntity QueryDefinition;
+        public QueryDefinition QueryDefinition;
 
 		private IDictionary<string, IDataStream> _out = new Dictionary<string, IDataStream>();
 		private bool _requiresRebuildOfOut = true;
@@ -39,13 +40,14 @@ namespace ToSic.Eav.DataSources
 
 		/// <inheritdoc />
 		/// <summary>
-		/// Constructs a new App DataSource
+		/// Constructs a new Query DataSource
 		/// </summary>
+		[PrivateApi]
 		public Query(int zoneId, int appId, IEntity queryDef, ILookUpEngine config, bool showDrafts)
 		{
 		    ZoneId = zoneId;
 		    AppId = appId;
-		    QueryDefinition = queryDef;
+            QueryDefinition = new QueryDefinition(queryDef, appId);
 		    ConfigurationProvider = config;
             _showDrafts = showDrafts;
 
@@ -58,7 +60,8 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		private void CreateOutWithAllStreams()
 		{
-		    var pipeline = new QueryBuilder(Log).GetAsDataSource(AppId, QueryDefinition, ConfigurationProvider, null, _showDrafts);
+		    //var pipeline = new QueryBuilder(Log).GetAsDataSource(AppId, QueryDefinition.Entity, ConfigurationProvider, null, _showDrafts);
+		    var pipeline = new QueryBuilder(Log).GetAsDataSource(QueryDefinition, ConfigurationProvider, null, null, _showDrafts);
 		    _out = pipeline.Out;
 		}
 	}

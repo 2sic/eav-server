@@ -46,5 +46,13 @@ namespace ToSic.Eav.Data
         public static bool Has(this IEnumerable<IEntity> entities, int id) 
             => entities.Any(e => e.EntityId == id || e.RepositoryId == id);
 
+
+        public static Dictionary<string, object> AsDictionary(this IEntity entity)
+        {
+            var attributes = entity.Attributes.ToDictionary(k => k.Value.Name, v => v.Value[0]);
+            attributes.Add("EntityId", entity.EntityId);
+            attributes.Add("EntityGuid", entity.EntityGuid);
+            return attributes;
+        }
     }
 }

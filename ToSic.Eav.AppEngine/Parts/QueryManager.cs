@@ -3,14 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
-using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Queries;
-using ToSic.Eav.Enums;
 using ToSic.Eav.ImportExport.Json;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
-using ToSic.Eav.Metadata;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps.Parts
@@ -28,16 +23,16 @@ namespace ToSic.Eav.Apps.Parts
         public void SaveCopy(QueryDefinition query)
         {
             var newQuery = CopyAndResetIds(query.Entity);
-            var newParts = query.Parts.ToDictionary(o => o.EntityGuid, o => CopyAndResetIds(o, newQuery.EntityGuid));
+            var newParts = query.Parts.ToDictionary(o => o.Guid, o => CopyAndResetIds(o.Entity, newQuery.EntityGuid));
 
             var origMetadata = query.Parts
-                .ToDictionary(o => o.EntityGuid, o => o.Metadata.FirstOrDefault())
+                .ToDictionary(o => o.Guid, o => o.Entity.Metadata.FirstOrDefault())
                 .Where(m => m.Value != null);
 
             var newMetadata = origMetadata.Select(o => CopyAndResetIds(o.Value, newParts[o.Key].EntityGuid));
 
             // now update wiring...
-            var origWiring = query.Entity.GetBestValue(Constants.QueryStreamWiringAttributeName).ToString();
+            var origWiring = query.Connections;// query.Entity.GetBestValue(Constants.QueryStreamWiringAttributeName).ToString();
             var keyMap = newParts.ToDictionary(o => o.Key.ToString(), o => o.Value.EntityGuid.ToString());
             var newWiring = RemapWiringToCopy(origWiring, keyMap);
 
@@ -51,10 +46,10 @@ namespace ToSic.Eav.Apps.Parts
             AppManager.Entities.Save(saveList);
         }
 
-        private static string RemapWiringToCopy(string origWiring, Dictionary<string, string> keyMap)
+        private static string RemapWiringToCopy(IList<Connection> origWiring, Dictionary<string, string> keyMap)
         {
-            var wiringsSource = QueryWiring.Deserialize(origWiring);
-            var wiringsClone = new List<WireInfo>();
+            var wiringsSource = origWiring;// QueryWiring.Deserialize(origWiring);
+            var wiringsClone = new List<Connection>();
             if (wiringsSource != null)
                 foreach (var wireInfo in wiringsSource)
                 {
@@ -66,7 +61,7 @@ namespace ToSic.Eav.Apps.Parts
 
                     wiringsClone.Add(wireInfoClone);
                 }
-            var newWiring = QueryWiring.Serialize(wiringsClone);
+            var newWiring = Connections.Serialize(wiringsClone);
             return newWiring;
         }
 
@@ -98,14 +93,14 @@ namespace ToSic.Eav.Apps.Parts
             var qDef = new QueryDefinition(queryEntity, AppManager.AppId);
 
             var mdItems = qDef.Parts// parts
-                .Select(ds => ds.Metadata.FirstOrDefault())
+                .Select(ds => ds.Entity.Metadata.FirstOrDefault())
                 .Where(md => md != null)
                 .Select(md => md.EntityId)
                 .ToList();
 
             // delete in the right order - first the outermost-dependents, then a layer in, and finally the top node
             AppManager.Entities.Delete(mdItems);
-            AppManager.Entities.Delete(qDef.Parts.Select(p => p.EntityId).ToList());
+            AppManager.Entities.Delete(qDef.Parts.Select(p => p.Id).ToList());
             AppManager.Entities.Delete(id);
 
             // flush cache
@@ -124,7 +119,7 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="newDsGuids"></param>
         /// <param name="headerValues"></param>
         /// <param name="wirings"></param>
-        public void Update(int queryId, List<Dictionary<string, object>> partDefs, List<Guid> newDsGuids, Dictionary<string, object> headerValues, List<WireInfo> wirings)
+        public void Update(int queryId, List<Dictionary<string, object>> partDefs, List<Guid> newDsGuids, Dictionary<string, object> headerValues, List<Connection> wirings)
         {
             // Get/Save Query EntityGuid. Its required to assign Query Parts to it.
             var qdef = AppManager.Read.Queries.Get(queryId);
@@ -202,14 +197,14 @@ namespace ToSic.Eav.Apps.Parts
         public void DeletedRemovedParts(
             List<Guid> newEntityGuids, 
             IEnumerable<Guid> newDataSources, 
-            QueryDefinition qdef)
+            QueryDefinition qDef)
         {
-            Log.Add($"delete part a#{AppManager.AppId}, pipe:{qdef.Entity.EntityGuid}");
+            Log.Add($"delete part a#{AppManager.AppId}, pipe:{qDef.Entity.EntityGuid}");
             // Get EntityGuids currently stored in EAV
-            var existingEntityGuids = qdef.Parts.Select(e => e.EntityGuid);
+            var existingEntityGuids = qDef.Parts.Select(e => e.Guid);
 
             // Get EntityGuids from the UI (except Out and unsaved)
-            newEntityGuids.AddRange(newDataSources/*.Values*/);
+            newEntityGuids.AddRange(newDataSources);
 
             foreach (var entityToDelete in existingEntityGuids
                 .Where(existingGuid => !newEntityGuids.Contains(existingGuid)))
@@ -225,7 +220,7 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="values"></param>
         /// <param name="wirings"></param>
         /// <param name="renamedDataSources">Array with new DataSources and the unsavedName and final EntityGuid</param>
-        private void SaveHeader(int id, Dictionary<string, object> values, List<WireInfo> wirings, IDictionary<string, Guid> renamedDataSources)
+        private void SaveHeader(int id, Dictionary<string, object> values, List<Connection> wirings, IDictionary<string, Guid> renamedDataSources)
         {
             Log.Add($"save pipe a#{AppManager.AppId}, pipe:{id}");
             wirings = RenameWiring(wirings, renamedDataSources);
@@ -236,7 +231,7 @@ namespace ToSic.Eav.Apps.Parts
                     $"DataSource \"{wireInfo.To}\" has multiple In-Streams with Name \"{wireInfo.In}\". Each In-Stream must have an unique Name and can have only one connection.");
 
             // add to new object...then send to save/update
-            values[Constants.QueryStreamWiringAttributeName] = QueryWiring.Serialize(wirings);
+            values[Constants.QueryStreamWiringAttributeName] = Connections.Serialize(wirings);
             AppManager.Entities.UpdateParts(id, values);
         }
 
@@ -246,11 +241,11 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="wirings"></param>
         /// <param name="renamedDataSources"></param>
         /// <returns></returns>
-        private static List<WireInfo> RenameWiring(List<WireInfo> wirings, IDictionary<string, Guid> renamedDataSources)
+        private static List<Connection> RenameWiring(List<Connection> wirings, IDictionary<string, Guid> renamedDataSources)
         {
             if (renamedDataSources == null) return wirings;
 
-            var wiringsNew = new List<WireInfo>();
+            var wiringsNew = new List<Connection>();
             foreach (var wireInfo in wirings)
             {
                 var newWireInfo = wireInfo;

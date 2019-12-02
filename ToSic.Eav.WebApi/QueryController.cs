@@ -20,7 +20,7 @@ namespace ToSic.Eav.WebApi
 	/// </summary>
 	public class QueryController : HasLog
     {
-        #region initializers etc. - work on later
+        #region constructors
         public QueryController(ILog parentLog): base("Api.EaPipe", parentLog)
 		{
 		}
@@ -36,37 +36,23 @@ namespace ToSic.Eav.WebApi
             var query = new QueryDefinitionInfo();
             var appManager = new AppManager(appId, Log);
 
-            if (id.HasValue)
-			{
-			    var qdef = appManager.Read.Queries.Get(id.Value);
+            if (!id.HasValue) return query;
 
-                #region Deserialize some Entity-Values
-                query.Pipeline = EntityToDictionary(qdef.Entity);
-			    query.Pipeline[Constants.QueryStreamWiringAttributeName] = QueryWiring
-                    .Deserialize((string)query.Pipeline[Constants.QueryStreamWiringAttributeName]);
+            var qDef = appManager.Read.Queries.Get(id.Value);
 
-				foreach (var part in qdef.Parts.Select(EntityToDictionary))
-				{
-					part[QueryConstants.VisualDesignerData] = JsonConvert
-                        .DeserializeObject((string)part[QueryConstants.VisualDesignerData] ?? "");
-					
-                    // Replace ToSic.Eav with ToSic.Eav.DataSources because they moved to a different DLL
-				    part[QueryConstants.PartAssemblyAndType] 
-                        = QueryBuilder.RewriteOldAssemblyNames((string)part[QueryConstants.PartAssemblyAndType]);
-                    query.DataSources.Add(part);
-				}
-				#endregion
-			}
+            #region Deserialize some Entity-Values
+
+            query.Pipeline = qDef.Entity.AsDictionary();
+            query.Pipeline[Constants.QueryStreamWiringAttributeName] = qDef.WiringRaw;
+            // QueryWiring
+            //     .Deserialize((string)query.Pipeline[Constants.QueryStreamWiringAttributeName]);
+
+            foreach (var part in qDef.Parts) 
+                query.DataSources.Add(part.AsDictionary());
+
+            #endregion
 
             return query;
-
-            Dictionary<string, object> EntityToDictionary(IEntity entity)
-            {
-                var attributes = entity.Attributes.ToDictionary(k => k.Value.Name, v =>  v.Value[0]);
-                attributes.Add("EntityId", entity.EntityId);
-                attributes.Add("EntityGuid", entity.EntityGuid);
-                return attributes;
-            }
         }
 
 
@@ -80,7 +66,7 @@ namespace ToSic.Eav.WebApi
 		/// Save Pipeline
 		/// </summary>
 		/// <param name="data">JSON object { pipeline: pipeline, dataSources: dataSources }</param>
-		/// <param name="appId">AppId this Pipeline belogs to</param>
+		/// <param name="appId">AppId this Pipeline belongs to</param>
 		/// <param name="id">PipelineEntityId</param>
 		public QueryDefinitionInfo SavePipeline(QueryDefinitionInfo data, int appId, int id)
 		{
@@ -93,7 +79,7 @@ namespace ToSic.Eav.WebApi
                 .ToList();
 
             // Update Pipeline Entity with new Wirings etc.
-		    var wirings = JsonConvert.DeserializeObject<List<WireInfo>>(data.Pipeline[Constants.QueryStreamWiringAttributeName].ToString());
+		    var wirings = JsonConvert.DeserializeObject<List<Connection>>(data.Pipeline[Constants.QueryStreamWiringAttributeName].ToString());
 
             new AppManager(appId, Log).Queries.Update(id, data.DataSources, newDsGuids, data.Pipeline, wirings);
 
@@ -102,7 +88,7 @@ namespace ToSic.Eav.WebApi
 
 
 		/// <summary>
-		/// Query the Result of a Pipline using Test-Parameters
+		/// Query the Result of a Pipeline using Test-Parameters
 		/// </summary>
 		public dynamic QueryPipeline(int appId, int id, ILookUpEngine config)
 		{
