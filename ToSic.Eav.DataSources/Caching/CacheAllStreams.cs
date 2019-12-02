@@ -6,7 +6,6 @@ using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.DataSources.Caching
 {
-	/// <inheritdoc cref="DataSourceBase" />
 	/// <summary>
 	/// Special DataSource which automatically caches everything it's given.
 	/// It's Used to optimize queries, so that heavier calculations don't need to be repeated if another request with the same signature is used. <br/>
@@ -26,10 +25,6 @@ namespace ToSic.Eav.DataSources.Caching
     [PublicApi]
 	public class CacheAllStreams : DataSourceBase, IDeferredDataSource
 	{
-
-        // Todo: caching parameters
-        // Time
-        // Reload in BG
         [PrivateApi]
 	    public override string LogId => "DS.CachAl";
 
@@ -39,7 +34,7 @@ namespace ToSic.Eav.DataSources.Caching
 	    private const string ReturnCacheWhileRefreshingKey = "ReturnCacheWhileRefreshing";
 
 		/// <summary>
-		/// An alternate app to switch to
+		/// How long to keep these streams in the cache
 		/// </summary>
         public int CacheDurationInSeconds
 		{
@@ -47,12 +42,18 @@ namespace ToSic.Eav.DataSources.Caching
 		    set => Configuration[CacheDurationInSecondsKey] = value.ToString();
 		}
 
+        /// <summary>
+        /// If a source-refresh should trigger a cache rebuild
+        /// </summary>
         public bool RefreshOnSourceRefresh
 	    {
             get => Convert.ToBoolean(Configuration[RefreshOnSourceRefreshKey]);
             set => Configuration[RefreshOnSourceRefreshKey] = value.ToString();
         }
 
+        /// <summary>
+        /// Perform a cache rebuild async. 
+        /// </summary>
         public bool ReturnCacheWhileRefreshing 
         {
             get => Convert.ToBoolean(Configuration[ReturnCacheWhileRefreshingKey]);
@@ -62,6 +63,8 @@ namespace ToSic.Eav.DataSources.Caching
 
 		private readonly IDictionary<string, IDataStream> _Out = new Dictionary<string, IDataStream>(StringComparer.OrdinalIgnoreCase);
 		private bool _requiresRebuildOfOut = true;
+
+        /// <inheritdoc />
 		public override IDictionary<string, IDataStream> Out
 		{
 			get
@@ -81,6 +84,7 @@ namespace ToSic.Eav.DataSources.Caching
 		/// <summary>
 		/// Constructs a new App DataSource
 		/// </summary>
+		[PrivateApi]
 		public CacheAllStreams()
 		{
 			// this one is unusual, so don't pre-attach a default data stream
@@ -136,6 +140,7 @@ namespace ToSic.Eav.DataSources.Caching
 	    }
 
         // already attach an out, ready to consume in when it's there
+        [PrivateApi]
 	    public IDataStream DeferredOut(string name) => GetDeferredStream(name);
 	}
 

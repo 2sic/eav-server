@@ -54,16 +54,13 @@ namespace ToSic.Eav.DataSources
 
         /// <inheritdoc />
         /// <summary>
-        /// Constructs a new Attributes DS
+        /// Constructs a new Apps DS
         /// </summary>
+        [PrivateApi]
         public Apps()
 		{
             Provide(GetList);
             ConfigMask(ZoneKey, $"[Settings:{ZoneIdField}]");
-			//Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
-		    //Configuration.Add(ZoneKey, $"[Settings:{ZoneIdField}]");
-
-            //CacheRelevantConfigurations = new [] { ZoneKey };
 		}
 
 

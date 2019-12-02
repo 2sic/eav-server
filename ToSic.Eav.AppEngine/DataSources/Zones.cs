@@ -42,8 +42,9 @@ namespace ToSic.Eav.DataSources
 
         /// <inheritdoc />
         /// <summary>
-        /// Constructs a new Attributes DS
+        /// Constructs a new Zones DS
         /// </summary>
+        [PrivateApi]
 		public Zones()
 		{
             Provide(GetList);

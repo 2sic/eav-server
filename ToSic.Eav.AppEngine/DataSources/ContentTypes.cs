@@ -66,8 +66,9 @@ namespace ToSic.Eav.DataSources
 
         /// <inheritdoc />
         /// <summary>
-        /// Constructs a new Attributes DS
+        /// Constructs a new ContentTypes DS
         /// </summary>
+        [PrivateApi]
         public ContentTypes()
 		{
 			Provide(GetList);
