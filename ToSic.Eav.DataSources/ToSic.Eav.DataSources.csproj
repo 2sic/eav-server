@@ -87,7 +87,7 @@
     <Compile Include="Compatibility\ToSic.Eav.DataSources.BaseDataSource.cs" />
     <Compile Include="DataSources\App.cs" />
     <Compile Include="DataSources\AttributeFilter.cs" />
-    <Compile Include="Caches\ICanPurgeListCache.cs" />
+    <Compile Include="Caching\ICanPurgeListCache.cs" />
     <Compile Include="Caches\IListsCache.cs" />
     <Compile Include="Caches\ListsCache.cs" />
     <Compile Include="Queries\Connection.cs" />
@@ -103,11 +103,11 @@
     <Compile Include="Queries\VisualQuery\DataSourceType.cs" />
     <Compile Include="Queries\VisualQuery\VisualQueryAttribute.cs" />
     <Compile Include="DataSources\DataSourceBase.cs" />
-    <Compile Include="Caches\BaseCache.cs" />
-    <Compile Include="Caches\CacheAllStreams.cs" />
-    <Compile Include="Caches\ICache.cs" />
+    <Compile Include="Caching\BaseCache.cs" />
+    <Compile Include="Caching\CacheAllStreams.cs" />
+    <Compile Include="Caching\ICache.cs" />
     <Compile Include="Caches\ListCacheItem.cs" />
-    <Compile Include="Caches\QuickCache.cs" />
+    <Compile Include="Caching\QuickCache.cs" />
     <Compile Include="DataSources\CsvDataSource.cs" />
     <Compile Include="DataSource.cs" />
     <Compile Include="Streams\DataStream.cs" />

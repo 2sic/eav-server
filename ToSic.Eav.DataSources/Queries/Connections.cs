@@ -36,7 +36,7 @@ namespace ToSic.Eav.DataSources.Queries
 		/// <summary>
 		/// Serialize Wire Infos to a String
 		/// </summary>
-		public static string Serialize(IEnumerable<Connection> wirings) => string.Join("\r\n", wirings.Select(w => w.ToString()));
+		internal static string Serialize(IEnumerable<Connection> wirings) => string.Join("\r\n", wirings.Select(w => w.ToString()));
 	}
 
 

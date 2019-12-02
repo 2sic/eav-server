@@ -43,7 +43,7 @@ namespace ToSic.Eav.WebApi
             #region Deserialize some Entity-Values
 
             query.Pipeline = qDef.Entity.AsDictionary();
-            query.Pipeline[Constants.QueryStreamWiringAttributeName] = qDef.WiringRaw;
+            query.Pipeline[Constants.QueryStreamWiringAttributeName] = qDef.Connections;
             // QueryWiring
             //     .Deserialize((string)query.Pipeline[Constants.QueryStreamWiringAttributeName]);
 

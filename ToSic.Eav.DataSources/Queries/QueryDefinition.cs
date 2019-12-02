@@ -28,10 +28,17 @@ namespace ToSic.Eav.DataSources.Queries
                    .ToList());
         private List<QueryPartDefinition> _parts;
 
-        public IList<Connection> Connections => _connections ?? (_connections = Queries.Connections.Deserialize(WiringRaw));
+        /// <summary>
+        /// Connections used in the query to map various DataSource Out-Streams to various other DataTarget In-Streams
+        /// </summary>
+        public IList<Connection> Connections => _connections ?? (_connections = Queries.Connections.Deserialize(ConnectionsRaw));
         private IList<Connection> _connections;
 
-        public string WiringRaw => Get(Constants.QueryStreamWiringAttributeName, "");
+        /// <summary>
+        /// The connections as they are serialized in the Entity
+        /// </summary>
+        [PrivateApi]
+        private string ConnectionsRaw => Get(Constants.QueryStreamWiringAttributeName, "");
 
         [PrivateApi]
         public QueryDefinition(IEntity header, int appId): base(header)
