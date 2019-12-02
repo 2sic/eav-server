@@ -8,7 +8,10 @@ namespace ToSic.Eav.DataSources.Caching
 {
 	/// <inheritdoc cref="DataSourceBase" />
 	/// <summary>
-	/// Return all Entities from a specific App
+	/// Special DataSource which automatically caches everything it's given.
+	/// It's Used to optimize queries, so that heavier calculations don't need to be repeated if another request with the same signature is used. <br/>
+	/// Internally it asks all up-stream DataSources what factors would determine their caching.
+	/// So if part of the supplying DataSources would have a changed parameter (like a different filter), it will still run the full query and cache the results again. 
 	/// </summary>
 
     [VisualQuery(GlobalName = "ToSic.Eav.DataSources.Caching.CacheAllStreams, ToSic.Eav.DataSources",
@@ -20,6 +23,7 @@ namespace ToSic.Eav.DataSources.Caching
                 "ToSic.Eav.DataSources.Caches.CacheAllStreams, ToSic.Eav.DataSources"
             },
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-CacheAllStreams")]
+    [PublicApi]
 	public class CacheAllStreams : DataSourceBase, IDeferredDataSource
 	{
 
