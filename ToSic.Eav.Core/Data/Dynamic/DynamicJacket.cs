@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
@@ -11,65 +13,55 @@ namespace ToSic.Eav.Data
     /// Used in various cases where you start with JSON and want to provide the contents to custom code without having to mess with
     /// JS/C# code style differences. 
     /// </summary>
-    [PrivateApi]
-    public /*partial*/ class DynamicJacket: DynamicObject
+    [PrivateApi("publish later")]
+    public partial class DynamicJacket: DynamicObject, IEnumerable<object>
     {
+        /// <summary>
+        /// The underlying data, in case it's needed for various internal operations
+        /// </summary>
         public readonly JToken OriginalData;
 
-        public const string EmptyJson = "{}";
-        private const char JObjStart = '{';
-        private const char JArrayStart = '[';
-        private const string JsonErrorCode = "error";
-
-
+        /// <summary>
+        /// Primary constructor expecting a Newtonsoft JObject
+        /// </summary>
+        /// <param name="originalData">the original data we're wrapping</param>
         public DynamicJacket(JObject originalData) => OriginalData = originalData;
 
-        //public DynamicJacket(string json, string fallback = EmptyJson) => OriginalData = AsDynamic(json, fallback);
 
-        public static object AsDynamicJacket(string json, string fallback = EmptyJson)
-        {
-            return WrapOrUnwrap(AsDynamic(json, fallback));
-            //var tbd = AsDynamic(json, fallback);
-            //if(tbd is JObject jObject)
-            //    return new DynamicJacket(jObject);
+        /// <summary>
+        /// Enable enumeration. When going through objects (properties) it will return the keys, not the values. <br/>
+        /// Use the [key] accessor to get the values as <see cref="DynamicJacket"/> or <see cref="DynamicJacketList"/>
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerator<object> GetEnumerator() =>
+            OriginalData is JObject jObject
+                ? jObject.Properties().Select(p => p.Name).GetEnumerator()
+                : throw new NotImplementedException();
 
-            //if(tbd is JArray jArray)
-            //    return new DynamicJacketList(jArray);
+        /// <inheritdoc />
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-            //return tbd;
-        }
-
-        private static JToken AsDynamic(string json, string fallback = EmptyJson)
-        {
-            if (!string.IsNullOrWhiteSpace(json))
-                try
-                {
-                    // find first possible opening character
-                    var firstCharPos = json.IndexOfAny(new[] { JObjStart, JArrayStart });
-                    if (firstCharPos > -1)
-                    {
-                        var firstChar = json[firstCharPos];
-                        if (firstChar == JObjStart)
-                            return JObject.Parse(json);
-                        if (firstChar == JArrayStart)
-                            return JArray.Parse(json);
-                    }
-                }
-                catch
-                {
-                    if (fallback == JsonErrorCode) throw;
-                }
-
-            // fallback
-            return fallback == null
-                ? null
-                : JObject.Parse(fallback);
-        }
+        /// <summary>
+        /// Access the properties of this object, but only if the underlying object is a real object and not an array.
+        /// </summary>
+        /// <remarks>
+        /// Note that this accessor is case sensitive
+        /// </remarks>
+        /// <param name="key">the key, case-sensitive</param>
+        /// <returns></returns>
+        public object this[string key] => OriginalData is JObject jObject ? WrapOrUnwrap(jObject[key]) : null;
 
 
+        /// <summary>
+        /// Performs a case-insensitive value look-up
+        /// </summary>
+        /// <param name="binder">.net binder object</param>
+        /// <param name="result">usually a <see cref="DynamicJacket"/>, <see cref="DynamicJacketList"/> or null</param>
+        /// <returns>always returns true, to avoid errors</returns>
+        [PrivateApi]
         public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
-            if (!OriginalData.HasValues)
+            if (OriginalData == null || !OriginalData.HasValues)
             {
                 result = null;
                 return true;
@@ -92,21 +84,6 @@ namespace ToSic.Eav.Data
             // not found
             result = null;
             return true;
-        }
-
-        public static object WrapOrUnwrap(object original)
-        {
-            switch (original)
-            {
-                case JArray jArray:
-                    return new DynamicJacketList(jArray); //  jArray.Select(WrapOrUnwrap).ToArray();
-                case JObject jResult: // it's another complex object, so return another wrapped reader
-                    return new DynamicJacket(jResult);
-                case JValue jValue: // it's a simple value - so we want to return the underlying real value
-                    return jValue.Value;
-                default: // it's something else, let's just return that
-                    return original;
-            }
         }
 
     }

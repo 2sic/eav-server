@@ -7,10 +7,18 @@ using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Data
 {
+    [PrivateApi("publish later")]
     public class DynamicJacketList : IList<object>
     {
+        /// <summary>
+        /// The underlying data, in case it's needed for various internal operations
+        /// </summary>
         public JArray OriginalData;
 
+        /// <summary>
+        /// Primary constructor expecting a Newtonsoft JArray
+        /// </summary>
+        /// <param name="originalData">the original data we're wrapping</param>
         public DynamicJacketList(JArray originalData)
         {
             OriginalData = originalData;
@@ -21,7 +29,7 @@ namespace ToSic.Eav.Data
         /// Enable enumeration - for both arrays as well as objects <br/>
         /// When going through objects (properties) it will return the keys, not the values. 
         /// </summary>
-        /// <returns></returns>
+        /// <returns>An enumerator with DynamicJackets</returns>
         public IEnumerator<object> GetEnumerator()
         {
             if (OriginalData is JArray jArray)
@@ -33,15 +41,7 @@ namespace ToSic.Eav.Data
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         /// <inheritdoc />
-        public int Count
-        {
-            get
-            {
-                if (OriginalData is JArray jArray)
-                    return jArray.Count;
-                return 0;
-            }
-        }
+        public int Count => OriginalData is JArray jArray ? jArray.Count : 0;
 
         /// <inheritdoc />
         public bool IsReadOnly => true;
@@ -53,12 +53,7 @@ namespace ToSic.Eav.Data
         /// <returns></returns>
         public object this[int index]
         {
-            get
-            {
-                if (OriginalData is JArray jArray)
-                    return DynamicJacket.WrapOrUnwrap(jArray[index]);
-                return null;
-            }
+            get => OriginalData is JArray jArray ? DynamicJacket.WrapOrUnwrap(jArray[index]) : null;
             set => throw new NotImplementedException();
         }
 
