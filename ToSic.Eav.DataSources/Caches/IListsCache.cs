@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.Data;
 
 namespace ToSic.Eav.DataSources.Caches
@@ -26,6 +27,16 @@ namespace ToSic.Eav.DataSources.Caches
         /// <param name="dataStream">The data stream on a data-source object</param>
         /// <returns></returns>
         ListCacheItem Get(IDataStream dataStream);
+
+        /// <summary>
+        /// Get cached item if available and valid, or rebuild cache using a mutual lock
+        /// </summary>
+        /// <param name="dataStream">The data stream on a data-source object</param>
+        /// <param name="cacheDurationInSeconds">The cache validity duration in seconds</param>
+        /// <param name="reloadCacheNeeded"></param>
+        /// <param name="lockAndBuild"></param>
+        /// <returns></returns>
+        ListCacheItem GetOrBuildLocked(IDataStream stream, int cacheDurationInSeconds, Func<IEnumerable<IEntity>> lockAndBuild);
 
         /// <summary>
         /// Set an item in the list-cache
