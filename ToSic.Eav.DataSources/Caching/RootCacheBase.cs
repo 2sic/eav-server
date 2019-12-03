@@ -30,7 +30,7 @@ namespace ToSic.Eav.DataSources.Caching
 			Out.Add(Constants.DraftsStreamName, new DataStream(this, Constants.DraftsStreamName, () => AppState.ListNotHavingDrafts));
 		    // ReSharper restore VirtualMemberCallInConstructor
 
-            Lists.DefaultRetentionTime = 60 * 60;
+            //Lists.DefaultDuration = 60 * 60;
 		}
 
         /// <summary>

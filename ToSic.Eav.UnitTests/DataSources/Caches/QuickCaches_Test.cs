@@ -2,6 +2,7 @@
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.DataSources.Caching;
 
 namespace ToSic.Eav.UnitTests.DataSources.Caches
 {
@@ -53,7 +54,7 @@ namespace ToSic.Eav.UnitTests.DataSources.Caches
             var ds = CreateFilterForTesting(100, ItemToFilter);
 
             var listCache = ds.Cache.Lists; //as IListCache;
-            listCache.DefaultRetentionTime = 1;
+            (listCache as ListCache).DefaultDuration = 1;
             Assert.IsFalse(listCache.Has(ds.CacheFullKey), "Should not have it in cache yet");
 
             listCache.Set(ds.CacheFullKey, ds.List, ds.CacheTimestamp);
