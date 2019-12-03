@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
@@ -14,32 +13,18 @@ namespace ToSic.Eav.Data
     /// JS/C# code style differences. 
     /// </summary>
     [PrivateApi("publish later")]
-    public partial class DynamicJacket: DynamicObject, IEnumerable<object>
+    public partial class DynamicJacket: DynamicJacketBase<JObject>
     {
-        /// <summary>
-        /// The underlying data, in case it's needed for various internal operations
-        /// </summary>
-        public readonly JToken OriginalData;
-
-        /// <summary>
-        /// Primary constructor expecting a Newtonsoft JObject
-        /// </summary>
-        /// <param name="originalData">the original data we're wrapping</param>
-        public DynamicJacket(JObject originalData) => OriginalData = originalData;
-
+        /// <inheritdoc />
+        public DynamicJacket(JObject originalData) : base(originalData) { }
 
         /// <summary>
         /// Enable enumeration. When going through objects (properties) it will return the keys, not the values. <br/>
         /// Use the [key] accessor to get the values as <see cref="DynamicJacket"/> or <see cref="DynamicJacketList"/>
         /// </summary>
         /// <returns></returns>
-        public IEnumerator<object> GetEnumerator() =>
-            OriginalData is JObject jObject
-                ? jObject.Properties().Select(p => p.Name).GetEnumerator()
-                : throw new NotImplementedException();
+        public override IEnumerator<object> GetEnumerator() => OriginalData.Properties().Select(p => p.Name).GetEnumerator();
 
-        /// <inheritdoc />
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         /// <summary>
         /// Access the properties of this object, but only if the underlying object is a real object and not an array.
@@ -48,9 +33,11 @@ namespace ToSic.Eav.Data
         /// Note that this accessor is case sensitive
         /// </remarks>
         /// <param name="key">the key, case-sensitive</param>
-        /// <returns></returns>
-        public object this[string key] => OriginalData is JObject jObject ? WrapOrUnwrap(jObject[key]) : null;
+        /// <returns>A value (string, int etc.), <see cref="DynamicJacket"/> or <see cref="DynamicJacketList"/></returns>
+        public object this[string key] => WrapOrUnwrap(OriginalData[key]);
 
+
+        #region Private TryGetMember
 
         /// <summary>
         /// Performs a case-insensitive value look-up
@@ -67,24 +54,27 @@ namespace ToSic.Eav.Data
                 return true;
             }
 
-            if (OriginalData is JObject jData)
-            {
-                var found = jData.Properties()
-                    .FirstOrDefault(
-                        p => string.Equals(p.Name, binder.Name, StringComparison.InvariantCultureIgnoreCase));
+            var found = OriginalData.Properties()
+                .FirstOrDefault(
+                    p => string.Equals(p.Name, binder.Name, StringComparison.InvariantCultureIgnoreCase));
 
-                if (found != null)
-                {
-                    var original = found.Value;
-                    result = WrapOrUnwrap(original);
-                    return true;
-                }
+            if (found != null)
+            {
+                var original = found.Value;
+                result = WrapOrUnwrap(original);
+                return true;
             }
 
             // not found
             result = null;
             return true;
         }
+        #endregion
+
+        /// <inheritdoc />
+        public override object this[int index] => (_propertyArray ?? (_propertyArray = OriginalData.Properties().ToArray()))[index];
+
+        private JProperty[] _propertyArray;
 
     }
 }

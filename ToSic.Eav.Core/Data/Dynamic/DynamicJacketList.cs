@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using ToSic.Eav.Documentation;
@@ -8,82 +6,21 @@ using ToSic.Eav.Documentation;
 namespace ToSic.Eav.Data
 {
     [PrivateApi("publish later")]
-    public class DynamicJacketList : IList<object>
+    public class DynamicJacketList : DynamicJacketBase<JArray>, IReadOnlyList<object>
     {
-        /// <summary>
-        /// The underlying data, in case it's needed for various internal operations
-        /// </summary>
-        public JArray OriginalData;
+        /// <inheritdoc />
+        public DynamicJacketList(JArray originalData) :base(originalData) { }
 
-        /// <summary>
-        /// Primary constructor expecting a Newtonsoft JArray
-        /// </summary>
-        /// <param name="originalData">the original data we're wrapping</param>
-        public DynamicJacketList(JArray originalData)
-        {
-            OriginalData = originalData;
-        }
-
-
-        /// <summary>
-        /// Enable enumeration - for both arrays as well as objects <br/>
-        /// When going through objects (properties) it will return the keys, not the values. 
-        /// </summary>
-        /// <returns>An enumerator with DynamicJackets</returns>
-        public IEnumerator<object> GetEnumerator()
-        {
-            if (OriginalData is JArray jArray)
-                return jArray.Select(DynamicJacket.WrapOrUnwrap).GetEnumerator();
-            throw new NotImplementedException();
-        }
 
         /// <inheritdoc />
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-        /// <inheritdoc />
-        public int Count => OriginalData is JArray jArray ? jArray.Count : 0;
-
-        /// <inheritdoc />
-        public bool IsReadOnly => true;
+        public override IEnumerator<object> GetEnumerator() => OriginalData.Select(DynamicJacket.WrapOrUnwrap).GetEnumerator();
 
         /// <summary>
         /// Access the items in this object - but only if the underlying object is an array. 
         /// </summary>
-        /// <param name="index"></param>
-        /// <returns></returns>
-        public object this[int index]
-        {
-            get => OriginalData is JArray jArray ? DynamicJacket.WrapOrUnwrap(jArray[index]) : null;
-            set => throw new NotImplementedException();
-        }
+        /// <param name="index">array index</param>
+        /// <returns>the item or an error if not found</returns>
+        public override object this[int index] => DynamicJacket.WrapOrUnwrap(OriginalData[index]);
 
-        #region Not Implemented Stuff of IList
-
-        [PrivateApi]
-        public void Add(object item) => throw new NotImplementedException();
-
-        [PrivateApi]
-        public void Clear() => throw new NotImplementedException();
-
-        [PrivateApi]
-        public bool Contains(object item) => throw new NotImplementedException();
-
-        [PrivateApi]
-        public void CopyTo(object[] array, int arrayIndex) => throw new NotImplementedException();
-
-        [PrivateApi]
-        public bool Remove(object item) => throw new NotImplementedException();
-
-        [PrivateApi]
-        public int IndexOf(object item) => throw new NotImplementedException();
-
-        [PrivateApi]
-        public void Insert(int index, object item) => throw new NotImplementedException();
-
-        [PrivateApi]
-        public void RemoveAt(int index) => throw new NotImplementedException();
-
-
-        #endregion
     }
 }
