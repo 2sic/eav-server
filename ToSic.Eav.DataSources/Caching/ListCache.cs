@@ -24,7 +24,7 @@ namespace ToSic.Eav.DataSources.Caching
         public bool Has(string key) => Cache.Contains(key);
 
         /// <inheritdoc />
-        public bool Has(IDataStream dataStream) => Has(dataStream.Source.CacheFullKey + "|" + dataStream.Name);
+        public bool Has(IDataStream dataStream) => Has(CacheKey(dataStream));
 
         #endregion
 
@@ -32,14 +32,23 @@ namespace ToSic.Eav.DataSources.Caching
         /// <inheritdoc />
         public int DefaultDuration { get; internal set; } = 60 * 60;
 
+        /// <summary>
+        /// Returns the cache key for a data stream
+        /// </summary>
+        /// <param name="dataStream"></param>
+        /// <returns></returns>
+        private string CacheKey(IDataStream dataStream)
+        {
+            return dataStream.Source.CacheFullKey + "|" + dataStream.Name;
+        }
+
         #region Get List
 
         /// <inheritdoc />
         public ListCacheItem GetOrBuild(IDataStream dataStream, Func<IEnumerable<IEntity>> builderFunc,
             int durationInSeconds = 0)
         {
-            // todo: 2rm: pls put the key-generation into a function, as we have duplicate code with some risks here
-            var key = dataStream.Source.CacheFullKey + "|" + dataStream.Name;
+            var key = CacheKey(dataStream);
 
             // Check if it's in the cache, and if it requires re-loading
             var itemInCache = Get(key);
@@ -73,7 +82,7 @@ namespace ToSic.Eav.DataSources.Caching
         public ListCacheItem Get(string key) => Cache[key] as ListCacheItem;
 
         /// <inheritdoc />
-        public ListCacheItem Get(IDataStream dataStream) => Get(dataStream.Source.CacheFullKey + "|" + dataStream.Name);
+        public ListCacheItem Get(IDataStream dataStream) => Get(CacheKey(dataStream));
 
         #endregion
 
@@ -94,7 +103,7 @@ namespace ToSic.Eav.DataSources.Caching
 
         /// <inheritdoc />
         public void Set(IDataStream dataStream, int durationInSeconds = 0)
-            => Set(dataStream.Source.CacheFullKey + "|" + dataStream.Name, dataStream.List,
+            => Set(CacheKey(dataStream), dataStream.List,
                 dataStream.Source.CacheTimestamp, durationInSeconds);
 
 
@@ -105,7 +114,7 @@ namespace ToSic.Eav.DataSources.Caching
         public void Remove(string key) => MemoryCache.Default.Remove(key);
 
         /// <inheritdoc />
-        public void Remove(IDataStream dataStream) => Remove(dataStream.Source.CacheFullKey + "|" + dataStream.Name);
+        public void Remove(IDataStream dataStream) => Remove(CacheKey(dataStream));
         #endregion
     }
 }
