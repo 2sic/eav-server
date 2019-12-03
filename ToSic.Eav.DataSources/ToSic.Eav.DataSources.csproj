@@ -88,8 +88,8 @@
     <Compile Include="DataSources\App.cs" />
     <Compile Include="DataSources\AttributeFilter.cs" />
     <Compile Include="Caching\ICanPurgeListCache.cs" />
-    <Compile Include="Caching\IListsCache.cs" />
-    <Compile Include="Caching\ListsCache.cs" />
+    <Compile Include="Caching\IListCache.cs" />
+    <Compile Include="Caching\ListCache.cs" />
     <Compile Include="Queries\Connection.cs" />
     <Compile Include="Queries\QueryPart.cs" />
     <Compile Include="System\Types\AppType.cs" />

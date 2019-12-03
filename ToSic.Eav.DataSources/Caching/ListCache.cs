@@ -31,7 +31,7 @@ namespace ToSic.Eav.DataSources.Caching
 
         /// <inheritdoc />
         public ListCacheItem GetOrBuild(IDataStream dataStream, Func<IEnumerable<IEntity>> builderFunc,
-            int durationInSeconds)
+            int durationInSeconds = 0)
         {
             var key = dataStream.Source.CacheFullKey + "|" + dataStream.Name;
 
