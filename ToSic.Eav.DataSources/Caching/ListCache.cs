@@ -3,6 +3,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Runtime.Caching;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
+using System.Threading;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.Caching
@@ -11,12 +13,19 @@ namespace ToSic.Eav.DataSources.Caching
     /// Responsible for caching lists / streams. Usually used in queries or sources which have an intensive loading or querying time.
     /// </summary>
     [PublicApi]
-    public class ListCache: IListCache
+    public class ListCache: HasLog, IListCache
     {
+
         private static ObjectCache Cache => MemoryCache.Default;
 
         private static readonly ConcurrentDictionary<string, object> LoadLocks
              = new ConcurrentDictionary<string, object>();
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        [PrivateApi]
+        public ListCache() : base("ListCache") { }
 
         #region Has in Cache
 
@@ -44,35 +53,45 @@ namespace ToSic.Eav.DataSources.Caching
 
         #region Get List
 
+        /// <summary>
+        /// Returns the cache item only if it is valid:
+        /// - item is in cache
+        /// - cache does not expire or source did not change/expire
+        /// </summary>
+        /// <param name="dataStream"></param>
+        /// <returns></returns>
+        private ListCacheItem GetValidCacheItemOrNull(IDataStream dataStream)
+        {
+            // Check if it's in the cache, and if it requires re-loading
+            var key = CacheKey(dataStream);
+            var itemInCache = Get(key);
+            var valid = itemInCache != null &&
+                        (!dataStream.CacheRefreshOnSourceRefresh || !itemInCache.CacheChanged(dataStream.Source.CacheTimestamp));
+            return valid ? itemInCache : null;
+        }
+
         /// <inheritdoc />
         public ListCacheItem GetOrBuild(IDataStream dataStream, Func<IEnumerable<IEntity>> builderFunc,
             int durationInSeconds = 0)
         {
             var key = CacheKey(dataStream);
 
-            // Check if it's in the cache, and if it requires re-loading
-            var itemInCache = Get(key);
-            var isInCache = itemInCache != null;
-            // todo: 2rm: I added a null-check because of Resharper warnings - pls check
-            // todo: 2rm: I standardized how we check if the cache using the CacheChanged interface, pls check
-            //var reloadCacheNeeded = dataStream.CacheRefreshOnSourceRefresh && (dataStream.Source.CacheTimestamp > itemInCache?.CacheTimestamp);
-            var reloadCacheNeeded = dataStream.CacheRefreshOnSourceRefresh && (itemInCache?.CacheChanged(dataStream.Source.CacheTimestamp) ?? true);
-            if (isInCache && reloadCacheNeeded)
-                return itemInCache;
+            var cacheItem = GetValidCacheItemOrNull(dataStream);
+            if (cacheItem != null)
+                return cacheItem;
 
             // If reloading is required, set a lock first (to prevent parallel loading of the same data)
             var lockKey = LoadLocks.GetOrAdd(key, new object());
             lock (lockKey)
             {
-                // todo: 2rm - recheck expiry, because maybe it was replaced in the meantime
-
                 // now that lock is free, it could have been initialized, so re-check
-                // Checking for timestamps is not needed as a previous lock would have reloaded the cache
-                if (Get(key) != null)
-                    return Get(key);
+                cacheItem = GetValidCacheItemOrNull(dataStream);
+                if (cacheItem != null)
+                    return cacheItem;
 
+                Log.Add($"Re-Building cache of data stream {dataStream.Name}");
                 var entities = builderFunc();
-                Set(key, entities, durationInSeconds);
+                Set(key, entities, dataStream.Source.CacheTimestamp, durationInSeconds);
 
                 return Get(key);
             }

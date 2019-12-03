@@ -79,7 +79,7 @@ namespace ToSic.Eav.DataSources
                 if (_list != null && ReuseInitialResults)
                     return _list;
 
-                IEnumerable<IEntity> entityListDelegate()
+                IEnumerable<IEntity> EntityListDelegate()
                 {
                     #region Assemble the list - either from the DictionaryDelegate or from the LightListDelegate
                     // try to use the built-in Entities-Delegate, but if not defined, use other delegate; just make sure we test both, to prevent infinite loops
@@ -90,7 +90,7 @@ namespace ToSic.Eav.DataSources
                         var getEntitiesDelegate = new GetIEnumerableDelegate(_lightListDelegate);
                         return getEntitiesDelegate();
                     }
-                    catch (InvalidOperationException) // this is a special exeption - for example when using SQL. Pass it on to enable proper testing
+                    catch (InvalidOperationException) // this is a special exception - for example when using SQL. Pass it on to enable proper testing
                     {
                         throw;
                     }
@@ -106,12 +106,12 @@ namespace ToSic.Eav.DataSources
                 #region Check if it's in the cache - and if yes, if it's still valid and should be re-used --> return if found
                 if (AutoCaching && ReuseInitialResults)
 			    {
-                    var cacheItem = Source.Cache.Lists.GetOrBuild(this, entityListDelegate, CacheDurationInSeconds);
+                    var cacheItem = Source.Cache.Lists.GetOrBuild(this, EntityListDelegate, CacheDurationInSeconds);
                     return _list = cacheItem.List;
                 }
                 #endregion
 
-                return entityListDelegate();
+                return EntityListDelegate();
 
             }
 	    }
