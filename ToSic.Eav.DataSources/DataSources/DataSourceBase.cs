@@ -69,7 +69,7 @@ namespace ToSic.Eav.DataSources
         }
 
         /// <inheritdoc />
-        public IRootCache Cache => DataSource.GetCache(ZoneId, AppId);
+        public IRootCache Cache => DataSource.GetCache(ZoneId, AppId, Log);
 
         /// <inheritdoc />
         public virtual string CacheFullKey

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caching;
-using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Metadata;
@@ -37,7 +36,9 @@ namespace ToSic.Eav
 			return newSource;
 		}
 
-	    /// <summary>
+        private static void Log(ILog log, string method, string message) => log?.Add($"{LogKey}:{method}()'{message}'");
+
+        /// <summary>
 	    /// Get DataSource for specified sourceName/Type
 	    /// </summary>
 	    /// <param name="sourceName">Full Qualified Type/Interface Name</param>
@@ -49,6 +50,7 @@ namespace ToSic.Eav
 	    /// <returns>A single DataSource</returns>
 	    public static IDataSource GetDataSource(string sourceName, int? zoneId = null, int? appId = null, IDataSource upstream = null, ILookUpEngine configLookUp = null, ILog parentLog = null)
 		{
+            Log(parentLog, nameof(GetDataSource), $"with name {sourceName}");
 		    // try to find with assembly name, or otherwise with GlobalName / previous names
             var type = Type.GetType(sourceName) 
                 ?? FindInDsTypeCache(sourceName)?.Type;
@@ -74,6 +76,7 @@ namespace ToSic.Eav
 	    private static IDataSource GetDataSource(Type type, int? zoneId, int? appId, IDataSource upstream,
 	        ILookUpEngine configLookUp, ILog parentLog)
 	    {
+            Log(parentLog, nameof(GetDataSource), "with type");
 	        var newDs = (DataSourceBase) Factory.Resolve(type);
 	        ConfigureNewDataSource(newDs, zoneId, appId, upstream, configLookUp, parentLog);
 	        return newDs;
@@ -91,7 +94,8 @@ namespace ToSic.Eav
 	    public static T GetDataSource<T>(int? zoneId = null, int? appId = null, IDataSource upstream = null,
 			ILookUpEngine configLookUp = null, ILog parentLog = null)
 		{
-            if(upstream == null && configLookUp == null)
+            Log(parentLog, nameof(GetDataSource) + $"<{typeof(T).Name}>", $"");
+            if (upstream == null && configLookUp == null)
                     throw new Exception("Trying to GetDataSource<T> but cannot do so if both upstream and ConfigurationProvider are null.");
 			var newDs = (DataSourceBase)Factory.Resolve(typeof(T));
 			ConfigureNewDataSource(newDs, zoneId, appId, upstream, configLookUp ?? upstream.ConfigurationProvider, parentLog);
@@ -113,7 +117,8 @@ namespace ToSic.Eav
 			ILookUpEngine configLookUp = null, 
             ILog parentLog = null)
 		{
-			var zoneAppId = GetZoneAppId(zoneId, appId);
+            Log(parentLog, nameof(ConfigureNewDataSource), "");
+            var zoneAppId = GetZoneAppId(zoneId, appId);
 			newDs.ZoneId = zoneAppId.Item1;
 			newDs.AppId = zoneAppId.Item2;
 			if (upstream != null)
@@ -121,8 +126,11 @@ namespace ToSic.Eav
 			if (configLookUp != null)
 				newDs.ConfigurationProvider = configLookUp;
 
-            if(parentLog != null)
+            if (parentLog != null)
+            {
+                Log(parentLog, nameof(ConfigureNewDataSource), "attach log");
                 newDs.InitLog(newDs.LogId, parentLog);
+            }
 		}
 
 		private static readonly string[] InitialDataSourceQuery =
@@ -176,8 +184,8 @@ namespace ToSic.Eav
         /// <param name="zoneId">ZoneId for this DataSource</param>
         /// <param name="appId">AppId for this DataSource</param>
         /// <returns>A new IRootCache</returns>
-        public static IRootCache GetCache(int? zoneId, int? appId = null) 
-            => (IRootCache)GetDataSource(_IRootCacheId, zoneId, appId);
+        public static IRootCache GetCache(int? zoneId, int? appId = null, ILog parentLog = null) 
+            => (IRootCache)GetDataSource(_IRootCacheId, zoneId, appId, parentLog:parentLog);
 
 	    /// <summary>
 		/// Get DataSource having common MetaData, like Field MetaData
@@ -214,28 +222,6 @@ namespace ToSic.Eav
 	        .FindInherited(typeof(IDataSource))
 	        .Select(t => new DataSourceInfo(t)).ToList();
 
-
-	    public class DataSourceInfo
-	    {
-	        public Type Type { get; }
-            public VisualQueryAttribute VisualQuery { get; }
-	        public string GlobalName => VisualQuery?.GlobalName;
-
-	        public DataSourceInfo(Type dsType)
-	        {
-	            Type = dsType;
-
-                // must put this in a try/catch, in case other DLLs have incompatible attributes
-	            try
-	            {
-	                VisualQuery =
-	                    Type.GetCustomAttributes(typeof(VisualQueryAttribute), false).FirstOrDefault() as
-	                        VisualQueryAttribute;
-	            }
-
-                catch {  /*ignore */ }
-	        }
-	    }
 	}
 
 }

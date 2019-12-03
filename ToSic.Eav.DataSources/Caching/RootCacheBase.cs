@@ -230,15 +230,15 @@ namespace ToSic.Eav.DataSources.Caching
         #region Additional Stream Caching
 
 	    /// <inheritdoc />
-        public IListCache Lists => _listsCache ?? (_listsCache = new ListCache());
+        public IListCache Lists => _listsCache ?? (_listsCache = new ListCache(Log));
 	    private IListCache _listsCache;
 
         #endregion
 
-	    /// <inheritdoc />
-        public override void InitLog(string name, ILog parentLog = null, string initialMessage = null)
-	    {
-	        // ignore
-	    }
+	    ///// <inheritdoc />
+     //   public override void InitLog(string name, ILog parentLog = null, string initialMessage = null)
+	    //{
+	    //    // ignore
+	    //}
 	}
 }

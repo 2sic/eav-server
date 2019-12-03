@@ -85,6 +85,7 @@
     <Compile Include="Compatibility\ToSic.Eav.DataSources.DataTableDataSource.cs" />
     <Compile Include="Compatibility\ToSic.Eav.DataSources.ExternalDataDataSource.cs" />
     <Compile Include="Compatibility\ToSic.Eav.DataSources.BaseDataSource.cs" />
+    <Compile Include="DataSourceInfo.cs" />
     <Compile Include="DataSources\App.cs" />
     <Compile Include="DataSources\AttributeFilter.cs" />
     <Compile Include="Caching\ICanPurgeListCache.cs" />

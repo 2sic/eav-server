@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Runtime.Caching;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
-using System.Threading;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.Caching
@@ -25,7 +24,7 @@ namespace ToSic.Eav.DataSources.Caching
         /// Constructor
         /// </summary>
         [PrivateApi]
-        public ListCache() : base("ListCache") { }
+        public ListCache(ILog parentLog) : base("DS.LstCch", parentLog) { }
 
         #region Has in Cache
 
@@ -46,10 +45,7 @@ namespace ToSic.Eav.DataSources.Caching
         /// </summary>
         /// <param name="dataStream"></param>
         /// <returns></returns>
-        private string CacheKey(IDataStream dataStream)
-        {
-            return dataStream.Source.CacheFullKey + "|" + dataStream.Name;
-        }
+        private string CacheKey(IDataStream dataStream) => dataStream.Source.CacheFullKey + "|" + dataStream.Name;
 
         #region Get List
 
@@ -62,38 +58,43 @@ namespace ToSic.Eav.DataSources.Caching
         /// <returns></returns>
         private ListCacheItem GetValidCacheItemOrNull(IDataStream dataStream)
         {
+            var wrapLog = Log.Call(nameof(GetValidCacheItemOrNull));
             // Check if it's in the cache, and if it requires re-loading
             var key = CacheKey(dataStream);
             var itemInCache = Get(key);
             var valid = itemInCache != null &&
                         (!dataStream.CacheRefreshOnSourceRefresh || !itemInCache.CacheChanged(dataStream.Source.CacheTimestamp));
+            wrapLog(valid.ToString());
             return valid ? itemInCache : null;
         }
 
         /// <inheritdoc />
-        public ListCacheItem GetOrBuild(IDataStream dataStream, Func<IEnumerable<IEntity>> builderFunc,
+        public ListCacheItem GetOrBuild(IDataStream stream, Func<IEnumerable<IEntity>> builderFunc,
             int durationInSeconds = 0)
         {
-            var key = CacheKey(dataStream);
+            var wrapLog = Log.Call<ListCacheItem>(nameof(GetOrBuild));
+            var key = CacheKey(stream);
 
-            var cacheItem = GetValidCacheItemOrNull(dataStream);
+            var cacheItem = GetValidCacheItemOrNull(stream);
             if (cacheItem != null)
-                return cacheItem;
+                return wrapLog("found", cacheItem);
 
             // If reloading is required, set a lock first (to prevent parallel loading of the same data)
             var lockKey = LoadLocks.GetOrAdd(key, new object());
             lock (lockKey)
             {
+                Log.Add("came out of lock");
                 // now that lock is free, it could have been initialized, so re-check
-                cacheItem = GetValidCacheItemOrNull(dataStream);
+                cacheItem = GetValidCacheItemOrNull(stream);
                 if (cacheItem != null)
-                    return cacheItem;
+                    return wrapLog("still valid", cacheItem);
 
-                Log.Add($"Re-Building cache of data stream {dataStream.Name}");
+                Log.Add($"Re-Building cache of data stream {stream.Name}");
                 var entities = builderFunc();
-                Set(key, entities, dataStream.Source.CacheTimestamp, durationInSeconds);
+                var useSlidingExpiration = stream.CacheRefreshOnSourceRefresh;
+                Set(key, entities, stream.Source.CacheTimestamp, durationInSeconds, useSlidingExpiration);
 
-                return Get(key);
+                return wrapLog("generated", Get(key));
             }
         }
 
@@ -108,22 +109,23 @@ namespace ToSic.Eav.DataSources.Caching
         #region set/add list
 
         /// <inheritdoc />
-        public void Set(string key, IEnumerable<IEntity> list, long sourceTimestamp, int durationInSeconds = 0)
+        public void Set(string key, IEnumerable<IEntity> list, long sourceTimestamp, int durationInSeconds = 0,
+            bool slidingExpiration = true)
         {
-            var policy = new CacheItemPolicy
-            {
-                SlidingExpiration = new TimeSpan(0, 0,
-                    durationInSeconds > 0 ? durationInSeconds : DefaultDuration)
-            };
+            var duration = durationInSeconds > 0 ? durationInSeconds : DefaultDuration;
+            var expiration = new TimeSpan(0, 0, duration);
+            var policy = slidingExpiration
+                ? new CacheItemPolicy { SlidingExpiration = expiration }
+                : new CacheItemPolicy { AbsoluteExpiration = new DateTimeOffset(DateTime.Now, expiration) };
 
             var cache = MemoryCache.Default;
             cache.Set(key, new ListCacheItem(/*key,*/ list, sourceTimestamp), policy);
         }
 
         /// <inheritdoc />
-        public void Set(IDataStream dataStream, int durationInSeconds = 0)
+        public void Set(IDataStream dataStream, int durationInSeconds = 0, bool slidingExpiration = true)
             => Set(CacheKey(dataStream), dataStream.List,
-                dataStream.Source.CacheTimestamp, durationInSeconds);
+                dataStream.Source.CacheTimestamp, durationInSeconds, slidingExpiration);
 
 
         #endregion

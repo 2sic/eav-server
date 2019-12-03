@@ -47,14 +47,16 @@ namespace ToSic.Eav.DataSources.Caching
         /// <param name="list">items to put into the cache for this cache key</param>
         /// <param name="sourceTimestamp"></param>
         /// <param name="durationInSeconds">The cache validity duration in seconds. If 0 or omitted, default value will be used. </param>
-        void Set(string key, IEnumerable<IEntity> list, long sourceTimestamp, int durationInSeconds = 0);
+        /// <param name="slidingExpiration"></param>
+        void Set(string key, IEnumerable<IEntity> list, long sourceTimestamp, int durationInSeconds = 0, bool slidingExpiration = true);
 
         /// <summary>
         /// Add an item to the list-cache
         /// </summary>
         /// <param name="dataStream">the data stream, which can provide it's cache-key</param>
         /// <param name="durationInSeconds">The cache validity duration in seconds. If 0 or omitted, default value will be used. </param>
-        void Set(IDataStream dataStream, int durationInSeconds = 0);
+        /// <param name="slidingExpiration"></param>
+        void Set(IDataStream dataStream, int durationInSeconds = 0, bool slidingExpiration = true);
 
         /// <summary>
         /// Remove an item from the list-cache using the string-key
