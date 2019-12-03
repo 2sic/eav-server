@@ -88,8 +88,8 @@
     <Compile Include="DataSources\App.cs" />
     <Compile Include="DataSources\AttributeFilter.cs" />
     <Compile Include="Caching\ICanPurgeListCache.cs" />
-    <Compile Include="Caches\IListsCache.cs" />
-    <Compile Include="Caches\ListsCache.cs" />
+    <Compile Include="Caching\IListsCache.cs" />
+    <Compile Include="Caching\ListsCache.cs" />
     <Compile Include="Queries\Connection.cs" />
     <Compile Include="Queries\QueryPart.cs" />
     <Compile Include="System\Types\AppType.cs" />
@@ -106,7 +106,7 @@
     <Compile Include="Caching\RootCacheBase.cs" />
     <Compile Include="Caching\CacheAllStreams.cs" />
     <Compile Include="Caching\IRootCache.cs" />
-    <Compile Include="Caches\ListCacheItem.cs" />
+    <Compile Include="Caching\ListCacheItem.cs" />
     <Compile Include="Caching\RootCacheSimple.cs" />
     <Compile Include="DataSources\CsvDataSource.cs" />
     <Compile Include="DataSource.cs" />
