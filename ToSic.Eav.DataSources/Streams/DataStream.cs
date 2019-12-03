@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using ToSic.Eav.Data;
-using ToSic.Eav.Interfaces;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -108,8 +106,8 @@ namespace ToSic.Eav.DataSources
                 #region Check if it's in the cache - and if yes, if it's still valid and should be re-used --> return if found
                 if (AutoCaching && ReuseInitialResults)
 			    {
-                    var cacheItem = Source.Cache.Lists.GetOrBuildLocked(this, CacheDurationInSeconds, entityListDelegate);
-                    return _list = cacheItem.LightList;
+                    var cacheItem = Source.Cache.Lists.GetOrBuild(this, entityListDelegate, CacheDurationInSeconds);
+                    return _list = cacheItem.List;
                 }
                 #endregion
 

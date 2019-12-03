@@ -1,6 +1,5 @@
 ﻿using System;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using AppState = ToSic.Eav.Apps.AppState;
@@ -51,7 +50,7 @@ namespace ToSic.Eav.DataSources.Caching
         /// <summary>
         /// Advanced caching of lists which have queried some of the data in this cache, and want to retain the results of the query till the root changes. 
         /// </summary>
-        IListsCache Lists { get; }
+        IListCache Lists { get; }
 
         /// <summary>
         /// Retrieve the AppState of the current app.

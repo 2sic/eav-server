@@ -1,18 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.Data;
+using ToSic.Eav.Documentation;
 
-namespace ToSic.Eav.DataSources.Caches
+namespace ToSic.Eav.DataSources.Caching
 {
     /// <summary>
-    /// Provide ability to cache lists of entities
+    /// Marks objects that can cache lists based on certain rules - including retention time and if up-stream changes should refresh the cache. 
     /// </summary>
-    public interface IListsCache
+    [PublicApi]
+    public interface IListCache
     {
         /// <summary>
-        /// The time a list stays in the cache by default - usually 3600 = 1 hour
+        /// The time a list stays in the cache by default - usually 3600 = 1 hour. Is used in all Set commands where the default duration is needed. 
         /// </summary>
-        int ListDefaultRetentionTimeInSeconds { get; set; }
+        int DefaultRetentionTime { get; set; }
 
         /// <summary>
         /// Get a list from the cache
@@ -22,7 +24,7 @@ namespace ToSic.Eav.DataSources.Caches
         ListCacheItem Get(string key);
 
         /// <summary>
-        /// Get a list from the cache
+        /// Get a list from the cache using a configured dataStream. The stream won't be queried, it serves as an identifier for the cache item. 
         /// </summary>
         /// <param name="dataStream">The data stream on a data-source object</param>
         /// <returns></returns>
@@ -31,21 +33,20 @@ namespace ToSic.Eav.DataSources.Caches
         /// <summary>
         /// Get cached item if available and valid, or rebuild cache using a mutual lock
         /// </summary>
-        /// <param name="dataStream">The data stream on a data-source object</param>
-        /// <param name="cacheDurationInSeconds">The cache validity duration in seconds</param>
-        /// <param name="reloadCacheNeeded"></param>
-        /// <param name="lockAndBuild"></param>
-        /// <returns></returns>
-        ListCacheItem GetOrBuildLocked(IDataStream stream, int cacheDurationInSeconds, Func<IEnumerable<IEntity>> lockAndBuild);
+        /// <param name="stream">The data stream on a data-source object</param>
+        /// <param name="builderFunc">a function which is only called if building is required</param>
+        /// <param name="durationInSeconds">The cache validity duration in seconds. If 0, default value will be used. </param>
+        /// <returns>The ListCacheItem - either from cache, or just created</returns>
+        ListCacheItem GetOrBuild(IDataStream stream, Func<IEnumerable<IEntity>> builderFunc, int durationInSeconds = 0);
 
         /// <summary>
-        /// Set an item in the list-cache
+        /// Add an item to the list-cache
         /// </summary>
-        /// <param name="key"></param>
-        /// <param name="list"></param>
-        /// <param name="sourceRefresh"></param>
-        /// <param name="durationInSeconds"></param>
-        void Set(string key, IEnumerable<IEntity> list, long sourceRefresh, int durationInSeconds = 0);
+        /// <param name="key">cache key</param>
+        /// <param name="list">items to put into the cache for this cache key</param>
+        /// <param name="sourceTimestamp"></param>
+        /// <param name="durationInSeconds">The cache validity duration in seconds. If 0, default value will be used. </param>
+        void Set(string key, IEnumerable<IEntity> list, long sourceTimestamp, int durationInSeconds = 0);
 
         /// <summary>
         /// Add an item to the list-cache
@@ -55,15 +56,15 @@ namespace ToSic.Eav.DataSources.Caches
         void Set(IDataStream dataStream, int durationInSeconds = 0);
 
         /// <summary>
-        /// Remove an item from the list-cache
+        /// Remove an item from the list-cache using the string-key
         /// </summary>
-        /// <param name="key"></param>
+        /// <param name="key">the identifier in the cache</param>
         void Remove(string key);
 
         /// <summary>
-        /// Remove an item from the list cache
+        /// Remove an item from the list cache using a data-stream key
         /// </summary>
-        /// <param name="dataStream"></param>
+        /// <param name="dataStream">the data stream, which can provide it's cache-key</param>
         void Remove(IDataStream dataStream);
 
         /// <summary>

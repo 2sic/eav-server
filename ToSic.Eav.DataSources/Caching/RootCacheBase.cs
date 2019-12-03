@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
@@ -31,7 +30,7 @@ namespace ToSic.Eav.DataSources.Caching
 			Out.Add(Constants.DraftsStreamName, new DataStream(this, Constants.DraftsStreamName, () => AppState.ListNotHavingDrafts));
 		    // ReSharper restore VirtualMemberCallInConstructor
 
-            Lists.ListDefaultRetentionTimeInSeconds = 60 * 60;
+            Lists.DefaultRetentionTime = 60 * 60;
 		}
 
         /// <summary>
@@ -231,8 +230,8 @@ namespace ToSic.Eav.DataSources.Caching
         #region Additional Stream Caching
 
 	    /// <inheritdoc />
-        public IListsCache Lists => _listsCache ?? (_listsCache = new ListsCache());
-	    private IListsCache _listsCache;
+        public IListCache Lists => _listsCache ?? (_listsCache = new ListCache());
+	    private IListCache _listsCache;
 
         #endregion
 

@@ -2,7 +2,6 @@
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSources.Caches;
 using ToSic.Eav.DataSources.Caching;
 
 namespace ToSic.Eav.UnitTests.DataSources
@@ -103,7 +102,7 @@ namespace ToSic.Eav.UnitTests.DataSources
 
             // Get first list from direct query and from cache - compare. Should be same
             var originalList = cacher[Constants.DefaultStreamName].List;
-            var listFromCache1 = cacher.Cache.Lists.Get(cacher.Out[Constants.DefaultStreamName]).LightList;
+            var listFromCache1 = cacher.Cache.Lists.Get(cacher.Out[Constants.DefaultStreamName]).List;
             Assert.AreEqual(listFromCache1, originalList, "Should be same list - right now");
 
             // Now wait 100 milliseconds, then repeat the process. Since the new source has another date-time, it should rebuild the cache
@@ -127,7 +126,7 @@ namespace ToSic.Eav.UnitTests.DataSources
 
             var cacheItem = cacher.Cache.Lists.Get(cacher.Out[Constants.DefaultStreamName]);
             Assert.IsNotNull(cacheItem, "should be not null, expected it to be in the cache");
-            var listFromCache1 = cacheItem.LightList;
+            var listFromCache1 = cacheItem.List;
             Assert.AreEqual(listFromCache1, originalList, "Should be same list - right now");
 
             // Now wait 100 milliseconds, then repeat the process. Since the new source has another date-time, it should rebuild the cache
@@ -154,7 +153,7 @@ namespace ToSic.Eav.UnitTests.DataSources
 
             // Get first list from direct query and from cache - compare. Should be same
             var originalList = cacher[Constants.DefaultStreamName].List;
-            var listFromCache1 = cacher.Cache.Lists.Get(cacher.Out[Constants.DefaultStreamName]).LightList;
+            var listFromCache1 = cacher.Cache.Lists.Get(cacher.Out[Constants.DefaultStreamName]).List;
             Assert.AreEqual(listFromCache1, originalList, "Should be same list - right now");
 
             // Now wait 1 second, then repeat the process. Since the new source has another date-time, it should rebuild the cache

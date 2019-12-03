@@ -1,37 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using ToSic.Eav.Data;
+using ToSic.Eav.Documentation;
 
-
-namespace ToSic.Eav.DataSources.Caches
+namespace ToSic.Eav.DataSources.Caching
 {
     /// <summary>
-    /// This class is used to add lists to the cache. It contains the list + caching-data to ensure we can check the expiry if needed
+    /// Cache Item in the List-Cache. 
     /// </summary>
+    [PublicApi]
     public class ListCacheItem
     {
         /// <summary>
-        /// The list in the cache
+        /// The items which we're caching.
         /// </summary>
-        public IEnumerable<IEntity> LightList { get; set; }
-        public string CacheKey { get; set; }
+        public IEnumerable<IEntity> List { get; set; }
+
+        ///// <summary>
+        ///// The key as the item is stored in the cache. More for internal use.
+        ///// </summary>
+        //[PrivateApi]
+        //public string CacheKey { get; set; }
 
 
         /// <summary>
         /// The age of the data - to see if it needs refreshing if the new source has a newer date
         /// </summary>
-        public /*DateTime*/long SourceRefresh { get; set; }
+        public long SourceTimestamp { get; set; }
 
         /// <summary>
         /// Initialize the object - ready to cache
         /// </summary>
-        /// <param name="list"></param>
-        /// <param name="sourceRefresh"></param>
-        public ListCacheItem(string cacheKey, IEnumerable<IEntity> list, /*DateTime*/ long sourceRefresh)
+        /// <param name="list">The list of items to put into the cache.</param>
+        /// <param name="sourceTimestamp">The timestamp of the source at the moment of cache-buildup, to later detect changes in the source.</param>
+        ///// <param name="cacheKey">The cache key as it is stored in the cache</param>
+        public ListCacheItem(/*string cacheKey,*/ IEnumerable<IEntity> list, long sourceTimestamp)
         {
-            CacheKey = cacheKey;
-            LightList = list;
-            SourceRefresh = sourceRefresh;
+            //CacheKey = cacheKey;
+            List = list;
+            SourceTimestamp = sourceTimestamp;
         }
     }
 }
