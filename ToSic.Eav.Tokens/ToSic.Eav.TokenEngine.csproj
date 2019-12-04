@@ -69,24 +69,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="LookUp\IGetEngine.cs" />
-    <Compile Include="LookUp\LookUpInNameValueCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tokens\TokenReplace.cs" />
-    <Compile Include="LookUp\LookUpInMetadata.cs" />
-    <Compile Include="LookUp\LookUpBase.cs" />
-    <Compile Include="LookUp\LookUpInEntity.cs" />
-    <Compile Include="LookUp\ILookUpEngine.cs" />
-    <Compile Include="LookUp\ILookUp.cs" />
-    <Compile Include="LookUp\LookUpInLookUps.cs" />
-    <Compile Include="LookUp\LookUpInDictionary.cs" />
-    <Compile Include="LookUp\LookUpEngine.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj">
       <Project>{82F94588-269B-4CDD-98D1-D5CB14C39090}</Project>
       <Name>ToSic.Eav.Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="LookUp\" />
+    <Folder Include="Tokens\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
