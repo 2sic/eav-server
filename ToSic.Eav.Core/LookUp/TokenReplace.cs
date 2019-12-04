@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
-using ToSic.Eav.LookUp;
+using ToSic.Eav.Documentation;
 
-namespace ToSic.Eav.Tokens
+namespace ToSic.Eav.LookUp
 {
 	/// <summary>
 	/// The BaseTokenReplace class provides the tokenization of tokens formatted  
@@ -12,6 +12,7 @@ namespace ToSic.Eav.Tokens
 	/// with the appropriate current property/custom values.
 	/// </summary>
 	/// <remarks></remarks>
+	[PrivateApi("we might still rename this some day...")]
 	public class TokenReplace
     {
         #region RegEx - the core formula

@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.LookUp;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -159,7 +160,7 @@ namespace ToSic.Eav.DataSources
             // Protect ourselves against SQL injection:
             // this is almost the same code as in the tokenizer, just replacing all tokens with an @param# syntax
             // and adding these @params to the collection of configurations
-            var tokenizer = Tokens.TokenReplace.Tokenizer;
+            var tokenizer = TokenReplace.Tokenizer;
 	        
             // Before we process the Select-Command, we must get it (by default it's just a token!)
 	        if (SelectCommand.StartsWith("[Settings"))

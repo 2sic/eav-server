@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.LookUp;
-using ToSic.Eav.Tokens;
 
 namespace ToSic.Eav.TokenEngine.Tests.Tokens
 {
@@ -122,27 +121,27 @@ but this should [token:key] again"
         public void TokenReplace_ContainsToken()
         {
             foreach (var validPureToken in ValidPureTokens)
-                Assert.IsTrue(Eav.Tokens.TokenReplace.ContainsTokens(validPureToken));
+                Assert.IsTrue(TokenReplace.ContainsTokens(validPureToken));
 
             foreach (var validMixedSingleToken in ValidMixedSingleTokens)
-                Assert.IsTrue(Eav.Tokens.TokenReplace.ContainsTokens(validMixedSingleToken));
+                Assert.IsTrue(TokenReplace.ContainsTokens(validMixedSingleToken));
 
             foreach (var validMixedMultiToken in ValidMixedMultiTokens)
-                Assert.IsTrue(Eav.Tokens.TokenReplace.ContainsTokens(validMixedMultiToken));
+                Assert.IsTrue(TokenReplace.ContainsTokens(validMixedMultiToken));
         }
 
         [TestMethod]
         public void TokenReplace_ContainsTokenWithSubtoken()
         {
             foreach (var token in ValidTokensWithSubTokens)
-                Assert.IsTrue(Eav.Tokens.TokenReplace.ContainsTokens(token));   
+                Assert.IsTrue(TokenReplace.ContainsTokens(token));   
         }
 
         [TestMethod]
         public void TokenReplace_DoesntContainToken()
         {
             foreach (var invalidToken in InvalidTokens)
-                Assert.IsFalse(Eav.Tokens.TokenReplace.ContainsTokens(invalidToken));
+                Assert.IsFalse(TokenReplace.ContainsTokens(invalidToken));
         }
 
         #endregion
