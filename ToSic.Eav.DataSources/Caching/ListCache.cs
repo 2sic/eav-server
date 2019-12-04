@@ -116,7 +116,7 @@ namespace ToSic.Eav.DataSources.Caching
             var expiration = new TimeSpan(0, 0, duration);
             var policy = slidingExpiration
                 ? new CacheItemPolicy { SlidingExpiration = expiration }
-                : new CacheItemPolicy { AbsoluteExpiration = new DateTimeOffset(DateTime.Now, expiration) };
+                : new CacheItemPolicy { AbsoluteExpiration = DateTime.Now.AddSeconds(duration) };
 
             var cache = MemoryCache.Default;
             cache.Set(key, new ListCacheItem(/*key,*/ list, sourceTimestamp), policy);
