@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using ToSic.Eav.Apps;
+using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 
-namespace ToSic.Eav.Data
+namespace ToSic.Eav.Apps
 {
     /// <summary>
     /// Contains all the basic infos about a Zone - usually cached
@@ -18,9 +18,7 @@ namespace ToSic.Eav.Data
             Languages = languages;
         }
 
-        /// <summary>
-        /// ZoneId
-        /// </summary>
+        /// <inheritdoc />
         public int ZoneId { get; internal set; }
 
         /// <summary>

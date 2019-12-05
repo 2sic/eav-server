@@ -3,7 +3,7 @@
 namespace ToSic.Eav.Apps
 {
     /// <summary>
-    /// This thing belongs to an App and a Zone
+    /// Marks thing which belongs to an App and a Zone
     /// </summary>
     /// <remarks>
     /// Technically many things could just identify the app they belong to, and let the system look up the zone.

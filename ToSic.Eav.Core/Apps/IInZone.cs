@@ -3,7 +3,7 @@
 namespace ToSic.Eav.Apps
 {
     /// <summary>
-    /// This things belongs to a Zone
+    /// Marks things which belongs to a Zone
     /// </summary>
     [PublicApi]
     public interface IInZone

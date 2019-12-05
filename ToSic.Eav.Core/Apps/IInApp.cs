@@ -3,7 +3,7 @@
 namespace ToSic.Eav.Apps
 {
     /// <summary>
-    /// This thing belongs to an App
+    /// Marks things which belongs to an App
     /// </summary>
     [PublicApi]
     public interface IInApp
