@@ -9,6 +9,10 @@ using ToSic.Eav.Security;
 
 namespace ToSic.Eav.Data
 {
+    /// <summary>
+    /// A basic unit / item of data. Has many <see cref="IAttribute{T}"/>s which then contains <see cref="IValue{T}"/>s which are multi-language. 
+    /// </summary>
+    [PublicApi]
     public class Entity: EntityLight, IEntity
     {
 

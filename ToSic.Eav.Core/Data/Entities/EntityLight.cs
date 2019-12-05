@@ -7,11 +7,13 @@ using ToSic.Eav.Metadata;
 namespace ToSic.Eav.Data
 {
 	/// <inheritdoc />
+	[PublicApi]
 	public class EntityLight : IEntityLight
     {
         #region Basic properties EntityId, EntityGuid, Title, Attributes, Type, Modified, etc.
         /// <inheritdoc />
         public int AppId { get; internal set; }
+
         /// <inheritdoc />
 		public int EntityId { get; internal set; } 
 
