@@ -4,8 +4,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using ToSic.Eav.Data;
-using ToSic.Eav.Interfaces;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.WebApi.Formats

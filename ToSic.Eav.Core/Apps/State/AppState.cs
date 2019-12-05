@@ -10,21 +10,22 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps
 {
-    /// <inheritdoc cref="HasLog" />
     /// <summary>
-    /// Cache Object for a specific App
+    /// A complete App state - usually cached in memory. <br/>
+    /// Has many internal features for partial updates etc.
+    /// But the primary purpose is to make sure the whole app is always available with everything. <br/>
+    /// It also manages and caches relationships between entities of the same app.
     /// </summary>
+    [PublicApi]
     public partial class AppState: HasLog, IInApp
 	{
 
 		#region public properties like AppId, Entities, List, Publisheentities, DraftEntities, 
-        /// <summary>
-        /// App ID
-        /// </summary>
+        /// <inheritdoc />
         public int AppId { get; }
 
 	    /// <summary>
-	    /// The simple list of entities, used in many query parts
+	    /// The simple list of <em>all</em> entities, used everywhere
 	    /// </summary>
 	    public IEnumerable<IEntity> List => _list 
             ?? (_list = new SynchronizedList<IEntity>(this, () => Index.Values.ToList()));
@@ -35,6 +36,7 @@ namespace ToSic.Eav.Apps
 	    /// <summary>
 	    /// Get all Published Entities in this App (excluding Drafts)
 	    /// </summary>
+	    [PrivateApi("this is an optimization feature which shouldn't be used by others")]
 	    public IEnumerable<IEntity> ListPublished
 	        => _listPublished ?? (_listPublished = new SynchronizedList<IEntity>(this,
 	               () => List.Where(e => e.IsPublished).ToList()));
@@ -43,6 +45,7 @@ namespace ToSic.Eav.Apps
 	    /// <summary>
 	    /// Get all Entities not having a Draft (Entities that are Published (not having a draft) or draft itself)
 	    /// </summary>
+	    [PrivateApi("this is an optimization feature which shouldn't be used by others")]
 	    public IEnumerable<IEntity> ListNotHavingDrafts
 	        => _listNotHavingDrafts ?? (_listNotHavingDrafts =
 	               new SynchronizedList<IEntity>(this,
@@ -50,18 +53,18 @@ namespace ToSic.Eav.Apps
 	    private IEnumerable<IEntity> _listNotHavingDrafts;
 
         /// <summary>
-        /// Get all Relationships between Entities
+        /// Manages all relationships between Entities
         /// </summary>
-        [PrivateApi]
         public AppRelationshipManager Relationships { get; }
 
 	    private bool _loading;
 	    private bool _firstLoadCompleted;
+        [PrivateApi]
 	    public int DynamicUpdatesCount;
 		#endregion
 
 
-
+        [PrivateApi("constructor, internal use only")]
         internal AppState(int appId, ILog parentLog): base($"App.Pkg{appId}", parentLog, $"start build package for {appId}")
 	    {
 	        AppId = appId;
@@ -77,6 +80,7 @@ namespace ToSic.Eav.Apps
         /// it's needed, so the metadata knows what lookup types are supported
         /// </summary>
         /// <param name="metadataTypes"></param>
+        [PrivateApi("internal use only")]
         internal void InitMetadata(ImmutableDictionary<int, string> metadataTypes)
 	    {
             if(!_loading)
@@ -88,9 +92,9 @@ namespace ToSic.Eav.Apps
 
 
 	    /// <summary>
-        /// Add an entity to the cache
+        /// Add an entity to the cache. Should only be used by EAV code
         /// </summary>
-	    public void Add(Entity newEntity, int? publishedId)
+	    internal void Add(Entity newEntity, int? publishedId)
 	    {
 	        if (!_loading)
 	            throw new Exception("trying to add entity, but not in loading state. set that first!");
@@ -167,7 +171,8 @@ namespace ToSic.Eav.Apps
 	            Log.Add("remove obsolete draft - no draft, won't remove");
 	    }
 
-	    public void Load(ILog parentLog, Action loader)
+
+	    internal void Load(ILog parentLog, Action loader)
 	    {
 	        _loading = true;
             Log.LinkTo(parentLog);

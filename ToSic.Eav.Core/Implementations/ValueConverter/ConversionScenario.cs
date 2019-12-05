@@ -1,8 +1,8 @@
-﻿namespace ToSic.Eav.Implementations.ValueConverter
-{
-    public enum ConversionScenario
-    {
-        GetFriendlyValue,
-        ConvertFriendlyToData
-    }
-}
+﻿//namespace ToSic.Eav.Implementations.ValueConverter
+//{
+//    public enum ConversionScenario
+//    {
+//        GetFriendlyValue,
+//        ConvertFriendlyToData
+//    }
+//}

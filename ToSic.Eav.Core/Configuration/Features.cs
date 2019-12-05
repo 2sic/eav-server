@@ -3,18 +3,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Security.Encryption;
 
 namespace ToSic.Eav.Configuration
 {
-    public class Features
+    /// <summary>
+    /// The Features lets your code find out what features are currently enabled/disabled in the environment.
+    /// It's important to detect if the admin must activate certain features to let your code do it's work.
+    /// </summary>
+    [PublicApi]
+    public static class Features
     {
-        public const bool AllowUnsignedFeatures = true; // testing mode!
-        public const string TypeName = "FeaturesConfiguration";
-        public const string FeaturesField = "Features";
-        public const string SignatureField = "Signature";
+        internal const bool AllowUnsignedFeatures = true; // testing mode!
+        internal const string TypeName = "FeaturesConfiguration";
+        internal const string FeaturesField = "Features";
+        internal const string SignatureField = "Signature";
 
+        [PrivateApi("no good reason to publish this")]
         public const string FeaturesValidationSignature2Sxc930 =
                 "MIIDxjCCAq6gAwIBAgIQOlgW44m37ohELal3ruEqjTANBgkqhkiG9w0BAQsFADBnMQ4wDAYDVQQHDAVCdWNoczERMA8GA1UECAwI" +
                 "U3RHYWxsZW4xCzAJBgNVBAYTAkNIMRQwEgYDVQQLDAtEZXZlbG9wbWVudDENMAsGA1UECgwEMnNpYzEQMA4GA1UEAwwHMnN4YyBD" +
@@ -30,21 +37,44 @@ namespace ToSic.Eav.Configuration
                 "cURfVQ064UicolDoAed3JfZ1XbIpYpUPK0uDDwOmsnNkwVJb1fm1z+MKTRNORnZDZCPfwVlXu32xwG1/YzJqDNnqOd0zY8H4Mj/x" +
                 "V+pokOjj/fBOjNiSfpI+7KkolNM43ZhLSw8TYStDZuf0WsSrU4vF0ROMyiynNhyebpPX21d/MB0PEfZ82uNXBrXTrBPFog==";
 
+        /// <summary>
+        /// Informs you if the enabled features are valid or not - meaning if they have been countersigned by the 2sxc features system.
+        /// As of now, it's not enforced, but in future it will be. 
+        /// </summary>
+        /// <returns>true if the features were signed correctly</returns>
+        [PublicApi]
         public static bool Valid { get; private set; }
 
+        [PrivateApi]
         internal static FeatureList Stored => _stored ?? (_stored = Load());
         private static FeatureList _stored; 
 
+
+        [PrivateApi]
         public static IEnumerable<Feature> All => (_merged ?? (_merged = Merge(Stored, Catalog))).Features;
         private static FeatureList _merged;
 
+        [PrivateApi]
         public static IEnumerable<Feature> Ui => All
             .Where(f => f.Enabled && f.Ui == true);
 
-        public static bool Enabled(Guid id) => All.Any(f => f.Id == id && f.Enabled);
+        /// <summary>
+        /// Checks if a feature is enabled
+        /// </summary>
+        /// <param name="guid">The feature Guid</param>
+        /// <returns>true if the feature is enabled</returns>
+        [PublicApi]
+        public static bool Enabled(Guid guid) => All.Any(f => f.Id == guid && f.Enabled);
 
-        public static bool Enabled(IEnumerable<Guid> ids) => ids.All(Enabled);
+        /// <summary>
+        /// Checks if a list of features are enabled, in case you need many features to be activated.
+        /// </summary>
+        /// <param name="guids">list/array of Guids</param>
+        /// <returns>true if all features are enabled, false if any one of them is not</returns>
+        [PublicApi]
+        public static bool Enabled(IEnumerable<Guid> guids) => guids.All(Enabled);
 
+        [PrivateApi]
         public static bool EnabledOrException(IEnumerable<Guid> features, string message, out FeaturesDisabledException exception)
         {
             // ReSharper disable PossibleMultipleEnumeration
@@ -59,8 +89,7 @@ namespace ToSic.Eav.Configuration
         private static string InfoLinkRoot => _infoLinkRoot ?? (_infoLinkRoot = Factory.Resolve<ISystemConfiguration>().FeatureInfoLinkRoot);
         private static string _infoLinkRoot;
 
-        //public static string MsgMissingSome(Guid id) 
-        //    => $"Feature {ToFeatInfoLink(id)} not enabled - see also {InfoLink}";
+        [PrivateApi]
         public static string MsgMissingSome(IEnumerable<Guid> ids) 
             => $"Features {string.Join(", ", ids.Where(i => !Enabled(i)).Select(ToFeatInfoLink))} not enabled - see also {HelpLink}";
 
@@ -69,6 +98,7 @@ namespace ToSic.Eav.Configuration
         /// <summary>
         /// Reset the features to force reloading of the features
         /// </summary>
+        [PrivateApi]
         public static void Reset()
         {
             _merged = null;
@@ -142,9 +172,11 @@ namespace ToSic.Eav.Configuration
 
         }
 
-        public static long CacheTimestamp { get; private set; }
+        [PrivateApi]
+        private static long CacheTimestamp { get; set; }
 
-        public static bool CacheChanged(long compareTo) => compareTo != CacheTimestamp;
+        [PrivateApi]
+        private static bool CacheChanged(long compareTo) => compareTo != CacheTimestamp;
 
 
 
@@ -158,6 +190,7 @@ namespace ToSic.Eav.Configuration
         /// this is a temporary solution, because most features are from 2sxc (not eav)
         /// so later on this must be injected or something
         /// </remarks>
+        [PrivateApi]
         public static FeatureList Catalog = new FeatureList(new List<Feature>
         {
             // released features

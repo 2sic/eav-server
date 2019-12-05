@@ -5,7 +5,7 @@ namespace ToSic.Eav.DataSources.Tests
 {
     internal class ValueSortShared
     {
-        private static Dictionary<int, DataTableDataSource> _cachedDs = new Dictionary<int, DataTableDataSource>();
+        private static Dictionary<int, DataTable> _cachedDs = new Dictionary<int, DataTable>();
 
         public static ValueSort GeneratePersonSourceWithDemoData(int itemsToGenerate = 10, int firstId = 1001, bool useCacheForSpeed = true)
         {

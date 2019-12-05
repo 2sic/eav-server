@@ -1,23 +1,51 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Data;
+using ToSic.Eav.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.Queries
 {
-    public class QueryDefinition
+    /// <summary>
+    /// This contains the structure / definition of a query, which was originally stored in an <see cref="IEntity"/>
+    /// </summary>
+    [PublicApi]
+    public class QueryDefinition: EntityBasedType
     {
         /// <summary>
-        /// The appid inside which the query will run (not where it is stored!)
+        /// The appid inside which the query will run, _not where it is stored!_ <br/>
+        /// This can differ, because certain global queries (stored in the global app) will run in a specific app - for example to retrieve all ContentTypes of that app.
         /// </summary>
-        public int AppId; 
+        public int AppId;
 
-        public IEntity Header;
-        public List<IEntity> Parts => Header.Metadata.Where(m => m.Type.Name == Constants.QueryPartTypeName).ToList();
+        /// <summary>
+        /// The parts of the query
+        /// </summary>
+        public List<QueryPartDefinition> Parts
+            => _parts ?? (_parts = Entity.Metadata
+                   .Where(m => m.Type.Name == Constants.QueryPartTypeName)
+                   .Select(e => new QueryPartDefinition(e))
+                   .ToList());
+        private List<QueryPartDefinition> _parts;
 
-        public QueryDefinition(IEntity header, int? appId = null)
+        /// <summary>
+        /// Connections used in the query to map various DataSource Out-Streams to various other DataTarget In-Streams
+        /// </summary>
+        public IList<Connection> Connections => _connections ?? (_connections = Queries.Connections.Deserialize(ConnectionsRaw));
+        private IList<Connection> _connections;
+
+        /// <summary>
+        /// The connections as they are serialized in the Entity
+        /// </summary>
+        [PrivateApi]
+        private string ConnectionsRaw => Get(Constants.QueryStreamWiringAttributeName, "");
+
+        [PrivateApi]
+        public QueryDefinition(IEntity header, int appId): base(header)
         {
-            Header = header;
-            AppId = appId ?? header.AppId;
+            if (appId == 0)
+                appId = header.AppId;
+            AppId = appId;
         }
     }
 }

@@ -63,6 +63,9 @@
     <Reference Include="CsvHelper, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8c4959082be5c823, processorArchitecture=MSIL">
       <HintPath>..\packages\CsvHelper.2.16.3.0\lib\net45\CsvHelper.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.4.5.6\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Collections.Immutable, Version=1.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Collections.Immutable.1.3.0\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
@@ -78,67 +81,74 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App.cs" />
-    <Compile Include="AttributeFilter.cs" />
-    <Compile Include="Caches\ICanPurgeListCache.cs" />
-    <Compile Include="Caches\IListsCache.cs" />
-    <Compile Include="Caches\ListsCache.cs" />
+    <Compile Include="Compatibility\ToSic.Eav.DataSources.SqlDataSource.cs" />
+    <Compile Include="Compatibility\ToSic.Eav.DataSources.DataTableDataSource.cs" />
+    <Compile Include="Compatibility\ToSic.Eav.DataSources.ExternalDataDataSource.cs" />
+    <Compile Include="Compatibility\ToSic.Eav.DataSources.BaseDataSource.cs" />
+    <Compile Include="DataSourceInfo.cs" />
+    <Compile Include="DataSources\App.cs" />
+    <Compile Include="DataSources\AttributeFilter.cs" />
+    <Compile Include="Caching\ICanPurgeListCache.cs" />
+    <Compile Include="Caching\IListCache.cs" />
+    <Compile Include="Caching\ListCache.cs" />
+    <Compile Include="Queries\Connection.cs" />
+    <Compile Include="Queries\QueryPart.cs" />
     <Compile Include="System\Types\AppType.cs" />
     <Compile Include="System\Types\AttributeType.cs" />
     <Compile Include="System\Types\ContentTypeType.cs" />
     <Compile Include="System\QueryInfo.cs" />
-    <Compile Include="Queries\Global.cs" />
+    <Compile Include="Queries\GlobalQueries.cs" />
     <Compile Include="System\Types\StreamsType.cs" />
     <Compile Include="System\Types\ZoneType.cs" />
-    <Compile Include="VisualQuery\DifficultyBeta.cs" />
-    <Compile Include="VisualQuery\DataSourceType.cs" />
-    <Compile Include="VisualQuery\VisualQueryAttribute.cs" />
-    <Compile Include="BaseDataSource.cs" />
-    <Compile Include="Caches\BaseCache.cs" />
-    <Compile Include="Caches\CacheAllStreams.cs" />
-    <Compile Include="Caches\ICache.cs" />
-    <Compile Include="Caches\ListCacheItem.cs" />
-    <Compile Include="Caches\QuickCache.cs" />
-    <Compile Include="CsvDataSource.cs" />
+    <Compile Include="Queries\VisualQuery\DifficultyBeta.cs" />
+    <Compile Include="Queries\VisualQuery\DataSourceType.cs" />
+    <Compile Include="Queries\VisualQuery\VisualQueryAttribute.cs" />
+    <Compile Include="DataSources\DataSourceBase.cs" />
+    <Compile Include="Caching\RootCacheBase.cs" />
+    <Compile Include="Caching\CacheAllStreams.cs" />
+    <Compile Include="Caching\IRootCache.cs" />
+    <Compile Include="Caching\ListCacheItem.cs" />
+    <Compile Include="Caching\RootCacheSimple.cs" />
+    <Compile Include="DataSources\CsvDataSource.cs" />
     <Compile Include="DataSource.cs" />
-    <Compile Include="DataStream.cs" />
-    <Compile Include="DataStreamDeferred.cs" />
-    <Compile Include="DataTableDataSource.cs" />
+    <Compile Include="Streams\DataStream.cs" />
+    <Compile Include="Streams\DataStreamDeferred.cs" />
+    <Compile Include="DataSources\DataTable.cs" />
     <Compile Include="Debug\DataSourceInfo.cs" />
     <Compile Include="Debug\QueryInfo.cs" />
     <Compile Include="Debug\StreamInfo.cs" />
-    <Compile Include="DeferredQuery.cs" />
-    <Compile Include="EntityIdFilter.cs" />
-    <Compile Include="EntityTypeFilter.cs" />
+    <Compile Include="DataSources\Query.cs" />
+    <Compile Include="DataSources\EntityIdFilter.cs" />
+    <Compile Include="DataSources\EntityTypeFilter.cs" />
     <Compile Include="Exceptions\DataSourceException.cs" />
-    <Compile Include="ExternalDataDataSource.cs" />
-    <Compile Include="IDataSource.cs" />
-    <Compile Include="IDataStream.cs" />
-    <Compile Include="IDataTarget.cs" />
-    <Compile Include="IDeferredDataSource.cs" />
-    <Compile Include="Metadata\MetadataFromDataSource.cs" />
+    <Compile Include="DataSources\ExternalData.cs" />
+    <Compile Include="Interfaces\IDataSource.cs" />
+    <Compile Include="Interfaces\IDataStream.cs" />
+    <Compile Include="Interfaces\IDataTarget.cs" />
+    <Compile Include="Interfaces\IDeferredDataSource.cs" />
+    <Compile Include="Metadata\RemoteMetadata.cs" />
     <Compile Include="System\Attributes.cs" />
-    <Compile Include="Pipeline\QueryConstants.cs" />
+    <Compile Include="Queries\QueryConstants.cs" />
     <Compile Include="Queries\QueryDefinition.cs" />
-    <Compile Include="Shuffle.cs" />
-    <Compile Include="Paging.cs" />
-    <Compile Include="PassThrough.cs" />
-    <Compile Include="Pipeline\DataQuery.cs" />
-    <Compile Include="Pipeline\QueryFactory.cs" />
-    <Compile Include="Pipeline\QueryWiring.cs" />
+    <Compile Include="DataSources\Shuffle.cs" />
+    <Compile Include="DataSources\Paging.cs" />
+    <Compile Include="DataSources\PassThrough.cs" />
+    <Compile Include="Queries\QueryManager.cs" />
+    <Compile Include="Queries\QueryBuilder.cs" />
+    <Compile Include="Queries\Connections.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="OwnerFilter.cs" />
-    <Compile Include="PublishingFilter.cs" />
-    <Compile Include="RelationshipFilter.cs" />
+    <Compile Include="DataSources\OwnerFilter.cs" />
+    <Compile Include="DataSources\PublishingFilter.cs" />
+    <Compile Include="DataSources\RelationshipFilter.cs" />
     <Compile Include="RootSources\IRootSource.cs" />
-    <Compile Include="SqlDataSource.cs" />
+    <Compile Include="DataSources\Sql.cs" />
     <Compile Include="SqlSources\EavSqlStore.cs" />
-    <Compile Include="ItemFilterDuplicates.cs" />
-    <Compile Include="StreamMerge.cs" />
-    <Compile Include="StreamFallback.cs" />
-    <Compile Include="ValueFilter.cs" />
-    <Compile Include="ValueProvider\LookUpInDataTarget.cs" />
-    <Compile Include="ValueSort.cs" />
+    <Compile Include="DataSources\ItemFilterDuplicates.cs" />
+    <Compile Include="DataSources\StreamMerge.cs" />
+    <Compile Include="DataSources\StreamFallback.cs" />
+    <Compile Include="DataSources\ValueFilter.cs" />
+    <Compile Include="LookUp\LookUpInDataTarget.cs" />
+    <Compile Include="DataSources\ValueSort.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj">
@@ -152,6 +162,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <Compile Include="Compatibility\ToSic.Eav.DataSources.VisualQuery.VisualQueryAttribute.cs" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />

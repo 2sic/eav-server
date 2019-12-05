@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSources.RootSources;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
 using AppState = ToSic.Eav.Apps.AppState;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -9,13 +9,13 @@ using IEntity = ToSic.Eav.Data.IEntity;
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataSources.SqlSources
 {
-    /// <inheritdoc cref="BaseDataSource" />
     /// <summary>
     /// A DataSource that uses SQL Server as Backend
     /// </summary>
-    public sealed class EavSqlStore : BaseDataSource, IRootSource
+    [PrivateApi("not sure if this should be as a data-source, since it's probably never really used as a DS")]
+    public sealed class EavSqlStore : DataSourceBase, IRootSource
 	{
-        // deferred IRepositoryLoader as needed...
+        [PrivateApi]
 	    public override string LogId => "DS.EavSql";
 
         private IRepositoryLoader Loader => _ldr ?? (_ldr = Factory.Resolve<IRepositoryLoader>());

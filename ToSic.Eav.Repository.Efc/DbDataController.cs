@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
+using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence;
@@ -10,7 +11,6 @@ using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Repository.Efc.Parts;
-using ICache = ToSic.Eav.DataSources.Caches.ICache;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Repository.Efc
@@ -215,10 +215,10 @@ namespace ToSic.Eav.Repository.Efc
         private void PurgeAppCacheIfReady()
         {
             if(_purgeAppCacheOnSave)
-                (_cache ?? (_cache = Factory.Resolve<ICache>())).PurgeCache(ZoneId, AppId);
+                (_cache ?? (_cache = Factory.Resolve<IRootCache>())).PurgeCache(ZoneId, AppId);
         }
 
-        private ICache _cache;
+        private IRootCache _cache;
 
         #endregion
 

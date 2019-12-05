@@ -6,6 +6,7 @@ using System.Linq;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.TokenEngine.Tests.TestData;
 using ToSic.Eav.TokenEngine.Tests.ValueProvider;
+using DataTable = ToSic.Eav.DataSources.DataTable;
 
 namespace ToSic.Eav.UnitTests.DataSources
 {
@@ -17,7 +18,7 @@ namespace ToSic.Eav.UnitTests.DataSources
         public static int HeightVar = 55;
         public static int IsMaleForEveryX = 3;
 
-        private static readonly Dictionary<int, DataTableDataSource> _cachedDs = new Dictionary<int, DataTableDataSource>();
+        private static readonly Dictionary<int, DataTable> _cachedDs = new Dictionary<int, DataTable>();
 
         [TestMethod]
         public void DataSource_Create_GeneralTest()
@@ -63,15 +64,15 @@ namespace ToSic.Eav.UnitTests.DataSources
             Assert.AreEqual("Daniel Mettler", first.GetBestTitle());
         }
 
-        public static DataTableDataSource GeneratePersonSourceWithDemoData(int itemsToGenerate = 10, int firstId = 1001, bool useCacheForSpeed = true)
+        public static DataTable GeneratePersonSourceWithDemoData(int itemsToGenerate = 10, int firstId = 1001, bool useCacheForSpeed = true)
         {
             if(useCacheForSpeed && _cachedDs.ContainsKey(itemsToGenerate))
                 return _cachedDs[itemsToGenerate];
             
-            var dataTable = new DataTable();
+            var dataTable = new System.Data.DataTable();
             dataTable.Columns.AddRange(new[]
             {
-                new DataColumn(DataTableDataSource.EntityIdDefaultColumnName, typeof (int)),
+                new DataColumn(DataTable.EntityIdDefaultColumnName, typeof (int)),
                 new DataColumn("FullName"),
                 new DataColumn("FirstName"),
                 new DataColumn("LastName"),
@@ -84,7 +85,7 @@ namespace ToSic.Eav.UnitTests.DataSources
             });
             AddSemirandomPersons(dataTable, itemsToGenerate, firstId);
 
-            var source = new DataTableDataSource(dataTable, "Person", titleField: "FullName", modifiedField: "InternalModified")
+            var source = new DataTable(dataTable, "Person", titleField: "FullName", modifiedField: "InternalModified")
             {
                 ConfigurationProvider = DemoConfigs.AppSetAndRes()
             };
@@ -98,7 +99,7 @@ namespace ToSic.Eav.UnitTests.DataSources
             return source;
         }
 
-        private static void AddSemirandomPersons(DataTable dataTable, int itemsToGenerate = 10, int firstId = 1000)
+        private static void AddSemirandomPersons(System.Data.DataTable dataTable, int itemsToGenerate = 10, int firstId = 1000)
         {
             for (var i = firstId; i < firstId + itemsToGenerate; i++)
             {
@@ -134,12 +135,12 @@ namespace ToSic.Eav.UnitTests.DataSources
         }
 
 
-        public static DataTableDataSource GenerateTrivial(int itemsToGenerate = 10, int firstId = 1001, bool useCacheForSpeed = true)
+        public static DataTable GenerateTrivial(int itemsToGenerate = 10, int firstId = 1001, bool useCacheForSpeed = true)
         {
-            var dataTable = new DataTable();
+            var dataTable = new System.Data.DataTable();
             dataTable.Columns.AddRange(new[]
             {
-                new DataColumn(DataTableDataSource.EntityIdDefaultColumnName, typeof (int)),
+                new DataColumn(DataTable.EntityIdDefaultColumnName, typeof (int)),
                 new DataColumn("EntityTitle"),
                 new DataColumn("FirstName"),
                 new DataColumn("LastName"),
@@ -148,7 +149,7 @@ namespace ToSic.Eav.UnitTests.DataSources
             });
             AddSemirandomTrivial(dataTable, itemsToGenerate, firstId);
 
-            var source = new DataTableDataSource(dataTable, "Person", modifiedField: "InternalModified")
+            var source = new DataTable(dataTable, "Person", modifiedField: "InternalModified")
             {
                 ConfigurationProvider = DemoConfigs.AppSetAndRes()
             };
@@ -162,7 +163,7 @@ namespace ToSic.Eav.UnitTests.DataSources
             return source;
         }
 
-        private static void AddSemirandomTrivial(DataTable dataTable, int itemsToGenerate = 10, int firstId = 1000)
+        private static void AddSemirandomTrivial(System.Data.DataTable dataTable, int itemsToGenerate = 10, int firstId = 1000)
         {
             for (var i = firstId; i < firstId + itemsToGenerate; i++)
             {

@@ -29,11 +29,8 @@ namespace ToSic.Eav.Api.Api01
 
         private readonly string _defaultLanguageCode;
 
-        //private readonly int _zoneId;
-
         private readonly int _appId;
 
-        ///// <param name="userName">Name of user loged in</param>
         /// <summary>
         /// Create a simple data controller to create, update and delete entities.
         /// </summary>

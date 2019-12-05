@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Data;
-using ToSic.Eav.DataSources.Pipeline;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSources.System.Types;
-using ToSic.Eav.DataSources.VisualQuery;
-using ToSic.Eav.Interfaces;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.System
@@ -22,7 +18,7 @@ namespace ToSic.Eav.DataSources.System
         ExpectsDataOfType = "4638668f-d506-4f5c-ae37-aa7fdbbb5540",
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-QueryInfo")]
 
-    public sealed class QueryInfo: BaseDataSource
+    public sealed class QueryInfo: DataSourceBase
 	{
         #region Configuration-properties (no config)
 	    public override string LogId => "DS.EavQIn";
@@ -118,15 +114,15 @@ namespace ToSic.Eav.DataSources.System
                 return;
 
             // important, use "Name" and not get-best-title, as some queries may not be correctly typed, so missing title-info
-            var found = QueryName.StartsWith(Global.GlobalQueryPrefix)
-                ? Global.FindQuery(QueryName)
-                : DataQuery.AllQueryItems(AppId, Log)
+            var found = QueryName.StartsWith(GlobalQueries.GlobalQueryPrefix)
+                ? GlobalQueries.FindQuery(QueryName)
+                : QueryManager.AllQueryItems(AppId, Log)
                     .FirstOrDefault(q => string.Equals(q.GetBestValue("Name").ToString(), QueryName,
                         StringComparison.InvariantCultureIgnoreCase));
 
             if (found == null) throw new Exception($"Can't build information about query - couldn't find query '{QueryName}'");
 
-            _query = new QueryFactory(Log).GetDataSourceForTesting(new QueryDefinition(found, AppId), false, ConfigurationProvider);
+            _query = new QueryBuilder(Log).GetDataSourceForTesting(new QueryDefinition(found, AppId), false, ConfigurationProvider);
         }
 
 	    private IDataSource _query;

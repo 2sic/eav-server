@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Logging;
 
-namespace ToSic.Eav.Security.Permissions
+namespace ToSic.Eav.Security
 {
     public interface IPermissionCheck: IHasLog
     {
@@ -10,6 +10,6 @@ namespace ToSic.Eav.Security.Permissions
 
         bool UserMay(List<Grants> grants);
 
-        ConditionType GrantedBecause { get; }
+        Conditions GrantedBecause { get; }
     }
 }

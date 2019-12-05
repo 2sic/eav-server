@@ -18,11 +18,11 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// If data-versioning is currently enabled
         /// </summary>
-        bool VersioningEnabled { get; }
+        bool PublishingEnabled { get; }
 
         /// <summary>
         /// Configuration used to query data - will deliver url-parameters and other important configuration values.
         /// </summary>
-        ITokenListFiller Configuration { get; }
+        ILookUpEngine Configuration { get; }
     }
 }

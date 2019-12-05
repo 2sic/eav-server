@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSources.Caches;
+using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps.Parts
@@ -22,7 +22,7 @@ namespace ToSic.Eav.Apps.Parts
 
         protected AppBase(IInAppAndZone app, ILog parentLog) : this(app.ZoneId, app.AppId, parentLog) { }
 
-        protected AppBase(int appId, ILog parentLog) : this(((BaseCache) DataSource.GetCache(null)).GetZoneAppId(appId: appId).Item1, appId, parentLog) { }
+        protected AppBase(int appId, ILog parentLog) : this(((RootCacheBase) DataSource.GetCache(null)).GetZoneAppId(appId: appId).Item1, appId, parentLog) { }
 
         protected AppBase(IDataSource data, ILog parentLog) : this(data.ZoneId, data.AppId, parentLog)
         {
@@ -31,8 +31,8 @@ namespace ToSic.Eav.Apps.Parts
 
 
         #region Data & Cache
-        public BaseCache Cache => _cache ?? (_cache = (BaseCache) Data.Cache);
-        private BaseCache _cache;
+        public RootCacheBase Cache => _cache ?? (_cache = (RootCacheBase) Data.Cache);
+        private RootCacheBase _cache;
 
         public IDataSource Data => _data ?? (_data = DataSource.GetInitialDataSource(ZoneId, AppId));
         private IDataSource _data;

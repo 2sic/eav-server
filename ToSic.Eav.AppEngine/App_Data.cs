@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Linq;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.LookUp;
 
 namespace ToSic.Eav.Apps
 {
     public partial class App
     {
-
-        public ITokenListFiller ConfigurationProvider
+        [PrivateApi]
+        public ILookUpEngine ConfigurationProvider
         {
             get
             {
@@ -18,13 +19,13 @@ namespace ToSic.Eav.Apps
                 if (_dataConfigurationBuilder != null)
                 {
                     var config = _dataConfigurationBuilder.Invoke(this);
-                    InitData(config.ShowDrafts, config.VersioningEnabled, config.Configuration);
+                    InitData(config.ShowDrafts, config.PublishingEnabled, config.Configuration);
                 }
                 _configurationProviderBuilt = true;
                 return _configurationProvider;
             }
         }
-        private ITokenListFiller _configurationProvider;
+        private ILookUpEngine _configurationProvider;
         private bool _configurationProviderBuilt;
 
 
@@ -40,7 +41,7 @@ namespace ToSic.Eav.Apps
         /// <param name="showDrafts"></param>
         /// <param name="versioningEnabled"></param>
         /// <param name="configurationValues">this is needed for providing parameters to the data-query-system</param>
-        private void InitData(bool showDrafts, bool versioningEnabled, ITokenListFiller configurationValues)
+        private void InitData(bool showDrafts, bool versioningEnabled, ILookUpEngine configurationValues)
         {
             Log.Add($"init data drafts:{showDrafts}, vers:{versioningEnabled}, hasConf:{configurationValues != null}");
             _configurationProvider = configurationValues;
@@ -48,11 +49,12 @@ namespace ToSic.Eav.Apps
             EnablePublishing = versioningEnabled;
         }
 
-
+        /// <inheritdoc />
         public IAppData Data => _data ?? (_data = BuildData());
         private IAppData _data;
 
-        protected virtual DataSources.App BuildData()
+        [PrivateApi]
+        protected virtual AppData BuildData()
         {
             Log.Add("configure on demand start");
             if (ConfigurationProvider == null)
@@ -61,10 +63,10 @@ namespace ToSic.Eav.Apps
 
             // ModulePermissionController does not work when indexing, return false for search
             var initialSource = DataSource.GetInitialDataSource(ZoneId, AppId, ShowDrafts,
-                ConfigurationProvider as TokenListFiller, Log);
+                ConfigurationProvider as LookUpEngine, Log);
 
             // todo: probably use the full configuration provider from function params, not from initial source?
-            var xData = DataSource.GetDataSource<DataSources.App>(initialSource.ZoneId,
+            var xData = DataSource.GetDataSource<AppData>(initialSource.ZoneId,
                 initialSource.AppId, initialSource, initialSource.ConfigurationProvider, Log);
 
             Log.Add("configure on demand completed");
@@ -77,7 +79,8 @@ namespace ToSic.Eav.Apps
         /// Override and enhance with environment data like current user, languages, etc.
         /// </summary>
         /// <returns></returns>
-        protected void GetLanguageAndUser(DataSources.App xData)
+        [PrivateApi]
+        protected void GetLanguageAndUser(AppData xData)
         {
             var languagesActive = Env.ZoneMapper.CulturesWithState(Tenant.Id, ZoneId)
                 .Any(c => c.Active);

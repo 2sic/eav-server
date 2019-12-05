@@ -6,12 +6,11 @@ using System.Web.Http;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSources.Caches;
+using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Serializers;
 using ToSic.Eav.WebApi.Formats;
-using ICache = ToSic.Eav.DataSources.Caches.ICache;
 
 namespace ToSic.Eav.WebApi
 {
@@ -21,7 +20,7 @@ namespace ToSic.Eav.WebApi
 	/// </summary>
 	public class ContentTypeController : HasLog
     {
-        public ContentTypeController(ILog parentLog = null) : base("Api.EavCTC", parentLog)
+        public ContentTypeController(ILog parentLog = null) : base("Api.EavCTC", parentLog, "get EavCTC")
         {
         }
 
@@ -37,8 +36,7 @@ namespace ToSic.Eav.WebApi
 
             // 2017-10-23 old...
             // scope can be null (eav) or alternatives would be "System", "2SexyContent-System", "2SexyContent-App", "2SexyContent"
-            var cache = (BaseCache)DataSource.GetCache(null, appId); // needed to count items
-            //var allTypes = cache.GetContentTypes();
+            var cache = (RootCacheBase)DataSource.GetCache(null, appId); // needed to count items
 
             var filteredType = allTypes.Where(t => t.Scope == scope)
                 .OrderBy(t => t.Name)
@@ -47,7 +45,7 @@ namespace ToSic.Eav.WebApi
             return filteredType;
 	    }
 
-        private ContentTypeInfo ContentTypeForJson(ContentType t, ICache cache)
+        private ContentTypeInfo ContentTypeForJson(ContentType t, IRootCache cache)
 	    {
 	        Log.Add($"for json a:{t.AppId}, type:{t.Name}");
 	        var metadata = t.Metadata.Description;

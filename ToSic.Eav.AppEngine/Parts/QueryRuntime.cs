@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSources.Pipeline;
 using ToSic.Eav.DataSources.Queries;
-using ToSic.Eav.DataSources.VisualQuery;
 using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps.Parts
@@ -19,7 +17,7 @@ namespace ToSic.Eav.Apps.Parts
         public static IEnumerable<DataSourceInfo> GetInstalledDataSources()
         {
             var result = new List<DataSourceInfo>();
-            var installedDataSources = DataSource.GetInstalledDataSources2(true);
+            var installedDataSources = DataSource.GetInstalledDataSources(true);
             foreach (var dataSource in installedDataSources)
             {
                 #region Create Instance of DataSource to get In- and Out-Streams
@@ -64,7 +62,7 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="queryId"></param>
         /// <returns></returns>
         public QueryDefinition Get(int queryId) =>
-            new QueryDefinition(DataQuery.GetQueryEntity(queryId, App.Cache));
+            new QueryDefinition(Eav.DataSources.Queries.QueryManager.GetQueryEntity(queryId, App.Cache), App.AppId);
 
         public class DataSourceInfo
         {

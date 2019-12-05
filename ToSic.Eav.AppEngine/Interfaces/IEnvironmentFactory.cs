@@ -4,6 +4,7 @@ using ToSic.Eav.Environment;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Security.Permissions;
 using IEntity = ToSic.Eav.Data.IEntity;
+using PermissionCheckBase = ToSic.Eav.Security.PermissionCheckBase;
 
 namespace ToSic.Eav.Apps
 {

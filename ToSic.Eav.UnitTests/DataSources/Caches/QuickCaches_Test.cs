@@ -2,7 +2,7 @@
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSources.Caches;
+using ToSic.Eav.DataSources.Caching;
 
 namespace ToSic.Eav.UnitTests.DataSources.Caches
 {
@@ -29,11 +29,11 @@ namespace ToSic.Eav.UnitTests.DataSources.Caches
             
 
             // Try to auto-retrieve 
-            var cached = listCache.Get(ds.CacheFullKey + "|Default").LightList;
+            var cached = listCache.Get(ds.CacheFullKey + "|Default").List;
 
             Assert.AreEqual(1, cached.Count());
 
-            cached = listCache.Get(ds[Constants.DefaultStreamName]).LightList;
+            cached = listCache.Get(ds[Constants.DefaultStreamName]).List;
             Assert.AreEqual(1, cached.Count());
 
             var lci = listCache.Get(ds.CacheFullKey);
@@ -42,7 +42,7 @@ namespace ToSic.Eav.UnitTests.DataSources.Caches
             lci = listCache.Get(ds[Constants.DefaultStreamName]);
             Assert.AreNotEqual(null, lci, "Cached should be found because usin stream instead of name");
 
-            cached = listCache.Get(ds[Constants.DefaultStreamName]).LightList;
+            cached = listCache.Get(ds[Constants.DefaultStreamName]).List;
             Assert.AreEqual(1, cached.Count());
 
         }
@@ -54,7 +54,7 @@ namespace ToSic.Eav.UnitTests.DataSources.Caches
             var ds = CreateFilterForTesting(100, ItemToFilter);
 
             var listCache = ds.Cache.Lists; //as IListCache;
-            listCache.ListDefaultRetentionTimeInSeconds = 1;
+            (listCache as ListCache).DefaultDuration = 1;
             Assert.IsFalse(listCache.Has(ds.CacheFullKey), "Should not have it in cache yet");
 
             listCache.Set(ds.CacheFullKey, ds.List, ds.CacheTimestamp);

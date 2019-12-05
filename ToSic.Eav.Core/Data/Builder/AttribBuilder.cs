@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Implementations.ValueConverter;
 
 namespace ToSic.Eav.Data.Builder
 {
@@ -80,7 +79,7 @@ namespace ToSic.Eav.Data.Builder
             // pre-convert links if necessary...
             if (resolveHyperlink && valueType == ValueTypes.Hyperlink.ToString())
             {
-                var valueConverter = Factory.Resolve<IEavValueConverter>();
+                var valueConverter = Factory.Resolve<IValueConverter>();
                 value = valueConverter.ToReference(valueType);//  valueConverter.Convert(ConversionScenario.ConvertFriendlyToData, valueType, (string)value);
             }
 

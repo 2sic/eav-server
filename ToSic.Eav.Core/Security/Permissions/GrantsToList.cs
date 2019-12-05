@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ToSic.Eav.Security.Permissions
+namespace ToSic.Eav.Security
 {
     public static class GrantsToList
     {

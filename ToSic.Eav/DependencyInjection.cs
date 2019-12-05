@@ -1,7 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSources.Caches;
-using ToSic.Eav.DataSources.RootSources;
 using ToSic.Eav.DataSources.SqlSources;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Efc;
@@ -9,10 +7,9 @@ using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repository.Efc.Implementations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Eav.DataSources.Metadata;
-using ToSic.Eav.ImportExport.Json;
+using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.Metadata;
-using ICache = ToSic.Eav.DataSources.Caches.ICache;
+using ToSic.Eav.ImportExport.Json;
 
 namespace ToSic.Eav
 {
@@ -29,9 +26,9 @@ namespace ToSic.Eav
 	    /// <param name="serviceCollection"></param>
 	    public void ConfigureNetCoreContainer(IServiceCollection serviceCollection)
 	    {
-            serviceCollection.TryAddTransient<ICache, QuickCache>();
+            serviceCollection.TryAddTransient<IRootCache, RootCacheSimple>();
             serviceCollection.TryAddTransient<IRootSource, EavSqlStore>();
-	        serviceCollection.TryAddTransient<IRemoteMetadata, MetadataFromDataSource>();
+	        serviceCollection.TryAddTransient<IRemoteMetadata, RemoteMetadata>();
 	        serviceCollection.TryAddTransient<ITargetTypes, EfcMetadataTargetTypes>();
 
             serviceCollection.TryAddTransient<IRepositoryImporter, RepositoryImporter>();
@@ -51,8 +48,8 @@ namespace ToSic.Eav
                 ServiceLifetime.Transient); // transient lifetime is important, otherwise 2-3x slower!
 
             // register some Default Constructors
-            serviceCollection.TryAddTransient<SqlDataSource>();
-            serviceCollection.TryAddTransient<DataTableDataSource>();
+            serviceCollection.TryAddTransient<Sql>();
+            serviceCollection.TryAddTransient<DataTable>();
 
             
         }

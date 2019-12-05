@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.DataSources.Caches;
+﻿using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Apps
@@ -11,7 +11,7 @@ namespace ToSic.Eav.Apps
         /// <param name="appId"></param>
         /// <returns></returns>
         public static int ZoneIdOfApp(int appId)
-            => ((BaseCache)DataSource.GetCache(null)).GetZoneAppId(appId: appId).Item1;
+            => ((RootCacheBase)DataSource.GetCache(null)).GetZoneAppId(appId: appId).Item1;
 
         /// <summary>
         /// Retrieve the Assignment-Type-ID which is used to determine which type of object

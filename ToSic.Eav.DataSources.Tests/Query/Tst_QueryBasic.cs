@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSources.Pipeline;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Interfaces;
@@ -22,9 +21,9 @@ namespace ToSic.Eav.DataSources.Tests.Query
         public void LookForQuery_DeepApi()
         {
             var qdef = LoadQueryDef(TestConfig.AppForQueryTests, basicId);
-            Assert.IsNotNull(qdef.Header);
+            Assert.IsNotNull(qdef.Entity);
 
-            var metadata = qdef.Header.Metadata.ToList();
+            var metadata = qdef.Entity.Metadata.ToList();
             Assert.IsTrue(metadata.Count > 0);
 
         }
@@ -32,8 +31,8 @@ namespace ToSic.Eav.DataSources.Tests.Query
         private QueryDefinition LoadQueryDef(int appId, int queryId)
         {
             var source = DataSource.GetInitialDataSource(appId: appId);
-            var pipelineEntity = DataQuery.GetQueryEntity(queryId, source);
-            return new QueryDefinition(pipelineEntity);
+            var pipelineEntity = QueryManager.GetQueryEntity(queryId, source);
+            return new QueryDefinition(pipelineEntity, appId);
         }
 
 
@@ -43,8 +42,8 @@ namespace ToSic.Eav.DataSources.Tests.Query
         {
             var qdef = LoadQueryDef(TestConfig.AppForQueryTests, basicId);
             var ser = new JsonSerializer();
-            var justHeader = ser.Serialize(qdef.Header, 0);
-            var full = ser.Serialize(qdef.Header, 10);
+            var justHeader = ser.Serialize(qdef.Entity, 0);
+            var full = ser.Serialize(qdef.Entity, 10);
             Assert.IsTrue(full.Length > justHeader.Length *2, "full serialized should be much longer");
             Trace.WriteLine("basic");
             Trace.WriteLine(justHeader);
@@ -57,8 +56,8 @@ namespace ToSic.Eav.DataSources.Tests.Query
         {
             var qdef = LoadQueryDef(TestConfig.AppForQueryTests, basicId);
             var ser = Serializer();
-            var strHead = ser.Serialize(qdef.Header, 0);
-            var full = ser.Serialize(qdef.Header, 10);
+            var strHead = ser.Serialize(qdef.Entity, 0);
+            var full = ser.Serialize(qdef.Entity, 10);
 
             var eHead2 = ser.Deserialize(strHead, true);
             Assert.IsTrue(eHead2.Metadata.Count() == 0, "header without metadata should also have non after restoring");
@@ -67,7 +66,7 @@ namespace ToSic.Eav.DataSources.Tests.Query
             Assert.AreEqual(strHead2, strHead2, "header without metadata serialized and back should be the same");
 
             var fullBack = ser.Deserialize(full, true);
-            Assert.AreEqual(fullBack.Metadata.Count(), qdef.Header.Metadata.Count(),
+            Assert.AreEqual(fullBack.Metadata.Count(), qdef.Entity.Metadata.Count(),
                 "full with metadata should also have after restoring");
 
             var full2 = ser.Serialize(fullBack, 10);
@@ -87,17 +86,17 @@ namespace ToSic.Eav.DataSources.Tests.Query
         public void Query_Run_And_Run_Materialized()
         {
             var qdef = LoadQueryDef(TestConfig.AppForQueryTests, basicId);
-            var query = new QueryFactory(null).GetDataSourceForTesting(qdef, false);
+            var query = new QueryBuilder(null).GetDataSourceForTesting(qdef, false);
             var countDef = query.List.Count();
             Assert.IsTrue(countDef > 0, "result > 0");
             Assert.AreEqual(basicCount, countDef);
 
             var ser = Serializer();
-            var strQuery = ser.Serialize(qdef.Header, 10);
+            var strQuery = ser.Serialize(qdef.Entity, 10);
             var eDef2 = ser.Deserialize(strQuery, true);
 
-            var qdef2 = new QueryDefinition(eDef2);
-            var query2 = new QueryFactory(null).GetDataSourceForTesting(qdef2, false);
+            var qdef2 = new QueryDefinition(eDef2, 0);
+            var query2 = new QueryBuilder(null).GetDataSourceForTesting(qdef2, false);
             var countDef2 = query2.List.Count();
             Assert.AreEqual(countDef2, countDef, "countdefs should be same");
         }

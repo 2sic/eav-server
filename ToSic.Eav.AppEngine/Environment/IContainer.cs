@@ -25,8 +25,9 @@ namespace ToSic.Eav.Environment
         int TenantId { get; }
 
         /// <summary>
-        /// Determines if this is a primary block (directly in the CMS) or a block within a primary block (inner content)
+        /// Determines if this is a the primary App (the content-app) as opposed to any additional app
         /// </summary>
+        [PrivateApi("don't think this should be here! also not sure if it's the primary - or the contentApp! reason seems to be that we detect it by the DNN module name")]
         bool IsPrimary { get; }
     }
 }

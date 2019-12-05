@@ -6,7 +6,6 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.WebApi.Formats;
 

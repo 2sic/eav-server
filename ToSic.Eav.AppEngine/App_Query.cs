@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSources.Pipeline;
 using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Apps
 {
@@ -11,6 +11,7 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// Cached list of queries
         /// </summary>
+        [PrivateApi]
         protected IDictionary<string, IDataSource> Queries;
 
         /// <summary>
@@ -19,6 +20,7 @@ namespace ToSic.Eav.Apps
         /// - App.Query.ContainsKey(...)
         /// - App.Query["One Event"].List
         /// </summary>
+        /// <inheritdoc />
         public IDictionary<string, IDataSource> Query
         {
             get
@@ -27,29 +29,30 @@ namespace ToSic.Eav.Apps
 
                 if (ConfigurationProvider == null)
                     throw new Exception("Can't use app-queries, because the necessary configuration provider hasn't been initialized. Call InitData first.");
-                Queries = DataQuery.AllQueries(ZoneId, AppId, ConfigurationProvider, Log, ShowDrafts);
+                Queries = QueryManager.AllQueries(ZoneId, AppId, ConfigurationProvider, Log, ShowDrafts);
                 return Queries;
             }
         }
 
-        public DeferredQuery GetQuery(string name)
+        /// <inheritdoc />
+        public Query GetQuery(string name)
         {
-            if (name.StartsWith(Global.GlobalQueryPrefix))
+            if (name.StartsWith(GlobalQueries.GlobalQueryPrefix))
                 return GetGlobalQuery(name);
 
             // Try to find the query, abort if not found
-            if (Query.ContainsKey(name) && Query[name] is DeferredQuery query)
+            if (Query.ContainsKey(name) && Query[name] is Query query)
                 return query;
 
             // not found
             return null;
         }
 
-        private DeferredQuery GetGlobalQuery(string name)
+        private Query GetGlobalQuery(string name)
         {
-            var qent = Global.FindQuery(name) 
+            var qent = GlobalQueries.FindQuery(name) 
                 ?? throw new Exception($"can't find global query {name}");
-            return new DeferredQuery(ZoneId, AppId, qent, ConfigurationProvider, ShowDrafts);
+            return new Query(ZoneId, AppId, qent, ConfigurationProvider, ShowDrafts);
         }
     }
 }

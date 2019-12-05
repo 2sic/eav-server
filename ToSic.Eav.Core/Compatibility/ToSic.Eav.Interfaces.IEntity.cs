@@ -2,6 +2,7 @@
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Security;
 using ToSic.Eav.Security.Permissions;
 
 // ReSharper disable once CheckNamespace

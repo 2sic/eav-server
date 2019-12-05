@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Security.Permissions;
 
-namespace ToSic.Eav.Security.Permissions
+namespace ToSic.Eav.Security
 {
     /// <summary>
     /// Anything that uses <see cref="IHasPermissions"/> can have custom permissions.

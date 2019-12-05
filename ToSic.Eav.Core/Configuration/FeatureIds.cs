@@ -1,7 +1,9 @@
 ﻿using System;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Configuration
 {
+    [PrivateApi("this should probably never be public, as we want to rename things at will")]
     public class FeatureIds
     {
         // Important: these names are public - don't ever change them
