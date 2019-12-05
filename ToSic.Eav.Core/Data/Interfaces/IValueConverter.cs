@@ -19,13 +19,14 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Resolve a reference to a value using the environment resolver
         /// </summary>
-        /// <param name="itemGuid">
-        /// Guid of the item/entity which was using the reference. <br/>
-        /// The Guid is used when security setting only allow resolving within the own item.
-        /// This ensures that external requests cannot just number through all possible IDs.
-        /// </param>
         /// <param name="reference">Reference code (or something else) - if not a code, will not resolve</param>
+        /// <param name="itemGuid">
+        ///     Guid of the item/entity which was using the reference. <br/>
+        ///     The Guid is used when security setting only allow resolving within the own item.
+        ///     This ensures that external requests cannot just number through all possible IDs. <br/>
+        ///     If you use Guid.Empty or don't supply it, it will usually work, except on systems where the security has been extra-hardened. 
+        /// </param>
         /// <returns>The value, like the url.</returns>
-        string ToValue(Guid itemGuid, string reference);
+        string ToValue(string reference, Guid itemGuid = default);
     }
 }

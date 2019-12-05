@@ -178,7 +178,7 @@ namespace ToSic.Eav.Data
         }
 
         protected static string TryToResolveLink(Guid itemGuid, string result) 
-            => Factory.Resolve<IValueConverter>().ToValue(itemGuid, result);
+            => Factory.Resolve<IValueConverter>().ToValue(result, itemGuid);
 
         /// <inheritdoc />
 	    public string GetBestTitle() => GetBestTitle(0);

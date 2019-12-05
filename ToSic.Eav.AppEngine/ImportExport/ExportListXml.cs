@@ -230,7 +230,7 @@ namespace ToSic.Eav.Apps.ImportExport
             IValueConverter resolver)
             => attrType != Constants.DataTypeHyperlink
                 ? value
-                : resolver.ToValue(itemGuid,value);
+                : resolver.ToValue(value, itemGuid);
 
         #endregion
 

@@ -14,7 +14,7 @@ namespace ToSic.Eav.Core.Tests.Mocks
             throw new NotImplementedException();
         }
 
-        public string ToValue(Guid itemGuid, string reference)
+        public string ToValue(string reference, Guid itemGuid)
         {
             return reference.ToLowerInvariant().StartsWith("page:") || reference.ToLowerInvariant().StartsWith("file:")
                 ? "http://mock.converted/" + reference
