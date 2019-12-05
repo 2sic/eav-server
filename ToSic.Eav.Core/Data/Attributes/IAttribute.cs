@@ -8,7 +8,7 @@ namespace ToSic.Eav.Data
     /// Usually we'll extend this and use <see cref="IAttribute{T}"/> instead.
     /// </summary>
     /// <remarks>
-    /// > We recommend you read about the @Articles.EavCoreDataModels
+    /// > We recommend you read about the @Specs.Data.Intro
     /// </remarks>
     [PublicApi]
     public interface IAttribute : IAttributeBase

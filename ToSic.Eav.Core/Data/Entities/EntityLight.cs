@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Data
@@ -8,7 +9,8 @@ namespace ToSic.Eav.Data
 	/// <inheritdoc />
 	public class EntityLight : IEntityLight
     {
-	    #region Basic properties EntityId, EntityGuid, Title, Attributes, Type, Modified, etc.
+        #region Basic properties EntityId, EntityGuid, Title, Attributes, Type, Modified, etc.
+        /// <inheritdoc />
         public int AppId { get; internal set; }
         /// <inheritdoc />
 		public int EntityId { get; internal set; } 
@@ -20,11 +22,13 @@ namespace ToSic.Eav.Data
         public object Title => TitleFieldName == null ? null : this[TitleFieldName];
 
         [Newtonsoft.Json.JsonIgnore]
+        [PrivateApi]
         internal string TitleFieldName;
 
         /// <summary>
         /// List of all attributes
         /// </summary>
+        [PrivateApi]
 		protected Dictionary<string, object> LightAttributesForInternalUseOnlyForNow { get; set; }
 
         /// <inheritdoc />
@@ -37,6 +41,7 @@ namespace ToSic.Eav.Data
         [Newtonsoft.Json.JsonIgnore]
         public IRelationshipManager Relationships { get; internal set; }
 
+        /// <inheritdoc />
         public ITarget MetadataFor { get; internal set; }
 
         /// <inheritdoc />
@@ -57,11 +62,13 @@ namespace ToSic.Eav.Data
         /// <remarks>
         /// Empty constructor for inheriting objects who need to build an Entity-Object
         /// </remarks>
+        [PrivateApi]
         protected EntityLight() { }
 
         /// <summary>
         /// Create a new Entity. Used to create InMemory Entities that are not persisted to the EAV SqlStore.
         /// </summary>
+        [PrivateApi]
         internal EntityLight(int appId, int entityId, Guid? guid, IContentType contentType, Dictionary<string, object> values, string titleAttribute = null, DateTime? modified = null)
         {
             AppId = appId;
@@ -125,7 +132,8 @@ namespace ToSic.Eav.Data
             return result;
         }
 
-        public TVal GetBestValue<TVal>(string name, bool resolveHyperlinks = false) 
+         /// <inheritdoc />
+       public TVal GetBestValue<TVal>(string name, bool resolveHyperlinks = false) 
             => ChangeTypeOrDefault<TVal>(GetBestValue(name, resolveHyperlinks));
 
         /// <summary>
@@ -138,6 +146,7 @@ namespace ToSic.Eav.Data
         /// <remarks>
         /// also used by Entity.cs, because that uses it's own GetBestValue(...)
         /// </remarks>
+        [PrivateApi]
         protected static TVal ChangeTypeOrDefault<TVal>(object found)
         {
             if (found == null)
@@ -160,6 +169,7 @@ namespace ToSic.Eav.Data
         /// </summary>
         /// <param name="attributeName"></param>
         /// <returns></returns>
+        [PrivateApi]
         protected object GetInternalPropertyByName(string attributeName)
         {
             switch (attributeName.ToLower())
@@ -177,12 +187,14 @@ namespace ToSic.Eav.Data
             }
         }
 
+        [PrivateApi]
         protected static string TryToResolveLink(Guid itemGuid, string result) 
             => Factory.Resolve<IValueConverter>().ToValue(result, itemGuid);
 
         /// <inheritdoc />
 	    public string GetBestTitle() => GetBestTitle(0);
 
+        /// <inheritdoc />
         private string GetBestTitle(int recursionCount)
         {
             var bestTitle = GetBestValue(Constants.EntityFieldTitle);
@@ -207,6 +219,7 @@ namespace ToSic.Eav.Data
 
 
         // todo: move to save options
+        [PrivateApi]
         public bool PlaceDraftInBranch { get; set; }
 
         #endregion

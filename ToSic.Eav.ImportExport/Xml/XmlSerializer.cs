@@ -69,7 +69,7 @@ namespace ToSic.Eav.Persistence.Xml
                 new XAttribute(XmlConstants.KeyAttr, attrib.Name),
                 new XAttribute(XmlConstants.ValueAttr, str),
                 new XAttribute(XmlConstants.EntityTypeAttribute, attrib.Type),
-                ((Value) value).Languages
+                value.Languages
                 .OrderBy(l => l.Key)
                 .Select(p => new XElement(XmlConstants.ValueDimNode,
                     // because JSON-Entities do not contain valid dimension ids, lookup id
