@@ -5,6 +5,11 @@ using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Data
 {
+    /// <summary>
+    /// Base class for DynamicJackets
+    /// </summary>
+    /// <typeparam name="T">The underlying type, either a JObject or a JToken</typeparam>
+    [PrivateApi("don't publish yet, not sure if this is the right name/namespaces")]
     public abstract class DynamicJacketBase<T>: DynamicObject, IReadOnlyList<object>
     {
         /// <summary>
@@ -17,6 +22,7 @@ namespace ToSic.Eav.Data
         /// Primary constructor expecting a internal data object
         /// </summary>
         /// <param name="originalData">the original data we're wrapping</param>
+        [PrivateApi]
         protected DynamicJacketBase(T originalData) => OriginalData = originalData;
 
         /// <summary>

@@ -5,7 +5,10 @@ using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Data
 {
-    [PrivateApi("publish later")]
+    /// <summary>
+    /// This is a DynamicJacket for JSON arrays
+    /// </summary>
+    [PrivateApi("don't publish yet, not sure if this is the right name/namespaces")]
     public class DynamicJacketList : DynamicJacketBase<JArray>, IReadOnlyList<object>
     {
         /// <inheritdoc />

@@ -12,11 +12,12 @@ namespace ToSic.Eav.Data
     /// Used in various cases where you start with JSON and want to provide the contents to custom code without having to mess with
     /// JS/C# code style differences. 
     /// </summary>
-    [PrivateApi("publish later")]
+    [PrivateApi("don't publish yet, not sure if this is the right name/namespaces")]
     public partial class DynamicJacket: DynamicJacketBase<JObject>
     {
         /// <inheritdoc />
-        public DynamicJacket(JObject originalData) : base(originalData) { }
+        [PrivateApi]
+        internal DynamicJacket(JObject originalData) : base(originalData) { }
 
         /// <summary>
         /// Enable enumeration. When going through objects (properties) it will return the keys, not the values. <br/>
