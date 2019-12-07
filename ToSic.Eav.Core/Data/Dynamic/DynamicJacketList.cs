@@ -6,14 +6,16 @@ using ToSic.Eav.Documentation;
 namespace ToSic.Eav.Data
 {
     /// <summary>
-    /// This is a DynamicJacket for JSON arrays
+    /// This is a DynamicJacket for JSON arrays. You can enumerate through it. 
     /// </summary>
-    [PrivateApi("don't publish yet, not sure if this is the right name/namespaces")]
+    [PublicApi]
     public class DynamicJacketList : DynamicJacketBase<JArray>, IReadOnlyList<object>
     {
         /// <inheritdoc />
         public DynamicJacketList(JArray originalData) :base(originalData) { }
 
+        /// <inheritdoc />
+        public override bool IsList => true;
 
         /// <inheritdoc />
         public override IEnumerator<object> GetEnumerator() => OriginalData.Select(DynamicJacket.WrapOrUnwrap).GetEnumerator();

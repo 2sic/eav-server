@@ -6,10 +6,11 @@ using ToSic.Eav.Documentation;
 namespace ToSic.Eav.Data
 {
     /// <summary>
-    /// Base class for DynamicJackets
+    /// Base class for DynamicJackets. You won't use this, just included in the docs. <br/>
+    /// To check if something is an array or an object, use "IsArray"
     /// </summary>
     /// <typeparam name="T">The underlying type, either a JObject or a JToken</typeparam>
-    [PrivateApi("don't publish yet, not sure if this is the right name/namespaces")]
+    [PublicApi]
     public abstract class DynamicJacketBase<T>: DynamicObject, IReadOnlyList<object>
     {
         /// <summary>
@@ -17,6 +18,11 @@ namespace ToSic.Eav.Data
         /// </summary>
         public T OriginalData;
 
+        /// <summary>
+        /// Check if it's an array.
+        /// </summary>
+        /// <returns>True if an array/list, false if an object.</returns>
+        public abstract bool IsList { get; }
 
         /// <summary>
         /// Primary constructor expecting a internal data object
@@ -53,7 +59,9 @@ namespace ToSic.Eav.Data
         public virtual object this[int index] => throw new System.NotImplementedException();
 
         /// <summary>
-        /// Fake property binder - just ensure that simple properties don't cause errors
+        /// Fake property binder - just ensure that simple properties don't cause errors. <br/>
+        /// Must be overriden in inheriting objects
+        /// like <see cref="DynamicJacket"/>, <see cref="DynamicJacketList"/>
         /// </summary>
         /// <param name="binder">.net binder object</param>
         /// <param name="result">always null, unless overriden</param>

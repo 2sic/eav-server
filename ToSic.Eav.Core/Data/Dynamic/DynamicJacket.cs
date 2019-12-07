@@ -9,33 +9,50 @@ namespace ToSic.Eav.Data
 {
     /// <summary>
     /// Case insensitive dynamic read-object for JSON. <br/>
-    /// Used in various cases where you start with JSON and want to provide the contents to custom code without having to mess with
-    /// JS/C# code style differences. 
+    /// Used in various cases where you start with JSON and want to
+    /// provide the contents to custom code without having to mess with
+    /// JS/C# code style differences. <br/>
+    /// You will usually do things like `AsDynamic(jsonString).FirstName` etc.
     /// </summary>
-    [PrivateApi("don't publish yet, not sure if this is the right name/namespaces")]
+    [PublicApi]
     public partial class DynamicJacket: DynamicJacketBase<JObject>
     {
         /// <inheritdoc />
         [PrivateApi]
         internal DynamicJacket(JObject originalData) : base(originalData) { }
 
+        /// <inheritdoc />
+        public override bool IsList => false;
+
         /// <summary>
-        /// Enable enumeration. When going through objects (properties) it will return the keys, not the values. <br/>
+        /// Enable enumeration. Will return the keys, not the values. <br/>
         /// Use the [key] accessor to get the values as <see cref="DynamicJacket"/> or <see cref="DynamicJacketList"/>
         /// </summary>
-        /// <returns></returns>
+        /// <returns>the string names of the keys</returns>
         public override IEnumerator<object> GetEnumerator() => OriginalData.Properties().Select(p => p.Name).GetEnumerator();
 
 
         /// <summary>
-        /// Access the properties of this object, but only if the underlying object is a real object and not an array.
+        /// Access the properties of this object.
         /// </summary>
         /// <remarks>
-        /// Note that this accessor is case sensitive
+        /// Note that <strong>this</strong> accessor is case insensitive
         /// </remarks>
-        /// <param name="key">the key, case-sensitive</param>
+        /// <param name="key">the key, case-insensitive</param>
         /// <returns>A value (string, int etc.), <see cref="DynamicJacket"/> or <see cref="DynamicJacketList"/></returns>
-        public object this[string key] => WrapOrUnwrap(OriginalData[key]);
+        public object this[string key] 
+            => FindValueOrNull(key, StringComparison.InvariantCultureIgnoreCase);
+
+        /// <summary>
+        /// Access the properties of this object.
+        /// </summary>
+        /// <param name="key">the key</param>
+        /// <param name="caseSensitive">true if case-sensitive, false if not</param>
+        /// <returns>A value (string, int etc.), <see cref="DynamicJacket"/> or <see cref="DynamicJacketList"/></returns>
+        public object this[string key, bool caseSensitive]
+            => FindValueOrNull(key, caseSensitive 
+                ? StringComparison.Ordinal
+                : StringComparison.InvariantCultureIgnoreCase);
 
 
         #region Private TryGetMember
@@ -49,27 +66,23 @@ namespace ToSic.Eav.Data
         [PrivateApi]
         public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
+            result = FindValueOrNull(binder.Name, StringComparison.InvariantCultureIgnoreCase);
+            // always say it was found to prevent runtime errors
+            return true;
+        }
+
+        private object FindValueOrNull(string name, StringComparison comparison)
+        {
             if (OriginalData == null || !OriginalData.HasValues)
-            {
-                result = null;
-                return true;
-            }
+                return null;
 
             var found = OriginalData.Properties()
                 .FirstOrDefault(
-                    p => string.Equals(p.Name, binder.Name, StringComparison.InvariantCultureIgnoreCase));
+                    p => string.Equals(p.Name, name, comparison));
 
-            if (found != null)
-            {
-                var original = found.Value;
-                result = WrapOrUnwrap(original);
-                return true;
-            }
-
-            // not found
-            result = null;
-            return true;
+            return WrapOrUnwrap(found?.Value);
         }
+
         #endregion
 
         /// <inheritdoc />
