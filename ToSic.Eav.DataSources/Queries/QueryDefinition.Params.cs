@@ -55,32 +55,6 @@ namespace ToSic.Eav.DataSources.Queries
             return wrapLog(paramsDic.Count.ToString(), paramsDic);
         }
 
-   //     /// <summary>
-   //     /// Generate the LookUp
-   //     /// They are in the format k=value or key=[some:token]
-   //     /// </summary>
-   //     internal ILookUp GenerateParamsLookUp(string paramsText)
-   //     {
-   //         var wrapLog = Log.Call<ILookUp>(nameof(GenerateParamsLookUp), $"{Entity.EntityId}");
 
-			//var paramsDic = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
-			//var lookUp = new LookUpInDictionary(QueryConstants.ParamsLookup, paramsDic);
-
-   //         if (string.IsNullOrWhiteSpace(paramsText)) return wrapLog("no params", lookUp);
-
-   //         // extract the lines which look like key=value
-   //         var paramMatches = ParamRegex.Matches(paramsText);
-   //         Log.Add($"found {paramMatches.Count} params");
-
-   //         foreach (Match testParam in paramMatches)
-   //         {
-   //             var key = testParam.Groups[KeyProperty].Value.ToLower();
-   //             var value = testParam.Groups[KeyValue].Value;
-			//	if(!paramsDic.ContainsKey(key))
-			//	    paramsDic[key] = value; // add not-yet-added-value
-   //         }
-
-   //         return wrapLog(paramsDic.Count.ToString(), lookUp);
-   //     }
     }
 }

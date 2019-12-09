@@ -8,7 +8,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 namespace ToSic.Eav.DataSources
 {
 	/// <summary>
-	/// Provides a data-source to a query, but won't assemble the query unless accessed. 
+	/// Provides a data-source to a query, but won't assemble/compile the query unless accessed (lazy). 
 	/// </summary>
 	[PublicApi]
 	public sealed class Query : DataSourceBase, IQuery
@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSources
         [PrivateApi]
 	    public override string LogId => "DS.DefQry";
 
-        [PrivateApi]
+        /// <inheritdoc />
         public QueryDefinition Definition { get; }
 
 		private IDictionary<string, IDataStream> _out = new Dictionary<string, IDataStream>();
@@ -25,7 +25,8 @@ namespace ToSic.Eav.DataSources
         private readonly bool _showDrafts;
 
         /// <summary>
-        /// Standard out - ensures that the Out is not compiled until accessed, and then auto-assembles the query
+        /// Standard out. Note that the Out is not prepared until accessed the first time,
+        /// when it will auto-assembles the query
         /// </summary>
 		public override IDictionary<string, IDataStream> Out
 		{
@@ -40,9 +41,6 @@ namespace ToSic.Eav.DataSources
 		#endregion
 
 		/// <inheritdoc />
-		/// <summary>
-		/// Constructs a new Query DataSource
-		/// </summary>
 		[PrivateApi]
 		public Query(int zoneId, int appId, IEntity queryDef, ILookUpEngine config, bool showDrafts)
 		{
@@ -51,7 +49,6 @@ namespace ToSic.Eav.DataSources
             Definition = new QueryDefinition(queryDef, appId, Log);
 		    ConfigurationProvider = config;
             _showDrafts = showDrafts;
-            //Params = Definition.Params;
 
             // this one is unusual, so don't pre-attach a default data stream
             //Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntities));
@@ -62,22 +59,13 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		private void CreateOutWithAllStreams()
 		{
-            // clone config provider so we can add the params
-            var queryConfig = new LookUpEngine(ConfigurationProvider);
-            //var paramsSource = new LookUpInDictionary(QueryConstants.ParamsLookup, Params);
-            //queryConfig.Add(paramsSource);
-
-		    var pipeline = new QueryBuilder(Log).GetAsDataSource(Definition, queryConfig, null, null, _showDrafts);
+		    var pipeline = new QueryBuilder(Log).GetAsDataSource(Definition, ConfigurationProvider, 
+                null, null, _showDrafts);
 		    _out = pipeline.Out;
         }
 
 
         /// <inheritdoc />
-        [PrivateApi] 
-        //public IDictionary<string, string> Params { get; } // = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-        /// <inheritdoc />
-        [PrivateApi]
         public void Param(string key, string value)
         {
             if(!_requiresRebuildOfOut)
