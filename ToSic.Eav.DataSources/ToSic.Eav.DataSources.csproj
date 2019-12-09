@@ -92,6 +92,7 @@
     <Compile Include="Caching\IListCache.cs" />
     <Compile Include="Caching\ListCache.cs" />
     <Compile Include="Queries\Connection.cs" />
+    <Compile Include="Queries\IQuery.cs" />
     <Compile Include="Queries\QueryPart.cs" />
     <Compile Include="System\Types\AppType.cs" />
     <Compile Include="System\Types\AttributeType.cs" />
@@ -164,6 +165,8 @@
     <None Include="app.config" />
     <Compile Include="Compatibility\ToSic.Eav.DataSources.VisualQuery.VisualQueryAttribute.cs" />
     <None Include="packages.config" />
+    <Compile Include="Queries\QueryDefinition.Params.cs" />
+    <Compile Include="Queries\QueryDefinition.TestParams.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

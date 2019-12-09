@@ -35,7 +35,7 @@ namespace ToSic.Eav.DataSources.Tests.Query
             var queryEnt = GlobalQueries.FindQuery(queryName);
             Assert.AreEqual(queryName, queryEnt.GetBestValue("Name").ToString(), "should find zones");
 
-            var qdef = new QueryDefinition(queryEnt, queryEnt.AppId);
+            var qdef = new QueryDefinition(queryEnt, queryEnt.AppId, null);
             Assert.AreEqual(2, qdef.Parts.Count, "counting parts of the qdef, should have the zone + sort = 2 parts");
         }
 
@@ -44,7 +44,7 @@ namespace ToSic.Eav.DataSources.Tests.Query
         {
             var queryEnt = GlobalQueries.FindQuery("Eav.Queries.Global.Zones");
 
-            var qdef = new QueryDefinition(queryEnt, TestConfig.AppForQueryTests);
+            var qdef = new QueryDefinition(queryEnt, TestConfig.AppForQueryTests, null);
 
             var fac = new QueryBuilder(Log);
             var query = fac.GetDataSourceForTesting(qdef, false);

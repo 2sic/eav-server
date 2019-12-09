@@ -2,6 +2,7 @@
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.Queries
@@ -10,8 +11,29 @@ namespace ToSic.Eav.DataSources.Queries
     /// This contains the structure / definition of a query, which was originally stored in an <see cref="IEntity"/>
     /// </summary>
     [PublicApi]
-    public class QueryDefinition: EntityBasedType
+    public partial class QueryDefinition: EntityBasedWithLog
     {
+        #region Constants / Field Names
+
+        [PrivateApi]
+        internal const string FieldTestParams = "TestParameters";
+
+        [PrivateApi]
+        internal const string FieldParams = QueryConstants.ParamsLookup;
+
+        #endregion
+
+        #region Constructor
+        [PrivateApi]
+        public QueryDefinition(IEntity header, int appId, ILog parentLog) : base(header, parentLog, "DS.QDef")
+        {
+            if (appId == 0)
+                appId = header.AppId;
+            AppId = appId;
+        }
+        #endregion
+
+
         /// <summary>
         /// The appid inside which the query will run, _not where it is stored!_ <br/>
         /// This can differ, because certain global queries (stored in the global app) will run in a specific app - for example to retrieve all ContentTypes of that app.
@@ -40,12 +62,5 @@ namespace ToSic.Eav.DataSources.Queries
         [PrivateApi]
         private string ConnectionsRaw => Get(Constants.QueryStreamWiringAttributeName, "");
 
-        [PrivateApi]
-        public QueryDefinition(IEntity header, int appId): base(header)
-        {
-            if (appId == 0)
-                appId = header.AppId;
-            AppId = appId;
-        }
     }
 }

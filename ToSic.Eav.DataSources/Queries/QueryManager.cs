@@ -41,9 +41,9 @@ namespace ToSic.Eav.DataSources.Queries
         /// ...but will be auto-assembled the moment they are accessed
         /// </summary>
         /// <returns></returns>
-	    internal static Dictionary<string, IDataSource> AllQueries(int zoneId, int appId, ILookUpEngine valuesCollectionProvider, ILog parentLog, bool showDrafts)
+	    internal static Dictionary<string, IQuery> AllQueries(int zoneId, int appId, ILookUpEngine valuesCollectionProvider, ILog parentLog, bool showDrafts)
 	    {
-	        var dict = new Dictionary<string, IDataSource>(StringComparer.OrdinalIgnoreCase);
+	        var dict = new Dictionary<string, IQuery>(StringComparer.OrdinalIgnoreCase);
 	        foreach (var entQuery in AllQueryItems(appId, parentLog))
 	        {
 	            var delayedQuery = new Query(zoneId, appId, entQuery, valuesCollectionProvider, showDrafts);

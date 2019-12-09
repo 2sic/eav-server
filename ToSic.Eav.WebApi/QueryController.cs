@@ -95,8 +95,8 @@ namespace ToSic.Eav.WebApi
 		    Log.Add($"query pipe: a#{appId}, id:{id}");
             // Get the query, run it and track how much time this took
 		    var queryFactory = new QueryBuilder(Log);
-		    var qDef = queryFactory.GetQueryDefinition(appId, id);
-			var outStreams = queryFactory.GetDataSourceForTesting(qDef, true, config);// ConstructPipeline(appId, id, true, config);
+		    var qDef = queryFactory.GetQueryDefinition(appId, id, Log);
+			var outStreams = queryFactory.GetDataSourceForTesting(qDef, true, config);
             var timer = new Stopwatch();
             timer.Start();
 		    var query = Helpers.Serializers.GetSerializerWithGuidEnabled().Prepare(outStreams);
@@ -146,7 +146,7 @@ namespace ToSic.Eav.WebApi
 
                 var deser = new Eav.ImportExport.Json.JsonSerializer(appManager.Package, Log);
                 var ents = deser.Deserialize(args.GetContentString());
-                var qdef = new QueryDefinition(ents, args.AppId);
+                var qdef = new QueryDefinition(ents, args.AppId, Log);
                 appManager.Queries.SaveCopy(qdef);
 
                 return true;

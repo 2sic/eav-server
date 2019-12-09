@@ -77,7 +77,8 @@ namespace ToSic.Eav
         /// <summary>Zone metadata</summary>
         public static readonly int MetadataForZone = 6;
 
-        [Obsolete("Use MetadataForCmsObject instead")] public static readonly int AssignmentObjectTypeCmsObject = 10;
+        [Obsolete("Use MetadataForCmsObject instead")] 
+        public static readonly int AssignmentObjectTypeCmsObject = 10;
         public static readonly int MetadataForCmsObject = 10;
 
         #region Metadata-Properties which have system use

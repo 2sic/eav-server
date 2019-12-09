@@ -12,7 +12,7 @@ namespace ToSic.Eav.Apps
         /// Cached list of queries
         /// </summary>
         [PrivateApi]
-        protected IDictionary<string, IDataSource> Queries;
+        protected IDictionary<string, IQuery> Queries;
 
         /// <summary>
         /// Accessor to queries. Use like:
@@ -21,7 +21,7 @@ namespace ToSic.Eav.Apps
         /// - App.Query["One Event"].List
         /// </summary>
         /// <inheritdoc />
-        public IDictionary<string, IDataSource> Query
+        public IDictionary<string, IQuery> Query
         {
             get
             {

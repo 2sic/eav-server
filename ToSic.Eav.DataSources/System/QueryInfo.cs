@@ -122,7 +122,8 @@ namespace ToSic.Eav.DataSources.System
 
             if (found == null) throw new Exception($"Can't build information about query - couldn't find query '{QueryName}'");
 
-            _query = new QueryBuilder(Log).GetDataSourceForTesting(new QueryDefinition(found, AppId), false, ConfigurationProvider);
+            _query = new QueryBuilder(Log).GetDataSourceForTesting(new QueryDefinition(found, AppId, Log), 
+                false, ConfigurationProvider);
         }
 
 	    private IDataSource _query;

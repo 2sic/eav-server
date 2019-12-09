@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Environment;
 using ToSic.Eav.LookUp;
@@ -47,7 +48,7 @@ namespace ToSic.Eav.Apps
         /// All queries of the app, to access like App.Query["name"]
         /// </summary>
         /// <returns>A dictionary with all queries. Internally the dictionary will not be built unless accessed.</returns>
-        IDictionary<string, IDataSource> Query { get; }
+        IDictionary<string, IQuery> Query { get; }
 
         /// <summary>
         /// The app metadata - like settings, resources etc.
