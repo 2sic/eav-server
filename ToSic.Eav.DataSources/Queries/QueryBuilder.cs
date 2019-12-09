@@ -69,7 +69,7 @@ namespace ToSic.Eav.DataSources.Queries
 	        #region prepare shared / global value providers
 
 	        overrideLookUps = overrideLookUps?.ToList();
-	        var wrapLog = Log.Call(nameof(GetAsDataSource), $"{queryDef.Entity.EntityId}, " +
+	        var wrapLog = Log.Call(nameof(GetAsDataSource), $"{queryDef.Id}, " +
 	                                                  $"hasProv:{lookUpEngineToClone != null}, " +
 	                                                  $"{overrideLookUps?.Count()}, " +
 	                                                  $"out:{outSource != null}, " +
