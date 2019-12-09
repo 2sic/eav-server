@@ -33,6 +33,14 @@ namespace ToSic.Eav.LookUp
         /// <inheritdoc/>
         public override string Get(string key, string format, ref bool notFound)
 		{
+            // first try a safe check
+            if (!Properties.ContainsKey(key))
+            {
+                notFound = true;
+                return null;
+            }
+
+            // then attempt the try/catch way
 			try
 			{
 				return Properties[key];
