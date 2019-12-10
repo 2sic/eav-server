@@ -55,6 +55,13 @@ namespace ToSic.Eav.DataSources.Queries
             return wrapLog(paramsDic.Count.ToString(), paramsDic);
         }
 
-
+        /// <summary>
+        /// Will reset all the parameters so you can run the query again with different parameters. 
+        /// </summary>
+        public void Reset()
+        {
+            _params = null;
+            _paraLookUp = null;
+        }
     }
 }

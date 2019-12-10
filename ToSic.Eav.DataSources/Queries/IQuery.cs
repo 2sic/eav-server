@@ -19,6 +19,12 @@ namespace ToSic.Eav.DataSources.Queries
         /// </summary>
         /// <param name="key">Key - the part used in [Params:key]</param>
         /// <param name="value">The value it will resolve to. Can also be another token.</param>
+        /// <remarks>If you set a param after accessing the query, the query will be reset so following read of the data will return the new data.</remarks>
         void Param(string key, string value);
+
+        /// <summary>
+        /// Reset the query, so it can be run again. Requires all params to be set again.
+        /// </summary>
+        void Reset();
     }
 }

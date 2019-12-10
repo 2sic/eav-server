@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.LookUp;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.DataSources.Queries
 {
 	/// <summary>
 	/// Provides a data-source to a query, but won't assemble/compile the query unless accessed (lazy). 
@@ -59,18 +58,35 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		private void CreateOutWithAllStreams()
 		{
-		    var pipeline = new QueryBuilder(Log).GetAsDataSource(Definition, ConfigurationProvider, 
+		    var pipeline = QueryBuilder.GetAsDataSource(Definition, ConfigurationProvider, 
                 null, null, _showDrafts);
 		    _out = pipeline.Out;
         }
+
+        private QueryBuilder QueryBuilder => _queryBuilder ?? (_queryBuilder = new QueryBuilder(Log));
+        private QueryBuilder _queryBuilder;
+
 
 
         /// <inheritdoc />
         public void Param(string key, string value)
         {
+            // if the query has already been built, and we're changing a value, make sure we'll regenerate the results
             if(!_requiresRebuildOfOut)
-                throw new Exception("Can't set param any more, the query has already been compiled. Always set params before accessing the data.");
+                throw new Exception("Can't set param any more, the query has already been compiled. Always set params before accessing the data. To Re-Run the query with other params, call Reset() first.");
+            //if (!Definition.Params.ContainsKey(value) || Definition.Params[key] != value)
+            //{
+            //    Log.Add($"Will set another param {key} to '{value}' - rebuild will be necessary on next read");
+            //    _requiresRebuildOfOut = true;
+            //}
             Definition.Params[key] = value;
+        }
+
+        /// <inheritdoc />
+        public void Reset()
+        {
+            Definition.Reset();
+            _requiresRebuildOfOut = true;
         }
     }
 
