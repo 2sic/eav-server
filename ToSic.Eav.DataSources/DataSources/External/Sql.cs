@@ -165,8 +165,9 @@ namespace ToSic.Eav.DataSources
             // Before we process the Select-Command, we must get it (by default it's just a token!)
 	        if (SelectCommand.StartsWith("[Settings"))
 	        {
-	            var tempList = new Dictionary<string, string> {{"one", SelectCommand}};
-	            ConfigurationProvider.LookUp(tempList, null, 0); // load, but make sure no recursions to prevent pre-filling parameters
+	            var tempList = ConfigurationProvider.LookUp(
+                    new Dictionary<string, string> { { "one", SelectCommand } }, 
+                    null, 0); // load, but make sure no recursions to prevent pre-filling parameters
 	            SelectCommand = tempList["one"];
 	        }
             var sourceText = SelectCommand;

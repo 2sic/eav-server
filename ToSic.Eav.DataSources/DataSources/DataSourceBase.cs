@@ -150,11 +150,11 @@ namespace ToSic.Eav.DataSources
 
             // Ensure that we have a configuration-provider (not always the case, but required)
             if (ConfigurationProvider == null)
-                throw new Exception("No ConfigurationProvider configured on this data-source. Cannot EnsureConfigurationIsLoaded");
+                throw new Exception($"No ConfigurationProvider configured on this data-source. Cannot run {nameof(EnsureConfigurationIsLoaded)}");
 
             // construct a property access for in, use it in the config provider
             var instancePAs = new Dictionary<string, ILookUp> { { "In".ToLower(), new LookUpInDataTarget(this) } };
-            ConfigurationProvider.LookUp(Configuration, instancePAs);
+            Configuration = ConfigurationProvider.LookUp(Configuration, instancePAs);
             ConfigurationIsLoaded = true;
         }
 
