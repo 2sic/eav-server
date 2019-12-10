@@ -71,7 +71,7 @@ namespace ToSic.Eav.ImportExport.Json
                         attribs.Boolean = ToTypedDictionary<bool?>(gList, log);
                         break;
                     case ValueTypes.Entity:
-                        attribs.Entity = ToTypedDictionaryEntity(gList, log);
+                        attribs.Entity = ToTypedDictionaryEntity(gList, false, log);
                         break;
                     case ValueTypes.Empty:
                     case ValueTypes.Undefined:
@@ -110,7 +110,7 @@ namespace ToSic.Eav.ImportExport.Json
         /// </summary>
         /// <returns></returns>
         private static Dictionary<string, Dictionary<string, List<Guid?>>> 
-            ToTypedDictionaryEntity(List<IAttribute> gList, ILog log)
+            ToTypedDictionaryEntity(List<IAttribute> gList, bool fullObjects,  ILog log)
         {
             // the following is a bit complex for the following reason
             // 1. either the relationship is guid based, and in that case, 
@@ -119,7 +119,7 @@ namespace ToSic.Eav.ImportExport.Json
             //    but the relationship manager doesn't have a direct reference to the guid,
             //    but only to the items directly
             // so it tries to get the guids first, and otherwise uses the items
-            var entities = ToTypedDictionary</*LazyEntities*/IEnumerable<IEntity>>(gList, log)
+            var entities = ToTypedDictionary<IEnumerable<IEntity>>(gList, log)
                 .ToDictionary(a => a.Key, a => a.Value
                     .ToDictionary(b => b.Key, b => ((LazyEntities)b.Value).ResolveGuids()));
             return entities;
