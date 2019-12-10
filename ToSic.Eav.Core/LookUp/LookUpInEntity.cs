@@ -11,19 +11,20 @@ namespace ToSic.Eav.LookUp
     /// Read more about this in @Specs.LookUp.Intro
     /// </summary>
     [PublicApi]
-	public class LookUpInEntity : LookUpBase
+	public class LookUpInEntity : LookUpBase<IEntity>
     {
-        protected IEntity Entity;
-	    private readonly string[] _dimensions = {""};
+        //protected IEntity Data;
+        private readonly string[] _dimensions = {""};
 
-        /// <summary>
-        /// not sure if I can drop this - or if the empty constructor is needed for DI
-        /// </summary>
-        [PrivateApi]
-	    public LookUpInEntity()
-	    {
+        // 2019-12-10 2dm disabled temporarily
+     //   /// <summary>
+     //   /// not sure if I can drop this - or if the empty constructor is needed for DI
+     //   /// </summary>
+     //   [PrivateApi]
+	    //public LookUpInEntity()
+	    //{
 	        
-	    }
+	    //}
 
 	    /// <summary>
 	    /// Constructs a new Entity LookUp
@@ -31,9 +32,10 @@ namespace ToSic.Eav.LookUp
 	    /// <param name="source"></param>
 	    /// <param name="name">Name of the LookUp, e.g. Settings</param>
 	    public LookUpInEntity(IEntity source, string name = "entity source without name")
-		{
-            Entity = source;
-		    Name = name;
+         : base(source, name)
+        {
+      //      OriginalData = source;
+		    //Name = name;
 		}
 
         // todo: might need to clarify what language/culture the key is taken from in an entity
@@ -48,14 +50,14 @@ namespace ToSic.Eav.LookUp
         private string Get(string key, string format, System.Globalization.CultureInfo formatProvider, ref bool notFound)
         {
             // Return empty string if Entity is null
-            if (Entity == null)
+            if (Data == null)
             {
                 notFound = true;
                 return string.Empty;
             }
 
             // bool notFound;
-            var valueObject = Entity.GetBestValue(key, _dimensions);
+            var valueObject = Data.GetBestValue(key, _dimensions);
             notFound = valueObject == null; // this is used multiple times
 
             if (!notFound)
@@ -91,7 +93,7 @@ namespace ToSic.Eav.LookUp
             var subTokens = CheckAndGetSubToken(key);
             if (subTokens.HasSubtoken)
             {
-                valueObject = Entity.GetBestValue(subTokens.Source, _dimensions);
+                valueObject = Data.GetBestValue(subTokens.Source, _dimensions);
 
                 if (valueObject != null)
                 {
@@ -120,7 +122,7 @@ namespace ToSic.Eav.LookUp
         /// <inheritdoc/>
         public override bool Has(string key)
 	    {
-	        var notFound = !Entity?.Attributes.ContainsKey(key) ?? false; // always false if no entity attached
+	        var notFound = !Data?.Attributes.ContainsKey(key) ?? false; // always false if no entity attached
             // if it's not a standard attribute, check for dynamically provided values like EntityId
             if (notFound)
 	            Get(key, "", ref notFound);

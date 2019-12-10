@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -14,7 +15,7 @@ namespace ToSic.Eav.DataSources.Queries
 	{
         #region Configuration-properties
         [PrivateApi]
-	    public override string LogId => "DS.DefQry";
+	    public override string LogId => "DS.Query";
 
         /// <inheritdoc />
         public QueryDefinition Definition { get; }
@@ -41,26 +42,26 @@ namespace ToSic.Eav.DataSources.Queries
 
 		/// <inheritdoc />
 		[PrivateApi]
-		public Query(int zoneId, int appId, IEntity queryDef, ILookUpEngine config, bool showDrafts)
+		public Query(int zoneId, int appId, IEntity queryDef, ILookUpEngine config, bool showDrafts, ILog parentLog)
 		{
 		    ZoneId = zoneId;
 		    AppId = appId;
             Definition = new QueryDefinition(queryDef, appId, Log);
 		    ConfigurationProvider = config;
             _showDrafts = showDrafts;
-
-            // this one is unusual, so don't pre-attach a default data stream
-            //Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntities));
+            Log.LinkTo(parentLog, LogId);
         }
 
 		/// <summary>
 		/// Create a stream for each data-type
 		/// </summary>
 		private void CreateOutWithAllStreams()
-		{
+        {
+            var wrapLog = Log.Call(nameof(CreateOutWithAllStreams));
 		    var pipeline = QueryBuilder.GetAsDataSource(Definition, ConfigurationProvider, 
                 null, null, _showDrafts);
 		    _out = pipeline.Out;
+            wrapLog("ok");
         }
 
         private QueryBuilder QueryBuilder => _queryBuilder ?? (_queryBuilder = new QueryBuilder(Log));
@@ -73,13 +74,19 @@ namespace ToSic.Eav.DataSources.Queries
         {
             // if the query has already been built, and we're changing a value, make sure we'll regenerate the results
             if(!_requiresRebuildOfOut)
-                throw new Exception("Can't set param any more, the query has already been compiled. Always set params before accessing the data. To Re-Run the query with other params, call Reset() first.");
-            //if (!Definition.Params.ContainsKey(value) || Definition.Params[key] != value)
-            //{
-            //    Log.Add($"Will set another param {key} to '{value}' - rebuild will be necessary on next read");
-            //    _requiresRebuildOfOut = true;
-            //}
+                throw new Exception("Can't set param any more, the query has already been compiled. " +
+                                    "Always set params before accessing the data. " +
+                                    "To Re-Run the query with other params, call Reset() first.");
+
             Definition.Params[key] = value;
+        }
+
+
+        /// <inheritdoc />
+        public void Params(string list)
+        {
+            foreach (var qP in Definition.GenerateParamsDic(list)) 
+                Param(qP.Key, qP.Value);
         }
 
         /// <inheritdoc />

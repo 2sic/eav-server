@@ -48,8 +48,11 @@ namespace ToSic.Eav.DataSources.Queries
             {
                 var key = testParam.Groups[KeyProperty].Value.ToLower();
                 var value = testParam.Groups[KeyValue].Value;
+                Log.Add($"Params:{key}={value}");
                 if (!paramsDic.ContainsKey(key))
                     paramsDic[key] = value; // add not-yet-added-value
+                else
+                    Log.Add($"Params:{key} already existed, will leave as is");
             }
 
             return wrapLog(paramsDic.Count.ToString(), paramsDic);
@@ -60,6 +63,7 @@ namespace ToSic.Eav.DataSources.Queries
         /// </summary>
         public void Reset()
         {
+            Log.Add($"{nameof(Reset)}()");
             _params = null;
             _paraLookUp = null;
         }

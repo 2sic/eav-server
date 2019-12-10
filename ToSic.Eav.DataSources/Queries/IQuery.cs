@@ -19,8 +19,16 @@ namespace ToSic.Eav.DataSources.Queries
         /// </summary>
         /// <param name="key">Key - the part used in [Params:key]</param>
         /// <param name="value">The value it will resolve to. Can also be another token.</param>
-        /// <remarks>If you set a param after accessing the query, the query will be reset so following read of the data will return the new data.</remarks>
+        /// <remarks>If you set a param after accessing the query, an exception will occur unless you call Reset() first.</remarks>
         void Param(string key, string value);
+
+        /// <summary>
+        /// Add/Set a parameter for the query, which will be used by the [Params:Xxx] tokens.
+        /// </summary>
+        /// <param name="list">list of key=value on many lines</param>
+        /// <remarks>If you set a param after accessing the query, an exception will occur unless you call Reset() first.</remarks>
+        void Params(string list);
+
 
         /// <summary>
         /// Reset the query, so it can be run again. Requires all params to be set again.

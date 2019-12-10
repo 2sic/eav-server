@@ -52,7 +52,7 @@ namespace ToSic.Eav.Apps
         {
             var qent = GlobalQueries.FindQuery(name) 
                 ?? throw new Exception($"can't find global query {name}");
-            return new Query(ZoneId, AppId, qent, ConfigurationProvider, ShowDrafts);
+            return new Query(ZoneId, AppId, qent, ConfigurationProvider, ShowDrafts, Log);
         }
     }
 }

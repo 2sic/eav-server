@@ -36,7 +36,7 @@ namespace ToSic.Eav.DataSources.Queries
 		}
 
         /// <summary>
-        /// Assembles a list of all queries / Querys configured for this app. 
+        /// Assembles a list of all queries / Queries configured for this app. 
         /// The queries internally are not assembled yet for performance reasons...
         /// ...but will be auto-assembled the moment they are accessed
         /// </summary>
@@ -46,7 +46,7 @@ namespace ToSic.Eav.DataSources.Queries
 	        var dict = new Dictionary<string, IQuery>(StringComparer.OrdinalIgnoreCase);
 	        foreach (var entQuery in AllQueryItems(appId, parentLog))
 	        {
-	            var delayedQuery = new Query(zoneId, appId, entQuery, valuesCollectionProvider, showDrafts);
+	            var delayedQuery = new Query(zoneId, appId, entQuery, valuesCollectionProvider, showDrafts, parentLog);
                 // make sure it doesn't break if two queries have the same name...
 	            var name = entQuery.Title[0].ToString();
 	            if (!dict.ContainsKey(name))

@@ -87,6 +87,7 @@
     <Compile Include="Compatibility\ToSic.Eav.DataSources.BaseDataSource.cs" />
     <Compile Include="DataSourceInfo.cs" />
     <Compile Include="DataSources\App.cs" />
+    <Compile Include="DataSources\QueryRun.cs" />
     <Compile Include="DataSources\Values\AttributeFilter.cs" />
     <Compile Include="Caching\ICanPurgeListCache.cs" />
     <Compile Include="Caching\IListCache.cs" />
