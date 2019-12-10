@@ -11,7 +11,7 @@ namespace ToSic.Eav.LookUp
     /// Read more about this in @Specs.LookUp.Intro
     /// </summary>
     [PublicApi]
-	public class LookUpInEntity : LookUpBase<IEntity>
+	public class LookUpInEntity : LookUpIn<IEntity>
     {
         //protected IEntity Data;
         private readonly string[] _dimensions = {""};
