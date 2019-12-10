@@ -154,7 +154,7 @@ namespace ToSic.Eav.DataSources
 
             // construct a property access for in, use it in the config provider
             var instancePAs = new Dictionary<string, ILookUp> { { "In".ToLower(), new LookUpInDataTarget(this) } };
-            ConfigurationProvider.LoadConfiguration(Configuration, instancePAs);
+            ConfigurationProvider.LookUp(Configuration, instancePAs);
             ConfigurationIsLoaded = true;
         }
 

@@ -50,7 +50,7 @@ namespace ToSic.Eav.LookUp
 	    /// <param name="configList">Dictionary of configuration strings</param>
 	    /// <param name="instanceSpecificPropertyAccesses">Instance specific additional value-dictionaries</param>
 	    /// <param name="repeat">max repeater in case of recursions</param>
-	    public void LoadConfiguration(IDictionary<string, string> configList, Dictionary<string, ILookUp> instanceSpecificPropertyAccesses = null, int repeat = 2)
+	    public void LookUp(IDictionary<string, string> configList, Dictionary<string, ILookUp> instanceSpecificPropertyAccesses = null, int repeat = 2)
 		{
             #region if there are instance-specific additional Property-Access objects, add them to the sources-list
             // note: it's important to create a one-time use list of sources if instance-specific sources are needed, to never modify the "global" list.

@@ -20,7 +20,7 @@ namespace ToSic.Eav.LookUp
 	    /// <summary>
 	    /// Replaces all Tokens in the ConfigList with actual values provided by the LookUps in the Sources
 	    /// </summary>
-	    void LoadConfiguration(IDictionary<string, string> configList, Dictionary<string, ILookUp> instanceSpecificPropertyAccesses = null, int repeat = 2);
+	    void LookUp(IDictionary<string, string> configList, Dictionary<string, ILookUp> instanceSpecificPropertyAccesses = null, int repeat = 2);
 
 	    /// <summary>
 	    /// Add (or replace) a value provider in the source list
