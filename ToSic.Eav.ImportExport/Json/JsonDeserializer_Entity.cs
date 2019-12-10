@@ -4,7 +4,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
-using ToSic.Eav.ImportExport.Json.Format;
+using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 

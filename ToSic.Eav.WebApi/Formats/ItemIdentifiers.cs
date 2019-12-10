@@ -1,5 +1,5 @@
 ﻿using System;
-using ToSic.Eav.ImportExport.Json.Format;
+using ToSic.Eav.ImportExport.Json.V1;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.WebApi.Formats

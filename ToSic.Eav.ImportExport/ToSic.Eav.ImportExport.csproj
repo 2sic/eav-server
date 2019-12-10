@@ -84,6 +84,15 @@
     <Compile Include="Json\JsonDeserializer_ContentType.cs" />
     <Compile Include="Json\JsonSerializer_Entity.cs" />
     <Compile Include="Json\JsonSerializer_ContentType.cs" />
+    <Compile Include="Json\V1\JsonAttributeDefinition.cs" />
+    <Compile Include="Json\V1\JsonAttributes.cs" />
+    <Compile Include="Json\V1\JsonContentType.cs" />
+    <Compile Include="Json\V1\JsonContentTypeShareable.cs" />
+    <Compile Include="Json\V1\JsonEntity.cs" />
+    <Compile Include="Json\V1\JsonFormat.cs" />
+    <Compile Include="Json\V1\JsonHeader.cs" />
+    <Compile Include="Json\V1\JsonMetadataFor.cs" />
+    <Compile Include="Json\V1\JsonType.cs" />
     <Compile Include="Json\V1\V1.cs" />
     <Compile Include="Json\JsonDeserializer_Entity.cs" />
     <Compile Include="Json\JsonSerializer.cs" />

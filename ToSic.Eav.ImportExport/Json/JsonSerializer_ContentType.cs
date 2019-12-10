@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using Newtonsoft.Json;
 using ToSic.Eav.Data;
-using ToSic.Eav.ImportExport.Json.Format;
+using ToSic.Eav.ImportExport.Json.V1;
 
 namespace ToSic.Eav.ImportExport.Json
 {
