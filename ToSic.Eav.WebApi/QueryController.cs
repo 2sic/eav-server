@@ -44,8 +44,6 @@ namespace ToSic.Eav.WebApi
 
             query.Pipeline = qDef.Entity.AsDictionary();
             query.Pipeline[Constants.QueryStreamWiringAttributeName] = qDef.Connections;
-            // QueryWiring
-            //     .Deserialize((string)query.Pipeline[Constants.QueryStreamWiringAttributeName]);
 
             foreach (var part in qDef.Parts) 
                 query.DataSources.Add(part.AsDictionary());

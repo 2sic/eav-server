@@ -237,7 +237,7 @@ namespace ToSic.Eav.DataSources.Queries
 	    {
 	        Log.Add($"construct test query a#{queryDef.AppId}, pipe:{queryDef.Entity.EntityGuid} ({queryDef.Entity.EntityId}), drafts:{showDrafts}");
 
-            var testValueProviders = queryDef.TestParameterLookUps;// GenerateTestValueLookUps(qdef, qdef.Log).ToList();
+            var testValueProviders = queryDef.TestParameterLookUps;
 	        return GetAsDataSource(queryDef, configuration, testValueProviders, showDrafts: showDrafts);
 	    }
 
