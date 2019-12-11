@@ -90,14 +90,5 @@ namespace ToSic.Eav.DataSources.Caching
 
 	    #endregion
 
-
-        #region Additional Stream Caching
-
-	    /// <inheritdoc />
-        public IListCache Lists => _listsCache ?? (_listsCache = new ListCache(Log));
-	    private IListCache _listsCache;
-
-        #endregion
-
-	}
+    }
 }

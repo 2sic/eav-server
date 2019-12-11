@@ -57,17 +57,17 @@ namespace ToSic.Eav.DataSources.Caching
 
         #endregion
 
-  //      /// <summary>
-  //      /// Get/Resolve ZoneId and AppId for specified ZoneId and/or AppId. If both are null, default ZoneId with it's default App is returned.
-  //      /// </summary>
-  //      /// <returns>Item1 = ZoneId, Item2 = AppId</returns>
-  //      [PrivateApi]
-		//Tuple<int, int> GetZoneAppId(int? zoneId = null, int? appId = null);
+        //      /// <summary>
+        //      /// Get/Resolve ZoneId and AppId for specified ZoneId and/or AppId. If both are null, default ZoneId with it's default App is returned.
+        //      /// </summary>
+        //      /// <returns>Item1 = ZoneId, Item2 = AppId</returns>
+        //      [PrivateApi]
+        //Tuple<int, int> GetZoneAppId(int? zoneId = null, int? appId = null);
 
-        /// <summary>
-        /// Advanced caching of lists which have queried some of the data in this cache, and want to retain the results of the query till the root changes. 
-        /// </summary>
-        IListCache Lists { get; }
+        ///// <summary>
+        ///// Advanced caching of lists which have queried some of the data in this cache, and want to retain the results of the query till the root changes. 
+        ///// </summary>
+        //IListCache Lists { get; }
 
         /// <summary>
         /// Retrieve the AppState of the current app.

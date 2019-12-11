@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 
@@ -21,10 +20,13 @@ namespace ToSic.Eav.Apps.Caching
         /// Get/Resolve ZoneId and AppId for specified ZoneId and/or AppId. If both are null, default ZoneId with it's default App is returned.
         /// </summary>
         /// <returns>Item1 = ZoneId, Item2 = AppId</returns>
-        [PrivateApi("todo rename")]
         IInAppAndZone GetIdentity(int? zoneId = null, int? appId = null);
 
         Dictionary<int, Zone> ZoneApps { get; }
+
+        #endregion
+
+        #region inspect cache
 
         /// <summary>
         /// Check if something is already in the cache
@@ -33,6 +35,7 @@ namespace ToSic.Eav.Apps.Caching
         /// <param name="appId"></param>
         /// <returns></returns>
         bool Has(int zoneId, int appId);
+
         #endregion
 
         #region Cache Purging
@@ -52,7 +55,7 @@ namespace ToSic.Eav.Apps.Caching
 
         #endregion
 
-        #region PreLoading of Cache (unsure what this is for...)
+        #region PreLoading of Cache when the primary language needs to be specified
 
         /// <summary>
         /// Load an app into cache, specifying the primary language.
@@ -61,7 +64,6 @@ namespace ToSic.Eav.Apps.Caching
         /// <param name="zoneId">Zone ID</param>
         /// <param name="appId">App ID</param>
         /// <param name="primaryLanguage">primary language, lower case</param>
-        [PrivateApi]
         void ForceLoad(int zoneId, int appId, string primaryLanguage);
 
         #endregion

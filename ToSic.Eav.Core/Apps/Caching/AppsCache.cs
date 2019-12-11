@@ -23,17 +23,15 @@ namespace ToSic.Eav.Apps.Caching
             get
             {
                 // ensure it's only loaded once, even if multiple threads are trying this at the same time
-                if (_zoneAppsCache != null) return _zoneAppsCache;
+                if (ZoneAppCache != null) return ZoneAppCache;
                 lock (ZoneAppLoadLock)
-                    if (_zoneAppsCache == null)
-                        _zoneAppsCache = LoadZoneApps();
-                return _zoneAppsCache;
+                    if (ZoneAppCache == null)
+                        ZoneAppCache = LoadZoneApps();
+                return ZoneAppCache;
             }
         }
-        private static volatile Dictionary<int, Zone> _zoneAppsCache;
-        private static readonly object ZoneAppLoadLock = new object();
-
-        public override string CacheKeySchema => "Z{0}A{1}";
+        protected static volatile Dictionary<int, Zone> ZoneAppCache;
+        protected static readonly object ZoneAppLoadLock = new object();
 
 
         #region The cache-variable + HasCacheItem, SetCacheItem, Get, Remove
@@ -41,7 +39,7 @@ namespace ToSic.Eav.Apps.Caching
 
 
         /// <inheritdoc />
-        protected override bool HasCacheItem(string cacheKey) => Caches.ContainsKey(cacheKey);
+        protected override bool Has(string cacheKey) => Caches.ContainsKey(cacheKey);
 
         /// <inheritdoc />
         protected override void Set(string cacheKey, AppState item)
@@ -63,17 +61,16 @@ namespace ToSic.Eav.Apps.Caching
             }
         }
 
-        [PrivateApi]
         /// <inheritdoc />
         protected override AppState Get(string cacheKey) => Caches[cacheKey];
 
-        [PrivateApi]
         /// <inheritdoc />
         protected override void Remove(string cacheKey) => Caches.Remove(cacheKey);    // returns false if key was not found (no Exception)
 
         #endregion
+
         /// <inheritdoc />
-        public override void PurgeGlobalCache() => _zoneAppsCache = null;
+        public override void PurgeGlobalCache() => ZoneAppCache = null;
 
         /// <inheritdoc />
         public override void PartialUpdate(IInAppAndZone app, IEnumerable<int> entities, ILog log)

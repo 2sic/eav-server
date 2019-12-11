@@ -33,14 +33,14 @@ namespace ToSic.Eav.Apps.Caching
 		/// Gets the KeySchema used to store values for a specific Zone and App. Must contain {0} for ZoneId and {1} for AppId
 		/// </summary>
 		[PrivateApi]
-		public abstract string CacheKeySchema { get; }
+		public virtual string CacheKeySchema { get; } = "Z{0}A{1}";
 
 
-	    #region Definition of the abstract Has-Item, Set, Get, Remove
+        #region Definition of the abstract Has-Item, Set, Get, Remove
         /// <summary>
-		/// Test whether CacheKey exists in the Cache
-		/// </summary>
-		protected abstract bool HasCacheItem(string cacheKey);
+        /// Test whether CacheKey exists in the Cache
+        /// </summary>
+        protected abstract bool Has(string cacheKey);
 
         /// <summary>
         /// Check if an app is already in the global cache.
@@ -48,7 +48,7 @@ namespace ToSic.Eav.Apps.Caching
         /// <param name="zoneId"></param>
         /// <param name="appId"></param>
         /// <returns></returns>
-        public bool Has(int zoneId, int appId) => HasCacheItem(string.Format(CacheKeySchema, zoneId, appId));
+        public bool Has(int zoneId, int appId) => Has(string.Format(CacheKeySchema, zoneId, appId));
 
         /// <summary>
         /// Sets the CacheItem with specified CacheKey
@@ -81,14 +81,14 @@ namespace ToSic.Eav.Apps.Caching
 
             var cacheKey = CacheKey(zoneId, appId);
 
-            if (HasCacheItem(cacheKey)) return Get(cacheKey);
+            if (Has(cacheKey)) return Get(cacheKey);
 
             // create lock to prevent parallel initialization
             var lockKey = LoadLocks.GetOrAdd(cacheKey, new object());
             lock (lockKey)
             {
                 // now that lock is free, it could have been initialized, so re-check
-                if (HasCacheItem(cacheKey)) return Get(cacheKey);
+                if (Has(cacheKey)) return Get(cacheKey);
 
                 // Init EavSqlStore once
                 var identity = GetZoneAppInternal(zoneId, appId);
