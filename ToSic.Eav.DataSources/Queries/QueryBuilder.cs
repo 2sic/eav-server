@@ -132,7 +132,7 @@ namespace ToSic.Eav.DataSources.Queries
                 // Check type because we renamed the DLL with the parts, and sometimes the old dll-name had been saved
                 var assemblyAndType = dataQueryPart.DataSourceType;
 
-	            var dataSource = DataSource.GetDataSource(assemblyAndType, null, queryDef.AppId,
+	            var dataSource = DataSource.GetDataSource(assemblyAndType, /*null,*/ DataSource.GetIdentity(null, queryDef.AppId),
 	                configLookUp: partConfig, parentLog: Log);
 	            dataSource.DataSourceGuid = dataQueryPart.Guid;
 

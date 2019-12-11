@@ -34,13 +34,9 @@ namespace ToSic.Eav.Apps
             var appsCache = Factory.Resolve<IAppsCache>();
             
             if (global)
-                //DataSource.GetCache(null)
-                appsCache
-                    .PurgeGlobalCache();
+                appsCache.PurgeGlobalCache();
             else
-                //DataSource.GetCache(null)
-                appsCache
-                    .PurgeCache(zoneId, appId);
+                appsCache.PurgeCache(zoneId, appId);
         }
 
         /// <summary>
@@ -49,12 +45,10 @@ namespace ToSic.Eav.Apps
         /// <param name="appId"></param>
         public static void Purge(int appId) => Purge(SystemRuntime.ZoneIdOfApp(appId), appId);
 
-        public void InformOfPartialUpdate(AppIdentity app, IEnumerable<int> entities)
+        public void InformOfPartialUpdate(IInAppAndZone app, IEnumerable<int> entities)
         {
-            // var zoneId = SystemRuntime.ZoneIdOfApp(app.ZoneId, app.AppId);
-            var cache = Factory.Resolve<IAppsCache>();//DataSource.GetCache(app.ZoneId, app.AppId);
-            cache.LinkLog(Log);
-            cache.PartialUpdate(entities);
+            var cache = Factory.Resolve<IAppsCache>();
+            cache.PartialUpdate(app, entities, Log);
         }
 
         /// <summary>

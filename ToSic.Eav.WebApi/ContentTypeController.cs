@@ -36,7 +36,7 @@ namespace ToSic.Eav.WebApi
 
             // 2017-10-23 old...
             // scope can be null (eav) or alternatives would be "System", "2SexyContent-System", "2SexyContent-App", "2SexyContent"
-            var cache = (RootCacheBase)DataSource.GetCache(null, appId); // needed to count items
+            var cache = (RootCacheBase)DataSource.GetCache(DataSource.GetIdentity(null, appId)); // needed to count items
 
             var filteredType = allTypes.Where(t => t.Scope == scope)
                 .OrderBy(t => t.Name)
@@ -80,7 +80,7 @@ namespace ToSic.Eav.WebApi
 	    public ContentTypeInfo GetSingle(int appId, string contentTypeStaticName, string scope = null)
 	    {
 	        Log.Add($"get single a#{appId}, type:{contentTypeStaticName}, scope:{scope}");
-            var cache = DataSource.GetCache(null, appId);
+            var cache = DataSource.GetCache(DataSource.GetIdentity(null, appId));
             var ct = cache.GetContentType(contentTypeStaticName);
             return ContentTypeForJson(ct as ContentType, null);
 	    }
@@ -135,7 +135,7 @@ namespace ToSic.Eav.WebApi
         {
             Log.Add($"get fields a#{appId}, type:{staticName}");
 
-            if(!(DataSource.GetCache(null, appId).GetContentType(staticName) is ContentType type))
+            if(!(DataSource.GetCache(DataSource.GetIdentity(null, appId)).GetContentType(staticName) is ContentType type))
                 throw new Exception("type should be a ContentType - something broke");
             var fields = type.Attributes.OrderBy(a => a.SortOrder);
 

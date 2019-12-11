@@ -106,7 +106,7 @@ namespace ToSic.Eav.DataSources
                 #region Check if it's in the cache - and if yes, if it's still valid and should be re-used --> return if found
                 if (AutoCaching && ReuseInitialResults)
 			    {
-                    var cacheItem = Source.Cache.Lists.GetOrBuild(this, EntityListDelegate, CacheDurationInSeconds);
+                    var cacheItem = Source.Root.Lists.GetOrBuild(this, EntityListDelegate, CacheDurationInSeconds);
                     return _list = cacheItem.List;
                 }
                 #endregion
@@ -119,7 +119,7 @@ namespace ToSic.Eav.DataSources
 
 	    public void PurgeList(bool cascade = false)
 	    {
-	        Source.Cache.Lists.Remove(this);
+	        Source.Root.Lists.Remove(this);
 	        if (cascade) Source.PurgeList(cascade);
 	    }
 

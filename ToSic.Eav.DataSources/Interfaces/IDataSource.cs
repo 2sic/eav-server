@@ -98,7 +98,7 @@ namespace ToSic.Eav.DataSources
         /// Direct access to the root cache underlying all data provided by this data source. 
         /// </summary>
         /// <returns>An <see cref="IRootCache"/> data source to the root cache.</returns>
-        IRootCache Cache { get; }
+        IRootCache Root { get; }
 
         /// <summary>
         /// Some configuration of the data source is cache-relevant, others are not.

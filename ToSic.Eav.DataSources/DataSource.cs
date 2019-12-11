@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Caching;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caching;
@@ -17,39 +18,19 @@ namespace ToSic.Eav
 	public class DataSource
 	{
 	    private const string LogKey = "DS.Factry";
-
-		/// <summary>
-		/// Assemble a DataSource with specified Type/Interface-Chain in reversed order.
-		/// </summary>
-		/// <param name="chain">Array of Full Qualified Names of DataSources</param>
-		/// <param name="zoneId">ZoneId for this DataSource</param>
-		/// <param name="appId">AppId for this DataSource</param>
-		/// <param name="configLookUp">Configuration Provider used for all DataSources</param>
-		/// <returns>A single DataSource that has attached </returns>
-		private static IDataSource AssembleDataSourceReverse(IList<string> chain, int zoneId, int appId, ILookUpEngine configLookUp)
-		{
-			var newSource = GetDataSource(chain[0], zoneId, appId, configLookUp: configLookUp);
-			if (chain.Count > 1)
-			{
-				var source = AssembleDataSourceReverse(chain.Skip(1).ToArray(), zoneId, appId, configLookUp);
-				((IDataTarget)newSource).Attach(source);
-			}
-			return newSource;
-		}
-
+        
         private static void Log(ILog log, string method, string message) => log?.Add($"{LogKey}:{method}()'{message}'");
 
         /// <summary>
-	    /// Get DataSource for specified sourceName/Type
-	    /// </summary>
-	    /// <param name="sourceName">Full Qualified Type/Interface Name</param>
-	    /// <param name="zoneId">ZoneId for this DataSource</param>
-	    /// <param name="appId">AppId for this DataSource</param>
-	    /// <param name="upstream">In-Connection</param>
-	    /// <param name="configLookUp">Provides configuration values if needed</param>
-	    /// <param name="parentLog"></param>
-	    /// <returns>A single DataSource</returns>
-	    public static IDataSource GetDataSource(string sourceName, int? zoneId = null, int? appId = null, IDataSource upstream = null, ILookUpEngine configLookUp = null, ILog parentLog = null)
+        /// Get DataSource for specified sourceName/Type
+        /// </summary>
+        /// <param name="sourceName">Full Qualified Type/Interface Name</param>
+        /// <param name="appIdentity"></param>
+        /// <param name="upstream">In-Connection</param>
+        /// <param name="configLookUp">Provides configuration values if needed</param>
+        /// <param name="parentLog"></param>
+        /// <returns>A single DataSource</returns>
+        public static IDataSource GetDataSource(string sourceName, IInAppAndZone appIdentity, IDataSource upstream = null, ILookUpEngine configLookUp = null, ILog parentLog = null)
 		{
             Log(parentLog, nameof(GetDataSource), $"with name {sourceName}");
 		    // try to find with assembly name, or otherwise with GlobalName / previous names
@@ -60,26 +41,25 @@ namespace ToSic.Eav
 			if (type == null)
 			    throw new Exception("DataSource not installed on Server: " + sourceName);
 
-			return GetDataSource(type, zoneId, appId, upstream, configLookUp, parentLog);
+			return GetDataSource(type, appIdentity, upstream, configLookUp, parentLog);
 		}
 
 
-	    /// <summary>
-	    /// Get DataSource for specified sourceName/Type
-	    /// </summary>
-	    /// <param name="type">the .net type of this data-source</param>
-	    /// <param name="zoneId">ZoneId for this DataSource</param>
-	    /// <param name="appId">AppId for this DataSource</param>
-	    /// <param name="upstream">In-Connection</param>
-	    /// <param name="configLookUp">Provides configuration values if needed</param>
-	    /// <param name="parentLog"></param>
-	    /// <returns>A single DataSource</returns>
-	    private static IDataSource GetDataSource(Type type, int? zoneId, int? appId, IDataSource upstream,
+        /// <summary>
+        /// Get DataSource for specified sourceName/Type
+        /// </summary>
+        /// <param name="type">the .net type of this data-source</param>
+        /// <param name="appIdentity"></param>
+        /// <param name="upstream">In-Connection</param>
+        /// <param name="configLookUp">Provides configuration values if needed</param>
+        /// <param name="parentLog"></param>
+        /// <returns>A single DataSource</returns>
+        private static IDataSource GetDataSource(Type type, IInAppAndZone appIdentity, IDataSource upstream,
 	        ILookUpEngine configLookUp, ILog parentLog)
 	    {
             Log(parentLog, nameof(GetDataSource), "with type");
 	        var newDs = (DataSourceBase) Factory.Resolve(type);
-	        ConfigureNewDataSource(newDs, zoneId, appId, upstream, configLookUp, parentLog);
+            ConfigureNewDataSource(newDs, appIdentity, upstream, configLookUp, parentLog);
 	        return newDs;
 	    }
 
@@ -93,35 +73,35 @@ namespace ToSic.Eav
 	    /// <param name="parentLog"></param>
 	    /// <returns>A single DataSource</returns>
 	    public static T GetDataSource<T>(int? zoneId = null, int? appId = null, IDataSource upstream = null,
-			ILookUpEngine configLookUp = null, ILog parentLog = null)
+			ILookUpEngine configLookUp = null, ILog parentLog = null) where T: IDataSource
 		{
             Log(parentLog, nameof(GetDataSource) + $"<{typeof(T).Name}>", $"");
             if (upstream == null && configLookUp == null)
                     throw new Exception("Trying to GetDataSource<T> but cannot do so if both upstream and ConfigurationProvider are null.");
 			var newDs = (DataSourceBase)Factory.Resolve(typeof(T));
-			ConfigureNewDataSource(newDs, zoneId, appId, upstream, configLookUp ?? upstream.ConfigurationProvider, parentLog);
+            var appIdentity = GetIdentity(zoneId, appId);
+            ConfigureNewDataSource(newDs, appIdentity, upstream, configLookUp ?? upstream.ConfigurationProvider, parentLog);
 			return (T)Convert.ChangeType(newDs, typeof(T));
 		}
 
-	    /// <summary>
-	    /// Helper function (internal) to configure a new data source. This code is used multiple times, that's why it's in an own function
-	    /// </summary>
-	    /// <param name="newDs">The new data source</param>
-	    /// <param name="zoneId">optional Zone #</param>
-	    /// <param name="appId">optional app #</param>
-	    /// <param name="upstream">upstream data source - for auto-attaching</param>
-	    /// <param name="configLookUp">optional configuration provider - for auto-attaching</param>
-	    /// <param name="parentLog"></param>
-	    private static void ConfigureNewDataSource(DataSourceBase newDs, 
-            int? zoneId = null, int? appId = null,
+        /// <summary>
+        /// Helper function (internal) to configure a new data source. This code is used multiple times, that's why it's in an own function
+        /// </summary>
+        /// <param name="newDs">The new data source</param>
+        /// <param name="appIdentity">app identifier</param>
+        /// <param name="upstream">upstream data source - for auto-attaching</param>
+        /// <param name="configLookUp">optional configuration provider - for auto-attaching</param>
+        /// <param name="parentLog"></param>
+        private static void ConfigureNewDataSource(
+            DataSourceBase newDs, 
+            IInAppAndZone appIdentity,
 			IDataSource upstream = null,
 			ILookUpEngine configLookUp = null, 
             ILog parentLog = null)
 		{
             Log(parentLog, nameof(ConfigureNewDataSource), "");
-            var zoneAppId = GetZoneAppId(zoneId, appId);
-			newDs.ZoneId = zoneAppId.Item1;
-			newDs.AppId = zoneAppId.Item2;
+			newDs.ZoneId = appIdentity.ZoneId;
+			newDs.AppId = appIdentity.AppId;
 			if (upstream != null)
 				((IDataTarget)newDs).Attach(upstream);
 			if (configLookUp != null)
@@ -134,11 +114,7 @@ namespace ToSic.Eav
             }
 		}
 
-		private static readonly string[] InitialDataSourceQuery =
-        {
-            "ToSic.Eav.DataSources.Caching.IRootCache, ToSic.Eav.DataSources", 
-            //"ToSic.Eav.DataSources.IRootSource, ToSic.Eav.DataSources"
-        };
+        private static readonly string RootDataSource = typeof(IRootCache).AssemblyQualifiedName;
 
 	    /// <summary>
 	    /// Gets a DataSource with Query having PublishingFilter, ICache and IRootSource.
@@ -152,12 +128,13 @@ namespace ToSic.Eav
 	    public static IDataSource GetInitialDataSource(int? zoneId = null, int? appId = null, bool showDrafts = false, ILookUpEngine configProvider = null, ILog parentLog = null)
 	    {
             parentLog?.AddChild(LogKey, $"get init #{zoneId}/{appId}, draft:{showDrafts}, config:{configProvider != null}");
-	        var zoneAppId = GetZoneAppId(zoneId, appId);
+	        var appIdentity = GetIdentity(zoneId, appId);
 
 			configProvider = configProvider ?? new LookUpEngine();
-			var dataSource = AssembleDataSourceReverse(InitialDataSourceQuery, zoneAppId.Item1, zoneAppId.Item2, configProvider);
 
-			var publishingFilter = GetDataSource<PublishingFilter>(zoneAppId.Item1, zoneAppId.Item2, dataSource, configProvider, parentLog);
+            var dataSource = GetDataSource(RootDataSource, appIdentity, null, configProvider, parentLog);
+
+			var publishingFilter = GetDataSource<PublishingFilter>(appIdentity.ZoneId, appIdentity.AppId, dataSource, configProvider, parentLog);
 			publishingFilter.ShowDrafts = showDrafts;
 
 			return publishingFilter;
@@ -167,26 +144,22 @@ namespace ToSic.Eav
 		/// Resolve and validate ZoneId and AppId for specified ZoneId and/or AppId (if any)
 		/// </summary>
 		/// <returns>Item1 = ZoneId, Item2 = AppId</returns>
-		internal static Tuple<int, int> GetZoneAppId(int? zoneId, int? appId)
-		{
-			if (zoneId == null || appId == null)
-            {
-                var cache = Factory.Resolve<IAppsCache>();// // GetCache(Constants.DefaultZoneId, Constants.MetaDataAppId);
-				return cache.GetZoneAppId(zoneId, appId);
-			}
-			return Tuple.Create(zoneId.Value, appId.Value);
-		}
+		public static IInAppAndZone  GetIdentity(int? zoneId, int? appId) =>
+            zoneId != null && appId != null
+                ? new AppZoneIds(zoneId.Value, appId.Value)
+                : Factory.Resolve<IAppsCache>().GetIdentity(zoneId, appId);
 
-	    private static string _IRootCacheId = "ToSic.Eav.DataSources.Caching.IRootCache, ToSic.Eav.DataSources";
+        //private static string _IRootCacheId = "ToSic.Eav.DataSources.Caching.IRootCache, ToSic.Eav.DataSources";
 
         /// <summary>
         /// Get a new ICache DataSource
         /// </summary>
-        /// <param name="zoneId">ZoneId for this DataSource</param>
-        /// <param name="appId">AppId for this DataSource</param>
         /// <returns>A new IRootCache</returns>
-        public static IRootCache GetCache(int? zoneId, int? appId = null, ILog parentLog = null) 
-            => (IRootCache)GetDataSource(_IRootCacheId, zoneId, appId, parentLog:parentLog);
+        public static IRootCache GetCache(IInAppAndZone appIdentity, ILog parentLog = null) 
+            => (IRootCache)GetDataSource(/*_IRootCacheId*/RootDataSource, appIdentity, parentLog:parentLog);
+        //public static IRootCache GetCache(int? zoneId, int? appId = null, ILog parentLog = null) 
+        //    => (IRootCache)GetDataSource(_IRootCacheId, GetIdentity(zoneId, appId), parentLog:parentLog);
+
 
 	    /// <summary>
 		/// Get DataSource having common MetaData, like Field MetaData
@@ -194,8 +167,8 @@ namespace ToSic.Eav
 		/// <returns>IMetaDataSource (from ICache)</returns>
 		public static IMetadataSource GetMetaDataSource(int? zoneId = null, int? appId = null)
 		{
-			var zoneAppId = GetZoneAppId(zoneId, appId);
-			return (IMetadataSource)GetCache(zoneAppId.Item1, zoneAppId.Item2);
+			var zoneAppId = GetIdentity(zoneId, appId);
+			return (IMetadataSource)GetCache(zoneAppId);
 		}
 
 

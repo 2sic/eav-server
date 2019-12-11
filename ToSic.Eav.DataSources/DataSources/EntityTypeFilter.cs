@@ -57,8 +57,8 @@ namespace ToSic.Eav.DataSources
 	        Log.Add($"get list with type:{TypeName}");
 
 	        try
-	        {
-	            var cache = DataSource.GetCache(ZoneId, AppId);
+            {
+                var cache = Root;// DataSource.GetCache(ZoneId, AppId);
 	            var foundType = cache?.GetContentType(TypeName);
 	            if (foundType != null) // maybe it doesn't find it!
 	                return (from e in In[Constants.DefaultStreamName].List

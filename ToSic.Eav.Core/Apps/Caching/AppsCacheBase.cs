@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Caching;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Metadata;
-using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps.Caching
 {
@@ -17,30 +13,13 @@ namespace ToSic.Eav.Apps.Caching
     /// </summary>
     [PublicApi]
     // todo 2dm 2019-12-11 remove the ICacheKey from here
-    public abstract class AppsCacheBase : HasLog,  /*IMetadataSource,*/ IAppsCache /*, IInAppAndZone*/ /*ICacheKey*/ /*ICanPurgeListCache*/
+    public abstract class AppsCacheBase : IAppsCache
     {
-        #region AppId ZoneId
-
-        ///// <inheritdoc />
-        //public virtual int AppId { get; set; }
-
-        ///// <inheritdoc />
-        //public virtual int ZoneId { get; set; }
-
-        //public IAppsCache Init(int zoneId, int appId)
-        //{
-        //    //ZoneId = zoneId;
-        //    //AppId = appId;
-        //    return this;
-        //}
-
-        #endregion
-
         #region Constructors
 
-        protected AppsCacheBase(string logName = "App.Cache", ILog parentLog = null) : base(logName, parentLog)
-        {
-        }
+        //protected AppsCacheBase(string logName = "App.Cache", ILog parentLog = null) : base(logName, parentLog)
+        //{
+        //}
 
 
         #endregion
@@ -79,29 +58,23 @@ namespace ToSic.Eav.Apps.Caching
         /// <param name="zoneId"></param>
         /// <param name="appId"></param>
         /// <returns></returns>
-        public bool HasCacheItem(int zoneId, int appId) => HasCacheItem(string.Format(CacheKeySchema, zoneId, appId));
+        public bool Has(int zoneId, int appId) => HasCacheItem(string.Format(CacheKeySchema, zoneId, appId));
 
         /// <summary>
         /// Sets the CacheItem with specified CacheKey
         /// </summary>
-        protected abstract void SetCacheItem(string cacheKey, AppState item);
+        protected abstract void Set(string cacheKey, AppState item);
 
 		/// <summary>
 		/// Get CacheItem with specified CacheKey
 		/// </summary>
-		protected abstract AppState GetCacheItem(string cacheKey);
+		protected abstract AppState Get(string cacheKey);
 
 		/// <summary>
 		/// Remove the CacheItem with specified CacheKey
 		/// </summary>
-		protected abstract void RemoveCacheItem(string cacheKey);
+		protected abstract void Remove(string cacheKey);
         #endregion
-
-  //      /// <summary>
-		///// Ensure cache for current AppId
-  //      /// In this case, the system will pick up the primary language from the surrounding context (e.g. HttpContext)
-		///// </summary>
-		//protected AppState EnsureCache() => EnsureCacheInternal(ZoneId, AppId);
 
         public AppState Get(int zoneId, int appId) => EnsureCacheInternal(zoneId, appId);
 
@@ -109,9 +82,7 @@ namespace ToSic.Eav.Apps.Caching
         /// Preload the cache with the given primary language
         /// Needed for cache buildup outside of a HttpContext (e.g. a Scheduler)
         /// </summary>
-        /// <param name="primaryLanguage"></param>
-        /// <returns></returns>
-        public void PreLoadCache(int zoneId, int appId, string primaryLanguage) => EnsureCacheInternal(zoneId, appId, primaryLanguage);
+        public void ForceLoad(int zoneId, int appId, string primaryLanguage) => EnsureCacheInternal(zoneId, appId, primaryLanguage);
 
         private AppState EnsureCacheInternal(int zoneId, int appId, string primaryLanguage = null)
         {
@@ -120,34 +91,26 @@ namespace ToSic.Eav.Apps.Caching
 
             var cacheKey = CachePartialKey(zoneId, appId);
 
-            if (!HasCacheItem(cacheKey))
+            if (HasCacheItem(cacheKey)) return Get(cacheKey);
+
+            // create lock to prevent parallel initialization
+            var lockKey = LoadLocks.GetOrAdd(cacheKey, new object());
+            lock (lockKey)
             {
-                // create lock to prevent parallel initialization
-                var lockKey = LoadLocks.GetOrAdd(cacheKey, new object());
-                lock (lockKey)
-                {
-                    // now that lock is free, it could have been initialized, so re-check
-                    if (!HasCacheItem(cacheKey))
-                    {
-                        // Init EavSqlStore once
-                        var zone = GetZoneAppInternal(zoneId, appId);
-                        Backend.InitZoneApp(zone.Item1, zone.Item2);
-                        SetCacheItem(cacheKey, Backend.GetDataForCache(primaryLanguage));
-                    }
-                }
+                // now that lock is free, it could have been initialized, so re-check
+                if (HasCacheItem(cacheKey)) return Get(cacheKey);
+
+                // Init EavSqlStore once
+                var identity = GetZoneAppInternal(zoneId, appId);
+                Backend.InitZoneApp(identity.ZoneId, identity.AppId);
+                Set(cacheKey, Backend.GetDataForCache(primaryLanguage));
             }
 
-            return GetCacheItem(cacheKey);
+            return Get(cacheKey);
         }
 
         private static readonly ConcurrentDictionary<string, object> LoadLocks 
             = new ConcurrentDictionary<string, object>();
-
-     //   /// <summary>
-     //   /// Get the <see cref="AppState"/> of this app from the cache.
-     //   /// </summary>
-     //   // todo 2dm 2019-12-11 use parameters with IDs
-	    //public AppState AppState => EnsureCache();
 
         #region Purge Cache
 
@@ -155,7 +118,7 @@ namespace ToSic.Eav.Apps.Caching
         /// <summary>
         /// Clear Cache for specific Zone/App
         /// </summary>
-        public void PurgeCache(int zoneId, int appId) => RemoveCacheItem(string.Format(CacheKeySchema, zoneId, appId));
+        public void PurgeCache(int zoneId, int appId) => Remove(string.Format(CacheKeySchema, zoneId, appId));
 
 	    /// <inheritdoc />
 	    /// <summary>
@@ -163,23 +126,14 @@ namespace ToSic.Eav.Apps.Caching
 	    /// </summary>
 	    public abstract void PurgeGlobalCache();
 
-        public abstract void PartialUpdate(IEnumerable<int> entities);
+        public abstract void PartialUpdate(IInAppAndZone app, IEnumerable<int> entities, ILog log);
 
         #endregion
 
         #region Cache-Chain
 
-        //   /// <inheritdoc />
-        //   public long CacheTimestamp => AppState.CacheTimestamp;
-        ///// <inheritdoc />
-        //public bool CacheChanged(long newCacheTimeStamp) => AppState.CacheChanged(newCacheTimeStamp);
-
         ///// <inheritdoc />
         public string CachePartialKey(int zoneId, int appId) => string.Format(CacheKeySchema, zoneId, appId);
-        //   private string _cachePartialKey;
-
-        ///// <inheritdoc />
-        //public string CacheFullKey => CachePartialKey;
 
         #endregion
 
@@ -190,11 +144,8 @@ namespace ToSic.Eav.Apps.Caching
         /// </summary>
         /// <returns>Item1 = ZoneId, Item2 = AppId</returns>
         [PrivateApi]
-		public Tuple<int, int> GetZoneAppId(int? zoneId = null, int? appId = null)
-        {
-            //EnsureCacheInternal(zoneId, appId);
-            return GetZoneAppInternal(zoneId, appId);
-		}
+		public IInAppAndZone GetIdentity(int? zoneId = null, int? appId = null) 
+            => GetZoneAppInternal(zoneId, appId);
 
         // todo: better name etc.
         /// <summary>
@@ -204,7 +155,7 @@ namespace ToSic.Eav.Apps.Caching
         /// <param name="appId"></param>
         /// <returns></returns>
         /// remarks: must be internal, as it must run after Ensure Cache
-		private Tuple<int, int> GetZoneAppInternal(int? zoneId, int? appId)
+		private IInAppAndZone GetZoneAppInternal(int? zoneId, int? appId)
 		{
 			var resultZoneId = zoneId ?? (appId.HasValue
 			                       ? ZoneApps.Single(z => z.Value.Apps.Any(a => a.Key == appId.Value)).Key
@@ -214,26 +165,8 @@ namespace ToSic.Eav.Apps.Caching
 								  ? ZoneApps[resultZoneId].Apps.Single(a => a.Key == appId.Value).Key
 								  : ZoneApps[resultZoneId].DefaultAppId;
 
-			return Tuple.Create(resultZoneId, resultAppId);
-		}
-
-
-     //   #region GetAssignedEntities by Guid, string and int
-
-	    ///// <inheritdoc />
-     //   public IEnumerable<IEntity> Get<T>(int targetType, T key, string contentTypeName = null) 
-     //       => AppState.Get(targetType, key, contentTypeName);
-
-	    //#endregion
-
-
-     //   #region Additional Stream Caching
-
-	    ///// <inheritdoc />
-     //   public IListCache Lists => _listsCache ?? (_listsCache = new ListCache(Log));
-	    //private IListCache _listsCache;
-
-     //   #endregion
+			return new AppZoneIds(resultZoneId, resultAppId);
+        }
 
     }
 }

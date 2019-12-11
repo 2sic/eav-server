@@ -1,21 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.Caching;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps.Caching
 {
     [PrivateApi("WIP")]
-    public interface IAppsCache: IHasLog/*, ICacheExpiring*/
+    public interface IAppsCache
     {
-        //IAppsCache Init(int zoneId, int appId);
 
         #region Get an App
-        ///// <summary>
-        ///// Get the <see cref="AppState"/> of this app from the cache.
-        ///// </summary>
-        //AppState AppState { get; }
 
         AppState Get(int zoneId, int appId);
 
@@ -28,12 +22,17 @@ namespace ToSic.Eav.Apps.Caching
         /// </summary>
         /// <returns>Item1 = ZoneId, Item2 = AppId</returns>
         [PrivateApi("todo rename")]
-        Tuple<int, int> GetZoneAppId(int? zoneId = null, int? appId = null);
+        IInAppAndZone GetIdentity(int? zoneId = null, int? appId = null);
 
         Dictionary<int, Zone> ZoneApps { get; }
 
-        // todo: rename
-        bool HasCacheItem(int zoneId, int appId);
+        /// <summary>
+        /// Check if something is already in the cache
+        /// </summary>
+        /// <param name="zoneId"></param>
+        /// <param name="appId"></param>
+        /// <returns></returns>
+        bool Has(int zoneId, int appId);
         #endregion
 
         #region Cache Purging
@@ -44,7 +43,7 @@ namespace ToSic.Eav.Apps.Caching
         void PurgeCache(int zoneId, int appId);
 
 
-        void PartialUpdate(IEnumerable<int> entities);
+        void PartialUpdate(IInAppAndZone app, IEnumerable<int> entities, ILog log);
 
         /// <summary>
         /// Clean global cache (currently contains List of Zones and Apps)
@@ -55,18 +54,17 @@ namespace ToSic.Eav.Apps.Caching
 
         #region PreLoading of Cache (unsure what this is for...)
 
+        /// <summary>
+        /// Load an app into cache, specifying the primary language.
+        /// This is used in scenarios, where the primary language cannot be auto-detected, so it's set explicitly.
+        /// </summary>
+        /// <param name="zoneId">Zone ID</param>
+        /// <param name="appId">App ID</param>
+        /// <param name="primaryLanguage">primary language, lower case</param>
         [PrivateApi]
-        void PreLoadCache(int zoneId, int appId, string primaryLanguage);
+        void ForceLoad(int zoneId, int appId, string primaryLanguage);
 
         #endregion
-
-        #region Content Type Stuff - probably we should remove this from the RootCache
-
-
-        #endregion
-
-
-
 
     }
 }
