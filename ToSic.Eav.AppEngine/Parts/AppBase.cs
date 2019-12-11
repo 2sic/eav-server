@@ -32,8 +32,8 @@ namespace ToSic.Eav.Apps.Parts
 
 
         #region Data & Cache
-        public RootCacheBase Cache => _cache ?? (_cache = (RootCacheBase) Data.Root);
-        private RootCacheBase _cache;
+        public AppRoot Cache => _cache ?? (_cache = (AppRoot) Data.Root);
+        private AppRoot _cache;
 
         public IDataSource Data => _data ?? (_data = DataSource.GetInitialDataSource(ZoneId, AppId));
         private IDataSource _data;

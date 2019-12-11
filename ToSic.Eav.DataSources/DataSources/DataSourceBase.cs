@@ -69,13 +69,13 @@ namespace ToSic.Eav.DataSources
         }
 
         /// <inheritdoc />
-        public IRootCache Root
+        public IAppRoot Root
         {
             get => _root ?? (_root = DataSource.GetCache(this, Log));
             protected set => _root = value;
         }
 
-        private IRootCache _root;
+        private IAppRoot _root;
 
         /// <inheritdoc />
         public virtual string CacheFullKey

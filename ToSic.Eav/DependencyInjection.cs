@@ -30,7 +30,7 @@ namespace ToSic.Eav
             // 2019-12-11 2dm new
             serviceCollection.TryAddTransient<IAppsCache, AppsCache>();
 
-            serviceCollection.TryAddTransient<IRootCache, RootCacheSimple>();
+            serviceCollection.TryAddTransient<IAppRoot, AppRoot>();
             //serviceCollection.TryAddTransient<IAppsLoader, EavSqlStore>();
 	        serviceCollection.TryAddTransient<IRemoteMetadata, RemoteMetadata>();
 	        serviceCollection.TryAddTransient<ITargetTypes, EfcMetadataTargetTypes>();

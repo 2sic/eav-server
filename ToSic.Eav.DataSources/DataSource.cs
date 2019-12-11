@@ -114,7 +114,7 @@ namespace ToSic.Eav
             }
 		}
 
-        private static readonly string RootDataSource = typeof(IRootCache).AssemblyQualifiedName;
+        private static readonly string RootDataSource = typeof(IAppRoot).AssemblyQualifiedName;
 
 	    /// <summary>
 	    /// Gets a DataSource with Query having PublishingFilter, ICache and IRootSource.
@@ -155,8 +155,8 @@ namespace ToSic.Eav
         /// Get a new ICache DataSource
         /// </summary>
         /// <returns>A new IRootCache</returns>
-        public static IRootCache GetCache(IInAppAndZone appIdentity, ILog parentLog = null) 
-            => (IRootCache)GetDataSource(/*_IRootCacheId*/RootDataSource, appIdentity, parentLog:parentLog);
+        public static IAppRoot GetCache(IInAppAndZone appIdentity, ILog parentLog = null) 
+            => (IAppRoot)GetDataSource(/*_IRootCacheId*/RootDataSource, appIdentity, parentLog:parentLog);
         //public static IRootCache GetCache(int? zoneId, int? appId = null, ILog parentLog = null) 
         //    => (IRootCache)GetDataSource(_IRootCacheId, GetIdentity(zoneId, appId), parentLog:parentLog);
 

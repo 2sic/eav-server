@@ -14,13 +14,16 @@ namespace ToSic.Eav.DataSources.Caching
     /// The real cache must implement this and also provide platform specific adjustments so that the caching is in sync with the Environment.
     /// </summary>
     [PublicApi]
-    public abstract class RootCacheBase : DataSourceBase, IMetadataSource, IRootCache
+    public class AppRoot : DataSourceBase, IMetadataSource, IAppRoot
     {
         [PrivateApi] 
         public IAppsCache AppsCache => _appsCache ?? (_appsCache = Factory.Resolve<IAppsCache>());
         private IAppsCache _appsCache;
 
-        protected RootCacheBase()
+        [PrivateApi]
+        public override string LogId => "DS.Root";
+
+        protected AppRoot()
         {
             Root = this;
 

@@ -36,7 +36,7 @@ namespace ToSic.Eav.WebApi
 
             // 2017-10-23 old...
             // scope can be null (eav) or alternatives would be "System", "2SexyContent-System", "2SexyContent-App", "2SexyContent"
-            var cache = (RootCacheBase)DataSource.GetCache(DataSource.GetIdentity(null, appId)); // needed to count items
+            var cache = (AppRoot)DataSource.GetCache(DataSource.GetIdentity(null, appId)); // needed to count items
 
             var filteredType = allTypes.Where(t => t.Scope == scope)
                 .OrderBy(t => t.Name)
@@ -45,7 +45,7 @@ namespace ToSic.Eav.WebApi
             return filteredType;
 	    }
 
-        private ContentTypeInfo ContentTypeForJson(ContentType t, IRootCache cache)
+        private ContentTypeInfo ContentTypeForJson(ContentType t, IAppRoot cache)
 	    {
 	        Log.Add($"for json a:{t.AppId}, type:{t.Name}");
 	        var metadata = t.Metadata.Description;
