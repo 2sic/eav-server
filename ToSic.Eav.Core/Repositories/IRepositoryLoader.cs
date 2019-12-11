@@ -5,7 +5,7 @@ using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
 using AppState = ToSic.Eav.Apps.AppState;
 
-namespace ToSic.Eav.Interfaces
+namespace ToSic.Eav.Repositories
 {
     public interface IRepositoryLoader
     {

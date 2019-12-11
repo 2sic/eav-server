@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Xml.Linq;
+using ToSic.Eav.Apps.Caching;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Repository.Efc;
@@ -62,7 +63,8 @@ namespace ToSic.Eav.Apps.ImportExport
 				return false;
 			}
 
-            DataSource.GetCache(null).PurgeGlobalCache();   // must do this, to ensure that the app-id exists now 
+            Factory.Resolve<IAppsCache>().PurgeGlobalCache();
+            //DataSource.GetCache(null).PurgeGlobalCache();   // must do this, to ensure that the app-id exists now 
             Log.Add("import app completed");
 			return ImportXml(zoneId, appId/*.Value*/, doc);
 		}

@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.DataSources;
+﻿using ToSic.Eav.Apps.Caching;
+using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.Logging;
 
@@ -22,7 +23,10 @@ namespace ToSic.Eav.Apps.Parts
 
         protected AppBase(IInAppAndZone app, ILog parentLog) : this(app.ZoneId, app.AppId, parentLog) { }
 
-        protected AppBase(int appId, ILog parentLog) : this(((RootCacheBase) DataSource.GetCache(null)).GetZoneAppId(appId: appId).Item1, appId, parentLog) { }
+        protected AppBase(int appId, ILog parentLog) : this(
+            // ((RootCacheBase) DataSource.GetCache(null)).
+            Factory.Resolve<IAppsCache>().
+            GetZoneAppId(appId: appId).Item1, appId, parentLog) { }
 
         protected AppBase(IDataSource data, ILog parentLog) : this(data.ZoneId, data.AppId, parentLog)
         {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Apps.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.Interfaces;
@@ -10,6 +11,7 @@ using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
+using ToSic.Eav.Repositories;
 using ToSic.Eav.Repository.Efc.Parts;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -218,8 +220,8 @@ namespace ToSic.Eav.Repository.Efc
                 Cache.PurgeCache(ZoneId, AppId);
         }
 
-        public IRootCache Cache => _cache ?? (_cache = Factory.Resolve<IRootCache>());
-        private IRootCache _cache;
+        public IAppsCache Cache => _cache ?? (_cache = Factory.Resolve<IAppsCache>());
+        private IAppsCache _cache;
 
         #endregion
 

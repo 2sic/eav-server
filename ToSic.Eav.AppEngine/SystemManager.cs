@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ToSic.Eav.Apps.Caching;
 using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps
@@ -30,10 +31,16 @@ namespace ToSic.Eav.Apps
         /// <param name="global">if true, will flush everything</param>
         public static void Purge(int zoneId, int appId, bool global = false)
         {
+            var appsCache = Factory.Resolve<IAppsCache>();
+            
             if (global)
-                DataSource.GetCache(null).PurgeGlobalCache();
+                //DataSource.GetCache(null)
+                appsCache
+                    .PurgeGlobalCache();
             else
-                DataSource.GetCache(null).PurgeCache(zoneId, appId);
+                //DataSource.GetCache(null)
+                appsCache
+                    .PurgeCache(zoneId, appId);
         }
 
         /// <summary>
@@ -45,7 +52,7 @@ namespace ToSic.Eav.Apps
         public void InformOfPartialUpdate(AppIdentity app, IEnumerable<int> entities)
         {
             // var zoneId = SystemRuntime.ZoneIdOfApp(app.ZoneId, app.AppId);
-            var cache = DataSource.GetCache(app.ZoneId, app.AppId);
+            var cache = Factory.Resolve<IAppsCache>();//DataSource.GetCache(app.ZoneId, app.AppId);
             cache.LinkLog(Log);
             cache.PartialUpdate(entities);
         }

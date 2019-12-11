@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Apps.Caching;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.Logging;
@@ -136,7 +137,7 @@ namespace ToSic.Eav
 		private static readonly string[] InitialDataSourceQuery =
         {
             "ToSic.Eav.DataSources.Caching.IRootCache, ToSic.Eav.DataSources", 
-            "ToSic.Eav.DataSources.IRootSource, ToSic.Eav.DataSources"
+            //"ToSic.Eav.DataSources.IRootSource, ToSic.Eav.DataSources"
         };
 
 	    /// <summary>
@@ -169,8 +170,8 @@ namespace ToSic.Eav
 		internal static Tuple<int, int> GetZoneAppId(int? zoneId, int? appId)
 		{
 			if (zoneId == null || appId == null)
-			{
-                var cache = GetCache(Constants.DefaultZoneId, Constants.MetaDataAppId);
+            {
+                var cache = Factory.Resolve<IAppsCache>();// // GetCache(Constants.DefaultZoneId, Constants.MetaDataAppId);
 				return cache.GetZoneAppId(zoneId, appId);
 			}
 			return Tuple.Create(zoneId.Value, appId.Value);

@@ -16,7 +16,7 @@ namespace ToSic.Eav.DataSources.Caching
             },
         Type = DataSourceType.Source)]
     [PublicApi]
-    public interface IRootCache : IDataSource, IAppsCache, IZoneCache
+    public interface IRootCache : IDataSource //, IAppsCache
     {
         #region Cache Purging
 

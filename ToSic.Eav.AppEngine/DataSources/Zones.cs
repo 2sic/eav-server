@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Caching;
 using ToSic.Eav.Apps.DataSources.Types;
 using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.DataSources.Queries;
@@ -52,8 +53,8 @@ namespace ToSic.Eav.DataSources
 	    private IEnumerable<IEntity> GetList()
 	    {
             // Get cache, which manages a list of zones
-	        var cache = (RootCacheBase)DataSource.GetCache(ZoneId, AppId);
-
+	        //var cache = (RootCacheBase)DataSource.GetCache(ZoneId, AppId);
+            var cache = Factory.Resolve<IAppsCache>();
 	        var env = Factory.Resolve<IAppEnvironment>();
 
 	        var list = cache.ZoneApps.Values.OrderBy(z => z.ZoneId).Select(zone =>
