@@ -6,7 +6,7 @@ using AppState = ToSic.Eav.Apps.AppState;
 namespace ToSic.Eav.DataSources
 {
     /// <summary>
-    /// Caching interface for Root Eav Cache. 
+    /// Interface for the App Root - usually the very first node in any data-delivery or query. 
     /// </summary>
     [VisualQuery(GlobalName = "ToSic.Eav.DataSources.IAppRoot, ToSic.Eav.DataSources",
         NiceName = "App Root",

@@ -10,7 +10,8 @@ namespace ToSic.Eav.DataSources
 {
     /// <summary>
     /// The App Root is the entry point for all data. It takes it's data from a hidden AppState Cache.
-    /// It's implemented as a DataSource so that other DataSources can easily attach to it. 
+    /// It's implemented as a DataSource so that other DataSources can easily attach to it. <br/>
+    /// This is also the object returned as the root in any query.
     /// </summary>
     [PublicApi]
     public class AppRoot : DataSourceBase, IMetadataSource, IAppRoot
