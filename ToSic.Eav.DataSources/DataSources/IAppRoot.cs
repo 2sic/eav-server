@@ -3,12 +3,13 @@ using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using AppState = ToSic.Eav.Apps.AppState;
 
-namespace ToSic.Eav.DataSources.Caching
+namespace ToSic.Eav.DataSources
 {
     /// <summary>
     /// Caching interface for Root Eav Cache. 
     /// </summary>
     [VisualQuery(GlobalName = "ToSic.Eav.DataSources.IAppRoot, ToSic.Eav.DataSources",
+        NiceName = "App Root",
         PreviousNames = new []
             {
                 "ToSic.Eav.DataSources.Caches.ICache, ToSic.Eav.DataSources",

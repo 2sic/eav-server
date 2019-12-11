@@ -6,12 +6,11 @@ using ToSic.Eav.Metadata;
 using AppState = ToSic.Eav.Apps.AppState;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.DataSources.Caching
+namespace ToSic.Eav.DataSources
 {
     /// <summary>
-    /// The Root Cache is the main cache for App States. It's implemented as a DataSource so that other DataSources can easily attach to it. <br/>
-    /// This is just the abstract base implementation.
-    /// The real cache must implement this and also provide platform specific adjustments so that the caching is in sync with the Environment.
+    /// The App Root is the entry point for all data. It takes it's data from a hidden AppState Cache.
+    /// It's implemented as a DataSource so that other DataSources can easily attach to it. 
     /// </summary>
     [PublicApi]
     public class AppRoot : DataSourceBase, IMetadataSource, IAppRoot
@@ -23,7 +22,8 @@ namespace ToSic.Eav.DataSources.Caching
         [PrivateApi]
         public override string LogId => "DS.Root";
 
-        protected AppRoot()
+        [PrivateApi]
+        public AppRoot()
         {
             Root = this;
 
