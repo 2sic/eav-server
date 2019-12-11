@@ -161,7 +161,7 @@ namespace ToSic.Eav.Apps.Parts
             AppManager.DataController.Loader.Update(AppManager.Package, 
                 AppStateLoadSequence.ItemLoad, ids.ToArray(), Log);
             // clear cache of this app
-            //SystemManager.Purge(AppManager.AppId);
+            new SystemManager(Log).InformOfPartialUpdate(AppManager, ids);
             wrapLog($"ids:{ids.Count}");
             return ids;
         }

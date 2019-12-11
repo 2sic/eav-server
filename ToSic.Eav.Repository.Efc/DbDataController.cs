@@ -215,9 +215,10 @@ namespace ToSic.Eav.Repository.Efc
         private void PurgeAppCacheIfReady()
         {
             if(_purgeAppCacheOnSave)
-                (_cache ?? (_cache = Factory.Resolve<IRootCache>())).PurgeCache(ZoneId, AppId);
+                Cache.PurgeCache(ZoneId, AppId);
         }
 
+        public IRootCache Cache => _cache ?? (_cache = Factory.Resolve<IRootCache>());
         private IRootCache _cache;
 
         #endregion
@@ -289,10 +290,6 @@ namespace ToSic.Eav.Repository.Efc
             History.Add("save-data", Log);
             return Entities.SaveEntity(entities, saveOptions);
         }
-
-
-        //public int Save(IEntity entity, SaveOptions saveOptions) 
-        //    => Entities.SaveEntity(entity, saveOptions);
 
         public void Save(List<IContentType> contentTypes, SaveOptions saveOptions)
             => ContentType.ExtendSaveContentTypes(contentTypes, saveOptions);

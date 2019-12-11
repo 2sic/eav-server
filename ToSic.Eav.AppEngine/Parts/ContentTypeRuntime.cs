@@ -26,7 +26,7 @@ namespace ToSic.Eav.Apps.Parts
         /// <summary>
         /// Gets a ContentType by Id
         /// </summary>
-        public IContentType Get(int contentTypeId) => App.Cache.GetContentType(contentTypeId);
+        public IContentType Get(int contentTypeId) => App.Cache.AppState.GetContentType(contentTypeId);
 
         public IEnumerable<IContentType> FromScope(string scope = null, bool includeAttributeTypes = false)
         {

@@ -1,11 +1,21 @@
 ﻿using System;
+using System.Collections.Generic;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps
 {
-    public class SystemManager
+    public class SystemManager: HasLog
     {
+        #region Constructor
+
+        public SystemManager(ILog parentLog = null) : base("App.SysMng", parentLog) { }
+
+        #endregion
+
+
 
         #region purge cache stuff
+
 
         /// <summary>
         /// Flush the entire map of zones / apps
@@ -31,6 +41,14 @@ namespace ToSic.Eav.Apps
         /// </summary>
         /// <param name="appId"></param>
         public static void Purge(int appId) => Purge(SystemRuntime.ZoneIdOfApp(appId), appId);
+
+        public void InformOfPartialUpdate(AppIdentity app, IEnumerable<int> entities)
+        {
+            // var zoneId = SystemRuntime.ZoneIdOfApp(app.ZoneId, app.AppId);
+            var cache = DataSource.GetCache(app.ZoneId, app.AppId);
+            cache.LinkLog(Log);
+            cache.PartialUpdate(entities);
+        }
 
         /// <summary>
         /// Run some code and then purge the cache after that for full rebuild

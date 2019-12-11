@@ -5,7 +5,6 @@ using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
 using AppState = ToSic.Eav.Apps.AppState;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -30,8 +29,6 @@ namespace ToSic.Eav.DataSources.Caching
 			Out.Add(Constants.PublishedStreamName, new DataStream(this, Constants.PublishedStreamName, () => AppState.ListPublished));
 			Out.Add(Constants.DraftsStreamName, new DataStream(this, Constants.DraftsStreamName, () => AppState.ListNotHavingDrafts));
 		    // ReSharper restore VirtualMemberCallInConstructor
-
-            //Lists.DefaultDuration = 60 * 60;
 		}
 
         /// <summary>
@@ -135,11 +132,13 @@ namespace ToSic.Eav.DataSources.Caching
         /// </summary>
 	    public AppState AppState => EnsureCache();
 
-		/// <inheritdoc />
-		/// <summary>
-		/// Clear Cache for specific Zone/App
-		/// </summary>
-		public void PurgeCache(int zoneId, int appId) => RemoveCacheItem(string.Format(CacheKeySchema, zoneId, appId));
+        #region Purge Cache
+
+        /// <inheritdoc />
+        /// <summary>
+        /// Clear Cache for specific Zone/App
+        /// </summary>
+        public void PurgeCache(int zoneId, int appId) => RemoveCacheItem(string.Format(CacheKeySchema, zoneId, appId));
 
 	    /// <inheritdoc />
 	    /// <summary>
@@ -147,10 +146,14 @@ namespace ToSic.Eav.DataSources.Caching
 	    /// </summary>
 	    public abstract void PurgeGlobalCache();
 
-	    #region Cache-Chain
+        public abstract void PartialUpdate(IEnumerable<int> entities);
 
-	    /// <inheritdoc />
-	    public override long CacheTimestamp => AppState.CacheTimestamp;
+        #endregion
+
+        #region Cache-Chain
+
+        /// <inheritdoc />
+        public override long CacheTimestamp => AppState.CacheTimestamp;
 	    /// <inheritdoc />
 	    public override bool CacheChanged(long newCacheTimeStamp) => AppState.CacheChanged(newCacheTimeStamp);
 
@@ -169,27 +172,31 @@ namespace ToSic.Eav.DataSources.Caching
 	    /// <inheritdoc />
 	    public override string CacheFullKey => CachePartialKey;
 
-	    #endregion
+        #endregion
 
-	    /// <inheritdoc />
-	    /// <summary>
-	    /// Get a ContentType by StaticName if found of DisplayName if not
-	    /// </summary>
-	    /// <param name="name">Either StaticName or DisplayName</param>
-	    /// <returns>a content-type OR null</returns>
-	    [PrivateApi("probably deprecate, as you should only use the AppState?")]
-	    public IContentType GetContentType(string name) => AppState.GetContentType(name);
+        #region ContentType - probably remove from RootCache soon
 
         /// <inheritdoc />
         /// <summary>
-        /// Get a ContentType by Id
+        /// Get a ContentType by StaticName if found of DisplayName if not
         /// </summary>
-        [PrivateApi("probably deprecate, as you should only use the AppState?")]
-		public IContentType GetContentType(int contentTypeId) => AppState.GetContentType(contentTypeId);
+        /// <param name="name">Either StaticName or DisplayName</param>
+        /// <returns>a content-type OR null</returns>
+        [PrivateApi("probably deprecate, as you should only use the AppState and actually create an AppState, not get it from the root cache?")]
+	    public IContentType GetContentType(string name) => AppState.GetContentType(name);
 
-	    /// <summary>
-		/// Get all Content Types
-		/// </summary>
+        //      /// <inheritdoc />
+        //      /// <summary>
+        //      /// Get a ContentType by Id
+        //      /// </summary>
+        //      [PrivateApi("probably deprecate, as you should only use the AppState?")]
+        //public IContentType GetContentType(int contentTypeId) => AppState.GetContentType(contentTypeId);
+
+        #endregion
+
+        /// <summary>
+        /// Get all Content Types
+        /// </summary>
         [PrivateApi("probably deprecate, as you should only use the AppState?")]
 		public IEnumerable<IContentType> GetContentTypes() => AppState.ContentTypes;
 

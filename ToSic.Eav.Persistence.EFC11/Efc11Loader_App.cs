@@ -29,7 +29,7 @@ namespace ToSic.Eav.Persistence.Efc
         /// <inheritdoc />
         /// <summary>Get Data to populate ICache</summary>
         /// <param name="appId">AppId (can be different than the appId on current context (e.g. if something is needed from the default appId, like MetaData)</param>
-        /// <param name="entityIds">null or a List of EntitiIds</param>
+        /// <param name="entityIds">null or a List of EntityIds</param>
         /// <param name="parentLog"></param>
         /// <returns>app package with initialized app</returns>
         public AppState AppPackage(int appId, int[] entityIds = null, ILog parentLog = null) 
@@ -70,8 +70,6 @@ namespace ToSic.Eav.Persistence.Efc
                     Log.Add("skipping items load");
 
                 Log.Add($"timers sql:sqlAll:{_sqlTotalTime}");
-
-                //app.LoadCompleted(); // tell app that loading is done
             });
             return app;
         }

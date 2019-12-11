@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
@@ -17,10 +18,7 @@ namespace ToSic.Eav.DataSources.Caching
         public override string LogId => "DS.QCache";
 
         [PrivateApi]
-        public RootCacheSimple()
-        {
-            Cache = this;
-        }
+        public RootCacheSimple() => Cache = this;
 
         [PrivateApi]
         public override Dictionary<int, Zone> ZoneApps
@@ -40,6 +38,13 @@ namespace ToSic.Eav.DataSources.Caching
         private static readonly object ZoneAppLoadLock = new object();
 
         public override void PurgeGlobalCache() => _zoneAppsCache = null;
+
+        public override void PartialUpdate(IEnumerable<int> entities)
+        {
+            // do nothing - this is only important for farm scenarios
+            Log.Add($"{nameof(PartialUpdate)}({entities?.Count()})");
+        }
+
 
         /// <inheritdoc />
         public override string CacheKeySchema => "Z{0}A{1}";

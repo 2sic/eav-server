@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
-using ToSic.Eav.Metadata;
 using AppState = ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.Persistence.Efc
@@ -215,7 +214,7 @@ namespace ToSic.Eav.Persistence.Efc
                     #endregion
                 }
 
-                // If entity is a draft, add references to Published Entity
+                // If entity is a draft, also include references to Published Entity
                 app.Add(newEntity, e.PublishedEntityId);
 
             }
