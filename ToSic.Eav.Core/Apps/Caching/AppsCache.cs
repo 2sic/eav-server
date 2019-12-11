@@ -30,7 +30,7 @@ namespace ToSic.Eav.Apps.Caching
                 return _zoneAppsCache;
             }
         }
-        private static Dictionary<int, Zone> _zoneAppsCache;
+        private static volatile Dictionary<int, Zone> _zoneAppsCache;
         private static readonly object ZoneAppLoadLock = new object();
 
         public override string CacheKeySchema => "Z{0}A{1}";

@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSources.SqlSources;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Efc.Models;
@@ -32,7 +31,7 @@ namespace ToSic.Eav
             serviceCollection.TryAddTransient<IAppsCache, AppsCache>();
 
             serviceCollection.TryAddTransient<IRootCache, RootCacheSimple>();
-            serviceCollection.TryAddTransient<IAppsLoader, EavSqlStore>();
+            //serviceCollection.TryAddTransient<IAppsLoader, EavSqlStore>();
 	        serviceCollection.TryAddTransient<IRemoteMetadata, RemoteMetadata>();
 	        serviceCollection.TryAddTransient<ITargetTypes, EfcMetadataTargetTypes>();
 

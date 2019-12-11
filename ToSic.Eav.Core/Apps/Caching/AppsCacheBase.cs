@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Repositories;
 
 namespace ToSic.Eav.Apps.Caching
 {
@@ -12,23 +13,12 @@ namespace ToSic.Eav.Apps.Caching
     /// The real cache must implement this and also provide platform specific adjustments so that the caching is in sync with the Environment.
     /// </summary>
     [PublicApi]
-    // todo 2dm 2019-12-11 remove the ICacheKey from here
     public abstract class AppsCacheBase : IAppsCache
     {
-        #region Constructors
-
-        //protected AppsCacheBase(string logName = "App.Cache", ILog parentLog = null) : base(logName, parentLog)
-        //{
-        //}
-
-
-        #endregion
-
         /// <summary>
-        /// The root / backend DataSource which can load apps as needed.
+        /// The repository loader. Must generate a new one on every access, to be sure that it doesn't stay in memory for long. 
         /// </summary>
-        private IAppsLoader Backend => _backend ?? (_backend = Factory.Resolve<IAppsLoader>());
-	    private IAppsLoader _backend;
+        private IRepositoryLoader GetNewRepoLoader() => Factory.Resolve<IRepositoryLoader>();
 
 	    /// <summary>
 	    /// Gets or sets the Dictionary of all Zones an Apps
@@ -36,8 +26,8 @@ namespace ToSic.Eav.Apps.Caching
 	    [PrivateApi("might rename this some day")]
 	    public abstract Dictionary<int, Zone> ZoneApps { get; }
 
-	    [PrivateApi("might rename this some day")]
-        protected Dictionary<int, Zone> LoadZoneApps() => Backend.GetAllZones();
+        [PrivateApi("might rename this some day")]
+        protected Dictionary<int, Zone> LoadZoneApps() => GetNewRepoLoader().Zones();
 
 	    /// <summary>
 		/// Gets the KeySchema used to store values for a specific Zone and App. Must contain {0} for ZoneId and {1} for AppId
@@ -89,7 +79,7 @@ namespace ToSic.Eav.Apps.Caching
             if (zoneId == 0 || appId == 0)
                 return null;
 
-            var cacheKey = CachePartialKey(zoneId, appId);
+            var cacheKey = CacheKey(zoneId, appId);
 
             if (HasCacheItem(cacheKey)) return Get(cacheKey);
 
@@ -102,8 +92,11 @@ namespace ToSic.Eav.Apps.Caching
 
                 // Init EavSqlStore once
                 var identity = GetZoneAppInternal(zoneId, appId);
-                Backend.InitZoneApp(identity.ZoneId, identity.AppId);
-                Set(cacheKey, Backend.GetDataForCache(primaryLanguage));
+                var loader = GetNewRepoLoader();
+                if (primaryLanguage != null) loader.PrimaryLanguage = primaryLanguage;
+                var appState = loader.AppPackage(identity.AppId, null);
+
+                Set(cacheKey, appState);
             }
 
             return Get(cacheKey);
@@ -133,7 +126,7 @@ namespace ToSic.Eav.Apps.Caching
         #region Cache-Chain
 
         ///// <inheritdoc />
-        public string CachePartialKey(int zoneId, int appId) => string.Format(CacheKeySchema, zoneId, appId);
+        public string CacheKey(int zoneId, int appId) => string.Format(CacheKeySchema, zoneId, appId);
 
         #endregion
 
