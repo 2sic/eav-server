@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging.Simple;
 
@@ -45,7 +46,16 @@ namespace ToSic.Eav.Logging
         /// Dump result to an internal format - not very important in public use cases
         /// </summary>
         [PrivateApi]
-        string Dump(string separator = " - ", string start = "", string end = "", string resultStart = "=>", string resultEnd = "");
+        string Dump(
+            string separator = " - ",
+            string start = "",
+            string end = "",
+            string resultStart = "=>",
+            string resultEnd = "",
+            bool withCaller = false,
+            string callStart = "",
+            string callEnd = ""
+        );
 
         /// <summary>
         /// Add a log entry for a class constructor, returning a method to call when done
@@ -75,9 +85,15 @@ namespace ToSic.Eav.Logging
         /// <summary>
         /// Add a message log entry
         /// </summary>
-        /// <param name="message"></param>
+        /// <param name="message">Message to log</param>
+        /// <param name="callerPath">auto pre filled by the compiler - the path to the code file</param>
+        /// <param name="callerName">auto pre filled by the compiler - the method name</param>
+        /// <param name="callerLine">auto pre filled by the compiler - the code line</param>
         /// <returns>The same warning text which was added</returns>
-        string Add(string message);
+        string Add(string message,
+            [CallerFilePath] string callerPath = "",
+            [CallerMemberName] string callerName = "",
+            [CallerLineNumber] int callerLine = 0);
 
         /// <summary>
         /// Add a warning log entry
@@ -91,6 +107,7 @@ namespace ToSic.Eav.Logging
         /// </summary>
         /// <param name="messageMaker"></param>
         void Add(Func<string> messageMaker);
+
 
         [PrivateApi]
         List<Entry> Entries { get; }

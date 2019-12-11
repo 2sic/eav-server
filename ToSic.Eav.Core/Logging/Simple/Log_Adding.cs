@@ -1,27 +1,28 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace ToSic.Eav.Logging.Simple
 {
     public partial class Log
     {
 
-        /// <summary>
-        /// Add a message
-        /// </summary>
-        /// <param name="message"></param>
-        public string Add(string message)
+        /// <inheritdoc />
+        public string Add(string message,
+            [CallerFilePath] string callerPath = "",
+            [CallerMemberName] string callerName = "",
+            [CallerLineNumber] int callerLine = 0)
         {
-            AddEntry(message);
+            AddEntry(message, callerPath, callerName, callerLine);
             return message;
         }
+
 
         /// <summary>
         /// Add a message
         /// </summary>
-        /// <param name="message"></param>
-        private Entry AddEntry(string message)
+        private Entry AddEntry(string message, string callerPath = "", string callerName = "", int callerLine = 0)
         {
-            var e = new Entry(this, message, WrapDepth);
+            var e = new Entry(this, message, WrapDepth, callerPath, callerName, callerLine);
             AddToEntriesAndParent(e);
             return e;
         }

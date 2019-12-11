@@ -8,13 +8,14 @@ namespace ToSic.Eav.Logging.Simple
         // unique ID of this logger, to not confuse it with other loggers
         private readonly string _id = Guid.NewGuid().ToString().Substring(0, 2);
 
+        // ReSharper disable once StringLiteralTypo
         protected string Name = "unknwn";
         protected string Scope = "tdo";
         private const int MaxScopeLen = 3;
         private const int MaxNameLen = 6;
-        public DateTime Created => _created;
-        private readonly DateTime _created = DateTime.Now;
-            public int WrapDepth;
+        public DateTime Created { get; } = DateTime.Now;
+
+        public int WrapDepth;
         public  List<Entry> Entries { get; } = new List<Entry>();
         private ILog _parent;
 
@@ -39,6 +40,7 @@ namespace ToSic.Eav.Logging.Simple
             else
                 New(className, initialMessage);
         }
+
 
         public ILog AddChild(string name, string message) => new Log(name, this, message);
 
