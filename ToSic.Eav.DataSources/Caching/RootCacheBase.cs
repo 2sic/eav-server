@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Metadata;
@@ -34,8 +35,8 @@ namespace ToSic.Eav.DataSources.Caching
         /// <summary>
 		/// The root / backend DataSource which can load apps as needed.
 		/// </summary>
-		private IRootSource Backend => _backend ?? (_backend = Factory.Resolve<IRootSource>());
-	    private IRootSource _backend;
+		private IAppsLoader Backend => _backend ?? (_backend = Factory.Resolve<IAppsLoader>());
+	    private IAppsLoader _backend;
 
 	    /// <summary>
 	    /// Gets or sets the Dictionary of all Zones an Apps

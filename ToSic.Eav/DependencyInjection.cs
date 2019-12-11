@@ -7,6 +7,8 @@ using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repository.Efc.Implementations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Caching;
 using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.ImportExport.Json;
@@ -27,7 +29,7 @@ namespace ToSic.Eav
 	    public void ConfigureNetCoreContainer(IServiceCollection serviceCollection)
 	    {
             serviceCollection.TryAddTransient<IRootCache, RootCacheSimple>();
-            serviceCollection.TryAddTransient<IRootSource, EavSqlStore>();
+            serviceCollection.TryAddTransient<IAppsLoader, EavSqlStore>();
 	        serviceCollection.TryAddTransient<IRemoteMetadata, RemoteMetadata>();
 	        serviceCollection.TryAddTransient<ITargetTypes, EfcMetadataTargetTypes>();
 

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using ToSic.Eav.Apps.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
@@ -17,28 +16,28 @@ namespace ToSic.Eav.DataSources.Caching
             },
         Type = DataSourceType.Source)]
     [PublicApi]
-    public interface IRootCache : IDataSource
+    public interface IRootCache : IDataSource, IAppsCache, IZoneCache
     {
         #region Cache Purging
 
-        /// <summary>
-        /// Clean cache for specific Zone and App
-        /// </summary>
-        void PurgeCache(int zoneId, int appId);
+  //      /// <summary>
+  //      /// Clean cache for specific Zone and App
+  //      /// </summary>
+  //      void PurgeCache(int zoneId, int appId);
 
-		/// <summary>
-		/// Clean global cache (currently contains List of Zones and Apps)
-		/// </summary>
-		void PurgeGlobalCache();
+		///// <summary>
+		///// Clean global cache (currently contains List of Zones and Apps)
+		///// </summary>
+		//void PurgeGlobalCache();
 
-        void PartialUpdate(IEnumerable<int> entities);
+  //      void PartialUpdate(IEnumerable<int> entities);
 
         #endregion
 
         #region PreLoading of Cache (unsure what this is for...)
 
-        [PrivateApi]
-        void PreLoadCache(string primaryLanguage);
+        //[PrivateApi]
+        //void PreLoadCache(string primaryLanguage);
 
         #endregion
 
@@ -58,12 +57,12 @@ namespace ToSic.Eav.DataSources.Caching
 
         #endregion
 
-        /// <summary>
-        /// Get/Resolve ZoneId and AppId for specified ZoneId and/or AppId. If both are null, default ZoneId with it's default App is returned.
-        /// </summary>
-        /// <returns>Item1 = ZoneId, Item2 = AppId</returns>
-        [PrivateApi]
-		Tuple<int, int> GetZoneAppId(int? zoneId = null, int? appId = null);
+  //      /// <summary>
+  //      /// Get/Resolve ZoneId and AppId for specified ZoneId and/or AppId. If both are null, default ZoneId with it's default App is returned.
+  //      /// </summary>
+  //      /// <returns>Item1 = ZoneId, Item2 = AppId</returns>
+  //      [PrivateApi]
+		//Tuple<int, int> GetZoneAppId(int? zoneId = null, int? appId = null);
 
         /// <summary>
         /// Advanced caching of lists which have queried some of the data in this cache, and want to retain the results of the query till the root changes. 
