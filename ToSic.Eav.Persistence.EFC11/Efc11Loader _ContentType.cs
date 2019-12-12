@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Data;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Persistence.Efc
@@ -26,11 +25,8 @@ namespace ToSic.Eav.Persistence.Efc
         /// Get all ContentTypes for specified AppId. 
         /// If uses temporary caching, so if called multiple times it loads from a private field.
         /// </summary>
-        public IList<IContentType> ContentTypes(int appId, IHasMetadataSource source)
-        {
-            return LoadContentTypesIntoLocalCache(appId, source);
-            
-        }
+        public IList<IContentType> ContentTypes(int appId, IHasMetadataSource source) 
+            => LoadContentTypesIntoLocalCache(appId, source);
 
 
         /// <summary>
@@ -39,6 +35,7 @@ namespace ToSic.Eav.Persistence.Efc
         private ImmutableList<IContentType> LoadContentTypesIntoLocalCache(int appId, 
             IHasMetadataSource source)
         {
+            var wrapLog = Log.Call(nameof(LoadContentTypesIntoLocalCache), useTimer: true);
             // Load from DB
             var sqlTime = Stopwatch.StartNew();
             var query = _dbContext.ToSicEavAttributeSets
@@ -95,12 +92,10 @@ namespace ToSic.Eav.Persistence.Efc
                 }
             );
 
-            //if (justAddNewOnes && prevList != null)
-            //    newTypes = newTypes.Concat(prevList);
-
             _sqlTotalTime = _sqlTotalTime.Add(sqlTime.Elapsed);
 
             //_contentTypes[appId] =
+            wrapLog("");
             return newTypes.ToImmutableList();
 
         }

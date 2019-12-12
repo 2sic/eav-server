@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 
 namespace ToSic.Eav.Logging.Simple
 {
@@ -21,6 +22,7 @@ namespace ToSic.Eav.Logging.Simple
                                                + new string('~', e.Depth * 2)
                                                + e.Message
                                                + (e.Result != null ? resultStart + e.Result + resultEnd: string.Empty)
+                                               + (e.Elapsed != TimeSpan.Zero ? $" ⌚ {e.Elapsed.TotalSeconds}s " : "" )
                                                + (withCaller && !string.IsNullOrEmpty(e.CallerPath) ? $"{callStart}{e.CallerPath} - {e.CallerName}() #{e.CallerLine}{callEnd}" : "")
             ));
             lg.Append(end);

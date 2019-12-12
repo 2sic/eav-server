@@ -70,17 +70,17 @@ namespace ToSic.Eav.Logging
         /// <summary>
         /// Add a log entry for method call, returning a method to call when done
         /// </summary>
-        Action<string> Call(string methodName, string @params = null, string message = null);
+        Action<string> Call(string methodName, string @params = null, string message = null, bool useTimer = false);
 
         /// <summary>
         /// Add a log entry for a class constructor, returning a method to call when done
         /// </summary>
-        Action<string> Call(string methodName, Func<string> @params, Func<string> message = null);
+        Action<string> Call(string methodName, Func<string> @params, Func<string> message = null, bool useTimer = false);
 
         /// <summary>
         /// Add a log entry for method call, returning a method to call when done
         /// </summary>
-        Func<string, T, T> Call<T>(string methodName, string @params = null, string message = null);
+        Func<string, T, T> Call<T>(string methodName, string @params = null, string message = null, bool useTimer = false);
 
         /// <summary>
         /// Add a message log entry

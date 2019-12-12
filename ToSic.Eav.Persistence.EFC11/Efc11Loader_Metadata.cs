@@ -13,6 +13,7 @@ namespace ToSic.Eav.Persistence.Efc
 
         private static TimeSpan InitMetadataLists(AppState app, EavDbContext dbContext)
         {
+            
             var sqlTime = Stopwatch.StartNew();
             if (_metadataTypeMapPermaCache == null)
                 _metadataTypeMapPermaCache = dbContext.ToSicEavAssignmentObjectTypes

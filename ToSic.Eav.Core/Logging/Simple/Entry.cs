@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Documentation;
+﻿using System;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Logging.Simple
 {
@@ -7,6 +8,7 @@ namespace ToSic.Eav.Logging.Simple
     {
         public string Message { get; }
         public string Result { get; private set; }
+        public TimeSpan Elapsed { get; set; }
         public int Depth;
 
         private readonly ILog _log;

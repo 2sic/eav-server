@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc.Models;
@@ -43,6 +42,7 @@ namespace ToSic.Eav.Persistence.Efc
                 Log = new Log("DB.EFLoad", app.Log, $"get app data package for a#{app.AppId}, " +
                                                     $"startAt: {startAt}, " +
                                                     $"ids only:{entityIds != null}");
+                var wrapLog = Log.Call(nameof(Update), useTimer:true);
 
                 // prepare metadata lists & relationships etc.
                 if (startAt <= AppStateLoadSequence.MetadataInit)
@@ -71,6 +71,7 @@ namespace ToSic.Eav.Persistence.Efc
                     Log.Add("skipping items load");
 
                 Log.Add($"timers sql:sqlAll:{_sqlTotalTime}");
+                wrapLog("ok");
             });
             return app;
         }
