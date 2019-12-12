@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using ToSic.Eav.Caching.Apps;
 using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps
@@ -31,12 +29,10 @@ namespace ToSic.Eav.Apps
         /// <param name="global">if true, will flush everything</param>
         public static void Purge(int zoneId, int appId, bool global = false)
         {
-            var appsCache = Factory.Resolve<IAppsCache>();
-            
             if (global)
-                appsCache.PurgeAll();
+                Factory.GetAppsCache().PurgeAll();
             else
-                appsCache.Purge(new AppIdentity(zoneId, appId));
+                Factory.GetAppsCache().Purge(new AppIdentity(zoneId, appId));
         }
 
         /// <summary>

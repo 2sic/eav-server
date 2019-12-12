@@ -15,18 +15,18 @@ namespace ToSic.Eav.Apps.Parts
     {
         public ContentTypeRuntime(AppRuntime app, ILog parentLog) : base(app, parentLog){}
 
-        public IEnumerable<IContentType> All => App.Cache.GetContentTypes();
+        public IEnumerable<IContentType> All => App.AppState.ContentTypes;//.GetContentTypes();
 
         /// <summary>
         /// Gets a ContentType by Name
         /// </summary>
         /// <returns>a content-type or null if not found</returns>
-        public IContentType Get(string name) => App.Cache.GetContentType(name);
+        public IContentType Get(string name) => App.AppState.GetContentType(name);
 
         /// <summary>
         /// Gets a ContentType by Id
         /// </summary>
-        public IContentType Get(int contentTypeId) => App.Cache.AppState.GetContentType(contentTypeId);
+        public IContentType Get(int contentTypeId) => App.AppState.GetContentType(contentTypeId);
 
         public IEnumerable<IContentType> FromScope(string scope = null, bool includeAttributeTypes = false)
         {

@@ -146,7 +146,7 @@ namespace ToSic.Eav
 		public static IAppIdentity  GetIdentity(int? zoneId, int? appId) =>
             zoneId != null && appId != null
                 ? new AppIdentity(zoneId.Value, appId.Value)
-                : Factory.Resolve<IAppsCache>().GetIdentity(zoneId, appId);
+                : Factory.GetAppsCache().GetIdentity(zoneId, appId);
 
 
         /// <summary>

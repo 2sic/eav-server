@@ -5,9 +5,9 @@ using System.Linq;
 using System.Web.Http;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Parts;
+using ToSic.Eav.Caching.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Serializers;
@@ -81,8 +81,9 @@ namespace ToSic.Eav.WebApi
 	    public ContentTypeInfo GetSingle(int appId, string contentTypeStaticName, string scope = null)
 	    {
 	        Log.Add($"get single a#{appId}, type:{contentTypeStaticName}, scope:{scope}");
-            var cache = DataSource.GetCache(DataSource.GetIdentity(null, appId));
-            var ct = cache.GetContentType(contentTypeStaticName);
+            var appState = Factory.GetAppState(appId);
+            //var cache = DataSource.GetCache(DataSource.GetIdentity(null, appId));
+            var ct = appState.GetContentType(contentTypeStaticName);
             return ContentTypeForJson(ct as ContentType, null);
 	    }
 
@@ -135,8 +136,8 @@ namespace ToSic.Eav.WebApi
         public IEnumerable<ContentTypeFieldInfo> GetFields(int appId, string staticName)
         {
             Log.Add($"get fields a#{appId}, type:{staticName}");
-
-            if(!(DataSource.GetCache(DataSource.GetIdentity(null, appId)).GetContentType(staticName) is ContentType type))
+            var appState = Factory.GetAppState(appId);
+            if(!(/*DataSource.GetCache(DataSource.GetIdentity(null, appId))*/appState.GetContentType(staticName) is ContentType type))
                 throw new Exception("type should be a ContentType - something broke");
             var fields = type.Attributes.OrderBy(a => a.SortOrder);
 

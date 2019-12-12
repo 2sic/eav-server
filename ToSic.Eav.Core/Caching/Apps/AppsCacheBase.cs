@@ -9,11 +9,11 @@ using ToSic.Eav.Repositories;
 namespace ToSic.Eav.Caching.Apps
 {
     /// <summary>
-    /// The Root Cache is the main cache for App States. It's implemented as a DataSource so that other DataSources can easily attach to it. <br/>
+    /// The Apps Cache is the main cache for App States. <br/>
     /// This is just the abstract base implementation.
     /// The real cache must implement this and also provide platform specific adjustments so that the caching is in sync with the Environment.
     /// </summary>
-    [PrivateApi("WIP")]
+    [PublicApi]
     public abstract class AppsCacheBase : IAppsCache
     {
         /// <summary>
@@ -21,58 +21,68 @@ namespace ToSic.Eav.Caching.Apps
         /// </summary>
         private IRepositoryLoader GetNewRepoLoader() => Factory.Resolve<IRepositoryLoader>();
 
-	    /// <summary>
-	    /// Gets or sets the Dictionary of all Zones an Apps
-	    /// </summary>
-	    [PrivateApi("might rename this some day")]
+	    /// <inheritdoc />
 	    public abstract Dictionary<int, Zone> Zones { get; }
 
-        [PrivateApi("might rename this some day")]
-        protected Dictionary<int, Zone> LoadZoneApps() => GetNewRepoLoader().Zones();
+        [PrivateApi]
+        protected Dictionary<int, Zone> LoadZones() => GetNewRepoLoader().Zones();
 
-	    /// <summary>
-		/// Gets the KeySchema used to store values for a specific Zone and App. Must contain {0} for ZoneId and {1} for AppId
-		/// </summary>
-		[PrivateApi]
-		public virtual string CacheKeySchema { get; } = "Z{0}A{1}";
+        #region Cache-Keys
+
+        /// <summary>
+        /// Gets the KeySchema used to store values for a specific Zone and App. Must contain {0} for ZoneId and {1} for AppId
+        /// </summary>
+        [PrivateApi]
+		public string CacheKeySchema { get; protected set; } = "Z{0}A{1}";
+
+        [PrivateApi]
+        protected string CacheKey(IAppIdentity appIdentity) => string.Format(CacheKeySchema, appIdentity.ZoneId, appIdentity.AppId);
+
+        #endregion
 
 
-        #region Definition of the abstract Has-Item, Set, Get, Remove
+
+        /// <inheritdoc />
+        public bool Has(IAppIdentity app) => Has(CacheKey(app));
+
+        #region Definition of the abstract Has, Set, Get, Remove
+
         /// <summary>
         /// Test whether CacheKey exists in the Cache
         /// </summary>
+        [PrivateApi("only important for developers, and they have intellisense")]
         protected abstract bool Has(string cacheKey);
-
-        /// <summary>
-        /// Check if an app is already in the global cache.
-        /// </summary>
-        /// <param name="app"></param>
-        /// <returns></returns>
-        public bool Has(IAppIdentity app) => Has(CacheKey(app));
 
         /// <summary>
         /// Sets the CacheItem with specified CacheKey
         /// </summary>
-        protected abstract void Set(string cacheKey, AppState item);
-
-		/// <summary>
-		/// Get CacheItem with specified CacheKey
-		/// </summary>
-		protected abstract AppState Get(string cacheKey);
-
-		/// <summary>
-		/// Remove the CacheItem with specified CacheKey
-		/// </summary>
-		protected abstract void Remove(string cacheKey);
-        #endregion
-
-        public AppState Get(IAppIdentity app) => GetOrBuild(app);
+        [PrivateApi("only important for developers, and they have intellisense")]
+        protected abstract void Set(string key, AppState item);
 
         /// <summary>
-        /// Preload the cache with the given primary language
-        /// Needed for cache buildup outside of a HttpContext (e.g. a Scheduler)
+        /// Get CacheItem with specified CacheKey
         /// </summary>
+        [PrivateApi("only important for developers, and they have intellisense")]
+		protected abstract AppState Get(string key);
+
+        /// <summary>
+        /// Remove the CacheItem with specified CacheKey
+        /// </summary>
+        [PrivateApi("only important for developers, and they have intellisense")]
+		protected abstract void Remove(string key);
+
+        #endregion
+
+        /// <inheritdoc />
+        public AppState Get(IAppIdentity app) => GetOrBuild(app);
+
+        /// <inheritdoc />
+        public AppState Get(int appId) => Get(GetIdentity(null, appId));
+
+
+        /// <inheritdoc />
         public void Load(IAppIdentity app, string primaryLanguage) => GetOrBuild(app, primaryLanguage);
+
 
         private AppState GetOrBuild(IAppIdentity appIdentity, string primaryLanguage = null)
         {
@@ -91,10 +101,9 @@ namespace ToSic.Eav.Caching.Apps
                 if (Has(cacheKey)) return Get(cacheKey);
 
                 // Init EavSqlStore once
-                //var identity = GetZoneAppInternal(zoneId, appId);
                 var loader = GetNewRepoLoader();
                 if (primaryLanguage != null) loader.PrimaryLanguage = primaryLanguage;
-                var appState = loader.AppPackage(appIdentity.AppId, null);
+                var appState = loader.AppPackage(appIdentity.AppId);
 
                 Set(cacheKey, appState);
             }
@@ -102,21 +111,25 @@ namespace ToSic.Eav.Caching.Apps
             return Get(cacheKey);
         }
 
+        /// <summary>
+        /// List of locks, to ensure that each app locks the loading process separately
+        /// </summary>
         private static readonly ConcurrentDictionary<string, object> LoadLocks 
             = new ConcurrentDictionary<string, object>();
 
         #region Purge Cache
 
         /// <inheritdoc />
-        /// <summary>
-        /// Clear Cache for specific Zone/App
-        /// </summary>
         public void Purge(IAppIdentity app) => Remove(CacheKey(app));
 
 	    /// <inheritdoc />
 	    public abstract void PurgeAll();
 
-	    /// <inheritdoc />
+        #endregion
+
+        #region Update
+
+        /// <inheritdoc />
         public virtual void Update(IAppIdentity app, IEnumerable<int> entities, ILog log)
         {
             var wrapLog = log.Call($"{nameof(AppsCacheBase)}.{nameof(Update)}");
@@ -133,19 +146,10 @@ namespace ToSic.Eav.Caching.Apps
 
         #endregion
 
-        #region Cache-Chain
 
-        protected string CacheKey(IAppIdentity appIdentity) => string.Format(CacheKeySchema, appIdentity.ZoneId, appIdentity.AppId);
-
-        #endregion
 
 
         /// <inheritdoc />
-        /// <summary>
-        /// Get/Resolve ZoneId and AppId for specified ZoneId and/or AppId. If both are null, default ZoneId with it's default App is returned.
-        /// </summary>
-        /// <returns>Item1 = ZoneId, Item2 = AppId</returns>
-        [PrivateApi]
 		public IAppIdentity GetIdentity(int? zoneId = null, int? appId = null) 
 		{
 			var resultZoneId = zoneId ?? (appId.HasValue

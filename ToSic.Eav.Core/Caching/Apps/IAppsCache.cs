@@ -22,6 +22,13 @@ namespace ToSic.Eav.Caching.Apps
         /// <returns>The <see cref="AppState"/> of the app.</returns>
         AppState Get(IAppIdentity app);
 
+        /// <summary>
+        /// Retrieve an app from the cache
+        /// </summary>
+        /// <param name="appId">App id if zone unknown.</param>
+        /// <returns>The <see cref="AppState"/> of the app.</returns>
+        AppState Get(int appId);
+
         #endregion
 
         #region Look up IDs

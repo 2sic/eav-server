@@ -16,7 +16,7 @@ namespace ToSic.Eav.UnitTests.DataSources.Caches
             const string ItemToFilter = "1023";
             var ds = CreateFilterForTesting(100, ItemToFilter);
 
-            var cache = ds.Root;
+            //var cache = ds.Root;
             var listCache = new ListCache(null);// cache.Lists;// as IListCache;
             Assert.IsFalse(listCache.Has(ds.CacheFullKey), "Should not have it in cache yet");
 

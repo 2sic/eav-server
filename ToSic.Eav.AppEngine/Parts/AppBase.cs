@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Caching.Apps;
-using ToSic.Eav.DataSources;
+﻿using ToSic.Eav.DataSources;
 using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps.Parts
@@ -22,7 +21,7 @@ namespace ToSic.Eav.Apps.Parts
 
         protected AppRuntimeBase(IAppIdentity app, ILog parentLog) : this(app.ZoneId, app.AppId, parentLog) { }
 
-        protected AppRuntimeBase(int appId, ILog parentLog) : this(Factory.Resolve<IAppsCache>().GetIdentity(appId: appId).ZoneId, appId, parentLog) { }
+        protected AppRuntimeBase(int appId, ILog parentLog) : this(Factory.GetAppsCache().GetIdentity(appId: appId).ZoneId, appId, parentLog) { }
 
         protected AppRuntimeBase(IDataSource data, ILog parentLog) : this(data.ZoneId, data.AppId, parentLog)
         {
@@ -31,8 +30,8 @@ namespace ToSic.Eav.Apps.Parts
 
 
         #region Data & Cache
-        public AppRoot Cache => _cache ?? (_cache = (AppRoot) Data.Root);
-        private AppRoot _cache;
+        //public AppRoot Cache => _cache ?? (_cache = (AppRoot) Data/*.Root*/);
+        //private AppRoot _cache;
 
         public IDataSource Data => _data ?? (_data = DataSource.GetInitialDataSource(ZoneId, AppId));
         private IDataSource _data;
@@ -40,7 +39,7 @@ namespace ToSic.Eav.Apps.Parts
         /// <summary>
         /// The cache-package if needed (mainly for export/import, where the full data is necessary)
         /// </summary>
-        public AppState Package => Cache.AppState;
+        public AppState AppState => Factory.GetAppState(Data);// Cache.AppState;
 
 
         #endregion

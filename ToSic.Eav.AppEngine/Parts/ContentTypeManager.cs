@@ -17,7 +17,7 @@ namespace ToSic.Eav.Apps.Parts
                 AppManager.DataController.AttribSet.PrepareDbAttribSet(name, description, name, scope, false, AppManager.AppId));
 
             // ensure app-package loads this type - this is a simple thing, as no data uses this type till now
-            AppManager.Package.ContentTypesShouldBeReloaded = true;
+            AppManager.AppState.ContentTypesShouldBeReloaded = true;
         }
 
         /// <summary>

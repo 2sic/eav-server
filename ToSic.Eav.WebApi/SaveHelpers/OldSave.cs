@@ -17,7 +17,7 @@ namespace ToSic.Eav.WebApi.SaveHelpers
 
         public Entity CreateEntityFromTransferObject(AppManager appMan, BundleWithHeader<EntityWithLanguages> editInfo)
         {
-            var allEntitiesForRelationships = appMan.Package;
+            var allEntitiesForRelationships = appMan.AppState;
 
             Log.Add($"CreateEntityFromTransferObject(editInfo:{editInfo.Header.ContentTypeName}:{editInfo.Header.Guid}, allEntitiesForRelationships:{allEntitiesForRelationships?.List?.Count()})");
             var toEntity = editInfo.Entity;

@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Caching.Apps
 {
+    /// <summary>
+    /// The default Apps Cache system running on a normal environment. 
+    /// </summary>
+    [PublicApi]
     public class AppsCache: AppsCacheBase
     {
         #region Constructor
@@ -18,7 +20,7 @@ namespace ToSic.Eav.Caching.Apps
 
         #endregion
 
-        [PrivateApi]
+        /// <inheritdoc />
         public override Dictionary<int, Zone> Zones
         {
             get
@@ -27,15 +29,18 @@ namespace ToSic.Eav.Caching.Apps
                 if (ZoneAppCache != null) return ZoneAppCache;
                 lock (ZoneAppLoadLock)
                     if (ZoneAppCache == null)
-                        ZoneAppCache = LoadZoneApps();
+                        ZoneAppCache = LoadZones();
                 return ZoneAppCache;
             }
         }
-        protected static volatile Dictionary<int, Zone> ZoneAppCache;
-        protected static readonly object ZoneAppLoadLock = new object();
+
+        // note: this object must be volatile!
+        [PrivateApi] protected static volatile Dictionary<int, Zone> ZoneAppCache;
+        [PrivateApi] protected static readonly object ZoneAppLoadLock = new object();
 
 
         #region The cache-variable + HasCacheItem, SetCacheItem, Get, Remove
+
         private static readonly IDictionary<string, AppState> Caches = new Dictionary<string, AppState>();
 
 
@@ -43,7 +48,7 @@ namespace ToSic.Eav.Caching.Apps
         protected override bool Has(string cacheKey) => Caches.ContainsKey(cacheKey);
 
         /// <inheritdoc />
-        protected override void Set(string cacheKey, AppState item)
+        protected override void Set(string key, AppState item)
         {
             try
             {
@@ -51,29 +56,26 @@ namespace ToSic.Eav.Caching.Apps
                 // 2018-03-28 added lock - because I assume that's the cause of the random errors sometimes on system-load - see #1498
                 lock (Caches)
                 {
-                    Caches[cacheKey] = item;
+                    Caches[key] = item;
                 }
             }
             catch (Exception ex)
             {
                 // unclear why this pops up sometime...if it would also hit on live, so I'm adding some more info
-                throw new Exception("issue with setting cache item - key is '" + cacheKey + "' and cache is null =" +
+                throw new Exception("issue with setting cache item - key is '" + key + "' and cache is null =" +
                                     (Caches == null) + " and item is null=" + (item == null), ex);
             }
         }
 
         /// <inheritdoc />
-        protected override AppState Get(string cacheKey) => Caches[cacheKey];
+        protected override AppState Get(string key) => Caches[key];
 
         /// <inheritdoc />
-        protected override void Remove(string cacheKey) => Caches.Remove(cacheKey);    // returns false if key was not found (no Exception)
+        protected override void Remove(string key) => Caches.Remove(key);    // returns false if key was not found (no Exception)
 
         #endregion
 
         /// <inheritdoc />
         public override void PurgeAll() => ZoneAppCache = null;
-
-        ///// <inheritdoc />
-        //public override void Update(IAppIdentity app, IEnumerable<int> entities, ILog log) => base.Update(app, entities, log);
     }
 }

@@ -147,7 +147,7 @@ namespace ToSic.Eav.Apps.Parts
                 }
 
             // attach relationship resolver - important when saving data which doesn't yet have the guid
-            entities.ForEach(AppManager.Package.Relationships.AttachRelationshipResolver);
+            entities.ForEach(AppManager.AppState.Relationships.AttachRelationshipResolver);
 
             List<int> ids = null;
             AppManager.DataController.DoButSkipAppCachePurge(() =>
@@ -158,8 +158,7 @@ namespace ToSic.Eav.Apps.Parts
             );
 
             // Tell the cache to do a partial update
-            var cache = Factory.Resolve<IAppsCache>();
-            cache.Update(AppManager, ids, Log);
+            Factory.GetAppsCache().Update(AppManager, ids, Log);
 
             //AppManager.DataController.Loader.Update(AppManager.Package, 
             //    AppStateLoadSequence.ItemLoad, ids.ToArray(), Log);
@@ -188,7 +187,7 @@ namespace ToSic.Eav.Apps.Parts
                 throw new NotImplementedException("atm this command only creates metadata for entities with id-keys");
 
             // see if a metadata already exists which we would update
-            var existingEntity = AppManager.Cache.List.FirstOrDefault(e => e.MetadataFor?.TargetType == target.TargetType && e.MetadataFor?.KeyNumber == target.KeyNumber);
+            var existingEntity = AppManager./*Cache*/Data.List.FirstOrDefault(e => e.MetadataFor?.TargetType == target.TargetType && e.MetadataFor?.KeyNumber == target.KeyNumber);
             if (existingEntity != null)
                 UpdateParts(existingEntity.EntityId, values);
             else
@@ -212,7 +211,7 @@ namespace ToSic.Eav.Apps.Parts
             saveOptions.PreserveUntouchedAttributes = true;
             saveOptions.PreserveUnknownLanguages = true;
 
-            var orig = IEntityExtensions.FindRepoId(AppManager.Cache.List,id);
+            var orig = IEntityExtensions.FindRepoId(AppManager./*Cache*/Data.List,id);
             var tempEnt = new Entity(AppManager.AppId, 0, orig.Type, values);
             var saveEnt = new EntitySaver(Log).CreateMergedForSaving(orig, tempEnt, saveOptions);
             Save(saveEnt, saveOptions);
@@ -267,9 +266,9 @@ namespace ToSic.Eav.Apps.Parts
 
 
         public ExportListXml Exporter(IContentType contentType) 
-            => new ExportListXml(AppManager.Cache.AppState, contentType, Log);
+            => new ExportListXml(AppManager.AppState, contentType, Log);
         public ExportListXml Exporter(string contentType) 
-            => new ExportListXml(AppManager.Cache.AppState, AppManager.Read.ContentTypes.Get(contentType), Log);
+            => new ExportListXml(AppManager.AppState, AppManager.Read.ContentTypes.Get(contentType), Log);
 
         public ImportListXml Importer(
             string contentTypeName,

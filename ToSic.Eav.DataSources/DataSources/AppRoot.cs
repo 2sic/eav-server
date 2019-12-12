@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.Caching.Apps;
-using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Metadata;
 using AppState = ToSic.Eav.Apps.AppState;
@@ -16,9 +14,9 @@ namespace ToSic.Eav.DataSources
     [PublicApi]
     public class AppRoot : DataSourceBase, IMetadataSource, IAppRoot
     {
-        [PrivateApi] 
-        public IAppsCache AppsCache => _appsCache ?? (_appsCache = Factory.Resolve<IAppsCache>());
-        private IAppsCache _appsCache;
+        //[PrivateApi] 
+        //private IAppsCache AppsCache => _appsCache ?? (_appsCache = Factory.GetAppsCache());
+        //private IAppsCache _appsCache;
 
         [PrivateApi]
         public override string LogId => "DS.Root";
@@ -45,8 +43,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Get the <see cref="AppState"/> of this app from the cache.
         /// </summary>
-	    public AppState AppState => _appState ?? (_appState =  AppsCache.Get(this));
-
+	    public AppState AppState => _appState ?? (_appState = Factory.GetAppState(this));
         private AppState _appState;
 
         #region Cache-Chain
@@ -65,25 +62,6 @@ namespace ToSic.Eav.DataSources
 	    public override string CacheFullKey => CachePartialKey;
 
         #endregion
-
-        #region ContentType - probably remove from RootCache soon
-
-        /// <inheritdoc />
-        /// <summary>
-        /// Get a ContentType by StaticName if found of DisplayName if not
-        /// </summary>
-        /// <param name="name">Either StaticName or DisplayName</param>
-        /// <returns>a content-type OR null</returns>
-        [PrivateApi("probably deprecate, as you should only use the AppState and actually create an AppState, not get it from the root cache?")]
-	    public IContentType GetContentType(string name) => AppState.GetContentType(name);
-
-        #endregion
-
-        /// <summary>
-        /// Get all Content Types
-        /// </summary>
-        [PrivateApi("probably deprecate, as you should only use the AppState?")]
-		public IEnumerable<IContentType> GetContentTypes() => AppState.ContentTypes;
 
 
         #region GetAssignedEntities by Guid, string and int

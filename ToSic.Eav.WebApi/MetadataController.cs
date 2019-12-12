@@ -29,14 +29,14 @@ namespace ToSic.Eav.WebApi
             {
                 case "guid":
                     if(Guid.TryParse(key, out var guidKey))
-                        entityList = appRun.Package.Get(targetType, guidKey, contentType);
+                        entityList = appRun.AppState.Get(targetType, guidKey, contentType);
                     break;
                 case "string":
-                    entityList = appRun.Package.Get(targetType, key, contentType);
+                    entityList = appRun.AppState.Get(targetType, key, contentType);
                     break;
                 case "number":
                     if(int.TryParse(key, out var keyInt))
-                        entityList = appRun.Package.Get(targetType, keyInt, contentType);
+                        entityList = appRun.AppState.Get(targetType, keyInt, contentType);
                     break;
                 default:
                     throw new Exception("keytype unknown:" + keyType);

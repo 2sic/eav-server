@@ -44,25 +44,11 @@ namespace ToSic.Eav.Apps.ImportExport
 
         #region Constructor stuff
 
-        //protected void Constructor(int zoneId, int appId, string appStaticName, bool appExport, string[] attrSetIds, string[] entityIds, Log parentLog)
-        //{
-        //    ZoneId = zoneId;
-        //    Log = new Log("Xml.Exp", parentLog, "start XML exporter");
-        //    AppPackage = new Efc11Loader(DbDataController.Instance(zoneId, appId, Log).SqlDb).AppPackage(appId, parentLog: Log);
-        //    Serializer = new XmlSerializer();
-        //    Serializer.Initialize(AppPackage);
-
-        //    _appStaticName = appStaticName;
-        //    _isAppExport = appExport;
-        //    AttributeSetIDs = attrSetIds;
-        //    EntityIDs = entityIds;
-        //}
-
         protected void Constructor(int zoneId, AppRuntime app, string appStaticName, bool appExport, string[] typeNamesOrIds, string[] entityIds, ILog parentLog)
         {
             ZoneId = zoneId;
             Log = new Log("Xml.Exp", parentLog, "start XML exporter using app-package");
-            AppPackage = app.Package;
+            AppPackage = app.AppState;
             Serializer = new XmlSerializer(app.Zone.Languages().ToDictionary(l => l.EnvironmentKey.ToLower(), l => l.DimensionId));
             Serializer.Initialize(AppPackage, Log);
 

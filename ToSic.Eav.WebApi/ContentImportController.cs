@@ -75,7 +75,7 @@ namespace ToSic.Eav.WebApi
             {
                 Log.Add("import json item" + args.DebugInfo);
                 var appManager = new AppManager(args.AppId, Log);
-                var deserializer = new ToSic.Eav.ImportExport.Json.JsonSerializer(appManager.Package, Log)
+                var deserializer = new ToSic.Eav.ImportExport.Json.JsonSerializer(appManager.AppState, Log)
                 {
                     // Since we're importing directly into this app, we would prefer local content-types
                     PreferLocalAppTypes = true

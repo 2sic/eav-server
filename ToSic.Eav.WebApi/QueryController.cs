@@ -142,7 +142,7 @@ namespace ToSic.Eav.WebApi
                 Log.Add("import content" + args.DebugInfo);
                 var appManager = new AppManager(args.AppId, Log);
 
-                var deser = new Eav.ImportExport.Json.JsonSerializer(appManager.Package, Log);
+                var deser = new Eav.ImportExport.Json.JsonSerializer(appManager.AppState, Log);
                 var ents = deser.Deserialize(args.GetContentString());
                 var qdef = new QueryDefinition(ents, args.AppId, Log);
                 appManager.Queries.SaveCopy(qdef);

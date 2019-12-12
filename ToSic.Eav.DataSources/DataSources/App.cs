@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Metadata;
@@ -145,8 +144,7 @@ namespace ToSic.Eav.DataSources
 
 			// now provide all data streams for all data types; only need the cache for the content-types list, don't use it as the source...
 			// because the "real" source already applies filters like published
-            var cache = (AppRoot)Root;// (RootCacheBase)DataSource.GetCache(ZoneId, AppId);
-			var listOfTypes = cache.GetContentTypes();
+            var listOfTypes = Factory.GetAppState(this).ContentTypes;// Root.AppState.ContentTypes;
 		    foreach (var contentType in listOfTypes)
 		    {
 		        var typeName = contentType.Name;
