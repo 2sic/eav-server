@@ -23,7 +23,7 @@ namespace ToSic.Eav.Persistence.File.Tests
 
 
             var loader = new Efc11Loader(dbc.SqlDb);
-            var app = loader.AppPackage(test.RootAppId);
+            var app = loader.AppState(test.RootAppId);
 
 
             var cts = app.ContentTypes;

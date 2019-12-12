@@ -23,7 +23,7 @@ namespace ToSic.Eav.Repositories
         /// <param name="entityIds">null or a List of EntityIds</param>
         /// <param name="parentLog">parent logger</param>
         /// <returns>An object with everything which an app has, usually for caching</returns>
-        AppState AppPackage(int appId, int[] entityIds = null, ILog parentLog = null);
+        AppState AppState(int appId, int[] entityIds = null, ILog parentLog = null);
 
         AppState Update(AppState app, AppStateLoadSequence startAt, int[] entityIds = null, ILog parentLog = null);
 

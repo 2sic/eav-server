@@ -32,7 +32,7 @@ namespace ToSic.Eav.ImportExport.Tests
             //Assert.IsTrue(xmlstring.Length > 200, "should get a long xml string");
 
             var loader = new Efc11Loader(dbc.SqlDb);
-            var app = loader.AppPackage(test.AppId);
+            var app = loader.AppState(test.AppId);
             var zone = new ZoneRuntime(test.ZoneId, Log);
             var languageMap = zone.Languages().ToDictionary(l => l.EnvironmentKey.ToLower(), l => l.DimensionId);
             var exBuilder = new XmlSerializer(languageMap);
@@ -51,7 +51,7 @@ namespace ToSic.Eav.ImportExport.Tests
             var appId = test.BlogAppId;
             var dbc = DbDataController.Instance(null, appId, Log);
             var loader = new Efc11Loader(dbc.SqlDb);
-            var app = loader.AppPackage(appId);
+            var app = loader.AppState(appId);
             var zone = new ZoneRuntime(test.ZoneId, Log);
             var languageMap = zone.Languages().ToDictionary(l => l.EnvironmentKey.ToLower(), l => l.DimensionId);
             var exBuilder = new XmlSerializer(languageMap);

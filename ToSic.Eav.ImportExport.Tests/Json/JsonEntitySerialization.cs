@@ -52,7 +52,7 @@ namespace ToSic.Eav.ImportExport.Tests.json
             var dbc = DbDataController.Instance(null, appId, Log);
 
             var loader = new Efc11Loader(dbc.SqlDb);
-            var app = loader.AppPackage(appId);
+            var app = loader.AppState(appId);
             var exBuilder = new JsonSerializer(app, Log);
 
             var maxCount = 1000;
