@@ -34,9 +34,9 @@ namespace ToSic.Eav.Apps
             var appsCache = Factory.Resolve<IAppsCache>();
             
             if (global)
-                appsCache.PurgeGlobalCache();
+                appsCache.PurgeAll();
             else
-                appsCache.PurgeCache(new AppIdentityTemp(zoneId, appId));
+                appsCache.Purge(new AppIdentity(zoneId, appId));
         }
 
         /// <summary>
@@ -45,11 +45,11 @@ namespace ToSic.Eav.Apps
         /// <param name="appId"></param>
         public static void Purge(int appId) => Purge(SystemRuntime.ZoneIdOfApp(appId), appId);
 
-        public void InformOfPartialUpdate(IAppIdentity app, IEnumerable<int> entities)
-        {
-            var cache = Factory.Resolve<IAppsCache>();
-            cache.PartialUpdate(app, entities, Log);
-        }
+        //public void InformOfPartialUpdate(IAppIdentity app, IEnumerable<int> entities)
+        //{
+        //    var cache = Factory.Resolve<IAppsCache>();
+        //    cache.Update(app, entities, Log);
+        //}
 
         /// <summary>
         /// Run some code and then purge the cache after that for full rebuild

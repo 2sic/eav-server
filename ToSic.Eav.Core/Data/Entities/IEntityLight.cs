@@ -11,7 +11,7 @@ namespace ToSic.Eav.Data
 	/// For the more powerful Entity, use <see cref="IEntity"/>.
 	/// </summary>
 	[PublicApi]
-	public interface IEntityLight: IAppId
+	public interface IEntityLight: IAppIdentityLight
 	{
 
         /// <summary>

@@ -72,7 +72,7 @@ namespace ToSic.Eav.Caching.Apps
         /// Preload the cache with the given primary language
         /// Needed for cache buildup outside of a HttpContext (e.g. a Scheduler)
         /// </summary>
-        public void ForceLoad(IAppIdentity app, string primaryLanguage) => GetOrBuild(app, primaryLanguage);
+        public void Load(IAppIdentity app, string primaryLanguage) => GetOrBuild(app, primaryLanguage);
 
         private AppState GetOrBuild(IAppIdentity appIdentity, string primaryLanguage = null)
         {
@@ -111,22 +111,29 @@ namespace ToSic.Eav.Caching.Apps
         /// <summary>
         /// Clear Cache for specific Zone/App
         /// </summary>
-        public void PurgeCache(IAppIdentity app) => Remove(CacheKey(app));
+        public void Purge(IAppIdentity app) => Remove(CacheKey(app));
 
 	    /// <inheritdoc />
-	    /// <summary>
-	    /// Clear Zones/Apps List
-	    /// </summary>
-	    public abstract void PurgeGlobalCache();
+	    public abstract void PurgeAll();
 
-        public abstract void PartialUpdate(IAppIdentity app, IEnumerable<int> entities, ILog log);
+	    /// <inheritdoc />
+        public virtual void Update(IAppIdentity app, IEnumerable<int> entities, ILog log)
+        {
+            var wrapLog = log.Call($"{nameof(AppsCacheBase)}.{nameof(Update)}");
+            // if it's not cached yet, ignore the request as partial update won't be necessary
+            if (!Has(app))
+            {
+                wrapLog("not cached");
+                return;
+            }
+            var appState = Get(app);
+            GetNewRepoLoader().Update(appState, AppStateLoadSequence.ItemLoad, entities.ToArray(), log);
+            wrapLog("ok");
+        }
 
         #endregion
 
         #region Cache-Chain
-
-        ///// <inheritdoc />
-        //public string CacheKey(int zoneId, int appId) => string.Format(CacheKeySchema, zoneId, appId);
 
         protected string CacheKey(IAppIdentity appIdentity) => string.Format(CacheKeySchema, appIdentity.ZoneId, appIdentity.AppId);
 
@@ -149,7 +156,7 @@ namespace ToSic.Eav.Caching.Apps
 								  ? Zones[resultZoneId].Apps.Single(a => a.Key == appId.Value).Key
 								  : Zones[resultZoneId].DefaultAppId;
 
-			return new AppIdentityTemp(resultZoneId, resultAppId);
+			return new AppIdentity(resultZoneId, resultAppId);
         }
 
     }

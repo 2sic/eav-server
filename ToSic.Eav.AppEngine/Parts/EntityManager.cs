@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ToSic.Eav.Apps.ImportExport;
+using ToSic.Eav.Caching.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport.Options;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence;
@@ -157,11 +157,14 @@ namespace ToSic.Eav.Apps.Parts
                 })
             );
 
-            // todo: continue here
-            AppManager.DataController.Loader.Update(AppManager.Package, 
-                AppStateLoadSequence.ItemLoad, ids.ToArray(), Log);
-            // clear cache of this app
-            new SystemManager(Log).InformOfPartialUpdate(AppManager, ids);
+            // Tell the cache to do a partial update
+            var cache = Factory.Resolve<IAppsCache>();
+            cache.Update(AppManager, ids, Log);
+
+            //AppManager.DataController.Loader.Update(AppManager.Package, 
+            //    AppStateLoadSequence.ItemLoad, ids.ToArray(), Log);
+            //// clear cache of this app
+            //new SystemManager(Log).InformOfPartialUpdate(AppManager, ids);
             wrapLog($"ids:{ids.Count}");
             return ids;
         }

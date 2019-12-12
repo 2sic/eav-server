@@ -1,6 +1,13 @@
-﻿namespace ToSic.Eav.Apps
+﻿using ToSic.Eav.Documentation;
+
+namespace ToSic.Eav.Apps
 {
-    public class AppIdentityTemp: IAppIdentity
+    /// <summary>
+    /// A full App-Identity.<br/>
+    /// This is either used to pass identities around, or as a base class for more extensive objects which know their full identity. 
+    /// </summary>
+    [PublicApi]
+    public class AppIdentity: IAppIdentity
     {
         /// <inheritdoc />
         public int ZoneId { get; }
@@ -13,13 +20,13 @@
         /// </summary>
         /// <param name="zoneId"></param>
         /// <param name="appId"></param>
-        public AppIdentityTemp(int zoneId, int appId)
+        public AppIdentity(int zoneId, int appId)
         {
             ZoneId = zoneId;
             AppId = appId;
         }
 
-        public AppIdentityTemp(IAppIdentity parent)
+        public AppIdentity(IAppIdentity parent)
         {
             ZoneId = parent.ZoneId;
             AppId = parent.AppId;
