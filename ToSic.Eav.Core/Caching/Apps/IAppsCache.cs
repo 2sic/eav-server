@@ -20,7 +20,7 @@ namespace ToSic.Eav.Caching.Apps
         /// </summary>
         /// <param name="app">App identifier.</param>
         /// <returns>The <see cref="AppState"/> of the app.</returns>
-        AppState Get(IInAppAndZone app);
+        AppState Get(IAppIdentity app);
 
         #endregion
 
@@ -30,7 +30,7 @@ namespace ToSic.Eav.Caching.Apps
         /// Get/Resolve ZoneId and AppId for specified ZoneId and/or AppId. If both are null, default ZoneId with it's default App is returned.
         /// </summary>
         /// <returns>Item1 = ZoneId, Item2 = AppId</returns>
-        IInAppAndZone GetIdentity(int? zoneId = null, int? appId = null);
+        IAppIdentity GetIdentity(int? zoneId = null, int? appId = null);
 
         /// <summary>
         /// The list of zones, which internally contains the list of apps. 
@@ -46,7 +46,7 @@ namespace ToSic.Eav.Caching.Apps
         /// </summary>
         /// <param name="app">App identifier.</param>
         /// <returns></returns>
-        bool Has(IInAppAndZone app);
+        bool Has(IAppIdentity app);
 
         #endregion
 
@@ -55,7 +55,7 @@ namespace ToSic.Eav.Caching.Apps
         /// <summary>
         /// Clean cache for specific Zone and App
         /// </summary>
-        void PurgeCache(/*int zoneId, int appId*/IInAppAndZone app);
+        void PurgeCache(/*int zoneId, int appId*/IAppIdentity app);
 
         /// <summary>
         /// Tell the cache to do a partial update on an app
@@ -63,7 +63,7 @@ namespace ToSic.Eav.Caching.Apps
         /// <param name="app">App identifier.</param>
         /// <param name="entities">List of entities which need to be updates.</param>
         /// <param name="log">Log object to log what's happening.</param>
-        void PartialUpdate(IInAppAndZone app, IEnumerable<int> entities, ILog log);
+        void PartialUpdate(IAppIdentity app, IEnumerable<int> entities, ILog log);
 
         /// <summary>
         /// Clean entire global cache, which includes the List of Zones and Apps as well as all the apps.
@@ -80,7 +80,7 @@ namespace ToSic.Eav.Caching.Apps
         /// </summary>
         /// <param name="app">App identifier.</param>
         /// <param name="primaryLanguage">Primary language, lower case.</param>
-        void ForceLoad(IInAppAndZone app, string primaryLanguage);
+        void ForceLoad(IAppIdentity app, string primaryLanguage);
 
         #endregion
 

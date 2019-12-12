@@ -23,7 +23,7 @@ namespace ToSic.Eav.Apps
         #region Constructors
         public AppManager(int zoneId, int appId, ILog parentLog = null) : base(zoneId, appId, parentLog) { RenameLog();}
 
-        public AppManager(IInAppAndZone app, ILog parentLog) : base(app, parentLog) { RenameLog();}
+        public AppManager(IAppIdentity app, ILog parentLog) : base(app, parentLog) { RenameLog();}
         public AppManager(int appId, ILog parentLog) : base(appId, parentLog) { RenameLog();}
 
         private void RenameLog() => Log.Rename("AppMan");

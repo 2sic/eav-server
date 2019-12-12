@@ -74,7 +74,7 @@ namespace ToSic.Eav.Caching.Apps
         public override void PurgeGlobalCache() => ZoneAppCache = null;
 
         /// <inheritdoc />
-        public override void PartialUpdate(IInAppAndZone app, IEnumerable<int> entities, ILog log)
+        public override void PartialUpdate(IAppIdentity app, IEnumerable<int> entities, ILog log)
         {
             // do nothing - this is only important for farm scenarios
             log.Add($"{nameof(PartialUpdate)}({entities?.Count()})");

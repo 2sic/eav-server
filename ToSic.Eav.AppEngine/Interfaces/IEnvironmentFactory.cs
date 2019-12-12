@@ -14,12 +14,12 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// Initialize this object so it can then give information regarding the permissions of an entity.
         /// </summary>
-        PermissionCheckBase ItemPermissions(IInAppAndZone appIdentity, IEntity targetItem, ILog parentLog, IContainer module = null);
+        PermissionCheckBase ItemPermissions(IAppIdentity appIdentity, IEntity targetItem, ILog parentLog, IContainer module = null);
 
         /// <summary>
         /// Initialize this object so it can then give information regarding the permissions of a type.
         /// </summary>
-        PermissionCheckBase TypePermissions(IInAppAndZone appIdentity, IContentType targetType, IEntity targetItem, ILog parentLog, IContainer module = null);
+        PermissionCheckBase TypePermissions(IAppIdentity appIdentity, IContentType targetType, IEntity targetItem, ILog parentLog, IContainer module = null);
 
         /// <summary>
         /// Initialize to get permissions for an instance

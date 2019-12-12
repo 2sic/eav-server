@@ -13,7 +13,7 @@ namespace ToSic.Eav.Apps
         #region constructors
         public AppRuntime(int zoneId, int appId, ILog parentLog) : base(zoneId, appId, parentLog) { }
 
-        public AppRuntime(IInAppAndZone app, ILog parentLog) : base(app, parentLog) { }
+        public AppRuntime(IAppIdentity app, ILog parentLog) : base(app, parentLog) { }
 
         /// <summary>
         ///  Special constructor, should be used with care as there is no Zone!

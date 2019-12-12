@@ -7,7 +7,7 @@ namespace ToSic.Eav.Apps
     /// Base object for things that have a full app-identity (app-id and zone-id)
     /// </summary>
     [PublicApi]
-    public class AppBase: HasLog, IInAppAndZone
+    public class AppBase: HasLog, IAppIdentity
     {
         /// <inheritdoc />
         public int ZoneId { get; }

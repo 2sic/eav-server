@@ -14,7 +14,7 @@ namespace ToSic.Eav.DataSources
 	/// Public interface for an Eav DataSource. All DataSource objects are based on this. 
 	/// </summary>
 	[PublicApi]
-	public interface IDataSource : IInAppAndZone, ICacheExpiring, ICacheKey, ICanPurgeListCache, IHasLog
+	public interface IDataSource : IAppIdentity, ICacheExpiring, ICacheKey, ICanPurgeListCache, IHasLog
 	{
 		#region Data Interfaces
 

@@ -5,7 +5,7 @@ using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Apps.Parts
 {
-    public class ZoneBase: IInZone
+    public class ZoneBase: IZoneIdentity
     {
         #region Constructor and simple properties
         public int ZoneId { get; }

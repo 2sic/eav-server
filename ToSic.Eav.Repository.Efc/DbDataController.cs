@@ -18,7 +18,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 namespace ToSic.Eav.Repository.Efc
 {
 
-    public class DbDataController : HasLog, IStorage, IInAppAndZone
+    public class DbDataController : HasLog, IStorage, IAppIdentity
     {
         #region Extracted, now externalized objects with actions and private fields
 

@@ -48,7 +48,7 @@ namespace ToSic.Eav.Caching.Apps
         /// </summary>
         /// <param name="app"></param>
         /// <returns></returns>
-        public bool Has(IInAppAndZone app) => Has(CacheKey(app));
+        public bool Has(IAppIdentity app) => Has(CacheKey(app));
 
         /// <summary>
         /// Sets the CacheItem with specified CacheKey
@@ -66,15 +66,15 @@ namespace ToSic.Eav.Caching.Apps
 		protected abstract void Remove(string cacheKey);
         #endregion
 
-        public AppState Get(IInAppAndZone app) => GetOrBuild(app);
+        public AppState Get(IAppIdentity app) => GetOrBuild(app);
 
         /// <summary>
         /// Preload the cache with the given primary language
         /// Needed for cache buildup outside of a HttpContext (e.g. a Scheduler)
         /// </summary>
-        public void ForceLoad(IInAppAndZone app, string primaryLanguage) => GetOrBuild(app, primaryLanguage);
+        public void ForceLoad(IAppIdentity app, string primaryLanguage) => GetOrBuild(app, primaryLanguage);
 
-        private AppState GetOrBuild(IInAppAndZone appIdentity, string primaryLanguage = null)
+        private AppState GetOrBuild(IAppIdentity appIdentity, string primaryLanguage = null)
         {
             if (appIdentity.ZoneId == 0 || appIdentity.AppId == 0)
                 return null;
@@ -111,7 +111,7 @@ namespace ToSic.Eav.Caching.Apps
         /// <summary>
         /// Clear Cache for specific Zone/App
         /// </summary>
-        public void PurgeCache(IInAppAndZone app) => Remove(CacheKey(app));
+        public void PurgeCache(IAppIdentity app) => Remove(CacheKey(app));
 
 	    /// <inheritdoc />
 	    /// <summary>
@@ -119,7 +119,7 @@ namespace ToSic.Eav.Caching.Apps
 	    /// </summary>
 	    public abstract void PurgeGlobalCache();
 
-        public abstract void PartialUpdate(IInAppAndZone app, IEnumerable<int> entities, ILog log);
+        public abstract void PartialUpdate(IAppIdentity app, IEnumerable<int> entities, ILog log);
 
         #endregion
 
@@ -128,7 +128,7 @@ namespace ToSic.Eav.Caching.Apps
         ///// <inheritdoc />
         //public string CacheKey(int zoneId, int appId) => string.Format(CacheKeySchema, zoneId, appId);
 
-        protected string CacheKey(IInAppAndZone appIdentity) => string.Format(CacheKeySchema, appIdentity.ZoneId, appIdentity.AppId);
+        protected string CacheKey(IAppIdentity appIdentity) => string.Format(CacheKeySchema, appIdentity.ZoneId, appIdentity.AppId);
 
         #endregion
 
@@ -139,7 +139,7 @@ namespace ToSic.Eav.Caching.Apps
         /// </summary>
         /// <returns>Item1 = ZoneId, Item2 = AppId</returns>
         [PrivateApi]
-		public IInAppAndZone GetIdentity(int? zoneId = null, int? appId = null) 
+		public IAppIdentity GetIdentity(int? zoneId = null, int? appId = null) 
 		{
 			var resultZoneId = zoneId ?? (appId.HasValue
 			                       ? Zones.Single(z => z.Value.Apps.Any(a => a.Key == appId.Value)).Key
@@ -149,7 +149,7 @@ namespace ToSic.Eav.Caching.Apps
 								  ? Zones[resultZoneId].Apps.Single(a => a.Key == appId.Value).Key
 								  : Zones[resultZoneId].DefaultAppId;
 
-			return new AppIdentity(resultZoneId, resultAppId);
+			return new AppIdentityTemp(resultZoneId, resultAppId);
         }
 
     }

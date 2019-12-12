@@ -36,7 +36,7 @@ namespace ToSic.Eav.Apps
             if (global)
                 appsCache.PurgeGlobalCache();
             else
-                appsCache.PurgeCache(new AppIdentity(zoneId, appId));
+                appsCache.PurgeCache(new AppIdentityTemp(zoneId, appId));
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace ToSic.Eav.Apps
         /// <param name="appId"></param>
         public static void Purge(int appId) => Purge(SystemRuntime.ZoneIdOfApp(appId), appId);
 
-        public void InformOfPartialUpdate(IInAppAndZone app, IEnumerable<int> entities)
+        public void InformOfPartialUpdate(IAppIdentity app, IEnumerable<int> entities)
         {
             var cache = Factory.Resolve<IAppsCache>();
             cache.PartialUpdate(app, entities, Log);

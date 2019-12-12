@@ -5,7 +5,7 @@
         /// <summary>
         /// Text based identity for debugging only
         /// </summary>
-        public static string LogState(this IInAppAndZone withAppIdentity) 
+        public static string LogState(this IAppIdentity withAppIdentity) 
             => withAppIdentity.ZoneId + ":" + withAppIdentity.AppId;
     }
 }

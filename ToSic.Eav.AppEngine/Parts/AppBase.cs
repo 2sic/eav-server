@@ -20,7 +20,7 @@ namespace ToSic.Eav.Apps.Parts
         {
         }
 
-        protected AppRuntimeBase(IInAppAndZone app, ILog parentLog) : this(app.ZoneId, app.AppId, parentLog) { }
+        protected AppRuntimeBase(IAppIdentity app, ILog parentLog) : this(app.ZoneId, app.AppId, parentLog) { }
 
         protected AppRuntimeBase(int appId, ILog parentLog) : this(Factory.Resolve<IAppsCache>().GetIdentity(appId: appId).ZoneId, appId, parentLog) { }
 

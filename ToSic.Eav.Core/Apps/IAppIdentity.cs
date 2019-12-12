@@ -10,7 +10,7 @@ namespace ToSic.Eav.Apps
     /// But this would be inefficient, so for optimization, many items identify themselves with both the app and zone Ids
     /// </remarks>
     [PublicApi]
-    public interface IInAppAndZone: IInZone, IInApp
+    public interface IAppIdentity: IZoneIdentity, IAppId
     {
     }
 }

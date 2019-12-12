@@ -17,7 +17,7 @@ namespace ToSic.Eav.Apps
     /// It also manages and caches relationships between entities of the same app.
     /// </summary>
     [PublicApi]
-    public partial class AppState: HasLog, IInApp
+    public partial class AppState: HasLog, IAppId
 	{
 
 		#region public properties like AppId, Entities, List, Publisheentities, DraftEntities, 

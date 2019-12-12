@@ -4,7 +4,6 @@ using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Caching.Apps;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Metadata;
@@ -30,7 +29,7 @@ namespace ToSic.Eav
         /// <param name="configLookUp">Provides configuration values if needed</param>
         /// <param name="parentLog"></param>
         /// <returns>A single DataSource</returns>
-        public static IDataSource GetDataSource(string sourceName, IInAppAndZone appIdentity, IDataSource upstream = null, ILookUpEngine configLookUp = null, ILog parentLog = null)
+        public static IDataSource GetDataSource(string sourceName, IAppIdentity appIdentity, IDataSource upstream = null, ILookUpEngine configLookUp = null, ILog parentLog = null)
 		{
             Log(parentLog, nameof(GetDataSource), $"with name {sourceName}");
 		    // try to find with assembly name, or otherwise with GlobalName / previous names
@@ -54,7 +53,7 @@ namespace ToSic.Eav
         /// <param name="configLookUp">Provides configuration values if needed</param>
         /// <param name="parentLog"></param>
         /// <returns>A single DataSource</returns>
-        private static IDataSource GetDataSource(Type type, IInAppAndZone appIdentity, IDataSource upstream,
+        private static IDataSource GetDataSource(Type type, IAppIdentity appIdentity, IDataSource upstream,
 	        ILookUpEngine configLookUp, ILog parentLog)
 	    {
             Log(parentLog, nameof(GetDataSource), "with type");
@@ -94,7 +93,7 @@ namespace ToSic.Eav
         /// <param name="parentLog"></param>
         private static void ConfigureNewDataSource(
             DataSourceBase newDs, 
-            IInAppAndZone appIdentity,
+            IAppIdentity appIdentity,
 			IDataSource upstream = null,
 			ILookUpEngine configLookUp = null, 
             ILog parentLog = null)
@@ -144,21 +143,18 @@ namespace ToSic.Eav
 		/// Resolve and validate ZoneId and AppId for specified ZoneId and/or AppId (if any)
 		/// </summary>
 		/// <returns>Item1 = ZoneId, Item2 = AppId</returns>
-		public static IInAppAndZone  GetIdentity(int? zoneId, int? appId) =>
+		public static IAppIdentity  GetIdentity(int? zoneId, int? appId) =>
             zoneId != null && appId != null
-                ? new AppIdentity(zoneId.Value, appId.Value)
+                ? new AppIdentityTemp(zoneId.Value, appId.Value)
                 : Factory.Resolve<IAppsCache>().GetIdentity(zoneId, appId);
 
-        //private static string _IRootCacheId = "ToSic.Eav.DataSources.Caching.IRootCache, ToSic.Eav.DataSources";
 
         /// <summary>
         /// Get a new ICache DataSource
         /// </summary>
         /// <returns>A new IRootCache</returns>
-        public static IAppRoot GetCache(IInAppAndZone appIdentity, ILog parentLog = null) 
-            => (IAppRoot)GetDataSource(/*_IRootCacheId*/RootDataSource, appIdentity, parentLog:parentLog);
-        //public static IRootCache GetCache(int? zoneId, int? appId = null, ILog parentLog = null) 
-        //    => (IRootCache)GetDataSource(_IRootCacheId, GetIdentity(zoneId, appId), parentLog:parentLog);
+        public static IAppRoot GetCache(IAppIdentity appIdentity, ILog parentLog = null) 
+            => (IAppRoot)GetDataSource(RootDataSource, appIdentity, parentLog:parentLog);
 
 
 	    /// <summary>

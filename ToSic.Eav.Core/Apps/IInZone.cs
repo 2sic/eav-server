@@ -6,7 +6,7 @@ namespace ToSic.Eav.Apps
     /// Marks things which belongs to a Zone
     /// </summary>
     [PublicApi]
-    public interface IInZone
+    public interface IZoneIdentity
     {
         /// <summary>
         /// ID of the zone (EAV Tenant)

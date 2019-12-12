@@ -8,7 +8,7 @@ namespace ToSic.Eav.Apps
     /// Contains all the basic infos about a Zone - usually cached
     /// </summary>
     [PublicApi]
-    public class Zone: IInZone
+    public class Zone: IZoneIdentity
     {
         public Zone(int zoneId, int defAppId, Dictionary<int, string> apps, List<DimensionDefinition> languages)
         {
