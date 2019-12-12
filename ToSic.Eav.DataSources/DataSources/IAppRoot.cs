@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Caching.Apps;
+﻿using ToSic.Eav.Caching;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using AppState = ToSic.Eav.Apps.AppState;

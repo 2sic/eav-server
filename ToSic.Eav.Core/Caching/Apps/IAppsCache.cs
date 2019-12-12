@@ -3,7 +3,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 
-namespace ToSic.Eav.Caching.Apps
+namespace ToSic.Eav.Caching
 {
     /// <summary>
     /// Marks the objects which are responsible for caching <see cref="AppState"/> in memory. <br/>
@@ -84,7 +84,8 @@ namespace ToSic.Eav.Caching.Apps
         /// <param name="app">App identifier.</param>
         /// <param name="entities">List of entities which need to be updates.</param>
         /// <param name="log">Log object to log what's happening.</param>
-        void Update(IAppIdentity app, IEnumerable<int> entities, ILog log);
+        /// <returns>The updated <see cref="AppState"/> or null, if it wasn't in the cache so didn't need updating.</returns>
+        AppState Update(IAppIdentity app, IEnumerable<int> entities, ILog log);
 
         #endregion
 

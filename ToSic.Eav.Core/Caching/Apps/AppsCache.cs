@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Documentation;
 
-namespace ToSic.Eav.Caching.Apps
+namespace ToSic.Eav.Caching
 {
     /// <summary>
     /// The default Apps Cache system running on a normal environment. 

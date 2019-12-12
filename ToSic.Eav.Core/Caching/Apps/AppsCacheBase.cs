@@ -6,7 +6,7 @@ using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Repositories;
 
-namespace ToSic.Eav.Caching.Apps
+namespace ToSic.Eav.Caching
 {
     /// <summary>
     /// The Apps Cache is the main cache for App States. <br/>
@@ -33,7 +33,7 @@ namespace ToSic.Eav.Caching.Apps
         /// Gets the KeySchema used to store values for a specific Zone and App. Must contain {0} for ZoneId and {1} for AppId
         /// </summary>
         [PrivateApi]
-		public string CacheKeySchema { get; protected set; } = "Z{0}A{1}";
+		public virtual string CacheKeySchema { get; protected set; } = "Z{0}A{1}";
 
         [PrivateApi]
         protected string CacheKey(IAppIdentity appIdentity) => string.Format(CacheKeySchema, appIdentity.ZoneId, appIdentity.AppId);
@@ -130,18 +130,19 @@ namespace ToSic.Eav.Caching.Apps
         #region Update
 
         /// <inheritdoc />
-        public virtual void Update(IAppIdentity app, IEnumerable<int> entities, ILog log)
+        public virtual AppState Update(IAppIdentity app, IEnumerable<int> entities, ILog log)
         {
             var wrapLog = log.Call($"{nameof(AppsCacheBase)}.{nameof(Update)}");
             // if it's not cached yet, ignore the request as partial update won't be necessary
             if (!Has(app))
             {
                 wrapLog("not cached");
-                return;
+                return null;
             }
             var appState = Get(app);
             GetNewRepoLoader().Update(appState, AppStateLoadSequence.ItemLoad, entities.ToArray(), log);
             wrapLog("ok");
+            return appState;
         }
 
         #endregion

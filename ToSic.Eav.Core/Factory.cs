@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Caching.Apps;
+using ToSic.Eav.Caching;
 using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav

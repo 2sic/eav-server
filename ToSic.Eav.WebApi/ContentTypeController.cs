@@ -5,7 +5,6 @@ using System.Linq;
 using System.Web.Http;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Parts;
-using ToSic.Eav.Caching.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Logging;

@@ -1,5 +1,4 @@
 ﻿using System;
-using ToSic.Eav.Caching.Apps;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 
