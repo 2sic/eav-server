@@ -43,7 +43,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Get the <see cref="AppState"/> of this app from the cache.
         /// </summary>
-	    public AppState AppState => _appState ?? (_appState = Factory.GetAppState(this));
+	    private AppState AppState => _appState ?? (_appState = Factory.GetAppState(this));
         private AppState _appState;
 
         #region Cache-Chain
