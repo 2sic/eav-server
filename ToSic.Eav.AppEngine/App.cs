@@ -1,6 +1,5 @@
 ﻿using System;
-using ToSic.Eav.Apps.Caching;
-using ToSic.Eav.DataSources.Caching;
+using ToSic.Eav.Caching.Apps;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 
@@ -11,7 +10,7 @@ namespace ToSic.Eav.Apps
     /// name, folder, data, metadata etc.
     /// </summary>
     [PublicApi]
-    public partial class App: AppIdentity, IApp
+    public partial class App: AppBase, IApp
     {
         [PrivateApi]
         public const int AutoLookupZone = -1;
@@ -47,10 +46,10 @@ namespace ToSic.Eav.Apps
             if (zoneId == AutoLookupZone) throw new Exception("Cannot find zone-id for portal specified");
 
             // Look up name in cache
-            var cache = Factory.Resolve<IAppsCache>();// (RootCacheBase) DataSource.GetCache(zoneId, appId);
-            AppDataPackage = cache.Get(zoneId, appId);// .AppState; // for metadata
+            var cache = Factory.Resolve<IAppsCache>();
+            AppState = cache.Get(this); // for metadata
 
-            AppGuid = cache.ZoneApps[zoneId].Apps[appId];
+            AppGuid = cache.Zones[zoneId].Apps[appId];
 
             if (AppGuid == Constants.DefaultAppName)
                 Name = Folder = Constants.ContentAppName;

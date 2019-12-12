@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Caching;
+﻿using ToSic.Eav.Caching.Apps;
 using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Apps

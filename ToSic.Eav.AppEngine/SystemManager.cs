@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.Apps.Caching;
+using ToSic.Eav.Caching.Apps;
 using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps
@@ -36,7 +36,7 @@ namespace ToSic.Eav.Apps
             if (global)
                 appsCache.PurgeGlobalCache();
             else
-                appsCache.PurgeCache(zoneId, appId);
+                appsCache.PurgeCache(new AppIdentity(zoneId, appId));
         }
 
         /// <summary>

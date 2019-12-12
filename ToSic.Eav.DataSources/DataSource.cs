@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Caching;
+using ToSic.Eav.Caching.Apps;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.Logging;
@@ -146,7 +146,7 @@ namespace ToSic.Eav
 		/// <returns>Item1 = ZoneId, Item2 = AppId</returns>
 		public static IInAppAndZone  GetIdentity(int? zoneId, int? appId) =>
             zoneId != null && appId != null
-                ? new AppZoneIds(zoneId.Value, appId.Value)
+                ? new AppIdentity(zoneId.Value, appId.Value)
                 : Factory.Resolve<IAppsCache>().GetIdentity(zoneId, appId);
 
         //private static string _IRootCacheId = "ToSic.Eav.DataSources.Caching.IRootCache, ToSic.Eav.DataSources";

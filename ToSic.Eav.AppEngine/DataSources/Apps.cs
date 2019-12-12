@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Apps.Caching;
+using ToSic.Eav.Caching.Apps;
 using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSources.System;
@@ -71,8 +71,8 @@ namespace ToSic.Eav.DataSources
             // try to load the content-type - if it fails, return empty list
 	        //var cache = (RootCacheBase)DataSource.GetCache(ZoneId, AppId);
             var cache = Factory.Resolve<IAppsCache>();
-	        if (!cache.ZoneApps.ContainsKey(OfZoneId)) return new List<IEntity>();
-	        var zone = cache.ZoneApps[OfZoneId];
+	        if (!cache.Zones.ContainsKey(OfZoneId)) return new List<IEntity>();
+	        var zone = cache.Zones[OfZoneId];
 
 	        var list = zone.Apps.OrderBy(a => a.Key).Select(app =>
 	        {

@@ -1,6 +1,5 @@
-﻿using ToSic.Eav.Apps.Caching;
+﻿using ToSic.Eav.Caching.Apps;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps.Parts
@@ -8,7 +7,7 @@ namespace ToSic.Eav.Apps.Parts
     /// <summary>
     /// Root class for app runtime objects
     /// </summary>
-    public abstract class AppBase: AppIdentity
+    public abstract class AppRuntimeBase: AppBase
     {
         /// <summary>
         /// Create an app manager for this specific app
@@ -16,16 +15,16 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="zoneId"></param>
         /// <param name="appId"></param>
         /// <param name="parentLog"></param>
-        protected AppBase(int zoneId, int appId, ILog parentLog) 
+        protected AppRuntimeBase(int zoneId, int appId, ILog parentLog) 
             : base(zoneId, appId, parentLog, "App.Base")
         {
         }
 
-        protected AppBase(IInAppAndZone app, ILog parentLog) : this(app.ZoneId, app.AppId, parentLog) { }
+        protected AppRuntimeBase(IInAppAndZone app, ILog parentLog) : this(app.ZoneId, app.AppId, parentLog) { }
 
-        protected AppBase(int appId, ILog parentLog) : this(Factory.Resolve<IAppsCache>().GetIdentity(appId: appId).ZoneId, appId, parentLog) { }
+        protected AppRuntimeBase(int appId, ILog parentLog) : this(Factory.Resolve<IAppsCache>().GetIdentity(appId: appId).ZoneId, appId, parentLog) { }
 
-        protected AppBase(IDataSource data, ILog parentLog) : this(data.ZoneId, data.AppId, parentLog)
+        protected AppRuntimeBase(IDataSource data, ILog parentLog) : this(data.ZoneId, data.AppId, parentLog)
         {
             _data = data;
         }

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.Apps.Caching;
+using ToSic.Eav.Caching.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Metadata;
@@ -39,13 +39,13 @@ namespace ToSic.Eav.DataSources
 		/// Gets the KeySchema used to store values for a specific Zone and App. Must contain {0} for ZoneId and {1} for AppId
 		/// </summary>
 		[PrivateApi]
-        public string CacheKeySchema => "Z{0}A{1}";
+        private string CacheKeySchema => "Z{0}A{1}";
 
 
         /// <summary>
         /// Get the <see cref="AppState"/> of this app from the cache.
         /// </summary>
-	    public AppState AppState => _appState ?? (_appState =  AppsCache.Get(ZoneId, AppId));
+	    public AppState AppState => _appState ?? (_appState =  AppsCache.Get(this));
 
         private AppState _appState;
 

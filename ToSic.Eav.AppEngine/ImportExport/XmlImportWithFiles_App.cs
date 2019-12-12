@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Xml.Linq;
-using ToSic.Eav.Apps.Caching;
+using ToSic.Eav.Caching.Apps;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Repository.Efc;

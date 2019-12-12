@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Caching;
 using ToSic.Eav.Apps.DataSources.Types;
+using ToSic.Eav.Caching.Apps;
 using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
@@ -57,7 +57,7 @@ namespace ToSic.Eav.DataSources
             var cache = Factory.Resolve<IAppsCache>();
 	        var env = Factory.Resolve<IAppEnvironment>();
 
-	        var list = cache.ZoneApps.Values.OrderBy(z => z.ZoneId).Select(zone =>
+	        var list = cache.Zones.Values.OrderBy(z => z.ZoneId).Select(zone =>
 	        {
 	            var tenant = env.ZoneMapper.Tenant(zone.ZoneId);
 

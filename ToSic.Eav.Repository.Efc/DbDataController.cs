@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Apps.Caching;
+using ToSic.Eav.Apps;
+using ToSic.Eav.Caching.Apps;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence;
@@ -18,7 +18,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 namespace ToSic.Eav.Repository.Efc
 {
 
-    public class DbDataController : HasLog, IStorage
+    public class DbDataController : HasLog, IStorage, IInAppAndZone
     {
         #region Extracted, now externalized objects with actions and private fields
 
@@ -217,7 +217,7 @@ namespace ToSic.Eav.Repository.Efc
         private void PurgeAppCacheIfReady()
         {
             if(_purgeAppCacheOnSave)
-                Cache.PurgeCache(ZoneId, AppId);
+                Cache.PurgeCache(this);
         }
 
         public IAppsCache Cache => _cache ?? (_cache = Factory.Resolve<IAppsCache>());

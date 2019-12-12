@@ -1,18 +1,19 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Repositories;
 
-namespace ToSic.Eav.Apps.Caching
+namespace ToSic.Eav.Caching.Apps
 {
     /// <summary>
     /// The Root Cache is the main cache for App States. It's implemented as a DataSource so that other DataSources can easily attach to it. <br/>
     /// This is just the abstract base implementation.
     /// The real cache must implement this and also provide platform specific adjustments so that the caching is in sync with the Environment.
     /// </summary>
-    [PublicApi]
+    [PrivateApi("WIP")]
     public abstract class AppsCacheBase : IAppsCache
     {
         /// <summary>
@@ -24,7 +25,7 @@ namespace ToSic.Eav.Apps.Caching
 	    /// Gets or sets the Dictionary of all Zones an Apps
 	    /// </summary>
 	    [PrivateApi("might rename this some day")]
-	    public abstract Dictionary<int, Zone> ZoneApps { get; }
+	    public abstract Dictionary<int, Zone> Zones { get; }
 
         [PrivateApi("might rename this some day")]
         protected Dictionary<int, Zone> LoadZoneApps() => GetNewRepoLoader().Zones();
@@ -45,10 +46,9 @@ namespace ToSic.Eav.Apps.Caching
         /// <summary>
         /// Check if an app is already in the global cache.
         /// </summary>
-        /// <param name="zoneId"></param>
-        /// <param name="appId"></param>
+        /// <param name="app"></param>
         /// <returns></returns>
-        public bool Has(int zoneId, int appId) => Has(string.Format(CacheKeySchema, zoneId, appId));
+        public bool Has(IInAppAndZone app) => Has(CacheKey(app));
 
         /// <summary>
         /// Sets the CacheItem with specified CacheKey
@@ -66,20 +66,20 @@ namespace ToSic.Eav.Apps.Caching
 		protected abstract void Remove(string cacheKey);
         #endregion
 
-        public AppState Get(int zoneId, int appId) => EnsureCacheInternal(zoneId, appId);
+        public AppState Get(IInAppAndZone app) => GetOrBuild(app);
 
         /// <summary>
         /// Preload the cache with the given primary language
         /// Needed for cache buildup outside of a HttpContext (e.g. a Scheduler)
         /// </summary>
-        public void ForceLoad(int zoneId, int appId, string primaryLanguage) => EnsureCacheInternal(zoneId, appId, primaryLanguage);
+        public void ForceLoad(IInAppAndZone app, string primaryLanguage) => GetOrBuild(app, primaryLanguage);
 
-        private AppState EnsureCacheInternal(int zoneId, int appId, string primaryLanguage = null)
+        private AppState GetOrBuild(IInAppAndZone appIdentity, string primaryLanguage = null)
         {
-            if (zoneId == 0 || appId == 0)
+            if (appIdentity.ZoneId == 0 || appIdentity.AppId == 0)
                 return null;
 
-            var cacheKey = CacheKey(zoneId, appId);
+            var cacheKey = CacheKey(appIdentity);
 
             if (Has(cacheKey)) return Get(cacheKey);
 
@@ -91,10 +91,10 @@ namespace ToSic.Eav.Apps.Caching
                 if (Has(cacheKey)) return Get(cacheKey);
 
                 // Init EavSqlStore once
-                var identity = GetZoneAppInternal(zoneId, appId);
+                //var identity = GetZoneAppInternal(zoneId, appId);
                 var loader = GetNewRepoLoader();
                 if (primaryLanguage != null) loader.PrimaryLanguage = primaryLanguage;
-                var appState = loader.AppPackage(identity.AppId, null);
+                var appState = loader.AppPackage(appIdentity.AppId, null);
 
                 Set(cacheKey, appState);
             }
@@ -111,7 +111,7 @@ namespace ToSic.Eav.Apps.Caching
         /// <summary>
         /// Clear Cache for specific Zone/App
         /// </summary>
-        public void PurgeCache(int zoneId, int appId) => Remove(string.Format(CacheKeySchema, zoneId, appId));
+        public void PurgeCache(IInAppAndZone app) => Remove(CacheKey(app));
 
 	    /// <inheritdoc />
 	    /// <summary>
@@ -126,7 +126,9 @@ namespace ToSic.Eav.Apps.Caching
         #region Cache-Chain
 
         ///// <inheritdoc />
-        public string CacheKey(int zoneId, int appId) => string.Format(CacheKeySchema, zoneId, appId);
+        //public string CacheKey(int zoneId, int appId) => string.Format(CacheKeySchema, zoneId, appId);
+
+        protected string CacheKey(IInAppAndZone appIdentity) => string.Format(CacheKeySchema, appIdentity.ZoneId, appIdentity.AppId);
 
         #endregion
 
@@ -138,27 +140,16 @@ namespace ToSic.Eav.Apps.Caching
         /// <returns>Item1 = ZoneId, Item2 = AppId</returns>
         [PrivateApi]
 		public IInAppAndZone GetIdentity(int? zoneId = null, int? appId = null) 
-            => GetZoneAppInternal(zoneId, appId);
-
-        // todo: better name etc.
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="zoneId"></param>
-        /// <param name="appId"></param>
-        /// <returns></returns>
-        /// remarks: must be internal, as it must run after Ensure Cache
-		private IInAppAndZone GetZoneAppInternal(int? zoneId, int? appId)
 		{
 			var resultZoneId = zoneId ?? (appId.HasValue
-			                       ? ZoneApps.Single(z => z.Value.Apps.Any(a => a.Key == appId.Value)).Key
+			                       ? Zones.Single(z => z.Value.Apps.Any(a => a.Key == appId.Value)).Key
 			                       : Constants.DefaultZoneId);
 
 			var resultAppId = appId.HasValue
-								  ? ZoneApps[resultZoneId].Apps.Single(a => a.Key == appId.Value).Key
-								  : ZoneApps[resultZoneId].DefaultAppId;
+								  ? Zones[resultZoneId].Apps.Single(a => a.Key == appId.Value).Key
+								  : Zones[resultZoneId].DefaultAppId;
 
-			return new AppZoneIds(resultZoneId, resultAppId);
+			return new AppIdentity(resultZoneId, resultAppId);
         }
 
     }

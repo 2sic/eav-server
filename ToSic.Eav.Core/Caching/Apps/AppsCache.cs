@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 
-namespace ToSic.Eav.Apps.Caching
+namespace ToSic.Eav.Caching.Apps
 {
     public class AppsCache: AppsCacheBase
     {
@@ -18,7 +19,7 @@ namespace ToSic.Eav.Apps.Caching
         #endregion
 
         [PrivateApi]
-        public override Dictionary<int, Zone> ZoneApps
+        public override Dictionary<int, Zone> Zones
         {
             get
             {

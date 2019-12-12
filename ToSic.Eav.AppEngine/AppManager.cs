@@ -18,7 +18,7 @@ namespace ToSic.Eav.Apps
     /// The app management system - it's meant for modifying the app, not for reading the configuration. 
     /// Use other mechanisms if you only want to read content-types etc.
     /// </summary>
-    public class AppManager: AppBase
+    public class AppManager: AppRuntimeBase
     {
         #region Constructors
         public AppManager(int zoneId, int appId, ILog parentLog = null) : base(zoneId, appId, parentLog) { RenameLog();}

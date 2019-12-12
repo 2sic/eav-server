@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.Apps
 {
-    public class AppZoneIds: IInAppAndZone
+    public class AppIdentity: IInAppAndZone
     {
         /// <inheritdoc />
         public int ZoneId { get; }
@@ -13,13 +13,13 @@
         /// </summary>
         /// <param name="zoneId"></param>
         /// <param name="appId"></param>
-        public AppZoneIds(int zoneId, int appId)
+        public AppIdentity(int zoneId, int appId)
         {
             ZoneId = zoneId;
             AppId = appId;
         }
 
-        public AppZoneIds(IInAppAndZone parent)
+        public AppIdentity(IInAppAndZone parent)
         {
             ZoneId = parent.ZoneId;
             AppId = parent.AppId;

@@ -7,7 +7,7 @@ namespace ToSic.Eav.Apps
     /// Base object for things that have a full app-identity (app-id and zone-id)
     /// </summary>
     [PublicApi]
-    public class AppIdentity: HasLog, IInAppAndZone
+    public class AppBase: HasLog, IInAppAndZone
     {
         /// <inheritdoc />
         public int ZoneId { get; }
@@ -23,8 +23,8 @@ namespace ToSic.Eav.Apps
         /// <param name="parentLog">the current log - could be null if necessary</param>
         /// <param name="logKey">a log key because most inheriting objects will want their own key in the log</param>
         /// <param name="initialMessage"></param>
-        public AppIdentity(int zoneId, int appId, ILog parentLog, string logKey = null, string initialMessage = null) 
-            : base(logKey ?? "App.Identy", parentLog, initialMessage ?? $"Zone {zoneId}, App {appId}")
+        public AppBase(int zoneId, int appId, ILog parentLog, string logKey = null, string initialMessage = null) 
+            : base(logKey ?? "App.Base", parentLog, initialMessage ?? $"Zone {zoneId}, App {appId}")
         {
             ZoneId = zoneId;
             AppId = appId;

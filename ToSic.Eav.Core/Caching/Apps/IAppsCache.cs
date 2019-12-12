@@ -1,16 +1,26 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 
-namespace ToSic.Eav.Apps.Caching
+namespace ToSic.Eav.Caching.Apps
 {
-    [PrivateApi("WIP")]
+    /// <summary>
+    /// Marks the objects which are responsible for caching <see cref="AppState"/> in memory. <br/>
+    /// This is a very powerful system ensuring performance and more. 
+    /// </summary>
+    [PublicApi]
     public interface IAppsCache
     {
 
         #region Get an App
 
-        AppState Get(int zoneId, int appId);
+        /// <summary>
+        /// Retrieve an app from the cache
+        /// </summary>
+        /// <param name="app">App identifier.</param>
+        /// <returns>The <see cref="AppState"/> of the app.</returns>
+        AppState Get(IInAppAndZone app);
 
         #endregion
 
@@ -22,7 +32,10 @@ namespace ToSic.Eav.Apps.Caching
         /// <returns>Item1 = ZoneId, Item2 = AppId</returns>
         IInAppAndZone GetIdentity(int? zoneId = null, int? appId = null);
 
-        Dictionary<int, Zone> ZoneApps { get; }
+        /// <summary>
+        /// The list of zones, which internally contains the list of apps. 
+        /// </summary>
+        Dictionary<int, Zone> Zones { get; }
 
         #endregion
 
@@ -31,10 +44,9 @@ namespace ToSic.Eav.Apps.Caching
         /// <summary>
         /// Check if something is already in the cache
         /// </summary>
-        /// <param name="zoneId"></param>
-        /// <param name="appId"></param>
+        /// <param name="app">App identifier.</param>
         /// <returns></returns>
-        bool Has(int zoneId, int appId);
+        bool Has(IInAppAndZone app);
 
         #endregion
 
@@ -43,13 +55,18 @@ namespace ToSic.Eav.Apps.Caching
         /// <summary>
         /// Clean cache for specific Zone and App
         /// </summary>
-        void PurgeCache(int zoneId, int appId);
+        void PurgeCache(/*int zoneId, int appId*/IInAppAndZone app);
 
-
+        /// <summary>
+        /// Tell the cache to do a partial update on an app
+        /// </summary>
+        /// <param name="app">App identifier.</param>
+        /// <param name="entities">List of entities which need to be updates.</param>
+        /// <param name="log">Log object to log what's happening.</param>
         void PartialUpdate(IInAppAndZone app, IEnumerable<int> entities, ILog log);
 
         /// <summary>
-        /// Clean global cache (currently contains List of Zones and Apps)
+        /// Clean entire global cache, which includes the List of Zones and Apps as well as all the apps.
         /// </summary>
         void PurgeGlobalCache();
 
@@ -61,10 +78,9 @@ namespace ToSic.Eav.Apps.Caching
         /// Load an app into cache, specifying the primary language.
         /// This is used in scenarios, where the primary language cannot be auto-detected, so it's set explicitly.
         /// </summary>
-        /// <param name="zoneId">Zone ID</param>
-        /// <param name="appId">App ID</param>
-        /// <param name="primaryLanguage">primary language, lower case</param>
-        void ForceLoad(int zoneId, int appId, string primaryLanguage);
+        /// <param name="app">App identifier.</param>
+        /// <param name="primaryLanguage">Primary language, lower case.</param>
+        void ForceLoad(IInAppAndZone app, string primaryLanguage);
 
         #endregion
 
