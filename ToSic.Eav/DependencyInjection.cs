@@ -28,7 +28,7 @@ namespace ToSic.Eav
 	    public void ConfigureNetCoreContainer(IServiceCollection serviceCollection)
 	    {
             // 2019-12-11 2dm new
-            serviceCollection.TryAddTransient<IAppsCache, AppsCache>();
+            serviceCollection.TryAddSingleton<IAppsCache, AppsCache>();
 
             serviceCollection.TryAddTransient<IAppRoot, AppRoot>();
             //serviceCollection.TryAddTransient<IAppsLoader, EavSqlStore>();

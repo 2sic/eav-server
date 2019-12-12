@@ -103,7 +103,7 @@ namespace ToSic.Eav.Metadata
         [PrivateApi]
         protected virtual void LoadFromProvider()
         {
-            var mdProvider = GetMetadataProvider();
+            var mdProvider = GetMetadataSource();
             Use(mdProvider?.Get(_itemType, Key).ToList()
                        ?? new List<IEntity>());
             if (mdProvider != null)
@@ -111,7 +111,7 @@ namespace ToSic.Eav.Metadata
         }
 
         [PrivateApi]
-        protected IMetadataSource GetMetadataProvider()
+        protected IMetadataSource GetMetadataSource()
         {
             // check if already retrieved
             if (_alreadyTriedToGetProvider) return _metadataSource;
@@ -120,7 +120,7 @@ namespace ToSic.Eav.Metadata
                 ? (_remoteZoneId != 0
                     ? Factory.Resolve<IRemoteMetadata>()?.OfZoneAndApp(_remoteZoneId, _remoteAppId)
                     : Factory.Resolve<IRemoteMetadata>()?.OfApp(_remoteAppId))
-                : _appMetadataProvider?.Metadata;
+                : _appMetadataProvider?.MetadataSource;
             _alreadyTriedToGetProvider = true;
             return _metadataSource;
         }

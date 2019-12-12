@@ -157,15 +157,15 @@ namespace ToSic.Eav
             => (IAppRoot)GetDataSource(RootDataSource, appIdentity, parentLog:parentLog);
 
 
-	    /// <summary>
-		/// Get DataSource having common MetaData, like Field MetaData
-		/// </summary>
-		/// <returns>IMetaDataSource (from ICache)</returns>
-		public static IMetadataSource GetMetaDataSource(int? zoneId = null, int? appId = null)
-		{
-			var zoneAppId = GetIdentity(zoneId, appId);
-			return (IMetadataSource)GetCache(zoneAppId);
-		}
+	 //   /// <summary>
+		///// Get DataSource having common MetaData, like Field MetaData
+		///// </summary>
+		///// <returns>IMetaDataSource (from ICache)</returns>
+		//public static IMetadataSource GetMetaDataSource(int? zoneId = null, int? appId = null)
+		//{
+		//	var zoneAppId = GetIdentity(zoneId, appId);
+		//	return /*(IMetadataSource)*/GetCache(zoneAppId);
+		//}
 
 
         private static DataSourceInfo FindInDsTypeCache(string name)

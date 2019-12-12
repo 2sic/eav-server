@@ -111,7 +111,7 @@ namespace ToSic.Eav.Apps
         /// </summary>
         internal static void EnsureAppIsConfigured(int zoneId, int appId, ILog parentLog, string appName = null)
         {
-            var mds = DataSource.GetMetaDataSource(zoneId, appId);
+            var mds = Factory.GetAppState(new AppIdentity(zoneId, appId));//DataSource.GetMetaDataSource(zoneId, appId);
             var appMetaData = mds.Get(Constants.MetadataForApp, appId, AppConstants.TypeAppConfig).FirstOrDefault();
             var appResources = mds.Get(Constants.MetadataForApp, appId, AppConstants.TypeAppResources).FirstOrDefault();
             var appSettings = mds.Get(Constants.MetadataForApp, appId, AppConstants.TypeAppSettings).FirstOrDefault();

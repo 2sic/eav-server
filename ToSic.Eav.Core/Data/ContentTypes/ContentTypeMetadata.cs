@@ -56,7 +56,7 @@ namespace ToSic.Eav.Data
             if (!Guid.TryParse(Key, out var ctGuid)) return;
 
             // add the guid metadata on entity if it has a real guid
-            var additional = GetMetadataProvider()?.Get(Constants.MetadataForEntity, ctGuid)
+            var additional = GetMetadataSource()?.Get(Constants.MetadataForEntity, ctGuid)
                                  .ToList()
                              ?? new List<IEntity>();
             Use(AllWithHidden.Concat(additional).ToList());

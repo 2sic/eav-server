@@ -32,7 +32,7 @@ namespace ToSic.Eav.Apps.ImportExport
         public string[] EntityIDs;
         public List<Message> Messages = new List<Message>();
 
-        public AppState AppPackage { get; private set; }
+        public AppState AppState { get; private set; }
         public XmlSerializer Serializer { get; private set; }
 
         public int ZoneId { get; private set; }
@@ -48,9 +48,9 @@ namespace ToSic.Eav.Apps.ImportExport
         {
             ZoneId = zoneId;
             Log = new Log("Xml.Exp", parentLog, "start XML exporter using app-package");
-            AppPackage = app.AppState;
+            AppState = app.AppState;
             Serializer = new XmlSerializer(app.Zone.Languages().ToDictionary(l => l.EnvironmentKey.ToLower(), l => l.DimensionId));
-            Serializer.Initialize(AppPackage, Log);
+            Serializer.Initialize(AppState, Log);
 
             _appStaticName = appStaticName;
             _isAppExport = appExport;
@@ -145,8 +145,8 @@ namespace ToSic.Eav.Apps.ImportExport
             {
                 //var id = int.Parse(attributeSetId);
                 var set = int.TryParse(attributeSetId, out var id)
-                    ? (ContentType) AppPackage.GetContentType(id)
-                    : (ContentType) AppPackage.GetContentType(attributeSetId);  // in case it's the name, not the number
+                    ? (ContentType) AppState.GetContentType(id)
+                    : (ContentType) AppState.GetContentType(attributeSetId);  // in case it's the name, not the number
 
                 // skip system/code-types
                 if((set.ParentId ?? 0) == Constants.SystemContentTypeFakeParent)
@@ -162,7 +162,7 @@ namespace ToSic.Eav.Apps.ImportExport
                         new XAttribute(XmlConstants.Type, x.Type),
                         new XAttribute(XmlConstants.IsTitle, x.IsTitle),
                         // Add Attribute MetaData
-                        from c in AppPackage.Get(Constants.MetadataForAttribute, x.AttributeId).ToList()
+                        from c in AppState.Get(Constants.MetadataForAttribute, x.AttributeId).ToList()
                         select GetEntityXElement(c.EntityId, c.Type.StaticName)
                     );
 
@@ -200,7 +200,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 var id = int.Parse(entityId);
 
                 // Get the entity and ContentType from ContentContext add Add it to ContentItems
-                var entity = AppPackage.List.FindRepoId(id);// [id];
+                var entity = AppState.List.FindRepoId(id);// [id];
                 entities.Add(GetEntityXElement(entity.EntityId, entity.Type.StaticName));
             }
 
@@ -256,12 +256,12 @@ namespace ToSic.Eav.Apps.ImportExport
                     {
                         case XmlConstants.TemplateContentTypeId:
                             var eid = int.Parse(valueString);
-                            var attributeSet = AppPackage.GetContentType(eid);//.ContentTypes[eid];
+                            var attributeSet = AppState.GetContentType(eid);//.ContentTypes[eid];
                             value.Attribute(XmlConstants.ValueAttr)?.SetValue(attributeSet != null ? attributeSet.StaticName : string.Empty);
                             break;
                         case XmlConstants.TemplateDemoItemId:
                             eid = int.Parse(valueString);
-                            var demoEntity = AppPackage.List.FindRepoId(eid);
+                            var demoEntity = AppState.List.FindRepoId(eid);
                             value.Attribute(XmlConstants.ValueAttr)?.SetValue(demoEntity?.EntityGuid.ToString() ?? string.Empty);
                             break;
                     }

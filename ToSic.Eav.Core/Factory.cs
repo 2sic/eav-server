@@ -134,9 +134,12 @@ namespace ToSic.Eav
         public static IAppsCache GetAppsCache() => Resolve<IAppsCache>();
 
         [PrivateApi]
-        public static AppState GetAppState(int appId) => Resolve<IAppsCache>().Get(appId);
+        public static AppState GetAppState(int appId) => GetAppsCache().Get(appId);
 
         [PrivateApi]
-        public static AppState GetAppState(IAppIdentity app) => Resolve<IAppsCache>().Get(app);
+        public static AppState GetAppState(IAppIdentity app) => GetAppsCache().Get(app);
+
+        [PrivateApi]
+        public static IAppIdentity GetAppIdentity(int? zoneId, int? appId) => GetAppsCache().GetIdentity(zoneId, appId);
     }
 }

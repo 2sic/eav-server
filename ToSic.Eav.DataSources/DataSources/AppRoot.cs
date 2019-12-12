@@ -1,8 +1,5 @@
-﻿using System.Collections.Generic;
-using ToSic.Eav.Documentation;
-using ToSic.Eav.Metadata;
+﻿using ToSic.Eav.Documentation;
 using AppState = ToSic.Eav.Apps.AppState;
-using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
 {
@@ -12,12 +9,8 @@ namespace ToSic.Eav.DataSources
     /// This is also the object returned as the root in any query.
     /// </summary>
     [PublicApi]
-    public class AppRoot : DataSourceBase, IMetadataSource, IAppRoot
+    public class AppRoot : DataSourceBase, IAppRoot
     {
-        //[PrivateApi] 
-        //private IAppsCache AppsCache => _appsCache ?? (_appsCache = Factory.GetAppsCache());
-        //private IAppsCache _appsCache;
-
         [PrivateApi]
         public override string LogId => "DS.Root";
 
@@ -37,7 +30,7 @@ namespace ToSic.Eav.DataSources
 		/// Gets the KeySchema used to store values for a specific Zone and App. Must contain {0} for ZoneId and {1} for AppId
 		/// </summary>
 		[PrivateApi]
-        private string CacheKeySchema => "Z{0}A{1}";
+        private static string CacheKeySchema => "Z{0}A{1}";
 
 
         /// <summary>
@@ -62,15 +55,6 @@ namespace ToSic.Eav.DataSources
 	    public override string CacheFullKey => CachePartialKey;
 
         #endregion
-
-
-        #region GetAssignedEntities by Guid, string and int
-
-	    /// <inheritdoc />
-        public IEnumerable<IEntity> Get<T>(int targetType, T key, string contentTypeName = null) 
-            => AppState.Get(targetType, key, contentTypeName);
-
-	    #endregion
 
     }
 }

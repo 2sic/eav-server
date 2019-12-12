@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Interfaces;
@@ -27,8 +26,8 @@ namespace ToSic.Eav.Apps.ImportExport
         internal IStorage Storage;
         public SaveOptions SaveOptions;
 
-        private int AppId;
-        private int ZoneId;
+        private readonly int AppId;
+        private readonly int ZoneId;
 
         #endregion
 

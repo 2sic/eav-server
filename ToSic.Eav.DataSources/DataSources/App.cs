@@ -170,7 +170,7 @@ namespace ToSic.Eav.DataSources
         /// This allows users of the App to query metadata directly through this object. 
         /// </summary>
         /// <returns>An initialized <see cref="IMetadataSource"/> for this app</returns>
-        public IMetadataSource Metadata => _metadata ?? (_metadata = DataSource.GetMetaDataSource(ZoneId, AppId));
+        public IMetadataSource Metadata => _metadata ?? (_metadata = Factory.GetAppState(this));// DataSource.GetMetaDataSource(ZoneId, AppId));
         private IMetadataSource _metadata;
     }
 
