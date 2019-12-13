@@ -62,7 +62,7 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="queryId"></param>
         /// <returns></returns>
         public QueryDefinition Get(int queryId) =>
-            new QueryDefinition(Eav.DataSources.Queries.QueryManager.GetQueryEntity(queryId, App./*Cache*/Data), App.AppId, Log);
+            new QueryDefinition(Eav.DataSources.Queries.QueryManager.GetQueryEntity(queryId, App./*Cache*/AppState), App.AppId, Log);
 
         public class DataSourceInfo
         {

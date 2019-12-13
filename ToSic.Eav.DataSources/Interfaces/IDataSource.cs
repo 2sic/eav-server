@@ -94,11 +94,11 @@ namespace ToSic.Eav.DataSources
 
         #region Caching Information
 
-        /// <summary>
-        /// Direct access to the root cache underlying all data provided by this data source. 
-        /// </summary>
-        /// <returns>An <see cref="IAppRoot"/> data source to the root cache.</returns>
-        IAppRoot Root { get; }
+        ///// <summary>
+        ///// Direct access to the root cache underlying all data provided by this data source. 
+        ///// </summary>
+        ///// <returns>An <see cref="IAppRoot"/> data source to the root cache.</returns>
+        //IAppRoot Root { get; }
 
         /// <summary>
         /// Some configuration of the data source is cache-relevant, others are not.

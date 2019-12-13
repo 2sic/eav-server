@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Apps;
 using ToSic.Eav.UnitTests.DataSources;
 
 namespace ToSic.Eav.DataSources.Tests
@@ -24,7 +25,7 @@ namespace ToSic.Eav.DataSources.Tests
         private static DataSources.Shuffle GenerateShuffleDS(int desiredFinds)
         {
             var ds = DataTableDataSourceTest.GeneratePersonSourceWithDemoData(desiredFinds, 1001, true);
-            var sf = Eav.DataSource.GetDataSource<DataSources.Shuffle>(0, 0, ds);
+            var sf = Eav.DataSource.GetDataSource<DataSources.Shuffle>(new AppIdentity(0, 0), ds);
             return sf;
         }
 

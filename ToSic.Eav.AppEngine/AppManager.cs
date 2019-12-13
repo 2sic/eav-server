@@ -7,7 +7,6 @@ using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Types;
@@ -21,10 +20,13 @@ namespace ToSic.Eav.Apps
     public class AppManager: AppRuntimeBase
     {
         #region Constructors
-        public AppManager(int zoneId, int appId, ILog parentLog = null) : base(zoneId, appId, parentLog) { RenameLog();}
+        //public AppManager(int zoneId, int appId, ILog parentLog = null) 
+        //    : base(zoneId, appId, parentLog) { RenameLog();}
 
         public AppManager(IAppIdentity app, ILog parentLog) : base(app, parentLog) { RenameLog();}
-        public AppManager(int appId, ILog parentLog) : base(appId, parentLog) { RenameLog();}
+
+        public AppManager(int appId, ILog parentLog) 
+            : this(Factory.GetAppIdentity(null, appId:appId), parentLog) { RenameLog();}
 
         private void RenameLog() => Log.Rename("AppMan");
 
@@ -111,7 +113,8 @@ namespace ToSic.Eav.Apps
         /// </summary>
         internal static void EnsureAppIsConfigured(int zoneId, int appId, ILog parentLog, string appName = null)
         {
-            var mds = Factory.GetAppState(new AppIdentity(zoneId, appId));//DataSource.GetMetaDataSource(zoneId, appId);
+            var appIdentity = new AppIdentity(zoneId, appId);
+            var mds = Factory.GetAppState(appIdentity);//DataSource.GetMetaDataSource(zoneId, appId);
             var appMetaData = mds.Get(Constants.MetadataForApp, appId, AppConstants.TypeAppConfig).FirstOrDefault();
             var appResources = mds.Get(Constants.MetadataForApp, appId, AppConstants.TypeAppResources).FirstOrDefault();
             var appSettings = mds.Get(Constants.MetadataForApp, appId, AppConstants.TypeAppSettings).FirstOrDefault();
@@ -122,7 +125,7 @@ namespace ToSic.Eav.Apps
             if (eavAppName == Constants.DefaultAppName)
                 return;
 
-            var appMan = new AppManager(zoneId, appId);
+            var appMan = new AppManager(appIdentity, null);
             if (appMetaData == null)
                 appMan.MetadataEnsureTypeAndSingleEntity(AppConstants.ScopeApp,
                     AppConstants.TypeAppConfig,

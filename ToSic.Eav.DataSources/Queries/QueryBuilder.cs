@@ -41,8 +41,9 @@ namespace ToSic.Eav.DataSources.Queries
 	        Log.Add($"get query def#{queryEntityId} for a#{appId}");
 
 	        try
-	        {
-                var source = DataSource.GetInitialDataSource(appId: appId, parentLog: Log);
+            {
+                var app = DataSource.GetIdentity(null, appId);
+                var source = DataSource.GetInitialDataSource(/*appId: appId*/app, parentLog: Log);
 	            var appEntities = source[Constants.DefaultStreamName].List;
 
 	            // use findRepo, as it uses the cache, which gives the list of all items // [queryEntityId];

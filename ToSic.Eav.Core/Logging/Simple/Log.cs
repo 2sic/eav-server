@@ -42,7 +42,7 @@ namespace ToSic.Eav.Logging.Simple
         }
 
 
-        public ILog AddChild(string name, string message) => new Log(name, this, message);
+        public ILog AddChild(string name, string message=null) => new Log(name, this, message);
 
         /// <summary>
         /// Rename this logger - usually used when a base-class has a logger, 

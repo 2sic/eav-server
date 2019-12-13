@@ -116,7 +116,7 @@ namespace ToSic.Eav.Logging
         string FullIdentifier { get; }
 
         [PrivateApi]
-        ILog AddChild(string name, string message);
+        ILog AddChild(string name, string message = null);
 
         /// <summary>
         /// Rename this logger - usually used when a base-class has a logger, 

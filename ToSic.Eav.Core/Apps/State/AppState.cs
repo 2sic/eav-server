@@ -17,12 +17,9 @@ namespace ToSic.Eav.Apps
     /// It also manages and caches relationships between entities of the same app.
     /// </summary>
     [PublicApi]
-    public partial class AppState: HasLog, IAppIdentityLight
+    public partial class AppState: AppBase// , IAppIdentityLight
 	{
-
-		#region public properties like AppId, Entities, List, Publisheentities, DraftEntities, 
-        /// <inheritdoc />
-        public int AppId { get; }
+        #region public properties like AppId, Entities, List, Publisheentities, DraftEntities, 
 
 	    /// <summary>
 	    /// The simple list of <em>all</em> entities, used everywhere
@@ -75,9 +72,10 @@ namespace ToSic.Eav.Apps
 
 
         [PrivateApi("constructor, internal use only")]
-        internal AppState(int appId, ILog parentLog): base($"App.Pkg{appId}", parentLog, $"start build package for {appId}")
+        internal AppState(IAppIdentity app, ILog parentLog)
+            : base(app,  parentLog, $"App.Pkg{app.AppId}",$"start build package")
 	    {
-	        AppId = appId;
+	        //AppId = appId;
             CacheResetTimestamp();  // do this very early, as this number is needed elsewhere
 
 	        Index = new Dictionary<int, IEntity>();

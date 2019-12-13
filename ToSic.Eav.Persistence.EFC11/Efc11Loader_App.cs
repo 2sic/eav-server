@@ -32,8 +32,11 @@ namespace ToSic.Eav.Persistence.Efc
         /// <param name="entityIds">null or a List of EntityIds</param>
         /// <param name="parentLog"></param>
         /// <returns>app package with initialized app</returns>
-        public AppState AppState(int appId, int[] entityIds = null, ILog parentLog = null) 
-            => Update(new AppState(appId, parentLog), AppStateLoadSequence.Start, entityIds, parentLog);
+        public AppState AppState(int appId, int[] entityIds = null, ILog parentLog = null)
+        {
+            var appIdentity = Factory.GetAppIdentity(null, appId);
+            return Update(new AppState(appIdentity, parentLog), AppStateLoadSequence.Start, entityIds, parentLog);
+        }
 
         public AppState Update(AppState app, AppStateLoadSequence startAt, int[] entityIds = null, ILog parentLog = null)
         {

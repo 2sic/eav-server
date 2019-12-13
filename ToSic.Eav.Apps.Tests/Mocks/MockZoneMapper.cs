@@ -9,6 +9,8 @@ namespace ToSic.Eav.Apps.Tests.Mocks
         public int GetZoneId(int tenantId) => -1;
 
         public int GetZoneId(ITenant tenant) => -999;
+        public IAppIdentity IdentityFromTenant(int tenantId, int appId) 
+            => new AppIdentity(-1, appId);
 
         public ITenant Tenant(int zoneId) => new MockTenant();
 

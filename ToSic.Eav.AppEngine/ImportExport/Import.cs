@@ -36,7 +36,9 @@ namespace ToSic.Eav.Apps.ImportExport
         /// </summary>
         public Import(int? zoneId, int appId, bool skipExistingAttributes = true, bool preserveUntouchedAttributes = true, ILog parentLog = null): base("Eav.Import", parentLog, "constructor")
         {
-            App = zoneId.HasValue ? new AppManager(zoneId.Value, appId) : new AppManager(appId, Log);
+            App = zoneId.HasValue
+                ? new AppManager(new AppIdentity(zoneId.Value, appId), Log)
+                : new AppManager(appId, Log);
             Storage = App.Storage;
 
             // now save the resolved zone/app IDs

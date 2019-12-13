@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
@@ -19,7 +20,7 @@ namespace ToSic.Eav.DataSources.Queries
 		/// </summary>
 		/// <param name="entityId">EntityId</param>
 		/// <param name="dataSource">DataSource to load Entity from</param>
-		internal static IEntity GetQueryEntity(int entityId, IDataSource dataSource)
+		internal static IEntity GetQueryEntity(int entityId, /*IDataSource*/AppState dataSource)
 		{
 			try
 			{
@@ -41,12 +42,12 @@ namespace ToSic.Eav.DataSources.Queries
         /// ...but will be auto-assembled the moment they are accessed
         /// </summary>
         /// <returns></returns>
-	    internal static Dictionary<string, IQuery> AllQueries(int zoneId, int appId, ILookUpEngine valuesCollectionProvider, ILog parentLog, bool showDrafts)
+	    internal static Dictionary<string, IQuery> AllQueries(/*int zoneId, int appId*/IAppIdentity app, ILookUpEngine valuesCollectionProvider, ILog parentLog, bool showDrafts)
 	    {
 	        var dict = new Dictionary<string, IQuery>(StringComparer.OrdinalIgnoreCase);
-	        foreach (var entQuery in AllQueryItems(appId, parentLog))
+	        foreach (var entQuery in AllQueryItems(app, parentLog))
 	        {
-	            var delayedQuery = new Query(zoneId, appId, entQuery, valuesCollectionProvider, showDrafts, parentLog);
+	            var delayedQuery = new Query(app.ZoneId, app.AppId, entQuery, valuesCollectionProvider, showDrafts, parentLog);
                 // make sure it doesn't break if two queries have the same name...
 	            var name = entQuery.Title[0].ToString();
 	            if (!dict.ContainsKey(name))
@@ -55,10 +56,10 @@ namespace ToSic.Eav.DataSources.Queries
 	        return dict;
 	    }
 
-	    internal static IEnumerable<IEntity> AllQueryItems(int appId, ILog parentLog)
+	    internal static IEnumerable<IEntity> AllQueryItems(IAppIdentity app, ILog parentLog)
 	    {
-	        var source = DataSource.GetInitialDataSource(appId: appId, parentLog: parentLog);
-	        var typeFilter = DataSource.GetDataSource<EntityTypeFilter>(appId: appId, upstream: source);
+	        var source = DataSource.GetInitialDataSource(app, parentLog: parentLog);
+	        var typeFilter = DataSource.GetDataSource<EntityTypeFilter>(/*appId: appId, upstream:*/ source);
 	        typeFilter.TypeName = Constants.QueryTypeName;
 	        var list = typeFilter.List;
 	        return list;

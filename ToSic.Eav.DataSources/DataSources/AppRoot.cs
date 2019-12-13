@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSources
         [PrivateApi]
         public AppRoot()
         {
-            Root = this;
+            //Root = this;
 
 		    // ReSharper disable VirtualMemberCallInConstructor
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, () => AppState.List));

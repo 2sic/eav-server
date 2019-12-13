@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data.Builder;
-using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
@@ -68,14 +67,14 @@ namespace ToSic.Eav.DataSources
             }
         }
 
-        /// <inheritdoc />
-        public IAppRoot Root
-        {
-            get => _root ?? (_root = DataSource.GetCache(this, Log));
-            protected set => _root = value;
-        }
+        ///// <inheritdoc />
+        //public IAppRoot Root
+        //{
+        //    get => _root ?? (_root = DataSource.GetCache(this, Log));
+        //    protected set => _root = value;
+        //}
 
-        private IAppRoot _root;
+        //private IAppRoot _root;
 
         /// <inheritdoc />
         public virtual string CacheFullKey

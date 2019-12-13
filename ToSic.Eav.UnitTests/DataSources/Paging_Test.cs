@@ -80,7 +80,7 @@ namespace ToSic.Eav.UnitTests
         public Paging CreatePagingForTesting(int testItemsInRootSource)
         {
             var ds = DataTableDataSourceTest.GeneratePersonSourceWithDemoData(testItemsInRootSource, seedId);
-            return DataSource.GetDataSource<Paging>(1, 1, ds);
+            return DataSource.GetDataSource<Paging>(ds);
             //return filtered;
         }
 

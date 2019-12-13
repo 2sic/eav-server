@@ -17,6 +17,8 @@ namespace ToSic.Eav.Apps
 
         int GetZoneId(ITenant tenant);
 
+        IAppIdentity IdentityFromTenant(int tenantId, int appId);
+
 
         ITenant Tenant(int zoneId);
 

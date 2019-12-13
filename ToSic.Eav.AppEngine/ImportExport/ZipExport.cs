@@ -125,14 +125,14 @@ namespace ToSic.Eav.Apps.ImportExport
         private XmlExporter GenerateExportXml(bool includeContentGroups, bool resetAppGuid)
         {
             // Get Export XML
-            var runtime = new AppRuntime(_zoneId, _appId, Log);
+            var runtime = new AppRuntime(new AppIdentity(_zoneId, _appId)/*,  _zoneId, _appId*/, Log);
             var attributeSets = runtime.ContentTypes.FromScope(includeAttributeTypes: true);
             attributeSets = attributeSets.Where(a => !((a as IContentTypeShared)?.AlwaysShareConfiguration ?? false));
 
             var contentTypeNames = attributeSets.Select(p => p.StaticName).ToArray();
             var templateTypeId = SystemRuntime.MetadataType(Settings.TemplateContentType);
             var entities =
-                DataSource.GetInitialDataSource(_zoneId, _appId).Out["Default"].List.Where(
+                DataSource.GetInitialDataSource(runtime/*,_zoneId, _appId*/).Out["Default"].List.Where(
                     e => e.MetadataFor.TargetType != templateTypeId
                          && e.MetadataFor.TargetType != Constants.MetadataForAttribute).ToList();
 

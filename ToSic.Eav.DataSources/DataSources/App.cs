@@ -90,12 +90,9 @@ namespace ToSic.Eav.DataSources
 		[PrivateApi]
 		public App()
 		{
-			// this one is unusual, so don't pre-attach a default data stream
-            // Don't delete this comment, as it's important we don't accidentally re-introduce this
-			// Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntities));
+			// this one is unusual, so don't pre-attach a default data stream to out
 
 			// Set default switch-keys to 0 = no switch
-            
 			ConfigMask(AppSwitchKey, "[Settings:" + AppSwitchKey + "||0]");
 			ConfigMask(ZoneSwitchKey, "[Settings:" + ZoneSwitchKey + "||0]");
 
@@ -114,7 +111,7 @@ namespace ToSic.Eav.DataSources
 		    if (AppSwitch != 0)
 				AppId = AppSwitch;
 
-		    var newDs = DataSource.GetInitialDataSource(ZoneId, AppId, configProvider: ConfigurationProvider);
+		    var newDs = DataSource.GetInitialDataSource(/*ZoneId, AppId*/this, configProvider: ConfigurationProvider);
 		    if (In.ContainsKey(Constants.DefaultStreamName))
 		        In.Remove(Constants.DefaultStreamName);
 			In.Add(Constants.DefaultStreamName, newDs[Constants.DefaultStreamName]);
@@ -150,7 +147,7 @@ namespace ToSic.Eav.DataSources
 		        var typeName = contentType.Name;
 		        if (typeName != Constants.DefaultStreamName && !typeName.StartsWith("@") && !_out.ContainsKey(typeName))
 		        {
-		            var ds = DataSource.GetDataSource<EntityTypeFilter>(ZoneId, AppId, upstreamDataSource, ConfigurationProvider, parentLog:Log);
+		            var ds = DataSource.GetDataSource<EntityTypeFilter>(/*ZoneId, AppId*/this, upstreamDataSource, ConfigurationProvider, parentLog:Log);
 		            ds.TypeName = typeName;
 		            ds.DataSourceGuid = DataSourceGuid; // tell the inner source that it has the same ID as this one, as we're pretending it's the same source
 

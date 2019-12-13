@@ -8,22 +8,25 @@ namespace ToSic.Eav.Apps.Parts
     /// </summary>
     public abstract class AppRuntimeBase: AppBase
     {
-        /// <summary>
-        /// Create an app manager for this specific app
-        /// </summary>
-        /// <param name="zoneId"></param>
-        /// <param name="appId"></param>
-        /// <param name="parentLog"></param>
-        protected AppRuntimeBase(int zoneId, int appId, ILog parentLog) 
-            : base(zoneId, appId, parentLog, "App.Base")
-        {
-        }
+        private const string LogId = "App.Base";
 
-        protected AppRuntimeBase(IAppIdentity app, ILog parentLog) : this(app.ZoneId, app.AppId, parentLog) { }
+        ///// <summary>
+        ///// Create an app manager for this specific app
+        ///// </summary>
+        ///// <param name="zoneId"></param>
+        ///// <param name="appId"></param>
+        ///// <param name="parentLog"></param>
+        //protected AppRuntimeBase(int zoneId, int appId, ILog parentLog) 
+        //    : base(zoneId, appId, parentLog, LogId)
+        //{
+        //}
 
-        protected AppRuntimeBase(int appId, ILog parentLog) : this(Factory.GetAppsCache().GetIdentity(appId: appId).ZoneId, appId, parentLog) { }
+        protected AppRuntimeBase(IAppIdentity app, ILog parentLog) 
+            : base(app, parentLog, LogId) { }
 
-        protected AppRuntimeBase(IDataSource data, ILog parentLog) : this(data.ZoneId, data.AppId, parentLog)
+        //protected AppRuntimeBase(int appId, ILog parentLog) : this(Factory.GetAppsCache().GetIdentity(appId: appId), parentLog) { }
+
+        protected AppRuntimeBase(IDataSource data, ILog parentLog) : this(data as IAppIdentity, parentLog)
         {
             _data = data;
         }
@@ -33,13 +36,13 @@ namespace ToSic.Eav.Apps.Parts
         //public AppRoot Cache => _cache ?? (_cache = (AppRoot) Data/*.Root*/);
         //private AppRoot _cache;
 
-        public IDataSource Data => _data ?? (_data = DataSource.GetInitialDataSource(ZoneId, AppId));
+        public IDataSource Data => _data ?? (_data = DataSource.GetInitialDataSource(this/*ZoneId, AppId*/));
         private IDataSource _data;
 
         /// <summary>
         /// The cache-package if needed (mainly for export/import, where the full data is necessary)
         /// </summary>
-        public AppState AppState => Factory.GetAppState(Data);// Cache.AppState;
+        public AppState AppState => Factory.GetAppState(this);// Cache.AppState;
 
 
         #endregion

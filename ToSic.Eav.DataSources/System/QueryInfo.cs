@@ -94,7 +94,7 @@ namespace ToSic.Eav.DataSources.System
             if(!_query.Out.ContainsKey(StreamName))
                 return new List<IEntity>();
 
-	        var attribInfo = DataSource.GetDataSource<Attributes>(upstream: _query, configLookUp:_query.ConfigurationProvider);
+	        var attribInfo = DataSource.GetDataSource<Attributes>(_query/*, configLookUp:_query.ConfigurationProvider*/);
             if(StreamName != Constants.DefaultStreamName)
                 attribInfo.Attach(Constants.DefaultStreamName, _query[StreamName]);
 
@@ -116,7 +116,7 @@ namespace ToSic.Eav.DataSources.System
             // important, use "Name" and not get-best-title, as some queries may not be correctly typed, so missing title-info
             var found = QueryName.StartsWith(GlobalQueries.GlobalQueryPrefix)
                 ? GlobalQueries.FindQuery(QueryName)
-                : QueryManager.AllQueryItems(AppId, Log)
+                : QueryManager.AllQueryItems(/*AppId*/this, Log)
                     .FirstOrDefault(q => string.Equals(q.GetBestValue("Name").ToString(), QueryName,
                         StringComparison.InvariantCultureIgnoreCase));
 

@@ -29,7 +29,7 @@ namespace ToSic.Eav.Apps
 
                 if (ConfigurationProvider == null)
                     throw new Exception("Can't use app-queries, because the necessary configuration provider hasn't been initialized. Call InitData first.");
-                Queries = QueryManager.AllQueries(ZoneId, AppId, ConfigurationProvider, Log, ShowDrafts);
+                Queries = QueryManager.AllQueries(/*ZoneId, AppId*/this, ConfigurationProvider, Log, ShowDrafts);
                 return Queries;
             }
         }

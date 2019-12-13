@@ -44,7 +44,7 @@ namespace ToSic.Eav.Api.Api01
             _appId = appId;
             _defaultLanguageCode = defaultLanguageCode;
             _context = DbDataController.Instance(zoneId, appId, Log);
-            _appManager = new AppManager(zoneId, appId, Log);
+            _appManager = new AppManager(new AppIdentity(zoneId, appId)/*,  zoneId, appId*/, Log);
         }
 
 

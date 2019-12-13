@@ -89,7 +89,7 @@ namespace ToSic.Eav.Apps.Parts
 
 
             // Get the Entity describing the Query and Query Parts (DataSources)
-            var queryEntity = Eav.DataSources.Queries.QueryManager.GetQueryEntity(id, AppManager./*Cache*/Data);
+            var queryEntity = Eav.DataSources.Queries.QueryManager.GetQueryEntity(id, AppManager./*Cache*/AppState);
             var qDef = new QueryDefinition(queryEntity, AppManager.AppId, Log);
 
             var mdItems = qDef.Parts// parts

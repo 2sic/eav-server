@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.ImportExport.Json;
-using ToSic.Eav.Interfaces;
-using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.DataSources.Tests.Query
 {
@@ -30,8 +27,9 @@ namespace ToSic.Eav.DataSources.Tests.Query
 
         private QueryDefinition LoadQueryDef(int appId, int queryId)
         {
-            var source = DataSource.GetInitialDataSource(appId: appId);
-            var pipelineEntity = QueryManager.GetQueryEntity(queryId, source);
+            var appState = Factory.GetAppState(appId);
+            var source = DataSource.GetInitialDataSource(/*appId: appId*/appState);
+            var pipelineEntity = QueryManager.GetQueryEntity(queryId, appState);
             return new QueryDefinition(pipelineEntity, appId, null);
         }
 
