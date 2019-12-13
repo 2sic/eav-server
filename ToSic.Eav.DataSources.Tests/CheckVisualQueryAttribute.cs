@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSources.Tests
         [TestMethod]
         public void CheckGlobalNames()
         {
-            var allDS = DataSource.GetInstalledDataSources(true).ToList();
+            var allDS = Catalog.GetAll(true).ToList();
 
             allDS.ForEach(ds =>
             {

@@ -101,7 +101,14 @@ namespace ToSic.Eav.DataSources
 	                /* ignore */
 	            }
 
-	            return AsEntity(BuildDictionary(t), ContentTypeType.Name.ToString(), ContentTypeTypeName, t.ContentTypeId, guid, appId: OfAppId);// new Data.Entity(DesiredAppId, t.ContentTypeId, ContentTypeTypeName, BuildDictionary(t), ContentTypeType.Name.ToString(), entityGuid: guid);
+                return Build.Entity(BuildDictionary(t),
+                    appId:OfAppId, 
+                    id:t.ContentTypeId, 
+                    titleField: ContentTypeType.Name.ToString(),
+                    typeName: ContentTypeTypeName,
+                    guid: guid);
+
+	            //return AsEntity(BuildDictionary(t), ContentTypeType.Name.ToString(), ContentTypeTypeName, t.ContentTypeId, guid, appId: OfAppId);// new Data.Entity(DesiredAppId, t.ContentTypeId, ContentTypeTypeName, BuildDictionary(t), ContentTypeType.Name.ToString(), entityGuid: guid);
 	        });
 
 	        return list;

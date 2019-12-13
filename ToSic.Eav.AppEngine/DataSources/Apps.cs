@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.DataSources.Caching;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSources.System;
 using ToSic.Eav.Documentation;
@@ -95,7 +95,14 @@ namespace ToSic.Eav.DataSources
 	                {AppType.IsDefault.ToString(), app.Key == zone.DefaultAppId},
 	            };
 
-	            return AsEntity(appEnt, AppType.Name.ToString(), AppsContentTypeName, app.Key, guid);
+                var result = Build.Entity(appEnt,
+                    appId: app.Key,
+                    id: app.Key,
+                    titleField: AppType.Name.ToString(),
+                    typeName: AppsContentTypeName, 
+                    guid: guid);
+                return result;
+	            //return AsEntity(appEnt, AppType.Name.ToString(), AppsContentTypeName, app.Key, guid);
             });
 
             return list;

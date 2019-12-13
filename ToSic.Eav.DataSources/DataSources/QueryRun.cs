@@ -38,7 +38,7 @@ namespace ToSic.Eav.DataSources
 		[PrivateApi]
 		public QueryRun()
 		{
-            TempUsesDynamicOut = true;
+            OutIsDynamic = true;
         }
 
         #region Out

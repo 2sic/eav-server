@@ -42,8 +42,8 @@ namespace ToSic.Eav.DataSources.Queries
 
 	        try
             {
-                var app = DataSource.GetIdentity(null, appId);
-                var source = DataSource.GetInitialDataSource(/*appId: appId*/app, parentLog: Log);
+                var app = Factory.GetAppIdentity(null, appId);// DataSource.GetIdentity(null, appId);
+                var source = DataSource.GetPublishing(/*appId: appId*/app, parentLog: Log);
 	            var appEntities = source[Constants.DefaultStreamName].List;
 
 	            // use findRepo, as it uses the cache, which gives the list of all items // [queryEntityId];
@@ -105,8 +105,8 @@ namespace ToSic.Eav.DataSources.Queries
 	            var passThroughConfig = new LookUpEngine(templateConfig);
 	            outSource = new PassThrough {ConfigurationProvider = passThroughConfig};
 	        }
-            if (outSource.DataSourceGuid == Guid.Empty)
-	            outSource.DataSourceGuid = queryDef.Entity.EntityGuid;
+            if (outSource.Guid == Guid.Empty)
+	            outSource.Guid = queryDef.Entity.EntityGuid;
 
 	        #endregion
 
@@ -133,9 +133,11 @@ namespace ToSic.Eav.DataSources.Queries
                 // Check type because we renamed the DLL with the parts, and sometimes the old dll-name had been saved
                 var assemblyAndType = dataQueryPart.DataSourceType;
 
-	            var dataSource = DataSource.GetDataSource(assemblyAndType, /*null,*/ DataSource.GetIdentity(null, queryDef.AppId),
+                var appIdentity = Factory.GetAppIdentity(null, queryDef.AppId);
+                var dataSource = DataSource.GetDataSource(assemblyAndType, /*null,*/ 
+                    appIdentity,//DataSource.GetIdentity(null, queryDef.AppId),
 	                configLookUp: partConfig, parentLog: Log);
-	            dataSource.DataSourceGuid = dataQueryPart.Guid;
+	            dataSource.Guid = dataQueryPart.Guid;
 
 	            Log.Add($"add '{assemblyAndType}' as " +
 	                    $"part#{dataQueryPart.Id}({dataQueryPart.Guid.ToString().Substring(0, 6)}...)");

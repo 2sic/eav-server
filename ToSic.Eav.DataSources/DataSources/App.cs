@@ -96,7 +96,7 @@ namespace ToSic.Eav.DataSources
 			ConfigMask(AppSwitchKey, "[Settings:" + AppSwitchKey + "||0]");
 			ConfigMask(ZoneSwitchKey, "[Settings:" + ZoneSwitchKey + "||0]");
 
-            TempUsesDynamicOut = true;
+            OutIsDynamic = true;
         }
 
 		/// <summary>
@@ -111,7 +111,7 @@ namespace ToSic.Eav.DataSources
 		    if (AppSwitch != 0)
 				AppId = AppSwitch;
 
-		    var newDs = DataSource.GetInitialDataSource(/*ZoneId, AppId*/this, configProvider: ConfigurationProvider);
+		    var newDs = DataSource.GetPublishing(/*ZoneId, AppId*/this, configProvider: ConfigurationProvider);
 		    if (In.ContainsKey(Constants.DefaultStreamName))
 		        In.Remove(Constants.DefaultStreamName);
 			In.Add(Constants.DefaultStreamName, newDs[Constants.DefaultStreamName]);
@@ -149,7 +149,7 @@ namespace ToSic.Eav.DataSources
 		        {
 		            var ds = DataSource.GetDataSource<EntityTypeFilter>(/*ZoneId, AppId*/this, upstreamDataSource, ConfigurationProvider, parentLog:Log);
 		            ds.TypeName = typeName;
-		            ds.DataSourceGuid = DataSourceGuid; // tell the inner source that it has the same ID as this one, as we're pretending it's the same source
+		            ds.Guid = Guid; // tell the inner source that it has the same ID as this one, as we're pretending it's the same source
 
 		            if (typeName != Constants.DefaultStreamName)
 		                ds.AddNamedStream(typeName);

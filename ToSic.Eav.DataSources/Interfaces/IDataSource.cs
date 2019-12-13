@@ -22,7 +22,7 @@ namespace ToSic.Eav.DataSources
         /// Internal ID usually from persisted configurations IF the configuration was build from an pre-stored query.
         /// </summary>
         /// <returns>The guid of this data source which identifies the configuration <see cref="IEntity"/> of the data source.</returns>
-        Guid DataSourceGuid { get; set; }
+        Guid Guid { get; set; }
 
 		/// <summary>
 		/// Gets the Dictionary of Out-Streams. This is the internal accessor, as usually you'll use this["name"] instead. <br/>
@@ -79,11 +79,12 @@ namespace ToSic.Eav.DataSources
 	    #endregion
 
 	    #region Internals (Ready, DistanceFromSource)
-	    /// <summary>
-	    /// Indicates whether the DataSource is ready for use (initialized/configured)
-		/// </summary>
-		/// <returns>True if ready, false if not. Rarely used.</returns>
-        bool Ready { get; }
+        // 2019-12-13 disabled, not actually in use!
+	 //   /// <summary>
+	 //   /// Indicates whether the DataSource is ready for use (initialized/configured)
+		///// </summary>
+		///// <returns>True if ready, false if not. Rarely used.</returns>
+  //      bool Ready { get; }
 
 		/// <summary>
 		/// Name of this DataSource - not usually relevant.
@@ -107,8 +108,13 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         List<string> CacheRelevantConfigurations { get; set; }
 
+        /// <summary>
+        /// Tell the system that out is dynamic and doesn't have a fixed list of streams.
+        /// Used by App-Data sources and similar.
+        /// Important for the global information system, so it doesn't try to query that. 
+        /// </summary>
         [PrivateApi]
-        bool TempUsesDynamicOut { get; }
+        bool OutIsDynamic { get; }
         #endregion
     }
 

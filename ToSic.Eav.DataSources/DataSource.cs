@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Logging;
@@ -15,9 +13,7 @@ namespace ToSic.Eav
 	public class DataSource
 	{
 	    private const string LogKey = "DS.Factry";
-        
-        //private static void Log(ILog log, string method, string message) 
-        //    => log?.Add($"{LogKey}:{method}()'{message}'");
+        private static readonly string RootDataSource = typeof(IAppRoot).AssemblyQualifiedName;
 
         /// <summary>
         /// Get DataSource for specified sourceName/Type
@@ -35,14 +31,15 @@ namespace ToSic.Eav
                 .Call(nameof(GetDataSource), $"with name {sourceName}");
 		    // try to find with assembly name, or otherwise with GlobalName / previous names
             var type = Type.GetType(sourceName) 
-                ?? FindInDsTypeCache(sourceName)?.Type;
+                ?? Catalog.FindInDsTypeCache(sourceName)?.Type;
 
 		    // still not found? must show error
 			if (type == null)
 			    throw new Exception("DataSource not installed on Server: " + sourceName);
+            var result = GetDataSource(type, app, upstream, configLookUp, parentLog);
             wrapLog?.Invoke("ok");
-            return GetDataSource(type, app, upstream, configLookUp, parentLog);
-		}
+            return result;
+        }
 
 
         /// <summary>
@@ -69,19 +66,6 @@ namespace ToSic.Eav
             wrapLog?.Invoke("ok");
             return newDs;
 	    }
-
-	    /// <summary>
-	    /// Get DataSource for specified sourceName/Type using Unity.
-	    /// </summary>
-	    /// <param name="zoneId">ZoneId for this DataSource</param>
-	    /// <param name="appId">AppId for this DataSource</param>
-	    /// <param name="upstream">In-Connection</param>
-	    /// <param name="configLookUp">Provides configuration values if needed</param>
-	    /// <param name="parentLog"></param>
-	    /// <returns>A single DataSource</returns>
-	  //  public static T GetDataSource<T>(int? zoneId = null, int? appId = null, IDataSource upstream = null,
-			//ILookUpEngine configLookUp = null, ILog parentLog = null) where T: IDataSource =>
-   //         GetDataSource<T>(GetIdentity(zoneId, appId), upstream, configLookUp, parentLog);
 
         public static T GetDataSource<T>(
             IDataSource upstream, 
@@ -152,92 +136,52 @@ namespace ToSic.Eav
             wrapLog?.Invoke("ok");
         }
 
-        private static readonly string RootDataSource = typeof(IAppRoot).AssemblyQualifiedName;
 
-	    /// <summary>
-	    /// Gets a DataSource with Query having PublishingFilter, ICache and IRootSource.
-	    /// </summary>
-	    /// <param name="zoneId">ZoneId for this DataSource</param>
-	    /// <param name="appId">AppId for this DataSource</param>
-	    /// <param name="showDrafts">Indicates whether Draft Entities should be returned</param>
-	    /// <param name="configProvider"></param>
-	    /// <param name="parentLog"></param>
-	    /// <returns>A single DataSource</returns>
-	    public static IDataSource GetInitialDataSource(IAppIdentity app, /*int? zoneId = null, int? appId = null,*/ 
+        /// <summary>
+        /// Gets a DataSource with Query having PublishingFilter, ICache and IRootSource.
+        /// </summary>
+        /// <param name="app"></param>
+        /// <param name="showDrafts">Indicates whether Draft Entities should be returned</param>
+        /// <param name="configProvider"></param>
+        /// <param name="parentLog"></param>
+        /// <returns>A single DataSource</returns>
+        public static IDataSource GetPublishing(
+            IAppIdentity app, 
             bool showDrafts = false, 
             ILookUpEngine configProvider = null, 
             ILog parentLog = null)
 	    {
             var wrapLog = parentLog?
                 .AddChild(LogKey)
-                .Call(nameof(GetInitialDataSource), $"#{app.ZoneId}/{app.AppId}, draft:{showDrafts}, config:{configProvider != null}");
-
-            var appIdentity = app;//GetIdentity(zoneId, appId);
+                .Call(nameof(GetPublishing), $"#{app.ZoneId}/{app.AppId}, draft:{showDrafts}, config:{configProvider != null}");
 
 			configProvider = configProvider ?? new LookUpEngine();
 
-            var dataSource = GetDataSource(RootDataSource, appIdentity, null, configProvider, parentLog);
+            var dataSource = GetDataSource(RootDataSource, app, null, configProvider, parentLog);
 
-			var publishingFilter = GetDataSource<PublishingFilter>(appIdentity/*.ZoneId, appIdentity.AppId*/, dataSource, configProvider, parentLog);
+			var publishingFilter = GetDataSource<PublishingFilter>(app, dataSource, configProvider, parentLog);
 			publishingFilter.ShowDrafts = showDrafts;
 
             wrapLog?.Invoke("ok");
             return publishingFilter;
 		}
 
-		/// <summary>
-		/// Resolve and validate ZoneId and AppId for specified ZoneId and/or AppId (if any)
-		/// </summary>
-		/// <returns>Item1 = ZoneId, Item2 = AppId</returns>
-		public static IAppIdentity  GetIdentity(int? zoneId, int? appId) =>
-            zoneId != null && appId != null
-                ? new AppIdentity(zoneId.Value, appId.Value)
-                : Factory.GetAppsCache().GetIdentity(zoneId, appId);
+		///// <summary>
+		///// Resolve and validate ZoneId and AppId for specified ZoneId and/or AppId (if any)
+		///// </summary>
+		///// <returns>Item1 = ZoneId, Item2 = AppId</returns>
+		//public static IAppIdentity  GetIdentity(int? zoneId, int? appId) =>
+  //          zoneId != null && appId != null
+  //              ? new AppIdentity(zoneId.Value, appId.Value)
+  //              : Factory.GetAppsCache().GetIdentity(zoneId, appId);
 
 
         /// <summary>
         /// Get a new ICache DataSource
         /// </summary>
         /// <returns>A new IRootCache</returns>
-        public static IAppRoot GetCache(IAppIdentity appIdentity, ILog parentLog = null) 
+        public static IAppRoot GetRootDs(IAppIdentity appIdentity, ILog parentLog = null) 
             => (IAppRoot)GetDataSource(RootDataSource, appIdentity, parentLog:parentLog);
-
-
-	 //   /// <summary>
-		///// Get DataSource having common MetaData, like Field MetaData
-		///// </summary>
-		///// <returns>IMetaDataSource (from ICache)</returns>
-		//public static IMetadataSource GetMetaDataSource(int? zoneId = null, int? appId = null)
-		//{
-		//	var zoneAppId = GetIdentity(zoneId, appId);
-		//	return /*(IMetadataSource)*/GetCache(zoneAppId);
-		//}
-
-
-        private static DataSourceInfo FindInDsTypeCache(string name)
-	        => DsTypeCache
-	               .FirstOrDefault(dst => string.Equals(dst.GlobalName, name, StringComparison.InvariantCultureIgnoreCase))
-	           ?? DsTypeCache
-	               .FirstOrDefault(dst => dst.VisualQuery?
-	                                          .PreviousNames.Any(pn => string.Equals(pn, name,
-	                                              StringComparison.InvariantCultureIgnoreCase)) ?? false);
-
-	    /// <summary>
-	    /// Get all Installed DataSources
-	    /// </summary>
-	    /// <remarks>Objects that implement IDataSource</remarks>
-	    internal static IEnumerable<DataSourceInfo> GetInstalledDataSources(bool onlyForVisualQuery)
-	        => onlyForVisualQuery
-	            ? DsTypeCache.Where(dsi => !string.IsNullOrEmpty(dsi.VisualQuery?.GlobalName))
-	            : DsTypeCache;
-
-        /// <summary>
-        /// A cache of all DataSource Types
-        /// </summary>
-	    private static List<DataSourceInfo> DsTypeCache { get; } = Plumbing.AssemblyHandling
-	        .FindInherited(typeof(IDataSource))
-	        .Select(t => new DataSourceInfo(t)).ToList();
-
-	}
+    }
 
 }

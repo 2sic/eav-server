@@ -94,7 +94,7 @@ namespace ToSic.Eav.DataSources.Caching
 			Configuration.Add(CacheDurationInSecondsKey, "[Settings:" + CacheDurationInSecondsKey + "||0]"); // 0 is default, meaning don't use custom value, use system value of 1 day
 		    Configuration.Add(ReturnCacheWhileRefreshingKey, "False");
 
-            TempUsesDynamicOut = true;
+            OutIsDynamic = true;
         }
 
 		/// <summary>

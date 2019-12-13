@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSources.System.Types;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -68,10 +69,12 @@ namespace ToSic.Eav.DataSources.System
 	        EnsureConfigurationIsLoaded();
 
 	        return _query?.Out.OrderBy(stream => stream.Key).Select(stream
-                => AsEntity(new Dictionary<string, object>
+                => /*AsEntity*/Build.Entity(new Dictionary<string, object>
                            {
                                {StreamsType.Name.ToString(), stream.Key}
-                           }, StreamsType.Name.ToString(), QueryStreamsContentType)
+                           }, 
+                    titleField: StreamsType.Name.ToString(), 
+                    typeName:QueryStreamsContentType)
                        //=> new Data.Entity(AppId, 0, QueryStreamsContentType,
                        //    new Dictionary<string, object>
                        //    {

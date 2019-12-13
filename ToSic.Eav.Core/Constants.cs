@@ -193,7 +193,7 @@ namespace ToSic.Eav
 
         public const string DynamicType = "dynamic";
 
-        public const int TransientAppId = -9999;
+        public const int TransientAppId = -9999999;
         public const int SystemContentTypeFakeParent = -9203503; // just a very strange, dummy number
 
         #region Parameter protection

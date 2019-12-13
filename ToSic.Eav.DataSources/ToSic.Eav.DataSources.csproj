@@ -84,12 +84,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Caching\CacheKey.cs" />
+    <Compile Include="Catalog\Catalog.cs" />
     <Compile Include="Compatibility\ToSic.Eav.DataSources.SqlDataSource.cs" />
     <Compile Include="Compatibility\ToSic.Eav.DataSources.DataTableDataSource.cs" />
     <Compile Include="Compatibility\ToSic.Eav.DataSources.ExternalDataDataSource.cs" />
     <Compile Include="Compatibility\ToSic.Eav.DataSources.BaseDataSource.cs" />
     <Compile Include="DataSourceInfo.cs" />
     <Compile Include="DataSources\App.cs" />
+    <Compile Include="DataSources\Configuration\Configuration.cs" />
     <Compile Include="DataSources\QueryRun.cs" />
     <Compile Include="DataSources\Values\AttributeFilter.cs" />
     <Compile Include="Caching\ICanPurgeListCache.cs" />

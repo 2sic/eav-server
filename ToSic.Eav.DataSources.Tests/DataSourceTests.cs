@@ -16,7 +16,7 @@ namespace ToSic.Eav.DataSources.Tests
         [TestMethod]
         public void AutoFindAllDataSources()
         {
-            var dsList = DataSource.GetInstalledDataSources(false);
+            var dsList = Catalog.GetAll(false);
             Assert.AreEqual(StandardInstalledDSCount, dsList.Count(), "expect a correct number of DSs");
 
             var hasSqlDs = dsList.FirstOrDefault(c => c.Type.FullName == SqlFullName);
@@ -26,7 +26,7 @@ namespace ToSic.Eav.DataSources.Tests
         [TestMethod]
         public void AutoFindPipelineDataSources()
         {
-            var dsList = DataSource.GetInstalledDataSources(true);
+            var dsList = Catalog.GetAll(true);
             Assert.AreEqual(StandardInstalledPipeLineDS, dsList.Count(), "expect a correct number of DSs");
 
             var hasSqlDs = dsList.FirstOrDefault(c => c.Type.FullName == SqlFullName);

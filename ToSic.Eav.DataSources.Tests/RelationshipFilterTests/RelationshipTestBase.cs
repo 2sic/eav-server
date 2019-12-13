@@ -93,7 +93,7 @@ namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
 
         protected RelationshipFilter BuildRelationshipFilter(int zone, int app, string primaryType, ILookUpEngine config = null)
         {
-            var baseDs = DataSource.GetInitialDataSource(new AppIdentity(zone,app) /*zone, app*/, configProvider: config, parentLog: Log);
+            var baseDs = DataSource.GetPublishing(new AppIdentity(zone,app) /*zone, app*/, configProvider: config, parentLog: Log);
             var appDs = DataSource.GetDataSource<App>(baseDs, Log);
 
             // micro tests to ensure we have the right app etc.

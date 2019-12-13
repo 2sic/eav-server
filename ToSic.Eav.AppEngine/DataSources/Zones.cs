@@ -2,7 +2,7 @@
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.DataSources.Types;
-using ToSic.Eav.DataSources.Caching;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -72,8 +72,14 @@ namespace ToSic.Eav.DataSources
                     {ZoneType.AppCount.ToString(), zone.Apps.Count }
 	            };
 
-	            return AsEntity(znData, ZoneType.Name.ToString(), ZoneContentTypeName, zone.ZoneId);
-	        });
+                return Build.Entity(znData,
+                    appId: 0, 
+                    id:zone.ZoneId, 
+                    titleField: ZoneType.Name.ToString(), 
+                    typeName: ZoneContentTypeName);
+
+                //return AsEntity(znData, ZoneType.Name.ToString(), ZoneContentTypeName, zone.ZoneId);
+            });
 
             return list;
         }

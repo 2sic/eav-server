@@ -86,7 +86,12 @@ namespace ToSic.Eav.DataSources.System
 
             // if it didn't work yet, maybe try from stream items
 
-	        return list?.Select(attribData => AsEntity(attribData, AttributeType.Name.ToString(), AttribContentTypeName) // new Data.Entity(AppId, 0, AttribContentTypeName, attribData, AttributeType.Name.ToString())
+	        return list?.Select(attribData => 
+            Build.Entity(attribData,
+                titleField: AttributeType.Name.ToString(), 
+                typeName: AttribContentTypeName)
+                           //AsEntity(attribData, AttributeType.Name.ToString(), AttribContentTypeName)
+                       // new Data.Entity(AppId, 0, AttribContentTypeName, attribData, AttributeType.Name.ToString())
             ) 
                 ?? new List<IEntity>();
         }

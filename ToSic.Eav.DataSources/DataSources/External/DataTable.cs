@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -141,7 +142,13 @@ namespace ToSic.Eav.DataSources
 				var values = row.Table.Columns.Cast<DataColumn>().Where(c => c.ColumnName != entityIdField).ToDictionary(c => c.ColumnName, c => row.Field<object>(c.ColumnName));
                 values = new Dictionary<string, object>(values, StringComparer.OrdinalIgnoreCase); // recast to ensure case-insensitive
 			    var mod = string.IsNullOrEmpty(modifiedField) ? null : values[modifiedField] as DateTime?;
-			    var entity = AsEntity(values, titleField, contentType, entityId, modified: mod, appId: Constants.TransientAppId);
+                var entity = Build.Entity(values,
+                    titleField: titleField,
+                    typeName: contentType,
+                    id: entityId,
+                    modified: mod,
+                    appId: Constants.TransientAppId);
+			    //var entity = AsEntity(values, titleField, contentType, entityId, modified: mod, appId: Constants.TransientAppId);
 				result.Add(entity);
 			}
 			return result;
