@@ -102,7 +102,7 @@ namespace ToSic.Eav.DataSources
 
         private IEnumerable<IEntity> GetList()
         {
-            EnsureConfigurationIsLoaded();
+            ConfigurationParse();
 
             var entityList = new List<IEntity>();
 

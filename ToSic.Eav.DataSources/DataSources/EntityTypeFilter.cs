@@ -53,7 +53,7 @@ namespace ToSic.Eav.DataSources
 
 	    private IEnumerable<IEntity> GetList()
 	    {
-	        EnsureConfigurationIsLoaded();
+	        ConfigurationParse();
 	        Log.Add($"get list with type:{TypeName}");
 
 	        try

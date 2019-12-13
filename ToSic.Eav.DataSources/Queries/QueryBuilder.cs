@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
+using ToSic.Eav.DataSources.Configuration;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 
@@ -103,7 +104,7 @@ namespace ToSic.Eav.DataSources.Queries
             if (outSource == null)
 	        {
 	            var passThroughConfig = new LookUpEngine(templateConfig);
-	            outSource = new PassThrough {ConfigurationProvider = passThroughConfig};
+                outSource = new PassThrough().Init(passThroughConfig);// {ConfigurationProvider = passThroughConfig};
 	        }
             if (outSource.Guid == Guid.Empty)
 	            outSource.Guid = queryDef.Entity.EntityGuid;

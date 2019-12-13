@@ -66,7 +66,7 @@ namespace ToSic.Eav.DataSources.System
 
 	    private IEnumerable<IEntity> GetStreams()
 	    {
-	        EnsureConfigurationIsLoaded();
+	        ConfigurationParse();
 
 	        return _query?.Out.OrderBy(stream => stream.Key).Select(stream
                 => /*AsEntity*/Build.Entity(new Dictionary<string, object>
@@ -87,7 +87,7 @@ namespace ToSic.Eav.DataSources.System
 
 	    private IEnumerable<IEntity> GetAttributes()
 	    {
-            EnsureConfigurationIsLoaded();
+            ConfigurationParse();
 
             // no query can happen if the name was blank
             if(_query == null)
@@ -104,9 +104,9 @@ namespace ToSic.Eav.DataSources.System
 	        return attribInfo.List;
         }
 
-	    protected internal override void EnsureConfigurationIsLoaded()
+	    protected internal override void ConfigurationParse()
 	    {
-	        base.EnsureConfigurationIsLoaded();
+	        base.ConfigurationParse();
             BuildQuery();
 	    }
 
@@ -126,7 +126,7 @@ namespace ToSic.Eav.DataSources.System
             if (found == null) throw new Exception($"Can't build information about query - couldn't find query '{QueryName}'");
 
             _query = new QueryBuilder(Log).GetDataSourceForTesting(new QueryDefinition(found, AppId, Log), 
-                false, ConfigurationProvider);
+                false, Configuration.LookUps);
         }
 
 	    private IDataSource _query;

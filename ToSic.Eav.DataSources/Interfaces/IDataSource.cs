@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
 using ToSic.Eav.DataSources.Caching;
+using ToSic.Eav.DataSources.Configuration;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
@@ -48,15 +49,19 @@ namespace ToSic.Eav.DataSources
         [Obsolete("deprecated since 2sxc 9.8 / eav 4.5 - use List instead")]
         IEnumerable<IEntity> LightList { get; }
 
-        /// <summary>
-		/// Gets the ConfigurationProvider for this DataSource
-		/// </summary>
-        ILookUpEngine ConfigurationProvider { get; }
 
-		/// <summary>
-		/// Gets a Dictionary of Configurations for this DataSource, e.g. Key: EntityId, Value: [QueryString:EntityId]
-		/// </summary>
-		IDictionary<string, string> Configuration { get; }
+        [PrivateApi("wip")]
+        DataSourceConfiguration Configuration { get; }
+
+  //      /// <summary>
+		///// Gets the ConfigurationProvider for this DataSource
+		///// </summary>
+  //      ILookUpEngine ConfigurationProvider { get; }
+
+		///// <summary>
+		///// Gets a Dictionary of Configurations for this DataSource, e.g. Key: EntityId, Value: [QueryString:EntityId]
+		///// </summary>
+		//IDictionary<string, string> Configuration { get; }
 
         #endregion
 

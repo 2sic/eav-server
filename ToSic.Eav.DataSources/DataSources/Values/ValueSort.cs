@@ -75,7 +75,7 @@ namespace ToSic.Eav.DataSources
 			// todo: maybe do something about languages?
 			// todo: test datetime & decimal types
 
-			EnsureConfigurationIsLoaded();
+			ConfigurationParse();
 
 		    Log.Add("will apply value-sort");
 			var attr = Attributes.Split(',').Select(s => s.Trim()).ToArray();

@@ -55,7 +55,7 @@ namespace ToSic.Eav.DataSources.System
 
 	    private IEnumerable<IEntity> GetList()
 	    {
-            EnsureConfigurationIsLoaded();
+            ConfigurationParse();
 
 	        IContentType type;
             // try to load the content-type - if it fails, return empty list

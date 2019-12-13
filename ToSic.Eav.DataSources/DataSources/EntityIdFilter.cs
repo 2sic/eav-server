@@ -53,7 +53,7 @@ namespace ToSic.Eav.DataSources
 
 		private IEnumerable<IEntity> GetList()
 		{
-            EnsureConfigurationIsLoaded();
+            ConfigurationParse();
 
 		    var entityIds = _cleanedIds;
 
@@ -70,9 +70,9 @@ namespace ToSic.Eav.DataSources
 
         /// <inheritdoc/>
         [PrivateApi]
-        protected internal override void EnsureConfigurationIsLoaded()
+        protected internal override void ConfigurationParse()
         {
-            base.EnsureConfigurationIsLoaded();
+            base.ConfigurationParse();
 
             #region clean up list of IDs to remove all white-space etc.
             try

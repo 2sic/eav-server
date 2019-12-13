@@ -47,7 +47,7 @@ namespace ToSic.Eav.DataSources.Queries
 		    ZoneId = zoneId;
 		    AppId = appId;
             Definition = new QueryDefinition(queryDef, appId, Log);
-		    ConfigurationProvider = config;
+            Configuration.LookUps = config;
             _showDrafts = showDrafts;
             Log.LinkTo(parentLog, LogId);
         }
@@ -58,7 +58,7 @@ namespace ToSic.Eav.DataSources.Queries
 		private void CreateOutWithAllStreams()
         {
             var wrapLog = Log.Call(nameof(CreateOutWithAllStreams));
-		    var pipeline = QueryBuilder.GetAsDataSource(Definition, ConfigurationProvider, 
+		    var pipeline = QueryBuilder.GetAsDataSource(Definition, Configuration.LookUps, 
                 null, null, _showDrafts);
 		    _out = pipeline.Out;
             wrapLog("ok");

@@ -57,7 +57,7 @@ namespace ToSic.Eav.DataSources
         /// <returns></returns>
 		private IEnumerable<IEntity> GetList()
 		{
-			EnsureConfigurationIsLoaded();
+			ConfigurationParse();
 
 		    var attributeNames = AttributeNames.Split(',');
 		    attributeNames = (from a in attributeNames select a.Trim()).ToArray();
@@ -73,9 +73,9 @@ namespace ToSic.Eav.DataSources
 
         /// <inheritdoc />
         [PrivateApi]
-        protected internal override void EnsureConfigurationIsLoaded()
+        protected internal override void ConfigurationParse()
 	    {
-	        base.EnsureConfigurationIsLoaded();
+	        base.ConfigurationParse();
 
             var namesList = (from a in AttributeNames.Split(',') select a.Trim()).ToArray();
             AttributeNames = string.Join(",", namesList.ToArray());

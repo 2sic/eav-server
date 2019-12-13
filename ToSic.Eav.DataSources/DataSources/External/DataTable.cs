@@ -116,7 +116,7 @@ namespace ToSic.Eav.DataSources
 
 		private IEnumerable<IEntity> GetEntities()
 		{
-			EnsureConfigurationIsLoaded();
+			ConfigurationParse();
 
 		    Log.Add($"get type:{ContentType}, id:{EntityIdField}, title:{TitleField}, modified:{ModifiedField}");
             var result = ConvertToEntityDictionary(Source, ContentType, EntityIdField, TitleField, ModifiedField);

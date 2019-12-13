@@ -78,7 +78,7 @@ namespace ToSic.Eav.DataSources
 
 	    private IEnumerable<IEntity> GetList()
 	    {
-            EnsureConfigurationIsLoaded();
+            ConfigurationParse();
 
 	        var appId = OfAppId;
 

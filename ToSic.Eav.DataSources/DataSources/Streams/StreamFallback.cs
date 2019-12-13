@@ -50,7 +50,7 @@ namespace ToSic.Eav.DataSources
 
 	    private IDataStream FindIdealFallbackStream()
 	    {
-            EnsureConfigurationIsLoaded();
+            ConfigurationParse();
 
             // Check if there is a default-stream in with content - if yes, try to return that
 	        if (In.ContainsKey(Constants.DefaultStreamName) && In[Constants.DefaultStreamName].List.Any())

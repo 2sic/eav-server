@@ -90,9 +90,9 @@ namespace ToSic.Eav.DataSources.Caching
 			// this one is unusual, so don't pre-attach a default data stream
 
 			// Set default switch-keys to 0 = no switch
-            Configuration.Add(RefreshOnSourceRefreshKey, "[Settings:" + RefreshOnSourceRefreshKey + "||True]");
-			Configuration.Add(CacheDurationInSecondsKey, "[Settings:" + CacheDurationInSecondsKey + "||0]"); // 0 is default, meaning don't use custom value, use system value of 1 day
-		    Configuration.Add(ReturnCacheWhileRefreshingKey, "False");
+            Configuration.Values.Add(RefreshOnSourceRefreshKey, "[Settings:" + RefreshOnSourceRefreshKey + "||True]");
+			Configuration.Values.Add(CacheDurationInSecondsKey, "[Settings:" + CacheDurationInSecondsKey + "||0]"); // 0 is default, meaning don't use custom value, use system value of 1 day
+		    Configuration.Values.Add(ReturnCacheWhileRefreshingKey, "False");
 
             OutIsDynamic = true;
         }
@@ -102,7 +102,7 @@ namespace ToSic.Eav.DataSources.Caching
 		/// </summary>
 		private void CreateOutWithAllStreams()
 		{
-            EnsureConfigurationIsLoaded();
+            ConfigurationParse();
 
             //_Out.Clear();
 
@@ -126,7 +126,7 @@ namespace ToSic.Eav.DataSources.Caching
 	    private IDataStream AttachDeferredStreamToOut(string name)
         {
 
-            EnsureConfigurationIsLoaded();
+            ConfigurationParse();
 
 	        var outStream = new DataStream(this, name,  () => In[name].List, true);
 

@@ -65,7 +65,7 @@ namespace ToSic.Eav.DataSources
 
 	    private IEnumerable<IEntity> GetList()
 	    {
-            EnsureConfigurationIsLoaded();
+            ConfigurationParse();
 
             // try to load the content-type - if it fails, return empty list
 	        //var cache = (RootCacheBase)DataSource.GetCache(ZoneId, AppId);

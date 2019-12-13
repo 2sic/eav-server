@@ -16,7 +16,7 @@ namespace ToSic.Eav.DataSources.Debug
             {
                 Guid = ds.Guid;
                 Type = ds.GetType().Name;
-                Configuration = ds.Configuration;
+                Configuration = ds.Configuration.Values;
             }
             catch (Exception)
             {

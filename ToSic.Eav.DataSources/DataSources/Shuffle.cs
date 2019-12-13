@@ -60,7 +60,7 @@ namespace ToSic.Eav.DataSources
 
         private IEnumerable<IEntity> GetList()
 	    {
-	        EnsureConfigurationIsLoaded();
+	        ConfigurationParse();
 
 	        Log.Add($"will shuffle and take:{Take}");
             return ShuffleInternal(In["Default"].List, Take, Log);

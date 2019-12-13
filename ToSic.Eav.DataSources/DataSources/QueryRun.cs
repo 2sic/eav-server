@@ -51,12 +51,13 @@ namespace ToSic.Eav.DataSources
         private IDictionary<string, IDataStream> CreateOutWithAllStreams()
         {
             var wrapLog = Log.Call<IDictionary<string, IDataStream>>(nameof(CreateOutWithAllStreams));
-            EnsureConfigurationIsLoaded();
+            ConfigurationParse();
 
             var emptyResult = new Dictionary<string, IDataStream>(StringComparer.OrdinalIgnoreCase);
 
             // ensure we have a configuration
-            var metadataLookUp = !(ConfigurationProvider.Sources[QueryBuilder.ConfigKeyPartSettings] is LookUpInLookUps settingsLookUp)
+            var metadataLookUp = !(Configuration.LookUps.Sources[QueryBuilder.ConfigKeyPartSettings] 
+                is LookUpInLookUps settingsLookUp)
                 ? null
                 : settingsLookUp.Providers.FirstOrDefault(p => p is LookUpInMetadata) as LookUpInMetadata;
 
@@ -85,7 +86,7 @@ namespace ToSic.Eav.DataSources
             // Note: ShowDrafts is false - but actually it will work
             // because that would only create an additional data-source for drafts-info
             // which was already created previously when the ConfigurationProvider for this DS was made
-            var query = new Query(ZoneId, AppId, queryDef, ConfigurationProvider, false, Log);
+            var query = new Query(ZoneId, AppId, queryDef, Configuration.LookUps, false, Log);
 
             // add all params
             query.Params(runEntity.GetBestValue<string>(FieldParams));

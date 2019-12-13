@@ -107,7 +107,8 @@ namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
 
             Assert.IsTrue(stream.List.Count() > 0, "stream.List.Count() > 0");
 
-            var relFilt = DataSource.GetDataSource<RelationshipFilter>(new AppIdentity(0, 0), null, appDs.ConfigurationProvider, parentLog: Log);
+            var relFilt = DataSource.GetDataSource<RelationshipFilter>(new AppIdentity(0, 0), null, 
+                appDs.Configuration.LookUps, parentLog: Log);
             relFilt.Attach(Constants.DefaultStreamName, stream);
             return relFilt;
         }

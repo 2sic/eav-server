@@ -25,13 +25,13 @@ namespace ToSic.Eav.DataSources.Caching
                     : DataSource.Name + "-NoGuid";
 
                 // Important to check configuration first - to ensure all tokens are resolved to the resulting parameters
-                DataSource.EnsureConfigurationIsLoaded();
+                DataSource.ConfigurationParse();
 
                 // note: whenever a item has filter-parameters, these should be part of the key as well...
 
                 return DataSource.CacheRelevantConfigurations
                     .Aggregate(key, (current, configName) => 
-                        current + "&" + configName + "=" + DataSource.Configuration[configName]);
+                        current + "&" + configName + "=" + DataSource.Configuration.Values[configName]);
             }
         }
 

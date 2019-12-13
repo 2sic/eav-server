@@ -69,7 +69,7 @@ namespace ToSic.Eav.DataSources
 		{
 			get
 			{
-                EnsureConfigurationIsLoaded();
+                ConfigurationParse();
 				if (_requiresRebuildOfOut)
 				{
 					// if the rebuilt is required because the app or zone are not default, then attach it first
@@ -111,7 +111,8 @@ namespace ToSic.Eav.DataSources
 		    if (AppSwitch != 0)
 				AppId = AppSwitch;
 
-		    var newDs = DataSource.GetPublishing(/*ZoneId, AppId*/this, configProvider: ConfigurationProvider);
+		    var newDs = DataSource.GetPublishing(/*ZoneId, AppId*/this, 
+                configProvider: Configuration.LookUps);
 		    if (In.ContainsKey(Constants.DefaultStreamName))
 		        In.Remove(Constants.DefaultStreamName);
 			In.Add(Constants.DefaultStreamName, newDs[Constants.DefaultStreamName]);
@@ -147,7 +148,8 @@ namespace ToSic.Eav.DataSources
 		        var typeName = contentType.Name;
 		        if (typeName != Constants.DefaultStreamName && !typeName.StartsWith("@") && !_out.ContainsKey(typeName))
 		        {
-		            var ds = DataSource.GetDataSource<EntityTypeFilter>(/*ZoneId, AppId*/this, upstreamDataSource, ConfigurationProvider, parentLog:Log);
+		            var ds = DataSource.GetDataSource<EntityTypeFilter>(/*ZoneId, AppId*/this, upstreamDataSource,
+                        Configuration.LookUps, parentLog:Log);
 		            ds.TypeName = typeName;
 		            ds.Guid = Guid; // tell the inner source that it has the same ID as this one, as we're pretending it's the same source
 

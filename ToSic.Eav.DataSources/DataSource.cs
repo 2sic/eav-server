@@ -70,7 +70,7 @@ namespace ToSic.Eav
         public static T GetDataSource<T>(
             IDataSource upstream, 
             ILog parentLog = null) where T : IDataSource 
-            => GetDataSource<T>(upstream, upstream, upstream.ConfigurationProvider, parentLog);
+            => GetDataSource<T>(upstream, upstream, upstream.Configuration.LookUps, parentLog);
 
 
         public static T GetDataSource<T>(
@@ -89,7 +89,7 @@ namespace ToSic.Eav
                     "Trying to GetDataSource<T> but cannot do so if both upstream and ConfigurationProvider are null.");
 
             var newDs = (DataSourceBase) Factory.Resolve(typeof(T));
-            ConfigureNewDataSource(newDs, appIdentity, upstream, configLookUp ?? upstream.ConfigurationProvider, parentLog);
+            ConfigureNewDataSource(newDs, appIdentity, upstream, configLookUp ?? upstream.Configuration.LookUps, parentLog);
             wrapLog?.Invoke("ok");
             return (T) Convert.ChangeType(newDs, typeof(T));
         }
@@ -129,7 +129,7 @@ namespace ToSic.Eav
 			if (upstream != null)
 				((IDataTarget)newDs).Attach(upstream);
 			if (configLookUp != null)
-				newDs.ConfigurationProvider = configLookUp;
+				newDs.Configuration.LookUps = configLookUp;
 
             if (parentLog != null) 
                 newDs.InitLog(newDs.LogId, parentLog);

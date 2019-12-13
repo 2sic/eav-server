@@ -4,7 +4,6 @@ using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.DataSources.Configuration;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
-using ToSic.Eav.LookUp;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -37,7 +36,7 @@ namespace ToSic.Eav.DataSources
         [PrivateApi]
         protected void ConfigMask(string key, string mask, bool cacheRelevant = true)
         {
-            Configuration.Add(key, mask);
+            Configuration.Values.Add(key, mask);
             if (cacheRelevant)
                 CacheRelevantConfigurations.Add(key);
         }
@@ -91,17 +90,9 @@ namespace ToSic.Eav.DataSources
         [Obsolete("deprecated since 2sxc 9.8 / eav 4.5 - use List")]
         public IEnumerable<IEntity> LightList => List;
 
-        public DataSourceConfiguration ConfigTemp => _config ?? (_config = new DataSourceConfiguration(this));
+        public DataSourceConfiguration Configuration => _config ?? (_config = new DataSourceConfiguration(this));
         private DataSourceConfiguration _config;
 
-        /// <inheritdoc />
-        public ILookUpEngine ConfigurationProvider { get; protected internal set; }
-
-        /// <inheritdoc />
-        public IDictionary<string, string> Configuration { get; internal set; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-        [PrivateApi]
-        protected internal bool ConfigurationIsLoaded;
 
 
         /// <summary>
@@ -109,19 +100,20 @@ namespace ToSic.Eav.DataSources
         /// but do it only once (for performance reasons)
         /// </summary>
         [PrivateApi]
-		protected internal virtual void EnsureConfigurationIsLoaded()
+		protected internal virtual void ConfigurationParse()
         {
-            if (ConfigurationIsLoaded)
-                return;
+            Configuration.Parse();
+            //if (ConfigurationIsLoaded)
+            //    return;
 
-            // Ensure that we have a configuration-provider (not always the case, but required)
-            if (ConfigurationProvider == null)
-                throw new Exception($"No ConfigurationProvider configured on this data-source. Cannot run {nameof(EnsureConfigurationIsLoaded)}");
+            //// Ensure that we have a configuration-provider (not always the case, but required)
+            //if (ConfigurationProvider == null)
+            //    throw new Exception($"No ConfigurationProvider configured on this data-source. Cannot run {nameof(EnsureConfigurationIsLoaded)}");
 
-            // construct a property access for in, use it in the config provider
-            var instancePAs = new Dictionary<string, ILookUp> { { "In".ToLower(), new LookUpInDataTarget(this) } };
-            Configuration = ConfigurationProvider.LookUp(Configuration, instancePAs);
-            ConfigurationIsLoaded = true;
+            //// construct a property access for in, use it in the config provider
+            //var instancePAs = new Dictionary<string, ILookUp> { { "In".ToLower(), new LookUpInDataTarget(this) } };
+            //Configuration = ConfigurationProvider.LookUp(Configuration, instancePAs);
+            //ConfigurationIsLoaded = true;
         }
 
         #region various Attach-In commands
@@ -183,6 +175,17 @@ namespace ToSic.Eav.DataSources
         //public virtual bool Ready => In[Constants.DefaultStreamName].Source != null 
         //                             && In[Constants.DefaultStreamName].Source.Ready;
 
+        ///// <inheritdoc />
+        //protected ILookUpEngine ConfigurationProvider { get; set; }
+
+        /// <inheritdoc />
+        //protected IDictionary<string, string> Configuration => ConfigTemp.Values;
+        // { get; internal set; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        //[PrivateApi]
+        //protected internal bool ConfigurationIsLoaded;
+
+
         #region API to build items, in case this data source generates items
 
         //private const string UnspecifiedType = "unspecified";
@@ -207,7 +210,7 @@ namespace ToSic.Eav.DataSources
         //    DateTime? modified = null,
         //    int? appId = null)
         //    => Build.Entity(appId ?? AppId, id, values, titleField: titleField, typeName: typeName, guid: guid, modified: modified);
-            //=> new Data.Entity(appId ?? AppId, id, ContentTypeBuilder.Fake(typeName), values, titleField, modified, entityGuid: guid);
+        //=> new Data.Entity(appId ?? AppId, id, ContentTypeBuilder.Fake(typeName), values, titleField, modified, entityGuid: guid);
 
 
 

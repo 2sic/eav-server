@@ -165,7 +165,7 @@ namespace ToSic.Eav.DataSources
 		{
 			// todo: maybe do something about languages?
 
-			EnsureConfigurationIsLoaded();
+			ConfigurationParse();
 
 			var relationship = Relationship;
 			var compAttr = CompareAttribute;

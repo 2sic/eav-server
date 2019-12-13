@@ -115,7 +115,7 @@ namespace ToSic.Eav.DataSources
         private IEnumerable<IEntity> GetEntities()
 		{
 			// todo: maybe do something about languages?
-			EnsureConfigurationIsLoaded();
+			ConfigurationParse();
 
 		    Log.Add("applying value filter...");
 			_initializedAttrName = Attribute;

@@ -152,9 +152,9 @@ namespace ToSic.Eav.DataSources
         /// Replace original EnsureConfigurationIsLoaded to handle the SQL in a special way
         /// </summary>
         [PrivateApi]
-	    protected internal override void EnsureConfigurationIsLoaded()
+	    protected internal override void ConfigurationParse()
 	    {
-	        if (ConfigurationIsLoaded)
+	        if (Configuration.IsParsed)
 	            return;
 
             // Protect ourselves against SQL injection:
@@ -165,7 +165,7 @@ namespace ToSic.Eav.DataSources
             // Before we process the Select-Command, we must get it (by default it's just a token!)
 	        if (SelectCommand.StartsWith("[Settings"))
 	        {
-	            var tempList = ConfigurationProvider.LookUp(
+	            var tempList = Configuration.LookUps.LookUp(
                     new Dictionary<string, string> { { "one", SelectCommand } }, 
                     null, 0); // load, but make sure no recursions to prevent pre-filling parameters
 	            SelectCommand = tempList["one"];
@@ -187,7 +187,7 @@ namespace ToSic.Eav.DataSources
 
                     var paramName = "@" + ExtractedParamPrefix + (paramNumber++);
                     result.Append(paramName);
-                    Configuration.Add(paramName, curMatch.ToString());
+                    Configuration.Values.Add(paramName, curMatch.ToString());
 
                     // add name to list for caching-key
                     additionalParams.Add(paramName);
@@ -201,13 +201,13 @@ namespace ToSic.Eav.DataSources
             }
 	        CacheRelevantConfigurations = CacheRelevantConfigurations.Concat(additionalParams).ToList();
 
-	        base.EnsureConfigurationIsLoaded();
+	        base.ConfigurationParse();
 	    }
 
 
 	    private IEnumerable<IEntity> GetList()
 		{
-			EnsureConfigurationIsLoaded();
+			ConfigurationParse();
 
 		    Log.Add($"get from sql:{SelectCommand}");
 
@@ -242,7 +242,7 @@ namespace ToSic.Eav.DataSources
 				    var command = new SqlCommand(SelectCommand, connection, trans);
 
                     // Add all items in Configuration starting with an @, as this should be an SQL parameter
-				    foreach (var sqlParameter in Configuration.Where(k => k.Key.StartsWith("@"))) 
+				    foreach (var sqlParameter in Configuration.Values.Where(k => k.Key.StartsWith("@"))) 
 					    command.Parameters.AddWithValue(sqlParameter.Key, sqlParameter.Value);
 
 			        var reader = command.ExecuteReader();
