@@ -30,8 +30,7 @@ namespace ToSic.Eav
                 .AddChild(LogKey)
                 .Call(nameof(GetDataSource), $"with name {sourceName}");
 		    // try to find with assembly name, or otherwise with GlobalName / previous names
-            var type = Type.GetType(sourceName) 
-                ?? Catalog.FindInDsTypeCache(sourceName)?.Type;
+            var type = Catalog.FindType(sourceName);
 
 		    // still not found? must show error
 			if (type == null)

@@ -6,6 +6,31 @@ namespace ToSic.Eav.DataSources
 {
     internal class Catalog
     {
+        internal static string FindName(string name)
+        {
+            var type = FindType(name);
+            if (type == null) return name;
+            var longName = type.AssemblyQualifiedName;
+            //var segments = longName.Split(',');
+            //var keep = seg
+            var first = longName.IndexOf(',');
+            var second = longName.IndexOf(',', first + 2);
+            var newName = longName.Substring(0, second);// /*type.Namespace + ", " + */type.FullName;
+            return newName;
+        }
+
+        internal static Type FindType(string name)
+        {
+            // first try to just find the type, but check if it's marked [Obsolete]
+            var type = Type.GetType(name);
+            if (type != null && !type.GetCustomAttributes(typeof(ObsoleteAttribute), inherit: false).Any())
+                return type;
+
+            // if not found, or if obsolete, try to find another
+            var typeFromCatalog = FindInDsTypeCache(name)?.Type;
+            return typeFromCatalog ?? type;
+        }
+
         /// <summary>
         /// Find a DataSource which may have changed it's name. Will look in the cached names list.
         /// </summary>

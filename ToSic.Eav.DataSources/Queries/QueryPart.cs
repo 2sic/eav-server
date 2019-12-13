@@ -41,9 +41,16 @@ namespace ToSic.Eav.DataSources.Queries
         /// <param name="assemblyAndType"></param>
         /// <returns></returns>
         internal static string RewriteOldAssemblyNames(string assemblyAndType)
-            => assemblyAndType.EndsWith(Constants.V3To4DataSourceDllOld)
+        {
+            var newName = assemblyAndType.EndsWith(Constants.V3To4DataSourceDllOld)
                 ? assemblyAndType.Replace(Constants.V3To4DataSourceDllOld, Constants.V3To4DataSourceDllNew)
                 : assemblyAndType;
+
+            // find the new name in the catalog
+            return Catalog.FindName(newName);
+
+            //return newName;
+        }
 
 
         [PrivateApi]
