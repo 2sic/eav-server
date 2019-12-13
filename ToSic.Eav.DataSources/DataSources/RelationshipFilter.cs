@@ -163,11 +163,11 @@ namespace ToSic.Eav.DataSources
 
         private IEnumerable<IEntity> GetEntities()
 		{
-			// todo: maybe do something about languages?
+            // todo: maybe do something about languages?
 
-			ConfigurationParse();
+            Configuration.Parse();
 
-			var relationship = Relationship;
+            var relationship = Relationship;
 			var compAttr = CompareAttribute;
 			var filter = Filter.ToLower(); // new: make case insensitive
 			var strMode = CompareMode.ToLower();

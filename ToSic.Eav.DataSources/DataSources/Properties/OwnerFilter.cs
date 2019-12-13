@@ -49,7 +49,7 @@ namespace ToSic.Eav.DataSources
 
         private IEnumerable<IEntity> GetList()
         {
-            ConfigurationParse();
+            Configuration.Parse();
 
             Log.Add($"get for identity:{Identity}");
             if (string.IsNullOrWhiteSpace(Identity)) return new List<IEntity>();

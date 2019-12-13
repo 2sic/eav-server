@@ -51,7 +51,7 @@ namespace ToSic.Eav.DataSources
         private IDictionary<string, IDataStream> CreateOutWithAllStreams()
         {
             var wrapLog = Log.Call<IDictionary<string, IDataStream>>(nameof(CreateOutWithAllStreams));
-            ConfigurationParse();
+            Configuration.Parse();
 
             var emptyResult = new Dictionary<string, IDataStream>(StringComparer.OrdinalIgnoreCase);
 

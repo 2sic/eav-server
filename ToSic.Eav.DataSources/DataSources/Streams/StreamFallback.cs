@@ -50,10 +50,10 @@ namespace ToSic.Eav.DataSources
 
 	    private IDataStream FindIdealFallbackStream()
 	    {
-            ConfigurationParse();
+            Configuration.Parse();
 
             // Check if there is a default-stream in with content - if yes, try to return that
-	        if (In.ContainsKey(Constants.DefaultStreamName) && In[Constants.DefaultStreamName].List.Any())
+            if (In.ContainsKey(Constants.DefaultStreamName) && In[Constants.DefaultStreamName].List.Any())
 	        {
 	            Log.Add("found default, will return that");
 	            return In[Constants.DefaultStreamName];

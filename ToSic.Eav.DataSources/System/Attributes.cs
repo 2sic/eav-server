@@ -55,9 +55,9 @@ namespace ToSic.Eav.DataSources.System
 
 	    private IEnumerable<IEntity> GetList()
 	    {
-            ConfigurationParse();
+            Configuration.Parse();
 
-	        IContentType type;
+            IContentType type;
             // try to load the content-type - if it fails, return empty list
 	        if (string.IsNullOrWhiteSpace(ContentTypeName)) return new List<IEntity>();
 

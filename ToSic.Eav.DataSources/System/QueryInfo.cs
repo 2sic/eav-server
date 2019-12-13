@@ -66,9 +66,9 @@ namespace ToSic.Eav.DataSources.System
 
 	    private IEnumerable<IEntity> GetStreams()
 	    {
-	        ConfigurationParse();
+            CustomConfigurationParse();
 
-	        return _query?.Out.OrderBy(stream => stream.Key).Select(stream
+            return _query?.Out.OrderBy(stream => stream.Key).Select(stream
                 => /*AsEntity*/Build.Entity(new Dictionary<string, object>
                            {
                                {StreamsType.Name.ToString(), stream.Key}
@@ -87,10 +87,10 @@ namespace ToSic.Eav.DataSources.System
 
 	    private IEnumerable<IEntity> GetAttributes()
 	    {
-            ConfigurationParse();
+            CustomConfigurationParse();
 
             // no query can happen if the name was blank
-            if(_query == null)
+            if (_query == null)
                 return new List<IEntity>();
 
             // check that _query has the stream name
@@ -104,9 +104,9 @@ namespace ToSic.Eav.DataSources.System
 	        return attribInfo.List;
         }
 
-	    protected internal override void ConfigurationParse()
+	    private void CustomConfigurationParse()
 	    {
-	        base.ConfigurationParse();
+            Configuration.Parse();
             BuildQuery();
 	    }
 

@@ -57,9 +57,9 @@ namespace ToSic.Eav.DataSources
         /// <returns></returns>
 		private IEnumerable<IEntity> GetList()
 		{
-			ConfigurationParse();
+            CustomConfigurationParse();
 
-		    var attributeNames = AttributeNames.Split(',');
+            var attributeNames = AttributeNames.Split(',');
 		    attributeNames = (from a in attributeNames select a.Trim()).ToArray();
 
 		    var result = In[Constants.DefaultStreamName].List
@@ -73,9 +73,9 @@ namespace ToSic.Eav.DataSources
 
         /// <inheritdoc />
         [PrivateApi]
-        protected internal override void ConfigurationParse()
+        private void CustomConfigurationParse()
 	    {
-	        base.ConfigurationParse();
+            Configuration.Parse();
 
             var namesList = (from a in AttributeNames.Split(',') select a.Trim()).ToArray();
             AttributeNames = string.Join(",", namesList.ToArray());

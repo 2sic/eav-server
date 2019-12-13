@@ -65,10 +65,10 @@ namespace ToSic.Eav.DataSources
 
 	    private IEnumerable<IEntity> GetList()
 	    {
-            ConfigurationParse();
+            Configuration.Parse();
 
             // try to load the content-type - if it fails, return empty list
-	        //var cache = (RootCacheBase)DataSource.GetCache(ZoneId, AppId);
+            //var cache = (RootCacheBase)DataSource.GetCache(ZoneId, AppId);
             var cache = Factory.GetAppsCache();
 	        if (!cache.Zones.ContainsKey(OfZoneId)) return new List<IEntity>();
 	        var zone = cache.Zones[OfZoneId];

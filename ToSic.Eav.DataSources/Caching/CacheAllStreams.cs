@@ -102,13 +102,13 @@ namespace ToSic.Eav.DataSources.Caching
 		/// </summary>
 		private void CreateOutWithAllStreams()
 		{
-            ConfigurationParse();
+            Configuration.Parse();
 
             //_Out.Clear();
 
             // attach all missing streams, now that Out is used the first time
             // note that some streams were already added because of the DeferredOut
-		    foreach (var dataStream in In.Where(s => !_Out.ContainsKey(s.Key)))
+            foreach (var dataStream in In.Where(s => !_Out.ContainsKey(s.Key)))
 		    {
 		        //var inStream = dataStream.Value as DataStream;
 		        AttachDeferredStreamToOut(dataStream.Key);
@@ -125,10 +125,9 @@ namespace ToSic.Eav.DataSources.Caching
 
 	    private IDataStream AttachDeferredStreamToOut(string name)
         {
+            Configuration.Parse();
 
-            ConfigurationParse();
-
-	        var outStream = new DataStream(this, name,  () => In[name].List, true);
+            var outStream = new DataStream(this, name,  () => In[name].List, true);
 
 	        // inStream.AutoCaching = true;
 	        if (CacheDurationInSeconds != 0) // only set if a value other than 0 (= default) was given

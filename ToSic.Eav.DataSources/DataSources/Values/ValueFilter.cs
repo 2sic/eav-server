@@ -114,10 +114,10 @@ namespace ToSic.Eav.DataSources
 
         private IEnumerable<IEntity> GetEntities()
 		{
-			// todo: maybe do something about languages?
-			ConfigurationParse();
+            // todo: maybe do something about languages?
+            Configuration.Parse();
 
-		    Log.Add("applying value filter...");
+            Log.Add("applying value filter...");
 			_initializedAttrName = Attribute;
 
             #region do language checks and finish initialization

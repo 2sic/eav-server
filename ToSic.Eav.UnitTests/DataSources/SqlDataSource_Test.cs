@@ -23,7 +23,7 @@ namespace ToSic.Eav.UnitTests
             var sql = GenerateSqlDataSource(ConnectionDummy, initQuery, ContentTypeName);
             var config = sql.Configuration.Values;
             var configCountBefore = config.Count;
-            sql.ConfigurationParse();
+            sql.Configuration.Parse(); 
 
             Assert.AreEqual(configCountBefore, config.Count);
             Assert.AreEqual(initQuery, sql.SelectCommand);
@@ -39,7 +39,7 @@ namespace ToSic.Eav.UnitTests
             var config = sql.Configuration.Values;
 
             var configCountBefore = config.Count;
-            sql.ConfigurationParse();
+            sql.Configuration.Parse();
 
             Assert.AreEqual(configCountBefore + 1, config.Count);
             Assert.AreEqual(expectedQuery, sql.SelectCommand);
@@ -61,7 +61,7 @@ And ProductSort = @" + Sql.ExtractedParamPrefix + @"3";
             var sql = GenerateSqlDataSource(ConnectionDummy, initQuery, ContentTypeName);
             var config = sql.Configuration.Values;
             var configCountBefore = config.Count;
-            sql.ConfigurationParse();
+            sql.Configuration.Parse();
 
             Assert.AreEqual(configCountBefore + 3, config.Count);
             Assert.AreEqual(expectedQuery, sql.SelectCommand);

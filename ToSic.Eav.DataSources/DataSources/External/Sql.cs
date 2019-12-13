@@ -152,7 +152,7 @@ namespace ToSic.Eav.DataSources
         /// Replace original EnsureConfigurationIsLoaded to handle the SQL in a special way
         /// </summary>
         [PrivateApi]
-	    protected internal override void ConfigurationParse()
+	    private void CustomConfigurationParse()
 	    {
 	        if (Configuration.IsParsed)
 	            return;
@@ -201,15 +201,15 @@ namespace ToSic.Eav.DataSources
             }
 	        CacheRelevantConfigurations = CacheRelevantConfigurations.Concat(additionalParams).ToList();
 
-	        base.ConfigurationParse();
-	    }
+            Configuration.Parse();
+        }
 
 
 	    private IEnumerable<IEntity> GetList()
 		{
-			ConfigurationParse();
+            CustomConfigurationParse();
 
-		    Log.Add($"get from sql:{SelectCommand}");
+            Log.Add($"get from sql:{SelectCommand}");
 
             // Check if SQL contains forbidden terms
             if(ForbiddenTermsInSelect.IsMatch(SelectCommand))

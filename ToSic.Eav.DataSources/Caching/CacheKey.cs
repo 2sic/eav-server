@@ -25,7 +25,7 @@ namespace ToSic.Eav.DataSources.Caching
                     : DataSource.Name + "-NoGuid";
 
                 // Important to check configuration first - to ensure all tokens are resolved to the resulting parameters
-                DataSource.ConfigurationParse();
+                DataSource.Configuration.Parse();
 
                 // note: whenever a item has filter-parameters, these should be part of the key as well...
 

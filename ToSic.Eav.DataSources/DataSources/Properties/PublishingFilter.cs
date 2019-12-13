@@ -50,8 +50,8 @@ namespace ToSic.Eav.DataSources
 
 	    private IEnumerable<IEntity> GetList()
 	    {
-	        ConfigurationParse();
-	        Log.Add($"get incl. draft:{ShowDrafts}");
+            Configuration.Parse();
+            Log.Add($"get incl. draft:{ShowDrafts}");
 	        var outStreamName = ShowDrafts 
                 ? Constants.DraftsStreamName 
                 : Constants.PublishedStreamName;

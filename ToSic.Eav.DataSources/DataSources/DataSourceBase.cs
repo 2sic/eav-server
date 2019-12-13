@@ -95,26 +95,7 @@ namespace ToSic.Eav.DataSources
 
 
 
-        /// <summary>
-        /// Make sure that configuration-parameters have been parsed (tokens resolved)
-        /// but do it only once (for performance reasons)
-        /// </summary>
-        [PrivateApi]
-		protected internal virtual void ConfigurationParse()
-        {
-            Configuration.Parse();
-            //if (ConfigurationIsLoaded)
-            //    return;
 
-            //// Ensure that we have a configuration-provider (not always the case, but required)
-            //if (ConfigurationProvider == null)
-            //    throw new Exception($"No ConfigurationProvider configured on this data-source. Cannot run {nameof(EnsureConfigurationIsLoaded)}");
-
-            //// construct a property access for in, use it in the config provider
-            //var instancePAs = new Dictionary<string, ILookUp> { { "In".ToLower(), new LookUpInDataTarget(this) } };
-            //Configuration = ConfigurationProvider.LookUp(Configuration, instancePAs);
-            //ConfigurationIsLoaded = true;
-        }
 
         #region various Attach-In commands
         /// <inheritdoc />
@@ -185,6 +166,26 @@ namespace ToSic.Eav.DataSources
         //[PrivateApi]
         //protected internal bool ConfigurationIsLoaded;
 
+        //      /// <summary>
+        //      /// Make sure that configuration-parameters have been parsed (tokens resolved)
+        //      /// but do it only once (for performance reasons)
+        //      /// </summary>
+        //      [PrivateApi]
+        //protected internal virtual void ConfigurationParse()
+        //      {
+        //          Configuration.Parse();
+        //          //if (ConfigurationIsLoaded)
+        //          //    return;
+
+        //          //// Ensure that we have a configuration-provider (not always the case, but required)
+        //          //if (ConfigurationProvider == null)
+        //          //    throw new Exception($"No ConfigurationProvider configured on this data-source. Cannot run {nameof(EnsureConfigurationIsLoaded)}");
+
+        //          //// construct a property access for in, use it in the config provider
+        //          //var instancePAs = new Dictionary<string, ILookUp> { { "In".ToLower(), new LookUpInDataTarget(this) } };
+        //          //Configuration = ConfigurationProvider.LookUp(Configuration, instancePAs);
+        //          //ConfigurationIsLoaded = true;
+        //      }
 
         #region API to build items, in case this data source generates items
 

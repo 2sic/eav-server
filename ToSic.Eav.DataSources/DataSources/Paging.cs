@@ -81,8 +81,8 @@ namespace ToSic.Eav.DataSources
 
 	    private IEnumerable<IEntity> GetList()
 	    {
-	        ConfigurationParse();
-		    var itemsToSkip = (PageNumber - 1)*PageSize;
+            Configuration.Parse();
+            var itemsToSkip = (PageNumber - 1)*PageSize;
 
 	        var result = In["Default"].List.Skip(itemsToSkip).Take(PageSize).ToList();
 	        Log.Add($"get page:{PageNumber} with size{PageSize} found:{result.Count}");
@@ -91,7 +91,7 @@ namespace ToSic.Eav.DataSources
 
         private IEnumerable<IEntity> GetPaging()
         {
-            ConfigurationParse();
+            Configuration.Parse();
 
             // Calculate any additional stuff
             var itemCount = In["Default"].List.Count();

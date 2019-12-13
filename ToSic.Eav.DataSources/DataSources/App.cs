@@ -69,8 +69,8 @@ namespace ToSic.Eav.DataSources
 		{
 			get
 			{
-                ConfigurationParse();
-				if (_requiresRebuildOfOut)
+                Configuration.Parse();
+                if (_requiresRebuildOfOut)
 				{
 					// if the rebuilt is required because the app or zone are not default, then attach it first
 					if (AppSwitch != 0 || ZoneSwitch != 0)

@@ -78,9 +78,9 @@ namespace ToSic.Eav.DataSources
 
 	    private IEnumerable<IEntity> GetList()
 	    {
-            ConfigurationParse();
+            Configuration.Parse();
 
-	        var appId = OfAppId;
+            var appId = OfAppId;
 
             var read = new AppRuntime(appId, Log);
 	        var scp = OfScope;

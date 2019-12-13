@@ -33,7 +33,7 @@ namespace ToSic.Eav.DataSources.Configuration
         /// but do it only once (for performance reasons)
         /// </summary>
         [PrivateApi]
-        protected internal virtual void Parse()
+        public void Parse()
         {
             if (IsParsed)
                 return;

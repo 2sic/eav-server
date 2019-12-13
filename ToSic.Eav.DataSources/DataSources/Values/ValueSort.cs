@@ -72,12 +72,12 @@ namespace ToSic.Eav.DataSources
 
 		private IEnumerable<IEntity> GetList()
 		{
-			// todo: maybe do something about languages?
-			// todo: test datetime & decimal types
+            // todo: maybe do something about languages?
+            // todo: test datetime & decimal types
 
-			ConfigurationParse();
+            Configuration.Parse();
 
-		    Log.Add("will apply value-sort");
+            Log.Add("will apply value-sort");
 			var attr = Attributes.Split(',').Select(s => s.Trim()).ToArray();
 			var directions = Directions.Split(',').Select(s => s.Trim()).ToArray();
 			var descendingCodes = new[] { "desc","d","0",">" };
