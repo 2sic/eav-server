@@ -35,7 +35,7 @@ namespace ToSic.Eav.Persistence.Efc
         private ImmutableList<IContentType> LoadContentTypesIntoLocalCache(int appId, 
             IHasMetadataSource source)
         {
-            var wrapLog = Log.Call(nameof(LoadContentTypesIntoLocalCache), useTimer: true);
+            var wrapLog = Log.Call(useTimer: true);
             // Load from DB
             var sqlTime = Stopwatch.StartNew();
             var query = _dbContext.ToSicEavAttributeSets

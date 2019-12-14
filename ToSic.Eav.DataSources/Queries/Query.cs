@@ -57,7 +57,7 @@ namespace ToSic.Eav.DataSources.Queries
 		/// </summary>
 		private void CreateOutWithAllStreams()
         {
-            var wrapLog = Log.Call(nameof(CreateOutWithAllStreams));
+            var wrapLog = Log.Call();
 		    var pipeline = QueryBuilder.GetAsDataSource(Definition, Configuration.LookUps, 
                 null, null, _showDrafts);
 		    _out = pipeline.Out;

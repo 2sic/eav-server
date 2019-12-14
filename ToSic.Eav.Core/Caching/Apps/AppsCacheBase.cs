@@ -132,7 +132,7 @@ namespace ToSic.Eav.Caching
         /// <inheritdoc />
         public virtual AppState Update(IAppIdentity app, IEnumerable<int> entities, ILog log)
         {
-            var wrapLog = log.Call($"{nameof(AppsCacheBase)}.{nameof(Update)}");
+            var wrapLog = log.Call();
             // if it's not cached yet, ignore the request as partial update won't be necessary
             if (!Has(app))
             {

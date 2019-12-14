@@ -71,11 +71,11 @@ namespace ToSic.Eav.DataSources.Queries
 	        #region prepare shared / global value providers
 
 	        overrideLookUps = overrideLookUps?.ToList();
-	        var wrapLog = Log.Call(nameof(GetAsDataSource), $"{queryDef.Id}, " +
-	                                                  $"hasProv:{lookUpEngineToClone != null}, " +
-	                                                  $"{overrideLookUps?.Count()}, " +
-	                                                  $"out:{outSource != null}, " +
-	                                                  $"drafts:{showDrafts}");
+	        var wrapLog = Log.Call($"{queryDef.Id}, " +
+                                            $"hasProv:{lookUpEngineToClone != null}, " +
+                                            $"{overrideLookUps?.Count()}, " +
+                                            $"out:{outSource != null}, " +
+                                            $"drafts:{showDrafts}");
 
 	        // the query settings which apply to the whole query
 	        var querySettingsLookUp = new LookUpInMetadata(ConfigKeyPipelineSettings, queryDef.Entity);
@@ -172,7 +172,7 @@ namespace ToSic.Eav.DataSources.Queries
 			// Init
             var wirings = queryDef.Connections;
 			var initializedWirings = new List<Connection>();
-		    var logWrap = Log.Call("InitWirings", $"count⋮{wirings.Count}");
+		    var logWrap = Log.Call($"count⋮{wirings.Count}");
 
 			// 1. wire Out-Streams of DataSources with no In-Streams
 			var dataSourcesWithNoInStreams = dataSources.Where(d => wirings.All(w => w.To != d.Key));

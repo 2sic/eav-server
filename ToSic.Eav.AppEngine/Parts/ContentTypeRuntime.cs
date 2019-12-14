@@ -42,7 +42,7 @@ namespace ToSic.Eav.Apps.Parts
         /// <returns></returns>
         public List<InputTypeInfo> GetInputTypes()
         {
-            var wraplog = Log.Call("GetInputTypes");
+            var wraplog = Log.Call();
             // Initial list is the global, file-system based types
             var globalDef = GetGlobalInputTypesBasedOnContentTypes();
             Log.Add($"in global {globalDef.Count}");

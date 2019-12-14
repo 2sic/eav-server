@@ -59,7 +59,7 @@ namespace ToSic.Eav.DataSources.Caching
         /// <returns></returns>
         private ListCacheItem GetValidCacheItemOrNull(IDataStream dataStream)
         {
-            var wrapLog = Log.Call(nameof(GetValidCacheItemOrNull));
+            var wrapLog = Log.Call();
             // Check if it's in the cache, and if it requires re-loading
             var key = CacheKey(dataStream);
             var itemInCache = Get(key);

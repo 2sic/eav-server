@@ -40,7 +40,7 @@ namespace ToSic.Eav.Persistence.Efc
 
         private void LoadEntities(AppState app, int[] entityIds = null)
         {
-            var wrapLog = Log.Call(nameof(LoadEntities), $"{app.AppId}, {entityIds?.Length ?? 0}", useTimer: true);
+            var wrapLog = Log.Call($"{app.AppId}, {entityIds?.Length ?? 0}", useTimer: true);
             
             var appId = app.AppId;
 

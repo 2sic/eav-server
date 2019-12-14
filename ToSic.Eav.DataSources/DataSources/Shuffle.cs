@@ -71,7 +71,7 @@ namespace ToSic.Eav.DataSources
 
         private static IEnumerable<T> ShuffleInternal<T>(IEnumerable<T> sequence, int take, ILog log)
         {
-            var wrapLog = log.Call("ShuffleInternal");
+            var wrapLog = log.Call();
             var retArray = sequence.ToArray();
             
             // check if there is actually any data

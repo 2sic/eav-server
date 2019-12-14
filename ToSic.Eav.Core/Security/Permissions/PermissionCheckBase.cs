@@ -21,7 +21,7 @@ namespace ToSic.Eav.Security
             {
                 // already constructed, use that
                 if (_permissionList != null) return _permissionList;
-                var logWrap = Log.Call("PermissionList");
+                var logWrap = Log.Call();
                 var partsToConsider = new[]
                 {
                     TargetItem?.Metadata.Permissions,
@@ -66,10 +66,10 @@ namespace ToSic.Eav.Security
         {
             var permList2 = permissions2 as IList<Permission> ?? permissions2?.ToList();
 
-            var wrapLog = Log.Call("PermissionCheckBase", $"type:{targetType?.StaticName}, " +
-                    $"itm:{targetItem?.EntityGuid} ({targetItem?.EntityId}), " +
-                    $"permList1: {permissions1?.Count()}, " +
-                    $"permList2: {permList2?.Count}");
+            var wrapLog = Log.Call($"type:{targetType?.StaticName}, " +
+                                            $"itm:{targetItem?.EntityGuid} ({targetItem?.EntityId}), " +
+                                            $"permList1: {permissions1?.Count()}, " +
+                                            $"permList2: {permList2?.Count}");
 
             TargetType = targetType;
             TargetItem = targetItem;
@@ -95,7 +95,7 @@ namespace ToSic.Eav.Security
 
         public bool UserMay(List<Grants> grants)
         {
-            var wrapLog = Log.Call("UserMay", () => $"[{string.Join(",", grants)}]");
+            var wrapLog = Log.Call(() => $"[{string.Join(",", grants)}]");
             GrantedBecause = Conditions.Undefined;
             var result = EnvironmentAllows(grants)
                    || DoesPermissionsListAllow(grants);
@@ -111,7 +111,7 @@ namespace ToSic.Eav.Security
         /// <returns></returns>
         private bool DoesPermissionsListAllow(List<Grants> grants)
         {
-            var wrapLog = Log.Call("DoesPermissionListAllow", () => $"[{string.Join(", ", grants)}]", () => $"for {PermissionList.Count()} permission items");
+            var wrapLog = Log.Call(() => $"[{string.Join(", ", grants)}]", () => $"for {PermissionList.Count()} permission items");
             var result = PermissionList.Any(
                 perm => DoesPermissionAllow(perm,
                     grants.Select(g => (char) g).ToArray()));
@@ -127,7 +127,7 @@ namespace ToSic.Eav.Security
         /// <returns></returns>
         private bool DoesPermissionAllow(Permission permissionEntity, char[] desiredActionCode)
         {
-            var wrapLog = Log.Call("DoesPermissionAllow", $"{new string(desiredActionCode)}");
+            var wrapLog = Log.Call($"{new string(desiredActionCode)}");
             // Check if it's a grant for the desired action - otherwise stop here
             var grnt = permissionEntity.Grant;// permissionEntity.GetBestValue(Permission.FieldGrant).ToString();
             // If Grant doesn't contain desired action, stop here

@@ -16,7 +16,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
 		private List<ContentType> GetImportContentTypes(IEnumerable<XElement> xmlContentTypes)
 		{
-            var wrap = Log.Call("GetImportContentTypes", "start");
+            var wrap = Log.Call("start");
             var list = xmlContentTypes.ToList();
             Log.Add($"items: {list.Count}");
 
@@ -38,7 +38,7 @@ namespace ToSic.Eav.Apps.ImportExport
 	    {
 	        var ctElement = xmlContentType.Element(XmlConstants.Attributes);
 	        var typeName = xmlContentType.Attribute(XmlConstants.Name).Value;
-	        var wrap = Log.Call("BuildContentTypeFromXml", typeName);
+	        var wrap = Log.Call(typeName);
 
 	        var attributes = new List<IContentTypeAttribute>();
             if (ctElement != null)

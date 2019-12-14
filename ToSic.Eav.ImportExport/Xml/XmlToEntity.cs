@@ -34,7 +34,7 @@ namespace ToSic.Eav.ImportExport.Xml
 
 	    private List<TargetLanguageToSourceLanguage> PrepareTargetToSourceLanguageMapping(List<DimensionDefinition> envLanguages, string envDefLang, List<DimensionDefinition> srcLanguages, int? srcDefLang)
 	    {
-	        var wrapLog = Log.Call("PrepareTargetToSourceLanguageMapping", $"Env has {envLanguages.Count} languages");
+	        var wrapLog = Log.Call($"Env has {envLanguages.Count} languages");
 	        List<TargetLanguageToSourceLanguage> result;
             // if the environment doesn't have languages defined, we'll create a temp-entry for the main language to allow mapping
             if (envLanguages.Any())
@@ -115,7 +115,7 @@ namespace ToSic.Eav.ImportExport.Xml
         /// <param name="metadataForFor"></param>
         public Entity BuildEntityFromXml(XElement xEntity, Metadata.Target metadataForFor)
         {
-            var wrap = Log.Call("BuildEntityFromXml");
+            var wrap = Log.Call();
 		    var finalAttributes = new Dictionary<string, IAttribute>();
 
 			// Group values by StaticName
@@ -131,7 +131,7 @@ namespace ToSic.Eav.ImportExport.Xml
 		    // Process each attribute (values grouped by StaticName)
             foreach (var sourceAttrib in valuesGroupedByStaticName)
             {
-                var wrapAttrib = Log.Call("attrib", $"{sourceAttrib.StaticName}");
+                var wrapAttrib = Log.Call($"{sourceAttrib.StaticName}");
 
 				var xmlValuesOfAttrib = sourceAttrib.Values;
 				var tempTargetValues = new List<ImportValue>();
@@ -206,7 +206,7 @@ namespace ToSic.Eav.ImportExport.Xml
 	    private void AddNodeToImportListOrEnhancePrevious(XElement sourceValueNode, List<ImportValue> tempTargetValues,
             TargetLanguageToSourceLanguage envLang, bool readOnly)
 	    {
-	        var wrapLog = Log.Call("AddNodeToImportListOrEnhancePrevious");
+	        var wrapLog = Log.Call();
 	        var logText = "";
 	        var dimensionsToAdd = new List<ILanguage>();
 	        if (_envLangs.Single(p => p.Matches(envLang.EnvironmentKey)).DimensionId > 0)
@@ -236,7 +236,7 @@ namespace ToSic.Eav.ImportExport.Xml
 
 	    private XElement GetFallbackAttributeInXml(List<XElement> xmlValuesOfAttrib)
 	    {
-	        var wrap = Log.Call("GetFallbackAttributeInXml");
+	        var wrap = Log.Call();
 	        // First, try to take a fallback node without language assignments
 	        //var dimensionNodes = xmlValuesOfAttrib.Elements(XmlConstants.ValueDimNode);
 	        var sourceValueNode = xmlValuesOfAttrib.FirstOrDefault(xv =>
@@ -270,7 +270,7 @@ namespace ToSic.Eav.ImportExport.Xml
 
 	    private Tuple<XElement, bool> FindAttribWithLanguageMatch(TargetLanguageToSourceLanguage envLang, List<XElement> xmlValuesOfAttrib)
 	    {
-	        var wrap = Log.Call("FindAttribWithLanguageMatch", envLang.EnvironmentKey);
+	        var wrap = Log.Call(envLang.EnvironmentKey);
 	        XElement sourceValueNode = null;
 	        var readOnly = false;
 

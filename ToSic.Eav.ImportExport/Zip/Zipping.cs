@@ -78,8 +78,7 @@ namespace ToSic.Eav.ImportExport.Zip
         /// </summary>
         public void ExtractZipFile(Stream zipStream, string outFolder, bool allowCodeImport)
         {
-            var wrapLog = Log.Call(nameof(ExtractZipFile),
-                $"{nameof(outFolder)}:'{outFolder}', {nameof(allowCodeImport)}:{allowCodeImport}");
+            var wrapLog = Log.Call($"{nameof(outFolder)}:'{outFolder}', {nameof(allowCodeImport)}:{allowCodeImport}");
             var file = new ZipFile(zipStream);
 
             try

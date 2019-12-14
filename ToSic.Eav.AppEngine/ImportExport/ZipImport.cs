@@ -89,7 +89,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
         private void TryToCleanUpTemporary(string temporaryDirectory)
         {
-            var wrapLog = Log.Call(nameof(TryToCleanUpTemporary), temporaryDirectory);
+            var wrapLog = Log.Call(temporaryDirectory);
             try
             {
                 // Finally delete the temporary directory
@@ -123,8 +123,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="importMessages"></param>
         private void ImportApp(string rename, string appDirectory, List<Message> importMessages)
         {
-            var wrapLog = Log.Call(nameof(ImportApp),
-                $"{nameof(rename)}:'{rename}', {nameof(appDirectory)}:'{appDirectory}', ...");
+            var wrapLog = Log.Call($"{nameof(rename)}:'{rename}', {nameof(appDirectory)}:'{appDirectory}', ...");
             
             // Import XML file(s)
             foreach (var xmlFileName in Directory.GetFiles(appDirectory, "App.xml"))
@@ -135,8 +134,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
         private void ImportAppXml(string rename, string appDirectory, string xmlFileName, List<Message> importMessages)
         {
-            var wrapLog = Log.Call(nameof(ImportAppXml),
-                $"{nameof(rename)}:'{rename}' {nameof(appDirectory)}:'{appDirectory}', ...");
+            var wrapLog = Log.Call($"{nameof(rename)}:'{rename}' {nameof(appDirectory)}:'{appDirectory}', ...");
             
             int appId;
             var importer = new XmlImportWithFiles(Log);

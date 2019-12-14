@@ -183,7 +183,7 @@ namespace ToSic.Eav.Apps
 
 	    internal void Load(ILog parentLog, Action loader)
         {
-            var wrapLog = Log.Call(nameof(Load), message:$"zone/app:{ZoneId}/{AppId}", useTimer:true);
+            var wrapLog = Log.Call(message: $"zone/app:{ZoneId}/{AppId}", useTimer: true);
 	        Loading = true;
             // temporarily link logs, to put messages in both logs
             Log.LinkTo(parentLog);

@@ -55,17 +55,17 @@ namespace ToSic.Eav.Logging
         );
 
 
-
         /// <summary>
         /// Add a log entry for method call, returning a method to call when done
         /// </summary>
+        /// <param name="parameters"></param>
+        /// <param name="message"></param>
+        /// <param name="useTimer"></param>
         /// <param name="cPath">auto pre filled by the compiler - the path to the code file</param>
         /// <param name="cName">auto pre filled by the compiler - the method name</param>
         /// <param name="cLine">auto pre filled by the compiler - the code line</param>
         Action<string> Call(
-            // todo: drop methodname, it's now auto-provided
-            string methodName, 
-            string @params = null, 
+            string parameters = null, 
             string message = null, 
             bool useTimer = false,
             [CallerFilePath] string cPath = null,
@@ -76,13 +76,14 @@ namespace ToSic.Eav.Logging
         /// <summary>
         /// Add a log entry for a class constructor, returning a method to call when done
         /// </summary>
+        /// <param name="parameters"></param>
+        /// <param name="message"></param>
+        /// <param name="useTimer"></param>
         /// <param name="cPath">auto pre filled by the compiler - the path to the code file</param>
         /// <param name="cName">auto pre filled by the compiler - the method name</param>
         /// <param name="cLine">auto pre filled by the compiler - the code line</param>
         Action<string> Call(
-            // todo: drop methodname, it's now auto-provided
-            string methodName, 
-            Func<string> @params, 
+            Func<string> parameters, 
             Func<string> message = null, 
             bool useTimer = false,
             [CallerFilePath] string cPath = null,

@@ -24,8 +24,7 @@ namespace ToSic.Eav.Apps
 	    /// <param name="contentTypes"></param>
 	    internal void InitContentTypes(IList<IContentType> contentTypes)
         {
-            var wrapLog = Log.Call(nameof(InitContentTypes),
-                message: $"init content types {contentTypes?.Count}", useTimer: true);
+            var wrapLog = Log.Call(message: $"init content types {contentTypes?.Count}", useTimer: true);
 	        if (!Loading)
 	            throw new Exception("trying to set content-types, but not in loading state. set that first!");
 
@@ -43,8 +42,7 @@ namespace ToSic.Eav.Apps
 
         private void BuildCacheForTypesByName(IList<IContentType> allTypes)
         {
-            var wrapLog = Log.Call(nameof(BuildCacheForTypesByName),
-                message: $"build cache for type names for {allTypes.Count} items", useTimer: true);
+            var wrapLog = Log.Call(message: $"build cache for type names for {allTypes.Count} items", useTimer: true);
 	        _appTypesByName = new Dictionary<string, IContentType>(StringComparer.InvariantCultureIgnoreCase);
 
 	        var keepTypes = allTypes;

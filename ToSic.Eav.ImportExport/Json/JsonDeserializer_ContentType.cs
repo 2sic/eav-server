@@ -13,7 +13,7 @@ namespace ToSic.Eav.ImportExport.Json
 
         public IContentType DeserializeContentType(string serialized)
         {
-            var wrap = Log.Call("DeserializeContentType",$"{serialized?.Substring(0, Math.Min(50, serialized.Length))}...");
+            var wrap = Log.Call($"{serialized?.Substring(0, Math.Min(50, serialized.Length))}...");
             try
             {
                 var jsonObj = UnpackAndTestGenericJsonV1(serialized);

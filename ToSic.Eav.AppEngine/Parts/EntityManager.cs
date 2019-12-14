@@ -132,7 +132,7 @@ namespace ToSic.Eav.Apps.Parts
 
         public List<int> Save(List<IEntity> entities, SaveOptions saveOptions = null)
         {
-            var wrapLog = Log.Call("Save", "", "save count:" + entities.Count + ", with Options:" + (saveOptions != null));
+            var wrapLog = Log.Call("", message: "save count:" + entities.Count + ", with Options:" + (saveOptions != null));
             saveOptions = saveOptions ?? SaveOptions.Build(AppManager.ZoneId);
 
             // ensure the type-definitions are real, not just placeholders
@@ -169,7 +169,7 @@ namespace ToSic.Eav.Apps.Parts
 
         public Tuple<int, Guid> Create(string typeName, Dictionary<string, object> values, ITarget metadataFor = null)
         {
-            var wrapLog = Log.Call("Create", $"type:{typeName}, val-count:{values.Count}, meta:{metadataFor}");
+            var wrapLog = Log.Call($"type:{typeName}, val-count:{values.Count}, meta:{metadataFor}");
             var newEnt = new Entity(AppManager.AppId, Guid.NewGuid(), AppManager.Read.ContentTypes.Get(typeName), values);
             if (metadataFor != null) newEnt.SetMetadata(metadataFor as Metadata.Target);
             var eid = Save(newEnt);
@@ -180,7 +180,7 @@ namespace ToSic.Eav.Apps.Parts
 
         public void SaveMetadata(Metadata.Target target, string typeName, Dictionary<string, object> values)
         {
-            var wrapLog = Log.Call("SaveMetadata", "target:" + target.KeyNumber + "/" + target.KeyGuid + ", values count:" + values.Count);
+            var wrapLog = Log.Call("target:" + target.KeyNumber + "/" + target.KeyGuid + ", values count:" + values.Count);
 
             if (target.TargetType != Constants.MetadataForAttribute || target.KeyNumber == null || target.KeyNumber == 0)
                 throw new NotImplementedException("atm this command only creates metadata for entities with id-keys");
@@ -206,7 +206,7 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="values"></param>
         public void UpdateParts(int id, Dictionary<string, object> values)
         {
-            var wrapLog = Log.Call("UpdateParts");
+            var wrapLog = Log.Call();
             var saveOptions = SaveOptions.Build(AppManager.ZoneId);
             saveOptions.PreserveUntouchedAttributes = true;
             saveOptions.PreserveUnknownLanguages = true;

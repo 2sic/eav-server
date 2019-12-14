@@ -23,7 +23,7 @@ namespace ToSic.Eav.ImportExport.Json
         public JsonEntity ToJson(IEntity entity, int metadataDepth = 0, ILog parentLog = null)
         {
             var log = new Log("Jsn.Serlzr", parent: parentLog/*, className:"JsonSerializer"*/);
-            var wrapLog = log.Call("ToJson", $"id:{entity?.EntityId}, meta-depth:{metadataDepth}");
+            var wrapLog = log.Call(parameters: $"id:{entity?.EntityId}, meta-depth:{metadataDepth}");
             // do a null-check, because sometimes code could ask to serialize not-yet existing entities
             if (entity == null)
             {

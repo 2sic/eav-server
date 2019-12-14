@@ -25,7 +25,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         internal int SaveEntity(IEntity newEnt, SaveOptions so)
         {
-            var wrapLog = Log.Call("SaveEntity", $"id:{newEnt?.EntityId}/{newEnt?.EntityGuid}");
+            var wrapLog = Log.Call($"id:{newEnt?.EntityId}/{newEnt?.EntityGuid}");
             #region Step 1: Do some initial error checking and preparations
             if (newEnt == null)
                 throw new ArgumentNullException(nameof(newEnt));
@@ -90,7 +90,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                 if (isNew)
                 {
-                    var logNew = Log.Call("", "", "Create new...");
+                    var logNew = Log.Call("", message: "Create new...");
 
                     if (newEnt.EntityGuid == Guid.Empty)
                     {
@@ -115,7 +115,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                     if (saveJson)
                     {
-                        var wrapSaveJson = Log.Call("SaveJson", $"id:{newEnt.EntityId}, guid:{newEnt.EntityGuid}");
+                        var wrapSaveJson = Log.Call($"id:{newEnt.EntityId}, guid:{newEnt.EntityGuid}");
                         dbEnt.Json = jsonExport ;
                         dbEnt.ContentType = newEnt.Type.StaticName;
                         DbContext.SqlDb.SaveChanges();
@@ -131,7 +131,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     dbEnt = DbContext.Entities.GetDbEntity(newEnt.EntityId); // get the published one (entityid is always the published id)
 
                     var stateChanged = dbEnt.IsPublished != newEnt.IsPublished;
-                    var logUpdate = Log.Call("", "", $"used existing i:{dbEnt.EntityId}, guid:{dbEnt.EntityGuid}, newstate:{newEnt.IsPublished}, state-changed:{stateChanged}, has-additional-draft:{hasAdditionalDraft}");
+                    var logUpdate = Log.Call("", message: $"used existing i:{dbEnt.EntityId}, guid:{dbEnt.EntityGuid}, newstate:{newEnt.IsPublished}, state-changed:{stateChanged}, has-additional-draft:{hasAdditionalDraft}");
 
                     #region If draft but should be published, correct what's necessary
 
@@ -231,7 +231,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <returns></returns>
         private int? GetDraftAndCorrectIdAndBranching(IEntity newEnt, out bool hasAdditionalDraft)
         {
-            var wrapLog = Log.Call("GetDraftAndCorrectIdAndBranching", $"entity:{newEnt.EntityId}");
+            var wrapLog = Log.Call($"entity:{newEnt.EntityId}");
 
             // only do this, if we were given an EntityId, otherwise we assume new entity
             if (newEnt.EntityId <= 0)
@@ -278,7 +278,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         private ToSicEavEntities CreateNewInDb(IEntity newEnt, int changeId, int contentTypeId)
         {
-            var wrapLog = Log.Call("CreateNewInDb", $"a:{DbContext.AppId}, guid:{newEnt.EntityGuid}, type:{contentTypeId}");
+            var wrapLog = Log.Call($"a:{DbContext.AppId}, guid:{newEnt.EntityGuid}, type:{contentTypeId}");
             var dbEnt = new ToSicEavEntities
             {
                 AppId = DbContext.AppId,
@@ -328,10 +328,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
             ToSicEavEntities dbEnt,
             int changeId)
         {
-            var wrapLog = Log.Call("SaveAttributesInDbModel", $"id:{newEnt.EntityId}");
+            var wrapLog = Log.Call($"id:{newEnt.EntityId}");
             foreach (var attribute in newEnt.Attributes.Values)
             {
-                var wrapAttrib = Log.Call("SaveAttributesInDbModel", $"attrib:{attribute.Name}");
+                var wrapAttrib = Log.Call($"attrib:{attribute.Name}");
                 // find attribute definition
                 var attribDef =
                     attributeDefs.SingleOrDefault(
@@ -409,7 +409,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <returns></returns>
         internal List<int> SaveEntity(List<IEntity> entities, SaveOptions saveOptions)
         {
-            var wrapLog = Log.Call("SaveEntity", $"count:{entities?.Count}");
+            var wrapLog = Log.Call($"count:{entities?.Count}");
             var ids = new List<int>();
 
             DbContext.DoInTransaction(()

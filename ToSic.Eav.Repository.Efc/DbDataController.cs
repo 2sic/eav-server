@@ -228,7 +228,7 @@ namespace ToSic.Eav.Repository.Efc
 
         internal void DoAndSave(Action action)
         {
-            var wrapLog = Log.Call("DoAndSave");
+            var wrapLog = Log.Call();
             action.Invoke();
             SqlDb.SaveChanges();
             wrapLog("completed");
@@ -239,7 +239,7 @@ namespace ToSic.Eav.Repository.Efc
         {
             var randomId = Guid.NewGuid().ToString().Substring(0, 4);
             var ownTransaction = SqlDb.Database.CurrentTransaction == null ? SqlDb.Database.BeginTransaction() : null;
-            var wrapLog = Log.Call("DoInTransaction", $"id:{randomId} - create new trans:{ownTransaction != null}");
+            var wrapLog = Log.Call($"id:{randomId} - create new trans:{ownTransaction != null}");
             try
             {
                 action.Invoke();

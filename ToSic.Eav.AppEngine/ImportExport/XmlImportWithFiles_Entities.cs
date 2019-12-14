@@ -25,7 +25,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <returns></returns>
         private List<IEntity> BuildEntities(List<XElement> entities, int assignmentObjectTypeId)
         {
-            var wrap = Log.Call("BuildEntities", $"for {entities?.Count}; type {assignmentObjectTypeId}");
+            var wrap = Log.Call($"for {entities?.Count}; type {assignmentObjectTypeId}");
             if(entities == null) return new List<IEntity>();
 	        var result = entities.Select(e => BuildEntity(e, assignmentObjectTypeId)).ToList();
             wrap($"found {result.Count}");
@@ -41,7 +41,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <returns></returns>
         private IEntity BuildEntity(XElement entityNode, int assignmentObjectTypeId)
         {
-            var wrap = Log.Call("BuildEntity", $"assignment-type: {assignmentObjectTypeId}");
+            var wrap = Log.Call($"assignment-type: {assignmentObjectTypeId}");
 
             #region retrieve optional metadata keys in the import - must happen before we apply corrections like AppId
 

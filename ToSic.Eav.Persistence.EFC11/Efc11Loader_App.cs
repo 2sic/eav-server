@@ -45,7 +45,7 @@ namespace ToSic.Eav.Persistence.Efc
                 Log = new Log("DB.EFLoad", app.Log, $"get app data package for a#{app.AppId}, " +
                                                     $"startAt: {startAt}, " +
                                                     $"ids only:{entityIds != null}");
-                var wrapLog = Log.Call(nameof(Update), useTimer:true);
+                var wrapLog = Log.Call(useTimer: true);
 
                 // prepare metadata lists & relationships etc.
                 if (startAt <= AppStateLoadSequence.MetadataInit)

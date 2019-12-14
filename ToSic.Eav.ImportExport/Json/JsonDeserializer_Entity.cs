@@ -19,7 +19,7 @@ namespace ToSic.Eav.ImportExport.Json
 
         private JsonFormat UnpackAndTestGenericJsonV1(string serialized)
         {
-            var wrapLog = Log.Call("UnpackAndTestGenericJsonV1");
+            var wrapLog = Log.Call();
             JsonFormat jsonObj;
             try
             {
@@ -40,7 +40,7 @@ namespace ToSic.Eav.ImportExport.Json
 
         public IEntity Deserialize(JsonEntity jEnt, bool allowDynamic, bool skipUnknownType)
         {
-            var wrapLog = Log.Call("Deserialize", $"guid: {jEnt.Guid}; allowDynamic:{allowDynamic} skipUnknown:{skipUnknownType}");
+            var wrapLog = Log.Call($"guid: {jEnt.Guid}; allowDynamic:{allowDynamic} skipUnknown:{skipUnknownType}");
 
             // get type def - use dynamic if dynamic is allowed OR if we'll skip unknown types
             var contentType = GetContentType(jEnt.Type.Id)
@@ -94,7 +94,7 @@ namespace ToSic.Eav.ImportExport.Json
 
         private void BuildAttribsOfUnknownContentType(JsonAttributes jAtts, Entity newEntity)
         {
-            var wrapLog = Log.Call("BuildAttribsOfUnknownContentType");
+            var wrapLog = Log.Call();
             BuildAttrib(jAtts.DateTime, ValueTypes.DateTime, newEntity);
             BuildAttrib(jAtts.Boolean, ValueTypes.Boolean, newEntity);
             BuildAttrib(jAtts.Custom, ValueTypes.Custom, newEntity);
@@ -119,7 +119,7 @@ namespace ToSic.Eav.ImportExport.Json
 
         private void BuildAttribsOfKnownType(JsonAttributes jAtts, IContentType contentType, Entity newEntity)
         {
-            var wrapLog = Log.Call("BuildAttribsOfKnownType");
+            var wrapLog = Log.Call();
             foreach (var definition in contentType.Attributes)
             {
                 var newAtt = ((ContentTypeAttribute) definition).CreateAttribute();

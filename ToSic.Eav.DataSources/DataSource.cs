@@ -28,7 +28,7 @@ namespace ToSic.Eav
 		{
             var wrapLog = parentLog?
                 .AddChild(LogKey)
-                .Call(nameof(GetDataSource), $"with name {sourceName}");
+                .Call(parameters: $"with name {sourceName}");
 		    // try to find with assembly name, or otherwise with GlobalName / previous names
             var type = Catalog.FindType(sourceName);
 
@@ -59,7 +59,7 @@ namespace ToSic.Eav
             parentLog = FindBestLog(parentLog, app, upstream);
             var wrapLog = parentLog?
                 .AddChild(LogKey)
-                .Call(nameof(GetDataSource));
+                .Call();
 	        var newDs = (DataSourceBase) Factory.Resolve(type);
             ConfigureNewDataSource(newDs, app, upstream, configLookUp, parentLog);
             wrapLog?.Invoke("ok");
@@ -81,7 +81,7 @@ namespace ToSic.Eav
             parentLog = FindBestLog(parentLog, appIdentity, upstream);
             var wrapLog = parentLog?
                 .AddChild(LogKey)
-                .Call(nameof(GetDataSource)+ $"<{typeof(T).Name}>");
+                .Call();
 
             if (upstream == null && configLookUp == null)
                 throw new Exception(
@@ -121,7 +121,7 @@ namespace ToSic.Eav
 		{
             var wrapLog = parentLog?
                 .AddChild(LogKey)
-                .Call(nameof(ConfigureNewDataSource));
+                .Call();
 
 			newDs.ZoneId = appIdentity.ZoneId;
 			newDs.AppId = appIdentity.AppId;
@@ -152,7 +152,7 @@ namespace ToSic.Eav
 	    {
             var wrapLog = parentLog?
                 .AddChild(LogKey)
-                .Call(nameof(GetPublishing), $"#{app.ZoneId}/{app.AppId}, draft:{showDrafts}, config:{configProvider != null}");
+                .Call(parameters: $"#{app.ZoneId}/{app.AppId}, draft:{showDrafts}, config:{configProvider != null}");
 
 			configProvider = configProvider ?? new LookUpEngine();
 

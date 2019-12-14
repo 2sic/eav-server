@@ -33,7 +33,7 @@ namespace ToSic.Eav.DataSources.Queries
         /// <returns></returns>
         private IEnumerable<ILookUp> GenerateTestValueLookUps()
         {
-            var wrapLog = Log.Call(nameof(GenerateTestValueLookUps), $"{Entity.EntityId}");
+            var wrapLog = Log.Call($"{Entity.EntityId}");
             // Parse Test-Parameters in Format [Token:Property]=Value
             var testParameters = TestParameters;//  ((IAttribute<string>) qdef.Entity[QueryDefinition.FieldTestParams]).TypedContents;
             if (testParameters == null)
