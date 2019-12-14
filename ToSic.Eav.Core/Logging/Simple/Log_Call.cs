@@ -33,16 +33,15 @@ namespace ToSic.Eav.Logging.Simple
 
 
 
-        /// <summary>
-        /// Add a log entry for method call, returning a method to call when done
-        /// </summary>
-        public Func<string, T, T> Call<T>(string methodName, string @params = null, string message = null,
+        /// <inheritdoc />
+        public Func<string, T, T> Call<T>(string parameters = null,
+            string message = null,
             bool useTimer = false,
             [CallerFilePath] string cPath = null,
             [CallerMemberName] string cName = null,
-            [CallerLineNumber] int cLine = 0
-        )
-            => Wrapper<T>($"{methodName}({@params}) {message}", useTimer,
+            [CallerLineNumber] int cLine = 0)
+            => Wrapper<T>($"{cName}({parameters}) {message}", 
+                useTimer,
                 new CodeRef(cPath, cName, cLine)
             );
 

@@ -37,7 +37,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <returns></returns>
         public bool ImportZip(Stream zipStream, string temporaryDirectory, string rename = null)
         {
-            var wrapLog = Log.Call<bool>( nameof(ImportZip),$"{temporaryDirectory}, {nameof(rename)}:{rename}");
+            var wrapLog = Log.Call<bool>( parameters: $"{temporaryDirectory}, {nameof(rename)}:{rename}");
             var messages = _environment.Messages;
             Exception finalException = null;
 

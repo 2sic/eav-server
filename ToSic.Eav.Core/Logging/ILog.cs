@@ -4,7 +4,6 @@ using System.Runtime.CompilerServices;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging.Simple;
 
-
 namespace ToSic.Eav.Logging
 {
     /// <summary>
@@ -58,9 +57,9 @@ namespace ToSic.Eav.Logging
         /// <summary>
         /// Add a log entry for method call, returning a method to call when done
         /// </summary>
-        /// <param name="parameters"></param>
-        /// <param name="message"></param>
-        /// <param name="useTimer"></param>
+        /// <param name="parameters">what was passed to the call in the brackets</param>
+        /// <param name="message">the message to log</param>
+        /// <param name="useTimer">enable a timer from call/close</param>
         /// <param name="cPath">auto pre filled by the compiler - the path to the code file</param>
         /// <param name="cName">auto pre filled by the compiler - the method name</param>
         /// <param name="cLine">auto pre filled by the compiler - the code line</param>
@@ -76,9 +75,9 @@ namespace ToSic.Eav.Logging
         /// <summary>
         /// Add a log entry for a class constructor, returning a method to call when done
         /// </summary>
-        /// <param name="parameters"></param>
-        /// <param name="message"></param>
-        /// <param name="useTimer"></param>
+        /// <param name="parameters">what was passed to the call in the brackets</param>
+        /// <param name="message">the message to log</param>
+        /// <param name="useTimer">enable a timer from call/close</param>
         /// <param name="cPath">auto pre filled by the compiler - the path to the code file</param>
         /// <param name="cName">auto pre filled by the compiler - the method name</param>
         /// <param name="cLine">auto pre filled by the compiler - the code line</param>
@@ -95,13 +94,14 @@ namespace ToSic.Eav.Logging
         /// <summary>
         /// Add a log entry for method call, returning a method to call when done
         /// </summary>
+        /// <param name="parameters">what was passed to the call in the brackets</param>
+        /// <param name="message">the message to log</param>
+        /// <param name="useTimer">enable a timer from call/close</param>
         /// <param name="cPath">auto pre filled by the compiler - the path to the code file</param>
         /// <param name="cName">auto pre filled by the compiler - the method name</param>
         /// <param name="cLine">auto pre filled by the compiler - the code line</param>
         Func<string, T, T> Call<T>(
-            // todo: drop methodname, it's now auto-provided
-            string methodName, 
-            string @params = null, 
+            string parameters = null, 
             string message = null, 
             bool useTimer = false,
             [CallerFilePath] string cPath = null,

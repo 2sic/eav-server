@@ -34,7 +34,7 @@ namespace ToSic.Eav.DataSources.Queries
         /// </summary>
         internal IDictionary<string, string> GenerateParamsDic(string paramsText)
         {
-            var wrapLog = Log.Call<IDictionary<string,string>>(nameof(GenerateParamsDic), $"{Entity.EntityId}");
+            var wrapLog = Log.Call<IDictionary<string,string>>(parameters: $"{Entity.EntityId}");
 
             var paramsDic = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 

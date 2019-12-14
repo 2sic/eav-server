@@ -73,7 +73,7 @@ namespace ToSic.Eav.DataSources.Caching
         public ListCacheItem GetOrBuild(IDataStream stream, Func<IEnumerable<IEntity>> builderFunc,
             int durationInSeconds = 0)
         {
-            var wrapLog = Log.Call<ListCacheItem>(nameof(GetOrBuild));
+            var wrapLog = Log.Call<ListCacheItem>();
             var key = CacheKey(stream);
 
             var cacheItem = GetValidCacheItemOrNull(stream);
