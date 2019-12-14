@@ -112,8 +112,10 @@ namespace ToSic.Eav.DataSources
                 }
                 #endregion
 
-                return EntityListDelegate();
-
+                var result = EntityListDelegate();
+                if (ReuseInitialResults)
+                    _list = result;
+                return result;
             }
 	    }
         #endregion

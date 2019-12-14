@@ -99,18 +99,12 @@ namespace ToSic.Eav.DataSources
             ConfigMask(TitleColumnNameKey, "[Settings:TitleColumnName]", cacheRelevant: false);
         }
 
-        /// <summary>
-        /// Keep results in case the DataSource read many times
-        /// </summary>
-        private List<IEntity> _entityList;
 
         private IEnumerable<IEntity> GetList()
         {
             Configuration.Parse();
 
-            if (_entityList != null) return this._entityList;
-
-            _entityList = new List<IEntity>();
+            var entityList = new List<IEntity>();
 
             Log.Add($"load csv:{ServerFilePath}, delimit:'{Delimiter}'");
             using (var stream = new StreamReader(ServerFilePath))
@@ -161,11 +155,11 @@ namespace ToSic.Eav.DataSources
                         entityValues.Add(parser.FieldHeaders[i], fields[i]);
                     }
 
-                    _entityList.Add(new Data.Entity(Constants.TransientAppId, entityId, ContentTypeBuilder.Fake(ContentType), entityValues, entityTitleName));
+                    entityList.Add(new Data.Entity(Constants.TransientAppId, entityId, ContentTypeBuilder.Fake(ContentType), entityValues, entityTitleName));
                 }
             }
-            Log.Add($"found:{_entityList.Count}");
-            return _entityList;
+            Log.Add($"found:{entityList.Count}");
+            return entityList;
         }
     }
 }
