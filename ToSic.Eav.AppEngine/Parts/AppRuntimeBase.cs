@@ -22,7 +22,7 @@ namespace ToSic.Eav.Apps.Parts
         //}
 
         protected AppRuntimeBase(IAppIdentity app, ILog parentLog) 
-            : base(app, parentLog, LogId) { }
+            : base(app, new CodeRef(),  parentLog, LogId) { }
 
         //protected AppRuntimeBase(int appId, ILog parentLog) : this(Factory.GetAppsCache().GetIdentity(appId: appId), parentLog) { }
 

@@ -8,11 +8,11 @@ namespace ToSic.Eav.Logging.Simple
 
         /// <inheritdoc />
         public string Add(string message,
-            [CallerFilePath] string callerPath = "",
-            [CallerMemberName] string callerName = "",
-            [CallerLineNumber] int callerLine = 0)
+            [CallerFilePath] string cPath = null,
+            [CallerMemberName] string cName = null,
+            [CallerLineNumber] int cLine = 0)
         {
-            AddEntry(message, callerPath, callerName, callerLine);
+            AddInternal(message, new CodeRef(cPath, cName, cLine));
             return message;
         }
 
@@ -20,9 +20,9 @@ namespace ToSic.Eav.Logging.Simple
         /// <summary>
         /// Add a message
         /// </summary>
-        private Entry AddEntry(string message, string callerPath = "", string callerName = "", int callerLine = 0)
+        private Entry AddInternal(string message, CodeRef code)
         {
-            var e = new Entry(this, message, WrapDepth, callerPath, callerName, callerLine);
+            var e = new Entry(this, message, WrapDepth, code);
             AddToEntriesAndParent(e);
             return e;
         }
@@ -59,11 +59,12 @@ namespace ToSic.Eav.Logging.Simple
             (_parent as Log)?.AddToEntriesAndParent(entry);
         }
 
-        /// <summary>
-        /// Add a message by calling a function. This will be inside a try/catch, to prevent crashes because of looping on nulls etc.
-        /// </summary>
-        /// <param name="messageMaker"></param>
-        public void Add(Func<string> messageMaker) => Add(Try(messageMaker));
+        /// <inheritdoc />
+        public void Add(Func<string> messageMaker,
+            [CallerFilePath] string cPath = null,
+            [CallerMemberName] string cName = null,
+            [CallerLineNumber] int cLine = 0) 
+            => Add(Try(messageMaker), cPath, cName, cLine);
 
     }
 }

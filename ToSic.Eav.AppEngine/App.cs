@@ -39,7 +39,7 @@ namespace ToSic.Eav.Apps
             ILog parentLog, 
             string logMsg)
             // first, initialize the AppIdentity and log it's use
-            : base(zoneId, appId, parentLog, "App.2sxcAp", $"prep App z#{zoneId}, a#{appId}, allowSE:{allowSideEffects}, hasDataConfig:{buildConfiguration != null}, {logMsg}")
+            : base(zoneId, appId, new CodeRef(),  parentLog, "App.2sxcAp", $"prep App z#{zoneId}, a#{appId}, allowSE:{allowSideEffects}, hasDataConfig:{buildConfiguration != null}, {logMsg}")
         {
             // if zone is missing, try to find it; if still missing, throw error
             if (zoneId == AutoLookupZone) throw new Exception("Cannot find zone-id for portal specified");

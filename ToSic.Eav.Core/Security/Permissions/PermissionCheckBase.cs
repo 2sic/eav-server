@@ -21,7 +21,7 @@ namespace ToSic.Eav.Security
             {
                 // already constructed, use that
                 if (_permissionList != null) return _permissionList;
-                var logWrap = Log.Get("PermissionList");
+                var logWrap = Log.Call("PermissionList");
                 var partsToConsider = new[]
                 {
                     TargetItem?.Metadata.Permissions,
@@ -66,7 +66,7 @@ namespace ToSic.Eav.Security
         {
             var permList2 = permissions2 as IList<Permission> ?? permissions2?.ToList();
 
-            var wrapLog = Log.New("PermissionCheckBase", $"type:{targetType?.StaticName}, " +
+            var wrapLog = Log.Call("PermissionCheckBase", $"type:{targetType?.StaticName}, " +
                     $"itm:{targetItem?.EntityGuid} ({targetItem?.EntityId}), " +
                     $"permList1: {permissions1?.Count()}, " +
                     $"permList2: {permList2?.Count}");

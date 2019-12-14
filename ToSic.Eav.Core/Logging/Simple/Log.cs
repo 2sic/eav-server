@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace ToSic.Eav.Logging.Simple
 {
@@ -28,19 +29,31 @@ namespace ToSic.Eav.Logging.Simple
         /// </summary>
         /// <param name="name">name this logger should use</param>
         /// <param name="parent">optional parent logger to attach to</param>
+        /// <param name="code">The code reference - must be generated before</param>
         /// <param name="initialMessage">optional initial message to log</param>
-        /// <param name="className">optional class-name, will change how the initial log is created</param>
-        public Log(string name, ILog parent = null, string initialMessage = null, string className = null)
+        public Log(string name, ILog parent, CodeRef code, string initialMessage = null)
         {
             Rename(name);
             LinkTo(parent);
             if (initialMessage == null) return;
-            if (className == null)
-                Add(initialMessage);
-            else
-                New(className, initialMessage);
+            AddInternal(initialMessage, code);
         }
 
+        /// <summary>
+        /// Create a logger and optionally attach it to a parent logger
+        /// </summary>
+        /// <param name="name">name this logger should use</param>
+        /// <param name="parent">optional parent logger to attach to</param>
+        /// <param name="initialMessage">optional initial message to log</param>
+        /// <param name="cPath">auto pre filled by the compiler - the path to the code file</param>
+        /// <param name="cName">auto pre filled by the compiler - the method name</param>
+        /// <param name="cLine">auto pre filled by the compiler - the code line</param>
+        public Log(string name, ILog parent = null, string initialMessage = null,
+                [CallerFilePath] string cPath = null,
+                [CallerMemberName] string cName = null,
+                [CallerLineNumber] int cLine = 0)
+        : this(name, parent, new CodeRef(cPath, cName, cLine), initialMessage)
+        {}
 
         public ILog AddChild(string name, string message=null) => new Log(name, this, message);
 

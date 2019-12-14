@@ -12,9 +12,9 @@ namespace ToSic.Eav.Logging.Simple
         /// <param name="openingMessage"></param>
         /// <param name="useTimer">optionally time the work done</param>
         /// <returns></returns>
-        private Action<string> Wrapper(string openingMessage, bool useTimer)
+        private Action<string> Wrapper(string openingMessage, bool useTimer, CodeRef code)
         {
-            var entry = AddEntry(openingMessage);
+            var entry = AddInternal(openingMessage, code);
             var timer = useTimer ? Stopwatch.StartNew() : null;
             WrapDepth++;
             return message =>
@@ -27,9 +27,10 @@ namespace ToSic.Eav.Logging.Simple
             };
         }
 
-        private Func<string, T, T> Wrapper<T>(string openingMessage, bool useTimer)
+        private Func<string, T, T> Wrapper<T>(string openingMessage, bool useTimer,
+            CodeRef code)
         {
-            var entry = AddEntry(openingMessage);
+            var entry = AddInternal(openingMessage, code);
             var timer = useTimer ? Stopwatch.StartNew() : null;
             WrapDepth++;
             return (message, result) =>

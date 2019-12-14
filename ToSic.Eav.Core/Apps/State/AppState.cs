@@ -73,9 +73,8 @@ namespace ToSic.Eav.Apps
 
         [PrivateApi("constructor, internal use only")]
         internal AppState(IAppIdentity app, ILog parentLog)
-            : base(app,  parentLog, $"App.Pkg{app.AppId}",$"start build package")
+            : base(app, new CodeRef(), parentLog, $"App.St-{app.AppId}",$"start build {nameof(AppState)} {app.AppId}")
 	    {
-	        //AppId = appId;
             CacheResetTimestamp();  // do this very early, as this number is needed elsewhere
 
 	        Index = new Dictionary<int, IEntity>();
@@ -184,7 +183,7 @@ namespace ToSic.Eav.Apps
 
 	    internal void Load(ILog parentLog, Action loader)
         {
-            var wrapLog = Log.Call(nameof(Load), useTimer:true);
+            var wrapLog = Log.Call(nameof(Load), message:$"zone/app:{ZoneId}/{AppId}", useTimer:true);
 	        Loading = true;
             // temporarily link logs, to put messages in both logs
             Log.LinkTo(parentLog);

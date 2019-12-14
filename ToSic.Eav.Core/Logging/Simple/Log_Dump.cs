@@ -23,7 +23,7 @@ namespace ToSic.Eav.Logging.Simple
                                                + e.Message
                                                + (e.Result != null ? resultStart + e.Result + resultEnd: string.Empty)
                                                + (e.Elapsed != TimeSpan.Zero ? $" ⌚ {e.Elapsed.TotalSeconds}s " : "" )
-                                               + (withCaller && !string.IsNullOrEmpty(e.CallerPath) ? $"{callStart}{e.CallerPath} - {e.CallerName}() #{e.CallerLine}{callEnd}" : "")
+                                               + (withCaller && e.Code != null ? $"{callStart}{e.Code.Path} - {e.Code.Name}() #{e.Code.Line}{callEnd}" : "")
             ));
             lg.Append(end);
             return lg.ToString();

@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging.Simple;
 
@@ -10,15 +11,6 @@ namespace ToSic.Eav.Logging
     [PublicApi]
     public abstract class HasLog : IHasLog
     {
-        ///// <summary>
-        ///// The unique ID of this logging item. <br/>
-        ///// It's usually a convention based name which helps identify logs of a specific class or object.
-        ///// The schema is Abc.AreaNm where the prefix marks a topic, the suffix the specific thing it's for. 
-        ///// </summary>
-        //[IgnoreDataMember]
-        //[PrivateApi] // I think this is not in use?
-        //public string LogId { get; internal set; } = "unknwn";
-
         /// <inheritdoc />
         [IgnoreDataMember]
         public ILog Log { get; private set; }
@@ -29,9 +21,20 @@ namespace ToSic.Eav.Logging
         /// <param name="logName">Name to use in the Log-ID</param>
         /// <param name="parentLog">Parent log (if available) for log-chaining</param>
         /// <param name="initialMessage">First message to be added</param>
-        /// <param name="className">Class name it's for</param>
-        protected HasLog(string logName, ILog parentLog = null, string initialMessage = null, string className = null) 
-            => InitLogInternal(logName, parentLog, initialMessage, className);
+        /// <param name="cPath">auto pre filled by the compiler - the path to the code file</param>
+        /// <param name="cName">auto pre filled by the compiler - the method name</param>
+        /// <param name="cLine">auto pre filled by the compiler - the code line</param>
+        protected HasLog(string logName, ILog parentLog = null, string initialMessage = null, 
+            [CallerFilePath] string cPath = null,
+            [CallerMemberName] string cName = null,
+            [CallerLineNumber] int cLine = 0)
+
+            => InitLogInternal(logName, parentLog, initialMessage,
+                new CodeRef(cPath, cName, cLine));
+
+        protected HasLog(string logName, CodeRef code, ILog parentLog = null, string initialMessage = null)
+
+            => InitLogInternal(logName, parentLog, initialMessage, code);
 
         /// <summary>
         /// This is the real initializer - implemented as a virtual method, because some
@@ -42,23 +45,29 @@ namespace ToSic.Eav.Logging
         /// <param name="parentLog"></param>
         /// <param name="initialMessage"></param>
         public virtual void InitLog(string name, ILog parentLog = null, string initialMessage = null) 
-            => InitLogInternal(name, parentLog, initialMessage);
+            => InitLogInternal(name, parentLog, initialMessage, null);
 
-        private void InitLogInternal(string name, ILog parentLog, string initialMessage, string className = null)
+        private void InitLogInternal(string name,
+            ILog parentLog, 
+            string initialMessage, 
+            CodeRef code
+            //,
+            //string className = null
+            )
         {
             if (Log == null)
                 // standard & most common case: just create log
-                Log = new Log(name, parentLog, initialMessage);
+                Log = new Log(name, parentLog, code, initialMessage);
             else
             {
                 // late-init case, where the log was already created - just reconfig keeping what was in it
                 Log.Rename(name);
                 this.LinkLog(parentLog);
                 if (initialMessage == null) return;
-                if (className == null)
+                //if (className == null)
                     Log.Add(initialMessage);
-                else
-                    Log.New(className, initialMessage);
+                //else
+                //    Log.New(className, initialMessage);
             }
         }
 

@@ -15,23 +15,22 @@ namespace ToSic.Eav.Logging.Simple
 
         public string Source => _log.FullIdentifier;
 
-        public Entry(ILog log, string message, int depth, string callerPath = "", string callerName = "", int callerLine = 0)
+        public Entry(ILog log, string message, int depth, CodeRef code)
         {
             _log = log;
             Message = message;
             Depth = depth;
-            CallerPath = callerPath;
-            CallerName = callerName;
-            CallerLine = callerLine;
+            Code = code;
         }
 
         public void AppendResult(string message) => Result = message;
 
-        #region Stack Information (experimental)
+        #region Stack Information
 
-        public string CallerPath;
-        public string CallerName;
-        public int CallerLine;
+        /// <summary>
+        /// Code reference where the log was added
+        /// </summary>
+        public CodeRef Code;
 
         #endregion
     }
