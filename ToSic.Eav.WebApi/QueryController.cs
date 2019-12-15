@@ -90,10 +90,10 @@ namespace ToSic.Eav.WebApi
 		/// </summary>
 		public dynamic QueryPipeline(int appId, int id, ILookUpEngine config)
 		{
-		    Log.Add($"query pipe: a#{appId}, id:{id}");
+            var wrapLog = Log.Call($"a#{appId}, id:{id}");
             // Get the query, run it and track how much time this took
 		    var queryFactory = new QueryBuilder(Log);
-		    var qDef = queryFactory.GetQueryDefinition(appId, id, Log);
+		    var qDef = queryFactory.GetQueryDefinition(appId, id);
 			var outStreams = queryFactory.GetDataSourceForTesting(qDef, true, config);
             var timer = new Stopwatch();
             timer.Start();
@@ -103,6 +103,7 @@ namespace ToSic.Eav.WebApi
             // Now get some more debug info
 		    var debugInfo = new DataSources.Debug.QueryInfo(outStreams);
 
+            wrapLog(null);
             // ...and return the results
 			return new
 			{

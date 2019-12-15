@@ -37,20 +37,22 @@ namespace ToSic.Eav.DataSources.Queries
         /// Build a query-definition object based on the entity-ID defining the query
         /// </summary>
         /// <returns></returns>
-        public QueryDefinition GetQueryDefinition(int appId, int queryEntityId, ILog parentLog)
+        public QueryDefinition GetQueryDefinition(int appId, int queryEntityId)
 	    {
-	        Log.Add($"get query def#{queryEntityId} for a#{appId}");
+            var wrapLog = Log.Call($"def#{queryEntityId} for a#{appId}");
 
 	        try
             {
-                var app = Factory.GetAppIdentity(null, appId);// DataSource.GetIdentity(null, appId);
-                var source = DataSource.GetPublishing(/*appId: appId*/app, parentLog: Log);
+                var app = Factory.GetAppIdentity(null, appId);
+                var source = new DataSource(Log).GetPublishing(app/*, parentLog: Log*/);
 	            var appEntities = source[Constants.DefaultStreamName].List;
 
 	            // use findRepo, as it uses the cache, which gives the list of all items // [queryEntityId];
 	            var dataQuery = appEntities.FindRepoId(queryEntityId);
-	            return new QueryDefinition(dataQuery, appId, parentLog);
-	        }
+	            var result = new QueryDefinition(dataQuery, appId, Log);
+                wrapLog(null);
+                return result;
+            }
 	        catch (KeyNotFoundException)
 	        {
 	            throw new Exception("QueryEntity not found with ID " + queryEntityId + " on AppId " + appId);
@@ -62,19 +64,19 @@ namespace ToSic.Eav.DataSources.Queries
 	    public const string ConfigKeyPipelineSettings = "pipelinesettings";
 
 
-	    public IDataSource GetAsDataSource(QueryDefinition queryDef,
+	    public IDataSource BuildQuery(QueryDefinition queryDef,
             ILookUpEngine lookUpEngineToClone,
             IEnumerable<ILookUp> overrideLookUps = null,
-            IDataSource outSource = null,
+            IDataSource outTarget = null,
             bool showDrafts = false)
         {
 	        #region prepare shared / global value providers
 
 	        overrideLookUps = overrideLookUps?.ToList();
-	        var wrapLog = Log.Call($"{queryDef.Id}, " +
-                                            $"hasProv:{lookUpEngineToClone != null}, " +
-                                            $"{overrideLookUps?.Count()}, " +
-                                            $"out:{outSource != null}, " +
+	        var wrapLog = Log.Call($"{queryDef.Title}({queryDef.Id}), " +
+                                            $"hasLookUp:{lookUpEngineToClone != null}, " +
+                                            $"overrides: {overrideLookUps?.Count()}, " +
+                                            $"out:{outTarget != null}, " +
                                             $"drafts:{showDrafts}");
 
 	        // the query settings which apply to the whole query
@@ -83,9 +85,9 @@ namespace ToSic.Eav.DataSources.Queries
             // centralizing building of the primary configuration template for each part
             if (lookUpEngineToClone != null)
                 Log.Add(() =>
-                    $"Sources in original provider: {lookUpEngineToClone.Sources.Count} " +
+                    $"Sources in original LookUp: {lookUpEngineToClone.Sources.Count} " +
                     $"[{string.Join(",", lookUpEngineToClone.Sources.Keys)}]");
-            var templateConfig = new LookUpEngine(lookUpEngineToClone);
+            var templateConfig = new LookUpEngine(lookUpEngineToClone, /*queryDef.*/Log);
 
             templateConfig.Add(querySettingsLookUp);        // add [pipelinesettings:...]
             templateConfig.Add(queryDef.ParamsLookUp);      // Add [params:...]
@@ -101,13 +103,13 @@ namespace ToSic.Eav.DataSources.Queries
             #region Load Query Entity and Query Parts
 
             // tell the primary-out that it has this guid, for better debugging
-            if (outSource == null)
+            if (outTarget == null)
 	        {
-	            var passThroughConfig = new LookUpEngine(templateConfig);
-                outSource = new PassThrough().Init(passThroughConfig);// {ConfigurationProvider = passThroughConfig};
+	            var passThroughConfig = new LookUpEngine(templateConfig, /*queryDef.*/Log);
+                outTarget = new PassThrough().Init(passThroughConfig);// {ConfigurationProvider = passThroughConfig};
 	        }
-            if (outSource.Guid == Guid.Empty)
-	            outSource.Guid = queryDef.Entity.EntityGuid;
+            if (outTarget.Guid == Guid.Empty)
+	            outTarget.Guid = queryDef.Entity.EntityGuid;
 
 	        #endregion
 
@@ -120,7 +122,7 @@ namespace ToSic.Eav.DataSources.Queries
 	        {
 	            #region Init Configuration Provider
 
-	            var partConfig = new LookUpEngine(templateConfig);
+	            var partConfig = new LookUpEngine(templateConfig, /*queryDef.*/Log);
                 // add / set item part configuration
 	            partConfig.Add(new LookUpInMetadata(ConfigKeyPartSettings, dataQueryPart.Entity));
 
@@ -135,23 +137,23 @@ namespace ToSic.Eav.DataSources.Queries
                 var assemblyAndType = dataQueryPart.DataSourceType;
 
                 var appIdentity = Factory.GetAppIdentity(null, queryDef.AppId);
-                var dataSource = DataSource.GetDataSource(assemblyAndType, /*null,*/ 
+                var dataSource = new DataSource(Log).GetDataSource(assemblyAndType, /*null,*/ 
                     appIdentity,//DataSource.GetIdentity(null, queryDef.AppId),
-	                configLookUp: partConfig, parentLog: Log);
+	                configLookUp: partConfig/*, parentLog: Log*/);
 	            dataSource.Guid = dataQueryPart.Guid;
 
 	            Log.Add($"add '{assemblyAndType}' as " +
 	                    $"part#{dataQueryPart.Id}({dataQueryPart.Guid.ToString().Substring(0, 6)}...)");
 	            dataSources.Add(dataQueryPart.Guid.ToString(), dataSource);
 	        }
-	        dataSources.Add("Out", outSource);
+	        dataSources.Add("Out", outTarget);
 
 	        #endregion
 
 	        InitWirings(queryDef, dataSources);
 
 	        wrapLog($"parts:{queryDef.Parts.Count}");
-	        return outSource;
+	        return outTarget;
 	    }
 
 	    ///// <summary>
@@ -239,10 +241,9 @@ namespace ToSic.Eav.DataSources.Queries
 
 	    public IDataSource GetDataSourceForTesting(QueryDefinition queryDef, bool showDrafts, ILookUpEngine configuration = null)
 	    {
-	        Log.Add($"construct test query a#{queryDef.AppId}, pipe:{queryDef.Entity.EntityGuid} ({queryDef.Entity.EntityId}), drafts:{showDrafts}");
-
+            var wrapLog = Log.Call<IDataSource>($"a#{queryDef.AppId}, pipe:{queryDef.Entity.EntityGuid} ({queryDef.Entity.EntityId}), drafts:{showDrafts}");
             var testValueProviders = queryDef.TestParameterLookUps;
-	        return GetAsDataSource(queryDef, configuration, testValueProviders, showDrafts: showDrafts);
+	        return wrapLog(null, BuildQuery(queryDef, configuration, testValueProviders, showDrafts: showDrafts));
 	    }
 
 	    //private const string FieldTestParams = "TestParameters";

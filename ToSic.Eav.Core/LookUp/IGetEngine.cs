@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.LookUp
 {
@@ -17,7 +18,7 @@ namespace ToSic.Eav.LookUp
         /// </summary>
         /// <param name="instanceId">The instance ID</param>
         /// <returns>a <see cref="ILookUpEngine"/> for the current context</returns>
-        ILookUpEngine GetEngine(int instanceId);
+        ILookUpEngine GetEngine(int instanceId, ILog parentLog);
 
     }
 }

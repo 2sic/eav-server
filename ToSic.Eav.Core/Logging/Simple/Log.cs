@@ -7,7 +7,7 @@ namespace ToSic.Eav.Logging.Simple
     public partial class Log: ILog
     {
         // unique ID of this logger, to not confuse it with other loggers
-        private readonly string _id = Guid.NewGuid().ToString().Substring(0, 2);
+        public string Id { get; } = Guid.NewGuid().ToString().Substring(0, 2);
 
         // ReSharper disable once StringLiteralTypo
         protected string Name = "unknwn";
@@ -20,7 +20,7 @@ namespace ToSic.Eav.Logging.Simple
         public  List<Entry> Entries { get; } = new List<Entry>();
         private ILog _parent;
 
-        private string Identifier => $"{Scope}{Name}[{_id}]";
+        public string Identifier => $"{Scope}{Name}[{Id}]";
 
         public string FullIdentifier => _parent?.FullIdentifier + Identifier;
 
@@ -55,7 +55,7 @@ namespace ToSic.Eav.Logging.Simple
         : this(name, parent, new CodeRef(cPath, cName, cLine), initialMessage)
         {}
 
-        public ILog AddChild(string name, string message=null) => new Log(name, this, message);
+        //public ILog AddChild(string name, string message=null) => new Log(name, this, message);
 
         /// <summary>
         /// Rename this logger - usually used when a base-class has a logger, 

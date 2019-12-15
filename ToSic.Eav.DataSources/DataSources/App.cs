@@ -111,7 +111,7 @@ namespace ToSic.Eav.DataSources
 		    if (AppSwitch != 0)
 				AppId = AppSwitch;
 
-		    var newDs = DataSource.GetPublishing(/*ZoneId, AppId*/this, 
+		    var newDs = new DataSource(Log).GetPublishing(/*ZoneId, AppId*/this, 
                 configProvider: Configuration.LookUps);
 		    if (In.ContainsKey(Constants.DefaultStreamName))
 		        In.Remove(Constants.DefaultStreamName);
@@ -143,13 +143,15 @@ namespace ToSic.Eav.DataSources
 			// now provide all data streams for all data types; only need the cache for the content-types list, don't use it as the source...
 			// because the "real" source already applies filters like published
             var listOfTypes = Factory.GetAppState(this).ContentTypes;// Root.AppState.ContentTypes;
+            var dataSourceFactory = new DataSource(Log);
 		    foreach (var contentType in listOfTypes)
 		    {
 		        var typeName = contentType.Name;
 		        if (typeName != Constants.DefaultStreamName && !typeName.StartsWith("@") && !_out.ContainsKey(typeName))
 		        {
-		            var ds = DataSource.GetDataSource<EntityTypeFilter>(/*ZoneId, AppId*/this, upstreamDataSource,
-                        Configuration.LookUps, parentLog:Log);
+		            var ds = dataSourceFactory.GetDataSource<EntityTypeFilter>(/*ZoneId, AppId*/
+                        this, upstreamDataSource,
+                        Configuration.LookUps/*, parentLog:Log*/);
 		            ds.TypeName = typeName;
 		            ds.Guid = Guid; // tell the inner source that it has the same ID as this one, as we're pretending it's the same source
 

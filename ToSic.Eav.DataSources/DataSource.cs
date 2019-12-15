@@ -10,10 +10,17 @@ namespace ToSic.Eav
 	/// <summary>
 	/// System to prepare data sources according to our needs.
 	/// </summary>
-	public class DataSource
+	public class DataSource: HasLog
 	{
 	    private const string LogKey = "DS.Factry";
         private static readonly string RootDataSource = typeof(IAppRoot).AssemblyQualifiedName;
+
+        // public DataSource
+
+        public DataSource(ILog parentLog = null) : base(LogKey, parentLog)
+        {
+
+        }
 
         /// <summary>
         /// Get DataSource for specified sourceName/Type
@@ -22,21 +29,18 @@ namespace ToSic.Eav
         /// <param name="app"></param>
         /// <param name="upstream">In-Connection</param>
         /// <param name="configLookUp">Provides configuration values if needed</param>
-        /// <param name="parentLog"></param>
         /// <returns>A single DataSource</returns>
-        public static IDataSource GetDataSource(string sourceName, IAppIdentity app, IDataSource upstream = null, ILookUpEngine configLookUp = null, ILog parentLog = null)
-		{
-            var wrapLog = parentLog?
-                .AddChild(LogKey)
-                .Call(parameters: $"with name {sourceName}");
+        public IDataSource GetDataSource(string sourceName, IAppIdentity app, IDataSource upstream = null, ILookUpEngine configLookUp = null)
+        {
+            var wrapLog = Log.Call(parameters: $"name: {sourceName}");
 		    // try to find with assembly name, or otherwise with GlobalName / previous names
             var type = Catalog.FindType(sourceName);
 
 		    // still not found? must show error
 			if (type == null)
 			    throw new Exception("DataSource not installed on Server: " + sourceName);
-            var result = GetDataSource(type, app, upstream, configLookUp, parentLog);
-            wrapLog?.Invoke("ok");
+            var result = GetDataSource(type, app, upstream, configLookUp);
+            wrapLog("ok");
             return result;
         }
 
@@ -48,61 +52,41 @@ namespace ToSic.Eav
         /// <param name="app"></param>
         /// <param name="upstream">In-Connection</param>
         /// <param name="configLookUp">Provides configuration values if needed</param>
-        /// <param name="parentLog"></param>
         /// <returns>A single DataSource</returns>
-        private static IDataSource GetDataSource(
+        private IDataSource GetDataSource(
             Type type, 
             IAppIdentity app, 
             IDataSource upstream,
-	        ILookUpEngine configLookUp, ILog parentLog)
+	        ILookUpEngine configLookUp)
         {
-            parentLog = FindBestLog(parentLog, app, upstream);
-            var wrapLog = parentLog?
-                .AddChild(LogKey)
-                .Call();
+            var wrapLog = Log.Call();
 	        var newDs = (DataSourceBase) Factory.Resolve(type);
-            ConfigureNewDataSource(newDs, app, upstream, configLookUp, parentLog);
-            wrapLog?.Invoke("ok");
+            ConfigureNewDataSource(newDs, app, upstream, configLookUp);
+            wrapLog("ok");
             return newDs;
 	    }
 
-        public static T GetDataSource<T>(
-            IDataSource upstream, 
-            ILog parentLog = null) where T : IDataSource 
-            => GetDataSource<T>(upstream, upstream, upstream.Configuration.LookUps, parentLog);
+        public T GetDataSource<T>(
+            IDataSource upstream) where T : IDataSource 
+            => GetDataSource<T>(upstream, upstream, upstream.Configuration.LookUps);
 
 
-        public static T GetDataSource<T>(
+        public T GetDataSource<T>(
             IAppIdentity appIdentity, 
             IDataSource upstream, 
-            ILookUpEngine configLookUp = null,
-            ILog parentLog = null) where T : IDataSource
+            ILookUpEngine configLookUp = null) where T : IDataSource
         {
-            parentLog = FindBestLog(parentLog, appIdentity, upstream);
-            var wrapLog = parentLog?
-                .AddChild(LogKey)
-                .Call();
+            var wrapLog = Log.Call();
 
             if (upstream == null && configLookUp == null)
                 throw new Exception(
                     "Trying to GetDataSource<T> but cannot do so if both upstream and ConfigurationProvider are null.");
 
             var newDs = (DataSourceBase) Factory.Resolve(typeof(T));
-            ConfigureNewDataSource(newDs, appIdentity, upstream, configLookUp ?? upstream.Configuration.LookUps, parentLog);
-            wrapLog?.Invoke("ok");
+            ConfigureNewDataSource(newDs, appIdentity, upstream, configLookUp ?? upstream.Configuration.LookUps);
+            wrapLog("ok");
             return (T) Convert.ChangeType(newDs, typeof(T));
         }
-
-        /// <summary>
-        /// handle missing parent log if we have an upstream
-        /// - try to get it from the app-identity, then from upstream
-        /// </summary>
-        /// <param name="parentLog"></param>
-        /// <param name="app"></param>
-        /// <param name="upstream"></param>
-        /// <returns></returns>
-        private static ILog FindBestLog(ILog parentLog, IAppIdentity app, IHasLog upstream) 
-            => parentLog ?? (app as IHasLog)?.Log ?? upstream?.Log;
 
         /// <summary>
         /// Helper function (internal) to configure a new data source. This code is used multiple times, that's why it's in an own function
@@ -111,17 +95,13 @@ namespace ToSic.Eav
         /// <param name="appIdentity">app identifier</param>
         /// <param name="upstream">upstream data source - for auto-attaching</param>
         /// <param name="configLookUp">optional configuration provider - for auto-attaching</param>
-        /// <param name="parentLog"></param>
-        private static void ConfigureNewDataSource(
+        private void ConfigureNewDataSource(
             DataSourceBase newDs, 
             IAppIdentity appIdentity,
 			IDataSource upstream = null,
-			ILookUpEngine configLookUp = null, 
-            ILog parentLog = null)
-		{
-            var wrapLog = parentLog?
-                .AddChild(LogKey)
-                .Call();
+			ILookUpEngine configLookUp = null)
+        {
+            var wrapLog = Log.Call();
 
 			newDs.ZoneId = appIdentity.ZoneId;
 			newDs.AppId = appIdentity.AppId;
@@ -130,9 +110,8 @@ namespace ToSic.Eav
 			if (configLookUp != null)
 				newDs.Configuration.LookUps = configLookUp;
 
-            if (parentLog != null) 
-                newDs.InitLog(newDs.LogId, parentLog);
-            wrapLog?.Invoke("ok");
+            newDs.InitLog(newDs.LogId, Log);
+            wrapLog("ok");
         }
 
 
@@ -142,45 +121,32 @@ namespace ToSic.Eav
         /// <param name="app"></param>
         /// <param name="showDrafts">Indicates whether Draft Entities should be returned</param>
         /// <param name="configProvider"></param>
-        /// <param name="parentLog"></param>
         /// <returns>A single DataSource</returns>
-        public static IDataSource GetPublishing(
+        public IDataSource GetPublishing(
             IAppIdentity app, 
             bool showDrafts = false, 
-            ILookUpEngine configProvider = null, 
-            ILog parentLog = null)
-	    {
-            var wrapLog = parentLog?
-                .AddChild(LogKey)
-                .Call(parameters: $"#{app.ZoneId}/{app.AppId}, draft:{showDrafts}, config:{configProvider != null}");
+            ILookUpEngine configProvider = null)
+        {
+            var wrapLog = Log.Call(parameters: $"#{app.ZoneId}/{app.AppId}, draft:{showDrafts}, config:{configProvider != null}");
 
-			configProvider = configProvider ?? new LookUpEngine();
+			configProvider = configProvider ?? new LookUpEngine(Log);
 
-            var dataSource = GetDataSource(RootDataSource, app, null, configProvider, parentLog);
+            var dataSource = GetDataSource(RootDataSource, app, null, configProvider);
 
-			var publishingFilter = GetDataSource<PublishingFilter>(app, dataSource, configProvider, parentLog);
+			var publishingFilter = GetDataSource<PublishingFilter>(app, dataSource, configProvider);
 			publishingFilter.ShowDrafts = showDrafts;
 
-            wrapLog?.Invoke("ok");
+            wrapLog("ok");
             return publishingFilter;
 		}
-
-		///// <summary>
-		///// Resolve and validate ZoneId and AppId for specified ZoneId and/or AppId (if any)
-		///// </summary>
-		///// <returns>Item1 = ZoneId, Item2 = AppId</returns>
-		//public static IAppIdentity  GetIdentity(int? zoneId, int? appId) =>
-  //          zoneId != null && appId != null
-  //              ? new AppIdentity(zoneId.Value, appId.Value)
-  //              : Factory.GetAppsCache().GetIdentity(zoneId, appId);
 
 
         /// <summary>
         /// Get a new ICache DataSource
         /// </summary>
         /// <returns>A new IRootCache</returns>
-        public static IAppRoot GetRootDs(IAppIdentity appIdentity, ILog parentLog = null) 
-            => (IAppRoot)GetDataSource(RootDataSource, appIdentity, parentLog:parentLog);
+        public IAppRoot GetRootDs(IAppIdentity appIdentity) 
+            => (IAppRoot)GetDataSource(RootDataSource, appIdentity);
     }
 
 }

@@ -20,7 +20,17 @@ namespace ToSic.Eav.Logging
         /// </summary>
         [PrivateApi]
         DateTime Created { get; }
-        
+
+        /// <summary>
+        /// A short random ID to differentiate this logger from others.
+        /// </summary>
+        string Id { get; }
+
+        /// <summary>
+        /// A unique identifier containing a special XXX.yyyyy[id] name
+        /// </summary>
+        string Identifier { get; }
+
         /// <summary>
         /// Intercept the result of an inner method, log it, then pass result on
         /// </summary>
@@ -150,8 +160,8 @@ namespace ToSic.Eav.Logging
         [PrivateApi]
         string FullIdentifier { get; }
 
-        [PrivateApi]
-        ILog AddChild(string name, string message = null);
+        //[PrivateApi]
+        //ILog AddChild(string name, string message = null);
 
         /// <summary>
         /// Rename this logger - usually used when a base-class has a logger, 

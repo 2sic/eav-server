@@ -11,9 +11,14 @@ namespace ToSic.Eav.Logging.Simple
         public TimeSpan Elapsed { get; set; }
         public int Depth;
 
+        public bool WrapOpen;
+        public bool WrapClose;
+
         private readonly ILog _log;
 
         public string Source => _log.FullIdentifier;
+
+        public string ShortSource => _log.Identifier;
 
         public Entry(ILog log, string message, int depth, CodeRef code)
         {

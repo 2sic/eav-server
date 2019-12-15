@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.DataSources.Configuration;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
@@ -66,9 +65,18 @@ namespace ToSic.Eav.DataSources.Queries
 		private void CreateOutWithAllStreams()
         {
             var wrapLog = Log.Call();
-		    var pipeline = QueryBuilder.GetAsDataSource(Definition, Configuration.LookUps, 
-                null, null, _showDrafts);
-		    _out = pipeline.Out;
+            // todo: separate original values in query def from the ones set here
+            // tood: create adictionary from the values set here, provide as overrides!
+
+            // Step 1: Resolve the params from outside, where x=[Params:y] should come from the outer Params
+            // and the current In
+            var resolvedParams = Configuration.LookUps.LookUp(Definition.Params);
+
+            // now provide an override source for this
+            var paramsOverride = new LookUpInDictionary(QueryConstants.ParamsLookup, resolvedParams);
+		    var pipeline = QueryBuilder.BuildQuery(Definition, Configuration.LookUps, 
+                new List<ILookUp> {paramsOverride}, null, _showDrafts);
+            _out = pipeline.Out;
             wrapLog("ok");
         }
 

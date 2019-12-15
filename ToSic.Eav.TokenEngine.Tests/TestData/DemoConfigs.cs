@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.TokenEngine.Tests.ValueProvider;
 
@@ -12,7 +13,7 @@ namespace ToSic.Eav.TokenEngine.Tests.TestData
 
         public static LookUpEngine AppSetAndRes(int appId = AppIdX)
         {
-            var vc = new LookUpEngine();
+            var vc = new LookUpEngine(null as ILog);
             vc.Add(AppSettings(appId));
             vc.Add(AppResources(appId));
 

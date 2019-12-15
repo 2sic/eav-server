@@ -58,8 +58,9 @@ namespace ToSic.Eav.DataSources.Queries
 
 	    internal static IEnumerable<IEntity> AllQueryItems(IAppIdentity app, ILog parentLog)
 	    {
-	        var source = DataSource.GetPublishing(app, parentLog: parentLog);
-	        var typeFilter = DataSource.GetDataSource<EntityTypeFilter>(/*appId: appId, upstream:*/ source);
+            var dsFact = new DataSource(parentLog);
+	        var source = dsFact.GetPublishing(app/*, parentLog: parentLog*/);
+	        var typeFilter = dsFact.GetDataSource<EntityTypeFilter>(/*appId: appId, upstream:*/ source);
 	        typeFilter.TypeName = Constants.QueryTypeName;
 	        var list = typeFilter.List;
 	        return list;

@@ -62,12 +62,12 @@ namespace ToSic.Eav.Apps
                                     "Please call InitData first to provide this data.");
 
             // ModulePermissionController does not work when indexing, return false for search
-            var initialSource = DataSource.GetPublishing(/*ZoneId, AppId*/this, ShowDrafts,
-                ConfigurationProvider as LookUpEngine, Log);
+            var initialSource = new DataSource(Log).GetPublishing(/*ZoneId, AppId*/this, ShowDrafts,
+                ConfigurationProvider as LookUpEngine/*, Log*/);
 
             // todo: probably use the full configuration provider from function params, not from initial source?
-            var xData = DataSource.GetDataSource<AppData>(
-                /*initialSource.ZoneId, initialSource.AppId, initialSource,*/ initialSource/*.ConfigurationProvider*/, Log);
+            var xData = new DataSource(Log).GetDataSource<AppData>(
+                /*initialSource.ZoneId, initialSource.AppId, initialSource,*/ initialSource/*.ConfigurationProvider, Log*/);
 
             Log.Add("configure on demand completed");
 
