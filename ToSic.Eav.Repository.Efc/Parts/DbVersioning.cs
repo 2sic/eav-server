@@ -56,7 +56,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         private IThingSerializer ImmediateStateSerializer()
         {
             var loader = new Efc11Loader(DbContext.SqlDb);
-            var appPackageRightNow = loader.AppPackage(DbContext.AppId, parentLog:Log);
+            var appPackageRightNow = loader.AppState(DbContext.AppId, parentLog:Log);
             var serializer = new JsonSerializer(appPackageRightNow, Log);
             return serializer;
         }

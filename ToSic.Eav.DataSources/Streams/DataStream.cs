@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using ToSic.Eav.DataSources.Caching;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -17,7 +18,7 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
 	public class DataStream : IDataStream
 	{
-	    private readonly GetIEnumerableDelegate _lightListDelegate;
+	    private readonly GetIEnumerableDelegate _listDelegate;
 
 
         #region Self-Caching and Results-Persistence Properties / Features
@@ -53,13 +54,13 @@ namespace ToSic.Eav.DataSources
 	    /// </summary>
 	    /// <param name="source">The DataSource providing Entities when needed</param>
 	    /// <param name="name">Name of this Stream</param>
-	    /// <param name="lightListDelegate">Function which gets Entities</param>
+	    /// <param name="listDelegate">Function which gets Entities</param>
 	    /// <param name="enableAutoCaching"></param>
-	    public DataStream(IDataSource source, string name, GetIEnumerableDelegate lightListDelegate = null, bool enableAutoCaching = false)
+	    public DataStream(IDataSource source, string name, GetIEnumerableDelegate listDelegate = null, bool enableAutoCaching = false)
 		{
 			Source = source;
 			Name = name;
-		    _lightListDelegate = lightListDelegate;
+		    _listDelegate = listDelegate;
 		    AutoCaching = enableAutoCaching;
             
             // Default properties for caching config
@@ -83,11 +84,11 @@ namespace ToSic.Eav.DataSources
                 {
                     #region Assemble the list - either from the DictionaryDelegate or from the LightListDelegate
                     // try to use the built-in Entities-Delegate, but if not defined, use other delegate; just make sure we test both, to prevent infinite loops
-                    if (_lightListDelegate == null)
+                    if (_listDelegate == null)
                         throw new Exception("can't load stream - no delegate found to supply it");
                     try
                     {
-                        var getEntitiesDelegate = new GetIEnumerableDelegate(_lightListDelegate);
+                        var getEntitiesDelegate = new GetIEnumerableDelegate(_listDelegate);
                         return getEntitiesDelegate();
                     }
                     catch (InvalidOperationException) // this is a special exception - for example when using SQL. Pass it on to enable proper testing
@@ -106,21 +107,23 @@ namespace ToSic.Eav.DataSources
                 #region Check if it's in the cache - and if yes, if it's still valid and should be re-used --> return if found
                 if (AutoCaching && ReuseInitialResults)
 			    {
-                    var cacheItem = Source.Cache.Lists.GetOrBuild(this, EntityListDelegate, CacheDurationInSeconds);
+                    var cacheItem = new ListCache(Source.Log).GetOrBuild(this, EntityListDelegate, CacheDurationInSeconds);
                     return _list = cacheItem.List;
                 }
                 #endregion
 
-                return EntityListDelegate();
-
+                var result = EntityListDelegate();
+                if (ReuseInitialResults)
+                    _list = result;
+                return result;
             }
 	    }
         #endregion
 
 	    public void PurgeList(bool cascade = false)
 	    {
-	        Source.Cache.Lists.Remove(this);
-	        if (cascade) Source.PurgeList(cascade);
+            new ListCache(Source.Log).Remove(this);
+	        if (cascade) Source.PurgeList(true);
 	    }
 
 	    [Obsolete("deprecated since 2sxc 9.8 / eav 4.5 - use List instead")]

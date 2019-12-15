@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
+using ToSic.Eav.Apps;
 using ToSic.Eav.DataSources;
 
 namespace ToSic.Eav.UnitTests.DataSources
@@ -29,7 +30,7 @@ namespace ToSic.Eav.UnitTests.DataSources
         public static EntityTypeFilter CreateEntityTypeFilterForTesting(int testItemsInRootSource)
         {
             var ds = DataTableDataSourceTest.GeneratePersonSourceWithDemoData(testItemsInRootSource, 1001);
-            var filtered = DataSource.GetDataSource<EntityTypeFilter>(0, 0, ds);
+            var filtered = DataSource.GetDataSource<EntityTypeFilter>(ds);
             return filtered;
         }
     }

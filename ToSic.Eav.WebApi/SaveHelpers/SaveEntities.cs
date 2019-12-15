@@ -18,7 +18,7 @@ namespace ToSic.Eav.WebApi.SaveHelpers
 
         public void UpdateGuidAndPublishedAndSaveMany(AppManager appMan, List<BundleWithHeader<IEntity>> itemsToImport, bool enforceDraft)
         {
-            var wrapLog = Log.Call("UpdateGuidAndPublishedAndSaveMany", "");
+            var wrapLog = Log.Call("");
             foreach (var bundle in itemsToImport)
             {
                 var currEntity = (Entity)bundle.Entity;
@@ -36,7 +36,7 @@ namespace ToSic.Eav.WebApi.SaveHelpers
 
         private void EnforceDraft(Entity currEntity)
         {
-            var wrapLog = Log.Call("EnforceDraft", $"will set published/isbranch on {currEntity.EntityGuid}");
+            var wrapLog = Log.Call($"will set published/isbranch on {currEntity.EntityGuid}");
             currEntity.IsPublished = false;
             currEntity.PlaceDraftInBranch = true;
             wrapLog(null);
@@ -48,7 +48,7 @@ namespace ToSic.Eav.WebApi.SaveHelpers
         /// <returns></returns>
         public Dictionary<Guid, int> GenerateIdList(EntityRuntime appEntities, IEnumerable<BundleWithHeader> items)
         {
-            var wrapLog = Log.Call("GenerateIdList");
+            var wrapLog = Log.Call();
             var idList = items.Select(e =>
                 {
                     var foundEntity = appEntities.Get(e.Header.Guid);

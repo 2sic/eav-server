@@ -31,7 +31,7 @@ namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
 
         private void CheckRequiredEnvironmentVersions(string reqVersionNode, string reqVersionNodeDnn)
         {
-            var wrapLog = Log.Call($"check version requirements eav:{reqVersionNode}, host:{reqVersionNodeDnn}");
+            var wrapLog = Log.Call();
             if (reqVersionNode != null)
             {
                 var vEav = Version.Parse(_environment.ModuleVersion);

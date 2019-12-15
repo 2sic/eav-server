@@ -14,12 +14,12 @@ namespace ToSic.Eav.Apps
         /// <inheritdoc />
         public IMetadataOf Metadata
             => _metadata ?? (_metadata = new MetadataOf<int>(Constants.MetadataForApp, AppId,
-                   AppDataPackage));
+                   AppState));
 
         private IMetadataOf _metadata;
 
         [PrivateApi]
-        protected readonly IHasMetadataSource AppDataPackage;
+        protected readonly IHasMetadataSource AppState;
 
         /// <summary>
         /// Permissions of this app

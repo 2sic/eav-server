@@ -46,7 +46,7 @@ namespace ToSic.Eav.Apps.ImportExport
             ErrorLog = new ImportErrorLog();
 
             AppMan = appMan;
-            App = appMan.Cache.AppState;
+            App = appMan.AppState;
 
             _appId = App.AppId;
 

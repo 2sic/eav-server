@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.DataSources.Caching;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSources.System;
 using ToSic.Eav.Documentation;
@@ -25,7 +25,7 @@ namespace ToSic.Eav.DataSources
                 "ToSic.Eav.DataSources.System.Apps, ToSic.Eav.Apps"
             },
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Apps")]
-    [PublicApi]
+    [PrivateApi("probably should be in own SysInfo folder or something")]
     public sealed class Apps: DataSourceBase
 	{
         #region Configuration-properties (no config)
@@ -65,12 +65,13 @@ namespace ToSic.Eav.DataSources
 
 	    private IEnumerable<IEntity> GetList()
 	    {
-            EnsureConfigurationIsLoaded();
+            Configuration.Parse();
 
             // try to load the content-type - if it fails, return empty list
-	        var cache = (RootCacheBase)DataSource.GetCache(ZoneId, AppId);
-	        if (!cache.ZoneApps.ContainsKey(OfZoneId)) return new List<IEntity>();
-	        var zone = cache.ZoneApps[OfZoneId];
+            //var cache = (RootCacheBase)DataSource.GetCache(ZoneId, AppId);
+            var cache = Factory.GetAppsCache();
+	        if (!cache.Zones.ContainsKey(OfZoneId)) return new List<IEntity>();
+	        var zone = cache.Zones[OfZoneId];
 
 	        var list = zone.Apps.OrderBy(a => a.Key).Select(app =>
 	        {
@@ -94,7 +95,14 @@ namespace ToSic.Eav.DataSources
 	                {AppType.IsDefault.ToString(), app.Key == zone.DefaultAppId},
 	            };
 
-	            return AsEntity(appEnt, AppType.Name.ToString(), AppsContentTypeName, app.Key, guid);
+                var result = Build.Entity(appEnt,
+                    appId: app.Key,
+                    id: app.Key,
+                    titleField: AppType.Name.ToString(),
+                    typeName: AppsContentTypeName, 
+                    guid: guid);
+                return result;
+	            //return AsEntity(appEnt, AppType.Name.ToString(), AppsContentTypeName, app.Key, guid);
             });
 
             return list;

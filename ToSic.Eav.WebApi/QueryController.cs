@@ -44,8 +44,6 @@ namespace ToSic.Eav.WebApi
 
             query.Pipeline = qDef.Entity.AsDictionary();
             query.Pipeline[Constants.QueryStreamWiringAttributeName] = qDef.Connections;
-            // QueryWiring
-            //     .Deserialize((string)query.Pipeline[Constants.QueryStreamWiringAttributeName]);
 
             foreach (var part in qDef.Parts) 
                 query.DataSources.Add(part.AsDictionary());
@@ -95,8 +93,8 @@ namespace ToSic.Eav.WebApi
 		    Log.Add($"query pipe: a#{appId}, id:{id}");
             // Get the query, run it and track how much time this took
 		    var queryFactory = new QueryBuilder(Log);
-		    var qDef = queryFactory.GetQueryDefinition(appId, id);
-			var outStreams = queryFactory.GetDataSourceForTesting(qDef, true, config);// ConstructPipeline(appId, id, true, config);
+		    var qDef = queryFactory.GetQueryDefinition(appId, id, Log);
+			var outStreams = queryFactory.GetDataSourceForTesting(qDef, true, config);
             var timer = new Stopwatch();
             timer.Start();
 		    var query = Helpers.Serializers.GetSerializerWithGuidEnabled().Prepare(outStreams);
@@ -144,9 +142,9 @@ namespace ToSic.Eav.WebApi
                 Log.Add("import content" + args.DebugInfo);
                 var appManager = new AppManager(args.AppId, Log);
 
-                var deser = new Eav.ImportExport.Json.JsonSerializer(appManager.Package, Log);
+                var deser = new Eav.ImportExport.Json.JsonSerializer(appManager.AppState, Log);
                 var ents = deser.Deserialize(args.GetContentString());
-                var qdef = new QueryDefinition(ents, args.AppId);
+                var qdef = new QueryDefinition(ents, args.AppId, Log);
                 appManager.Queries.SaveCopy(qdef);
 
                 return true;

@@ -63,7 +63,7 @@ namespace ToSic.Eav.Apps.ImportExport
             => _eavContext.Entities.GetMostCurrentDbEntity(entityGuid).EntityId;
 
         protected AppManager GetCurrentAppManager()
-            => new AppManager(_eavContext.ZoneId, _eavContext.AppId, Log);
+            => new AppManager(_eavContext, Log);
 
         #endregion
     }

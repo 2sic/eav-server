@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Interfaces;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -165,11 +163,11 @@ namespace ToSic.Eav.DataSources
 
         private IEnumerable<IEntity> GetEntities()
 		{
-			// todo: maybe do something about languages?
+            // todo: maybe do something about languages?
 
-			EnsureConfigurationIsLoaded();
+            Configuration.Parse();
 
-			var relationship = Relationship;
+            var relationship = Relationship;
 			var compAttr = CompareAttribute;
 			var filter = Filter.ToLower(); // new: make case insensitive
 			var strMode = CompareMode.ToLower();

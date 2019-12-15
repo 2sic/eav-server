@@ -6,7 +6,6 @@ using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport.Options;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence;
@@ -133,7 +132,7 @@ namespace ToSic.Eav.Apps.Parts
 
         public List<int> Save(List<IEntity> entities, SaveOptions saveOptions = null)
         {
-            var wrapLog = Log.Call("Save", "", "save count:" + entities.Count + ", with Options:" + (saveOptions != null));
+            var wrapLog = Log.Call("", message: "save count:" + entities.Count + ", with Options:" + (saveOptions != null));
             saveOptions = saveOptions ?? SaveOptions.Build(AppManager.ZoneId);
 
             // ensure the type-definitions are real, not just placeholders
@@ -147,7 +146,7 @@ namespace ToSic.Eav.Apps.Parts
                 }
 
             // attach relationship resolver - important when saving data which doesn't yet have the guid
-            entities.ForEach(AppManager.Package.Relationships.AttachRelationshipResolver);
+            entities.ForEach(AppManager.AppState.Relationships.AttachRelationshipResolver);
 
             List<int> ids = null;
             AppManager.DataController.DoButSkipAppCachePurge(() =>
@@ -157,18 +156,20 @@ namespace ToSic.Eav.Apps.Parts
                 })
             );
 
-            // todo: continue here
-            AppManager.DataController.Loader.Update(AppManager.Package, 
-                AppStateLoadSequence.ItemLoad, ids.ToArray(), Log);
-            // clear cache of this app
-            //SystemManager.Purge(AppManager.AppId);
+            // Tell the cache to do a partial update
+            Factory.GetAppsCache().Update(AppManager, ids, Log);
+
+            //AppManager.DataController.Loader.Update(AppManager.Package, 
+            //    AppStateLoadSequence.ItemLoad, ids.ToArray(), Log);
+            //// clear cache of this app
+            //new SystemManager(Log).InformOfPartialUpdate(AppManager, ids);
             wrapLog($"ids:{ids.Count}");
             return ids;
         }
 
         public Tuple<int, Guid> Create(string typeName, Dictionary<string, object> values, ITarget metadataFor = null)
         {
-            var wrapLog = Log.Call("Create", $"type:{typeName}, val-count:{values.Count}, meta:{metadataFor}");
+            var wrapLog = Log.Call($"type:{typeName}, val-count:{values.Count}, meta:{metadataFor}");
             var newEnt = new Entity(AppManager.AppId, Guid.NewGuid(), AppManager.Read.ContentTypes.Get(typeName), values);
             if (metadataFor != null) newEnt.SetMetadata(metadataFor as Metadata.Target);
             var eid = Save(newEnt);
@@ -179,13 +180,14 @@ namespace ToSic.Eav.Apps.Parts
 
         public void SaveMetadata(Metadata.Target target, string typeName, Dictionary<string, object> values)
         {
-            var wrapLog = Log.Call("SaveMetadata", "target:" + target.KeyNumber + "/" + target.KeyGuid + ", values count:" + values.Count);
+            var wrapLog = Log.Call("target:" + target.KeyNumber + "/" + target.KeyGuid + ", values count:" + values.Count);
 
             if (target.TargetType != Constants.MetadataForAttribute || target.KeyNumber == null || target.KeyNumber == 0)
                 throw new NotImplementedException("atm this command only creates metadata for entities with id-keys");
 
             // see if a metadata already exists which we would update
-            var existingEntity = AppManager.Cache.List.FirstOrDefault(e => e.MetadataFor?.TargetType == target.TargetType && e.MetadataFor?.KeyNumber == target.KeyNumber);
+            var existingEntity = AppManager./*Cache*/AppState.List
+                .FirstOrDefault(e => e.MetadataFor?.TargetType == target.TargetType && e.MetadataFor?.KeyNumber == target.KeyNumber);
             if (existingEntity != null)
                 UpdateParts(existingEntity.EntityId, values);
             else
@@ -204,12 +206,12 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="values"></param>
         public void UpdateParts(int id, Dictionary<string, object> values)
         {
-            var wrapLog = Log.Call("UpdateParts");
+            var wrapLog = Log.Call();
             var saveOptions = SaveOptions.Build(AppManager.ZoneId);
             saveOptions.PreserveUntouchedAttributes = true;
             saveOptions.PreserveUnknownLanguages = true;
 
-            var orig = IEntityExtensions.FindRepoId(AppManager.Cache.List,id);
+            var orig = IEntityExtensions.FindRepoId(AppManager./*Cache*/AppState.List,id);
             var tempEnt = new Entity(AppManager.AppId, 0, orig.Type, values);
             var saveEnt = new EntitySaver(Log).CreateMergedForSaving(orig, tempEnt, saveOptions);
             Save(saveEnt, saveOptions);
@@ -264,9 +266,9 @@ namespace ToSic.Eav.Apps.Parts
 
 
         public ExportListXml Exporter(IContentType contentType) 
-            => new ExportListXml(AppManager.Cache.AppState, contentType, Log);
+            => new ExportListXml(AppManager.AppState, contentType, Log);
         public ExportListXml Exporter(string contentType) 
-            => new ExportListXml(AppManager.Cache.AppState, AppManager.Read.ContentTypes.Get(contentType), Log);
+            => new ExportListXml(AppManager.AppState, AppManager.Read.ContentTypes.Get(contentType), Log);
 
         public ImportListXml Importer(
             string contentTypeName,

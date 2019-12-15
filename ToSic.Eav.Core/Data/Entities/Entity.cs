@@ -3,27 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Security;
 
 namespace ToSic.Eav.Data
 {
+    /// <summary>
+    /// A basic unit / item of data. Has many <see cref="IAttribute{T}"/>s which then contains <see cref="IValue{T}"/>s which are multi-language. 
+    /// </summary>
+    [PublicApi]
     public class Entity: EntityLight, IEntity
     {
 
         #region Basic properties like EntityId, Guid, IsPublished etc.
-        /// <summary>
-        /// Official title of this content-item
-        /// </summary>
+        /// <inheritdoc />
         public new IAttribute Title => TitleFieldName == null
             ? null
             : (Attributes?.ContainsKey(TitleFieldName) ?? false ? Attributes[TitleFieldName] : null);
 
 
 
-        /// <summary>
-        /// List of all attributes
-        /// </summary>
+        /// <inheritdoc />
         public Dictionary<string, IAttribute> Attributes {
             get => _attributes ?? (_attributes = LightAttributesForInternalUseOnlyForNow.ConvertToAttributes());
             set => _attributes = value;
@@ -33,23 +34,22 @@ namespace ToSic.Eav.Data
 
         #region IsPublished, DratEntity, PublishedEntity
         /// <inheritdoc />
+        [PrivateApi]
         public int RepositoryId { get; internal set; }
 
         /// <inheritdoc />
-        /// <summary>
-        /// Published/Draft status. If not published, it may be invisible, but there may also be another item visible ATM
-        /// </summary>
         public bool IsPublished { get; set; } = true;
 
         /// <summary>
         /// If this entity is published and there is a draft of it, then it can be navigated through DraftEntity
         /// </summary>
-		public IEntity DraftEntity { get; set; }
+        [PrivateApi]
+		internal IEntity DraftEntity { get; set; }
 
         /// <summary>
         /// If this entity is draft and there is a published edition, then it can be navigated through PublishedEntity
         /// </summary>
-        public IEntity PublishedEntity { get; internal set; }
+        internal IEntity PublishedEntity { get; set; }
 
         internal int? PublishedEntityId { get; set; } = null;
         #endregion
@@ -85,14 +85,17 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// special blank constructor for entity-builders
         /// </summary>
+        [PrivateApi]
         internal Entity() { }
 
+        [PrivateApi]
         public Entity(int appId, int entityId, Guid entityGuid, string contentType, Dictionary<string, object> values, string titleAttribute = null, DateTime? modified = null)
             : base(appId, entityId, entityGuid, new ContentType(appId, contentType), values, titleAttribute, modified)
         {
             MapAttributesInConstructor(values);
         }
 
+        [PrivateApi]
         public Entity(int appId, int entityId, IContentType contentType, Dictionary<string, object> values, string titleAttribute = null, DateTime? modified = null, Guid? entityGuid = null) 
             : base(appId, entityId, entityGuid, contentType, values, titleAttribute, modified)
         {
@@ -112,6 +115,7 @@ namespace ToSic.Eav.Data
         /// Create a brand new Entity. 
         /// Mainly used for entities which are created for later saving
         /// </summary>
+        [PrivateApi]
         public Entity(int appId, Guid entityGuid, IContentType contentType, Dictionary<string, object> values) 
             : this(appId, 0, contentType, values, entityGuid: entityGuid)
         {}
@@ -122,14 +126,7 @@ namespace ToSic.Eav.Data
             => GetBestValue(attributeName, new string[0], resolveHyperlinks);
 
 
-        /// <summary>
-        /// Retrieves the best possible value for an attribute or virtual attribute (like EntityTitle)
-        /// Automatically resolves the language-variations as well based on the list of preferred languages
-        /// </summary>
-        /// <param name="attributeName">Name of the attribute or virtual attribute</param>
-        /// <param name="languages">List of languages</param>
-        /// <param name="resolveHyperlinks"></param>
-        /// <returns>An object OR a null - for example when retrieving the title and no title exists</returns>
+        /// <inheritdoc />
         public object GetBestValue(string attributeName, string[] languages, bool resolveHyperlinks = false)
         {
             if (_useLightModel)
@@ -163,15 +160,21 @@ namespace ToSic.Eav.Data
             return result;
         }
 
+        /// <inheritdoc />
         public new TVal GetBestValue<TVal>(string name, bool resolveHyperlinks = false)
             => ChangeTypeOrDefault<TVal>(GetBestValue(name, resolveHyperlinks));
 
+        /// <inheritdoc />
         public TVal GetBestValue<TVal>(string name, string[] languages, bool resolveHyperlinks = false)
             => ChangeTypeOrDefault<TVal>(GetBestValue(name, resolveHyperlinks));
 
+        /// <inheritdoc />
+        [PrivateApi("not sure yet if this is final")]
         public object PrimaryValue(string attributeName, bool resolveHyperlinks = false)
             => GetBestValue(attributeName, new string[0], resolveHyperlinks);
 
+        /// <inheritdoc />
+        [PrivateApi("not sure yet if this is final")]
         public TVal PrimaryValue<TVal>(string attributeName, bool resolveHyperlinks = false)
             => GetBestValue<TVal>(attributeName, new string[0], resolveHyperlinks);
 
@@ -182,13 +185,7 @@ namespace ToSic.Eav.Data
         public string GetBestTitle(string[] dimensions) => GetBestTitle(dimensions, 0);
 
 
-        /// <summary>
-        /// Try to look up the title while also checking titles built with entities,
-        /// but make sure we don't recurse forever
-        /// </summary>
-        /// <param name="dimensions"></param>
-        /// <param name="recursionCount"></param>
-        /// <returns></returns>
+        /// <inheritdoc />
         internal string GetBestTitle(string[] dimensions, int recursionCount)
         {
             var bestTitle = GetBestValue(Constants.EntityFieldTitle, dimensions);
@@ -212,23 +209,30 @@ namespace ToSic.Eav.Data
 
         #region Metadata & Permissions
 
+        /// <inheritdoc />
         public IMetadataOf Metadata => _metadata ?? (_metadata =
                                                new MetadataOf<Guid>(Constants.MetadataForEntity, EntityGuid, DeferredLookupData));
         private IMetadataOf _metadata;
         internal IHasMetadataSource DeferredLookupData = null;
 
+        /// <inheritdoc />
         public IEnumerable<Permission> Permissions => Metadata.Permissions;
         #endregion
 
 
+        /// <inheritdoc />
+        [PrivateApi("don't publish yet, not really final")]
         public object Value(string field, bool resolve = true)
             => GetBestValue(field, new[] { Thread.CurrentThread.CurrentCulture.Name }, resolve);
 
+        /// <inheritdoc />
+        [PrivateApi("don't publish yet, not really final")]
         public T Value<T>(string field, bool resolve = true)
             => GetBestValue<T>(field, new[] { Thread.CurrentThread.CurrentCulture.Name }, resolve);
 
 
         #region IEntity Queryable / Quick
+        /// <inheritdoc />
         public List<IEntity> Children(string field = null, string type = null)
         {
             var list = Relationships
@@ -237,7 +241,7 @@ namespace ToSic.Eav.Data
             return list;
         }
 
-
+        /// <inheritdoc />
         public List<IEntity> Parents(string type = null, string field = null)
         {
             var list = Relationships

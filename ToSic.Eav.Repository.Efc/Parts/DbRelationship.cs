@@ -17,7 +17,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         internal void DoWhileQueueingRelationships(Action action)
         {
             var randomId = Guid.NewGuid().ToString().Substring(0, 4);
-            var wrapLog = Log.Call("DoWhileQueueingRelationships", $"relationship queue:{randomId} start");
+            var wrapLog = Log.Call($"relationship queue:{randomId} start");
 
             var willPurgeQueue = _outermostQueueCall;
             _outermostQueueCall = false;
@@ -49,7 +49,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         private void UpdateEntityRelationshipsAndSave(int attributeId, IEnumerable<int?> newValue, ToSicEavEntities currentEntity)
         {
-            var wrapLog = Log.Call("UpdateEntityRelationshipsAndSave", () => $"i:{currentEntity.EntityId}, attrib:{attributeId}, vals:[{string.Join(",", newValue)}]");
+            var wrapLog = Log.Call(() => $"i:{currentEntity.EntityId}, attrib:{attributeId}, vals:[{string.Join(",", newValue)}]");
             // remove existing Relationships that are not in new list
             var newEntityIds = newValue.ToList();
             var existingRelationships = currentEntity.RelationshipsWithThisAsParent
@@ -112,7 +112,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         internal void ImportRelationshipQueueAndSave()
         {
-            var wrapLog = Log.Call("ImportRelationshipQueueAndSave", "");
+            var wrapLog = Log.Call("");
             // if SaveOptions determines it, clear all existing relationships first
             var fullFlush = _saveQueue
                 .Where(r => r.FlushAllEntityRelationships)
@@ -164,7 +164,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         internal void FlushChildrenRelationships(List<int> parentIds)
         {
-            var wrapLog = Log.Call("FlushChildrenRelationships", $"{parentIds?.Count} items", "will do full-flush");
+            var wrapLog = Log.Call($"{parentIds?.Count} items", message: "will do full-flush");
             
             // Delete all existing relationships - but not the target, just the relationship
             // note: can't use .Clear(), as that will try to actually delete the children
@@ -205,7 +205,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         internal void SaveRelationships(IEntity eToSave, ToSicEavEntities dbEntity, List<ToSicEavAttributes> attributeDefs, SaveOptions so)
         {
-            var wrapLog = Log.Call("SaveRelationships", "");
+            var wrapLog = Log.Call("");
 
             // some initial error checking
             if(dbEntity.EntityId <= 0)

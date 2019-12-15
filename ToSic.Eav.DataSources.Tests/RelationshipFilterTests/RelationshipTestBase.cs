@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
@@ -92,8 +93,8 @@ namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
 
         protected RelationshipFilter BuildRelationshipFilter(int zone, int app, string primaryType, ILookUpEngine config = null)
         {
-            var baseDs = DataSource.GetInitialDataSource(zone, app, configProvider: config, parentLog: Log);
-            var appDs = DataSource.GetDataSource<App>(zone, app, baseDs, parentLog: Log);
+            var baseDs = DataSource.GetPublishing(new AppIdentity(zone,app) /*zone, app*/, configProvider: config, parentLog: Log);
+            var appDs = DataSource.GetDataSource<App>(baseDs, Log);
 
             // micro tests to ensure we have the right app etc.
             Assert.IsTrue(appDs.List.Count() > 20, "appDs.List.Count() > 20");
@@ -106,7 +107,8 @@ namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
 
             Assert.IsTrue(stream.List.Count() > 0, "stream.List.Count() > 0");
 
-            var relFilt = DataSource.GetDataSource<RelationshipFilter>(zone, app, null, appDs.ConfigurationProvider, parentLog: Log);
+            var relFilt = DataSource.GetDataSource<RelationshipFilter>(new AppIdentity(0, 0), null, 
+                appDs.Configuration.LookUps, parentLog: Log);
             relFilt.Attach(Constants.DefaultStreamName, stream);
             return relFilt;
         }

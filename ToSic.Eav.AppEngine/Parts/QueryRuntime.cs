@@ -17,7 +17,7 @@ namespace ToSic.Eav.Apps.Parts
         public static IEnumerable<DataSourceInfo> GetInstalledDataSources()
         {
             var result = new List<DataSourceInfo>();
-            var installedDataSources = DataSource.GetInstalledDataSources(true);
+            var installedDataSources = Catalog.GetAll(true);
             foreach (var dataSource in installedDataSources)
             {
                 #region Create Instance of DataSource to get In- and Out-Streams
@@ -25,7 +25,7 @@ namespace ToSic.Eav.Apps.Parts
                 if (!dataSource.Type.IsInterface && !dataSource.Type.IsAbstract)
                 {
                     var dataSourceInstance = (IDataSource)Activator.CreateInstance(dataSource.Type);
-                    if (dataSourceInstance.TempUsesDynamicOut) // skip this if out-connections cannot be queried
+                    if (dataSourceInstance.OutIsDynamic) // skip this if out-connections cannot be queried
                         outStreamNames = null;
                     else
                         try
@@ -62,7 +62,7 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="queryId"></param>
         /// <returns></returns>
         public QueryDefinition Get(int queryId) =>
-            new QueryDefinition(Eav.DataSources.Queries.QueryManager.GetQueryEntity(queryId, App.Cache), App.AppId);
+            new QueryDefinition(Eav.DataSources.Queries.QueryManager.GetQueryEntity(queryId, App./*Cache*/AppState), App.AppId, Log);
 
         public class DataSourceInfo
         {

@@ -12,7 +12,8 @@ namespace ToSic.Eav.LookUp
     [PublicApi]
     public class LookUpInLookUps: LookUpBase
     {
-        protected List<ILookUp> Providers = new List<ILookUp>(); 
+        [PrivateApi]
+        public List<ILookUp> Providers = new List<ILookUp>(); 
 
         /// <summary>
         /// Generate a lookup-of-lookups. 

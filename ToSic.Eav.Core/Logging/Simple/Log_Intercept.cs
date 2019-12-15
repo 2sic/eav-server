@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace ToSic.Eav.Logging.Simple
 {
@@ -11,10 +12,14 @@ namespace ToSic.Eav.Logging.Simple
         /// <param name="message"></param>
         /// <param name="generate"></param>
         /// <returns></returns>
-        public T Intercept<T>(string message, Func<T> generate)
+        public T Intercept<T>(string message, Func<T> generate,
+            [CallerFilePath] string cPath = null,
+            [CallerMemberName] string cName = null,
+            [CallerLineNumber] int cLine = 0
+            )
         {
             var result = generate();
-            var e = AddEntry($"{message}");
+            var e = AddInternal($"{message}", new CodeRef(cPath, cName, cLine));
             e.AppendResult($"{result}");
             return result;
         }

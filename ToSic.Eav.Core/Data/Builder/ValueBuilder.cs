@@ -25,7 +25,7 @@ namespace ToSic.Eav.Data.Builder
         public static IValue Build(ValueTypes type, object value, List<ILanguage> languages, IEntitiesSource fullEntityListForLookup = null)
         {
             if (languages == null) languages = new List<ILanguage>();
-            Value typedModel;
+            IValue typedModel;
             var stringValue = value as string;
             try
             {

@@ -1,5 +1,4 @@
 ﻿using System;
-using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 
@@ -10,7 +9,7 @@ namespace ToSic.Eav.Apps
     /// name, folder, data, metadata etc.
     /// </summary>
     [PublicApi]
-    public partial class App: AppIdentity, IApp
+    public partial class App: AppBase, IApp
     {
         [PrivateApi]
         public const int AutoLookupZone = -1;
@@ -40,16 +39,16 @@ namespace ToSic.Eav.Apps
             ILog parentLog, 
             string logMsg)
             // first, initialize the AppIdentity and log it's use
-            : base(zoneId, appId, parentLog, "App.2sxcAp", $"prep App z#{zoneId}, a#{appId}, allowSE:{allowSideEffects}, hasDataConfig:{buildConfiguration != null}, {logMsg}")
+            : base(zoneId, appId, new CodeRef(),  parentLog, "App.2sxcAp", $"prep App z#{zoneId}, a#{appId}, allowSE:{allowSideEffects}, hasDataConfig:{buildConfiguration != null}, {logMsg}")
         {
             // if zone is missing, try to find it; if still missing, throw error
             if (zoneId == AutoLookupZone) throw new Exception("Cannot find zone-id for portal specified");
 
             // Look up name in cache
-            var cache = (RootCacheBase) DataSource.GetCache(zoneId, appId);
-            AppDataPackage = cache.AppState; // for metadata
+            var cache = Factory.GetAppsCache();//.Resolve<IAppsCache>();
+            AppState = cache.Get(this); // for metadata
 
-            AppGuid = cache.ZoneApps[zoneId].Apps[appId];
+            AppGuid = cache.Zones[zoneId].Apps[appId];
 
             if (AppGuid == Constants.DefaultAppName)
                 Name = Folder = Constants.ContentAppName;

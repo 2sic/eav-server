@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Apps;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.UnitTests.DataSources;
 
@@ -15,7 +16,7 @@ namespace ToSic.Eav.DataSources.Tests.StreamMerge
         public void StreamMerge_In0()
         {
             var desiredFinds = 0;
-            var sf = DataSource.GetDataSource<DataSources.StreamMerge>(0, 0, configLookUp: new LookUpEngine());
+            var sf = DataSource.GetDataSource<DataSources.StreamMerge>(new AppIdentity(0, 0), null, configLookUp: new LookUpEngine());
             var found = sf.List.Count();
             Assert.AreEqual(desiredFinds, found, "Should find exactly this amount people");
         }
@@ -60,7 +61,7 @@ namespace ToSic.Eav.DataSources.Tests.StreamMerge
         private static DataSources.StreamMerge GenerateMergeDs(int desiredFinds)
         {
             var ds = DataTableDataSourceTest.GeneratePersonSourceWithDemoData(desiredFinds, 1001, true);
-            var sf = DataSource.GetDataSource<DataSources.StreamMerge>(0, 0, ds);
+            var sf = DataSource.GetDataSource<DataSources.StreamMerge>(new AppIdentity(0, 0), ds);
             return sf;
         }
     }

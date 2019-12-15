@@ -23,20 +23,21 @@ namespace ToSic.Eav.WebApi
         {
             IEnumerable<IEntity> entityList = null;
 
-            var appRun = new AppRuntime(appId, Log);
+            //var appRun = new AppRuntime(appId, Log);
+            var appState = Factory.GetAppState(appId);
 
             switch (keyType)
             {
                 case "guid":
                     if(Guid.TryParse(key, out var guidKey))
-                        entityList = appRun.Package.Get(targetType, guidKey, contentType);
+                        entityList = appState.Get(targetType, guidKey, contentType);
                     break;
                 case "string":
-                    entityList = appRun.Package.Get(targetType, key, contentType);
+                    entityList = appState.Get(targetType, key, contentType);
                     break;
                 case "number":
                     if(int.TryParse(key, out var keyInt))
-                        entityList = appRun.Package.Get(targetType, keyInt, contentType);
+                        entityList = appState.Get(targetType, keyInt, contentType);
                     break;
                 default:
                     throw new Exception("keytype unknown:" + keyType);

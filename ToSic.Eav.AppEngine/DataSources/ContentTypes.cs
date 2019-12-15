@@ -26,7 +26,7 @@ namespace ToSic.Eav.DataSources
                 "ToSic.Eav.DataSources.System.ContentTypes, ToSic.Eav.Apps"
             },
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-ContentTypes")]
-    [PublicApi]
+    [PrivateApi("probably should be in own SysInfo folder or something")]
     public sealed class ContentTypes: DataSourceBase
 	{
         #region Configuration-properties (no config)
@@ -78,9 +78,9 @@ namespace ToSic.Eav.DataSources
 
 	    private IEnumerable<IEntity> GetList()
 	    {
-            EnsureConfigurationIsLoaded();
+            Configuration.Parse();
 
-	        var appId = OfAppId;
+            var appId = OfAppId;
 
             var read = new AppRuntime(appId, Log);
 	        var scp = OfScope;
@@ -101,7 +101,14 @@ namespace ToSic.Eav.DataSources
 	                /* ignore */
 	            }
 
-	            return AsEntity(BuildDictionary(t), ContentTypeType.Name.ToString(), ContentTypeTypeName, t.ContentTypeId, guid, appId: OfAppId);// new Data.Entity(DesiredAppId, t.ContentTypeId, ContentTypeTypeName, BuildDictionary(t), ContentTypeType.Name.ToString(), entityGuid: guid);
+                return Build.Entity(BuildDictionary(t),
+                    appId:OfAppId, 
+                    id:t.ContentTypeId, 
+                    titleField: ContentTypeType.Name.ToString(),
+                    typeName: ContentTypeTypeName,
+                    guid: guid);
+
+	            //return AsEntity(BuildDictionary(t), ContentTypeType.Name.ToString(), ContentTypeTypeName, t.ContentTypeId, guid, appId: OfAppId);// new Data.Entity(DesiredAppId, t.ContentTypeId, ContentTypeTypeName, BuildDictionary(t), ContentTypeType.Name.ToString(), entityGuid: guid);
 	        });
 
 	        return list;

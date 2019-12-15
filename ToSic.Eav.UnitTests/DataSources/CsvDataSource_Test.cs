@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.DataSources.Configuration;
 using ToSic.Eav.TokenEngine.Tests.TestData;
 
 namespace ToSic.Eav.UnitTests.DataSources
@@ -124,9 +125,9 @@ namespace ToSic.Eav.UnitTests.DataSources
                 ContentType = contentType,
                 IdColumnName = idColumnName,
                 TitleColumnName = titleColumnName,
-                ConfigurationProvider = DemoConfigs.AppSetAndRes()
+                //ConfigurationProvider = DemoConfigs.AppSetAndRes()
             };
-            return source;
+            return source.Init(DemoConfigs.AppSetAndRes());
         }
     }
 }

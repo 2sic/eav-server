@@ -4,5 +4,7 @@
     {
         public const string PartAssemblyAndType = "PartAssemblyAndType";
         public const string VisualDesignerData = "VisualDesignerData";
+
+        public const string ParamsLookup = "Params";
     }
 }

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence;
@@ -10,13 +10,14 @@ using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
+using ToSic.Eav.Repositories;
 using ToSic.Eav.Repository.Efc.Parts;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Repository.Efc
 {
 
-    public class DbDataController : HasLog, IStorage
+    public class DbDataController : HasLog, IStorage, IAppIdentity
     {
         #region Extracted, now externalized objects with actions and private fields
 
@@ -215,10 +216,11 @@ namespace ToSic.Eav.Repository.Efc
         private void PurgeAppCacheIfReady()
         {
             if(_purgeAppCacheOnSave)
-                (_cache ?? (_cache = Factory.Resolve<IRootCache>())).PurgeCache(ZoneId, AppId);
+                Factory.GetAppsCache().Purge(this);
         }
 
-        private IRootCache _cache;
+        //public IAppsCache Cache => _cache ?? (_cache = Factory.Resolve<IAppsCache>());
+        //private IAppsCache _cache;
 
         #endregion
 
@@ -226,7 +228,7 @@ namespace ToSic.Eav.Repository.Efc
 
         internal void DoAndSave(Action action)
         {
-            var wrapLog = Log.Call("DoAndSave");
+            var wrapLog = Log.Call();
             action.Invoke();
             SqlDb.SaveChanges();
             wrapLog("completed");
@@ -237,7 +239,7 @@ namespace ToSic.Eav.Repository.Efc
         {
             var randomId = Guid.NewGuid().ToString().Substring(0, 4);
             var ownTransaction = SqlDb.Database.CurrentTransaction == null ? SqlDb.Database.BeginTransaction() : null;
-            var wrapLog = Log.Call("DoInTransaction", $"id:{randomId} - create new trans:{ownTransaction != null}");
+            var wrapLog = Log.Call($"id:{randomId} - create new trans:{ownTransaction != null}");
             try
             {
                 action.Invoke();
@@ -289,10 +291,6 @@ namespace ToSic.Eav.Repository.Efc
             History.Add("save-data", Log);
             return Entities.SaveEntity(entities, saveOptions);
         }
-
-
-        //public int Save(IEntity entity, SaveOptions saveOptions) 
-        //    => Entities.SaveEntity(entity, saveOptions);
 
         public void Save(List<IContentType> contentTypes, SaveOptions saveOptions)
             => ContentType.ExtendSaveContentTypes(contentTypes, saveOptions);

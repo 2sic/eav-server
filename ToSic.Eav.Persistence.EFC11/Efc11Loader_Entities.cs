@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
-using ToSic.Eav.Metadata;
 using AppState = ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.Persistence.Efc
@@ -24,9 +23,7 @@ namespace ToSic.Eav.Persistence.Efc
                 }
                 return _primaryLanguage;
             }
-            set {
-                _primaryLanguage = value;
-            }
+            set => _primaryLanguage = value;
         }
 
         private int[] GetEntityIdOfPartnerEntities(int[] repositoryIds)
@@ -43,7 +40,7 @@ namespace ToSic.Eav.Persistence.Efc
 
         private void LoadEntities(AppState app, int[] entityIds = null)
         {
-            // ToDo: do not use importexportenvironment - should create a IEnvironment (discuss w/2dm)
+            var wrapLog = Log.Call($"{app.AppId}, {entityIds?.Length ?? 0}", useTimer: true);
             
             var appId = app.AppId;
 
@@ -138,7 +135,7 @@ namespace ToSic.Eav.Persistence.Efc
                         Name = vg.First().Attribute.StaticName,
                         Values = vg
                             // The order of values is significant because the 2sxc system uses the first value as fallback
-                            // Because we can't ensure order of values when saving, order values: priorize values without
+                            // Because we can't ensure order of values when saving, order values: prioritize values without
                             // any dimensions, then values with primary language
                             .OrderByDescending(v2 => !v2.ToSicEavValuesDimensions.Any())
                             .ThenByDescending(v2 => v2.ToSicEavValuesDimensions.Any(l => string.Equals(l.Dimension.EnvironmentKey, PrimaryLanguage, StringComparison.InvariantCultureIgnoreCase)))
@@ -215,7 +212,7 @@ namespace ToSic.Eav.Persistence.Efc
                     #endregion
                 }
 
-                // If entity is a draft, add references to Published Entity
+                // If entity is a draft, also include references to Published Entity
                 app.Add(newEntity, e.PublishedEntityId);
 
             }
@@ -227,6 +224,7 @@ namespace ToSic.Eav.Persistence.Efc
 
 
             _sqlTotalTime = _sqlTotalTime.Add(sqlTime.Elapsed);
+            wrapLog("ok");
         }
 
     }

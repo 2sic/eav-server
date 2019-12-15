@@ -13,6 +13,6 @@ namespace ToSic.Eav.Metadata
         /// <summary>
         /// The metadata source
         /// </summary>
-        IMetadataSource Metadata { get; }
+        IMetadataSource MetadataSource { get; }
     }
 }

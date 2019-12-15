@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Data;
 using System.Linq;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.DataSources.Configuration;
 using ToSic.Eav.TokenEngine.Tests.TestData;
 using ToSic.Eav.TokenEngine.Tests.ValueProvider;
 using DataTable = ToSic.Eav.DataSources.DataTable;
@@ -86,9 +87,10 @@ namespace ToSic.Eav.UnitTests.DataSources
             AddSemirandomPersons(dataTable, itemsToGenerate, firstId);
 
             var source = new DataTable(dataTable, "Person", titleField: "FullName", modifiedField: "InternalModified")
-            {
-                ConfigurationProvider = DemoConfigs.AppSetAndRes()
-            };
+                .Init(DemoConfigs.AppSetAndRes());
+            //{
+            //    ConfigurationProvider = DemoConfigs.AppSetAndRes()
+            //};
 
             // now enumerate all, to be sure that the time counted for DS creation isn't part of the tracked test-time
             // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
@@ -150,9 +152,10 @@ namespace ToSic.Eav.UnitTests.DataSources
             AddSemirandomTrivial(dataTable, itemsToGenerate, firstId);
 
             var source = new DataTable(dataTable, "Person", modifiedField: "InternalModified")
-            {
-                ConfigurationProvider = DemoConfigs.AppSetAndRes()
-            };
+                .Init(DemoConfigs.AppSetAndRes());
+            //{
+            //    ConfigurationProvider = DemoConfigs.AppSetAndRes()
+            //};
 
             // now enumerate all, to be sure that the time counted for DS creation isn't part of the tracked test-time
             // ReSharper disable once ReturnValueOfPureMethodIsNotUsed

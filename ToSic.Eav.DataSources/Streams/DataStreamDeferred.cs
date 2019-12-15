@@ -6,7 +6,7 @@
     /// </summary>
     public class DataStreamDeferred: DataStream
     {
-        public DataStreamDeferred(IDataSource source, string name, GetIEnumerableDelegate lightListDelegate = null, bool enableAutoCaching = false) : base(source, name, lightListDelegate, enableAutoCaching)
+        public DataStreamDeferred(IDataSource source, string name, GetIEnumerableDelegate listDelegate = null, bool enableAutoCaching = false) : base(source, name, listDelegate, enableAutoCaching)
         {
         }
     }

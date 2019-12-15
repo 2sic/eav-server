@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSources.System.Types;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -65,13 +66,15 @@ namespace ToSic.Eav.DataSources.System
 
 	    private IEnumerable<IEntity> GetStreams()
 	    {
-	        EnsureConfigurationIsLoaded();
+            CustomConfigurationParse();
 
-	        return _query?.Out.OrderBy(stream => stream.Key).Select(stream
-                => AsEntity(new Dictionary<string, object>
+            return _query?.Out.OrderBy(stream => stream.Key).Select(stream
+                => /*AsEntity*/Build.Entity(new Dictionary<string, object>
                            {
                                {StreamsType.Name.ToString(), stream.Key}
-                           }, StreamsType.Name.ToString(), QueryStreamsContentType)
+                           }, 
+                    titleField: StreamsType.Name.ToString(), 
+                    typeName:QueryStreamsContentType)
                        //=> new Data.Entity(AppId, 0, QueryStreamsContentType,
                        //    new Dictionary<string, object>
                        //    {
@@ -84,26 +87,26 @@ namespace ToSic.Eav.DataSources.System
 
 	    private IEnumerable<IEntity> GetAttributes()
 	    {
-            EnsureConfigurationIsLoaded();
+            CustomConfigurationParse();
 
             // no query can happen if the name was blank
-            if(_query == null)
+            if (_query == null)
                 return new List<IEntity>();
 
             // check that _query has the stream name
             if(!_query.Out.ContainsKey(StreamName))
                 return new List<IEntity>();
 
-	        var attribInfo = DataSource.GetDataSource<Attributes>(upstream: _query, configLookUp:_query.ConfigurationProvider);
+	        var attribInfo = DataSource.GetDataSource<Attributes>(_query/*, configLookUp:_query.ConfigurationProvider*/);
             if(StreamName != Constants.DefaultStreamName)
                 attribInfo.Attach(Constants.DefaultStreamName, _query[StreamName]);
 
 	        return attribInfo.List;
         }
 
-	    protected internal override void EnsureConfigurationIsLoaded()
+	    private void CustomConfigurationParse()
 	    {
-	        base.EnsureConfigurationIsLoaded();
+            Configuration.Parse();
             BuildQuery();
 	    }
 
@@ -116,13 +119,14 @@ namespace ToSic.Eav.DataSources.System
             // important, use "Name" and not get-best-title, as some queries may not be correctly typed, so missing title-info
             var found = QueryName.StartsWith(GlobalQueries.GlobalQueryPrefix)
                 ? GlobalQueries.FindQuery(QueryName)
-                : QueryManager.AllQueryItems(AppId, Log)
+                : QueryManager.AllQueryItems(/*AppId*/this, Log)
                     .FirstOrDefault(q => string.Equals(q.GetBestValue("Name").ToString(), QueryName,
                         StringComparison.InvariantCultureIgnoreCase));
 
             if (found == null) throw new Exception($"Can't build information about query - couldn't find query '{QueryName}'");
 
-            _query = new QueryBuilder(Log).GetDataSourceForTesting(new QueryDefinition(found, AppId), false, ConfigurationProvider);
+            _query = new QueryBuilder(Log).GetDataSourceForTesting(new QueryDefinition(found, AppId, Log), 
+                false, Configuration.LookUps);
         }
 
 	    private IDataSource _query;

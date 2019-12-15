@@ -27,7 +27,7 @@ namespace ToSic.Eav.TokenEngine.Tests.ValueProvider
             Assert.AreEqual(OriginalSettingDefaultCat, settings["DefaultCategory"]);
             Assert.AreEqual(OriginalSettingMaxItems, settings["MaxItems"]);
 
-            vc.LoadConfiguration(settings);
+            settings = vc.LookUp(settings);
 
             Assert.AreEqual(ResolvedSettingDefaultCat, settings["DefaultCategory"], "Default should be all");
             Assert.AreEqual(ResolvedSettingMaxItems, settings["MaxItems"], "Max should be 100");
@@ -36,7 +36,7 @@ namespace ToSic.Eav.TokenEngine.Tests.ValueProvider
 
 
 
-        public Dictionary<string, string> Settings()
+        public IDictionary<string, string> Settings()
         {
             return new Dictionary<string, string>()
             {
@@ -47,10 +47,10 @@ namespace ToSic.Eav.TokenEngine.Tests.ValueProvider
             };
         }
 
-        public Dictionary<string, string> ResolvedSettings()
+        public IDictionary<string, string> ResolvedSettings()
         {
             var settings = Settings();
-            DemoConfigs.AppSetAndRes().LoadConfiguration(settings);
+            DemoConfigs.AppSetAndRes().LookUp(settings);
             return settings;
         }
     }

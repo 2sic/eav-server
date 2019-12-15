@@ -20,6 +20,7 @@ namespace ToSic.Eav.DataSources.Caching
         private static readonly ConcurrentDictionary<string, object> LoadLocks
              = new ConcurrentDictionary<string, object>();
 
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -58,7 +59,7 @@ namespace ToSic.Eav.DataSources.Caching
         /// <returns></returns>
         private ListCacheItem GetValidCacheItemOrNull(IDataStream dataStream)
         {
-            var wrapLog = Log.Call(nameof(GetValidCacheItemOrNull));
+            var wrapLog = Log.Call();
             // Check if it's in the cache, and if it requires re-loading
             var key = CacheKey(dataStream);
             var itemInCache = Get(key);
@@ -72,7 +73,7 @@ namespace ToSic.Eav.DataSources.Caching
         public ListCacheItem GetOrBuild(IDataStream stream, Func<IEnumerable<IEntity>> builderFunc,
             int durationInSeconds = 0)
         {
-            var wrapLog = Log.Call<ListCacheItem>(nameof(GetOrBuild));
+            var wrapLog = Log.Call<ListCacheItem>();
             var key = CacheKey(stream);
 
             var cacheItem = GetValidCacheItemOrNull(stream);

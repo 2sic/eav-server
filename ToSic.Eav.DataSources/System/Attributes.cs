@@ -55,9 +55,9 @@ namespace ToSic.Eav.DataSources.System
 
 	    private IEnumerable<IEntity> GetList()
 	    {
-            EnsureConfigurationIsLoaded();
+            Configuration.Parse();
 
-	        IContentType type;
+            IContentType type;
             // try to load the content-type - if it fails, return empty list
 	        if (string.IsNullOrWhiteSpace(ContentTypeName)) return new List<IEntity>();
 
@@ -68,7 +68,7 @@ namespace ToSic.Eav.DataSources.System
 
 	        type = useStream 
                 ? optionalList?.FirstOrDefault()?.Type 
-                : DataSource.GetCache(ZoneId, AppId).GetContentType(ContentTypeName);
+                : /* DataSource.GetCache(ZoneId, AppId)*/Factory.GetAppState(this).GetContentType(ContentTypeName);
 
 	        // try to load from type, if it exists
 	        var list = type?.Attributes?.OrderBy(at => at.Name).Select(BuildDictionary).ToList();
@@ -86,7 +86,12 @@ namespace ToSic.Eav.DataSources.System
 
             // if it didn't work yet, maybe try from stream items
 
-	        return list?.Select(attribData => AsEntity(attribData, AttributeType.Name.ToString(), AttribContentTypeName) // new Data.Entity(AppId, 0, AttribContentTypeName, attribData, AttributeType.Name.ToString())
+	        return list?.Select(attribData => 
+            Build.Entity(attribData,
+                titleField: AttributeType.Name.ToString(), 
+                typeName: AttribContentTypeName)
+                           //AsEntity(attribData, AttributeType.Name.ToString(), AttribContentTypeName)
+                       // new Data.Entity(AppId, 0, AttribContentTypeName, attribData, AttributeType.Name.ToString())
             ) 
                 ?? new List<IEntity>();
         }

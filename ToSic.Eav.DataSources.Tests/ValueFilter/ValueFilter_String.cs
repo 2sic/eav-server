@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
+using ToSic.Eav.Apps;
 using ToSic.Eav.UnitTests.DataSources;
 
 namespace ToSic.Eav.DataSources.Tests
@@ -239,7 +240,7 @@ namespace ToSic.Eav.DataSources.Tests
         public static  ValueFilter CreateValueFilterForTesting(int testItemsInRootSource)
         {
             var ds = DataTableDataSourceTest.GeneratePersonSourceWithDemoData(testItemsInRootSource, 1001);
-            var filtered = Eav.DataSource.GetDataSource<ValueFilter>(1, 1, ds);
+            var filtered = Eav.DataSource.GetDataSource<ValueFilter>(new AppIdentity(1, 1), ds);
             return filtered;
         }
     }

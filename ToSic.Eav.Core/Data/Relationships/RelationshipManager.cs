@@ -59,7 +59,7 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
 	    public List<IEntity> FindChildren(string field = null, string type = null, ILog log = null)
 	    {
-            var wrap = log?.Call("RelMan.FindChildren", $"field:{field}; type:{type}");
+            var wrap = log?.Call(parameters: $"field:{field}; type:{type}");
 	        List<IEntity> rels;
 	        if (string.IsNullOrEmpty(field))
 	            rels = ChildRelationships().Select(r => r.Child).ToList();
@@ -90,7 +90,7 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         public List<IEntity> FindParents(string type = null, string field = null, ILog log = null)
 	    {
-	        var wrap = log?.Call("RelMan.FindParents", $"type:{type}; field:{field}");
+	        var wrap = log?.Call(parameters: $"type:{type}; field:{field}");
             var list = ParentRelationships();
 	        if (!string.IsNullOrEmpty(type))
 	            list = list.Where(r => r.Parent.Type.Is(type));

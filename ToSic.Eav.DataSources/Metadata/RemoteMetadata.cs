@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Documentation;
+﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Documentation;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Metadata
@@ -14,11 +15,11 @@ namespace ToSic.Eav.Metadata
     public class RemoteMetadata: IRemoteMetadata
     {
         /// <inheritdoc />
-       public IMetadataSource OfZoneAndApp(int zoneId, int appId) 
-            => DataSource.GetMetaDataSource(zoneId, appId);
+        public IMetadataSource OfZoneAndApp(int zoneId, int appId)
+            => Factory.GetAppState(new AppIdentity(zoneId, appId));// DataSource.GetMetaDataSource(zoneId, appId);
 
         /// <inheritdoc />
-        public IMetadataSource OfApp(int appId) 
-            => DataSource.GetMetaDataSource(null, appId);
+        public IMetadataSource OfApp(int appId)
+            => Factory.GetAppState(appId);// DataSource.GetMetaDataSource(null, appId);
     }
 }

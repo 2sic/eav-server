@@ -17,12 +17,9 @@ namespace ToSic.Eav.Apps
     /// It also manages and caches relationships between entities of the same app.
     /// </summary>
     [PublicApi]
-    public partial class AppState: HasLog, IInApp
+    public partial class AppState: AppBase// , IAppIdentityLight
 	{
-
-		#region public properties like AppId, Entities, List, Publisheentities, DraftEntities, 
-        /// <inheritdoc />
-        public int AppId { get; }
+        #region public properties like AppId, Entities, List, Publisheentities, DraftEntities, 
 
 	    /// <summary>
 	    /// The simple list of <em>all</em> entities, used everywhere
@@ -57,22 +54,32 @@ namespace ToSic.Eav.Apps
         /// </summary>
         public AppRelationshipManager Relationships { get; }
 
-	    private bool _loading;
-	    private bool _firstLoadCompleted;
-        [PrivateApi]
+        /// <summary>
+        /// Shows that the app is loading / building up the data.
+        /// </summary>
+        protected bool Loading; 
+
+        /// <summary>
+        /// Shows that the initial load has completed
+        /// </summary>
+	    protected bool FirstLoadCompleted;
+
+        /// <summary>
+        /// Show how many times the app has been Dynamically updated - in case we run into cache rebuild problems.
+        /// </summary>
 	    public int DynamicUpdatesCount;
 		#endregion
 
 
         [PrivateApi("constructor, internal use only")]
-        internal AppState(int appId, ILog parentLog): base($"App.Pkg{appId}", parentLog, $"start build package for {appId}")
+        internal AppState(IAppIdentity app, ILog parentLog)
+            : base(app, new CodeRef(), parentLog, $"App.St-{app.AppId}",$"start build {nameof(AppState)} {app.AppId}")
 	    {
-	        AppId = appId;
             CacheResetTimestamp();  // do this very early, as this number is needed elsewhere
 
 	        Index = new Dictionary<int, IEntity>();
             Relationships = new AppRelationshipManager(this);
-	        History.Add("app-data-cache", Log);
+	        History.Add("app-state", Log);
         }
 
         /// <summary>
@@ -83,7 +90,7 @@ namespace ToSic.Eav.Apps
         [PrivateApi("internal use only")]
         internal void InitMetadata(ImmutableDictionary<int, string> metadataTypes)
 	    {
-            if(!_loading)
+            if(!Loading)
                 throw new Exception("trying to init metadata, but not in loading state. set that first!");
 	        Metadata = _appTypesFromRepository == null
 	            ? new AppMetadataManager(this, metadataTypes, Log)
@@ -96,19 +103,19 @@ namespace ToSic.Eav.Apps
         /// </summary>
 	    internal void Add(Entity newEntity, int? publishedId)
 	    {
-	        if (!_loading)
+            if (!Loading)
 	            throw new Exception("trying to add entity, but not in loading state. set that first!");
 
             if (newEntity.RepositoryId == 0)
                 throw new Exception("Entities without real ID not supported yet");
 
-            CacheResetTimestamp(); 
+            //CacheResetTimestamp(); 
 	        RemoveObsoleteDraft(newEntity);
             Index[newEntity.RepositoryId] = newEntity; // add like this, it could also be an update
 	        MapDraftToPublished(newEntity, publishedId);
             Metadata.Register(newEntity);
 
-	        if (_firstLoadCompleted)
+	        if (FirstLoadCompleted)
 	            DynamicUpdatesCount++;
 
 	        Log.Add($"added entity {newEntity.EntityId} for published {publishedId}; dyn-update#{DynamicUpdatesCount}");
@@ -119,9 +126,11 @@ namespace ToSic.Eav.Apps
         /// </summary>
 	    internal void RemoveAllItems()
         {
+            if (!Loading)
+                throw new Exception("trying to init metadata, but not in loading state. set that first!");
             Log.Add("remove all items");
 	        Index.Clear();
-            CacheResetTimestamp(); 
+            //CacheResetTimestamp(); 
             Metadata.Reset();
 	    }
 
@@ -173,15 +182,20 @@ namespace ToSic.Eav.Apps
 
 
 	    internal void Load(ILog parentLog, Action loader)
-	    {
-	        _loading = true;
+        {
+            var wrapLog = Log.Call(message: $"zone/app:{ZoneId}/{AppId}", useTimer: true);
+	        Loading = true;
+            // temporarily link logs, to put messages in both logs
             Log.LinkTo(parentLog);
 	        Log.Add("app loading start");
 	        loader.Invoke();
-	        _loading = false;
-	        _firstLoadCompleted = true;
+            CacheResetTimestamp();
+	        Loading = false;
+            FirstLoadCompleted = true;
 	        Log.Add($"app loading done - dynamic load count: {DynamicUpdatesCount}");
+            // detach logs again, to prevent memory leaks
 	        Log.LinkTo(null);
+            wrapLog("ok");
         }
 
     }

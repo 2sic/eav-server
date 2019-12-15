@@ -77,7 +77,7 @@ namespace ToSic.Eav.Apps.Parts
         }
 
         private JsonSerializer Serializer 
-            => _serializer ?? (_serializer = new JsonSerializer(AppManager.Package, Log));
+            => _serializer ?? (_serializer = new JsonSerializer(AppManager.AppState, Log));
         private JsonSerializer _serializer;
 
         public bool Delete(int id)
@@ -89,8 +89,8 @@ namespace ToSic.Eav.Apps.Parts
 
 
             // Get the Entity describing the Query and Query Parts (DataSources)
-            var queryEntity = Eav.DataSources.Queries.QueryManager.GetQueryEntity(id, AppManager.Cache);
-            var qDef = new QueryDefinition(queryEntity, AppManager.AppId);
+            var queryEntity = Eav.DataSources.Queries.QueryManager.GetQueryEntity(id, AppManager./*Cache*/AppState);
+            var qDef = new QueryDefinition(queryEntity, AppManager.AppId, Log);
 
             var mdItems = qDef.Parts// parts
                 .Select(ds => ds.Entity.Metadata.FirstOrDefault())

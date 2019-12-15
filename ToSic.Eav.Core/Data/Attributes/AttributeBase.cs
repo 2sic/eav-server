@@ -6,18 +6,22 @@ using ToSic.Eav.Documentation;
 namespace ToSic.Eav.Data
 {
     /// <summary>
-    /// Represents an Attribute containing <see cref="IValue"/> of a Generic (unknown) inner type
+    /// Represents an Attribute Definition. Used in Content-Types and IEntities.
     /// </summary>
     /// <remarks>
-    /// > We recommend you read about the @Articles.EavCoreDataModels
+    /// > We recommend you read about the @Specs.Data.Intro
     /// </remarks>
+    [PublicApi]
     public class AttributeBase : IAttributeBase
     {
+        /// <inheritdoc />
         public string Name { get; set; }
+        /// <inheritdoc />
         public string Type { get; set; }
 
         private ValueTypes _controlledType = ValueTypes.Undefined;
 
+        [PrivateApi]
         public ValueTypes ControlledType
         {
             get => _controlledType != ValueTypes.Undefined 

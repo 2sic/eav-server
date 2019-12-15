@@ -23,9 +23,9 @@ namespace ToSic.Eav.Apps
 	    /// </summary>
 	    /// <param name="contentTypes"></param>
 	    internal void InitContentTypes(IList<IContentType> contentTypes)
-	    {
-	        Log.Add($"initialize content types for {contentTypes?.Count} types");
-	        if (!_loading)
+        {
+            var wrapLog = Log.Call(message: $"init content types {contentTypes?.Count}", useTimer: true);
+	        if (!Loading)
 	            throw new Exception("trying to set content-types, but not in loading state. set that first!");
 
             if (Metadata == null || List.Any())
@@ -36,12 +36,13 @@ namespace ToSic.Eav.Apps
 	        // build types by name
 	        BuildCacheForTypesByName(_appTypesFromRepository);
 	        ContentTypesShouldBeReloaded = false;
-	    }
+            wrapLog("ok");
+        }
 
 
         private void BuildCacheForTypesByName(IList<IContentType> allTypes)
         {
-            Log.Add($"build cache for type names for {allTypes.Count} items");
+            var wrapLog = Log.Call(message: $"build cache for type names for {allTypes.Count} items", useTimer: true);
 	        _appTypesByName = new Dictionary<string, IContentType>(StringComparer.InvariantCultureIgnoreCase);
 
 	        var keepTypes = allTypes;
@@ -55,7 +56,8 @@ namespace ToSic.Eav.Apps
 	        foreach (var type in keepTypes)
 	            if (!_appTypesByName.ContainsKey(type.Name))
 	                _appTypesByName.Add(type.Name, type);
-	    }
+            wrapLog("ok");
+        }
 
 	    private static ImmutableList<IContentType> RemoveAliasesForGlobalTypes(IList<IContentType> allTypes)
 	    {

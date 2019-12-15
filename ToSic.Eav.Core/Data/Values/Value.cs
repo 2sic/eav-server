@@ -1,13 +1,14 @@
 using System.Collections.Generic;
-using ToSic.Eav.Interfaces;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Data
 {
     /// <summary>
-    /// Represents a Value
+    /// The base class for Values  
     /// </summary>
+    [PrivateApi("probably not for public use, as it's too basic and has no significance")]
     public class Value
     {
-        public IList<ILanguage> Languages { get; set; }
+        //public IList<ILanguage> Languages { get; set; }
     }
 }

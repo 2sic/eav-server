@@ -9,7 +9,7 @@ namespace ToSic.Eav.Data
 	/// Represents a Content Type information (the schema) used for <see cref="IEntity"/> objects.
 	/// </summary>
 	[PublicApi]
-	public interface IContentType: IInApp
+	public interface IContentType: IAppIdentityLight
 	{
 
         /// <summary>

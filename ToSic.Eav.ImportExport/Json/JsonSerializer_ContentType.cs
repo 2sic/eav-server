@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using Newtonsoft.Json;
 using ToSic.Eav.Data;
-using ToSic.Eav.ImportExport.Json.Format;
+using ToSic.Eav.ImportExport.Json.V1;
 
 namespace ToSic.Eav.ImportExport.Json
 {
@@ -25,19 +25,27 @@ namespace ToSic.Eav.ImportExport.Json
 
             var jsonSerializer = new JsonSerializer();
 
-            var attribs = contentType.Attributes.OrderBy(a => a.SortOrder).Select(a => new JsonAttributeDefinition
-            {
-                Name = a.Name,
-                Type = a.Type,
-                InputType = a.InputType(),
-                IsTitle = a.IsTitle,
-                Metadata = a.Metadata
-                    ?.Select(dt => jsonSerializer.ToJson(dt)) /* important: must write the method with params, otherwise default param metadata = 1 instead of 0*/
-                    .ToList()
-            }).ToList();
+            var attribs = contentType.Attributes
+                .OrderBy(a => a.SortOrder)
+                .Select(a => new JsonAttributeDefinition
+                {
+                    Name = a.Name,
+                    Type = a.Type,
+                    InputType = a.InputType(),
+                    IsTitle = a.IsTitle,
+                    Metadata = a.Metadata
+                        ?.Select(dt =>
+                            jsonSerializer
+                                .ToJson(dt)) /* important: must write the method with params, otherwise default param metadata = 1 instead of 0*/
+                        .ToList()
+                })
+                .ToList();
 
             // clean up metadata info on this metadata list, as it's already packed inside something it's related to
-            attribs.Where(a => a.Metadata != null).SelectMany(a => a.Metadata).ToList().ForEach(e => e.For = null);
+            attribs.Where(a => a.Metadata != null)
+                .SelectMany(a => a.Metadata)
+                .ToList()
+                .ForEach(e => e.For = null);
 
             var typeIsShared = sharableCt != null && (sharableCt.AlwaysShareConfiguration ||
                                                       sharableCt.ParentId.HasValue && sharableCt.ParentId !=

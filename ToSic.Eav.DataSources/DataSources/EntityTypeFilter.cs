@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Interfaces;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -55,13 +53,13 @@ namespace ToSic.Eav.DataSources
 
 	    private IEnumerable<IEntity> GetList()
 	    {
-	        EnsureConfigurationIsLoaded();
-	        Log.Add($"get list with type:{TypeName}");
+            Configuration.Parse();
+            Log.Add($"get list with type:{TypeName}");
 
 	        try
-	        {
-	            var cache = DataSource.GetCache(ZoneId, AppId);
-	            var foundType = cache?.GetContentType(TypeName);
+            {
+                var appState = Factory.GetAppState(this);//  Root.AppState;// DataSource.GetCache(ZoneId, AppId);
+	            var foundType = appState?.GetContentType(TypeName);
 	            if (foundType != null) // maybe it doesn't find it!
 	                return (from e in In[Constants.DefaultStreamName].List
 	                    where e.Type == foundType

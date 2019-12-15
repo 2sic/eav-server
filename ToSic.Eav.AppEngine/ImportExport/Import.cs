@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Interfaces;
@@ -27,8 +26,8 @@ namespace ToSic.Eav.Apps.ImportExport
         internal IStorage Storage;
         public SaveOptions SaveOptions;
 
-        private int AppId;
-        private int ZoneId;
+        private readonly int AppId;
+        private readonly int ZoneId;
 
         #endregion
 
@@ -37,7 +36,9 @@ namespace ToSic.Eav.Apps.ImportExport
         /// </summary>
         public Import(int? zoneId, int appId, bool skipExistingAttributes = true, bool preserveUntouchedAttributes = true, ILog parentLog = null): base("Eav.Import", parentLog, "constructor")
         {
-            App = zoneId.HasValue ? new AppManager(zoneId.Value, appId) : new AppManager(appId, Log);
+            App = zoneId.HasValue
+                ? new AppManager(new AppIdentity(zoneId.Value, appId), Log)
+                : new AppManager(appId, Log);
             Storage = App.Storage;
 
             // now save the resolved zone/app IDs
@@ -69,7 +70,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     if (newAttributeSets != null)
                         Storage.DoWhileQueuingVersioning(() =>
                         {
-                            _entireApp = Storage.Loader.AppPackage(AppId, parentLog:Log); // load everything, as content-type metadata is normal entities
+                            _entireApp = Storage.Loader.AppState(AppId, parentLog:Log); // load everything, as content-type metadata is normal entities
                             var newSetsList = newAttributeSets.ToList();
                             // first: import the attribute sets in the system scope, as they may be needed by others...
                             // ...and would need a cache-refresh before 
@@ -77,7 +78,7 @@ namespace ToSic.Eav.Apps.ImportExport
                             if (sysAttributeSets.Any())
                                 MergeAndSaveContentTypes(sysAttributeSets);
 
-                            _entireApp = Storage.Loader.AppPackage(AppId, parentLog: Log); // load everything, as content-type metadata is normal entities
+                            _entireApp = Storage.Loader.AppState(AppId, parentLog: Log); // load everything, as content-type metadata is normal entities
 
                             // now the remaining attributeSets
                             var nonSysAttribSets = newSetsList.Where(a => !sysAttributeSets.Contains(a)).ToList();
@@ -91,7 +92,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
                     if (newEntities != null)
                     {
-                        _entireApp = Storage.Loader.AppPackage(AppId, parentLog: Log); // load all entities
+                        _entireApp = Storage.Loader.AppState(AppId, parentLog: Log); // load all entities
                         newEntities = newEntities
                             .Select(entity => CreateMergedForSaving(entity, _entireApp, SaveOptions))
                             .Where(e => e != null).ToList();

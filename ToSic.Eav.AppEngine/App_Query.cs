@@ -12,7 +12,7 @@ namespace ToSic.Eav.Apps
         /// Cached list of queries
         /// </summary>
         [PrivateApi]
-        protected IDictionary<string, IDataSource> Queries;
+        protected IDictionary<string, IQuery> Queries;
 
         /// <summary>
         /// Accessor to queries. Use like:
@@ -21,7 +21,7 @@ namespace ToSic.Eav.Apps
         /// - App.Query["One Event"].List
         /// </summary>
         /// <inheritdoc />
-        public IDictionary<string, IDataSource> Query
+        public IDictionary<string, IQuery> Query
         {
             get
             {
@@ -29,7 +29,7 @@ namespace ToSic.Eav.Apps
 
                 if (ConfigurationProvider == null)
                     throw new Exception("Can't use app-queries, because the necessary configuration provider hasn't been initialized. Call InitData first.");
-                Queries = QueryManager.AllQueries(ZoneId, AppId, ConfigurationProvider, Log, ShowDrafts);
+                Queries = QueryManager.AllQueries(/*ZoneId, AppId*/this, ConfigurationProvider, Log, ShowDrafts);
                 return Queries;
             }
         }
@@ -52,7 +52,7 @@ namespace ToSic.Eav.Apps
         {
             var qent = GlobalQueries.FindQuery(name) 
                 ?? throw new Exception($"can't find global query {name}");
-            return new Query(ZoneId, AppId, qent, ConfigurationProvider, ShowDrafts);
+            return new Query(ZoneId, AppId, qent, ConfigurationProvider, ShowDrafts, Log);
         }
     }
 }

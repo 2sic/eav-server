@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.DataSources.Configuration;
 using ToSic.Eav.TokenEngine.Tests.TestData;
 using ToSic.Eav.TokenEngine.Tests.ValueProvider;
 using ToSic.Testing.Shared;
@@ -20,10 +21,11 @@ namespace ToSic.Eav.UnitTests
         {
             var initQuery = "Select * From Products";
             var sql = GenerateSqlDataSource(ConnectionDummy, initQuery, ContentTypeName);
-            var configCountBefore = sql.Configuration.Count;
-            sql.EnsureConfigurationIsLoaded();
+            var config = sql.Configuration.Values;
+            var configCountBefore = config.Count;
+            sql.Configuration.Parse(); 
 
-            Assert.AreEqual(configCountBefore, sql.Configuration.Count);
+            Assert.AreEqual(configCountBefore, config.Count);
             Assert.AreEqual(initQuery, sql.SelectCommand);
         }
 
@@ -34,12 +36,14 @@ namespace ToSic.Eav.UnitTests
             var initQuery = "Select * From Products Where ProductId = [QueryString:Id]";
             var expectedQuery = "Select * From Products Where ProductId = @" + Sql.ExtractedParamPrefix + "1";
             var sql = GenerateSqlDataSource(ConnectionDummy, initQuery, ContentTypeName);
-            var configCountBefore = sql.Configuration.Count;
-            sql.EnsureConfigurationIsLoaded();
+            var config = sql.Configuration.Values;
 
-            Assert.AreEqual(configCountBefore + 1, sql.Configuration.Count);
+            var configCountBefore = config.Count;
+            sql.Configuration.Parse();
+
+            Assert.AreEqual(configCountBefore + 1, config.Count);
             Assert.AreEqual(expectedQuery, sql.SelectCommand);
-            Assert.AreEqual("", sql.Configuration["@" + Sql.ExtractedParamPrefix + "1"]);
+            Assert.AreEqual("", config["@" + Sql.ExtractedParamPrefix + "1"]);
         }
 
         [TestMethod]
@@ -55,14 +59,15 @@ Where CatName = @" + Sql.ExtractedParamPrefix + @"2
 And ProductSort = @" + Sql.ExtractedParamPrefix + @"3";
 
             var sql = GenerateSqlDataSource(ConnectionDummy, initQuery, ContentTypeName);
-            var configCountBefore = sql.Configuration.Count;
-            sql.EnsureConfigurationIsLoaded();
+            var config = sql.Configuration.Values;
+            var configCountBefore = config.Count;
+            sql.Configuration.Parse();
 
-            Assert.AreEqual(configCountBefore + 3, sql.Configuration.Count);
+            Assert.AreEqual(configCountBefore + 3, config.Count);
             Assert.AreEqual(expectedQuery, sql.SelectCommand);
-            Assert.AreEqual(ValueCollectionProvider_Test.MaxPictures, sql.Configuration["@" + Sql.ExtractedParamPrefix + "1"]);
-            Assert.AreEqual(ValueCollectionProvider_Test.DefaultCategory, sql.Configuration["@" + Sql.ExtractedParamPrefix + "2"]);
-            Assert.AreEqual("CorrectlyDefaulted", sql.Configuration["@" + Sql.ExtractedParamPrefix + "3"]);
+            Assert.AreEqual(ValueCollectionProvider_Test.MaxPictures, config["@" + Sql.ExtractedParamPrefix + "1"]);
+            Assert.AreEqual(ValueCollectionProvider_Test.DefaultCategory, config["@" + Sql.ExtractedParamPrefix + "2"]);
+            Assert.AreEqual("CorrectlyDefaulted", config["@" + Sql.ExtractedParamPrefix + "3"]);
         }
 
         #endregion
@@ -114,7 +119,8 @@ And ProductSort = @" + Sql.ExtractedParamPrefix + @"3";
         public static Sql GenerateSqlDataSource(string connection, string query, string typeName)
         {
             var source = new Sql(connection, query, typeName);
-            source.ConfigurationProvider = DemoConfigs.AppSetAndRes();
+            source.Init(DemoConfigs.AppSetAndRes());
+            //source.ConfigurationProvider = DemoConfigs.AppSetAndRes();
 
             return source;
         }

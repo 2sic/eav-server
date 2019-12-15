@@ -74,7 +74,7 @@ namespace ToSic.Eav.WebApi
             Log.Add($"get fields a#{appId}, type:{name}");
             var appManager = new AppManager(appId, Log);
             var type = appManager.Read.ContentTypes.Get(name);
-            var serializer = new JsonSerializer(appManager.Package, Log);
+            var serializer = new JsonSerializer(appManager.AppState, Log);
 
             return Download.BuildDownload(serializer.Serialize(type),
                 (type.Scope + "." + type.StaticName + ImpExpConstants.Extension(ImpExpConstants.Files.json))
@@ -87,7 +87,7 @@ namespace ToSic.Eav.WebApi
             Log.Add($"get fields a#{appId}, id:{id}");
             var appManager = new AppManager(appId, Log);
             var entity = appManager.Read.Entities.Get(id);
-            var serializer = new JsonSerializer(appManager.Package, Log);
+            var serializer = new JsonSerializer(appManager.AppState, Log);
 
             return Download.BuildDownload(
                 serializer.Serialize(entity, withMetadata ? FileSystemLoader.QueryMetadataDepth : 0),

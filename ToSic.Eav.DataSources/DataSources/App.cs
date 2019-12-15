@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Metadata;
 using static System.Int32;
 
@@ -71,8 +69,8 @@ namespace ToSic.Eav.DataSources
 		{
 			get
 			{
-                EnsureConfigurationIsLoaded();
-				if (_requiresRebuildOfOut)
+                Configuration.Parse();
+                if (_requiresRebuildOfOut)
 				{
 					// if the rebuilt is required because the app or zone are not default, then attach it first
 					if (AppSwitch != 0 || ZoneSwitch != 0)
@@ -92,16 +90,13 @@ namespace ToSic.Eav.DataSources
 		[PrivateApi]
 		public App()
 		{
-			// this one is unusual, so don't pre-attach a default data stream
-            // Don't delete this comment, as it's important we don't accidentally re-introduce this
-			// Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetEntities));
+			// this one is unusual, so don't pre-attach a default data stream to out
 
 			// Set default switch-keys to 0 = no switch
-            
 			ConfigMask(AppSwitchKey, "[Settings:" + AppSwitchKey + "||0]");
 			ConfigMask(ZoneSwitchKey, "[Settings:" + ZoneSwitchKey + "||0]");
 
-            TempUsesDynamicOut = true;
+            OutIsDynamic = true;
         }
 
 		/// <summary>
@@ -116,7 +111,8 @@ namespace ToSic.Eav.DataSources
 		    if (AppSwitch != 0)
 				AppId = AppSwitch;
 
-		    var newDs = DataSource.GetInitialDataSource(ZoneId, AppId, configProvider: ConfigurationProvider);
+		    var newDs = DataSource.GetPublishing(/*ZoneId, AppId*/this, 
+                configProvider: Configuration.LookUps);
 		    if (In.ContainsKey(Constants.DefaultStreamName))
 		        In.Remove(Constants.DefaultStreamName);
 			In.Add(Constants.DefaultStreamName, newDs[Constants.DefaultStreamName]);
@@ -146,16 +142,16 @@ namespace ToSic.Eav.DataSources
 
 			// now provide all data streams for all data types; only need the cache for the content-types list, don't use it as the source...
 			// because the "real" source already applies filters like published
-			var cache = (RootCacheBase)DataSource.GetCache(ZoneId, AppId);
-			var listOfTypes = cache.GetContentTypes();
+            var listOfTypes = Factory.GetAppState(this).ContentTypes;// Root.AppState.ContentTypes;
 		    foreach (var contentType in listOfTypes)
 		    {
 		        var typeName = contentType.Name;
 		        if (typeName != Constants.DefaultStreamName && !typeName.StartsWith("@") && !_out.ContainsKey(typeName))
 		        {
-		            var ds = DataSource.GetDataSource<EntityTypeFilter>(ZoneId, AppId, upstreamDataSource, ConfigurationProvider, parentLog:Log);
+		            var ds = DataSource.GetDataSource<EntityTypeFilter>(/*ZoneId, AppId*/this, upstreamDataSource,
+                        Configuration.LookUps, parentLog:Log);
 		            ds.TypeName = typeName;
-		            ds.DataSourceGuid = DataSourceGuid; // tell the inner source that it has the same ID as this one, as we're pretending it's the same source
+		            ds.Guid = Guid; // tell the inner source that it has the same ID as this one, as we're pretending it's the same source
 
 		            if (typeName != Constants.DefaultStreamName)
 		                ds.AddNamedStream(typeName);
@@ -173,7 +169,7 @@ namespace ToSic.Eav.DataSources
         /// This allows users of the App to query metadata directly through this object. 
         /// </summary>
         /// <returns>An initialized <see cref="IMetadataSource"/> for this app</returns>
-        public IMetadataSource Metadata => _metadata ?? (_metadata = DataSource.GetMetaDataSource(ZoneId, AppId));
+        public IMetadataSource Metadata => _metadata ?? (_metadata = Factory.GetAppState(this));// DataSource.GetMetaDataSource(ZoneId, AppId));
         private IMetadataSource _metadata;
     }
 

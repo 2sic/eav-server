@@ -90,11 +90,11 @@ namespace ToSic.Eav.DataSources.Caching
 			// this one is unusual, so don't pre-attach a default data stream
 
 			// Set default switch-keys to 0 = no switch
-            Configuration.Add(RefreshOnSourceRefreshKey, "[Settings:" + RefreshOnSourceRefreshKey + "||True]");
-			Configuration.Add(CacheDurationInSecondsKey, "[Settings:" + CacheDurationInSecondsKey + "||0]"); // 0 is default, meaning don't use custom value, use system value of 1 day
-		    Configuration.Add(ReturnCacheWhileRefreshingKey, "False");
+            Configuration.Values.Add(RefreshOnSourceRefreshKey, "[Settings:" + RefreshOnSourceRefreshKey + "||True]");
+			Configuration.Values.Add(CacheDurationInSecondsKey, "[Settings:" + CacheDurationInSecondsKey + "||0]"); // 0 is default, meaning don't use custom value, use system value of 1 day
+		    Configuration.Values.Add(ReturnCacheWhileRefreshingKey, "False");
 
-            TempUsesDynamicOut = true;
+            OutIsDynamic = true;
         }
 
 		/// <summary>
@@ -102,13 +102,13 @@ namespace ToSic.Eav.DataSources.Caching
 		/// </summary>
 		private void CreateOutWithAllStreams()
 		{
-            EnsureConfigurationIsLoaded();
+            Configuration.Parse();
 
             //_Out.Clear();
 
             // attach all missing streams, now that Out is used the first time
             // note that some streams were already added because of the DeferredOut
-		    foreach (var dataStream in In.Where(s => !_Out.ContainsKey(s.Key)))
+            foreach (var dataStream in In.Where(s => !_Out.ContainsKey(s.Key)))
 		    {
 		        //var inStream = dataStream.Value as DataStream;
 		        AttachDeferredStreamToOut(dataStream.Key);
@@ -125,10 +125,9 @@ namespace ToSic.Eav.DataSources.Caching
 
 	    private IDataStream AttachDeferredStreamToOut(string name)
         {
+            Configuration.Parse();
 
-            EnsureConfigurationIsLoaded();
-
-	        var outStream = new DataStream(this, name,  () => In[name].List, true);
+            var outStream = new DataStream(this, name,  () => In[name].List, true);
 
 	        // inStream.AutoCaching = true;
 	        if (CacheDurationInSeconds != 0) // only set if a value other than 0 (= default) was given

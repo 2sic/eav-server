@@ -17,10 +17,14 @@ namespace ToSic.Eav.LookUp
         /// <returns><see cref="Dictionary{TKey,TValue}"/> of <see cref="ILookUp"/> items.</returns>
         Dictionary<string, ILookUp> Sources { get; }
 
-	    /// <summary>
-	    /// Replaces all Tokens in the ConfigList with actual values provided by the LookUps in the Sources
-	    /// </summary>
-	    void LoadConfiguration(IDictionary<string, string> configList, Dictionary<string, ILookUp> instanceSpecificPropertyAccesses = null, int repeat = 2);
+        /// <summary>
+        /// This will go through a dictionary of strings (usually configuration values) and replace all tokens in that string
+        /// with whatever the token-resolver delivers. It's usually needed to initialize a DataSource. 
+        /// </summary>
+        /// <param name="values">Dictionary of configuration strings.</param>
+        /// <param name="overrides">Optional override LookUps which would be consulted first.</param>
+        /// <param name="depth">Max recursion when looking up tokens which return other tokens.</param>
+        IDictionary<string, string> LookUp(IDictionary<string, string> values, Dictionary<string, ILookUp> overrides = null, int depth = LookUpEngine.DefaultLookUpDepth);
 
 	    /// <summary>
 	    /// Add (or replace) a value provider in the source list

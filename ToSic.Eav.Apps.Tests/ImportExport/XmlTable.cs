@@ -101,7 +101,7 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
         {
             var dbc = DbDataController.Instance(null, appId, Log);
             var loader = new Efc11Loader(dbc.SqlDb);
-            var appPackage = loader.AppPackage(appId);
+            var appPackage = loader.AppState(appId);
             var type = appPackage.ContentTypes.First(ct => ct.Name == ctName);
             return new ExportListXml(appPackage, type, Log);
         }

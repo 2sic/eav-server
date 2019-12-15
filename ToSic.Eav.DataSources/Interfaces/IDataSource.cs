@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
 using ToSic.Eav.DataSources.Caching;
+using ToSic.Eav.DataSources.Configuration;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -13,7 +15,7 @@ namespace ToSic.Eav.DataSources
 	/// Public interface for an Eav DataSource. All DataSource objects are based on this. 
 	/// </summary>
 	[PublicApi]
-	public interface IDataSource : IInAppAndZone, ICacheExpiring, ICacheKey, ICanPurgeListCache
+	public interface IDataSource : IAppIdentity, ICacheExpiring, ICacheKey, ICanPurgeListCache, IHasLog
 	{
 		#region Data Interfaces
 
@@ -21,7 +23,7 @@ namespace ToSic.Eav.DataSources
         /// Internal ID usually from persisted configurations IF the configuration was build from an pre-stored query.
         /// </summary>
         /// <returns>The guid of this data source which identifies the configuration <see cref="IEntity"/> of the data source.</returns>
-        Guid DataSourceGuid { get; set; }
+        Guid Guid { get; set; }
 
 		/// <summary>
 		/// Gets the Dictionary of Out-Streams. This is the internal accessor, as usually you'll use this["name"] instead. <br/>
@@ -47,15 +49,19 @@ namespace ToSic.Eav.DataSources
         [Obsolete("deprecated since 2sxc 9.8 / eav 4.5 - use List instead")]
         IEnumerable<IEntity> LightList { get; }
 
-        /// <summary>
-		/// Gets the ConfigurationProvider for this DataSource
-		/// </summary>
-        ILookUpEngine ConfigurationProvider { get; }
 
-		/// <summary>
-		/// Gets a Dictionary of Configurations for this DataSource, e.g. Key: EntityId, Value: [QueryString:EntityId]
-		/// </summary>
-		IDictionary<string, string> Configuration { get; }
+        [PrivateApi("wip")]
+        DataSourceConfiguration Configuration { get; }
+
+  //      /// <summary>
+		///// Gets the ConfigurationProvider for this DataSource
+		///// </summary>
+  //      ILookUpEngine ConfigurationProvider { get; }
+
+		///// <summary>
+		///// Gets a Dictionary of Configurations for this DataSource, e.g. Key: EntityId, Value: [QueryString:EntityId]
+		///// </summary>
+		//IDictionary<string, string> Configuration { get; }
 
         #endregion
 
@@ -78,11 +84,12 @@ namespace ToSic.Eav.DataSources
 	    #endregion
 
 	    #region Internals (Ready, DistanceFromSource)
-	    /// <summary>
-	    /// Indicates whether the DataSource is ready for use (initialized/configured)
-		/// </summary>
-		/// <returns>True if ready, false if not. Rarely used.</returns>
-        bool Ready { get; }
+        // 2019-12-13 disabled, not actually in use!
+	 //   /// <summary>
+	 //   /// Indicates whether the DataSource is ready for use (initialized/configured)
+		///// </summary>
+		///// <returns>True if ready, false if not. Rarely used.</returns>
+  //      bool Ready { get; }
 
 		/// <summary>
 		/// Name of this DataSource - not usually relevant.
@@ -93,11 +100,11 @@ namespace ToSic.Eav.DataSources
 
         #region Caching Information
 
-        /// <summary>
-        /// Direct access to the root cache underlying all data provided by this data source. 
-        /// </summary>
-        /// <returns>An <see cref="IRootCache"/> data source to the root cache.</returns>
-        IRootCache Cache { get; }
+        ///// <summary>
+        ///// Direct access to the root cache underlying all data provided by this data source. 
+        ///// </summary>
+        ///// <returns>An <see cref="IAppRoot"/> data source to the root cache.</returns>
+        //IAppRoot Root { get; }
 
         /// <summary>
         /// Some configuration of the data source is cache-relevant, others are not.
@@ -106,8 +113,13 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         List<string> CacheRelevantConfigurations { get; set; }
 
+        /// <summary>
+        /// Tell the system that out is dynamic and doesn't have a fixed list of streams.
+        /// Used by App-Data sources and similar.
+        /// Important for the global information system, so it doesn't try to query that. 
+        /// </summary>
         [PrivateApi]
-        bool TempUsesDynamicOut { get; }
+        bool OutIsDynamic { get; }
         #endregion
     }
 

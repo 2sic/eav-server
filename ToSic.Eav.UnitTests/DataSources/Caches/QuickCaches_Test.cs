@@ -3,6 +3,7 @@ using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caching;
+using ToSic.Eav.DataSources.Configuration;
 
 namespace ToSic.Eav.UnitTests.DataSources.Caches
 {
@@ -16,8 +17,8 @@ namespace ToSic.Eav.UnitTests.DataSources.Caches
             const string ItemToFilter = "1023";
             var ds = CreateFilterForTesting(100, ItemToFilter);
 
-            var cache = ds.Cache;
-            var listCache = cache.Lists;// as IListCache;
+            //var cache = ds.Root;
+            var listCache = new ListCache(null);// cache.Lists;// as IListCache;
             Assert.IsFalse(listCache.Has(ds.CacheFullKey), "Should not have it in cache yet");
 
             // manually add to cache
@@ -53,7 +54,7 @@ namespace ToSic.Eav.UnitTests.DataSources.Caches
             const string ItemToFilter = "1027";
             var ds = CreateFilterForTesting(100, ItemToFilter);
 
-            var listCache = ds.Cache.Lists; //as IListCache;
+            var listCache = new ListCache(null);// ds.Root.Lists; //as IListCache;
             (listCache as ListCache).DefaultDuration = 1;
             Assert.IsFalse(listCache.Has(ds.CacheFullKey), "Should not have it in cache yet");
 
@@ -73,8 +74,9 @@ namespace ToSic.Eav.UnitTests.DataSources.Caches
         public static EntityIdFilter CreateFilterForTesting(int testItemsInRootSource, string entityIdsValue)
         {
             var ds = DataTableDataSourceTest.GeneratePersonSourceWithDemoData(testItemsInRootSource, 1001);
-            var filtered = new EntityIdFilter();
-            filtered.ConfigurationProvider = ds.ConfigurationProvider;
+            var filtered = new EntityIdFilter()
+                .Init(ds.Configuration.LookUps);
+            //filtered.ConfigurationProvider = ds.ConfigurationProvider;
             filtered.Attach(ds);
             filtered.EntityIds = entityIdsValue;
             return filtered;

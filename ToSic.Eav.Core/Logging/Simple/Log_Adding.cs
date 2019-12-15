@@ -1,27 +1,28 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace ToSic.Eav.Logging.Simple
 {
     public partial class Log
     {
 
-        /// <summary>
-        /// Add a message
-        /// </summary>
-        /// <param name="message"></param>
-        public string Add(string message)
+        /// <inheritdoc />
+        public string Add(string message,
+            [CallerFilePath] string cPath = null,
+            [CallerMemberName] string cName = null,
+            [CallerLineNumber] int cLine = 0)
         {
-            AddEntry(message);
+            AddInternal(message, new CodeRef(cPath, cName, cLine));
             return message;
         }
+
 
         /// <summary>
         /// Add a message
         /// </summary>
-        /// <param name="message"></param>
-        private Entry AddEntry(string message)
+        private Entry AddInternal(string message, CodeRef code)
         {
-            var e = new Entry(this, message, WrapDepth);
+            var e = new Entry(this, message, WrapDepth, code);
             AddToEntriesAndParent(e);
             return e;
         }
@@ -58,11 +59,12 @@ namespace ToSic.Eav.Logging.Simple
             (_parent as Log)?.AddToEntriesAndParent(entry);
         }
 
-        /// <summary>
-        /// Add a message by calling a function. This will be inside a try/catch, to prevent crashes because of looping on nulls etc.
-        /// </summary>
-        /// <param name="messageMaker"></param>
-        public void Add(Func<string> messageMaker) => Add(Try(messageMaker));
+        /// <inheritdoc />
+        public void Add(Func<string> messageMaker,
+            [CallerFilePath] string cPath = null,
+            [CallerMemberName] string cName = null,
+            [CallerLineNumber] int cLine = 0) 
+            => Add(Try(messageMaker), cPath, cName, cLine);
 
     }
 }

@@ -15,18 +15,18 @@ namespace ToSic.Eav.Apps.Parts
     {
         public ContentTypeRuntime(AppRuntime app, ILog parentLog) : base(app, parentLog){}
 
-        public IEnumerable<IContentType> All => App.Cache.GetContentTypes();
+        public IEnumerable<IContentType> All => App.AppState.ContentTypes;//.GetContentTypes();
 
         /// <summary>
         /// Gets a ContentType by Name
         /// </summary>
         /// <returns>a content-type or null if not found</returns>
-        public IContentType Get(string name) => App.Cache.GetContentType(name);
+        public IContentType Get(string name) => App.AppState.GetContentType(name);
 
         /// <summary>
         /// Gets a ContentType by Id
         /// </summary>
-        public IContentType Get(int contentTypeId) => App.Cache.GetContentType(contentTypeId);
+        public IContentType Get(int contentTypeId) => App.AppState.GetContentType(contentTypeId);
 
         public IEnumerable<IContentType> FromScope(string scope = null, bool includeAttributeTypes = false)
         {
@@ -42,7 +42,7 @@ namespace ToSic.Eav.Apps.Parts
         /// <returns></returns>
         public List<InputTypeInfo> GetInputTypes()
         {
-            var wraplog = Log.Call("GetInputTypes");
+            var wraplog = Log.Call();
             // Initial list is the global, file-system based types
             var globalDef = GetGlobalInputTypesBasedOnContentTypes();
             Log.Add($"in global {globalDef.Count}");

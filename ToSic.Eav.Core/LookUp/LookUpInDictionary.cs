@@ -5,7 +5,7 @@ using ToSic.Eav.Documentation;
 namespace ToSic.Eav.LookUp
 {
     /// <summary>
-    /// Look Up values from a .net dictionary. <br/>
+    /// Look Up values from a .net dictionary. Case-Insensitive. <br/>
     /// Read more about this in @Specs.LookUp.Intro
     /// </summary>
     public class LookUpInDictionary : LookUpBase
@@ -14,22 +14,33 @@ namespace ToSic.Eav.LookUp
 		/// List with static properties and Test-Values
 		/// </summary>
 		[PublicApi]
-		public Dictionary<string, string> Properties { get; }
+		public IDictionary<string, string> Properties { get; }
 
         /// <summary>
         /// Constructor, can optionally take a dictionary to reference with, otherwise creates a new one
         /// </summary>
         /// <param name="name">Name to use</param>
         /// <param name="valueList">value list (dictionary) to reference</param>
-        public LookUpInDictionary(string name, Dictionary<string, string> valueList = null)
-		{
-			Properties = valueList ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-			Name = name;
+        public LookUpInDictionary(string name, IDictionary<string, string> valueList = null)
+        {
+            // either take existing dic or create new, but always make sure it's case insensitive
+            Properties = valueList != null
+                ? new Dictionary<string, string>(valueList, StringComparer.OrdinalIgnoreCase)
+                : new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            Name = name;
 		}
 
         /// <inheritdoc/>
         public override string Get(string key, string format, ref bool notFound)
 		{
+            // first try a safe check
+            if (!Properties.ContainsKey(key))
+            {
+                notFound = true;
+                return null;
+            }
+
+            // then attempt the try/catch way
 			try
 			{
 				return Properties[key];
@@ -42,9 +53,6 @@ namespace ToSic.Eav.LookUp
 		}
 
         /// <inheritdoc/>
-        public override bool Has(string key)
-        {
-            return Properties.ContainsKey(key);
-        }
-	}
+        public override bool Has(string key) => Properties.ContainsKey(key);
+    }
 }

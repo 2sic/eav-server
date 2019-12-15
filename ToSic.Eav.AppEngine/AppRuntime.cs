@@ -8,17 +8,19 @@ namespace ToSic.Eav.Apps
     /// <summary>
     /// Basic App-Reading System to access app data and read it
     /// </summary>
-    public class AppRuntime : AppBase
+    public class AppRuntime : AppRuntimeBase
     {
         #region constructors
-        public AppRuntime(int zoneId, int appId, ILog parentLog) : base(zoneId, appId, parentLog) { }
+        //public AppRuntime(int zoneId, int appId, ILog parentLog) 
+        //    : base(zoneId, appId, parentLog) { }
 
-        public AppRuntime(IInAppAndZone app, ILog parentLog) : base(app, parentLog) { }
+        public AppRuntime(IAppIdentity app, ILog parentLog) : base(app, parentLog) { }
 
         /// <summary>
         ///  Special constructor, should be used with care as there is no Zone!
         /// </summary>
-        public AppRuntime(int appId, ILog parentLog) :base (appId, parentLog) { }
+        public AppRuntime(int appId, ILog parentLog) 
+            :this (Factory.GetAppIdentity(null, appId), parentLog) { }
 
         internal AppRuntime(IDataSource data, ILog parentLog): base(data, parentLog) { }
         #endregion

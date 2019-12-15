@@ -11,8 +11,11 @@ namespace ToSic.Eav.Data
     /// </summary>
     /// <typeparam name="T">Type of the actual Value</typeparam>
     [PublicApi]
-    public class Value<T> : Value, IValue<T>
+    public class Value<T> : /*Value,*/ IValue<T>
     {
+        /// <inheritdoc />
+        public IList<ILanguage> Languages { get; set; }
+
         /// <inheritdoc />
         public T TypedContents { get; internal set; }
 

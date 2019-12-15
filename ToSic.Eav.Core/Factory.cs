@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics;
+using ToSic.Eav.Apps;
+using ToSic.Eav.Caching;
 using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav
@@ -127,5 +129,17 @@ namespace ToSic.Eav
             ResolvesList.Add((generic ? "<>" : "()") + t.Name + "..." + mName);
 
 	    }
-	}
+
+        [PrivateApi]
+        public static IAppsCache GetAppsCache() => Resolve<IAppsCache>();
+
+        [PrivateApi]
+        public static AppState GetAppState(int appId) => GetAppsCache().Get(appId);
+
+        [PrivateApi]
+        public static AppState GetAppState(IAppIdentity app) => GetAppsCache().Get(app);
+
+        [PrivateApi]
+        public static IAppIdentity GetAppIdentity(int? zoneId, int? appId) => GetAppsCache().GetIdentity(zoneId, appId);
+    }
 }

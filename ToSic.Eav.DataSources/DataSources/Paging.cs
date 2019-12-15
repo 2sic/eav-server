@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Interfaces;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -83,8 +81,8 @@ namespace ToSic.Eav.DataSources
 
 	    private IEnumerable<IEntity> GetList()
 	    {
-	        EnsureConfigurationIsLoaded();
-		    var itemsToSkip = (PageNumber - 1)*PageSize;
+            Configuration.Parse();
+            var itemsToSkip = (PageNumber - 1)*PageSize;
 
 	        var result = In["Default"].List.Skip(itemsToSkip).Take(PageSize).ToList();
 	        Log.Add($"get page:{PageNumber} with size{PageSize} found:{result.Count}");
@@ -93,7 +91,7 @@ namespace ToSic.Eav.DataSources
 
         private IEnumerable<IEntity> GetPaging()
         {
-            EnsureConfigurationIsLoaded();
+            Configuration.Parse();
 
             // Calculate any additional stuff
             var itemCount = In["Default"].List.Count();

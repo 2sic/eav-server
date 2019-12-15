@@ -16,8 +16,8 @@ namespace ToSic.Eav.DataSources.Debug
         {
             try
             {
-                Target = (target as IDataSource).DataSourceGuid;
-                Source = strm.Source.DataSourceGuid;
+                Target = (target as IDataSource).Guid;
+                Source = strm.Source.Guid;
                 TargetIn = inName;
                 foreach (var outStm in strm.Source.Out)
                     if (outStm.Value == strm)

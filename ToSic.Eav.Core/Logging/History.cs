@@ -8,8 +8,8 @@ namespace ToSic.Eav.Logging
     [PrivateApi]
     public static class History
     {
-        public static int Size { get; set; } = 25;
-        public const int MaxCollect = 250;
+        public static int Size { get; set; } = 50;
+        public const int MaxCollect = 500;
 
         public static bool Pause
         {

@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -62,9 +60,9 @@ namespace ToSic.Eav.DataSources
 
         private IEnumerable<IEntity> GetList()
 	    {
-	        EnsureConfigurationIsLoaded();
+            Configuration.Parse();
 
-	        Log.Add($"will shuffle and take:{Take}");
+            Log.Add($"will shuffle and take:{Take}");
             return ShuffleInternal(In["Default"].List, Take, Log);
 	    }
 
@@ -73,7 +71,7 @@ namespace ToSic.Eav.DataSources
 
         private static IEnumerable<T> ShuffleInternal<T>(IEnumerable<T> sequence, int take, ILog log)
         {
-            var wrapLog = log.Call("ShuffleInternal");
+            var wrapLog = log.Call();
             var retArray = sequence.ToArray();
             
             // check if there is actually any data

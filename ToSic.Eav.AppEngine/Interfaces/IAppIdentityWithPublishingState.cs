@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Apps
 {
-    public interface IAppIdentityWithPublishingState: IInAppAndZone
+    public interface IAppIdentityWithPublishingState: IAppIdentity
     {
         [PrivateApi]
         bool ShowDrafts { get; }

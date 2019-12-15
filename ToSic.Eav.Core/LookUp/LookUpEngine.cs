@@ -12,6 +12,11 @@ namespace ToSic.Eav.LookUp
     [PublicApi]
     public class LookUpEngine : ILookUpEngine
 	{
+        #region Constants
+
+        [PrivateApi] public const int DefaultLookUpDepth = 4;
+        #endregion
+
         // todo: probably change and not let the outside modify directly
         [PrivateApi]
 	    public Dictionary<string, ILookUp> Sources { get; }
@@ -43,35 +48,34 @@ namespace ToSic.Eav.LookUp
 		}
 
 	    /// <inheritdoc />
-	    /// <summary>
-	    /// This will go through a dictionary of strings (usually configuration values) and replace all tokens in that string
-	    /// with whatever the token-resolver delivers. It's usually needed to initialize a DataSource. 
-	    /// </summary>
-	    /// <param name="configList">Dictionary of configuration strings</param>
-	    /// <param name="instanceSpecificPropertyAccesses">Instance specific additional value-dictionaries</param>
-	    /// <param name="repeat">max repeater in case of recursions</param>
-	    public void LoadConfiguration(IDictionary<string, string> configList, Dictionary<string, ILookUp> instanceSpecificPropertyAccesses = null, int repeat = 2)
+	    public IDictionary<string, string> LookUp(IDictionary<string, string> values,
+            Dictionary<string, ILookUp> overrides = null, int depth = 4)
 		{
+            // start by creating a copy of the dictionary
+            values = new Dictionary<string, string>(values, StringComparer.OrdinalIgnoreCase);
+
             #region if there are instance-specific additional Property-Access objects, add them to the sources-list
             // note: it's important to create a one-time use list of sources if instance-specific sources are needed, to never modify the "global" list.
-            var useAdditionalPa = instanceSpecificPropertyAccesses != null; // not null, so it has instance specific stuff
+            var useAdditionalPa = overrides != null; // not null, so it has instance specific stuff
 		    if (useAdditionalPa)
 		        foreach (var pa in Sources)
-		            if (!instanceSpecificPropertyAccesses.ContainsKey(pa.Key))
-		                instanceSpecificPropertyAccesses.Add(pa.Key.ToLower(), pa.Value);
-		    var instanceTokenReplace = useAdditionalPa ? new TokenReplace(instanceSpecificPropertyAccesses) : _reusableTokenReplace;
+		            if (!overrides.ContainsKey(pa.Key))
+		                overrides.Add(pa.Key.ToLower(), pa.Value);
+		    var instanceTokenReplace = useAdditionalPa ? new TokenReplace(overrides) : _reusableTokenReplace;
             #endregion
 
             #region Loop through all config-items and token-replace them
-            foreach (var o in configList.ToList())
+            foreach (var o in values.ToList())
 			{
                 // check if the string contains a token or not
                 if (!TokenReplace.ContainsTokens(o.Value))
 					continue;
-                configList[o.Key] = instanceTokenReplace.ReplaceTokens(o.Value, repeat); // with 2 further recurrances
+                values[o.Key] = instanceTokenReplace.ReplaceTokens(o.Value, depth); // with 2 further recurrences
 
             }
             #endregion
+
+            return values;
         }
 
         // 2019-11-07 2dm doesn't seem used

@@ -6,7 +6,7 @@ using System.Web.Http;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSources.Caching;
+using ToSic.Eav.DataSources;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Serializers;
@@ -36,7 +36,8 @@ namespace ToSic.Eav.WebApi
 
             // 2017-10-23 old...
             // scope can be null (eav) or alternatives would be "System", "2SexyContent-System", "2SexyContent-App", "2SexyContent"
-            var cache = (RootCacheBase)DataSource.GetCache(null, appId); // needed to count items
+            var appIdentity = Factory.GetAppIdentity(null, appId);
+            var cache = (AppRoot) DataSource.GetRootDs(appIdentity);//DataSource.GetIdentity(null, appId)); // needed to count items
 
             var filteredType = allTypes.Where(t => t.Scope == scope)
                 .OrderBy(t => t.Name)
@@ -45,7 +46,7 @@ namespace ToSic.Eav.WebApi
             return filteredType;
 	    }
 
-        private ContentTypeInfo ContentTypeForJson(ContentType t, IRootCache cache)
+        private ContentTypeInfo ContentTypeForJson(ContentType t, IAppRoot cache)
 	    {
 	        Log.Add($"for json a:{t.AppId}, type:{t.Name}");
 	        var metadata = t.Metadata.Description;
@@ -80,8 +81,9 @@ namespace ToSic.Eav.WebApi
 	    public ContentTypeInfo GetSingle(int appId, string contentTypeStaticName, string scope = null)
 	    {
 	        Log.Add($"get single a#{appId}, type:{contentTypeStaticName}, scope:{scope}");
-            var cache = DataSource.GetCache(null, appId);
-            var ct = cache.GetContentType(contentTypeStaticName);
+            var appState = Factory.GetAppState(appId);
+            //var cache = DataSource.GetCache(DataSource.GetIdentity(null, appId));
+            var ct = appState.GetContentType(contentTypeStaticName);
             return ContentTypeForJson(ct as ContentType, null);
 	    }
 
@@ -134,8 +136,8 @@ namespace ToSic.Eav.WebApi
         public IEnumerable<ContentTypeFieldInfo> GetFields(int appId, string staticName)
         {
             Log.Add($"get fields a#{appId}, type:{staticName}");
-
-            if(!(DataSource.GetCache(null, appId).GetContentType(staticName) is ContentType type))
+            var appState = Factory.GetAppState(appId);
+            if(!(/*DataSource.GetCache(DataSource.GetIdentity(null, appId))*/appState.GetContentType(staticName) is ContentType type))
                 throw new Exception("type should be a ContentType - something broke");
             var fields = type.Attributes.OrderBy(a => a.SortOrder);
 
