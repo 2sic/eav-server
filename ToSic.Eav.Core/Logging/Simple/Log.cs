@@ -55,7 +55,6 @@ namespace ToSic.Eav.Logging.Simple
         : this(name, parent, new CodeRef(cPath, cName, cLine), initialMessage)
         {}
 
-        //public ILog AddChild(string name, string message=null) => new Log(name, this, message);
 
         /// <summary>
         /// Rename this logger - usually used when a base-class has a logger, 

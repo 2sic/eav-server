@@ -37,7 +37,7 @@ namespace ToSic.Eav.WebApi
             // 2017-10-23 old...
             // scope can be null (eav) or alternatives would be "System", "2SexyContent-System", "2SexyContent-App", "2SexyContent"
             var appIdentity = Factory.GetAppIdentity(null, appId);
-            var cache = (AppRoot) new DataSource(Log).GetRootDs(appIdentity);//DataSource.GetIdentity(null, appId)); // needed to count items
+            var cache = (AppRoot) new DataSource(Log).GetRootDs(appIdentity);
 
             var filteredType = allTypes.Where(t => t.Scope == scope)
                 .OrderBy(t => t.Name)

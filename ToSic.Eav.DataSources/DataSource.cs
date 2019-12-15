@@ -15,12 +15,7 @@ namespace ToSic.Eav
 	    private const string LogKey = "DS.Factry";
         private static readonly string RootDataSource = typeof(IAppRoot).AssemblyQualifiedName;
 
-        // public DataSource
-
-        public DataSource(ILog parentLog = null) : base(LogKey, parentLog)
-        {
-
-        }
+        public DataSource(ILog parentLog = null) : base(LogKey, parentLog) { }
 
         /// <summary>
         /// Get DataSource for specified sourceName/Type

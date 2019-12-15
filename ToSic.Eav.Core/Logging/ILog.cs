@@ -160,9 +160,6 @@ namespace ToSic.Eav.Logging
         [PrivateApi]
         string FullIdentifier { get; }
 
-        //[PrivateApi]
-        //ILog AddChild(string name, string message = null);
-
         /// <summary>
         /// Rename this logger - usually used when a base-class has a logger, 
         /// but the inherited class needs a different name

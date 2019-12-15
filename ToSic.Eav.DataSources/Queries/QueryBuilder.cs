@@ -44,7 +44,7 @@ namespace ToSic.Eav.DataSources.Queries
 	        try
             {
                 var app = Factory.GetAppIdentity(null, appId);
-                var source = new DataSource(Log).GetPublishing(app/*, parentLog: Log*/);
+                var source = new DataSource(Log).GetPublishing(app);
 	            var appEntities = source[Constants.DefaultStreamName].List;
 
 	            // use findRepo, as it uses the cache, which gives the list of all items // [queryEntityId];
@@ -137,9 +137,7 @@ namespace ToSic.Eav.DataSources.Queries
                 var assemblyAndType = dataQueryPart.DataSourceType;
 
                 var appIdentity = Factory.GetAppIdentity(null, queryDef.AppId);
-                var dataSource = new DataSource(Log).GetDataSource(assemblyAndType, /*null,*/ 
-                    appIdentity,//DataSource.GetIdentity(null, queryDef.AppId),
-	                configLookUp: partConfig/*, parentLog: Log*/);
+                var dataSource = new DataSource(Log).GetDataSource(assemblyAndType, appIdentity, configLookUp: partConfig);
 	            dataSource.Guid = dataQueryPart.Guid;
 
 	            Log.Add($"add '{assemblyAndType}' as " +

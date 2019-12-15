@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSources.Queries
 		/// </summary>
 		/// <param name="entityId">EntityId</param>
 		/// <param name="dataSource">DataSource to load Entity from</param>
-		internal static IEntity GetQueryEntity(int entityId, /*IDataSource*/AppState dataSource)
+		internal static IEntity GetQueryEntity(int entityId, AppState dataSource)
 		{
 			try
 			{
@@ -59,8 +59,8 @@ namespace ToSic.Eav.DataSources.Queries
 	    internal static IEnumerable<IEntity> AllQueryItems(IAppIdentity app, ILog parentLog)
 	    {
             var dsFact = new DataSource(parentLog);
-	        var source = dsFact.GetPublishing(app/*, parentLog: parentLog*/);
-	        var typeFilter = dsFact.GetDataSource<EntityTypeFilter>(/*appId: appId, upstream:*/ source);
+	        var source = dsFact.GetPublishing(app);
+	        var typeFilter = dsFact.GetDataSource<EntityTypeFilter>(source);
 	        typeFilter.TypeName = Constants.QueryTypeName;
 	        var list = typeFilter.List;
 	        return list;
