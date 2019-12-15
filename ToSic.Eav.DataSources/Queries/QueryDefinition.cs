@@ -25,7 +25,8 @@ namespace ToSic.Eav.DataSources.Queries
 
         #region Constructor
         [PrivateApi]
-        public QueryDefinition(IEntity header, int appId, ILog parentLog) : base(header, parentLog, "DS.QDef")
+        public QueryDefinition(IEntity header, int appId, ILog parentLog) 
+            : base(header, parentLog, "DS.QDef")
         {
             if (appId == 0)
                 appId = header.AppId;

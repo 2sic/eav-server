@@ -70,7 +70,7 @@ namespace ToSic.Eav.DataSources.Queries
 
 
         /// <inheritdoc />
-        public void Param(string key, string value)
+        public void Params(string key, string value)
         {
             // if the query has already been built, and we're changing a value, make sure we'll regenerate the results
             if(!_requiresRebuildOfOut)
@@ -85,9 +85,12 @@ namespace ToSic.Eav.DataSources.Queries
         /// <inheritdoc />
         public void Params(string list)
         {
-            foreach (var qP in Definition.GenerateParamsDic(list)) 
-                Param(qP.Key, qP.Value);
+            foreach (var qP in QueryDefinition.GenerateParamsDic(list, Log)) 
+                Params(qP.Key, qP.Value);
         }
+
+        /// <inheritdoc />
+        public IDictionary<string, string> Params() => Definition.Params;
 
         /// <inheritdoc />
         public void Reset()

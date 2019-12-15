@@ -6,7 +6,7 @@
     <ProjectGuid>{C212A78C-25BB-4A77-AFBB-B5939352CE36}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ToSic.Eav.DataSources.Tests</RootNamespace>
+    <RootNamespace>ToSic.Eav.DataSourceTests</RootNamespace>
     <AssemblyName>ToSic.Eav.DataSources.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -101,6 +101,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Query\Tst_QueryBasic.cs" />
     <Compile Include="Query\Tst_QueryGlobal.cs" />
+    <Compile Include="Query\ParamsTests.cs" />
     <Compile Include="RelationshipFilterTests\RelationshipTest.cs" />
     <Compile Include="RelationshipFilterTests\RelationshipTestBase.cs" />
     <Compile Include="RelationshipFilterTests\Tst_RelationshipFilterDS_Modes.cs" />
