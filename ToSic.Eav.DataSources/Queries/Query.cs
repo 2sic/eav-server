@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ToSic.Eav.DataSources.Configuration;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
@@ -42,14 +43,21 @@ namespace ToSic.Eav.DataSources.Queries
 
 		/// <inheritdoc />
 		[PrivateApi]
-		public Query(int zoneId, int appId, IEntity queryDef, ILookUpEngine config, bool showDrafts, ILog parentLog)
+		public Query(int zoneId, int appId, IEntity queryDef, ILookUpEngine config, bool showDrafts, IDataTarget inSource, ILog parentLog)
 		{
 		    ZoneId = zoneId;
 		    AppId = appId;
+            Log.LinkTo(parentLog, LogId);
             Definition = new QueryDefinition(queryDef, appId, Log);
             Configuration.LookUps = config;
             _showDrafts = showDrafts;
-            Log.LinkTo(parentLog, LogId);
+
+            // hook up in, just in case we get parameters from an In
+            if (inSource != null)
+            {
+                Log.Add("found in for Query, will attach");
+                In = inSource.In;
+            }
         }
 
 		/// <summary>

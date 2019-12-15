@@ -16,6 +16,7 @@ key2=[token]";
             var result = QueryDefinition.GenerateParamsDic(input, new Log("dummy"));
             Assert.AreEqual(result.Count, 3, "should find 3 items");
             Assert.AreEqual(result["key"], "result", "key=result");
+            Assert.AreEqual(result["key2"], "[token]", "key=result");
         }
 
         [TestMethod]

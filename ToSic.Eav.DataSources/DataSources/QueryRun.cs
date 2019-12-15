@@ -86,16 +86,19 @@ namespace ToSic.Eav.DataSources
             // Note: ShowDrafts is false - but actually it will work
             // because that would only create an additional data-source for drafts-info
             // which was already created previously when the ConfigurationProvider for this DS was made
-            var query = new Query(ZoneId, AppId, queryDef, Configuration.LookUps, false, Log);
+            var query = new Query(ZoneId, AppId, queryDef, Configuration.LookUps, false, this, Log);
 
-            // add all params
-            query.Params(runEntity.GetBestValue<string>(FieldParams));
-            //var qParams = query.Definition.GenerateParamsDic(runEntity.GetBestValue<string>(FieldParams));
-            //foreach (var qP in qParams)
-            //{
-            //    Log.Add($"Params:{qP.Key}={qP.Value}");
-            //    query.Param(qP.Key, qP.Value);
-            //}
+            #region Set Params
+            // #1 access the params to be sure they were loaded
+            var oldParams = query.Params();
+
+            // #2 add all params
+            var wrapLogParams = Log.Call("will override params");
+            var fieldParams = runEntity.GetBestValue<string>(FieldParams);
+            query.Params(fieldParams);
+            wrapLogParams("done");
+
+            #endregion
 
             return wrapLog("ok", query.Out);
         }
