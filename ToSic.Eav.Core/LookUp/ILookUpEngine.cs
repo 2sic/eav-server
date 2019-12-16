@@ -25,7 +25,7 @@ namespace ToSic.Eav.LookUp
         /// <param name="values">Dictionary of configuration strings.</param>
         /// <param name="overrides">Optional override LookUps which would be consulted first.</param>
         /// <param name="depth">Max recursion when looking up tokens which return other tokens.</param>
-        IDictionary<string, string> LookUp(IDictionary<string, string> values, Dictionary<string, ILookUp> overrides = null, int depth = LookUpEngine.DefaultLookUpDepth);
+        IDictionary<string, string> LookUp(IDictionary<string, string> values, IDictionary<string, ILookUp> overrides = null, int depth = LookUpEngine.DefaultLookUpDepth);
 
 	    /// <summary>
 	    /// Add (or replace) a value provider in the source list

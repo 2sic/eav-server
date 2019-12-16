@@ -47,17 +47,16 @@ namespace ToSic.Eav.LookUp
         public LookUpEngine(ILookUpEngine original, ILog parentLog): this(parentLog)
 		{
 		    if (original == null) return;
-            var wrapLog = Log.Call(null, $"cloning #{original.Log.Id}; LogDetailed: {LogDetailed}");
+            var wrapLog = Log.Call(null, $"clone: {original.Log.Id}; LogDetailed: {LogDetailed}");
 		    foreach (var srcSet in original.Sources)
 		        Sources.Add(srcSet.Key, srcSet.Value);
             wrapLog($"cloned {original.Sources.Count}");
         }
 
 	    /// <inheritdoc />
-	    public IDictionary<string, string> LookUp(
-            IDictionary<string, string> values,
-            Dictionary<string, ILookUp> overrides = null, 
-            int depth = DefaultLookUpDepth)
+	    public IDictionary<string, string> LookUp(IDictionary<string, string> values,
+            IDictionary<string, ILookUp> overrides = null,
+            int depth = 4)
         {
             var wrapLog = Log.Call($"values: {values.Count}, overrides: {overrides?.Count}, depth: {depth}");
             // start by creating a copy of the dictionary

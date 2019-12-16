@@ -86,17 +86,36 @@ namespace ToSic.Eav.DataSources
             // Note: ShowDrafts is false - but actually it will work
             // because that would only create an additional data-source for drafts-info
             // which was already created previously when the ConfigurationProvider for this DS was made
-            var query = new Query(ZoneId, AppId, queryDef, Configuration.LookUps, false, this, Log);
-
-            #region Set Params
-            // #1 access the params to be sure they were loaded
-            var oldParams = query.Params();
-
-            // #2 add all params
-            var wrapLogParams = Log.Call("will override params");
+            
+            // 0. Take the new params and resolve them in the context of this query
+            // var tempLookUpForParams = new LookUpEngine(Configuration.LookUps, Log);
             var fieldParams = runEntity.GetBestValue<string>(FieldParams);
-            query.Params(fieldParams);
-            wrapLogParams("done");
+            var newParamsDic = QueryDefinition.GenerateParamsDic(fieldParams, Log);
+            var resultingParams = Configuration.Parse(newParamsDic);
+            Log.Add($"Resolved wrapper params - found {resultingParams.Count} [" 
+                    + string.Join(",", resultingParams.Select(p => p.Key + "=" + p.Value)) 
+                    + "]");
+
+            // 1. Create a new lookup machine and remove the params which would be in there right now
+            // note that internally, query will generate another params for this
+            var lookUpsWithoutParams = new LookUpEngine(Configuration.LookUps, Log);
+            if (lookUpsWithoutParams.Sources.ContainsKey(QueryConstants.ParamsLookup))
+                lookUpsWithoutParams.Sources.Remove(QueryConstants.ParamsLookup);
+            // note: can't add Override, because the underlying params don't exist yet - so an override wouldn't keep them
+            // lookUpsWithoutParams.AddOverride(new LookUpInDictionary(QueryConstants.ParamsLookup, resultingParams));
+
+            // 2. create the query
+            var query = new Query(ZoneId, AppId, queryDef, lookUpsWithoutParams, false, this, Log);
+
+            #region 3. Set Params
+            // #3a access the params to be sure they were loaded
+            //var oldParams = query.Params();
+            query.Params(resultingParams);
+
+            // #3b add all params
+            //var wrapLogParams = Log.Call("will override params");
+            //query.Params(fieldParams);
+            //wrapLogParams("done");
 
             #endregion
 

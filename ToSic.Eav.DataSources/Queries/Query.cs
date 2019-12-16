@@ -101,7 +101,14 @@ namespace ToSic.Eav.DataSources.Queries
         /// <inheritdoc />
         public void Params(string list)
         {
-            foreach (var qP in QueryDefinition.GenerateParamsDic(list, Log)) 
+            Params(QueryDefinition.GenerateParamsDic(list, Log));
+            //foreach (var qP in QueryDefinition.GenerateParamsDic(list, Log)) 
+            //    Params(qP.Key, qP.Value);
+        }
+
+        public void Params(IDictionary<string, string> values)
+        {
+            foreach (var qP in values)
                 Params(qP.Key, qP.Value);
         }
 
