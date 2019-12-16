@@ -20,10 +20,8 @@ namespace ToSic.Eav.DataSources.Configuration
             set => Values[key] = value;
         }
 
-        // todo: rename to values
         public IDictionary<string, string> Values { get; internal set; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-        // todo: rename to lookup
         public ILookUpEngine LookUps { get; protected internal set; }
 
         protected internal bool IsParsed;

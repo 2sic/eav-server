@@ -42,7 +42,7 @@ namespace ToSic.Eav.DataSources.Queries
 
 		/// <inheritdoc />
 		[PrivateApi]
-		public Query(int zoneId, int appId, IEntity queryDef, ILookUpEngine config, bool showDrafts, IDataTarget inSource, ILog parentLog)
+		public Query(int zoneId, int appId, IEntity queryDef, ILookUpEngine config, bool showDrafts, IDataTarget target, ILog parentLog)
 		{
 		    ZoneId = zoneId;
 		    AppId = appId;
@@ -52,11 +52,10 @@ namespace ToSic.Eav.DataSources.Queries
             _showDrafts = showDrafts;
 
             // hook up in, just in case we get parameters from an In
-            if (inSource != null)
-            {
-                Log.Add("found in for Query, will attach");
-                In = inSource.In;
-            }
+            if (target == null) return;
+
+            Log.Add("found target for Query, will attach");
+            In = target.In;
         }
 
 		/// <summary>
@@ -65,8 +64,6 @@ namespace ToSic.Eav.DataSources.Queries
 		private void CreateOutWithAllStreams()
         {
             var wrapLog = Log.Call();
-            // todo: separate original values in query def from the ones set here
-            // tood: create adictionary from the values set here, provide as overrides!
 
             // Step 1: Resolve the params from outside, where x=[Params:y] should come from the outer Params
             // and the current In
