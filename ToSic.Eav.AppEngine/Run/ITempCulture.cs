@@ -1,4 +1,4 @@
-﻿namespace ToSic.SexyContent.Environment.Interfaces
+﻿namespace ToSic.Eav.Run
 {
     // todo: sometime replace this with DimensionDefinition
     public interface ITempCulture

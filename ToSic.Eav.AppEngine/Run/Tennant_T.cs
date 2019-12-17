@@ -1,9 +1,6 @@
 ﻿using ToSic.Eav.Documentation;
-using ToSic.Eav.Interfaces;
-using ToSic.Eav.Run;
 
-// ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Environment
+namespace ToSic.Eav.Run
 {
     /// <summary>
     /// A tenant in the environment with a reference to the original thing.
@@ -15,7 +12,7 @@ namespace ToSic.Eav.Environment
         /// <summary>
         /// The tenant settings - usually the DNN PortalSettings
         /// </summary>
-        public T Original { get; }
+        public T UnwrappedContents { get; }
 
         /// <inheritdoc />
         public abstract string DefaultLanguage { get; }
@@ -37,7 +34,7 @@ namespace ToSic.Eav.Environment
         public abstract string ContentPath { get; }
 
 
-        protected Tenant(T settings) => Original = settings;
+        protected Tenant(T settings) => UnwrappedContents = settings;
 
     }
 }
