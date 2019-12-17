@@ -6,7 +6,7 @@ namespace ToSic.Eav.Run
     /// <summary>
     /// Marks objects that can convert values - like "file:22" to "/images/logo.jpg" and back.
     /// </summary>
-    [PublicApi]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("just fyi")]
     public interface IValueConverter
     {
         /// <summary>
