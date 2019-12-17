@@ -11,6 +11,10 @@ using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Repositories;
+//using ToSic.Sxc.Dnn.DataSources;
+using ToSic.Eav.Plumbing;
+using System;
+using System.Linq;
 
 namespace ToSic.Eav
 {
@@ -27,8 +31,25 @@ namespace ToSic.Eav
 	    /// <param name="serviceCollection"></param>
 	    public void ConfigureNetCoreContainer(IServiceCollection serviceCollection)
 	    {
+            //var dnnFarmCacheTypes = AssemblyHandling.FindInherited(typeof(ToSic.Sxc.Dnn.DataSources.AppsCacheDnnFarm)).FirstOrDefault();
+            //if (dnnFarmCacheTypes != null)
+            //{
+            //    // DnnFarmCache
+            //    serviceCollection.TryAddSingleton<IAppsCache, ToSic.Sxc.Dnn.DataSources.AppsCacheDnnFarm>();
+            //}
+            //else
+            //{
+            //    // Default EAV app cache
+            //    // 2019-12-11 2dm new
+            //    serviceCollection.TryAddSingleton<IAppsCache, AppsCache>();
+            //}
+
+            // DnnFarmCache
+            serviceCollection.TryAddSingleton<IAppsCache, ToSic.Sxc.Dnn.DataSources.AppsCacheDnnFarm>();
+
+            // Default EAV app cache
             // 2019-12-11 2dm new
-            serviceCollection.TryAddSingleton<IAppsCache, AppsCache>();
+            // serviceCollection.TryAddSingleton<IAppsCache, AppsCache>();
 
             serviceCollection.TryAddTransient<IAppRoot, AppRoot>();
             //serviceCollection.TryAddTransient<IAppsLoader, EavSqlStore>();
@@ -48,14 +69,14 @@ namespace ToSic.Eav
             if (!conStr.ToLower().Contains("multipleactiveresultsets")) // this is needed to allow querying data while preparing new data on the same DbContext
                 conStr += ";MultipleActiveResultSets=True";
 
-            serviceCollection.AddDbContext<EavDbContext>(options => options.UseSqlServer(conStr), 
+            serviceCollection.AddDbContext<EavDbContext>(options => options.UseSqlServer(conStr),
                 ServiceLifetime.Transient); // transient lifetime is important, otherwise 2-3x slower!
 
             // register some Default Constructors
             serviceCollection.TryAddTransient<Sql>();
             serviceCollection.TryAddTransient<DataTable>();
 
-            
+
         }
         #endregion
 
