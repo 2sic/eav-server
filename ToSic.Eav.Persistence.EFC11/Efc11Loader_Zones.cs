@@ -10,12 +10,12 @@ namespace ToSic.Eav.Persistence.Efc
 {
     public partial class Efc11Loader
     {
-        public Dictionary<int, Zone> Zones()
+        public IReadOnlyDictionary<int, Zone> Zones()
         {
             var log = new Log("DB.EfLoad", null, "Zones()");
             History.Add("zone-app-map", log);
 
-            return _dbContext.ToSicEavZones
+            var zones = _dbContext.ToSicEavZones
                 .Include(z => z.ToSicEavApps)
                 .Include(z => z.ToSicEavDimensions)
                 .ThenInclude(d => d.ParentNavigation)
@@ -25,6 +25,8 @@ namespace ToSic.Eav.Persistence.Efc
                     z.ToSicEavDimensions.Where(d => d.ParentNavigation?.Key == Constants.CultureSystemKey)
                         // ReSharper disable once RedundantEnumerableCastCall
                         .Cast<DimensionDefinition>().ToList()));
+
+            return zones;
         }
     }
 }

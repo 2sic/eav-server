@@ -22,10 +22,10 @@ namespace ToSic.Eav.Caching
         private IRepositoryLoader GetNewRepoLoader() => Factory.Resolve<IRepositoryLoader>();
 
 	    /// <inheritdoc />
-	    public abstract Dictionary<int, Zone> Zones { get; }
+	    public abstract IReadOnlyDictionary<int, Zone> Zones { get; }
 
         [PrivateApi]
-        protected Dictionary<int, Zone> LoadZones() => GetNewRepoLoader().Zones();
+        protected IReadOnlyDictionary<int, Zone> LoadZones() => GetNewRepoLoader().Zones();
 
         #region Cache-Keys
 
@@ -123,7 +123,7 @@ namespace ToSic.Eav.Caching
         public void Purge(IAppIdentity app) => Remove(CacheKey(app));
 
 	    /// <inheritdoc />
-	    public abstract void PurgeAll();
+	    public abstract void PurgeZones();
 
         #endregion
 

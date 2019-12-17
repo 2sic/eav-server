@@ -1,7 +1,7 @@
-﻿using ToSic.Eav.Documentation;
-using ToSic.Eav.Interfaces;
+﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Documentation;
 
-namespace ToSic.Eav.Apps
+namespace ToSic.Eav.Run
 {
     /// <inheritdoc />
     /// <summary>

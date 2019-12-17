@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSources.Tests
         public static ValueSort GeneratePersonSourceWithDemoData(int itemsToGenerate = 10, int firstId = 1001, bool useCacheForSpeed = true)
         {
             var ds = DataTableDataSourceTest.GeneratePersonSourceWithDemoData(itemsToGenerate, firstId);
-            var filtered = Eav.DataSource.GetDataSource<ValueSort>(ds, null);
+            var filtered = new DataSource(null).GetDataSource<ValueSort>(ds, null);
             return filtered;
 
             //if (useCacheForSpeed && _cachedDs.ContainsKey(itemsToGenerate))

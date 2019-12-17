@@ -1,6 +1,4 @@
-﻿using ToSic.SexyContent.Environment.Interfaces;
-
-namespace ToSic.Eav.Apps.Environment
+﻿namespace ToSic.Eav.Run
 {
     // todo: probably replace with DimensionDefinition
     public class TempTempCulture: ITempCulture

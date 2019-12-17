@@ -50,8 +50,8 @@ namespace ToSic.Eav.LookUp
         #endregion
 
         #region constructor
-        public Dictionary<string, ILookUp> ValueSources { get; }
-	    public TokenReplace(Dictionary<string, ILookUp> valueSources = null)
+        public IDictionary<string, ILookUp> ValueSources { get; }
+	    public TokenReplace(IDictionary<string, ILookUp> valueSources = null)
 	    {
             if(valueSources == null)
                 valueSources = new Dictionary<string, ILookUp>(StringComparer.OrdinalIgnoreCase);

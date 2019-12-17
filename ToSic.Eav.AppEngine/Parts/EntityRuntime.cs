@@ -44,7 +44,7 @@ namespace ToSic.Eav.Apps.Parts
 
         public IEnumerable<IEntity> Get(string contentTypeName)
         {
-            var typeFilter = DataSource.GetDataSource<EntityTypeFilter>(/*appId: App.AppId, upstream:*/ App./*Cache*/Data, /*configLookUp: App.Data.ConfigurationProvider*/ Log); // need to go to cache, to include published & unpublished
+            var typeFilter = new DataSource(Log).GetDataSource<EntityTypeFilter>(App./*Cache*/Data); // need to go to cache, to include published & unpublished
             typeFilter.TypeName = contentTypeName;
             return typeFilter.List;
         }

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 
 namespace ToSic.Eav.DataSources.Queries
@@ -15,7 +17,7 @@ namespace ToSic.Eav.DataSources.Queries
 		/// <summary>
         /// The param-dictionary used for the LookUp. All keys will be available in the token [Params:key]
         /// </summary>
-        public IDictionary<string, string> Params => _params ?? (_params = GenerateParamsDic(ParamsRaw));
+        public IDictionary<string, string> Params => _params ?? (_params = GenerateParamsDic(ParamsRaw, Log));
         private IDictionary<string, string> _params;
 
 		/// <summary>
@@ -25,16 +27,24 @@ namespace ToSic.Eav.DataSources.Queries
         public ILookUp ParamsLookUp => _paraLookUp ?? (_paraLookUp = new LookUpInDictionary(QueryConstants.ParamsLookup, Params));
         private ILookUp _paraLookUp;
 
-        internal static Regex ParamRegex = new Regex(
-            $@"(?<{KeyProperty}>\w+)=(?<{KeyValue}>[^\r\n]*)", RegexOptions.Compiled);
+        /// <summary>
+        /// Regex to detect key=value. <br/>
+        /// Keys must always be the first thing optionally followed by a = and then anything till a newline.
+        /// Anything that doesn't match will be ignored. <br/>
+        /// Comments should start with a //
+        /// </summary>
+        public static Regex ParamRegex = new Regex(
+            $@"^(?<{KeyProperty}>\w+)(\=(?<{KeyValue}>[^\r\n]*)?)?",
+            RegexOptions.Compiled | RegexOptions.Multiline);
 
         /// <summary>
         /// Generate the LookUp
         /// They are in the format k=value or key=[some:token]
         /// </summary>
-        internal IDictionary<string, string> GenerateParamsDic(string paramsText)
+        [PrivateApi]
+        public static IDictionary<string, string> GenerateParamsDic(string paramsText, ILog log)
         {
-            var wrapLog = Log.Call<IDictionary<string,string>>(parameters: $"{Entity.EntityId}");
+            var wrapLog = log.Call<IDictionary<string,string>>();
 
             var paramsDic = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 
@@ -42,17 +52,17 @@ namespace ToSic.Eav.DataSources.Queries
 
             // extract the lines which look like key=value
             var paramMatches = ParamRegex.Matches(paramsText);
-            Log.Add($"found {paramMatches.Count} params");
+            log.Add($"found {paramMatches.Count} params");
 
             foreach (Match testParam in paramMatches)
             {
                 var key = testParam.Groups[KeyProperty].Value.ToLower();
                 var value = testParam.Groups[KeyValue].Value;
-                Log.Add($"Params:{key}={value}");
+                log.Add($"Params:{key}={value}");
                 if (!paramsDic.ContainsKey(key))
                     paramsDic[key] = value; // add not-yet-added-value
                 else
-                    Log.Add($"Params:{key} already existed, will leave as is");
+                    log.Add($"Params:{key} already existed, will leave as is");
             }
 
             return wrapLog(paramsDic.Count.ToString(), paramsDic);

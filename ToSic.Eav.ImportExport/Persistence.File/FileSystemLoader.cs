@@ -7,9 +7,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Json;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Types;
@@ -28,14 +26,8 @@ namespace ToSic.Eav.Persistence.File
         
         public string PrimaryLanguage
         {
-            get
-            {
-                throw new Exception("Not implemented");
-            }
-            set
-            {
-                throw new Exception("Not implemented");
-            }
+            get => throw new Exception("Not implemented");
+            set => throw new Exception("Not implemented");
         }
 
         public FileSystemLoader(string path, RepositoryTypes source, bool ignoreMissing, ILog parentLog): base("FSL.Loadr", parentLog, $"init with path:{path} ignore:{ignoreMissing}")
@@ -216,7 +208,7 @@ namespace ToSic.Eav.Persistence.File
             ILog parentLog = null) 
             => throw new NotImplementedException();
 
-        public Dictionary<int, Zone> Zones() 
+        public IReadOnlyDictionary<int, Zone> Zones() 
             => throw new NotImplementedException();
 
         #endregion

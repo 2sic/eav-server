@@ -15,6 +15,8 @@ namespace ToSic.Eav.Logging
         [IgnoreDataMember]
         public ILog Log { get; private set; }
 
+        [PrivateApi] protected bool LogDetailed = false;
+
         /// <summary>
         /// Constructor which ensures Log-chaining and optionally adds initial messages
         /// </summary>

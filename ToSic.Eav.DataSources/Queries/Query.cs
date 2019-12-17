@@ -42,14 +42,20 @@ namespace ToSic.Eav.DataSources.Queries
 
 		/// <inheritdoc />
 		[PrivateApi]
-		public Query(int zoneId, int appId, IEntity queryDef, ILookUpEngine config, bool showDrafts, ILog parentLog)
+		public Query(int zoneId, int appId, IEntity queryDef, ILookUpEngine config, bool showDrafts, IDataTarget target, ILog parentLog)
 		{
 		    ZoneId = zoneId;
 		    AppId = appId;
+            Log.LinkTo(parentLog, LogId);
             Definition = new QueryDefinition(queryDef, appId, Log);
             Configuration.LookUps = config;
             _showDrafts = showDrafts;
-            Log.LinkTo(parentLog, LogId);
+
+            // hook up in, just in case we get parameters from an In
+            if (target == null) return;
+
+            Log.Add("found target for Query, will attach");
+            In = target.In;
         }
 
 		/// <summary>
@@ -58,9 +64,16 @@ namespace ToSic.Eav.DataSources.Queries
 		private void CreateOutWithAllStreams()
         {
             var wrapLog = Log.Call();
-		    var pipeline = QueryBuilder.GetAsDataSource(Definition, Configuration.LookUps, 
-                null, null, _showDrafts);
-		    _out = pipeline.Out;
+
+            // Step 1: Resolve the params from outside, where x=[Params:y] should come from the outer Params
+            // and the current In
+            var resolvedParams = Configuration.LookUps.LookUp(Definition.Params);
+
+            // now provide an override source for this
+            var paramsOverride = new LookUpInDictionary(QueryConstants.ParamsLookup, resolvedParams);
+		    var pipeline = QueryBuilder.BuildQuery(Definition, Configuration.LookUps, 
+                new List<ILookUp> {paramsOverride}, null, _showDrafts);
+            _out = pipeline.Out;
             wrapLog("ok");
         }
 
@@ -70,7 +83,7 @@ namespace ToSic.Eav.DataSources.Queries
 
 
         /// <inheritdoc />
-        public void Param(string key, string value)
+        public void Params(string key, string value)
         {
             // if the query has already been built, and we're changing a value, make sure we'll regenerate the results
             if(!_requiresRebuildOfOut)
@@ -83,11 +96,17 @@ namespace ToSic.Eav.DataSources.Queries
 
 
         /// <inheritdoc />
-        public void Params(string list)
+        public void Params(string list) => Params(QueryDefinition.GenerateParamsDic(list, Log));
+
+        /// <inheritdoc />
+        public void Params(IDictionary<string, string> values)
         {
-            foreach (var qP in Definition.GenerateParamsDic(list)) 
-                Param(qP.Key, qP.Value);
+            foreach (var qP in values)
+                Params(qP.Key, qP.Value);
         }
+
+        /// <inheritdoc />
+        public IDictionary<string, string> Params() => Definition.Params;
 
         /// <inheritdoc />
         public void Reset()

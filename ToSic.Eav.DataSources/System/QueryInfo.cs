@@ -97,7 +97,7 @@ namespace ToSic.Eav.DataSources.System
             if(!_query.Out.ContainsKey(StreamName))
                 return new List<IEntity>();
 
-	        var attribInfo = DataSource.GetDataSource<Attributes>(_query/*, configLookUp:_query.ConfigurationProvider*/);
+	        var attribInfo = new DataSource(Log).GetDataSource<Attributes>(_query);
             if(StreamName != Constants.DefaultStreamName)
                 attribInfo.Attach(Constants.DefaultStreamName, _query[StreamName]);
 

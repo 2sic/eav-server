@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSources.Queries
 		/// </summary>
 		/// <param name="entityId">EntityId</param>
 		/// <param name="dataSource">DataSource to load Entity from</param>
-		internal static IEntity GetQueryEntity(int entityId, /*IDataSource*/AppState dataSource)
+		internal static IEntity GetQueryEntity(int entityId, AppState dataSource)
 		{
 			try
 			{
@@ -47,7 +47,7 @@ namespace ToSic.Eav.DataSources.Queries
 	        var dict = new Dictionary<string, IQuery>(StringComparer.OrdinalIgnoreCase);
 	        foreach (var entQuery in AllQueryItems(app, parentLog))
 	        {
-	            var delayedQuery = new Query(app.ZoneId, app.AppId, entQuery, valuesCollectionProvider, showDrafts, parentLog);
+	            var delayedQuery = new Query(app.ZoneId, app.AppId, entQuery, valuesCollectionProvider, showDrafts, null, parentLog);
                 // make sure it doesn't break if two queries have the same name...
 	            var name = entQuery.Title[0].ToString();
 	            if (!dict.ContainsKey(name))
@@ -58,8 +58,9 @@ namespace ToSic.Eav.DataSources.Queries
 
 	    internal static IEnumerable<IEntity> AllQueryItems(IAppIdentity app, ILog parentLog)
 	    {
-	        var source = DataSource.GetPublishing(app, parentLog: parentLog);
-	        var typeFilter = DataSource.GetDataSource<EntityTypeFilter>(/*appId: appId, upstream:*/ source);
+            var dsFact = new DataSource(parentLog);
+	        var source = dsFact.GetPublishing(app);
+	        var typeFilter = dsFact.GetDataSource<EntityTypeFilter>(source);
 	        typeFilter.TypeName = Constants.QueryTypeName;
 	        var list = typeFilter.List;
 	        return list;

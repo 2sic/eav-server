@@ -111,8 +111,7 @@ namespace ToSic.Eav.DataSources
 		    if (AppSwitch != 0)
 				AppId = AppSwitch;
 
-		    var newDs = DataSource.GetPublishing(/*ZoneId, AppId*/this, 
-                configProvider: Configuration.LookUps);
+		    var newDs = new DataSource(Log).GetPublishing(this, configProvider: Configuration.LookUps);
 		    if (In.ContainsKey(Constants.DefaultStreamName))
 		        In.Remove(Constants.DefaultStreamName);
 			In.Add(Constants.DefaultStreamName, newDs[Constants.DefaultStreamName]);
@@ -142,14 +141,15 @@ namespace ToSic.Eav.DataSources
 
 			// now provide all data streams for all data types; only need the cache for the content-types list, don't use it as the source...
 			// because the "real" source already applies filters like published
-            var listOfTypes = Factory.GetAppState(this).ContentTypes;// Root.AppState.ContentTypes;
+            var listOfTypes = Factory.GetAppState(this).ContentTypes;
+            var dataSourceFactory = new DataSource(Log);
 		    foreach (var contentType in listOfTypes)
 		    {
 		        var typeName = contentType.Name;
 		        if (typeName != Constants.DefaultStreamName && !typeName.StartsWith("@") && !_out.ContainsKey(typeName))
 		        {
-		            var ds = DataSource.GetDataSource<EntityTypeFilter>(/*ZoneId, AppId*/this, upstreamDataSource,
-                        Configuration.LookUps, parentLog:Log);
+		            var ds = dataSourceFactory.GetDataSource<EntityTypeFilter>(this, upstreamDataSource,
+                        Configuration.LookUps);
 		            ds.TypeName = typeName;
 		            ds.Guid = Guid; // tell the inner source that it has the same ID as this one, as we're pretending it's the same source
 
@@ -169,7 +169,7 @@ namespace ToSic.Eav.DataSources
         /// This allows users of the App to query metadata directly through this object. 
         /// </summary>
         /// <returns>An initialized <see cref="IMetadataSource"/> for this app</returns>
-        public IMetadataSource Metadata => _metadata ?? (_metadata = Factory.GetAppState(this));// DataSource.GetMetaDataSource(ZoneId, AppId));
+        public IMetadataSource Metadata => _metadata ?? (_metadata = Factory.GetAppState(this));
         private IMetadataSource _metadata;
     }
 

@@ -46,7 +46,7 @@ namespace ToSic.Eav.Caching
         /// <summary>
         /// The list of zones, which internally contains the list of apps. 
         /// </summary>
-        Dictionary<int, Zone> Zones { get; }
+        IReadOnlyDictionary<int, Zone> Zones { get; }
 
         #endregion
 
@@ -72,7 +72,7 @@ namespace ToSic.Eav.Caching
         /// <summary>
         /// Clean entire global cache, which includes the List of Zones and Apps as well as all the apps.
         /// </summary>
-        void PurgeAll();
+        void PurgeZones();
 
         #endregion
 

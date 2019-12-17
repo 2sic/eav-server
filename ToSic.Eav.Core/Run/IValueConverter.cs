@@ -1,7 +1,7 @@
 ﻿using System;
 using ToSic.Eav.Documentation;
 
-namespace ToSic.Eav.Data
+namespace ToSic.Eav.Run
 {
     /// <summary>
     /// Marks objects that can convert values - like "file:22" to "/images/logo.jpg" and back.

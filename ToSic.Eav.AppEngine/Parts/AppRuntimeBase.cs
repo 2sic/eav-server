@@ -36,7 +36,7 @@ namespace ToSic.Eav.Apps.Parts
         //public AppRoot Cache => _cache ?? (_cache = (AppRoot) Data/*.Root*/);
         //private AppRoot _cache;
 
-        public IDataSource Data => _data ?? (_data = DataSource.GetPublishing(this/*ZoneId, AppId*/));
+        public IDataSource Data => _data ?? (_data = new DataSource(Log).GetPublishing(this));
         private IDataSource _data;
 
         /// <summary>

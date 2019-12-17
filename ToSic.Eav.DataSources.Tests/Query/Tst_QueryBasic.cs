@@ -28,7 +28,7 @@ namespace ToSic.Eav.DataSources.Tests.Query
         private QueryDefinition LoadQueryDef(int appId, int queryId)
         {
             var appState = Factory.GetAppState(appId);
-            var source = DataSource.GetPublishing(/*appId: appId*/appState);
+            var source = new DataSource(null).GetPublishing(appState);
             var pipelineEntity = QueryManager.GetQueryEntity(queryId, appState);
             return new QueryDefinition(pipelineEntity, appId, null);
         }

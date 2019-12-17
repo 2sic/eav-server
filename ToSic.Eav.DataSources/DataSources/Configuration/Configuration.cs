@@ -20,10 +20,8 @@ namespace ToSic.Eav.DataSources.Configuration
             set => Values[key] = value;
         }
 
-        // todo: rename to values
         public IDictionary<string, string> Values { get; internal set; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-        // todo: rename to lookup
         public ILookUpEngine LookUps { get; protected internal set; }
 
         protected internal bool IsParsed;
@@ -35,18 +33,36 @@ namespace ToSic.Eav.DataSources.Configuration
         [PrivateApi]
         public void Parse()
         {
-            if (IsParsed)
-                return;
+            if (IsParsed) return;
+            Values = Parse(Values);
+            IsParsed = true;
+        }
+
+        /// <summary>
+        /// Make sure that configuration-parameters have been parsed (tokens resolved)
+        /// but do it only once (for performance reasons)
+        /// </summary>
+        [PrivateApi]
+        public IDictionary<string, string> Parse(IDictionary<string, string> values)
+        {
+            //if (IsParsed)
+            //    return;
 
             // Ensure that we have a configuration-provider (not always the case, but required)
             if (LookUps == null)
                 throw new Exception($"No ConfigurationProvider configured on this data-source. Cannot run {nameof(Parse)}");
 
             // construct a property access for in, use it in the config provider
-            var instancePAs = new Dictionary<string, ILookUp> { { "In".ToLower(), new LookUpInDataTarget(DataSource) } };
-            Values = LookUps.LookUp(Values, instancePAs);
-            IsParsed = true;
+            //var instancePAs = new Dictionary<string, ILookUp> { { "In".ToLower(), new LookUpInDataTarget(DataSource) } };
+            return LookUps.LookUp(values, OverrideLookUps);
+            //IsParsed = true;
         }
+
+        [PrivateApi]
+        internal IDictionary<string, ILookUp> OverrideLookUps 
+            => _overrideLookUps 
+               ?? (_overrideLookUps = new Dictionary<string, ILookUp> { { "In".ToLower(), new LookUpInDataTarget(DataSource) } });
+        private IDictionary<string, ILookUp> _overrideLookUps;
 
     }
 }
