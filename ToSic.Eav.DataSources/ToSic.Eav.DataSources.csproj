@@ -79,9 +79,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="ToSic.Eav.Apps">
-      <HintPath>..\..\2sxc-dnn742\Website\DesktopModules\ToSIC_SexyContent\Bin\ToSic.Eav.Apps.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Caching\CacheKey.cs" />
