@@ -50,17 +50,20 @@ namespace ToSic.Eav.Apps
 
             AppGuid = cache.Zones[zoneId].Apps[appId];
 
-            if (AppGuid == Constants.DefaultAppName)
-                Name = Folder = Constants.ContentAppName;
-            else
+            if (AppGuid != Constants.DefaultAppName)
             {
                 // if it's a real App (not content/default), do more
                 Log.Add($"create app resources? allowSE:{allowSideEffects}");
 
                 if (allowSideEffects)
                     AppManager.EnsureAppIsConfigured(ZoneId, AppId, Log); // make sure additional settings etc. exist
-                InitializeResourcesSettingsAndMetadata();
             }
+
+            InitializeResourcesSettingsAndMetadata();
+
+            // do this after initializing resources to certainly set the content-name
+            if(AppGuid == Constants.DefaultAppName)
+                Name = Folder = Constants.ContentAppName;
 
             // for deferred initialization as needed
             _dataConfigurationBuilder = buildConfiguration;
