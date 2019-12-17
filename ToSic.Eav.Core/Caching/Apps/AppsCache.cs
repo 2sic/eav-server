@@ -76,6 +76,6 @@ namespace ToSic.Eav.Caching
         #endregion
 
         /// <inheritdoc />
-        public override void PurgeAll() => ZoneAppCache = null;
+        public override void PurgeZones() => ZoneAppCache = null;
     }
 }

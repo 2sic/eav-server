@@ -62,7 +62,7 @@ namespace ToSic.Eav.Apps.ImportExport
 				return false;
 			}
 
-            Factory.GetAppsCache().PurgeAll();
+            Factory.GetAppsCache().PurgeZones();
             //DataSource.GetCache(null).PurgeGlobalCache();   // must do this, to ensure that the app-id exists now 
             Log.Add("import app completed");
 			return ImportXml(zoneId, appId/*.Value*/, doc);

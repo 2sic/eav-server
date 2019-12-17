@@ -123,7 +123,7 @@ namespace ToSic.Eav.Caching
         public void Purge(IAppIdentity app) => Remove(CacheKey(app));
 
 	    /// <inheritdoc />
-	    public abstract void PurgeAll();
+	    public abstract void PurgeZones();
 
         #endregion
 

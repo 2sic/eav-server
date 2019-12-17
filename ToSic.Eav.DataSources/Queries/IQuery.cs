@@ -33,7 +33,7 @@ namespace ToSic.Eav.DataSources.Queries
         /// <summary>
         /// Add/Set a parameter for the query, which will be used by the [Params:Xxx] tokens.
         /// </summary>
-        /// <param name="list">list of key=value on many lines</param>
+        /// <param name="values">dictionary with values</param>
         /// <remarks>If you set a param after accessing the query, an exception will occur unless you call Reset() first.</remarks>
         void Params(IDictionary<string, string> values);
 

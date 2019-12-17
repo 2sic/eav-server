@@ -72,7 +72,7 @@ namespace ToSic.Eav.Caching
         /// <summary>
         /// Clean entire global cache, which includes the List of Zones and Apps as well as all the apps.
         /// </summary>
-        void PurgeAll();
+        void PurgeZones();
 
         #endregion
 
