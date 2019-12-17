@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ToSic.Eav.Interfaces
+namespace ToSic.Eav.Run
 {
     public interface IUser
     {

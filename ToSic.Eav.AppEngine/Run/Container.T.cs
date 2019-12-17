@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
+using ToSic.Eav.Run;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Environment
@@ -9,7 +10,7 @@ namespace ToSic.Eav.Environment
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [PublicApi]
-    public abstract class Container<T>: IContainer, IHasOriginal<T>
+    public abstract class Container<T>: IContainer, IWrapper<T>
     {
         /// <inheritdoc />
         public T Original { get; }

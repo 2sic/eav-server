@@ -2,7 +2,7 @@
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
 
-namespace ToSic.Eav.Interfaces
+namespace ToSic.Eav.Run
 {
     public interface IRuntime: IHasLog
     {
