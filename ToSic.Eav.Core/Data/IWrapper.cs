@@ -1,10 +1,13 @@
-﻿namespace ToSic.Eav.Run
+﻿using ToSic.Eav.Documentation;
+
+namespace ToSic.Eav.Data
 {
     /// <summary>
     /// This is for any object which does something, but caries with it an original object which is the type
     /// of the hosting system (environment)
     /// </summary>
     /// <typeparam name="T"></typeparam>
+    [PublicApi]
     public interface IWrapper<out T>
     {
         /// <summary>
