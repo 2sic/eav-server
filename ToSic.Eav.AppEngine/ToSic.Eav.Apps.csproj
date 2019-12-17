@@ -2,10 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>net451</TargetFramework>
-    <AssemblyVersion>10.23.01.0</AssemblyVersion>
-    <FileVersion>10.23.01.0</FileVersion>
+    <AssemblyVersion>10.24.00.0</AssemblyVersion>
+    <FileVersion>10.24.00.0</FileVersion>
     <Copyright>Copyright AGPL 2sic 2019</Copyright>
-    <Version>10.23.01.00</Version>
+    <Version>10.24.00.00</Version>
     <Configurations>Debug;Release;Dbg Testing</Configurations>
     <RootNamespace>ToSic.Eav</RootNamespace>
   </PropertyGroup>
