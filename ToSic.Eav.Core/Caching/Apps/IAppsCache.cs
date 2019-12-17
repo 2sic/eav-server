@@ -46,7 +46,7 @@ namespace ToSic.Eav.Caching
         /// <summary>
         /// The list of zones, which internally contains the list of apps. 
         /// </summary>
-        Dictionary<int, Zone> Zones { get; }
+        IReadOnlyDictionary<int, Zone> Zones { get; }
 
         #endregion
 

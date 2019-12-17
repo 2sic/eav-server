@@ -22,10 +22,10 @@ namespace ToSic.Eav.Caching
         private IRepositoryLoader GetNewRepoLoader() => Factory.Resolve<IRepositoryLoader>();
 
 	    /// <inheritdoc />
-	    public abstract Dictionary<int, Zone> Zones { get; }
+	    public abstract IReadOnlyDictionary<int, Zone> Zones { get; }
 
         [PrivateApi]
-        protected Dictionary<int, Zone> LoadZones() => GetNewRepoLoader().Zones();
+        protected IReadOnlyDictionary<int, Zone> LoadZones() => GetNewRepoLoader().Zones();
 
         #region Cache-Keys
 

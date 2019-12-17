@@ -21,7 +21,7 @@ namespace ToSic.Eav.Caching
         #endregion
 
         /// <inheritdoc />
-        public override Dictionary<int, Zone> Zones
+        public override IReadOnlyDictionary<int, Zone> Zones
         {
             get
             {
@@ -35,7 +35,7 @@ namespace ToSic.Eav.Caching
         }
 
         // note: this object must be volatile!
-        [PrivateApi] protected static volatile Dictionary<int, Zone> ZoneAppCache;
+        [PrivateApi] protected static volatile IReadOnlyDictionary<int, Zone> ZoneAppCache;
         [PrivateApi] protected static readonly object ZoneAppLoadLock = new object();
 
 
