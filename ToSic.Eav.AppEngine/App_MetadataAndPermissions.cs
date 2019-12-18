@@ -38,18 +38,21 @@ namespace ToSic.Eav.Apps
         /// </summary>
         protected void InitializeResourcesSettingsAndMetadata()
         {
-            Log.Add("init app resources");
+            var wrapLog = Log.Call();
 
             // Get the content-items describing various aspects of this app
             AppResources = Metadata.FirstOrDefault(md => md.Type.StaticName == AppConstants.TypeAppResources);
             AppSettings = Metadata.FirstOrDefault(md => md.Type.StaticName == AppConstants.TypeAppSettings);
             AppConfiguration = Metadata.FirstOrDefault(md => md.Type.StaticName == AppConstants.TypeAppConfig);
+            Log.Add($"HasResources: {AppResources != null}, HasSettings: {AppSettings != null}, HasConfiguration: {AppConfiguration != null}");
 
             // resolve some values for easier access
             Name = AppConfiguration?.GetBestValue("DisplayName")?.ToString() ?? "Error";
             Folder = AppConfiguration?.GetBestValue("Folder")?.ToString() ?? "Error";
             if (bool.TryParse(AppConfiguration?.GetBestValue("Hidden")?.ToString(), out var hidden))
                 Hidden = hidden;
+            Log.Add($"Name: {Name}, Folder: {Folder}, Hidden: {Hidden}");
+            wrapLog(null);
         }
         #endregion
     }

@@ -23,7 +23,7 @@ namespace ToSic.Eav.Apps
         }
 
         [PrivateApi]
-        protected App(IAppEnvironment env, 
+        private App(IAppEnvironment env, 
             ITenant tenant, 
             int zoneId, 
             int appId, 
