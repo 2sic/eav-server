@@ -18,7 +18,7 @@ namespace ToSic.Eav.Caching
     {
         #region EnforceSingleton experimental
 
-        [PrivateApi] public bool EnforceSingleton => false;
+        [PrivateApi] public virtual bool EnforceSingleton => false;
         #endregion
 
         /// <summary>
