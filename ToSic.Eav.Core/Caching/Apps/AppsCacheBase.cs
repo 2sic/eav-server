@@ -16,6 +16,11 @@ namespace ToSic.Eav.Caching
     [PublicApi]
     public abstract class AppsCacheBase : IAppsCache
     {
+        #region EnforceSingleton experimental
+
+        [PrivateApi] public bool EnforceSingleton => false;
+        #endregion
+
         /// <summary>
         /// The repository loader. Must generate a new one on every access, to be sure that it doesn't stay in memory for long. 
         /// </summary>

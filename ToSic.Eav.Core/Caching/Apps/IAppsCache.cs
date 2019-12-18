@@ -12,6 +12,10 @@ namespace ToSic.Eav.Caching
     [PublicApi]
     public interface IAppsCache
     {
+        #region EnforceSingleton experimental
+        [PrivateApi]
+        bool EnforceSingleton { get; }
+        #endregion
 
         #region Get an App
 

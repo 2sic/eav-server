@@ -131,8 +131,17 @@ namespace ToSic.Eav
 	    }
 
         [PrivateApi]
-        public static IAppsCache GetAppsCache() => Resolve<IAppsCache>();
+        public static IAppsCache GetAppsCache()
+        {
+            if (_appsCacheSingleton != null) return _appsCacheSingleton;
 
+            var appsCache = Resolve<IAppsCache>();
+            if (appsCache.EnforceSingleton)
+                _appsCacheSingleton = appsCache;
+            return appsCache;
+        }
+
+        private static IAppsCache _appsCacheSingleton;
         [PrivateApi]
         public static AppState GetAppState(int appId) => GetAppsCache().Get(appId);
 
