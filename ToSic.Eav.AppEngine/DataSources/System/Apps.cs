@@ -8,7 +8,7 @@ using ToSic.Eav.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.DataSources.System
 {
     /// <inheritdoc />
     /// <summary>
@@ -16,14 +16,17 @@ namespace ToSic.Eav.DataSources
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
     [VisualQuery(
-        GlobalName = "ToSic.Eav.DataSources.Apps, ToSic.Eav.Apps",
+        GlobalName = "ToSic.Eav.DataSources.System.Apps, ToSic.Eav.Apps",
         Type = DataSourceType.Source,
         DynamicOut = false,
         Difficulty = DifficultyBeta.Advanced,
         ExpectsDataOfType = "fabc849e-b426-42ea-8e1c-c04e69facd9b",
         PreviousNames = new []
             {
-                "ToSic.Eav.DataSources.System.Apps, ToSic.Eav.Apps"
+                "ToSic.Eav.DataSources.System.Apps, ToSic.Eav.Apps",
+                // not sure if this was ever used...just added it for safety for now
+                // can probably remove again, if we see that all system queries use the correct name
+                "ToSic.Eav.DataSources.Apps, ToSic.Eav.Apps",
             },
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Apps")]
     public sealed class Apps: DataSourceBase
