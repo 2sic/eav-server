@@ -7,7 +7,7 @@ namespace ToSic.Eav.Security
     /// <summary>
     /// Helper object for constants related to the permissions-type
     /// </summary>
-    [PublicApi]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public class Permission: EntityBasedType
     {
         public const string TypeName = "PermissionConfiguration";

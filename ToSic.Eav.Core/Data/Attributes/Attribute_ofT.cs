@@ -12,7 +12,7 @@ namespace ToSic.Eav.Data
     /// > We recommend you read about the @Specs.Data.Intro
     /// </remarks>
     /// <typeparam name="T">Type of the Value</typeparam>
-    [PublicApi]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi, use interface IAttribute<T>")]
     public class Attribute<T> : AttributeBase, IAttribute<T>
     {
         /// <summary>

@@ -10,8 +10,8 @@ namespace ToSic.Eav.Data
     /// Represents a typed Value object in the memory model
     /// </summary>
     /// <typeparam name="T">Type of the actual Value</typeparam>
-    [PublicApi]
-    public class Value<T> : /*Value,*/ IValue<T>
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi, always work with interface IValue<T>")]
+    public class Value<T> : IValue<T>
     {
         /// <inheritdoc />
         public IList<ILanguage> Languages { get; set; }

@@ -10,7 +10,7 @@ namespace ToSic.Eav.LookUp
     /// Takes a list of configuration masks (list of tokens) and resolves them with a bunch of LookUps. <br/>
     /// Read more about this in @Specs.LookUp.Intro
     /// </summary>
-    [PublicApi]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi, use Interface in your code ILookupEngine")]
     public class LookUpEngine : HasLog, ILookUpEngine
 	{
         #region Constants

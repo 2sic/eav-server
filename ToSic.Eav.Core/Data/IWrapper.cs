@@ -7,7 +7,7 @@ namespace ToSic.Eav.Data
     /// of the hosting system (environment)
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    [PublicApi]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public interface IWrapper<out T>
     {
         /// <summary>

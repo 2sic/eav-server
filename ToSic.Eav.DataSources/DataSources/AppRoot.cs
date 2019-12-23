@@ -8,7 +8,7 @@ namespace ToSic.Eav.DataSources
     /// It's implemented as a DataSource so that other DataSources can easily attach to it. <br/>
     /// This is also the object returned as the root in any query.
     /// </summary>
-    [PublicApi]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public class AppRoot : DataSourceBase, IAppRoot
     {
         [PrivateApi]

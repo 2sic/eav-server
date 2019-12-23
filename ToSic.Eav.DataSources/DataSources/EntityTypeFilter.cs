@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// Return only entities of a specific content-type
 	/// </summary>
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
 	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.EntityTypeFilter, ToSic.Eav.DataSources",
         Type = DataSourceType.Filter, 
         DynamicOut = false,

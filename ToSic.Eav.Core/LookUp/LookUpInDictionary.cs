@@ -8,12 +8,12 @@ namespace ToSic.Eav.LookUp
     /// Look Up values from a .net dictionary. Case-Insensitive. <br/>
     /// Read more about this in @Specs.LookUp.Intro
     /// </summary>
+	[PublicApi_Stable_ForUseInYourCode]
     public class LookUpInDictionary : LookUpBase
 	{
 		/// <summary>
 		/// List with static properties and Test-Values
 		/// </summary>
-		[PublicApi]
 		public IDictionary<string, string> Properties { get; }
 
         /// <summary>

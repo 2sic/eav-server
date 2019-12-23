@@ -8,7 +8,7 @@ namespace ToSic.Eav.Apps
     /// A <em>single-use</em> app-object providing quick simple api to access
     /// name, folder, data, metadata etc.
     /// </summary>
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
     public partial class App: AppBase, IApp
     {
         [PrivateApi]

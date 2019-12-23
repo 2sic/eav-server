@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// A DataSource that merges two streams
 	/// </summary>
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
 	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.StreamMerge, ToSic.Eav.DataSources",
         Type = DataSourceType.Logic, 
         DynamicOut = false, 

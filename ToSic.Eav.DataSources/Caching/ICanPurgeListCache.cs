@@ -7,7 +7,7 @@ namespace ToSic.Eav.DataSources.Caching
     /// This helps in scenarios where the code knows that the cache should be cleaned, but needs to rely on the whole tree to be cleaned.
     /// Without this, a cache would be cleared but the next-upstream would still be cached, so the next access would still return the same results. 
     /// </summary>
-    [PublicApi]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public interface ICanPurgeListCache
     {
         /// <summary>

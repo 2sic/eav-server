@@ -10,7 +10,7 @@ namespace ToSic.Eav.LookUp
     /// Get Values from an <see cref="IEntity"/>. <br/>
     /// Read more about this in @Specs.LookUp.Intro
     /// </summary>
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
 	public class LookUpInEntity : LookUpIn<IEntity>
     {
         //protected IEntity Data;

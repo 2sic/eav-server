@@ -1,13 +1,14 @@
 ﻿using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 
+// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Run
 {
     /// <summary>
     /// A base implementation of the block information wrapping the CMS specific object along with it.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    [PublicApi]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public abstract class Container<T>: IContainer, IWrapper<T>
     {
         /// <inheritdoc />

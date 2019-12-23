@@ -1,11 +1,12 @@
 ﻿using ToSic.Eav.Documentation;
 
+// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Run
 {
     /// <summary>
     /// Describes a tenant - this is what the Environment calls a tenant (like a portal in DNN)
     /// </summary>
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
     public interface ITenant
     {
         /// <summary>

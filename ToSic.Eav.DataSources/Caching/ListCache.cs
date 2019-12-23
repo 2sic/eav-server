@@ -11,7 +11,7 @@ namespace ToSic.Eav.DataSources.Caching
     /// <summary>
     /// Responsible for caching lists / streams. Usually used in queries or sources which have an intensive loading or querying time.
     /// </summary>
-    [PublicApi]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public class ListCache: HasLog, IListCache
     {
 

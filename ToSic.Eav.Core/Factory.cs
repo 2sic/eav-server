@@ -11,7 +11,7 @@ namespace ToSic.Eav
 	/// <summary>
 	/// The Eav DI Factory, used to construct various objects through Dependency Injection.
 	/// </summary>
-	[PublicApi]
+	[PublicApi_Stable_ForUseInYourCode]
 	public class Factory
 	{
 #pragma warning disable IDE0051 // Remove unused private members

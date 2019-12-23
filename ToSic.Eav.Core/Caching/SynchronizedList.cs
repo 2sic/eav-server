@@ -10,7 +10,7 @@ namespace ToSic.Eav.Caching
     /// This is an IEnumerable which relies on an up-stream cache, which may change. That would require this IEnumerable to update what it delivers.
     /// </summary>
     /// <typeparam name="T">The type which is enumerated, usually an <see cref="IEntity"/></typeparam>
-    [PublicApi]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public class SynchronizedList<T>: IEnumerable<T>, ICacheDependent, ICacheExpiring
     {
         /// <summary>

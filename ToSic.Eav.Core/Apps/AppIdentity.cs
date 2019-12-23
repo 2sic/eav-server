@@ -6,7 +6,7 @@ namespace ToSic.Eav.Apps
     /// A full App-Identity.<br/>
     /// This is either used to pass identities around, or as a base class for more extensive objects which know their full identity. 
     /// </summary>
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
     public class AppIdentity: IAppIdentity
     {
         /// <inheritdoc />

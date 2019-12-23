@@ -7,8 +7,8 @@ using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Data
 {
-	/// <inheritdoc />
-	[PublicApi]
+    /// <inheritdoc />
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi, always use IEntity")]
 	public class EntityLight : IEntityLight
     {
         #region Basic properties EntityId, EntityGuid, Title, Attributes, Type, Modified, etc.

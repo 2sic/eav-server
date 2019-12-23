@@ -13,7 +13,7 @@ namespace ToSic.Eav.Apps
     /// The special feature is that it also has methods for data-manipulation,
     /// including Create, Update and Delete
     /// </summary>
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
     public sealed class AppData: Eav.DataSources.App, IAppData
     {
         [PrivateApi]

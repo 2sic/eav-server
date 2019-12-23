@@ -10,7 +10,7 @@ namespace ToSic.Eav.Data
     /// > We recommend you read about the @Specs.Data.Intro
     /// </remarks>
 	/// <typeparam name="T">Type of the Value</typeparam>
-	[PublicApi]
+	[PublicApi_Stable_ForUseInYourCode]
 	public interface IAttribute<T> : IAttribute
 	{
 		/// <summary>

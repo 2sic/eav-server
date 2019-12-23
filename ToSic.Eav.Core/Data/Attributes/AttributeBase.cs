@@ -11,7 +11,7 @@ namespace ToSic.Eav.Data
     /// <remarks>
     /// > We recommend you read about the @Specs.Data.Intro
     /// </remarks>
-    [PublicApi]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi, use Interface IAttributeBase")]
     public class AttributeBase : IAttributeBase
     {
         /// <inheritdoc />

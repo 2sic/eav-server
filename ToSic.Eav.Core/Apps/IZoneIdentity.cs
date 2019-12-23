@@ -5,7 +5,7 @@ namespace ToSic.Eav.Apps
     /// <summary>
     /// Marks things which belongs to a Zone
     /// </summary>
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
     public interface IZoneIdentity
     {
         /// <summary>

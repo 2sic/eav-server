@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSources.Queries
 	/// <summary>
 	/// Provides a data-source to a query, but won't assemble/compile the query unless accessed (lazy). 
 	/// </summary>
-	[PublicApi]
+	[PublicApi_Stable_ForUseInYourCode]
 	public sealed class Query : DataSourceBase, IQuery
 	{
         #region Configuration-properties

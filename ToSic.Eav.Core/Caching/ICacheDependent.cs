@@ -5,7 +5,7 @@ namespace ToSic.Eav.Caching
     /// <summary>
     /// Marks something that is cache-dependent. Used for things that are themselves cached, but rely on an upstream cache. 
     /// </summary>
-    [PublicApi]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public interface ICacheDependent: ITimestamped
     {
         /// <summary>

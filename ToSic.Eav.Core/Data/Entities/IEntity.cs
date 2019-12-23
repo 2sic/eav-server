@@ -11,7 +11,7 @@ namespace ToSic.Eav.Data
     /// versioning, publishing etc.
     /// > We recommend you read about the @Specs.Data.Intro
     /// </summary>
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
     public interface IEntity: ToSic.Eav.Interfaces.IEntity, // compatibility
         IEntityLight, IPublish<IEntity>, IHasPermissions
     {

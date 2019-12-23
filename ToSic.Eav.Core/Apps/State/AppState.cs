@@ -16,9 +16,9 @@ namespace ToSic.Eav.Apps
     /// But the primary purpose is to make sure the whole app is always available with everything. <br/>
     /// It also manages and caches relationships between entities of the same app.
     /// </summary>
-    [PublicApi]
-    public partial class AppState: AppBase// , IAppIdentityLight
-	{
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
+    public partial class AppState: AppBase
+    {
         #region public properties like AppId, Entities, List, Publisheentities, DraftEntities, 
 
 	    /// <summary>

@@ -7,7 +7,7 @@ namespace ToSic.Eav.Caching
     /// For example, when parameters change what data is cached, then the cache-key can contain this parameter,
     /// so that a different cache is used based on changing parameters. 
     /// </summary>
-    [PublicApi]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public interface ICacheKey
     {
         /// <summary>

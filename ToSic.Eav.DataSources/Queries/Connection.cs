@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ToSic.Eav.Documentation;
+﻿using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.DataSources.Queries
 {
     /// <summary>
     /// Represent a connection which connects two DataSources in a Query
     /// </summary>
-    [PublicApi]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public struct Connection
     {
         internal const string FromField = "From";

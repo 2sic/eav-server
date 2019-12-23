@@ -10,7 +10,7 @@ namespace ToSic.Eav.Data
     /// <summary>
     /// Represents a ContentType
     /// </summary>
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
     public class ContentType : IContentType, IContentTypeShared, IHasExternalI18n
     {
         #region simple properties

@@ -9,7 +9,7 @@ namespace ToSic.Eav.Metadata
     /// For querying metadata from the data source.
     /// Mainly used in the Store, Cache-Systems and Apps.
     /// </summary>
-    [PublicApi]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public interface IMetadataSource: ICacheExpiring
     {
         /// <summary>

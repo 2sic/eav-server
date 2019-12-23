@@ -5,12 +5,12 @@ using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Data
 {
-	/// <summary>
-	/// Represents a light Entity, which is a very basic entity
-	/// without multi-language capabilities, versions or publishing.
-	/// For the more powerful Entity, use <see cref="IEntity"/>.
-	/// </summary>
-	[PublicApi]
+    /// <summary>
+    /// Represents a light Entity, which is a very basic entity
+    /// without multi-language capabilities, versions or publishing.
+    /// For the more powerful Entity, use <see cref="IEntity"/>.
+    /// </summary>
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
 	public interface IEntityLight: IAppIdentityLight
 	{
 

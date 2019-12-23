@@ -12,7 +12,7 @@ namespace ToSic.Eav.LookUp
 	/// It will take the first <see cref="IEntity"/> in a source and look up properties/attributes in that. <br/>
 	/// Normally this is used in Queries, where you want to get a parameter from the <em>In</em> stream.
 	/// </summary>
-	[PublicApi]
+	[PublicApi_Stable_ForUseInYourCode]
 	public class LookUpInDataTarget : LookUpBase
     {
         /// <summary>

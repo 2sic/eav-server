@@ -12,7 +12,7 @@ namespace ToSic.Eav.DataSources
 	/// For example, it has a variable amount of Out-streams, one for each content-type in the app.
 	/// </summary>
 
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
 	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.App, ToSic.Eav.DataSources",
         Type = DataSourceType.Source, 
         Icon = "app",

@@ -6,7 +6,7 @@ namespace ToSic.Eav.Data
 	/// Represents a Value with a specific type (string, decimal, etc.).
 	/// </summary>
 	/// <typeparam name="T">Type of the actual Value</typeparam>
-	[PublicApi]
+	[PublicApi_Stable_ForUseInYourCode]
 	public interface IValue<out T> : IValue
 	{
 		/// <summary>

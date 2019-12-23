@@ -13,7 +13,7 @@ namespace ToSic.Eav.Caching
     /// This is just the abstract base implementation.
     /// The real cache must implement this and also provide platform specific adjustments so that the caching is in sync with the Environment.
     /// </summary>
-    [PublicApi]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public abstract class AppsCacheBase : IAppsCache
     {
         #region EnforceSingleton experimental

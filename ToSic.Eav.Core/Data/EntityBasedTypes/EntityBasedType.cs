@@ -8,7 +8,7 @@ namespace ToSic.Eav.Data
     /// This is used for more type safety - because some internal objects need entities for data-storage,
     /// but when programming they should use typed objects to not accidentally access invalid properties. 
     /// </summary>
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
     public abstract class EntityBasedType : IEntityBasedType
     {
         /// <inheritdoc />

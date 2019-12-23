@@ -11,7 +11,7 @@ namespace ToSic.Eav.LookUp
     /// As of now it's hardwired to look up Metadata of Entities. <br/>
     /// Read more about this in @Specs.LookUp.Intro
     /// </summary>
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
 	public class LookUpInMetadata : LookUpInEntity
 	{
 	    private readonly IMetadataSource _metaDataSource;

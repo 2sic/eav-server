@@ -11,7 +11,7 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// Run another query and provide the resulting data. The settings will provide the params for the query.
 	/// </summary>
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
 	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.QueryRun, ToSic.Eav.DataSources",
         Type = DataSourceType.Source,
         NiceName = "Query Run",

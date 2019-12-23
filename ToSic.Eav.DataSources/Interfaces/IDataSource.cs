@@ -13,7 +13,7 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// Public interface for an Eav DataSource. All DataSource objects are based on this. 
 	/// </summary>
-	[PublicApi]
+	[PublicApi_Stable_ForUseInYourCode]
 	public interface IDataSource : IAppIdentity, ICacheExpiring, ICacheKey, ICanPurgeListCache, IHasLog
 	{
 		#region Data Interfaces
@@ -52,16 +52,6 @@ namespace ToSic.Eav.DataSources
         [PrivateApi("wip")]
         DataSourceConfiguration Configuration { get; }
 
-  //      /// <summary>
-		///// Gets the ConfigurationProvider for this DataSource
-		///// </summary>
-  //      ILookUpEngine ConfigurationProvider { get; }
-
-		///// <summary>
-		///// Gets a Dictionary of Configurations for this DataSource, e.g. Key: EntityId, Value: [QueryString:EntityId]
-		///// </summary>
-		//IDictionary<string, string> Configuration { get; }
-
         #endregion
 
         #region UI Interfaces -- not implemented yet
@@ -82,13 +72,7 @@ namespace ToSic.Eav.DataSources
 
 	    #endregion
 
-	    #region Internals (Ready, DistanceFromSource)
-        // 2019-12-13 disabled, not actually in use!
-	 //   /// <summary>
-	 //   /// Indicates whether the DataSource is ready for use (initialized/configured)
-		///// </summary>
-		///// <returns>True if ready, false if not. Rarely used.</returns>
-  //      bool Ready { get; }
+	    #region Internals 
 
 		/// <summary>
 		/// Name of this DataSource - not usually relevant.
@@ -98,12 +82,6 @@ namespace ToSic.Eav.DataSources
 		#endregion
 
         #region Caching Information
-
-        ///// <summary>
-        ///// Direct access to the root cache underlying all data provided by this data source. 
-        ///// </summary>
-        ///// <returns>An <see cref="IAppRoot"/> data source to the root cache.</returns>
-        //IAppRoot Root { get; }
 
         /// <summary>
         /// Some configuration of the data source is cache-relevant, others are not.

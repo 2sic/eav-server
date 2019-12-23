@@ -7,7 +7,7 @@ namespace ToSic.Eav.DataSources
     /// <summary>
     /// Base DataSource class for providing data from external systems
     /// </summary>
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
     public abstract class ExternalData: DataSourceBase
     {
         /// <inheritdoc/>

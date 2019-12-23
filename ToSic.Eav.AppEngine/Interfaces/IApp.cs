@@ -10,7 +10,7 @@ namespace ToSic.Eav.Apps
     /// <summary>
     /// An App in memory - for quickly getting things done with the app data, queries etc.
     /// </summary>
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
     public interface IApp : IAppIdentityWithPublishingState
     {
         /// <summary>

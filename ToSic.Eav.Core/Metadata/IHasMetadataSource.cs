@@ -7,7 +7,7 @@ namespace ToSic.Eav.Metadata
     /// Marks metadata providers.
     /// This is important for things that need a source for their metadata, but won't load it till later. 
     /// </summary>
-    [PublicApi]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public interface IHasMetadataSource: ICacheExpiring
     {
         /// <summary>

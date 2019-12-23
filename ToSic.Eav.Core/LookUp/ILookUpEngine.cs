@@ -7,7 +7,7 @@ namespace ToSic.Eav.LookUp
     /// <summary>
     /// Resolves Configurations from LookUps. Common use is for configurable DataSources
     /// </summary>
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
     public interface ILookUpEngine: IHasLog
 	{
         /// <summary>
