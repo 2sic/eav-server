@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.DataSources.Types;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
@@ -15,6 +14,7 @@ namespace ToSic.Eav.DataSources
     /// <summary>
     /// A DataSource that gets all zones in the system.
     /// </summary>
+    [InternalApi_DoNotUse_MayChangeWithoutNotice]
     [VisualQuery(
         GlobalName = "ToSic.Eav.DataSources.Zones, ToSic.Eav.Apps",
         Type = DataSourceType.Source,
@@ -25,7 +25,6 @@ namespace ToSic.Eav.DataSources
                 "ToSic.Eav.DataSources.System.Zones, ToSic.Eav.Apps"
             },
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Zones")]
-    [PrivateApi("probably should be in own SysInfo folder or something")]
     public sealed class Zones: DataSourceBase
 	{
         #region Configuration-properties (no config)

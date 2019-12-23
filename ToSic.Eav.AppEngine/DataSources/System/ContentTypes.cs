@@ -15,6 +15,7 @@ namespace ToSic.Eav.DataSources
     /// <summary>
     /// A DataSource that all content-types of an app.
     /// </summary>
+    [InternalApi_DoNotUse_MayChangeWithoutNotice]
     [VisualQuery(
         GlobalName = "ToSic.Eav.DataSources.ContentTypes, ToSic.Eav.Apps",
         Type = DataSourceType.Source,
@@ -26,7 +27,6 @@ namespace ToSic.Eav.DataSources
                 "ToSic.Eav.DataSources.System.ContentTypes, ToSic.Eav.Apps"
             },
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-ContentTypes")]
-    [PrivateApi("probably should be in own SysInfo folder or something")]
     public sealed class ContentTypes: DataSourceBase
 	{
         #region Configuration-properties (no config)
