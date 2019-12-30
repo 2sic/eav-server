@@ -58,7 +58,7 @@ namespace ToSic.Eav.DataSources
 
 	        try
             {
-                var appState = Factory.GetAppState(this);//  Root.AppState;// DataSource.GetCache(ZoneId, AppId);
+                var appState = /*Factory.GetAppState*/Eav.Apps.Apps.Get(this);//  Root.AppState;// DataSource.GetCache(ZoneId, AppId);
 	            var foundType = appState?.GetContentType(TypeName);
 	            if (foundType != null) // maybe it doesn't find it!
 	                return (from e in In[Constants.DefaultStreamName].List

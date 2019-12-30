@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
-using ToSic.Eav.DataSources.System;
 using ToSic.Eav.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -72,7 +71,7 @@ namespace ToSic.Eav.DataSources.System
 
             // try to load the content-type - if it fails, return empty list
             //var cache = (RootCacheBase)DataSource.GetCache(ZoneId, AppId);
-            var cache = Factory.GetAppsCache();
+            var cache = /*Factory.GetAppsCache*/Eav.Apps.Apps.Cache;
 	        if (!cache.Zones.ContainsKey(OfZoneId)) return new List<IEntity>();
 	        var zone = cache.Zones[OfZoneId];
 

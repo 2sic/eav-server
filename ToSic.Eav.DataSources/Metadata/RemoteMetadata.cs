@@ -16,10 +16,10 @@ namespace ToSic.Eav.Metadata
     {
         /// <inheritdoc />
         public IMetadataSource OfZoneAndApp(int zoneId, int appId)
-            => Factory.GetAppState(new AppIdentity(zoneId, appId));// DataSource.GetMetaDataSource(zoneId, appId);
+            => /*Factory.GetAppState*/Eav.Apps.Apps.Get(new AppIdentity(zoneId, appId));// DataSource.GetMetaDataSource(zoneId, appId);
 
         /// <inheritdoc />
         public IMetadataSource OfApp(int appId)
-            => Factory.GetAppState(appId);// DataSource.GetMetaDataSource(null, appId);
+            => Eav.Apps.Apps.Get(appId); //Factory.GetAppState(appId);// DataSource.GetMetaDataSource(null, appId);
     }
 }

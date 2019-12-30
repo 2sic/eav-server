@@ -157,7 +157,8 @@ namespace ToSic.Eav.Apps.Parts
             );
 
             // Tell the cache to do a partial update
-            Factory.GetAppsCache().Update(AppManager, ids, Log);
+            /*Factory.GetAppsCache*/
+            Eav.Apps.Apps.Cache.Update(AppManager, ids, Log);
 
             //AppManager.DataController.Loader.Update(AppManager.Package, 
             //    AppStateLoadSequence.ItemLoad, ids.ToArray(), Log);

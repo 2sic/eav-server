@@ -217,7 +217,8 @@ namespace ToSic.Eav.Repository.Efc
         private void PurgeAppCacheIfReady()
         {
             if(_purgeAppCacheOnSave)
-                Factory.GetAppsCache().Purge(this);
+                /*Factory.GetAppsCache*/
+                Eav.Apps.Apps.Cache.Purge(this);
         }
 
         //public IAppsCache Cache => _cache ?? (_cache = Factory.Resolve<IAppsCache>());

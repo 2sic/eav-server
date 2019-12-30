@@ -56,7 +56,7 @@ namespace ToSic.Eav.DataSources.System
 	    {
             // Get cache, which manages a list of zones
 	        //var cache = (RootCacheBase)DataSource.GetCache(ZoneId, AppId);
-            var cache = Factory.GetAppsCache();
+            var cache = /*Factory.GetAppsCache*/Eav.Apps.Apps.Cache;
 	        var env = Factory.Resolve<IAppEnvironment>();
 
 	        var list = cache.Zones.Values.OrderBy(z => z.ZoneId).Select(zone =>

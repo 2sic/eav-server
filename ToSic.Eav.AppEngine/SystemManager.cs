@@ -30,9 +30,11 @@ namespace ToSic.Eav.Apps
         public static void Purge(int zoneId, int appId, bool global = false)
         {
             if (global)
-                Factory.GetAppsCache().PurgeZones();
+                /*Factory.GetAppsCache*/
+                Eav.Apps.Apps.Cache.PurgeZones();
             else
-                Factory.GetAppsCache().Purge(new AppIdentity(zoneId, appId));
+                /*Factory.GetAppsCache*/
+                Eav.Apps.Apps.Cache.Purge(new AppIdentity(zoneId, appId));
         }
 
         /// <summary>
