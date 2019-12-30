@@ -71,9 +71,9 @@ namespace ToSic.Eav.DataSources.System
 
             // try to load the content-type - if it fails, return empty list
             //var cache = (RootCacheBase)DataSource.GetCache(ZoneId, AppId);
-            var cache = /*Factory.GetAppsCache*/Eav.Apps.Apps.Cache;
-	        if (!cache.Zones.ContainsKey(OfZoneId)) return new List<IEntity>();
-	        var zone = cache.Zones[OfZoneId];
+            var zones = /*Factory.GetAppsCache*/Eav.Apps.Apps.Zones;
+	        if (!zones.ContainsKey(OfZoneId)) return new List<IEntity>();
+	        var zone = zones[OfZoneId];
 
 	        var list = zone.Apps.OrderBy(a => a.Key).Select(app =>
 	        {
