@@ -43,7 +43,7 @@ namespace ToSic.Eav.DataSources.Queries
 
 	        try
             {
-                var app = /*Factory.GetAppIdentity*/Apps.Apps.Identity(null, appId);
+                var app = /*Factory.GetAppIdentity*/Apps.State.Identity(null, appId);
                 var source = new DataSource(Log).GetPublishing(app);
 	            var appEntities = source[Constants.DefaultStreamName].List;
 
@@ -136,7 +136,7 @@ namespace ToSic.Eav.DataSources.Queries
                 // Check type because we renamed the DLL with the parts, and sometimes the old dll-name had been saved
                 var assemblyAndType = dataQueryPart.DataSourceType;
 
-                var appIdentity = /*Factory.GetAppIdentity*/Apps.Apps.Identity(null, queryDef.AppId);
+                var appIdentity = /*Factory.GetAppIdentity*/Apps.State.Identity(null, queryDef.AppId);
                 var dataSource = new DataSource(Log).GetDataSource(assemblyAndType, appIdentity, configLookUp: partConfig);
 	            dataSource.Guid = dataQueryPart.Guid;
 

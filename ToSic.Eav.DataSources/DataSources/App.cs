@@ -141,7 +141,7 @@ namespace ToSic.Eav.DataSources
 
 			// now provide all data streams for all data types; only need the cache for the content-types list, don't use it as the source...
 			// because the "real" source already applies filters like published
-            var listOfTypes = /*Factory.GetAppState*/Eav.Apps.Apps.Get(this).ContentTypes;
+            var listOfTypes = /*Factory.GetAppState*/Eav.Apps.State.Get(this).ContentTypes;
             var dataSourceFactory = new DataSource(Log);
 		    foreach (var contentType in listOfTypes)
 		    {
@@ -169,7 +169,7 @@ namespace ToSic.Eav.DataSources
         /// This allows users of the App to query metadata directly through this object. 
         /// </summary>
         /// <returns>An initialized <see cref="IMetadataSource"/> for this app</returns>
-        public IMetadataSource Metadata => _metadata ?? (_metadata = /*Factory.GetAppState*/Eav.Apps.Apps.Get(this));
+        public IMetadataSource Metadata => _metadata ?? (_metadata = /*Factory.GetAppState*/Eav.Apps.State.Get(this));
         private IMetadataSource _metadata;
     }
 

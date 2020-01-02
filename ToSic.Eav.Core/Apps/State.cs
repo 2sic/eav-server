@@ -5,10 +5,12 @@ using ToSic.Eav.Documentation;
 namespace ToSic.Eav.Apps
 {
     /// <summary>
-    /// This helps retrieve App catalog information from the cache or system.
+    /// This provides access to the in-memory state, to
+    /// - retrieve App catalog information from the cache or system (zones)
+    /// - to retrieve app states (or automatically load them if accessed the first time)
     /// </summary>
-    [PrivateApi("will probably rename soon to something better, but not sure what...")]
-    public class Apps
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("the name of this class is not final, may change")]
+    public class State
     {
         [PrivateApi]
         public static IAppsCache Cache
@@ -26,16 +28,16 @@ namespace ToSic.Eav.Apps
         private static IAppsCache _appsCacheSingleton;
 
 
-        [PrivateApi]
+        [InternalApi_DoNotUse_MayChangeWithoutNotice]
         public static AppState Get(int appId) => Cache.Get(appId);
 
-        [PrivateApi]
+        [InternalApi_DoNotUse_MayChangeWithoutNotice]
         public static AppState Get(IAppIdentity app) => Cache.Get(app);
 
-        [PrivateApi]
+        [InternalApi_DoNotUse_MayChangeWithoutNotice]
         public static IAppIdentity Identity(int? zoneId, int? appId) => Cache.GetIdentity(zoneId, appId);
 
-        [PrivateApi] 
+        [InternalApi_DoNotUse_MayChangeWithoutNotice] 
         public static IReadOnlyDictionary<int, Zone> Zones => Cache.Zones;
     }
 }

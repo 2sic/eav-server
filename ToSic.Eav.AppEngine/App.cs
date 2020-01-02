@@ -45,7 +45,7 @@ namespace ToSic.Eav.Apps
             if (zoneId == AutoLookupZone) throw new Exception("Cannot find zone-id for portal specified");
 
             // Look up name in cache
-            var cache = /*Factory.GetAppsCache*/Eav.Apps.Apps.Cache;//.Resolve<IAppsCache>();
+            var cache = /*Factory.GetAppsCache*/Eav.Apps.State.Cache;//.Resolve<IAppsCache>();
             AppState = cache.Get(this); // for metadata
 
             AppGuid = cache.Zones[zoneId].Apps[appId];

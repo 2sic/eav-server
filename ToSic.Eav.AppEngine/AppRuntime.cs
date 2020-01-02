@@ -20,7 +20,7 @@ namespace ToSic.Eav.Apps
         ///  Special constructor, should be used with care as there is no Zone!
         /// </summary>
         public AppRuntime(int appId, ILog parentLog) 
-            :this (/*Factory.GetAppIdentity*/Eav.Apps.Apps.Identity(null, appId), parentLog) { }
+            :this (/*Factory.GetAppIdentity*/Eav.Apps.State.Identity(null, appId), parentLog) { }
 
         internal AppRuntime(IDataSource data, ILog parentLog): base(data, parentLog) { }
         #endregion

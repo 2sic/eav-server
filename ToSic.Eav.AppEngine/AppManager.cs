@@ -26,7 +26,7 @@ namespace ToSic.Eav.Apps
         public AppManager(IAppIdentity app, ILog parentLog) : base(app, parentLog) { RenameLog();}
 
         public AppManager(int appId, ILog parentLog) 
-            : this(/*Factory.GetAppIdentity*/Eav.Apps.Apps.Identity(null, appId:appId), parentLog) { RenameLog();}
+            : this(/*Factory.GetAppIdentity*/Eav.Apps.State.Identity(null, appId:appId), parentLog) { RenameLog();}
 
         private void RenameLog() => Log.Rename("AppMan");
 
@@ -114,7 +114,7 @@ namespace ToSic.Eav.Apps
         internal static void EnsureAppIsConfigured(int zoneId, int appId, ILog parentLog, string appName = null)
         {
             var appIdentity = new AppIdentity(zoneId, appId);
-            var mds = /*Factory.GetAppState*/Eav.Apps.Apps.Get(appIdentity);//DataSource.GetMetaDataSource(zoneId, appId);
+            var mds = /*Factory.GetAppState*/Eav.Apps.State.Get(appIdentity);//DataSource.GetMetaDataSource(zoneId, appId);
             var appMetaData = mds.Get(Constants.MetadataForApp, appId, AppConstants.TypeAppConfig).FirstOrDefault();
             var appResources = mds.Get(Constants.MetadataForApp, appId, AppConstants.TypeAppResources).FirstOrDefault();
             var appSettings = mds.Get(Constants.MetadataForApp, appId, AppConstants.TypeAppSettings).FirstOrDefault();

@@ -36,7 +36,7 @@ namespace ToSic.Eav.WebApi
 
             // 2017-10-23 old...
             // scope can be null (eav) or alternatives would be "System", "2SexyContent-System", "2SexyContent-App", "2SexyContent"
-            var appIdentity = /*Factory.GetAppIdentity*/Apps.Apps.Identity(null, appId);
+            var appIdentity = /*Factory.GetAppIdentity*/Apps.State.Identity(null, appId);
             var cache = (AppRoot) new DataSource(Log).GetRootDs(appIdentity);
 
             var filteredType = allTypes.Where(t => t.Scope == scope)
@@ -81,7 +81,7 @@ namespace ToSic.Eav.WebApi
 	    public ContentTypeInfo GetSingle(int appId, string contentTypeStaticName, string scope = null)
 	    {
 	        Log.Add($"get single a#{appId}, type:{contentTypeStaticName}, scope:{scope}");
-            var appState = Eav.Apps.Apps.Get(appId); //Factory.GetAppState(appId);
+            var appState = Eav.Apps.State.Get(appId); //Factory.GetAppState(appId);
             //var cache = DataSource.GetCache(DataSource.GetIdentity(null, appId));
             var ct = appState.GetContentType(contentTypeStaticName);
             return ContentTypeForJson(ct as ContentType, null);
@@ -136,7 +136,7 @@ namespace ToSic.Eav.WebApi
         public IEnumerable<ContentTypeFieldInfo> GetFields(int appId, string staticName)
         {
             Log.Add($"get fields a#{appId}, type:{staticName}");
-            var appState = Eav.Apps.Apps.Get(appId); // Factory.GetAppState(appId);
+            var appState = Eav.Apps.State.Get(appId); // Factory.GetAppState(appId);
             if (!(/*DataSource.GetCache(DataSource.GetIdentity(null, appId))*/appState.GetContentType(staticName) is ContentType type))
                 throw new Exception("type should be a ContentType - something broke");
             var fields = type.Attributes.OrderBy(a => a.SortOrder);

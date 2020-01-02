@@ -31,10 +31,10 @@ namespace ToSic.Eav.Apps
         {
             if (global)
                 /*Factory.GetAppsCache*/
-                Eav.Apps.Apps.Cache.PurgeZones();
+                Eav.Apps.State.Cache.PurgeZones();
             else
                 /*Factory.GetAppsCache*/
-                Eav.Apps.Apps.Cache.Purge(new AppIdentity(zoneId, appId));
+                Eav.Apps.State.Cache.Purge(new AppIdentity(zoneId, appId));
         }
 
         /// <summary>

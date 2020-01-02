@@ -70,7 +70,7 @@ namespace ToSic.Eav.DataSources.System
 
 	        type = useStream 
                 ? optionalList?.FirstOrDefault()?.Type
-                : /* DataSource.GetCache(ZoneId, AppId)*//*Factory.GetAppState*/Eav.Apps.Apps.Get(this).GetContentType(ContentTypeName);
+                : /* DataSource.GetCache(ZoneId, AppId)*//*Factory.GetAppState*/Eav.Apps.State.Get(this).GetContentType(ContentTypeName);
 
 	        // try to load from type, if it exists
 	        var list = type?.Attributes?.OrderBy(at => at.Name).Select(BuildDictionary).ToList();

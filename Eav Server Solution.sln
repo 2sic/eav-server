@@ -25,7 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToSic.Eav.Persistence.Efc",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.Persistence.Efc.Tests", "ToSic.Eav.Persistence.EFC11.Tests\ToSic.Eav.Persistence.Efc.Tests.csproj", "{EB8491A7-4147-4A18-AC74-CD1BE957FF48}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2sxc.WebApi (Dnn)", "..\2sxc-dnn742\Website\DesktopModules\ToSIC_SexyContent\Sxc WebApi\2sxc.WebApi (Dnn).csproj", "{8398FE44-7164-48CB-96CF-74BA9C270BD2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2sxc WebApi (Dnn)", "..\2sxc-dnn742\Website\DesktopModules\ToSIC_SexyContent\Sxc WebApi\2sxc WebApi (Dnn).csproj", "{8398FE44-7164-48CB-96CF-74BA9C270BD2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2sxc Razor", "..\2sxc-dnn742\Website\DesktopModules\ToSIC_SexyContent\2Sexy Content Razor\2sxc Razor.csproj", "{78A558AF-F274-4E3C-95FE-8DE9226E0EBC}"
 EndProject
@@ -1562,7 +1562,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {705647E1-B5B1-4D94-888C-1D918095554C}
 		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35;packages\Unity.2.1.505.0\lib\NET35
+		SolutionGuid = {705647E1-B5B1-4D94-888C-1D918095554C}
 	EndGlobalSection
 EndGlobal

@@ -24,7 +24,7 @@ namespace ToSic.Eav.WebApi
             IEnumerable<IEntity> entityList = null;
 
             //var appRun = new AppRuntime(appId, Log);
-            var appState = Eav.Apps.Apps.Get(appId); //Factory.GetAppState(appId);
+            var appState = Eav.Apps.State.Get(appId); //Factory.GetAppState(appId);
 
             switch (keyType)
             {
