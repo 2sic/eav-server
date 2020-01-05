@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using ToSic.Eav.DataSources;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Serializers
+namespace ToSic.Eav.Serialization
 {
     /// <inheritdoc />
     /// <summary>

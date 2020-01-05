@@ -7,7 +7,7 @@ using ToSic.Eav.Interfaces;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Serializers
+namespace ToSic.Eav.Serialization
 {
     /// <summary>
     /// A helper to serialize various combinations of entities, lists of entities etc

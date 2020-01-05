@@ -2,15 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
-using ToSic.Eav.Serialization;
 using ToSic.Eav.Types;
 using AppState = ToSic.Eav.Apps.AppState;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.ImportExport.Serializers
+// ReSharper disable once CheckNamespace
+namespace ToSic.Eav.Serialization
 {
     public abstract class SerializerBase: HasLog, IDataSerializer
     {

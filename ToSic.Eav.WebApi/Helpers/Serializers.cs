@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Serializers;
+﻿using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.WebApi.Helpers
 {

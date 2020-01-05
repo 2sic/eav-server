@@ -1,5 +1,5 @@
 ﻿ // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Serializers
+namespace ToSic.Eav.Serialization
 {
     public class SerializableRelationship
     {

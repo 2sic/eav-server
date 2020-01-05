@@ -9,7 +9,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Repository.Efc;
-using ToSic.Eav.Serializers;
+using ToSic.Eav.Serialization;
 using ToSic.Eav.WebApi.Formats;
 
 namespace ToSic.Eav.WebApi

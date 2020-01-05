@@ -5,7 +5,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Serializers;
+using ToSic.Eav.Serialization;
 using ToSic.Eav.WebApi.Formats;
 using IEntity = ToSic.Eav.Data.IEntity;
 
