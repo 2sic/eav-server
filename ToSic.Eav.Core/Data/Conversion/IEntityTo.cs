@@ -1,9 +1,13 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.Data;
+using ToSic.Eav.Documentation;
 
-// ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Serialization
+namespace ToSic.Eav.Data.Conversion
 {
+    /// <summary>
+    /// Convert an entity into another format
+    /// </summary>
+    /// <typeparam name="T">The target format we'll convert into</typeparam>
+    [InternalApi_DoNotUse_MayChangeWithoutNotice]
     public interface IEntityTo<out T>
     {
         /// <summary>
@@ -26,7 +30,9 @@ namespace ToSic.Eav.Serialization
         /// </summary>
         bool WithTitle { get; }
 
-
+        /// <summary>
+        /// Languages to prefer when looking up the values
+        /// </summary>
         string[] Languages { get; set; }
 
         /// <summary>
