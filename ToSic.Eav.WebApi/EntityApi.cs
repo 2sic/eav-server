@@ -29,7 +29,7 @@ namespace ToSic.Eav.WebApi
             {
                 if (_serializer != null) return _serializer;
                 _serializer = Factory.Resolve<Serializer>();
-                _serializer.IncludeGuid = true;
+                _serializer.WithGuid = true;
                 return _serializer;
             }
         }

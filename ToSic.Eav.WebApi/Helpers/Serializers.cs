@@ -8,7 +8,7 @@ namespace ToSic.Eav.WebApi.Helpers
         public static Serializer GetSerializerWithGuidEnabled()
         {
             var serializer = Factory.Resolve<Serializer>();
-            serializer.IncludeGuid = true;
+            serializer.WithGuid = true;
             return serializer;
         }
     }

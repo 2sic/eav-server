@@ -13,22 +13,22 @@ namespace ToSic.Eav.Serialization
     public class EntityToDictionary : IEntityTo<Dictionary<string, object>>
     {
         #region Configuration
-        public bool IncludeGuid { get; set; }
-        public bool IncludePublishingInfo { get; private set; }
+        /// <inheritdoc/>
+        public bool WithGuid { get; set; }
+        /// <inheritdoc/>
+        public bool WithPublishing { get; private set; }
+        /// <inheritdoc/>
+        public bool WithMetadataFor { get; private set; }
+        /// <inheritdoc/>
+        public bool WithTitle { get; private set; }
 
-        public bool IncludeMetadataFor { get; private set; }
-
-        public bool ProvideIdentityTitle { get; private set; }
-
-        /// <summary>
-        /// ensure all settings are so it includes guids etc.
-        /// </summary>
+        /// <inheritdoc/>
         public void ConfigureForAdminUse()
         {
-            IncludeGuid = true;
-            IncludePublishingInfo = true;
-            IncludeMetadataFor = true;
-            ProvideIdentityTitle = true;
+            WithGuid = true;
+            WithPublishing = true;
+            WithMetadataFor = true;
+            WithTitle = true;
         }
 
         #endregion
@@ -44,20 +44,12 @@ namespace ToSic.Eav.Serialization
         #endregion
 
         #region Many variations of the Prepare-Statement expecting various kinds of input
-        
-        /// <summary>
-        /// Return an object that represents an IDataStream, but is serializable
-        /// </summary>
-        /// <remarks>
-        ///     note that this could be in use on webAPIs and scripts
-        ///     so even if it looks un-used, it must stay available
-        /// </remarks>
+
+        /// <inheritdoc/>
         public IEnumerable<Dictionary<string, object>> Convert(IEnumerable<IEntity> entities) 
             => entities.Select(GetDictionaryFromEntity);
 
-        /// <summary>
-        /// Return an object that represents an IDataStream, but is serializable
-        /// </summary>
+        /// <inheritdoc/>
         public Dictionary<string, object> Convert(IEntity entity) 
             => entity == null ? null : GetDictionaryFromEntity(entity);
         
@@ -92,13 +84,13 @@ namespace ToSic.Eav.Serialization
             if (entityValues.ContainsKey("Id")) entityValues.Remove("Id");
             entityValues.Add("Id", entity.EntityId);
 
-            if (IncludeGuid)
+            if (WithGuid)
             {
                 if (entityValues.ContainsKey("Guid")) entityValues.Remove("Guid");
                 entityValues.Add("Guid", entity.EntityGuid);
             }
 
-            if (IncludePublishingInfo)
+            if (WithPublishing)
             {
                 entityValues.Add(Constants.RepoIdInternalField, entity.RepositoryId);
                 entityValues.Add(Constants.IsPublishedField, entity.IsPublished);
@@ -124,10 +116,10 @@ namespace ToSic.Eav.Serialization
                 }
             }
 
-            if (IncludeMetadataFor && entity.MetadataFor.IsMetadata)
+            if (WithMetadataFor && entity.MetadataFor.IsMetadata)
                 entityValues.Add("Metadata", entity.MetadataFor);
 
-            if(ProvideIdentityTitle)
+            if(WithTitle)
                 try { entityValues.Add("_Title", entity.GetBestTitle(Languages)); }
                 catch { /* ignore */ }
 

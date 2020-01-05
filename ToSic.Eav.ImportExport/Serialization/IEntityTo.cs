@@ -9,22 +9,22 @@ namespace ToSic.Eav.Serialization
         /// <summary>
         /// Include the entity Guid in the conversion
         /// </summary>
-        bool IncludeGuid { get; set; }
+        bool WithGuid { get; set; }
 
         /// <summary>
         /// Include publishing information (draft etc.) in the conversion
         /// </summary>
-        bool IncludePublishingInfo { get; }
+        bool WithPublishing { get; }
 
         /// <summary>
         /// Include metadata for-information
         /// </summary>
-        bool IncludeMetadataFor { get; }
+        bool WithMetadataFor { get; }
 
         /// <summary>
         /// Include the title in a special field _Title
         /// </summary>
-        bool ProvideIdentityTitle { get; }
+        bool WithTitle { get; }
 
 
         string[] Languages { get; set; }
