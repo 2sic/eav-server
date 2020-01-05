@@ -9,7 +9,7 @@ namespace ToSic.Eav.Data.Conversion
     /// <summary>
     /// A helper to serialize various combinations of entities, lists of entities etc
     /// </summary>
-    public class EntityToDictionary : IEntityTo<Dictionary<string, object>>
+    public abstract class EntityToDictionary : IEntityTo<Dictionary<string, object>>
     {
         #region Configuration
         /// <inheritdoc/>

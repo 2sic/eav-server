@@ -26,7 +26,7 @@ namespace ToSic.Eav.Serialization
         /// <summary>
         /// Returns an object that represents an IDataSource, but is serializable. If streamsToPublish is null, it will return all streams.
         /// </summary>
-        public Dictionary<string, IEnumerable<Dictionary<string, object>>> Prepare(IDataSource source, IEnumerable<string> streamsToPublish = null)
+        public Dictionary<string, IEnumerable<Dictionary<string, object>>> Convert(IDataSource source, IEnumerable<string> streamsToPublish = null)
         {
             if (streamsToPublish == null)
                 streamsToPublish = source.Out.Select(p => p.Key);
@@ -45,8 +45,8 @@ namespace ToSic.Eav.Serialization
         ///     note that this could be in use on webAPIs and scripts
         ///     so even if it looks un-used, it must stay available
         /// </remarks>
-        public Dictionary<string, IEnumerable<Dictionary<string, object>>> Prepare(IDataSource source, string streamsToPublish)
-            => Prepare(source, streamsToPublish.Split(','));
+        public Dictionary<string, IEnumerable<Dictionary<string, object>>> Convert(IDataSource source, string streamsToPublish)
+            => Convert(source, streamsToPublish.Split(','));
 
         /// <summary>
         /// Return an object that represents an IDataStream, but is serializable
@@ -55,7 +55,7 @@ namespace ToSic.Eav.Serialization
         ///     note that this could be in use on webAPIs and scripts
         ///     so even if it looks un-used, it must stay available
         /// </remarks>
-        public IEnumerable<Dictionary<string, object>> Prepare(IDataStream stream)
+        public IEnumerable<Dictionary<string, object>> Convert(IDataStream stream)
             => Convert(stream.List);
         
         

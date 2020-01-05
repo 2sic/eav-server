@@ -97,7 +97,7 @@ namespace ToSic.Eav.WebApi
 			var outStreams = queryFactory.GetDataSourceForTesting(qDef, true, config);
             var timer = new Stopwatch();
             timer.Start();
-		    var query = Helpers.Serializers.GetSerializerWithGuidEnabled().Prepare(outStreams);
+		    var query = Helpers.Serializers.GetSerializerWithGuidEnabled().Convert(outStreams);
             timer.Stop();
 
             // Now get some more debug info
