@@ -2,15 +2,16 @@
 using System.Linq;
 using System.Web.Http;
 using Newtonsoft.Json;
-using ToSic.Eav.Conversion;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.Documentation;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Serialization
+namespace ToSic.Eav.Conversion
 {
     /// <summary>
     /// A helper to serialize various combinations of entities, lists of entities etc
     /// </summary>
+    [PublicApi_Stable_ForUseInYourCode]
     public class EntitiesToDictionary: EntitiesToDictionaryBase, IStreamsTo<Dictionary<string, object>>
     {
         // TODO: has an important side effect, this isn't clear from outside!
@@ -19,12 +20,10 @@ namespace ToSic.Eav.Serialization
             // Ensure that date-times are sent in the Zulu-time format (UTC) and not with offsets which causes many problems during round-trips
             GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
         }
-        
+
 
         #region Many variations of the Prepare-Statement expecting various kinds of input
-        /// <summary>
-        /// Returns an object that represents an IDataSource, but is serializable. If streamsToPublish is null, it will return all streams.
-        /// </summary>
+        /// <inheritdoc />
         public Dictionary<string, IEnumerable<Dictionary<string, object>>> Convert(IDataSource source, IEnumerable<string> streams = null)
         {
             if (streams == null)
@@ -37,23 +36,11 @@ namespace ToSic.Eav.Serialization
             return y;
         }
 
-        /// <summary>
-        /// Returns an object that represents an IDataSource, but is serializable. If streamsToPublish is null, it will return all streams.
-        /// </summary>
-        /// <remarks>
-        ///     note that this could be in use on webAPIs and scripts
-        ///     so even if it looks un-used, it must stay available
-        /// </remarks>
+        /// <inheritdoc />
         public Dictionary<string, IEnumerable<Dictionary<string, object>>> Convert(IDataSource source, string streams)
             => Convert(source, streams.Split(','));
 
-        /// <summary>
-        /// Return an object that represents an IDataStream, but is serializable
-        /// </summary>
-        /// <remarks>
-        ///     note that this could be in use on webAPIs and scripts
-        ///     so even if it looks un-used, it must stay available
-        /// </remarks>
+        /// <inheritdoc />
         public IEnumerable<Dictionary<string, object>> Convert(IDataStream stream)
             => Convert(stream.List);
         

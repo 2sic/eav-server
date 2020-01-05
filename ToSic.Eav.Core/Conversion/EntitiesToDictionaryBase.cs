@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using ToSic.Eav.Data;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Conversion
 {
     /// <summary>
     /// A helper to serialize various combinations of entities, lists of entities etc
     /// </summary>
+    [InternalApi_DoNotUse_MayChangeWithoutNotice]
     public abstract class EntitiesToDictionaryBase : IEntitiesTo<Dictionary<string, object>>
     {
         #region Configuration
