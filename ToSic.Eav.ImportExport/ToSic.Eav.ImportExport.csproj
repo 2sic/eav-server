@@ -100,9 +100,7 @@
     <Compile Include="Persistence.File\FileSystemLoader_Save.cs" />
     <Compile Include="Persistence.File\Runtime.cs" />
     <Compile Include="Security\Files\FileNames.cs" />
-    <Compile Include="Data\Conversion\Relationship.cs" />
     <Compile Include="Serialization\SerializerBase.cs" />
-    <Compile Include="Data\Conversion\EntityToDictionary.cs" />
     <Compile Include="FileManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Validation\StringExtension.cs" />
