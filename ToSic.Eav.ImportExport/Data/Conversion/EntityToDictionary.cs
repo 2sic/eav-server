@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using ToSic.Eav.Data.Conversion;
-using IEntity = ToSic.Eav.Data.IEntity;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Serialization
+namespace ToSic.Eav.Data.Conversion
 {
     /// <summary>
     /// A helper to serialize various combinations of entities, lists of entities etc
@@ -71,7 +69,7 @@ namespace ToSic.Eav.Serialization
             {
 				var value = entity.GetBestValue(v.Name, Languages, true);
                 if (v.Type == "Entity" && value is IEnumerable<IEntity> entities)
-                    return entities.Select(p => new SerializableRelationship
+                    return entities.Select(p => new RelationshipReference
                     {
                         Id = p?.EntityId,
                         Title = p?.GetBestTitle(Languages)

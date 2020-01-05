@@ -1,7 +1,7 @@
 ﻿ // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Serialization
+namespace ToSic.Eav.Data.Conversion
 {
-    public class SerializableRelationship
+    public class RelationshipReference
     {
         public int? Id;
         public string Title;
