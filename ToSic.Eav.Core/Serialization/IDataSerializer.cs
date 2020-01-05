@@ -9,7 +9,7 @@ namespace ToSic.Eav.Serialization
     /// <summary>
     /// Marks objects that can serialize EAV data like Entities or Content-Types. <br/>
     /// </summary>
-    [InternalApi_DoNotUse_MayChangeWithoutNotice]
+    [PrivateApi("not ready for publishing")]
     public interface IDataSerializer
     {
         /// <summary>

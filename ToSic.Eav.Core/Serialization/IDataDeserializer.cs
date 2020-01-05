@@ -9,7 +9,7 @@ namespace ToSic.Eav.Serialization
     /// <summary>
     /// Marks objects that can de-serialize EAV data like entities.
     /// </summary>
-    [InternalApi_DoNotUse_MayChangeWithoutNotice]
+    [PrivateApi("not ready for publishing")]
     public interface IDataDeserializer: IHasLog
     {
         /// <summary>
