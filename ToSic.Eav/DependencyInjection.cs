@@ -12,6 +12,7 @@ using ToSic.Eav.Metadata;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Run;
+using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav
 {
@@ -42,8 +43,8 @@ namespace ToSic.Eav
 
             serviceCollection.TryAddTransient<IRepositoryLoader, Efc11Loader>();
 
-	        serviceCollection.TryAddTransient<IThingSerializer, JsonSerializer>();
-	        serviceCollection.TryAddTransient<IThingDeserializer, JsonSerializer>();
+	        serviceCollection.TryAddTransient<IDataSerializer, JsonSerializer>();
+	        serviceCollection.TryAddTransient<IDataDeserializer, JsonSerializer>();
 
             var conStr = new Repository.Efc.Implementations.Configuration().DbConnectionString;
             if (!conStr.ToLower().Contains("multipleactiveresultsets")) // this is needed to allow querying data while preparing new data on the same DbContext

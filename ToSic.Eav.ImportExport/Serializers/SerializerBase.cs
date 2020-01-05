@@ -5,13 +5,14 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Serialization;
 using ToSic.Eav.Types;
 using AppState = ToSic.Eav.Apps.AppState;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.ImportExport.Serializers
 {
-    public abstract class SerializerBase: HasLog, IThingSerializer
+    public abstract class SerializerBase: HasLog, IDataSerializer
     {
         protected SerializerBase(string name): base(name) { }
 
@@ -43,10 +44,10 @@ namespace ToSic.Eav.ImportExport.Serializers
                            : App.GetContentType(staticName));
         }
 
-        public void Initialize(AppState app, ILog parentLog)
+        public void Initialize(AppState appState, ILog parentLog)
         {
-            App = app;
-            AppId = app.AppId;
+            App = appState;
+            AppId = appState.AppId;
             Log.LinkTo(parentLog);
         }
 

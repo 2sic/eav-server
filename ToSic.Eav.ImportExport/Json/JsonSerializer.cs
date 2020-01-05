@@ -2,11 +2,12 @@
 using ToSic.Eav.ImportExport.Serializers;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Serialization;
 using AppState = ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.ImportExport.Json
 {
-    public partial class JsonSerializer: SerializerBase, IThingDeserializer
+    public partial class JsonSerializer: SerializerBase, IDataDeserializer
     {
         public const string ReadOnlyMarker = "~";
         public const string NoLanguage = "*";
