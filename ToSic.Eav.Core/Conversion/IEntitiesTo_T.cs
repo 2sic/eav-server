@@ -9,7 +9,7 @@ namespace ToSic.Eav.Conversion
     /// </summary>
     /// <typeparam name="T">The target format we'll convert into</typeparam>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
-    public interface IEntityTo<out T>
+    public interface IEntitiesTo<out T>
     {
         /// <summary>
         /// Include the entity Guid in the conversion

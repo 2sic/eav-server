@@ -11,7 +11,7 @@ namespace ToSic.Eav.Serialization
     /// <summary>
     /// A helper to serialize various combinations of entities, lists of entities etc
     /// </summary>
-    public class EntitiesToDictionary: EntityToDictionaryBase, IStreamsTo<Dictionary<string, object>>
+    public class EntitiesToDictionary: EntitiesToDictionaryBase, IStreamsTo<Dictionary<string, object>>
     {
         // TODO: has an important side effect, this isn't clear from outside!
         public EntitiesToDictionary()
