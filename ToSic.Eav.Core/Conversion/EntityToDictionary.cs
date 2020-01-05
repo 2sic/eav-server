@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using ToSic.Eav.Data;
 
-// ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Data.Conversion
+namespace ToSic.Eav.Conversion
 {
     /// <summary>
     /// A helper to serialize various combinations of entities, lists of entities etc
     /// </summary>
-    public abstract class EntityToDictionary : IEntityTo<Dictionary<string, object>>
+    public abstract class EntityToDictionaryBase : IEntityTo<Dictionary<string, object>>
     {
         #region Configuration
         /// <inheritdoc/>

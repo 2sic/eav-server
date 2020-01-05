@@ -1,5 +1,4 @@
-﻿ // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Data.Conversion
+﻿namespace ToSic.Eav.Conversion
 {
     public class RelationshipReference
     {

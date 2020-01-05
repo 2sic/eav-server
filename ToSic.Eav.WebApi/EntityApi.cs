@@ -23,17 +23,17 @@ namespace ToSic.Eav.WebApi
         /// <summary>
         /// The serializer, so it can be configured from outside if necessary
         /// </summary>
-        public Serializer Serializer
+        public EntitiesToDictionary Serializer
         {
             get
             {
-                if (_serializer != null) return _serializer;
-                _serializer = Factory.Resolve<Serializer>();
-                _serializer.WithGuid = true;
-                return _serializer;
+                if (_entitiesToDictionary != null) return _entitiesToDictionary;
+                _entitiesToDictionary = Factory.Resolve<EntitiesToDictionary>();
+                _entitiesToDictionary.WithGuid = true;
+                return _entitiesToDictionary;
             }
         }
-        private Serializer _serializer;
+        private EntitiesToDictionary _entitiesToDictionary;
 
         public IEntity GetOrThrow(string contentType, int id)
         {

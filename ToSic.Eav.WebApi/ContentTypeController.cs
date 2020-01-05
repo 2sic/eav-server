@@ -54,7 +54,7 @@ namespace ToSic.Eav.WebApi
 	        var nameOverride = metadata?.GetBestValue(Constants.ContentTypeMetadataLabel).ToString();
 	        if (string.IsNullOrEmpty(nameOverride))
 	            nameOverride = t.Name;
-            var ser = new Serializer();
+            var ser = new EntitiesToDictionary();
 
 	        var share = (IContentTypeShared) t;
 
@@ -144,7 +144,7 @@ namespace ToSic.Eav.WebApi
 
             var appInputTypes = new AppRuntime(appId, Log).ContentTypes.GetInputTypes();
 
-            var ser = new Serializer();
+            var ser = new EntitiesToDictionary();
             return fields.Select(a =>
             {
                 var inputtype = FindInputType(a);// a.InputType;

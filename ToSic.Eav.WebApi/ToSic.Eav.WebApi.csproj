@@ -96,6 +96,7 @@
     <Compile Include="ContentExportController.cs" />
     <Compile Include="ContentImportController.cs" />
     <Compile Include="ContentTypeController.cs" />
+    <Compile Include="Conversion\IStreamTo_T.cs" />
     <Compile Include="EntityApi.cs" />
     <Compile Include="Formats\EntityForPicker.cs" />
     <Compile Include="Formats\EntityImport.cs" />
@@ -165,9 +166,7 @@
     <None Include="packages.config" />
     <None Include="TestFormats\DemoFormats.json" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Data\Conversion\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy "$(TargetDir)ToSic.Eav.*" "$(ProjectDir)..\..\2sxc-dnn742\Website\bin"

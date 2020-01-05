@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 
-namespace ToSic.Eav.Data.Conversion
+namespace ToSic.Eav.Conversion
 {
     /// <summary>
     /// Convert an entity into another format
