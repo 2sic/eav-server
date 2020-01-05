@@ -13,9 +13,17 @@ namespace ToSic.Eav.Serialization
 {
     public abstract class SerializerBase: HasLog, IDataSerializer
     {
+        /// <summary>
+        /// Empty constructor for DI
+        /// </summary>
+        protected SerializerBase() : this("Srl.Default") { }
+
+        /// <summary>
+        /// Normal constructor
+        /// </summary>
+        /// <param name="name"></param>
         protected SerializerBase(string name): base(name) { }
 
-        protected SerializerBase() : this("Srl.Default") { }
 
         public AppState App
         {

@@ -11,7 +11,7 @@ namespace ToSic.Eav.Serialization
     /// <summary>
     /// A helper to serialize various combinations of entities, lists of entities etc
     /// </summary>
-    public class Serializer: SerializerHelper
+    public class Serializer: EntityToDictionary
     {
 
         public Serializer()
@@ -55,7 +55,7 @@ namespace ToSic.Eav.Serialization
         ///     so even if it looks un-used, it must stay available
         /// </remarks>
         public IEnumerable<Dictionary<string, object>> Prepare(IDataStream stream)
-            => Prepare(stream.List);
+            => Convert(stream.List);
         
         
         #endregion

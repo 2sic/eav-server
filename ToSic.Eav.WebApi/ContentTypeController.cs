@@ -70,7 +70,7 @@ namespace ToSic.Eav.WebApi
 	            SharedDefId = share.ParentId,
 	            Items = cache?.List.Count(i => i.Type == t) ?? -1, // only count if cache provided
 	            Fields = t.Attributes.Count,
-	            Metadata = ser.Prepare(metadata),
+	            Metadata = ser.Convert(metadata),
                 // DebugInfoRepositoryAddress = t.RepositoryAddress,
                 I18nKey = t.I18nKey
 	        };
@@ -158,7 +158,7 @@ namespace ToSic.Eav.WebApi
                     IsTitle = a.IsTitle,
                     AttributeId = a.AttributeId,
                     Metadata = a.Metadata
-                        .ToDictionary(e => e.Type.StaticName.TrimStart('@'), e => ser.Prepare(e)),
+                        .ToDictionary(e => e.Type.StaticName.TrimStart('@'), e => ser.Convert(e)),
                     InputTypeConfig = appInputTypes.FirstOrDefault(it => it.Type == inputtype),
                     I18nKey = type.I18nKey
                 };

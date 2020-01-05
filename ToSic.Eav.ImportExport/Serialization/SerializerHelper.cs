@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using ToSic.Eav.Data;
-using ToSic.Eav.Interfaces;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 // ReSharper disable once CheckNamespace
@@ -12,15 +10,15 @@ namespace ToSic.Eav.Serialization
     /// <summary>
     /// A helper to serialize various combinations of entities, lists of entities etc
     /// </summary>
-    public class SerializerHelper
+    public class EntityToDictionary : IEntityTo<Dictionary<string, object>>
     {
         #region Configuration
         public bool IncludeGuid { get; set; }
-        protected bool IncludePublishingInfo { get; private set; }
+        public bool IncludePublishingInfo { get; private set; }
 
-        protected bool IncludeMetadata { get; private set; }
+        public bool IncludeMetadataFor { get; private set; }
 
-        protected bool ProvideIdentityTitle { get; private set; }
+        public bool ProvideIdentityTitle { get; private set; }
 
         /// <summary>
         /// ensure all settings are so it includes guids etc.
@@ -29,19 +27,11 @@ namespace ToSic.Eav.Serialization
         {
             IncludeGuid = true;
             IncludePublishingInfo = true;
-            IncludeMetadata = true;
+            IncludeMetadataFor = true;
             ProvideIdentityTitle = true;
         }
 
         #endregion
-
-        //public SerializerHelper()
-        //{
-            // Ensure that date-times are sent in the Zulu-time format (UTC) and not with offsets which causes many problems during round-trips
-            // 2017-06-07 2dm: can't use this setting outside of web...
-            // must find a solution... GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-            //GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-        //}
 
         #region Language
         private string[] _langs;
@@ -54,9 +44,7 @@ namespace ToSic.Eav.Serialization
         #endregion
 
         #region Many variations of the Prepare-Statement expecting various kinds of input
- 
         
-
         /// <summary>
         /// Return an object that represents an IDataStream, but is serializable
         /// </summary>
@@ -64,13 +52,13 @@ namespace ToSic.Eav.Serialization
         ///     note that this could be in use on webAPIs and scripts
         ///     so even if it looks un-used, it must stay available
         /// </remarks>
-        public IEnumerable<Dictionary<string, object>> Prepare(IEnumerable<IEntity> entities) 
+        public IEnumerable<Dictionary<string, object>> Convert(IEnumerable<IEntity> entities) 
             => entities.Select(GetDictionaryFromEntity);
 
         /// <summary>
         /// Return an object that represents an IDataStream, but is serializable
         /// </summary>
-        public Dictionary<string, object> Prepare(IEntity entity) 
+        public Dictionary<string, object> Convert(IEntity entity) 
             => entity == null ? null : GetDictionaryFromEntity(entity);
         
 
@@ -84,7 +72,6 @@ namespace ToSic.Eav.Serialization
         /// <returns></returns>
         public virtual Dictionary<string, object> GetDictionaryFromEntity(IEntity entity)
         {
-            // var lngs = Languages;// new[] {Languages};
             // Convert Entity to dictionary
             // If the value is a relationship, then give those too, but only Title and Id
             var entityValues = (from d in entity.Attributes select d.Value).ToDictionary(k => k.Name, v =>
@@ -137,7 +124,7 @@ namespace ToSic.Eav.Serialization
                 }
             }
 
-            if (IncludeMetadata && entity.MetadataFor.IsMetadata)
+            if (IncludeMetadataFor && entity.MetadataFor.IsMetadata)
                 entityValues.Add("Metadata", entity.MetadataFor);
 
             if(ProvideIdentityTitle)

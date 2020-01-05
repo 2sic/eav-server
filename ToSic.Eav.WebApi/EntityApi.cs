@@ -65,14 +65,14 @@ namespace ToSic.Eav.WebApi
         public Dictionary<string, object> GetOne(string contentType, int id, string cultureCode = null)
         {
             var found = GetOrThrow(contentType, id);
-            return Serializer.Prepare(found);
+            return Serializer.Convert(found);
         }
 
         /// <summary>
         /// Get all Entities of specified Type
         /// </summary>
         public IEnumerable<Dictionary<string, object>> GetEntities(string contentType, string cultureCode = null) 
-            => Serializer.Prepare(AppManager.Read.Entities.Get(contentType));
+            => Serializer.Convert(AppManager.Read.Entities.Get(contentType));
 
         public List<BundleIEntity> GetEntitiesForEditing(int appId, List<ItemIdentifier> items)
         {
@@ -153,7 +153,7 @@ namespace ToSic.Eav.WebApi
         {
             Serializer.ConfigureForAdminUse();
 
-            var list = Serializer.Prepare(AppManager.Read.Entities.Get(contentType));
+            var list = Serializer.Convert(AppManager.Read.Entities.Get(contentType));
 
             var newList = list
                 .Select(li

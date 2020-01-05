@@ -46,7 +46,7 @@ namespace ToSic.Eav.WebApi
             if(entityList == null)
                 throw new Exception($"was not able to convert '{key}' to keytype {keyType}, must cancel");
 
-            return Helpers.Serializers.GetSerializerWithGuidEnabled().Prepare(entityList);
+            return Helpers.Serializers.GetSerializerWithGuidEnabled().Convert(entityList);
         }
 
     }
