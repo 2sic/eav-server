@@ -63,7 +63,8 @@ namespace ToSic.Eav.Conversion
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public virtual Dictionary<string, object> GetDictionaryFromEntity(IEntity entity)
+        [PrivateApi]
+        protected virtual Dictionary<string, object> GetDictionaryFromEntity(IEntity entity)
         {
             // Convert Entity to dictionary
             // If the value is a relationship, then give those too, but only Title and Id

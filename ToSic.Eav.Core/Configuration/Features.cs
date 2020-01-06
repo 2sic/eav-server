@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security.Encryption;
 
@@ -206,7 +205,10 @@ namespace ToSic.Eav.Configuration
 
             // 2sxc 9.43+
             new Feature(FeatureIds.EditFormPreferAngularJs, true, true),
-            new Feature(FeatureIds.WebApiOptionsAllowLocal, true, false)
+            new Feature(FeatureIds.WebApiOptionsAllowLocal, true, false),
+
+            // 2sxc 10.24+
+            new Feature(FeatureIds.WebFarm, false, false),
         });
 
 
