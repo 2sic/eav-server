@@ -50,14 +50,15 @@ namespace ToSic.Eav.Apps
 
             AppGuid = cache.Zones[zoneId].Apps[appId];
 
-            if (AppGuid != Constants.DefaultAppName)
-            {
+            // v10.25 from now on the DefaultApp can also have settings and resources
+            //if (AppGuid != Constants.DefaultAppName)
+            //{
                 // if it's a real App (not content/default), do more
                 Log.Add($"create app resources? allowSE:{allowSideEffects}");
 
                 if (allowSideEffects)
                     AppManager.EnsureAppIsConfigured(ZoneId, AppId, Log); // make sure additional settings etc. exist
-            }
+            //}
 
             InitializeResourcesSettingsAndMetadata();
 

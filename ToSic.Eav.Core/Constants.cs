@@ -186,6 +186,7 @@ namespace ToSic.Eav
 
         #region special uses of Apps
         public const string ContentAppName = "Content";
+        public const string ContentAppFolder = "Content";
         public const string AppAssignmentName = "App";
 
 
