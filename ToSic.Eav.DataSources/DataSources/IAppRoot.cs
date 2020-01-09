@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSources
                 "ToSic.Eav.DataSources.Caching.IRootCache, ToSic.Eav.DataSources"
             },
         Type = DataSourceType.Source)]
-    [PublicApi]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public interface IAppRoot : IDataSource
     {
         ///// <summary>

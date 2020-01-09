@@ -7,7 +7,7 @@ namespace ToSic.Eav.Apps.Assets
     /// Any asset (file/folder) of the EAV App System. <br/>
     /// This interface contains properties which both <see cref="IFolder"/> and <see cref="IFile"/> have in common
     /// </summary>
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
     public interface IAsset
     {
         /// <summary>

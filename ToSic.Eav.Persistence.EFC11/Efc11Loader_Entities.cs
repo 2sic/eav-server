@@ -6,6 +6,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Run;
+using ToSic.Eav.Serialization;
 using AppState = ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.Persistence.Efc
@@ -161,7 +162,7 @@ namespace ToSic.Eav.Persistence.Efc
 
             #region Build EntityModels
 
-            var serializer = Factory.Resolve<IThingDeserializer>();
+            var serializer = Factory.Resolve<IDataDeserializer>();
             serializer.Initialize(app, Log);
 
             var entityTimer = Stopwatch.StartNew();

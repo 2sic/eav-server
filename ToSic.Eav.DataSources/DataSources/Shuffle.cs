@@ -12,7 +12,7 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// A DataSource that filters Entities by Ids
 	/// </summary>
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
     [VisualQuery(GlobalName = "ToSic.Eav.DataSources.Shuffle, ToSic.Eav.DataSources",
         Type = DataSourceType.Sort, 
         DynamicOut = false, 

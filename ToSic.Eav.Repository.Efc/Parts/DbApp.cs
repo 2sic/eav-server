@@ -23,9 +23,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
             };
             DbContext.DoAndSave(() => DbContext.SqlDb.Add(newApp)); // save is required to ensure AppId is created - required in EnsureSharedAttributeSets();
 
-            // 2018-03-28 disable auto-shared attributes, as not needed any more - part of #1492
-            //DbContext.DoAndSave(() => DbContext.AttribSet.PrepareMissingSharedAttributesOnApp(newApp));
-
             return newApp;
         }
 

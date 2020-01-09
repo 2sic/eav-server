@@ -11,15 +11,15 @@ namespace ToSic.Eav.Metadata
     /// even if they do not know about data-sources
     /// which will then be provided through dependency injection.
     /// </summary>
-    [PublicApi]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public class RemoteMetadata: IRemoteMetadata
     {
         /// <inheritdoc />
         public IMetadataSource OfZoneAndApp(int zoneId, int appId)
-            => Factory.GetAppState(new AppIdentity(zoneId, appId));// DataSource.GetMetaDataSource(zoneId, appId);
+            => /*Factory.GetAppState*/Eav.Apps.State.Get(new AppIdentity(zoneId, appId));// DataSource.GetMetaDataSource(zoneId, appId);
 
         /// <inheritdoc />
         public IMetadataSource OfApp(int appId)
-            => Factory.GetAppState(appId);// DataSource.GetMetaDataSource(null, appId);
+            => Eav.Apps.State.Get(appId); //Factory.GetAppState(appId);// DataSource.GetMetaDataSource(null, appId);
     }
 }

@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Conversion;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Serializers;
 using ToSic.Eav.WebApi.Formats;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -23,17 +23,17 @@ namespace ToSic.Eav.WebApi
         /// <summary>
         /// The serializer, so it can be configured from outside if necessary
         /// </summary>
-        public Serializer Serializer
+        public EntitiesToDictionary Serializer
         {
             get
             {
-                if (_serializer != null) return _serializer;
-                _serializer = Factory.Resolve<Serializer>();
-                _serializer.IncludeGuid = true;
-                return _serializer;
+                if (_entitiesToDictionary != null) return _entitiesToDictionary;
+                _entitiesToDictionary = Factory.Resolve<EntitiesToDictionary>();
+                _entitiesToDictionary.WithGuid = true;
+                return _entitiesToDictionary;
             }
         }
-        private Serializer _serializer;
+        private EntitiesToDictionary _entitiesToDictionary;
 
         public IEntity GetOrThrow(string contentType, int id)
         {
@@ -65,14 +65,14 @@ namespace ToSic.Eav.WebApi
         public Dictionary<string, object> GetOne(string contentType, int id, string cultureCode = null)
         {
             var found = GetOrThrow(contentType, id);
-            return Serializer.Prepare(found);
+            return Serializer.Convert(found);
         }
 
         /// <summary>
         /// Get all Entities of specified Type
         /// </summary>
         public IEnumerable<Dictionary<string, object>> GetEntities(string contentType, string cultureCode = null) 
-            => Serializer.Prepare(AppManager.Read.Entities.Get(contentType));
+            => Serializer.Convert(AppManager.Read.Entities.Get(contentType));
 
         public List<BundleIEntity> GetEntitiesForEditing(int appId, List<ItemIdentifier> items)
         {
@@ -153,7 +153,7 @@ namespace ToSic.Eav.WebApi
         {
             Serializer.ConfigureForAdminUse();
 
-            var list = Serializer.Prepare(AppManager.Read.Entities.Get(contentType));
+            var list = Serializer.Convert(AppManager.Read.Entities.Get(contentType));
 
             var newList = list
                 .Select(li

@@ -34,7 +34,7 @@ namespace ToSic.Eav.Persistence.Efc
         /// <returns>app package with initialized app</returns>
         public AppState AppState(int appId, int[] entityIds = null, ILog parentLog = null)
         {
-            var appIdentity = Factory.GetAppIdentity(null, appId);
+            var appIdentity = /*Factory.GetAppIdentity*/Apps.State.Identity(null, appId);
             return Update(new AppState(appIdentity, parentLog), AppStateLoadSequence.Start, entityIds, parentLog);
         }
 

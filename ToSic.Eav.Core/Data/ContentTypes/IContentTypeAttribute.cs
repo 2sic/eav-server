@@ -8,7 +8,7 @@ namespace ToSic.Eav.Data
     /// <summary>
     /// Represents an Attribute definition in a ContentType. This is the base for attributes in <see cref="IContentType"/>
     /// </summary>
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
     public interface IContentTypeAttribute: IAttributeBase, IHasPermissions, IAppIdentityLight
 	{
         /// <summary>

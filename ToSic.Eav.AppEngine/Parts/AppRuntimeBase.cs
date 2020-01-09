@@ -42,7 +42,7 @@ namespace ToSic.Eav.Apps.Parts
         /// <summary>
         /// The cache-package if needed (mainly for export/import, where the full data is necessary)
         /// </summary>
-        public AppState AppState => Factory.GetAppState(this);// Cache.AppState;
+        public AppState AppState => /*Factory.GetAppState*/Eav.Apps.State.Get(this);// Cache.AppState;
 
 
         #endregion

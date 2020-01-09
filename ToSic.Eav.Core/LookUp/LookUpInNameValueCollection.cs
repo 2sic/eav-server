@@ -7,7 +7,7 @@ namespace ToSic.Eav.LookUp
     /// Look-Up helper to get something from a standard .net NameValueCollection. <br/>
     /// Read more about this in @Specs.LookUp.Intro
     /// </summary>
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
     public class LookUpInNameValueCollection : LookUpBase
     {
 	    readonly NameValueCollection _nameValueCollection;

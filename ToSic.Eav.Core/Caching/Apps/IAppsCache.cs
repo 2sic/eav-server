@@ -9,7 +9,7 @@ namespace ToSic.Eav.Caching
     /// Marks the objects which are responsible for caching <see cref="AppState"/> in memory. <br/>
     /// This is a very powerful system ensuring performance and more. 
     /// </summary>
-    [PublicApi]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public interface IAppsCache
     {
         #region EnforceSingleton experimental

@@ -12,7 +12,7 @@ namespace ToSic.Eav.DataSources
     /// <summary>
     /// Return only Entities having a specific value in an Attribute
     /// </summary>
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
     [VisualQuery(GlobalName = "ToSic.Eav.DataSources.ValueFilter, ToSic.Eav.DataSources",
         Type = DataSourceType.Filter, 
         In = new[] { Constants.DefaultStreamName, Constants.FallbackStreamName },

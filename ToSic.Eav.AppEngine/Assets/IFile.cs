@@ -5,7 +5,7 @@ namespace ToSic.Eav.Apps.Assets
     /// <summary>
     /// Describes a file asset as provided by the underlying environment (like DNN)
     /// </summary>
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
     public interface IFile: IAsset
     {
         /// <summary>

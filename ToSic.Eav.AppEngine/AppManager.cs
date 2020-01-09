@@ -26,7 +26,7 @@ namespace ToSic.Eav.Apps
         public AppManager(IAppIdentity app, ILog parentLog) : base(app, parentLog) { RenameLog();}
 
         public AppManager(int appId, ILog parentLog) 
-            : this(Factory.GetAppIdentity(null, appId:appId), parentLog) { RenameLog();}
+            : this(/*Factory.GetAppIdentity*/State.Identity(null, appId:appId), parentLog) { RenameLog();}
 
         private void RenameLog() => Log.Rename("AppMan");
 
@@ -114,7 +114,7 @@ namespace ToSic.Eav.Apps
         internal static void EnsureAppIsConfigured(int zoneId, int appId, ILog parentLog, string appName = null)
         {
             var appIdentity = new AppIdentity(zoneId, appId);
-            var mds = Factory.GetAppState(appIdentity);//DataSource.GetMetaDataSource(zoneId, appId);
+            var mds = State.Get(appIdentity);
             var appMetaData = mds.Get(Constants.MetadataForApp, appId, AppConstants.TypeAppConfig).FirstOrDefault();
             var appResources = mds.Get(Constants.MetadataForApp, appId, AppConstants.TypeAppResources).FirstOrDefault();
             var appSettings = mds.Get(Constants.MetadataForApp, appId, AppConstants.TypeAppSettings).FirstOrDefault();
@@ -122,8 +122,14 @@ namespace ToSic.Eav.Apps
             // Get appName from cache - stop if it's a "Default" app
             var eavAppName = new ZoneRuntime(zoneId, parentLog).GetName(appId);
 
-            if (eavAppName == Constants.DefaultAppName)
-                return;
+            // v10.25 from now on the DefaultApp can also have settings and resources
+            //if (eavAppName == Constants.DefaultAppName)
+            //    return;
+            var folder = eavAppName == Constants.DefaultAppName
+                ? Constants.ContentAppFolder
+                : string.IsNullOrEmpty(appName)
+                    ? eavAppName
+                    : string.IsNullOrEmpty(appName) ? eavAppName : RemoveIllegalCharsFromPath(appName);
 
             var appMan = new AppManager(appIdentity, null);
             if (appMetaData == null)
@@ -134,9 +140,9 @@ namespace ToSic.Eav.Apps
                     new Dictionary<string, object>
                     {
                         {"DisplayName", string.IsNullOrEmpty(appName) ? eavAppName : appName},
-                        {"Folder", string.IsNullOrEmpty(appName) ? eavAppName : RemoveIllegalCharsFromPath(appName)},
-                        {"AllowTokenTemplates", "False"},
-                        {"AllowRazorTemplates", "False"},
+                        {"Folder", folder},
+                        {"AllowTokenTemplates", "True"},
+                        {"AllowRazorTemplates", "True"},
                         {"Version", "00.00.01"},
                         {"OriginalId", ""}
                     }, 

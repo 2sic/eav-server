@@ -6,7 +6,7 @@ namespace ToSic.Eav.Data
     /// Represents a Dimension to assign values to. Dimensions are usually languages (<see cref="ILanguage"/>),
     /// but in future they could also be multi-dimensional, like values which are mapped to a language <em>and</em> to a specific edition, use case, etc.
     /// </summary>
-    [PublicApi]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public interface IDimension
 	{
 		/// <summary>

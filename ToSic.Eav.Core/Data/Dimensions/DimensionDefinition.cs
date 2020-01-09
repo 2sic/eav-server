@@ -6,7 +6,7 @@ namespace ToSic.Eav.Data
     /// <summary>
     /// The definition of a dimension / language
     /// </summary>
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
     public class DimensionDefinition
     {
         [PrivateApi("might be changed to just 'id' or something")]

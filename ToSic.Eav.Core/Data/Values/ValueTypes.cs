@@ -5,7 +5,7 @@ namespace ToSic.Eav.Data
 	/// <summary>
 	/// Attribute Type Enum
 	/// </summary>
-	[PublicApi]
+	[PublicApi_Stable_ForUseInYourCode]
 	public enum ValueTypes
 	{
         /// <summary> Used for unknown cases, where you would otherwise use null </summary>

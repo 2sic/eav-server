@@ -8,7 +8,7 @@ namespace ToSic.Eav.Apps
     /// A <em>single-use</em> app-object providing quick simple api to access
     /// name, folder, data, metadata etc.
     /// </summary>
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
     public partial class App: AppBase, IApp
     {
         [PrivateApi]
@@ -45,19 +45,20 @@ namespace ToSic.Eav.Apps
             if (zoneId == AutoLookupZone) throw new Exception("Cannot find zone-id for portal specified");
 
             // Look up name in cache
-            var cache = Factory.GetAppsCache();//.Resolve<IAppsCache>();
+            var cache = /*Factory.GetAppsCache*/Eav.Apps.State.Cache;//.Resolve<IAppsCache>();
             AppState = cache.Get(this); // for metadata
 
             AppGuid = cache.Zones[zoneId].Apps[appId];
 
-            if (AppGuid != Constants.DefaultAppName)
-            {
+            // v10.25 from now on the DefaultApp can also have settings and resources
+            //if (AppGuid != Constants.DefaultAppName)
+            //{
                 // if it's a real App (not content/default), do more
                 Log.Add($"create app resources? allowSE:{allowSideEffects}");
 
                 if (allowSideEffects)
                     AppManager.EnsureAppIsConfigured(ZoneId, AppId, Log); // make sure additional settings etc. exist
-            }
+            //}
 
             InitializeResourcesSettingsAndMetadata();
 

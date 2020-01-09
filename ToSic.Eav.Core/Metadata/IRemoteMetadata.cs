@@ -7,7 +7,7 @@ namespace ToSic.Eav.Metadata
     /// This interface allows objects to provide metadata from "remote" systems
     /// meaning from apps / sources which the original source doesn't know about
     /// </summary>
-    [PublicApi]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public interface IRemoteMetadata
     {
         /// <summary>

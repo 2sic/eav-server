@@ -9,24 +9,27 @@ using ToSic.Eav.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.DataSources.System
 {
     /// <inheritdoc />
     /// <summary>
     /// A DataSource that all content-types of an app.
     /// </summary>
+    [InternalApi_DoNotUse_MayChangeWithoutNotice]
     [VisualQuery(
-        GlobalName = "ToSic.Eav.DataSources.ContentTypes, ToSic.Eav.Apps",
+        GlobalName = "ToSic.Eav.DataSources.System.ContentTypes, ToSic.Eav.Apps",
         Type = DataSourceType.Source,
         Difficulty = DifficultyBeta.Advanced,
         DynamicOut = false,
         ExpectsDataOfType = "37b25044-29bb-4c78-85e4-7b89f0abaa2c",
         PreviousNames = new []
             {
-                "ToSic.Eav.DataSources.System.ContentTypes, ToSic.Eav.Apps"
+                "ToSic.Eav.DataSources.System.ContentTypes, ToSic.Eav.Apps",
+                // not sure if this was ever used...just added it for safety for now
+                // can probably remove again, if we see that all system queries use the correct name
+                "ToSic.Eav.DataSources.ContentTypes, ToSic.Eav.Apps",
             },
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-ContentTypes")]
-    [PrivateApi("probably should be in own SysInfo folder or something")]
     public sealed class ContentTypes: DataSourceBase
 	{
         #region Configuration-properties (no config)

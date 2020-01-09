@@ -12,7 +12,7 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// A DataSource that filters Entities by Ids
 	/// </summary>
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
 	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.Paging, ToSic.Eav.DataSources",
         Type = DataSourceType.Logic, 
         DynamicOut = false,

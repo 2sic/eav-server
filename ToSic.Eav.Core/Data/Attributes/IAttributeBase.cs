@@ -10,7 +10,7 @@ namespace ToSic.Eav.Data
 	/// <remarks>
     /// > We recommend you read about the @Specs.Data.Intro
 	/// </remarks>
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
 	public interface IAttributeBase
 	{
 		/// <summary>

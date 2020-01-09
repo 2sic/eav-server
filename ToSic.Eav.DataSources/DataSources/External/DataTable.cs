@@ -13,7 +13,7 @@ namespace ToSic.Eav.DataSources
 	/// Provide Entities from a System.Data.DataTable. <br/>
 	/// This is not meant for VisualQuery, but for code which pre-processes data in a DataTable and then wants to provide it as entities. 
 	/// </summary>
-	[PublicApi]
+	[PublicApi_Stable_ForUseInYourCode]
 	public class DataTable : ExternalData
 	{
         #region Configuration-properties

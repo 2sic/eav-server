@@ -13,7 +13,7 @@ namespace ToSic.Eav.DataSources
 	/// DataSource to only pass through configured AttributeNames - other attributes/properties are removed from the entities.
 	/// </summary>
 	/// <remarks>Uses Configuration "AttributeNames"</remarks>
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
 	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.AttributeFilter, ToSic.Eav.DataSources",
         Type = DataSourceType.Modify, 
         DynamicOut = false,

@@ -5,11 +5,11 @@ using System.Linq;
 using System.Web.Http;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Parts;
+using ToSic.Eav.Conversion;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Repository.Efc;
-using ToSic.Eav.Serializers;
 using ToSic.Eav.WebApi.Formats;
 
 namespace ToSic.Eav.WebApi
@@ -36,7 +36,7 @@ namespace ToSic.Eav.WebApi
 
             // 2017-10-23 old...
             // scope can be null (eav) or alternatives would be "System", "2SexyContent-System", "2SexyContent-App", "2SexyContent"
-            var appIdentity = Factory.GetAppIdentity(null, appId);
+            var appIdentity = /*Factory.GetAppIdentity*/Apps.State.Identity(null, appId);
             var cache = (AppRoot) new DataSource(Log).GetRootDs(appIdentity);
 
             var filteredType = allTypes.Where(t => t.Scope == scope)
@@ -54,7 +54,7 @@ namespace ToSic.Eav.WebApi
 	        var nameOverride = metadata?.GetBestValue(Constants.ContentTypeMetadataLabel).ToString();
 	        if (string.IsNullOrEmpty(nameOverride))
 	            nameOverride = t.Name;
-            var ser = new Serializer();
+            var ser = new EntitiesToDictionary();
 
 	        var share = (IContentTypeShared) t;
 
@@ -70,7 +70,7 @@ namespace ToSic.Eav.WebApi
 	            SharedDefId = share.ParentId,
 	            Items = cache?.List.Count(i => i.Type == t) ?? -1, // only count if cache provided
 	            Fields = t.Attributes.Count,
-	            Metadata = ser.Prepare(metadata),
+	            Metadata = ser.Convert(metadata),
                 // DebugInfoRepositoryAddress = t.RepositoryAddress,
                 I18nKey = t.I18nKey
 	        };
@@ -81,7 +81,7 @@ namespace ToSic.Eav.WebApi
 	    public ContentTypeInfo GetSingle(int appId, string contentTypeStaticName, string scope = null)
 	    {
 	        Log.Add($"get single a#{appId}, type:{contentTypeStaticName}, scope:{scope}");
-            var appState = Factory.GetAppState(appId);
+            var appState = Eav.Apps.State.Get(appId); //Factory.GetAppState(appId);
             //var cache = DataSource.GetCache(DataSource.GetIdentity(null, appId));
             var ct = appState.GetContentType(contentTypeStaticName);
             return ContentTypeForJson(ct as ContentType, null);
@@ -136,15 +136,15 @@ namespace ToSic.Eav.WebApi
         public IEnumerable<ContentTypeFieldInfo> GetFields(int appId, string staticName)
         {
             Log.Add($"get fields a#{appId}, type:{staticName}");
-            var appState = Factory.GetAppState(appId);
-            if(!(/*DataSource.GetCache(DataSource.GetIdentity(null, appId))*/appState.GetContentType(staticName) is ContentType type))
+            var appState = Eav.Apps.State.Get(appId); // Factory.GetAppState(appId);
+            if (!(/*DataSource.GetCache(DataSource.GetIdentity(null, appId))*/appState.GetContentType(staticName) is ContentType type))
                 throw new Exception("type should be a ContentType - something broke");
             var fields = type.Attributes.OrderBy(a => a.SortOrder);
 
 
             var appInputTypes = new AppRuntime(appId, Log).ContentTypes.GetInputTypes();
 
-            var ser = new Serializer();
+            var ser = new EntitiesToDictionary();
             return fields.Select(a =>
             {
                 var inputtype = FindInputType(a);// a.InputType;
@@ -158,7 +158,7 @@ namespace ToSic.Eav.WebApi
                     IsTitle = a.IsTitle,
                     AttributeId = a.AttributeId,
                     Metadata = a.Metadata
-                        .ToDictionary(e => e.Type.StaticName.TrimStart('@'), e => ser.Prepare(e)),
+                        .ToDictionary(e => e.Type.StaticName.TrimStart('@'), e => ser.Convert(e)),
                     InputTypeConfig = appInputTypes.FirstOrDefault(it => it.Type == inputtype),
                     I18nKey = type.I18nKey
                 };

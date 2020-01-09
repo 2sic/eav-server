@@ -5,7 +5,7 @@ namespace ToSic.Eav.Apps.Assets
     /// <summary>
     /// Describes a folder as provided by the underlying environment (like DNN)
     /// </summary>
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
     public interface IFolder: IAsset
     {
         /// <summary>

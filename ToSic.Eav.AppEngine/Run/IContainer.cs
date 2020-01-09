@@ -1,11 +1,13 @@
 ﻿using ToSic.Eav.Documentation;
 
+// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Run
 {
     /// <summary>
     /// A unit / block within the CMS. Contains all necessary identification to pass around. 
     /// </summary>
-    [PublicApi]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
+
     public interface IContainer
     {
         /// <summary>

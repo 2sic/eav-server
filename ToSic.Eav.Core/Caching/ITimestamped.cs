@@ -5,7 +5,7 @@ namespace ToSic.Eav.Caching
     /// <summary>
     /// Provides a time stamp when something was created / updated for caching. 
     /// </summary>
-    [PublicApi]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public interface ITimestamped
     {
         /// <summary>

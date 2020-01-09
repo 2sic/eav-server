@@ -6,7 +6,7 @@ namespace ToSic.Eav.Apps
     /// <summary>
     /// The configuration of an app-data - usually relevant so the source will auto-filter out unpublished data for normal viewers.
     /// </summary>
-    [PublicApi]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public interface IAppDataConfiguration
     {
         /// <summary>

@@ -8,7 +8,7 @@ namespace ToSic.Eav.Metadata
     /// Reference to target. Usually used on <see cref="IEntity"/> to define what thing it provides additional metadata for.
     /// Basically it contains all the references necessary to identify what it belongs to.
     /// </summary>
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
 	public interface ITarget
 	{
         /// <summary>

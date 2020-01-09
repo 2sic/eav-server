@@ -7,7 +7,7 @@ namespace ToSic.Eav.DataSources.Queries
     /// Marks a special <see cref="IDataSource"/> which is a query.
     /// It has an underlying <see cref="QueryDefinition"/> and Params which can be modified by code before running the query. 
     /// </summary>
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
     public interface IQuery: IDataSource
     {
         /// <summary>

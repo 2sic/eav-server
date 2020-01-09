@@ -1,13 +1,14 @@
 ﻿using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 
+// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Run
 {
     /// <summary>
     /// A tenant in the environment with a reference to the original thing.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    [PublicApi]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public abstract class Tenant<T> :ITenant, IWrapper<T>
     {
         /// <summary>

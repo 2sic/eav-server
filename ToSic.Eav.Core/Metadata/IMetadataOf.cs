@@ -10,7 +10,7 @@ namespace ToSic.Eav.Metadata
     /// A provider for metadata for something.
     /// So if an <see cref="IEntity"/> or an IApp has metadata, this will provide it. 
     /// </summary>
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
     public interface IMetadataOf: IEnumerable<IEntity>, IHasPermissions
     {
         // 2019-10-27 2dm - I think this is a leftover of old times, I believe it's not needed any more

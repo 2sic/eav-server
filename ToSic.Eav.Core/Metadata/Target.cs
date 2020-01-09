@@ -4,7 +4,7 @@ using ToSic.Eav.Documentation;
 namespace ToSic.Eav.Metadata
 {
     /// <inheritdoc />
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
     public class Target : ITarget
     {
         /// <summary>

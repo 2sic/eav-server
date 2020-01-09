@@ -8,7 +8,7 @@ namespace ToSic.Eav.DataSources.Queries
     /// Will add information about help, configuration-content-types etc.
     /// Only DataSources which have this attribute will be listed in the designer-tool
     /// </summary>
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
 
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
 	public class VisualQueryAttribute : Attribute

@@ -6,7 +6,7 @@ namespace ToSic.Eav.Data
     /// <summary>
     /// Represents a Dimension / Language Assignment
     /// </summary>
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
     public class Language : ILanguage
     {
         /// <inheritdoc />

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.DataSources.Types;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
@@ -9,23 +8,26 @@ using ToSic.Eav.Run;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.DataSources.System
 {
     /// <inheritdoc />
     /// <summary>
     /// A DataSource that gets all zones in the system.
     /// </summary>
+    [InternalApi_DoNotUse_MayChangeWithoutNotice]
     [VisualQuery(
-        GlobalName = "ToSic.Eav.DataSources.Zones, ToSic.Eav.Apps",
+        GlobalName = "ToSic.Eav.DataSources.System.Zones, ToSic.Eav.Apps",
         Type = DataSourceType.Source,
         Difficulty = DifficultyBeta.Advanced,
         DynamicOut = false,
         PreviousNames = new []
             {
-                "ToSic.Eav.DataSources.System.Zones, ToSic.Eav.Apps"
+                "ToSic.Eav.DataSources.System.Zones, ToSic.Eav.Apps",
+                // not sure if this was ever used...just added it for safety for now
+                // can probably remove again, if we see that all system queries use the correct name
+                "ToSic.Eav.DataSources.Zones, ToSic.Eav.Apps",
             },
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Zones")]
-    [PrivateApi("probably should be in own SysInfo folder or something")]
     public sealed class Zones: DataSourceBase
 	{
         #region Configuration-properties (no config)
@@ -54,10 +56,10 @@ namespace ToSic.Eav.DataSources
 	    {
             // Get cache, which manages a list of zones
 	        //var cache = (RootCacheBase)DataSource.GetCache(ZoneId, AppId);
-            var cache = Factory.GetAppsCache();
+            var zones = /*Factory.GetAppsCache*/Eav.Apps.State.Zones;
 	        var env = Factory.Resolve<IAppEnvironment>();
 
-	        var list = cache.Zones.Values.OrderBy(z => z.ZoneId).Select(zone =>
+	        var list = zones.Values.OrderBy(z => z.ZoneId).Select(zone =>
 	        {
 	            var tenant = env.ZoneMapper.Tenant(zone.ZoneId);
 

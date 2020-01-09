@@ -8,7 +8,7 @@ namespace ToSic.Eav.Data
     /// This is used for more type safety - so you base your interfaces - like IPerson on this,
     /// otherwise you're IPerson would be missing the Title, Id, Guid
     /// </summary>
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
     public interface IEntityBasedType
     {
         /// <summary>

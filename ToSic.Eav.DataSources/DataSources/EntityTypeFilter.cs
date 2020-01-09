@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// Return only entities of a specific content-type
 	/// </summary>
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
 	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.EntityTypeFilter, ToSic.Eav.DataSources",
         Type = DataSourceType.Filter, 
         DynamicOut = false,
@@ -58,7 +58,7 @@ namespace ToSic.Eav.DataSources
 
 	        try
             {
-                var appState = Factory.GetAppState(this);//  Root.AppState;// DataSource.GetCache(ZoneId, AppId);
+                var appState = /*Factory.GetAppState*/Eav.Apps.State.Get(this);//  Root.AppState;// DataSource.GetCache(ZoneId, AppId);
 	            var foundType = appState?.GetContentType(TypeName);
 	            if (foundType != null) // maybe it doesn't find it!
 	                return (from e in In[Constants.DefaultStreamName].List

@@ -4,7 +4,6 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Security;
-using ToSic.Eav.Security.Permissions;
 
 namespace ToSic.Eav.Metadata
 {
@@ -13,7 +12,7 @@ namespace ToSic.Eav.Metadata
     /// It's usually on a <strong>Metadata</strong> property of things that can have metadata.
     /// </summary>
     /// <typeparam name="T">The type this metadata uses as a key - int, string, guid</typeparam>
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
     public class MetadataOf<T> : IMetadataOf, IMetadataInternals
     {
         /// <summary>

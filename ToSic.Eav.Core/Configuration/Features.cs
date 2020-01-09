@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security.Encryption;
 
@@ -14,7 +13,7 @@ namespace ToSic.Eav.Configuration
     /// The Features lets your code find out what features are currently enabled/disabled in the environment.
     /// It's important to detect if the admin must activate certain features to let your code do it's work.
     /// </summary>
-    [PublicApi]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public static class Features
     {
         internal const bool AllowUnsignedFeatures = true; // testing mode!
@@ -43,7 +42,6 @@ namespace ToSic.Eav.Configuration
         /// As of now, it's not enforced, but in future it will be. 
         /// </summary>
         /// <returns>true if the features were signed correctly</returns>
-        [PublicApi]
         public static bool Valid { get; private set; }
 
         [PrivateApi]
@@ -64,7 +62,6 @@ namespace ToSic.Eav.Configuration
         /// </summary>
         /// <param name="guid">The feature Guid</param>
         /// <returns>true if the feature is enabled</returns>
-        [PublicApi]
         public static bool Enabled(Guid guid) => All.Any(f => f.Id == guid && f.Enabled);
 
         /// <summary>
@@ -72,7 +69,6 @@ namespace ToSic.Eav.Configuration
         /// </summary>
         /// <param name="guids">list/array of Guids</param>
         /// <returns>true if all features are enabled, false if any one of them is not</returns>
-        [PublicApi]
         public static bool Enabled(IEnumerable<Guid> guids) => guids.All(Enabled);
 
         [PrivateApi]
@@ -209,7 +205,10 @@ namespace ToSic.Eav.Configuration
 
             // 2sxc 9.43+
             new Feature(FeatureIds.EditFormPreferAngularJs, true, true),
-            new Feature(FeatureIds.WebApiOptionsAllowLocal, true, false)
+            new Feature(FeatureIds.WebApiOptionsAllowLocal, true, false),
+
+            // 2sxc 10.24+
+            new Feature(FeatureIds.WebFarm, false, false),
         });
 
 

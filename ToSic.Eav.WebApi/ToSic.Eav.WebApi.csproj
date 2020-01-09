@@ -96,6 +96,7 @@
     <Compile Include="ContentExportController.cs" />
     <Compile Include="ContentImportController.cs" />
     <Compile Include="ContentTypeController.cs" />
+    <Compile Include="Conversion\IStreamTo_T.cs" />
     <Compile Include="EntityApi.cs" />
     <Compile Include="Formats\EntityForPicker.cs" />
     <Compile Include="Formats\EntityImport.cs" />
@@ -126,7 +127,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Serializers\Serializer.cs" />
+    <Compile Include="Conversion\EntitiesToDictionary.cs" />
     <Compile Include="MetadataController.cs" />
     <Compile Include="EntitiesController.cs" />
   </ItemGroup>

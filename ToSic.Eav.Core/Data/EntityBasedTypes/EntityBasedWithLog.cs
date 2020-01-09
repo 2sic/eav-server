@@ -7,7 +7,7 @@ namespace ToSic.Eav.Data
     /// <summary>
     /// A strongly typed object which gets its data from an entity, and also logs what it does.
     /// </summary>
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
     public abstract class EntityBasedWithLog: EntityBasedType, IHasLog
     {
         /// <summary>

@@ -7,7 +7,7 @@ namespace ToSic.Eav.Data
     /// <summary>
     /// Manages relationships of an entity - to it's children and parents.
     /// </summary>
-    [PublicApi]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public interface IRelationshipManager
     {
         /// <summary>

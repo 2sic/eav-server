@@ -12,7 +12,7 @@ namespace ToSic.Eav.Logging
     /// If chained, it can broadcast the messages to the other loggers from that time forward.
     /// Basically this is the backbone of Insights.
     /// </summary>
-    [PublicApi]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public interface ILog
     {
         /// <summary>

@@ -11,7 +11,7 @@ namespace ToSic.Eav.DataSources
 	/// Represents a DataStream object. This is a stream of IEntity objects, which has a source and a name.
 	/// A stream can be read from, and it can be attached to upstream data-sources for further processing.
 	/// </summary>
-	[PublicApi]
+	[PublicApi_Stable_ForUseInYourCode]
 	public interface IDataStream: ICanSelfCache, ICanPurgeListCache, IEnumerable<IEntity>
 	{
         /// <summary>

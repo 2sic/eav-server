@@ -8,7 +8,7 @@ namespace ToSic.Eav.DataSources.Caching
     /// <summary>
     /// Marks objects that can cache lists based on certain rules - including retention time and if up-stream changes should refresh the cache. 
     /// </summary>
-    [PublicApi]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public interface IListCache
     {
         /// <summary>

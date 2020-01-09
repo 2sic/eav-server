@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Caching;
 using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav
@@ -11,7 +9,7 @@ namespace ToSic.Eav
 	/// <summary>
 	/// The Eav DI Factory, used to construct various objects through Dependency Injection.
 	/// </summary>
-	[PublicApi]
+	[PublicApi_Stable_ForUseInYourCode]
 	public class Factory
 	{
 #pragma warning disable IDE0051 // Remove unused private members
@@ -71,7 +69,7 @@ namespace ToSic.Eav
 #pragma warning restore IDE0052 // Remove unread private members
 
         /// <summary>
-        /// Internal debugging, disabled by default.
+        /// Internal debugging, disabled by default. If set to true, resolves will be counted and logged.
         /// </summary>
         public static bool Debug = false;
 
@@ -110,7 +108,7 @@ namespace ToSic.Eav
 	    }
 
         /// <summary>
-        /// Counter for internal statistics and debugging.
+        /// Counter for internal statistics and debugging. Will only be incremented if Debug = true.
         /// </summary>
 	    public static int CountResolves;
 
@@ -130,25 +128,5 @@ namespace ToSic.Eav
 
 	    }
 
-        [PrivateApi]
-        public static IAppsCache GetAppsCache()
-        {
-            if (_appsCacheSingleton != null) return _appsCacheSingleton;
-
-            var appsCache = Resolve<IAppsCache>();
-            if (appsCache.EnforceSingleton)
-                _appsCacheSingleton = appsCache;
-            return appsCache;
-        }
-
-        private static IAppsCache _appsCacheSingleton;
-        [PrivateApi]
-        public static AppState GetAppState(int appId) => GetAppsCache().Get(appId);
-
-        [PrivateApi]
-        public static AppState GetAppState(IAppIdentity app) => GetAppsCache().Get(app);
-
-        [PrivateApi]
-        public static IAppIdentity GetAppIdentity(int? zoneId, int? appId) => GetAppsCache().GetIdentity(zoneId, appId);
     }
 }

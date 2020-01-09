@@ -8,7 +8,7 @@ namespace ToSic.Eav.DataSources
     /// It's implemented as a DataSource so that other DataSources can easily attach to it. <br/>
     /// This is also the object returned as the root in any query.
     /// </summary>
-    [PublicApi]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public class AppRoot : DataSourceBase, IAppRoot
     {
         [PrivateApi]
@@ -36,7 +36,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Get the <see cref="AppState"/> of this app from the cache.
         /// </summary>
-	    private AppState AppState => _appState ?? (_appState = Factory.GetAppState(this));
+	    private AppState AppState => _appState ?? (_appState = /*Factory.GetAppState*/Eav.Apps.State.Get(this));
         private AppState _appState;
 
         #region Cache-Chain

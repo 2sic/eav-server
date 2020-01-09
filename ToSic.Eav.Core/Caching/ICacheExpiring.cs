@@ -5,7 +5,7 @@ namespace ToSic.Eav.Caching
     /// <summary>
     /// Marks objects which are cache-based, and which may contain obsolete cached data.
     /// </summary>
-    [PublicApi]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public interface ICacheExpiring: ITimestamped
     {
         /// <summary>

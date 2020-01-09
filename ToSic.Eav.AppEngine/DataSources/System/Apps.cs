@@ -3,29 +3,31 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
-using ToSic.Eav.DataSources.System;
 using ToSic.Eav.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.DataSources.System
 {
     /// <inheritdoc />
     /// <summary>
     /// A DataSource that gets all Apps of a zone.
     /// </summary>
+    [InternalApi_DoNotUse_MayChangeWithoutNotice]
     [VisualQuery(
-        GlobalName = "ToSic.Eav.DataSources.Apps, ToSic.Eav.Apps",
+        GlobalName = "ToSic.Eav.DataSources.System.Apps, ToSic.Eav.Apps",
         Type = DataSourceType.Source,
         DynamicOut = false,
         Difficulty = DifficultyBeta.Advanced,
         ExpectsDataOfType = "fabc849e-b426-42ea-8e1c-c04e69facd9b",
         PreviousNames = new []
             {
-                "ToSic.Eav.DataSources.System.Apps, ToSic.Eav.Apps"
+                "ToSic.Eav.DataSources.System.Apps, ToSic.Eav.Apps",
+                // not sure if this was ever used...just added it for safety for now
+                // can probably remove again, if we see that all system queries use the correct name
+                "ToSic.Eav.DataSources.Apps, ToSic.Eav.Apps",
             },
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Apps")]
-    [PrivateApi("probably should be in own SysInfo folder or something")]
     public sealed class Apps: DataSourceBase
 	{
         #region Configuration-properties (no config)
@@ -69,9 +71,9 @@ namespace ToSic.Eav.DataSources
 
             // try to load the content-type - if it fails, return empty list
             //var cache = (RootCacheBase)DataSource.GetCache(ZoneId, AppId);
-            var cache = Factory.GetAppsCache();
-	        if (!cache.Zones.ContainsKey(OfZoneId)) return new List<IEntity>();
-	        var zone = cache.Zones[OfZoneId];
+            var zones = /*Factory.GetAppsCache*/Eav.Apps.State.Zones;
+	        if (!zones.ContainsKey(OfZoneId)) return new List<IEntity>();
+	        var zone = zones[OfZoneId];
 
 	        var list = zone.Apps.OrderBy(a => a.Key).Select(app =>
 	        {

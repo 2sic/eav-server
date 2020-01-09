@@ -2,6 +2,7 @@
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.System
@@ -10,6 +11,7 @@ namespace ToSic.Eav.DataSources.System
     /// <summary>
     /// A DataSource that returns the attributes of a content-type
     /// </summary>
+    [InternalApi_DoNotUse_MayChangeWithoutNotice]
     [VisualQuery(GlobalName = "ToSic.Eav.DataSources.System.Attributes, ToSic.Eav.DataSources",
         Type = DataSourceType.Source,
         Difficulty = DifficultyBeta.Advanced,
@@ -67,8 +69,8 @@ namespace ToSic.Eav.DataSources.System
 	            : null;
 
 	        type = useStream 
-                ? optionalList?.FirstOrDefault()?.Type 
-                : /* DataSource.GetCache(ZoneId, AppId)*/Factory.GetAppState(this).GetContentType(ContentTypeName);
+                ? optionalList?.FirstOrDefault()?.Type
+                : /* DataSource.GetCache(ZoneId, AppId)*//*Factory.GetAppState*/Eav.Apps.State.Get(this).GetContentType(ContentTypeName);
 
 	        // try to load from type, if it exists
 	        var list = type?.Attributes?.OrderBy(at => at.Name).Select(BuildDictionary).ToList();

@@ -9,7 +9,7 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// Filter entities to show Drafts or only Published Entities
 	/// </summary>
-	[PublicApi]
+	[PublicApi_Stable_ForUseInYourCode]
 
 	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.PublishingFilter, ToSic.Eav.DataSources",
         Type = DataSourceType.Security, 

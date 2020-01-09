@@ -8,7 +8,7 @@ namespace ToSic.Eav.Logging
     /// <summary>
     /// Base class for most objects which simply want to implement log and log-chaining.
     /// </summary>
-    [PublicApi]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public abstract class HasLog : IHasLog
     {
         /// <inheritdoc />

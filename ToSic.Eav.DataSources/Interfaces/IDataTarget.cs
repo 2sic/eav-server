@@ -7,7 +7,7 @@ namespace ToSic.Eav.DataSources
 	/// Represents a data source that can be the recipient of Data.
 	/// This basically means it has an In <see cref="IDataStream"/>
 	/// </summary>
-	[PublicApi]
+	[PublicApi_Stable_ForUseInYourCode]
 	public interface IDataTarget
 	{
 		/// <summary>

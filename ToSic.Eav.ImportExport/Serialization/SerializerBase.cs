@@ -2,20 +2,28 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Types;
 using AppState = ToSic.Eav.Apps.AppState;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.ImportExport.Serializers
+// ReSharper disable once CheckNamespace
+namespace ToSic.Eav.Serialization
 {
-    public abstract class SerializerBase: HasLog, IThingSerializer
+    public abstract class SerializerBase: HasLog, IDataSerializer
     {
+        /// <summary>
+        /// Empty constructor for DI
+        /// </summary>
+        protected SerializerBase() : this("Srl.Default") { }
+
+        /// <summary>
+        /// Normal constructor
+        /// </summary>
+        /// <param name="name"></param>
         protected SerializerBase(string name): base(name) { }
 
-        protected SerializerBase() : this("Srl.Default") { }
 
         public AppState App
         {
@@ -43,10 +51,10 @@ namespace ToSic.Eav.ImportExport.Serializers
                            : App.GetContentType(staticName));
         }
 
-        public void Initialize(AppState app, ILog parentLog)
+        public void Initialize(AppState appState, ILog parentLog)
         {
-            App = app;
-            AppId = app.AppId;
+            App = appState;
+            AppId = appState.AppId;
             Log.LinkTo(parentLog);
         }
 

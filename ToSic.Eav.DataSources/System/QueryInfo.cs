@@ -4,14 +4,18 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSources.System.Types;
+using ToSic.Eav.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.System
 {
     /// <inheritdoc />
     /// <summary>
-    /// A DataSource that returns the attributes of a content-type
+    /// A DataSource that returns infos about a query. <br/>
+    /// For example, it says how many out-streams are available and what fields can be used on each stream. <br/>
+    /// This is used in fields which let you pick a query, stream and field from that stream.
     /// </summary>
+    [InternalApi_DoNotUse_MayChangeWithoutNotice]
     [VisualQuery(GlobalName = "ToSic.Eav.DataSources.System.QueryInfo, ToSic.Eav.DataSources",
         Type = DataSourceType.Source,
         Difficulty = DifficultyBeta.Advanced,

@@ -9,7 +9,7 @@ namespace ToSic.Eav.Data
     /// <summary>
     /// Defines an attribute with name and the type this attribute has. Part of of a <see cref="IContentType"/> definition.
     /// </summary>
-    [PublicApi]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi, always use the interface")]
     public class ContentTypeAttribute : AttributeBase, IContentTypeAttribute
     {
         /// <inheritdoc />

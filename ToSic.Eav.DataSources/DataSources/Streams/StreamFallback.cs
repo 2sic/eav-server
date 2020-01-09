@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// A DataSource that returns the first stream which has content
 	/// </summary>
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
 	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.StreamFallback, ToSic.Eav.DataSources",
         Type = DataSourceType.Logic, 
         DynamicOut = false, 

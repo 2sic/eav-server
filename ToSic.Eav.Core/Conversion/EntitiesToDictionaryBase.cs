@@ -3,45 +3,36 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using ToSic.Eav.Data;
-using ToSic.Eav.Interfaces;
-using IEntity = ToSic.Eav.Data.IEntity;
+using ToSic.Eav.Documentation;
 
-// ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Serializers
+namespace ToSic.Eav.Conversion
 {
     /// <summary>
     /// A helper to serialize various combinations of entities, lists of entities etc
     /// </summary>
-    public class SerializerHelper
+    [InternalApi_DoNotUse_MayChangeWithoutNotice]
+    public abstract class EntitiesToDictionaryBase : IEntitiesTo<Dictionary<string, object>>
     {
         #region Configuration
-        public bool IncludeGuid { get; set; }
-        protected bool IncludePublishingInfo { get; private set; }
+        /// <inheritdoc/>
+        public bool WithGuid { get; set; }
+        /// <inheritdoc/>
+        public bool WithPublishing { get; private set; }
+        /// <inheritdoc/>
+        public bool WithMetadataFor { get; private set; }
+        /// <inheritdoc/>
+        public bool WithTitle { get; private set; }
 
-        protected bool IncludeMetadata { get; private set; }
-
-        protected bool ProvideIdentityTitle { get; private set; }
-
-        /// <summary>
-        /// ensure all settings are so it includes guids etc.
-        /// </summary>
+        /// <inheritdoc/>
         public void ConfigureForAdminUse()
         {
-            IncludeGuid = true;
-            IncludePublishingInfo = true;
-            IncludeMetadata = true;
-            ProvideIdentityTitle = true;
+            WithGuid = true;
+            WithPublishing = true;
+            WithMetadataFor = true;
+            WithTitle = true;
         }
 
         #endregion
-
-        //public SerializerHelper()
-        //{
-            // Ensure that date-times are sent in the Zulu-time format (UTC) and not with offsets which causes many problems during round-trips
-            // 2017-06-07 2dm: can't use this setting outside of web...
-            // must find a solution... GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-            //GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-        //}
 
         #region Language
         private string[] _langs;
@@ -54,23 +45,13 @@ namespace ToSic.Eav.Serializers
         #endregion
 
         #region Many variations of the Prepare-Statement expecting various kinds of input
- 
-        
 
-        /// <summary>
-        /// Return an object that represents an IDataStream, but is serializable
-        /// </summary>
-        /// <remarks>
-        ///     note that this could be in use on webAPIs and scripts
-        ///     so even if it looks un-used, it must stay available
-        /// </remarks>
-        public IEnumerable<Dictionary<string, object>> Prepare(IEnumerable<IEntity> entities) 
+        /// <inheritdoc/>
+        public IEnumerable<Dictionary<string, object>> Convert(IEnumerable<IEntity> entities) 
             => entities.Select(GetDictionaryFromEntity);
 
-        /// <summary>
-        /// Return an object that represents an IDataStream, but is serializable
-        /// </summary>
-        public Dictionary<string, object> Prepare(IEntity entity) 
+        /// <inheritdoc/>
+        public Dictionary<string, object> Convert(IEntity entity) 
             => entity == null ? null : GetDictionaryFromEntity(entity);
         
 
@@ -82,16 +63,16 @@ namespace ToSic.Eav.Serializers
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public virtual Dictionary<string, object> GetDictionaryFromEntity(IEntity entity)
+        [PrivateApi]
+        protected virtual Dictionary<string, object> GetDictionaryFromEntity(IEntity entity)
         {
-            // var lngs = Languages;// new[] {Languages};
             // Convert Entity to dictionary
             // If the value is a relationship, then give those too, but only Title and Id
             var entityValues = (from d in entity.Attributes select d.Value).ToDictionary(k => k.Name, v =>
             {
 				var value = entity.GetBestValue(v.Name, Languages, true);
                 if (v.Type == "Entity" && value is IEnumerable<IEntity> entities)
-                    return entities.Select(p => new SerializableRelationship
+                    return entities.Select(p => new RelationshipReference
                     {
                         Id = p?.EntityId,
                         Title = p?.GetBestTitle(Languages)
@@ -105,13 +86,13 @@ namespace ToSic.Eav.Serializers
             if (entityValues.ContainsKey("Id")) entityValues.Remove("Id");
             entityValues.Add("Id", entity.EntityId);
 
-            if (IncludeGuid)
+            if (WithGuid)
             {
                 if (entityValues.ContainsKey("Guid")) entityValues.Remove("Guid");
                 entityValues.Add("Guid", entity.EntityGuid);
             }
 
-            if (IncludePublishingInfo)
+            if (WithPublishing)
             {
                 entityValues.Add(Constants.RepoIdInternalField, entity.RepositoryId);
                 entityValues.Add(Constants.IsPublishedField, entity.IsPublished);
@@ -137,10 +118,10 @@ namespace ToSic.Eav.Serializers
                 }
             }
 
-            if (IncludeMetadata && entity.MetadataFor.IsMetadata)
+            if (WithMetadataFor && entity.MetadataFor.IsMetadata)
                 entityValues.Add("Metadata", entity.MetadataFor);
 
-            if(ProvideIdentityTitle)
+            if(WithTitle)
                 try { entityValues.Add("_Title", entity.GetBestTitle(Languages)); }
                 catch { /* ignore */ }
 

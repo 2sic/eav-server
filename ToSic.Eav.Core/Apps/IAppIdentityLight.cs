@@ -5,7 +5,7 @@ namespace ToSic.Eav.Apps
     /// <summary>
     /// Marks things which belongs to an App - but it may only know about the app, not about the zone. For a full identity, see <see cref="IAppIdentity"/>.
     /// </summary>
-    [PublicApi]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public interface IAppIdentityLight
     {
         /// <summary>

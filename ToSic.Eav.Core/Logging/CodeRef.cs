@@ -6,7 +6,7 @@ namespace ToSic.Eav.Logging
     /// <summary>
     /// Reference to code - containing the path to the file, the method name and the line in the code. 
     /// </summary>
-    [PublicApi]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public class CodeRef
     {
         /// <summary>

@@ -24,7 +24,7 @@ namespace ToSic.Eav.WebApi
             IEnumerable<IEntity> entityList = null;
 
             //var appRun = new AppRuntime(appId, Log);
-            var appState = Factory.GetAppState(appId);
+            var appState = Eav.Apps.State.Get(appId); //Factory.GetAppState(appId);
 
             switch (keyType)
             {
@@ -46,7 +46,7 @@ namespace ToSic.Eav.WebApi
             if(entityList == null)
                 throw new Exception($"was not able to convert '{key}' to keytype {keyType}, must cancel");
 
-            return Helpers.Serializers.GetSerializerWithGuidEnabled().Prepare(entityList);
+            return Helpers.Serializers.GetSerializerWithGuidEnabled().Convert(entityList);
         }
 
     }

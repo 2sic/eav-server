@@ -5,7 +5,7 @@ namespace ToSic.Eav.Configuration
     /// <summary>
     /// Defines all classes which can provide fingerprints - to delegate fingerprint-creation to the environment. 
     /// </summary>
-    [PublicApi]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public interface IFingerprintProvider
     {
         string GetSystemFingerprint();

@@ -11,7 +11,7 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// Sort Entity by values in specified Attributes
 	/// </summary>
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
 	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.ValueSort, ToSic.Eav.DataSources",
         Type = DataSourceType.Sort,
         DynamicOut = false,

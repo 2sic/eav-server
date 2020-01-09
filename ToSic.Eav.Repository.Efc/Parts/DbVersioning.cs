@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Efc.Models;
+using ToSic.Eav.Serialization;
 using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
 
 namespace ToSic.Eav.Repository.Efc.Parts
@@ -53,7 +54,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             Save();
         }
 
-        private IThingSerializer ImmediateStateSerializer()
+        private IDataSerializer ImmediateStateSerializer()
         {
             var loader = new Efc11Loader(DbContext.SqlDb);
             var appPackageRightNow = loader.AppState(DbContext.AppId, parentLog:Log);
@@ -64,7 +65,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Convert an entity to xml and add to saving queue
         /// </summary>
-        private void SerializeEntityAndAddToQueue(IThingSerializer serializer, int entityId, Guid entityGuid) 
+        private void SerializeEntityAndAddToQueue(IDataSerializer serializer, int entityId, Guid entityGuid) 
             => SaveEntity(entityId, entityGuid, serializer.Serialize(entityId));
 
         /// <summary>

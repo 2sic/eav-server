@@ -7,7 +7,7 @@ namespace ToSic.Eav.LookUp
     /// It's usually used to get pre-stored configuration or to get settings from the context. <br/>
     /// Read more about this in @Specs.LookUp.Intro
     /// </summary>
-    [PublicApi]
+    [PublicApi_Stable_ForUseInYourCode]
 	public interface ILookUp
 	{
 		/// <summary>
