@@ -7,6 +7,7 @@ using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Types;
@@ -61,7 +62,8 @@ namespace ToSic.Eav.Apps
 
         public void MetadataEnsureTypeAndSingleEntity(string scope, string setName, string label, int appAssignment, Dictionary<string, object> values, bool inAppType)
         {
-            Log.Add($"check / create for {scope}/{setName} and {label} for app {appAssignment} - inApp: {inAppType}");
+            var wrapLog = Log.Call($"{scope}/{setName} and {label} for app {AppId} MetadataAssignment: {appAssignment} - inApp: {inAppType}");
+            //Log.Add($"check / create for {scope}/{setName} and {label} for app {appAssignment} - inApp: {inAppType}");
 
             // if it's an in-app type, it should check the app, otherwise it should check the global type
             // this is important, because there are rare cases where historic data accidentally
@@ -75,21 +77,29 @@ namespace ToSic.Eav.Apps
 
             if (ct == null && inAppType)
             {
+                Log.Add("couldn't find type, will create");
                 ContentTypes.Create(setName, setName, label, scope);
                 ct = Read.ContentTypes.Get(setName);
             }
+            else
+                Log.Add($"Type '{setName}' found");
 
             // if it's still null, we have a problem...
             if (ct == null)
+            {
+                Log.Add("type is still null, error");
+                wrapLog("error");
                 throw new Exception("something went wrong - can't find type in app, but it's not a global type, so I must cancel");
+            }
 
             values = values ?? new Dictionary<string, object>();
 
             var newEnt = new Entity(AppId, Guid.NewGuid(), ct, values);
-            newEnt.SetMetadata(new Metadata.Target { KeyNumber = DataController.AppId, TargetType = appAssignment });
+            newEnt.SetMetadata(new Metadata.Target { KeyNumber = /*DataController.*/AppId, TargetType = appAssignment });
             Entities.Save(newEnt);
 
             SystemManager.Purge(ZoneId, AppId);
+            wrapLog(null);
         }
 
 
@@ -105,22 +115,35 @@ namespace ToSic.Eav.Apps
                 throw new ArgumentOutOfRangeException("appName '" + appName + "' not allowed");
 
             var appId = new ZoneManager(zoneId, parentLog).CreateApp();
-            EnsureAppIsConfigured(zoneId, appId, parentLog, appName);
+            new AppManager(new AppIdentity(zoneId, appId), parentLog)
+                .EnsureAppIsConfigured( /*zoneId, appId, parentLog, */appName);
         }
 
         /// <summary>
         /// Create app-describing entity for configuration and add Settings and Resources Content Type
         /// </summary>
-        internal static void EnsureAppIsConfigured(int zoneId, int appId, ILog parentLog, string appName = null)
+        internal /*static*/ void EnsureAppIsConfigured(/*int zoneId, int appId, ILog parentLog,*/ string appName = null)
         {
-            var appIdentity = new AppIdentity(zoneId, appId);
-            var mds = State.Get(appIdentity);
-            var appMetaData = mds.Get(Constants.MetadataForApp, appId, AppConstants.TypeAppConfig).FirstOrDefault();
-            var appResources = mds.Get(Constants.MetadataForApp, appId, AppConstants.TypeAppResources).FirstOrDefault();
-            var appSettings = mds.Get(Constants.MetadataForApp, appId, AppConstants.TypeAppSettings).FirstOrDefault();
+            //var log = new Log("Eav.AppMan", parentLog);
+            var wrapLog = Log.Call($"{nameof(appName)}: {appName}");
+
+            //var appIdentity = new AppIdentity(ZoneId, AppId);
+            var mds = State.Get(/*appIdentity*/this);
+            var appConfig = mds.Get(Constants.MetadataForApp, AppId, AppConstants.TypeAppConfig).FirstOrDefault();
+            var appResources = mds.Get(Constants.MetadataForApp, AppId, AppConstants.TypeAppResources).FirstOrDefault();
+            var appSettings = mds.Get(Constants.MetadataForApp, AppId, AppConstants.TypeAppSettings).FirstOrDefault();
+
+            Log.Add($"App Config: {appConfig != null}, Resources: {appResources != null}, Settings: {appSettings != null}");
+
+            // if nothing must be done, return now
+            if (appConfig != null && appResources != null && appSettings != null)
+            {
+                wrapLog("ok");
+                return;
+            }
 
             // Get appName from cache - stop if it's a "Default" app
-            var eavAppName = new ZoneRuntime(zoneId, parentLog).GetName(appId);
+            var eavAppName = new ZoneRuntime(ZoneId, /*parentLog*/Log).GetName(AppId);
 
             // v10.25 from now on the DefaultApp can also have settings and resources
             //if (eavAppName == Constants.DefaultAppName)
@@ -131,9 +154,9 @@ namespace ToSic.Eav.Apps
                     ? eavAppName
                     : string.IsNullOrEmpty(appName) ? eavAppName : RemoveIllegalCharsFromPath(appName);
 
-            var appMan = new AppManager(appIdentity, null);
-            if (appMetaData == null)
-                appMan.MetadataEnsureTypeAndSingleEntity(AppConstants.ScopeApp,
+            //var appMan = new AppManager(appIdentity, Log);
+            if (appConfig == null)
+                /*appMan.*/MetadataEnsureTypeAndSingleEntity(AppConstants.ScopeApp,
                     AppConstants.TypeAppConfig,
                     "App Metadata",
                     Constants.MetadataForApp,
@@ -151,7 +174,7 @@ namespace ToSic.Eav.Apps
 
             // Add new (empty) ContentType for Settings
             if (appSettings == null)
-                appMan.MetadataEnsureTypeAndSingleEntity(AppConstants.ScopeApp,
+                /*appMan.*/MetadataEnsureTypeAndSingleEntity(AppConstants.ScopeApp,
                     AppConstants.TypeAppSettings,
                     "Stores settings for an app",
                     Constants.MetadataForApp,
@@ -160,15 +183,17 @@ namespace ToSic.Eav.Apps
 
             // add new (empty) ContentType for Resources
             if (appResources == null)
-                appMan.MetadataEnsureTypeAndSingleEntity(AppConstants.ScopeApp,
+                /*appMan.*/MetadataEnsureTypeAndSingleEntity(AppConstants.ScopeApp,
                     AppConstants.TypeAppResources,
                     "Stores resources like translations for an app",
                     Constants.MetadataForApp,
                     null, 
                     true);
 
-            if (appMetaData == null || appSettings == null || appResources == null)
-                SystemManager.Purge(zoneId, appId);
+            //if (appConfig == null || appSettings == null || appResources == null)
+            SystemManager.Purge(ZoneId, AppId);
+
+            wrapLog("ok");
         }
 
         private static string RemoveIllegalCharsFromPath(string path)

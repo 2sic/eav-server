@@ -57,7 +57,7 @@ namespace ToSic.Eav.Apps
                 Log.Add($"create app resources? allowSE:{allowSideEffects}");
 
                 if (allowSideEffects)
-                    AppManager.EnsureAppIsConfigured(ZoneId, AppId, Log); // make sure additional settings etc. exist
+                    new AppManager(this, Log).EnsureAppIsConfigured(/*ZoneId, AppId, Log*/); // make sure additional settings etc. exist
             //}
 
             InitializeResourcesSettingsAndMetadata();
