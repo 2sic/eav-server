@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Windows.Markup;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
@@ -122,7 +123,7 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// Create app-describing entity for configuration and add Settings and Resources Content Type
         /// </summary>
-        internal /*static*/ void EnsureAppIsConfigured(/*int zoneId, int appId, ILog parentLog,*/ string appName = null)
+        public /*static*/ void EnsureAppIsConfigured(/*int zoneId, int appId, ILog parentLog,*/ string appName = null)
         {
             //var log = new Log("Eav.AppMan", parentLog);
             var wrapLog = Log.Call($"{nameof(appName)}: {appName}");
@@ -194,6 +195,14 @@ namespace ToSic.Eav.Apps
             SystemManager.Purge(ZoneId, AppId);
 
             wrapLog("ok");
+        }
+
+        private IEntity AppSettingsDummy() => AppMetaDummy(AppConstants.TypeAppSettings, new Dictionary<string, object>());
+
+        private IEntity AppMetaDummy(string typeName, Dictionary<string, object> values)
+        {
+            var ct = Read.ContentTypes.Get(typeName);
+            return new Entity(AppId, Guid.NewGuid(), ct, values);
         }
 
         private static string RemoveIllegalCharsFromPath(string path)

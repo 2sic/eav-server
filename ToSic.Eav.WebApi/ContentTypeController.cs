@@ -7,7 +7,6 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Conversion;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSources;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.WebApi.Formats;
@@ -28,25 +27,29 @@ namespace ToSic.Eav.WebApi
         [HttpGet]
 	    public IEnumerable<ContentTypeInfo> Get(int appId, string scope = null, bool withStatistics = false)
         {
-            Log.Add($"get a#{appId}, scope:{scope}, stats:{withStatistics}");
+            var wrapLog = Log.Call($"a#{appId}, scope:{scope}, stats:{withStatistics}");
 
-            // 2017-10-23 new - should use app-manager and return each type 1x only
+            // should use app-manager and return each type 1x only
             var appMan = new AppManager(appId, Log);
-            var allTypes = appMan.Read.ContentTypes.FromScope(scope, true);
 
-            // 2017-10-23 old...
-            // scope can be null (eav) or alternatives would be "System", "2SexyContent-System", "2SexyContent-App", "2SexyContent"
-            var appIdentity = /*Factory.GetAppIdentity*/Apps.State.Identity(null, appId);
-            var cache = (AppRoot) new DataSource(Log).GetRootDs(appIdentity);
+            // 2020-01-15 2sxc 10.25.01 Special side-effect, pre-generate the resources, settings etc. if they didn't exist yet
+            if (scope == AppConstants.ScopeApp)
+            {
+                Log.Add($"is scope {scope}, will do extra processing");
+                appMan.EnsureAppIsConfigured(); // make sure additional settings etc. exist
+            }
+
+            // get all types
+            var allTypes = appMan.Read.ContentTypes.FromScope(scope, true);
 
             var filteredType = allTypes.Where(t => t.Scope == scope)
                 .OrderBy(t => t.Name)
-                .Select(t => ContentTypeForJson(t as ContentType, cache));
-
+                .Select(t => ContentTypeForJson(t as ContentType, appMan.Read.Entities.Get(t.Name).Count()));
+            wrapLog("ok");
             return filteredType;
 	    }
 
-        private ContentTypeInfo ContentTypeForJson(ContentType t, IAppRoot cache)
+        private ContentTypeInfo ContentTypeForJson(ContentType t, int count = -1)
 	    {
 	        Log.Add($"for json a:{t.AppId}, type:{t.Name}");
 	        var metadata = t.Metadata.Description;
@@ -68,10 +71,9 @@ namespace ToSic.Eav.WebApi
 	            Description = t.Description,
 	            UsesSharedDef = share.ParentId != null,
 	            SharedDefId = share.ParentId,
-	            Items = cache?.List.Count(i => i.Type == t) ?? -1, // only count if cache provided
+	            Items = count,
 	            Fields = t.Attributes.Count,
 	            Metadata = ser.Convert(metadata),
-                // DebugInfoRepositoryAddress = t.RepositoryAddress,
                 I18nKey = t.I18nKey
 	        };
 	        return jsonReady;
@@ -80,11 +82,12 @@ namespace ToSic.Eav.WebApi
         [HttpGet]
 	    public ContentTypeInfo GetSingle(int appId, string contentTypeStaticName, string scope = null)
 	    {
-	        Log.Add($"get single a#{appId}, type:{contentTypeStaticName}, scope:{scope}");
-            var appState = Eav.Apps.State.Get(appId); //Factory.GetAppState(appId);
-            //var cache = DataSource.GetCache(DataSource.GetIdentity(null, appId));
+	        var wrapLog = Log.Call($"a#{appId}, type:{contentTypeStaticName}, scope:{scope}");
+            var appState = State.Get(appId);
+
             var ct = appState.GetContentType(contentTypeStaticName);
-            return ContentTypeForJson(ct as ContentType, null);
+            wrapLog(null);
+            return ContentTypeForJson(ct as ContentType /*, null,*/);
 	    }
 
         [HttpGet]
@@ -136,7 +139,7 @@ namespace ToSic.Eav.WebApi
         public IEnumerable<ContentTypeFieldInfo> GetFields(int appId, string staticName)
         {
             Log.Add($"get fields a#{appId}, type:{staticName}");
-            var appState = Eav.Apps.State.Get(appId); // Factory.GetAppState(appId);
+            var appState = State.Get(appId); // Factory.GetAppState(appId);
             if (!(/*DataSource.GetCache(DataSource.GetIdentity(null, appId))*/appState.GetContentType(staticName) is ContentType type))
                 throw new Exception("type should be a ContentType - something broke");
             var fields = type.Attributes.OrderBy(a => a.SortOrder);
