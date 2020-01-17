@@ -13,11 +13,13 @@ namespace ToSic.Eav.WebApi
 {
     public class EntityApi: HasLog
     {
-        public AppManager AppManager;
+        //public AppManager AppManager;
+        public AppRuntime AppRead;
 
-        public EntityApi(int appId, ILog parentLog): base("Api.EntPrc", parentLog)
+        public EntityApi(int appId, bool showDrafts, ILog parentLog): base("Api.EntPrc", parentLog)
         {
-            AppManager = new AppManager(appId, Log);
+            //AppManager = new AppManager(appId, Log);
+            AppRead = new AppRuntime(appId, showDrafts, Log);
         }
 
         /// <summary>
@@ -38,7 +40,7 @@ namespace ToSic.Eav.WebApi
         public IEntity GetOrThrow(string contentType, int id)
         {
             // must use cache, because it shows both published  unpublished
-            var found = AppManager.Read.Entities.Get(id);
+            var found = AppRead.Entities.Get(id);
             if (contentType != null && !(found.Type.Name == contentType || found.Type.StaticName == contentType))
                 throw new KeyNotFoundException("Can't find " + id + "of type '" + contentType + "'");
             return found;
@@ -48,7 +50,7 @@ namespace ToSic.Eav.WebApi
         public IEntity GetOrThrow(string contentType, Guid guid)
         {
             // must use cache, because it shows both published  unpublished
-            var itm = AppManager.Read.Entities.Get(guid);
+            var itm = AppRead.Entities.Get(guid);
             if (itm == null || (contentType != null && !(itm.Type.Name == contentType || itm.Type.StaticName == contentType)))
                 throw new KeyNotFoundException("Can't find " + guid + "of type '" + contentType + "'");
             return itm;
@@ -72,7 +74,7 @@ namespace ToSic.Eav.WebApi
         /// Get all Entities of specified Type
         /// </summary>
         public IEnumerable<Dictionary<string, object>> GetEntities(string contentType, string cultureCode = null) 
-            => Serializer.Convert(AppManager.Read.Entities.Get(contentType));
+            => Serializer.Convert(AppRead.Entities.Get(contentType));
 
         public List<BundleIEntity> GetEntitiesForEditing(int appId, List<ItemIdentifier> items)
         {
@@ -132,7 +134,7 @@ namespace ToSic.Eav.WebApi
         /// <exception cref="InvalidOperationException">Entity cannot be deleted for example when it is referenced by another object</exception>
         public void Delete(string contentType, int id, bool force = false)
         {
-            AppManager.Entities.Delete(id, contentType, force);
+            new AppManager(AppRead, AppRead.Log).Entities.Delete(id, contentType, force);
         }
 
         /// <summary>
@@ -145,7 +147,7 @@ namespace ToSic.Eav.WebApi
         /// <exception cref="InvalidOperationException">Entity cannot be deleted for example when it is referenced by another object</exception>
         public void Delete(string contentType, Guid entityGuid, bool force = false)
         {
-            var entity = AppManager.Read.Entities.Get(entityGuid);
+            var entity = AppRead.Entities.Get(entityGuid);
             Delete(contentType, entity.EntityId, force);
         }
 
@@ -153,7 +155,7 @@ namespace ToSic.Eav.WebApi
         {
             Serializer.ConfigureForAdminUse();
 
-            var list = Serializer.Convert(AppManager.Read.Entities.Get(contentType));
+            var list = Serializer.Convert(AppRead.Entities.Get(contentType));
 
             var newList = list
                 .Select(li
@@ -172,7 +174,7 @@ namespace ToSic.Eav.WebApi
         {
             foreach (var itm in items.Where(i => !string.IsNullOrEmpty(i.ContentTypeName)).ToArray())
             {
-                var ct = AppManager.Read.ContentTypes.Get(itm.ContentTypeName);
+                var ct = AppRead.ContentTypes.Get(itm.ContentTypeName);
                 if (ct == null)
                 {
                     if (!itm.ContentTypeName.StartsWith("@"))

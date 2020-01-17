@@ -125,7 +125,9 @@ namespace ToSic.Eav.Apps.ImportExport
         private XmlExporter GenerateExportXml(bool includeContentGroups, bool resetAppGuid)
         {
             // Get Export XML
-            var runtime = new AppRuntime(new AppIdentity(_zoneId, _appId)/*,  _zoneId, _appId*/, Log);
+            // 2020-01-17 2dm: added new parameter showDrafts and using true here, but not sure if this is actually good
+            // will have to wait and see
+            var runtime = new AppRuntime(new AppIdentity(_zoneId, _appId), true, Log);
             var attributeSets = runtime.ContentTypes.FromScope(includeAttributeTypes: true);
             attributeSets = attributeSets.Where(a => !((a as IContentTypeShared)?.AlwaysShareConfiguration ?? false));
 

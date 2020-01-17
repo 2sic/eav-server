@@ -135,7 +135,7 @@ namespace ToSic.Eav.WebApi
         /// <summary>
         /// Returns the configuration for a content type
         /// </summary>
-        [HttpGet]
+        //[HttpGet]
         public IEnumerable<ContentTypeFieldInfo> GetFields(int appId, string staticName)
         {
             Log.Add($"get fields a#{appId}, type:{staticName}");
@@ -145,7 +145,7 @@ namespace ToSic.Eav.WebApi
             var fields = type.Attributes.OrderBy(a => a.SortOrder);
 
 
-            var appInputTypes = new AppRuntime(appId, Log).ContentTypes.GetInputTypes();
+            var appInputTypes = new AppRuntime(appId, true, Log).ContentTypes.GetInputTypes();
 
             var ser = new EntitiesToDictionary();
             return fields.Select(a =>
@@ -206,11 +206,11 @@ namespace ToSic.Eav.WebApi
             return GetDb(appId).AttributesDefinition.DataTypeNames(appId);
 	    }
 
-	    [HttpGet]
+	    //[HttpGet]
 	    public List<InputTypeInfo> InputTypes(int appId)
 	    {
 	        Log.Add($"get input types a#{appId}");
-	        var appInputTypes = new AppRuntime(appId, Log).ContentTypes.GetInputTypes();
+	        var appInputTypes = new AppRuntime(appId, true, Log).ContentTypes.GetInputTypes();
 
 	        return appInputTypes;
 

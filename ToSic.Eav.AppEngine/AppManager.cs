@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Windows.Markup;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Types;
@@ -22,13 +20,10 @@ namespace ToSic.Eav.Apps
     public class AppManager: AppRuntimeBase
     {
         #region Constructors
-        //public AppManager(int zoneId, int appId, ILog parentLog = null) 
-        //    : base(zoneId, appId, parentLog) { RenameLog();}
-
-        public AppManager(IAppIdentity app, ILog parentLog) : base(app, parentLog) { RenameLog();}
+        public AppManager(IAppIdentity app, ILog parentLog) : base(app, true, parentLog) { RenameLog();}
 
         public AppManager(int appId, ILog parentLog) 
-            : this(/*Factory.GetAppIdentity*/State.Identity(null, appId:appId), parentLog) { RenameLog();}
+            : this(State.Identity(null, appId:appId), parentLog) { RenameLog();}
 
         private void RenameLog() => Log.Rename("AppMan");
 
@@ -36,7 +31,7 @@ namespace ToSic.Eav.Apps
 
         #region Access the Runtime
 
-        public AppRuntime Read => _runtime ?? (_runtime = new AppRuntime(Data, Log));
+        public AppRuntime Read => _runtime ?? (_runtime = new AppRuntime(Data, ShowDrafts, Log));
         private AppRuntime _runtime;
         #endregion
 
@@ -197,13 +192,13 @@ namespace ToSic.Eav.Apps
             wrapLog("ok");
         }
 
-        private IEntity AppSettingsDummy() => AppMetaDummy(AppConstants.TypeAppSettings, new Dictionary<string, object>());
+        //private IEntity AppSettingsDummy() => AppMetaDummy(AppConstants.TypeAppSettings, new Dictionary<string, object>());
 
-        private IEntity AppMetaDummy(string typeName, Dictionary<string, object> values)
-        {
-            var ct = Read.ContentTypes.Get(typeName);
-            return new Entity(AppId, Guid.NewGuid(), ct, values);
-        }
+        //private IEntity AppMetaDummy(string typeName, Dictionary<string, object> values)
+        //{
+        //    var ct = Read.ContentTypes.Get(typeName);
+        //    return new Entity(AppId, Guid.NewGuid(), ct, values);
+        //}
 
         private static string RemoveIllegalCharsFromPath(string path)
         {
