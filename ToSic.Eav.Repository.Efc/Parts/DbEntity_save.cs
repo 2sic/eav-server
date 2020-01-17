@@ -4,9 +4,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
-using ToSic.Eav.Enums;
 using ToSic.Eav.ImportExport.Json;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Efc.Models;
@@ -59,9 +57,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
             #region Step 2: check header record - does it already exist, what ID should we use, etc.
 
             // If we think we'll update an existing entity...
-            // ...we have to check if we'll actualy update the draft of the entity
+            // ...we have to check if we'll actually update the draft of the entity
             // ...or create a new draft (branch)
-            var existingDraftId = GetDraftAndCorrectIdAndBranching(newEnt, out var hasAdditionalDraft);
+            var draftInfo = GetDraftAndCorrectIdAndBranching(newEnt);//, out var hasAdditionalDraft);
+            var existingDraftId = draftInfo.Item1;
+            var hasAdditionalDraft = draftInfo.Item2;
 
             var isNew = newEnt.EntityId <= 0;   // remember how we want to work...
             Log.Add($"entity id:{newEnt.EntityId} - will treat as new:{isNew}");
@@ -88,6 +88,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                 #region Step 3: either create a new entity, or if it's an update, do draft/published checks to ensure correct data
 
+                // is New
                 if (isNew)
                 {
                     var logNew = Log.Call("", message: "Create new...");
@@ -108,7 +109,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     }
                     catch
                     {
-                        Log.Add("Error serializing - will try again with logging");
+                        Log.Add("Error serializing - will repeat with detailed with logging");
                         _jsonifier.LinkLog(Log);
                         jsonExport = _jsonifier.Serialize(newEnt);
                     }
@@ -123,12 +124,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     }
                     logNew($"i:{dbEnt.EntityId}, guid:{dbEnt.EntityGuid}");
                 }
+                // is Update
                 else
                 {
                     #region Step 3b: Check published (only if not new) - make sure we don't have multiple drafts
 
                     // new: always change the draft if there is one! - it will then either get published, or not...
-                    dbEnt = DbContext.Entities.GetDbEntity(newEnt.EntityId); // get the published one (entityid is always the published id)
+                    dbEnt = DbContext.Entities.GetDbEntity(newEnt.EntityId); // get the published one (entityId is always the published id)
 
                     var stateChanged = dbEnt.IsPublished != newEnt.IsPublished;
                     var logUpdate = Log.Call("", message: $"used existing i:{dbEnt.EntityId}, guid:{dbEnt.EntityGuid}, newstate:{newEnt.IsPublished}, state-changed:{stateChanged}, has-additional-draft:{hasAdditionalDraft}");
@@ -150,7 +152,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                     #endregion
 
-                    // update changelogmodified for the DB record
+                    // update changelog modified for the DB record
                     dbEnt.ChangeLogModified = changeLogId;
                     
                     // increase version
@@ -204,7 +206,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                 if(jsonExport == null)
                     throw new Exception("trying to save version history entry, but jsonexport isn't ready");
-                    DbContext.Versioning.SaveEntity(dbEnt.EntityId, dbEnt.EntityGuid, jsonExport);
+                DbContext.Versioning.SaveEntity(dbEnt.EntityId, dbEnt.EntityGuid, jsonExport);
 
                 #endregion
 
@@ -227,19 +229,19 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// then correct branching-infos on the entity depending on the scenario
         /// </summary>
         /// <param name="newEnt">the entity to be saved, with IDs and Guids</param>
-        /// <param name="hasAdditionalDraft">will be true, if there is a draft in a branch; false if the item itself is already draft</param>
+        /// <param name="outHasDraft">will be true, if there is a draft in a branch; false if the item itself is already draft</param>
         /// <returns></returns>
-        private int? GetDraftAndCorrectIdAndBranching(IEntity newEnt, out bool hasAdditionalDraft)
+        private Tuple<int?, bool> GetDraftAndCorrectIdAndBranching(IEntity newEnt)//, out bool outHasDraft)
         {
             var wrapLog = Log.Call($"entity:{newEnt.EntityId}");
 
             // only do this, if we were given an EntityId, otherwise we assume new entity
             if (newEnt.EntityId <= 0)
             {
-                Log.Add("entity id == 0 so skip draft lookup");
-                hasAdditionalDraft = false;
+                Log.Add("entity id == 0 means new, so skip draft lookup");
+                //outHasDraft = false;
                 wrapLog("null");
-                return null;
+                return new Tuple<int?, bool>(null, false);// null;
             }
             Log.Add("entity id > 0 - will check draft/branching");
 
@@ -247,20 +249,22 @@ namespace ToSic.Eav.Repository.Efc.Parts
             var ent = (Entity) newEnt;
             var existingDraftId = DbContext.Publishing.GetDraftBranchEntityId(ent.EntityId);
 
-            hasAdditionalDraft = ent.EntityId != (existingDraftId ?? -1); // only true, if there is an "attached" draft; false if the item itself is draft
+            var hasDraft = existingDraftId != null && ent.EntityId != existingDraftId; // only true, if there is an "attached" draft; false if the item itself is draft
 
-            Log.Add($"draft check: id:{ent.EntityId} existingDraft:{existingDraftId}, " +
-                    $"is-additional:{hasAdditionalDraft}");
+            Log.Add($"draft check: id:{ent.EntityId} {nameof(existingDraftId)}:{existingDraftId}, " +
+                    $"{nameof(hasDraft)}:{hasDraft}");
 
+            // if it's being saved as published, or the draft will be without an old original, then exit 
             if (ent.IsPublished || !ent.PlaceDraftInBranch)
             {
                 Log.Add($"new is published or branching is not wanted, so we won't branch - returning draft-id:{existingDraftId}");
                 wrapLog($"{existingDraftId}");
-                return existingDraftId;
+                return new Tuple<int?, bool>(existingDraftId, hasDraft);// existingDraftId;
             }
 
-            Log.Add("new is draft, and setting is PlaceDraftInBranch:true");
+            Log.Add($"will save as draft, and setting is PlaceDraftInBranch:{ent.PlaceDraftInBranch}=true");
 
+            Log.Add($"Will look for original {ent.EntityId} to check if it's not published.");
             // check if the original is also not published, with must prevent a second branch!
             var entityInDb = DbContext.Entities.GetDbEntity(ent.EntityId);
             if (!entityInDb.IsPublished)
@@ -270,10 +274,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 Log.Add("original is published, so we'll draft in a branch");
                 ent.SetPublishedIdForSaving(ent.EntityId); // set this, in case we'll create a new one
                 ent.ResetEntityId(existingDraftId ?? 0); // set to the draft OR 0 = new
-                hasAdditionalDraft = false; // not additional any more, as we're now pointing this as primary
+                hasDraft = false; // not additional any more, as we're now pointing this as primary
             }
             wrapLog($"{existingDraftId}");
-            return existingDraftId;
+            return new Tuple<int?, bool>(existingDraftId, hasDraft);// existingDraftId;
         }
 
         private ToSicEavEntities CreateNewInDb(IEntity newEnt, int changeId, int contentTypeId)

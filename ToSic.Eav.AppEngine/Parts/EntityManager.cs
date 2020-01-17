@@ -47,7 +47,7 @@ namespace ToSic.Eav.Apps.Parts
                         $"will publish: {repoId} if published false (it's: {maybeDraft.IsPublished})");
 
                 if (!maybeDraft.IsPublished)
-                    AppManager.DataController.Publishing.PublishDraftInDbEntity(repoId);
+                    AppManager.DataController.Publishing.PublishDraftInDbEntity(repoId, maybeDraft);
             }
 
             Log.Add($"/PublishWithoutPurge({entityId})");

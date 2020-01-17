@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Linq;
+using ToSic.Eav.Data;
+using ToSic.Eav.Data.Builder;
+using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
@@ -12,10 +15,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// Publish a Draft-Entity
         /// </summary>
         /// <param name="entityId"></param>
+        /// <param name="draftToPublishForJson">Item to be published as the original, for serialization</param>
         /// <returns>The published Entity</returns>
-        internal ToSicEavEntities PublishDraftInDbEntity(int entityId)
+        internal ToSicEavEntities PublishDraftInDbEntity(int entityId, IEntity draftToPublishForJson)
         {
-            Log.Add($"PublishDraftInDbEntity({entityId})");
+            var wrapLog = Log.Call($"{entityId}");
             var unpublishedEntity = DbContext.Entities.GetDbEntity(entityId);
             if (!unpublishedEntity.IsPublished)
                 Log.Add("found item is draft, will use this to publish");
@@ -42,11 +46,37 @@ namespace ToSic.Eav.Repository.Efc.Parts
             // Replace currently published Entity with draft Entity and delete the draft
             else
             {
+                var publishedId = unpublishedEntity.PublishedEntityId.Value;
                 Log.Add("There is a published item, will update that with the draft-data and delete the draft afterwards");
-                publishedEntity = DbContext.Entities.GetDbEntity(unpublishedEntity.PublishedEntityId.Value);
+                publishedEntity = DbContext.Entities.GetDbEntity(publishedId);
                 var json = unpublishedEntity.Json;
                 var isJson = !string.IsNullOrEmpty(json);
                 Log.Add($"this is a json:{isJson}");
+
+                // 2020-01-17 2dm - this is the big culprit
+                // we're just copying the JSON, and thereby inheriting the EntityId in the draft-json
+                // which then doesn't match the old one any more!
+                if (isJson)
+                {
+                    Log.Add($"Must convert back to entity, to then modify the EntityId. The json: {json}");
+                    // update the content-id
+                    draftToPublishForJson.ResetEntityId(publishedId);
+                    var serializer = new JsonSerializer();
+                    json = serializer.Serialize(draftToPublishForJson);
+
+                    // Alternative code 2020-01-17, works, but more processing
+                    // left here for a while in case we need it after all
+                    //var appForSerializer = State.Get(unpublishedEntity.AppId);
+                    //var serializer = new JsonSerializer(appForSerializer, Log);
+                    ////serializer.Log.LinkTo(Log);
+                    //var e = serializer.Deserialize(json) as Entity;
+                    //Log.Add($"built entity, will now reset the ID to {publishedId}");
+                    //e.ResetEntityId(publishedId);
+                    //Log.Add("now re-serialize");
+                    //json = serializer.Serialize(e);
+                    Log.Add($"changed - final json: {json}");
+                }
+
                 publishedEntity.Json = json;  // if it's using the new format
                 publishedEntity.ChangeLogModified = unpublishedEntity.ChangeLogModified; // transfer last-modified date (not to today, but to last edit)
                 DbContext.Values.CloneRelationshipsAndSave(unpublishedEntity, publishedEntity); // relationships need special treatment and intermediate save!
@@ -58,7 +88,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             Log.Add("About to save...");
             DbContext.SqlDb.SaveChanges();
-            Log.Add("/PublishDraftInDbEntity({entityId})");
+            wrapLog($"ok {entityId}");
             return publishedEntity;
         }
 

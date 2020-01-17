@@ -9,12 +9,18 @@ namespace ToSic.Eav.Repository.Efc.Parts
     {
 
         private IQueryable<ToSicEavEntities> EntityQuery
-            => DbContext.SqlDb.ToSicEavEntities
-                .Include(e => e.RelationshipsWithThisAsParent)
-                .Include(e => e.RelationshipsWithThisAsChild)
-                .Include(e => e.ToSicEavValues)
+        {
+            get
+            {
+                DbContext.Log.Add(nameof(EntityQuery));
+                return DbContext.SqlDb.ToSicEavEntities
+                    .Include(e => e.RelationshipsWithThisAsParent)
+                    .Include(e => e.RelationshipsWithThisAsChild)
+                    .Include(e => e.ToSicEavValues)
                     .ThenInclude(v => v.ToSicEavValuesDimensions)
-                        .ThenInclude(d => d.Dimension);
+                    .ThenInclude(d => d.Dimension);
+            }
+        }
 
 
         private IQueryable<ToSicEavEntities> IncludeMultiple(IQueryable<ToSicEavEntities> origQuery, string additionalTables)
@@ -28,7 +34,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         /// <returns>Entity or throws InvalidOperationException</returns>
         internal ToSicEavEntities GetDbEntity(int entityId)
-            => EntityQuery.Single(e => e.EntityId == entityId);
+        {
+            var wraplog = DbContext.Log.Call<ToSicEavEntities>($"Get {entityId}");
+            var found = EntityQuery.Single(e => e.EntityId == entityId);
+            return wraplog("ok", found);
+        }
 
         internal ToSicEavEntities GetDbEntity(int entityId, string includes)
             => IncludeMultiple(EntityQuery, includes).Single(e => e.EntityId == entityId);
