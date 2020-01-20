@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Types;
 
@@ -13,20 +12,21 @@ namespace ToSic.Eav.Apps.Parts
     // ReSharper disable once InheritdocConsiderUsage
     public class ContentTypeRuntime : RuntimeBase
     {
-        public ContentTypeRuntime(AppRuntime app, ILog parentLog) : base(app, parentLog){}
+        public ContentTypeRuntime(AppRuntime appRt, ILog parentLog) : base(appRt, parentLog){}
 
-        public IEnumerable<IContentType> All => App.AppState.ContentTypes;//.GetContentTypes();
+        public IEnumerable<IContentType> All => AppRT.AppState.ContentTypes;//.GetContentTypes();
 
         /// <summary>
         /// Gets a ContentType by Name
         /// </summary>
         /// <returns>a content-type or null if not found</returns>
-        public IContentType Get(string name) => App.AppState.GetContentType(name);
+        public IContentType Get(string name) => AppRT.AppState.GetContentType(name);
 
-        /// <summary>
-        /// Gets a ContentType by Id
-        /// </summary>
-        public IContentType Get(int contentTypeId) => App.AppState.GetContentType(contentTypeId);
+        // 2020-01-17 2dm removed, not in use; better to use the AppState.GetContentType directly
+        ///// <summary>
+        ///// Gets a ContentType by Id
+        ///// </summary>
+        //public IContentType Get(int contentTypeId) => AppRT.AppState.GetContentType(contentTypeId);
 
         public IEnumerable<IContentType> FromScope(string scope = null, bool includeAttributeTypes = false)
         {
@@ -54,8 +54,8 @@ namespace ToSic.Eav.Apps.Parts
             Log.Add($"combined {inputTypes.Count}");
 
             // Merge input types registered in global metadata-app
-            var systemDef = new AppRuntime(Constants.MetaDataAppId, Log);
-            var systemInputTypes = systemDef.ContentTypes.GetAppRegisteredInputTypes();
+            var systemAppRt = new AppRuntime(Constants.MetaDataAppId, true, Log);
+            var systemInputTypes = systemAppRt.ContentTypes.GetAppRegisteredInputTypes();
             Log.Add($"in system {systemInputTypes.Count}");
             AddMissingTypes(systemInputTypes, inputTypes);
             Log.Add($"combined {inputTypes.Count}");
@@ -81,7 +81,7 @@ namespace ToSic.Eav.Apps.Parts
         /// </summary>
         /// <returns></returns>
         private List<InputTypeInfo> GetAppRegisteredInputTypes()
-            => App.Entities.Get(Constants.TypeForInputTypeDefinition)
+            => AppRT.Entities.Get(Constants.TypeForInputTypeDefinition)
                 .Select(e => new InputTypeInfo(
                     e.GetBestValue<string>(Constants.InputTypeType),
                     e.GetBestValue<string>(Constants.InputTypeLabel),

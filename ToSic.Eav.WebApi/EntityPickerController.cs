@@ -19,12 +19,12 @@ namespace ToSic.Eav.WebApi
         /// <summary>
         /// Returns a list of entities, optionally filtered by AttributeSetId.
         /// </summary>
-        public IEnumerable<dynamic> GetAvailableEntities(int appId, string[] items, string contentTypeName, int? dimensionId)
+        public IEnumerable<dynamic> GetAvailableEntities(int appId, string[] items, string contentTypeName, bool withDrafts, int? dimensionId)
         {
             Log.Add($"Get entities for a#{appId}, itms⋮{items?.Length}, type:{contentTypeName}, lang#{dimensionId}");
             var dimensionIds = dimensionId ?? 0;
 
-            var appRead = new AppRuntime(appId, Log);
+            var appRead = new AppRuntime(appId, withDrafts, Log);
 
             IContentType contentType = null;
             if (!IsNullOrEmpty(contentTypeName))

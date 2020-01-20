@@ -15,7 +15,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var Log = new Log("TstExp");
             var zoneId = 2;
             var appId = 2;
-            var appRuntime = new AppRuntime(appId, Log);
+            var appRuntime = new AppRuntime(appId, true, Log);
 
             //string[] contentTypeIdsString = null;
             //string[] entityIdsString = null;

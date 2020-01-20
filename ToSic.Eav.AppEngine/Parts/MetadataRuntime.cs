@@ -6,10 +6,10 @@ namespace ToSic.Eav.Apps.Parts
 {
     public class MetadataRuntime: RuntimeBase
     {
-        internal MetadataRuntime(AppRuntime app, ILog parentLog) : base(app, parentLog) { }
+        internal MetadataRuntime(AppRuntime appRt, ILog parentLog) : base(appRt, parentLog) { }
 
         public IEnumerable<IEntity> Get<T>(int targetType, T key, string contentTypeName = null)
-            => App.AppState.Get(targetType, key, contentTypeName);
+            => AppRT.AppState.Get(targetType, key, contentTypeName);
 
 
     }

@@ -54,13 +54,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
                         .ToList();
 
                 if (found.Count != 1)
-                    throw new Exception($"too many or to few content types found for the content-type {name} - found {found.Count}");
+                    throw new Exception($"too many or too few content types found for the content-type {name} - found {found.Count}");
 
                 return found.First();
             }
             catch (InvalidOperationException ex)
             {
-                throw new Exception($"Unable to get AttributeSet with StaticName \"{name}\" in app {appId}", ex);
+                throw new Exception($"Unable to get Content-Type/AttributeSet with StaticName \"{name}\" in app {appId}", ex);
             }
         }
 

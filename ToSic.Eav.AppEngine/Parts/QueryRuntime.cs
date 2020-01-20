@@ -8,7 +8,7 @@ namespace ToSic.Eav.Apps.Parts
 {
     public class QueryRuntime: RuntimeBase
     {
-        internal QueryRuntime(AppRuntime app, ILog parentLog) : base(app, parentLog) { }
+        internal QueryRuntime(AppRuntime appRt, ILog parentLog) : base(appRt, parentLog) { }
 
         /// <summary>
         /// Get all installed data sources - usually for the UI
@@ -62,7 +62,7 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="queryId"></param>
         /// <returns></returns>
         public QueryDefinition Get(int queryId) =>
-            new QueryDefinition(Eav.DataSources.Queries.QueryManager.GetQueryEntity(queryId, App./*Cache*/AppState), App.AppId, Log);
+            new QueryDefinition(Eav.DataSources.Queries.QueryManager.GetQueryEntity(queryId, AppRT./*Cache*/AppState), AppRT.AppId, Log);
 
         public class DataSourceInfo
         {

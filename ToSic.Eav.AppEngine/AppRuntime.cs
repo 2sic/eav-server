@@ -10,19 +10,20 @@ namespace ToSic.Eav.Apps
     /// </summary>
     public class AppRuntime : AppRuntimeBase
     {
+
         #region constructors
         //public AppRuntime(int zoneId, int appId, ILog parentLog) 
         //    : base(zoneId, appId, parentLog) { }
 
-        public AppRuntime(IAppIdentity app, ILog parentLog) : base(app, parentLog) { }
+        public AppRuntime(IAppIdentity app, bool showDrafts, ILog parentLog) : base(app, showDrafts, parentLog) { }
 
         /// <summary>
         ///  Special constructor, should be used with care as there is no Zone!
         /// </summary>
-        public AppRuntime(int appId, ILog parentLog) 
-            :this (/*Factory.GetAppIdentity*/Eav.Apps.State.Identity(null, appId), parentLog) { }
+        public AppRuntime(int appId, bool showDrafts, ILog parentLog) 
+            :this (State.Identity(null, appId), showDrafts, parentLog) { }
 
-        internal AppRuntime(IDataSource data, ILog parentLog): base(data, parentLog) { }
+        internal AppRuntime(IDataSource data, bool showDrafts, ILog parentLog): base(data, showDrafts, parentLog) { }
         #endregion
 
         /// <summary>

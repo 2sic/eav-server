@@ -9,24 +9,16 @@ namespace ToSic.Eav.Apps.Parts
     public abstract class AppRuntimeBase: AppBase
     {
         private const string LogId = "App.Base";
+        public bool ShowDrafts;
 
-        ///// <summary>
-        ///// Create an app manager for this specific app
-        ///// </summary>
-        ///// <param name="zoneId"></param>
-        ///// <param name="appId"></param>
-        ///// <param name="parentLog"></param>
-        //protected AppRuntimeBase(int zoneId, int appId, ILog parentLog) 
-        //    : base(zoneId, appId, parentLog, LogId)
-        //{
-        //}
+        protected AppRuntimeBase(IAppIdentity app, bool showDrafts, ILog parentLog)
+            : base(app, new CodeRef(), parentLog, LogId)
+        {
+            ShowDrafts = showDrafts;
+        }
 
-        protected AppRuntimeBase(IAppIdentity app, ILog parentLog) 
-            : base(app, new CodeRef(),  parentLog, LogId) { }
-
-        //protected AppRuntimeBase(int appId, ILog parentLog) : this(Factory.GetAppsCache().GetIdentity(appId: appId), parentLog) { }
-
-        protected AppRuntimeBase(IDataSource data, ILog parentLog) : this(data as IAppIdentity, parentLog)
+        protected AppRuntimeBase(IDataSource data, bool showDrafts, ILog parentLog) 
+            : this(data as IAppIdentity, showDrafts, parentLog)
         {
             _data = data;
         }
@@ -36,13 +28,13 @@ namespace ToSic.Eav.Apps.Parts
         //public AppRoot Cache => _cache ?? (_cache = (AppRoot) Data/*.Root*/);
         //private AppRoot _cache;
 
-        public IDataSource Data => _data ?? (_data = new DataSource(Log).GetPublishing(this));
+        public IDataSource Data => _data ?? (_data = new DataSource(Log).GetPublishing(this, showDrafts: ShowDrafts));
         private IDataSource _data;
 
         /// <summary>
         /// The cache-package if needed (mainly for export/import, where the full data is necessary)
         /// </summary>
-        public AppState AppState => /*Factory.GetAppState*/Eav.Apps.State.Get(this);// Cache.AppState;
+        public AppState AppState => State.Get(this);
 
 
         #endregion
