@@ -9,7 +9,7 @@ namespace ToSic.Eav.Apps.Parts
     public abstract class AppRuntimeBase: AppBase
     {
         private const string LogId = "App.Base";
-        public bool ShowDrafts;
+        public bool ShowDrafts { get; }
 
         protected AppRuntimeBase(IAppIdentity app, bool showDrafts, ILog parentLog)
             : base(app, new CodeRef(), parentLog, LogId)
