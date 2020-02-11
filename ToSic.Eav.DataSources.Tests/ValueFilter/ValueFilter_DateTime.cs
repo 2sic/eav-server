@@ -76,15 +76,42 @@ namespace ToSic.Eav.DataSources.Tests
             => DateTimeFilter("Birthdate", "1.1.1995 and 31.12.2000", 10000- 546, "!between"); // this is one of the generated dates
 
        
-        public void DateTimeFilter(string attr, string value, int expected, string operation = null)
-        {
-            var vf = _testDataGeneratedOutsideTimer;
-            vf.Attribute = attr;
-            vf.Value = value;
-            if (operation != null)
-                vf.Operator = operation;
-            Assert.AreEqual(expected, vf.List.Count(), "Should find exactly " + expected + " amount people");
-        }
+
+        #endregion
+
+        #region DateTime Null filter
+
+        [TestMethod]
+        public void NullNotBetween()
+            => DateTimeFilter("BirthdateMaybeNull", "1.1.1995 and 31.12.2000", 9727, "!between"); // this is one of the generated dates
+        
+        [TestMethod]
+        public void NullBetween()
+            => DateTimeFilter("BirthdateMaybeNull", "1.1.1995 and 31.12.2000", 273, "between"); // this is one of the generated dates
+
+        [TestMethod]
+        public void NullBetweenNullAndReal()
+            => DateTimeFilter("BirthdateMaybeNull", " and 31.12.2000", 9000, "between"); // this is one of the generated dates
+
+        [TestMethod]
+        public void NullEq()
+            => DateTimeFilter("BirthdateMaybeNull", "", 10000/2, "=="); // this is one of the generated dates
+
+        [TestMethod]
+        public void NullGt()
+            => DateTimeFilter("BirthdateMaybeNull", "24.8.1997", 546, ">");// this is one of the generated dates
+
+        [TestMethod]
+        public void NullLt()
+            => DateTimeFilter("BirthdateMaybeNull", "24.8.1997", 4454, "<");// this is one of the generated dates
+
+        [TestMethod]
+        public void NullGtEq()
+            => DateTimeFilter("BirthdateMaybeNull", "24.8.1997", 546, ">="); // this is one of the generated dates
+
+        [TestMethod]
+        public void NullLtEq()
+            => DateTimeFilter("BirthdateMaybeNull", "24.8.1997", 4454, "<="); // this is one of the generated dates
 
         #endregion
 
@@ -95,6 +122,15 @@ namespace ToSic.Eav.DataSources.Tests
         public void NumberFilterInvalidOperator()
             => DateTimeFilter("Birthdate", "180", 5632, "!!");
 
+        public void DateTimeFilter(string attr, string value, int expected, string operation = null)
+        {
+            var vf = _testDataGeneratedOutsideTimer;
+            vf.Attribute = attr;
+            vf.Value = value;
+            if (operation != null)
+                vf.Operator = operation;
+            Assert.AreEqual(expected, vf.List.Count(), "Should find exactly " + expected + " amount people");
+        }
 
     }
 }

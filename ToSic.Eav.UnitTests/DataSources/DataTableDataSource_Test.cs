@@ -80,6 +80,7 @@ namespace ToSic.Eav.UnitTests.DataSources
                 new DataColumn("City"),
                 new DataColumn("IsMale", typeof (bool)),
                 new DataColumn("Birthdate", typeof (DateTime)),
+                new DataColumn("BirthdateMaybeNull", typeof(DateTime)),
                 new DataColumn("Height", typeof (int)),
                 new DataColumn("CityMaybeNull", typeof(string)), 
                 new DataColumn("InternalModified", typeof(DateTime)), 
@@ -113,18 +114,21 @@ namespace ToSic.Eav.UnitTests.DataSources
                 var year = 1900 + i%110;
                 var month = i%12+1;
                 var day = i%28+1;
+                var birthday = new DateTime(year, month, day);
                 var sysModified = RandomDate();// new DateTime(i % 7 + 1990 - i%11, i%11 + 1, (i + 20) % 28);
-                dataTable.Rows.Add(i, 
-                    fullName, 
-                    firstName, 
-                    lastName, 
+                var row = dataTable.Rows.Add(i,
+                    fullName,
+                    firstName,
+                    lastName,
                     city,
-                    i % IsMaleForEveryX == 0, 
-                    new DateTime(year, month, day),
+                    i % IsMaleForEveryX == 0,
+                    birthday,
+                    i % 2 == 0 ? birthday : null as DateTime?,
                     MinHeight + i % HeightVar,
                     cityMaybeNull,
                     sysModified
-                    );
+                );
+                var x = 7;
             }
         }
 
