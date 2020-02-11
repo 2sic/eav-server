@@ -326,18 +326,16 @@ namespace ToSic.Eav.DataSources
             if (referenceDateTime == DateTime.MinValue)
                 DateTime.TryParse(original, out referenceDateTime);
 
-            // special remarks about the MinValue - that is used if the date-time wasn't able to parse
-            // in that case, it's usually an empty / null parameter, so we want to also agree with date==null
-            var dateComparisons = new Dictionary<string, Func<DateTime?, bool>>
+            var dateComparisons = new Dictionary<string, Func<DateTime, bool>>
             {
-                {"==", value => value == referenceDateTime || referenceDateTime == DateTime.MinValue && value == null},
-                {"===", value => value == referenceDateTime || referenceDateTime == DateTime.MinValue && value == null},
+                {"==", value => value == referenceDateTime},
+                {"===", value => value == referenceDateTime},
                 {"!=", value => value != referenceDateTime},
                 {">", value => value > referenceDateTime},
                 {"<", value => value < referenceDateTime},
                 {">=", value => value >= referenceDateTime},
                 {"<=", value => value <= referenceDateTime},
-                {"between", value => (value >= referenceDateTime) && value <= max },
+                {"between", value => value >= referenceDateTime && value <= max },
                 {"!between", value => !(value >= referenceDateTime && value <= max) },
             };
 
@@ -348,11 +346,10 @@ namespace ToSic.Eav.DataSources
 
             return e => {
                 var value = e.GetBestValue(_initializedAttrName, _initializedLangs);
-                //if (value == null)
-                //    return false;
                 try
                 {
-                    var valAsDec = value == null ? null as DateTime? : Convert.ToDateTime(value);
+                    // treat null as DateTime.MinValue - because that's also how the null-parameter is parsed when creating the filter
+                    var valAsDec = value == null ? DateTime.MinValue : Convert.ToDateTime(value);
                     return dateTimeCompare(valAsDec);
                 }
                 catch

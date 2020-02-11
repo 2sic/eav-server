@@ -81,37 +81,24 @@ namespace ToSic.Eav.DataSources.Tests
 
         #region DateTime Null filter
 
-        [TestMethod]
-        public void NullNotBetween()
-            => DateTimeFilter("BirthdateMaybeNull", "1.1.1995 and 31.12.2000", 9727, "!between"); // this is one of the generated dates
-        
-        [TestMethod]
-        public void NullBetween()
-            => DateTimeFilter("BirthdateMaybeNull", "1.1.1995 and 31.12.2000", 273, "between"); // this is one of the generated dates
+        private void FilterNullBDay(string value, int expected, string operation)
+            => DateTimeFilter("BirthdateMaybeNull", value, expected, operation);
 
-        [TestMethod]
-        public void NullBetweenNullAndReal()
-            => DateTimeFilter("BirthdateMaybeNull", " and 31.12.2000", 9000, "between"); // this is one of the generated dates
+        [TestMethod] public void NullNotBetween() => FilterNullBDay("1.1.1995 and 31.12.2000", 9727, "!between");
 
-        [TestMethod]
-        public void NullEq()
-            => DateTimeFilter("BirthdateMaybeNull", "", 10000/2, "=="); // this is one of the generated dates
+        [TestMethod] public void NullBetween() => FilterNullBDay("1.1.1995 and 31.12.2000", 273, "between");
 
-        [TestMethod]
-        public void NullGt()
-            => DateTimeFilter("BirthdateMaybeNull", "24.8.1997", 546, ">");// this is one of the generated dates
+        [TestMethod] public void NullBetweenNullAndReal() => FilterNullBDay(" and 31.12.2000", 9636, "between");
 
-        [TestMethod]
-        public void NullLt()
-            => DateTimeFilter("BirthdateMaybeNull", "24.8.1997", 4454, "<");// this is one of the generated dates
+        [TestMethod] public void NullEq() => FilterNullBDay("", 10000/2, "==");
 
-        [TestMethod]
-        public void NullGtEq()
-            => DateTimeFilter("BirthdateMaybeNull", "24.8.1997", 546, ">="); // this is one of the generated dates
+        [TestMethod] public void NullGt() => FilterNullBDay("24.8.1997", 546, ">");
 
-        [TestMethod]
-        public void NullLtEq()
-            => DateTimeFilter("BirthdateMaybeNull", "24.8.1997", 4454, "<="); // this is one of the generated dates
+        [TestMethod] public void NullLt() => FilterNullBDay("24.8.1997", 9454, "<");
+
+        [TestMethod] public void NullGtEq() => FilterNullBDay("24.8.1997", 546, ">=");
+
+        [TestMethod] public void NullLtEq() => FilterNullBDay("24.8.1997", 9454, "<=");
 
         #endregion
 
