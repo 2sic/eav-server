@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.UnitTests.DataSources;
+using ToSic.Eav.LookUp;
 
 namespace ToSic.Eav.DataSources.Tests
 {
@@ -17,9 +17,11 @@ namespace ToSic.Eav.DataSources.Tests
         public void PassThrough_CacheKey()
         {
             var outSource = new PassThrough();
+            outSource.Configuration.LookUps = new LookUpEngine(null);
             var partialKey = outSource.CachePartialKey;
             var fullKey = outSource.CacheFullKey;
             Assert.IsNotNull(partialKey);
+            Assert.IsNotNull(fullKey);
         }
 
 

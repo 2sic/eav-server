@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
+using ToSic.Eav.UnitTests.DataSources;
 
 namespace ToSic.Eav.DataSources.Tests
 {
@@ -15,102 +16,39 @@ namespace ToSic.Eav.DataSources.Tests
     [TestClass]
     public class ValueSort_DateTime
     {
-        private const int TestVolume = 30, InitialId = 1001;
-        private const string Birthdate = "Birthdate";
+        private const int TestVolume = 30;
+        private const string Birthdate = DataTableDataSourceTest.FieldBirthday;
+        private const string BirthdateMaybeNull = DataTableDataSourceTest.FieldBirthdayNull;
         private const string ModifiedTest = "InternalModified";
         private const string ModifiedReal = "Modified";
         private readonly ValueSort _testDataGeneratedOutsideTimer;
         public ValueSort_DateTime()
         {
-            _testDataGeneratedOutsideTimer = ValueSortShared.GeneratePersonSourceWithDemoData(TestVolume, InitialId);
+            _testDataGeneratedOutsideTimer = ValueSortShared.GeneratePersonSourceWithDemoData(TestVolume);
         }
 
 
         [TestMethod]
-        public void ValueSort_SortFieldDesc_Birthday()
+        public void ValueSort_SortFieldDesc_Birthday() => SetupFilterAndRun(Birthdate, true);
+
+        [TestMethod] public void ValueSort_DateNull_Asc() => SetupFilterAndRun(BirthdateMaybeNull, true);
+
+        [TestMethod] public void ValueSort_DateNull_Desc() => SetupFilterAndRun(BirthdateMaybeNull, false);
+
+        [TestMethod] public void ValueSort_Sort_Modified() => SetupFilterAndRun(ModifiedReal, true);
+
+        [TestMethod] public void ValueSort_Sort_Modified_Desc() => SetupFilterAndRun(ModifiedReal, false);
+
+        private void SetupFilterAndRun(string field, bool asc)
         {
             var vf = _testDataGeneratedOutsideTimer;
-            vf.Attributes = Birthdate;
-            vf.Directions = "d";
+            vf.Attributes = field;
+            vf.Directions = asc ? "a" : "d";
             var result = vf.List.ToList();
             // check that each following city is same or larger...
-            ValidateDateFieldIsSorted(result, Birthdate, false);
+            ValidateDateFieldIsSorted(result, field, asc);
+
         }
-
-        [TestMethod]
-        public void ValueSort_Sort_Modified()
-        {
-            var vf = _testDataGeneratedOutsideTimer;
-            vf.Attributes = ModifiedReal;
-            var result = vf.List.ToList();
-            // check that each following city is same or larger...
-            ValidateDateFieldIsSorted(result, ModifiedReal, true);
-        }
-
-        [TestMethod]
-        public void ValueSort_Sort_Modified_Desc()
-        {
-            var vf = _testDataGeneratedOutsideTimer;
-            vf.Attributes = ModifiedReal;
-            vf.Directions = "d";
-            var result = vf.List.ToList();
-            // check that each following city is same or larger...
-            ValidateDateFieldIsSorted(result, ModifiedReal, false);
-        }
-        //[TestMethod]
-        //public void ValueSort_SortFieldAndAsc_City()
-        //{
-        //    TestSortFieldAndDirection(City, "asc", true);
-        //}
-
-        //private void TestSortFieldAndDirection(string field, string direction, bool testAscending)
-        //{
-        //    var vf = _testDataGeneratedOutsideTimer;
-        //    vf.Attributes = field;
-        //    vf.Directions = direction;
-        //    var result = vf.LightList.ToList();
-        //    // check that each following city is same or larger...
-        //    ValidateFieldIsSorted(result, field, testAscending);
-        //}
-
-        //[TestMethod]
-        //public void ValueSort_SortFieldAndA_City()
-        //{
-        //    TestSortFieldAndDirection(City, "a", true);
-        //}
-        //[TestMethod]
-        //public void ValueSort_SortFieldAndDir1_City()
-        //{
-        //    TestSortFieldAndDirection(City, "1", true);
-        //}
-        //public void ValueSort_SortFieldAndGt_City()
-        //{
-        //    TestSortFieldAndDirection(City, "<", true);
-        //}
-        //[TestMethod]
-        //public void ValueSort_SortFieldAndDesc_City()
-        //{
-        //    TestSortFieldAndDirection(City, "desc", false);
-        //}
-        //[TestMethod]
-        //public void ValueSort_SortFieldAndD_City()
-        //{
-        //    TestSortFieldAndDirection(City, "d", false);
-        //}
-        //public void ValueSort_SortFieldAndDCase_City()
-        //{
-        //    TestSortFieldAndDirection(City, "D", false);
-        //}
-        //[TestMethod]
-        //public void ValueSort_SortFieldAnd0_City()
-        //{
-        //    TestSortFieldAndDirection(City, "0", false);
-        //}
-        //[TestMethod]
-        //public void ValueSort_SortFieldAndLt_City()
-        //{
-        //    TestSortFieldAndDirection(City, ">", false);
-        //}
 
         private void ValidateDateFieldIsSorted(List<IEntity> list, string field, bool asc)
         {
@@ -118,9 +56,14 @@ namespace ToSic.Eav.DataSources.Tests
             foreach (var entity in list)
             {
                 var next = entity.GetBestValue(field) as DateTime?;
-                if(!next.HasValue || !previous.HasValue) 
-                    throw new Exception("try to compare prev/next dates, but one or both are null");
-                var comp = (next.Value - previous.Value).TotalMilliseconds;// string.Compare(previous, next, StringComparison.Ordinal);
+                //if(!(next is DateTime) || !previousValue.HasValue) 
+                //    throw new Exception("try to compare prev/next dates, but one or both are null");
+                double comp;
+                if (next == null && previous == null) comp = 0;
+                else if (next == null && previous != null) comp = -1;
+                else if (next != null && previous == null) comp = 1;
+
+                else comp = (next.Value - previous.Value).TotalMilliseconds;
                 if (asc)
                     Assert.IsTrue(comp >= 0, "new " + field + " " + next + " should be = or larger than prev " + previous);
                 else
