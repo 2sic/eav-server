@@ -92,6 +92,7 @@
     <Compile Include="DataSources\Configuration\Configuration.cs" />
     <Compile Include="DataSources\Configuration\DSHelpers.cs" />
     <Compile Include="DataSources\QueryRun.cs" />
+    <Compile Include="DataSources\Streams\StreamPick.cs" />
     <Compile Include="DataSources\Values\AttributeFilter.cs" />
     <Compile Include="Caching\ICanPurgeListCache.cs" />
     <Compile Include="Caching\IListCache.cs" />
