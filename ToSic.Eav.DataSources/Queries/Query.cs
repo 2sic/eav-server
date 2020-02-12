@@ -42,7 +42,7 @@ namespace ToSic.Eav.DataSources.Queries
 
 		/// <inheritdoc />
 		[PrivateApi]
-		public Query(int zoneId, int appId, IEntity queryDef, ILookUpEngine config, bool showDrafts, IDataTarget target, ILog parentLog)
+		public Query(int zoneId, int appId, IEntity queryDef, ILookUpEngine config, bool showDrafts, IDataTarget source, ILog parentLog)
 		{
 		    ZoneId = zoneId;
 		    AppId = appId;
@@ -52,10 +52,10 @@ namespace ToSic.Eav.DataSources.Queries
             _showDrafts = showDrafts;
 
             // hook up in, just in case we get parameters from an In
-            if (target == null) return;
+            if (source == null) return;
 
             Log.Add("found target for Query, will attach");
-            In = target.In;
+            In = source.In;
         }
 
 		/// <summary>
@@ -63,7 +63,7 @@ namespace ToSic.Eav.DataSources.Queries
 		/// </summary>
 		private void CreateOutWithAllStreams()
         {
-            var wrapLog = Log.Call();
+            var wrapLog = Log.Call(message:$"Query: '{Definition.Entity.GetBestTitle()}'", useTimer: true);
 
             // Step 1: Resolve the params from outside, where x=[Params:y] should come from the outer Params
             // and the current In
@@ -72,7 +72,7 @@ namespace ToSic.Eav.DataSources.Queries
             // now provide an override source for this
             var paramsOverride = new LookUpInDictionary(QueryConstants.ParamsLookup, resolvedParams);
 		    var pipeline = QueryBuilder.BuildQuery(Definition, Configuration.LookUps, 
-                new List<ILookUp> {paramsOverride}, null, _showDrafts);
+                new List<ILookUp> {paramsOverride}, /*null,*/ _showDrafts);
             _out = pipeline.Out;
             wrapLog("ok");
         }
@@ -85,13 +85,19 @@ namespace ToSic.Eav.DataSources.Queries
         /// <inheritdoc />
         public void Params(string key, string value)
         {
+            var wrapLog = Log.Call($"{key}, {value}");
             // if the query has already been built, and we're changing a value, make sure we'll regenerate the results
             if(!_requiresRebuildOfOut)
+            {
+                Log.Add("Can't set param - query already compiled");
+                wrapLog("error");
                 throw new Exception("Can't set param any more, the query has already been compiled. " +
                                     "Always set params before accessing the data. " +
                                     "To Re-Run the query with other params, call Reset() first.");
+            }
 
             Definition.Params[key] = value;
+            wrapLog(null);
         }
 
 
@@ -111,6 +117,7 @@ namespace ToSic.Eav.DataSources.Queries
         /// <inheritdoc />
         public void Reset()
         {
+            Log.Add("Reset query");
             Definition.Reset();
             _requiresRebuildOfOut = true;
         }
