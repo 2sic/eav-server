@@ -24,15 +24,15 @@ namespace ToSic.Eav.DataSources
         [PrivateApi]
 	    public override string LogId => "DS.Publsh";
 
-        private const string ShowDraftsKey = "ShowDrafts";
+        //private const string ShowDraftsKey = "ShowDrafts";
 
 		/// <summary>
 		/// Indicates whether to show drafts or only Published Entities. 
 		/// </summary>
 		public bool ShowDrafts
 		{
-			get => bool.Parse(Configuration[ShowDraftsKey]);
-		    set => Configuration[ShowDraftsKey] = value.ToString();
+			get => bool.Parse(Configuration[QueryConstants.ParamsShowDraftKey]);
+		    set => Configuration[QueryConstants.ParamsShowDraftKey] = value.ToString();
 		}
 		#endregion
 
@@ -44,7 +44,7 @@ namespace ToSic.Eav.DataSources
 		public PublishingFilter()
 		{
             Provide(GetList);
-		    ConfigMask(ShowDraftsKey, "[Settings:ShowDrafts||false]");
+		    ConfigMask(QueryConstants.ParamsShowDraftKey, "[Settings:ShowDrafts||false]");
        }
 
 

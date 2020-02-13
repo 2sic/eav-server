@@ -76,15 +76,31 @@ namespace ToSic.Eav.DataSources.Tests
             => DateTimeFilter("Birthdate", "1.1.1995 and 31.12.2000", 10000- 546, "!between"); // this is one of the generated dates
 
        
-        public void DateTimeFilter(string attr, string value, int expected, string operation = null)
-        {
-            var vf = _testDataGeneratedOutsideTimer;
-            vf.Attribute = attr;
-            vf.Value = value;
-            if (operation != null)
-                vf.Operator = operation;
-            Assert.AreEqual(expected, vf.List.Count(), "Should find exactly " + expected + " amount people");
-        }
+
+        #endregion
+
+        #region DateTime Null filter
+
+        private void FilterNullBDay(string value, int expected, string operation)
+            => DateTimeFilter("BirthdateMaybeNull", value, expected, operation);
+
+        [TestMethod] public void NullBetween() => FilterNullBDay("1.1.1995 and 31.12.2000", 273, "between");
+
+        [TestMethod] public void NullBetweenNot() => FilterNullBDay("1.1.1995 and 31.12.2000", 9727, "!between");
+
+        [TestMethod] public void NullBetweenNullAndReal() => FilterNullBDay(" and 31.12.2000", 9636, "between");
+
+        [TestMethod] public void NullEq() => FilterNullBDay("", 10000/2, "==");
+
+        [TestMethod] public void NullEqNot() => FilterNullBDay("", 10000/2, "!=");
+
+        [TestMethod] public void NullGt() => FilterNullBDay("24.8.1997", 546, ">");
+
+        [TestMethod] public void NullLt() => FilterNullBDay("24.8.1997", 9454, "<");
+
+        [TestMethod] public void NullGtEq() => FilterNullBDay("24.8.1997", 546, ">=");
+
+        [TestMethod] public void NullLtEq() => FilterNullBDay("24.8.1997", 9454, "<=");
 
         #endregion
 
@@ -95,6 +111,15 @@ namespace ToSic.Eav.DataSources.Tests
         public void NumberFilterInvalidOperator()
             => DateTimeFilter("Birthdate", "180", 5632, "!!");
 
+        public void DateTimeFilter(string attr, string value, int expected, string operation = null)
+        {
+            var vf = _testDataGeneratedOutsideTimer;
+            vf.Attribute = attr;
+            vf.Value = value;
+            if (operation != null)
+                vf.Operator = operation;
+            Assert.AreEqual(expected, vf.List.Count(), "Should find exactly " + expected + " amount people");
+        }
 
     }
 }

@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Data;
 using System.Linq;
-using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Configuration;
 using ToSic.Eav.TokenEngine.Tests.TestData;
-using ToSic.Eav.TokenEngine.Tests.ValueProvider;
 using DataTable = ToSic.Eav.DataSources.DataTable;
 
 namespace ToSic.Eav.UnitTests.DataSources
@@ -18,6 +16,9 @@ namespace ToSic.Eav.UnitTests.DataSources
         public static int MinHeight = 150;
         public static int HeightVar = 55;
         public static int IsMaleForEveryX = 3;
+
+        public const string FieldBirthday = "Birthdate",
+            FieldBirthdayNull = "BirthdateMaybeNull";
 
         private static readonly Dictionary<int, DataTable> _cachedDs = new Dictionary<int, DataTable>();
 
@@ -79,7 +80,8 @@ namespace ToSic.Eav.UnitTests.DataSources
                 new DataColumn("LastName"),
                 new DataColumn("City"),
                 new DataColumn("IsMale", typeof (bool)),
-                new DataColumn("Birthdate", typeof (DateTime)),
+                new DataColumn(FieldBirthday, typeof (DateTime)),
+                new DataColumn(FieldBirthdayNull, typeof(DateTime)),
                 new DataColumn("Height", typeof (int)),
                 new DataColumn("CityMaybeNull", typeof(string)), 
                 new DataColumn("InternalModified", typeof(DateTime)), 
@@ -113,18 +115,21 @@ namespace ToSic.Eav.UnitTests.DataSources
                 var year = 1900 + i%110;
                 var month = i%12+1;
                 var day = i%28+1;
+                var birthday = new DateTime(year, month, day);
                 var sysModified = RandomDate();// new DateTime(i % 7 + 1990 - i%11, i%11 + 1, (i + 20) % 28);
-                dataTable.Rows.Add(i, 
-                    fullName, 
-                    firstName, 
-                    lastName, 
+                var row = dataTable.Rows.Add(i,
+                    fullName,
+                    firstName,
+                    lastName,
                     city,
-                    i % IsMaleForEveryX == 0, 
-                    new DateTime(year, month, day),
+                    i % IsMaleForEveryX == 0,
+                    birthday,
+                    i % 2 == 0 ? birthday : null as DateTime?,
                     MinHeight + i % HeightVar,
                     cityMaybeNull,
                     sysModified
-                    );
+                );
+                var x = 7;
             }
         }
 

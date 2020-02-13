@@ -110,6 +110,7 @@
     <Compile Include="DataSourceTests.cs" />
     <Compile Include="PassThrough\PassThrough_Cache.cs" />
     <Compile Include="StreamMerge\Tst_StreamMerge.cs" />
+    <Compile Include="StreamPick\StreamPickTests.cs" />
     <Compile Include="TestConfig.cs" />
     <Compile Include="CheckVisualQueryAttribute.cs" />
     <Compile Include="ValueFilter\ValueFilter_DateTime.cs" />

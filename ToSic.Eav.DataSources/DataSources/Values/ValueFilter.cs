@@ -150,7 +150,7 @@ namespace ToSic.Eav.DataSources
 
                 var firstEntity = Constants.InternalOnlyIsSpecialEntityProperty(_initializedAttrName)
                     ? originals.FirstOrDefault()
-                    : originals.FirstOrDefault(x => x.Attributes.ContainsKey(_initializedAttrName));
+                    : originals.FirstOrDefault(x => x.Attributes.ContainsKey(_initializedAttrName) && x.GetBestValue(_initializedAttrName) != null);
 
                 // if I can't find any, return empty list
                 if (firstEntity == null)
@@ -158,7 +158,7 @@ namespace ToSic.Eav.DataSources
 
                 // New mechanism because the filter ignores internal properties like Modified, EntityId etc.
                 var firstAtt = firstEntity.GetBestValue(_initializedAttrName);  // this should get everything, incl. modified, EntityId, EntityGuid etc.
-                var netTypeName = firstAtt.GetType().Name;
+                var netTypeName = firstAtt?.GetType().Name ?? "Null";
                 switch (netTypeName)
                 {
                     case "Boolean": // todo: find some constant for this
@@ -174,6 +174,7 @@ namespace ToSic.Eav.DataSources
                         throw new Exception("can't compare values which are related entities - use the RelationshipFilter instead");
                     // ReSharper disable once RedundantCaseLabel
                     case "String":
+                    case "Null":
                     default:
                         compare = GetStringComparison(Value);
                         break;
@@ -325,7 +326,7 @@ namespace ToSic.Eav.DataSources
             if (referenceDateTime == DateTime.MinValue)
                 DateTime.TryParse(original, out referenceDateTime);
 
-            var dateComparisons = new Dictionary<string, Func<DateTime, bool>>()
+            var dateComparisons = new Dictionary<string, Func<DateTime, bool>>
             {
                 {"==", value => value == referenceDateTime},
                 {"===", value => value == referenceDateTime},
@@ -345,11 +346,10 @@ namespace ToSic.Eav.DataSources
 
             return e => {
                 var value = e.GetBestValue(_initializedAttrName, _initializedLangs);
-                if (value == null)
-                    return false;
                 try
                 {
-                    var valAsDec = Convert.ToDateTime(value);
+                    // treat null as DateTime.MinValue - because that's also how the null-parameter is parsed when creating the filter
+                    var valAsDec = value == null ? DateTime.MinValue : Convert.ToDateTime(value);
                     return dateTimeCompare(valAsDec);
                 }
                 catch

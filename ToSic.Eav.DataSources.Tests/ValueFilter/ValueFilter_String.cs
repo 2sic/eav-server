@@ -21,7 +21,7 @@ namespace ToSic.Eav.DataSources.Tests
         [TestMethod]
         public void ValueFilter_SimpleTextFilter()
         {
-            var vf = _testDataGeneratedOutsideTimer;// CreateValueFilterForTesting(testVolume);
+            var vf = _testDataGeneratedOutsideTimer;
             vf.Attribute = "City";
             vf.Value = DataTableDataSourceTest.TestCities[0]; // test for the first value
             Assert.AreEqual(2500, vf.List.Count(), "Should find exactly 2500 people with this city");
@@ -29,7 +29,7 @@ namespace ToSic.Eav.DataSources.Tests
         [TestMethod]
         public void ValueFilter_SimpleTextFilterCIDefault()
         {
-            var vf = _testDataGeneratedOutsideTimer;// CreateValueFilterForTesting(testVolume);
+            var vf = _testDataGeneratedOutsideTimer;
             vf.Attribute = "City";
             vf.Value = DataTableDataSourceTest.TestCities[0].ToLower(); // test for the first value
             Assert.AreEqual(2500, vf.List.Count(), "Should find exactly 2500 people with this city");
@@ -39,7 +39,7 @@ namespace ToSic.Eav.DataSources.Tests
         [TestMethod]
         public void ValueFilter_SimpleTextFilterCSWithResults()
         {
-            var vf = _testDataGeneratedOutsideTimer;// CreateValueFilterForTesting(testVolume);
+            var vf = _testDataGeneratedOutsideTimer;
             vf.Attribute = "City";
             vf.Operator = "===";
             vf.Value = DataTableDataSourceTest.TestCities[0]; // test for the first value
@@ -49,7 +49,7 @@ namespace ToSic.Eav.DataSources.Tests
         [TestMethod]
         public void ValueFilter_SimpleTextFilterCSWithoutResults()
         {
-            var vf = _testDataGeneratedOutsideTimer;// CreateValueFilterForTesting(testVolume);
+            var vf = _testDataGeneratedOutsideTimer;
             vf.Attribute = "City";
             vf.Operator = "===";
             vf.Value = DataTableDataSourceTest.TestCities[0].ToLower(); // test for the first value
@@ -59,7 +59,7 @@ namespace ToSic.Eav.DataSources.Tests
         [TestMethod]
         public void ValueFilter_SimpleTextFilterCSWithSomeNulls()
         {
-            var vf = _testDataGeneratedOutsideTimer;// CreateValueFilterForTesting(testVolume);
+            var vf = _testDataGeneratedOutsideTimer;
             vf.Attribute = "CityMaybeNull";
             vf.Operator = "===";
             vf.Value = "Grabs"; // test for the first value
@@ -85,7 +85,7 @@ namespace ToSic.Eav.DataSources.Tests
         [TestMethod]
         public void ValueFilter_TextContainsWithResults()
         {
-            var vf = _testDataGeneratedOutsideTimer;// CreateValueFilterForTesting(testVolume);
+            var vf = _testDataGeneratedOutsideTimer;
             vf.Attribute = "City";
             vf.Operator = "contains";
             vf.Value = "uCHs";
@@ -99,7 +99,7 @@ namespace ToSic.Eav.DataSources.Tests
         [TestMethod]
        public void ValueFilter_TextContainsOneOnly()
         {
-            var vf = _testDataGeneratedOutsideTimer;// CreateValueFilterForTesting(testVolume);
+            var vf = _testDataGeneratedOutsideTimer;
             vf.Attribute = "City";
             vf.Operator = "contains";
             vf.Value = "uCHs";
@@ -109,7 +109,7 @@ namespace ToSic.Eav.DataSources.Tests
         [TestMethod]
        public void ValueFilter_TakeContainsCH1000()
         {
-            var vf = _testDataGeneratedOutsideTimer;// CreateValueFilterForTesting(testVolume);
+            var vf = _testDataGeneratedOutsideTimer;
             vf.Attribute = "City";
             vf.Operator = "contains";
             vf.Value = "CH";
@@ -119,7 +119,7 @@ namespace ToSic.Eav.DataSources.Tests
         [TestMethod]
        public void ValueFilter_TakeAll10000()
         {
-            var vf = _testDataGeneratedOutsideTimer;// CreateValueFilterForTesting(testVolume);
+            var vf = _testDataGeneratedOutsideTimer;
             vf.Attribute = "City";
             vf.Operator = "all";
             vf.Value = "uCHs";
@@ -130,7 +130,7 @@ namespace ToSic.Eav.DataSources.Tests
         [TestMethod]
        public void ValueFilter_TakeAll90000()
         {
-            var vf = _testDataGeneratedOutsideTimer;// CreateValueFilterForTesting(testVolume);
+            var vf = _testDataGeneratedOutsideTimer;
             vf.Attribute = "City";
             vf.Operator = "all";
             vf.Value = "uCHs";
@@ -165,7 +165,7 @@ namespace ToSic.Eav.DataSources.Tests
         [TestMethod]
         public void ValueFilter_SimpleTextFilterContainsWithoutResults()
         {
-            var vf = _testDataGeneratedOutsideTimer;// CreateValueFilterForTesting(testVolume);
+            var vf = _testDataGeneratedOutsideTimer;
             vf.Attribute = "City";
             vf.Operator = "contains";
             vf.Value = "Buchs SG";
@@ -175,7 +175,7 @@ namespace ToSic.Eav.DataSources.Tests
         [TestMethod]
         public void ValueFilter_SimpleTextFilterNotContains()
         {
-            var vf = _testDataGeneratedOutsideTimer;// CreateValueFilterForTesting(testVolume);
+            var vf = _testDataGeneratedOutsideTimer;
             vf.Attribute = "City";
             vf.Operator = "!contains";
             vf.Value = "ch";
@@ -187,7 +187,7 @@ namespace ToSic.Eav.DataSources.Tests
         [TestMethod]
         public void ValueFilter_SimpleTextFilterWithoutResults()
         {
-            var vf = _testDataGeneratedOutsideTimer;// CreateValueFilterForTesting(testVolume);
+            var vf = _testDataGeneratedOutsideTimer;
             vf.Attribute = "City";
             vf.Value = "Daniel";
             Assert.AreEqual(0, vf.List.Count(), "Should find exactly 0 people with this city");
@@ -196,7 +196,7 @@ namespace ToSic.Eav.DataSources.Tests
         [TestMethod]
         public void ValueFilter_FilterOnUnexistingProperty()
         {
-            var vf = _testDataGeneratedOutsideTimer;// CreateValueFilterForTesting(testVolume);
+            var vf = _testDataGeneratedOutsideTimer;
             vf.Attribute = "ZIPCodeOrSomeOtherNotExistingField";
             vf.Value = "9470"; // test for the first value
             Assert.AreEqual(0, vf.List.Count(), "Should find exactly 0 people with this city");
@@ -205,7 +205,7 @@ namespace ToSic.Eav.DataSources.Tests
         [TestMethod]
         public void ValueFilter_FilterFieldSometimesNull()
         {
-            var vf = _testDataGeneratedOutsideTimer;// CreateValueFilterForTesting(testVolume);
+            var vf = _testDataGeneratedOutsideTimer;
             vf.Attribute = "CityMaybeNull";
             vf.Value = DataTableDataSourceTest.TestCities[1]; // test for the second value
             Assert.AreEqual(2500, vf.List.Count(), "Should find exactly 250 people with this city");
