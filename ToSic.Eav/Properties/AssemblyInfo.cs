@@ -30,7 +30,7 @@ using System.Runtime.InteropServices;
 //      Revision
 //
 // You can specify all the values or you can default the Build and Revision Numbers 
-[assembly: AssemblyVersion("10.25.03.*")]
+[assembly: AssemblyVersion("10.25.04.*")]
 
 // This is needed for unit testing
 [assembly: InternalsVisibleTo("ToSic.Eav.UnitTests")]
