@@ -116,7 +116,7 @@ namespace ToSic.Eav.UnitTests.DataSources
                 var month = i%12+1;
                 var day = i%28+1;
                 var birthday = new DateTime(year, month, day);
-                var sysModified = RandomDate();// new DateTime(i % 7 + 1990 - i%11, i%11 + 1, (i + 20) % 28);
+                var sysModified = RandomDate();
                 var row = dataTable.Rows.Add(i,
                     fullName,
                     firstName,
@@ -129,7 +129,6 @@ namespace ToSic.Eav.UnitTests.DataSources
                     cityMaybeNull,
                     sysModified
                 );
-                var x = 7;
             }
         }
 
