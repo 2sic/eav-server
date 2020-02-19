@@ -37,8 +37,11 @@ namespace ToSic.Eav.Apps
         /// <inheritdoc />
         public Query GetQuery(string name)
         {
-            if (name.StartsWith(GlobalQueries.GlobalQueryPrefix))
+            if (name.StartsWith(GlobalQueries.GlobalEavQueryPrefix))
                 return GetGlobalQuery(name);
+
+            if (name.StartsWith(GlobalQueries.GlobalQueryPrefix))
+                return GetGlobalQuery(name.Substring(GlobalQueries.GlobalQueryPrefix.Length -1));
 
             // Try to find the query, abort if not found
             if (Query.ContainsKey(name) && Query[name] is Query query)

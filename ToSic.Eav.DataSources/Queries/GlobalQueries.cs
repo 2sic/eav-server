@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Run;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -8,7 +7,8 @@ namespace ToSic.Eav.DataSources.Queries
 {
     public static class GlobalQueries
     {
-        public const string GlobalQueryPrefix = "Eav.Queries.Global.";
+        public const string GlobalEavQueryPrefix = "Eav.Queries.Global.";
+        public const string GlobalQueryPrefix = "Global:";
 
         /// <summary>
         /// List of global queries, caches after first scan
