@@ -51,7 +51,7 @@ namespace ToSic.Eav.Apps
             AppGuid = cache.Zones[zoneId].Apps[appId];
 
             // v10.25 from now on the DefaultApp can also have settings and resources
-            // v10.25.04 reactivated this protection, because it causes side-effects. On content-app, let's only do this if people start editing the resources...?
+            // v10.26.00 reactivated this protection, because it causes side-effects. On content-app, let's only do this if people start editing the resources...?
             // note that on imported apps, this would automatically work, as those would already have these things
             if (AppGuid != Constants.DefaultAppName)
             {
