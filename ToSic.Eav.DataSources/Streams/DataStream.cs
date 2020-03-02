@@ -76,9 +76,10 @@ namespace ToSic.Eav.DataSources
 	    {
             get
             {
+                var wrapLog = Source.Log.Call<IEnumerable<IEntity>>($"{nameof(Name)}:{Name}; {nameof(ReuseInitialResults)}:{ReuseInitialResults}");
                 // already retrieved? then return last result to be faster
                 if (_list != null && ReuseInitialResults)
-                    return _list;
+                    return wrapLog("reuse", _list);
 
                 IEnumerable<IEntity> EntityListDelegate()
                 {
@@ -93,12 +94,15 @@ namespace ToSic.Eav.DataSources
                     }
                     catch (InvalidOperationException) // this is a special exception - for example when using SQL. Pass it on to enable proper testing
                     {
+                        wrapLog("error", null);
                         throw;
                     }
                     catch (Exception ex)
                     {
-                        throw new Exception(
-                            $"Error getting List of Stream.\nStream Name: {Name}\nDataSource Name: {Source.Name}", ex);
+                        var msg = $"Error getting List of Stream.\nStream Name: {Name}\nDataSource Name: {Source.Name}";
+                        // Source.Log.Add(msg);
+                        wrapLog("error", null);
+                        throw new Exception(msg, ex);
                     }
 
                     #endregion
@@ -106,16 +110,17 @@ namespace ToSic.Eav.DataSources
 
                 #region Check if it's in the cache - and if yes, if it's still valid and should be re-used --> return if found
                 if (AutoCaching && ReuseInitialResults)
-			    {
+                {
+                    Source.Log.Add($"{nameof(AutoCaching)} && {nameof(ReuseInitialResults)}");
                     var cacheItem = new ListCache(Source.Log).GetOrBuild(this, EntityListDelegate, CacheDurationInSeconds);
-                    return _list = cacheItem.List;
+                    return _list = wrapLog("ok", cacheItem.List);
                 }
                 #endregion
 
                 var result = EntityListDelegate();
                 if (ReuseInitialResults)
                     _list = result;
-                return result;
+                return wrapLog("ok", result);
             }
 	    }
         #endregion

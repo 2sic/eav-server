@@ -21,6 +21,5 @@ namespace ToSic.Eav.Caching
         /// </summary>
         /// <returns>Full key containing own partial key and upstream keys.</returns>
         string CacheFullKey { get; }
-
     }
 }

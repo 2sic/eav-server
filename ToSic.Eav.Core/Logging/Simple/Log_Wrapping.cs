@@ -43,13 +43,17 @@ namespace ToSic.Eav.Logging.Simple
             CodeRef code)
         {
             var entry = WrapStart(openingMessage, useTimer, code, out var timer);
-
+            var open = true;
             //var entry = AddInternal(openingMessage, code);
             //entry.WrapOpen = true;
             //var timer = useTimer ? Stopwatch.StartNew() : null;
             //WrapDepth++;
             return (message, result) =>
             {
+                if (!open) 
+                    Add("Log Warning: Wrapper already closed from previous call");
+                open = false;
+
                 WrapFinish(entry, message, timer);
                 //WrapDepth--;
                 //entry.AppendResult(message);

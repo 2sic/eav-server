@@ -1,4 +1,6 @@
-﻿using ToSic.Eav.Documentation;
+﻿using ToSic.Eav.Caching;
+using ToSic.Eav.DataSources.Caching;
+using ToSic.Eav.Documentation;
 using AppState = ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.DataSources
@@ -18,6 +20,7 @@ namespace ToSic.Eav.DataSources
         public AppRoot()
         {
             //Root = this;
+            // include cache information
 
 		    // ReSharper disable VirtualMemberCallInConstructor
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, () => AppState.List));
@@ -26,17 +29,17 @@ namespace ToSic.Eav.DataSources
 		    // ReSharper restore VirtualMemberCallInConstructor
 		}
 
-	    /// <summary>
-		/// Gets the KeySchema used to store values for a specific Zone and App. Must contain {0} for ZoneId and {1} for AppId
-		/// </summary>
-		[PrivateApi]
-        private static string CacheKeySchema => "Z{0}A{1}";
-
+        /// <summary>
+        /// Special CacheKey generator for AppRoots, which rely on the state
+        /// </summary>
+        [PrivateApi]
+        public new ICacheKeyManager CacheKey => _cacheKey ?? (_cacheKey = new AppRootCacheKey(this));
+        private CacheKey _cacheKey;
 
         /// <summary>
         /// Get the <see cref="AppState"/> of this app from the cache.
         /// </summary>
-	    private AppState AppState => _appState ?? (_appState = /*Factory.GetAppState*/Eav.Apps.State.Get(this));
+	    private AppState AppState => _appState ?? (_appState = Apps.State.Get(this));
         private AppState _appState;
 
         #region Cache-Chain
@@ -46,10 +49,6 @@ namespace ToSic.Eav.DataSources
 
 	    /// <inheritdoc />
 	    public override bool CacheChanged(long newCacheTimeStamp) => AppState.CacheChanged(newCacheTimeStamp);
-
-	    /// <inheritdoc />
-	    public override string CachePartialKey => _cachePartialKey ?? (_cachePartialKey = string.Format(CacheKeySchema, ZoneId, AppId));
-        private string _cachePartialKey;
 
 	    /// <inheritdoc />
 	    public override string CacheFullKey => CachePartialKey;

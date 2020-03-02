@@ -90,6 +90,8 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         List<string> CacheRelevantConfigurations { get; set; }
 
+        ICacheKeyManager CacheKey { get; }
+
         /// <summary>
         /// Tell the system that out is dynamic and doesn't have a fixed list of streams.
         /// Used by App-Data sources and similar.

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ToSic.Eav.Caching;
 using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.DataSources.Configuration;
 using ToSic.Eav.Documentation;
@@ -42,7 +43,7 @@ namespace ToSic.Eav.DataSources
         }
 
         [PrivateApi]
-        protected CacheKey CacheKey => _cacheKey ?? (_cacheKey = new CacheKey(this));
+        public ICacheKeyManager CacheKey => _cacheKey ?? (_cacheKey = new CacheKey(this));
         private CacheKey _cacheKey;
 
         /// <inheritdoc />
