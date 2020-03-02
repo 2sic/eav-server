@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSources.Queries
         /// <inheritdoc />
         public QueryDefinition Definition { get; }
 
-		private IDictionary<string, IDataStream> _out = new Dictionary<string, IDataStream>();
+		private StreamDictionary _out = new StreamDictionary();
 		private bool _requiresRebuildOfOut = true;
         private readonly bool _showDrafts;
 
@@ -72,8 +72,8 @@ namespace ToSic.Eav.DataSources.Queries
             // now provide an override source for this
             var paramsOverride = new LookUpInDictionary(QueryConstants.ParamsLookup, resolvedParams);
 		    var pipeline = QueryBuilder.BuildQuery(Definition, Configuration.LookUps, 
-                new List<ILookUp> {paramsOverride}, /*null,*/ _showDrafts);
-            _out = pipeline.Out;
+                new List<ILookUp> {paramsOverride}, _showDrafts);
+            _out = new StreamDictionary(this, pipeline.Out);
             wrapLog("ok");
         }
 

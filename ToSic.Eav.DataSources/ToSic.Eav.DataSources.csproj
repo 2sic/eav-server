@@ -101,6 +101,8 @@
     <Compile Include="Queries\Connection.cs" />
     <Compile Include="Queries\IQuery.cs" />
     <Compile Include="Queries\QueryPart.cs" />
+    <Compile Include="Streams\GetIEnumerableDelegate.cs" />
+    <Compile Include="Streams\StreamDictionary.cs" />
     <Compile Include="System\Types\AppType.cs" />
     <Compile Include="System\Types\AttributeType.cs" />
     <Compile Include="System\Types\ContentTypeType.cs" />

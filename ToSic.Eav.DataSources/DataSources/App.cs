@@ -58,8 +58,9 @@ namespace ToSic.Eav.DataSources
 				_requiresRebuildOfOut = true;
 			}
 		}
-
-		private readonly IDictionary<string, IDataStream> _out = new Dictionary<string, IDataStream>(StringComparer.OrdinalIgnoreCase);
+		#endregion
+		#region Dynamic Out
+		private readonly StreamDictionary _out; // Dictionary<string, IDataStream>(StringComparer.OrdinalIgnoreCase);
 		private bool _requiresRebuildOfOut = true;
 
 
@@ -91,6 +92,7 @@ namespace ToSic.Eav.DataSources
 		public App()
 		{
 			// this one is unusual, so don't pre-attach a default data stream to out
+            _out = new StreamDictionary(this, null);
 
 			// Set default switch-keys to 0 = no switch
 			ConfigMask(AppSwitchKey, "[Settings:" + AppSwitchKey + "||0]");
@@ -141,35 +143,39 @@ namespace ToSic.Eav.DataSources
 
 			// now provide all data streams for all data types; only need the cache for the content-types list, don't use it as the source...
 			// because the "real" source already applies filters like published
-            var listOfTypes = /*Factory.GetAppState*/Eav.Apps.State.Get(this).ContentTypes;
+            var listOfTypes = Apps.State.Get(this).ContentTypes;
             var dataSourceFactory = new DataSource(Log);
 		    foreach (var contentType in listOfTypes)
 		    {
 		        var typeName = contentType.Name;
-		        if (typeName != Constants.DefaultStreamName && !typeName.StartsWith("@") && !_out.ContainsKey(typeName))
-		        {
-		            var ds = dataSourceFactory.GetDataSource<EntityTypeFilter>(this, upstreamDataSource,
-                        Configuration.LookUps);
-		            ds.TypeName = typeName;
-		            ds.Guid = Guid; // tell the inner source that it has the same ID as this one, as we're pretending it's the same source
-
-		            if (typeName != Constants.DefaultStreamName)
-		                ds.AddNamedStream(typeName);
-		            var typeOut = ds.Out[typeName];
-		            typeOut.AutoCaching = true; // enable auto-caching 
-
-		            _out.Add(typeName, typeOut);
-		        }
-		    }
+                if (typeName == Constants.DefaultStreamName || typeName.StartsWith("@") ||
+                    _out.ContainsKey(typeName)) continue;
+                var deferredStream = new DataStreamDeferred(this, typeName, 
+                    () => BuildTypeStream(dataSourceFactory, upstreamDataSource, typeName)[Constants.DefaultStreamName], true);
+                _out.Add(typeName, deferredStream);
+            }
 		}
 
-        /// <summary>
-        /// Metadata is an important feature of apps. <br/>
-        /// The App DataSource automatically provides direct access to the metadata system.
-        /// This allows users of the App to query metadata directly through this object. 
-        /// </summary>
-        /// <returns>An initialized <see cref="IMetadataSource"/> for this app</returns>
-        public IMetadataSource Metadata => _metadata ?? (_metadata = /*Factory.GetAppState*/Eav.Apps.State.Get(this));
+		/// <summary>
+		/// Build an EntityTypeFilter for this content-type to provide as a stream
+		/// </summary>
+        private EntityTypeFilter BuildTypeStream(DataSource dataSourceFactory, IDataSource upstreamDataSource, string typeName)
+        {
+            var ds = dataSourceFactory.GetDataSource<EntityTypeFilter>(this, upstreamDataSource,
+                Configuration.LookUps);
+            ds.TypeName = typeName;
+            ds.Guid = Guid; // tell the inner source that it has the same ID as this one, as we're pretending it's the same source
+            ds.Out[Constants.DefaultStreamName].AutoCaching = true; // enable auto-caching 
+            return ds;
+        }
+
+		/// <summary>
+		/// Metadata is an important feature of apps. <br/>
+		/// The App DataSource automatically provides direct access to the metadata system.
+		/// This allows users of the App to query metadata directly through this object. 
+		/// </summary>
+		/// <returns>An initialized <see cref="IMetadataSource"/> for this app</returns>
+		public IMetadataSource Metadata => _metadata ?? (_metadata = Apps.State.Get(this));
         private IMetadataSource _metadata;
     }
 

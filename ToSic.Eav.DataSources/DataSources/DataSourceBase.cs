@@ -79,7 +79,7 @@ namespace ToSic.Eav.DataSources
         public IDictionary<string, IDataStream> In { get; internal set; } = new Dictionary<string, IDataStream>();
 
         /// <inheritdoc />
-        public virtual IDictionary<string, IDataStream> Out { get; protected internal set; } = new Dictionary<string, IDataStream>();
+        public virtual IDictionary<string, IDataStream> Out { get; protected internal set; } = new StreamDictionary();
 
         /// <inheritdoc />
         public IDataStream this[string outName] => Out[outName];

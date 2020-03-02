@@ -6,11 +6,6 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
 {
-    /// <summary>
-    /// The light list for the series of items returned
-    /// </summary>
-    /// <returns></returns>
-    public delegate IEnumerable<IEntity> GetIEnumerableDelegate(); 
 
 	/// <inheritdoc />
 	/// <summary>

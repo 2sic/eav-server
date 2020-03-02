@@ -9,26 +9,34 @@ namespace ToSic.Eav.DataSources.Debug
         public Guid Source;
         public string SourceOut;
         public string TargetIn;
-        public int Count;
+        public int Count => Stream.List.Count();
         public bool Error = false;
 
-        public StreamInfo(IDataStream strm, IDataTarget target, string inName)
+        protected readonly IDataStream Stream;
+
+        public StreamInfo(IDataStream stream, IDataTarget target, string inName)
         {
             try
             {
-                Target = (target as IDataSource).Guid;
-                Source = strm.Source.Guid;
+                Stream = stream;
+                Target = (target as IDataSource)?.Guid ?? Guid.Empty;
+                Source = stream.Source.Guid;
                 TargetIn = inName;
-                foreach (var outStm in strm.Source.Out)
-                    if (outStm.Value == strm)
+                foreach (var outStm in stream.Source.Out)
+                    if (outStm.Value == stream)
                         SourceOut = outStm.Key;
-
-                Count = strm.List.Count();
             }
             catch
             {
                 Error = true;
             }
         }
+
+
+        public bool Equals(StreamInfo comparison) =>
+            comparison.Target == Target
+            && comparison.Source == Source
+            && comparison.TargetIn == TargetIn
+            && comparison.SourceOut == SourceOut;
     }
 }

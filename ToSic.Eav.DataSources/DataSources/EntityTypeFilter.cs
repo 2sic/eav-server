@@ -48,10 +48,11 @@ namespace ToSic.Eav.DataSources
 		    ConfigMask(TypeNameKey, "[Settings:TypeName]");
         }
 
-        // special alternately named stream for use in the App data-source
-        internal void AddNamedStream(string otherName) => Out.Add(otherName, new DataStream(this, otherName, GetList));
+		// 2020-03-02 2dm disabled this, not necessary any more
+        //// special alternately named stream for use in the App data-source
+        //internal void AddNamedStream(string otherName) => Out.Add(otherName, new DataStream(this, otherName, GetList));
 
-	    private IEnumerable<IEntity> GetList()
+	    private List<IEntity> GetList()
 	    {
             Configuration.Parse();
             Log.Add($"get list with type:{TypeName}");

@@ -95,21 +95,25 @@ namespace ToSic.Eav.WebApi
 		    var queryFactory = new QueryBuilder(Log);
 		    var qDef = queryFactory.GetQueryDefinition(appId, id);
 			var outStreams = queryFactory.GetDataSourceForTesting(qDef, true, config);
+            
+            
+            var serializeWrap = Log.Call("Serialize", useTimer: true);
             var timer = new Stopwatch();
             timer.Start();
 		    var query = Helpers.Serializers.GetSerializerWithGuidEnabled().Convert(outStreams);
             timer.Stop();
+            serializeWrap("ok");
 
             // Now get some more debug info
-		    var debugInfo = new DataSources.Debug.QueryInfo(outStreams);
+            var debugInfo = new DataSources.Debug.QueryInfo(outStreams, Log);
 
             wrapLog(null);
             // ...and return the results
 			return new
 			{
 				Query = query, 
-				debugInfo.Streams,
-				debugInfo.Sources,
+				Streams = debugInfo.Streams,
+				Sources = debugInfo.Sources,
                 QueryTimer = new { 
                     Milliseconds = timer.ElapsedMilliseconds,
                     Ticks = timer.ElapsedTicks

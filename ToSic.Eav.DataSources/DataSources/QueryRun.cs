@@ -94,8 +94,20 @@ namespace ToSic.Eav.DataSources
             var query = new Query(ZoneId, AppId, queryDef, LookUpWithoutParams(), false, null, Log);
             query.Params(ResolveParams(configEntity));
 
-            return wrapLog("ok", query.Out);
+            return wrapLog("ok", new StreamDictionary(this, query.Out));
         }
+
+        //private StreamDictionary ReStream(IDictionary<string, IDataStream> original)
+        //{
+        //    var result = new StreamDictionary();
+        //    foreach (var stream in original)
+        //    {
+        //        var newStream = new DataStream(this, stream.Key, () => stream.Value.List);
+        //        result.Add(stream.Key, newStream);
+        //    }
+
+        //    return result;
+        //}
 
         /// <summary>
         /// Create a new lookup machine and remove the params which would be in there right now
