@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
 using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.DataSourceTests.ExternalData;
 using ToSic.Eav.LookUp;
-using ToSic.Eav.UnitTests.DataSources;
 
-namespace ToSic.Eav.DataSourceTests.StreamPick
+namespace ToSic.Eav.DataSourceTests.Streams
 {
     [TestClass]
-    public class StreamPickTests
+    public class StreamPickTst
     {
         private const int DefaultStreamSize = 10;
         private const int MoreStreamSize = 27;
@@ -42,9 +41,9 @@ namespace ToSic.Eav.DataSourceTests.StreamPick
                 {"StreamParam", "Lots"}
             });
 
-            var ds1 = DataTableDataSourceTest.GeneratePersonSourceWithDemoData(DefaultStreamSize, 1000);
-            var ds2 = DataTableDataSourceTest.GeneratePersonSourceWithDemoData(MoreStreamSize, 2700);
-            var ds3 = DataTableDataSourceTest.GeneratePersonSourceWithDemoData(53, 5300);
+            var ds1 = DataTableTst.GeneratePersonSourceWithDemoData(DefaultStreamSize, 1000);
+            var ds2 = DataTableTst.GeneratePersonSourceWithDemoData(MoreStreamSize, 2700);
+            var ds3 = DataTableTst.GeneratePersonSourceWithDemoData(53, 5300);
             var dsBuild = new DataSource(null);
             var streamPick = dsBuild.GetDataSource<DataSources.StreamPick>(new AppIdentity(1, 1), null, ds1.Configuration.LookUps);
             streamPick.Attach(Constants.DefaultStreamName, ds1);

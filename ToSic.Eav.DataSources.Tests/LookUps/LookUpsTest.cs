@@ -1,13 +1,13 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Configuration;
-using ToSic.Eav.UnitTests.DataSources;
+using ToSic.Eav.DataSourceTests.ExternalData;
 using ToSic.Eav.TokenEngine.Tests.ValueProvider;
 
-namespace ToSic.Eav.UnitTests.ValueProvider
+namespace ToSic.Eav.DataSourceTests.LookUps
 {
     [TestClass]
-    public class DataTargetValueProvider_Test
+    public class LookUpsTest
     {
         [TestMethod]
         public void DataTargetValueProvider_General()
@@ -17,7 +17,7 @@ namespace ToSic.Eav.UnitTests.ValueProvider
             // Assemble a simple source-stream with demo data
             const int ItemsToGenerate = 499;
             const string ItemToFilter = "1023";
-            var ds = DataTableDataSourceTest.GeneratePersonSourceWithDemoData(ItemsToGenerate, 1001);
+            var ds = DataTableTst.GeneratePersonSourceWithDemoData(ItemsToGenerate, 1001);
             var myConfDs = new EntityIdFilter()
                 .Init(ds.Configuration.LookUps);
             //myConfDs.ConfigurationProvider = ds.ConfigurationProvider;

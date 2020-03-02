@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
 using ToSic.Eav.Apps;
-using ToSic.Eav.UnitTests.DataSources;
+using ToSic.Eav.DataSourceTests.ExternalData;
 
 namespace ToSic.Eav.DataSources.Tests
 {
@@ -23,7 +23,7 @@ namespace ToSic.Eav.DataSources.Tests
         {
             var vf = _testDataGeneratedOutsideTimer;
             vf.Attribute = "City";
-            vf.Value = DataTableDataSourceTest.TestCities[0]; // test for the first value
+            vf.Value = DataTableTst.TestCities[0]; // test for the first value
             Assert.AreEqual(2500, vf.List.Count(), "Should find exactly 2500 people with this city");
         }
         [TestMethod]
@@ -31,7 +31,7 @@ namespace ToSic.Eav.DataSources.Tests
         {
             var vf = _testDataGeneratedOutsideTimer;
             vf.Attribute = "City";
-            vf.Value = DataTableDataSourceTest.TestCities[0].ToLower(); // test for the first value
+            vf.Value = DataTableTst.TestCities[0].ToLower(); // test for the first value
             Assert.AreEqual(2500, vf.List.Count(), "Should find exactly 2500 people with this city");
         }
 
@@ -42,7 +42,7 @@ namespace ToSic.Eav.DataSources.Tests
             var vf = _testDataGeneratedOutsideTimer;
             vf.Attribute = "City";
             vf.Operator = "===";
-            vf.Value = DataTableDataSourceTest.TestCities[0]; // test for the first value
+            vf.Value = DataTableTst.TestCities[0]; // test for the first value
             Assert.AreEqual(2500, vf.List.Count(), "Should find exactly 2500 people with this city");
         }       
 
@@ -52,7 +52,7 @@ namespace ToSic.Eav.DataSources.Tests
             var vf = _testDataGeneratedOutsideTimer;
             vf.Attribute = "City";
             vf.Operator = "===";
-            vf.Value = DataTableDataSourceTest.TestCities[0].ToLower(); // test for the first value
+            vf.Value = DataTableTst.TestCities[0].ToLower(); // test for the first value
             Assert.AreEqual(0, vf.List.Count(), "Should find exactly 0 people with this city");
         }
 
@@ -207,7 +207,7 @@ namespace ToSic.Eav.DataSources.Tests
         {
             var vf = _testDataGeneratedOutsideTimer;
             vf.Attribute = "CityMaybeNull";
-            vf.Value = DataTableDataSourceTest.TestCities[1]; // test for the second value
+            vf.Value = DataTableTst.TestCities[1]; // test for the second value
             Assert.AreEqual(2500, vf.List.Count(), "Should find exactly 250 people with this city");
         }
 
@@ -239,7 +239,7 @@ namespace ToSic.Eav.DataSources.Tests
 
         public static  ValueFilter CreateValueFilterForTesting(int testItemsInRootSource)
         {
-            var ds = DataTableDataSourceTest.GeneratePersonSourceWithDemoData(testItemsInRootSource, 1001);
+            var ds = DataTableTst.GeneratePersonSourceWithDemoData(testItemsInRootSource, 1001);
             var filtered = new DataSource(null).GetDataSource<ValueFilter>(new AppIdentity(1, 1), ds);
             return filtered;
         }

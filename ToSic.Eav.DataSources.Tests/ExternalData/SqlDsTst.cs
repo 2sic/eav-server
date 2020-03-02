@@ -7,10 +7,10 @@ using ToSic.Eav.TokenEngine.Tests.TestData;
 using ToSic.Eav.TokenEngine.Tests.ValueProvider;
 using ToSic.Testing.Shared;
 
-namespace ToSic.Eav.UnitTests
+namespace ToSic.Eav.DataSourceTests.ExternalData
 {
     [TestClass]
-    public class SqlDataSource_Test
+    public class SqlDsTst
     {
         private const string ConnectionDummy = "";
         private const string ConnectionName = TestConstants.ConStr;// "Data Source=.\\SQLExpress;Initial Catalog=2flex 2Sexy Content;Integrated Security=True";
@@ -35,15 +35,19 @@ namespace ToSic.Eav.UnitTests
         {
             var initQuery = "Select * From Products Where ProductId = [QueryString:Id]";
             var expectedQuery = "Select * From Products Where ProductId = @" + Sql.ExtractedParamPrefix + "1";
+            var paramsInQuery = 1;
             var sql = GenerateSqlDataSource(ConnectionDummy, initQuery, ContentTypeName);
             var config = sql.Configuration.Values;
 
             var configCountBefore = config.Count;
-            sql.Configuration.Parse();
+            sql.CustomConfigurationParse();
 
-            Assert.AreEqual(configCountBefore + 1, config.Count);
+            Assert.AreEqual(configCountBefore + paramsInQuery, config.Count);
             Assert.AreEqual(expectedQuery, sql.SelectCommand);
-            Assert.AreEqual("", config["@" + Sql.ExtractedParamPrefix + "1"]);
+
+            sql.Configuration.Parse();
+            var parsed = sql.Configuration.Values;
+            Assert.AreEqual("", parsed["@" + Sql.ExtractedParamPrefix + "1"]);
         }
 
         [TestMethod]
@@ -57,17 +61,21 @@ And ProductSort = [AppSettings:DoesntExist||CorrectlyDefaulted]";
 From Products 
 Where CatName = @" + Sql.ExtractedParamPrefix + @"2 
 And ProductSort = @" + Sql.ExtractedParamPrefix + @"3";
+            var paramsInQuery = 3;
 
             var sql = GenerateSqlDataSource(ConnectionDummy, initQuery, ContentTypeName);
             var config = sql.Configuration.Values;
             var configCountBefore = config.Count;
-            sql.Configuration.Parse();
+            sql.CustomConfigurationParse();
 
-            Assert.AreEqual(configCountBefore + 3, config.Count);
+            Assert.AreEqual(configCountBefore + paramsInQuery, config.Count);
             Assert.AreEqual(expectedQuery, sql.SelectCommand);
-            Assert.AreEqual(ValueCollectionProvider_Test.MaxPictures, config["@" + Sql.ExtractedParamPrefix + "1"]);
-            Assert.AreEqual(ValueCollectionProvider_Test.DefaultCategory, config["@" + Sql.ExtractedParamPrefix + "2"]);
-            Assert.AreEqual("CorrectlyDefaulted", config["@" + Sql.ExtractedParamPrefix + "3"]);
+
+            sql.Configuration.Parse();
+            var parsed = sql.Configuration.Values;
+            Assert.AreEqual(ValueCollectionProvider_Test.MaxPictures, parsed["@" + Sql.ExtractedParamPrefix + "1"]);
+            Assert.AreEqual(ValueCollectionProvider_Test.DefaultCategory, parsed["@" + Sql.ExtractedParamPrefix + "2"]);
+            Assert.AreEqual("CorrectlyDefaulted", parsed["@" + Sql.ExtractedParamPrefix + "3"]);
         }
 
         #endregion

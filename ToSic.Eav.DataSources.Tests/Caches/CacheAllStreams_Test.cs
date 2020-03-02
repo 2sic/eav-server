@@ -4,14 +4,15 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.DataSources.Configuration;
+using ToSic.Eav.DataSourceTests.ExternalData;
 
-namespace ToSic.Eav.UnitTests.DataSources
+namespace ToSic.Eav.DataSourceTests.Caches
 {
     [TestClass]
-    public class CacheAllStreams_Test
+    public class CacheAllStreamsTest
     {
-        private readonly string FilterIdForManyTests = "1067";
-        private readonly string AlternateIdForAlternateTests = "1069";
+        const string FilterIdForManyTests = "1067";
+        const string AlternateIdForAlternateTests = "1069";
 
         [TestMethod]
         public void CacheAllStreams_Check1NotInBeforeAndInAfterwards()
@@ -178,7 +179,7 @@ namespace ToSic.Eav.UnitTests.DataSources
 
         public static EntityIdFilter CreateFilterForTesting(int testItemsInRootSource, string entityIdsValue, bool useCacheForSpeed = true)
         {
-            var ds = DataTableDataSourceTest.GeneratePersonSourceWithDemoData(testItemsInRootSource, 1001, useCacheForSpeed);
+            var ds = DataTableTst.GeneratePersonSourceWithDemoData(testItemsInRootSource, 1001, useCacheForSpeed);
             var filtered = new EntityIdFilter()
                 .Init(ds.Configuration.LookUps); //{ConfigurationProvider = ds.ConfigurationProvider};
             filtered.Attach(ds);

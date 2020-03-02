@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.DataSources;
-using ToSic.Eav.UnitTests.DataSources;
+using ToSic.Eav.DataSourceTests.ExternalData;
 
-namespace ToSic.Eav.UnitTests
+namespace ToSic.Eav.DataSourceTests.Paging
 {
     // Todo
     // Create tests with language-parameters as well, as these tests ignore the language and always use default
@@ -68,7 +67,7 @@ namespace ToSic.Eav.UnitTests
         {
             var ds = CreatePagingForTesting(45);
             Assert.AreEqual("Paging-NoGuid&PageSize=10&PageNumber=1", ds.CachePartialKey);
-            Assert.AreEqual("DataTableDataSource-NoGuid&TitleField=FullName&EntityIdField=EntityId&ModifiedField=InternalModified&ContentType=Person" +
+            Assert.AreEqual("DataTable-NoGuid&TitleField=FullName&EntityIdField=EntityId&ModifiedField=InternalModified&ContentType=Person" +
                             ">Paging-NoGuid&PageSize=10&PageNumber=1", ds.CacheFullKey);
             var lastRefresh = ds.CacheTimestamp; // get this before comparison, because sometimes slow execution will get strange results
             Assert.IsTrue(DateTime.Now.Ticks >= lastRefresh, "Date-check of cache refresh");
@@ -77,10 +76,10 @@ namespace ToSic.Eav.UnitTests
         // to test
         // pickup of settings when it has settings
         
-        public Paging CreatePagingForTesting(int testItemsInRootSource)
+        public DataSources.Paging CreatePagingForTesting(int testItemsInRootSource)
         {
-            var ds = DataTableDataSourceTest.GeneratePersonSourceWithDemoData(testItemsInRootSource, seedId);
-            return new DataSource(null).GetDataSource<Paging>(ds);
+            var ds = DataTableTst.GeneratePersonSourceWithDemoData(testItemsInRootSource, seedId);
+            return new DataSource(null).GetDataSource<DataSources.Paging>(ds);
             //return filtered;
         }
 

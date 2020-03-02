@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
@@ -34,12 +35,17 @@ namespace ToSic.Eav.DataSources
 		/// A string containing one or more entity-ids. like "27" or "27,40,3063,30306"
 		/// </summary>
 		public string EntityIds
-		{
-			get => Configuration[EntityIdKey];
-		    set => Configuration[EntityIdKey] = value;
-		}
+        {
+            get => Configuration[EntityIdKey];
+            set
+            {
+                // kill any spaces in the string
+                var cleaned = Regex.Replace(value ?? "", @"\s+", "");
+                Configuration[EntityIdKey] = cleaned;
+            }
+        }
 
-		#endregion
+        #endregion
 
 		/// <summary>
 		/// Constructs a new EntityIdFilter

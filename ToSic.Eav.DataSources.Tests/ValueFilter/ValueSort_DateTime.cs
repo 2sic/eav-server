@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
-using ToSic.Eav.UnitTests.DataSources;
+using ToSic.Eav.DataSourceTests.ExternalData;
 
 namespace ToSic.Eav.DataSources.Tests
 {
@@ -17,8 +17,8 @@ namespace ToSic.Eav.DataSources.Tests
     public class ValueSort_DateTime
     {
         private const int TestVolume = 30;
-        private const string Birthdate = DataTableDataSourceTest.FieldBirthday;
-        private const string BirthdateMaybeNull = DataTableDataSourceTest.FieldBirthdayNull;
+        private const string Birthdate = DataTableTst.FieldBirthday;
+        private const string BirthdateMaybeNull = DataTableTst.FieldBirthdayNull;
         private const string ModifiedTest = "InternalModified";
         private const string ModifiedReal = "Modified";
         private readonly ValueSort _testDataGeneratedOutsideTimer;

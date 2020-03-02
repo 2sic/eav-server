@@ -1,16 +1,14 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
+using ToSic.Eav.DataSourceTests.ExternalData;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
-using ToSic.Eav.UnitTests.DataSources;
 
-
-
-namespace ToSic.Eav.DataSources.Tests.StreamMerge
+namespace ToSic.Eav.DataSourceTests.Streams
 {
     [TestClass]
-    public class Tst_StreamMerge
+    public class StreamMergeTst
     {
 
         [TestMethod]
@@ -63,7 +61,7 @@ namespace ToSic.Eav.DataSources.Tests.StreamMerge
 
         private static DataSources.StreamMerge GenerateMergeDs(int desiredFinds)
         {
-            var ds = DataTableDataSourceTest.GeneratePersonSourceWithDemoData(desiredFinds, 1001, true);
+            var ds = DataTableTst.GeneratePersonSourceWithDemoData(desiredFinds, 1001, true);
             var sf = new DataSource(null).GetDataSource<DataSources.StreamMerge>(new AppIdentity(0, 0), ds);
             return sf;
         }

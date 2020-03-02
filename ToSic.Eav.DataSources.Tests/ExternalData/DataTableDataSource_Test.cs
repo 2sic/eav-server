@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Data;
 using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources.Configuration;
 using ToSic.Eav.TokenEngine.Tests.TestData;
 using DataTable = ToSic.Eav.DataSources.DataTable;
 
-namespace ToSic.Eav.UnitTests.DataSources
+namespace ToSic.Eav.DataSourceTests.ExternalData
 {
     [TestClass]
-    public class DataTableDataSourceTest
+    public class DataTableTst
     {
         public static string[] TestCities = { "Buchs", "Grabs", "Sevelen", "Zürich" };
         public static int MinHeight = 150;
@@ -48,7 +48,7 @@ namespace ToSic.Eav.UnitTests.DataSources
             var ds = GeneratePersonSourceWithDemoData(itemsToGenerate);
 
             var expKey =
-                "DataTableDataSource-NoGuid&TitleField=FullName&EntityIdField=EntityId&ModifiedField=InternalModified&ContentType=Person";
+                "DataTable-NoGuid&TitleField=FullName&EntityIdField=EntityId&ModifiedField=InternalModified&ContentType=Person";
             Assert.AreEqual(expKey, ds.CachePartialKey);
             Assert.AreEqual(expKey, ds.CacheFullKey);
             var lastRefresh = ds.CacheTimestamp; // get this before comparison, because sometimes slow execution will get strange results

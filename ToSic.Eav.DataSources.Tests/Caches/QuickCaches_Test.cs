@@ -4,11 +4,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.DataSources.Configuration;
+using ToSic.Eav.DataSourceTests.ExternalData;
 
-namespace ToSic.Eav.UnitTests.DataSources.Caches
+namespace ToSic.Eav.DataSourceTests.Caches
 {
     [TestClass]
-    public class QuickCaches_Test
+    public class QuickCachesTest
     {
 
         [TestMethod]
@@ -73,7 +74,7 @@ namespace ToSic.Eav.UnitTests.DataSources.Caches
 
         public static EntityIdFilter CreateFilterForTesting(int testItemsInRootSource, string entityIdsValue)
         {
-            var ds = DataTableDataSourceTest.GeneratePersonSourceWithDemoData(testItemsInRootSource, 1001);
+            var ds = DataTableTst.GeneratePersonSourceWithDemoData(testItemsInRootSource, 1001);
             var filtered = new EntityIdFilter()
                 .Init(ds.Configuration.LookUps);
             //filtered.ConfigurationProvider = ds.ConfigurationProvider;
