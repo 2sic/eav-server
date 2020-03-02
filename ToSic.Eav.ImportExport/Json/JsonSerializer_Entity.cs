@@ -7,6 +7,7 @@ using ToSic.Eav.Enums;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.Metadata;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.ImportExport.Json
@@ -83,8 +84,10 @@ namespace ToSic.Eav.ImportExport.Json
 
             // new: optionally include metadata
             List<JsonEntity> itemMeta = null;
-            if (metadataDepth > 0 && entity.Metadata.Any())
-                itemMeta = entity.Metadata.Select(m => ToJson(m, metadataDepth - 1)).ToList();
+            //var entityMetadata = entity.Metadata;
+            var metaList = (entity.Metadata as MetadataOf<Guid>)?.AllWithHidden ?? entity.Metadata as IEnumerable<IEntity>;
+            if (metadataDepth > 0 && metaList.Any())
+                itemMeta = metaList.Select(m => ToJson(m, metadataDepth - 1)).ToList();
 
             var jEnt = new JsonEntity
             {

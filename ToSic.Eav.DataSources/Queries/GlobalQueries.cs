@@ -8,7 +8,7 @@ namespace ToSic.Eav.DataSources.Queries
     public static class GlobalQueries
     {
         public const string GlobalEavQueryPrefix = "Eav.Queries.Global.";
-        public const string GlobalQueryPrefix = "Global:";
+        public const string GlobalQueryPrefix = "Global.";
 
         /// <summary>
         /// List of global queries, caches after first scan
