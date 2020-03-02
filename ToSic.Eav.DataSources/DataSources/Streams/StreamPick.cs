@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSources
 	/// <inheritdoc />
 	/// <summary>
 	/// A DataSource that returns a stream by the provided name. Usually this will be configured through [Params:SomeName]
-	/// BETA - this is introduced in 10.26.00 but not officially released yet.
+	/// BETA - this is introduced in 10.26.01 but not officially released yet.
 	/// </summary>
     [PrivateApi("not ready for public use")]
 	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.StreamPick, ToSic.Eav.DataSources",

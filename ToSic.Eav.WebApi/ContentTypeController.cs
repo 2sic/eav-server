@@ -32,7 +32,7 @@ namespace ToSic.Eav.WebApi
             // should use app-manager and return each type 1x only
             var appMan = new AppManager(appId, Log);
 
-            // 2020-01-15 2sxc 10.26.00 Special side-effect, pre-generate the resources, settings etc. if they didn't exist yet
+            // 2020-01-15 2sxc 10.26.01 Special side-effect, pre-generate the resources, settings etc. if they didn't exist yet
             if (scope == AppConstants.ScopeApp)
             {
                 Log.Add($"is scope {scope}, will do extra processing");
