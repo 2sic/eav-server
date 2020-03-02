@@ -29,7 +29,7 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
             var ds = GeneratePersonSourceWithDemoData(itemsToGenerate);
             Assert.IsTrue(ds.In.Count == 0, "In count should be 0");
             Assert.IsTrue(ds.Out.Count == 1, "Out cound should be 1");
-            var defaultOut = ds["Default"];
+            var defaultOut = ds[Constants.DefaultStreamName];
             Assert.IsTrue(defaultOut != null);
             try
             {

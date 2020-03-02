@@ -58,18 +58,18 @@ namespace ToSic.Eav.DataSources
         }
 
 
-        private IEnumerable<IEntity> GetList()
+        private List<IEntity> GetList()
 	    {
             Configuration.Parse();
 
             Log.Add($"will shuffle and take:{Take}");
-            return ShuffleInternal(In["Default"].List, Take, Log);
+            return ShuffleInternal(In[Constants.DefaultStreamName].List, Take, Log);
 	    }
 
         #region Experiment based on http://stackoverflow.com/questions/375351/most-efficient-way-to-randomly-sort-shuffle-a-list-of-integers-in-c-sharp/375446#375446
         static readonly Random Generator = new Random();
 
-        private static IEnumerable<T> ShuffleInternal<T>(IEnumerable<T> sequence, int take, ILog log)
+        private static List<T> ShuffleInternal<T>(IEnumerable<T> sequence, int take, ILog log)
         {
             var wrapLog = log.Call();
             var retArray = sequence.ToArray();
@@ -78,7 +78,7 @@ namespace ToSic.Eav.DataSources
             if (!retArray.Any())
             {
                 wrapLog("0 items found to shuffle");
-                return retArray;
+                return retArray.ToList();
             }
 
             var maxIndex = retArray.Length; // not Length -1, as the random-generator will always be below this

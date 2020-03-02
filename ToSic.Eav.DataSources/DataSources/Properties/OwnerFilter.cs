@@ -47,14 +47,14 @@ namespace ToSic.Eav.DataSources
 		    ConfigMask(IdentityCode, "[Settings:" + IdentityCode + "]"); 
         }
 
-        private IEnumerable<IEntity> GetList()
+        private List<IEntity> GetList()
         {
             Configuration.Parse();
 
             Log.Add($"get for identity:{Identity}");
             if (string.IsNullOrWhiteSpace(Identity)) return new List<IEntity>();
 
-            return In["Default"].List.Where(e => e.Owner == Identity).ToList();
+            return In[Constants.DefaultStreamName].List.Where(e => e.Owner == Identity).ToList();
         }
 
 	}
