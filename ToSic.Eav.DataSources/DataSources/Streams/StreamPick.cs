@@ -84,7 +84,7 @@ namespace ToSic.Eav.DataSources
             }
 
             wrapLog("ok");
-            return foundStream.Value.List;
+            return foundStream.Value.List.ToList();
         }
 
 	}

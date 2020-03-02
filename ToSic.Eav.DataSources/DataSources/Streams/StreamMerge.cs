@@ -38,9 +38,14 @@ namespace ToSic.Eav.DataSources
 
         private IEnumerable<IEntity> GetList()
         {
-            var streams = In.OrderBy(pair => pair.Key).Where(v => v.Value?.List != null).Select(v => v.Value.List);
+            var streams = In
+                .OrderBy(pair => pair.Key)
+                .Where(v => v.Value?.List != null)
+                .Select(v => v.Value.List);
 
-            return streams.Aggregate(new List<IEntity>() as IEnumerable<IEntity>, (current, strm) => current.Concat(strm));
+            return streams
+                .Aggregate(new List<IEntity>() as IEnumerable<IEntity>, (current, strm) => current.Concat(strm))
+                .ToList();
         }
 	}
 }

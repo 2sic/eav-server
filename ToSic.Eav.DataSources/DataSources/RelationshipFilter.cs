@@ -157,7 +157,7 @@ namespace ToSic.Eav.DataSources
                 if (In.ContainsKey(Constants.FallbackStreamName) && In[Constants.FallbackStreamName] != null && In[Constants.FallbackStreamName].List.Any())
                     res = In[Constants.FallbackStreamName].List;
 
-            return res;
+            return res.ToList();
             // ReSharper restore PossibleMultipleEnumeration
         }
 

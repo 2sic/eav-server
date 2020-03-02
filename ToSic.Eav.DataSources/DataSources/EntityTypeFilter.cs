@@ -58,12 +58,13 @@ namespace ToSic.Eav.DataSources
 
 	        try
             {
-                var appState = /*Factory.GetAppState*/Eav.Apps.State.Get(this);//  Root.AppState;// DataSource.GetCache(ZoneId, AppId);
+                var appState = Apps.State.Get(this);
 	            var foundType = appState?.GetContentType(TypeName);
 	            if (foundType != null) // maybe it doesn't find it!
 	                return (from e in In[Constants.DefaultStreamName].List
 	                    where e.Type == foundType
-	                    select e);
+	                    select e)
+                        .ToList();
 	        }
 	        catch { /* ignore */ }
 
@@ -71,7 +72,8 @@ namespace ToSic.Eav.DataSources
             // Reason is that many dynamically created content-types won't be known to the cache, so they cannot be found the previous way
 	        return (from e in In[Constants.DefaultStreamName].List
 	            where e.Type.Name == TypeName
-	            select e);
+	            select e)
+                .ToList();
 	    }
 
 	}

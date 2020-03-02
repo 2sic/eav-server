@@ -54,7 +54,7 @@ namespace ToSic.Eav.DataSources
             Log.Add($"get for identity:{Identity}");
             if (string.IsNullOrWhiteSpace(Identity)) return new List<IEntity>();
 
-            return In["Default"].List.Where(e => e.Owner == Identity);
+            return In["Default"].List.Where(e => e.Owner == Identity).ToList();
         }
 
 	}

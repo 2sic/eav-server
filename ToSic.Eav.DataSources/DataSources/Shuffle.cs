@@ -102,7 +102,9 @@ namespace ToSic.Eav.DataSources
             }
 
             wrapLog((maxTake).ToString());
-            return retArray.Take(maxTake);
+            return retArray
+                .Take(maxTake)
+                .ToList();
         }
         #endregion
 

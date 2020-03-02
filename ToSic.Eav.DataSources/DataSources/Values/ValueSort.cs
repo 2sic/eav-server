@@ -70,7 +70,7 @@ namespace ToSic.Eav.DataSources
 		    ConfigMask(LangKey, "Default");
         }
 
-		private IEnumerable<IEntity> GetList()
+		private List<IEntity> GetList()
 		{
             // todo: maybe do something about languages?
             // todo: test datetime & decimal types
@@ -97,7 +97,7 @@ namespace ToSic.Eav.DataSources
 
             // check if no list parameters specified
 		    if (attr.Length == 1 && string.IsNullOrWhiteSpace(attr[0]))
-		        return list;
+		        return list.ToList();
 
             // only get the entities, that have these attributes (but don't test for id/title, as all have these)
             var valueAttrs = attr.Where(v => !Constants.InternalOnlyIsSpecialEntityProperty(v)).ToArray();
@@ -109,7 +109,7 @@ namespace ToSic.Eav.DataSources
 
 			// if list is blank, stop here and return blank list
 			if (!results.Any())
-				return results;
+				return results.ToList();
 
             IOrderedEnumerable<IEntity> ordered = null;
 
@@ -142,7 +142,7 @@ namespace ToSic.Eav.DataSources
 				}
 			}
 
-			return ordered;
+			return ordered.ToList();
 		}
 
 		private object getObjToSort(IEntity e, string a, char special)

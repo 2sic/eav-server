@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -55,7 +56,7 @@ namespace ToSic.Eav.DataSources
 	        var outStreamName = ShowDrafts 
                 ? Constants.DraftsStreamName 
                 : Constants.PublishedStreamName;
-	        return In[outStreamName].List;
+	        return In[outStreamName].List.ToList();
 	    }
 
 	}

@@ -51,7 +51,9 @@ namespace ToSic.Eav.DataSources
 
             var list = In[Constants.DefaultStreamName].List;
 
-            return list.Distinct();
+            return list
+                .Distinct()
+                .ToList();
         }
 
 
@@ -66,7 +68,11 @@ namespace ToSic.Eav.DataSources
 
 	        var list = In[Constants.DefaultStreamName].List;
 
-	        return list.GroupBy(s => s).Where(g => g.Count() > 1).Select(g => g.Key);
+	        return list
+                .GroupBy(s => s)
+                .Where(g => g.Count() > 1)
+                .Select(g => g.Key)
+                .ToList();
 	    }
     }
 }

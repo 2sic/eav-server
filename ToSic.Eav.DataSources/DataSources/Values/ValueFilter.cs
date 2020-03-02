@@ -95,7 +95,7 @@ namespace ToSic.Eav.DataSources
 		    ConfigMask(LangKey, "Default");
         }
 
-        private IEnumerable<IEntity> GetEntitiesOrFallback()
+        private List<IEntity> GetEntitiesOrFallback()
         {
             var res = GetEntities();
             // ReSharper disable PossibleMultipleEnumeration
@@ -104,7 +104,7 @@ namespace ToSic.Eav.DataSources
                     In[Constants.FallbackStreamName].List.Any())
                 {
                     Log.Add("will return fallback stream");
-                    res = In[Constants.FallbackStreamName].List;
+                    res = In[Constants.FallbackStreamName].List.ToList();
                 }
             
             return res;
@@ -112,7 +112,7 @@ namespace ToSic.Eav.DataSources
         }
 
 
-        private IEnumerable<IEntity> GetEntities()
+        private List<IEntity> GetEntities()
 		{
             // todo: maybe do something about languages?
             Configuration.Parse();
@@ -430,8 +430,8 @@ namespace ToSic.Eav.DataSources
 	    private string[] _initializedLangs;
 	    private string _initializedAttrName;
 
-	    private IEnumerable<IEntity> GetFilteredWithLinq(IEnumerable<IEntity> originals, Func<IEntity, bool> compare)//, string attr, string lang)//, string filter)
-	    {
+	    private List<IEntity> GetFilteredWithLinq(IEnumerable<IEntity> originals, Func<IEntity, bool> compare)
+        {
             try
             {
                 var op = Operator.ToLower();
@@ -452,7 +452,7 @@ namespace ToSic.Eav.DataSources
                 }
                 if (int.TryParse(Take, out var tk))
 	                results = results.Take(tk);
-	            return results;
+	            return results.ToList();
 	        }
 	        catch (Exception ex)
 	        {
