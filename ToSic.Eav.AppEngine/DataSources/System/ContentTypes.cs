@@ -79,7 +79,7 @@ namespace ToSic.Eav.DataSources.System
 		    ConfigMask(ScopeKey, $"[Settings:{ScopeField}||Default]");
 		}
 
-	    private IEnumerable<IEntity> GetList()
+	    private List<IEntity> GetList()
 	    {
             Configuration.Parse();
 
@@ -110,11 +110,9 @@ namespace ToSic.Eav.DataSources.System
                     titleField: ContentTypeType.Name.ToString(),
                     typeName: ContentTypeTypeName,
                     guid: guid);
-
-	            //return AsEntity(BuildDictionary(t), ContentTypeType.Name.ToString(), ContentTypeTypeName, t.ContentTypeId, guid, appId: OfAppId);// new Data.Entity(DesiredAppId, t.ContentTypeId, ContentTypeTypeName, BuildDictionary(t), ContentTypeType.Name.ToString(), entityGuid: guid);
 	        });
 
-	        return list;
+	        return list.ToList();
 	    }
 
 	    private static Dictionary<string, object> BuildDictionary(IContentType t) => new Dictionary<string, object>

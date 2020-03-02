@@ -41,7 +41,7 @@ namespace ToSic.Eav.DataSources
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
 		}
 
-        private IEnumerable<IEntity> GetList()
+        private List<IEntity> GetList()
         {
             var foundStream = FindIdealFallbackStream();
 

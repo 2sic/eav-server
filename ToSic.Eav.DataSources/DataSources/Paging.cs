@@ -79,7 +79,7 @@ namespace ToSic.Eav.DataSources
 		}
 
 
-	    private IEnumerable<IEntity> GetList()
+	    private List<IEntity> GetList()
 	    {
             Configuration.Parse();
             var itemsToSkip = (PageNumber - 1)*PageSize;

@@ -100,7 +100,7 @@ namespace ToSic.Eav.DataSources
         }
 
 
-        private IEnumerable<IEntity> GetList()
+        private List<IEntity> GetList()
         {
             Configuration.Parse();
 

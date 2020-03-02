@@ -57,7 +57,7 @@ namespace ToSic.Eav.DataSources
 		    ConfigMask(EntityIdKey, "[Settings:EntityIds]");
 		}
 
-		private IEnumerable<IEntity> GetList()
+		private List<IEntity> GetList()
 		{
             CustomConfigurationParse();
 

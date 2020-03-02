@@ -66,7 +66,7 @@ namespace ToSic.Eav.DataSources
             ConfigMask(SearchInParentKey, "[Settings:UseParent||False]");
 		}
 
-		private IEnumerable<IEntity> GetList()
+		private List<IEntity> GetList()
         {
             var wrapLog = Log.Call();
             Configuration.Parse();

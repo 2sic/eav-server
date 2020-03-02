@@ -55,7 +55,7 @@ namespace ToSic.Eav.DataSources.System
 		    ConfigMask(ContentTypeKey, $"[Settings:{ContentTypeField}||{TryToUseInStream}]");
 		}
 
-	    private IEnumerable<IEntity> GetList()
+	    private List<IEntity> GetList()
 	    {
             Configuration.Parse();
 
@@ -70,7 +70,7 @@ namespace ToSic.Eav.DataSources.System
 
 	        type = useStream 
                 ? optionalList?.FirstOrDefault()?.Type
-                : /* DataSource.GetCache(ZoneId, AppId)*//*Factory.GetAppState*/Eav.Apps.State.Get(this).GetContentType(ContentTypeName);
+                : Apps.State.Get(this).GetContentType(ContentTypeName);
 
 	        // try to load from type, if it exists
 	        var list = type?.Attributes?.OrderBy(at => at.Name).Select(BuildDictionary).ToList();
@@ -88,14 +88,12 @@ namespace ToSic.Eav.DataSources.System
 
             // if it didn't work yet, maybe try from stream items
 
-	        return list?.Select(attribData => 
-            Build.Entity(attribData,
-                titleField: AttributeType.Name.ToString(), 
-                typeName: AttribContentTypeName)
-                           //AsEntity(attribData, AttributeType.Name.ToString(), AttribContentTypeName)
-                       // new Data.Entity(AppId, 0, AttribContentTypeName, attribData, AttributeType.Name.ToString())
-            ) 
-                ?? new List<IEntity>();
+            return list?.Select(attribData =>
+                           Build.Entity(attribData,
+                               titleField: AttributeType.Name.ToString(),
+                               typeName: AttribContentTypeName)
+                   ).ToList()
+                   ?? new List<IEntity>();
         }
 
 
