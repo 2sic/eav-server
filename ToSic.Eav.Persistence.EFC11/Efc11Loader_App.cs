@@ -18,6 +18,10 @@ namespace ToSic.Eav.Persistence.Efc
         {
             _dbContext = dbContext;
         }
+        public Efc11Loader(EavDbContext dbContext, ILog testLog): this(dbContext)
+        {
+            Log = testLog;
+        }
 
         private readonly EavDbContext _dbContext;
 

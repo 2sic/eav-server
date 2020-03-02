@@ -54,7 +54,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         [TestMethod]
         public void GetHistoryTests()
         {
-            GetHistoryTest(TestItemWithCa20Changes, 10);
+            GetHistoryTest(TestItemWithCa20Changes, 31);
             // 2017-10-05 2dm disabled temporarily, as history was cleared
             //GetHistoryTest(TestItemWithCa100Changes, 102);
             //GetHistoryTest(TestItemWithCa9Changes, 9);
