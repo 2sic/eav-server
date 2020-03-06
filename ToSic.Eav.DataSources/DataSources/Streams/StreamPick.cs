@@ -9,15 +9,16 @@ namespace ToSic.Eav.DataSources
 {
 	/// <inheritdoc />
 	/// <summary>
-	/// A DataSource that returns a stream by the provided name. Usually this will be configured through [Params:SomeName]
-	/// BETA - this is introduced in 10.26.01 but not officially released yet.
-	/// </summary>
-    [PrivateApi("not ready for public use")]
+	/// A DataSource that returns a stream by the provided name.
+	/// Usually this will be configured through [Params:SomeName]
+    /// </summary>
+	/// <remarks>Introduced in 10.26</remarks>
+    [PublicApi_Stable_ForUseInYourCode]
 	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.StreamPick, ToSic.Eav.DataSources",
         Type = DataSourceType.Logic,
         ExpectsDataOfType = "67b19864-df6d-400b-9f37-f41f1dd69c4a",
         DynamicOut = false, 
-	    HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-StreamPick")]
+	    HelpLink = "https://r.2sxc.org/DsStreamPick")]
 
     public sealed class StreamPick: DataSourceBase
 	{

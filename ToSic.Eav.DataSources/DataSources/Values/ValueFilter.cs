@@ -18,7 +18,7 @@ namespace ToSic.Eav.DataSources
         In = new[] { Constants.DefaultStreamName, Constants.FallbackStreamName },
         DynamicOut = false,
         ExpectsDataOfType = "|Config ToSic.Eav.DataSources.ValueFilter",
-        HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-ValueFilter")]
+        HelpLink = "https://r.2sxc.org/DsValueFilter")]
 
     public sealed class ValueFilter : DataSourceBase
     {

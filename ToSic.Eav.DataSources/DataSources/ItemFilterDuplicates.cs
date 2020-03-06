@@ -14,7 +14,7 @@ namespace ToSic.Eav.DataSources
 	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.ItemFilterDuplicates, ToSic.Eav.DataSources",
         Type = DataSourceType.Logic, 
         DynamicOut = false, 
-	    HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-ItemFilterDuplicates")]
+	    HelpLink = "https://r.2sxc.org/DsFilterDuplicates")]
 
     public sealed class ItemFilterDuplicates: DataSourceBase
 	{

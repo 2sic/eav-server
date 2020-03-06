@@ -16,7 +16,7 @@ namespace ToSic.Eav.DataSources
         Type = DataSourceType.Sort,
         DynamicOut = false,
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.ValueSort",
-        HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-ValueSort")]
+        HelpLink = "https://r.2sxc.org/DsValueSort")]
 
     public sealed class ValueSort : DataSourceBase
 	{

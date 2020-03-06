@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSources
         Type = DataSourceType.Logic, 
         DynamicOut = false,
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.Paging",
-        HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Paging")]
+        HelpLink = "https://r.2sxc.org/DsPaging")]
 
     public sealed class Paging: DataSourceBase
 	{

@@ -18,7 +18,7 @@ namespace ToSic.Eav.DataSources
         Type = DataSourceType.Modify, 
         DynamicOut = false,
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.AttributeFilter",
-        HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-AttributeFilter")]
+        HelpLink = "https://r.2sxc.org/DsAttributeFilter")]
 
     public class AttributeFilter : DataSourceBase
 	{

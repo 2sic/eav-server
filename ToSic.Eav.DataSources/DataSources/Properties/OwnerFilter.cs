@@ -15,7 +15,7 @@ namespace ToSic.Eav.DataSources
         Type = DataSourceType.Security,
         DynamicOut = false,
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.OwnerFilter",
-        HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-OwnerFilter")]
+        HelpLink = "https://r.2sxc.org/DsOwnerFilter")]
 
     public class OwnerFilter : DataSourceBase
 	{

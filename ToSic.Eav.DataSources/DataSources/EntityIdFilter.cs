@@ -19,7 +19,7 @@ namespace ToSic.Eav.DataSources
         DynamicOut = false,
         NiceName = "ItemIdFilter",
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.EntityIdFilter",
-        HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-ItemIdFilter")]
+        HelpLink = "https://r.2sxc.org/DsIdFilter")]
 
     public class EntityIdFilter : DataSourceBase
 	{

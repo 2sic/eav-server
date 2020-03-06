@@ -16,7 +16,7 @@ namespace ToSic.Eav.DataSources
         DynamicOut = false,
         NiceName = "ContentTypeFilter",
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.EntityTypeFilter",
-        HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-ContentTypeFilter")]
+        HelpLink = "https://r.2sxc.org/DsTypeFilter")]
 
     public class EntityTypeFilter : DataSourceBase
 	{

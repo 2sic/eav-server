@@ -16,7 +16,7 @@ namespace ToSic.Eav.DataSources
         Type = DataSourceType.Security, 
         Icon = "eye", 
         DynamicOut = false, 
-        HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-PublishingFilter")]
+        HelpLink = "https://r.2sxc.org/DsPublishingFilter")]
 
     public class PublishingFilter : DataSourceBase
 	{

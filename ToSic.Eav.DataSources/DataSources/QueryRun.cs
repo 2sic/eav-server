@@ -18,7 +18,7 @@ namespace ToSic.Eav.DataSources
         Icon = "filter",
         DynamicOut = true,
 	    ExpectsDataOfType = "78d25ea6-66cc-44a2-b45d-77749cd9420a",
-        HelpLink = "https://docs.2sxc.org/api/dot-net/ToSic.Eav.DataSources.QueryRun.html"
+        HelpLink = "https://r.2sxc.org/QueryRun"
         )]
 
     // ReSharper disable once UnusedMember.Global
