@@ -30,16 +30,23 @@ namespace ToSic.Eav.Apps
         #endregion
 
         #region Access the Runtime
-
+        /// <summary>
+        /// Read / Runtime system of the AppManager, to read data
+        /// </summary>
         public AppRuntime Read => _runtime ?? (_runtime = new AppRuntime(Data, ShowDrafts, Log));
         private AppRuntime _runtime;
         #endregion
 
+        /// <summary>
+        /// Database controller / DB-Context
+        /// </summary>
         internal DbDataController DataController 
             => _eavContext ?? (_eavContext = DbDataController.Instance(ZoneId, AppId, Log));
         private DbDataController _eavContext;
 
-
+        /// <summary>
+        /// Storage system providing another interface
+        /// </summary>
         internal IStorage Storage => DataController;
 
         /// <summary>
@@ -48,15 +55,27 @@ namespace ToSic.Eav.Apps
         public EntitiesManager Entities => _entities ?? (_entities = new EntitiesManager(this, Log));
         private EntitiesManager _entities;
 
+        ///// <summary>
+        ///// The entity-lists management subsystem
+        ///// </summary>
+        //public EntityListManager EntityLists => _entityList ?? (_entityList = new EntityListManager(this, Log));
+        //private EntityListManager _entityList;
+
+        /// <summary>
+        /// Queries Management Subsystem
+        /// </summary>
         public QueryManager Queries => _queries ?? (_queries = new QueryManager(this, Log));
         private QueryManager _queries;
 
+        /// <summary>
+        /// Content-Types Manager Subsystem
+        /// </summary>
         public ContentTypeManager ContentTypes => _contentTypes ?? (_contentTypes = new ContentTypeManager(this, Log));
         private ContentTypeManager  _contentTypes;
 
 
 
-        public void MetadataEnsureTypeAndSingleEntity(string scope, string setName, string label, int appAssignment, Dictionary<string, object> values, bool inAppType)
+        private void MetadataEnsureTypeAndSingleEntity(string scope, string setName, string label, int appAssignment, Dictionary<string, object> values, bool inAppType)
         {
             var wrapLog = Log.Call($"{scope}/{setName} and {label} for app {AppId} MetadataAssignment: {appAssignment} - inApp: {inAppType}");
             //Log.Add($"check / create for {scope}/{setName} and {label} for app {appAssignment} - inApp: {inAppType}");
@@ -91,7 +110,7 @@ namespace ToSic.Eav.Apps
             values = values ?? new Dictionary<string, object>();
 
             var newEnt = new Entity(AppId, Guid.NewGuid(), ct, values);
-            newEnt.SetMetadata(new Metadata.Target { KeyNumber = /*DataController.*/AppId, TargetType = appAssignment });
+            newEnt.SetMetadata(new Metadata.Target { KeyNumber = AppId, TargetType = appAssignment });
             Entities.Save(newEnt);
 
             SystemManager.Purge(ZoneId, AppId);
@@ -112,19 +131,17 @@ namespace ToSic.Eav.Apps
 
             var appId = new ZoneManager(zoneId, parentLog).CreateApp();
             new AppManager(new AppIdentity(zoneId, appId), parentLog)
-                .EnsureAppIsConfigured( /*zoneId, appId, parentLog, */appName);
+                .EnsureAppIsConfigured(appName);
         }
 
         /// <summary>
         /// Create app-describing entity for configuration and add Settings and Resources Content Type
         /// </summary>
-        public /*static*/ void EnsureAppIsConfigured(/*int zoneId, int appId, ILog parentLog,*/ string appName = null)
+        public void EnsureAppIsConfigured(string appName = null)
         {
-            //var log = new Log("Eav.AppMan", parentLog);
             var wrapLog = Log.Call($"{nameof(appName)}: {appName}");
 
-            //var appIdentity = new AppIdentity(ZoneId, AppId);
-            var mds = State.Get(/*appIdentity*/this);
+            var mds = State.Get(this);
             var appConfig = mds.Get(Constants.MetadataForApp, AppId, AppConstants.TypeAppConfig).FirstOrDefault();
             var appResources = mds.Get(Constants.MetadataForApp, AppId, AppConstants.TypeAppResources).FirstOrDefault();
             var appSettings = mds.Get(Constants.MetadataForApp, AppId, AppConstants.TypeAppSettings).FirstOrDefault();
@@ -139,7 +156,7 @@ namespace ToSic.Eav.Apps
             }
 
             // Get appName from cache - stop if it's a "Default" app
-            var eavAppName = new ZoneRuntime(ZoneId, /*parentLog*/Log).GetName(AppId);
+            var eavAppName = new ZoneRuntime(ZoneId, Log).GetName(AppId);
 
             // v10.25 from now on the DefaultApp can also have settings and resources
             //if (eavAppName == Constants.DefaultAppName)
@@ -152,7 +169,7 @@ namespace ToSic.Eav.Apps
 
             //var appMan = new AppManager(appIdentity, Log);
             if (appConfig == null)
-                /*appMan.*/MetadataEnsureTypeAndSingleEntity(AppConstants.ScopeApp,
+                MetadataEnsureTypeAndSingleEntity(AppConstants.ScopeApp,
                     AppConstants.TypeAppConfig,
                     "App Metadata",
                     Constants.MetadataForApp,
@@ -170,7 +187,7 @@ namespace ToSic.Eav.Apps
 
             // Add new (empty) ContentType for Settings
             if (appSettings == null)
-                /*appMan.*/MetadataEnsureTypeAndSingleEntity(AppConstants.ScopeApp,
+                MetadataEnsureTypeAndSingleEntity(AppConstants.ScopeApp,
                     AppConstants.TypeAppSettings,
                     "Stores settings for an app",
                     Constants.MetadataForApp,
@@ -179,7 +196,7 @@ namespace ToSic.Eav.Apps
 
             // add new (empty) ContentType for Resources
             if (appResources == null)
-                /*appMan.*/MetadataEnsureTypeAndSingleEntity(AppConstants.ScopeApp,
+                MetadataEnsureTypeAndSingleEntity(AppConstants.ScopeApp,
                     AppConstants.TypeAppResources,
                     "Stores resources like translations for an app",
                     Constants.MetadataForApp,
