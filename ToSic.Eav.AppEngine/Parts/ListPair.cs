@@ -55,7 +55,9 @@ namespace ToSic.Eav.Apps.Parts
         public UpdateList Remove(int index)
         {
             Log.Add($"remove content and pres items type:{PrimaryField}, order:{index}");
-            PrimaryIds.RemoveAt(index);
+            // always check if the length actually matches this, otherwise ignore
+            if (PrimaryIds.Count > index)
+                PrimaryIds.RemoveAt(index);
             // in many cases the presentation-list is empty, then there is nothing to remove
             if (CoupledIds.Count > index)
                 CoupledIds.RemoveAt(index);
@@ -66,21 +68,19 @@ namespace ToSic.Eav.Apps.Parts
         public UpdateList Move(int origin, int target)
         {
             var wrapLog = Log.Call<UpdateList>($"reorder entities before:{origin} to after:{target}");
+            if (origin >= PrimaryIds.Count) 
+                return wrapLog("outside of range, no changes", null);
+
             var contentId = PrimaryIds[origin];
             var presentationId = CoupledIds[origin];
-
-            /*
-             * ToDo 2017-08-28:
-             * Create a DRAFT copy of the BlockConfiguration if versioning is enabled.
-             */
 
             PrimaryIds.RemoveAt(origin);
             CoupledIds.RemoveAt(origin);
 
             PrimaryIds.InsertOrAppend(target, contentId);
             CoupledIds.InsertOrAppend(target, presentationId);
-
             return wrapLog("ok", BuildChangesList(PrimaryIds, CoupledIds));
+
         }
 
 
@@ -97,20 +97,28 @@ namespace ToSic.Eav.Apps.Parts
                 throw new Exception(msg);
             }
 
-            var newContentIds = new List<int?>();
-            var newPresIds = new List<int?>();
+            var newPIds = new List<int?>();
+            var newCIds = new List<int?>();
+            var originalPIds = PrimaryIds.ToList();
+            const int usedMarker = int.MinValue;
 
             foreach (var index in newSequence)
             {
+                if(originalPIds[index] == usedMarker)
+                    throw new Exception($"Cancelled re-order because index {index} was re-used");
                 var primaryId = PrimaryIds[index];
-                newContentIds.Add(primaryId);
+                newPIds.Add(primaryId);
+                originalPIds[index] = usedMarker;
 
                 var coupledId = CoupledIds[index];
-                newPresIds.Add(coupledId);
+                newCIds.Add(coupledId);
                 Log.Add($"Added at [{index}] values {primaryId}, {coupledId}");
             }
 
-            return wrapLog("ok", BuildChangesList(newContentIds, newPresIds));
+            PrimaryIds = newPIds;
+            CoupledIds = newCIds;
+
+            return wrapLog("ok", BuildChangesList(PrimaryIds, CoupledIds));
         }
 
         public UpdateList Replace(int index, int? entityId, bool updatePair, int? pairId)
@@ -123,20 +131,28 @@ namespace ToSic.Eav.Apps.Parts
             }
 
             // if necessary, increase length
+            // this is important, because one list could be much longer already, then the other
+            // must catch up
             PrimaryIds.EnsureListLength(index);
 
-            var somethingChanged = ReplaceItemAtIndexIfChanged(PrimaryIds, index, entityId);
+            var primaryChanged = ReplaceItemAtIndexIfChanged(PrimaryIds, index, entityId);
+            var coupledChanged = false;
 
             // maybe do more
             if (updatePair)
             {
                 Log.Add("Will update the coupled list");
                 CoupledIds.EnsureListLength(index);
-                somethingChanged = somethingChanged || ReplaceItemAtIndexIfChanged(CoupledIds, index, pairId);
+                coupledChanged = ReplaceItemAtIndexIfChanged(CoupledIds, index, pairId);
+            }
+            else
+            {
+                // otherwise ensure the lengths still match
+                SyncCoupledListLength(PrimaryIds, CoupledIds);
             }
             var package = BuildChangesList(PrimaryIds, CoupledIds);
 
-            return somethingChanged ? package : null;
+            return primaryChanged || coupledChanged ? package : null;
         }
 
         private static bool ReplaceItemAtIndexIfChanged(List<int?> listMain, int index, int? entityId)
@@ -194,10 +210,6 @@ namespace ToSic.Eav.Apps.Parts
             wrapLog("ok");
             return result;
         }
-
-
-        //private static List<int?> IdsWithNulls(IEnumerable<IEntity> list)
-        //    => list.Select(p => p?.EntityId).ToList();
 
         #endregion
     }

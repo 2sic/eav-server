@@ -45,60 +45,24 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="sortOrder"></param>
         /// <param name="primaryId"></param>
         /// <param name="coupledId"></param>
-        public void Add(int? sortOrder, int? primaryId, int? coupledId)
-        {
-            //Log.Add($"add content/pres at order:{sortOrder}, content#{primaryId}, pres#{coupledId}");
-
-            //if (!sortOrder.HasValue)
-            //    sortOrder = PrimaryIds.Count;
-
-            //PrimaryIds.InsertOrAppend(sortOrder.Value, primaryId);
-            //CoupledIds.InsertOrAppend(sortOrder.Value, coupledId);
-
-            //var values = BuildChangesList(PrimaryIds, CoupledIds);
-            var values = ListPair.Add(sortOrder, primaryId, coupledId);
-            Save(values);
-        }
+        public void Add(int? sortOrder, int? primaryId, int? coupledId) 
+            => Save(ListPair.Add(sortOrder, primaryId, coupledId));
 
         /// <summary>
         /// Removes entities from a group. This will also remove the corresponding presentation entities.
         /// </summary>
         /// <param name="index"></param>
-        public void Remove(int index)
-        {
-            //Log.Add($"remove content and pres items type:{PrimaryField}, order:{index}");
-            //PrimaryIds.RemoveAt(index);
-            //// in many cases the presentation-list is empty, then there is nothing to remove
-            //if (CoupledIds.Count > index)
-            //    CoupledIds.RemoveAt(index);
-            //var values = BuildChangesList(PrimaryIds, CoupledIds);
-            var values = ListPair.Remove(index);
-            Save(values);
-        }
+        public void Remove(int index) 
+            => Save(ListPair.Remove(index));
 
 
         public void Move(int origin, int target)
         {
-            //var wrapLog = Log.Call($"reorder entities before:{origin} to after:{target}");
-            ////CoupledIds = SyncCoupledListLength(PrimaryIds, CoupledIds);
-            //var contentId = PrimaryIds[origin];
-            //var presentationId = CoupledIds[origin];
-
-            ///*
-            // * ToDo 2017-08-28:
-            // * Create a DRAFT copy of the BlockConfiguration if versioning is enabled.
-            // */
-
-            //PrimaryIds.RemoveAt(origin);
-            //CoupledIds.RemoveAt(origin);
-
-            //PrimaryIds.InsertOrAppend(target, contentId);
-            //CoupledIds.InsertOrAppend(target, presentationId);
-
-            //var list = BuildChangesList(PrimaryIds, CoupledIds);
-            var list = ListPair.Move(origin, target);
-            Save(list);
-            //wrapLog("ok");
+            /*
+             * Known Issue 2017-08-28:
+             * Create a DRAFT copy of the BlockConfiguration if versioning is enabled.
+             */
+            Save(ListPair.Move(origin, target));
         }
 
 
@@ -180,87 +144,11 @@ namespace ToSic.Eav.Apps.Parts
 
         public void Replace(int index, int? entityId, bool updatePair, int? pairId)
         {
-            //var wrapLog = Log.Call($"index: {index}, primaryId: {entityId}, coupled?:{updatePair}, coupledId:{pairId}");
-            //if (index == -1)
-            //{
-            //    wrapLog("error");
-            //    throw new Exception("Sort order is never -1 any more; deprecated");
-            //}
-
-            //// if necessary, increase length
-            //PrimaryIds.EnsureListLength(index);
-
-            //var somethingChanged = ReplaceItemAtIndexIfChanged(PrimaryIds, index, entityId);
-
-            //// maybe do more
-            //if (updatePair)
-            //{
-            //    Log.Add("Will update the coupled list");
-            //    CoupledIds.EnsureListLength(index);
-            //    somethingChanged = somethingChanged || ReplaceItemAtIndexIfChanged(CoupledIds, index, pairId);
-            //}
-            //var package = BuildChangesList(PrimaryIds, CoupledIds);
             var package = ListPair.Replace(index, entityId, updatePair, pairId);
-            //if (package != null)
-                Save(package);
+            Save(package);
         }
 
-        //private static bool ReplaceItemAtIndexIfChanged(List<int?> listMain, int index, int? entityId)
-        //{
-        //    if (listMain[index] == entityId) return false;
-        //    listMain[index] = entityId;
-        //    return true;
-        //}
-
-        #region Basic Helpers
-
-        ///// <summary>
-        ///// This method does various clean-up, because historic data can often be mismatched.
-        ///// For example, a list-pair of content/presentation may not be in correct state, so this ensures that everything
-        ///// is in sync.
-        ///// </summary>
-        ///// <param name="primary"></param>
-        ///// <param name="coupled"></param>
-        ///// <returns></returns>
-        //private List<int?> SyncCoupledListLength(List<int?> primary, List<int?> coupled)
-        //{
-        //    var wrapLog = Log.Call<List<int?>>();
-        //    var difference = primary.Count - coupled.Count;
-        //    Log.Add($"Difference: {difference}");
-
-        //    // this should fix https://github.com/2sic/2sxc/issues/1178 and https://github.com/2sic/2sxc/issues/1158
-        //    // goal is to simply remove the last presentation items, if there is a mismatch. Usually they will simply be nulls anyhow
-        //    if (difference < 0)
-        //    {
-        //        Log.Add($"will remove {difference}");
-        //        coupled.RemoveRange(primary.Count, difference);
-        //    }
-
-        //    // extend as necessary
-        //    if (difference > 0)
-        //    {
-        //        Log.Add($"will add {difference}");
-        //        coupled.AddRange(Enumerable.Repeat(new int?(), difference));
-        //    }
-
-        //    return wrapLog("ok", coupled);
-        //}
-
-        #endregion
-
         #region MiniHelpers
-
-        //private Dictionary<string, List<int?>> BuildChangesList(List<int?> primary, List<int?> coupled)
-        //{
-        //    var wrapLog = Log.Call($"primary len: {primary.Count}; coupled len: {coupled?.Count}");
-        //    var result = new Dictionary<string, List<int?>>(
-        //        StringComparer.InvariantCultureIgnoreCase) {{PrimaryField, primary.ToList()}};
-        //    if(coupled != null)
-        //        result.Add(CoupledField, coupled);
-        //    wrapLog("ok");
-        //    return result;
-        //}
-
 
         private static List<int?> IdsWithNulls(IEnumerable<IEntity> list)
             => list.Select(p => p?.EntityId).ToList();
