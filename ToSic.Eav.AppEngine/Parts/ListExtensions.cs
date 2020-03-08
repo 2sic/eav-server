@@ -38,7 +38,7 @@ namespace ToSic.Eav.Apps.Parts
         internal static bool Move<T>(this IList<T> list, int from, int to)
         {
             if (from >= list.Count)
-                return false; //wrapLog("outside of range, no changes", null);
+                return false;
 
             var contentId = list[from];
             list.RemoveAt(from);
@@ -50,5 +50,8 @@ namespace ToSic.Eav.Apps.Parts
         {
             foreach (var keyValuePair in list) action.Invoke(keyValuePair.Value);
         }
+
+        internal static Dictionary<string, object> ToObject<T>(this Dictionary<string, T> list)
+            => list.ToDictionary(x => x.Key, x => x.Value as object);
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Apps.Parts;
 
 namespace ToSic.Eav.Apps.Tests
 {
@@ -10,10 +9,10 @@ namespace ToSic.Eav.Apps.Tests
         [TestMethod]
         public void Move0_1()
         {
-            var pair = new ListPair(new List<int?> {1, 2, null, 44},
+            var pair = CoupledIdLists(new List<int?> {1, 2, null, 44},
                 new List<int?> {101, null, 103, null, null, null},
                 PName,
-                CName, null);
+                CName);
             pair.Move(0, 1);
             AssertLength(pair, 4);
             AssertPositions(pair, 0, 2, null);
@@ -25,10 +24,10 @@ namespace ToSic.Eav.Apps.Tests
         [TestMethod]
         public void Move1_0()
         {
-            var pair = new ListPair(new List<int?> {1, 2, null, 44},
+            var pair = CoupledIdLists(new List<int?> {1, 2, null, 44},
                 new List<int?> {101, null, 103, null, null, null},
                 PName,
-                CName, null);
+                CName);
             pair.Move(1, 0);
             AssertLength(pair, 4);
             AssertPositions(pair, 0, 2, null);
@@ -39,10 +38,10 @@ namespace ToSic.Eav.Apps.Tests
         [TestMethod]
         public void Move0_0()
         {
-            var pair = new ListPair(new List<int?> {1, 2, null, 44},
+            var pair = CoupledIdLists(new List<int?> {1, 2, null, 44},
                 new List<int?> {101, null, 103, null, null, null},
                 PName,
-                CName, null);
+                CName);
             pair.Move(0, 0);
             AssertLength(pair, 4);
             AssertPositions(pair, 0, 1, 101);
@@ -53,10 +52,10 @@ namespace ToSic.Eav.Apps.Tests
         [TestMethod]
         public void Move1_1()
         {
-            var pair = new ListPair(new List<int?> {1, 2, null, 44},
+            var pair = CoupledIdLists(new List<int?> {1, 2, null, 44},
                 new List<int?> {101, null, 103, null, null, null},
                 PName,
-                CName, null);
+                CName);
             pair.Move(1, 1);
             AssertLength(pair, 4);
             AssertPositions(pair, 0, 1, 101);
@@ -67,10 +66,10 @@ namespace ToSic.Eav.Apps.Tests
         [TestMethod]
         public void Move0_2()
         {
-            var pair = new ListPair(new List<int?> {1, 2, null, 44},
+            var pair = CoupledIdLists(new List<int?> {1, 2, null, 44},
                 new List<int?> {101, null, 103, null, null, null},
                 PName,
-                CName, null);
+                CName);
             pair.Move(0, 2);
             AssertLength(pair, 4);
             AssertPositions(pair, 0, 2, null);
@@ -82,10 +81,10 @@ namespace ToSic.Eav.Apps.Tests
         [TestMethod]
         public void MoveEndTwo2_3()
         {
-            var pair = new ListPair(new List<int?> {1, 2, null, 44},
+            var pair = CoupledIdLists(new List<int?> {1, 2, null, 44},
                 new List<int?> {101, null, 103, null, null, null},
                 PName,
-                CName, null);
+                CName);
             pair.Move(2, 3);
             AssertLength(pair, 4);
             AssertPositions(pair, 0, 1, 101);
@@ -97,10 +96,10 @@ namespace ToSic.Eav.Apps.Tests
         [TestMethod]
         public void MoveEndPastEnd()
         {
-            var pair = new ListPair(new List<int?> {1, 2, null, 44},
+            var pair = CoupledIdLists(new List<int?> {1, 2, null, 44},
                 new List<int?> {101, null, 103, 104, null, null},
                 PName,
-                CName, null);
+                CName);
             var changes = pair.Move(3, 4);
             AssertLength(pair, 4);
             AssertPositions(pair, 0, 1, 101);
@@ -114,10 +113,10 @@ namespace ToSic.Eav.Apps.Tests
         [TestMethod]
         public void MoveEndPastEndFar()
         {
-            var pair = new ListPair(new List<int?> {1, 2, null, 44},
+            var pair = CoupledIdLists(new List<int?> {1, 2, null, 44},
                 new List<int?> {101, null, 103, 104, null, null},
                 PName,
-                CName, null);
+                CName);
             var changes = pair.Move(3, 9);
             AssertLength(pair, 4);
             AssertPositions(pair, 0, 1, 101);
@@ -131,10 +130,10 @@ namespace ToSic.Eav.Apps.Tests
         [TestMethod]
         public void MoveOutsideOfRange()
         {
-            var pair = new ListPair(new List<int?> {1, 2, null, 44},
+            var pair = CoupledIdLists(new List<int?> {1, 2, null, 44},
                 new List<int?> {101, null, 103, 104, null, null},
                 PName,
-                CName, null);
+                CName);
             var changes = pair.Move(7, 9);
             AssertLength(pair, 4);
             AssertPositions(pair, 0, 1, 101);

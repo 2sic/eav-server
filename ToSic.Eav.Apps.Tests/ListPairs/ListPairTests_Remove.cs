@@ -11,10 +11,10 @@ namespace ToSic.Eav.Apps.Tests
         [TestMethod]
         public void RemoveAt0()
         {
-            var pair = new ListPair(new List<int?> {1, 2, null, 3},
+            var pair = CoupledIdLists(new List<int?> {1, 2, null, 3},
                 new List<int?> {101, null, 103, null, null, null},
                 PName,
-                CName, null);
+                CName);
             pair.Remove(0);
             AssertLength(pair, 3);
             AssertPositions(pair, 0, 2, null);
@@ -25,10 +25,10 @@ namespace ToSic.Eav.Apps.Tests
         [TestMethod]
         public void RemoveAt1()
         {
-            var pair = new ListPair(new List<int?> {1, 2, null, 3},
+            var pair = CoupledIdLists(new List<int?> {1, 2, null, 3},
                 new List<int?> {101, null, 103, null, null, null},
                 PName,
-                CName, null);
+                CName);
             pair.Remove(1);
             AssertLength(pair, 3);
             AssertPositions(pair, 0, 1, 101);
@@ -42,10 +42,10 @@ namespace ToSic.Eav.Apps.Tests
         [TestMethod]
         public void RemoveAtEnd()
         {
-            var pair = new ListPair(new List<int?> {1, 2, null, 3},
+            var pair = CoupledIdLists(new List<int?> {1, 2, null, 3},
                 new List<int?> {101, null, 103, 104, null, null},
                 PName,
-                CName, null);
+                CName);
             pair.Remove(3);
             AssertLength(pair, 3);
             AssertPositions(pair, 0, 1, 101);
@@ -65,10 +65,10 @@ namespace ToSic.Eav.Apps.Tests
 
         private void RemoveAtEndOrBeyond(int addPosition)
         {
-            var pair = new ListPair(new List<int?> {1, 2, null, 3},
+            var pair = CoupledIdLists(new List<int?> {1, 2, null, 3},
                 new List<int?> {101, null, 103, null, null, null},
                 PName,
-                CName, null);
+                CName);
             pair.Remove(addPosition);
             AssertLength(pair, 4);
             AssertPositions(pair, 0, 1, 101);

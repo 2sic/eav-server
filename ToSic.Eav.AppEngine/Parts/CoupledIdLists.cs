@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Logging;
 using DicNameInt = System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<int?>>;
+using DicNameObj = System.Collections.Generic.Dictionary<string, object>;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -11,24 +12,19 @@ namespace ToSic.Eav.Apps.Parts
     /// These are usually relationship-properties of an entity,
     /// like the Content items on a ContentBlock
     /// </summary>
-    public class ListPair: HasLog
+    public class CoupledIdLists: HasLog
     {
         public DicNameInt Lists = new DicNameInt(StringComparer.InvariantCultureIgnoreCase);
 
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="primary">The primary list which is usually modified</param>
-        /// <param name="coupled">A linked/coupled list which should have the same length</param>
-        /// <param name="primaryField">The primary field - needed to create the update-package</param>
-        /// <param name="coupledField">The linked field - needed to create the update-package</param>
+        /// <param name="lists">Lists to use for working on</param>
         /// <param name="parentLog">Logger</param>
-        public ListPair(List<int?> primary, List<int?> coupled, 
-            string primaryField, string coupledField, ILog parentLog)
+        public CoupledIdLists(DicNameInt lists, ILog parentLog)
             : base("App.LstPai", parentLog)
         {
-            Lists.Add(primaryField, primary);
-            Lists.Add(coupledField, coupled);
+            foreach (var keyValuePair in lists) Lists.Add(keyValuePair.Key, keyValuePair.Value);
             SyncListLengths();
 
             if(Lists.Count == 0)
@@ -40,51 +36,48 @@ namespace ToSic.Eav.Apps.Parts
         /// </summary>
         /// <param name="index">Index to add to - 0 based</param>
         /// <param name="ids"></param>
-        public DicNameInt Add(int? index, int?[] ids)
+        public DicNameObj Add(int? index, int?[] ids)
         {
             Log.Add($"add content/pres at order:{index}");
             index = index ?? Lists.First().Value.Count;
             var i = 0;
             Lists.ForEach(l => l.InsertOrAppend(index.Value, ids[i++]));
-            return Lists;
+            return Lists.ToObject();
         }
 
         /// <summary>
         /// Removes entries from the coupled pair.
         /// </summary>
         /// <param name="index">Index to remove, 0 based</param>
-        public DicNameInt Remove(int index)
+        public DicNameObj Remove(int index)
         {
             Log.Add($"remove content and pres items order:{index}");
             Lists.ForEach(l => l.RemoveIfInRange(index));
-            return Lists;
+            return Lists.ToObject();
         }
-
-
 
         /// <summary>
         /// Move an item in the coupled lists
         /// </summary>
         /// <returns></returns>
-        public DicNameInt Move(int sourceIndex, int targetIndex)
+        public DicNameObj Move(int sourceIndex, int targetIndex)
         {
-            var wrapLog = Log.Call<DicNameInt>($"reorder entities before:{sourceIndex} to after:{targetIndex}");
+            var wrapLog = Log.Call<DicNameObj>($"reorder entities before:{sourceIndex} to after:{targetIndex}");
             var hasChanges = Lists.Values
                 .Aggregate(false, (prev, l) => l.Move(sourceIndex, targetIndex) || prev);
             return hasChanges
-                ? wrapLog("ok", Lists)
+                ? wrapLog("ok", Lists.ToObject())
                 : wrapLog("outside of range, no changes", null);
         }
-
 
         /// <summary>
         /// Reorder the pair of sequences
         /// </summary>
         /// <param name="newSequence">List of index-IDs how it should be sorted now</param>
         /// <returns></returns>
-        public DicNameInt Reorder(int[] newSequence)
+        public DicNameObj Reorder(int[] newSequence)
         {
-            var wrapLog = Log.Call<DicNameInt>($"seq:[{string.Join(",", newSequence)}]");
+            var wrapLog = Log.Call<DicNameObj>($"seq:[{string.Join(",", newSequence)}]");
 
             // some error checks
             if (newSequence.Length != Lists.First().Value.Count)
@@ -110,7 +103,7 @@ namespace ToSic.Eav.Apps.Parts
                 }
             });
 
-            return wrapLog("ok", Lists);
+            return wrapLog("ok", Lists.ToObject());
         }
 
         /// <summary>
@@ -119,14 +112,11 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="index"></param>
         /// <param name="values"></param>
         /// <returns></returns>
-        public DicNameInt Replace(int index, Tuple<bool, int?>[] values)
+        public DicNameObj Replace(int index, Tuple<bool, int?>[] values)
         {
-            var wrapLog = Log.Call<DicNameInt>($"index: {index}");
+            Log.Call($"index: {index}")(null);
             if (index == -1)
-            {
-                wrapLog("error", null);
                 throw new Exception("Sort order is never -1 any more; deprecated");
-            }
 
             // if necessary, increase length on all
             var i = 0;
@@ -138,7 +128,7 @@ namespace ToSic.Eav.Apps.Parts
                 return prev || changed;
             });
 
-            return ok ? Lists : null;
+            return ok ? Lists.ToObject() : null;
         }
 
         private static bool ReplaceItemAtIndexIfChanged(List<int?> listMain, int index, int? entityId)

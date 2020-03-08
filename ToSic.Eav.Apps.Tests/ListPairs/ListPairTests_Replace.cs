@@ -113,12 +113,11 @@ namespace ToSic.Eav.Apps.Tests
         }
 
 
-        private static ListPair ReplaceAtX(int index, bool updatePair)
+        private static CoupledIdLists ReplaceAtX(int index, bool updatePair)
         {
-            var pair = new ListPair(new List<int?> { 1, 2, null, 44 },
+            var pair = CoupledIdLists(new List<int?> { 1, 2, null, 44 },
                 new List<int?> { 101, null, 103, null, null, null },
-                PName,
-                CName, null);
+                PName, CName);
             pair.Replace(index, new[]
             {
                 new Tuple<bool, int?>(true, 999), 

@@ -64,12 +64,11 @@ namespace ToSic.Eav.Apps.Tests
         public void ReorderErrorOutOfRange() 
             => GenerateListAndReorder(new[] {3, 7, 0, 1});
 
-        private static ListPair GenerateListAndReorder(int[] newSequence)
+        private static CoupledIdLists GenerateListAndReorder(int[] newSequence)
         {
-            var pair = new ListPair(new List<int?> {1, 2, null, 44},
+            var pair = CoupledIdLists(new List<int?> {1, 2, null, 44},
                 new List<int?> {101, null, 103, 444},
-                PName,
-                CName, null);
+                PName, CName);
             pair.Reorder(newSequence);
             return pair;
         }

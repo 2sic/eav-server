@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Apps.Parts;
 
 namespace ToSic.Eav.Apps.Tests
 {
@@ -10,11 +9,11 @@ namespace ToSic.Eav.Apps.Tests
         [TestMethod]
         public void AddAt0()
         {
-            var pair = new ListPair(new List<int?> {1, 2, null, 3},
+            var pair = CoupledIdLists(new List<int?> {1, 2, null, 3},
                 new List<int?> {101, null, 103, null, null, null},
                 PName,
-                CName, null);
-            pair.Add(0, new int?[]{999,777}/* 999, 777*/);
+                CName);
+            pair.Add(0, new int?[]{999,777});
             AssertLength(pair, 5);
             AssertPositions(pair,0, 999, 777);
             AssertPositions(pair, 1, 1, 101);
@@ -24,11 +23,11 @@ namespace ToSic.Eav.Apps.Tests
         [TestMethod]
         public void AddAt1()
         {
-            var pair = new ListPair(new List<int?> {1, 2, null, 3},
+            var pair = CoupledIdLists(new List<int?> {1, 2, null, 3},
                 new List<int?> {101, null, 103, null, null, null},
                 PName,
-                CName, null);
-            pair.Add(1, new int?[] {999, 777});// 999, 777);
+                CName);
+            pair.Add(1, new int?[] {999, 777});
             AssertLength(pair, 5);
             AssertPositions(pair, 0, 1, 101);
             AssertPositions(pair, 1, 999, 777);
@@ -38,11 +37,11 @@ namespace ToSic.Eav.Apps.Tests
         [TestMethod]
         public void AddAtEnd()
         {
-            var pair = new ListPair(new List<int?> {1, 2, null, 3},
+            var pair = CoupledIdLists(new List<int?> {1, 2, null, 3},
                 new List<int?> {101, null, 103, null, null, null},
                 PName,
-                CName, null);
-            pair.Add(3, new int?[] {999, 777});// 999, 777);
+                CName);
+            pair.Add(3, new int?[] {999, 777});
             AssertLength(pair, 5);
             AssertPositions(pair, 0, 1, 101);
             AssertPositions(pair, 1, 2, null);
@@ -58,11 +57,10 @@ namespace ToSic.Eav.Apps.Tests
 
         private void AddAtEndOrBeyond(int addPosition)
         {
-            var pair = new ListPair(new List<int?> {1, 2, null, 3},
+            var pair = CoupledIdLists(new List<int?> {1, 2, null, 3},
                 new List<int?> {101, null, 103, null, null, null},
-                PName,
-                CName, null);
-            pair.Add(addPosition, new int?[] {999, 777});// 999, 777);
+                PName, CName);
+            pair.Add(addPosition, new int?[] {999, 777});
             AssertLength(pair, 5);
             AssertPositions(pair, 0, 1, 101);
             AssertPositions(pair, 1, 2, null);
