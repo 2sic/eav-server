@@ -55,12 +55,6 @@ namespace ToSic.Eav.Apps
         public EntitiesManager Entities => _entities ?? (_entities = new EntitiesManager(this, Log));
         private EntitiesManager _entities;
 
-        ///// <summary>
-        ///// The entity-lists management subsystem
-        ///// </summary>
-        //public EntityListManager EntityLists => _entityList ?? (_entityList = new EntityListManager(this, Log));
-        //private EntityListManager _entityList;
-
         /// <summary>
         /// Queries Management Subsystem
         /// </summary>

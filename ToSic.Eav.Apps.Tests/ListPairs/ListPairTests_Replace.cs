@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps.Parts;
 
@@ -118,7 +119,11 @@ namespace ToSic.Eav.Apps.Tests
                 new List<int?> { 101, null, 103, null, null, null },
                 PName,
                 CName, null);
-            pair.Replace(index, 999, updatePair, 777);
+            pair.Replace(index, new[]
+            {
+                new Tuple<bool, int?>(true, 999), 
+                new Tuple<bool, int?>(updatePair, 777), 
+            });
             return pair;
         }
 

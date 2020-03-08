@@ -17,8 +17,9 @@ namespace ToSic.Eav.Apps.Tests
                 CName, null);
             pair.Remove(0);
             AssertLength(pair, 3);
-            Assert.AreEqual(pair.PrimaryIds.First(), 2);
-            Assert.AreEqual(pair.CoupledIds.First(), null);
+            AssertPositions(pair, 0, 2, null);
+            //Assert.AreEqual(pair.PrimaryIds.First(), 2);
+            //Assert.AreEqual(pair.CoupledIds.First(), null);
         }
 
         [TestMethod]
@@ -30,10 +31,12 @@ namespace ToSic.Eav.Apps.Tests
                 CName, null);
             pair.Remove(1);
             AssertLength(pair, 3);
-            Assert.AreEqual(pair.PrimaryIds.First(), 1);
-            Assert.AreEqual(pair.CoupledIds.First(), 101);
-            Assert.AreEqual(pair.PrimaryIds[1], null);
-            Assert.AreEqual(pair.CoupledIds[1], 103);
+            AssertPositions(pair, 0, 1, 101);
+            //Assert.AreEqual(pair.PrimaryIds.First(), 1);
+            //Assert.AreEqual(pair.CoupledIds.First(), 101);
+            AssertPositions(pair, 1, null, 103);
+            //Assert.AreEqual(pair.PrimaryIds[1], null);
+            //Assert.AreEqual(pair.CoupledIds[1], 103);
         }
 
         [TestMethod]
@@ -45,10 +48,12 @@ namespace ToSic.Eav.Apps.Tests
                 CName, null);
             pair.Remove(3);
             AssertLength(pair, 3);
-            Assert.AreEqual(pair.PrimaryIds.First(), 1);
-            Assert.AreEqual(pair.CoupledIds.First(), 101);
-            Assert.AreEqual(pair.PrimaryIds.Last(), null);
-            Assert.AreEqual(pair.CoupledIds.Last(), 103);
+            AssertPositions(pair, 0, 1, 101);
+            AssertPositions(pair, pair.Lists.First().Value.Count() -1, null, 103);
+            //Assert.AreEqual(pair.PrimaryIds.First(), 1);
+            //Assert.AreEqual(pair.CoupledIds.First(), 101);
+            //Assert.AreEqual(pair.PrimaryIds.Last(), null);
+            //Assert.AreEqual(pair.CoupledIds.Last(), 103);
         }
 
 
@@ -66,12 +71,15 @@ namespace ToSic.Eav.Apps.Tests
                 CName, null);
             pair.Remove(addPosition);
             AssertLength(pair, 4);
-            Assert.AreEqual(pair.PrimaryIds.First(), 1);
-            Assert.AreEqual(pair.CoupledIds.First(), 101);
-            Assert.AreEqual(pair.PrimaryIds[1], 2);
-            Assert.AreEqual(pair.CoupledIds[1], null);
-            Assert.AreEqual(pair.PrimaryIds[3], 3);
-            Assert.AreEqual(pair.CoupledIds[3], null);
+            AssertPositions(pair, 0, 1, 101);
+            AssertPositions(pair, 1, 2, null);
+            AssertPositions(pair, 3, 3, null);
+            //Assert.AreEqual(pair.PrimaryIds.First(), 1);
+            //Assert.AreEqual(pair.CoupledIds.First(), 101);
+            //Assert.AreEqual(pair.PrimaryIds[1], 2);
+            //Assert.AreEqual(pair.CoupledIds[1], null);
+            //Assert.AreEqual(pair.PrimaryIds[3], 3);
+            //Assert.AreEqual(pair.CoupledIds[3], null);
         }
 
     }

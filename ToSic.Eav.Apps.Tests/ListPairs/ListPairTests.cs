@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps.Parts;
 
@@ -32,16 +33,19 @@ namespace ToSic.Eav.Apps.Tests
 
         private void AssertLength(ListPair pair, int expectedLength)
         {
-            Assert.AreEqual(pair.PrimaryIds.Count, pair.CoupledIds.Count, "lengths should now match");
-            Assert.AreEqual(expectedLength, pair.CoupledIds.Count, $"length was expected to be {expectedLength}");
+            var itemsNotWithLength = pair.Lists.Values.Where(list => list.Count != expectedLength);
+            Assert.AreEqual(0, itemsNotWithLength.Count(), "lengths should now match");
+            //Assert.AreEqual(expectedLength, pair.CoupledIds.Count, $"length was expected to be {expectedLength}");
         }
 
         private void AssertPositions(ListPair pair, int position, int? primary, int? coupled)
         {
-            Assert.AreEqual(primary, pair.PrimaryIds[position], 
-                $"Primary at {position} expected to be {primary} but was {pair.PrimaryIds[position]}");
-            Assert.AreEqual(coupled, pair.CoupledIds[position], 
-                $"Primary at {position} expected to be {primary} but was {pair.PrimaryIds[position]}");
+            var found = pair.Lists.Values.First()[position];
+            Assert.AreEqual(primary, found, 
+                $"Primary at {position} expected to be {primary} but was {found}");
+            found = pair.Lists.Values.Skip(1).First()[position];
+            Assert.AreEqual(coupled, found, 
+                $"Primary at {position} expected to be {primary} but was {found}");
         }
 
         private void AssertSequence(ListPair pair, int startIndex)

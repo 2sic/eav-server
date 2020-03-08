@@ -14,7 +14,7 @@ namespace ToSic.Eav.Apps.Tests
                 new List<int?> {101, null, 103, null, null, null},
                 PName,
                 CName, null);
-            pair.Add(0, 999, 777);
+            pair.Add(0, new int?[]{999,777}/* 999, 777*/);
             AssertLength(pair, 5);
             AssertPositions(pair,0, 999, 777);
             AssertPositions(pair, 1, 1, 101);
@@ -28,7 +28,7 @@ namespace ToSic.Eav.Apps.Tests
                 new List<int?> {101, null, 103, null, null, null},
                 PName,
                 CName, null);
-            pair.Add(1, 999, 777);
+            pair.Add(1, new int?[] {999, 777});// 999, 777);
             AssertLength(pair, 5);
             AssertPositions(pair, 0, 1, 101);
             AssertPositions(pair, 1, 999, 777);
@@ -42,7 +42,7 @@ namespace ToSic.Eav.Apps.Tests
                 new List<int?> {101, null, 103, null, null, null},
                 PName,
                 CName, null);
-            pair.Add(3, 999, 777);
+            pair.Add(3, new int?[] {999, 777});// 999, 777);
             AssertLength(pair, 5);
             AssertPositions(pair, 0, 1, 101);
             AssertPositions(pair, 1, 2, null);
@@ -62,7 +62,7 @@ namespace ToSic.Eav.Apps.Tests
                 new List<int?> {101, null, 103, null, null, null},
                 PName,
                 CName, null);
-            pair.Add(addPosition, 999, 777);
+            pair.Add(addPosition, new int?[] {999, 777});// 999, 777);
             AssertLength(pair, 5);
             AssertPositions(pair, 0, 1, 101);
             AssertPositions(pair, 1, 2, null);
