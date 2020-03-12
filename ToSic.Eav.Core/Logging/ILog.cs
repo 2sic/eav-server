@@ -32,6 +32,13 @@ namespace ToSic.Eav.Logging
         string Identifier { get; }
 
         /// <summary>
+        /// Determines if this log should be preserved in the short term.
+        /// Like for live-analytics / live-insights.
+        /// Default is true, but in certain cases it will default to false.
+        /// </summary>
+        bool Preserve { get; set; }
+
+        /// <summary>
         /// Intercept the result of an inner method, log it, then pass result on
         /// </summary>
         /// <typeparam name="T"></typeparam>

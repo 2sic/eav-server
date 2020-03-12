@@ -6,15 +6,11 @@ namespace ToSic.Eav.Generics
 {
     public class DictionaryInvariant<T>: IDictionary<string, T>
     {
-        public DictionaryInvariant()
-        {
-            Original = new Dictionary<string, T>(comparer: StringComparer.InvariantCultureIgnoreCase);
-        }
+        public DictionaryInvariant() 
+            => Original = new Dictionary<string, T>(comparer: StringComparer.InvariantCultureIgnoreCase);
 
-        public DictionaryInvariant(IDictionary<string, T> original)
-        {
-            Original = original;
-        }
+        public DictionaryInvariant(IDictionary<string, T> original) 
+            => Original = new Dictionary<string, T>(original, StringComparer.InvariantCultureIgnoreCase);
 
         protected readonly IDictionary<string, T> Original;
             
