@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.DataSources.Configuration;
-using ToSic.Eav.TokenEngine.Tests.TestData;
 using DataTable = ToSic.Eav.DataSources.DataTable;
 
 namespace ToSic.Eav.DataSourceTests.ExternalData
@@ -89,7 +89,7 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
             AddSemirandomPersons(dataTable, itemsToGenerate, firstId);
 
             var source = new DataTable(dataTable, "Person", titleField: "FullName", modifiedField: "InternalModified")
-                .Init(DemoConfigs.AppSetAndRes());
+                .Init(LookUpTestData.AppSetAndRes());
             //{
             //    ConfigurationProvider = DemoConfigs.AppSetAndRes()
             //};
@@ -156,7 +156,7 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
             AddSemirandomTrivial(dataTable, itemsToGenerate, firstId);
 
             var source = new DataTable(dataTable, "Person", modifiedField: "InternalModified")
-                .Init(DemoConfigs.AppSetAndRes());
+                .Init(LookUpTestData.AppSetAndRes());
             //{
             //    ConfigurationProvider = DemoConfigs.AppSetAndRes()
             //};

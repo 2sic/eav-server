@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Configuration;
-using ToSic.Eav.TokenEngine.Tests.TestData;
 
 namespace ToSic.Eav.DataSourceTests.ExternalData
 {
@@ -129,7 +129,7 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
                 TitleColumnName = titleColumnName,
                 //ConfigurationProvider = DemoConfigs.AppSetAndRes()
             };
-            return source.Init(DemoConfigs.AppSetAndRes());
+            return source.Init(LookUpTestData.AppSetAndRes());
         }
     }
 }

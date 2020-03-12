@@ -2,13 +2,12 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSourceTests;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.LookUp;
-using ToSic.Eav.TokenEngine.Tests.TestData;
-
 
 
 namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
@@ -118,13 +117,13 @@ namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
         protected static LookUpEngine BuildConfigurationProvider(string name, Dictionary<string, object> vals)
         {
             var vc = BuildConfigurationProvider();
-            vc.Add(DemoConfigs.BuildValueProvider("Settings", vals));
+            vc.Add(LookUpTestData.BuildLookUpEntity("Settings", vals));
             return vc;
         }
 
         protected static LookUpEngine BuildConfigurationProvider()
         {
-            var vc = DemoConfigs.AppSetAndRes();
+            var vc = LookUpTestData.AppSetAndRes();
             return vc;
         }
 

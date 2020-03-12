@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Configuration;
-using ToSic.Eav.TokenEngine.Tests.TestData;
-using ToSic.Eav.TokenEngine.Tests.ValueProvider;
 using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests.ExternalData
@@ -73,8 +72,8 @@ And ProductSort = @" + Sql.ExtractedParamPrefix + @"3";
 
             sql.Configuration.Parse();
             var parsed = sql.Configuration.Values;
-            Assert.AreEqual(ValueCollectionProvider_Test.MaxPictures, parsed["@" + Sql.ExtractedParamPrefix + "1"]);
-            Assert.AreEqual(ValueCollectionProvider_Test.DefaultCategory, parsed["@" + Sql.ExtractedParamPrefix + "2"]);
+            Assert.AreEqual(LookUpEngineTests.MaxPictures, parsed["@" + Sql.ExtractedParamPrefix + "1"]);
+            Assert.AreEqual(LookUpEngineTests.DefaultCategory, parsed["@" + Sql.ExtractedParamPrefix + "2"]);
             Assert.AreEqual("CorrectlyDefaulted", parsed["@" + Sql.ExtractedParamPrefix + "3"]);
         }
 
@@ -127,7 +126,7 @@ And ProductSort = @" + Sql.ExtractedParamPrefix + @"3";
         public static Sql GenerateSqlDataSource(string connection, string query, string typeName)
         {
             var source = new Sql(connection, query, typeName);
-            source.Init(DemoConfigs.AppSetAndRes());
+            source.Init(LookUpTestData.AppSetAndRes());
             //source.ConfigurationProvider = DemoConfigs.AppSetAndRes();
 
             return source;

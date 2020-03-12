@@ -1,8 +1,8 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Configuration;
 using ToSic.Eav.DataSourceTests.ExternalData;
-using ToSic.Eav.TokenEngine.Tests.ValueProvider;
 
 namespace ToSic.Eav.DataSourceTests.LookUps
 {
@@ -25,7 +25,7 @@ namespace ToSic.Eav.DataSourceTests.LookUps
             myConfDs.EntityIds = ItemToFilter;
 
             testSource.Configuration.Values.Add("SomethingSimple", "Something");
-            testSource.Configuration.Values.Add("Token1", new ValueCollectionProvider_Test().OriginalSettingDefaultCat);
+            testSource.Configuration.Values.Add("Token1", new LookUpEngineTests().OriginalSettingDefaultCat);
             testSource.Configuration.Values.Add("InTestTitle", "[In:Default:EntityTitle]");
             testSource.Configuration.Values.Add("InTestFirstName", "[In:Default:FirstName]");
             testSource.Configuration.Values.Add("InTestBadStream", "[In:InvalidStream:Field]");
