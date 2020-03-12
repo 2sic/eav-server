@@ -65,10 +65,11 @@ namespace ToSic.Eav.DataSources.Queries
 	        var querySettingsLookUp = new LookUpInMetadata(ConfigKeyPipelineSettings, queryDef.Entity);
 
             // centralizing building of the primary configuration template for each part
-            if (lookUpEngineToClone != null)
-                Log.Add(() =>
-                    $"Sources in original LookUp: {lookUpEngineToClone.Sources.Count} " +
-                    $"[{string.Join(",", lookUpEngineToClone.Sources.Keys)}]");
+			// 2020-03-12 2dm - disabling this log, because now that it's hierarchical, this doesn't mean anything any more
+            //if (lookUpEngineToClone != null)
+            //    Log.Add(() =>
+            //        $"Sources in original LookUp: {lookUpEngineToClone.Sources.Count} " +
+            //        $"[{string.Join(",", lookUpEngineToClone.Sources.Keys)}]");
             var templateConfig = new LookUpEngine(lookUpEngineToClone, Log);
 
             if (queryDef.ParamsLookUp is LookUpInDictionary paramsLookup)

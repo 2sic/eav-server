@@ -42,23 +42,33 @@ namespace ToSic.Eav.DataSources
 
         #region Out
         /// <inheritdoc/>
-        public override IDictionary<string, IDataStream> Out => _out ?? (_out = CreateOutWithAllStreams());
+        public override IDictionary<string, IDataStream> Out 
+            => _out ?? (_out = new StreamDictionary(this, Query?.Out  ?? new Dictionary<string, IDataStream>(StringComparer.OrdinalIgnoreCase)));
 
         private IDictionary<string, IDataStream> _out;
         #endregion
 
-        private IDictionary<string, IDataStream> CreateOutWithAllStreams()
+        #region Surface the inner query in the API in case we need to look into it from our Razor Code
+
+        /// <summary>
+        /// The inner query object. Will be initialized the first time it's accessed.
+        /// </summary>
+        [PrivateApi("not sure if showing this has any value - probably not")]
+        public Query Query => _query ?? (_query = BuildQuery());
+        private Query _query;
+        #endregion
+
+        private Query BuildQuery()
         {
-            var wrapLog = Log.Call<IDictionary<string, IDataStream>>();
+            var wrapLog = Log.Call<Query>();
             // parse config to be sure we get the right query name etc.
             Configuration.Parse();
 
             #region get the configEntity
             // go through the metadata-source to find it, since it's usually only used in LookUps
-            var metadataLookUp = !(Configuration.LookUps.Sources[QueryBuilder.ConfigKeyPartSettings] 
-                is LookUpInLookUps settingsLookUp)
-                ? null
-                : settingsLookUp.Providers.FirstOrDefault(p => p is LookUpInMetadata) as LookUpInMetadata;
+            var metadataLookUp = (Configuration.LookUps.FindSource(QueryBuilder.ConfigKeyPartSettings)// .Sources[QueryBuilder.ConfigKeyPartSettings] 
+                as LookUpInLookUps)
+                ?.Providers.FirstOrDefault(p => p is LookUpInMetadata) as LookUpInMetadata;
 
             // if found, initialize and get the metadata entity attached
             metadataLookUp?.Initialize();
@@ -68,13 +78,13 @@ namespace ToSic.Eav.DataSources
             #region check for various missing configurations / errors
 
             // prepare empty result, as we may need it in various use cases
-            var emptyResult = new Dictionary<string, IDataStream>(StringComparer.OrdinalIgnoreCase);
+            //var emptyResult = new Dictionary<string, IDataStream>(StringComparer.OrdinalIgnoreCase);
 
             // quit if nothing found
             if(configEntity == null)
             {
                 Log.Add("no configuration found - empty list");
-                return wrapLog("silent error", emptyResult);
+                return wrapLog("silent error", null /*emptyResult*/);
             }
 
             Log.Add($"Found query settings'{configEntity.GetBestTitle()}' ({configEntity.EntityId}), will continue");
@@ -84,7 +94,7 @@ namespace ToSic.Eav.DataSources
             if (queryDef == null)
             {
                 Log.Add("can't find query in configuration - empty list");
-                return wrapLog("silent error", emptyResult);
+                return wrapLog("silent error", null /*emptyResult*/);
             }
             #endregion
 
@@ -93,8 +103,9 @@ namespace ToSic.Eav.DataSources
             // create the query & set params
             var query = new Query(ZoneId, AppId, queryDef, LookUpWithoutParams(), false, null, Log);
             query.Params(ResolveParams(configEntity));
+            return wrapLog("ok", query);
 
-            return wrapLog("ok", new StreamDictionary(this, query.Out));
+            //return wrapLog("ok", new StreamDictionary(this, Query.Out));
         }
 
         //private StreamDictionary ReStream(IDictionary<string, IDataStream> original)
@@ -116,8 +127,8 @@ namespace ToSic.Eav.DataSources
         /// <returns></returns>
         private LookUpEngine LookUpWithoutParams()
         {
-            var lookUpsWithoutParams = new LookUpEngine(Configuration.LookUps, Log);
-            if (lookUpsWithoutParams.Sources.ContainsKey(QueryConstants.ParamsLookup))
+            var lookUpsWithoutParams = new LookUpEngine(Configuration.LookUps, Log, true);
+            if (lookUpsWithoutParams.HasSource/*.Sources.ContainsKey*/(QueryConstants.ParamsLookup))
                 lookUpsWithoutParams.Sources.Remove(QueryConstants.ParamsLookup);
             // 1.1 note: can't add Override here because the underlying params don't exist yet - so an override wouldn't keep them
             return lookUpsWithoutParams;

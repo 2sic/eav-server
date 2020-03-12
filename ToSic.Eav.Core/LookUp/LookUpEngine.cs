@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
+using DicString = System.Collections.Generic.IDictionary<string, string>;
 
 namespace ToSic.Eav.LookUp
 {
@@ -22,7 +23,7 @@ namespace ToSic.Eav.LookUp
         // todo: probably change and not let the outside modify directly
         [PrivateApi]
 	    public Dictionary<string, ILookUp> Sources { get; }
-	        = new Dictionary<string, ILookUp>(StringComparer.OrdinalIgnoreCase);
+	        = new Dictionary<string, ILookUp>(StringComparer.InvariantCultureIgnoreCase);
 
         /// <summary>
         /// List of all Configurations for this DataSource
@@ -36,64 +37,114 @@ namespace ToSic.Eav.LookUp
 
         public LookUpEngine(ILog parentLog): base("EAV.LookUp", parentLog)
 		{
-			_reusableTokenReplace = new TokenReplace(Sources);
+			_reusableTokenReplace = new TokenReplace(this/*Sources*/);
 		}
 
         /// <inheritdoc />
         /// <summary>
         /// Cloning another LookUpEngine and keep the sources.
-        /// BUT: Don't keep the overrides, as these will be unique in the clone. 
         /// </summary>
-        public LookUpEngine(ILookUpEngine original, ILog parentLog): this(parentLog)
+        public LookUpEngine(ILookUpEngine original, ILog parentLog, bool makeOwnCopyOfSources = false): this(parentLog)
 		{
 		    if (original == null) return;
             var wrapLog = Log.Call(null, $"clone: {original.Log.Id}; LogDetailed: {LogDetailed}");
-		    foreach (var srcSet in original.Sources)
-		        Sources.Add(srcSet.Key, srcSet.Value);
+            if (makeOwnCopyOfSources)
+            {
+                Link(original.Downstream);
+                foreach (var srcSet in original.Sources)
+                    Sources.Add(srcSet.Key, srcSet.Value);
+            }
+            else
+                Link(original);
+
             wrapLog($"cloned {original.Sources.Count}");
         }
 
-	    /// <inheritdoc />
-	    public IDictionary<string, string> LookUp(IDictionary<string, string> values,
-            IDictionary<string, ILookUp> overrides = null,
-            int depth = 4)
+        [PrivateApi("still wip")]
+        public ILookUpEngine Downstream { get; private set; }
+
+        [PrivateApi("still wip")]
+        public ILookUp FindSource(string name) => Sources.ContainsKey(name)
+            ? Sources[name]
+            : Downstream?.FindSource(name);
+
+        [PrivateApi]
+        public bool HasSource(string name) => FindSource(name) != null;
+
+        public void Link(ILookUpEngine downstream) => Downstream = downstream;
+
+	    // 2020-03-12 original
+	  //  public IDictionary<string, string> LookUp(IDictionary<string, string> values,
+   //         IDictionary<string, ILookUp> overrides = null,
+   //         int depth = 4)
+   //     {
+   //         var wrapLog = Log.Call($"values: {values.Count}, overrides: {overrides?.Count}, depth: {depth}");
+   //         // start by creating a copy of the dictionary
+   //         values = new Dictionary<string, string>(values, StringComparer.OrdinalIgnoreCase);
+
+   //         if (values.Count == 0)
+   //         {
+   //             wrapLog("no values");
+   //             return values;
+   //         }
+
+   //         #region if there are instance-specific additional Property-Access objects, add them to the sources-list
+   //         // note: it's important to create a one-time use list of sources if instance-specific sources are needed, to never modify the "global" list.
+   //         var useAdditionalPa = overrides != null; // not null, so it has instance specific stuff
+		 //   if (useAdditionalPa)
+   //         {
+   //             var added = "";
+   //             var skipped = "";
+   //             foreach (var pa in Sources)
+   //                 if (!overrides.ContainsKey(pa.Key))
+   //                 {
+   //                     if (LogDetailed) added += pa.Key + ",";
+   //                     overrides.Add(pa.Key.ToLower(), pa.Value);
+   //                 }
+   //                 else if (LogDetailed) skipped += pa.Key + ",";
+
+   //             if (LogDetailed)
+   //                 Log.Add($"skipped original [{skipped}] " +
+   //                         $"and added originals [{added}]");
+   //         }
+
+   //         var instanceTokenReplace = useAdditionalPa ? new TokenReplace(this, overrides) : _reusableTokenReplace;
+   //         #endregion
+
+   //         #region Loop through all config-items and token-replace them
+   //         foreach (var o in values.ToList())
+			//{
+   //             // check if the string contains a token or not
+   //             if (!TokenReplace.ContainsTokens(o.Value))
+   //             {
+   //                 if (LogDetailed) Log.Add($"token '{o.Key}={o.Value}' has no sub-tokens");
+   //                 continue;
+   //             }
+
+   //             var result = instanceTokenReplace.ReplaceTokens(o.Value, depth); // with 2 further recurrences
+   //             if (LogDetailed) Log.Add($"token '{o.Key}={o.Value}' is now '{result}'");
+   //             values[o.Key] = result;
+   //         }
+   //         #endregion
+
+   //         wrapLog("ok");
+   //         return values;
+   //     }
+
+        public DicString LookUp(DicString values, int depth = 4)
         {
-            var wrapLog = Log.Call($"values: {values.Count}, overrides: {overrides?.Count}, depth: {depth}");
+            var wrapLog = Log.Call<IDictionary<string, string>>($"values: {values.Count}, depth: {depth}");
             // start by creating a copy of the dictionary
             values = new Dictionary<string, string>(values, StringComparer.OrdinalIgnoreCase);
 
             if (values.Count == 0)
-            {
-                wrapLog("no values");
-                return values;
-            }
+                return wrapLog("no values", values);
 
-            #region if there are instance-specific additional Property-Access objects, add them to the sources-list
-            // note: it's important to create a one-time use list of sources if instance-specific sources are needed, to never modify the "global" list.
-            var useAdditionalPa = overrides != null; // not null, so it has instance specific stuff
-		    if (useAdditionalPa)
-            {
-                var added = "";
-                var skipped = "";
-                foreach (var pa in Sources)
-                    if (!overrides.ContainsKey(pa.Key))
-                    {
-                        if (LogDetailed) added += pa.Key + ",";
-                        overrides.Add(pa.Key.ToLower(), pa.Value);
-                    }
-                    else if (LogDetailed) skipped += pa.Key + ",";
-
-                if (LogDetailed)
-                    Log.Add($"skipped original [{skipped}] " +
-                            $"and added originals [{added}]");
-            }
-
-            var instanceTokenReplace = useAdditionalPa ? new TokenReplace(overrides) : _reusableTokenReplace;
-            #endregion
+            var instanceTokenReplace = _reusableTokenReplace;
 
             #region Loop through all config-items and token-replace them
             foreach (var o in values.ToList())
-			{
+            {
                 // check if the string contains a token or not
                 if (!TokenReplace.ContainsTokens(o.Value))
                 {
@@ -107,16 +158,34 @@ namespace ToSic.Eav.LookUp
             }
             #endregion
 
-            wrapLog("ok");
-            return values;
+            return wrapLog("ok", values);
+        }
+
+        public IDictionary<string, string> LookUp(DicString values, IDictionary<string, ILookUp> overrides, int depth = 4)
+        {
+            var wrapLog = Log.Call<DicString>($"values: {values.Count}, overrides: {overrides?.Count}, depth: {depth}");
+
+            // start by creating a copy of the dictionary
+            values = new Dictionary<string, string>(values, StringComparer.OrdinalIgnoreCase);
+
+            if (values.Count == 0) return wrapLog("no values", values);
+
+            // if there are instance-specific additional Property-Access objects, add them to the sources-list
+            // note: it's important to create a one-time use list of sources if instance-specific sources are needed, to never modify the "global" list.
+            if (overrides == null || overrides.Count <= 0) return wrapLog("ok", LookUp(values, depth));
+
+            var innerLookup = new LookUpEngine(this, Log);
+            foreach (var pa in overrides)
+                innerLookup.Sources.Add(pa.Key, pa.Value);
+            return wrapLog("ok", innerLookup.LookUp(values, depth));
         }
 
         // 2019-11-07 2dm doesn't seem used
-	    //public string Replace(string sourceText) => _reusableTokenReplace.ReplaceTokens(sourceText);
+        //public string Replace(string sourceText) => _reusableTokenReplace.ReplaceTokens(sourceText);
 
 
         /// <inheritdoc />
-	    public void Add(ILookUp lookUp)
+        public void Add(ILookUp lookUp)
         {
             if (LogDetailed) Log.Add($"Add source: '{lookUp.Name}'");
             Sources[lookUp.Name] = lookUp;
