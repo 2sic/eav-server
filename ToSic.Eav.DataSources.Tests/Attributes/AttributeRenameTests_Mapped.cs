@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSourceTests.ExternalData;
 
 namespace ToSic.Eav.DataSourceTests.Attributes
@@ -40,15 +41,23 @@ Last=LastName";
         }
 
         [TestMethod]
-        public void Map3ChangeWithPreserve()
+        public void Map3ChangeWithPreserve() => Map3ChangeWithPreserve(Map3Fields);
+
+        /// <summary>
+        /// This test should result in the same thing as the original test, because the other field doesn't exist
+        /// </summary>
+        [TestMethod]
+        public void Map3PlusFaultyWithPreserve() => Map3ChangeWithPreserve(Map3Fields + "\nNewName=DoesNotExist");
+
+        public void Map3ChangeWithPreserve(string map)
         {
-            var test = new AttributeRenameTester(Map3Fields);
+            var test = new AttributeRenameTester(map);
             Assert.AreEqual(10, test.CList.Count);
             Assert.AreEqual(DataTableTst.ValueColumns, test.CItem.Attributes.Count, "expected the same amount of columns");
 
-            AssertFieldsChanged(test.CItem, 
-                new[] {DataTableTst.FieldFullName, DataTableTst.FieldFirstName, DataTableTst.FieldLastName},
-                new[] {ShortName, ShortFirst, ShortLast});
+            AssertFieldsChanged(test.CItem,
+                new[] { DataTableTst.FieldFullName, DataTableTst.FieldFirstName, DataTableTst.FieldLastName },
+                new[] { ShortName, ShortFirst, ShortLast });
 
             test.AssertValues(DataTableTst.FieldFullName, ShortName);
             test.AssertValues(DataTableTst.FieldFirstName, ShortFirst);

@@ -14,7 +14,7 @@ namespace ToSic.Eav.DataSources
 	/// DataSource to only pass through configured AttributeNames - other attributes/properties are removed from the entities.
 	/// </summary>
 	/// <remarks>Uses Configuration "AttributeNames"</remarks>
-    [PrivateApi("beta")]
+    [PublicApi_Stable_ForUseInYourCode]
     [VisualQuery(GlobalName = "ToSic.Eav.DataSources.AttributeRename, ToSic.Eav.DataSources",
         Type = DataSourceType.Modify,
         DynamicOut = false,
@@ -44,8 +44,7 @@ namespace ToSic.Eav.DataSources
         }
 
         /// <summary>
-        /// A string containing one or more attribute maps.
-        /// The syntax is "NewName=OldName" - one mapping per line
+        /// True/false if attributes not renamed should be preserved.
         /// </summary>
         public bool KeepOtherAttributes
         {
@@ -113,6 +112,9 @@ namespace ToSic.Eav.DataSources
                         var fieldMap = attributeNames.FirstOrDefault(an => string.Equals(an.Old, a.Key, StringComparison.InvariantCultureIgnoreCase));
                         if (fieldMap != null)
                         {
+                            // check if the name actually changed, if not, return original (faster)
+                            if (string.Equals(fieldMap.New, fieldMap.Old, StringComparison.InvariantCultureIgnoreCase))
+                                return a;
                             var renameAttribute = AttribBuilder.CloneAttributeAndRename(a.Value, fieldMap.New);
                             return new KeyValuePair<string, IAttribute>(fieldMap.New, renameAttribute);
                         }
