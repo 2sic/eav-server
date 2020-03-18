@@ -90,11 +90,12 @@
     <Compile Include="DataSourceInfo.cs" />
     <Compile Include="DataSources\App.cs" />
     <Compile Include="DataSources\AppRootCacheKey.cs" />
+    <Compile Include="DataSources\Attributes\AttributeRename.cs" />
     <Compile Include="DataSources\Configuration\Configuration.cs" />
     <Compile Include="DataSources\Configuration\DSHelpers.cs" />
     <Compile Include="DataSources\QueryRun.cs" />
     <Compile Include="DataSources\Streams\StreamPick.cs" />
-    <Compile Include="DataSources\Values\AttributeFilter.cs" />
+    <Compile Include="DataSources\Attributes\AttributeFilter.cs" />
     <Compile Include="Caching\ICanPurgeListCache.cs" />
     <Compile Include="Caching\IListCache.cs" />
     <Compile Include="Caching\ListCache.cs" />
@@ -118,7 +119,6 @@
     <Compile Include="Caching\CacheAllStreams.cs" />
     <Compile Include="DataSources\IAppRoot.cs" />
     <Compile Include="Caching\ListCacheItem.cs" />
-    <Compile Include="Caching\RootCacheSimple.cs" />
     <Compile Include="DataSources\External\CsvDataSource.cs" />
     <Compile Include="DataSource.cs" />
     <Compile Include="Streams\DataStream.cs" />

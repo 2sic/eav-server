@@ -12,10 +12,39 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
     [TestClass]
     public class DataTableTst
     {
+        // ReSharper disable StringLiteralTypo
         public static string[] TestCities = { "Buchs", "Grabs", "Sevelen", "Zürich" };
+        // ReSharper restore StringLiteralTypo
         public static int MinHeight = 150;
         public static int HeightVar = 55;
         public static int IsMaleForEveryX = 3;
+
+        public const string ContentTypeName = "Person";
+
+        public const int ValueColumns = 10;
+        public const string FieldFullName = "FullName";
+        public const string FieldFirstName = "FirstName";
+        public const string FieldLastName = "LastName";
+        public const string FieldCity = "City";
+        public const string FieldIsMale = "IsMale";
+        public const string FieldHeight = "Height";
+        public const string FieldCityMaybeNull = "CityMaybeNull";
+        public const string FieldModified = "InternalModified";
+
+        public static string[] Fields = {
+            // the id won't be listed as a field
+            //DataTable.EntityIdDefaultColumnName,
+            FieldFullName,
+            FieldFirstName,
+            FieldLastName,
+            FieldCity,
+            FieldIsMale,
+            FieldHeight,
+            FieldCityMaybeNull,
+            FieldModified
+        };
+
+        //public const string Col
 
         public const string FieldBirthday = "Birthdate",
             FieldBirthdayNull = "BirthdateMaybeNull";
@@ -75,24 +104,21 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
             dataTable.Columns.AddRange(new[]
             {
                 new DataColumn(DataTable.EntityIdDefaultColumnName, typeof (int)),
-                new DataColumn("FullName"),
-                new DataColumn("FirstName"),
-                new DataColumn("LastName"),
-                new DataColumn("City"),
-                new DataColumn("IsMale", typeof (bool)),
+                new DataColumn(FieldFullName),
+                new DataColumn(FieldFirstName),
+                new DataColumn(FieldLastName),
+                new DataColumn(FieldCity),
+                new DataColumn(FieldIsMale, typeof (bool)),
                 new DataColumn(FieldBirthday, typeof (DateTime)),
                 new DataColumn(FieldBirthdayNull, typeof(DateTime)),
-                new DataColumn("Height", typeof (int)),
-                new DataColumn("CityMaybeNull", typeof(string)), 
-                new DataColumn("InternalModified", typeof(DateTime)), 
+                new DataColumn(FieldHeight, typeof (int)),
+                new DataColumn(FieldCityMaybeNull, typeof(string)), 
+                new DataColumn(FieldModified, typeof(DateTime)), 
             });
             AddSemirandomPersons(dataTable, itemsToGenerate, firstId);
 
-            var source = new DataTable(dataTable, "Person", titleField: "FullName", modifiedField: "InternalModified")
+            var source = new DataTable(dataTable, ContentTypeName, titleField: FieldFullName, modifiedField: "InternalModified")
                 .Init(LookUpTestData.AppSetAndRes());
-            //{
-            //    ConfigurationProvider = DemoConfigs.AppSetAndRes()
-            //};
 
             // now enumerate all, to be sure that the time counted for DS creation isn't part of the tracked test-time
             // ReSharper disable once ReturnValueOfPureMethodIsNotUsed

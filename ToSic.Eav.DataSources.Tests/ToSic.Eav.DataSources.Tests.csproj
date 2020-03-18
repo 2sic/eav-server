@@ -105,6 +105,12 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="Attributes\AttributeRenameTester.cs" />
+    <Compile Include="Attributes\AttributeRenameTests_TitleField.cs" />
+    <Compile Include="Attributes\AttributeRenameTests_Type.cs" />
+    <Compile Include="Attributes\AttributeRenameTests_Mapped.cs" />
+    <Compile Include="Attributes\AttributeRenameTests_NoChanges.cs" />
+    <Compile Include="Attributes\AttributeRenameTests.cs" />
     <Compile Include="Caches\CacheAllStreams_Test.cs" />
     <Compile Include="Caches\QuickCaches_Test.cs" />
     <Compile Include="EntityFilters\EntityIdFilter_Test.cs" />
