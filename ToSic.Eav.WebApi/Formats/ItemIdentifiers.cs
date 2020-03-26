@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 using ToSic.Eav.ImportExport.Json.V1;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -15,7 +16,7 @@ namespace ToSic.Eav.WebApi.Formats
         /// <summary>
         ///  the Guid
         /// </summary>
-        public Guid Guid { get; set; } // not 
+        public Guid Guid { get; set; } 
 
         /// <summary>
         /// the content-type (for new, and finding all fields etc.)
@@ -27,21 +28,48 @@ namespace ToSic.Eav.WebApi.Formats
         /// </summary>
         public Metadata Metadata { get; set; }
 
-
-        // 2019-05-23 new for 2sxc 10
+        /// <summary>
+        /// Metadata key information
+        /// </summary>
+        /// <remarks>
+        /// added 2019-05-23 new for 2sxc 10
+        /// </remarks>
         public JsonMetadataFor For { get; set; }
 
+        #region Old properties only for support of the old UI, will be deprecated soon
         /// <summary>
         /// Group information, for items which are coming from a group and not using direct IDs
         /// This also contains information about 
         /// </summary>
         public GroupAssignment Group { get; set; }
 
+        /// <summary>
+        /// This is an old property for the old UI, not to be used in the new UI
+        /// </summary>
+        public string Title { get; set; }
+        #endregion
+
         // this is not needed on the server, but must be passed through so it's still attached to this item if in use
         public dynamic Prefill { get; set; }
-        public string Title { get; set; }
+
 
         public int? DuplicateEntity { get; set; }
+
+        #region New features in 10.27 adding things in lists
+
+        /// <summary>
+        /// Experimental 10.27
+        /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string Field { get; set; }
+
+        /// <summary>
+        /// Experimental 10.27
+        /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public Guid? Parent { get; set; }
+
+        #endregion
     }
 
     public class BundleWithHeader
@@ -57,7 +85,7 @@ namespace ToSic.Eav.WebApi.Formats
         /// Temporary solution to provide get/set EntityGuid across all expected types
         /// remove this when only then new save is being used
         /// </summary>
-        [Newtonsoft.Json.JsonIgnore]
+        [JsonIgnore]
         public Guid EntityGuid
         {
             get
@@ -77,7 +105,7 @@ namespace ToSic.Eav.WebApi.Formats
             }
         }
 
-        [Newtonsoft.Json.JsonIgnore]
+        [JsonIgnore]
         public int EntityId
         {
             get
@@ -136,23 +164,21 @@ namespace ToSic.Eav.WebApi.Formats
         /// and because the previous information if it should really, really add (entityId=0) fails
         /// with the new API since it's set upon saving
         /// </summary>
-        [Newtonsoft.Json.JsonIgnore]
+        [JsonIgnore]
         public bool? ReallyAddBecauseAlreadyVerified { get; set; }
-
  
         /// <summary>
         /// Determines that an empty slot is allowed / possible
         /// This will usually affect the UI in the possible options
         /// </summary>
         public bool SlotCanBeEmpty { get; set; }
+
        /// <summary>
         /// LeaveBlank means that the slot - no matter if new or existing - should be blank and should NOT contain the entity
         /// It may even mean that the slot must be blanked now
         /// </summary>
         public bool SlotIsEmpty { get; set; }
 
-        //public bool ContentBlockIsEntity { get; set; }
-        //public int ContentBlockId { get; set; }
         public int ContentBlockAppId { get; set; }
     }
 
