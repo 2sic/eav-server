@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Persistence.Efc.Tests
@@ -28,7 +29,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
             Loader = NewLoader();
         }
 
-        public Efc11Loader NewLoader() => new Efc11Loader(Db);
+        public Efc11Loader NewLoader() => new Efc11Loader(Db, new Log("Tst.Efc11"));
 
 
         protected JsonSerializer SerializerOfApp(int appId)

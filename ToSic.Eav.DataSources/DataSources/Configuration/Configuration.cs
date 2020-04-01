@@ -64,5 +64,15 @@ namespace ToSic.Eav.DataSources.Configuration
                ?? (_overrideLookUps = new Dictionary<string, ILookUp> { { "In".ToLower(), new LookUpInDataTarget(DataSource) } });
         private IDictionary<string, ILookUp> _overrideLookUps;
 
+
+        [PrivateApi]
+        public bool ConvertSafely(string value, bool? defaultValue = null)
+        {
+            var defValue = defaultValue ?? false;
+            if (string.IsNullOrWhiteSpace(value)) return defValue;
+            if (bool.TryParse(value, out var result))
+                return result;
+            return defValue;
+        }
     }
 }

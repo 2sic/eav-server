@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.UnitTests.DataSources;
+using ToSic.Eav.DataSourceTests.ExternalData;
 
 namespace ToSic.Eav.DataSources.Tests
 {
@@ -9,7 +9,7 @@ namespace ToSic.Eav.DataSources.Tests
 
         public static ValueSort GeneratePersonSourceWithDemoData(int itemsToGenerate = 10, int firstId = 1001, bool useCacheForSpeed = true)
         {
-            var ds = DataTableDataSourceTest.GeneratePersonSourceWithDemoData(itemsToGenerate, firstId);
+            var ds = DataTableTst.GeneratePersonSourceWithDemoData(itemsToGenerate, firstId);
             var filtered = new DataSource(null).GetDataSource<ValueSort>(ds, ds);
             return filtered;
         }

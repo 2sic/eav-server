@@ -16,10 +16,11 @@ namespace ToSic.Eav.DataSources
 	[PublicApi_Stable_ForUseInYourCode]
 	public class DataTable : ExternalData
 	{
-        #region Configuration-properties
+		// help Link: https://r.2sxc.org/DsDataTable
+		#region Configuration-properties
 
-        /// <inheritdoc/>
-        [PrivateApi]
+		/// <inheritdoc/>
+		[PrivateApi]
         public override string LogId => "DS.DtaTbl";
 
         private const string TitleFieldKey = "TitleField";

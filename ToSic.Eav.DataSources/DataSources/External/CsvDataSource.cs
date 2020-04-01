@@ -19,7 +19,8 @@ namespace ToSic.Eav.DataSources
     [VisualQuery(GlobalName = "ToSic.Eav.DataSources.CsvDataSource, ToSic.Eav.DataSources",
         Type = DataSourceType.Source, 
         DynamicOut = false,
-        ExpectsDataOfType = "|Config ToSic.Eav.DataSources.CsvDataSource")]
+        ExpectsDataOfType = "|Config ToSic.Eav.DataSources.CsvDataSource",
+        HelpLink = "https://r.2sxc.org/DsCsv")]
     public class CsvDataSource : ExternalData
     {
         /// <inheritdoc/>
@@ -100,7 +101,7 @@ namespace ToSic.Eav.DataSources
         }
 
 
-        private IEnumerable<IEntity> GetList()
+        private List<IEntity> GetList()
         {
             Configuration.Parse();
 

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Apps.Parts
 {

@@ -14,7 +14,7 @@ namespace ToSic.Eav.DataSources
 	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.StreamMerge, ToSic.Eav.DataSources",
         Type = DataSourceType.Logic, 
         DynamicOut = false, 
-	    HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-StreamMerge")]
+	    HelpLink = "https://r.2sxc.org/DsStreamMerge")]
 
     public sealed class StreamMerge: DataSourceBase
 	{
@@ -36,11 +36,16 @@ namespace ToSic.Eav.DataSources
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
 		}
 
-        private IEnumerable<IEntity> GetList()
+        private List<IEntity> GetList()
         {
-            var streams = In.OrderBy(pair => pair.Key).Where(v => v.Value?.List != null).Select(v => v.Value.List);
+            var streams = In
+                .OrderBy(pair => pair.Key)
+                .Where(v => v.Value?.List != null)
+                .Select(v => v.Value.List);
 
-            return streams.Aggregate(new List<IEntity>() as IEnumerable<IEntity>, (current, strm) => current.Concat(strm));
+            return streams
+                .Aggregate(new List<IEntity>() as IEnumerable<IEntity>, (current, strm) => current.Concat(strm))
+                .ToList();
         }
 	}
 }

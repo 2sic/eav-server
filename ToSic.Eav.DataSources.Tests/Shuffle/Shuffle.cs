@@ -1,9 +1,10 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
-using ToSic.Eav.UnitTests.DataSources;
+using ToSic.Eav.DataSources;
+using ToSic.Eav.DataSourceTests.ExternalData;
 
-namespace ToSic.Eav.DataSources.Tests
+namespace ToSic.Eav.DataSourceTests.Shuffle
 {
     // Todo
     // Create tests with language-parameters as well, as these tests ignore the language and always use default
@@ -24,7 +25,7 @@ namespace ToSic.Eav.DataSources.Tests
 
         private static DataSources.Shuffle GenerateShuffleDS(int desiredFinds)
         {
-            var ds = DataTableDataSourceTest.GeneratePersonSourceWithDemoData(desiredFinds, 1001, true);
+            var ds = DataTableTst.GeneratePersonSourceWithDemoData(desiredFinds, 1001, true);
             var sf = new DataSource(null).GetDataSource<DataSources.Shuffle>(new AppIdentity(0, 0), ds);
             return sf;
         }
@@ -46,8 +47,8 @@ namespace ToSic.Eav.DataSources.Tests
             var items = 5;
             var sf = GenerateShuffleDS(items);
 
-            var origSeqSorted = AreAllItemsSorted(sf.In["Default"]);
-            var seqConsistent = AreAllItemsSorted(sf.Out["Default"]);
+            var origSeqSorted = AreAllItemsSorted(sf.In[Constants.DefaultStreamName]);
+            var seqConsistent = AreAllItemsSorted(sf.Out[Constants.DefaultStreamName]);
 
             // after checking all, it should NOT be consistent
             Assert.IsTrue(origSeqSorted, "original sequence SHOULD be sorted");

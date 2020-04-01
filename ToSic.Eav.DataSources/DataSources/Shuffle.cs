@@ -18,7 +18,7 @@ namespace ToSic.Eav.DataSources
         DynamicOut = false, 
         ExpectsDataOfType = "38e7822b-1049-4539-bb3f-f99949b1b1d1",
         Icon = "shuffle",
-        HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Shuffle")]
+        HelpLink = "https://r.2sxc.org/DsShuffle")]
 	public sealed class Shuffle: DataSourceBase
 	{
         #region Configuration-properties (no config)
@@ -58,18 +58,18 @@ namespace ToSic.Eav.DataSources
         }
 
 
-        private IEnumerable<IEntity> GetList()
+        private List<IEntity> GetList()
 	    {
             Configuration.Parse();
 
             Log.Add($"will shuffle and take:{Take}");
-            return ShuffleInternal(In["Default"].List, Take, Log);
+            return ShuffleInternal(In[Constants.DefaultStreamName].List, Take, Log);
 	    }
 
         #region Experiment based on http://stackoverflow.com/questions/375351/most-efficient-way-to-randomly-sort-shuffle-a-list-of-integers-in-c-sharp/375446#375446
         static readonly Random Generator = new Random();
 
-        private static IEnumerable<T> ShuffleInternal<T>(IEnumerable<T> sequence, int take, ILog log)
+        private static List<T> ShuffleInternal<T>(IEnumerable<T> sequence, int take, ILog log)
         {
             var wrapLog = log.Call();
             var retArray = sequence.ToArray();
@@ -78,7 +78,7 @@ namespace ToSic.Eav.DataSources
             if (!retArray.Any())
             {
                 wrapLog("0 items found to shuffle");
-                return retArray;
+                return retArray.ToList();
             }
 
             var maxIndex = retArray.Length; // not Length -1, as the random-generator will always be below this
@@ -102,7 +102,9 @@ namespace ToSic.Eav.DataSources
             }
 
             wrapLog((maxTake).ToString());
-            return retArray.Take(maxTake);
+            return retArray
+                .Take(maxTake)
+                .ToList();
         }
         #endregion
 

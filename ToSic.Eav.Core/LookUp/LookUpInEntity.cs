@@ -34,8 +34,6 @@ namespace ToSic.Eav.LookUp
 	    public LookUpInEntity(IEntity source, string name = "entity source without name")
          : base(source, name)
         {
-      //      OriginalData = source;
-		    //Name = name;
 		}
 
         // todo: might need to clarify what language/culture the key is taken from in an entity

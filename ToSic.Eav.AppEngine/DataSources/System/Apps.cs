@@ -65,7 +65,7 @@ namespace ToSic.Eav.DataSources.System
 		}
 
 
-	    private IEnumerable<IEntity> GetList()
+	    private List<IEntity> GetList()
 	    {
             Configuration.Parse();
 
@@ -107,7 +107,7 @@ namespace ToSic.Eav.DataSources.System
 	            //return AsEntity(appEnt, AppType.Name.ToString(), AppsContentTypeName, app.Key, guid);
             });
 
-            return list;
+            return list.ToList();
         }
 
 	}

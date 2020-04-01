@@ -25,8 +25,7 @@ namespace ToSic.Eav.Data.Builder
                 else
                 {
                     var attributeType = GetAttributeTypeName(oAttrib.Value);
-                    //var baseModel = new AttributeDefinition(attribute.Key, attributeType, attribute.Key == titleAttributeName, 0, 0);
-                    var attributeModel = AttributeBase.CreateTypedAttribute(oAttrib.Key, attributeType);//  baseModel.CreateAttribute();
+                    var attributeModel = AttributeBase.CreateTypedAttribute(oAttrib.Key, attributeType);
                     var valuesModelList = new List<IValue>();
                     if (oAttrib.Value != null)
                     {
@@ -44,29 +43,39 @@ namespace ToSic.Eav.Data.Builder
 
             return result;
 
-            // helper to get text-name of the type
-            string GetAttributeTypeName(object value)
-            {
-                if (value is DateTime)
-                    return "DateTime";
-                if (value is decimal || value is int || value is double)
-                    return "Number";
-                if (value is bool)
-                    return "Boolean";
-                if (value is Guid || value is List<Guid> || value is List<Guid?> || value is List<int> || value is List<int?>)
-                    return "Entity";
-                if (value is int[] || value is int?[])
-                    throw new Exception("Trying to provide an attribute with a value which is an int-array. This is not allowed - ask the iJungleboy.");
-                return "String";
-            }
+
         }
 
+        // helper to get text-name of the type
+        public static string GetAttributeTypeName(object value)
+        {
+            if (value is DateTime)
+                return "DateTime";
+            if (value is decimal || value is int || value is double)
+                return "Number";
+            if (value is bool)
+                return "Boolean";
+            if (value is Guid || value is List<Guid> || value is List<Guid?> || value is List<int> || value is List<int?>)
+                return "Entity";
+            if (value is int[] || value is int?[])
+                throw new Exception("Trying to provide an attribute with a value which is an int-array. This is not allowed - ask the iJungleboy.");
+            return "String";
+        }
         #endregion
 
+
+        public static IAttribute CloneAttributeAndRename(IAttribute original, string newName)
+        {
+            var attributeType = GetAttributeTypeName(original);
+            var newAttrib = AttributeBase.CreateTypedAttribute(newName, attributeType);
+            newAttrib.Values = original.Values;
+            return newAttrib;
+        }
 
 
         public static Dictionary<string, IAttribute> Copy(this IDictionary<string, IAttribute> attributes) 
             => attributes.ToDictionary(x => x.Key, x => x.Value.Copy());
+
 
         #region Helper to add a value with languages to an existing list of Attributes
         /// <summary>

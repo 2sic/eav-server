@@ -26,7 +26,7 @@ namespace ToSic.Eav.DataSources
             {
                 "ToSic.Eav.DataSources.SqlDataSource, ToSic.Eav.DataSources"
             },
-        HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-SqlDataSource")]
+        HelpLink = "https://r.2sxc.org/DsSql")]
 
 	public class Sql : ExternalData
 	{
@@ -152,7 +152,7 @@ namespace ToSic.Eav.DataSources
         /// Replace original EnsureConfigurationIsLoaded to handle the SQL in a special way
         /// </summary>
         [PrivateApi]
-	    private void CustomConfigurationParse()
+	    internal void CustomConfigurationParse()
 	    {
 	        if (Configuration.IsParsed)
 	            return;
@@ -205,7 +205,7 @@ namespace ToSic.Eav.DataSources
         }
 
 
-	    private IEnumerable<IEntity> GetList()
+	    private List<IEntity> GetList()
 		{
             CustomConfigurationParse();
 

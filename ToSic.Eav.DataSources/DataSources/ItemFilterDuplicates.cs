@@ -14,7 +14,7 @@ namespace ToSic.Eav.DataSources
 	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.ItemFilterDuplicates, ToSic.Eav.DataSources",
         Type = DataSourceType.Logic, 
         DynamicOut = false, 
-	    HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-ItemFilterDuplicates")]
+	    HelpLink = "https://r.2sxc.org/DsFilterDuplicates")]
 
     public sealed class ItemFilterDuplicates: DataSourceBase
 	{
@@ -51,7 +51,9 @@ namespace ToSic.Eav.DataSources
 
             var list = In[Constants.DefaultStreamName].List;
 
-            return list.Distinct();
+            return list
+                .Distinct()
+                .ToList();
         }
 
 
@@ -66,7 +68,11 @@ namespace ToSic.Eav.DataSources
 
 	        var list = In[Constants.DefaultStreamName].List;
 
-	        return list.GroupBy(s => s).Where(g => g.Count() > 1).Select(g => g.Key);
+	        return list
+                .GroupBy(s => s)
+                .Where(g => g.Count() > 1)
+                .Select(g => g.Key)
+                .ToList();
 	    }
     }
 }

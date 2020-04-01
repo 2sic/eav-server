@@ -14,7 +14,7 @@ namespace ToSic.Eav.DataSources
 	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.StreamFallback, ToSic.Eav.DataSources",
         Type = DataSourceType.Logic, 
         DynamicOut = false, 
-	    HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-StreamFallback")]
+	    HelpLink = "https://r.2sxc.org/DsStreamFallback")]
 
     public sealed class StreamFallback : DataSourceBase
 	{
@@ -41,11 +41,11 @@ namespace ToSic.Eav.DataSources
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
 		}
 
-        private IEnumerable<IEntity> GetList()
+        private List<IEntity> GetList()
         {
             var foundStream = FindIdealFallbackStream();
 
-            return foundStream != null ? foundStream.List : new List<IEntity>();
+            return foundStream != null ? foundStream.List.ToList() : new List<IEntity>();
         }
 
 	    private IDataStream FindIdealFallbackStream()

@@ -24,6 +24,19 @@ namespace ToSic.Eav.Logging.Simple
 
         public string FullIdentifier => _parent?.FullIdentifier + Identifier;
 
+        public bool Preserve
+        {
+            get => _preserve;
+            set
+            {
+                _preserve = value;
+                // pass it on to the parent, so that the chain knows if it should be preserved
+                if (_parent != null) _parent.Preserve = true;
+            }
+        }
+
+        private bool _preserve = true;
+
         /// <summary>
         /// Create a logger and optionally attach it to a parent logger
         /// </summary>

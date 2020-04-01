@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSources
         Type = DataSourceType.Logic, 
         DynamicOut = false,
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.Paging",
-        HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Paging")]
+        HelpLink = "https://r.2sxc.org/DsPaging")]
 
     public sealed class Paging: DataSourceBase
 	{
@@ -79,12 +79,15 @@ namespace ToSic.Eav.DataSources
 		}
 
 
-	    private IEnumerable<IEntity> GetList()
+	    private List<IEntity> GetList()
 	    {
             Configuration.Parse();
             var itemsToSkip = (PageNumber - 1)*PageSize;
 
-	        var result = In["Default"].List.Skip(itemsToSkip).Take(PageSize).ToList();
+	        var result = In[Constants.DefaultStreamName].List
+                .Skip(itemsToSkip)
+                .Take(PageSize)
+                .ToList();
 	        Log.Add($"get page:{PageNumber} with size{PageSize} found:{result.Count}");
             return result;
 	    }
@@ -94,7 +97,7 @@ namespace ToSic.Eav.DataSources
             Configuration.Parse();
 
             // Calculate any additional stuff
-            var itemCount = In["Default"].List.Count();
+            var itemCount = In[Constants.DefaultStreamName].List.Count();
             var pageCount = Math.Ceiling((decimal) itemCount / PageSize);
 
             // Assemble the entity

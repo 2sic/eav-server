@@ -16,7 +16,7 @@ namespace ToSic.Eav.DataSources
         DynamicOut = false,
         NiceName = "ContentTypeFilter",
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.EntityTypeFilter",
-        HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-ContentTypeFilter")]
+        HelpLink = "https://r.2sxc.org/DsTypeFilter")]
 
     public class EntityTypeFilter : DataSourceBase
 	{
@@ -48,22 +48,24 @@ namespace ToSic.Eav.DataSources
 		    ConfigMask(TypeNameKey, "[Settings:TypeName]");
         }
 
-        // special alternately named stream for use in the App data-source
-        internal void AddNamedStream(string otherName) => Out.Add(otherName, new DataStream(this, otherName, GetList));
+		// 2020-03-02 2dm disabled this, not necessary any more
+        //// special alternately named stream for use in the App data-source
+        //internal void AddNamedStream(string otherName) => Out.Add(otherName, new DataStream(this, otherName, GetList));
 
-	    private IEnumerable<IEntity> GetList()
+	    private List<IEntity> GetList()
 	    {
             Configuration.Parse();
             Log.Add($"get list with type:{TypeName}");
 
 	        try
             {
-                var appState = /*Factory.GetAppState*/Eav.Apps.State.Get(this);//  Root.AppState;// DataSource.GetCache(ZoneId, AppId);
+                var appState = Apps.State.Get(this);
 	            var foundType = appState?.GetContentType(TypeName);
 	            if (foundType != null) // maybe it doesn't find it!
 	                return (from e in In[Constants.DefaultStreamName].List
 	                    where e.Type == foundType
-	                    select e);
+	                    select e)
+                        .ToList();
 	        }
 	        catch { /* ignore */ }
 
@@ -71,7 +73,8 @@ namespace ToSic.Eav.DataSources
             // Reason is that many dynamically created content-types won't be known to the cache, so they cannot be found the previous way
 	        return (from e in In[Constants.DefaultStreamName].List
 	            where e.Type.Name == TypeName
-	            select e);
+	            select e)
+                .ToList();
 	    }
 
 	}

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
@@ -18,7 +19,7 @@ namespace ToSic.Eav.DataSources
         DynamicOut = false,
         NiceName = "ItemIdFilter",
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.EntityIdFilter",
-        HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-ItemIdFilter")]
+        HelpLink = "https://r.2sxc.org/DsIdFilter")]
 
     public class EntityIdFilter : DataSourceBase
 	{
@@ -34,12 +35,17 @@ namespace ToSic.Eav.DataSources
 		/// A string containing one or more entity-ids. like "27" or "27,40,3063,30306"
 		/// </summary>
 		public string EntityIds
-		{
-			get => Configuration[EntityIdKey];
-		    set => Configuration[EntityIdKey] = value;
-		}
+        {
+            get => Configuration[EntityIdKey];
+            set
+            {
+                // kill any spaces in the string
+                var cleaned = Regex.Replace(value ?? "", @"\s+", "");
+                Configuration[EntityIdKey] = cleaned;
+            }
+        }
 
-		#endregion
+        #endregion
 
 		/// <summary>
 		/// Constructs a new EntityIdFilter
@@ -51,7 +57,7 @@ namespace ToSic.Eav.DataSources
 		    ConfigMask(EntityIdKey, "[Settings:EntityIds]");
 		}
 
-		private IEnumerable<IEntity> GetList()
+		private List<IEntity> GetList()
 		{
             CustomConfigurationParse();
 
@@ -60,7 +66,7 @@ namespace ToSic.Eav.DataSources
 		    var originals = In[Constants.DefaultStreamName].List;
 
 			//var result = entityIds.Where(originals.ContainsKey).ToDictionary(id => id, id => originals[id]);
-		    var result = entityIds.Select(originals.One).Where(e => e != null);
+		    var result = entityIds.Select(originals.One).Where(e => e != null).ToList();
 
 		    Log.Add(() => $"get ids:[{string.Join(",",_cleanedIds)}] found:{result.Count()}");
 		    return result;

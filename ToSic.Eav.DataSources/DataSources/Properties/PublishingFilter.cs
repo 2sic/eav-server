@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -15,7 +16,7 @@ namespace ToSic.Eav.DataSources
         Type = DataSourceType.Security, 
         Icon = "eye", 
         DynamicOut = false, 
-        HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-PublishingFilter")]
+        HelpLink = "https://r.2sxc.org/DsPublishingFilter")]
 
     public class PublishingFilter : DataSourceBase
 	{
@@ -48,14 +49,14 @@ namespace ToSic.Eav.DataSources
        }
 
 
-	    private IEnumerable<IEntity> GetList()
+	    private List<IEntity> GetList()
 	    {
             Configuration.Parse();
             Log.Add($"get incl. draft:{ShowDrafts}");
 	        var outStreamName = ShowDrafts 
                 ? Constants.DraftsStreamName 
                 : Constants.PublishedStreamName;
-	        return In[outStreamName].List;
+	        return In[outStreamName].List.ToList();
 	    }
 
 	}

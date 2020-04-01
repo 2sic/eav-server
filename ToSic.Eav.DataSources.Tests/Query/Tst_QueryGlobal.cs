@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.DataSourceTests;
 using ToSic.Eav.ImportExport.Tests.Persistence.File;
 using ToSic.Eav.Logging;
 
@@ -10,7 +11,7 @@ namespace ToSic.Eav.DataSources.Tests.Query
     [DeploymentItem("..\\..\\" + TestConfig.GlobalQueriesData, TestConfig.TestingPath)]
     public class Tst_QueryGlobal: HasLog
     {
-        private const int testQueryCount = 2;
+        private const int testQueryCount = 8;
 
         public Tst_QueryGlobal() : base("Tst.QryGlb") { }
 
@@ -24,7 +25,7 @@ namespace ToSic.Eav.DataSources.Tests.Query
         public void FindGlobalQueries()
         {
             var queries = GlobalQueries.AllQueries();
-            Assert.AreEqual(testQueryCount, queries.Count, "should find 2 query definitions");
+            Assert.AreEqual(testQueryCount, queries.Count, $"should find {testQueryCount} query definitions");
         }
 
 
@@ -44,10 +45,10 @@ namespace ToSic.Eav.DataSources.Tests.Query
         {
             var queryEnt = GlobalQueries.FindQuery("Eav.Queries.Global.Zones");
 
-            var qdef = new QueryDefinition(queryEnt, TestConfig.AppForQueryTests, null);
+            var qDef = new QueryDefinition(queryEnt, TestConfig.AppForQueryTests, null);
 
             var fac = new QueryBuilder(Log);
-            var query = fac.GetDataSourceForTesting(qdef, false);
+            var query = fac.GetDataSourceForTesting(qDef, false);
 
             var list = query.List;
             Assert.IsTrue(list.Count() > 1, "should find a few portals");

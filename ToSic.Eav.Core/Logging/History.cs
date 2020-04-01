@@ -30,6 +30,9 @@ namespace ToSic.Eav.Logging
             // only add if not paused
             if (Pause) return;
 
+            // don't keep in journal if it shouldn't be preserved
+            if (!log.Preserve) return;
+
             // auto-pause after 1000 logs were run through this, till someone decides to unpause again
             if (Count++ > MaxCollect) Pause = true;
 

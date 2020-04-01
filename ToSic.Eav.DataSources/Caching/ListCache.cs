@@ -46,7 +46,7 @@ namespace ToSic.Eav.DataSources.Caching
         /// </summary>
         /// <param name="dataStream"></param>
         /// <returns></returns>
-        private string CacheKey(IDataStream dataStream) => dataStream.Source.CacheFullKey + "|" + dataStream.Name;
+        private string CacheKey(IDataStream dataStream) => dataStream.Source.CacheKey.CacheFullKey + "&Stream=" + dataStream.Name;
 
         #region Get List
 
@@ -63,8 +63,10 @@ namespace ToSic.Eav.DataSources.Caching
             // Check if it's in the cache, and if it requires re-loading
             var key = CacheKey(dataStream);
             var itemInCache = Get(key);
-            var valid = itemInCache != null &&
-                        (!dataStream.CacheRefreshOnSourceRefresh || !itemInCache.CacheChanged(dataStream.Source.CacheTimestamp));
+            var found = itemInCache != null;
+            var valid = found && (!dataStream.CacheRefreshOnSourceRefresh || !itemInCache.CacheChanged(dataStream.Source.CacheTimestamp));
+            Log.Add($"ListCache found:{found}; valid:{valid}; timestamp:{dataStream.Source.CacheTimestamp}");
+            Log.Add($"ListCache key:'{key}'");
             wrapLog(valid.ToString());
             return valid ? itemInCache : null;
         }

@@ -18,7 +18,7 @@ namespace ToSic.Eav.DataSources
         In = new[] { Constants.DefaultStreamName, Constants.FallbackStreamName },
         DynamicOut = false,
         ExpectsDataOfType = "|Config ToSic.Eav.DataSources.ValueFilter",
-        HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-ValueFilter")]
+        HelpLink = "https://r.2sxc.org/DsValueFilter")]
 
     public sealed class ValueFilter : DataSourceBase
     {
@@ -95,25 +95,26 @@ namespace ToSic.Eav.DataSources
 		    ConfigMask(LangKey, "Default");
         }
 
-        private IEnumerable<IEntity> GetEntitiesOrFallback()
+        private List<IEntity> GetEntitiesOrFallback()
         {
             var res = GetEntities();
             // ReSharper disable PossibleMultipleEnumeration
-            if (!res.Any())
-                if (In.ContainsKey(Constants.FallbackStreamName) && In[Constants.FallbackStreamName] != null &&
-                    In[Constants.FallbackStreamName].List.Any())
-                {
-                    Log.Add("will return fallback stream");
-                    res = In[Constants.FallbackStreamName].List;
-                }
-            
+            if (res.Any()) return res;
+            if (In.ContainsKey(Constants.FallbackStreamName) && In[Constants.FallbackStreamName] != null &&
+                In[Constants.FallbackStreamName].List.Any())
+            {
+                Log.Add("will return fallback stream");
+                res = In[Constants.FallbackStreamName].List.ToList();
+            }
+
             return res;
             // ReSharper restore PossibleMultipleEnumeration
         }
 
 
-        private IEnumerable<IEntity> GetEntities()
-		{
+        private List<IEntity> GetEntities()
+        {
+            var wrapLog = Log.Call();
             // todo: maybe do something about languages?
             Configuration.Parse();
 
@@ -162,20 +163,26 @@ namespace ToSic.Eav.DataSources
                 switch (netTypeName)
                 {
                     case "Boolean": // todo: find some constant for this
+                        Log.Add("Will apply Boolean comparison");
                         compare = GetBoolComparison(Value);
                         break;
                     case "Decimal":
+                        Log.Add("Will apply Decimal comparison");
                         compare = GetNumberComparison(Value);
                         break;
                     case "DateTime":
+                        Log.Add("Will apply DateTime comparison");
                         compare = GetDateTimeComparison(Value);
                         break;
                     case "Entity":
+                        Log.Add("Would apply entity comparison, but this doesn't work");
                         throw new Exception("can't compare values which are related entities - use the RelationshipFilter instead");
                     // ReSharper disable once RedundantCaseLabel
                     case "String":
+                    // ReSharper disable once RedundantCaseLabel
                     case "Null":
                     default:
+                        Log.Add("Will apply String comparison");
                         compare = GetStringComparison(Value);
                         break;
                 }
@@ -184,7 +191,10 @@ namespace ToSic.Eav.DataSources
             }
             #endregion
 
+            wrapLog("ok");
             return GetFilteredWithLinq(originals, compare);
+            // The following version has more logging, activate in serious cases
+            // Note that the code might not be 100% identical, but it should help find issues
 		    //_results = GetFilteredWithLoop(originals, compare);
 		}
 
@@ -193,6 +203,7 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         /// <param name="original"></param>
         /// <returns></returns>
+        // ReSharper disable once UnusedMember.Local
         private Func<IEntity, bool> GetEntityComparison(string original)
         {
             var boolFilter = bool.Parse(original);
@@ -391,7 +402,7 @@ namespace ToSic.Eav.DataSources
             if (numberFilter == decimal.MinValue)
                 decimal.TryParse(original, out numberFilter);
 
-            var numComparisons = new Dictionary<string, Func<decimal, bool>>()
+            var numComparisons = new Dictionary<string, Func<decimal, bool>>
             {
                 {"==", value => value == numberFilter},
                 {"===", value => value == numberFilter},
@@ -430,8 +441,8 @@ namespace ToSic.Eav.DataSources
 	    private string[] _initializedLangs;
 	    private string _initializedAttrName;
 
-	    private IEnumerable<IEntity> GetFilteredWithLinq(IEnumerable<IEntity> originals, Func<IEntity, bool> compare)//, string attr, string lang)//, string filter)
-	    {
+	    private List<IEntity> GetFilteredWithLinq(IEnumerable<IEntity> originals, Func<IEntity, bool> compare)
+        {
             try
             {
                 var op = Operator.ToLower();
@@ -452,7 +463,7 @@ namespace ToSic.Eav.DataSources
                 }
                 if (int.TryParse(Take, out var tk))
 	                results = results.Take(tk);
-	            return results;
+	            return results.ToList();
 	        }
 	        catch (Exception ex)
 	        {
@@ -477,14 +488,14 @@ namespace ToSic.Eav.DataSources
             var result = new List<IEntity>();
             var langArr = new[] { lang };
             foreach (var res in inList)
-                //try
-                //{
-                    //if (res.Value[attr][lang].ToString() == filter)
-                    if ((res.GetBestValue(attr, langArr) ?? "").ToString() == filter)
-                        result.Add(res);
-                //}
-                //catch { }
-	        return result;
+            //try
+            //{
+                //if (res.Value[attr][lang].ToString() == filter)
+                if ((res.GetBestValue(attr, langArr) ?? "").ToString() == filter)
+                    result.Add(res);
+            //}
+            //catch { }
+            return result;
 	    }
 		
 	}

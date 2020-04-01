@@ -173,7 +173,10 @@ namespace ToSic.Eav.Persistence.Efc
                 if (e.Json != null)
                 {
                     newEntity = serializer.Deserialize(e.Json, false, true) as Entity;
+                    // add properties which are not in the json
                     newEntity.IsPublished = e.IsPublished;
+                    newEntity.Modified = e.Modified;
+                    newEntity.Owner = e.Owner;
                 }
                 else
                 {

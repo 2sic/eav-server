@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 using ToSic.Eav.Documentation;
@@ -50,12 +49,18 @@ namespace ToSic.Eav.LookUp
         #endregion
 
         #region constructor
-        public IDictionary<string, ILookUp> ValueSources { get; }
-	    public TokenReplace(IDictionary<string, ILookUp> valueSources = null)
+        //public IDictionary<string, ILookUp> ValueSources { get; }
+
+        private ILookUp FindSource(string key) => LookupEngine.FindSource(key);
+
+        public ILookUpEngine LookupEngine { get; }
+	    public TokenReplace(ILookUpEngine lookupEngine/*, IDictionary<string, ILookUp> valueSources = null*/)
 	    {
-            if(valueSources == null)
-                valueSources = new Dictionary<string, ILookUp>(StringComparer.OrdinalIgnoreCase);
-	        ValueSources = valueSources;
+            LookupEngine = lookupEngine ?? throw new Exception("Can't initialize TokenReplace without engine");
+
+            //if(valueSources == null)
+            //    valueSources = new Dictionary<string, ILookUp>(StringComparer.InvariantCultureIgnoreCase);
+	        //ValueSources = valueSources;
 	    }
         #endregion
 
@@ -147,13 +152,12 @@ namespace ToSic.Eav.LookUp
         /// <returns></returns>
         protected string RetrieveTokenValue(string sourceName, string key, string format)
         {
-            var result = string.Empty;
+            //var result = string.Empty;
             var propertyNotFound = false;
-            if (ValueSources.ContainsKey(sourceName.ToLower()))
-            {
-                result = ValueSources[sourceName.ToLower()].Get(key, format, ref propertyNotFound);
-            }
-            return result;
+            return FindSource(sourceName)?.Get(key, format, ref propertyNotFound) ?? string.Empty;
+            //return ValueSources.ContainsKey(sourceName.ToLower()) 
+            //    ? ValueSources[sourceName.ToLower()].Get(key, format, ref propertyNotFound) 
+            //    : result;
         }
     }
 }

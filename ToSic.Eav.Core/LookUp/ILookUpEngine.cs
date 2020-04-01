@@ -16,6 +16,7 @@ namespace ToSic.Eav.LookUp
         /// Read more about this in @Specs.LookUp.Intro
         /// </summary>
         /// <returns><see cref="Dictionary{TKey,TValue}"/> of <see cref="ILookUp"/> items.</returns>
+        [PrivateApi("prone to change")]
         Dictionary<string, ILookUp> Sources { get; }
 
         /// <summary>
@@ -47,5 +48,14 @@ namespace ToSic.Eav.LookUp
         /// <param name="lookUps">list of <see cref="ILookUp"/> which should override the original configuration</param>
 	    void AddOverride(IEnumerable<ILookUp> lookUps);
 
-	}
+
+        [PrivateApi("still wip")]
+        ILookUpEngine Downstream { get; }
+
+        [PrivateApi("still wip")]
+        ILookUp FindSource(string name);
+
+        [PrivateApi("still wip")]
+        bool HasSource(string name);
+    }
 }

@@ -86,6 +86,10 @@
     <Compile Include="Data\Entity_Test.cs" />
     <Compile Include="Data\DynamicValue_Test.cs" />
     <Compile Include="InitializeTests.cs" />
+    <Compile Include="LookUp\LookUpTestData.cs" />
+    <Compile Include="LookUp\Tokens\TokenReplaceTst.cs" />
+    <Compile Include="LookUp\LookUpEngineTests.cs" />
+    <Compile Include="LookUp\LookUpTests.cs" />
     <Compile Include="Signature\SignatureDataSha256.cs" />
     <Compile Include="Signature\SignatureHashSha1.cs" />
     <Compile Include="Mocks\FingerprintProvider.cs" />
@@ -115,6 +119,7 @@
       <Name>ToSic.Eav.Core</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

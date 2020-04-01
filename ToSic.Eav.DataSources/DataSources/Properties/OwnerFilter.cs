@@ -15,7 +15,7 @@ namespace ToSic.Eav.DataSources
         Type = DataSourceType.Security,
         DynamicOut = false,
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.OwnerFilter",
-        HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-OwnerFilter")]
+        HelpLink = "https://r.2sxc.org/DsOwnerFilter")]
 
     public class OwnerFilter : DataSourceBase
 	{
@@ -47,14 +47,14 @@ namespace ToSic.Eav.DataSources
 		    ConfigMask(IdentityCode, "[Settings:" + IdentityCode + "]"); 
         }
 
-        private IEnumerable<IEntity> GetList()
+        private List<IEntity> GetList()
         {
             Configuration.Parse();
 
             Log.Add($"get for identity:{Identity}");
             if (string.IsNullOrWhiteSpace(Identity)) return new List<IEntity>();
 
-            return In["Default"].List.Where(e => e.Owner == Identity);
+            return In[Constants.DefaultStreamName].List.Where(e => e.Owner == Identity).ToList();
         }
 
 	}

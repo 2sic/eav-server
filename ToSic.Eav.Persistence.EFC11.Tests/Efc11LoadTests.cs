@@ -2,7 +2,6 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Metadata;
 using AppState = ToSic.Eav.Apps.AppState;
 
@@ -31,20 +30,21 @@ namespace ToSic.Eav.Persistence.Efc.Tests
         [TestMethod]
         public void PerformanceLoading100XBlog()
         {
-            var loadCount = 25;
-            for (int i = 0; i < loadCount; i++)
+            const int loadCount = 25;
+            for (var i = 0; i < loadCount; i++)
             {
                 Loader = NewLoader();
                 TestLoadApp(2);
             }
         }
 
+        private const int ExpectedContentTypesOnApp2 = 65;
 
         [TestMethod]
         public void LoadContentTypesOf2Once()
         {
             var results = TestLoadCts(2);
-            Assert.AreEqual(61, results.Count, "dummy test: ");
+            Assert.AreEqual(ExpectedContentTypesOnApp2, results.Count, "dummy test: ");
         }
 
         [TestMethod]
@@ -54,7 +54,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
             var results = TestLoadCts(2);
             for (var x = 0; x < 9; x++)
                 results = TestLoadCts(2);
-            Assert.AreEqual(61, results.Count, "dummy test: ");
+            Assert.AreEqual(ExpectedContentTypesOnApp2, results.Count, "dummy test: ");
         }
 
         [TestMethod]
@@ -67,7 +67,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
                 //Loader.ResetCacheForTesting();
             }
             // var str = results.ToString();
-            Assert.AreEqual(61, results.Count, "dummy test: ");
+            Assert.AreEqual(ExpectedContentTypesOnApp2, results.Count, "dummy test: ");
         }
 
         [TestMethod]
@@ -87,8 +87,8 @@ namespace ToSic.Eav.Persistence.Efc.Tests
             var apps = zones[2].Apps;
 
             Assert.AreEqual(1, defapp, "def app on first zone");
-            Assert.IsTrue(zones.Count > 70 && zones.Count < 100, "zone count - often changes, as new test-portals are made");
-            Assert.AreEqual(24, apps.Count, "app count on second zone");
+            Assert.IsTrue(zones.Count > 120 && zones.Count < 150, $"zone count - often changes, as new test-portals are made. Found: {zones.Count}");
+            Assert.AreEqual(26, apps.Count, "app count on second zone");
 
             // ML Checks
             var mlZones = zones.Values.Where(z => z.Languages.Count > 1).ToList();

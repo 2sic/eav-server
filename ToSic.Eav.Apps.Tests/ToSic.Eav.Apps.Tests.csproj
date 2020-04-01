@@ -59,6 +59,12 @@
   <ItemGroup>
     <Compile Include="ImportExport\XmlTable.cs" />
     <Compile Include="InitializeTests.cs" />
+    <Compile Include="ListPairs\ListPairTests_Reorder.cs" />
+    <Compile Include="ListPairs\ListPairTests_Replace.cs" />
+    <Compile Include="ListPairs\ListPairTests_Move.cs" />
+    <Compile Include="ListPairs\ListPairTests_Remove.cs" />
+    <Compile Include="ListPairs\ListPairTests_Add.cs" />
+    <Compile Include="ListPairs\ListPairTests.cs" />
     <Compile Include="Mocks\MockEnvironment.cs" />
     <Compile Include="Mocks\MockTenant.cs" />
     <Compile Include="Mocks\MockZoneMapper.cs" />
@@ -94,6 +100,7 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

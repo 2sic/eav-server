@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.DataSources.Tests
+﻿namespace ToSic.Eav.DataSourceTests
 {
     internal class TestConfig
     {

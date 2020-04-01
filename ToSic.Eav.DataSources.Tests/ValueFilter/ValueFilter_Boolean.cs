@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
-using ToSic.Eav.UnitTests.DataSources;
+using ToSic.Eav.DataSourceTests.ExternalData;
 
 namespace ToSic.Eav.DataSources.Tests
 {
@@ -22,7 +22,7 @@ namespace ToSic.Eav.DataSources.Tests
 
         public void FilterBool(string compareValue, int desiredFinds, int populationRoot)
         {
-            var vf = ValueFilterString.CreateValueFilterForTesting(populationRoot * DataTableDataSourceTest.IsMaleForEveryX); // only every 3rd is male in the demo data
+            var vf = ValueFilterString.CreateValueFilterForTesting(populationRoot * DataTableTst.IsMaleForEveryX); // only every 3rd is male in the demo data
             vf.Attribute = "IsMale";
             vf.Value = compareValue;
             var found = vf.List.Count();

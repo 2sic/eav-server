@@ -52,7 +52,7 @@ namespace ToSic.Eav.DataSources.System
             Provide(GetList);
 		}
 
-	    private IEnumerable<IEntity> GetList()
+	    private List<IEntity> GetList()
 	    {
             // Get cache, which manages a list of zones
 	        //var cache = (RootCacheBase)DataSource.GetCache(ZoneId, AppId);
@@ -80,11 +80,9 @@ namespace ToSic.Eav.DataSources.System
                     id:zone.ZoneId, 
                     titleField: ZoneType.Name.ToString(), 
                     typeName: ZoneContentTypeName);
-
-                //return AsEntity(znData, ZoneType.Name.ToString(), ZoneContentTypeName, zone.ZoneId);
             });
 
-            return list;
+            return list.ToList();
         }
 
 	}

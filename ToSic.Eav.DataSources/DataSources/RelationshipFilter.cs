@@ -18,7 +18,7 @@ namespace ToSic.Eav.DataSources
         In = new[] { Constants.DefaultStreamName, Constants.FallbackStreamName }, 
         DynamicOut = false,
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.RelationshipFilter",
-        HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-RelationshipFilter")]
+        HelpLink = "https://r.2sxc.org/DsRelationshipFilter")]
     public sealed class RelationshipFilter : DataSourceBase
 	{
         #region Configuration-properties
@@ -157,7 +157,7 @@ namespace ToSic.Eav.DataSources
                 if (In.ContainsKey(Constants.FallbackStreamName) && In[Constants.FallbackStreamName] != null && In[Constants.FallbackStreamName].List.Any())
                     res = In[Constants.FallbackStreamName].List;
 
-            return res;
+            return res.ToList();
             // ReSharper restore PossibleMultipleEnumeration
         }
 

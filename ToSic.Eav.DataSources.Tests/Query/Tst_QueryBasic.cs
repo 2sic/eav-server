@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.DataSourceTests;
 using ToSic.Eav.ImportExport.Json;
 
 namespace ToSic.Eav.DataSources.Tests.Query

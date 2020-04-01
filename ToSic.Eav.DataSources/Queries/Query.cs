@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSources.Queries
         /// <inheritdoc />
         public QueryDefinition Definition { get; }
 
-		private IDictionary<string, IDataStream> _out = new Dictionary<string, IDataStream>();
+		private StreamDictionary _out = new StreamDictionary();
 		private bool _requiresRebuildOfOut = true;
         private readonly bool _showDrafts;
 
@@ -38,10 +38,27 @@ namespace ToSic.Eav.DataSources.Queries
 			    return _out;
 			}
 		}
-		#endregion
+        #endregion
 
-		/// <inheritdoc />
-		[PrivateApi]
+        #region Internal Source - mainly for debugging
+
+        [PrivateApi]
+        public IDataSource Source
+        {
+            get
+            {
+                if (!_requiresRebuildOfOut) return _source;
+                CreateOutWithAllStreams();
+                _requiresRebuildOfOut = false;
+                return _source;
+            }
+        }
+
+        private IDataSource _source;
+        #endregion
+
+        /// <inheritdoc />
+        [PrivateApi]
 		public Query(int zoneId, int appId, IEntity queryDef, ILookUpEngine config, bool showDrafts, IDataTarget source, ILog parentLog)
 		{
 		    ZoneId = zoneId;
@@ -71,9 +88,9 @@ namespace ToSic.Eav.DataSources.Queries
 
             // now provide an override source for this
             var paramsOverride = new LookUpInDictionary(QueryConstants.ParamsLookup, resolvedParams);
-		    var pipeline = QueryBuilder.BuildQuery(Definition, Configuration.LookUps, 
-                new List<ILookUp> {paramsOverride}, /*null,*/ _showDrafts);
-            _out = pipeline.Out;
+		    _source = QueryBuilder.BuildQuery(Definition, Configuration.LookUps, 
+                new List<ILookUp> {paramsOverride}, _showDrafts);
+            _out = new StreamDictionary(this, _source.Out);
             wrapLog("ok");
         }
 

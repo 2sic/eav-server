@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Metadata;
 using AppState = ToSic.Eav.Apps.AppState;
 
@@ -71,10 +70,14 @@ namespace ToSic.Eav.Data.Builder
         /// Create a new Entity based on an Entity and Attributes
         /// Used in the Attribute-Filter, which generates a new entity with less properties
         /// </summary>
-        public static Entity FullClone(IEntity entity, Dictionary<string, IAttribute> attributes, 
-            IEnumerable<EntityRelationship> allRelationships)
+        public static Entity FullClone(IEntity entity, 
+            Dictionary<string, IAttribute> attributes, 
+            IEnumerable<EntityRelationship> allRelationships,
+            IContentType newType = null)
         {
-            var e = EntityWithAllIdsAndType(entity.AppId, entity.EntityGuid, entity.EntityId, entity.RepositoryId, entity.Type, 
+            var targetType = newType ?? entity.Type;
+
+            var e = EntityWithAllIdsAndType(entity.AppId, entity.EntityGuid, entity.EntityId, entity.RepositoryId, targetType, 
                 entity.IsPublished, entity.Modified, entity.Owner, entity.Version, attributes);
             e.TitleFieldName = entity.Title?.Name;
             var lookupApp = (entity as Entity)?.DeferredLookupData as AppState;

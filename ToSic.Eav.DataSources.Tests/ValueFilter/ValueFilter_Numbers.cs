@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
-using ToSic.Eav.UnitTests.DataSources;
+using ToSic.Eav.DataSourceTests.ExternalData;
 
 namespace ToSic.Eav.DataSources.Tests
 {
@@ -23,7 +23,7 @@ namespace ToSic.Eav.DataSources.Tests
 
         [TestMethod]
         public void ValueFilter_FilterNumber()
-         =>NumberFilter("Height", (DataTableDataSourceTest.MinHeight + 7).ToString(), 181);
+         =>NumberFilter("Height", (DataTableTst.MinHeight + 7).ToString(), 181);
         
 
         [TestMethod]

@@ -73,7 +73,7 @@ namespace ToSic.Eav.DataSources.System
             CustomConfigurationParse();
 
             return _query?.Out.OrderBy(stream => stream.Key).Select(stream
-                => /*AsEntity*/Build.Entity(new Dictionary<string, object>
+                => Build.Entity(new Dictionary<string, object>
                            {
                                {StreamsType.Name.ToString(), stream.Key}
                            }, 
@@ -121,7 +121,7 @@ namespace ToSic.Eav.DataSources.System
                 return;
 
             // important, use "Name" and not get-best-title, as some queries may not be correctly typed, so missing title-info
-            var found = QueryName.StartsWith(GlobalQueries.GlobalQueryPrefix)
+            var found = QueryName.StartsWith(GlobalQueries.GlobalEavQueryPrefix)
                 ? GlobalQueries.FindQuery(QueryName)
                 : QueryManager.AllQueryItems(/*AppId*/this, Log)
                     .FirstOrDefault(q => string.Equals(q.GetBestValue("Name").ToString(), QueryName,
