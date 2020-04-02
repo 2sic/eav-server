@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("2sic Internet Solutions GmbH")]
 [assembly: AssemblyProduct("2sic EAV")]
-[assembly: AssemblyCopyright("Copyright © 2sic 2019")]
+[assembly: AssemblyCopyright("Copyright © 2sic 2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -30,7 +30,7 @@ using System.Runtime.InteropServices;
 //      Revision
 //
 // You can specify all the values or you can default the Build and Revision Numbers 
-[assembly: AssemblyVersion("10.27.01.*")]
+[assembly: AssemblyVersion("10.27.02.*")]
 
 // This is needed for unit testing
 [assembly: InternalsVisibleTo("ToSic.Eav.UnitTests")]
