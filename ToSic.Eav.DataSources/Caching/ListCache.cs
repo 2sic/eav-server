@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Runtime.Caching;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
@@ -46,7 +47,7 @@ namespace ToSic.Eav.DataSources.Caching
         /// </summary>
         /// <param name="dataStream"></param>
         /// <returns></returns>
-        private string CacheKey(IDataStream dataStream) => dataStream.Source.CacheKey.CacheFullKey + "&Stream=" + dataStream.Name;
+        private string CacheKey(IDataStream dataStream) => dataStream.Source.CacheKey.CacheFullKey + "&Stream=" + dataStream.Name + dataStream.CacheSuffix;
 
         #region Get List
 
@@ -72,7 +73,7 @@ namespace ToSic.Eav.DataSources.Caching
         }
 
         /// <inheritdoc />
-        public ListCacheItem GetOrBuild(IDataStream stream, Func<IEnumerable<IEntity>> builderFunc,
+        public ListCacheItem GetOrBuild(IDataStream stream, Func<IImmutableList<IEntity>> builderFunc,
             int durationInSeconds = 0)
         {
             var wrapLog = Log.Call<ListCacheItem>();
@@ -112,7 +113,7 @@ namespace ToSic.Eav.DataSources.Caching
         #region set/add list
 
         /// <inheritdoc />
-        public void Set(string key, IEnumerable<IEntity> list, long sourceTimestamp, int durationInSeconds = 0,
+        public void Set(string key, IImmutableList<IEntity> list, long sourceTimestamp, int durationInSeconds = 0,
             bool slidingExpiration = true)
         {
             var duration = durationInSeconds > 0 ? durationInSeconds : DefaultDuration;
@@ -125,11 +126,14 @@ namespace ToSic.Eav.DataSources.Caching
             cache.Set(key, new ListCacheItem(/*key,*/ list, sourceTimestamp), policy);
         }
 
+
         /// <inheritdoc />
         public void Set(IDataStream dataStream, int durationInSeconds = 0, bool slidingExpiration = true)
-            => Set(CacheKey(dataStream), dataStream.List,
+            => Set(CacheKey(dataStream), dataStream.List.ToImmutableList(),
                 dataStream.Source.CacheTimestamp, durationInSeconds, slidingExpiration);
 
+        public void Set(string key, IEnumerable<IEntity> list, long sourceTimestamp, int durationInSeconds = 0, bool slidingExpiration = true) 
+            => Set(key, list.ToImmutableList(), sourceTimestamp, durationInSeconds, slidingExpiration);
 
         #endregion
 

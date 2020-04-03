@@ -14,6 +14,11 @@ namespace ToSic.Eav.DataSources
 	[PublicApi_Stable_ForUseInYourCode]
 	public interface IDataStream: ICanSelfCache, ICanPurgeListCache, IEnumerable<IEntity>
 	{
+
+		// Temp
+		[PrivateApi]
+		string CacheSuffix { get; }
+
         /// <summary>
         /// The list of items in this stream.
         /// </summary>

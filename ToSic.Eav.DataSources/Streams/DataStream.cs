@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using ToSic.Eav.DataSources.Caching;
+using ToSic.Eav.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -17,6 +19,9 @@ namespace ToSic.Eav.DataSources
 
 
         #region Self-Caching and Results-Persistence Properties / Features
+
+        [PrivateApi] public virtual string CacheSuffix => "";
+
         /// <inheritdoc />
         /// <summary>
         /// This one will return the original result if queried again - as long as this object exists
@@ -66,17 +71,21 @@ namespace ToSic.Eav.DataSources
 
         #region Get Dictionary and Get List
 
-	    private IEnumerable<IEntity> _list; 
+        /// <summary>
+        /// A temporary result list - must be a List, because otherwise
+        /// there's a high risk of IEnumerable signatures with functions being stored inside
+        /// </summary>
+	    private IImmutableList<IEntity> _list; 
         public IEnumerable<IEntity> List
 	    {
             get
             {
-                var wrapLog = Source.Log.Call<IEnumerable<IEntity>>($"{nameof(Name)}:{Name}; {nameof(ReuseInitialResults)}:{ReuseInitialResults}");
+                var wrapLog = Source.Log.Call<IImmutableList<IEntity>>($"{nameof(Name)}:{Name}; {nameof(ReuseInitialResults)}:{ReuseInitialResults}");
                 // already retrieved? then return last result to be faster
                 if (_list != null && ReuseInitialResults)
                     return wrapLog("reuse", _list);
 
-                IEnumerable<IEntity> EntityListDelegate()
+                IImmutableList<IEntity> EntityListDelegate()
                 {
                     #region Assemble the list - either from the DictionaryDelegate or from the LightListDelegate
                     // try to use the built-in Entities-Delegate, but if not defined, use other delegate; just make sure we test both, to prevent infinite loops
@@ -85,7 +94,7 @@ namespace ToSic.Eav.DataSources
                     try
                     {
                         var getEntitiesDelegate = new GetIEnumerableDelegate(_listDelegate);
-                        return getEntitiesDelegate();
+                        return getEntitiesDelegate().ToImmutableList();
                     }
                     catch (InvalidOperationException) // this is a special exception - for example when using SQL. Pass it on to enable proper testing
                     {

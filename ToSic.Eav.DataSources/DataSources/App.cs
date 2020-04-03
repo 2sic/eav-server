@@ -166,7 +166,10 @@ namespace ToSic.Eav.DataSources
                 Configuration.LookUps);
             ds.TypeName = typeName;
             ds.Guid = Guid; // tell the inner source that it has the same ID as this one, as we're pretending it's the same source
-            ds.Out[Constants.DefaultStreamName].AutoCaching = true; // enable auto-caching 
+            // 2020-04-04 2dm - disabled this, I believe that it's causing 
+			// problems because this source caches, and the deferred as well, 
+			// both using the same key - which doesn't make sense...
+            // ds.Out[Constants.DefaultStreamName].AutoCaching = true; // enable auto-caching 
             return ds;
         }
 
