@@ -35,9 +35,9 @@ namespace ToSic.Eav.LookUp
 		///// </summary>
 		//public LookUpEngine(): this(null as ILog) { }
 
-        public LookUpEngine(ILog parentLog): base("EAV.LookUp", parentLog)
+        public LookUpEngine(ILog parentLog): base("EAV.LookUp", parentLog, "()")
 		{
-			_reusableTokenReplace = new TokenReplace(this/*Sources*/);
+			_reusableTokenReplace = new TokenReplace(this);
 		}
 
         /// <inheritdoc />

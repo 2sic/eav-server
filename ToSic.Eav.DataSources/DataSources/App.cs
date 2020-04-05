@@ -41,7 +41,7 @@ namespace ToSic.Eav.DataSources
 			{
 				Configuration[AppSwitchKey] = value.ToString();
 				AppId = value;
-				_requiresRebuildOfOut = true;
+				RequiresRebuildOfOut = true;
 			}
 		}
 
@@ -56,13 +56,13 @@ namespace ToSic.Eav.DataSources
 			{
 				Configuration[ZoneSwitchKey] = value.ToString();
 				ZoneId = value;
-				_requiresRebuildOfOut = true;
+				RequiresRebuildOfOut = true;
 			}
 		}
 		#endregion
 		#region Dynamic Out
-		private readonly StreamDictionary _out; // Dictionary<string, IDataStream>(StringComparer.OrdinalIgnoreCase);
-		private bool _requiresRebuildOfOut = true;
+		private readonly StreamDictionary _out;
+		protected bool RequiresRebuildOfOut = true;
 
 
 
@@ -72,16 +72,16 @@ namespace ToSic.Eav.DataSources
 			get
 			{
                 Configuration.Parse();
-                if (_requiresRebuildOfOut)
-				{
-					// if the rebuilt is required because the app or zone are not default, then attach it first
-					if (AppSwitch != 0 || ZoneSwitch != 0)
-						AttachOtherDataSource();
-					// now create all streams
-					CreateOutWithAllStreams();
-					_requiresRebuildOfOut = false;
-				}
-				return _out;
+                if (!RequiresRebuildOfOut) return _out;
+
+                // if the rebuilt is required because the app or zone are not default, then attach it first
+                if (AppSwitch != 0 || ZoneSwitch != 0)
+                    AttachOtherDataSource();
+                
+                // now create all streams
+                CreateOutWithAllStreams();
+                RequiresRebuildOfOut = false;
+                return _out;
 			}
 		}
 		#endregion
@@ -124,7 +124,8 @@ namespace ToSic.Eav.DataSources
 		/// Create a stream for each data-type
 		/// </summary>
 		private void CreateOutWithAllStreams()
-		{
+        {
+            var wrapLog = Log.Call(nameof(CreateOutWithAllStreams));
 			IDataStream upstream;
 			try
 			{
@@ -155,7 +156,9 @@ namespace ToSic.Eav.DataSources
                     () => BuildTypeStream(dataSourceFactory, upstreamDataSource, typeName)[Constants.DefaultStreamName], true);
                 _out.Add(typeName, deferredStream);
             }
-		}
+
+            wrapLog(null);
+        }
 
 		/// <summary>
 		/// Build an EntityTypeFilter for this content-type to provide as a stream

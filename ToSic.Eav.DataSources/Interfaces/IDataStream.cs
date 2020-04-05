@@ -15,7 +15,11 @@ namespace ToSic.Eav.DataSources
 	public interface IDataStream: ICanSelfCache, ICanPurgeListCache, IEnumerable<IEntity>
 	{
 
-		// Temp
+        /// <summary>
+        /// The Cache-Suffix helps to keep these streams separate in case multiple streams have the same key
+        /// For example when the deferred list and the underlying list have the same key. 
+        /// Because then they would have the same cache-key, and that would cause trouble. 
+        /// </summary>
 		[PrivateApi]
 		string CacheSuffix { get; }
 
