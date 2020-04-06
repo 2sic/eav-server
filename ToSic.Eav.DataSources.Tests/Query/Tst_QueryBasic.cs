@@ -29,7 +29,7 @@ namespace ToSic.Eav.DataSources.Tests.Query
         private QueryDefinition LoadQueryDef(int appId, int queryId)
         {
             var appState = Eav.Apps.State.Get(appId); //Factory.GetAppState(appId);
-            var source = new DataSource(null).GetPublishing(appState);
+            var source = new DataSource(null).GetPublishing(appState, false);
             var pipelineEntity = QueryManager.GetQueryEntity(queryId, appState);
             return new QueryDefinition(pipelineEntity, appId, null);
         }

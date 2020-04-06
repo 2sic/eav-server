@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
 using ToSic.Eav.DataSources.Caching;
+using ToSic.Eav.DataSources.Caching.CacheInfo;
 using ToSic.Eav.DataSources.Configuration;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
@@ -14,7 +15,7 @@ namespace ToSic.Eav.DataSources
 	/// Public interface for an Eav DataSource. All DataSource objects are based on this. 
 	/// </summary>
 	[PublicApi_Stable_ForUseInYourCode]
-	public interface IDataSource : IAppIdentity, ICacheExpiring, ICacheKey, ICanPurgeListCache, IHasLog
+	public interface IDataSource : IAppIdentity, ICacheInfo, ICanPurgeListCache, IHasLog
 	{
 		#region Data Interfaces
 

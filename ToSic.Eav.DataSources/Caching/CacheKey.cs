@@ -7,8 +7,8 @@ namespace ToSic.Eav.DataSources.Caching
 {
     public class CacheKey: ICacheKeyManager
     {
-        public readonly DataSourceBase DataSource;
-        public CacheKey(DataSourceBase dataSource) => DataSource = dataSource;
+        public readonly IDataSource DataSource;
+        public CacheKey(IDataSource dataSource) => DataSource = dataSource;
 
 
         /// <inheritdoc />
@@ -35,36 +35,6 @@ namespace ToSic.Eav.DataSources.Caching
 
         public virtual string CacheFullKey => _fullKey ?? (_fullKey = string.Join(">", SubKeys.Distinct()));
 
-        //public string CacheFullKeyOldV1JustKeepInCaseOfProblems
-        //{
-        //    get
-        //    {
-        //        if (_cacheFullKey != null) return _cacheFullKey;
-
-        //        var fullKey = "";
-
-        //        // If there is an upstream, use that as the leading part of the id
-        //        if (DataSource.In.ContainsKey(Constants.DefaultStreamName) &&
-        //            DataSource.In[Constants.DefaultStreamName] != null)
-        //            fullKey += DataSource.In[Constants.DefaultStreamName].Source.CacheFullKey + ">";
-
-        //        // add current key
-        //        fullKey += CachePartialKey;
-        //        return _cacheFullKey = fullKey;
-        //    }
-        //}
-        //private string _cacheFullKey;
-
-        //public string[] DependentFullKeys
-        //{
-        //    get
-        //    {
-        //        if (_dependentFulls != null) return _dependentFulls;
-        //        _dependentFulls = UniqueSources().Select(inStream => inStream.CacheFullKey).ToArray();
-        //        return _dependentFulls;
-        //    }
-        //}
-        //private string[] _dependentFulls = null;
 
         /// <summary>
         /// make sure we don't re-create many keys, of if some streams have the same DataSource, only get the key once
@@ -72,10 +42,12 @@ namespace ToSic.Eav.DataSources.Caching
         /// <returns></returns>
         private List<IDataSource> UniqueSources()
         {
-            if (DataSource.In == null || DataSource.In.Count == 0)
+            if (!(DataSource is IDataTarget target)) return new List<IDataSource>();
+
+            if (target.In == null || target.In.Count == 0)
                 return new List<IDataSource>();
 
-            return DataSource.In
+            return target.In
                 .Select(pairs => pairs.Value?.Source)
                 .Where(stream => stream != null)
                 .Distinct()
@@ -99,8 +71,6 @@ namespace ToSic.Eav.DataSources.Caching
         }
 
         private string[] _dependentPartials = null;
-
-        //public string FullKey => _fullKey ?? (_fullKey = string.Join(">", SubKeys.Distinct()));
 
         private string _fullKey;
     }

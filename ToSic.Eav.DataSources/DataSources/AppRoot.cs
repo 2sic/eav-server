@@ -19,9 +19,6 @@ namespace ToSic.Eav.DataSources
         [PrivateApi]
         public AppRoot()
         {
-            //Root = this;
-            // include cache information
-
 		    // ReSharper disable VirtualMemberCallInConstructor
 			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, () => AppState.List));
 			Out.Add(Constants.PublishedStreamName, new DataStream(this, Constants.PublishedStreamName, () => AppState.ListPublished));

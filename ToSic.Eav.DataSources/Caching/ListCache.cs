@@ -15,12 +15,12 @@ namespace ToSic.Eav.DataSources.Caching
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public class ListCache: HasLog, IListCache
     {
-
+        #region Static Caching and Lock Variables
         private static ObjectCache Cache => MemoryCache.Default;
 
         private static readonly ConcurrentDictionary<string, object> LoadLocks
              = new ConcurrentDictionary<string, object>();
-
+        #endregion
 
         /// <summary>
         /// Constructor
@@ -47,7 +47,7 @@ namespace ToSic.Eav.DataSources.Caching
         /// </summary>
         /// <param name="dataStream"></param>
         /// <returns></returns>
-        private string CacheKey(IDataStream dataStream) => dataStream.Source.CacheKey.CacheFullKey + "&Stream=" + dataStream.Name + dataStream.CacheSuffix;
+        private string CacheKey(IDataStream dataStream) => dataStream.Caching.CacheFullKey /*+ "&Stream=" + dataStream.Name + dataStream.CacheSuffix*/;
 
         #region Get List
 
@@ -65,8 +65,8 @@ namespace ToSic.Eav.DataSources.Caching
             var key = CacheKey(dataStream);
             var itemInCache = Get(key);
             var found = itemInCache != null;
-            var valid = found && (!dataStream.CacheRefreshOnSourceRefresh || !itemInCache.CacheChanged(dataStream.Source.CacheTimestamp));
-            Log.Add($"ListCache found:{found}; valid:{valid}; timestamp:{dataStream.Source.CacheTimestamp}");
+            var valid = found && (!dataStream.CacheRefreshOnSourceRefresh || !itemInCache.CacheChanged(dataStream.Caching.CacheTimestamp));
+            Log.Add($"ListCache found:{found}; valid:{valid}; timestamp:{dataStream.Caching.CacheTimestamp}");
             Log.Add($"ListCache key:'{key}'");
             wrapLog(valid.ToString());
             return valid ? itemInCache : null;
@@ -81,7 +81,7 @@ namespace ToSic.Eav.DataSources.Caching
 
             var cacheItem = GetValidCacheItemOrNull(stream);
             if (cacheItem != null)
-                return wrapLog("found", cacheItem);
+                return wrapLog("found, use cache", cacheItem);
 
             // If reloading is required, set a lock first (to prevent parallel loading of the same data)
             var lockKey = LoadLocks.GetOrAdd(key, new object());
@@ -91,14 +91,14 @@ namespace ToSic.Eav.DataSources.Caching
                 // now that lock is free, it could have been initialized, so re-check
                 cacheItem = GetValidCacheItemOrNull(stream);
                 if (cacheItem != null)
-                    return wrapLog("still valid", cacheItem);
+                    return wrapLog("still valid, use cache", cacheItem);
 
                 Log.Add($"Re-Building cache of data stream {stream.Name}");
                 var entities = builderFunc();
                 var useSlidingExpiration = stream.CacheRefreshOnSourceRefresh;
-                Set(key, entities, stream.Source.CacheTimestamp, durationInSeconds, useSlidingExpiration);
+                Set(key, entities, stream.Caching.CacheTimestamp, durationInSeconds, useSlidingExpiration);
 
-                return wrapLog("generated", Get(key));
+                return wrapLog("generated and placed in cache", Get(key));
             }
         }
 
@@ -123,14 +123,14 @@ namespace ToSic.Eav.DataSources.Caching
                 : new CacheItemPolicy { AbsoluteExpiration = DateTime.Now.AddSeconds(duration) };
 
             var cache = MemoryCache.Default;
-            cache.Set(key, new ListCacheItem(/*key,*/ list, sourceTimestamp), policy);
+            cache.Set(key, new ListCacheItem(list, sourceTimestamp), policy);
         }
 
 
         /// <inheritdoc />
         public void Set(IDataStream dataStream, int durationInSeconds = 0, bool slidingExpiration = true)
             => Set(CacheKey(dataStream), dataStream.List.ToImmutableList(),
-                dataStream.Source.CacheTimestamp, durationInSeconds, slidingExpiration);
+                dataStream.Caching.CacheTimestamp, durationInSeconds, slidingExpiration);
 
         public void Set(string key, IEnumerable<IEntity> list, long sourceTimestamp, int durationInSeconds = 0, bool slidingExpiration = true) 
             => Set(key, list.ToImmutableList(), sourceTimestamp, durationInSeconds, slidingExpiration);
