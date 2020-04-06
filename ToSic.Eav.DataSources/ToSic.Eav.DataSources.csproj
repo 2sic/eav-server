@@ -81,7 +81,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Caching\CacheInfo\CacheInfoAppAndMore.cs" />
     <Compile Include="Caching\CacheKey.cs" />
+    <Compile Include="Caching\CacheInfo\ICacheInfo.cs" />
     <Compile Include="Catalog\Catalog.cs" />
     <Compile Include="Compatibility\ToSic.Eav.DataSources.SqlDataSource.cs" />
     <Compile Include="Compatibility\ToSic.Eav.DataSources.DataTableDataSource.cs" />
@@ -90,6 +92,7 @@
     <Compile Include="DataSourceInfo.cs" />
     <Compile Include="DataSources\App.cs" />
     <Compile Include="DataSources\AppRootCacheKey.cs" />
+    <Compile Include="DataSources\App_OutBuilder.cs" />
     <Compile Include="DataSources\Attributes\AttributeRename.cs" />
     <Compile Include="DataSources\Configuration\Configuration.cs" />
     <Compile Include="DataSources\Configuration\DSHelpers.cs" />
@@ -102,6 +105,7 @@
     <Compile Include="Queries\Connection.cs" />
     <Compile Include="Queries\IQuery.cs" />
     <Compile Include="Queries\QueryPart.cs" />
+    <Compile Include="Streams\DataStreamCacheStatus.cs" />
     <Compile Include="Streams\GetIEnumerableDelegate.cs" />
     <Compile Include="Streams\StreamDictionary.cs" />
     <Compile Include="System\Types\AppType.cs" />
@@ -122,7 +126,7 @@
     <Compile Include="DataSources\External\CsvDataSource.cs" />
     <Compile Include="DataSource.cs" />
     <Compile Include="Streams\DataStream.cs" />
-    <Compile Include="Streams\DataStreamDeferred.cs" />
+    <Compile Include="Streams\DataStreamWithCustomCaching.cs" />
     <Compile Include="DataSources\External\DataTable.cs" />
     <Compile Include="Debug\DataSourceInfo.cs" />
     <Compile Include="Debug\QueryInfo.cs" />

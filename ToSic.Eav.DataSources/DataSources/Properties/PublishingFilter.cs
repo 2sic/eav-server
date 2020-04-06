@@ -25,8 +25,6 @@ namespace ToSic.Eav.DataSources
         [PrivateApi]
 	    public override string LogId => "DS.Publsh";
 
-        //private const string ShowDraftsKey = "ShowDrafts";
-
 		/// <summary>
 		/// Indicates whether to show drafts or only Published Entities. 
 		/// </summary>

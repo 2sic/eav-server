@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Immutable;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
-using NotImplementedException = System.NotImplementedException;
 
 namespace ToSic.Eav.DataSources.Caching
 {
@@ -15,7 +14,7 @@ namespace ToSic.Eav.DataSources.Caching
         /// <summary>
         /// The items which we're caching.
         /// </summary>
-        public IEnumerable<IEntity> List { get; set; }
+        public IImmutableList<IEntity> List { get; set; }
 
         ///// <summary>
         ///// The key as the item is stored in the cache. More for internal use.
@@ -38,7 +37,7 @@ namespace ToSic.Eav.DataSources.Caching
         /// <param name="list">The list of items to put into the cache.</param>
         /// <param name="cacheTimestamp">The timestamp of the source at the moment of cache-buildup, to later detect changes in the source.</param>
         ///// <param name="cacheKey">The cache key as it is stored in the cache</param>
-        public ListCacheItem(/*string cacheKey,*/ IEnumerable<IEntity> list, long cacheTimestamp)
+        public ListCacheItem(/*string cacheKey,*/ IImmutableList<IEntity> list, long cacheTimestamp)
         {
             //CacheKey = cacheKey;
             List = list;

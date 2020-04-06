@@ -45,17 +45,12 @@ namespace ToSic.Eav.DataSources.Configuration
         [PrivateApi]
         public IDictionary<string, string> Parse(IDictionary<string, string> values)
         {
-            //if (IsParsed)
-            //    return;
-
             // Ensure that we have a configuration-provider (not always the case, but required)
             if (LookUps == null)
                 throw new Exception($"No ConfigurationProvider configured on this data-source. Cannot run {nameof(Parse)}");
 
             // construct a property access for in, use it in the config provider
-            //var instancePAs = new Dictionary<string, ILookUp> { { "In".ToLower(), new LookUpInDataTarget(DataSource) } };
             return LookUps.LookUp(values, OverrideLookUps);
-            //IsParsed = true;
         }
 
         [PrivateApi]

@@ -8,7 +8,7 @@ using ToSic.Eav.Metadata;
 namespace ToSic.Eav.Apps
 {
     /// <summary>
-    /// The Data object on an App. It's also a data-source of type <see cref="ToSic.Eav.DataSources.App"/>,
+    /// The Data object on an App. It's also a data-source of type <see cref="Eav.DataSources.App"/>,
     /// so it has many streams, one for each content-type so you can use it in combination with other DataSources. <br/>
     /// The special feature is that it also has methods for data-manipulation,
     /// including Create, Update and Delete
@@ -40,7 +40,9 @@ namespace ToSic.Eav.Apps
             ITarget target = null)
         {
             Log.Add($"app create new entity of type:{contentTypeName}");
-            DataController().Create(contentTypeName, new List<Dictionary<string, object>> { values}, target); 
+            DataController().Create(contentTypeName, new List<Dictionary<string, object>> {values}, target);
+            // Out must now be rebuilt, because otherwise it will still have old data in the streams
+            RequiresRebuildOfOut = true;
         }
 
         /// <inheritdoc />
@@ -49,7 +51,9 @@ namespace ToSic.Eav.Apps
             string userName = null)
         {
             Log.Add($"app create many ({multiValues.Count()}) new entities of type:{contentTypeName}");
-            DataController().Create(contentTypeName, multiValues); 
+            DataController().Create(contentTypeName, multiValues);
+            // Out must now be rebuilt, because otherwise it will still have old data in the streams
+            RequiresRebuildOfOut = true;
         }
 
         /// <inheritdoc />
@@ -58,6 +62,8 @@ namespace ToSic.Eav.Apps
         {
             Log.Add($"app update i:{entityId}");
             DataController().Update(entityId, values);
+            // Out must now be rebuilt, because otherwise it will still have old data in the streams
+            RequiresRebuildOfOut = true;
         }
 
 
@@ -66,7 +72,9 @@ namespace ToSic.Eav.Apps
         {
             Log.Add($"app delete i:{entityId}");
             DataController().Delete(entityId);
+            // Out must now be rebuilt, because otherwise it will still have old data in the streams
+            RequiresRebuildOfOut = true;
         }
- 
+
     }
 }

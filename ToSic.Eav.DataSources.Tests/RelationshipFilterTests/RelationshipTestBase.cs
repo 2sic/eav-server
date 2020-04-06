@@ -93,8 +93,8 @@ namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
 
         protected RelationshipFilter BuildRelationshipFilter(int zone, int app, string primaryType, ILookUpEngine config = null)
         {
-            var baseDs = new DataSource(Log).GetPublishing(new AppIdentity(zone,app) /*zone, app*/, configProvider: config/*, parentLog: Log*/);
-            var appDs = new DataSource(Log).GetDataSource<App>(baseDs/*, Log*/);
+            var baseDs = new DataSource(Log).GetPublishing(new AppIdentity(zone,app), configProvider: config);
+            var appDs = new DataSource(Log).GetDataSource<App>(baseDs);
 
             // micro tests to ensure we have the right app etc.
             Assert.IsTrue(appDs.List.Count() > 20, "appDs.List.Count() > 20");

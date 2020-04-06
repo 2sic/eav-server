@@ -1,5 +1,5 @@
-﻿using ToSic.Eav.DataSources.Caching;
-using ToSic.Eav.Documentation;
+﻿using ToSic.Eav.Apps;
+using ToSic.Eav.DataSources.Caching;
 
 namespace ToSic.Eav.DataSources
 {
@@ -13,11 +13,11 @@ namespace ToSic.Eav.DataSources
         private readonly AppRoot _appRoot;
 
         /// <inheritdoc />
-        public override string CachePartialKey => _cachePartialKey ?? (_cachePartialKey = base.CachePartialKey + $"&Zone={_appRoot.ZoneId}&App={_appRoot.AppId}");
-        private string _cachePartialKey;
+        public override string CachePartialKey => base.CachePartialKey + AppCacheKey(_appRoot);
 
         /// <inheritdoc />
         public override string CacheFullKey => CachePartialKey;
 
+        public static string AppCacheKey(IAppIdentity app) => $"&Zone={app.ZoneId}&App={app.AppId}";
     }
 }
