@@ -101,7 +101,7 @@ namespace ToSic.Eav.Apps
 	    /// <summary>
         /// Add an entity to the cache. Should only be used by EAV code
         /// </summary>
-	    internal void Add(Entity newEntity, int? publishedId)
+	    internal void Add(Entity newEntity, int? publishedId, bool log)
 	    {
             if (!Loading)
 	            throw new Exception("trying to add entity, but not in loading state. set that first!");
@@ -110,15 +110,15 @@ namespace ToSic.Eav.Apps
                 throw new Exception("Entities without real ID not supported yet");
 
             //CacheResetTimestamp(); 
-	        RemoveObsoleteDraft(newEntity);
+	        RemoveObsoleteDraft(newEntity, log);
             Index[newEntity.RepositoryId] = newEntity; // add like this, it could also be an update
-	        MapDraftToPublished(newEntity, publishedId);
+	        MapDraftToPublished(newEntity, publishedId, log);
             Metadata.Register(newEntity);
 
 	        if (FirstLoadCompleted)
 	            DynamicUpdatesCount++;
 
-	        Log.Add($"added entity {newEntity.EntityId} for published {publishedId}; dyn-update#{DynamicUpdatesCount}");
+            if (log) Log.Add($"added entity {newEntity.EntityId} for published {publishedId}; dyn-update#{DynamicUpdatesCount}");
 	    }
 
         /// <summary>
@@ -138,11 +138,11 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// Reconnect / wire drafts to the published item
         /// </summary>
-	    private void MapDraftToPublished(Entity newEntity, int? publishedId)
+	    private void MapDraftToPublished(Entity newEntity, int? publishedId, bool log)
         {
 	        if (newEntity.IsPublished || !publishedId.HasValue) return;
 
-            Log.Add($"map draft to published for new: {newEntity.EntityId} on {publishedId}");
+            if (log) Log.Add($"map draft to published for new: {newEntity.EntityId} on {publishedId}");
 	
             // Published Entity is already in the Entities-List as EntityIds is validated/extended before and Draft-EntityID is always higher as Published EntityId
             newEntity.PublishedEntity = Index[publishedId.Value];
@@ -150,10 +150,12 @@ namespace ToSic.Eav.Apps
 	        newEntity.EntityId = publishedId.Value;
 	    }
 
-	    /// <summary>
+        /// <summary>
         /// Check if a new entity previously had a draft, and remove that
         /// </summary>
-	    private void RemoveObsoleteDraft(IEntity newEntity)
+        /// <param name="newEntity"></param>
+        /// <param name="log">To optionally disable logging, in case it would overfill what we're seeing!</param>
+        private void RemoveObsoleteDraft(IEntity newEntity, bool log)
 	    {
 	        var previous = Index.ContainsKey(newEntity.EntityId) ? Index[newEntity.EntityId] : null;
             var draftEnt = previous?.GetDraft();
@@ -166,18 +168,18 @@ namespace ToSic.Eav.Apps
 
 	        if (msg != null)
 	        {
-	            Log.Add("remove obsolete draft - nothing to change because: " + msg);
+                if (log) Log.Add("remove obsolete draft - nothing to change because: " + msg);
                 return;
 	        }
 
             var draftId = draftEnt?.RepositoryId;
 	        if (draftId != null)
 	        {
-	            Log.Add($"remove obsolete draft - found draft, will remove {draftId.Value}");
+                if (log) Log.Add($"remove obsolete draft - found draft, will remove {draftId.Value}");
 	            Index.Remove(draftId.Value);
 	        }
 	        else
-	            Log.Add("remove obsolete draft - no draft, won't remove");
+                if (log) Log.Add("remove obsolete draft - no draft, won't remove");
 	    }
 
 

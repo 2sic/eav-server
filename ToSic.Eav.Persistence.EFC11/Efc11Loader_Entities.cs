@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
-using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
-using ToSic.Eav.Interfaces;
+using ToSic.Eav.Generics;
 using ToSic.Eav.Run;
 using ToSic.Eav.Serialization;
 using AppState = ToSic.Eav.Apps.AppState;
@@ -17,33 +16,24 @@ namespace ToSic.Eav.Persistence.Efc
         public string PrimaryLanguage
         {
             get {
-                if(_primaryLanguage == null)
-                {
-                    var env = Factory.Resolve<IEnvironment>();
-                    _primaryLanguage = env.DefaultLanguage.ToLowerInvariant();
-                    Log.Add($"Primary language from environment (for attribute sorting): {_primaryLanguage}");
-                }
+                if (_primaryLanguage != null) return _primaryLanguage;
+                var env = Factory.Resolve<IEnvironment>();
+                _primaryLanguage = env.DefaultLanguage.ToLowerInvariant();
+                Log.Add($"Primary language from environment (for attribute sorting): {_primaryLanguage}");
                 return _primaryLanguage;
             }
             set => _primaryLanguage = value;
         }
 
-        private int[] GetEntityIdOfPartnerEntities(int[] repositoryIds)
-        {
-            var relatedIds = from e in _dbContext.ToSicEavEntities
-                where e.PublishedEntityId.HasValue && !e.IsPublished && repositoryIds.Contains(e.EntityId) &&
-                      !repositoryIds.Contains(e.PublishedEntityId.Value) && e.ChangeLogDeleted == null
-                select e.PublishedEntityId.Value;
+        public const int IdChunkSize = 5000;
+        public const int MaxLogDetailsCount = 1000;
 
-            var combined = repositoryIds.Union(relatedIds).ToArray();
-
-            return combined;
-        }
+        internal int AddLogCount;
 
         private void LoadEntities(AppState app, int[] entityIds = null)
         {
             var wrapLog = Log.Call($"{app.AppId}, {entityIds?.Length ?? 0}", useTimer: true);
-            
+            AddLogCount = 0; // reset, so anything in this call will be logged again up to 1000 entries
             var appId = app.AppId;
 
             #region Prepare & Extend EntityIds
@@ -68,92 +58,23 @@ namespace ToSic.Eav.Persistence.Efc
             #region Get Entities with Attribute-Values from Database
 
             sqlTime.Start();
-            var rawEntities = _dbContext.ToSicEavEntities
-                .Include(e => e.AttributeSet)
-                .Include(e => e.ToSicEavValues)
-                .ThenInclude(v => v.ToSicEavValuesDimensions)
-                .Where(e => !e.ChangeLogDeleted.HasValue &&
-                            e.AppId == appId &&
-                            e.AttributeSet.ChangeLogDeleted == null &&
-                            (
-                                // filter by EntityIds (if set)
-                                !filterByEntityIds || entityIds.Contains(e.EntityId)
-                            ))
-                .OrderBy(e => e.EntityId) // order to ensure drafts are processed after draft-parents
-                .Select(e => new
-                {
-                    e.EntityId,
-                    e.EntityGuid,
-                    e.Version,
-                    e.AttributeSetId,
-                    Metadata = new Metadata.Target
-                    {
-                        TargetType = e.AssignmentObjectTypeId,
-                        KeyGuid = e.KeyGuid,
-                        KeyNumber = e.KeyNumber,
-                        KeyString = e.KeyString
-                    },
-                    e.IsPublished,
-                    e.PublishedEntityId,
-                    e.Owner,
-                    Modified = e.ChangeLogModifiedNavigation.Timestamp,
-                    e.Json,
-                    e.ContentType
-                })
-                .ToList();
+            var rawEntities = GetRawEntities(entityIds, appId, filterByEntityIds);
             sqlTime.Stop();
             var entityIdsFound = rawEntities.Select(e => e.EntityId).ToList();
+            var entityIdChunks = entityIdsFound.ChunkBy(IdChunkSize);
+            Log.Add($"Found {entityIdsFound.Count} raw entities in {sqlTime.ElapsedMilliseconds}ms - chunked into {entityIdChunks.Count} chunks");
 
             sqlTime.Start();
-            var relatedEntities = _dbContext.ToSicEavEntityRelationships
-                .Include(rel => rel.Attribute)
-                .Where(rel => rel.ParentEntity.AppId == appId)
-                .Where(r => !r.ChildEntityId.HasValue ||
-                            entityIdsFound.Contains(r.ChildEntityId.Value) ||
-                            entityIdsFound.Contains(r.ParentEntityId))
-                .GroupBy(g => g.ParentEntityId)
-                .ToDictionary(g => g.Key, g => g.GroupBy(r => r.AttributeId)
-                    .Select(rg => new
-                    {
-                        AttributeID = rg.Key,
-                        rg.First().Attribute.StaticName,
-                        Childs = rg.OrderBy(c => c.SortOrder).Select(c => c.ChildEntityId)
-                    }));
+            var chunkedRelationships = entityIdChunks.Select(eIdC => GetRelatedEntities(appId, eIdC));
+            var relatedEntities = chunkedRelationships.SelectMany(chunk => chunk).ToDictionary(i => i.Key, i => i.Value);
+            Log.Add($"Found {relatedEntities.Count} entity relationships in {sqlTime.ElapsedMilliseconds}ms");
 
 
             #region load attributes & values
 
-            var attributes = _dbContext.ToSicEavValues
-                .Include(v => v.Attribute)
-                .Include(v => v.ToSicEavValuesDimensions)
-                .ThenInclude(d => d.Dimension)
-                .Where(r => entityIdsFound.Contains(r.EntityId))
-                .Where(v => !v.ChangeLogDeleted.HasValue)
-                .GroupBy(e => e.EntityId)
-                .ToDictionary(e => e.Key, e => e.GroupBy(v => v.AttributeId)
-                    .Select(vg => new
-                    {
-                        AttributeID = vg.Key,
-                        Name = vg.First().Attribute.StaticName,
-                        Values = vg
-                            // The order of values is significant because the 2sxc system uses the first value as fallback
-                            // Because we can't ensure order of values when saving, order values: prioritize values without
-                            // any dimensions, then values with primary language
-                            .OrderByDescending(v2 => !v2.ToSicEavValuesDimensions.Any())
-                            .ThenByDescending(v2 => v2.ToSicEavValuesDimensions.Any(l => string.Equals(l.Dimension.EnvironmentKey, PrimaryLanguage, StringComparison.InvariantCultureIgnoreCase)))
-                            .ThenBy(v2 => v2.ChangeLogCreated)
-                            .Select(v2 => new
-                            {
-                                v2.Value,
-                                Languages = v2.ToSicEavValuesDimensions.Select(l => new Language
-                                {
-                                    DimensionId = l.DimensionId,
-                                    ReadOnly = l.ReadOnly,
-                                    Key = l.Dimension.EnvironmentKey.ToLowerInvariant()
-                                } as ILanguage).ToList(),
-                            })
-                    }));
-
+            var chunkedAttributes = entityIdChunks.Select(GetAttributesOfEntityChunk);
+            var attributes = chunkedAttributes.SelectMany(chunk => chunk).ToDictionary(i => i.Key, i => i.Value);
+            Log.Add($"Found {attributes.Count} attributes");
             #endregion
 
             sqlTime.Stop();
@@ -168,12 +89,15 @@ namespace ToSic.Eav.Persistence.Efc
             var entityTimer = Stopwatch.StartNew();
             foreach (var e in rawEntities)
             {
+                if (AddLogCount++ == MaxLogDetailsCount) Log.Add($"Will stop logging each item now, as we've already logged {AddLogCount} items");
+
                 Entity newEntity;
 
                 if (e.Json != null)
                 {
                     newEntity = serializer.Deserialize(e.Json, false, true) as Entity;
                     // add properties which are not in the json
+                    // ReSharper disable once PossibleNullReferenceException
                     newEntity.IsPublished = e.IsPublished;
                     newEntity.Modified = e.Modified;
                     newEntity.Owner = e.Owner;
@@ -196,7 +120,7 @@ namespace ToSic.Eav.Persistence.Efc
                     // add Related-Entities Attributes to the entity
                     if (relatedEntities.ContainsKey(e.EntityId))
                         foreach (var r in relatedEntities[e.EntityId])
-                            newEntity.BuildReferenceAttribute(r.StaticName, r.Childs, app);
+                            newEntity.BuildReferenceAttribute(r.StaticName, r.Children, app);
 
                     #region Add "normal" Attributes (that are not Entity-Relations)
 
@@ -218,7 +142,7 @@ namespace ToSic.Eav.Persistence.Efc
                 }
 
                 // If entity is a draft, also include references to Published Entity
-                app.Add(newEntity, e.PublishedEntityId);
+                app.Add(newEntity, e.PublishedEntityId, AddLogCount <= MaxLogDetailsCount);
 
             }
 
