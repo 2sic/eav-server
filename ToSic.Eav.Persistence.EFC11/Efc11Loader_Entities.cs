@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Generics;
+using ToSic.Eav.Persistence.Efc.Intermediate;
 using ToSic.Eav.Run;
 using ToSic.Eav.Serialization;
 using AppState = ToSic.Eav.Apps.AppState;
@@ -91,55 +93,7 @@ namespace ToSic.Eav.Persistence.Efc
             {
                 if (AddLogCount++ == MaxLogDetailsCount) Log.Add($"Will stop logging each item now, as we've already logged {AddLogCount} items");
 
-                Entity newEntity;
-
-                if (e.Json != null)
-                {
-                    newEntity = serializer.Deserialize(e.Json, false, true) as Entity;
-                    // add properties which are not in the json
-                    // ReSharper disable once PossibleNullReferenceException
-                    newEntity.IsPublished = e.IsPublished;
-                    newEntity.Modified = e.Modified;
-                    newEntity.Owner = e.Owner;
-                }
-                else
-                {
-                    var contentType = app.GetContentType(e.AttributeSetId);
-                    if (contentType == null)
-                        throw new NullReferenceException("content type is not found for type " + e.AttributeSetId);
-
-                    newEntity = EntityBuilder.EntityFromRepository(appId, e.EntityGuid, e.EntityId, e.EntityId,
-                        e.Metadata, contentType, e.IsPublished, app, e.Modified, e.Owner,
-                        e.Version);
-
-                    // Add all Attributes of that Content-Type
-                    var titleAttrib = newEntity.GenerateAttributesOfContentType(contentType);
-                    if (titleAttrib != null)
-                        newEntity.SetTitleField(titleAttrib.Name);
-
-                    // add Related-Entities Attributes to the entity
-                    if (relatedEntities.ContainsKey(e.EntityId))
-                        foreach (var r in relatedEntities[e.EntityId])
-                            newEntity.BuildReferenceAttribute(r.StaticName, r.Children, app);
-
-                    #region Add "normal" Attributes (that are not Entity-Relations)
-
-                    if (attributes.ContainsKey(e.EntityId))
-                        foreach (var a in attributes[e.EntityId])
-                        {
-                            if (!newEntity.Attributes.TryGetValue(a.Name, out var attrib))
-                                continue;
-
-                            attrib.Values = a.Values
-                                .Select(v => ValueBuilder.Build(attrib.Type, v.Value, v.Languages))
-                                .ToList();
-
-                            // fix faulty data dimensions in case old storage mechanims messed up
-                            attrib.FixIncorrectLanguageDefinitions();
-                        }
-
-                    #endregion
-                }
+                var newEntity = BuildNewEntity(app, e, serializer, relatedEntities, attributes);
 
                 // If entity is a draft, also include references to Published Entity
                 app.Add(newEntity, e.PublishedEntityId, AddLogCount <= MaxLogDetailsCount);
@@ -156,5 +110,65 @@ namespace ToSic.Eav.Persistence.Efc
             wrapLog("ok");
         }
 
+
+
+        private static Entity BuildNewEntity(AppState app, TempEntity e, 
+            IDataDeserializer serializer,
+            Dictionary<int, IEnumerable<TempRelationshipList>> relatedEntities,
+            Dictionary<int, IEnumerable<TempAttributeWithValues>> attributes)
+        {
+            Entity newEntity;
+
+            if (e.Json != null)
+            {
+                newEntity = serializer.Deserialize(e.Json, false, true) as Entity;
+                // add properties which are not in the json
+                // ReSharper disable once PossibleNullReferenceException
+                newEntity.IsPublished = e.IsPublished;
+                newEntity.Modified = e.Modified;
+                newEntity.Owner = e.Owner;
+                return newEntity;
+            }
+
+            var contentType = app.GetContentType(e.AttributeSetId);
+            if (contentType == null)
+                throw new NullReferenceException("content type is not found for type " + e.AttributeSetId);
+
+            newEntity = EntityBuilder.EntityFromRepository(app.AppId, e.EntityGuid, e.EntityId, e.EntityId,
+                e.Metadata, contentType, e.IsPublished, app, e.Modified, e.Owner,
+                e.Version);
+
+            // Add all Attributes of that Content-Type
+            var titleAttrib = newEntity.GenerateAttributesOfContentType(contentType);
+            if (titleAttrib != null)
+                newEntity.SetTitleField(titleAttrib.Name);
+
+            // add Related-Entities Attributes to the entity
+            if (relatedEntities.ContainsKey(e.EntityId))
+                foreach (var r in relatedEntities[e.EntityId])
+                    newEntity.BuildReferenceAttribute(r.StaticName, r.Children, app);
+
+            #region Add "normal" Attributes (that are not Entity-Relations)
+
+            if (!attributes.ContainsKey(e.EntityId)) 
+                return newEntity;
+
+            foreach (var a in attributes[e.EntityId])
+            {
+                if (!newEntity.Attributes.TryGetValue(a.Name, out var attrib))
+                    continue;
+
+                attrib.Values = a.Values
+                    .Select(v => ValueBuilder.Build(attrib.Type, v.Value, v.Languages))
+                    .ToList();
+
+                // fix faulty data dimensions in case old storage mechanims messed up
+                attrib.FixIncorrectLanguageDefinitions();
+            }
+
+            #endregion
+
+            return newEntity;
+        }
     }
 }
