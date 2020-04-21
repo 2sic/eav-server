@@ -19,6 +19,9 @@ namespace ToSic.Eav.Apps
         /// <param name="values">a dictionary of values to be stored</param>
         /// <param name="userName">the current user name - will be logged as the author</param>
         /// <param name="target">information if this new item is to be metadata for something</param>
+        /// <remarks>
+        /// Changed in 2sxc 10.30 - now returns the id of the created items
+        /// </remarks>
         int Create(string contentTypeName, Dictionary<string, object> values, string userName = null, ITarget target = null);
 
         /// <summary>
@@ -27,7 +30,10 @@ namespace ToSic.Eav.Apps
         /// <param name="contentTypeName">The type name</param>
         /// <param name="multiValues">many dictionaries, each will become an own item when stored</param>
         /// <param name="userName">the current user name - will be logged as the author</param>
-        /// <remarks>You can't create items which are metadata with this, for that, please use the Create-one overload</remarks>
+        /// <remarks>
+        /// You can't create items which are metadata with this, for that, please use the Create-one overload <br/>
+        /// Changed in 2sxc 10.30 - now returns the id of the created items
+        /// </remarks>
         IEnumerable<int> Create(string contentTypeName, IEnumerable<Dictionary<string, object>> multiValues, string userName = null);
 
         /// <summary>
