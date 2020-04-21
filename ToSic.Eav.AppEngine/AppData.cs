@@ -34,46 +34,51 @@ namespace ToSic.Eav.Apps
         private SimpleDataController DataController() => new SimpleDataController(ZoneId, AppId, DefaultLanguage, Log);
 
         /// <inheritdoc />
-        public void Create(string contentTypeName,
+        public int Create(string contentTypeName,
             Dictionary<string, object> values, 
             string userName = null,
             ITarget target = null)
         {
-            Log.Add($"app create new entity of type:{contentTypeName}");
-            DataController().Create(contentTypeName, new List<Dictionary<string, object>> {values}, target);
+            var wrapLog = Log.Call<int>(contentTypeName);
+            var ids = DataController().Create(contentTypeName, new List<Dictionary<string, object>> {values}, target);
+            var id = ids.FirstOrDefault();
             // Out must now be rebuilt, because otherwise it will still have old data in the streams
             RequiresRebuildOfOut = true;
+            return wrapLog(null, id);
         }
 
         /// <inheritdoc />
-        public void Create(string contentTypeName, 
+        public IEnumerable<int> Create(string contentTypeName, 
             IEnumerable<Dictionary<string, object>> multiValues, 
             string userName = null)
         {
-            Log.Add($"app create many ({multiValues.Count()}) new entities of type:{contentTypeName}");
-            DataController().Create(contentTypeName, multiValues);
+            var wrapLog = Log.Call<IEnumerable<int>>(null, $"app create many ({multiValues.Count()}) new entities of type:{contentTypeName}");
+            var ids = DataController().Create(contentTypeName, multiValues);
             // Out must now be rebuilt, because otherwise it will still have old data in the streams
             RequiresRebuildOfOut = true;
+            return wrapLog(null, ids);
         }
 
         /// <inheritdoc />
         public void Update(int entityId, Dictionary<string, object> values,
             string userName = null)
         {
-            Log.Add($"app update i:{entityId}");
+            var wrapLog = Log.Call($"app update i:{entityId}");
             DataController().Update(entityId, values);
             // Out must now be rebuilt, because otherwise it will still have old data in the streams
             RequiresRebuildOfOut = true;
+            wrapLog(null);
         }
 
 
         /// <inheritdoc />
         public void Delete(int entityId, string userName = null)
         {
-            Log.Add($"app delete i:{entityId}");
+            var wrapLog = Log.Call($"app delete i:{entityId}");
             DataController().Delete(entityId);
             // Out must now be rebuilt, because otherwise it will still have old data in the streams
             RequiresRebuildOfOut = true;
+            wrapLog(null);
         }
 
     }
