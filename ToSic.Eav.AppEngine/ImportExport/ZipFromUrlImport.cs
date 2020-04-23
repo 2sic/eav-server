@@ -31,14 +31,23 @@ namespace ToSic.Eav.Apps.ImportExport
 
             using (var client = new WebClient())
             {
+                var initialProtocol = ServicePointManager.SecurityProtocol;
                 try
                 {
+                    Log.Add("Will upgrade TLS connection so we can connect with TLS 1.1 or 1.2");
+                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+
+
                     Log.Add($"try to download:{packageUrl} to:{destinationPath}");
                     client.DownloadFile(packageUrl, destinationPath);
                 }
                 catch (WebException e)
                 {
                     throw new Exception("Could not download app package from '" + packageUrl + "'.", e);
+                }
+                finally
+                {
+                    ServicePointManager.SecurityProtocol = initialProtocol;
                 }
                 
             }
