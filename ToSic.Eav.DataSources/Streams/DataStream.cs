@@ -152,12 +152,6 @@ namespace ToSic.Eav.DataSources
 	        if (cascade) Source.PurgeList(true);
 	    }
 
-        // TODO: 11 - REMOVE
-	    [Obsolete("deprecated since 2sxc 9.8 / eav 4.5 - use List instead - leave in interface for now, because it might in the signature of other DLLs")]
-        [PrivateApi]
-	    public IEnumerable<IEntity> LightList => List;
-
-
         /// <inheritdoc />
         /// <summary>
         /// The source which holds this stream
