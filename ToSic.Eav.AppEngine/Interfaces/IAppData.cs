@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Metadata;
@@ -22,7 +23,7 @@ namespace ToSic.Eav.Apps
         /// <remarks>
         /// Changed in 2sxc 10.30 - now returns the id of the created items
         /// </remarks>
-        int Create(string contentTypeName, Dictionary<string, object> values, string userName = null, ITarget target = null);
+        IEntity Create(string contentTypeName, Dictionary<string, object> values, string userName = null, ITarget target = null);
 
         /// <summary>
         /// Create a bunch of new entities in one single call (much faster, because cache doesn't need to repopulate in the mean time).
@@ -34,7 +35,7 @@ namespace ToSic.Eav.Apps
         /// You can't create items which are metadata with this, for that, please use the Create-one overload <br/>
         /// Changed in 2sxc 10.30 - now returns the id of the created items
         /// </remarks>
-        IEnumerable<int> Create(string contentTypeName, IEnumerable<Dictionary<string, object>> multiValues, string userName = null);
+        IEnumerable<IEntity> Create(string contentTypeName, IEnumerable<Dictionary<string, object>> multiValues, string userName = null);
 
         /// <summary>
         /// Update an existing item.

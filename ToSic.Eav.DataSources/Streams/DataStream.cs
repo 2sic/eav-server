@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using ToSic.Eav.DataSources.Caching;
-using ToSic.Eav.DataSources.Caching.CacheInfo;
 using ToSic.Eav.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -22,11 +21,12 @@ namespace ToSic.Eav.DataSources
 
         #region Self-Caching and Results-Persistence Properties / Features
 
-        /// <inheritdoc />
-        /// <summary>
-        /// This one will return the original result if queried again - as long as this object exists
-        /// </summary>
-        public bool ReuseInitialResults { get; set; }
+        // 2020-04-27.01 2dm - disabled this - as of now, it's always true, so we'll probably remove it soon
+        ///// <inheritdoc />
+        ///// <summary>
+        ///// This one will return the original result if queried again - as long as this object exists
+        ///// </summary>
+        //private bool ReuseInitialResults { get; set; } = true;
 
         /// <inheritdoc />
         /// <summary>
@@ -38,14 +38,14 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Default cache duration is 1 day = 3600 * 24
         /// </summary>
-        public int CacheDurationInSeconds { get; set; }
+        public int CacheDurationInSeconds { get; set; } = 3600 * 24; // one day, since by default if it caches, it would check upstream for cache-reload
 
 
         /// <inheritdoc />
         /// <summary>
         /// Kill the cache if the source data is newer than the cache-stamped data
         /// </summary>
-        public bool CacheRefreshOnSourceRefresh { get; set; }
+        public bool CacheRefreshOnSourceRefresh { get; set; } = true;
 
         /// <summary>
         /// Provide access to the CacheKey - so it could be overridden if necessary without using the stream underneath it
@@ -71,9 +71,9 @@ namespace ToSic.Eav.DataSources
 		    AutoCaching = enableAutoCaching;
             
             // Default properties for caching config
-            ReuseInitialResults = true;
-		    CacheDurationInSeconds = 3600 * 24; // one day, since by default if it caches, it would check upstream for cache-reload
-            CacheRefreshOnSourceRefresh = true;
+            //ReuseInitialResults = true;
+		    //CacheDurationInSeconds = 3600 * 24; // one day, since by default if it caches, it would check upstream for cache-reload
+            //CacheRefreshOnSourceRefresh = true;
 		}
 
         #region Get Dictionary and Get List
@@ -87,22 +87,23 @@ namespace ToSic.Eav.DataSources
 	    {
             get
             {
-                var wrapLog = Source.Log.Call<IImmutableList<IEntity>>($"{nameof(Name)}:{Name}; {nameof(ReuseInitialResults)}:{ReuseInitialResults}");
+                var wrapLog = Source.Log.Call<IImmutableList<IEntity>>($"{nameof(Name)}:{Name}"); // {nameof(ReuseInitialResults)}:{ReuseInitialResults}");
                 // If already retrieved return last result to be faster
-                if (_list != null && ReuseInitialResults)
-                    return wrapLog("reuse", _list);
+                if (_list != null) // && ReuseInitialResults)
+                    return wrapLog("reuse previous", _list);
 
                 // Check if it's in the cache - and if yes, if it's still valid and should be re-used --> return if found
-                if (AutoCaching && ReuseInitialResults)
+                if (AutoCaching) // && ReuseInitialResults)
                 {
-                    Source.Log.Add($"{nameof(AutoCaching)} && {nameof(ReuseInitialResults)}");
+                    Source.Log.Add($"{nameof(AutoCaching)}:{AutoCaching}"); // && {nameof(ReuseInitialResults)}");
                     var cacheItem = new ListCache(Source.Log).GetOrBuild(this, ReadUnderlyingList, CacheDurationInSeconds);
                     return _list = wrapLog("ok", cacheItem.List);
                 }
 
                 var result = ReadUnderlyingList();
-                if (ReuseInitialResults)
-                    _list = result;
+                // 2020-04-27.01 2dm - disabled this - as of now, it's always true, so we'll probably remove it soon
+                // if (ReuseInitialResults)
+                _list = result;
                 return wrapLog("ok", result);
             }
 	    }
@@ -142,11 +143,16 @@ namespace ToSic.Eav.DataSources
 
 
         public void PurgeList(bool cascade = false)
-	    {
+        {
+            // kill the very local temp cache
+            _list = null;
+            // kill in list-cache
             new ListCache(Source.Log).Remove(this);
+            // tell upstream to flush as well
 	        if (cascade) Source.PurgeList(true);
 	    }
 
+        // TODO: 11 - REMOVE
 	    [Obsolete("deprecated since 2sxc 9.8 / eav 4.5 - use List instead - leave in interface for now, because it might in the signature of other DLLs")]
         [PrivateApi]
 	    public IEnumerable<IEntity> LightList => List;
@@ -170,6 +176,6 @@ namespace ToSic.Eav.DataSources
         public IEnumerator<IEntity> GetEnumerator() => List.GetEnumerator();
 
 	    IEnumerator IEnumerable.GetEnumerator() => List.GetEnumerator();
-        #endregion Experimental support for IEnumerable<IEntity>
+        #endregion Support for IEnumerable<IEntity>
     }
 }
