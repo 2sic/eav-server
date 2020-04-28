@@ -87,7 +87,7 @@ namespace ToSic.Eav.WebApi
 
             var ct = appState.GetContentType(contentTypeStaticName);
             wrapLog(null);
-            return ContentTypeForJson(ct as ContentType /*, null,*/);
+            return ContentTypeForJson(ct as ContentType);
 	    }
 
         [HttpGet]

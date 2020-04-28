@@ -18,7 +18,8 @@ namespace ToSic.Eav.DataSources
     [VisualQuery(GlobalName = "ToSic.Eav.DataSources.AttributeRename, ToSic.Eav.DataSources",
         Type = DataSourceType.Modify,
         DynamicOut = false,
-        NiceName = "Attribute-Rename / Property-Rename",
+        NiceName = "Attribute-Rename",
+        UiHint = "rename the Attribute / Property",
         ExpectsDataOfType = "c5918cb8-d35a-48c7-9380-a437edde66d2",
         HelpLink = "https://r.2sxc.org/DsAttributeRename")]
 

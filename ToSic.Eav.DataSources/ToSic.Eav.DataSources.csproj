@@ -154,9 +154,7 @@
     <Compile Include="DataSources\Properties\OwnerFilter.cs" />
     <Compile Include="DataSources\Properties\PublishingFilter.cs" />
     <Compile Include="DataSources\RelationshipFilter.cs" />
-    <Compile Include="RootSources\IRootSource.cs" />
     <Compile Include="DataSources\External\Sql.cs" />
-    <Compile Include="SqlSources\EavSqlStore.cs" />
     <Compile Include="DataSources\ItemFilterDuplicates.cs" />
     <Compile Include="DataSources\Streams\StreamMerge.cs" />
     <Compile Include="DataSources\Streams\StreamFallback.cs" />
