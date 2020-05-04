@@ -15,8 +15,9 @@ namespace ToSic.Eav.DataSources
         Type = DataSourceType.Source, 
         Icon = "app",
         DynamicOut = true,
-		NiceName = "App (with streams for each Content Type)",
-        ExpectsDataOfType = "|Config ToSic.Eav.DataSources.App",
+		NiceName = "App",
+		UiHint = "with streams for each Content Type",
+		ExpectsDataOfType = "|Config ToSic.Eav.DataSources.App",
         HelpLink = "https://r.2sxc.org/DsApp")]
     public partial class App : DataSourceBase
 	{

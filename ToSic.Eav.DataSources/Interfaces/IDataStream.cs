@@ -22,10 +22,6 @@ namespace ToSic.Eav.DataSources
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="IEntity"/> items.</returns>
         IEnumerable<IEntity> List { get; }
 
-        [PrivateApi]
-        [Obsolete("deprecated since 2sxc 9.8 / eav 4.5 - use List instead")]
-	    IEnumerable<IEntity> LightList { get; }
-
         /// <summary>
 		/// Underlying <see cref="IDataSource"/> providing the <see cref="IEntity"/> of this stream
 		/// </summary>

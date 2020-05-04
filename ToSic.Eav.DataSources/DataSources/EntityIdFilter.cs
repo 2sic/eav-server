@@ -17,7 +17,8 @@ namespace ToSic.Eav.DataSources
 	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.EntityIdFilter, ToSic.Eav.DataSources",
         Type = DataSourceType.Filter, 
         DynamicOut = false,
-        NiceName = "ItemIdFilter",
+        NiceName = "Item Id Filter",
+        UiHint = "Find items based on the ID",
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.EntityIdFilter",
         HelpLink = "https://r.2sxc.org/DsIdFilter")]
 

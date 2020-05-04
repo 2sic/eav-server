@@ -28,6 +28,8 @@ namespace ToSic.Eav.Apps.Parts
         ///// </summary>
         //public IContentType Get(int contentTypeId) => AppRT.AppState.GetContentType(contentTypeId);
 
+        public IEnumerable<string> GetScopes() => All.Select(ct => ct.Scope).Distinct().OrderBy(s => s);
+
         public IEnumerable<IContentType> FromScope(string scope = null, bool includeAttributeTypes = false)
         {
             var set = All.Where(c => includeAttributeTypes || !c.Name.StartsWith("@"));

@@ -67,7 +67,7 @@ namespace ToSic.Eav.Apps.Parts
         public class DataSourceInfo
         {
             public string PartAssemblyAndType;
-            public string ClassName;
+            //public string ClassName;
             public ICollection<string> In;
             public ICollection<string> Out;
             public string ContentType;
@@ -77,12 +77,14 @@ namespace ToSic.Eav.Apps.Parts
             public string HelpLink;
             public bool EnableConfig;
             public string Name;
+            public string UiHint;
             public int Difficulty;
 
             public DataSourceInfo(string fallbackName, VisualQueryAttribute dsInfo)
             {
                 Name = fallbackName; // will override further down if dsInfo is provided
                 if (dsInfo == null) return;
+                UiHint = dsInfo.UiHint;
                 PrimaryType = dsInfo.Type.ToString();
                 Icon = dsInfo.Icon;
                 HelpLink = dsInfo.HelpLink;

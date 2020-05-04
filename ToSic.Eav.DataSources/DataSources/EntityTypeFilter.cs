@@ -14,7 +14,7 @@ namespace ToSic.Eav.DataSources
 	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.EntityTypeFilter, ToSic.Eav.DataSources",
         Type = DataSourceType.Filter, 
         DynamicOut = false,
-        NiceName = "ContentTypeFilter",
+        NiceName = "ContentType-Filter",
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.EntityTypeFilter",
         HelpLink = "https://r.2sxc.org/DsTypeFilter")]
 

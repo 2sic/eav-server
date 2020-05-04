@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Api.Api01;
+using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
@@ -34,47 +35,66 @@ namespace ToSic.Eav.Apps
         private SimpleDataController DataController() => new SimpleDataController(ZoneId, AppId, DefaultLanguage, Log);
 
         /// <inheritdoc />
-        public void Create(string contentTypeName,
+        public IEntity Create(string contentTypeName,
             Dictionary<string, object> values, 
             string userName = null,
             ITarget target = null)
         {
-            Log.Add($"app create new entity of type:{contentTypeName}");
-            DataController().Create(contentTypeName, new List<Dictionary<string, object>> {values}, target);
+            var wrapLog = Log.Call<IEntity>(contentTypeName);
+            var ids = DataController().Create(contentTypeName, new List<Dictionary<string, object>> {values}, target);
+            var id = ids.FirstOrDefault();
             // Out must now be rebuilt, because otherwise it will still have old data in the streams
-            RequiresRebuildOfOut = true;
+            FlushDataSnapshot();
+            // try to find it again
+            var created = List.One(id);
+            return wrapLog(null, created);
         }
 
         /// <inheritdoc />
-        public void Create(string contentTypeName, 
+        public IEnumerable<IEntity> Create(string contentTypeName, 
             IEnumerable<Dictionary<string, object>> multiValues, 
             string userName = null)
         {
-            Log.Add($"app create many ({multiValues.Count()}) new entities of type:{contentTypeName}");
-            DataController().Create(contentTypeName, multiValues);
+            var wrapLog = Log.Call<IEnumerable<IEntity>>(null, $"app create many ({multiValues.Count()}) new entities of type:{contentTypeName}");
+            var ids = DataController().Create(contentTypeName, multiValues);
             // Out must now be rebuilt, because otherwise it will still have old data in the streams
-            RequiresRebuildOfOut = true;
+            FlushDataSnapshot();
+            var created = List.Where(e => ids.Contains(e.EntityId)).ToList();
+            return wrapLog(null, created);
         }
 
         /// <inheritdoc />
         public void Update(int entityId, Dictionary<string, object> values,
             string userName = null)
         {
-            Log.Add($"app update i:{entityId}");
+            var wrapLog = Log.Call($"app update i:{entityId}");
             DataController().Update(entityId, values);
             // Out must now be rebuilt, because otherwise it will still have old data in the streams
-            RequiresRebuildOfOut = true;
+            FlushDataSnapshot();
+            wrapLog(null);
         }
 
 
         /// <inheritdoc />
         public void Delete(int entityId, string userName = null)
         {
-            Log.Add($"app delete i:{entityId}");
+            var wrapLog = Log.Call($"app delete i:{entityId}");
             DataController().Delete(entityId);
             // Out must now be rebuilt, because otherwise it will still have old data in the streams
-            RequiresRebuildOfOut = true;
+            FlushDataSnapshot();
+            wrapLog(null);
         }
 
+        /// <summary>
+        /// All 2sxc data is always snapshot, so read will only run a query once and keep it till the objects are killed.
+        /// If we do updates or perform other changes, we must clear the current snapshot so subsequent access will result
+        /// in the new data. 
+        /// </summary>
+        private void FlushDataSnapshot()
+        {
+            // Purge the list and parent lists - must happen first, as otherwise the list-access will be interrupted
+            PurgeList(true);
+            RequiresRebuildOfOut = true;
+        }
     }
 }

@@ -84,12 +84,17 @@ namespace ToSic.Eav.Metadata
         private List<IEntity> _filteredEntities;
 
         /// <inheritdoc />
-        public IEnumerable<Permission> Permissions =>
-            _permissions ?? (_permissions =
-            AllWithHidden
-                .Where(md => md.Type.StaticName == Permission.TypeName)
-                .Select(e => new Permission(e))
-            );
+        public IEnumerable<Permission> Permissions
+        {
+            get
+            {
+                if(_permissions == null || RequiresReload())
+                    _permissions = AllWithHidden
+                               .Where(md => md.Type.StaticName == Permission.TypeName)
+                               .Select(e => new Permission(e));
+                return _permissions;
+            }
+        }
 
         private IEnumerable<Permission> _permissions;
 

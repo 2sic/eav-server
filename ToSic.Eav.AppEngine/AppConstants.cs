@@ -18,7 +18,7 @@
         public static readonly string[] ScopesContent = {ScopeContentOld, ScopeContentFuture };
 
         public const string ScopeContentSystem = "2SexyContent-System";
-        public static readonly string[] ScopesSystem = { Constants.ScopeSystem, ScopeApp, ScopeContentSystem };
+        //public static readonly string[] ScopesSystem = { Constants.ScopeSystem, ScopeApp, ScopeContentSystem };
 
         #endregion
     }

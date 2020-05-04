@@ -44,7 +44,7 @@ namespace ToSic.Eav.Api.Api01
             _appId = appId;
             _defaultLanguageCode = defaultLanguageCode;
             _context = DbDataController.Instance(zoneId, appId, Log);
-            _appManager = new AppManager(new AppIdentity(zoneId, appId)/*,  zoneId, appId*/, Log);
+            _appManager = new AppManager(new AppIdentity(zoneId, appId), Log);
         }
 
 
@@ -59,35 +59,47 @@ namespace ToSic.Eav.Api.Api01
         /// </param>
         /// <param name="target"></param>
         /// <exception cref="ArgumentException">Content-type does not exist, or an attribute in values</exception>
-        public void Create(string contentTypeName, IEnumerable<Dictionary<string, object>> multiValues, ITarget target = null)
+        public IEnumerable<int> Create(string contentTypeName, IEnumerable<Dictionary<string, object>> multiValues, ITarget target = null)
         {
-            Log.Add($"create type:{contentTypeName}");
+            var wrapLog = Log.Call<IEnumerable<int>>(contentTypeName);
 
             // ensure the type really exists
             var type = _appManager.Read.ContentTypes.Get(contentTypeName);
             if (type == null)
-                throw new ArgumentException("Content type '" + contentTypeName + "' does not exist.");
+            {
+                var msg = "Error: Content type '" + contentTypeName + "' does not exist.";
+                wrapLog(msg, null);
+                throw new ArgumentException(msg);
+            }
 
             var importEntity = multiValues.Select(values => BuildEntity(type, values, target)).ToList();
 
-            _appManager.Entities.Save(importEntity);
+            var ids = _appManager.Entities.Save(importEntity);
+            return wrapLog(null, ids);
         }
 
         private IEntity BuildEntity(IContentType type, Dictionary<string, object> values, ITarget target)
         {
+            var wrapLog = Log.Call<IEntity>();
             // ensure it's case insensitive...
             values = new Dictionary<string, object>(values, StringComparer.OrdinalIgnoreCase);
 
             if (values.All(v => v.Key.ToLower() != Constants.EntityFieldGuid))
+            {
+                Log.Add("add guid");
                 values.Add(Constants.EntityFieldGuid, Guid.NewGuid());
+            }
 
             var eGuid = Guid.Parse(values[Constants.EntityFieldGuid].ToString());
             var importEntity = new Entity(_appId, eGuid, type, new Dictionary<string, object>());
             if (target != null)
+            {
+                Log.Add("add metadata target");
                 importEntity.SetMetadata(target);
+            }
             AppendAttributeValues(importEntity, type, ConvertEntityRelations(values), _defaultLanguageCode, false,
                 true);
-            return importEntity;
+            return wrapLog(null, importEntity);
         }
 
 

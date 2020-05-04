@@ -10,7 +10,8 @@ namespace ToSic.Eav.DataSources
     /// It's just like a normal <see cref="IDataSource"/> but will internally access the <see cref="AppState"/> from the <see cref="IAppsCache"/>.
     /// </summary>
     [VisualQuery(GlobalName = "ToSic.Eav.DataSources.IAppRoot, ToSic.Eav.DataSources",
-        NiceName = "App Root (ICache)",
+        NiceName = "App Root Cache",
+        UiHint = "(aka ICache)",
         PreviousNames = new []
             {
                 "ToSic.Eav.DataSources.Caches.ICache, ToSic.Eav.DataSources",

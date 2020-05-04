@@ -70,6 +70,12 @@ namespace ToSic.Eav.DataSources.Queries
         /// </summary>
         public string NiceName { get; set; }
 
+
+        /// <summary>
+        /// A hint to help the user better understand what this does - in case the nice name isn't enough. 
+        /// </summary>
+        public string UiHint { get; set; }
+
         /// <summary>
         /// **required** this should be a unique id, ideally a GUID. <br/>
         /// _important: old code use string names like a.net namespace. This should not be done any more and will be deprecated in future._

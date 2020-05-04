@@ -88,7 +88,7 @@ namespace ToSic.Eav.DataSources.System
             var read = new AppRuntime(appId, false, Log);
 	        var scp = OfScope;
 	        if (string.IsNullOrWhiteSpace(scp) || string.Equals(scp, "Default", StringComparison.InvariantCultureIgnoreCase))
-	            scp = "2SexyContent";
+	            scp = AppConstants.ScopeContentOld;
 
 	        var types = read.ContentTypes.FromScope(scp);
 
