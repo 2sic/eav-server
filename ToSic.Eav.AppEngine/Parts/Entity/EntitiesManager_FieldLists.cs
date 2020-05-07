@@ -20,6 +20,20 @@ namespace ToSic.Eav.Apps.Parts
         public void FieldListRemove(IEntity target, string[] fields, int index, bool enableVersioning)
             => FieldListUpdate(target, fields, enableVersioning, lists => lists.Remove(index));
 
+        public void FieldListMove(IEntity target, string[] fields, int source, int dest, bool enableVersioning) 
+            => FieldListUpdate(target, fields, enableVersioning, lists => lists.Move(source, dest));
+
+        public void FieldListReorder(IEntity target, string[] fields, int[] newSequence, bool enableVersioning)
+            => FieldListUpdate(target, fields, enableVersioning, lists => lists.Reorder(newSequence));
+
+
+        public void FieldListReplaceIfModified(IEntity target, string[] fields, int index, int?[] replacement, bool enableVersioning)
+        {
+            FieldListUpdate(target, fields, enableVersioning, 
+                lists => lists.Replace(index, replacement.Select(r => new Tuple<bool, int?>(true, r)).ToArray()
+            ));
+        }
+
         private static List<int?> FieldListIdsWithNulls(IEnumerable<IEntity> list)
             => list.Select(p => p?.EntityId).ToList();
 
