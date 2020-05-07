@@ -16,6 +16,9 @@ namespace ToSic.Eav.Apps.Parts
             var values = callback.Invoke(lists);
             AppManager.Entities.UpdateParts(target, values, enableVersioning);
         }
+        public void FieldListAdd(IEntity target, string[] fields, int index, int?[] values, bool enableVersioning)
+            => FieldListUpdate(target, fields, enableVersioning, lists => lists.Add(index, values));
+
 
         public void FieldListRemove(IEntity target, string[] fields, int index, bool enableVersioning)
             => FieldListUpdate(target, fields, enableVersioning, lists => lists.Remove(index));
