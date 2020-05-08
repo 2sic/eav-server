@@ -12,8 +12,6 @@ namespace ToSic.Eav.Apps
     {
 
         #region constructors
-        //public AppRuntime(int zoneId, int appId, ILog parentLog) 
-        //    : base(zoneId, appId, parentLog) { }
 
         public AppRuntime(IAppIdentity app, bool showDrafts, ILog parentLog) : base(app, showDrafts, parentLog) { }
 

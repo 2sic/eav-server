@@ -123,9 +123,6 @@
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Apps\Loading\" />
-  </ItemGroup>
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0'">
     <DefineConstants>NETCORE</DefineConstants>
   </PropertyGroup>

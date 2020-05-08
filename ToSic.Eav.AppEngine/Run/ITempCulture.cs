@@ -1,4 +1,5 @@
-﻿namespace ToSic.Eav.Run
+﻿// ReSharper disable once CheckNamespace
+namespace ToSic.Eav.Run
 {
     // todo: sometime replace this with DimensionDefinition
     public interface ITempCulture

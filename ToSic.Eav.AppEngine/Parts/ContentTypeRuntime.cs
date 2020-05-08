@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Run;
 using ToSic.Eav.Types;
 
 namespace ToSic.Eav.Apps.Parts
@@ -50,16 +52,26 @@ namespace ToSic.Eav.Apps.Parts
             Log.Add($"in global {globalDef.Count}");
 
             // Merge input types registered in this app
-            var inputTypes = GetAppRegisteredInputTypes();
-            Log.Add($"in app {inputTypes.Count}");
-            AddMissingTypes(globalDef, inputTypes);
+            var appTypes = GetAppRegisteredInputTypes();
+            Log.Add($"in app {appTypes.Count}");
+
+            // experimental v11
+            var extensionTypes = GetAppExtensionInputTypes();
+
+            var inputTypes = extensionTypes;
+            if (inputTypes.Count > 0)
+                AddMissingTypes(inputTypes, appTypes);
+            else
+                inputTypes = appTypes;
+
+            AddMissingTypes(inputTypes, globalDef);
             Log.Add($"combined {inputTypes.Count}");
 
             // Merge input types registered in global metadata-app
             var systemAppRt = new AppRuntime(Constants.MetaDataAppId, true, Log);
-            var systemInputTypes = systemAppRt.ContentTypes.GetAppRegisteredInputTypes();
-            Log.Add($"in system {systemInputTypes.Count}");
-            AddMissingTypes(systemInputTypes, inputTypes);
+            var systemAppInputTypes = systemAppRt.ContentTypes.GetAppRegisteredInputTypes();
+            Log.Add($"in system {systemAppInputTypes.Count}");
+            AddMissingTypes(inputTypes, systemAppInputTypes);
             Log.Add($"combined {inputTypes.Count}");
 
             wraplog($"found {inputTypes.Count}");
@@ -69,9 +81,9 @@ namespace ToSic.Eav.Apps.Parts
         /// <summary>
         /// Mini-helper to enhance a list with additional entries not yet contained
         /// </summary>
-        /// <param name="additional"></param>
         /// <param name="target"></param>
-        private static void AddMissingTypes(List<InputTypeInfo> additional, List<InputTypeInfo> target)
+        /// <param name="additional"></param>
+        private static void AddMissingTypes(List<InputTypeInfo> target, List<InputTypeInfo> additional)
             => additional.ForEach(sit =>
             {
                 if (target.FirstOrDefault(ait => ait.Type == sit.Type) == null)
@@ -95,6 +107,32 @@ namespace ToSic.Eav.Apps.Parts
                     e.GetBestValue<bool>(Constants.InputTypeUseAdam)
                 ))
                 .ToList();
+
+        /// <summary>
+        /// Experimental v11 - load input types based on folder
+        /// </summary>
+        /// <returns></returns>
+        private List<InputTypeInfo> GetAppExtensionInputTypes()
+        {
+            var wrapLog = Log.Call<List<InputTypeInfo>>();
+            try
+            {
+                var factory = Factory.Resolve<IEnvironmentFactory>();
+                var appState = State.Get(AppRT);
+                var appLoader = factory.AppFileSystemLoader(appState.AppId, appState.Path, Log);
+                var inputTypes = appLoader.FindInputTypes();
+                //var typed = inputTypes.Select(it =>
+                //        new InputTypeInfo(it, "Extension: " + it, "Field in App System", "", false,
+                //            $"[App:Path]/system/extensions/{it}/index.js", "", false))
+                //    .ToList();
+                return wrapLog(null, inputTypes);
+            }
+            catch (Exception e)
+            {
+                Log.Add("Error: " + e.Message);
+                return wrapLog("error", new List<InputTypeInfo>());
+            }
+        }
 
         private const string FieldTypePrefix = "@";
 

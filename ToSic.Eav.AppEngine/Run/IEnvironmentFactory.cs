@@ -5,6 +5,7 @@ using ToSic.Eav.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 using PermissionCheckBase = ToSic.Eav.Security.PermissionCheckBase;
 
+// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Run
 {
     [PrivateApi]
@@ -29,5 +30,7 @@ namespace ToSic.Eav.Run
 
         IAppEnvironment Environment(ILog parentLog);
 
+        // experimental
+        IAppFileSystemLoader AppFileSystemLoader(int appId, string path, ILog log);
     }
 }

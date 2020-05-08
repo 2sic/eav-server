@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Documentation;
 
+// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Run
 {
     /// <inheritdoc />

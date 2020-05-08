@@ -6,6 +6,7 @@ namespace ToSic.Eav.Apps
     public enum AppStateLoadSequence
     {
         Start,
+        AppPathInit,
         MetadataInit,
         ContentTypeLoad,
         ItemLoad
