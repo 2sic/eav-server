@@ -47,38 +47,46 @@ namespace ToSic.Eav
         public static readonly int MetaDataAppId = 1;
 
 
-        /// <summary>
-        /// Default Entity AssignmentObjectTypeId
-        /// </summary>
-        [Obsolete("Use NotMetadata instead")] public const int AssignmentObjectTypeId = 1;
+        ///// <summary>
+        ///// Default Entity AssignmentObjectTypeId
+        ///// </summary>
+        //[Obsolete("Use NotMetadata instead")] public const int AssignmentObjectTypeId = 1;
 
+
+        ///// <summary>
+        ///// AssignmentObjectTypeId for FieldProperties (Field MetaData)
+        ///// </summary>
+        //[Obsolete("Use MetadataForField instead")] public static readonly int AssignmentObjectTypeIdFieldProperties = 2;
+
+
+        ///// <summary>
+        ///// AssignmentObjectTypeId for DataQueries
+        ///// </summary>
+        //[Obsolete("Use MetadataForEntity instead")] public static readonly int AssignmentObjectTypeEntity = 4;
+
+        /// <summary>Things that are not used as Metadata</summary>
         public const int NotMetadata = 1;
 
-        /// <summary>
-        /// AssignmentObjectTypeId for FieldProperties (Field MetaData)
-        /// </summary>
-        [Obsolete("Use MetadataForField instead")] public static readonly int AssignmentObjectTypeIdFieldProperties = 2;
-
+        /// <summary>Metadata of attributes (fields)</summary>
         public static readonly int MetadataForAttribute = 2;
-
-        /// <summary>
-        /// AssignmentObjectTypeId for DataQueries
-        /// </summary>
-        [Obsolete("Use MetadataForEntity instead")] public static readonly int AssignmentObjectTypeEntity = 4;
-
-        public const int MetadataForEntity = 4;
-
-        public static readonly int MetadataForContentType = 5;
-        public const string ContentTypeTypeName = "ContentType";
 
         /// <summary>App metadata</summary>
         public static readonly int MetadataForApp = 3;
 
-        /// <summary>Zone metadata</summary>
-        public static readonly int MetadataForZone = 6;
+        /// <summary>Metadata of entities (data-items)</summary>
+        public const int MetadataForEntity = 4;
 
-        [Obsolete("Use MetadataForCmsObject instead")] 
-        public static readonly int AssignmentObjectTypeCmsObject = 10;
+        /// <summary>Metadata of a content-type (data-schema)</summary>
+        public static readonly int MetadataForContentType = 5;
+
+        public const string ContentTypeTypeName = "ContentType";
+
+
+        ///// <summary>Zone metadata</summary>
+        //public static readonly int MetadataForZone = 6;
+
+        //[Obsolete("Use MetadataForCmsObject instead")] 
+        //public static readonly int AssignmentObjectTypeCmsObject = 10;
         public static readonly int MetadataForCmsObject = 10;
 
         #region Metadata-Properties which have system use

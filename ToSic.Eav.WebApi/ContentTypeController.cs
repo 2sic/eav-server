@@ -139,8 +139,8 @@ namespace ToSic.Eav.WebApi
         public IEnumerable<ContentTypeFieldInfo> GetFields(int appId, string staticName)
         {
             Log.Add($"get fields a#{appId}, type:{staticName}");
-            var appState = State.Get(appId); // Factory.GetAppState(appId);
-            if (!(/*DataSource.GetCache(DataSource.GetIdentity(null, appId))*/appState.GetContentType(staticName) is ContentType type))
+            var appState = State.Get(appId);
+            if (!(appState.GetContentType(staticName) is ContentType type))
                 throw new Exception("type should be a ContentType - something broke");
             var fields = type.Attributes.OrderBy(a => a.SortOrder);
 
@@ -150,13 +150,13 @@ namespace ToSic.Eav.WebApi
             var ser = new EntitiesToDictionary();
             return fields.Select(a =>
             {
-                var inputtype = FindInputType(a);// a.InputType;
+                var inputType = FindInputType(a);
                 return new ContentTypeFieldInfo
                 {
                     Id = a.AttributeId,
                     SortOrder = a.SortOrder,
                     Type = a.Type,
-                    InputType = inputtype,
+                    InputType = inputType,
                     StaticName = a.Name,
                     IsTitle = a.IsTitle,
                     AttributeId = a.AttributeId,
@@ -172,7 +172,7 @@ namespace ToSic.Eav.WebApi
                             },
                             e => ser.Convert(e)
                         ),
-                    InputTypeConfig = appInputTypes.FirstOrDefault(it => it.Type == inputtype),
+                    InputTypeConfig = appInputTypes.FirstOrDefault(it => it.Type == inputType),
                     I18nKey = type.I18nKey
                 };
             });

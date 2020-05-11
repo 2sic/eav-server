@@ -17,9 +17,6 @@ namespace ToSic.Eav.Persistence.Efc
         //    => _contentTypes = new Dictionary<int, IList<IContentType>>();
         #endregion
 
-        #region Load Content-Types into IContent-Type Dictionary
-
-        //private Dictionary<int, IList<IContentType>> _contentTypes = new Dictionary<int, IList<IContentType>>();
 
         /// <inheritdoc />
         /// <summary>
@@ -132,15 +129,9 @@ namespace ToSic.Eav.Persistence.Efc
 
             _sqlTotalTime = _sqlTotalTime.Add(sqlTime.Elapsed);
 
-            //_contentTypes[appId] =
             wrapLog("");
             return newTypes.ToImmutableList();
-
         }
-
-        #endregion
-
-
 
     }
 }

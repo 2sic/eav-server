@@ -11,7 +11,7 @@
             "node_modules",
             "bower_components",
             ".vs",
-            ".data"
+            Constants.FolderData
         };
 
         public static readonly string ModuleDirectory = "~/desktopmodules/tosic_sexycontent";

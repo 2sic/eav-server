@@ -16,7 +16,7 @@ namespace ToSic.Eav.Apps.Parts
     {
         public ContentTypeRuntime(AppRuntime appRt, ILog parentLog) : base(appRt, parentLog){}
 
-        public IEnumerable<IContentType> All => AppRT.AppState.ContentTypes;//.GetContentTypes();
+        public IEnumerable<IContentType> All => AppRT.AppState.ContentTypes;
 
         /// <summary>
         /// Gets a ContentType by Name
