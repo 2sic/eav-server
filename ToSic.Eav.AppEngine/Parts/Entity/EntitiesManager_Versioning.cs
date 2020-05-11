@@ -30,7 +30,7 @@ namespace ToSic.Eav.Apps.Parts
             if (entityDraft.HasValue)
                 AppManager.DataController.Entities.DeleteEntity(entityDraft.Value);
 
-            SystemManager.Purge(AppManager.ZoneId, AppManager.AppId);
+            SystemManager.Purge(AppManager.ZoneId, AppManager.AppId, log: Log); 
         }
 
 

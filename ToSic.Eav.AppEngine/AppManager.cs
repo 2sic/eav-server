@@ -107,7 +107,7 @@ namespace ToSic.Eav.Apps
             newEnt.SetMetadata(new Metadata.Target { KeyNumber = AppId, TargetType = appAssignment });
             Entities.Save(newEnt);
 
-            SystemManager.Purge(ZoneId, AppId);
+            SystemManager.Purge(ZoneId, AppId, log: Log);
             wrapLog(null);
         }
 
@@ -198,7 +198,7 @@ namespace ToSic.Eav.Apps
                     true);
 
             //if (appConfig == null || appSettings == null || appResources == null)
-            SystemManager.Purge(ZoneId, AppId);
+            SystemManager.Purge(ZoneId, AppId, log: Log);
 
             wrapLog("ok");
         }

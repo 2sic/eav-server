@@ -20,7 +20,7 @@ namespace ToSic.Eav.Apps
         #region App management
 
         public void DeleteApp(int appId)
-            => SystemManager.DoAndPurge(ZoneId, appId, () => DataController.App.DeleteApp(appId), true);
+            => SystemManager.DoAndPurge(ZoneId, appId, () => DataController.App.DeleteApp(appId), true, Log);
 
         public int CreateApp()
         {
@@ -28,7 +28,7 @@ namespace ToSic.Eav.Apps
             var appGuid = Guid.NewGuid().ToString();
             var app = DataController.App.AddApp(null, appGuid);
 
-            SystemManager.PurgeZoneList();
+            SystemManager.PurgeZoneList(Log);
             Log.Add($"app created a:{app.AppId}, guid:{appGuid}");
             return app.AppId;
         }
@@ -41,7 +41,7 @@ namespace ToSic.Eav.Apps
         {
             var log = new Log("App.ZoneMg", parentLog, $"create zone:{name}");
             var zoneId = DbDataController.Instance(null, null, parentLog).Zone.AddZone(name);
-            SystemManager.PurgeZoneList();
+            SystemManager.PurgeZoneList(parentLog);
             return zoneId;
         }
 
@@ -52,9 +52,9 @@ namespace ToSic.Eav.Apps
 
         public void SaveLanguage(string cultureCode, string cultureText, bool active)
         {
-            Log.Add($"save langs code:{cultureCode}, txt:{cultureText}, act:{active}");
+            Log.Add($"save languages code:{cultureCode}, txt:{cultureText}, act:{active}");
             DataController.Dimensions.AddOrUpdateLanguage(cultureCode, cultureText, active);
-            SystemManager.PurgeZoneList();
+            SystemManager.PurgeZoneList(Log);
         }
 
         #endregion
