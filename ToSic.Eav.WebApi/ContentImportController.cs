@@ -49,7 +49,7 @@ namespace ToSic.Eav.WebApi
             {
                 var db = DbDataController.Instance(null, args.AppId, Log);
                 import.PersistImportToRepository(db.UserName);
-                SystemManager.Purge(args.AppId);
+                SystemManager.Purge(args.AppId, Log);
             }
             return new ContentImportResult(!import.ErrorLog.HasErrors, null);
         }

@@ -18,6 +18,7 @@ namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
 
         internal void EnsureVersions(XElement appConfig)
         {
+            var wrapLog = Log.Call();
             var reqVersionNode = appConfig.Elements(XmlConstants.ValueNode)
                 .FirstOrDefault(v => v.Attribute(XmlConstants.KeyAttr)?.Value == "RequiredVersion")
                 ?.Attribute(XmlConstants.ValueAttr)?.Value;
@@ -26,12 +27,12 @@ namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
                 ?.Attribute(XmlConstants.ValueAttr)?.Value;
 
             CheckRequiredEnvironmentVersions(reqVersionNode, reqVersionNodeDnn);
-
+            wrapLog("ok");
         }
 
         private void CheckRequiredEnvironmentVersions(string reqVersionNode, string reqVersionNodeDnn)
         {
-            var wrapLog = Log.Call();
+            var wrapLog = Log.Call($"{reqVersionNode}, {reqVersionNodeDnn}");
             if (reqVersionNode != null)
             {
                 var vEav = Version.Parse(_environment.ModuleVersion);

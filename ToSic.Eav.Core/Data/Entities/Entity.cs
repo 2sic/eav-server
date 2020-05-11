@@ -5,6 +5,7 @@ using System.Threading;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Repositories;
 using ToSic.Eav.Security;
 
 namespace ToSic.Eav.Data
@@ -89,9 +90,17 @@ namespace ToSic.Eav.Data
         [PrivateApi]
         internal Entity() { }
 
+        /// <summary>
+        /// Special constructor for importing new entities without a known content-type
+        /// </summary>
+        /// <param name="appId"></param>
+        /// <param name="entityId"></param>
+        /// <param name="entityGuid"></param>
+        /// <param name="contentType"></param>
+        /// <param name="values"></param>
         [PrivateApi]
-        public Entity(int appId, int entityId, Guid entityGuid, string contentType, Dictionary<string, object> values, string titleAttribute = null, DateTime? modified = null)
-            : base(appId, entityId, entityGuid, new ContentType(appId, contentType), values, titleAttribute, modified)
+        public Entity(int appId, int entityId, Guid entityGuid, string contentType, Dictionary<string, object> values) 
+            : base(appId, entityId, entityGuid, new ContentType(appId, contentType), values, null, null)
         {
             MapAttributesInConstructor(values);
         }
