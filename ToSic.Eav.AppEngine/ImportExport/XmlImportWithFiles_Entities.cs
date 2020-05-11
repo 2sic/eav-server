@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
-using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
-using ToSic.Eav.Interfaces;
-using ToSic.Eav.Metadata;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 // 2dm: must disable NullRef warnings, because there a lot of warnings when processing XML, 
@@ -128,6 +125,7 @@ namespace ToSic.Eav.Apps.ImportExport
 	    private string GetMappedLink(string sourceValueString)
 	    {
             // file
+            // todo: these patterns should be stored in a global location, in case we enhance the functionality
 	        var fileRegex = new Regex("^File:(?<Id>[0-9]+)", RegexOptions.IgnoreCase);
 	        var a = fileRegex.Match(sourceValueString);
 
@@ -140,6 +138,7 @@ namespace ToSic.Eav.Apps.ImportExport
 	        }
 
             // folder
+            // todo: these patterns should be stored in a global location, in case we enhance the functionality
 	        var folderRegEx = new Regex("^folder:(?<Id>[0-9]+)", RegexOptions.IgnoreCase);
 	        var f = folderRegEx.Match(sourceValueString);
 

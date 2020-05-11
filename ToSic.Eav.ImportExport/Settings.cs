@@ -11,6 +11,11 @@
             "node_modules",
             "bower_components",
             ".vs",
+            //Constants.FolderData
+        };
+
+        public static string[] ExcludeRootFolders =
+        {
             Constants.FolderData
         };
 

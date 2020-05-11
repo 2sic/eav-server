@@ -154,7 +154,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
                 var attributes = new XElement(XmlConstants.Attributes);
 
-                // Add all Attributes to AttributeSet including meta informations
+                // Add all Attributes to AttributeSet including meta information
                 foreach (var x in set.Attributes.OrderBy(a => a.SortOrder))
                 {
                     var attribute = new XElement(XmlConstants.Attribute,
@@ -181,7 +181,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 // Add Ghost-Info if content type inherits from another content type
                 if (set.ParentId.HasValue)
                 {
-                    var parentStaticName = set.StaticName;// AppPackage.GetContentType(set.ParentId.Value).StaticName;
+                    var parentStaticName = set.StaticName;
                     attributeSet.Add(new XAttribute(XmlConstants.AttributeSetParentDef, parentStaticName));
                 }
 
@@ -200,7 +200,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 var id = int.Parse(entityId);
 
                 // Get the entity and ContentType from ContentContext add Add it to ContentItems
-                var entity = AppState.List.FindRepoId(id);// [id];
+                var entity = AppState.List.FindRepoId(id);
                 entities.Add(GetEntityXElement(entity.EntityId, entity.Type.StaticName));
             }
 
@@ -256,7 +256,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     {
                         case XmlConstants.TemplateContentTypeId:
                             var eid = int.Parse(valueString);
-                            var attributeSet = AppState.GetContentType(eid);//.ContentTypes[eid];
+                            var attributeSet = AppState.GetContentType(eid);
                             value.Attribute(XmlConstants.ValueAttr)?.SetValue(attributeSet != null ? attributeSet.StaticName : string.Empty);
                             break;
                         case XmlConstants.TemplateDemoItemId:
