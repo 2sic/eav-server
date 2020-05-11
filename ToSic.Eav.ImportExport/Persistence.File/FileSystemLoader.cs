@@ -24,20 +24,22 @@ namespace ToSic.Eav.Persistence.File
         private const string ConfigurationFolder = "configurations\\";
         private const string ItemFolder = "items\\";
 
-        public FileSystemLoader(string path, RepositoryTypes source, bool ignoreMissing, ILog parentLog): base("FSL.Loadr", parentLog, $"init with path:{path} ignore:{ignoreMissing}")
+        public FileSystemLoader(string path, RepositoryTypes repoType, bool ignoreMissing, IEntitiesSource entitiesSource, ILog parentLog)
+            : base("FSL.Loadr", parentLog, $"init with path:{path} ignore:{ignoreMissing}")
         {
             Path = path + (path.EndsWith("\\") ? "" : "\\");
-            Source = source;
+            RepoType = repoType;
             IgnoreMissingStuff = ignoreMissing;
+            EntitiesSource = entitiesSource;
         }
 
         private string Path { get; }
 
         private bool IgnoreMissingStuff { get; }
 
-        private RepositoryTypes Source { get; }
+        private RepositoryTypes RepoType { get; }
 
-
+        protected readonly IEntitiesSource EntitiesSource;
 
         #region json serializer
         private JsonSerializer Serializer
@@ -46,7 +48,7 @@ namespace ToSic.Eav.Persistence.File
             {
                 if (_ser != null) return _ser;
                 _ser = new JsonSerializer();
-                _ser.Initialize(0, ReflectionTypes.FakeCache.Values, null, Log);
+                _ser.Initialize(0, ReflectionTypes.FakeCache.Values, EntitiesSource, Log);
                 _ser.AssumeUnknownTypesAreDynamic = true;
                 return _ser;
             }
@@ -127,7 +129,7 @@ namespace ToSic.Eav.Persistence.File
                 var ct = ser.DeserializeContentType(json);
 
                 infoIfError = "couldn't set source/parent";
-                (ct as ContentType).SetSourceAndParent(Source, Constants.SystemContentTypeFakeParent, path);
+                (ct as ContentType).SetSourceAndParent(RepoType, Constants.SystemContentTypeFakeParent, path);
                 return ct;
             }
             catch (IOException e)

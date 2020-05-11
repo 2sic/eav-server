@@ -60,7 +60,8 @@ namespace ToSic.Eav.Data
         string RepositoryAddress { get; }
 
         /// <summary>
-        /// Determines if the data for this type is dynamic (stored as JSON) or EAV (split into sql-tables)
+        /// Determines if the data for this type is dynamic (spontaneously created) or real an EAV (split into sql-tables) or json somewhere
+        /// To detect if it's just a global json-type, find out what repository the type is from (RepositoryType)
         /// </summary>
         bool IsDynamic { get; }
 

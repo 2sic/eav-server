@@ -31,9 +31,14 @@ namespace ToSic.Eav.Data.Builder
                 IsDynamic = true
             };
 
-        public static void SetSourceAndParent(this ContentType type, RepositoryTypes source, int parentId, string address)
+        public static void SetSource(this ContentType type, RepositoryTypes repoType)
         {
-            type.RepositoryType = source;
+            type.RepositoryType = repoType;
+        }
+
+        public static void SetSourceAndParent(this ContentType type, RepositoryTypes repoType, int parentId, string address)
+        {
+            type.RepositoryType = repoType;
             type.ParentId = parentId;
             type.RepositoryAddress = address;
         }

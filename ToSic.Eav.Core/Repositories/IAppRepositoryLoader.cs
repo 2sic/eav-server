@@ -11,6 +11,7 @@ namespace ToSic.Eav.Repositories
         /// <summary>
         /// Get all ContentTypes for specified AppId.
         /// </summary>
-        IList<IContentType> ContentTypes();
+        /// <param name="entitiesSource"></param>
+        IList<IContentType> ContentTypes(IEntitiesSource entitiesSource);
     }
 }

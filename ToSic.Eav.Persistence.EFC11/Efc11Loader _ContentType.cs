@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Run;
@@ -11,13 +12,6 @@ namespace ToSic.Eav.Persistence.Efc
 {
     public partial class Efc11Loader
     {
-        #region Testing / Analytics helpers
-
-        //internal void ResetCacheForTesting()
-        //    => _contentTypes = new Dictionary<int, IList<IContentType>>();
-        #endregion
-
-
         /// <inheritdoc />
         /// <summary>
         /// Get all ContentTypes for specified AppId. 
@@ -27,14 +21,14 @@ namespace ToSic.Eav.Persistence.Efc
             => LoadContentTypesIntoLocalCache(appId, source);
 
 
-        internal IList<IContentType> TryToLoadFsTypesAndMerge(int appId, string path, IList<IContentType> dbTypes)
+        internal IList<IContentType> LoadExtensionsTypesAndMerge(AppState app, IList<IContentType> dbTypes)
         {
-            var wrapLog = Log.Call<IList<IContentType>>();
+            var wrapLog = Log.Call<IList<IContentType>>(useTimer: true);
             try
             {
-                if (string.IsNullOrEmpty(path)) return wrapLog("no path", dbTypes);
+                if (string.IsNullOrEmpty(app.Path)) return wrapLog("no path", dbTypes);
 
-                var fileTypes = InitFileSystemContentTypes(appId, path);
+                var fileTypes = InitFileSystemContentTypes(app);
                 if (fileTypes == null || fileTypes.Count == 0) return wrapLog("no app file types", dbTypes);
 
                 Log.Add($"Will check {fileTypes.Count} items");
@@ -55,12 +49,12 @@ namespace ToSic.Eav.Persistence.Efc
             catch (System.Exception e) { return wrapLog("error:" + e.Message, dbTypes); }
         }
 
-        internal IList<IContentType> InitFileSystemContentTypes(int appId, string path)
+        internal IList<IContentType> InitFileSystemContentTypes(AppState app)
         {
             var wrapLog = Log.Call<IList<IContentType>>();
             var factory = Factory.Resolve<IRuntimeFactory>();
-            var loader = factory.AppRepositoryLoader(appId, path, Log);
-            var types = loader.ContentTypes();
+            var loader = factory.AppRepositoryLoader(app.AppId, app.Path, Log);
+            var types = loader.ContentTypes(app);
             return wrapLog("ok", types);
         }
 

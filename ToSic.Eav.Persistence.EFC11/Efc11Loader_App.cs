@@ -60,7 +60,7 @@ namespace ToSic.Eav.Persistence.Efc
                 if (startAt <= AppStateLoadSequence.MetadataInit)
                 {
                     _sqlTotalTime = _sqlTotalTime.Add(InitMetadataLists(app, _dbContext));
-                    // todo: 11.01 extensions
+                    // New in V11.01
                     app.Path = PreloadAppPath(app.AppId);
                 }
                 else
@@ -74,7 +74,7 @@ namespace ToSic.Eav.Persistence.Efc
                 {
                     var typeTimer = Stopwatch.StartNew();
                     var dbTypes = ContentTypes(app.AppId, app);
-                    dbTypes = TryToLoadFsTypesAndMerge(app.AppId, app.Path, dbTypes);
+                    dbTypes = LoadExtensionsTypesAndMerge(app, dbTypes);
                     app.InitContentTypes(dbTypes);
                     typeTimer.Stop();
                     Log.Add($"timers types:{typeTimer.Elapsed}");
