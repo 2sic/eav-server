@@ -136,7 +136,7 @@ namespace ToSic.Eav.ImportExport.Json
                             break; // just keep the empty definition, as that's fine
                         newAtt.Values = jAtts.Entity[definition.Name]
                             .Select(v => ValueBuilder.Build(definition.Type, v.Value, RecreateLanguageList(v.Key),
-                                RelLookupList)).ToList();
+                                LazyRelationshipLookupList)).ToList();
                         break;
                     case ValueTypes.Hyperlink:
                         BuildValues(jAtts.Hyperlink, definition,newAtt);
