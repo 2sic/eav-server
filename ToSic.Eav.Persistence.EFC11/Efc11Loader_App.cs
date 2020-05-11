@@ -73,7 +73,9 @@ namespace ToSic.Eav.Persistence.Efc
                 if (startAt <= AppStateLoadSequence.ContentTypeLoad)
                 {
                     var typeTimer = Stopwatch.StartNew();
-                    app.InitContentTypes(ContentTypes(app.AppId, app));
+                    var dbTypes = ContentTypes(app.AppId, app);
+                    dbTypes = TryToLoadFsTypesAndMerge(app.AppId, app.Path, dbTypes);
+                    app.InitContentTypes(dbTypes);
                     typeTimer.Stop();
                     Log.Add($"timers types:{typeTimer.Elapsed}");
                 }

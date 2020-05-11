@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Data;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Persistence.Efc
 {
@@ -28,6 +29,43 @@ namespace ToSic.Eav.Persistence.Efc
         public IList<IContentType> ContentTypes(int appId, IHasMetadataSource source) 
             => LoadContentTypesIntoLocalCache(appId, source);
 
+
+        internal IList<IContentType> TryToLoadFsTypesAndMerge(int appId, string path, IList<IContentType> dbTypes)
+        {
+            var wrapLog = Log.Call<IList<IContentType>>();
+            try
+            {
+                if (string.IsNullOrEmpty(path)) return wrapLog("no path", dbTypes);
+
+                var fileTypes = InitFileSystemContentTypes(appId, path);
+                if (fileTypes == null || fileTypes.Count == 0) return wrapLog("no app file types", dbTypes);
+
+                Log.Add($"Will check {fileTypes.Count} items");
+
+                // remove previous items with same name, as the "static files" have precedence
+                var typeToMerge = dbTypes.ToList();
+                var before = typeToMerge.Count;
+                var comparer = new EqualityComparer_ContentType();
+                typeToMerge.RemoveAll(t => fileTypes.Contains(t, comparer));
+                foreach (var fType in fileTypes)
+                {
+                    Log.Add($"Will add {fType.Name}");
+                    typeToMerge.Add(fType);
+                }
+
+                return wrapLog($"before {before}, now {typeToMerge.Count} types", typeToMerge);
+            }
+            catch (System.Exception e) { return wrapLog("error:" + e.Message, dbTypes); }
+        }
+
+        internal IList<IContentType> InitFileSystemContentTypes(int appId, string path)
+        {
+            var wrapLog = Log.Call<IList<IContentType>>();
+            var factory = Factory.Resolve<IRuntimeFactory>();
+            var loader = factory.AppRepositoryLoader(appId, path, Log);
+            var types = loader.ContentTypes();
+            return wrapLog("ok", types);
+        }
 
         /// <summary>
         /// Load DB content-types into loader-cache

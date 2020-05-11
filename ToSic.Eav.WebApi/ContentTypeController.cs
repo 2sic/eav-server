@@ -161,7 +161,17 @@ namespace ToSic.Eav.WebApi
                     IsTitle = a.IsTitle,
                     AttributeId = a.AttributeId,
                     Metadata = a.Metadata
-                        .ToDictionary(e => e.Type.StaticName.TrimStart('@'), e => ser.Convert(e)),
+                        .ToDictionary(
+                            e =>
+                            {
+                                // if the static name is a GUID, then use the normal name as name-giver
+                                var name = Guid.TryParse(e.Type.StaticName, out _)
+                                    ? e.Type.Name
+                                    : e.Type.StaticName;
+                                return name.TrimStart('@');
+                            },
+                            e => ser.Convert(e)
+                        ),
                     InputTypeConfig = appInputTypes.FirstOrDefault(it => it.Type == inputtype),
                     I18nKey = type.I18nKey
                 };

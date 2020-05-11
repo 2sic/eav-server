@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Data;
-using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Repositories
 {
@@ -12,8 +11,6 @@ namespace ToSic.Eav.Repositories
         /// <summary>
         /// Get all ContentTypes for specified AppId.
         /// </summary>
-        IList<IContentType> ContentTypes(int appId, IHasMetadataSource source);
-
-        // todo: more
+        IList<IContentType> ContentTypes();
     }
 }

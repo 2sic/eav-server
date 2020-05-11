@@ -120,11 +120,7 @@ namespace ToSic.Eav.Apps.Parts
                 var factory = Factory.Resolve<IEnvironmentFactory>();
                 var appState = State.Get(AppRT);
                 var appLoader = factory.AppFileSystemLoader(appState.AppId, appState.Path, Log);
-                var inputTypes = appLoader.FindInputTypes();
-                //var typed = inputTypes.Select(it =>
-                //        new InputTypeInfo(it, "Extension: " + it, "Field in App System", "", false,
-                //            $"[App:Path]/system/extensions/{it}/index.js", "", false))
-                //    .ToList();
+                var inputTypes = appLoader.InputTypes();
                 return wrapLog(null, inputTypes);
             }
             catch (Exception e)
