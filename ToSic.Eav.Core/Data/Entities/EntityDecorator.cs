@@ -126,7 +126,7 @@ namespace ToSic.Eav.Data
         public List<IEntity> Parents(string type = null, string field = null) => _baseEntity.Parents(type, field);
 
 
-        #region experimental support for LINQ enhancements
+        #region support for LINQ enhancements
 
         [PrivateApi]
         public object Value(string field, bool resolve = true) => _baseEntity.Value(field, resolve);

@@ -61,5 +61,20 @@ namespace ToSic.Eav.Data
                 typeName: typeName)
             );
 
+        /// <summary>
+        /// Create a dummy fake entity. It's just used in scenarios where code may expect an entity but the
+        /// internals are not relevant. 
+        /// </summary>
+        /// <param name="appId"></param>
+        /// <returns></returns>
+        [PrivateApi]
+        public static Entity FakeEntity(int appId)
+            => new Entity(
+                appId,
+                0,
+                ContentTypeBuilder.Fake(""),
+                new Dictionary<string, object> {{"Title", ""}},
+                "Title"
+            );
     }
 }
