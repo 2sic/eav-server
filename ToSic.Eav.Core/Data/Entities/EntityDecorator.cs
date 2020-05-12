@@ -11,7 +11,7 @@ namespace ToSic.Eav.Data
     /// Everything in the original is passed through invisibly. <br/>
     /// </summary>
     [PrivateApi]
-    public abstract class EntityDecorator : IEntity
+    public abstract partial class EntityDecorator : IEntity
     {
         private readonly IEntity _baseEntity;
 
