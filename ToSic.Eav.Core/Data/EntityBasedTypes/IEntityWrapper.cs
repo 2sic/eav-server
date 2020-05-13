@@ -5,7 +5,7 @@ namespace ToSic.Eav.Data
     /// <summary>
     /// A interface to ensure all things that carry an IEntity can be compared based on the Entity they carry.
     /// </summary>
-    [PublicApi_Stable_ForUseInYourCode("still WIP")]
+    [PublicApi]
     public interface IEntityWrapper
     {
         /// <summary>
@@ -22,6 +22,7 @@ namespace ToSic.Eav.Data
         /// </summary>
         // ReSharper disable once InconsistentNaming
 #pragma warning disable IDE1006 // Naming Styles
+        [PrivateApi("used vor very internal stuff")]
         IEntity _EntityForEqualityCheck { get; }
 #pragma warning restore IDE1006 // Naming Styles
     }
