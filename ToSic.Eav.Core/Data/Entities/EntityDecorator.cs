@@ -11,128 +11,128 @@ namespace ToSic.Eav.Data
     /// Everything in the original is passed through invisibly. <br/>
     /// </summary>
     [PrivateApi]
-    public abstract partial class EntityDecorator : IEntity
+    public abstract partial class EntityDecorator : IEntity, IEntityWrapper
     {
-        private readonly IEntity _baseEntity;
+        public IEntity Entity { get; }
 
         /// <summary>
         /// Initialize the object and store the underlying IEntity.
         /// </summary>
         /// <param name="baseEntity"></param>
-        protected EntityDecorator(IEntity baseEntity) => _baseEntity = baseEntity;
+        protected EntityDecorator(IEntity baseEntity) => Entity = baseEntity;
 
         #region IEntity Implementation
 
         /// <inheritdoc />
-        public IEntity GetDraft() => _baseEntity.GetDraft();
+        public IEntity GetDraft() => Entity.GetDraft();
 
         /// <inheritdoc />
-        public IEntity GetPublished() => _baseEntity.GetPublished();
+        public IEntity GetPublished() => Entity.GetPublished();
 
         /// <inheritdoc />
-        public int AppId => _baseEntity.AppId;
+        public int AppId => Entity.AppId;
 
         /// <inheritdoc />
-        public int EntityId => _baseEntity.EntityId;
+        public int EntityId => Entity.EntityId;
 
         /// <inheritdoc />
-        public int RepositoryId => _baseEntity.RepositoryId;
+        public int RepositoryId => Entity.RepositoryId;
 
         /// <inheritdoc />
-        public Guid EntityGuid => _baseEntity.EntityGuid;
+        public Guid EntityGuid => Entity.EntityGuid;
 
         /// <inheritdoc />
-        public ITarget MetadataFor => _baseEntity.MetadataFor;
+        public ITarget MetadataFor => Entity.MetadataFor;
 
         /// <inheritdoc />
-        public Dictionary<string, IAttribute> Attributes => _baseEntity.Attributes;
+        public Dictionary<string, IAttribute> Attributes => Entity.Attributes;
 
         /// <inheritdoc />
-        public IContentType Type => _baseEntity.Type;
+        public IContentType Type => Entity.Type;
 
         /// <inheritdoc />
-        public IAttribute Title => _baseEntity.Title;
+        public IAttribute Title => Entity.Title;
 
         /// <inheritdoc />
-        public DateTime Modified => _baseEntity.Modified;
+        public DateTime Modified => Entity.Modified;
 
          /// <inheritdoc />
-       public IAttribute this[string attributeName] => _baseEntity[attributeName];
+       public IAttribute this[string attributeName] => Entity[attributeName];
 
         /// <inheritdoc />
-        public IRelationshipManager Relationships => _baseEntity.Relationships;
+        public IRelationshipManager Relationships => Entity.Relationships;
 
         /// <inheritdoc />
-        public bool IsPublished => _baseEntity.IsPublished;
+        public bool IsPublished => Entity.IsPublished;
 
         /// <inheritdoc />
-        public string Owner => _baseEntity.Owner;
+        public string Owner => Entity.Owner;
 
 
         /// <inheritdoc />
         public object GetBestValue(string attributeName, bool resolveHyperlinks = false)
-            => _baseEntity.GetBestValue(attributeName, resolveHyperlinks);
+            => Entity.GetBestValue(attributeName, resolveHyperlinks);
 
 
         /// <inheritdoc />
         public object GetBestValue(string attributeName, string[] languages, bool resolveHyperlinks = false)
-            => _baseEntity.GetBestValue(attributeName, languages, resolveHyperlinks);
+            => Entity.GetBestValue(attributeName, languages, resolveHyperlinks);
 
         /// <inheritdoc />
         public T GetBestValue<T>(string attributeName, string[] languages, bool resolveHyperlinks = false) 
-            => _baseEntity.GetBestValue<T>(attributeName, languages, resolveHyperlinks);
+            => Entity.GetBestValue<T>(attributeName, languages, resolveHyperlinks);
 
         [PrivateApi]
         public object PrimaryValue(string attributeName, bool resolveHyperlinks = false) 
-            => _baseEntity.PrimaryValue(attributeName, resolveHyperlinks);
+            => Entity.PrimaryValue(attributeName, resolveHyperlinks);
 
         [PrivateApi]
         public T PrimaryValue<T>(string attributeName, bool resolveHyperlinks = false) 
-            => _baseEntity.PrimaryValue<T>(attributeName, resolveHyperlinks);
+            => Entity.PrimaryValue<T>(attributeName, resolveHyperlinks);
 
         /// <inheritdoc />
         public TVal GetBestValue<TVal>(string name, bool resolveHyperlinks = false)
-            => _baseEntity.GetBestValue<TVal>(name, resolveHyperlinks);
+            => Entity.GetBestValue<TVal>(name, resolveHyperlinks);
 
         /// <inheritdoc />
-        public string GetBestTitle() => _baseEntity.GetBestTitle();
+        public string GetBestTitle() => Entity.GetBestTitle();
 
         /// <inheritdoc />
         public string GetBestTitle(string[] dimensions)
-            => _baseEntity.GetBestTitle(dimensions);
+            => Entity.GetBestTitle(dimensions);
 
         /// <inheritdoc />
-        object IEntityLight.Title => ((IEntityLight) _baseEntity).Title;
+        object IEntityLight.Title => ((IEntityLight) Entity).Title;
 
         /// <inheritdoc />
-        object IEntityLight.this[string attributeName] => ((IEntityLight) _baseEntity)[attributeName];
+        object IEntityLight.this[string attributeName] => ((IEntityLight) Entity)[attributeName];
 
         /// <inheritdoc />
-        public int Version => _baseEntity.Version;
+        public int Version => Entity.Version;
 
         /// <inheritdoc />
-        public IMetadataOf Metadata => _baseEntity.Metadata;
+        public IMetadataOf Metadata => Entity.Metadata;
 
         /// <inheritdoc />
-        public IEnumerable<Permission> Permissions => _baseEntity.Permissions;
+        public IEnumerable<Permission> Permissions => Entity.Permissions;
 
         #endregion
 
 
         /// <inheritdoc />
-        public List<IEntity> Children(string field = null, string type = null) => _baseEntity.Children(field, type);
+        public List<IEntity> Children(string field = null, string type = null) => Entity.Children(field, type);
 
         /// <inheritdoc />
-        public List<IEntity> Parents(string type = null, string field = null) => _baseEntity.Parents(type, field);
+        public List<IEntity> Parents(string type = null, string field = null) => Entity.Parents(type, field);
 
 
         #region support for LINQ enhancements
 
         [PrivateApi]
-        public object Value(string field, bool resolve = true) => _baseEntity.Value(field, resolve);
+        public object Value(string field, bool resolve = true) => Entity.Value(field, resolve);
 
         [PrivateApi]
-        public T Value<T>(string field, bool resolve = true) => _baseEntity.Value<T>(field, resolve);
+        public T Value<T>(string field, bool resolve = true) => Entity.Value<T>(field, resolve);
 
         #endregion
 

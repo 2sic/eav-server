@@ -9,14 +9,8 @@ namespace ToSic.Eav.Data
     /// otherwise you're IPerson would be missing the Title, Id, Guid
     /// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-    public interface IEntityBasedType
+    public interface IEntityBasedType: IEntityWrapper
     {
-        /// <summary>
-        /// The underlying entity. 
-        /// </summary>
-        /// <returns>The entity, or null if not provided</returns>
-        IEntity Entity { get; }
-
         /// <summary>
         /// The title as string.
         /// </summary>

@@ -19,11 +19,11 @@ namespace ToSic.Eav.Data
         /// </remarks>
         /// <returns></returns>
         private static bool IsEqual(EntityDecorator d1, EntityDecorator d2)
-            => !(d1 is null) && (ReferenceEquals(d1, d2) || Equals(d1?._baseEntity, d2?._baseEntity));
+            => !(d1 is null) && (ReferenceEquals(d1, d2) || Equals(d1?.Entity, d2?.Entity));
 
         public bool Equals(EntityDecorator other) => !(other is null) && IsEqual(this, other);
 
-        public bool Equals(IEntity other) => !(other is null) && Equals(_baseEntity, other);
+        public bool Equals(IEntity other) => !(other is null) && Equals(Entity, other);
 
         public override bool Equals(object obj)
         {
@@ -33,6 +33,6 @@ namespace ToSic.Eav.Data
             return Equals((EntityDecorator) obj);
         }
 
-        public override int GetHashCode() => _baseEntity?.GetHashCode() ?? 0;
+        public override int GetHashCode() => Entity?.GetHashCode() ?? 0;
     }
 }
