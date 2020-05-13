@@ -19,7 +19,11 @@ namespace ToSic.Eav.Data
         /// Initialize the object and store the underlying IEntity.
         /// </summary>
         /// <param name="baseEntity"></param>
-        protected EntityDecorator(IEntity baseEntity) => Entity = baseEntity;
+        protected EntityDecorator(IEntity baseEntity)
+        {
+            Entity = baseEntity;
+            _EntityForEqualityCheck = (Entity as IEntityWrapper)?._EntityForEqualityCheck ?? Entity;
+        }
 
         #region IEntity Implementation
 

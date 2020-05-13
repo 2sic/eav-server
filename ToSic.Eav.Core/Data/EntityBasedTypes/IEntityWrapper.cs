@@ -13,5 +13,16 @@ namespace ToSic.Eav.Data
         /// </summary>
         /// <returns>The entity, or null if not provided</returns>
         IEntity Entity { get; }
+
+        /// <summary>
+        /// The underlying entity which is used for equality check.
+        /// It's important, because the Entity can sometimes already be wrapped
+        /// in which case the various wrappers would think they point
+        /// to something different
+        /// </summary>
+        // ReSharper disable once InconsistentNaming
+#pragma warning disable IDE1006 // Naming Styles
+        IEntity _EntityForEqualityCheck { get; }
+#pragma warning restore IDE1006 // Naming Styles
     }
 }
