@@ -14,10 +14,16 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         public IEntity Entity { get; }
 
-         /// <inheritdoc />
-        protected EntityBasedType(IEntity entity) => Entity = entity;
+        public IEntity _EntityForEqualityCheck { get; }
 
          /// <inheritdoc />
+        protected EntityBasedType(IEntity entity)
+         {
+             Entity = entity;
+             _EntityForEqualityCheck = (Entity as IEntityWrapper)?._EntityForEqualityCheck ?? Entity;
+         }
+
+        /// <inheritdoc />
         public virtual string Title => _title ?? (_title = Entity?.GetBestTitle() ?? "");
         [PrivateApi]
         private string _title;

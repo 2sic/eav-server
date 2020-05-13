@@ -5,6 +5,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Repositories;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 // ReSharper disable once CheckNamespace
@@ -12,14 +13,12 @@ namespace ToSic.Eav.Persistence.Xml
 {
     public class XmlSerializer: SerializerBase
     {
-        private Dictionary<string, int> _dimensions;
+        private readonly Dictionary<string, int> _dimensions;
         public XmlSerializer(Dictionary<string, int> dimensionMapping)
         {
             _dimensions = dimensionMapping;
         }
 
-        public Dictionary<int, XElement> ToXml(List<int> entityIds) => entityIds.ToDictionary(e => e, ToXml);
-        public Dictionary<int, XElement> ToXml(List<IEntity> entities) => entities.ToDictionary(e => e.EntityId, ToXml);
         public XElement ToXml(int entityId) => ToXml(Lookup(entityId));
 
 
@@ -29,7 +28,7 @@ namespace ToSic.Eav.Persistence.Xml
         public XElement ToXml(IEntity entity)
         {
             var valuesXElement = entity.Attributes.Values
-                .Where(a => a.Type != "Entity" || ((a.Values.FirstOrDefault() as IValue</*LazyEntities*/IEnumerable<IEntity>>)?.TypedContents?.Any() ?? false))
+                .Where(a => a.Type != "Entity" || ((a.Values.FirstOrDefault() as IValue<IEnumerable<IEntity>>)?.TypedContents?.Any() ?? false))
                 .OrderBy(a => a.Name)
                 .SelectMany(a => a.Values.Select(v => XmlValue(a, v)));
 
@@ -40,6 +39,10 @@ namespace ToSic.Eav.Persistence.Xml
                 new XAttribute(XmlConstants.AttSetNiceName, entity.Type.Name),
                 new XAttribute(XmlConstants.GuidNode, entity.EntityGuid),
                 valuesXElement);
+
+            // experimental new in V11
+            if(entity.Type.RepositoryType != RepositoryTypes.Sql)
+                entityXElement.Add(new XAttribute(XmlConstants.EntityIsJsonAttribute, "True"));
 
             // try to add keys - moved to here from xml-exporter
             if (entity.MetadataFor.KeyGuid.HasValue)
@@ -81,6 +84,11 @@ namespace ToSic.Eav.Persistence.Xml
             return valueXElement;
         }
 
+        //private XElement XmlJsonEntity(IEntity entity)
+        //{
+        //    var jsonElement = new XElement(XmlConstants.JsonEntityNode);
+        //    return jsonElement;
+        //}
     }
 
 }

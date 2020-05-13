@@ -5,7 +5,6 @@ using ToSic.Eav.Apps.ImportExport.ImportHelpers;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Zip;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
 
@@ -127,12 +126,12 @@ namespace ToSic.Eav.Apps.ImportExport
             
             // Import XML file(s)
             foreach (var xmlFileName in Directory.GetFiles(appDirectory, "App.xml"))
-                ImportAppXml(rename, appDirectory, xmlFileName, importMessages);
+                ImportAppXmlAndFiles(rename, appDirectory, xmlFileName, importMessages);
             
             wrapLog("ok");
         }
 
-        private void ImportAppXml(string rename, string appDirectory, string xmlFileName, List<Message> importMessages)
+        private void ImportAppXmlAndFiles(string rename, string appDirectory, string xmlFileName, List<Message> importMessages)
         {
             var wrapLog = Log.Call($"{nameof(rename)}:'{rename}' {nameof(appDirectory)}:'{appDirectory}', ...");
             
@@ -152,11 +151,13 @@ namespace ToSic.Eav.Apps.ImportExport
                 // user decided to install app in different folder, because same App is already installed
                 if (!string.IsNullOrEmpty(rename))
                 {
+                    Log.Add($"User rename to '{rename}'");
                     var renamer = new RenameOnImport(folder, rename, Log);
                     renamer.FixAppXmlForImportAsDifferentApp(imp);
                     renamer.FixPortalFilesAdamAppFolderName(appDirectory);
                     folder = rename;
                 }
+                else Log.Add("No rename of app requested");
 
                 // Throw error if the app directory already exists
                 var appPath = _environment.TargetPath(folder);
@@ -179,8 +180,13 @@ namespace ToSic.Eav.Apps.ImportExport
             }
 
             importMessages.AddRange(importer.Messages);
-            FixOld2SexyFolderName(importMessages, appId, appDirectory);
-            
+            CopyAppFiles(importMessages, appId, appDirectory);
+
+            // New in V11 - now that we just imported content types into the /system folder
+            // the App must be refreshed to ensure these are available for working
+            // Must happen after CopyAppFiles(...)
+            SystemManager.Purge(appId, Log);
+
             wrapLog("ok");
         }
 
@@ -189,21 +195,26 @@ namespace ToSic.Eav.Apps.ImportExport
         /// </summary>
         /// <param name="importMessages"></param>
         /// <param name="appId"></param>
-        /// <param name="appDirectory"></param>
-        private void FixOld2SexyFolderName(List<Message> importMessages, int appId, string appDirectory)
+        /// <param name="tempFolder"></param>
+        /// <remarks>The zip file still uses the old "2sexy" folder name instead of "2sxc"</remarks>
+        private void CopyAppFiles(List<Message> importMessages, int appId, string tempFolder)
         {
+            var wrapLog = Log.Call($"..., {appId}, {tempFolder}");
             var templateRoot = _environment.TemplatesRoot(_zoneId, appId);
-            var appTemplateRoot = Path.Combine(appDirectory, "2sexy");
+            var appTemplateRoot = Path.Combine(tempFolder, "2sexy");
             if (Directory.Exists(appTemplateRoot))
                 new FileManager(appTemplateRoot).CopyAllFiles(templateRoot, false, importMessages);
+            wrapLog("ok");
         }
 
         private void HandlePortalFilesFolder(string appDirectory)
         {
+            var wrapLog = Log.Call();
             // Handle PortalFiles folder
             var portalTempRoot = Path.Combine(appDirectory, XmlConstants.PortalFiles);
             if (Directory.Exists(portalTempRoot))
                 _environment.TransferFilesToTenant(portalTempRoot, string.Empty);
+            wrapLog(null);
         }
 
     }

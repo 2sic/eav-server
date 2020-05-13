@@ -44,7 +44,7 @@
                 }
                 catch (Repository.Efc.Parts.EntityAlreadyPublishedException) { /* ignore */ }
             // for now, do a full purge as it's the safest. in the future, maybe do a partial cache-update
-            SystemManager.Purge(AppManager.AppId);
+            SystemManager.Purge(AppManager.AppId, Log);
             Log.Add("/Publish(...)");
         }
 

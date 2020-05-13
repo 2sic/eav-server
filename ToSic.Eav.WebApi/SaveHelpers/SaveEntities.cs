@@ -21,10 +21,10 @@ namespace ToSic.Eav.WebApi.SaveHelpers
             var wrapLog = Log.Call("");
             foreach (var bundle in itemsToImport)
             {
-                var currEntity = (Entity)bundle.Entity;
-                currEntity.SetGuid(bundle.Header.Guid);
+                var curEntity = (Entity)bundle.Entity;
+                curEntity.SetGuid(bundle.Header.Guid);
                 if (enforceDraft)
-                    EnforceDraft(currEntity);
+                    EnforceDraft(curEntity);
             }
 
             var entitiesToImport = itemsToImport.Select(e => e.Entity).ToList();

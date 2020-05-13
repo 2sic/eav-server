@@ -3,7 +3,6 @@ using System.Linq;
 using System.Xml.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
-using ToSic.Eav.Interfaces;
 
 // 2dm: must disable NullRef warnings, because there a lot of warnings when processing XML, 
 // ...and these are real errors which should blow
@@ -16,7 +15,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
 		private List<ContentType> GetImportContentTypes(IEnumerable<XElement> xmlContentTypes)
 		{
-            var wrap = Log.Call("start");
+            var wrap = Log.Call();
             var list = xmlContentTypes.ToList();
             Log.Add($"items: {list.Count}");
 
@@ -38,7 +37,7 @@ namespace ToSic.Eav.Apps.ImportExport
 	    {
 	        var ctElement = xmlContentType.Element(XmlConstants.Attributes);
 	        var typeName = xmlContentType.Attribute(XmlConstants.Name).Value;
-	        var wrap = Log.Call(typeName);
+	        var wrapLog = Log.Call(typeName);
 
 	        var attributes = new List<IContentTypeAttribute>();
             if (ctElement != null)
@@ -86,7 +85,7 @@ namespace ToSic.Eav.Apps.ImportExport
             if(isSharedType & !AllowUpdateOnSharedTypes)
             {
                 Log.Add("trying to update a shared type, but not allowed");
-                wrap("error");
+                wrapLog("error");
                 return null;
             }
             #endregion
@@ -99,7 +98,7 @@ namespace ToSic.Eav.Apps.ImportExport
 	            description: xmlContentType.Attribute(XmlConstants.Description).Value,
 	            AllowUpdateOnSharedTypes && isSharedType
 	        );
-	        wrap("ok");
+	        wrapLog("ok");
 	        return ct;
 	    }
 

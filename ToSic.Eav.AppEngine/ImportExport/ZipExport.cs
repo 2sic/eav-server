@@ -18,7 +18,7 @@ namespace ToSic.Eav.Apps.ImportExport
         private readonly int _appId;
         private readonly int _zoneId;
         private const string SexyContentContentGroupName = "2SexyContent-ContentGroup";
-        private const string SourceControlDataFolder = ".data";
+        private const string SourceControlDataFolder = Constants.FolderData;
         private const string SourceControlDataFile = "app.xml"; // lower case
         private readonly string _blankGuid = Guid.Empty.ToString();
         private const string ZipFolderForPortalFiles = "PortalFiles";

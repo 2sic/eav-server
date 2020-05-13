@@ -3,23 +3,15 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Persistence.Efc
 {
     public partial class Efc11Loader
     {
-        #region Testing / Analytics helpers
-
-        //internal void ResetCacheForTesting()
-        //    => _contentTypes = new Dictionary<int, IList<IContentType>>();
-        #endregion
-
-        #region Load Content-Types into IContent-Type Dictionary
-
-        //private Dictionary<int, IList<IContentType>> _contentTypes = new Dictionary<int, IList<IContentType>>();
-
         /// <inheritdoc />
         /// <summary>
         /// Get all ContentTypes for specified AppId. 
@@ -28,6 +20,43 @@ namespace ToSic.Eav.Persistence.Efc
         public IList<IContentType> ContentTypes(int appId, IHasMetadataSource source) 
             => LoadContentTypesIntoLocalCache(appId, source);
 
+
+        internal IList<IContentType> LoadExtensionsTypesAndMerge(AppState app, IList<IContentType> dbTypes)
+        {
+            var wrapLog = Log.Call<IList<IContentType>>(useTimer: true);
+            try
+            {
+                if (string.IsNullOrEmpty(app.Path)) return wrapLog("no path", dbTypes);
+
+                var fileTypes = InitFileSystemContentTypes(app);
+                if (fileTypes == null || fileTypes.Count == 0) return wrapLog("no app file types", dbTypes);
+
+                Log.Add($"Will check {fileTypes.Count} items");
+
+                // remove previous items with same name, as the "static files" have precedence
+                var typeToMerge = dbTypes.ToList();
+                var before = typeToMerge.Count;
+                var comparer = new EqualityComparer_ContentType();
+                typeToMerge.RemoveAll(t => fileTypes.Contains(t, comparer));
+                foreach (var fType in fileTypes)
+                {
+                    Log.Add($"Will add {fType.Name}");
+                    typeToMerge.Add(fType);
+                }
+
+                return wrapLog($"before {before}, now {typeToMerge.Count} types", typeToMerge);
+            }
+            catch (System.Exception e) { return wrapLog("error:" + e.Message, dbTypes); }
+        }
+
+        internal IList<IContentType> InitFileSystemContentTypes(AppState app)
+        {
+            var wrapLog = Log.Call<IList<IContentType>>();
+            var factory = Factory.Resolve<IRuntimeFactory>();
+            var loader = factory.AppRepositoryLoader(app.AppId, app.Path, Log);
+            var types = loader.ContentTypes(app);
+            return wrapLog("ok", types);
+        }
 
         /// <summary>
         /// Load DB content-types into loader-cache
@@ -94,15 +123,9 @@ namespace ToSic.Eav.Persistence.Efc
 
             _sqlTotalTime = _sqlTotalTime.Add(sqlTime.Elapsed);
 
-            //_contentTypes[appId] =
             wrapLog("");
             return newTypes.ToImmutableList();
-
         }
-
-        #endregion
-
-
 
     }
 }

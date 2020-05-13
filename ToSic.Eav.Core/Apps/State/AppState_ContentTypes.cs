@@ -31,7 +31,13 @@ namespace ToSic.Eav.Apps
             if (Metadata == null || List.Any())
 	            throw new Exception("can't set content types before setting Metadata manager, or after entities-list already exists");
 
-	        _appTypeMap = contentTypes.ToImmutableDictionary(x => x.ContentTypeId, x => x.StaticName);
+	        _appTypeMap = contentTypes
+					// temp V11.01 - all the local content-types in the /system/ folder have id=0
+					// will filter out for now, because otherwise we get duplicate keys-errors
+					// believe this shouldn't be an issue, as it only seems to be used in fairly edge-case export/import
+					// situations which the static types shouldn't be used for, as they are json-typed
+                .Where(x => x.ContentTypeId != 0)
+                .ToImmutableDictionary(x => x.ContentTypeId, x => x.StaticName);
 	        _appTypesFromRepository = RemoveAliasesForGlobalTypes(contentTypes);
 	        // build types by name
 	        BuildCacheForTypesByName(_appTypesFromRepository);

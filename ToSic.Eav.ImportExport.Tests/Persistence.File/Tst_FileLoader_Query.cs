@@ -28,7 +28,7 @@ namespace ToSic.Eav.Persistence.File.Tests
         private IList<IEntity> LoadAllQueries()
         {
             Trace.WriteLine($"path:'{TestStorageRoot}'");
-            var loader = new FileSystemLoader(TestStorageRoot, RepositoryTypes.TestingDoNotUse, false, Log);
+            var loader = new FileSystemLoader(TestStorageRoot, RepositoryTypes.TestingDoNotUse, false, null, Log);
             IList<IEntity> cts;
             try
             {

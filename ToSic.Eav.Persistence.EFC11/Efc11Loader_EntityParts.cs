@@ -23,11 +23,11 @@ namespace ToSic.Eav.Persistence.Efc
         }
 
 
-        private List<TempEntity> GetRawEntities(int[] entityIds, int appId, bool filterByEntityIds)
+        private List<TempEntity> GetRawEntities(int[] entityIds, int appId, bool filterByEntityIds, string filterByType = null)
         {
             var wrapLog =
                 Log.Call<List<TempEntity>>($"app: {appId}, ids: {entityIds.Length}, filter: {filterByEntityIds}");
-            var rawEntities = _dbContext.ToSicEavEntities
+            var query = _dbContext.ToSicEavEntities
                 .Include(e => e.AttributeSet)
                 .Include(e => e.ToSicEavValues)
                 .ThenInclude(v => v.ToSicEavValuesDimensions)
@@ -37,7 +37,11 @@ namespace ToSic.Eav.Persistence.Efc
                             (
                                 // filter by EntityIds (if set)
                                 !filterByEntityIds || entityIds.Contains(e.EntityId)
-                            ))
+                            ));
+            if (filterByType != null)
+                query = query.Where(e => e.ContentType == filterByType);
+
+            var rawEntities = query
                 .OrderBy(e => e.EntityId) // order to ensure drafts are processed after draft-parents
                 .Select(e => new TempEntity
                 {

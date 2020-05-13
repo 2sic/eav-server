@@ -94,12 +94,12 @@ namespace ToSic.Eav.WebApi
 
             // make sure the header has the right "new" guid as well - as this is the primary one to work with
             // it is really important to use the header guid, because sometimes the entity does not exist - so it doesn't have a guid either
-            var itemsToCorrect = list.Where(i => i.Header.Guid == Guid.Empty).ToArray(); // must do toarray, to prevent re-checking after setting the guid
+            var itemsToCorrect = list.Where(i => i.Header.Guid == Guid.Empty).ToArray(); // must do toArray, to prevent re-checking after setting the guid
             foreach (var i in itemsToCorrect)
             {
                 var hasEntity = i.Entity != null;
                 var useExistingGuid = hasEntity && i.Entity.EntityGuid != Guid.Empty;
-                i.Header.Guid = useExistingGuid // i.Entity != null && i.Entity.EntityGuid != Guid.Empty
+                i.Header.Guid = useExistingGuid
                     ? i.Entity.EntityGuid
                     : Guid.NewGuid();
                 if (hasEntity && !useExistingGuid)

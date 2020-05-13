@@ -55,19 +55,48 @@ namespace ToSic.Eav.WebApi.Formats
 
         public int? DuplicateEntity { get; set; }
 
-        #region New features in 10.27 adding things in lists
+        #region New features in 11.01 adding things in lists
 
         /// <summary>
-        /// Experimental 10.27
+        /// Experimental 11.01
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string Field { get; set; }
 
         /// <summary>
-        /// Experimental 10.27
+        /// Experimental 11.01
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public Guid? Parent { get; set; }
+
+        /// <summary>
+        /// Experimental 11.01 - move from Group to here
+        /// </summary>
+        public bool? Add
+        {
+            get => _add ?? Group?.Add;
+            set => _add = value;
+        }
+        private bool? _add;
+
+        /// <summary>
+        /// Experimental 11.01 - move from Group to here
+        /// </summary>
+        public int? Index { get; set; }
+
+        ///// <summary>
+        ///// This property is only needed by the new UI, because it does more checking
+        ///// and because the previous information if it should really, really add (entityId=0) fails
+        ///// with the new API since it's set upon saving
+        ///// </summary>
+        //[JsonIgnore]
+        //public bool? ReallyAddBecauseAlreadyVerified { get; set; }
+
+        public bool ListHas() => Group != null || Parent != null;
+        public Guid ListParent() => Group?.Guid ?? Parent.Value;
+        public int ListIndex() => Group?.Index ?? Index.Value;
+
+        public bool ListAdd() => Group?.Add ?? Add ?? false;
 
         #endregion
     }
@@ -159,13 +188,13 @@ namespace ToSic.Eav.WebApi.Formats
         /// </summary>
         public bool Add { get; set; }
 
-        /// <summary>
-        /// This property is only needed by the new UI, because it does more checking
-        /// and because the previous information if it should really, really add (entityId=0) fails
-        /// with the new API since it's set upon saving
-        /// </summary>
-        [JsonIgnore]
-        public bool? ReallyAddBecauseAlreadyVerified { get; set; }
+        ///// <summary>
+        ///// This property is only needed by the new UI, because it does more checking
+        ///// and because the previous information if it should really, really add (entityId=0) fails
+        ///// with the new API since it's set upon saving
+        ///// </summary>
+        //[JsonIgnore]
+        //public bool? ReallyAddBecauseAlreadyVerified { get; set; }
  
         /// <summary>
         /// Determines that an empty slot is allowed / possible

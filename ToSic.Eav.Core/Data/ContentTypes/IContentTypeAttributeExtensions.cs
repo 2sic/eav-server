@@ -1,9 +1,11 @@
-﻿using ToSic.Eav.Documentation;
+﻿using System.Linq;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Data
 {
     [PrivateApi]
-    public static class AttributeDefinitionExtensions
+    // ReSharper disable once InconsistentNaming
+    public static class IContentTypeAttributeExtensions
     {
         /// <summary>
         /// Will look up the input type name of an attribute. It uses a series of cascades, because historically this can be missing or written in a different way.
@@ -34,6 +36,13 @@ namespace ToSic.Eav.Data
                 inputType = definition.Type.ToLowerInvariant() + "-default";
 
             return inputType;
+        }
+
+        public static string EntityFieldItemTypePrimary(this IContentTypeAttribute attribute)
+        {
+            var itemTypeName = attribute.Metadata.GetBestValue<string>(Constants.EntityFieldType) ?? "";
+            var typeName = itemTypeName.Split(',').First().Trim();
+            return typeName;
         }
 
     }

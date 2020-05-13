@@ -18,13 +18,13 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <returns>AppId of the new imported app</returns>
         public bool ImportApp(int zoneId, XDocument doc, out int appId)
         {
-            Log.Add($"import app z#{zoneId}");
+            var wrapLog = Log.Call<bool>($"zone:{zoneId}");
 
             appId = 0;
 
 			if (!IsCompatible(doc))
 			{
-				Messages.Add(new Message("The import file is not compatible with the installed version of 2sxc.", Message.MessageTypes.Error));
+				Messages.Add(new Message(Log.Add("The import file is not compatible with the installed version of 2sxc."), Message.MessageTypes.Error));
 				return false;
 			}
 
@@ -36,14 +36,14 @@ namespace ToSic.Eav.Apps.ImportExport
 
             if (appGuid == null)
             {
-                Messages.Add(new Message("Something is wrong in the xml structure, can't get an app-guid", Message.MessageTypes.Error));
+                Messages.Add(new Message(Log.Add("Something is wrong in the xml structure, can't get an app-guid"), Message.MessageTypes.Error));
                 return false;
             }
 
             if (appGuid != XmlConstants.AppContentGuid)
             {
                 // Build Guid (take existing, or create a new)
-                if (String.IsNullOrEmpty(appGuid) || appGuid == new Guid().ToString())
+                if (string.IsNullOrEmpty(appGuid) || appGuid == new Guid().ToString())
                     appGuid = Guid.NewGuid().ToString();
 
                 // Adding app to EAV
@@ -58,15 +58,13 @@ namespace ToSic.Eav.Apps.ImportExport
 
             if (appId <= 0)
 			{
-				Messages.Add(new Message("App was not created. Please try again or make sure the package you are importing is correct.", Message.MessageTypes.Error));
+				Messages.Add(new Message(Log.Add("App was not created. Please try again or make sure the package you are importing is correct."), Message.MessageTypes.Error));
 				return false;
 			}
 
-            /*Factory.GetAppsCache*/
-            Eav.Apps.State.Cache.PurgeZones();
-            //DataSource.GetCache(null).PurgeGlobalCache();   // must do this, to ensure that the app-id exists now 
-            Log.Add("import app completed");
-			return ImportXml(zoneId, appId/*.Value*/, doc);
+            Log.Add("Purging all Zones");
+            State.Cache.PurgeZones();
+            return wrapLog("done", ImportXml(zoneId, appId, doc));
 		}
 
 

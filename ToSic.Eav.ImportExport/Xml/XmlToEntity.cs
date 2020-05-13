@@ -4,10 +4,8 @@ using System.Linq;
 using System.Xml.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
-using ToSic.Eav.Metadata;
+using ToSic.Eav.Repositories;
 using ToSic.Eav.Types;
 
 namespace ToSic.Eav.ImportExport.Xml
@@ -181,17 +179,23 @@ namespace ToSic.Eav.ImportExport.Xml
                 throw new NullReferenceException("trying to import an xml entity but type is null - " + xEntity);
 		    
             // find out if it's a system type, and use that if it exists
-            var contentType = Global.FindContentType(typeName);// as object ?? typeName;
+            var globalType = Global.FindContentType(typeName);// as object ?? typeName;
 		    var guid = Guid.Parse(xEntity.Attribute(XmlConstants.GuidNode)?.Value ??
 		                          throw new NullReferenceException("can't import an entity without a guid identifier"));
 		    var attribs = finalAttributes.ToDictionary(x => x.Key, y => (object) y.Value);
 
-		    var targetEntity = contentType != null
-		        ? new Entity(AppId, guid, contentType, attribs)
+		    var targetEntity = globalType != null
+		        ? new Entity(AppId, guid, globalType, attribs)
 		        : new Entity(AppId, 0, guid, typeName, attribs);
 		    if (metadataForFor != null) targetEntity.SetMetadata(metadataForFor);
 
-            wrap($"returning {guid} of type {contentType?.Name ?? typeName} with attribs:{attribs.Count} and metadata:{metadataForFor != null}");
+            // if it's not a global type but still marked as IsJson
+            // then it's a local extension type with Content-Type definitions in the app/system folder
+            // in this case, the storage system must know that it should json-save it
+            if (globalType == null && xEntity.Attribute(XmlConstants.EntityIsJsonAttribute)?.Value == "True")
+                (targetEntity.Type as ContentType).SetSource(RepositoryTypes.Folder);
+
+            wrap($"returning {guid} of type {globalType?.Name ?? typeName} with attribs:{attribs.Count} and metadata:{metadataForFor != null}");
 			return targetEntity;
 		}
 

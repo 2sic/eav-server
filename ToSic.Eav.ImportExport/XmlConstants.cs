@@ -76,8 +76,10 @@
         public const string KeyAttr = "Key";
         public const string ValueAttr = "Value";
         public const string ValueDimNode = "Dimension";
-        // public const string ValueDimIdAttr = "DimensionId";
         public const string ValueDimRoAttr = "ReadOnly";
+
+        // JSON Entities
+        public const string EntityIsJsonAttribute = "Json";
 
         // Dimensions
         public const string DimensionDefinition = "Dimensions";

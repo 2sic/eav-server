@@ -78,19 +78,7 @@ namespace ToSic.Eav.Serialization
 
         public Dictionary<int, string> Serialize(List<IEntity> entities) => entities.ToDictionary(e => e.EntityId, Serialize);
 
-
-
-        protected IEntitiesSource RelLookupList
-        {
-            get
-            {
-                if (_relList != null) return _relList;
-                //var appList = new AppDataPackageDeferredList();
-                //appList.AttachApp(App);
-                _relList = App; // appList;
-                return _relList;
-            }
-        }
+        protected IEntitiesSource LazyRelationshipLookupList => _relList ?? (_relList = App);
         private IEntitiesSource _relList;
 
         protected int GetMetadataNumber(string name) => MetadataProvider.GetId(name);

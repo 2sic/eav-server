@@ -19,7 +19,8 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// Flush the entire map of zones / apps
         /// </summary>
-        public static void PurgeZoneList() => Purge(0,0,true);
+        /// <param name="log">log which will then log that it purged this</param>
+        public static void PurgeZoneList(ILog log) => Purge(0,0,true, log);
 
         /// <summary>
         /// Clear the cache of a specific app/zone, or of everything
@@ -27,35 +28,38 @@ namespace ToSic.Eav.Apps
         /// <param name="zoneId"></param>
         /// <param name="appId"></param>
         /// <param name="global">if true, will flush everything</param>
-        public static void Purge(int zoneId, int appId, bool global = false)
+        /// <param name="log">log which will then log that it purged this</param>
+        public static void Purge(int zoneId, int appId, bool global = false, ILog log = null)
         {
+            var wrapLog = log?.Call($"{zoneId}, {appId}, {global}");
             if (global)
-                /*Factory.GetAppsCache*/
-                Eav.Apps.State.Cache.PurgeZones();
+                State.Cache.PurgeZones();
             else
-                /*Factory.GetAppsCache*/
-                Eav.Apps.State.Cache.Purge(new AppIdentity(zoneId, appId));
+                State.Cache.Purge(new AppIdentity(zoneId, appId));
+            wrapLog?.Invoke("ok");
         }
 
         /// <summary>
         /// Purge the cache of one app
         /// </summary>
         /// <param name="appId"></param>
-        public static void Purge(int appId) => Purge(SystemRuntime.ZoneIdOfApp(appId), appId);
-
-        //public void InformOfPartialUpdate(IAppIdentity app, IEnumerable<int> entities)
-        //{
-        //    var cache = Factory.Resolve<IAppsCache>();
-        //    cache.Update(app, entities, Log);
-        //}
+        /// <param name="log">log which will then log that it purged this</param>
+        public static void Purge(int appId, ILog log)
+        {
+            var wrapLog = log?.Call($"{appId}");
+            Purge(SystemRuntime.ZoneIdOfApp(appId), appId, log: log);
+            wrapLog?.Invoke("ok");
+        }
 
         /// <summary>
         /// Run some code and then purge the cache after that for full rebuild
         /// </summary>
-        public static void DoAndPurge(int zoneId, int appId, Action action, bool global = false)
+        public static void DoAndPurge(int zoneId, int appId, Action action, bool global = false, ILog log = null)
         {
+            var wrapLog = log?.Call($"{zoneId}, {appId}, fn(...), {global}");
             action.Invoke();
-            Purge(zoneId, appId, global);
+            Purge(zoneId, appId, global, log);
+            wrapLog?.Invoke("ok");
         }
         #endregion
 

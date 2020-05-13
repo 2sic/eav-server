@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Plumbing;
@@ -55,7 +54,7 @@ namespace ToSic.Eav.ImportExport.Persistence.File
 
         private List<string> _paths;
 
-        public RepositoryTypes Source { get; set; } = RepositoryTypes.Folder;
+        public RepositoryTypes Source { get; } = RepositoryTypes.Folder;
 
         public IEnumerable<IContentType> LoadGlobalContentTypes()
         {
@@ -70,7 +69,7 @@ namespace ToSic.Eav.ImportExport.Persistence.File
 
 
 
-        internal List<FileSystemLoader> Loaders => _loader ?? (_loader = Paths.Select(path => new FileSystemLoader(path, Source, true, Log)).ToList());
+        internal List<FileSystemLoader> Loaders => _loader ?? (_loader = Paths.Select(path => new FileSystemLoader(path, Source, true, null, Log)).ToList());
         private List<FileSystemLoader> _loader;
 
 

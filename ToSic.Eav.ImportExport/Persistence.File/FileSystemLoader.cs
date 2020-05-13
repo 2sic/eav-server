@@ -23,27 +23,23 @@ namespace ToSic.Eav.Persistence.File
         private const string QueryFolder = "queries\\";
         private const string ConfigurationFolder = "configurations\\";
         private const string ItemFolder = "items\\";
-        
-        public string PrimaryLanguage
-        {
-            get => throw new Exception("Not implemented");
-            set => throw new Exception("Not implemented");
-        }
 
-        public FileSystemLoader(string path, RepositoryTypes source, bool ignoreMissing, ILog parentLog): base("FSL.Loadr", parentLog, $"init with path:{path} ignore:{ignoreMissing}")
+        public FileSystemLoader(string path, RepositoryTypes repoType, bool ignoreMissing, IEntitiesSource entitiesSource, ILog parentLog)
+            : base("FSL.Loadr", parentLog, $"init with path:{path} ignore:{ignoreMissing}")
         {
             Path = path + (path.EndsWith("\\") ? "" : "\\");
-            Source = source;
+            RepoType = repoType;
             IgnoreMissingStuff = ignoreMissing;
+            EntitiesSource = entitiesSource;
         }
 
         private string Path { get; }
 
         private bool IgnoreMissingStuff { get; }
 
-        private RepositoryTypes Source { get; }
+        private RepositoryTypes RepoType { get; }
 
-
+        protected readonly IEntitiesSource EntitiesSource;
 
         #region json serializer
         private JsonSerializer Serializer
@@ -52,7 +48,7 @@ namespace ToSic.Eav.Persistence.File
             {
                 if (_ser != null) return _ser;
                 _ser = new JsonSerializer();
-                _ser.Initialize(0, ReflectionTypes.FakeCache.Values, null, Log);
+                _ser.Initialize(0, ReflectionTypes.FakeCache.Values, EntitiesSource, Log);
                 _ser.AssumeUnknownTypesAreDynamic = true;
                 return _ser;
             }
@@ -96,8 +92,8 @@ namespace ToSic.Eav.Persistence.File
         /// <returns></returns>
         public IList<IContentType> ContentTypes(int appId, IHasMetadataSource source)
         {
-            if(appId != 0)
-                throw new ArgumentOutOfRangeException(nameof(appId), appId, "appid should only be 0 for now");
+            // v11.01 experimental - maybe disable this, as now we're loading from the app folder so we have an AppId
+            if (appId != 0) throw new ArgumentOutOfRangeException(nameof(appId), appId, "appid should only be 0 for now");
 
             // #1. check that folder exists
             var pathCt = ContentTypePath;
@@ -133,7 +129,7 @@ namespace ToSic.Eav.Persistence.File
                 var ct = ser.DeserializeContentType(json);
 
                 infoIfError = "couldn't set source/parent";
-                (ct as ContentType).SetSourceAndParent(Source, Constants.SystemContentTypeFakeParent, path);
+                (ct as ContentType).SetSourceAndParent(RepoType, Constants.SystemContentTypeFakeParent, path);
                 return ct;
             }
             catch (IOException e)
@@ -191,12 +187,12 @@ namespace ToSic.Eav.Persistence.File
         /// <returns></returns>
         private bool CheckPathExists(string path)
         {
-            Log.Add("path: check exists '" + path + "'");
-            if (Directory.Exists(path)) return true;
+            var wrapLog = Log.Call<bool>("path: check exists '" + path + "'");
+            if (Directory.Exists(path)) return wrapLog("ok", true);
             if (!IgnoreMissingStuff)
                 throw new DirectoryNotFoundException("directory '" + path + "' not found, and couldn't ignore");
             Log.Add("path: doesn't exist, but ignore");
-            return false;
+            return wrapLog("not found", false);
         }
 
 
@@ -210,6 +206,12 @@ namespace ToSic.Eav.Persistence.File
 
         public IReadOnlyDictionary<int, Zone> Zones() 
             => throw new NotImplementedException();
+
+        public string PrimaryLanguage
+        {
+            get => throw new Exception("Not implemented");
+            set => throw new Exception("Not implemented");
+        }
 
         #endregion
     }

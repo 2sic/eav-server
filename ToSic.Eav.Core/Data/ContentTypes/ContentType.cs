@@ -4,6 +4,7 @@ using ToSic.Eav.Documentation;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Repositories;
+using static System.StringComparison;
 
 namespace ToSic.Eav.Data
 {
@@ -49,7 +50,7 @@ namespace ToSic.Eav.Data
         public bool Is(string name) => Name == name || StaticName == name;
 
         /// <inheritdoc />
-        public IContentTypeAttribute this[string fieldName] => Attributes.FirstOrDefault(a => a.Name == fieldName);
+        public IContentTypeAttribute this[string fieldName] => Attributes.FirstOrDefault(a => string.Equals(a.Name, fieldName, OrdinalIgnoreCase));
 
 
         #endregion

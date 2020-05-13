@@ -56,11 +56,12 @@ namespace ToSic.Eav.ImportExport
                 if (_allTransferableFiles == null)
                 {
                     // add folder slashes to ensure the term is part of a folder, not within a file-name
-                    var excFolderFilter = Settings.ExcludeFolders.Select(f => "\\" + f + "\\").ToArray();
+                    var exclAnyFolder = Settings.ExcludeFolders.Select(f => "\\" + f + "\\").ToArray();
+                    var exclRootFolders = Settings.ExcludeRootFolders.Select(f => _sourceFolder + f).ToArray();
+                    var excFolders = exclAnyFolder.Union(exclRootFolders).ToArray();
 
-                    _allTransferableFiles = from f in AllFiles
-                        where !excFolderFilter.Any(ex => f.ToLowerInvariant().Contains(ex))
-                        select f;
+                    _allTransferableFiles = AllFiles
+                        .Where(f => !excFolders.Any(ex => f.ToLowerInvariant().Contains(ex)));
                 }
                 return _allTransferableFiles;
             }

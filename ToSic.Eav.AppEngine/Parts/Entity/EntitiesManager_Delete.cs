@@ -33,7 +33,7 @@ namespace ToSic.Eav.Apps.Parts
             #endregion
 
             var ok = AppManager.DataController.Entities.DeleteEntity(id, true, true);
-            SystemManager.Purge(AppManager.AppId);
+            SystemManager.Purge(AppManager.AppId, Log);
             return ok;
         }
 

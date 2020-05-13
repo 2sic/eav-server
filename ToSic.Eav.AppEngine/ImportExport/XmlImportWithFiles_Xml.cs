@@ -18,8 +18,8 @@ namespace ToSic.Eav.Apps.ImportExport
 		/// Do the import
 		/// </summary>
 		public bool ImportXml(int zoneId, int appId, XDocument doc, bool leaveExistingValuesUntouched = true)
-		{
-		    Log.Add($"import xml z#{zoneId}, a#{appId}, leaveExisting:{leaveExistingValuesUntouched}");
+        {
+            var wrapLog = Log.Call<bool>($"z#{zoneId}, a#{appId}, leaveExisting:{leaveExistingValuesUntouched}");
 		    _eavContext = DbDataController.Instance(zoneId, appId, Log);
             
 			AppId = appId;
@@ -27,7 +27,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
 			if (!IsCompatible(doc))
 			{
-				Messages.Add(new Message("The import file is not compatible with the installed version of 2sxc.", Message.MessageTypes.Error));
+				Messages.Add(new Message(Log.Add("The import file is not compatible with the installed version of 2sxc."), Message.MessageTypes.Error));
 				return false;
 			}
 
@@ -35,7 +35,7 @@ namespace ToSic.Eav.Apps.ImportExport
 			var xmlSource = doc.Element(XmlConstants.RootNode);
             if (xmlSource == null)
             {
-                Messages.Add(new Message("Xml doesn't have expected root node: " + XmlConstants.RootNode, Message.MessageTypes.Error));
+                Messages.Add(new Message(Log.Add("Xml doesn't have expected root node: " + XmlConstants.RootNode), Message.MessageTypes.Error));
                 return false;
             }
             PrepareFolderIdCorrectionListAndCreateMissingFolders(xmlSource);
@@ -48,7 +48,7 @@ namespace ToSic.Eav.Apps.ImportExport
             var sourceDefaultLanguage = xmlSource.Element(XmlConstants.Header)?.Element(XmlConstants.Language)?.Attribute(XmlConstants.LangDefault)?.Value;
 		    if (sourceDimensions == null || sourceDefaultLanguage == null)
 		    {
-                Messages.Add(new Message("Cant find source dimensions or source-default language.", Message.MessageTypes.Error));
+                Messages.Add(new Message(Log.Add("Cant find source dimensions or source-default language."), Message.MessageTypes.Error));
                 return false;
             }
 
@@ -72,15 +72,13 @@ namespace ToSic.Eav.Apps.ImportExport
 
 			var import = new Import(ZoneId, AppId, leaveExistingValuesUntouched, parentLog: Log);
 			import.ImportIntoDb(importAttributeSets, importEntities.Cast<Entity>());
-            SystemManager.Purge(ZoneId, AppId);
+
+            Log.Add($"Purging {ZoneId}/{AppId}");
+            SystemManager.Purge(ZoneId, AppId, log: Log);
 
 			Messages.AddRange(GetExportImportMessagesFromImportLog(import.Storage.ImportLogToBeRefactored));
 
-			//if (xmlSource.Elements(XmlConstants.Templates).Any())
-			//	ImportXmlTemplates(xmlSource);
-
-		    Log.Add("import xml completed");
-			return true;
+		    return wrapLog("done", true);
 		}
 
 

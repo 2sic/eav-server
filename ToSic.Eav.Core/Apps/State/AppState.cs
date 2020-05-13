@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using ToSic.Eav.Caching;
-using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -19,57 +15,6 @@ namespace ToSic.Eav.Apps
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public partial class AppState: AppBase
     {
-        #region public properties like AppId, Entities, List, Publisheentities, DraftEntities, 
-
-	    /// <summary>
-	    /// The simple list of <em>all</em> entities, used everywhere
-	    /// </summary>
-	    public IEnumerable<IEntity> List => _list 
-            ?? (_list = new SynchronizedList<IEntity>(this, () => Index.Values.ToList()));
-	    private SynchronizedList<IEntity> _list;
-
-        internal Dictionary<int, IEntity> Index { get; }
-
-	    /// <summary>
-	    /// Get all Published Entities in this App (excluding Drafts)
-	    /// </summary>
-	    [PrivateApi("this is an optimization feature which shouldn't be used by others")]
-	    public IEnumerable<IEntity> ListPublished
-	        => _listPublished ?? (_listPublished = new SynchronizedList<IEntity>(this,
-	               () => List.Where(e => e.IsPublished).ToList()));
-	    private IEnumerable<IEntity> _listPublished;
-
-	    /// <summary>
-	    /// Get all Entities not having a Draft (Entities that are Published (not having a draft) or draft itself)
-	    /// </summary>
-	    [PrivateApi("this is an optimization feature which shouldn't be used by others")]
-	    public IEnumerable<IEntity> ListNotHavingDrafts
-	        => _listNotHavingDrafts ?? (_listNotHavingDrafts =
-	               new SynchronizedList<IEntity>(this,
-	                   () => List.Where(e => e.GetDraft() == null).ToList()));
-	    private IEnumerable<IEntity> _listNotHavingDrafts;
-
-        /// <summary>
-        /// Manages all relationships between Entities
-        /// </summary>
-        public AppRelationshipManager Relationships { get; }
-
-        /// <summary>
-        /// Shows that the app is loading / building up the data.
-        /// </summary>
-        protected bool Loading; 
-
-        /// <summary>
-        /// Shows that the initial load has completed
-        /// </summary>
-	    protected bool FirstLoadCompleted;
-
-        /// <summary>
-        /// Show how many times the app has been Dynamically updated - in case we run into cache rebuild problems.
-        /// </summary>
-	    public int DynamicUpdatesCount;
-		#endregion
-
 
         [PrivateApi("constructor, internal use only")]
         internal AppState(IAppIdentity app, ILog parentLog)
@@ -82,123 +27,27 @@ namespace ToSic.Eav.Apps
 	        History.Add("app-state", Log);
         }
 
-        /// <summary>
-        /// The first init-command to run after creating the package
-        /// it's needed, so the metadata knows what lookup types are supported
-        /// </summary>
-        /// <param name="metadataTypes"></param>
-        [PrivateApi("internal use only")]
-        internal void InitMetadata(ImmutableDictionary<int, string> metadataTypes)
-	    {
-            if(!Loading)
-                throw new Exception("trying to init metadata, but not in loading state. set that first!");
-	        Metadata = _appTypesFromRepository == null
-	            ? new AppMetadataManager(this, metadataTypes, Log)
-	            : throw new Exception("can't set metadata if content-types are already set");
-	    }
-
-
-	    /// <summary>
-        /// Add an entity to the cache. Should only be used by EAV code
-        /// </summary>
-	    internal void Add(Entity newEntity, int? publishedId, bool log)
-	    {
-            if (!Loading)
-	            throw new Exception("trying to add entity, but not in loading state. set that first!");
-
-            if (newEntity.RepositoryId == 0)
-                throw new Exception("Entities without real ID not supported yet");
-
-            //CacheResetTimestamp(); 
-	        RemoveObsoleteDraft(newEntity, log);
-            Index[newEntity.RepositoryId] = newEntity; // add like this, it could also be an update
-	        MapDraftToPublished(newEntity, publishedId, log);
-            Metadata.Register(newEntity);
-
-	        if (FirstLoadCompleted)
-	            DynamicUpdatesCount++;
-
-            if (log) Log.Add($"added entity {newEntity.EntityId} for published {publishedId}; dyn-update#{DynamicUpdatesCount}");
-	    }
 
         /// <summary>
-        /// Reset all item storages and indexes
+        /// Manages all relationships between Entities
         /// </summary>
-	    internal void RemoveAllItems()
+        public AppRelationshipManager Relationships { get; }
+
+        /// <summary>
+        /// WIP - the app-path, which is pre-initialized very early on
+        /// WIP 2020-05 for v11.x
+        /// </summary>
+        public string Path
         {
-            if (!Loading)
-                throw new Exception("trying to init metadata, but not in loading state. set that first!");
-            Log.Add("remove all items");
-	        Index.Clear();
-            //CacheResetTimestamp(); 
-            Metadata.Reset();
-	    }
-
-
-        /// <summary>
-        /// Reconnect / wire drafts to the published item
-        /// </summary>
-	    private void MapDraftToPublished(Entity newEntity, int? publishedId, bool log)
-        {
-	        if (newEntity.IsPublished || !publishedId.HasValue) return;
-
-            if (log) Log.Add($"map draft to published for new: {newEntity.EntityId} on {publishedId}");
-	
-            // Published Entity is already in the Entities-List as EntityIds is validated/extended before and Draft-EntityID is always higher as Published EntityId
-            newEntity.PublishedEntity = Index[publishedId.Value];
-	        ((Entity) newEntity.PublishedEntity).DraftEntity = newEntity;
-	        newEntity.EntityId = publishedId.Value;
-	    }
-
-        /// <summary>
-        /// Check if a new entity previously had a draft, and remove that
-        /// </summary>
-        /// <param name="newEntity"></param>
-        /// <param name="log">To optionally disable logging, in case it would overfill what we're seeing!</param>
-        private void RemoveObsoleteDraft(IEntity newEntity, bool log)
-	    {
-	        var previous = Index.ContainsKey(newEntity.EntityId) ? Index[newEntity.EntityId] : null;
-            var draftEnt = previous?.GetDraft();
-
-            // check if we went from draft-branch to published, because in this case, we have to remove the last draft
-            string msg = null;
-	        if (previous == null) msg = "previous is null => new will be added to cache";  // didn't exist, return
-            else if(!previous.IsPublished) msg = "previous not published => new will replace in cache"; // previous wasn't published, so we couldn't have had a branch
-	        else if(!newEntity.IsPublished && draftEnt == null) msg = "new copy not published, and no draft exists => new will replace in cache"; // new entity isn't published, so we're not switching "back"
-
-	        if (msg != null)
-	        {
-                if (log) Log.Add("remove obsolete draft - nothing to change because: " + msg);
-                return;
-	        }
-
-            var draftId = draftEnt?.RepositoryId;
-	        if (draftId != null)
-	        {
-                if (log) Log.Add($"remove obsolete draft - found draft, will remove {draftId.Value}");
-	            Index.Remove(draftId.Value);
-	        }
-	        else
-                if (log) Log.Add("remove obsolete draft - no draft, won't remove");
-	    }
-
-
-	    internal void Load(ILog parentLog, Action loader)
-        {
-            var wrapLog = Log.Call(message: $"zone/app:{ZoneId}/{AppId}", useTimer: true);
-	        Loading = true;
-            // temporarily link logs, to put messages in both logs
-            Log.LinkTo(parentLog);
-	        Log.Add("app loading start");
-	        loader.Invoke();
-            CacheResetTimestamp();
-	        Loading = false;
-            FirstLoadCompleted = true;
-	        Log.Add($"app loading done - dynamic load count: {DynamicUpdatesCount}");
-            // detach logs again, to prevent memory leaks
-	        Log.LinkTo(null);
-            wrapLog("ok");
+            get => _path;
+            set
+            {
+                if (!Loading)
+                    throw new Exception("Can't set AppState.Path when not in loading state");
+                _path = value;
+            }
         }
 
+        private string _path;
     }
 }

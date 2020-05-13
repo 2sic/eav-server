@@ -1,9 +1,14 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repositories;
+using ToSic.Eav.Serialization;
+using ToSic.Eav.Types;
 using AppState = ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.Persistence.Efc
@@ -38,7 +43,7 @@ namespace ToSic.Eav.Persistence.Efc
         /// <returns>app package with initialized app</returns>
         public AppState AppState(int appId, int[] entityIds = null, ILog parentLog = null)
         {
-            var appIdentity = /*Factory.GetAppIdentity*/Apps.State.Identity(null, appId);
+            var appIdentity = State.Identity(null, appId);
             return Update(new AppState(appIdentity, parentLog), AppStateLoadSequence.Start, entityIds, parentLog);
         }
 
@@ -53,7 +58,11 @@ namespace ToSic.Eav.Persistence.Efc
 
                 // prepare metadata lists & relationships etc.
                 if (startAt <= AppStateLoadSequence.MetadataInit)
+                {
                     _sqlTotalTime = _sqlTotalTime.Add(InitMetadataLists(app, _dbContext));
+                    // New in V11.01
+                    app.Path = PreloadAppPath(app.AppId);
+                }
                 else
                     Log.Add("skipping metadata load");
 
@@ -64,7 +73,9 @@ namespace ToSic.Eav.Persistence.Efc
                 if (startAt <= AppStateLoadSequence.ContentTypeLoad)
                 {
                     var typeTimer = Stopwatch.StartNew();
-                    app.InitContentTypes(ContentTypes(app.AppId, app));
+                    var dbTypes = ContentTypes(app.AppId, app);
+                    dbTypes = LoadExtensionsTypesAndMerge(app, dbTypes);
+                    app.InitContentTypes(dbTypes);
                     typeTimer.Stop();
                     Log.Add($"timers types:{typeTimer.Elapsed}");
                 }
@@ -81,6 +92,40 @@ namespace ToSic.Eav.Persistence.Efc
                 wrapLog("ok");
             });
             return app;
+        }
+
+        /// <summary>
+        /// Must load the app-path from the settings early on, so that other loaders have it
+        /// </summary>
+        /// <param name="appId"></param>
+        /// <returns></returns>
+        private string PreloadAppPath(int appId)
+        {
+            var wrapLog = Log.Call<string>();
+            try
+            {
+                var dbEntity = GetRawEntities(new int[0], appId, false, "2SexyContent-App");
+                if (!dbEntity.Any()) return wrapLog("not in db", null);
+                var json = dbEntity.FirstOrDefault()?.Json;
+                if (string.IsNullOrEmpty(json)) return wrapLog("no json", null);
+
+                Log.Add("app Entity found - this json: " + json);
+                var serializer = Factory.Resolve<IDataDeserializer>();
+                serializer.Initialize(0, ReflectionTypes.FakeCache.Values, null, Log);
+                if (!(serializer.Deserialize(json, true, true) is Entity appEntity))
+                    return wrapLog("can't deserialize", null);
+                var path = appEntity.GetBestValue<string>("Folder");
+                return string.IsNullOrWhiteSpace(path) 
+                    ? wrapLog("no folder", null) 
+                    : wrapLog(path, path);
+            }
+            catch (Exception ex)
+            {
+                // Ignore, but log
+                Log.Add("error " + ex.Message);
+            }
+
+            return wrapLog("error", null);
         }
 
         #endregion

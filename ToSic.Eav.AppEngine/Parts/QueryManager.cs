@@ -104,7 +104,7 @@ namespace ToSic.Eav.Apps.Parts
             AppManager.Entities.Delete(id);
 
             // flush cache
-            SystemManager.Purge(AppManager.AppId);
+            SystemManager.Purge(AppManager.AppId, Log);
 
             return true;
 
