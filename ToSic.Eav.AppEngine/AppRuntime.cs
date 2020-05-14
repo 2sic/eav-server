@@ -24,6 +24,12 @@ namespace ToSic.Eav.Apps
         internal AppRuntime(IDataSource data, bool showDrafts, ILog parentLog): base(data, showDrafts, parentLog) { }
         #endregion
 
+        #region DataSourceFactory
+        public DataSource DataSourceFactory => _dsFactory ?? (_dsFactory = new DataSource(Log));
+        private DataSource _dsFactory;
+
+        #endregion 
+
         /// <summary>
         /// Entities Runtime to get entities in this app
         /// </summary>
