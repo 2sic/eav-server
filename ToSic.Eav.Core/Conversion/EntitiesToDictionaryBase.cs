@@ -23,6 +23,8 @@ namespace ToSic.Eav.Conversion
         /// <inheritdoc/>
         public bool WithTitle { get; private set; }
 
+        private bool WithStats { get; set; }
+
         /// <inheritdoc/>
         public void ConfigureForAdminUse()
         {
@@ -30,6 +32,7 @@ namespace ToSic.Eav.Conversion
             WithPublishing = true;
             WithMetadataFor = true;
             WithTitle = true;
+            WithStats = true;
         }
 
         #endregion
@@ -124,6 +127,15 @@ namespace ToSic.Eav.Conversion
             if(WithTitle)
                 try { entityValues.Add("_Title", entity.GetBestTitle(Languages)); }
                 catch { /* ignore */ }
+
+            if(WithStats)
+                try
+                {
+                    entityValues.Add("_Used", entity.Parents().Count);
+                    entityValues.Add("_Uses", entity.Children().Count);
+                }
+                catch { /* ignore */ }
+
 
             // todo: unclear if this is still needed, but it would be risky to remove, without analyzing all scripts
             if (!entityValues.ContainsKey("Title"))
