@@ -45,5 +45,8 @@ namespace ToSic.Eav.Data
         /// <param name="log">Optional logger, to debug what happens internally</param>
         /// <returns>Always returns a list - empty or containing results</returns>
         List<IEntity> FindParents(string type = null, string field = null, ILog log = null);
+
+        [PrivateApi]
+        IEnumerable<EntityRelationship> AllRelationships { get; }
     }
 }

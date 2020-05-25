@@ -15,7 +15,7 @@ namespace ToSic.Eav.Data
         // special note: ATM everything is an IEntity, so EntityLight is currently not supported
 
         private readonly IEntityLight _entity;
-	    public readonly IEnumerable<EntityRelationship> AllRelationships;
+	    public IEnumerable<EntityRelationship> AllRelationships { get; }
 
 		/// <summary>
 		/// Initializes a new instance of the RelationshipManager class.
@@ -102,6 +102,15 @@ namespace ToSic.Eav.Data
             wrap?.Invoke(result.Count.ToString());
             return result;
 	    }
-	    #endregion
+		#endregion
+
+		#region Relationship Information
+        [PrivateApi]
+        public IEnumerable<string> Fields()
+        {
+            return null;
+        }
+
+        #endregion
     }
 }
