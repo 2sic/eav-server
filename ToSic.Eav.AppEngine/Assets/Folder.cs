@@ -2,13 +2,13 @@
 
 namespace ToSic.Eav.Apps.Assets
 {
-    public class Folder : IFolder
+    public abstract class Folder : IFolder
     {
         /// <inheritdoc/>
         public int Id { get; set; }
 
         /// <inheritdoc/>
-        public bool HasChildren { get; set; }
+        public virtual bool HasChildren { get; set; }
 
         /// <inheritdoc/>
         public DateTime Created { get; set; }
