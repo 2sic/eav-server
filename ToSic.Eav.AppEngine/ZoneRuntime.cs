@@ -44,9 +44,15 @@ namespace ToSic.Eav.Apps
             // optionally check folder names
             if (appId == 0 && alsoCheckFolderName)
                 appId = AppIdFromFolderName(appName);
+
             return appId > 0 ? appId : AppConstants.AppIdNotFound;
         }
 
+        /// <summary>
+        /// Find an app based on the folder name. Will check the App Metadata for this
+        /// </summary>
+        /// <param name="folderName"></param>
+        /// <returns></returns>
         private int AppIdFromFolderName(string folderName)
         {
             var nameLower = folderName.ToLower();
