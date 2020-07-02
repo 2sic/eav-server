@@ -21,5 +21,15 @@
         //public static readonly string[] ScopesSystem = { Constants.ScopeSystem, ScopeApp, ScopeContentSystem };
 
         #endregion
+
+        #region App Configuration Fields
+
+        public const string
+            FieldFolder = "Folder";
+
+        #endregion
+
+        // this used to be a Settings.DataIsMissingInDb
+        public const int AppIdNotFound = -100;
     }
 }
