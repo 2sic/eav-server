@@ -2,10 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>net451</TargetFramework>
-    <AssemblyVersion>11.04.00.0</AssemblyVersion>
-    <FileVersion>11.04.00.0</FileVersion>
+    <AssemblyVersion>11.04.01.0</AssemblyVersion>
+    <FileVersion>11.04.01.0</FileVersion>
     <Copyright>Copyright AGPL 2sic 2020</Copyright>
-    <Version>11.04.00.00</Version>
+    <Version>11.04.01.00</Version>
     <Configurations>Debug;Release;Dbg Testing</Configurations>
     <RootNamespace>ToSic.Eav.Apps</RootNamespace>
   </PropertyGroup>
