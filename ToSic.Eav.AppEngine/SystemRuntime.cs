@@ -9,7 +9,7 @@ namespace ToSic.Eav.Apps
         /// </summary>
         /// <param name="appId"></param>
         /// <returns></returns>
-        public static int ZoneIdOfApp(int appId) => /*Factory.GetAppsCache*/Eav.Apps.State.Identity(null, appId).ZoneId;
+        public static int ZoneIdOfApp(int appId) => State.Identity(null, appId).ZoneId;
 
         /// <summary>
         /// Retrieve the Assignment-Type-ID which is used to determine which type of object

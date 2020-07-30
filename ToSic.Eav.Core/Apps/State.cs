@@ -39,5 +39,6 @@ namespace ToSic.Eav.Apps
 
         [InternalApi_DoNotUse_MayChangeWithoutNotice] 
         public static IReadOnlyDictionary<int, Zone> Zones => Cache.Zones;
+
     }
 }
