@@ -135,7 +135,6 @@
     <Compile Include="Parts\DbAttributeDefinition.cs" />
     <Compile Include="Parts\DbAttributeSet.cs" />
     <Compile Include="Parts\DbContentType_AttribSorting.cs" />
-    <Compile Include="Parts\DbContentType_Shared.cs" />
     <Compile Include="Parts\DbContentType_Ghosts.cs" />
     <Compile Include="Parts\DbAttributeDefinition_Query.cs" />
     <Compile Include="Parts\DbContentType_Read.cs" />

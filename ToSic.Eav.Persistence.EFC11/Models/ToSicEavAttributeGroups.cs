@@ -11,7 +11,8 @@ namespace ToSic.Eav.Persistence.Efc.Models
 
         public int AttributeGroupId { get; set; }
         public string Name { get; set; }
-        public int SortOrder { get; set; }
+        // 2020-07-31 2dm removed, never used
+        //public int SortOrder { get; set; }
         public int AttributeSetId { get; set; }
 
         public virtual ICollection<ToSicEavAttributesInSets> ToSicEavAttributesInSets { get; set; }

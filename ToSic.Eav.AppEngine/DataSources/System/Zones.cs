@@ -28,6 +28,7 @@ namespace ToSic.Eav.DataSources.System
                 "ToSic.Eav.DataSources.Zones, ToSic.Eav.Apps",
             },
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Zones")]
+    // ReSharper disable once UnusedMember.Global
     public sealed class Zones: DataSourceBase
 	{
         #region Configuration-properties (no config)

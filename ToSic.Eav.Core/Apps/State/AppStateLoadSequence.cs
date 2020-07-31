@@ -6,6 +6,7 @@ namespace ToSic.Eav.Apps
     public enum AppStateLoadSequence
     {
         Start,
+        // ReSharper disable once UnusedMember.Global
         AppPathInit,
         MetadataInit,
         ContentTypeLoad,

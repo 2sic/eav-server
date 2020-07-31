@@ -8,9 +8,9 @@ namespace ToSic.Eav.Apps.Parts
 {
     public partial class EntitiesManager
     {
-
-        public ExportListXml Exporter(IContentType contentType)
-            => new ExportListXml(AppManager.AppState, contentType, Log);
+        // 2020-07-31 2dm - never used
+        //public ExportListXml Exporter(IContentType contentType)
+        //    => new ExportListXml(AppManager.AppState, contentType, Log);
         public ExportListXml Exporter(string contentType)
             => new ExportListXml(AppManager.AppState, AppManager.Read.ContentTypes.Get(contentType), Log);
 

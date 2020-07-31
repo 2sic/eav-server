@@ -35,6 +35,7 @@ namespace ToSic.Eav.Apps
         /// You can't create items which are metadata with this, for that, please use the Create-one overload <br/>
         /// Changed in 2sxc 10.30 - now returns the id of the created items
         /// </remarks>
+        // ReSharper disable once UnusedMember.Global
         IEnumerable<IEntity> Create(string contentTypeName, IEnumerable<Dictionary<string, object>> multiValues, string userName = null);
 
         /// <summary>
@@ -50,6 +51,7 @@ namespace ToSic.Eav.Apps
         /// </summary>
         /// <param name="entityId">The item ID</param>
         /// <param name="userName">the current user name - will be logged as the author of the change</param>
+        // ReSharper disable once UnusedMember.Global
         void Delete(int entityId, string userName = null);
 
         /// <summary>
@@ -57,6 +59,7 @@ namespace ToSic.Eav.Apps
         /// So the App DataSource automatically provides direct access to the metadata system.
         /// This allows users of the App to query metadata directly through this object. 
         /// </summary>
+        // ReSharper disable once UnusedMember.Global
         IMetadataSource Metadata { get; }
     }
 }

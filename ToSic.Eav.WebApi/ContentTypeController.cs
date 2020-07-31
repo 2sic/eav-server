@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Web.Http;
 using ToSic.Eav.Apps;
@@ -24,7 +23,6 @@ namespace ToSic.Eav.WebApi
         }
 
         #region Content-Type Get, Delete, Save
-        [HttpGet]
 	    public IEnumerable<ContentTypeInfo> Get(int appId, string scope = null, bool withStatistics = false)
         {
             var wrapLog = Log.Call($"a#{appId}, scope:{scope}, stats:{withStatistics}");
@@ -99,7 +97,6 @@ namespace ToSic.Eav.WebApi
 	        return true;
 	    }
 
-	    [HttpPost]
 	    public bool Save(int appId, Dictionary<string, string> item)
 	    {
 	        Log.Add($"save a#{appId}, item count:{item?.Count}");
@@ -109,20 +106,16 @@ namespace ToSic.Eav.WebApi
 	            return false;
 	        }
 
-	        bool.TryParse(item["ChangeStaticName"], out var changeStaticName);
 	        GetDb(appId).ContentType.AddOrUpdate(
                 item["StaticName"], 
                 item["Scope"], 
                 item["Name"], 
                 item["Description"],
-                null, false, 
-                changeStaticName, 
-                changeStaticName ? item["NewStaticName"] : item["StaticName"]);
+                null, false);
 	        return true;
 	    }
         #endregion
 
-        [HttpGet]
 	    public bool CreateGhost(int appId, string sourceStaticName)
 	    {
 	        Log.Add($"create ghost a#{appId}, type:{sourceStaticName}");
@@ -135,7 +128,6 @@ namespace ToSic.Eav.WebApi
         /// <summary>
         /// Returns the configuration for a content type
         /// </summary>
-        //[HttpGet]
         public IEnumerable<ContentTypeFieldInfo> GetFields(int appId, string staticName)
         {
             Log.Add($"get fields a#{appId}, type:{staticName}");
@@ -187,19 +179,16 @@ namespace ToSic.Eav.WebApi
         /// <remarks>
         /// It's important to NOT cache this result, because it can change during runtime, and then a cached info would be wrong. 
         /// </remarks>
-        private string FindInputType(IContentTypeAttribute attribute)
+        private static string FindInputType(IContentTypeAttribute attribute)
         {
             var inputType = attribute.Metadata.GetBestValue<string>(Constants.MetadataFieldAllInputType, Constants.MetadataFieldTypeAll);
 
-            return string.IsNullOrEmpty(inputType)
-                ? "unknown" // unknown will let the UI fallback on other mechanisms
-                : inputType;
+            // unknown will let the UI fallback on other mechanisms
+            return string.IsNullOrEmpty(inputType) ? "unknown" : inputType;
         }
 
 
 
-
-        [HttpGet]
         public bool Reorder(int appId, int contentTypeId, string newSortOrder)
         {
             Log.Add($"reorder a#{appId}, type#{contentTypeId}, order:{newSortOrder}");
@@ -209,27 +198,22 @@ namespace ToSic.Eav.WebApi
             return true;
         }
 
-	    [HttpGet]
 	    public string[] DataTypes(int appId)
 	    {
 	        Log.Add($"get data types a#{appId}");
-            return GetDb(appId).AttributesDefinition.DataTypeNames(appId);
+            return GetDb(appId).Attributes.DataTypeNames();
 	    }
 
-	    //[HttpGet]
 	    public List<InputTypeInfo> InputTypes(int appId)
 	    {
 	        Log.Add($"get input types a#{appId}");
 	        var appInputTypes = new AppRuntime(appId, true, Log).ContentTypes.GetInputTypes();
 
 	        return appInputTypes;
-
 	    }
 
            
             
-        [HttpGet]
-        [SuppressMessage("ReSharper", "RedundantArgumentDefaultValue")]
         public int AddField(int appId, int contentTypeId, string staticName, string type, string inputType, int sortOrder)
 	    {
 	        Log.Add($"add field a#{appId}, type#{contentTypeId}, name:{staticName}, type:{type}, input:{inputType}, order:{sortOrder}");
@@ -239,7 +223,6 @@ namespace ToSic.Eav.WebApi
             return appManager.ContentTypes.CreateAttributeAndInitializeAndSave(contentTypeId, attDef, inputType);
 	    }
 
-        [HttpGet]
         public bool UpdateInputType(int appId, int attributeId, string inputType)
         {
             Log.Add($"update input type a#{appId}, attrib:{attributeId}, input:{inputType}");
@@ -247,35 +230,28 @@ namespace ToSic.Eav.WebApi
             return appManager.ContentTypes.UpdateInputType(attributeId, inputType);
         }
 
-        [HttpGet]
-        [HttpDelete]
 	    public bool DeleteField(int appId, int contentTypeId, int attributeId)
 	    {
 	        Log.Add($"delete field a#{appId}, type#{contentTypeId}, attrib:{attributeId}");
-            return GetDb(appId).AttributesDefinition.RemoveAttributeAndAllValuesAndSave(attributeId);
+            return GetDb(appId).Attributes.RemoveAttributeAndAllValuesAndSave(attributeId);
 	    }
 
-        [HttpGet]
 	    public void SetTitle(int appId, int contentTypeId, int attributeId)
 	    {
 	        Log.Add($"set title a#{appId}, type#{contentTypeId}, attrib:{attributeId}");
-	        GetDb(appId).AttributesDefinition.SetTitleAttribute(attributeId, contentTypeId);
+	        GetDb(appId).Attributes.SetTitleAttribute(attributeId, contentTypeId);
 	    }
 
-        [HttpGet]
         public bool Rename(int appId, int contentTypeId, int attributeId, string newName)
         {
             Log.Add($"rename attribute a#{appId}, type#{contentTypeId}, attrib:{attributeId}, name:{newName}");
-            GetDb(appId).AttributesDefinition.RenameAttribute(attributeId, contentTypeId, newName);
+            GetDb(appId).Attributes.RenameAttribute(attributeId, contentTypeId, newName);
             return true;
         }
 
-
-
-
         #endregion
 
-        internal DbDataController GetDb(int appId) => DbDataController.Instance(null, appId, Log);
+        private DbDataController GetDb(int appId) => DbDataController.Instance(null, appId, Log);
     }
 
 

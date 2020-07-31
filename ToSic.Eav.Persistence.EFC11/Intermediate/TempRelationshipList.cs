@@ -4,7 +4,7 @@ namespace ToSic.Eav.Persistence.Efc.Intermediate
 {
     internal class TempRelationshipList
     {
-        public int AttributeId;
+        //public int AttributeId;
 
         public string StaticName;
 

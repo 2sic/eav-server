@@ -19,9 +19,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         private List<DimensionDefinition> _zoneLanguages;
 
-        private readonly JsonSerializer _jsonifier = new JsonSerializer();
+        private readonly JsonSerializer _serializer = new JsonSerializer();
 
-        internal int SaveEntity(IEntity newEnt, SaveOptions so)
+        private int SaveEntity(IEntity newEnt, SaveOptions so)
         {
             var wrapLog = Log.Call($"id:{newEnt?.EntityId}/{newEnt?.EntityGuid}");
             #region Step 1: Do some initial error checking and preparations
@@ -68,10 +68,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             var contentTypeId = saveJson 
                 ? RepoIdForJsonEntities 
-                : DbContext.AttribSet.GetIdWithEitherName(newEnt.Type.StaticName);
+                : DbContext.AttribSet.GetId(newEnt.Type.StaticName);
             var attributeDefs = saveJson
                 ? null
-                : DbContext.AttributesDefinition.GetAttributeDefinitions(contentTypeId).ToList();
+                : DbContext.Attributes.GetAttributeDefinitions(contentTypeId).ToList();
             Log.Add($"header checked type:{contentTypeId}, attribDefs⋮{attributeDefs?.Count}");
             if (attributeDefs != null)
                 Log.Add(() => $"attribs: [{string.Join(",", attributeDefs.Select(a => a.AttributeId + ":" + a.StaticName))}]");
@@ -105,13 +105,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     Log.Add($"will serialize-json id:{newEnt.EntityId}");
                     try
                     {
-                        jsonExport = _jsonifier.Serialize(newEnt);
+                        jsonExport = _serializer.Serialize(newEnt);
                     }
                     catch
                     {
                         Log.Add("Error serializing - will repeat with detailed with logging");
-                        _jsonifier.LinkLog(Log);
-                        jsonExport = _jsonifier.Serialize(newEnt);
+                        _serializer.LinkLog(Log);
+                        jsonExport = _serializer.Serialize(newEnt);
                     }
 
                     if (saveJson)
@@ -160,7 +160,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     (newEnt as Entity)?.SetVersion(dbEnt.Version);
 
                     // prepare export for save json OR versioning later on
-                    jsonExport = _jsonifier.Serialize(newEnt);
+                    jsonExport = _serializer.Serialize(newEnt);
 
                     if (saveJson)
                     {
@@ -206,7 +206,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                 if(jsonExport == null)
                     throw new Exception("trying to save version history entry, but jsonexport isn't ready");
-                DbContext.Versioning.SaveEntity(dbEnt.EntityId, dbEnt.EntityGuid, jsonExport);
+                DbContext.Versioning.AddToHistoryQueue(dbEnt.EntityId, dbEnt.EntityGuid, jsonExport);
 
                 #endregion
 
@@ -229,9 +229,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// then correct branching-infos on the entity depending on the scenario
         /// </summary>
         /// <param name="newEnt">the entity to be saved, with IDs and Guids</param>
-        /// <param name="outHasDraft">will be true, if there is a draft in a branch; false if the item itself is already draft</param>
         /// <returns></returns>
-        private Tuple<int?, bool> GetDraftAndCorrectIdAndBranching(IEntity newEnt)//, out bool outHasDraft)
+        private Tuple<int?, bool> GetDraftAndCorrectIdAndBranching(IEntity newEnt)
         {
             var wrapLog = Log.Call($"entity:{newEnt.EntityId}");
 
@@ -417,7 +416,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             var ids = new List<int>();
 
             DbContext.DoInTransaction(()
-                => DbContext.Versioning.QueueDuringAction(()
+                => DbContext.Versioning.DoAndSaveHistoryQueue(()
                     =>
                 {
                     entities?.ForEach(e => DbContext.DoAndSave(() => ids.Add(SaveEntity(e, saveOptions))));

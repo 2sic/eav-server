@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Efc.Models;
@@ -15,48 +14,44 @@ namespace ToSic.Eav.Repository.Efc.Parts
     public partial class DbContentType
     {
 
-        public void AddOrUpdate(string staticName, string scope, string name, string description, int? usesConfigurationOfOtherSet, bool alwaysShareConfig, bool changeStaticName = false, string newStaticName = "")
+        public void AddOrUpdate(string staticName, string scope, string name, string description, int? usesConfigurationOfOtherSet, bool alwaysShareConfig)
         {
-            var ct = GetTypeByStaticName(staticName);
-
-            if (ct == null)
-            {
-                ct = new ToSicEavAttributeSets()
-                {
-                    AppId = DbContext.AppId,
-                    StaticName = Guid.NewGuid().ToString(),// staticName,
-                    Scope = scope == "" ? null : scope,
-                    UsesConfigurationOfAttributeSet = usesConfigurationOfOtherSet,
-                    AlwaysShareConfiguration = alwaysShareConfig
-                };
-                DbContext.SqlDb.Add(ct);
-            }
+            var ct = GetTypeByStaticName(staticName) 
+                     ?? Create(scope, usesConfigurationOfOtherSet, alwaysShareConfig);
 
             ct.Name = name;
             ct.Description = description;
             ct.Scope = scope;
-            if (changeStaticName) // note that this is a very "deep" change
-                ct.StaticName = newStaticName;
             ct.ChangeLogCreated = DbContext.Versioning.GetChangeLogId();
 
             // save first, to ensure it has an Id
             DbContext.SqlDb.SaveChanges();
         }
 
+        private ToSicEavAttributeSets Create(string scope, int? usesConfigurationOfOtherSet, bool alwaysShareConfig)
+        {
+            var ct = new ToSicEavAttributeSets
+            {
+                AppId = DbContext.AppId,
+                StaticName = Guid.NewGuid().ToString(),
+                Scope = scope == "" ? null : scope,
+                UsesConfigurationOfAttributeSet = usesConfigurationOfOtherSet,
+                AlwaysShareConfiguration = alwaysShareConfig
+            };
+            DbContext.SqlDb.Add(ct);
+            return ct;
+        }
 
 
         public void Delete(string staticName)
         {
             var setToDelete = GetTypeByStaticName(staticName);
-
             setToDelete.ChangeLogDeleted = DbContext.Versioning.GetChangeLogId();
             DbContext.SqlDb.SaveChanges();
         }
 
-        
 
-
-        internal int? GetOrCreateContentType(ContentType contentType)
+        private int? GetOrCreateContentType(ContentType contentType)
         {
             var destinationSet = DbContext.AttribSet.GetDbAttribSet(contentType.StaticName);
 
@@ -87,12 +82,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
             destinationSet.AlwaysShareConfiguration = contentType.AlwaysShareConfiguration;
             DbContext.SqlDb.SaveChanges();
 
-            // if this set expects to share it's configuration, ensure that it does
-            // 2018-03-28 disable auto-shared attributes, as not needed any more - part of #1492
-            //if (destinationSet.AlwaysShareConfiguration)
-            //    DbContext.AttribSet.DistributeSharedContentTypes();
-
-            // all ok :)
             return destinationSet.AttributeSetId;
         }
 
@@ -118,7 +107,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             // append all Attributes
             foreach (var newAtt in contentType.Attributes.Cast<ContentTypeAttribute>())
             {
-                var destAttribId = DbContext.AttributesDefinition.GetOrCreateAttributeDefinition(contentTypeId, newAtt);
+                var destAttribId = DbContext.Attributes.GetOrCreateAttributeDefinition(contentTypeId, newAtt);
 
                 // save additional entities containing AttributeMetaData for this attribute
                 if (newAtt.Metadata != null)
@@ -145,7 +134,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                              ?? metadata;
             foreach (var entity in sourceList)
             {
-                var md = (Metadata.Target)entity.MetadataFor;
+                var md = (Target)entity.MetadataFor;
                 // Validate Entity
                 md.TargetType = Constants.MetadataForAttribute;
 

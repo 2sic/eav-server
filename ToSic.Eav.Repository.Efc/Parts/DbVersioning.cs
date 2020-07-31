@@ -3,11 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using ToSic.Eav.Interfaces;
-using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Efc.Models;
-using ToSic.Eav.Serialization;
-using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
@@ -15,7 +11,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
     {
         private const string EntitiesTableName = "ToSIC_EAV_Entities";
 
-        internal DbVersioning(DbDataController cntx) : base(cntx, "Db.Vers") { }
+        internal DbVersioning(DbDataController db) : base(db, "Db.Vers") { }
 
         #region Change-Log ID
         private int _mainChangeLogId;
@@ -33,7 +29,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 con.Open();	// make sure same connection is used later
 
             _mainChangeLogId = DbContext.SqlDb.ToSicEavChangeLog
-                // ReSharper disable once FormatStringProblem
                 .FromSql("ToSIC_EAV_ChangeLogAdd @p0", userName)
                 .Single().ChangeId;
 
@@ -43,35 +38,16 @@ namespace ToSic.Eav.Repository.Efc.Parts
         #endregion
 
 
-        public void QueueDuringAction(Action action)
+        public void DoAndSaveHistoryQueue(Action action)
         {
             action.Invoke();
-            ProcessQueue();
-        }
-
-        private void ProcessQueue()
-        {
             Save();
         }
-
-        private IDataSerializer ImmediateStateSerializer()
-        {
-            var loader = new Efc11Loader(DbContext.SqlDb);
-            var appPackageRightNow = loader.AppState(DbContext.AppId, parentLog:Log);
-            var serializer = new JsonSerializer(appPackageRightNow, Log);
-            return serializer;
-        }
-
-        /// <summary>
-        /// Convert an entity to xml and add to saving queue
-        /// </summary>
-        private void SerializeEntityAndAddToQueue(IDataSerializer serializer, int entityId, Guid entityGuid) 
-            => SaveEntity(entityId, entityGuid, serializer.Serialize(entityId));
 
         /// <summary>
         /// Save an entity to versioning, which is already serialized
         /// </summary>
-        public void SaveEntity(int entityId, Guid entityGuid, string serialized)
+        internal void AddToHistoryQueue(int entityId, Guid entityGuid, string serialized)
             => _queue.Add(new ToSicEavDataTimeline
             {
                 SourceTable = EntitiesTableName,
@@ -95,7 +71,5 @@ namespace ToSic.Eav.Repository.Efc.Parts
         }
 
         private readonly List<ToSicEavDataTimeline> _queue = new List<ToSicEavDataTimeline>();
-
-        
     }
 }

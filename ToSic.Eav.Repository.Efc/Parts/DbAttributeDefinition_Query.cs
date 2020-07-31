@@ -3,7 +3,7 @@ using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
-    public partial class DbAttributeDefinition
+    public partial class DbAttribute
     {
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <param name="attributeSetId"></param>
         /// <param name="staticName"></param>
         /// <returns></returns>
-        internal bool AttributeExistsInSet(int attributeSetId, string staticName)
+        private bool AttributeExistsInSet(int attributeSetId, string staticName)
             => DbContext.SqlDb.ToSicEavAttributesInSets.Any(s =>
                 s.Attribute.StaticName == staticName
                 && !s.Attribute.ChangeLogDeleted.HasValue
@@ -35,7 +35,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
 
         // new parts
-        public string[] DataTypeNames(int appId)
+        public string[] DataTypeNames()
             => DbContext.SqlDb.ToSicEavAttributeTypes.OrderBy(a => a.Type)
             .Select(a => a.Type)
             .ToArray();

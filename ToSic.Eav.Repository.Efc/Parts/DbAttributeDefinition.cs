@@ -9,9 +9,9 @@ using ToSic.Eav.Persistence.Logging;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
-    public partial class DbAttributeDefinition: BllCommandBase
+    public partial class DbAttribute: BllCommandBase
     {
-        public DbAttributeDefinition(DbDataController cntx) : base(cntx, "Db.AttDef") {}
+        public DbAttribute(DbDataController db) : base(db, "Db.AttDef") {}
 
         /// <summary>
         /// Set an Attribute as Title on an AttributeSet
@@ -85,7 +85,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Append a new Attribute to an AttributeSet
         /// </summary>
-        internal int AppendToEndAndSave(int attributeSetId, ContentTypeAttribute contentTypeAttribute)
+        private int AppendToEndAndSave(int attributeSetId, ContentTypeAttribute contentTypeAttribute)
         {
             var maxIndex = DbContext.SqlDb.ToSicEavAttributesInSets
                 .Where(a => a.AttributeSetId == attributeSetId)

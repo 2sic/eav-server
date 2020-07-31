@@ -28,6 +28,7 @@ namespace ToSic.Eav.DataSources.System
                 "ToSic.Eav.DataSources.Apps, ToSic.Eav.Apps",
             },
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Apps")]
+    // ReSharper disable once UnusedMember.Global
     public sealed class Apps: DataSourceBase
 	{
         #region Configuration-properties (no config)
@@ -48,7 +49,8 @@ namespace ToSic.Eav.DataSources.System
 	    public int OfZoneId
 	    {
 	        get => int.TryParse(Configuration[ZoneKey], out int zid) ? zid : ZoneId;
-	        set => Configuration[ZoneKey] = value.ToString();
+            // ReSharper disable once UnusedMember.Global
+            set => Configuration[ZoneKey] = value.ToString();
 	    }
 
 	    #endregion

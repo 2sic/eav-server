@@ -13,12 +13,10 @@ namespace ToSic.Eav.WebApi
 {
     public class EntityApi: HasLog
     {
-        //public AppManager AppManager;
         public AppRuntime AppRead;
 
         public EntityApi(int appId, bool showDrafts, ILog parentLog): base("Api.EntPrc", parentLog)
         {
-            //AppManager = new AppManager(appId, Log);
             AppRead = new AppRuntime(appId, showDrafts, Log);
         }
 
@@ -38,45 +36,38 @@ namespace ToSic.Eav.WebApi
         private EntitiesToDictionary _entitiesToDictionary;
 
         public IEntity GetOrThrow(string contentType, int id)
-        {
-            // must use cache, because it shows both published  unpublished
-            var found = AppRead.Entities.Get(id);
-            if (contentType != null && !(found.Type.Name == contentType || found.Type.StaticName == contentType))
-                throw new KeyNotFoundException("Can't find " + id + "of type '" + contentType + "'");
-            return found;
-        }
-
+            => ReturnOrThrowIfInvalid(contentType, id, AppRead.Entities.Get(id));
 
         public IEntity GetOrThrow(string contentType, Guid guid)
+            => ReturnOrThrowIfInvalid(contentType, guid, AppRead.Entities.Get(guid));
+
+        private static IEntity ReturnOrThrowIfInvalid(string contentType, object identifier, IEntity itm)
         {
-            // must use cache, because it shows both published  unpublished
-            var itm = AppRead.Entities.Get(guid);
             if (itm == null || (contentType != null && !(itm.Type.Name == contentType || itm.Type.StaticName == contentType)))
-                throw new KeyNotFoundException("Can't find " + guid + "of type '" + contentType + "'");
+                throw new KeyNotFoundException("Can't find " + identifier + "of type '" + contentType + "'");
             return itm;
         }
 
-
-        /// <summary>
-        /// this is needed by 2sxc
-        /// </summary>
-        /// <param name="contentType"></param>
-        /// <param name="id"></param>
-        /// <param name="cultureCode"></param>
-        /// <returns></returns>
-        public Dictionary<string, object> GetOne(string contentType, int id, string cultureCode = null)
-        {
-            var found = GetOrThrow(contentType, id);
-            return Serializer.Convert(found);
-        }
+        // #2134
+        ///// <summary>
+        ///// this is needed by 2sxc
+        ///// </summary>
+        ///// <param name="contentType"></param>
+        ///// <param name="id"></param>
+        ///// <returns></returns>
+        //public Dictionary<string, object> GetOne(string contentType, int id)
+        //{
+        //    var found = GetOrThrow(contentType, id);
+        //    return Serializer.Convert(found);
+        //}
 
         /// <summary>
         /// Get all Entities of specified Type
         /// </summary>
-        public IEnumerable<Dictionary<string, object>> GetEntities(string contentType, string cultureCode = null) 
+        public IEnumerable<Dictionary<string, object>> GetEntities(string contentType) 
             => Serializer.Convert(AppRead.Entities.Get(contentType));
 
-        public List<BundleIEntity> GetEntitiesForEditing(int appId, List<ItemIdentifier> items)
+        public List<BundleIEntity> GetEntitiesForEditing(List<ItemIdentifier> items)
         {
             ReplaceSimpleTypeNames(items);
 
@@ -131,11 +122,10 @@ namespace ToSic.Eav.WebApi
         /// <param name="contentType"></param>
         /// <param name="id">Entity ID</param>
         /// <param name="force">try to force-delete</param>
+        /// <exception cref="ArgumentNullException">Entity does not exist</exception>
         /// <exception cref="InvalidOperationException">Entity cannot be deleted for example when it is referenced by another object</exception>
-        public void Delete(string contentType, int id, bool force = false)
-        {
-            new AppManager(AppRead, AppRead.Log).Entities.Delete(id, contentType, force);
-        }
+        public void Delete(string contentType, int id, bool force = false) 
+            => new AppManager(AppRead, AppRead.Log).Entities.Delete(id, contentType, force);
 
         /// <summary>
         /// Delete the entity specified by GUID.
@@ -145,24 +135,17 @@ namespace ToSic.Eav.WebApi
         /// <param name="force"></param>
         /// <exception cref="ArgumentNullException">Entity does not exist</exception>
         /// <exception cref="InvalidOperationException">Entity cannot be deleted for example when it is referenced by another object</exception>
-        public void Delete(string contentType, Guid entityGuid, bool force = false)
-        {
-            var entity = AppRead.Entities.Get(entityGuid);
-            Delete(contentType, entity.EntityId, force);
-        }
+        public void Delete(string contentType, Guid entityGuid, bool force = false) 
+            => Delete(contentType, AppRead.Entities.Get(entityGuid).EntityId, force);
 
         public IEnumerable<Dictionary<string, object>> GetEntitiesForAdmin(string contentType)
         {
             Serializer.ConfigureForAdminUse();
-
             var list = Serializer.Convert(AppRead.Entities.Get(contentType));
 
-            var newList = list
-                .Select(li
-                    => li.ToDictionary(x1 => x1.Key, x2 => TruncateLongStrings(x2.Value, 50)))
+            return list
+                .Select(li => li.ToDictionary(x1 => x1.Key, x2 => Truncate(x2.Value, 50)))
                 .ToList();
-
-            return newList;
         }
 
 
@@ -187,7 +170,7 @@ namespace ToSic.Eav.WebApi
             }
         }
 
-        internal object TruncateLongStrings(object value, int length)
+        internal object Truncate(object value, int length)
         {
             if (!(value is string asTxt))
                 return value;

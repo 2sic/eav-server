@@ -26,7 +26,7 @@ namespace ToSic.Eav.Apps.Parts
         public int CreateAttributeAndInitializeAndSave(int attributeSetId, ContentTypeAttribute attDef, string inputType)
         {
             Log.Add($"create attrib+init+save type:{attributeSetId}, input:{inputType}");
-            var newAttribute = AppManager.DataController.AttributesDefinition.AddAttributeAndSave(attributeSetId, attDef);
+            var newAttribute = AppManager.DataController.Attributes.AddAttributeAndSave(attributeSetId, attDef);
 
             // set the nice name and input type, important for newly created attributes
             InitializeNameAndInputType(attDef.Name, inputType, newAttribute);

@@ -21,7 +21,7 @@ namespace ToSic.Eav.Persistence.Efc
             => LoadContentTypesIntoLocalCache(appId, source);
 
 
-        internal IList<IContentType> LoadExtensionsTypesAndMerge(AppState app, IList<IContentType> dbTypes)
+        private IList<IContentType> LoadExtensionsTypesAndMerge(AppState app, IList<IContentType> dbTypes)
         {
             var wrapLog = Log.Call<IList<IContentType>>(useTimer: true);
             try
@@ -49,7 +49,7 @@ namespace ToSic.Eav.Persistence.Efc
             catch (System.Exception e) { return wrapLog("error:" + e.Message, dbTypes); }
         }
 
-        internal IList<IContentType> InitFileSystemContentTypes(AppState app)
+        private IList<IContentType> InitFileSystemContentTypes(AppState app)
         {
             var wrapLog = Log.Call<IList<IContentType>>();
             var factory = Factory.Resolve<IRuntimeFactory>();

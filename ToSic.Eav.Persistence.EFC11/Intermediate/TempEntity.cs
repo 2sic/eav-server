@@ -16,6 +16,6 @@ namespace ToSic.Eav.Persistence.Efc.Intermediate
         public string Owner;
         public DateTime Modified;
         public string Json;
-        public string ContentType;
+        //public string ContentType;
     }
 }

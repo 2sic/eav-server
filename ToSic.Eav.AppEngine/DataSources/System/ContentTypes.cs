@@ -30,6 +30,7 @@ namespace ToSic.Eav.DataSources.System
                 "ToSic.Eav.DataSources.ContentTypes, ToSic.Eav.Apps",
             },
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-ContentTypes")]
+    // ReSharper disable once UnusedMember.Global
     public sealed class ContentTypes: DataSourceBase
 	{
         #region Configuration-properties (no config)
@@ -53,6 +54,7 @@ namespace ToSic.Eav.DataSources.System
         public int OfAppId
         {
             get => int.TryParse(Configuration[AppIdKey], out int aid) ? aid : AppId;
+            // ReSharper disable once UnusedMember.Global
             set => Configuration[AppIdKey] = value.ToString();
         }
 
@@ -62,7 +64,8 @@ namespace ToSic.Eav.DataSources.System
 	    public string OfScope
 	    {
 	        get => Configuration[ScopeKey];
-	        set => Configuration[ScopeKey] = value;
+            // ReSharper disable once UnusedMember.Global
+            set => Configuration[ScopeKey] = value;
 	    }
 
         #endregion

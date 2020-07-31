@@ -45,7 +45,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             var rootQuery = DbContext.SqlDb.ToSicEavDataTimeline
                 .Where(t =>
                     t.SourceTable == EntitiesTableName
-                    && t.Operation == Constants.DataTimelineEntityJson //
+                    && t.Operation == Constants.DataTimelineEntityJson
                     && t.SourceId == entityId
                 );
             if (historyId > 0)

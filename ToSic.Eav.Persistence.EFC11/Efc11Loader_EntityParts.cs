@@ -61,7 +61,8 @@ namespace ToSic.Eav.Persistence.Efc
                     Owner = e.Owner,
                     Modified = e.ChangeLogModifiedNavigation.Timestamp,
                     Json = e.Json,
-                    ContentType = e.ContentType
+                    // 2020-07-31 2dm - never used
+                    //ContentType = e.ContentType
                 })
                 .ToList();
             return wrapLog("ok", rawEntities);
@@ -82,7 +83,8 @@ namespace ToSic.Eav.Persistence.Efc
                 .ToDictionary(e => e.Key, e => e.GroupBy(v => v.AttributeId)
                     .Select(vg => new TempAttributeWithValues
                     {
-                        AttributeId = vg.Key,
+                        // 2020-07-31 2dm - never used
+                        // AttributeId = vg.Key,
                         Name = vg.First().Attribute.StaticName,
                         Values = vg
                             // The order of values is significant because the 2sxc system uses the first value as fallback
@@ -122,7 +124,8 @@ namespace ToSic.Eav.Persistence.Efc
                 .ToDictionary(g => g.Key, g => g.GroupBy(r => r.AttributeId)
                     .Select(rg => new TempRelationshipList
                     {
-                        AttributeId = rg.Key,
+                        // 2020-07-31 2dm - never used
+                        // AttributeId = rg.Key,
                         StaticName = rg.First().Attribute.StaticName,
                         Children = rg.OrderBy(c => c.SortOrder).Select(c => c.ChildEntityId)
                     }));

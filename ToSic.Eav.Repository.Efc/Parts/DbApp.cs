@@ -6,7 +6,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 {
     public class DbApp: BllCommandBase
     {
-        public DbApp(DbDataController cntx) : base(cntx, "Db.App") {}
+        public DbApp(DbDataController db) : base(db, "Db.App") {}
 
 
         /// <summary>

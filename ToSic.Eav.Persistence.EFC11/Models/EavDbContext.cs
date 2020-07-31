@@ -7,7 +7,8 @@ namespace ToSic.Eav.Persistence.Efc.Models
     {
         public virtual DbSet<ToSicEavApps> ToSicEavApps { get; set; }
         public virtual DbSet<ToSicEavAssignmentObjectTypes> ToSicEavAssignmentObjectTypes { get; set; }
-        public virtual DbSet<ToSicEavAttributeGroups> ToSicEavAttributeGroups { get; set; }
+        // 2020-07-31 2dm - never used
+        //public virtual DbSet<ToSicEavAttributeGroups> ToSicEavAttributeGroups { get; set; }
         public virtual DbSet<ToSicEavAttributeSets> ToSicEavAttributeSets { get; set; }
         public virtual DbSet<ToSicEavAttributeTypes> ToSicEavAttributeTypes { get; set; }
         public virtual DbSet<ToSicEavAttributes> ToSicEavAttributes { get; set; }
@@ -18,7 +19,8 @@ namespace ToSic.Eav.Persistence.Efc.Models
         public virtual DbSet<ToSicEavEntities> ToSicEavEntities { get; set; }
         public virtual DbSet<ToSicEavEntityRelationships> ToSicEavEntityRelationships { get; set; }
         public virtual DbSet<ToSicEavValues> ToSicEavValues { get; set; }
-        public virtual DbSet<ToSicEavValuesDimensions> ToSicEavValuesDimensions { get; set; }
+        // 2020-07-31 2dm - never used
+        //public virtual DbSet<ToSicEavValuesDimensions> ToSicEavValuesDimensions { get; set; }
         public virtual DbSet<ToSicEavZones> ToSicEavZones { get; set; }
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -27,7 +29,7 @@ namespace ToSic.Eav.Persistence.Efc.Models
         //    optionsBuilder.UseSqlServer(@"Data Source=NBK-DEV-04\SQLEXPRESS;Initial Catalog=""2flex 2Sexy Content"";Integrated Security=True;");
         //}
 
-        public bool DebugMode = false;
+        //public bool DebugMode = false;
 
         public EavDbContext(DbContextOptions<EavDbContext> options) : base(options)
         {

@@ -22,13 +22,14 @@ namespace ToSic.Eav.Apps.Parts
             wrapLog("ok");
         }
 
-        public void DoAndUpdate(IEntity entity, Func<UpdateList> callback, bool? draft = null)
-        {
-            var wrapLog = Log.Call();
-            var values = callback.Invoke();
-            AppManager.Entities.UpdateParts(entity, values, draft);
-            wrapLog("ok");
-        }
+        // 2020-07-31 2dm - never used
+        //public void DoAndUpdate(IEntity entity, Func<UpdateList> callback, bool? draft = null)
+        //{
+        //    var wrapLog = Log.Call();
+        //    var values = callback.Invoke();
+        //    AppManager.Entities.UpdateParts(entity, values, draft);
+        //    wrapLog("ok");
+        //}
 
 
         /// <summary>

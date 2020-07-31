@@ -23,10 +23,11 @@ namespace ToSic.Eav.WebApi.Formats
         /// </summary>
         public string ContentTypeName { get; set; }
 
-        /// <summary>
-        /// Additional Assignment (MetadataFor) information - important for new, assigned entities
-        /// </summary>
-        public Metadata Metadata { get; set; }
+        // #2134
+        ///// <summary>
+        ///// Additional Assignment (MetadataFor) information - important for new, assigned entities
+        ///// </summary>
+        //public Metadata Metadata { get; set; }
 
         /// <summary>
         /// Metadata key information
@@ -43,14 +44,16 @@ namespace ToSic.Eav.WebApi.Formats
         /// </summary>
         public GroupAssignment Group { get; set; }
 
-        /// <summary>
-        /// This is an old property for the old UI, not to be used in the new UI
-        /// </summary>
-        public string Title { get; set; }
+        // #2134
+        ///// <summary>
+        ///// This is an old property for the old UI, not to be used in the new UI
+        ///// </summary>
+        //public string Title { get; set; }
         #endregion
 
-        // this is not needed on the server, but must be passed through so it's still attached to this item if in use
-        public dynamic Prefill { get; set; }
+        // #2134
+        //// this is not needed on the server, but must be passed through so it's still attached to this item if in use
+        //public dynamic Prefill { get; set; }
 
 
         public int? DuplicateEntity { get; set; }
@@ -106,54 +109,56 @@ namespace ToSic.Eav.WebApi.Formats
         public ItemIdentifier Header { get; set; }     
     }
 
-    public class BundleWithHeader<T>: BundleWithHeader
+    public class BundleWithHeader<T>: BundleWithHeader // where T: JsonEntity, IEntity
     {
         public T Entity { get; set; }
+        // #2134
+        ///// <summary>
+        ///// Temporary solution to provide get/set EntityGuid across all expected types
+        ///// remove this when only then new save is being used
+        ///// </summary>
+        //[JsonIgnore]
+        //public Guid EntityGuid
+        //{
+        //    get
+        //    {
+        //        switch (Entity)
+        //        {
+        //            case IEntity ent:
+        //                return ent.EntityGuid;
+        //            // #2134
+        //            //case EntityWithLanguages entLang:
+        //            //    return entLang.Guid;
+        //            case JsonEntity entJson:
+        //                return entJson.Guid;
+        //            default:
+        //                throw new Exception($"BundleWithHeader<T> - found unsupported type of T: {Entity.GetType().Name}");
+        //        }
 
-        /// <summary>
-        /// Temporary solution to provide get/set EntityGuid across all expected types
-        /// remove this when only then new save is being used
-        /// </summary>
-        [JsonIgnore]
-        public Guid EntityGuid
-        {
-            get
-            {
-                switch (Entity)
-                {
-                    case IEntity ent:
-                        return ent.EntityGuid;
-                    case EntityWithLanguages entLang:
-                        return entLang.Guid;
-                    case JsonEntity entJson:
-                        return entJson.Guid;
-                    default:
-                        throw new Exception($"BundleWithHeader<T> - found unsupported type of T: {Entity.GetType().Name}");
-                }
+        //    }
+        //}
 
-            }
-        }
+        //[JsonIgnore]
+        //public int EntityId
+        //{
+        //    get
+        //    {
+        //        switch (Entity)
+        //        {
+        //            case IEntity ent:
+        //                return ent.EntityId;
+        //            // #2134
+        //            //case EntityWithLanguages entLang:
+        //            //    return entLang.Id;
+        //            case JsonEntity entJson:
+        //                return entJson.Id;
+        //            default:
+        //                throw new Exception(
+        //                    $"BundleWithHeader<T> - found unsupported type of T: {Entity.GetType().Name}");
+        //        }
 
-        [JsonIgnore]
-        public int EntityId
-        {
-            get
-            {
-                switch (Entity)
-                {
-                    case IEntity ent:
-                        return ent.EntityId;
-                    case EntityWithLanguages entLang:
-                        return entLang.Id;
-                    case JsonEntity entJson:
-                        return entJson.Id;
-                    default:
-                        throw new Exception(
-                            $"BundleWithHeader<T> - found unsupported type of T: {Entity.GetType().Name}");
-                }
-
-            }
-        }
+        //    }
+        //}
     }
 
     public class BundleIEntity: BundleWithHeader<IEntity> { }
