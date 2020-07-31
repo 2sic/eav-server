@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using ToSic.Eav.Data;
-using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.Persistence.Logging
 {

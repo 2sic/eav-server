@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Newtonsoft.Json;
-
-namespace ToSic.Eav.ImportExport.Json.V1
+﻿namespace ToSic.Eav.ImportExport.Json.V1
 {
 
     //public class JsonHeader { public int V = 1; }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Implementations.UserInformation

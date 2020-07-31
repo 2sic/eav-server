@@ -5,7 +5,6 @@ using System.Xml.Linq;
 using System.Xml.XPath;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
 {

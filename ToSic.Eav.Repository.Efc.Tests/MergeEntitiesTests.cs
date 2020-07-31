@@ -4,7 +4,6 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
-using ToSic.Eav.Enums;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence;
