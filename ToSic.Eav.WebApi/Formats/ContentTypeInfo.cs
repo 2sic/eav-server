@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.WebApi.Formats
 {
-    public class ContentTypeInfo: IHasExternalI18n
+    public class ContentTypeInfo
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -16,11 +15,6 @@ namespace ToSic.Eav.WebApi.Formats
         public int Items { get; set; }
         public int Fields { get; set; }
         public Dictionary<string, object> Metadata { get; set; }
-
-        // public string DebugInfoRepositoryAddress { get; set; }
-
-        // ReSharper disable once InconsistentNaming
-        public string I18nKey { get; set; }
     }
 
 }

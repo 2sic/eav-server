@@ -72,7 +72,6 @@ namespace ToSic.Eav.WebApi
 	            Items = count,
 	            Fields = t.Attributes.Count,
 	            Metadata = ser.Convert(metadata),
-                I18nKey = t.I18nKey
 	        };
 	        return jsonReady;
 	    }
@@ -165,7 +164,6 @@ namespace ToSic.Eav.WebApi
                             e => ser.Convert(e)
                         ),
                     InputTypeConfig = appInputTypes.FirstOrDefault(it => it.Type == inputType),
-                    I18nKey = type.I18nKey
                 };
             });
             

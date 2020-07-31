@@ -23,7 +23,7 @@ namespace ToSic.Eav.WebApi
         /// <summary>
         /// The serializer, so it can be configured from outside if necessary
         /// </summary>
-        public EntitiesToDictionary Serializer
+        private EntitiesToDictionary Serializer
         {
             get
             {
@@ -102,7 +102,7 @@ namespace ToSic.Eav.WebApi
             return list;
         }
 
-        public IEntity GetEditableEditionAndMaybeCloneIt(ItemIdentifier p)
+        private IEntity GetEditableEditionAndMaybeCloneIt(ItemIdentifier p)
         {
             var found = GetOrThrow(p.ContentTypeName, p.DuplicateEntity ?? p.EntityId);
             // if there is a draft, only allow editing that
@@ -153,7 +153,7 @@ namespace ToSic.Eav.WebApi
         /// clean up content-type names in case it's using the nice-name instead of the static name...
         /// </summary>
         /// <param name="items"></param>
-        internal void ReplaceSimpleTypeNames(List<ItemIdentifier> items)
+        private void ReplaceSimpleTypeNames(List<ItemIdentifier> items)
         {
             foreach (var itm in items.Where(i => !string.IsNullOrEmpty(i.ContentTypeName)).ToArray())
             {
@@ -170,7 +170,7 @@ namespace ToSic.Eav.WebApi
             }
         }
 
-        internal object Truncate(object value, int length)
+        private object Truncate(object value, int length)
         {
             if (!(value is string asTxt))
                 return value;

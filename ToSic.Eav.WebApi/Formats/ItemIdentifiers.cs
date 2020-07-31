@@ -32,9 +32,6 @@ namespace ToSic.Eav.WebApi.Formats
         /// <summary>
         /// Metadata key information
         /// </summary>
-        /// <remarks>
-        /// added 2019-05-23 new for 2sxc 10
-        /// </remarks>
         public JsonMetadataFor For { get; set; }
 
         #region Old properties only for support of the old UI, will be deprecated soon
@@ -86,14 +83,6 @@ namespace ToSic.Eav.WebApi.Formats
         /// Experimental 11.01 - move from Group to here
         /// </summary>
         public int? Index { get; set; }
-
-        ///// <summary>
-        ///// This property is only needed by the new UI, because it does more checking
-        ///// and because the previous information if it should really, really add (entityId=0) fails
-        ///// with the new API since it's set upon saving
-        ///// </summary>
-        //[JsonIgnore]
-        //public bool? ReallyAddBecauseAlreadyVerified { get; set; }
 
         public bool ListHas() => Group != null || Parent != null;
         public Guid ListParent() => Group?.Guid ?? Parent.Value;

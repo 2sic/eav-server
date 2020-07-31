@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.WebApi
@@ -11,19 +10,18 @@ namespace ToSic.Eav.WebApi
 	/// Web API Controller for MetaData
 	/// Metadata-entities (content-items) are additional information about some other object
 	/// </summary>
-	public class MetadataController : HasLog
+	public static class MetadataController // : HasLog
     {
-        public MetadataController(ILog parentLog) : base("Api.MetaCn", parentLog)
-        {}
+        //public MetadataController(ILog parentLog) : base("Api.MetaCn", parentLog)
+        //{}
 
         /// <summary>
         /// Get Entities with specified AssignmentObjectTypeId and Key
         /// </summary>
-        public IEnumerable<Dictionary<string, object>> Get(int appId, int targetType, string keyType, string key, string contentType = null)
+        public static IEnumerable<Dictionary<string, object>> Get(int appId, int targetType, string keyType, string key, string contentType = null)
         {
             IEnumerable<IEntity> entityList = null;
 
-            //var appRun = new AppRuntime(appId, Log);
             var appState = State.Get(appId);
 
             switch (keyType)

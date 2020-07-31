@@ -1,4 +1,5 @@
-﻿namespace ToSic.Eav.WebApi.Formats
+﻿// ReSharper disable MemberCanBePrivate.Global
+namespace ToSic.Eav.WebApi.Formats
 {
     public class ContentImportResult
     {

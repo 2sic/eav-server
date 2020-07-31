@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Apps.Parts;
-using ToSic.Eav.Interfaces;
 
 namespace ToSic.Eav.WebApi.Formats
 {
-    public class ContentTypeFieldInfo: IHasExternalI18n
+    public class ContentTypeFieldInfo
     {
         public int Id { get; set; }
         public int SortOrder { get; set; }
@@ -15,7 +14,5 @@ namespace ToSic.Eav.WebApi.Formats
         public int AttributeId { get; set; }
         public Dictionary<string, Dictionary<string, object>> Metadata { get; set; }
         public InputTypeInfo InputTypeConfig { get; set; }
-
-        public string I18nKey { get; set; }
     }
 }

@@ -17,7 +17,7 @@ namespace ToSic.Eav.WebApi
         }
 
         /// <summary>
-        /// Returns a list of entities, optionally filtered by AttributeSetId.
+        /// Returns a list of entities, optionally filtered by contentType.
         /// </summary>
         public IEnumerable<dynamic> GetAvailableEntities(int appId, string[] items, string contentTypeName, bool withDrafts, int? dimensionId)
         {

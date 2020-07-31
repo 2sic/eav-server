@@ -105,7 +105,6 @@
     <Compile Include="Formats\ContentTypeFieldInfo.cs" />
     <Compile Include="Formats\ContentTypeInfo.cs" />
     <Compile Include="EntityPickerController.cs" />
-    <Compile Include="Formats\CompleteEntity.cs" />
     <Compile Include="Formats\ItemIdentifiers.cs" />
     <Compile Include="Formats\QueryDefinitionInfo.cs" />
     <Compile Include="Helpers\Download.cs" />
@@ -121,7 +120,6 @@
     <Compile Include="PublicApi\IMetadataController.cs" />
     <Compile Include="PublicApi\IPipelineDesignerController.cs" />
     <Compile Include="PublicApi\ISystemController.cs" />
-    <Compile Include="SaveHelpers\OldSave.cs" />
     <Compile Include="SaveHelpers\SaveEntities.cs" />
     <Compile Include="QueryController.cs">
       <SubType>Code</SubType>
