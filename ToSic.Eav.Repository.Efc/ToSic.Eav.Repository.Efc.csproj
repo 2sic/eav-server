@@ -132,11 +132,11 @@
     <Compile Include="BllCommandBase.cs" />
     <Compile Include="DbDataController.cs" />
     <Compile Include="Parts\DbApp.cs" />
-    <Compile Include="Parts\DbAttributeDefinition.cs" />
+    <Compile Include="Parts\DbAttribute.cs" />
     <Compile Include="Parts\DbAttributeSet.cs" />
     <Compile Include="Parts\DbContentType_AttribSorting.cs" />
     <Compile Include="Parts\DbContentType_Ghosts.cs" />
-    <Compile Include="Parts\DbAttributeDefinition_Query.cs" />
+    <Compile Include="Parts\DbAttribute_Query.cs" />
     <Compile Include="Parts\DbContentType_Read.cs" />
     <Compile Include="Parts\DbContentType_Modify.cs" />
     <Compile Include="Parts\DbDimensions.cs" />
