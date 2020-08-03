@@ -23,9 +23,9 @@ namespace ToSic.Eav.Persistence.Efc.Models
         public int? KeyNumber { get; set; }
         public Guid? KeyGuid { get; set; }
         public string KeyString { get; set; }
-        // 2017-06-20 2dm - never used - but can't remove yet
-        // 2020-07-31 2dm removed now
-        //public int SortOrder { get; set; } = 0;
+        // 2020-07-31 2dm can't remove even though, never used - otherwise it tries to use a null-value
+        // so we can't remove until we change the DB / SQL, which we don't want to do soon
+        public int SortOrder { get; set; } = 0;
 
         public int ChangeLogCreated { get; set; }
         public int? ChangeLogDeleted { get; set; }
