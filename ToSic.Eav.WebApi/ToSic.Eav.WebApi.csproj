@@ -169,9 +169,7 @@
     <None Include="packages.config" />
     <None Include="TestFormats\DemoFormats.json" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ImportExport\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy "$(TargetDir)ToSic.Eav.*" "$(ProjectDir)..\..\2sxc-dnn742\Website\bin"

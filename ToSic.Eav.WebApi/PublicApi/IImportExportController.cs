@@ -1,6 +1,5 @@
 ﻿using System.Net.Http;
 using ToSic.Eav.WebApi.Dto;
-using ToSic.Eav.WebApi.ImportExport;
 
 namespace ToSic.Eav.WebApi.PublicApi
 {
@@ -11,7 +10,7 @@ namespace ToSic.Eav.WebApi.PublicApi
         bool ExportForVersionControl(int appId, int zoneId, bool includeContentGroups, bool resetAppGuid);
         AppExportInfoDto GetAppInfo(int appId, int zoneId);
         ExportPartsOverviewDto GetContentInfo(int appId, int zoneId, string scope);
-        ImportResult ImportApp();
-        ImportResult ImportContent();
+        ImportResultDto ImportApp();
+        ImportResultDto ImportContent();
     }
 }

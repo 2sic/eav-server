@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Persistence.Logging;
 
-namespace ToSic.Eav.WebApi.ImportExport
+namespace ToSic.Eav.WebApi.Dto
 {
-    public class ImportResult
+    public class ImportResultDto
     {
         public bool Succeeded;
 

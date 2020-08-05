@@ -5,16 +5,12 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.WebApi
 {
-	/// <inheritdoc />
 	/// <summary>
 	/// Web API Controller for MetaData
 	/// Metadata-entities (content-items) are additional information about some other object
 	/// </summary>
-	public static class MetadataController // : HasLog
+	public static class MetadataController
     {
-        //public MetadataController(ILog parentLog) : base("Api.MetaCn", parentLog)
-        //{}
-
         /// <summary>
         /// Get Entities with specified AssignmentObjectTypeId and Key
         /// </summary>
