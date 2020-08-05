@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Conversion;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
@@ -202,16 +201,7 @@ namespace ToSic.Eav.WebApi
             return GetDb(appId).Attributes.DataTypeNames();
 	    }
 
-	    public List<InputTypeInfo> InputTypes(int appId)
-	    {
-	        Log.Add($"get input types a#{appId}");
-	        var appInputTypes = new AppRuntime(appId, true, Log).ContentTypes.GetInputTypes();
 
-	        return appInputTypes;
-	    }
-
-           
-            
         public int AddField(int appId, int contentTypeId, string staticName, string type, string inputType, int sortOrder)
 	    {
 	        Log.Add($"add field a#{appId}, type#{contentTypeId}, name:{staticName}, type:{type}, input:{inputType}, order:{sortOrder}");

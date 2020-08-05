@@ -6,16 +6,14 @@
     /// </summary>
     public class InputTypeInfo
     {
-        public InputTypeInfo(string type, string label, string description, string assets, bool disableI18N, string ngAssets, string ngMode, bool useAdam)
+        public InputTypeInfo(string type, string label, string description, string assets, bool disableI18N, string ngAssets, bool useAdam)
         {
             Type = type;
             Label = label;
             Description = description;
             Assets = assets;
             DisableI18n = disableI18N;
-
             AngularAssets = ngAssets;
-            AngularMode = ngMode;
             UseAdam = useAdam;
         }
         public string Type { get; }
@@ -29,7 +27,7 @@
         public bool DisableI18n { get; }
 
         public string AngularAssets { get; }
-        public string AngularMode { get; }
+
 
         public bool UseAdam { get; }
 

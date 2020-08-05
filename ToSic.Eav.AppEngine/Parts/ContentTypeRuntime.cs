@@ -55,7 +55,7 @@ namespace ToSic.Eav.Apps.Parts
             var appTypes = GetAppRegisteredInputTypes();
             Log.Add($"in app {appTypes.Count}");
 
-            // experimental v11
+            // Load input types which are stored as app-extension files
             var extensionTypes = GetAppExtensionInputTypes();
 
             var inputTypes = extensionTypes;
@@ -103,7 +103,6 @@ namespace ToSic.Eav.Apps.Parts
                     e.GetBestValue<string>(Constants.InputTypeAssets),
                     e.GetBestValue<bool>(Constants.InputTypeDisableI18N),
                     e.GetBestValue<string>(Constants.InputTypeAngularAssets),
-                    e.GetBestValue<string>(Constants.InputTypeAngularMode),
                     e.GetBestValue<bool>(Constants.InputTypeUseAdam)
                 ))
                 .ToList();
@@ -151,7 +150,6 @@ namespace ToSic.Eav.Apps.Parts
                     it.Metadata.GetBestValue<string>(Constants.InputTypeAssets, Constants.TypeForInputTypeDefinition),
                     it.Metadata.GetBestValue<bool>(Constants.InputTypeDisableI18N, Constants.TypeForInputTypeDefinition),
                     it.Metadata.GetBestValue<string>(Constants.InputTypeAngularAssets, Constants.TypeForInputTypeDefinition),
-                    it.Metadata.GetBestValue<string>(Constants.InputTypeAngularMode, Constants.TypeForInputTypeDefinition),
                     it.Metadata.GetBestValue<bool>(Constants.InputTypeUseAdam, Constants.TypeForInputTypeDefinition)
                 ))
                 .ToList();

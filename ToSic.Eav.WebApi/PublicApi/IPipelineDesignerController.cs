@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Web.Http;
 using ToSic.Eav.Apps.Parts;
+using ToSic.Eav.WebApi.Dto;
 using ToSic.Eav.WebApi.Formats;
 
 namespace ToSic.Eav.WebApi.PublicApi
@@ -12,7 +13,7 @@ namespace ToSic.Eav.WebApi.PublicApi
         IEnumerable<QueryRuntime.DataSourceInfo> GetInstalledDataSources();
         QueryDefinitionInfo GetPipeline(int appId, int? id = null);
         bool ImportQuery(EntityImport args);
-        dynamic QueryPipeline(int appId, int id);
+        QueryRunDto QueryPipeline(int appId, int id);
         QueryDefinitionInfo SavePipeline([FromBody] QueryDefinitionInfo data, int appId, int id);
     }
 }

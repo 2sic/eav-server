@@ -9,7 +9,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
-
+using ToSic.Eav.WebApi.Dto;
 using ToSic.Eav.WebApi.Formats;
 
 namespace ToSic.Eav.WebApi
@@ -88,7 +88,7 @@ namespace ToSic.Eav.WebApi
 		/// <summary>
 		/// Query the Result of a Pipeline using Test-Parameters
 		/// </summary>
-		public dynamic QueryPipeline(int appId, int id, ILookUpEngine config)
+		public QueryRunDto QueryPipeline(int appId, int id, ILookUpEngine config)
 		{
             var wrapLog = Log.Call($"a#{appId}, id:{id}");
             // Get the query, run it and track how much time this took
@@ -109,12 +109,12 @@ namespace ToSic.Eav.WebApi
 
             wrapLog(null);
             // ...and return the results
-			return new
+			return new QueryRunDto
 			{
 				Query = query, 
 				Streams = debugInfo.Streams,
 				Sources = debugInfo.Sources,
-                QueryTimer = new { 
+                QueryTimer = new QueryTimerDto { 
                     Milliseconds = timer.ElapsedMilliseconds,
                     Ticks = timer.ElapsedTicks
                 }
@@ -125,8 +125,7 @@ namespace ToSic.Eav.WebApi
         /// <summary>
         /// Clone a Pipeline with all DataSources and their configurations
         /// </summary>
-        public void ClonePipeline(int appId, int id)
-            => new AppManager(appId, Log).Queries.SaveCopy(id);
+        public void ClonePipeline(int appId, int id) => new AppManager(appId, Log).Queries.SaveCopy(id);
 		
 
 		/// <summary>
