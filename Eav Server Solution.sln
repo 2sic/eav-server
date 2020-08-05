@@ -23,8 +23,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2sxc Razor", "..\2sxc-dnn74
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2sxc", "..\2sxc-dnn742\Website\DesktopModules\ToSIC_SexyContent\2sxc.csproj", "{D4250011-B9BE-4326-9736-4F0122C79802}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.Repository.Efc", "ToSic.Eav.Repository.Efc\ToSic.Eav.Repository.Efc.csproj", "{2BBA13D2-F6D2-443B-B7C8-8F4C31432C03}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.Repository.Efc.Tests", "ToSic.Eav.Repository.Efc.Tests\ToSic.Eav.Repository.Efc.Tests.csproj", "{F989FE10-C84A-4B18-AAA7-4665EC85B059}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.ImportExport.Tests", "ToSic.Eav.ImportExport.Tests\ToSic.Eav.ImportExport.Tests.csproj", "{00C8672B-E79E-42D4-A512-6C0ABCCAF046}"
@@ -51,7 +49,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Docs-Generator", "..\2sxc-d
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToSic.Eav.DataSources", "ToSic.Eav.DataSources\ToSic.Eav.DataSources.csproj", "{93149D23-E6CC-43AF-97D0-32D89D29D714}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToSic.Eav.Repository.Efc2", "ToSic.Eav.Repository.Efc2\ToSic.Eav.Repository.Efc2.csproj", "{CB322A0B-0C28-4165-87A8-7BBE78911451}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToSic.Eav.Repository.Efc", "ToSic.Eav.Repository.Efc\ToSic.Eav.Repository.Efc.csproj", "{CB322A0B-0C28-4165-87A8-7BBE78911451}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToSic.Eav.Persistence.Efc", "ToSic.Eav.Persistence.Efc\ToSic.Eav.Persistence.Efc.csproj", "{B45F98A5-BBA9-4418-A5A1-7CA747E1698B}"
 EndProject
