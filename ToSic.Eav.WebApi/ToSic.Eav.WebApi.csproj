@@ -93,9 +93,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ContentExportController.cs" />
-    <Compile Include="ContentImportController.cs" />
-    <Compile Include="ContentTypeController.cs" />
+    <Compile Include="ContentExportApi.cs" />
+    <Compile Include="ContentImportApi.cs" />
+    <Compile Include="ContentTypeApi.cs" />
     <Compile Include="Conversion\IStreamTo_T.cs" />
     <Compile Include="Dto\AppExportInfoDto.cs" />
     <Compile Include="Dto\ExportPartsOverviewDto.cs" />
@@ -109,7 +109,7 @@
     <Compile Include="Dto\ContentImportResultDto.cs" />
     <Compile Include="Dto\ContentTypeFieldDto.cs" />
     <Compile Include="Dto\ContentTypeDto.cs" />
-    <Compile Include="EntityPickerController.cs" />
+    <Compile Include="EntityPickerApi.cs" />
     <Compile Include="Dto\ItemIdentifiers.cs" />
     <Compile Include="Dto\QueryDefinitionDto.cs" />
     <Compile Include="Helpers\Download.cs" />
@@ -131,7 +131,7 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Conversion\EntitiesToDictionary.cs" />
-    <Compile Include="MetadataController.cs" />
+    <Compile Include="MetadataApi.cs" />
     <Compile Include="EntitiesController.cs" />
   </ItemGroup>
   <ItemGroup>
