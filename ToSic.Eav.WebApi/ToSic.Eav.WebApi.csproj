@@ -114,6 +114,7 @@
     <Compile Include="Dto\QueryDefinitionDto.cs" />
     <Compile Include="Helpers\Download.cs" />
     <Compile Include="Helpers\JsonResponseAttribute.cs" />
+    <Compile Include="Helpers\QueryHelpers.cs" />
     <Compile Include="Helpers\Serializers.cs" />
     <Compile Include="Dto\ImportResultDto.cs" />
     <Compile Include="PublicApi\IContentExportController.cs" />

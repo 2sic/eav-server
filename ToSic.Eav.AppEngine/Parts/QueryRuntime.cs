@@ -45,11 +45,9 @@ namespace ToSic.Eav.Apps.Parts
                 }
                 #endregion
 
-                //var dsInfo = dataSource.VisualQuery;//.GetCustomAttributes(typeof(VisualQueryAttribute), true).FirstOrDefault() as VisualQueryAttribute;
                 result.Add(new DataSourceInfo(dataSource.Type.Name, dataSource.VisualQuery)
                 {
-                    PartAssemblyAndType = dataSource.GlobalName,// dataSource.Type.FullName + ", " + dataSource.Type.Assembly.GetName().Name,
-                    Out = outStreamNames
+                    PartAssemblyAndType = dataSource.GlobalName, Out = outStreamNames
                 });
             }
 
@@ -62,12 +60,11 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="queryId"></param>
         /// <returns></returns>
         public QueryDefinition Get(int queryId) =>
-            new QueryDefinition(Eav.DataSources.Queries.QueryManager.GetQueryEntity(queryId, AppRT./*Cache*/AppState), AppRT.AppId, Log);
+            new QueryDefinition(Eav.DataSources.Queries.QueryManager.GetQueryEntity(queryId, AppRT.AppState), AppRT.AppId, Log);
 
         public class DataSourceInfo
         {
             public string PartAssemblyAndType;
-            //public string ClassName;
             public ICollection<string> In;
             public ICollection<string> Out;
             public string ContentType;

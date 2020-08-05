@@ -4,12 +4,12 @@ using System.Diagnostics;
 using System.Linq;
 using Newtonsoft.Json;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.WebApi.Dto;
+using ToSic.Eav.WebApi.Helpers;
 
 namespace ToSic.Eav.WebApi
 {
@@ -17,19 +17,14 @@ namespace ToSic.Eav.WebApi
 	/// <summary>
 	/// Web API Controller for the Pipeline Designer UI
 	/// </summary>
-	public class QueryController : HasLog
+	public class QueryApi : HasLog
     {
-        #region constructors
-        public QueryController(ILog parentLog): base("Api.EaPipe", parentLog)
-		{
-		}
-
-        #endregion
+        public QueryApi(ILog parentLog): base("Api.EavQry", parentLog) {}
 
         /// <summary>
         /// Get a Pipeline with DataSources
         /// </summary>
-		public QueryDefinitionDto GetPipeline(int appId, int? id = null)
+		public QueryDefinitionDto Definition(int appId, int? id = null)
         {
             Log.Add($"get pipe a#{appId}, id:{id}");
             var query = new QueryDefinitionDto();
@@ -52,20 +47,13 @@ namespace ToSic.Eav.WebApi
             return query;
         }
 
-
         /// <summary>
-        /// Get installed DataSources from .NET Runtime but only those with [PipelineDesigner Attribute]
-        /// </summary>
-		public static IEnumerable<QueryRuntime.DataSourceInfo> GetInstalledDataSources()
-		    => QueryRuntime.GetInstalledDataSources();
-
-		/// <summary>
 		/// Save Pipeline
 		/// </summary>
 		/// <param name="data">JSON object { pipeline: pipeline, dataSources: dataSources }</param>
 		/// <param name="appId">AppId this Pipeline belongs to</param>
 		/// <param name="id">PipelineEntityId</param>
-		public QueryDefinitionDto SavePipeline(QueryDefinitionDto data, int appId, int id)
+		public QueryDefinitionDto Save(QueryDefinitionDto data, int appId, int id)
 		{
 		    Log.Add($"save pipe: a#{appId}, id#{id}");
 
@@ -80,14 +68,14 @@ namespace ToSic.Eav.WebApi
 
             new AppManager(appId, Log).Queries.Update(id, data.DataSources, newDsGuids, data.Pipeline, wirings);
 
-		    return GetPipeline(appId, id);
+		    return Definition(appId, id);
 		}
 
 
 		/// <summary>
 		/// Query the Result of a Pipeline using Test-Parameters
 		/// </summary>
-		public QueryRunDto QueryPipeline(int appId, int id, ILookUpEngine config)
+		public QueryRunDto Run(int appId, int id, ILookUpEngine config)
 		{
             var wrapLog = Log.Call($"a#{appId}, id:{id}");
             // Get the query, run it and track how much time this took
@@ -124,13 +112,13 @@ namespace ToSic.Eav.WebApi
         /// <summary>
         /// Clone a Pipeline with all DataSources and their configurations
         /// </summary>
-        public void ClonePipeline(int appId, int id) => new AppManager(appId, Log).Queries.SaveCopy(id);
+        public void Clone(int appId, int id) => new AppManager(appId, Log).Queries.SaveCopy(id);
 		
 
 		/// <summary>
 		/// Delete a Pipeline with the Pipeline Entity, Pipeline Parts and their Configurations. Stops if the if the Pipeline Entity has relationships to other Entities.
 		/// </summary>
-		public object DeletePipeline(int appId, int id)
+		public object Delete(int appId, int id)
 		{
 		    new AppManager(appId, Log).Queries.Delete(id);
 			return new { Result = "Success" };
@@ -138,7 +126,7 @@ namespace ToSic.Eav.WebApi
 
 
 
-        public bool ImportQuery(EntityImportDto args)
+        public bool Import(EntityImportDto args)
         {
             try
             {
