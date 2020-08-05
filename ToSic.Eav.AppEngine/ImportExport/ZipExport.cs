@@ -64,7 +64,8 @@ namespace ToSic.Eav.Apps.ImportExport
             var messages = new List<Message>();
             var randomShortFolderName = Guid.NewGuid().ToString().Substring(0, 4);
 
-            var temporaryDirectoryPath = HttpContext.Current.Server.MapPath(Path.Combine(Settings.TemporaryDirectory, randomShortFolderName));
+            var temporaryDirectoryPath = GetPathMultiTarget(Path.Combine(Settings.TemporaryDirectory, randomShortFolderName));
+            //var temporaryDirectoryPath = HttpContext.Current.Server.MapPath(Path.Combine(Settings.TemporaryDirectory, randomShortFolderName));
 
             if (!Directory.Exists(temporaryDirectoryPath))
                 Directory.CreateDirectory(temporaryDirectoryPath);
@@ -167,13 +168,21 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="targetPath"></param>
         private void AddInstructionsToPackageFolder(string targetPath)
         {
-            var srcPath = HttpContext.Current.Server.MapPath(Path.Combine(Settings.ModuleDirectory, "SexyContent\\ImportExport\\Instructions"));
+            var srcPath = GetPathMultiTarget(Path.Combine(Settings.ModuleDirectory, "SexyContent\\ImportExport\\Instructions"));
+            //var srcPath = HttpContext.Current.Server.MapPath(Path.Combine(Settings.ModuleDirectory, "SexyContent\\ImportExport\\Instructions"));
 
             foreach (var file in Directory.GetFiles(srcPath))
                 File.Copy(file, Path.Combine(targetPath, Path.GetFileName(file)));
         }
 
-
+        internal static string GetPathMultiTarget(string path)
+        {
+#if NET451
+            return HttpContext.Current.Server.MapPath(path);
+#else
+            return "Not Yet Implemented in .net standard #TodoNetStandard";
+#endif
+        }
 
     }
 }

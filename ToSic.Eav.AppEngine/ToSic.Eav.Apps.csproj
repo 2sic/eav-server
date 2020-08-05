@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net451</TargetFramework>
+    <TargetFrameworks>net451;netstandard2.0</TargetFrameworks>
     <AssemblyVersion>11.04.01.0</AssemblyVersion>
     <FileVersion>11.04.01.0</FileVersion>
     <Copyright>Copyright AGPL 2sic 2020</Copyright>
@@ -28,13 +28,16 @@
     <ProjectReference Include="..\ToSic.Eav.Repository.Efc\ToSic.Eav.Repository.Efc.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="System.Data.Entity" />
-    <Reference Include="System.Web" />
+  <ItemGroup Condition="'$(TargetFramework)' == 'net451'">
+    <PackageReference Include="SharpZipLib" Version="0.86.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="SharpZipLib" Version="0.86.0" />
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="SharpZipLib" Version="1.2.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net451'">
+    <Reference Include="System.Web" />
   </ItemGroup>
 
 </Project>
