@@ -10,9 +10,9 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.WebApi
 {
-    public class EntityPickerController : HasLog
+    public class EntityPickerApi : HasLog
     {
-        public EntityPickerController(ILog parentLog) : base("Api.EntPck", parentLog)
+        public EntityPickerApi(ILog parentLog) : base("Api.EntPck", parentLog)
         {
         }
 

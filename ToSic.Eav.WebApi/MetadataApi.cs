@@ -9,7 +9,7 @@ namespace ToSic.Eav.WebApi
 	/// Web API Controller for MetaData
 	/// Metadata-entities (content-items) are additional information about some other object
 	/// </summary>
-	public static class MetadataController
+	public static class MetadataApi
     {
         /// <summary>
         /// Get Entities with specified AssignmentObjectTypeId and Key

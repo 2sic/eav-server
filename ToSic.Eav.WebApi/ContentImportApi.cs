@@ -12,9 +12,9 @@ using ToSic.Eav.WebApi.Dto;
 namespace ToSic.Eav.WebApi
 {
     /// <inheritdoc />
-    public class ContentImportController : HasLog
+    public class ContentImportApi : HasLog
     {
-        public ContentImportController(ILog parentLog = null) : base("Api.EaCtIm", parentLog)
+        public ContentImportApi(ILog parentLog = null) : base("Api.EaCtIm", parentLog)
         {
         }
 

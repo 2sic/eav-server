@@ -13,9 +13,9 @@ using ToSic.Eav.WebApi.Helpers;
 
 namespace ToSic.Eav.WebApi
 {
-    public class ContentExportController : HasLog
+    public class ContentExportApi : HasLog
     {
-        public ContentExportController(ILog parentLog = null) : base("Api.EaCtEx", parentLog)
+        public ContentExportApi(ILog parentLog = null) : base("Api.EaCtEx", parentLog)
         {
         }
 

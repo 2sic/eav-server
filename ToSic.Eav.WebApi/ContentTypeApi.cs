@@ -15,9 +15,9 @@ namespace ToSic.Eav.WebApi
 	/// <summary>
 	/// Web API Controller for ContentTypes
 	/// </summary>
-	public class ContentTypeController : HasLog
+	public class ContentTypeApi : HasLog
     {
-        public ContentTypeController(ILog parentLog = null) : base("Api.EavCTC", parentLog, "get EavCTC")
+        public ContentTypeApi(ILog parentLog = null) : base("Api.EavCTC", parentLog, "get EavCTC")
         {
         }
 
