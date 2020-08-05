@@ -116,7 +116,7 @@
       <Project>{5a75cd35-99f4-4cf0-944a-dc0f5d68b430}</Project>
       <Name>ToSic.Eav.ImportExport</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ToSic.Eav.Persistence.EFC11.Tests\ToSic.Eav.Persistence.Efc.Tests.csproj">
+    <ProjectReference Include="..\ToSic.Eav.Persistence.Efc.Tests\ToSic.Eav.Persistence.Efc.Tests.csproj">
       <Project>{eb8491a7-4147-4a18-ac74-cd1be957ff48}</Project>
       <Name>ToSic.Eav.Persistence.Efc.Tests</Name>
     </ProjectReference>

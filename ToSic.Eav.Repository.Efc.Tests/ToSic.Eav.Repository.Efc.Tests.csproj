@@ -156,7 +156,7 @@
       <Project>{66318f76-3d43-406c-8de6-94b46c22f776}</Project>
       <Name>2sxc core %28ToSic.Sxc%29</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ToSic.Eav.AppEngine\ToSic.Eav.Apps.csproj">
+    <ProjectReference Include="..\ToSic.Eav.Apps\ToSic.Eav.Apps.csproj">
       <Project>{FA1B4495-6B85-400F-A5E3-0E292CCBFAE2}</Project>
       <Name>ToSic.Eav.Apps</Name>
     </ProjectReference>
@@ -172,7 +172,7 @@
       <Project>{5A75CD35-99F4-4CF0-944A-DC0F5D68B430}</Project>
       <Name>ToSic.Eav.ImportExport</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ToSic.Eav.Persistence.EFC11.Tests\ToSic.Eav.Persistence.Efc.Tests.csproj">
+    <ProjectReference Include="..\ToSic.Eav.Persistence.Efc.Tests\ToSic.Eav.Persistence.Efc.Tests.csproj">
       <Project>{eb8491a7-4147-4a18-ac74-cd1be957ff48}</Project>
       <Name>ToSic.Eav.Persistence.Efc.Tests</Name>
     </ProjectReference>
