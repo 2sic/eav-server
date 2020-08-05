@@ -2,10 +2,8 @@
 
 namespace ToSic.Eav.WebApi.Dto
 {
-    public class ContentTypeDto
+    public class ContentTypeDto: IdNameDto
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
         public string Label { get; set; }
         public string StaticName { get; set; }
         public string Scope { get; set; }

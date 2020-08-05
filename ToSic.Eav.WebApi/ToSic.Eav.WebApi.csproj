@@ -99,6 +99,7 @@
     <Compile Include="Conversion\IStreamTo_T.cs" />
     <Compile Include="Dto\AppExportInfoDto.cs" />
     <Compile Include="Dto\ExportPartsOverviewDto.cs" />
+    <Compile Include="Dto\IdNameDto.cs" />
     <Compile Include="Dto\ImportStatisticsDto.cs" />
     <Compile Include="Dto\QueryRunDto.cs" />
     <Compile Include="EntityApi.cs" />
@@ -114,7 +115,7 @@
     <Compile Include="Helpers\Download.cs" />
     <Compile Include="Helpers\JsonResponseAttribute.cs" />
     <Compile Include="Helpers\Serializers.cs" />
-    <Compile Include="ImportExport\ImportResult.cs" />
+    <Compile Include="Dto\ImportResultDto.cs" />
     <Compile Include="PublicApi\IContentExportController.cs" />
     <Compile Include="PublicApi\IContentImportController.cs" />
     <Compile Include="PublicApi\IContentTypeController.cs" />
@@ -168,7 +169,9 @@
     <None Include="packages.config" />
     <None Include="TestFormats\DemoFormats.json" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="ImportExport\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy "$(TargetDir)ToSic.Eav.*" "$(ProjectDir)..\..\2sxc-dnn742\Website\bin"
