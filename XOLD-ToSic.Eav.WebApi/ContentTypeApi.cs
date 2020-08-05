@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-#if NET451
 using System.Web.Http;
-#else
-using Microsoft.AspNetCore.Mvc;
-#endif
 using ToSic.Eav.Apps;
 using ToSic.Eav.Conversion;
 using ToSic.Eav.Data;
@@ -25,7 +21,7 @@ namespace ToSic.Eav.WebApi
         {
         }
 
-#region Content-Type Get, Delete, Save
+        #region Content-Type Get, Delete, Save
 	    public IEnumerable<ContentTypeDto> Get(int appId, string scope = null, bool withStatistics = false)
         {
             var wrapLog = Log.Call($"a#{appId}, scope:{scope}, stats:{withStatistics}");
@@ -116,7 +112,7 @@ namespace ToSic.Eav.WebApi
                 null, false);
 	        return true;
 	    }
-#endregion
+        #endregion
 
 	    public bool CreateGhost(int appId, string sourceStaticName)
 	    {
@@ -125,7 +121,7 @@ namespace ToSic.Eav.WebApi
             return true;
 	    }
 
-#region Fields - Get, Reorder, Data-Types (for dropdown), etc.
+        #region Fields - Get, Reorder, Data-Types (for dropdown), etc.
 
         /// <summary>
         /// Returns the configuration for a content type
@@ -241,7 +237,7 @@ namespace ToSic.Eav.WebApi
             return true;
         }
 
-#endregion
+        #endregion
 
         private DbDataController GetDb(int appId) => DbDataController.Instance(null, appId, Log);
     }

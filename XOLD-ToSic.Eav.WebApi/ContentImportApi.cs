@@ -1,11 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-#if NET451
 using System.Web.Http;
-#else
-using Microsoft.AspNetCore.Mvc;
-#endif
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Data.Builder;

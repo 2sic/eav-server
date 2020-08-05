@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Http;
-#if NET451
 using System.Web.Http;
-#else
-using Microsoft.AspNetCore.Mvc;
-#endif
 using ToSic.Eav.Apps;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Json;
@@ -23,6 +19,7 @@ namespace ToSic.Eav.WebApi
         {
         }
 
+        [HttpGet]
         public HttpResponseMessage ExportContent(int appId, string language, string defaultLanguage, string contentType,
             ExportSelection exportSelection, ExportResourceReferenceMode exportResourcesReferences,
             ExportLanguageResolution exportLanguageReferences, string selectedIds = null) 

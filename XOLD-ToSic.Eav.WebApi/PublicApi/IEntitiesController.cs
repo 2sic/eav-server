@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-#if NET451
 using System.Web.Http;
-#else
-using Microsoft.AspNetCore.Mvc;
-#endif
 using ToSic.Eav.Persistence.Versions;
 using ToSic.Eav.WebApi.Formats;
 

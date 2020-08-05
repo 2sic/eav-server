@@ -18,11 +18,7 @@ namespace ToSic.Eav.Conversion
         public EntitiesToDictionary()
         {
             // Ensure that date-times are sent in the Zulu-time format (UTC) and not with offsets which causes many problems during round-trips
-#if NET451
             GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-#else
-            // "Not Yet Implemented in .net standard #TodoNetStandard";
-#endif
         }
 
 

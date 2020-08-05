@@ -1,0 +1,31 @@
+﻿{
+    "JobFunction": {
+        "EN": { "v": "CEO" },
+        "FR":  { "l": "EN", "r": "r" },
+        "IT":  { "l": "EN", "r": "r" },
+        "DE":  { "v": "Geschäftsleiter" },
+        "CH":  {
+            "l": "DE", "r":"rw" }
+        },
+    
+
+    "JobFunction": {
+        "V": [ "CEO", "Geschäftsleiter" ],
+        "L": {
+            "EN": { "0":  "rw" },
+            "FR": { "0":  "r" },
+            "IT": { "0":  "rw" },
+            "DE": { "1":  "rw" },
+            "CH": { "1":  "rw" }
+        }
+    },
+
+    "JobFunction": [
+        { "CEO": { "EN": "rw", "FR": "r", "IT": "rw" } },
+        { "Geschäftsleiter": { "DE": "rw", "CH": "r" } }
+    ],
+    "JobFunction": [
+        { "CEO": null  }
+    ]
+
+}
