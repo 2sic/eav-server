@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav", "ToSic.Eav\ToSi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToSic.Eav.Core", "ToSic.Eav.Core\ToSic.Eav.Core.csproj", "{82F94588-269B-4CDD-98D1-D5CB14C39090}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.DataSources", "ToSic.Eav.DataSources\ToSic.Eav.DataSources.csproj", "{DAAE8E21-CA5F-400B-9F5A-5E4E1196B21B}"
+# Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.DataSources", "ToSic.Eav.DataSources\ToSic.Eav.DataSources.csproj", "{DAAE8E21-CA5F-400B-9F5A-5E4E1196B21B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.ImportExport", "ToSic.Eav.ImportExport\ToSic.Eav.ImportExport.csproj", "{5A75CD35-99F4-4CF0-944A-DC0F5D68B430}"
 EndProject
@@ -55,7 +55,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2sxc.WebApi.Tests", "..\2sx
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Docs-Generator", "..\2sxc-dnn742\Website\DesktopModules\ToSIC_SexyContent\Docs-Generator\Docs-Generator.csproj", "{991006CF-1F50-4A9B-A5B2-A17A1624BF38}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.DataSources2", "ToSic.Eav.DataSources2\ToSic.Eav.DataSources2.csproj", "{93149D23-E6CC-43AF-97D0-32D89D29D714}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.DataSources", "ToSic.Eav.DataSources\ToSic.Eav.DataSources.csproj", "{93149D23-E6CC-43AF-97D0-32D89D29D714}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

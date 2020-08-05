@@ -1,184 +1,43 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{DAAE8E21-CA5F-400B-9F5A-5E4E1196B21B}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ToSic.Eav.DataSources</RootNamespace>
+    <TargetFrameworks>net451;netstandard2.0</TargetFrameworks>
     <AssemblyName>ToSic.Eav.DataSources</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
+    <RootNamespace>ToSic.Eav.DataSources</RootNamespace>
+    <AssemblyVersion>11.04.01.0</AssemblyVersion>
+    <FileVersion>11.04.01.0</FileVersion>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'efc and WebApi|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\efc and WebApi\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'debug eav only|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\debug eav only\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dbg Testing|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\Dbg Testing\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="CsvHelper, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8c4959082be5c823, processorArchitecture=MSIL">
-      <HintPath>..\packages\CsvHelper.2.16.3.0\lib\net45\CsvHelper.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Collections.Immutable, Version=1.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Collections.Immutable.1.3.0\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Core" />
+    <PackageReference Include="CsvHelper" Version="2.16.3" />
+    <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.1" />
+    <PackageReference Include="System.Runtime.Caching" Version="4.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="System.Runtime.Caching" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net451'">
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Web" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Caching\CacheInfo\CacheInfoAppAndMore.cs" />
-    <Compile Include="Caching\CacheKey.cs" />
-    <Compile Include="Caching\CacheInfo\ICacheInfo.cs" />
-    <Compile Include="Catalog\Catalog.cs" />
-    <Compile Include="Compatibility\ToSic.Eav.DataSources.SqlDataSource.cs" />
-    <Compile Include="Compatibility\ToSic.Eav.DataSources.DataTableDataSource.cs" />
-    <Compile Include="Compatibility\ToSic.Eav.DataSources.ExternalDataDataSource.cs" />
-    <Compile Include="Compatibility\ToSic.Eav.DataSources.BaseDataSource.cs" />
-    <Compile Include="DataSourceInfo.cs" />
-    <Compile Include="DataSources\App.cs" />
-    <Compile Include="DataSources\AppRootCacheKey.cs" />
-    <Compile Include="DataSources\App_OutBuilder.cs" />
-    <Compile Include="DataSources\Attributes\AttributeRename.cs" />
-    <Compile Include="DataSources\Configuration\Configuration.cs" />
-    <Compile Include="DataSources\Configuration\DSHelpers.cs" />
-    <Compile Include="DataSources\QueryRun.cs" />
-    <Compile Include="DataSources\Streams\StreamPick.cs" />
-    <Compile Include="DataSources\Attributes\AttributeFilter.cs" />
-    <Compile Include="Caching\ICanPurgeListCache.cs" />
-    <Compile Include="Caching\IListCache.cs" />
-    <Compile Include="Caching\ListCache.cs" />
-    <Compile Include="Queries\Connection.cs" />
-    <Compile Include="Queries\IQuery.cs" />
-    <Compile Include="Queries\QueryPart.cs" />
-    <Compile Include="Streams\DataStreamCacheStatus.cs" />
-    <Compile Include="Streams\GetIEnumerableDelegate.cs" />
-    <Compile Include="Streams\StreamDictionary.cs" />
-    <Compile Include="System\Types\AppType.cs" />
-    <Compile Include="System\Types\AttributeType.cs" />
-    <Compile Include="System\Types\ContentTypeType.cs" />
-    <Compile Include="System\QueryInfo.cs" />
-    <Compile Include="Queries\GlobalQueries.cs" />
-    <Compile Include="System\Types\StreamsType.cs" />
-    <Compile Include="System\Types\ZoneType.cs" />
-    <Compile Include="Queries\VisualQuery\DifficultyBeta.cs" />
-    <Compile Include="Queries\VisualQuery\DataSourceType.cs" />
-    <Compile Include="Queries\VisualQuery\VisualQueryAttribute.cs" />
-    <Compile Include="DataSources\DataSourceBase.cs" />
-    <Compile Include="DataSources\AppRoot.cs" />
-    <Compile Include="Caching\CacheAllStreams.cs" />
-    <Compile Include="DataSources\IAppRoot.cs" />
-    <Compile Include="Caching\ListCacheItem.cs" />
-    <Compile Include="DataSources\External\CsvDataSource.cs" />
-    <Compile Include="DataSource.cs" />
-    <Compile Include="Streams\DataStream.cs" />
-    <Compile Include="Streams\DataStreamWithCustomCaching.cs" />
-    <Compile Include="DataSources\External\DataTable.cs" />
-    <Compile Include="Debug\DataSourceInfo.cs" />
-    <Compile Include="Debug\QueryInfo.cs" />
-    <Compile Include="Debug\StreamInfo.cs" />
-    <Compile Include="Queries\Query.cs" />
-    <Compile Include="DataSources\EntityIdFilter.cs" />
-    <Compile Include="DataSources\EntityTypeFilter.cs" />
-    <Compile Include="Exceptions\DataSourceException.cs" />
-    <Compile Include="DataSources\External\ExternalData.cs" />
-    <Compile Include="Interfaces\IDataSource.cs" />
-    <Compile Include="Interfaces\IDataStream.cs" />
-    <Compile Include="Interfaces\IDataTarget.cs" />
-    <Compile Include="Interfaces\IDeferredDataSource.cs" />
-    <Compile Include="Metadata\RemoteMetadata.cs" />
-    <Compile Include="System\Attributes.cs" />
-    <Compile Include="Queries\QueryConstants.cs" />
-    <Compile Include="Queries\QueryDefinition.cs" />
-    <Compile Include="DataSources\Shuffle.cs" />
-    <Compile Include="DataSources\Paging.cs" />
-    <Compile Include="DataSources\Streams\PassThrough.cs" />
-    <Compile Include="Queries\QueryManager.cs" />
-    <Compile Include="Queries\QueryBuilder.cs" />
-    <Compile Include="Queries\Connections.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="DataSources\Properties\OwnerFilter.cs" />
-    <Compile Include="DataSources\Properties\PublishingFilter.cs" />
-    <Compile Include="DataSources\RelationshipFilter.cs" />
-    <Compile Include="DataSources\External\Sql.cs" />
-    <Compile Include="DataSources\ItemFilterDuplicates.cs" />
-    <Compile Include="DataSources\Streams\StreamMerge.cs" />
-    <Compile Include="DataSources\Streams\StreamFallback.cs" />
-    <Compile Include="DataSources\Values\ValueFilter.cs" />
-    <Compile Include="LookUp\LookUpInDataTarget.cs" />
-    <Compile Include="DataSources\Values\ValueSort.cs" />
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="Microsoft.AspNetCore.Http">
+      <Version>2.2.2</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions">
+      <Version>2.2.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Configuration.ConfigurationManager">
+      <Version>4.7.0</Version>
+    </PackageReference>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj">
-      <Project>{82f94588-269b-4cdd-98d1-d5cb14c39090}</Project>
-      <Name>ToSic.Eav.Core</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <Compile Include="Compatibility\ToSic.Eav.DataSources.VisualQuery.VisualQueryAttribute.cs" />
-    <None Include="packages.config" />
-    <Compile Include="Queries\QueryDefinition.Params.cs" />
-    <Compile Include="Queries\QueryDefinition.TestParams.cs" />
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>

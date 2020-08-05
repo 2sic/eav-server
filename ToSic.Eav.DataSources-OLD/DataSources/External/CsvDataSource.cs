@@ -9,6 +9,7 @@ using ToSic.Eav.Documentation;
 using ContentTypeBuilder = ToSic.Eav.Data.Builder.ContentTypeBuilder;
 using IEntity = ToSic.Eav.Data.IEntity;
 
+
 namespace ToSic.Eav.DataSources
 {
     /// <summary>
@@ -40,17 +41,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Full path to the CSV file. 
         /// </summary>
-        public string ServerFilePath
-        {
-            get
-            {
-#if NETSTANDARD
-                return "Not Yet Implemented in .net standard #TodoNetStandard";
-#else
-                return HttpContext.Current != null ? HttpContext.Current.Server.MapPath(FilePath) : FilePath;
-#endif
-            }
-        }
+        public string ServerFilePath => HttpContext.Current != null ? HttpContext.Current.Server.MapPath(FilePath) : FilePath;
 
 
         /// <summary>
