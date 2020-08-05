@@ -55,7 +55,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToSic.Eav.DataSources", "To
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.Repository.Efc2", "ToSic.Eav.Repository.Efc2\ToSic.Eav.Repository.Efc2.csproj", "{CB322A0B-0C28-4165-87A8-7BBE78911451}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.Persistence.Efc", "ToSic.Eav.Persistence.Efc11\ToSic.Eav.Persistence.Efc.csproj", "{B45F98A5-BBA9-4418-A5A1-7CA747E1698B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.Persistence.Efc", "ToSic.Eav.Persistence.Efc\ToSic.Eav.Persistence.Efc.csproj", "{B45F98A5-BBA9-4418-A5A1-7CA747E1698B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
