@@ -156,10 +156,6 @@
       <Project>{2bba13d2-f6d2-443b-b7c8-8f4c31432c03}</Project>
       <Name>ToSic.Eav.Repository.Efc</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ToSic.Eav.Tokens\ToSic.Eav.TokenEngine.csproj">
-      <Project>{2a81f269-8cca-4afd-a85f-82b1c2343965}</Project>
-      <Name>ToSic.Eav.TokenEngine</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ToSic.Eav\ToSic.Eav.csproj">
       <Project>{cf3b9349-8c66-4901-8edb-a4ec1d75326b}</Project>
       <Name>ToSic.Eav</Name>
