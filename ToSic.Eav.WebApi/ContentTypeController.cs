@@ -7,7 +7,7 @@ using ToSic.Eav.Conversion;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Repository.Efc;
-using ToSic.Eav.WebApi.Formats;
+using ToSic.Eav.WebApi.Dto;
 
 namespace ToSic.Eav.WebApi
 {
@@ -22,7 +22,7 @@ namespace ToSic.Eav.WebApi
         }
 
         #region Content-Type Get, Delete, Save
-	    public IEnumerable<ContentTypeInfo> Get(int appId, string scope = null, bool withStatistics = false)
+	    public IEnumerable<ContentTypeDto> Get(int appId, string scope = null, bool withStatistics = false)
         {
             var wrapLog = Log.Call($"a#{appId}, scope:{scope}, stats:{withStatistics}");
 
@@ -46,7 +46,7 @@ namespace ToSic.Eav.WebApi
             return filteredType;
 	    }
 
-        private ContentTypeInfo ContentTypeForJson(ContentType t, int count = -1)
+        private ContentTypeDto ContentTypeForJson(ContentType t, int count = -1)
 	    {
 	        Log.Add($"for json a:{t.AppId}, type:{t.Name}");
 	        var metadata = t.Metadata.Description;
@@ -58,7 +58,7 @@ namespace ToSic.Eav.WebApi
 
 	        var share = (IContentTypeShared) t;
 
-	        var jsonReady = new ContentTypeInfo
+	        var jsonReady = new ContentTypeDto
 	        {
 	            Id = t.ContentTypeId,
 	            Name = t.Name,
@@ -76,7 +76,7 @@ namespace ToSic.Eav.WebApi
 	    }
 
         [HttpGet]
-	    public ContentTypeInfo GetSingle(int appId, string contentTypeStaticName, string scope = null)
+	    public ContentTypeDto GetSingle(int appId, string contentTypeStaticName, string scope = null)
 	    {
 	        var wrapLog = Log.Call($"a#{appId}, type:{contentTypeStaticName}, scope:{scope}");
             var appState = State.Get(appId);
@@ -126,7 +126,7 @@ namespace ToSic.Eav.WebApi
         /// <summary>
         /// Returns the configuration for a content type
         /// </summary>
-        public IEnumerable<ContentTypeFieldInfo> GetFields(int appId, string staticName)
+        public IEnumerable<ContentTypeFieldDto> GetFields(int appId, string staticName)
         {
             Log.Add($"get fields a#{appId}, type:{staticName}");
             var appState = State.Get(appId);
@@ -141,7 +141,7 @@ namespace ToSic.Eav.WebApi
             return fields.Select(a =>
             {
                 var inputType = FindInputType(a);
-                return new ContentTypeFieldInfo
+                return new ContentTypeFieldDto
                 {
                     Id = a.AttributeId,
                     SortOrder = a.SortOrder,

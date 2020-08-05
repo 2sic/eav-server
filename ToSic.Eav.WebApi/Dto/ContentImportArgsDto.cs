@@ -1,8 +1,8 @@
 ﻿using ToSic.Eav.ImportExport.Options;
 
-namespace ToSic.Eav.WebApi.Formats
+namespace ToSic.Eav.WebApi.Dto
 {
-    public class ContentImportArgs
+    public class ContentImportArgsDto
     {
         public int AppId;
 

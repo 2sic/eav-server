@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Text;
 
-namespace ToSic.Eav.WebApi.Formats
+namespace ToSic.Eav.WebApi.Dto
 {
-    public class EntityImport
+    public class EntityImportDto
     {
         public int AppId;
 

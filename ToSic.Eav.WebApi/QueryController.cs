@@ -10,7 +10,6 @@ using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.WebApi.Dto;
-using ToSic.Eav.WebApi.Formats;
 
 namespace ToSic.Eav.WebApi
 {
@@ -30,10 +29,10 @@ namespace ToSic.Eav.WebApi
         /// <summary>
         /// Get a Pipeline with DataSources
         /// </summary>
-		public QueryDefinitionInfo GetPipeline(int appId, int? id = null)
+		public QueryDefinitionDto GetPipeline(int appId, int? id = null)
         {
             Log.Add($"get pipe a#{appId}, id:{id}");
-            var query = new QueryDefinitionInfo();
+            var query = new QueryDefinitionDto();
             var appManager = new AppManager(appId, Log);
 
             if (!id.HasValue) return query;
@@ -66,7 +65,7 @@ namespace ToSic.Eav.WebApi
 		/// <param name="data">JSON object { pipeline: pipeline, dataSources: dataSources }</param>
 		/// <param name="appId">AppId this Pipeline belongs to</param>
 		/// <param name="id">PipelineEntityId</param>
-		public QueryDefinitionInfo SavePipeline(QueryDefinitionInfo data, int appId, int id)
+		public QueryDefinitionDto SavePipeline(QueryDefinitionDto data, int appId, int id)
 		{
 		    Log.Add($"save pipe: a#{appId}, id#{id}");
 
@@ -139,7 +138,7 @@ namespace ToSic.Eav.WebApi
 
 
 
-        public bool ImportQuery(EntityImport args)
+        public bool ImportQuery(EntityImportDto args)
         {
             try
             {

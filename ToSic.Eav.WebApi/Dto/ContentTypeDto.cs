@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace ToSic.Eav.WebApi.Formats
+namespace ToSic.Eav.WebApi.Dto
 {
-    public class ContentTypeInfo
+    public class ContentTypeDto
     {
         public int Id { get; set; }
         public string Name { get; set; }

@@ -2,7 +2,6 @@
 using System.Web.Http;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.WebApi.Dto;
-using ToSic.Eav.WebApi.Formats;
 
 namespace ToSic.Eav.WebApi.PublicApi
 {
@@ -11,9 +10,9 @@ namespace ToSic.Eav.WebApi.PublicApi
         void ClonePipeline(int appId, int id);
         object DeletePipeline(int appId, int id);
         IEnumerable<QueryRuntime.DataSourceInfo> GetInstalledDataSources();
-        QueryDefinitionInfo GetPipeline(int appId, int? id = null);
-        bool ImportQuery(EntityImport args);
+        QueryDefinitionDto GetPipeline(int appId, int? id = null);
+        bool ImportQuery(EntityImportDto args);
         QueryRunDto QueryPipeline(int appId, int id);
-        QueryDefinitionInfo SavePipeline([FromBody] QueryDefinitionInfo data, int appId, int id);
+        QueryDefinitionDto SavePipeline([FromBody] QueryDefinitionDto data, int appId, int id);
     }
 }

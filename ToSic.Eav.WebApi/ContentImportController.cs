@@ -7,7 +7,7 @@ using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Repository.Efc;
-using ToSic.Eav.WebApi.Formats;
+using ToSic.Eav.WebApi.Dto;
 
 namespace ToSic.Eav.WebApi
 {
@@ -20,14 +20,15 @@ namespace ToSic.Eav.WebApi
 
 
         [HttpPost]
-        public ContentImportResult EvaluateContent(ContentImportArgs args)
+        public ContentImportResultDto EvaluateContent(ContentImportArgsDto args)
         {
             Log.Add("eval content - start" + args.DebugInfo);
 
             var import = GetXmlImport(args);
             return import.ErrorLog.HasErrors 
-                ? new ContentImportResult(!import.ErrorLog.HasErrors, import.ErrorLog.Errors) 
-                : new ContentImportResult(!import.ErrorLog.HasErrors, new {
+                ? new ContentImportResultDto(!import.ErrorLog.HasErrors, import.ErrorLog.Errors) 
+                : new ContentImportResultDto(!import.ErrorLog.HasErrors, new ImportStatisticsDto
+                {
                     AmountOfEntitiesCreated = import.Info_AmountOfEntitiesCreated,
                     AmountOfEntitiesDeleted = import.Info_AmountOfEntitiesDeleted,
                     AmountOfEntitiesUpdated = import.Info_AmountOfEntitiesUpdated,
@@ -40,7 +41,7 @@ namespace ToSic.Eav.WebApi
         }
 
         [HttpPost]
-        public ContentImportResult ImportContent(ContentImportArgs args)
+        public ContentImportResultDto ImportContent(ContentImportArgsDto args)
         {
             Log.Add("import content" + args.DebugInfo);
 
@@ -51,10 +52,10 @@ namespace ToSic.Eav.WebApi
                 import.PersistImportToRepository(db.UserName);
                 SystemManager.Purge(args.AppId, Log);
             }
-            return new ContentImportResult(!import.ErrorLog.HasErrors, null);
+            return new ContentImportResultDto(!import.ErrorLog.HasErrors, null);
         }
 
-        private ImportListXml GetXmlImport(ContentImportArgs args)
+        private ImportListXml GetXmlImport(ContentImportArgsDto args)
         {
             Log.Add("get xml import " + args.DebugInfo);
             var appManager = new AppManager(args.AppId, Log);
@@ -69,7 +70,7 @@ namespace ToSic.Eav.WebApi
         }
 
         [HttpPost]
-        public bool Import(EntityImport args)
+        public bool Import(EntityImportDto args)
         {
             try
             {

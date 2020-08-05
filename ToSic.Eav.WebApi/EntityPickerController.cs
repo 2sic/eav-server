@@ -4,7 +4,7 @@ using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
-using ToSic.Eav.WebApi.Formats;
+using ToSic.Eav.WebApi.Dto;
 using static System.String;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -19,7 +19,7 @@ namespace ToSic.Eav.WebApi
         /// <summary>
         /// Returns a list of entities, optionally filtered by contentType.
         /// </summary>
-        public IEnumerable<dynamic> GetAvailableEntities(int appId, string[] items, string contentTypeName, bool withDrafts, int? dimensionId)
+        public IEnumerable<EntityForPickerDto> GetAvailableEntities(int appId, string[] items, string contentTypeName, bool withDrafts, int? dimensionId)
         {
             Log.Add($"Get entities for a#{appId}, itms⋮{items?.Length}, type:{contentTypeName}, lang#{dimensionId}");
             var dimensionIds = dimensionId ?? 0;
@@ -57,7 +57,7 @@ namespace ToSic.Eav.WebApi
             else
                 Log.Add("won't filter by IDs");
 
-            var entities = temp.Select(l => new EntityForPicker
+            var entities = temp.Select(l => new EntityForPickerDto
                 {
                     Id = l.EntityId,
                     Value = l.EntityGuid,

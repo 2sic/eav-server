@@ -97,6 +97,9 @@
     <Compile Include="ContentImportController.cs" />
     <Compile Include="ContentTypeController.cs" />
     <Compile Include="Conversion\IStreamTo_T.cs" />
+    <Compile Include="Dto\AppExportInfoDto.cs" />
+    <Compile Include="Dto\ExportPartsOverviewDto.cs" />
+    <Compile Include="Dto\ImportStatisticsDto.cs" />
     <Compile Include="Dto\QueryRunDto.cs" />
     <Compile Include="EntityApi.cs" />
     <Compile Include="Dto\EntityForPickerDto.cs" />
