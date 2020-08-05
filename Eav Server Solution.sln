@@ -11,9 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToSic.Eav.Apps", "ToSic.Eav
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.Persistence.Efc.Tests", "ToSic.Eav.Persistence.Efc.Tests\ToSic.Eav.Persistence.Efc.Tests.csproj", "{EB8491A7-4147-4A18-AC74-CD1BE957FF48}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2sxc WebApi (Dnn)", "..\2sxc-dnn742\Website\DesktopModules\ToSIC_SexyContent\Sxc WebApi\2sxc WebApi (Dnn).csproj", "{8398FE44-7164-48CB-96CF-74BA9C270BD2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2sxc WebApi (Dnn)", "..\2sxc-dnn742\Website\DesktopModules\ToSIC_SexyContent\ToSic.Sxc.WebApi\2sxc WebApi (Dnn).csproj", "{8398FE44-7164-48CB-96CF-74BA9C270BD2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2sxc Razor", "..\2sxc-dnn742\Website\DesktopModules\ToSIC_SexyContent\2Sexy Content Razor\2sxc Razor.csproj", "{78A558AF-F274-4E3C-95FE-8DE9226E0EBC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2sxc Razor", "..\2sxc-dnn742\Website\DesktopModules\ToSIC_SexyContent\ToSic.Sxc.Razor\2sxc Razor.csproj", "{78A558AF-F274-4E3C-95FE-8DE9226E0EBC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2sxc", "..\2sxc-dnn742\Website\DesktopModules\ToSIC_SexyContent\2sxc.csproj", "{D4250011-B9BE-4326-9736-4F0122C79802}"
 EndProject
@@ -33,11 +33,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.Apps.Tests", "ToS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2sxc core (ToSic.Sxc)", "..\2sxc-dnn742\Website\DesktopModules\ToSIC_SexyContent\ToSic.Sxc\2sxc core (ToSic.Sxc).csproj", "{66318F76-3D43-406C-8DE6-94B46C22F776}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2sxc Dnn", "..\2sxc-dnn742\Website\DesktopModules\ToSIC_SexyContent\2sxc Dnn\2sxc Dnn.csproj", "{A94DE6D7-D1E6-4BE2-B5B5-DC4A6A61CD80}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2sxc Dnn", "..\2sxc-dnn742\Website\DesktopModules\ToSIC_SexyContent\ToSic.Sxc.Dnn\2sxc Dnn.csproj", "{A94DE6D7-D1E6-4BE2-B5B5-DC4A6A61CD80}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2sxc core tests (ToSic.Sxc.Tests)", "..\2sxc-dnn742\Website\DesktopModules\ToSIC_SexyContent\ToSic.Sxc.Tests\2sxc core tests (ToSic.Sxc.Tests).csproj", "{0EA1085A-D15F-4254-8A79-DE811C47EBF4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2sxc.WebApi.Tests", "..\2sxc-dnn742\Website\DesktopModules\ToSIC_SexyContent\2sxc.WebApi.Tests\2sxc.WebApi.Tests.csproj", "{000D1ACB-7247-42CF-A86F-987A0AF68BA1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2sxc.WebApi.Tests", "..\2sxc-dnn742\Website\DesktopModules\ToSIC_SexyContent\ToSic.Sxc.WebApi.Tests\2sxc.WebApi.Tests.csproj", "{000D1ACB-7247-42CF-A86F-987A0AF68BA1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Docs-Generator", "..\2sxc-dnn742\Website\DesktopModules\ToSIC_SexyContent\Docs-Generator\Docs-Generator.csproj", "{991006CF-1F50-4A9B-A5B2-A17A1624BF38}"
 EndProject
