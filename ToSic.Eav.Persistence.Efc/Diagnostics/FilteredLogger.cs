@@ -12,7 +12,9 @@ namespace ToSic.Eav.Persistence.Efc.Diagnostics
         private static string[] _categories =
         {
             typeof(Microsoft.EntityFrameworkCore.Storage.Internal.RelationalCommandBuilderFactory).FullName,
+#if net451
             typeof(Microsoft.EntityFrameworkCore.Storage.Internal.SqlServerConnection).FullName
+#endif
         };
 
         public ILogger CreateLogger(string categoryName)

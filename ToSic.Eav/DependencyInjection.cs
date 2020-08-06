@@ -29,11 +29,9 @@ namespace ToSic.Eav
 	    /// <param name="serviceCollection"></param>
 	    public void ConfigureNetCoreContainer(IServiceCollection serviceCollection)
 	    {
-            // 2019-12-11 2dm new
             serviceCollection.TryAddSingleton<IAppsCache, AppsCache>();
 
             serviceCollection.TryAddTransient<IAppRoot, AppRoot>();
-            //serviceCollection.TryAddTransient<IAppsLoader, EavSqlStore>();
 	        serviceCollection.TryAddTransient<IRemoteMetadata, RemoteMetadata>();
 	        serviceCollection.TryAddTransient<ITargetTypes, EfcMetadataTargetTypes>();
 
@@ -50,8 +48,10 @@ namespace ToSic.Eav
             if (!conStr.ToLower().Contains("multipleactiveresultsets")) // this is needed to allow querying data while preparing new data on the same DbContext
                 conStr += ";MultipleActiveResultSets=True";
 
+            // transient lifetime is important, otherwise 2-3x slower!
+            // note: https://docs.microsoft.com/en-us/ef/core/miscellaneous/configuring-dbcontext says we should use transient
             serviceCollection.AddDbContext<EavDbContext>(options => options.UseSqlServer(conStr), 
-                ServiceLifetime.Transient); // transient lifetime is important, otherwise 2-3x slower!
+                ServiceLifetime.Transient); 
 
             // register some Default Constructors
             serviceCollection.TryAddTransient<Sql>();
@@ -59,7 +59,7 @@ namespace ToSic.Eav
 
             
         }
-        #endregion
+#endregion
 
     }
 }
