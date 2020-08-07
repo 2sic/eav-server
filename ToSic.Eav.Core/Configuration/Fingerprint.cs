@@ -22,7 +22,7 @@ namespace ToSic.Eav.Configuration
         {
             try
             {
-                var provider = Factory.Resolve<IFingerprintProvider>();
+                var provider = Factory.Resolve<IFingerprint>();
                 return provider.GetSystemFingerprint();
             }
             catch

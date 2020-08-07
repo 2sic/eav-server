@@ -6,7 +6,7 @@ namespace ToSic.Eav.Run
     /// Defines all classes which can provide fingerprints - to delegate fingerprint-creation to the environment. 
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
-    public interface IFingerprintProvider
+    public interface IFingerprint
     {
         string GetSystemFingerprint();
     }
