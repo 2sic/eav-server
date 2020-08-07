@@ -77,26 +77,31 @@ namespace ToSic.Eav
                 throw new Exception(
                     "Trying to GetDataSource<T> but cannot do so if both upstream and ConfigurationProvider are null.");
 
-            var newDs = (DataSourceBase) Factory.Resolve(typeof(T));
+            var newDs = Factory.Resolve<T>();
             ConfigureNewDataSource(newDs, appIdentity, upstream, configLookUp ?? upstream.Configuration.LookUps);
             wrapLog("ok");
-            return (T) Convert.ChangeType(newDs, typeof(T));
+            return newDs;
         }
 
         /// <summary>
         /// Helper function (internal) to configure a new data source. This code is used multiple times, that's why it's in an own function
         /// </summary>
-        /// <param name="newDs">The new data source</param>
+        /// <param name="newSource">The new data source</param>
         /// <param name="appIdentity">app identifier</param>
         /// <param name="upstream">upstream data source - for auto-attaching</param>
         /// <param name="configLookUp">optional configuration provider - for auto-attaching</param>
-        private void ConfigureNewDataSource(
-            DataSourceBase newDs, 
+        private void ConfigureNewDataSource<T>(
+            T newSource, 
             IAppIdentity appIdentity,
 			IDataSource upstream = null,
 			ILookUpEngine configLookUp = null)
         {
             var wrapLog = Log.Call();
+            if (!(newSource is DataSourceBase newDs))
+            {
+                wrapLog("can't configure, not a base source");
+                return;
+            }
 
 			newDs.ZoneId = appIdentity.ZoneId;
 			newDs.AppId = appIdentity.AppId;
