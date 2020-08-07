@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.Run;
 
-namespace ToSic.Eav.Implementations.UserInformation
+namespace ToSic.Eav.Run.Basic
 {
-    public class NeutralEavUser: IUser
+    public class BasicUser: IUser
     {
         private const string Unknown = "unknown(eav)";
 

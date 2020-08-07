@@ -1,10 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav;
-using ToSic.Eav.Implementations.Runtime;
-using ToSic.Eav.Implementations.UserInformation;
 using ToSic.Eav.Repository.Efc.Implementations;
 using ToSic.Eav.Run;
+using ToSic.Eav.Run.Basic;
 
 namespace ToSic.Testing.Shared
 {
@@ -29,8 +28,8 @@ namespace ToSic.Testing.Shared
             Factory.ActivateNetCoreDi(sc =>
             {
                 //sc.TryAddTransient<IEavUserInformation, NeutralEavUserInformation>();
-                sc.TryAddTransient<IUser, NeutralEavUser>();
-                sc.TryAddTransient<IRuntime, NeutralRuntime>();
+                sc.TryAddTransient<IUser, BasicUser>();
+                sc.TryAddTransient<IRuntime, BasicRuntime>();
 
                 configure.Invoke(sc);
 

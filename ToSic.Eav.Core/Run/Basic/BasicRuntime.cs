@@ -2,12 +2,11 @@
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
-using ToSic.Eav.Run;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.Implementations.Runtime
+namespace ToSic.Eav.Run.Basic
 {
-    public class NeutralRuntime: IRuntime
+    public class BasicRuntime: IRuntime
     {
         public IEnumerable<IContentType> LoadGlobalContentTypes() => new List<IContentType>();
 
