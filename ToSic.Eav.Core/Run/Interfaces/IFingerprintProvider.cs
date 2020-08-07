@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Documentation;
 
-namespace ToSic.Eav.Configuration
+namespace ToSic.Eav.Run
 {
     /// <summary>
     /// Defines all classes which can provide fingerprints - to delegate fingerprint-creation to the environment. 
