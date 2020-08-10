@@ -9,8 +9,20 @@ namespace ToSic.Eav.Apps.Environment
     /// NOTE: It is currently not in use, and that's ok. 
     /// </summary>
     // ReSharper disable once UnusedMember.Global
-    public class NoPagePublishing : IPagePublishing
+    public class NoPagePublishing : HasLog, IPagePublishing
     {
+        #region Constructors
+
+        public NoPagePublishing() : base("Eav.NoPubl") { }
+
+        public IPagePublishing Init(ILog parent)
+        {
+            Log.LinkTo(parent);
+            return this;
+        }
+
+        #endregion
+
         public bool Supported => false;
 
         public PublishingMode Requirements(int moduleId)
@@ -54,9 +66,5 @@ namespace ToSic.Eav.Apps.Environment
             throw new NotImplementedException();
         }
 
-        public IPagePublishing Init(ILog parent)
-        {
-            return this;
-        }
     }
 }

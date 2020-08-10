@@ -48,7 +48,7 @@ namespace ToSic.Eav.Apps
         protected string GetRootPath() => System.IO.Path.Combine(Tenant.SxcPath, Folder);
 
         [PrivateApi]
-        public string PhysicalPath => Env.MapAppPath(GetRootPath());
+        public string PhysicalPath => Env.MapPath(GetRootPath());
 
         #endregion
 

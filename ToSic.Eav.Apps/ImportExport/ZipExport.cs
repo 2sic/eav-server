@@ -10,13 +10,14 @@ using ToSic.Eav.ImportExport.Zip;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Logging;
+using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Apps.ImportExport
 {
     public class ZipExport
     {
-        private readonly int _appId;
-        private readonly int _zoneId;
+        private int _appId;
+        private int _zoneId;
         private const string SexyContentContentGroupName = "2SexyContent-ContentGroup";
         private const string SourceControlDataFolder = Constants.FolderData;
         private const string SourceControlDataFile = "app.xml"; // lower case
@@ -26,12 +27,20 @@ namespace ToSic.Eav.Apps.ImportExport
         private const string AppXmlFileName = "App.xml";
 
         public FileManager FileManager;
-        private readonly string _physicalAppPath;
-        private readonly string _appFolder;
+        private string _physicalAppPath;
+        private string _appFolder;
 
         protected ILog Log;
 
-        public ZipExport(int zoneId, int appId, string appFolder, string physicalAppPath, ILog parentLog)
+        #region Constructors and DI
+        public ZipExport(IEnvironment environment)
+        {
+            _environment = environment;
+        }
+
+        private readonly IEnvironment _environment;
+
+        public ZipExport Init(int zoneId, int appId, string appFolder, string physicalAppPath, ILog parentLog)
         {
             _appId = appId;
             _zoneId = zoneId;
@@ -39,7 +48,9 @@ namespace ToSic.Eav.Apps.ImportExport
             _physicalAppPath = physicalAppPath;
             Log = new Log("Zip.Exp", parentLog);
             FileManager = new FileManager(_physicalAppPath);
+            return this;
         }
+        #endregion
 
         public void ExportForSourceControl(bool includeContentGroups = false, bool resetAppGuid = false)
         {
@@ -64,8 +75,7 @@ namespace ToSic.Eav.Apps.ImportExport
             var messages = new List<Message>();
             var randomShortFolderName = Guid.NewGuid().ToString().Substring(0, 4);
 
-            var temporaryDirectoryPath = GetPathMultiTarget(Path.Combine(Settings.TemporaryDirectory, randomShortFolderName));
-            //var temporaryDirectoryPath = HttpContext.Current.Server.MapPath(Path.Combine(Settings.TemporaryDirectory, randomShortFolderName));
+            var temporaryDirectoryPath = _environment.MapPath(Path.Combine(Settings.TemporaryDirectory, randomShortFolderName));
 
             if (!Directory.Exists(temporaryDirectoryPath))
                 Directory.CreateDirectory(temporaryDirectoryPath);
@@ -168,21 +178,20 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="targetPath"></param>
         private void AddInstructionsToPackageFolder(string targetPath)
         {
-            var srcPath = GetPathMultiTarget(Path.Combine(Settings.ModuleDirectory, "SexyContent\\ImportExport\\Instructions"));
-            //var srcPath = HttpContext.Current.Server.MapPath(Path.Combine(Settings.ModuleDirectory, "SexyContent\\ImportExport\\Instructions"));
+            var srcPath = _environment.MapPath(Path.Combine(Settings.ModuleDirectory, "SexyContent\\ImportExport\\Instructions"));
 
             foreach (var file in Directory.GetFiles(srcPath))
                 File.Copy(file, Path.Combine(targetPath, Path.GetFileName(file)));
         }
 
-        internal static string GetPathMultiTarget(string path)
-        {
-#if NET451
-            return HttpContext.Current.Server.MapPath(path);
-#else
-            return "Not Yet Implemented in .net standard #TodoNetStandard";
-#endif
-        }
+//        internal static string GetPathMultiTarget(string path)
+//        {
+//#if NET451
+//            return HttpContext.Current.Server.MapPath(path);
+//#else
+//            return "Not Yet Implemented in .net standard #TodoNetStandard";
+//#endif
+//        }
 
     }
 }

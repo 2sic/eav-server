@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Net;
-using System.Web;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.Interfaces;
+using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Apps.ImportExport
 {
@@ -18,8 +18,7 @@ namespace ToSic.Eav.Apps.ImportExport
         public bool ImportUrl(string packageUrl, bool isAppImport)
         {
             Log.Add($"import zip from url:{packageUrl}, isApp:{isAppImport}");
-            var path = ZipExport.GetPathMultiTarget(Settings.TemporaryDirectory);
-            //var path = HttpContext.Current.Server.MapPath(Settings.TemporaryDirectory);
+            var path = Factory.Resolve<IEnvironment>().MapPath(Settings.TemporaryDirectory);
             if (path == null)
                 throw new NullReferenceException("path for temporary is null - this won't work");
 
@@ -54,14 +53,8 @@ namespace ToSic.Eav.Apps.ImportExport
             bool success;
 
 
-            var temporaryDirectory = ZipExport.GetPathMultiTarget(Path.Combine(Settings.TemporaryDirectory, Guid.NewGuid().ToString()));
-            //var temporaryDirectory = HttpContext.Current.Server.MapPath(Path.Combine(Settings.TemporaryDirectory, Guid.NewGuid().ToString()));
-            // Increase script timeout to prevent timeouts
-#if NET451
-            HttpContext.Current.Server.ScriptTimeout = 300;
-#else
-            // "Not Yet Implemented in .net standard #TodoNetStandard";
-#endif
+            var temporaryDirectory = Factory.Resolve<IEnvironment>().MapPath(Path.Combine(Settings.TemporaryDirectory, Guid.NewGuid().ToString()));
+
             using (var file = File.OpenRead(destinationPath))
                 success = ImportZip(file, temporaryDirectory);
 

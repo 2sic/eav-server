@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Repositories;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Run
@@ -15,7 +14,7 @@ namespace ToSic.Eav.Run
         /// <param name="path"></param>
         /// <param name="log"></param>
         /// <returns></returns>
-        new IAppFileSystemLoader Init(int appId, string path, ILog log);
+        IAppFileSystemLoader Init(int appId, string path, ILog log);
 
         string Path { get; set; }
 
