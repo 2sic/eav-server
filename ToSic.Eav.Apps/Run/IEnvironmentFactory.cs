@@ -9,7 +9,7 @@ using PermissionCheckBase = ToSic.Eav.Security.PermissionCheckBase;
 namespace ToSic.Eav.Run
 {
     [PrivateApi]
-    public interface IEnvironmentFactory: IRuntimeFactory
+    public interface IEnvironmentFactory
     {
         /// <summary>
         /// Initialize this object so it can then give information regarding the permissions of an entity.
@@ -28,11 +28,5 @@ namespace ToSic.Eav.Run
         /// </summary>
         PermissionCheckBase InstancePermissions(ILog parentLog, IContainer module, IApp app);
 
-        IPagePublishing PagePublisher(ILog parentLog);
-
-        IAppEnvironment Environment(ILog parentLog);
-
-        // experimental
-        IAppFileSystemLoader AppFileSystemLoader(int appId, string path, ILog log);
     }
 }

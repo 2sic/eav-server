@@ -1,5 +1,6 @@
 ﻿using System;
 using ToSic.Eav.Apps.Enums;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps.Environment
 {
@@ -8,7 +9,7 @@ namespace ToSic.Eav.Apps.Environment
     /// NOTE: It is currently not in use, and that's ok. 
     /// </summary>
     // ReSharper disable once UnusedMember.Global
-    public class NoPagePublishig : IPagePublishing
+    public class NoPagePublishing : IPagePublishing
     {
         public bool Supported => false;
 
@@ -51,6 +52,11 @@ namespace ToSic.Eav.Apps.Environment
         public bool IsEnabled(int instanceId)
         {
             throw new NotImplementedException();
+        }
+
+        public IPagePublishing Init(ILog parent)
+        {
+            return this;
         }
     }
 }

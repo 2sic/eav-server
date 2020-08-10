@@ -1,15 +1,16 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Run
 {
-    /// <inheritdoc />
+    /// <inheritdoc cref="IEnvironment" />
     /// <summary>
     /// Any object implementing this can provide more information which are app/zone specific. 
     /// </summary>
     [PrivateApi]
-    public interface IAppEnvironment : IEnvironment
+    public interface IAppEnvironment : IEnvironment, IHasLog<IAppEnvironment>
     {
         /// <summary>
         /// The environment zone-mapper, which finds the zone-ID for the current tenant (portal) of the environment

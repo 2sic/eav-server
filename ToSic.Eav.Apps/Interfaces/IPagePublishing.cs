@@ -2,12 +2,13 @@
 using ToSic.Eav.Apps.Enums;
 using ToSic.Eav.Apps.Environment;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps
 {
     // Note: maybe some day this should go into a .Cms namespace
     [PrivateApi]
-    public interface IPagePublishing
+    public interface IPagePublishing: IHasLog<IPagePublishing>
     {
         bool Supported { get; }
 

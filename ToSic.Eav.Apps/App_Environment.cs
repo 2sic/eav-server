@@ -17,7 +17,7 @@ namespace ToSic.Eav.Apps
         protected App(ITenant tenant, int zoneId, int appId, bool allowSideEffects,
             Func<App, IAppDataConfiguration> buildConfiguration,
             ILog parentLog)
-            : this(Factory.Resolve<IEnvironmentFactory>().Environment(parentLog), tenant, zoneId, appId,
+            : this(Factory.Resolve<IAppEnvironment>().Init(parentLog), tenant, zoneId, appId,
                 allowSideEffects, buildConfiguration, parentLog)
         {
         }

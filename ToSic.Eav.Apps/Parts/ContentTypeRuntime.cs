@@ -24,12 +24,6 @@ namespace ToSic.Eav.Apps.Parts
         /// <returns>a content-type or null if not found</returns>
         public IContentType Get(string name) => AppRT.AppState.GetContentType(name);
 
-        // 2020-01-17 2dm removed, not in use; better to use the AppState.GetContentType directly
-        ///// <summary>
-        ///// Gets a ContentType by Id
-        ///// </summary>
-        //public IContentType Get(int contentTypeId) => AppRT.AppState.GetContentType(contentTypeId);
-
         public IEnumerable<string> GetScopes() => All.Select(ct => ct.Scope).Distinct().OrderBy(s => s);
 
         public IEnumerable<IContentType> FromScope(string scope = null, bool includeAttributeTypes = false)
@@ -116,9 +110,8 @@ namespace ToSic.Eav.Apps.Parts
             var wrapLog = Log.Call<List<InputTypeInfo>>();
             try
             {
-                var factory = Factory.Resolve<IEnvironmentFactory>();
                 var appState = State.Get(AppRT);
-                var appLoader = factory.AppFileSystemLoader(appState.AppId, appState.Path, Log);
+                var appLoader = Factory.Resolve<IAppFileSystemLoader>().Init(appState.AppId, appState.Path, Log);
                 var inputTypes = appLoader.InputTypes();
                 return wrapLog(null, inputTypes);
             }

@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Interfaces;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Apps.Tests.Mocks
@@ -15,5 +16,9 @@ namespace ToSic.Eav.Apps.Tests.Mocks
 
 
         public string DefaultLanguage => "en-US";
+        public IAppEnvironment Init(ILog parent)
+        {
+            return this;
+        }
     }
 }

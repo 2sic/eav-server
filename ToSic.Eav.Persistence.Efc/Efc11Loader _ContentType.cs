@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Metadata;
-using ToSic.Eav.Run;
+using ToSic.Eav.Repositories;
 
 namespace ToSic.Eav.Persistence.Efc
 {
@@ -52,8 +52,7 @@ namespace ToSic.Eav.Persistence.Efc
         private IList<IContentType> InitFileSystemContentTypes(AppState app)
         {
             var wrapLog = Log.Call<IList<IContentType>>();
-            var factory = Factory.Resolve<IRuntimeFactory>();
-            var loader = factory.AppRepositoryLoader(app.AppId, app.Path, Log);
+            var loader = Factory.Resolve<IAppRepositoryLoader>().Init(app.AppId, app.Path, Log);
             var types = loader.ContentTypes(app);
             return wrapLog("ok", types);
         }
