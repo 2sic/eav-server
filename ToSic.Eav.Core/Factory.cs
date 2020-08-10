@@ -12,31 +12,36 @@ namespace ToSic.Eav
 	[PublicApi_Stable_ForUseInYourCode]
 	public class Factory
 	{
-#pragma warning disable IDE0051 // Remove unused private members
-        // ReSharper disable once UnusedMember.Local
-        private const string ServiceProviderKey = "2sxc-scoped-serviceprovider";
-#pragma warning restore IDE0051 // Remove unused private members
-        private static readonly IServiceCollection ServiceCollection = new ServiceCollection();
+#if NETFULL
+        private const string ServiceProviderKey = "eav-scoped-serviceprovider";
+        private static IServiceProvider _sp;
+#endif
+        private static IServiceCollection _serviceCollection = new ServiceCollection();
+
+        public static void BetaUseExistingServiceCollection(IServiceCollection newServiceCollection)
+            => _serviceCollection = newServiceCollection;
 
         public delegate void ServiceConfigurator(IServiceCollection service);
 
 	    public static void ActivateNetCoreDi(ServiceConfigurator configure)
 	    {
-	        var sc = ServiceCollection;
+	        var sc = _serviceCollection;
 	        configure.Invoke(sc);
+#if NETFULL
 	        _sp = sc.BuildServiceProvider();
+#endif
 	    }
 
         private static IServiceProvider ServiceProvider
 	    {
 	        get
 	        {
+#if NETFULL
                 // Because 2sxc runs inside DNN as a webforms project and not asp.net core mvc, we have
                 // to make sure the service-provider object is disposed correctly. If we don't do this,
                 // connections to the database are kept open, and this leads to errors like "SQL timeout:
                 // "All pooled connections were in use". https://github.com/2sic/2sxc/issues/1200
-
-#if NETFULL
+                // 2017-05-31 2rm Quick work-around for issue https://github.com/2sic/2sxc/issues/1200
                 // Scope service-provider based on request
                 var httpContext = HttpContext.Current;
                 if (httpContext == null) return _sp.CreateScope().ServiceProvider;
@@ -55,18 +60,11 @@ namespace ToSic.Eav
                 return (IServiceProvider)httpContext.Items[ServiceProviderKey];
 
 #else
-                // 2017-05-31 2rm Quick work-around for issue https://github.com/2sic/2sxc/issues/1200
-                return ServiceCollection.BuildServiceProvider();
-
+                return _serviceCollection.BuildServiceProvider();
 #endif
             }
         }
 
-
-#pragma warning disable IDE0052 // Remove unread private members
-        // ReSharper disable once NotAccessedField.Local
-        private static IServiceProvider _sp;
-#pragma warning restore IDE0052 // Remove unread private members
 
         /// <summary>
         /// Internal debugging, disabled by default. If set to true, resolves will be counted and logged.
