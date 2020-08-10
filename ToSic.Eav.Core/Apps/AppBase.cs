@@ -10,35 +10,30 @@ namespace ToSic.Eav.Apps
     public abstract class AppBase: HasLog, IAppIdentity
     {
         /// <inheritdoc />
-        public int ZoneId { get; }
+        public int ZoneId { get; private set; }
 
         /// <inheritdoc />
-        public int AppId { get; }
+        public int AppId { get; private set; }
+
+        /// <summary>
+        /// DI Constructor - always run Init afterwards
+        /// </summary>
+        protected AppBase(): base("App.Base") { }
 
         /// <summary>
         /// App identity containing zone/app combination
         /// </summary>
-        /// <param name="zoneId"></param>
-        /// <param name="appId"></param>
+        /// <param name="app">the identity</param>
         /// <param name="parentLog">the current log - could be null if necessary</param>
         /// <param name="code">code-ref, must be created first</param>
         /// <param name="logKey">a log key because most inheriting objects will want their own key in the log</param>
         /// <param name="initialMessage"></param>
-        protected AppBase(int zoneId, int appId, CodeRef code, ILog parentLog,  string logKey = null, string initialMessage = null) 
-            : base(logKey ?? "App.Base", code, parentLog, initialMessage)
+        protected AppBase Init(IAppIdentity app, CodeRef code, ILog parentLog, string logKey = null, string initialMessage = null)
         {
-            ZoneId = zoneId;
-            AppId = appId;
-        }
-
-        protected AppBase(IAppIdentity app, CodeRef code, ILog parentLog, 
-            string logKey = null, 
-            string initialMessage = null) 
-            : base(logKey ?? "App.Base", code, parentLog, initialMessage)
-        {
+            InitLog(logKey, parentLog, initialMessage, code);
             ZoneId = app.ZoneId;
             AppId = app.AppId;
+            return this;
         }
-
     }
 }

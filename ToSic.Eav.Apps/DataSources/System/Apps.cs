@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
@@ -72,8 +73,7 @@ namespace ToSic.Eav.DataSources.System
             Configuration.Parse();
 
             // try to load the content-type - if it fails, return empty list
-            //var cache = (RootCacheBase)DataSource.GetCache(ZoneId, AppId);
-            var zones = /*Factory.GetAppsCache*/Eav.Apps.State.Zones;
+            var zones = State.Zones;
 	        if (!zones.ContainsKey(OfZoneId)) return new List<IEntity>();
 	        var zone = zones[OfZoneId];
 
@@ -83,7 +83,8 @@ namespace ToSic.Eav.DataSources.System
 	            Guid? guid = null;
 	            try
 	            {
-	                appObj = new Eav.Apps.App(zone.ZoneId, app.Key, false, null, Log, "for apps DS");
+	                appObj = Factory.Resolve<Eav.Apps.App>()
+                        .Init(new AppIdentity(zone.ZoneId, app.Key), false, null, Log, "for apps DS");
                     // this will get the guid, if the identity is not "default"
 	                if(Guid.TryParse(appObj.AppGuid, out var g)) guid = g;
 	            }
@@ -106,7 +107,6 @@ namespace ToSic.Eav.DataSources.System
                     typeName: AppsContentTypeName, 
                     guid: guid);
                 return result;
-	            //return AsEntity(appEnt, AppType.Name.ToString(), AppsContentTypeName, app.Key, guid);
             });
 
             return list.ToList();

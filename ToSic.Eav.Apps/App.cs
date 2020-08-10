@@ -1,6 +1,7 @@
 ﻿using System;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Apps
 {
@@ -22,7 +23,7 @@ namespace ToSic.Eav.Apps
         public bool Hidden { get; private set; }
 
         /// <inheritdoc />
-        public string AppGuid { get; }
+        public string AppGuid { get; private set; }
 
         /// <inheritdoc />
         public bool ShowDrafts { get; private set; }
@@ -32,23 +33,38 @@ namespace ToSic.Eav.Apps
         [PrivateApi]
         protected const string IconFile = "/" + AppConstants.AppIconFile;
 
-        internal App(int zoneId, 
-            int appId, 
+
+        public App(IAppEnvironment environment, ITenant tenant)
+        {
+            Env = environment;
+            Tenant = tenant;
+        }
+
+        protected internal App Init(
+            IAppIdentity appIdentity,
             bool allowSideEffects,
             Func<App, IAppDataConfiguration> buildConfiguration,
             ILog parentLog, 
             string logMsg)
             // first, initialize the AppIdentity and log it's use
-            : base(zoneId, appId, new CodeRef(),  parentLog, "App.2sxcAp", $"prep App z#{zoneId}, a#{appId}, allowSE:{allowSideEffects}, hasDataConfig:{buildConfiguration != null}, {logMsg}")
+            // : base(new AppIdentity(zoneId, appId), new CodeRef(),  parentLog, "App.2sxcAp", $"prep App z#{zoneId}, a#{appId}, allowSE:{allowSideEffects}, hasDataConfig:{buildConfiguration != null}, {logMsg}")
         {
+            Env = Env ?? throw new Exception("no environment received");
+            Tenant = Tenant ?? throw new Exception("no tenant (portal settings) received");
+            Env.Init(parentLog);
+
             // if zone is missing, try to find it; if still missing, throw error
-            if (zoneId == AutoLookupZone) throw new Exception("Cannot find zone-id for portal specified");
+            if (appIdentity.ZoneId == AutoLookupZone)
+                appIdentity = Env.ZoneMapper.IdentityFromTenant(Tenant.Id, appIdentity.AppId);
+
+            Init(appIdentity, new CodeRef(), parentLog, "App.2sxcAp",
+                $"prep App z#{appIdentity.ZoneId}, a#{appIdentity.AppId}, allowSE:{allowSideEffects}, hasDataConfig:{buildConfiguration != null}, {logMsg}");
 
             // Look up name in cache
-            var cache = /*Factory.GetAppsCache*/Eav.Apps.State.Cache;//.Resolve<IAppsCache>();
+            var cache = State.Cache;
             AppState = cache.Get(this); // for metadata
 
-            AppGuid = cache.Zones[zoneId].Apps[appId];
+            AppGuid = cache.Zones[ZoneId].Apps[AppId];
 
             // v10.25 from now on the DefaultApp can also have settings and resources
             // v10.26.0x reactivated this protection, because it causes side-effects. On content-app, let's only do this if people start editing the resources...?
@@ -59,7 +75,7 @@ namespace ToSic.Eav.Apps
                 Log.Add($"create app resources? allowSE:{allowSideEffects}");
 
                 if (allowSideEffects)
-                    new AppManager(this, Log).EnsureAppIsConfigured(/*ZoneId, AppId, Log*/); // make sure additional settings etc. exist
+                    new AppManager(this, Log).EnsureAppIsConfigured(); // make sure additional settings etc. exist
             }
 
             InitializeResourcesSettingsAndMetadata();
@@ -70,6 +86,8 @@ namespace ToSic.Eav.Apps
 
             // for deferred initialization as needed
             _dataConfigurationBuilder = buildConfiguration;
+
+            return this;
         }
     }
 }

@@ -19,7 +19,7 @@ namespace ToSic.Eav.Apps
         private IMetadataOf _metadata;
 
         [PrivateApi]
-        protected readonly IHasMetadataSource AppState;
+        protected IHasMetadataSource AppState;
 
         /// <summary>
         /// Permissions of this app

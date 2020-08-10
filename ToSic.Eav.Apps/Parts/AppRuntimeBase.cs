@@ -8,12 +8,12 @@ namespace ToSic.Eav.Apps.Parts
     /// </summary>
     public abstract class AppRuntimeBase: AppBase
     {
-        private const string LogId = "App.Base";
         public bool ShowDrafts { get; }
 
         protected AppRuntimeBase(IAppIdentity app, bool showDrafts, ILog parentLog)
-            : base(app, new CodeRef(), parentLog, LogId)
+            // : base(app, new CodeRef(), parentLog, LogId)
         {
+            Init(app, new CodeRef(), parentLog, "App.Base");
             ShowDrafts = showDrafts;
         }
 
@@ -25,8 +25,6 @@ namespace ToSic.Eav.Apps.Parts
 
 
         #region Data & Cache
-        //public AppRoot Cache => _cache ?? (_cache = (AppRoot) Data/*.Root*/);
-        //private AppRoot _cache;
 
         public IDataSource Data => _data ?? (_data = new DataSource(Log).GetPublishing(this, showDrafts: ShowDrafts));
         private IDataSource _data;

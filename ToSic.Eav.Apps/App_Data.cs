@@ -31,7 +31,7 @@ namespace ToSic.Eav.Apps
 
         #region Data
 
-        private readonly Func<App, IAppDataConfiguration> _dataConfigurationBuilder;
+        private Func<App, IAppDataConfiguration> _dataConfigurationBuilder;
 
 
         /// <summary>
