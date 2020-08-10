@@ -44,6 +44,7 @@ namespace ToSic.Eav.Apps
             IAppIdentity appIdentity,
             bool allowSideEffects,
             Func<App, IAppDataConfiguration> buildConfiguration,
+            string logKey,
             ILog parentLog, 
             string logMsg)
             // first, initialize the AppIdentity and log it's use
@@ -57,7 +58,7 @@ namespace ToSic.Eav.Apps
             if (appIdentity.ZoneId == AutoLookupZone)
                 appIdentity = Env.ZoneMapper.IdentityFromTenant(Tenant.Id, appIdentity.AppId);
 
-            Init(appIdentity, new CodeRef(), parentLog, "App.2sxcAp",
+            Init(appIdentity, new CodeRef(), parentLog, logKey ?? "Eav.App",
                 $"prep App z#{appIdentity.ZoneId}, a#{appIdentity.AppId}, allowSE:{allowSideEffects}, hasDataConfig:{buildConfiguration != null}, {logMsg}");
 
             // Look up name in cache

@@ -84,7 +84,7 @@ namespace ToSic.Eav.DataSources.System
 	            try
 	            {
 	                appObj = Factory.Resolve<Eav.Apps.App>()
-                        .Init(new AppIdentity(zone.ZoneId, app.Key), false, null, Log, "for apps DS");
+                        .Init(new AppIdentity(zone.ZoneId, app.Key), false, null, null, Log, "for apps DS");
                     // this will get the guid, if the identity is not "default"
 	                if(Guid.TryParse(appObj.AppGuid, out var g)) guid = g;
 	            }

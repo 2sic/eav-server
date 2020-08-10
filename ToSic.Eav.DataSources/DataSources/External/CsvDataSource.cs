@@ -46,6 +46,7 @@ namespace ToSic.Eav.DataSources
             {
 #if NETSTANDARD
                 return "Not Yet Implemented in .net standard #TodoNetStandard";
+                // should be easy to fix, just have to inject IEnvironment or something that has MapPath
 #else
                 return HttpContext.Current != null ? HttpContext.Current.Server.MapPath(FilePath) : FilePath;
 #endif
@@ -108,7 +109,6 @@ namespace ToSic.Eav.DataSources
             ConfigMask(IdColumnNameKey, "[Settings:IdColumnName]", cacheRelevant: false);
             ConfigMask(TitleColumnNameKey, "[Settings:TitleColumnName]", cacheRelevant: false);
         }
-
 
         private List<IEntity> GetList()
         {

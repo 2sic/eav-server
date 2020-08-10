@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Web;
 using System.Xml.XPath;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
@@ -183,15 +182,6 @@ namespace ToSic.Eav.Apps.ImportExport
             foreach (var file in Directory.GetFiles(srcPath))
                 File.Copy(file, Path.Combine(targetPath, Path.GetFileName(file)));
         }
-
-//        internal static string GetPathMultiTarget(string path)
-//        {
-//#if NET451
-//            return HttpContext.Current.Server.MapPath(path);
-//#else
-//            return "Not Yet Implemented in .net standard #TodoNetStandard";
-//#endif
-//        }
 
     }
 }

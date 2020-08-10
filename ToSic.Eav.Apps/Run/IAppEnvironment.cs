@@ -23,11 +23,5 @@ namespace ToSic.Eav.Run
         /// </summary>
         IPagePublishing PagePublishing { get; }
 
-        ///// <summary>
-        ///// Path resolver to get the full path of a file (template, icon etc.) inside an app-folder
-        ///// </summary>
-        ///// <param name="virtualPath"></param>
-        ///// <returns></returns>
-        //string MapPath(string virtualPath);
     }
 }
