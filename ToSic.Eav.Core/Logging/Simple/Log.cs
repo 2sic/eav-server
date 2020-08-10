@@ -79,6 +79,7 @@ namespace ToSic.Eav.Logging.Simple
         /// <param name="name"></param>
         public void Rename(string name)
         {
+            if (name == null) return;
             try
             {
                 var dot = name.IndexOf(".", StringComparison.Ordinal);
