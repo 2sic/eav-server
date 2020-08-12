@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Logging;
@@ -16,42 +16,36 @@ namespace ToSic.Eav.Apps.Parts
         /// <returns></returns>
         public static IEnumerable<DataSourceInfo> GetInstalledDataSources()
         {
-            var result = new List<DataSourceInfo>();
             var installedDataSources = Catalog.GetAll(true);
-            foreach (var dataSource in installedDataSources)
+
+            return installedDataSources.Select(dataSource => new DataSourceInfo(dataSource.Type.Name, dataSource.VisualQuery)
             {
-                #region Create Instance of DataSource to get In- and Out-Streams
-                ICollection<string> outStreamNames = new string[0];
-                if (!dataSource.Type.IsInterface && !dataSource.Type.IsAbstract)
-                {
-                    var dataSourceInstance = (IDataSource)Activator.CreateInstance(dataSource.Type);
-                    if (dataSourceInstance.OutIsDynamic) // skip this if out-connections cannot be queried
-                        outStreamNames = null;
-                    else
-                        try
-                        {
-                            outStreamNames = dataSourceInstance.Out.Keys;
-                        }
-                        catch
-                        {
-                            outStreamNames = null;
-                        }
-                }
-                // Handle Interfaces (currently only on ICache)
-                else if (dataSource.Type.IsInterface)
-                {
-                    var dataSourceInstance = (IDataSource)Factory.Resolve(dataSource.Type);
-                    outStreamNames = dataSourceInstance.Out.Keys;
-                }
-                #endregion
+                PartAssemblyAndType = dataSource.GlobalName, 
+                Out = GetOutStreamNames(dataSource)
+            }).ToList();
+        }
 
-                result.Add(new DataSourceInfo(dataSource.Type.Name, dataSource.VisualQuery)
-                {
-                    PartAssemblyAndType = dataSource.GlobalName, Out = outStreamNames
-                });
+        /// <summary>
+        /// Create Instance of DataSource to get In- and Out-Streams
+        /// </summary>
+        /// <param name="dataSource"></param>
+        /// <returns></returns>
+        private static ICollection<string> GetOutStreamNames(Eav.DataSources.DataSourceInfo dataSource)
+        {
+            if (dataSource.Type.IsAbstract) return null;
+
+            // Handle Interfaces and real types (currently only on ICache)
+            var dataSourceInstance = (IDataSource) Factory.Resolve(dataSource.Type);
+            
+            try
+            {
+                // skip this if out-connections cannot be queried
+                return dataSourceInstance.OutIsDynamic ? null : dataSourceInstance.Out.Keys;
             }
-
-            return result;
+            catch
+            {
+                return null;
+            }
         }
 
         /// <summary>
