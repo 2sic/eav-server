@@ -13,6 +13,8 @@ namespace ToSic.Eav.Run
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public abstract class Container<T>: IContainer, IWrapper<T> where T: class
     {
+        #region Constructors and DI
+
         /// <inheritdoc />
         public T UnwrappedContents { get; private set; }
 
@@ -26,6 +28,7 @@ namespace ToSic.Eav.Run
         }
 
         public abstract IContainer Init(int id, ILog parentLog);
+        #endregion
 
         /// <inheritdoc />
         public abstract int Id { get; }
@@ -39,6 +42,7 @@ namespace ToSic.Eav.Run
         /// <inheritdoc />
         public abstract bool IsPrimary { get; }
 
+        /// <inheritdoc />
         public abstract IBlockIdentifier BlockIdentifier { get; }
     }
 }

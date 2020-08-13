@@ -2,6 +2,9 @@
 
 namespace ToSic.Eav.Apps.Run
 {
+    /// <summary>
+    /// Identifies a content-block with all the parameters necessary to find it in the system
+    /// </summary>
     public interface IBlockIdentifier: IAppIdentity
     {
         /// <summary>
