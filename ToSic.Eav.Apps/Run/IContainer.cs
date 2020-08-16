@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Apps.Run;
+﻿using System.Collections.Generic;
+using ToSic.Eav.Apps.Run;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 
@@ -35,6 +36,11 @@ namespace ToSic.Eav.Run
         /// </summary>
         [PrivateApi("don't think this should be here! also not sure if it's the primary - or the contentApp! reason seems to be that we detect it by the DNN module name")]
         bool IsPrimary { get; }
+
+        /// <summary>
+        /// These parameters can reconfigure what view is used or change
+        /// </summary>
+        [PrivateApi("wip")] List<KeyValuePair<string, string>> Parameters { get; }
 
         /// <summary>
         /// Identifies the content-block which should be shown in this container

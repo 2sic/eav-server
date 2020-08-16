@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Apps.Run;
+﻿using System.Collections.Generic;
+using ToSic.Eav.Apps.Run;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
@@ -41,6 +42,8 @@ namespace ToSic.Eav.Run
 
         /// <inheritdoc />
         public abstract bool IsPrimary { get; }
+
+        public abstract List<KeyValuePair<string, string>> Parameters { get; set; }
 
         /// <inheritdoc />
         public abstract IBlockIdentifier BlockIdentifier { get; }
