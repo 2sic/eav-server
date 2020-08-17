@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Run
 {
     [PrivateApi]
-    public interface IZoneMapper
+    public interface IZoneMapper: IHasLog<IZoneMapper>
     {
         /// <summary>
         /// Get the zoneId which belongs to the tenant of this environment

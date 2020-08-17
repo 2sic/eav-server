@@ -10,5 +10,12 @@ namespace ToSic.Eav.Run
         Guid? Guid { get; }
 
         List<int> Roles { get; }
+
+        bool IsSuperUser { get; }
+
+        /// <summary>
+        /// Returns true if a user is in the SexyContent Designers group
+        /// </summary>
+        bool IsDesigner { get; }
     }
 }

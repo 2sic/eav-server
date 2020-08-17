@@ -25,9 +25,11 @@ namespace ToSic.Eav.Run
         /// <inheritdoc />
         public abstract string Name { get; }
 
+        public abstract string Url { get; }
+
         /// <inheritdoc />
         [PrivateApi]
-        public abstract string SxcPath { get; }
+        public abstract string AppsRoot { get; }
 
         [PrivateApi]
         public abstract bool RefactorUserIsAdmin { get; }

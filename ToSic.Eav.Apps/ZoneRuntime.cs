@@ -35,7 +35,7 @@ namespace ToSic.Eav.Apps
             var zones = State.Zones;
 
             if (string.IsNullOrEmpty(appName))
-                return AppConstants.AppIdNotFound;
+                return Constants.AppIdEmpty;
 
             var appId = zones[ZoneId].Apps
                 .Where(p => p.Value == appName)

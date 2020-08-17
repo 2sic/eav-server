@@ -12,5 +12,7 @@ namespace ToSic.Eav.Run.Basic
         public Guid? Guid => null;
 
         public List<int> Roles => new List<int>();
+        public bool IsSuperUser => false;
+        public bool IsDesigner => false;
     }
 }

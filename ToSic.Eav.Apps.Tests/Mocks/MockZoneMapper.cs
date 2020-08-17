@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.Apps.Environment;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Apps.Tests.Mocks
 {
-    public class MockZoneMapper: IZoneMapper
+    public class MockZoneMapper: HasLog, IZoneMapper
     {
         public int GetZoneId(int tenantId) => -1;
 
@@ -15,5 +15,13 @@ namespace ToSic.Eav.Apps.Tests.Mocks
         public ITenant Tenant(int zoneId) => new MockTenant();
 
         public List<TempTempCulture> CulturesWithState(int tenantId, int zoneId) => new List<TempTempCulture>();
+
+        public MockZoneMapper() : base("Tst.MckZM") { }
+
+        public IZoneMapper Init(ILog parent)
+        {
+            Log.LinkTo(parent);
+            return this;
+        }
     }
 }

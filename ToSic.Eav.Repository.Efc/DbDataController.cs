@@ -42,7 +42,7 @@ namespace ToSic.Eav.Repository.Efc
         /// <summary>
         /// AppId of this whole Context
         /// </summary>
-        public int AppId => _appId == 0 ? Constants.MetaDataAppId : _appId;
+        public int AppId => _appId == Constants.AppIdEmpty ? Constants.MetaDataAppId : _appId;
 
         /// <summary>
         /// ZoneId of this whole Context
@@ -188,7 +188,7 @@ namespace ToSic.Eav.Repository.Efc
         /// </summary>
         public int SaveChanges(bool acceptAllChangesOnSuccess, EavDbContext.SaveChangesEvent baseEvent)
         {
-            if (_appId == 0)
+            if (_appId == Constants.AppIdEmpty)
                 throw new Exception("SaveChanges with AppId 0 not allowed.");
 
             // enure changelog exists and is set to SQL CONTEXT_INFO variable

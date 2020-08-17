@@ -9,8 +9,9 @@ namespace ToSic.Eav.Apps.Tests.Mocks
         public string DefaultLanguage => null;
 
         public string Name => "MockTenant";
+        public string Url => "Mock.org/root";
 
-        public string SxcPath => "Mock";
+        public string AppsRoot => "Mock";
 
         public bool RefactorUserIsAdmin => false;
 

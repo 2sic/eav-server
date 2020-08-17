@@ -22,25 +22,10 @@ namespace ToSic.Eav.Run
         int Id { get; }
 
         /// <summary>
-        /// Page ID
-        /// </summary>
-        int PageId { get; }
-
-        /// <summary>
-        /// Tenant ID
-        /// </summary>
-        int TenantId { get; }
-
-        /// <summary>
         /// Determines if this is a the primary App (the content-app) as opposed to any additional app
         /// </summary>
         [PrivateApi("don't think this should be here! also not sure if it's the primary - or the contentApp! reason seems to be that we detect it by the DNN module name")]
         bool IsPrimary { get; }
-
-        /// <summary>
-        /// These parameters can reconfigure what view is used or change
-        /// </summary>
-        [PrivateApi("wip")] List<KeyValuePair<string, string>> Parameters { get; }
 
         /// <summary>
         /// Identifies the content-block which should be shown in this container

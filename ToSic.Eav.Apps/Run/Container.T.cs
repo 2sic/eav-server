@@ -35,15 +35,7 @@ namespace ToSic.Eav.Run
         public abstract int Id { get; }
 
         /// <inheritdoc />
-        public abstract int PageId { get; }
-
-        /// <inheritdoc />
-        public abstract int TenantId { get; }
-
-        /// <inheritdoc />
         public abstract bool IsPrimary { get; }
-
-        public abstract List<KeyValuePair<string, string>> Parameters { get; set; }
 
         /// <inheritdoc />
         public abstract IBlockIdentifier BlockIdentifier { get; }

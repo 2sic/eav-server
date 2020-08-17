@@ -10,6 +10,7 @@ namespace ToSic.Eav
         /// </summary>
         public const string DefaultAppName = "Default";
 
+        public const int AppIdEmpty = 0;
 
         public const string CultureSystemKey = "Culture";
 
