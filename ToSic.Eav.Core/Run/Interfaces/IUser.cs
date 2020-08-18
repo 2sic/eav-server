@@ -13,6 +13,8 @@ namespace ToSic.Eav.Run
 
         bool IsSuperUser { get; }
 
+        bool IsAdmin { get; }
+
         /// <summary>
         /// Returns true if a user is in the SexyContent Designers group
         /// </summary>
