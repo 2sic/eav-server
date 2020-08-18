@@ -17,21 +17,13 @@ namespace ToSic.Eav.ImportExport.Persistence.File
         #region Constructor and DI
 
         private readonly IServiceProvider _serviceProvider;
-        public Runtime(IServiceProvider sc) : base("Eav.Rntime")
-        {
-            _serviceProvider = sc;
-        }
-        //public Runtime(string logName) : base(logName)
-        //{
+        public Runtime(IServiceProvider sc) : base("Eav.Rntime") => _serviceProvider = sc;
 
-        //}
         public IRuntime Init(ILog parent)
         {
             Log.LinkTo(parent);
             return this;
         }
-
-        
 
         #endregion
 

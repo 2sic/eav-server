@@ -74,7 +74,7 @@ namespace ToSic.Eav.ImportExport.Tests.Persistence.File
         {
             // set loader root path, based on test environment
             RepositoryInfoOfTestSystem.PathToUse = TestingPath40;
-            var loader = (Runtime)Factory.Resolve<IRuntime>().Init(null); // new Runtime();
+            var loader = (Runtime)Factory.Resolve<IRuntime>().Init(null);
             var time = Stopwatch.StartNew();
             for (var i = 0; i < 10; i++)
             {
