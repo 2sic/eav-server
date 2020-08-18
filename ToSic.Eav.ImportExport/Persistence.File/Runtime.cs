@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.File;
@@ -13,11 +14,26 @@ namespace ToSic.Eav.ImportExport.Persistence.File
 {
     public class Runtime : HasLog, IRuntime
     {
-        public Runtime() : this("Eav.Rntime") {}
-        public Runtime(string logName) : base(logName)
-        {
+        #region Constructor and DI
 
+        private readonly IServiceProvider _serviceProvider;
+        public Runtime(IServiceProvider sc) : base("Eav.Rntime")
+        {
+            _serviceProvider = sc;
         }
+        //public Runtime(string logName) : base(logName)
+        //{
+
+        //}
+        public IRuntime Init(ILog parent)
+        {
+            Log.LinkTo(parent);
+            return this;
+        }
+
+        
+
+        #endregion
 
         // 1 - find the current path to the .data folder
         public List<string> Paths
@@ -36,7 +52,7 @@ namespace ToSic.Eav.ImportExport.Persistence.File
                     try
                     {
                         Log.Add($"adding {typ.FullName}");
-                        var instance = (RepositoryInfoOfFolder) Activator.CreateInstance(typ);
+                        var instance = (RepositoryInfoOfFolder) ActivatorUtilities.CreateInstance(_serviceProvider, typ, new object[0]);
                         var paths = instance.RootPaths;
                         if (paths != null)
                             _paths.AddRange(paths);

@@ -37,7 +37,7 @@ namespace ToSic.Eav.Configuration
             List<IEntity> list;
             try
             {
-                var runtime = Factory.Resolve<IRuntime>();
+                var runtime = Factory.Resolve<IRuntime>().Init(null);
                 list = runtime?.LoadGlobalItems("configuration")?.ToList() ?? new List<IEntity>();
             }
             catch

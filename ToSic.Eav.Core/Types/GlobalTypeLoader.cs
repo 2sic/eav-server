@@ -55,7 +55,7 @@ namespace ToSic.Eav.Types
         private IEnumerable<IContentType> ContentTypesInRuntime()
         {
             Log.Add("ContentTypesInRuntime() loading");
-            var runtime = Factory.Resolve<IRuntime>();
+            var runtime = Factory.Resolve<IRuntime>().Init(Log);
             runtime?.LinkLog(Log);
             return runtime?.LoadGlobalContentTypes() ?? new List<IContentType>();
         }
