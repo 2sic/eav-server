@@ -21,8 +21,5 @@ namespace ToSic.Eav.Run.Basic
 
         public IEnumerable<IEntity> LoadGlobalItems(string groupIdentifier) => new List<IEntity>();
 
-
-        public ILog Log { get; } = new Log("empty");
-
     }
 }
