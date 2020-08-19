@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Run.Basic
@@ -15,7 +14,6 @@ namespace ToSic.Eav.Run.Basic
             Log.LinkTo(parent);
             return this;
         }
-
 
         public IEnumerable<IContentType> LoadGlobalContentTypes() => new List<IContentType>();
 

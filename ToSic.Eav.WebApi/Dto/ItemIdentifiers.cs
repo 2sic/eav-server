@@ -48,9 +48,8 @@ namespace ToSic.Eav.WebApi.Formats
         //public string Title { get; set; }
         #endregion
 
-        // #2134
         //// this is not needed on the server, but must be passed through so it's still attached to this item if in use
-        //public dynamic Prefill { get; set; }
+        public dynamic Prefill { get; set; }
 
 
         public int? DuplicateEntity { get; set; }
