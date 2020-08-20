@@ -27,19 +27,26 @@ namespace ToSic.Eav.Apps.Security
 
         public AppPermissionCheck ForAttribute(IInstanceContext ctx, IAppIdentity appIdentity, IContentTypeAttribute attribute, ILog parentLog)
         {
-            Init(ctx, appIdentity, parentLog, permissions1: attribute.Permissions);
+            Init(ctx, appIdentity, parentLog, permissions: attribute.Permissions);
             return Log.Call<AppPermissionCheck>()("ok", this);
         }
 
+        /// <summary>
+        /// Init the check for an app.
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <param name="app">The App - in some cases (if no app exists yet) it's null</param>
+        /// <param name="parentLog"></param>
+        /// <returns></returns>
         public AppPermissionCheck ForApp(IInstanceContext ctx, IApp app, ILog parentLog)
         {
-            Init(ctx, app, parentLog, permissions1: app.Metadata.Permissions);
+            Init(ctx, app, parentLog, permissions: app?.Metadata.Permissions);
             return Log.Call<AppPermissionCheck>()("ok", this);
         }
 
         public AppPermissionCheck ForParts(IInstanceContext ctx, IApp app, IContentType targetType, IEntity targetItem, ILog parentLog)
         {
-            Init(ctx, app, parentLog, targetType, targetItem, app.Metadata.Permissions);
+            Init(ctx, app, parentLog, targetType, targetItem, app?.Metadata.Permissions);
             return Log.Call<AppPermissionCheck>()("ok", this);
         }
 
@@ -54,11 +61,10 @@ namespace ToSic.Eav.Apps.Security
             ILog parentLog,
             IContentType targetType = null, // optional type to check
             IEntity targetItem = null, // optional entity to check
-            IEnumerable<Permission> permissions1 = null
-            //IEnumerable<Permission> permissions2 = null
+            IEnumerable<Permission> permissions = null
             )
         {
-            Init(parentLog, targetType ?? targetItem?.Type, targetItem, permissions1, null);
+            Init(parentLog, targetType ?? targetItem?.Type, targetItem, permissions);
             var logWrap = Log.Call<AppPermissionCheck>($"..., {targetItem?.EntityId}, app: {appIdentity?.AppId}, ");
             Context = ctx ?? throw new ArgumentNullException(nameof(ctx));
             AppIdentity = appIdentity;
