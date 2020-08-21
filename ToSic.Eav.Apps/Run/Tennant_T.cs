@@ -40,5 +40,6 @@ namespace ToSic.Eav.Run
 
         protected Tenant(T settings) => UnwrappedContents = settings;
 
+        public abstract int ZoneId { get; }
     }
 }

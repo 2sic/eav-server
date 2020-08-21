@@ -16,5 +16,6 @@ namespace ToSic.Eav.Apps.Tests.Mocks
         public bool RefactorUserIsAdmin => false;
 
         public string ContentPath => "MockPath";
+        public int ZoneId => -999;
     }
 }
