@@ -11,6 +11,16 @@ namespace ToSic.Eav.Run
     [PublicApi_Stable_ForUseInYourCode]
     public interface ITenant: IWebResource, IZoneIdentity
     {
+        #region Constructor Helper
+
+        /// <summary>
+        /// This is a special constructor where the tenant object is re-initialized with a specific tenant id
+        /// </summary>
+        /// <returns></returns>
+        ITenant Init(int tenantId);
+
+        #endregion
+
         /// <summary>
         /// The default language code - like "en-US"
         /// </summary>

@@ -14,7 +14,10 @@ namespace ToSic.Eav.Run
         /// <summary>
         /// The tenant settings - usually the DNN PortalSettings
         /// </summary>
-        public T UnwrappedContents { get; }
+        public T UnwrappedContents { get; protected set; }
+
+        /// <inheritdoc />
+        public abstract ITenant Init(int tenantId);
 
         /// <inheritdoc />
         public abstract string DefaultLanguage { get; }

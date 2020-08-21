@@ -11,5 +11,7 @@ namespace ToSic.Eav.Apps.Run
         IContainer Container { get; }
 
         IUser User { get; }
+
+        IInstanceContext Clone(ITenant tenant = null, IPage page = null, IContainer container = null, IUser user = null);
     }
 }

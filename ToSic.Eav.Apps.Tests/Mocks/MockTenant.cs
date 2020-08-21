@@ -6,6 +6,11 @@ namespace ToSic.Eav.Apps.Tests.Mocks
     {
         public int Id => -999;
 
+        public ITenant Init(int tenantId)
+        {
+            return this;
+        }
+
         public string DefaultLanguage => null;
 
         public string Name => "MockTenant";
