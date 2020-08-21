@@ -43,7 +43,7 @@ namespace ToSic.Eav.WebApi
 
         private static IEntity ReturnOrThrowIfInvalid(string contentType, object identifier, IEntity itm)
         {
-            if (itm == null || (contentType != null && !(itm.Type.Name == contentType || itm.Type.StaticName == contentType)))
+            if (itm == null || contentType != null && !itm.Type.Is(contentType))
                 throw new KeyNotFoundException("Can't find " + identifier + "of type '" + contentType + "'");
             return itm;
         }

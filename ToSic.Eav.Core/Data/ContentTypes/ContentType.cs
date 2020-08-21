@@ -46,7 +46,7 @@ namespace ToSic.Eav.Data
         public bool IsDynamic { get; internal set; }
 
         /// <inheritdoc />
-        public bool Is(string name) => Name == name || StaticName == name;
+        public bool Is(string name) => Name.Equals(name, InvariantCultureIgnoreCase) || StaticName.Equals(name, InvariantCultureIgnoreCase);
 
         /// <inheritdoc />
         public IContentTypeAttribute this[string fieldName] => Attributes.FirstOrDefault(a => string.Equals(a.Name, fieldName, OrdinalIgnoreCase));
