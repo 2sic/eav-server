@@ -12,6 +12,8 @@ namespace ToSic.Eav
 
         public const int AppIdEmpty = 0;
 
+        public const int NullId = -2742;
+
         public const string CultureSystemKey = "Culture";
 
         /// <summary>
