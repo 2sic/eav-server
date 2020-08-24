@@ -38,7 +38,7 @@ namespace ToSic.Eav.Apps.Security
         /// <param name="app">The App - in some cases (if no app exists yet) it's null</param>
         /// <param name="parentLog"></param>
         /// <returns></returns>
-        public AppPermissionCheck ForApp(IInstanceContext ctx, IApp app, ILog parentLog)
+        public AppPermissionCheck ForAppInInstance(IInstanceContext ctx, IApp app, ILog parentLog)
         {
             Init(ctx, app, parentLog, permissions: app?.Metadata.Permissions);
             return Log.Call<AppPermissionCheck>()("ok", this);

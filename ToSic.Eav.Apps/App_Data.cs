@@ -79,14 +79,14 @@ namespace ToSic.Eav.Apps
         /// </summary>
         /// <returns></returns>
         [PrivateApi]
-        protected void GetLanguageAndUser(AppData xData)
+        protected void GetLanguageAndUser(AppData data)
         {
             var languagesActive = Env.ZoneMapper.CulturesWithState(Tenant.Id, ZoneId)
                 .Any(c => c.Active);
-            xData.DefaultLanguage = languagesActive
+            data.DefaultLanguage = languagesActive
                 ? Tenant.DefaultLanguage
                 : "";
-            xData.CurrentUserName = Env.User.IdentityToken;
+            data.CurrentUserName = Env.User.IdentityToken;
         }
 
         #endregion

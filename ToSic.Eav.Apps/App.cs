@@ -36,6 +36,8 @@ namespace ToSic.Eav.Apps
 
         public App(IAppEnvironment environment, ITenant tenant)
         {
+            // just keep pointers for now, don't init/verify yet
+            // as in some cases (like search) they will be replaced after the constructor
             Env = environment;
             Tenant = tenant;
         }
@@ -50,6 +52,7 @@ namespace ToSic.Eav.Apps
             // first, initialize the AppIdentity and log it's use
             // : base(new AppIdentity(zoneId, appId), new CodeRef(),  parentLog, "App.2sxcAp", $"prep App z#{zoneId}, a#{appId}, allowSE:{allowSideEffects}, hasDataConfig:{buildConfiguration != null}, {logMsg}")
         {
+            // Env / Tenant must be re-checked here
             Env = Env ?? throw new Exception("no environment received");
             Tenant = Tenant ?? throw new Exception("no tenant (portal settings) received");
             Env.Init(parentLog);
