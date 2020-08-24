@@ -144,17 +144,17 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\2sxc\Src\Sxc\ToSic.Sxc\2sxc core %28ToSic.Sxc%29.csproj">
+      <Project>{5d87eb0c-bf67-4814-a0ff-d96256c9b852}</Project>
+      <Name>2sxc core %28ToSic.Sxc%29</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\2sxc\ToSIC_SexyContent\2sxc.csproj">
       <Project>{d4250011-b9be-4326-9736-4f0122c79802}</Project>
       <Name>2sxc</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\2sxc\ToSIC_SexyContent\ToSic.Sxc.Dnn\2sxc Dnn.csproj">
+    <ProjectReference Include="..\..\2sxc\Src\Dnn\ToSic.Sxc.Dnn\2sxc Dnn.csproj">
       <Project>{a94de6d7-d1e6-4be2-b5b5-dc4a6a61cd80}</Project>
       <Name>2sxc Dnn</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\2sxc\ToSIC_SexyContent\ToSic.Sxc\2sxc core %28ToSic.Sxc%29.csproj">
-      <Project>{5d87eb0c-bf67-4814-a0ff-d96256c9b852}</Project>
-      <Name>2sxc core %28ToSic.Sxc%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\ToSic.Eav.Apps\ToSic.Eav.Apps.csproj">
       <Project>{FA1B4495-6B85-400F-A5E3-0E292CCBFAE2}</Project>
