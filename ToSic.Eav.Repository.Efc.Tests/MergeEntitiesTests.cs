@@ -26,7 +26,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         #region Test Data Person tests
 
         private const int AppId = Constants.TransientAppId;
-        ContentType _ctNull = null;
+        //ContentType _ctNull = null;
 
         ContentType _ctPerson = new ContentType(AppId, "Person") {Attributes = new List<IContentTypeAttribute>
         {

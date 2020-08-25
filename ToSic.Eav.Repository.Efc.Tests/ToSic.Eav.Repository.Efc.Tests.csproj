@@ -144,13 +144,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\2sxc\Src\Sxc\ToSic.Sxc\2sxc core %28ToSic.Sxc%29.csproj">
+    <ProjectReference Include="..\..\2sxc\Src\Sxc\ToSic.Sxc\ToSic.Sxc.csproj">
       <Project>{5d87eb0c-bf67-4814-a0ff-d96256c9b852}</Project>
-      <Name>2sxc core %28ToSic.Sxc%29</Name>
+      <Name>ToSic.Sxc</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\2sxc\ToSIC_SexyContent\2sxc.csproj">
+    <ProjectReference Include="..\..\2sxc\Src\Dnn\ToSic.Sxc.Dnn.Main\ToSic.Sxc.Dnn.Main.csproj">
       <Project>{d4250011-b9be-4326-9736-4f0122c79802}</Project>
-      <Name>2sxc</Name>
+      <Name>ToSic.Sxc.Dnn.Main</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\2sxc\Src\Dnn\ToSic.Sxc.Dnn\2sxc Dnn.csproj">
       <Project>{a94de6d7-d1e6-4be2-b5b5-dc4a6a61cd80}</Project>

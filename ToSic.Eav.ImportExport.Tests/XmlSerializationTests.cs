@@ -16,8 +16,8 @@ namespace ToSic.Eav.ImportExport.Tests
     public class XmlSerializationTests
     {
         public static ILog Log = new Log("TstXml");
-        private int AppId = 2;
-        private int TestItemId = 0;
+        //private int AppId = 2;
+        //private int TestItemId = 0;
 
         [TestMethod]
         public void Xml_SerializeItemOnHome()

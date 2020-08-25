@@ -20,9 +20,9 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         private int TestItemWithCa20Changes = 3893;
         private Guid ItemWithCa20Changes = new Guid("5BF76130-B386-4848-9F17-AAE567D50CF6");
-        private int TestItemWithCa100Changes = 4457;
+        //private int TestItemWithCa100Changes = 4457;
         private Guid ItemWithCa100Changes = new Guid("23F24A0C-B4A2-43B4-ACBF-F5AC64549BF1");
-        private int TestItemWithCa9Changes = 7707;
+        //private int TestItemWithCa9Changes = 7707;
         private Guid ItemWithCa9Changes = new Guid("3AB334D9-A99C-4C01-AAB7-C29E04274B5C");
 
         private TestValuesOnPc2Dm td = new TestValuesOnPc2Dm();
