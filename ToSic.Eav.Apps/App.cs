@@ -54,8 +54,13 @@ namespace ToSic.Eav.Apps
         {
             // Env / Tenant must be re-checked here
             Env = Env ?? throw new Exception("no environment received");
-            Tenant = Tenant ?? throw new Exception("no tenant (portal settings) received");
             Env.Init(parentLog);
+            Tenant = Tenant ?? throw new Exception("no tenant (portal settings) received");
+            
+            // in case the DI gave a bad tenant, try to look up
+            if (Tenant.Id == Constants.NullId && appIdentity.AppId != Constants.NullId &&
+                appIdentity.AppId != AppConstants.AppIdNotFound)
+                Tenant = Env.ZoneMapper.TenantOfApp(appIdentity.AppId);
 
             // if zone is missing, try to find it; if still missing, throw error
             if (appIdentity.ZoneId == AutoLookupZone)

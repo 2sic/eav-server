@@ -46,7 +46,10 @@ namespace ToSic.Eav.Persistence.Efc
 
                 return wrapLog($"before {before}, now {typeToMerge.Count} types", typeToMerge);
             }
-            catch (System.Exception e) { return wrapLog("error:" + e.Message, dbTypes); }
+            catch (System.Exception e)
+            {
+                return wrapLog("error:" + e.Message, dbTypes);
+            }
         }
 
         private IList<IContentType> InitFileSystemContentTypes(AppState app)

@@ -12,7 +12,8 @@ namespace ToSic.Eav.Apps.Tests.Mocks
         public IAppIdentity IdentityFromTenant(int tenantId, int appId) 
             => new AppIdentity(-1, appId);
 
-        public ITenant Tenant(int zoneId) => new MockTenant();
+        public ITenant TenantOfZone(int zoneId) => new MockTenant();
+        public ITenant TenantOfApp(int appId) => new MockTenant();
 
         public List<TempTempCulture> CulturesWithState(int tenantId, int zoneId) => new List<TempTempCulture>();
 

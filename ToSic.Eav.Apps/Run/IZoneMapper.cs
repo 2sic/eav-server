@@ -21,7 +21,9 @@ namespace ToSic.Eav.Run
         IAppIdentity IdentityFromTenant(int tenantId, int appId);
 
 
-        ITenant Tenant(int zoneId);
+        ITenant TenantOfZone(int zoneId);
+
+        ITenant TenantOfApp(int appId);
 
         /// <summary>
         /// The cultures available on this tenant/zone combination
