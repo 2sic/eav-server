@@ -67,8 +67,45 @@ namespace ToSic.Eav.Persistence.Efc
             Log.Add($"Found {entityIdsFound.Count} raw entities in {sqlTime.ElapsedMilliseconds}ms - chunked into {entityIdChunks.Count} chunks");
 
             sqlTime.Start();
-            var chunkedRelationships = entityIdChunks.Select(eIdC => GetRelatedEntities(appId, eIdC));
-            var relatedEntities = chunkedRelationships.SelectMany(chunk => chunk).ToDictionary(i => i.Key, i => i.Value);
+            //var chunkedRelationships = entityIdChunks.Select(idList => GetRelationshipChunk(appId, idList));
+            // Load relationships in batches / chunks
+            var allChunks = entityIdChunks.Select(idList => GetRelationshipChunk(appId, idList))
+                .SelectMany(chunk => chunk)
+                .ToList();
+            // in some strange cases we get duplicate keys - this should try to report what's happening
+            //Dictionary<int, IEnumerable<TempRelationshipList>> relatedEntities;
+            //try
+            //{
+            var relatedEntities = ConvertRelationships(allChunks); // .ToDictionary(i => i.Key, i => i.Value);
+            //}
+            //catch (Exception ex)
+            //{
+            //    Log.Add("Ran into big problem merging relationship chunks. Will attempt to add more information");
+            //    try
+            //    {
+            //        Log.Add($"These are the entity ID chunks in bundles of {IdChunkSize}");
+            //        entityIdChunks.ForEach(eid => Log.Add("Chunk: " + string.Join(",", eid)));
+            //    }
+            //    catch { /* ignored */ }
+
+            //    // do more detailed error reporting - but only if we didn't cause more errors
+            //    try
+            //    {
+            //        Log.Add("These are the duplicates we think cause the problems");
+            //        var duplicates = allChunks.GroupBy(c => c.Key)
+            //            .Where(g => g.Count() > 1)
+            //            .Select(g => g.Key)
+            //            .ToList();
+            //        Log.Add($"Found {duplicates.Count} duplicates.");
+            //        Log.Add($"The duplicate IDs are probably: {string.Join(",", duplicates)}");
+            //        throw new Exception("Ran into problems merging relationship chunks. Check the insights logs.", ex);
+            //    }
+            //    catch
+            //    {
+            //        throw new Exception("Ran into problems merging relationship chunks, and detailed analysis failed. Check Insights logs.", ex);
+            //    }
+            //}
+
             Log.Add($"Found {relatedEntities.Count} entity relationships in {sqlTime.ElapsedMilliseconds}ms");
 
 

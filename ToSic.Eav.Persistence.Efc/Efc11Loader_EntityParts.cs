@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Data;
 using ToSic.Eav.Persistence.Efc.Intermediate;
+using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Persistence.Efc
 {
@@ -109,27 +110,42 @@ namespace ToSic.Eav.Persistence.Efc
             return wrapLog("ok", attributes);
         }
 
-        private Dictionary<int, IEnumerable<TempRelationshipList>> GetRelatedEntities(int appId, List<int> entityIdsFound)
+        /// <summary>
+        /// Get a chunk of relationships.
+        /// Note that since it must check child/parents then multiple chunks could return the identical relationship.
+        /// See https://github.com/2sic/2sxc/issues/2127
+        /// This is why the conversion to dictionary etc. must happen later, when all chunks are merged. 
+        /// </summary>
+        /// <returns></returns>
+        private List<ToSicEavEntityRelationships> GetRelationshipChunk(int appId, ICollection<int> entityIdsFound)
         {
-            var wrapLog = Log.Call<Dictionary<int, IEnumerable<TempRelationshipList>>>(
-                    $"app: {appId}, ids: {entityIdsFound.Count}");
-
-            var relatedEntities = _dbContext.ToSicEavEntityRelationships
+            var wrapLog = Log.Call<List<ToSicEavEntityRelationships>>($"app: {appId}, ids: {entityIdsFound.Count}");
+            var relationships = _dbContext.ToSicEavEntityRelationships
                 .Include(rel => rel.Attribute)
                 .Where(rel => rel.ParentEntity.AppId == appId)
-                .Where(r => !r.ChildEntityId.HasValue ||
-                            entityIdsFound.Contains(r.ChildEntityId.Value) ||
-                            entityIdsFound.Contains(r.ParentEntityId))
+                .Where(r => !r.ChildEntityId.HasValue // child can be a null-reference
+                            || entityIdsFound.Contains(r.ChildEntityId.Value) // check if it's referred to as a child
+                            || entityIdsFound.Contains(r.ParentEntityId)) // check if it's referred to as a parent
+                .ToList();
+            return wrapLog("ok", relationships);
+        }
+
+        private static Dictionary<int, IEnumerable<TempRelationshipList>> ConvertRelationships(List<ToSicEavEntityRelationships> relationships)
+        {
+            var relatedEntities = relationships
                 .GroupBy(g => g.ParentEntityId)
-                .ToDictionary(g => g.Key, g => g.GroupBy(r => r.AttributeId)
-                    .Select(rg => new TempRelationshipList
-                    {
-                        // 2020-07-31 2dm - never used
-                        // AttributeId = rg.Key,
-                        StaticName = rg.First().Attribute.StaticName,
-                        Children = rg.OrderBy(c => c.SortOrder).Select(c => c.ChildEntityId)
-                    }));
-            return wrapLog("ok", relatedEntities);
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.GroupBy(r => r.AttributeId)
+                        .Select(rg => new TempRelationshipList
+                        {
+                            StaticName = rg.First().Attribute.StaticName,
+                            Children = rg
+                                .OrderBy(c => c.SortOrder)
+                                .Select(c => c.ChildEntityId)
+                                .ToList()
+                        }));
+            return relatedEntities;
         }
     }
 }
