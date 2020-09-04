@@ -7,7 +7,11 @@
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net451'">
     <PackageReference Include="Newtonsoft.Json" Version="4.5.6" />
-    <PackageReference Include="SharpZipLib" Version="0.86.0" />
+    <!--ATM we're still using v.0.81 which isn't available on nuget-->
+    <!--<PackageReference Include="SharpZipLib" Version="0.86.0" />-->
+    <Reference Include="SharpZipLib">
+      <HintPath>..\Dependencies\SharpZipLib\SharpZipLib.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
