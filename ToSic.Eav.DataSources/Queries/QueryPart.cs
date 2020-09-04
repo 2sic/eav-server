@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 
@@ -40,7 +39,7 @@ namespace ToSic.Eav.DataSources.Queries
         /// </summary>
         /// <param name="assemblyAndType"></param>
         /// <returns></returns>
-        internal static string RewriteOldAssemblyNames(string assemblyAndType)
+        private static string RewriteOldAssemblyNames(string assemblyAndType)
         {
             var newName = assemblyAndType.EndsWith(Constants.V3To4DataSourceDllOld)
                 ? assemblyAndType.Replace(Constants.V3To4DataSourceDllOld, Constants.V3To4DataSourceDllNew)
@@ -48,23 +47,21 @@ namespace ToSic.Eav.DataSources.Queries
 
             // find the new name in the catalog
             return Catalog.FindName(newName);
-
-            //return newName;
         }
 
 
-        [PrivateApi]
-        public Dictionary<string, object> AsDictionary()
-        {
-            var attributes = Entity.AsDictionary();
+        //[PrivateApi]
+        //public Dictionary<string, object> AsDictionary()
+        //{
+        //    var attributes = Entity.AsDictionary();
 
-            attributes[QueryConstants.VisualDesignerData] = JsonConvert.DeserializeObject(VisualDesignerData);
+        //    attributes[QueryConstants.VisualDesignerData] = JsonConvert.DeserializeObject(VisualDesignerData);
 
-            // Replace ToSic.Eav with ToSic.Eav.DataSources because they moved to a different DLL
-            attributes[QueryConstants.PartAssemblyAndType] = DataSourceType;
+        //    // Replace ToSic.Eav with ToSic.Eav.DataSources because they moved to a different DLL
+        //    attributes[QueryConstants.PartAssemblyAndType] = DataSourceType;
 
-            return attributes;
-        }
+        //    return attributes;
+        //}
 
     }
 }

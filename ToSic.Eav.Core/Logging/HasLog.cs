@@ -31,12 +31,12 @@ namespace ToSic.Eav.Logging
             [CallerMemberName] string cName = null,
             [CallerLineNumber] int cLine = 0)
 
-            => InitLogInternal(logName, parentLog, initialMessage,
+            => InitLog(logName, parentLog, initialMessage,
                 new CodeRef(cPath, cName, cLine));
 
         protected HasLog(string logName, CodeRef code, ILog parentLog = null, string initialMessage = null)
 
-            => InitLogInternal(logName, parentLog, initialMessage, code);
+            => InitLog(logName, parentLog, initialMessage, code);
 
         /// <summary>
         /// This is the real initializer - implemented as a virtual method, because some
@@ -47,14 +47,12 @@ namespace ToSic.Eav.Logging
         /// <param name="parentLog"></param>
         /// <param name="initialMessage"></param>
         public virtual void InitLog(string name, ILog parentLog = null, string initialMessage = null) 
-            => InitLogInternal(name, parentLog, initialMessage, null);
+            => InitLog(name, parentLog, initialMessage, null);
 
-        private void InitLogInternal(string name,
+        protected void InitLog(string name,
             ILog parentLog, 
             string initialMessage, 
             CodeRef code
-            //,
-            //string className = null
             )
         {
             if (Log == null)
@@ -62,14 +60,11 @@ namespace ToSic.Eav.Logging
                 Log = new Log(name, parentLog, code, initialMessage);
             else
             {
-                // late-init case, where the log was already created - just reconfig keeping what was in it
+                // late-init case, where the log was already created - just reconfigure keeping what was in it
                 Log.Rename(name);
                 this.LinkLog(parentLog);
                 if (initialMessage == null) return;
-                //if (className == null)
-                    Log.Add(initialMessage);
-                //else
-                //    Log.New(className, initialMessage);
+                Log.Add(initialMessage, code?.Path, code?.Name, code?.Line ?? 0);
             }
         }
 

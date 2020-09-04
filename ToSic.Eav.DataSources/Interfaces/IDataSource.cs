@@ -45,9 +45,9 @@ namespace ToSic.Eav.DataSources
         /// <returns>A list of <see cref="IEntity"/> items in the Default stream.</returns>
         IEnumerable<IEntity> List { get; }
 
-        [PrivateApi]
-        [Obsolete("deprecated since 2sxc 9.8 / eav 4.5 - use List instead")]
-        IEnumerable<IEntity> LightList { get; }
+        //[PrivateApi]
+        //[Obsolete("deprecated since 2sxc 9.8 / eav 4.5 - use List instead")]
+        //IEnumerable<IEntity> LightList { get; }
 
 
         [PrivateApi("wip")]

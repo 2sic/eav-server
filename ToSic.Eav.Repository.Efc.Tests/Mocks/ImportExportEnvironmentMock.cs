@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
@@ -11,9 +10,21 @@ namespace ToSic.Eav.Repository.Efc.Tests.Mocks
 {
     internal class ImportExportEnvironmentMock : HasLog, IImportExportEnvironment
     {
-        public ImportExportEnvironmentMock(ILog parentLog = null) : base("Mck.ImpExp", parentLog)
+        #region Constructors
+
+        public ImportExportEnvironmentMock() : base("Mck.ImpExp")
         {
         }
+
+        public IImportExportEnvironment Init(ILog parent)
+        {
+            Log.LinkTo(parent);
+            return this;
+        }
+
+
+        #endregion
+
 
         public List<Message> Messages { get; } = new List<Message>();
 

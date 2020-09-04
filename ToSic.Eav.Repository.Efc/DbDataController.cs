@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Efc;
@@ -25,7 +24,7 @@ namespace ToSic.Eav.Repository.Efc
         public DbVersioning Versioning { get; private set; }
         public DbEntity Entities { get; private set; }
         public DbValue Values { get; private set; }
-        public DbAttributeDefinition AttributesDefinition { get; private set; }
+        public DbAttribute Attributes { get; private set; }
         public DbRelationship Relationships { get; private set; }
         public DbAttributeSet AttribSet { get; private set; }
         internal DbPublishing Publishing { get; private set; }
@@ -43,20 +42,12 @@ namespace ToSic.Eav.Repository.Efc
         /// <summary>
         /// AppId of this whole Context
         /// </summary>
-        public int AppId
-        {
-            get => _appId == 0 ? Constants.MetaDataAppId : _appId;
-            set => _appId = value;
-        }
+        public int AppId => _appId == Constants.AppIdEmpty ? Constants.MetaDataAppId : _appId;
 
         /// <summary>
         /// ZoneId of this whole Context
         /// </summary>
-        public int ZoneId
-        {
-            get => _zoneId == 0 ? Constants.DefaultZoneId : _zoneId;
-            set => _zoneId = value;
-        }
+        public int ZoneId => _zoneId == 0 ? Constants.DefaultZoneId : _zoneId;
 
         private string _userName;
         /// <summary>
@@ -80,7 +71,7 @@ namespace ToSic.Eav.Repository.Efc
                 }
                 return _userName;
             }
-            set => _userName = value;
+            //set => _userName = value;
         }
 
         #endregion
@@ -115,12 +106,11 @@ namespace ToSic.Eav.Repository.Efc
             var dc = new DbDataController
             {
                 SqlDb = context,
-                //Log = new Log("Db.Data")
             };
             dc.Versioning = new DbVersioning(dc);
             dc.Entities = new DbEntity(dc);
             dc.Values = new DbValue(dc);
-            dc.AttributesDefinition = new DbAttributeDefinition(dc);
+            dc.Attributes = new DbAttribute(dc);
             dc.Relationships = new DbRelationship(dc);
             dc.AttribSet = new DbAttributeSet(dc);
             dc.Publishing = new DbPublishing(dc);
@@ -198,7 +188,7 @@ namespace ToSic.Eav.Repository.Efc
         /// </summary>
         public int SaveChanges(bool acceptAllChangesOnSuccess, EavDbContext.SaveChangesEvent baseEvent)
         {
-            if (_appId == 0)
+            if (_appId == Constants.AppIdEmpty)
                 throw new Exception("SaveChanges with AppId 0 not allowed.");
 
             // enure changelog exists and is set to SQL CONTEXT_INFO variable
@@ -262,7 +252,7 @@ namespace ToSic.Eav.Repository.Efc
         /// <summary>
         /// Get or seth whether SaveChanges() should automatically purge cache.
         /// </summary>
-        /// <remarks>Usefull if many changes are made in a batch and Cache should be purged after that batch</remarks>
+        /// <remarks>Useful if many changes are made in a batch and Cache should be purged after that batch</remarks>
         private bool _purgeAppCacheOnSave = true;
 
         public void DoButSkipAppCachePurge(Action action)
@@ -285,7 +275,7 @@ namespace ToSic.Eav.Repository.Efc
         }
 
         public IRepositoryLoader Loader => new Efc11Loader(SqlDb);
-        public void DoWhileQueuingVersioning(Action action) => Versioning.QueueDuringAction(action);
+        public void DoWhileQueuingVersioning(Action action) => Versioning.DoAndSaveHistoryQueue(action);
         public void DoWhileQueueingRelationships(Action action) => Relationships.DoWhileQueueingRelationships(action);
 
         public List<int> Save(List<IEntity> entities, SaveOptions saveOptions)

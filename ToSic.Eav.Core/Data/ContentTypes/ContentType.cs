@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Repositories;
 using static System.StringComparison;
@@ -12,7 +11,7 @@ namespace ToSic.Eav.Data
     /// Represents a ContentType
     /// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-    public class ContentType : IContentType, IContentTypeShared, IHasExternalI18n
+    public class ContentType : IContentType, IContentTypeShared
     {
         #region simple properties
 
@@ -20,10 +19,10 @@ namespace ToSic.Eav.Data
         public int AppId { get; }
 
         /// <inheritdoc />
-        public string Name { get; protected set; }
+        public string Name { get; }
 
         /// <inheritdoc />
-        public string StaticName { get; protected set; }
+        public string StaticName { get; private set; }
 
         /// <inheritdoc />
         public string Description { get; protected set; }
@@ -47,7 +46,7 @@ namespace ToSic.Eav.Data
         public bool IsDynamic { get; internal set; }
 
         /// <inheritdoc />
-        public bool Is(string name) => Name == name || StaticName == name;
+        public bool Is(string name) => Name.Equals(name, InvariantCultureIgnoreCase) || StaticName.Equals(name, InvariantCultureIgnoreCase);
 
         /// <inheritdoc />
         public IContentTypeAttribute this[string fieldName] => Attributes.FirstOrDefault(a => string.Equals(a.Name, fieldName, OrdinalIgnoreCase));
@@ -63,7 +62,7 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         public int ParentZoneId { get; }
         /// <inheritdoc />
-        public bool AlwaysShareConfiguration { get; protected set; }
+        public bool AlwaysShareConfiguration { get; private set; }
 
         #endregion
 
@@ -140,13 +139,5 @@ namespace ToSic.Eav.Data
         private readonly IHasMetadataSource _metaOfThisApp;
 
         #endregion
-
-        #region external i18n
-        [PrivateApi]
-        public string I18nKey { get; protected set; } = null;
-        #endregion
-
     }
-
-
 }

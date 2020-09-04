@@ -1,4 +1,5 @@
-﻿namespace ToSic.Eav.DataSources.Queries
+﻿// ReSharper disable UnusedMember.Global
+namespace ToSic.Eav.DataSources.Queries
 {
     public enum DifficultyBeta
     {

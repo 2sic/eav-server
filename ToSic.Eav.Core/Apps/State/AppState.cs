@@ -18,8 +18,8 @@ namespace ToSic.Eav.Apps
 
         [PrivateApi("constructor, internal use only")]
         internal AppState(IAppIdentity app, ILog parentLog)
-            : base(app, new CodeRef(), parentLog, $"App.St-{app.AppId}",$"start build {nameof(AppState)} {app.AppId}")
-	    {
+        {
+            Init(app, new CodeRef(), parentLog, $"App.St-{app.AppId}", $"start build {nameof(AppState)} {app.AppId}");
             CacheResetTimestamp();  // do this very early, as this number is needed elsewhere
 
 	        Index = new Dictionary<int, IEntity>();

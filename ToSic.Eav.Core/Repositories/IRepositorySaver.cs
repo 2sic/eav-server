@@ -6,6 +6,7 @@ namespace ToSic.Eav.Interfaces
     {
         void SaveContentType(IContentType type);
 
-        void SaveEntity(Data.IEntity item);
+        // 2020-07-31 2dm - never used #2134
+        //void SaveEntity(Data.IEntity item);
     }
 }

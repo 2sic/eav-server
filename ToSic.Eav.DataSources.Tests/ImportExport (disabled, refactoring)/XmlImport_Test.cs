@@ -12,8 +12,8 @@ namespace ToSic.Eav.UnitTests.ImportExport.Refactoring
         //private readonly int ZoneId = 1;
         //private readonly int AppId = 1;
         //private readonly int ContentTypeSimpleContent = 13;
-        private Guid SingleItemGuid = new Guid("31d93b03-cfb3-483b-8134-e08bbee9cd2c");
-        private string UserNameOfTestingScript = "TestUser";
+        //private Guid SingleItemGuid = new Guid("31d93b03-cfb3-483b-8134-e08bbee9cd2c");
+        //private string UserNameOfTestingScript = "TestUser";
         #endregion
 
         #region Test-Data

@@ -4,7 +4,6 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
-using ToSic.Eav.Enums;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence;
@@ -27,7 +26,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         #region Test Data Person tests
 
         private const int AppId = Constants.TransientAppId;
-        ContentType _ctNull = null;
+        //ContentType _ctNull = null;
 
         ContentType _ctPerson = new ContentType(AppId, "Person") {Attributes = new List<IContentTypeAttribute>
         {

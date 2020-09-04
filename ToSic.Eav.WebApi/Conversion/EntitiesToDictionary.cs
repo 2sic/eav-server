@@ -18,7 +18,12 @@ namespace ToSic.Eav.Conversion
         public EntitiesToDictionary()
         {
             // Ensure that date-times are sent in the Zulu-time format (UTC) and not with offsets which causes many problems during round-trips
+#if NET451
             GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
+#else
+            // "Not Yet Implemented in .net standard #TodoNetStandard";
+            // probably do at top level like https://stackoverflow.com/questions/58102189/formatting-datetime-in-asp-net-core-3-0-using-system-text-json
+#endif
         }
 
 

@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Data;
-using ToSic.Eav.Enums;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Efc.Models;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -13,6 +10,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 {
     public class DbRelationship: BllCommandBase
     {
+        public DbRelationship(DbDataController db) : base(db, "Db.Rels") {}
 
         internal void DoWhileQueueingRelationships(Action action)
         {
@@ -33,16 +31,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
         private readonly List<RelationshipToSave> _saveQueue = new List<RelationshipToSave>();
 
 
-        public DbRelationship(DbDataController cntx) : base(cntx, "Db.Rels") {}
-
-        internal ICollection<ToSicEavEntityRelationships> GetRelationshipsOfParent(int parentId)
-        {
-            return DbContext.SqlDb.ToSicEavEntityRelationships
-                .Include(r => r.ChildEntity)
-                .Include(r => r.Attribute)
-                .Where(r => r.ParentEntityId == parentId)
-                .ToList();
-        }
 
         /// <summary>
         /// Update Relationships of an Entity
@@ -191,7 +179,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
         private struct RelationshipToSave
         {
             public int AttributeId { get; set; }
-            //public Guid? ParentEntityGuid { get; set; }
             public List<Guid?> ChildEntityGuids { get; set; }
             public List<int?> ChildEntityIds { get; set; }
 
@@ -227,7 +214,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     {
                         case null:
                             continue;
-                        case /*LazyEntities*/IEnumerable<IEntity> entities:
+                        case IEnumerable<IEntity> entities:
                             list = ((LazyEntities)entities).Identifiers;
                             break;
                         case Guid guid:

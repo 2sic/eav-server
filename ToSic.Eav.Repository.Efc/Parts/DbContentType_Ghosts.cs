@@ -11,7 +11,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
     {
 
         /// <summary>
-        /// if AttributeSet refers another AttributeSet, get ID of the refered AttributeSet. Otherwise returns passed AttributeSetId.
+        /// if AttributeSet refers another AttributeSet, get ID of the referred AttributeSet. Otherwise returns passed AttributeSetId.
         /// </summary>
         /// <param name="attributeSetId">AttributeSetId to resolve</param>
         internal int ResolvePotentialGhostAttributeSetId(int attributeSetId)

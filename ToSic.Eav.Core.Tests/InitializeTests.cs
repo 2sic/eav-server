@@ -3,9 +3,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Core.Tests.Mocks;
 using ToSic.Eav.Data;
-using ToSic.Eav.Implementations.Runtime;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Run;
+using ToSic.Eav.Run.Basic;
 
 namespace ToSic.Eav.Core.Tests
 {
@@ -24,8 +24,8 @@ namespace ToSic.Eav.Core.Tests
             {
                 //Trace.WriteLine("di configuration core");
                 sc.TryAddTransient<IValueConverter, MockValueConverter>();
-                sc.TryAddTransient<IRuntime, NeutralRuntime>();
-                sc.TryAddTransient<IFingerprintProvider, FingerprintProvider>();
+                sc.TryAddTransient<IRuntime, BasicRuntime>();
+                sc.TryAddTransient<IFingerprint, FingerprintProvider>();
                 configure.Invoke(sc);   // call parent invoker if necessary (usually not relevant at core, as this is the top-level
             });
 

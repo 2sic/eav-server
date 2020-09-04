@@ -87,9 +87,9 @@ namespace ToSic.Eav.DataSources
         /// <inheritdoc />
         public IEnumerable<IEntity> List => Out[Constants.DefaultStreamName].List;
 
-        [PrivateApi]
-        [Obsolete("deprecated since 2sxc 9.8 / eav 4.5 - use List")]
-        public IEnumerable<IEntity> LightList => List;
+        //[PrivateApi]
+        //[Obsolete("deprecated since 2sxc 9.8 / eav 4.5 - use List")]
+        //public IEnumerable<IEntity> LightList => List;
 
         public DataSourceConfiguration Configuration => _config ?? (_config = new DataSourceConfiguration(this));
         private DataSourceConfiguration _config;

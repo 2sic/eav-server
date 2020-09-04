@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Run;
 
@@ -56,7 +55,7 @@ namespace ToSic.Eav.Types
         private IEnumerable<IContentType> ContentTypesInRuntime()
         {
             Log.Add("ContentTypesInRuntime() loading");
-            var runtime = Factory.Resolve<IRuntime>();
+            var runtime = Factory.Resolve<IRuntime>().Init(Log);
             runtime?.LinkLog(Log);
             return runtime?.LoadGlobalContentTypes() ?? new List<IContentType>();
         }

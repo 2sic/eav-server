@@ -10,15 +10,10 @@ namespace ToSic.Eav.Repository.Efc
         internal BllCommandBase(DbDataController dataController, string logName)
         {
             DbContext = dataController;
-            Log = new Log(logName, dataController.Log);// parentLog);
+            Log = new Log(logName, dataController.Log);
         }
 
-        #region Logging
-
-        protected ILog Log;
-
-        #endregion
-
+        protected readonly ILog Log;
 
     }
 }

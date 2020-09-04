@@ -2,7 +2,7 @@
 {
     public partial class DbEntity: BllCommandBase
     {
-        public DbEntity(DbDataController cntx) : base(cntx, "Db.Enty")
+        public DbEntity(DbDataController db) : base(db, "Db.Enty")
         {
         }
     }

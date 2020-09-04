@@ -5,9 +5,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 {
     public class DbValue : BllCommandBase
     {
-        public DbValue(DbDataController cntx) : base(cntx, "Db.Values")
-        {
-        }
+        public DbValue(DbDataController db) : base(db, "Db.Values") {}
 
         /// <summary>
         /// Copy all Values (including Related Entities) from teh Source Entity to the target entity
@@ -15,7 +13,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         internal void CloneEntitySimpleValues(ToSicEavEntities source, ToSicEavEntities target)
         {
             Log.Add($"CloneEntitySimpleValues({source.EntityId}, {target.EntityId})");
-            // Clear values on target (including Dimensions). Must be done in separate steps, would cause unallowed null-Foreign-Keys
+            // Clear values on target (including Dimensions). Must be done in separate steps, would cause un-allowed null-Foreign-Keys
             var delCount = 0;
             if (target.ToSicEavValues.Any(v => v.ChangeLogDeleted == null))
                 foreach (var eavValue in target.ToSicEavValues.Where(v => v.ChangeLogDeleted == null))

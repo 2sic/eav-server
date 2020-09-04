@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Apps.Parts;
-using ToSic.Eav.WebApi.Formats;
+using ToSic.Eav.WebApi.Dto;
 
 namespace ToSic.Eav.WebApi.PublicApi
 {
@@ -57,7 +57,7 @@ namespace ToSic.Eav.WebApi.PublicApi
         /// <param name="scope"></param>
         /// <param name="withStatistics"></param>
         /// <returns></returns>
-        IEnumerable<dynamic> Get(int appId, string scope = null, bool withStatistics = false);
+        IEnumerable<ContentTypeDto> Get(int appId, string scope = null, bool withStatistics = false);
 
         /// <summary>
         /// Get one content-type
@@ -66,7 +66,7 @@ namespace ToSic.Eav.WebApi.PublicApi
         /// <param name="contentTypeId"></param>
         /// <param name="scope"></param>
         /// <returns></returns>
-        dynamic Get(int appId, string contentTypeId, string scope = null);
+        ContentTypeDto Get(int appId, string contentTypeId, string scope = null);
 
         /// <summary>
         /// Get the fields of a content-type
@@ -74,7 +74,7 @@ namespace ToSic.Eav.WebApi.PublicApi
         /// <param name="appId"></param>
         /// <param name="staticName"></param>
         /// <returns></returns>
-        IEnumerable<ContentTypeFieldInfo> GetFields(int appId, string staticName);
+        IEnumerable<ContentTypeFieldDto> GetFields(int appId, string staticName);
 
         /// <summary>
         /// Get a single content-type.
@@ -84,7 +84,7 @@ namespace ToSic.Eav.WebApi.PublicApi
         /// <param name="contentTypeStaticName"></param>
         /// <param name="scope"></param>
         /// <returns></returns>
-        dynamic GetSingle(int appId, string contentTypeStaticName, string scope = null);
+        ContentTypeDto GetSingle(int appId, string contentTypeStaticName, string scope = null);
 
         /// <summary>
         /// Get a list of all known input types in this app.

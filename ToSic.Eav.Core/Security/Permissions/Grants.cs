@@ -19,6 +19,7 @@
 
         Approve = 'a',
 
+        // ReSharper disable once UnusedMember.Global
         Schema = '$',
 
         ReadDraft = 'ř',

@@ -12,41 +12,41 @@ namespace ToSic.Eav.UnitTests.ImportExport.Refactoring
         #endregion
 
         #region Expected Blank Template Values
-        private string ExpectedBlankTemplateSimpleContent = @"<SexyContentData>
-  <Entity Type=""BasicContentwithPreviewandImagebuiltin"">
-    <Guid></Guid>
-    <Language></Language>
-    <Title>BlankExportHelp</Title>
-    <Content></Content>
-    <PreviewContent></PreviewContent>
-    <Link></Link>
-    <Image></Image>
-  </Entity>
-  <Entity Type=""BasicContentwithPreviewandImagebuiltin"">
-    <Guid></Guid>
-    <Language></Language>
-    <Title></Title>
-    <Content></Content>
-    <PreviewContent></PreviewContent>
-    <Link></Link>
-    <Image></Image>
-  </Entity>
-</SexyContentData>";
+//        private string ExpectedBlankTemplateSimpleContent = @"<SexyContentData>
+//  <Entity Type=""BasicContentwithPreviewandImagebuiltin"">
+//    <Guid></Guid>
+//    <Language></Language>
+//    <Title>BlankExportHelp</Title>
+//    <Content></Content>
+//    <PreviewContent></PreviewContent>
+//    <Link></Link>
+//    <Image></Image>
+//  </Entity>
+//  <Entity Type=""BasicContentwithPreviewandImagebuiltin"">
+//    <Guid></Guid>
+//    <Language></Language>
+//    <Title></Title>
+//    <Content></Content>
+//    <PreviewContent></PreviewContent>
+//    <Link></Link>
+//    <Image></Image>
+//  </Entity>
+//</SexyContentData>";
 
-        private string ExpectedBlankTemplateRetinaEffects = @"<SexyContentData>
-  <Entity Type=""RetinaEffectdemo"">
-    <Guid></Guid>
-    <Language></Language>
-    <Image>BlankExportHelp</Image>
-    <Test></Test>
-  </Entity>
-  <Entity Type=""RetinaEffectdemo"">
-    <Guid></Guid>
-    <Language></Language>
-    <Image></Image>
-    <Test></Test>
-  </Entity>
-</SexyContentData>";
+//        private string ExpectedBlankTemplateRetinaEffects = @"<SexyContentData>
+//  <Entity Type=""RetinaEffectdemo"">
+//    <Guid></Guid>
+//    <Language></Language>
+//    <Image>BlankExportHelp</Image>
+//    <Test></Test>
+//  </Entity>
+//  <Entity Type=""RetinaEffectdemo"">
+//    <Guid></Guid>
+//    <Language></Language>
+//    <Image></Image>
+//    <Test></Test>
+//  </Entity>
+//</SexyContentData>";
 
         #endregion
 

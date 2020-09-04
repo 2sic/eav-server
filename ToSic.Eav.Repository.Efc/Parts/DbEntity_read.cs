@@ -40,7 +40,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             return wraplog("ok", found);
         }
 
-        internal ToSicEavEntities GetDbEntity(int entityId, string includes)
+        private ToSicEavEntities GetDbEntity(int entityId, string includes)
             => IncludeMultiple(EntityQuery, includes).Single(e => e.EntityId == entityId);
 
         /// <summary>
@@ -60,10 +60,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
                                       && !e.ChangeLogDeleted.HasValue
                                       && !e.AttributeSet.ChangeLogDeleted.HasValue
                                       && e.AppId == DbContext.AppId);
-
-
-        internal IQueryable<ToSicEavEntities> GetEntitiesByType(ToSicEavAttributeSets set)
-        => EntityQuery.Where(e => e.AttributeSet == set);
 
 
         /// <summary>

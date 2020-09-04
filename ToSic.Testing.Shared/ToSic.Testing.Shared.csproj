@@ -115,7 +115,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ToSic.Eav.AppEngine\ToSic.Eav.Apps.csproj">
+    <ProjectReference Include="..\ToSic.Eav.Apps\ToSic.Eav.Apps.csproj">
       <Project>{fa1b4495-6b85-400f-a5e3-0e292ccbfae2}</Project>
       <Name>ToSic.Eav.Apps</Name>
     </ProjectReference>
@@ -127,8 +127,8 @@
       <Project>{daae8e21-ca5f-400b-9f5a-5e4e1196b21b}</Project>
       <Name>ToSic.Eav.DataSources</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ToSic.Eav.Persistence.EFC11\ToSic.Eav.Persistence.Efc.csproj">
-      <Project>{0b6f21c6-e066-419e-9a6b-c34ffd668a16}</Project>
+    <ProjectReference Include="..\ToSic.Eav.Persistence.Efc\ToSic.Eav.Persistence.Efc.csproj">
+      <Project>{b45f98a5-bba9-4418-a5a1-7ca747e1698b}</Project>
       <Name>ToSic.Eav.Persistence.Efc</Name>
     </ProjectReference>
     <ProjectReference Include="..\ToSic.Eav\ToSic.Eav.csproj">

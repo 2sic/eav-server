@@ -4,6 +4,7 @@ using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Core.Tests.Types;
 using ToSic.Eav.ImportExport.Persistence.File;
+using ToSic.Eav.Run;
 using ToSic.Eav.Types;
 
 namespace ToSic.Eav.ImportExport.Tests.Persistence.File
@@ -73,7 +74,7 @@ namespace ToSic.Eav.ImportExport.Tests.Persistence.File
         {
             // set loader root path, based on test environment
             RepositoryInfoOfTestSystem.PathToUse = TestingPath40;
-            var loader = new Runtime();
+            var loader = (Runtime)Factory.Resolve<IRuntime>().Init(null);
             var time = Stopwatch.StartNew();
             for (var i = 0; i < 10; i++)
             {

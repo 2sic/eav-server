@@ -8,7 +8,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 {
 	public class DbDimensions: BllCommandBase
 	{
-        public DbDimensions(DbDataController ctx) : base(ctx, "Db.Dims") { }
+        public DbDimensions(DbDataController db) : base(db, "Db.Dims") { }
 
 		private int GetDimensionId(string systemKey, string externalKey)
 		{
@@ -83,27 +83,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 && (includeInactive || d.Active)
                 ).Cast<DimensionDefinition>().ToList();
         }
-
-
-     //   /// <summary>
-     //   /// Generate a language list which will have at least 1 language in it for import-purposes
-     //   /// note that I'm not sure why we are doing this!
-     //   /// </summary>
-     //   /// <param name="defaultLanguage"></param>
-     //   /// <returns></returns>
-	    //public List<DimensionDefinition> GetLanguageListForImport(string defaultLanguage)
-	    //{
-     //       var langs = GetLanguages();
-     //       if (langs.Count == 0)
-     //           langs.Add(new DimensionDefinition
-     //           {
-     //               Active = true,
-     //               EnvironmentKey = defaultLanguage,
-     //               Name = "(added by import System, default language " + defaultLanguage + ")",
-     //               Key = Constants.CultureSystemKey
-     //           });
-	    //    return langs.ToList();
-	    //}
 
         /// <summary>
         /// Add a new Language to current Zone

@@ -5,7 +5,7 @@ using ToSic.Eav.Persistence.Logging;
 
 namespace ToSic.Eav.Persistence.Interfaces
 {
-    public interface IImportExportEnvironment: IHasLog
+    public interface IImportExportEnvironment: IHasLog<IImportExportEnvironment>
     {
 
         List<Message> Messages { get; }
@@ -30,7 +30,7 @@ namespace ToSic.Eav.Persistence.Interfaces
         /// </summary>
         string FallbackContentTypeScope { get; }
 
-        //todo: this is now availabl ein the normal IEnvironment, try to move all use cases to that
+        //todo: this is now available ein the normal IEnvironment, try to move all use cases to that
         string DefaultLanguage { get; }
         string TemplatesRoot(int zoneId, int appId);
         string TargetPath(string folder);

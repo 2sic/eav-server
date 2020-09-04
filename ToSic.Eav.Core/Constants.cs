@@ -10,6 +10,9 @@ namespace ToSic.Eav
         /// </summary>
         public const string DefaultAppName = "Default";
 
+        public const int AppIdEmpty = 0;
+
+        public const int NullId = -2742;
 
         public const string CultureSystemKey = "Culture";
 
@@ -138,7 +141,7 @@ namespace ToSic.Eav
         public const string InputTypeDisableI18N = "DisableI18n";
         public const string InputTypeAngularAssets = "AngularAssets";
         public const string InputTypeUseAdam = "UseAdam";
-        public const string InputTypeAngularMode = "AngularMode";
+        //public const string InputTypeAngularMode = "AngularMode";
 
         #endregion
 

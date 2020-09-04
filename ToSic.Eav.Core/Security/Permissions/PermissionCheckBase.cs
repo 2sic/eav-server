@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Run;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -12,9 +11,9 @@ namespace ToSic.Eav.Security
     {
 
         #region Permission Targets and resulting list of metadata to control
-        private IContentType TargetType { get; }
+        private IContentType TargetType { get; set; }
 
-        private IEntity TargetItem { get; }
+        private IEntity TargetItem { get; set; }
 
         protected IEnumerable<Permission> PermissionList
         {
@@ -43,7 +42,7 @@ namespace ToSic.Eav.Security
 
         private IEnumerable<Permission> _permissionList;
 
-        private readonly IEnumerable<Permission> _additionalMetadata;
+        private IEnumerable<Permission> _additionalMetadata;
 
         public bool HasPermissions => PermissionList.Any();
 
@@ -53,18 +52,24 @@ namespace ToSic.Eav.Security
         #region constructors
 
         /// <summary>
+        /// Basic constructor, you must always call Init afterwards
+        /// </summary>
+        protected PermissionCheckBase(string logName): base(logName) { }
+
+        /// <summary>
         /// Initialize this object so it can then give information regarding the permissions of an entity.
         /// Uses a GUID as identifier because that survives export/import. 
         /// </summary>
-        protected PermissionCheckBase(
+        protected PermissionCheckBase Init(
             ILog parentLog,
             IContentType targetType = null, // optional type to check
             IEntity targetItem = null,      // optional entity to check
             IEnumerable<Permission> permissions1 = null,
             IEnumerable<Permission> permissions2 = null
             ) 
-            : base("App.PermCk", parentLog)
+            //: base("App.PermCk")
         {
+            Log.LinkTo(parentLog);
             var permList2 = permissions2 as IList<Permission> ?? permissions2?.ToList();
 
             var wrapLog = Log.Call($"type:{targetType?.StaticName}, " +
@@ -81,12 +86,10 @@ namespace ToSic.Eav.Security
 
             GrantedBecause = Conditions.Undefined;
             wrapLog("ready");
+            return this;
         }
 
         #endregion
-
-        //public bool UserMay(Grants grant) 
-        //    => UserMay(new List<Grants> {grant});
 
         public Conditions GrantedBecause
         {
@@ -159,7 +162,5 @@ namespace ToSic.Eav.Security
         /// The current user, as provided by injection
         /// </summary>
         protected abstract IUser User { get; }
-
-
     }
 }

@@ -28,7 +28,7 @@ namespace ToSic.Eav.DataSources.Queries
         public QueryDefinition(IEntity header, int appId, ILog parentLog) 
             : base(header, parentLog, "DS.QDef")
         {
-            if (appId == 0)
+            if (appId == Constants.AppIdEmpty)
                 appId = header.AppId;
             AppId = appId;
         }

@@ -1,5 +1,4 @@
-﻿using System;
-using ToSic.Eav.Data;
+﻿using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Validation;
 using ToSic.Eav.Interfaces;
@@ -39,9 +38,11 @@ namespace ToSic.Eav.Persistence.File
             System.IO.File.WriteAllText(fileName, json);
        }
 
-        public void SaveEntity(IEntity item)
-        {
-            throw new NotImplementedException("save entity not provided yet");
-        }
+        // #2134?
+        // 2020-07-31 2dm - never used
+        //public void SaveEntity(IEntity item)
+        //{
+        //    throw new NotImplementedException("save entity not provided yet");
+        //}
     }
 }

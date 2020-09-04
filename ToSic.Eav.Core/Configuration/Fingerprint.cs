@@ -1,5 +1,6 @@
 ﻿using System;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Configuration
 {
@@ -21,7 +22,7 @@ namespace ToSic.Eav.Configuration
         {
             try
             {
-                var provider = Factory.Resolve<IFingerprintProvider>();
+                var provider = Factory.Resolve<IFingerprint>();
                 return provider.GetSystemFingerprint();
             }
             catch

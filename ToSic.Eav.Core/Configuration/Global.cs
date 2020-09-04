@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Run;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -38,7 +37,7 @@ namespace ToSic.Eav.Configuration
             List<IEntity> list;
             try
             {
-                var runtime = Factory.Resolve<IRuntime>();
+                var runtime = Factory.Resolve<IRuntime>().Init(null);
                 list = runtime?.LoadGlobalItems("configuration")?.ToList() ?? new List<IEntity>();
             }
             catch

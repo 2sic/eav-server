@@ -147,7 +147,8 @@ namespace ToSic.Eav.Persistence.File
 
 
         #region todo someday items
-        private string ItemPath => Path + ItemFolder;
+        // 2020-07-31 2dm not used
+        //private string ItemPath => Path + ItemFolder;
 
 
         /// <summary>

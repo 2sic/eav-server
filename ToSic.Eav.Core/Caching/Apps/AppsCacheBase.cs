@@ -91,7 +91,7 @@ namespace ToSic.Eav.Caching
 
         private AppState GetOrBuild(IAppIdentity appIdentity, string primaryLanguage = null)
         {
-            if (appIdentity.ZoneId == 0 || appIdentity.AppId == 0)
+            if (appIdentity.ZoneId == 0 || appIdentity.AppId == Constants.AppIdEmpty)
                 return null;
 
             var cacheKey = CacheKey(appIdentity);

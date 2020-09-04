@@ -36,7 +36,7 @@ namespace ToSic.Eav.DataSources.Queries
         {
             if (_runtimeCache != null) return _runtimeCache;
 
-            var runtime = Factory.Resolve<IRuntime>();
+            var runtime = Factory.Resolve<IRuntime>().Init(null);
             _runtimeCache = runtime?.LoadGlobalItems("query") ?? new List<IEntity>();
             return _runtimeCache;
         }

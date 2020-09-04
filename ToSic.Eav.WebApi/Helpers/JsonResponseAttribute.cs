@@ -1,6 +1,9 @@
-﻿using System;
+﻿#if NET451
+using System;
 using System.Web.Http.Controllers;
 
+// Special case: this should enforce json formatting
+// It's only needed in .net4x where the default is xml
 namespace ToSic.Eav.WebApi.Helpers
 {
     public class JsonResponseAttribute : Attribute, IControllerConfiguration
@@ -9,3 +12,5 @@ namespace ToSic.Eav.WebApi.Helpers
             => controllerSettings.Formatters.Remove(controllerSettings.Formatters.XmlFormatter);
     }
 }
+
+#endif
