@@ -1,11 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>net451;netstandard2.0</TargetFrameworks>
     <AssemblyName>ToSic.Eav.Persistence.Efc</AssemblyName>
     <AssemblyVersion>11.04.1.0</AssemblyVersion>
     <FileVersion>11.04.1.0</FileVersion>
-    <Version>11.04.01</Version>
+    <Version>11.05.00</Version>
   </PropertyGroup>
 
   <!-- Entity Framework for net451 (DNN) should be 1.1.1 because of DI, but newer version for MVC-->
