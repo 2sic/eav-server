@@ -5,6 +5,7 @@ using System.Xml.Linq;
 using System.Xml.XPath;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.Logging;
+using ToSic.Sxc.Adam;
 
 namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
 {
@@ -107,8 +108,8 @@ namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
 
         internal void FixPortalFilesAdamAppFolderName(string appDirectory)
         {
-            var originalAdamTempRoot = Path.Combine(appDirectory, XmlConstants.PortalFiles, "adam", From);
-            var newAdamTempRoot = Path.Combine(appDirectory, XmlConstants.PortalFiles, "adam", To);
+            var originalAdamTempRoot = Path.Combine(appDirectory, XmlConstants.PortalFiles, AdamConstants.AdamRootFolder, From);
+            var newAdamTempRoot = Path.Combine(appDirectory, XmlConstants.PortalFiles, AdamConstants.AdamRootFolder, To);
             if (Directory.Exists(originalAdamTempRoot))
             {
                 Log.Add($"rename app folder name in temp PortalFiles/adam from:{originalAdamTempRoot} to:{newAdamTempRoot}");
