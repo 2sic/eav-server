@@ -23,6 +23,13 @@ namespace ToSic.Eav.Apps.Assets
         int Id { get; set; }
 
         /// <summary>
+        /// The folder ID of the file, or parent-folder of a folder, if the underlying environment uses int IDs
+        /// </summary>
+        /// <returns>an int with the id used by the environment to track this item</returns>
+        // ReSharper disable once UnusedMemberInSuper.Global
+        int ParentId { get; }
+
+        /// <summary>
         /// The modified date of the file, as reported by the environment.
         /// </summary>
         /// <returns>The date-time when the file was modified last.</returns>

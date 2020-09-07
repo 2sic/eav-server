@@ -11,9 +11,13 @@ namespace ToSic.Eav.Apps.Assets
 
         /// <summary>
         /// Folder Id, only relevant if the environment uses Ids
+        /// Internally we want to prefer parentId, but
+        /// as this may confuse people and because FolderId may already be publicly used
+        /// we'll keep this property indefinitely
         /// </summary>
         public int FolderId { get; set; }
 
+        public int ParentId => FolderId;
 
         public string Folder { get; set; }
 

@@ -8,6 +8,9 @@ namespace ToSic.Eav.Apps.Assets
         public int Id { get; set; }
 
         /// <inheritdoc/>
+        public int ParentId { get; set; }
+
+        /// <inheritdoc/>
         public virtual bool HasChildren { get; set; }
 
         /// <inheritdoc/>
