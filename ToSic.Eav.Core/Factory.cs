@@ -12,7 +12,8 @@ namespace ToSic.Eav
 	{
         private static IServiceCollection _serviceCollection = new ServiceCollection();
 
-        public static void BetaUseExistingServiceCollection(IServiceCollection newServiceCollection)
+        // ReSharper disable once UnusedMember.Global
+        public static void UseExistingServices(IServiceCollection newServiceCollection)
             => _serviceCollection = newServiceCollection;
 
         public delegate void ServiceConfigurator(IServiceCollection service);

@@ -7,11 +7,12 @@ using ToSic.Eav.Repository.Efc.Implementations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Caching;
-using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.ImportExport.Json;
+using ToSic.Eav.ImportExport.Persistence.File;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Run;
+using ToSic.Eav.Run.Basic;
 using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav
@@ -19,30 +20,36 @@ namespace ToSic.Eav
 	/// <summary>
 	/// Global Eav Configuration
 	/// </summary>
-	public class DependencyInjection
+	public static class DependencyInjection
 	{
-        #region try to configure the ef-core container
-
 	    /// <summary>
 	    /// Use this to setup the new DI container
 	    /// </summary>
-	    /// <param name="serviceCollection"></param>
-	    public void ConfigureNetCoreContainer(IServiceCollection serviceCollection)
+	    /// <param name="services"></param>
+	    public static IServiceCollection AddEav(this IServiceCollection services)
 	    {
-            serviceCollection.TryAddSingleton<IAppsCache, AppsCache>();
+            // very basic stuff - normally overriden by the platform
+            services.TryAddTransient<IFingerprint, BasicFingerprint>();
+            services.TryAddTransient<IUser, BasicUser>();
+            services.TryAddTransient<IValueConverter, BasicValueConverter>();
 
-            serviceCollection.TryAddTransient<IAppRoot, AppRoot>();
-	        serviceCollection.TryAddTransient<IRemoteMetadata, RemoteMetadata>();
-	        serviceCollection.TryAddTransient<ITargetTypes, EfcMetadataTargetTypes>();
+            // core things - usually not replaced
+            services.TryAddTransient<IRuntime, Runtime>();
 
-            serviceCollection.TryAddTransient<IRepositoryImporter, RepositoryImporter>();
+            services.TryAddSingleton<IAppsCache, AppsCache>();
 
-            serviceCollection.TryAddTransient<ISystemConfiguration, Repository.Efc.Implementations.Configuration>();
+            services.TryAddTransient<IAppRoot, AppRoot>();
+	        services.TryAddTransient<IRemoteMetadata, RemoteMetadata>();
+	        services.TryAddTransient<ITargetTypes, EfcMetadataTargetTypes>();
 
-            serviceCollection.TryAddTransient<IRepositoryLoader, Efc11Loader>();
+            services.TryAddTransient<IRepositoryImporter, RepositoryImporter>();
 
-	        serviceCollection.TryAddTransient<IDataSerializer, JsonSerializer>();
-	        serviceCollection.TryAddTransient<IDataDeserializer, JsonSerializer>();
+            services.TryAddTransient<ISystemConfiguration, Repository.Efc.Implementations.Configuration>();
+
+            services.TryAddTransient<IRepositoryLoader, Efc11Loader>();
+
+	        services.TryAddTransient<IDataSerializer, JsonSerializer>();
+	        services.TryAddTransient<IDataDeserializer, JsonSerializer>();
 
             var conStr = new Repository.Efc.Implementations.Configuration().DbConnectionString;
             if (!conStr.ToLower().Contains("multipleactiveresultsets")) // this is needed to allow querying data while preparing new data on the same DbContext
@@ -50,16 +57,14 @@ namespace ToSic.Eav
 
             // transient lifetime is important, otherwise 2-3x slower!
             // note: https://docs.microsoft.com/en-us/ef/core/miscellaneous/configuring-dbcontext says we should use transient
-            serviceCollection.AddDbContext<EavDbContext>(options => options.UseSqlServer(conStr), 
+            services.AddDbContext<EavDbContext>(options => options.UseSqlServer(conStr), 
                 ServiceLifetime.Transient); 
 
             // register some Default Constructors
-            serviceCollection.TryAddTransient<Sql>();
-            serviceCollection.TryAddTransient<DataTable>();
+            services.TryAddTransient<Sql>();
+            services.TryAddTransient<DataTable>();
 
-            
+            return services;
         }
-#endregion
-
     }
 }

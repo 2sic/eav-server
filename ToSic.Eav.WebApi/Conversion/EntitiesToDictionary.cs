@@ -21,8 +21,8 @@ namespace ToSic.Eav.Conversion
 #if NET451
             GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
 #else
-            // "Not Yet Implemented in .net standard #TodoNetStandard";
-            // probably do at top level like https://stackoverflow.com/questions/58102189/formatting-datetime-in-asp-net-core-3-0-using-system-text-json
+            // #DoneDotNetStandard - there it's handled in the startup.cs
+            
 #endif
         }
 
