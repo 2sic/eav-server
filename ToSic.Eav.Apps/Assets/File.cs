@@ -4,30 +4,19 @@ namespace ToSic.Eav.Apps.Assets
 {
     public abstract class File<TFolderId, TFileId>: IFile<TFolderId, TFileId>
     {
+        /// <inheritdoc />
+        public TFileId SysId { get; set; }
 
-        /// <summary>
-        /// An Id - only relevant if the environment uses Ids
-        /// </summary>
-        public TFileId Id { get; set; }
-
-        /// <summary>
-        /// Folder Id, only relevant if the environment uses Ids
-        /// Internally we want to prefer parentId, but
-        /// as this may confuse people and because FolderId may already be publicly used
-        /// we'll keep this property indefinitely
-        /// </summary>
-        public TFolderId FolderId { get; set; }
-
-
-        public TFolderId ParentId => FolderId;
+        /// <inheritdoc />
+        public TFolderId ParentSysId {get; set; }
 
         public string Folder { get; set; }
 
         #region Old Interface, where IDs were always ints
 
-        int IAsset.Id => Id as int? ?? 0;
-        int IAsset.ParentId => ParentId as int? ?? 0;
-        int IFile.FolderId => FolderId as int? ?? 0;
+        public int Id => SysId as int? ?? 0;
+        public int ParentId => ParentSysId as int? ?? 0;
+        public int FolderId => ParentSysId as int? ?? 0;
 
         #endregion
 
