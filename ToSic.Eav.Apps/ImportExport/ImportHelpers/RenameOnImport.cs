@@ -3,9 +3,9 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using ToSic.Eav.Apps.Adam;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.Logging;
-using ToSic.Sxc.Adam;
 
 namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
 {

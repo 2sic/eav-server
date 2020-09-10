@@ -28,7 +28,7 @@ namespace ToSic.Eav.Apps.Assets
         /// </summary>
         /// <returns>an int with the id used by the environment to track this item</returns>
         // ReSharper disable once UnusedMemberInSuper.Global
-        int FolderId { get; set; }
+        int FolderId { get; /*set;*/ }
 
         /// <summary>
         /// The full file name of the original file
