@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.Apps.Assets
 {
-    public interface IFolder<TFolderId, TFileId>: IFolder, IAssetSysId<TFolderId, TFolderId>
+    public interface IFolder<out TFolderId, out TFileId>: IFolder, IAssetSysId<TFolderId>, IAssetWithParentSysId<TFolderId>
     {
     }
 }
