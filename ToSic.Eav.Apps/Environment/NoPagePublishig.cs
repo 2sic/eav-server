@@ -26,7 +26,7 @@ namespace ToSic.Eav.Apps.Environment
 
         public bool Supported => false;
 
-        public PublishingMode Requirements(int moduleId)
+        public PublishingMode Requirements(int instanceId)
         {
             return PublishingMode.DraftOptional;
         }
@@ -37,22 +37,22 @@ namespace ToSic.Eav.Apps.Environment
             action.Invoke(info);
         }
 
-        public void DoInsidePublishLatestVersion(int moduleId, Action<VersioningActionInfo> action)
+        public void DoInsidePublishLatestVersion(int instanceId, Action<VersioningActionInfo> action)
         {
             // NOTE: Do nothing!
         }
 
-        public void DoInsideDeleteLatestVersion(int moduleId, Action<VersioningActionInfo> action)
+        public void DoInsideDeleteLatestVersion(int instanceId, Action<VersioningActionInfo> action)
         {
             // NOTE: Do nothing!
         }
 
-        public int GetLatestVersion(int moduleId)
+        public int GetLatestVersion(int instanceId)
         {
             return 0;
         }
 
-        public int GetPublishedVersion(int moduleId)
+        public int GetPublishedVersion(int instanceId)
         {
             return 0;
         }

@@ -16,9 +16,9 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// Get the current versioning requirements. - to determine if it's required, optional etc.
         /// </summary>
-        /// <param name="moduleId"></param>
+        /// <param name="instanceId"></param>
         /// <returns></returns>
-        PublishingMode Requirements(int moduleId);
+        PublishingMode Requirements(int instanceId);
 
         /// <summary>
         /// Wraps an action and performs pre/post processing related to versioning of the environment.
@@ -43,9 +43,9 @@ namespace ToSic.Eav.Apps
         ///// <param name="moduleId"></param>
         //void DoInsideDeleteLatestVersion(int moduleId, Action<VersioningActionInfo> action);
 
-        int GetLatestVersion(int moduleId);
+        int GetLatestVersion(int instanceId);
 
-        int GetPublishedVersion(int moduleId);
+        int GetPublishedVersion(int instanceId);
 
         void Publish(int instanceId, int version);
 
