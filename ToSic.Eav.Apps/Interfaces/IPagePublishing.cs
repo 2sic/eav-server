@@ -1,6 +1,7 @@
 ﻿using System;
 using ToSic.Eav.Apps.Enums;
 using ToSic.Eav.Apps.Environment;
+using ToSic.Eav.Apps.Run;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 
@@ -22,10 +23,11 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// Wraps an action and performs pre/post processing related to versioning of the environment.
         /// </summary>
+        /// <param name="context"></param>
         /// <param name="moduleId"></param>
         /// <param name="userId"></param>
         /// <param name="action"></param>
-        void DoInsidePublishing(int moduleId, int userId, Action<VersioningActionInfo> action);
+        void DoInsidePublishing(IInstanceContext context, Action<VersioningActionInfo> action);
 
         ///// <summary>
         ///// Wraps an action inside publish of latest version.

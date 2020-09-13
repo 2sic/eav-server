@@ -1,5 +1,6 @@
 ﻿using System;
 using ToSic.Eav.Apps.Enums;
+using ToSic.Eav.Apps.Run;
 using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps.Environment
@@ -30,7 +31,7 @@ namespace ToSic.Eav.Apps.Environment
             return PublishingMode.DraftOptional;
         }
 
-        public void DoInsidePublishing(int moduleId, int userId, Action<VersioningActionInfo> action)
+        public void DoInsidePublishing(IInstanceContext context, Action<VersioningActionInfo> action)
         {
             var info = new VersioningActionInfo();
             action.Invoke(info);
