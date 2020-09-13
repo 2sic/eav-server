@@ -48,19 +48,6 @@ namespace ToSic.Eav.WebApi
             return itm;
         }
 
-        // #2134
-        ///// <summary>
-        ///// this is needed by 2sxc
-        ///// </summary>
-        ///// <param name="contentType"></param>
-        ///// <param name="id"></param>
-        ///// <returns></returns>
-        //public Dictionary<string, object> GetOne(string contentType, int id)
-        //{
-        //    var found = GetOrThrow(contentType, id);
-        //    return Serializer.Convert(found);
-        //}
-
         /// <summary>
         /// Get all Entities of specified Type
         /// </summary>
