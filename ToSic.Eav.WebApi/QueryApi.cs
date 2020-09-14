@@ -75,9 +75,12 @@ namespace ToSic.Eav.WebApi
 		/// <summary>
 		/// Query the Result of a Pipeline using Test-Parameters
 		/// </summary>
-		public QueryRunDto Run(int appId, int id, ILookUpEngine config)
+		public QueryRunDto Run(int appId, int id, int instanceId)
 		{
-            var wrapLog = Log.Call($"a#{appId}, id:{id}");
+            var wrapLog = Log.Call($"a#{appId}, {nameof(id)}:{id}, {nameof(instanceId)}: {instanceId}");
+
+            var config = Factory.Resolve<IGetEngine>().GetEngine(instanceId, Log);
+
             // Get the query, run it and track how much time this took
 		    var queryFactory = new QueryBuilder(Log);
 		    var qDef = queryFactory.GetQueryDefinition(appId, id);
@@ -118,12 +121,7 @@ namespace ToSic.Eav.WebApi
 		/// <summary>
 		/// Delete a Pipeline with the Pipeline Entity, Pipeline Parts and their Configurations. Stops if the if the Pipeline Entity has relationships to other Entities.
 		/// </summary>
-		public object Delete(int appId, int id)
-		{
-		    new AppManager(appId, Log).Queries.Delete(id);
-			return new { Result = "Success" };
-		}
-
+		public bool Delete(int appId, int id) => new AppManager(appId, Log).Queries.Delete(id);
 
 
         public bool Import(EntityImportDto args)
