@@ -6,6 +6,7 @@ using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repository.Efc.Implementations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.ImportExport.Json;
@@ -50,6 +51,7 @@ namespace ToSic.Eav
 
 	        services.TryAddTransient<IDataSerializer, JsonSerializer>();
 	        services.TryAddTransient<IDataDeserializer, JsonSerializer>();
+            services.TryAddTransient<ZipExport, ZipExport>();
 
             var conStr = new Repository.Efc.Implementations.Configuration().DbConnectionString;
             if (!conStr.ToLower().Contains("multipleactiveresultsets")) // this is needed to allow querying data while preparing new data on the same DbContext
