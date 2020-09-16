@@ -25,14 +25,12 @@ namespace ToSic.Eav.Repository.Efc.Tests.Mocks
 
         #endregion
 
-
-        public List<Message> Messages { get; } = new List<Message>();
-
         public string BasePath { get; set; }= @"C:\Projects\eav-server\ToSic.Eav.Repository.Efc.Tests\";
 
 
-        public virtual void TransferFilesToTenant(string sourceFolder, string destinationFolder)
+        public virtual List<Message> TransferFilesToTenant(string sourceFolder, string destinationFolder)
         {
+            return new List<Message>();
         }
 
         public virtual Version TenantVersion => new Version(8, 0);

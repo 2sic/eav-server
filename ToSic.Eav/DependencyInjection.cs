@@ -52,6 +52,8 @@ namespace ToSic.Eav
 	        services.TryAddTransient<IDataSerializer, JsonSerializer>();
 	        services.TryAddTransient<IDataDeserializer, JsonSerializer>();
             services.TryAddTransient<ZipExport, ZipExport>();
+            services.TryAddTransient<ZipImport, ZipImport>();
+            services.TryAddTransient<ZipFromUrlImport, ZipFromUrlImport>();
 
             var conStr = new Repository.Efc.Implementations.Configuration().DbConnectionString;
             if (!conStr.ToLower().Contains("multipleactiveresultsets")) // this is needed to allow querying data while preparing new data on the same DbContext

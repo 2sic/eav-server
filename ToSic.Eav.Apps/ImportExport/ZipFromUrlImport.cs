@@ -10,9 +10,14 @@ namespace ToSic.Eav.Apps.ImportExport
 {
     public class ZipFromUrlImport: ZipImport
     {
-        public ZipFromUrlImport(IImportExportEnvironment environment, int zoneId, int? appId, bool allowCode, ILog parentLog) 
-            : base(environment, zoneId, appId, allowCode, parentLog)
+        public ZipFromUrlImport(IImportExportEnvironment environment) : base(environment)
         {
+        }
+
+        public new ZipFromUrlImport Init(int zoneId, int? appId, bool allowCode, ILog parentLog)
+        {
+            base.Init(zoneId, appId, allowCode, parentLog);
+            return this;
         }
 
         public bool ImportUrl(string packageUrl, bool isAppImport)
