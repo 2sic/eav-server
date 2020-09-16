@@ -13,7 +13,9 @@ using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.ImportExport.Validation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.File;
+using ToSic.Eav.Run;
 using ToSic.Eav.WebApi.Helpers;
+using ToSic.Eav.WebApi.Security;
 
 namespace ToSic.Eav.WebApi
 {
@@ -23,12 +25,7 @@ namespace ToSic.Eav.WebApi
         {
         }
 
-        public HttpResponseMessage ExportContent(int appId, string language, string defaultLanguage, string contentType,
-            ExportSelection exportSelection, ExportResourceReferenceMode exportResourcesReferences,
-            ExportLanguageResolution exportLanguageReferences, string selectedIds = null) 
-            => ExportContentNew(appId, language, defaultLanguage, contentType, exportSelection, exportResourcesReferences, exportLanguageReferences, selectedIds);
-
-        private HttpResponseMessage ExportContentNew(int appId, string language, 
+        public HttpResponseMessage ExportContent(IUser user, int appId, string language, 
             string defaultLanguage, 
             string contentType,
             ExportSelection exportSelection, 
@@ -36,8 +33,9 @@ namespace ToSic.Eav.WebApi
             ExportLanguageResolution exportLanguageReferences, 
             string selectedIds)
         {
-            Log.Add($"export content NEW a#{appId}, lang:{language}, " +
-                    $"deflang:{defaultLanguage}, ct:{contentType}, ids:{selectedIds}");
+            Log.Add($"export content a#{appId}, lang:{language}, deflang:{defaultLanguage}, ct:{contentType}, ids:{selectedIds}");
+            EavSecurityHelpers.ThrowIfNotAdmin(user);
+
             var appManager = new AppManager(appId, Log);
             var contextLanguages = appManager.Read.Zone.Languages().Select(l => l.EnvironmentKey).ToArray();
 
@@ -72,9 +70,10 @@ namespace ToSic.Eav.WebApi
         }
 
         [HttpGet]
-        public HttpResponseMessage DownloadTypeAsJson(int appId, string name)
+        public HttpResponseMessage DownloadTypeAsJson(IUser user, int appId, string name)
         {
             Log.Add($"get fields a#{appId}, type:{name}");
+            EavSecurityHelpers.ThrowIfNotAdmin(user);
             var appManager = new AppManager(appId, Log);
             var type = appManager.Read.ContentTypes.Get(name);
             var serializer = new JsonSerializer(appManager.AppState, Log);
@@ -85,9 +84,10 @@ namespace ToSic.Eav.WebApi
         }
 
         [HttpGet]
-        public HttpResponseMessage DownloadEntityAsJson(int appId, int id, string prefix, bool withMetadata)
+        public HttpResponseMessage DownloadEntityAsJson(IUser user, int appId, int id, string prefix, bool withMetadata)
         {
             Log.Add($"get fields a#{appId}, id:{id}");
+            EavSecurityHelpers.ThrowIfNotAdmin(user);
             var appManager = new AppManager(appId, Log);
             var entity = appManager.Read.Entities.Get(id);
             var serializer = new JsonSerializer(appManager.AppState, Log);
