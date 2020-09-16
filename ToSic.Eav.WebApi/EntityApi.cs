@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Run;
 using ToSic.Eav.Conversion;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Logging;
+using ToSic.Eav.WebApi.Errors;
 using ToSic.Eav.WebApi.Formats;
+using ToSic.Eav.WebApi.Security;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.WebApi
@@ -15,10 +18,23 @@ namespace ToSic.Eav.WebApi
     {
         public AppRuntime AppRead;
 
+        #region Constructors
+
         public EntityApi(int appId, bool showDrafts, ILog parentLog): base("Api.EntPrc", parentLog)
         {
             AppRead = new AppRuntime(appId, showDrafts, Log);
         }
+
+        public static EntityApi GetOrThrowBasedOnGrants(IInstanceContext context, IApp app, string contentType, List<Eav.Security.Grants> requiredGrants, ILog parentLog)
+        {
+            var permCheck = new MultiPermissionsTypes().Init(context, app, contentType, parentLog);
+            if (!permCheck.EnsureAll(requiredGrants, out var error))
+                throw HttpException.PermissionDenied(error);
+            return new EntityApi(app.AppId, true, parentLog);
+        }
+
+        #endregion
+
 
         /// <summary>
         /// The serializer, so it can be configured from outside if necessary
