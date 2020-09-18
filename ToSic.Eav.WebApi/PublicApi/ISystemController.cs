@@ -5,6 +5,8 @@ namespace ToSic.Eav.WebApi.PublicApi
 {
     public interface ISystemController
     {
-        IEnumerable<Feature> Features(int appId);
+        IEnumerable<Feature> Features(bool reload = false);
+
+        string ManageFeaturesUrl();
     }
 }

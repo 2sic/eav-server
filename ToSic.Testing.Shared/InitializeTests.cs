@@ -33,7 +33,7 @@ namespace ToSic.Testing.Shared
 
                 configure.Invoke(sc);
 
-                new DependencyInjection().ConfigureNetCoreContainer(sc);
+                sc.AddEav();
             });
 
         }

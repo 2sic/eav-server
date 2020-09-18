@@ -12,19 +12,27 @@ namespace ToSic.Eav.Apps.ImportExport
 {
     public class ZipImport: HasLog
     {
-        private readonly int? _initialAppId;
-        private readonly int _zoneId;
-        private readonly IImportExportEnvironment _environment;
+        private int? _initialAppId;
+        private int _zoneId;
+        public readonly IImportExportEnvironment Env;
 
-        public readonly bool AllowCodeImport;
+        public List<Message> Messages { get; }
 
-        public ZipImport(IImportExportEnvironment environment, int zoneId, int? appId, bool allowCode, ILog parentLog)
-            :base("Zip.Imp", parentLog)
+        public bool AllowCodeImport;
+
+        public ZipImport(IImportExportEnvironment environment) :base("Zip.Imp")
         {
+            Env = environment.Init(Log);
+            Messages = new List<Message>();
+        }
+
+        public ZipImport Init(int zoneId, int? appId, bool allowCode, ILog parentLog)
+        {
+            Log.LinkTo(parentLog);
             _initialAppId = appId;
             _zoneId = zoneId;
-            _environment = environment;
             AllowCodeImport = allowCode;
+            return this;
         }
 
         /// <summary>
@@ -37,7 +45,7 @@ namespace ToSic.Eav.Apps.ImportExport
         public bool ImportZip(Stream zipStream, string temporaryDirectory, string rename = null)
         {
             var wrapLog = Log.Call<bool>( parameters: $"{temporaryDirectory}, {nameof(rename)}:{rename}");
-            var messages = _environment.Messages;
+            var messages = Messages;
             Exception finalException = null;
 
             try
@@ -144,7 +152,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 Log.Add("will do app-import");
 
                 // Version Checks (new in 08.03.03)
-                new VersionCheck(_environment, Log).EnsureVersions(imp.AppConfig);
+                new VersionCheck(Env, Log).EnsureVersions(imp.AppConfig);
 
                 var folder = imp.AppFolder;
 
@@ -160,7 +168,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 else Log.Add("No rename of app requested");
 
                 // Throw error if the app directory already exists
-                var appPath = _environment.TargetPath(folder);
+                var appPath = Env.TargetPath(folder);
                 if (Directory.Exists(appPath))
                     throw new IOException($"App could not be installed, app-folder '{appPath}' already exists.");
 
@@ -200,7 +208,7 @@ namespace ToSic.Eav.Apps.ImportExport
         private void CopyAppFiles(List<Message> importMessages, int appId, string tempFolder)
         {
             var wrapLog = Log.Call($"..., {appId}, {tempFolder}");
-            var templateRoot = _environment.TemplatesRoot(_zoneId, appId);
+            var templateRoot = Env.TemplatesRoot(_zoneId, appId);
             var appTemplateRoot = Path.Combine(tempFolder, "2sexy");
             if (Directory.Exists(appTemplateRoot))
                 new FileManager(appTemplateRoot).CopyAllFiles(templateRoot, false, importMessages);
@@ -213,7 +221,10 @@ namespace ToSic.Eav.Apps.ImportExport
             // Handle PortalFiles folder
             var portalTempRoot = Path.Combine(appDirectory, XmlConstants.PortalFiles);
             if (Directory.Exists(portalTempRoot))
-                _environment.TransferFilesToTenant(portalTempRoot, string.Empty);
+            {
+                var messages = Env.TransferFilesToTenant(portalTempRoot, string.Empty);
+                Messages.AddRange(messages);
+            }
             wrapLog(null);
         }
 

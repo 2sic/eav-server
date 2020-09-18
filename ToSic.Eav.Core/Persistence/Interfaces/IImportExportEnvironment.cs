@@ -8,7 +8,7 @@ namespace ToSic.Eav.Persistence.Interfaces
     public interface IImportExportEnvironment: IHasLog<IImportExportEnvironment>
     {
 
-        List<Message> Messages { get; }
+        //List<Message> Messages { get; }
 
         /// <summary>
         /// Copy all files from SourceFolder to DestinationFolder
@@ -18,7 +18,7 @@ namespace ToSic.Eav.Persistence.Interfaces
         ///// <param name="overwriteFiles"></param>
         ///// <param name="messages"></param>
         ///// <param name="fileIdMapping">The fileIdMapping is needed to re-assign the existing "File:" parameters while importing the content</param>
-        void TransferFilesToTenant(string sourceFolder, string destinationFolder);
+        List<Message> TransferFilesToTenant(string sourceFolder, string destinationFolder);
 
         Version TenantVersion { get; }
 

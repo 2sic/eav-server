@@ -1,5 +1,6 @@
 ﻿using System;
 using ToSic.Eav.Apps.Enums;
+using ToSic.Eav.Apps.Run;
 using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps.Environment
@@ -25,33 +26,33 @@ namespace ToSic.Eav.Apps.Environment
 
         public bool Supported => false;
 
-        public PublishingMode Requirements(int moduleId)
+        public PublishingMode Requirements(int instanceId)
         {
             return PublishingMode.DraftOptional;
         }
 
-        public void DoInsidePublishing(int moduleId, int userId, Action<VersioningActionInfo> action)
+        public void DoInsidePublishing(IInstanceContext context, Action<VersioningActionInfo> action)
         {
             var info = new VersioningActionInfo();
             action.Invoke(info);
         }
 
-        public void DoInsidePublishLatestVersion(int moduleId, Action<VersioningActionInfo> action)
+        public void DoInsidePublishLatestVersion(int instanceId, Action<VersioningActionInfo> action)
         {
             // NOTE: Do nothing!
         }
 
-        public void DoInsideDeleteLatestVersion(int moduleId, Action<VersioningActionInfo> action)
+        public void DoInsideDeleteLatestVersion(int instanceId, Action<VersioningActionInfo> action)
         {
             // NOTE: Do nothing!
         }
 
-        public int GetLatestVersion(int moduleId)
+        public int GetLatestVersion(int instanceId)
         {
             return 0;
         }
 
-        public int GetPublishedVersion(int moduleId)
+        public int GetPublishedVersion(int instanceId)
         {
             return 0;
         }

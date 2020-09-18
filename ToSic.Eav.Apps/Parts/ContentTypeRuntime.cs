@@ -24,7 +24,41 @@ namespace ToSic.Eav.Apps.Parts
         /// <returns>a content-type or null if not found</returns>
         public IContentType Get(string name) => AppRT.AppState.GetContentType(name);
 
-        public IEnumerable<string> GetScopes() => All.Select(ct => ct.Scope).Distinct().OrderBy(s => s);
+        public IEnumerable<string> GetScopes()
+        {
+            var scopes = All.Select(ct => ct.Scope).Distinct().ToList();
+
+            // Make sure the "Default" scope is always included, otherwise it's missing on new apps
+            if (!scopes.Contains(AppConstants.ScopeContentOld))
+                scopes.Add(AppConstants.ScopeContentOld);
+
+            return scopes.OrderBy(s => s);
+        }
+
+        /// <summary>
+        /// Get the scopes with labels / sorted by label
+        /// </summary>
+        /// <returns></returns>
+        public IDictionary<string, string> ScopesWithLabels()
+        {
+            var scopes = GetScopes().ToList();
+
+            var lookup = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
+            {
+                {AppConstants.ScopeContentOld, "Default"},
+                {AppConstants.ScopeContentSystem, "System: CMS"},
+                {AppConstants.ScopeApp, "System: App"},
+                {Constants.ScopeSystem, "System: System"},
+                {"System.DataSources", "System: DataSources"},
+                {"System.Fields", "System: Fields"}
+            };
+
+            var dic = scopes
+                .Select(s => new { value = s, name = lookup.TryGetValue(s, out var label) ? label : s })
+                .OrderBy(s => s.name)
+                .ToDictionary(s => s.value, s => s.name);
+            return dic;
+        }
 
         public IEnumerable<IContentType> FromScope(string scope = null, bool includeAttributeTypes = false)
         {

@@ -10,7 +10,5 @@ namespace ToSic.Eav.Apps.Parts
 
         public IEnumerable<IEntity> Get<T>(int targetType, T key, string contentTypeName = null)
             => AppRT.AppState.Get(targetType, key, contentTypeName);
-
-
     }
 }

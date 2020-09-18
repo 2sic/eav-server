@@ -2,20 +2,23 @@
 
 namespace ToSic.Eav.Apps.Assets
 {
-    public abstract class File : IFile
+    public abstract class File<TFolderId, TFileId>: IFile<TFolderId, TFileId>
     {
-        /// <summary>
-        /// An Id - only relevant if the environment uses Ids
-        /// </summary>
-        public int Id { get; set; }
+        /// <inheritdoc />
+        public TFileId SysId { get; set; }
 
-        /// <summary>
-        /// Folder Id, only relevant if the environment uses Ids
-        /// </summary>
-        public int FolderId { get; set; }
-
+        /// <inheritdoc />
+        public TFolderId ParentSysId {get; set; }
 
         public string Folder { get; set; }
+
+        #region Old Interface, where IDs were always ints
+
+        public int Id => SysId as int? ?? 0;
+        public int ParentId => ParentSysId as int? ?? 0;
+        public int FolderId => ParentSysId as int? ?? 0;
+
+        #endregion
 
         public string FullName { get; set; }
         public string Extension { get; set; }
@@ -23,6 +26,7 @@ namespace ToSic.Eav.Apps.Assets
         public string Path { get; set; }
 
         public DateTime Created { get; set; }
+
 
         public DateTime Modified { get; set; }
 

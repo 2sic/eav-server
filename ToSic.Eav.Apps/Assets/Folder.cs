@@ -2,10 +2,18 @@
 
 namespace ToSic.Eav.Apps.Assets
 {
-    public abstract class Folder : IFolder
+    public abstract class Folder<TFolderId, TFileId> : IFolder<TFolderId, TFolderId>
     {
         /// <inheritdoc/>
-        public int Id { get; set; }
+        int IAsset.Id => SysId as int? ?? 0;
+
+        /// <inheritdoc/>
+        int IAsset.ParentId => ParentSysId as int? ?? 0;
+
+        public TFolderId ParentSysId { get; set; }
+
+        public TFolderId SysId { get; set; }
+
 
         /// <inheritdoc/>
         public virtual bool HasChildren { get; set; }

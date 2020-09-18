@@ -20,6 +20,9 @@ namespace ToSic.Eav.Configuration
         internal const string TypeName = "FeaturesConfiguration";
         internal const string FeaturesField = "Features";
         internal const string SignatureField = "Signature";
+        public const string FeaturesJson = "features.json";
+
+        public const string FeaturesPath = Constants.FolderDataCustom + "/configurations/";
 
         [PrivateApi("no good reason to publish this")]
         public const string FeaturesValidationSignature2Sxc930 =

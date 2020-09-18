@@ -24,6 +24,7 @@ namespace ToSic.Eav.Apps.ImportExport
         private const string ZipFolderForPortalFiles = "PortalFiles";
         private const string ZipFolderForAppStuff = "2sexy";
         private const string AppXmlFileName = "App.xml";
+        private const string InstructionsFolder = "ImportExport\\Instructions";
 
         public FileManager FileManager;
         private string _physicalAppPath;
@@ -177,7 +178,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="targetPath"></param>
         private void AddInstructionsToPackageFolder(string targetPath)
         {
-            var srcPath = _environment.MapPath(Path.Combine(Settings.ModuleDirectory, "SexyContent\\ImportExport\\Instructions"));
+            var srcPath = _environment.MapPath(Path.Combine(Settings.ModuleDirectory, InstructionsFolder));
 
             foreach (var file in Directory.GetFiles(srcPath))
                 File.Copy(file, Path.Combine(targetPath, Path.GetFileName(file)));

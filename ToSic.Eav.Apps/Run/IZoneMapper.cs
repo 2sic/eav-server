@@ -12,17 +12,27 @@ namespace ToSic.Eav.Run
         /// <summary>
         /// Get the zoneId which belongs to the tenant of this environment
         /// </summary>
-        /// <param name="tenantId"></param>
-        /// <returns></returns>
         int GetZoneId(int tenantId);
 
+        /// <summary>
+        /// Get the zoneId which belongs to the tenant of this environment
+        /// </summary>
         int GetZoneId(ITenant tenant);
 
+        /// <summary>
+        /// Get the App Identity when we know the tenant and app-id
+        /// </summary>
         IAppIdentity IdentityFromTenant(int tenantId, int appId);
 
 
+        /// <summary>
+        /// Find the tenant of a Zone
+        /// </summary>
         ITenant TenantOfZone(int zoneId);
 
+        /// <summary>
+        /// Find the tenant of an App
+        /// </summary>
         ITenant TenantOfApp(int appId);
 
         /// <summary>

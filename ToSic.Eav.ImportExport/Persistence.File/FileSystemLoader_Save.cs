@@ -38,11 +38,5 @@ namespace ToSic.Eav.Persistence.File
             System.IO.File.WriteAllText(fileName, json);
        }
 
-        // #2134?
-        // 2020-07-31 2dm - never used
-        //public void SaveEntity(IEntity item)
-        //{
-        //    throw new NotImplementedException("save entity not provided yet");
-        //}
     }
 }
