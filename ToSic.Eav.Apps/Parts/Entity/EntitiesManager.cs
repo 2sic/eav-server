@@ -40,12 +40,10 @@ namespace ToSic.Eav.Apps.Parts
             entities.ForEach(AppManager.AppState.Relationships.AttachRelationshipResolver);
 
             List<int> ids = null;
-            AppManager.DataController.DoButSkipAppCachePurge(() =>
-                AppManager.DataController.DoWhileQueueingRelationships(() =>
-                {
-                    ids = AppManager.DataController.Save(entities, saveOptions);
-                })
-            );
+            var dc = AppManager.DataController;
+            dc.DoButSkipAppCachePurge(
+                () => dc.DoWhileQueueingRelationships(
+                    () => ids = dc.Save(entities, saveOptions)));
 
             // Tell the cache to do a partial update
             State.Cache.Update(AppManager, ids, Log);
