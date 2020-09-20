@@ -215,7 +215,7 @@ namespace ToSic.Eav.WebApi
             return appManager.ContentTypes.CreateAttributeAndInitializeAndSave(contentTypeId, attDef, inputType);
 	    }
 
-        public bool UpdateInputType(int appId, int attributeId, string inputType)
+        public bool SetInputType(int appId, int attributeId, string inputType)
         {
             Log.Add($"update input type a#{appId}, attrib:{attributeId}, input:{inputType}");
             var appManager = new AppManager(appId, Log);

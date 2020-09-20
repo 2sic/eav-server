@@ -15,9 +15,9 @@ namespace ToSic.Eav.WebApi.PublicApi
         /// <summary>
         /// Get all Entities of specified Type
         /// </summary>
-        IEnumerable<Dictionary<string, object>> GetEntities(string contentType, int appId/*, string cultureCode = null*/);
+        //IEnumerable<Dictionary<string, object>> GetEntities(string contentType, int appId/*, string cultureCode = null*/);
 
-        IEnumerable<Dictionary<string, object>> GetAllOfTypeForAdmin(int appId, string contentType);
+        IEnumerable<Dictionary<string, object>> List(int appId, string contentType);
 
         void Delete(string contentType, int id, int appId, bool force = false);
 
