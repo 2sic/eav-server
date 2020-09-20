@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Net.Http;
 using ToSic.Eav.WebApi.Dto;
 
 namespace ToSic.Eav.WebApi.PublicApi
@@ -52,5 +53,6 @@ namespace ToSic.Eav.WebApi.PublicApi
         /// <param name="attributeId"></param>
         void SetTitle(int appId, int contentTypeId, int attributeId);
 
+        HttpResponseMessage Json(int appId, string name);
     }
 }
