@@ -73,19 +73,6 @@ namespace ToSic.Eav.WebApi.PublicApi
         /// <returns></returns>
         bool Sort(int appId, int contentTypeId, string order);
 
-        //// 2019-11-15 2dm special change: item to be Dictionary<string, object> because in DNN 9.4
-        //// it causes problems when a content-type has metadata, where a value then is a deeper object
-        //// in future, the JS front-end should send something clearer and not the whole object
-        //bool Save(int appId, Dictionary<string, object> item);
-
-        ///// <summary>
-        ///// Mark a field as being the title field
-        ///// </summary>
-        ///// <param name="appId"></param>
-        ///// <param name="contentTypeId"></param>
-        ///// <param name="attributeId"></param>
-        //void SetTitle(int appId, int contentTypeId, int attributeId);
-
         /// <summary>
         /// Update the input-type information on a field
         /// </summary>
