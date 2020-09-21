@@ -3,10 +3,10 @@ using ToSic.Eav.Configuration;
 
 namespace ToSic.Eav.WebApi.PublicApi
 {
-    public interface ISystemController
+    public interface IFeatureController
     {
-        IEnumerable<Feature> Features(bool reload = false);
+        IEnumerable<Feature> List(bool reload = false);
 
-        string ManageFeaturesUrl();
+        string RemoteManageUrl();
     }
 }
