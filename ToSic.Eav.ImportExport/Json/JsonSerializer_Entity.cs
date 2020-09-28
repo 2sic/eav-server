@@ -18,12 +18,12 @@ namespace ToSic.Eav.ImportExport.Json
         public string Serialize(IEntity entity, int metadataDepth) => JsonConvert.SerializeObject(new JsonFormat
         {
             Entity = ToJson(entity, metadataDepth, Log)
-        }, JsonSerializerSettings());
+        }, JsonSettings.Defaults());
 
         public JsonEntity ToJson(IEntity entity, int metadataDepth = 0, ILog parentLog = null)
         {
-            var log = new Log("Jsn.Serlzr", parent: parentLog/*, className:"JsonSerializer"*/);
-            var wrapLog = log.Call(parameters: $"id:{entity?.EntityId}, meta-depth:{metadataDepth}");
+            var log = new Log("Jsn.Serlzr", parentLog);
+            var wrapLog = log.Call($"id:{entity?.EntityId}, meta-depth:{metadataDepth}");
             // do a null-check, because sometimes code could ask to serialize not-yet existing entities
             if (entity == null)
             {
@@ -35,7 +35,7 @@ namespace ToSic.Eav.ImportExport.Json
             if (entity.MetadataFor.IsMetadata)
                 mddic = new JsonMetadataFor
                 {
-                    Target = GetMetadataName(entity.MetadataFor.TargetType),// Factory.Resolve<IGlobalMetadataProvider>().GetType(entity.MetadataFor.TargetType),
+                    Target = GetMetadataName(entity.MetadataFor.TargetType),
                     Guid = entity.MetadataFor.KeyGuid,
                     Number = entity.MetadataFor.KeyNumber,
                     String = entity.MetadataFor.KeyString
@@ -83,7 +83,6 @@ namespace ToSic.Eav.ImportExport.Json
 
             // new: optionally include metadata
             List<JsonEntity> itemMeta = null;
-            //var entityMetadata = entity.Metadata;
             var metaList = (entity.Metadata as MetadataOf<Guid>)?.AllWithHidden ?? entity.Metadata as IEnumerable<IEntity>;
             if (metadataDepth > 0 && metaList.Any())
                 itemMeta = metaList.Select(m => ToJson(m, metadataDepth - 1)).ToList();
@@ -135,7 +134,5 @@ namespace ToSic.Eav.ImportExport.Json
                     .ToArray())
                 .EmptyAlternative(NoLanguage);
         }
-
- 
     }
 }

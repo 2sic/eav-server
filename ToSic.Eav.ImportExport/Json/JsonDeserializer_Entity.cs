@@ -17,13 +17,13 @@ namespace ToSic.Eav.ImportExport.Json
             => Deserialize(UnpackAndTestGenericJsonV1(serialized).Entity, allowDynamic, skipUnknownType);
 
 
-        private JsonFormat UnpackAndTestGenericJsonV1(string serialized)
+        protected JsonFormat UnpackAndTestGenericJsonV1(string serialized)
         {
             var wrapLog = Log.Call();
             JsonFormat jsonObj;
             try
             {
-                jsonObj = JsonConvert.DeserializeObject<JsonFormat>(serialized, JsonSerializerSettings());
+                jsonObj = JsonConvert.DeserializeObject<JsonFormat>(serialized, JsonSettings.Defaults());
             }
             catch (Exception ex)
             {

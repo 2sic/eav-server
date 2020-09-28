@@ -34,7 +34,7 @@ namespace ToSic.Eav.Serialization
 
         public bool PreferLocalAppTypes = false;
 
-        public IContentType GetContentType(string staticName)
+        protected IContentType GetContentType(string staticName)
         {
             // If local type is preferred, use the App accessor,
             // this will also check the global types internally
@@ -53,9 +53,9 @@ namespace ToSic.Eav.Serialization
 
         public void Initialize(AppState appState, ILog parentLog)
         {
+            Log.LinkTo(parentLog);
             App = appState;
             AppId = appState.AppId;
-            Log.LinkTo(parentLog);
         }
 
         protected int AppId;
