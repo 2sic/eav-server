@@ -169,6 +169,7 @@ namespace ToSic.Eav.WebApi
                             e => ser.Convert(e)
                         ),
                     InputTypeConfig = appInputTypes.FirstOrDefault(it => it.Type == inputType),
+                    Permissions = new HasPermissionsDto { Count = a.Metadata.Permissions.Count()},
                 };
             });
             
