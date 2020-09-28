@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 #if NET451
@@ -8,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 #endif
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.ImportExport;
-using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.WebApi.Dto;
@@ -78,25 +79,15 @@ namespace ToSic.Eav.WebApi
         {
             try
             {
-                Log.Add("import json item" + args.DebugInfo);
+                var callLog = Log.Call<bool>(null, "import json item" + args.DebugInfo);
                 var appManager = new AppManager(args.AppId, Log);
-                var deserializer = new ToSic.Eav.ImportExport.Json.JsonSerializer(appManager.AppState, Log)
+                var deserializer = new ImportExport.Json.JsonSerializer(appManager.AppState, Log)
                 {
-                    // Since we're importing directly into this app, we would prefer local content-types
-                    PreferLocalAppTypes = true
+                    PreferLocalAppTypes = true, // Since we're importing directly into this app, we prefer local content-types
                 };
 
-                var entity = deserializer.Deserialize(args.GetContentString());
-
-                entity.ResetEntityId(0);
-
-                var checkExists = appManager.Read.Entities.Get(entity.EntityGuid);
-                if (checkExists != null)
-                    throw new ArgumentException("Can't import this item - an item with the same guid already exists");
-
-                appManager.Entities.Save(entity);
-
-                return true;
+                appManager.Entities.Import(new List<IEntity> {deserializer.Deserialize(args.GetContentString()) });
+                return callLog("ok", true);
             }
             catch (ArgumentException)
             {

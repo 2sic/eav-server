@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
@@ -17,6 +18,16 @@ namespace ToSic.Eav.Apps.Parts
         public EntitiesManager(AppManager app, ILog parentLog = null) 
             : base(app, parentLog, "App.EntMan") { }
 
+        public void Import(List<IEntity> newEntities)
+        {
+            newEntities.ForEach(e =>
+            {
+                e.ResetEntityId();
+                if (AppManager.Read.Entities.Get(e.EntityGuid) != null)
+                    throw new ArgumentException("Can't import this item - an item with the same guid already exists");
+            });
+            Save(newEntities);
+        }
 
         public int Save(IEntity entity, SaveOptions saveOptions = null) 
             => Save(new List<IEntity> {entity}, saveOptions).FirstOrDefault();

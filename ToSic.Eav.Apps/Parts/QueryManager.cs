@@ -70,7 +70,7 @@ namespace ToSic.Eav.Apps.Parts
             var newSer = Serializer.Serialize(origQuery);
             var newEnt = Serializer.Deserialize(newSer) as Entity;
             newEnt.SetGuid(Guid.NewGuid());
-            newEnt.ResetEntityId(0);
+            newEnt.ResetEntityId();
             if(newMetadataTarget != null)
                 newEnt.Retarget(newMetadataTarget.Value);
             return newEnt;
