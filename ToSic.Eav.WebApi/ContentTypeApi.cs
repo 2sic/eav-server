@@ -12,6 +12,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.WebApi.Dto;
+using ToSic.Eav.WebApi.Security;
 
 namespace ToSic.Eav.WebApi
 {
@@ -75,6 +76,7 @@ namespace ToSic.Eav.WebApi
 	            Items = count,
 	            Fields = t.Attributes.Count,
 	            Metadata = ser.Convert(metadata),
+                Permissions = new HasPermissionsDto { Count = t.Metadata.Permissions.Count()},
 	        };
 	        return jsonReady;
 	    }

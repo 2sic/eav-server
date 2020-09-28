@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
+using ToSic.Eav.WebApi.Security;
 using static Newtonsoft.Json.NullValueHandling;
 
 namespace ToSic.Eav.WebApi.Dto
@@ -26,6 +27,7 @@ namespace ToSic.Eav.WebApi.Dto
         public string Name;
         public string Identifier;
         public string GettingStartedUrl;
+        public HasPermissionsDto Permissions;
     }
 
     public class EnableDto
