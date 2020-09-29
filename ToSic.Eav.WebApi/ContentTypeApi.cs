@@ -12,6 +12,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.WebApi.Dto;
+using ToSic.Eav.WebApi.Security;
 
 namespace ToSic.Eav.WebApi
 {
@@ -75,6 +76,7 @@ namespace ToSic.Eav.WebApi
 	            Items = count,
 	            Fields = t.Attributes.Count,
 	            Metadata = ser.Convert(metadata),
+                Permissions = new HasPermissionsDto { Count = t.Metadata.Permissions.Count()},
 	        };
 	        return jsonReady;
 	    }
@@ -167,6 +169,7 @@ namespace ToSic.Eav.WebApi
                             e => ser.Convert(e)
                         ),
                     InputTypeConfig = appInputTypes.FirstOrDefault(it => it.Type == inputType),
+                    Permissions = new HasPermissionsDto { Count = a.Metadata.Permissions.Count()},
                 };
             });
             
@@ -215,7 +218,7 @@ namespace ToSic.Eav.WebApi
             return appManager.ContentTypes.CreateAttributeAndInitializeAndSave(contentTypeId, attDef, inputType);
 	    }
 
-        public bool UpdateInputType(int appId, int attributeId, string inputType)
+        public bool SetInputType(int appId, int attributeId, string inputType)
         {
             Log.Add($"update input type a#{appId}, attrib:{attributeId}, input:{inputType}");
             var appManager = new AppManager(appId, Log);

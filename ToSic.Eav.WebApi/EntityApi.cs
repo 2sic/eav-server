@@ -115,7 +115,7 @@ namespace ToSic.Eav.WebApi
 
             var copy = EntityBuilder.FullClone(found, found.Attributes, null);
             copy.SetGuid(Guid.Empty);
-            copy.ResetEntityId(0);
+            copy.ResetEntityId();
             return copy;
         }
 

@@ -14,7 +14,7 @@ namespace ToSic.Eav.Apps.Parts
         /// Get all installed data sources - usually for the UI
         /// </summary>
         /// <returns></returns>
-        public static IEnumerable<DataSourceInfo> GetInstalledDataSources()
+        public static IEnumerable<DataSourceInfo> QueryDataSources()
         {
             var installedDataSources = Catalog.GetAll(true);
 

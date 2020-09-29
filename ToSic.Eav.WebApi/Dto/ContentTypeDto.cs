@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.WebApi.Security;
 
 namespace ToSic.Eav.WebApi.Dto
 {
@@ -13,6 +14,7 @@ namespace ToSic.Eav.WebApi.Dto
         public int Items { get; set; }
         public int Fields { get; set; }
         public Dictionary<string, object> Metadata { get; set; }
-    }
 
+        public HasPermissionsDto Permissions { get; set; }
+    }
 }

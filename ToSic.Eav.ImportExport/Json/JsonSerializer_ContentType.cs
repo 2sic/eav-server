@@ -11,7 +11,7 @@ namespace ToSic.Eav.ImportExport.Json
         {
             var package = new JsonFormat {ContentType = ToJson(contentType)};
 
-            var simple = JsonConvert.SerializeObject(package, JsonSerializerSettings());
+            var simple = JsonConvert.SerializeObject(package, JsonSettings.Defaults());
             return simple;
         }
 
@@ -50,7 +50,7 @@ namespace ToSic.Eav.ImportExport.Json
             var typeIsShared = sharableCt != null && (sharableCt.AlwaysShareConfiguration ||
                                                       sharableCt.ParentId.HasValue && sharableCt.ParentId !=
                                                       Constants.SystemContentTypeFakeParent);
-            if (typeIsShared && !includeSharedTypes /*sharableCt != null && (sharableCt.AlwaysShareConfiguration || sharableCt.ParentId.HasValue && sharableCt.ParentId != Constants.SystemContentTypeFakeParent)*/)
+            if (typeIsShared && !includeSharedTypes)
             {
                 // if it's a shared type, flush definition as we won't include it
                 if (sharableCt.ParentId.HasValue)

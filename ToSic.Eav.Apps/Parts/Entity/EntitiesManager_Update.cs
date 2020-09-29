@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Persistence;
 using UpdateList = System.Collections.Generic.Dictionary<string, object>;
@@ -21,23 +20,13 @@ namespace ToSic.Eav.Apps.Parts
             wrapLog("ok");
         }
 
-        // 2020-07-31 2dm - never used
-        //public void DoAndUpdate(IEntity entity, Func<UpdateList> callback, bool? draft = null)
-        //{
-        //    var wrapLog = Log.Call();
-        //    var values = callback.Invoke();
-        //    AppManager.Entities.UpdateParts(entity, values, draft);
-        //    wrapLog("ok");
-        //}
-
-
         /// <summary>
         /// Update an entity
         /// </summary>
         /// <param name="orig">Original entity to be updated</param>
         /// <param name="values">Dictionary of values to update</param>
         /// <param name="draft">Optionally specify that it should be a draft change</param>
-        public void UpdateParts(IEntity orig, Dictionary<string, object> values, bool? draft = null)
+        public void UpdateParts(IEntity orig, UpdateList values, bool? draft = null)
         {
             var wrapLog = Log.Call();
             if (values == null || !values.Any())

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Apps.Parts;
+using ToSic.Eav.WebApi.Security;
 
 namespace ToSic.Eav.WebApi.Dto
 {
@@ -14,5 +15,7 @@ namespace ToSic.Eav.WebApi.Dto
         public int AttributeId { get; set; }
         public Dictionary<string, Dictionary<string, object>> Metadata { get; set; }
         public InputTypeInfo InputTypeConfig { get; set; }
+
+        public HasPermissionsDto Permissions { get; set; }
     }
 }

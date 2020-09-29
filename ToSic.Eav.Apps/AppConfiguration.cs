@@ -13,6 +13,6 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// The type name used to store templates in the eav-system
         /// </summary>
-        public static string TemplateContentType = "2SexyContent-Template";
+        public static string TemplateContentType = Eav.ImportExport.Settings.TemplateContentType;// "2SexyContent-Template";
     }
 }
