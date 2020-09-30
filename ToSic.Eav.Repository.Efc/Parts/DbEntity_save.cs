@@ -59,7 +59,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             // If we think we'll update an existing entity...
             // ...we have to check if we'll actually update the draft of the entity
             // ...or create a new draft (branch)
-            var draftInfo = GetDraftAndCorrectIdAndBranching(newEnt);//, out var hasAdditionalDraft);
+            var draftInfo = GetDraftAndCorrectIdAndBranching(newEnt);
             var existingDraftId = draftInfo.Item1;
             var hasAdditionalDraft = draftInfo.Item2;
 
@@ -68,7 +68,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             var contentTypeId = saveJson 
                 ? RepoIdForJsonEntities 
-                : DbContext.AttribSet.GetId(newEnt.Type.StaticName);
+                : newEnt.Type.ContentTypeId > 0 
+                    ? newEnt.Type.ContentTypeId 
+                    : DbContext.AttribSet.GetId(newEnt.Type.StaticName); // todo: we probably always have the id, so we could drop this only use of GetId
             var attributeDefs = saveJson
                 ? null
                 : DbContext.Attributes.GetAttributeDefinitions(contentTypeId).ToList();
@@ -167,6 +169,16 @@ namespace ToSic.Eav.Repository.Efc.Parts
                         dbEnt.Json = jsonExport;
                         dbEnt.AttributeSetId = contentTypeId;       // in case the previous entity wasn't json stored yet
                         dbEnt.ContentType = newEnt.Type.StaticName; // in case the previous entity wasn't json stored yet
+                    }
+                    // super exotic case - maybe it was a json before, but isn't any more...
+                    // this probably only happens on the master system, where we maintain the 
+                    // core content-types like @All
+                    // In this case we must reset this, otherwise the next load will still prefer the json
+                    else 
+                    {
+                        if (dbEnt.AttributeSetId == RepoIdForJsonEntities) dbEnt.AttributeSetId = contentTypeId;
+                        if (dbEnt.Json != null) dbEnt.Json = null;
+                        if (dbEnt.ContentType != null) dbEnt.ContentType = null;
                     }
 
                     // first, clean up all existing attributes / values (flush)
