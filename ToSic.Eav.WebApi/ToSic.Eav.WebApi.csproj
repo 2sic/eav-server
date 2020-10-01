@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net451;netstandard2.0</TargetFrameworks>
-    <Version>11.07.01</Version>
+    <Version>11.07.02</Version>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net451'">
