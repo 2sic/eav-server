@@ -40,7 +40,7 @@ namespace ToSic.Eav.DataSources.Queries
 		}
         #endregion
 
-        #region Internal Source - mainly for debugging
+        #region Internal Source - mainly for debugging or advanced uses of a query
 
         [PrivateApi]
         public IDataSource Source
