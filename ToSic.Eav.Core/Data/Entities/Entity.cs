@@ -90,16 +90,11 @@ namespace ToSic.Eav.Data
         internal Entity() { }
 
         /// <summary>
-        /// Special constructor for importing new entities without a known content-type
+        /// Special constructor for importing-new/creating-external entities without a known content-type
         /// </summary>
-        /// <param name="appId"></param>
-        /// <param name="entityId"></param>
-        /// <param name="entityGuid"></param>
-        /// <param name="contentType"></param>
-        /// <param name="values"></param>
         [PrivateApi]
-        public Entity(int appId, int entityId, Guid entityGuid, string contentType, Dictionary<string, object> values) 
-            : base(appId, entityId, entityGuid, new ContentType(appId, contentType), values, null, null)
+        public Entity(int appId, int entityId, Guid entityGuid, string contentType, Dictionary<string, object> values, string titleAttribute = null, DateTime? modified = null) 
+            : base(appId, entityId, entityGuid, new ContentType(appId, contentType), values, titleAttribute, modified)
         {
             MapAttributesInConstructor(values);
         }

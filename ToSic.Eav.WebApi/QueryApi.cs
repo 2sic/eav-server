@@ -75,11 +75,9 @@ namespace ToSic.Eav.WebApi
 		/// <summary>
 		/// Query the Result of a Pipeline using Test-Parameters
 		/// </summary>
-		public QueryRunDto Run(int appId, int id, int instanceId)
+		public QueryRunDto Run(int appId, int id, int instanceId, LookUpEngine config)
 		{
             var wrapLog = Log.Call($"a#{appId}, {nameof(id)}:{id}, {nameof(instanceId)}: {instanceId}");
-
-            var config = Factory.Resolve<IGetEngine>().GetEngine(instanceId, Log);
 
             // Get the query, run it and track how much time this took
 		    var queryFactory = new QueryBuilder(Log);

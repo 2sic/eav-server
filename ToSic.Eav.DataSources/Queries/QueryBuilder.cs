@@ -49,7 +49,6 @@ namespace ToSic.Eav.DataSources.Queries
 	    public IDataSource BuildQuery(QueryDefinition queryDef,
             ILookUpEngine lookUpEngineToClone,
             IEnumerable<ILookUp> overrideLookUps,
-            //IDataSource outTarget = null,
             bool showDrafts)
         {
 	        #region prepare shared / global value providers
@@ -58,18 +57,12 @@ namespace ToSic.Eav.DataSources.Queries
 	        var wrapLog = Log.Call($"{queryDef.Title}({queryDef.Id}), " +
                                             $"hasLookUp:{lookUpEngineToClone != null}, " +
                                             $"overrides: {overrideLookUps?.Count()}, " +
-                                            // $"out:{outTarget != null}, " +
                                             $"drafts:{showDrafts}");
 
 	        // the query settings which apply to the whole query
 	        var querySettingsLookUp = new LookUpInMetadata(ConfigKeyPipelineSettings, queryDef.Entity);
 
             // centralizing building of the primary configuration template for each part
-			// 2020-03-12 2dm - disabling this log, because now that it's hierarchical, this doesn't mean anything any more
-            //if (lookUpEngineToClone != null)
-            //    Log.Add(() =>
-            //        $"Sources in original LookUp: {lookUpEngineToClone.Sources.Count} " +
-            //        $"[{string.Join(",", lookUpEngineToClone.Sources.Keys)}]");
             var templateConfig = new LookUpEngine(lookUpEngineToClone, Log);
 
             if (queryDef.ParamsLookUp is LookUpInDictionary paramsLookup)
@@ -88,12 +81,8 @@ namespace ToSic.Eav.DataSources.Queries
 			#region Load Query Entity and Query Parts
 
 			// tell the primary-out that it has this guid, for better debugging
-			IDataSource outTarget = null;
-         //   if (outTarget == null)
-	        //{
-	            var passThroughConfig = new LookUpEngine(templateConfig, Log);
-                outTarget = new PassThrough().Init(passThroughConfig);
-	        //}
+            var passThroughConfig = new LookUpEngine(templateConfig, Log);
+            IDataSource outTarget = new PassThrough().Init(passThroughConfig);
             if (outTarget.Guid == Guid.Empty)
 	            outTarget.Guid = queryDef.Entity.EntityGuid;
 
@@ -113,8 +102,7 @@ namespace ToSic.Eav.DataSources.Queries
 	            partConfig.Add(new LookUpInMetadata(ConfigKeyPartSettings, dataQueryPart.Entity));
 
 	            // if show-draft in overridden, add that to the settings
-	            if (itemSettingsShowDrafts != null)
-	                partConfig.AddOverride(new LookUpInDictionary(ConfigKeyPartSettings, itemSettingsShowDrafts));
+	            partConfig.AddOverride(new LookUpInDictionary(ConfigKeyPartSettings, itemSettingsShowDrafts));
 
                 #endregion
 
@@ -218,7 +206,7 @@ namespace ToSic.Eav.DataSources.Queries
             var wrapLog = Log.Call<IDataSource>($"a#{queryDef.AppId}, pipe:{queryDef.Entity.EntityGuid} ({queryDef.Entity.EntityId}), drafts:{showDrafts}");
             var testValueProviders = queryDef.TestParameterLookUps;
             return wrapLog(null,
-                BuildQuery(queryDef, configuration, testValueProviders, /*outTarget: null,*/ showDrafts));
+                BuildQuery(queryDef, configuration, testValueProviders, showDrafts));
         }
 
 
