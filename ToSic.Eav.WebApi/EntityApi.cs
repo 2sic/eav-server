@@ -39,13 +39,14 @@ namespace ToSic.Eav.WebApi
         /// <summary>
         /// The serializer, so it can be configured from outside if necessary
         /// </summary>
-        private EntitiesToDictionary Serializer
+        private EntitiesToDictionary EntityToDic
         {
             get
             {
                 if (_entitiesToDictionary != null) return _entitiesToDictionary;
                 _entitiesToDictionary = Factory.Resolve<EntitiesToDictionary>();
                 _entitiesToDictionary.WithGuid = true;
+                _entitiesToDictionary.Init(Log);
                 return _entitiesToDictionary;
             }
         }
@@ -68,7 +69,7 @@ namespace ToSic.Eav.WebApi
         /// Get all Entities of specified Type
         /// </summary>
         public IEnumerable<Dictionary<string, object>> GetEntities(string contentType) 
-            => Serializer.Convert(AppRead.Entities.Get(contentType));
+            => EntityToDic.Convert(AppRead.Entities.Get(contentType));
 
         public List<BundleIEntity> GetEntitiesForEditing(List<ItemIdentifier> items)
         {
@@ -143,12 +144,19 @@ namespace ToSic.Eav.WebApi
 
         public IEnumerable<Dictionary<string, object>> GetEntitiesForAdmin(string contentType)
         {
-            Serializer.ConfigureForAdminUse();
-            var list = Serializer.Convert(AppRead.Entities.Get(contentType));
+            var wrapLog = Log.Call(useTimer: true);
+            EntityToDic.ConfigureForAdminUse();
+            var originals = AppRead.Entities.Get(contentType).ToList();
+            var list = EntityToDic.Convert(originals).ToList();
 
-            return list
+            var timer = Log.Call(null, "truncate dictionary", useTimer: true);
+            var result = list
                 .Select(li => li.ToDictionary(x1 => x1.Key, x2 => Truncate(x2.Value, 50)))
                 .ToList();
+            timer("ok");
+
+            wrapLog(result.Count.ToString());
+            return result;
         }
 
 

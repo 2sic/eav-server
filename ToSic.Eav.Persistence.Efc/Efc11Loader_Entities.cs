@@ -76,7 +76,7 @@ namespace ToSic.Eav.Persistence.Efc
             //Dictionary<int, IEnumerable<TempRelationshipList>> relatedEntities;
             //try
             //{
-            var relatedEntities = ConvertRelationships(allChunks); // .ToDictionary(i => i.Key, i => i.Value);
+            var relatedEntities = GroupUniqueRelationships(allChunks); // .ToDictionary(i => i.Key, i => i.Value);
             //}
             //catch (Exception ex)
             //{

@@ -15,7 +15,7 @@ namespace ToSic.Eav.Conversion
     public class EntitiesToDictionary: EntitiesToDictionaryBase, IStreamsTo<Dictionary<string, object>>
     {
         // TODO: has an important side effect, this isn't clear from outside!
-        public EntitiesToDictionary()
+        public EntitiesToDictionary(): base("Cnv.Ent2Dc")
         {
             // Ensure that date-times are sent in the Zulu-time format (UTC) and not with offsets which causes many problems during round-trips
 #if NET451
@@ -27,17 +27,24 @@ namespace ToSic.Eav.Conversion
         }
 
 
+
+
         #region Many variations of the Prepare-Statement expecting various kinds of input
         /// <inheritdoc />
         public Dictionary<string, IEnumerable<Dictionary<string, object>>> Convert(IDataSource source, IEnumerable<string> streams = null)
         {
+            var wrapLog = Log.Call(useTimer: true);
             if (streams == null)
+            {
+                Log.Add("Found some stream names to filter for");
                 streams = source.Out.Select(p => p.Key);
+            }
 
             var y = streams.Where(k => source.Out.ContainsKey(k))
                 .ToDictionary(k => k, s => source.Out[s].List.Select(GetDictionaryFromEntity)
             );
 
+            wrapLog("ok");
             return y;
         }
 
