@@ -74,7 +74,7 @@ namespace ToSic.Eav.DataSources
                     () => new CacheInfoAppAndMore("AppTypeStream" + AppRootCacheKey.AppCacheKey(this), Apps.State.Get(this), $"Name={typeName}&Drafts={showDrafts}"),
                     this,
                     typeName,
-                    () => BuildTypeStream(dataSourceFactory, upstreamDataSource, typeName)[Constants.DefaultStreamName],
+                    () => BuildTypeStream(dataSourceFactory, upstreamDataSource, typeName)[Constants.DefaultStreamName].List,
                     true);
                 _out.Add(typeName, deferredStream);
             }

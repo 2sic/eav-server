@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
@@ -68,38 +69,32 @@ namespace ToSic.Eav.DataSources.System
 		    ConfigMask(StreamKey, $"[Settings:{StreamField}||{Constants.DefaultStreamName}]");
 		}
 
-	    private IEnumerable<IEntity> GetStreams()
+	    private IImmutableList<IEntity> GetStreams()
 	    {
             CustomConfigurationParse();
 
             return _query?.Out.OrderBy(stream => stream.Key).Select(stream
-                => Build.Entity(new Dictionary<string, object>
+                       => Build.Entity(new Dictionary<string, object>
                            {
                                {StreamsType.Name.ToString(), stream.Key}
-                           }, 
-                    titleField: StreamsType.Name.ToString(), 
-                    typeName:QueryStreamsContentType)
-                       //=> new Data.Entity(AppId, 0, QueryStreamsContentType,
-                       //    new Dictionary<string, object>
-                       //    {
-                       //        {StreamsType.Name.ToString(), stream.Key}
-                       //    },
-                       //    StreamsType.Name.ToString())
-                       )
-	               ?? new List<IEntity>();
-	    }
+                           },
+                           titleField: StreamsType.Name.ToString(),
+                           typeName: QueryStreamsContentType))
+                    .ToImmutableList()
+                   ?? new List<IEntity>().ToImmutableList();
+        }
 
-	    private IEnumerable<IEntity> GetAttributes()
+	    private IImmutableList<IEntity> GetAttributes()
 	    {
             CustomConfigurationParse();
 
             // no query can happen if the name was blank
             if (_query == null)
-                return new List<IEntity>();
+                return new ImmutableArray<IEntity>();//  new List<IEntity>();
 
             // check that _query has the stream name
-            if(!_query.Out.ContainsKey(StreamName))
-                return new List<IEntity>();
+            if (!_query.Out.ContainsKey(StreamName))
+                return new ImmutableArray<IEntity>(); //new List<IEntity>();
 
 	        var attribInfo = new DataSource(Log).GetDataSource<Attributes>(_query);
             if(StreamName != Constants.DefaultStreamName)

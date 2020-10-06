@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
@@ -38,14 +38,15 @@ namespace ToSic.Eav.DataSources
         [PrivateApi]
 		public StreamFallback()
 		{
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
+			Provide(GetList);
+			//Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
 		}
 
-        private List<IEntity> GetList()
+        private IImmutableList<IEntity> GetList()
         {
             var foundStream = FindIdealFallbackStream();
 
-            return foundStream != null ? foundStream.List.ToList() : new List<IEntity>();
+            return foundStream != null ? foundStream.List /*.ToList()*/ : new ImmutableArray<IEntity>(); // new List<IEntity>().ToImmutableList();
         }
 
 	    private IDataStream FindIdealFallbackStream()

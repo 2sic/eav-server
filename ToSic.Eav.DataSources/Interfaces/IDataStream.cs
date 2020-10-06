@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using ToSic.Eav.Caching;
 using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.Documentation;
@@ -13,12 +14,11 @@ namespace ToSic.Eav.DataSources
 	[PublicApi_Stable_ForUseInYourCode]
 	public interface IDataStream: ICanSelfCache, ICanPurgeListCache, IEnumerable<IEntity>
 	{
-
         /// <summary>
         /// The list of items in this stream.
         /// </summary>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="IEntity"/> items.</returns>
-        IEnumerable<IEntity> List { get; }
+        IImmutableList<IEntity> List { get; }
 
         /// <summary>
 		/// Underlying <see cref="IDataSource"/> providing the <see cref="IEntity"/> of this stream

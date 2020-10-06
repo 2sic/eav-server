@@ -129,7 +129,6 @@ namespace ToSic.Eav.DataSources.Caching
 
             var outStream = new DataStream(this, name,  () => In[name].List, true);
 
-	        // inStream.AutoCaching = true;
 	        if (CacheDurationInSeconds != 0) // only set if a value other than 0 (= default) was given
 	            outStream.CacheDurationInSeconds = CacheDurationInSeconds;
 	        outStream.CacheRefreshOnSourceRefresh = RefreshOnSourceRefresh;

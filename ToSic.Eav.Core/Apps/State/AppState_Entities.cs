@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
@@ -11,9 +12,11 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// The simple list of <em>all</em> entities, used everywhere
         /// </summary>
-        public IEnumerable<IEntity> List => _list
-                                            ?? (_list = new SynchronizedList<IEntity>(this, () => Index.Values.ToList()));
+        public IImmutableList<IEntity> List => _list?.List
+                                            ?? (_list = new SynchronizedList<IEntity>(this, () => Index.Values.ToList())).List;
         private SynchronizedList<IEntity> _list;
+
+        IEnumerable<IEntity> IEntitiesSource.List => List;
 
         internal Dictionary<int, IEntity> Index { get; }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
@@ -68,13 +69,13 @@ namespace ToSic.Eav.DataSources.System
 		}
 
 
-	    private List<IEntity> GetList()
+	    private IImmutableList<IEntity> GetList()
 	    {
             Configuration.Parse();
 
             // try to load the content-type - if it fails, return empty list
             var zones = State.Zones;
-	        if (!zones.ContainsKey(OfZoneId)) return new List<IEntity>();
+            if (!zones.ContainsKey(OfZoneId)) return new ImmutableArray<IEntity>(); // new List<IEntity>();
 	        var zone = zones[OfZoneId];
 
 	        var list = zone.Apps.OrderBy(a => a.Key).Select(app =>
@@ -109,7 +110,7 @@ namespace ToSic.Eav.DataSources.System
                 return result;
             });
 
-            return list.ToList();
+            return list.ToImmutableList();// .ToList();
         }
 
 	}

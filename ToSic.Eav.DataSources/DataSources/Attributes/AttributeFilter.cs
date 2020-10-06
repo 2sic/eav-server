@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Immutable;
 using System.Linq;
-using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
@@ -55,7 +54,7 @@ namespace ToSic.Eav.DataSources
         /// Get the list of all items with reduced attributes-list
         /// </summary>
         /// <returns></returns>
-		private List<IEntity> GetList()
+		private IImmutableList<IEntity> GetList()
 		{
             CustomConfigurationParse();
 
@@ -65,8 +64,9 @@ namespace ToSic.Eav.DataSources
 		    var result = In[Constants.DefaultStreamName].List
                 .Select(entity => EntityBuilder.FullClone(entity, 
                     entity.Attributes.Where(a => attributeNames.Contains(a.Key)).ToDictionary(k => k.Key, v => v.Value),
-                    (entity.Relationships as RelationshipManager).AllRelationships)).Cast<IEntity>()
-                .ToList();
+                    entity.Relationships.AllRelationships)).Cast<IEntity>()
+                .ToImmutableList();
+                //.ToList();
 
 		    Log.Add($"attrib filter names:[{string.Join(",", attributeNames)}] found:{result.Count}");
 		    return result;

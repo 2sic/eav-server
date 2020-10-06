@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -205,7 +206,7 @@ namespace ToSic.Eav.DataSources
         }
 
 
-	    private List<IEntity> GetList()
+	    private ImmutableList<IEntity> GetList()
 		{
             CustomConfigurationParse();
 
@@ -297,7 +298,7 @@ namespace ToSic.Eav.DataSources
 			}
 
 		    Log.Add($"found:{list.Count}");
-			return list;
+			return list.ToImmutableList();
 		}
 	}
 }

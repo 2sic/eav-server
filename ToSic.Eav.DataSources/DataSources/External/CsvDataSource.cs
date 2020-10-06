@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using CsvHelper;
 using System.IO;
@@ -110,7 +111,7 @@ namespace ToSic.Eav.DataSources
             ConfigMask(TitleColumnNameKey, "[Settings:TitleColumnName]", cacheRelevant: false);
         }
 
-        private List<IEntity> GetList()
+        private ImmutableList<IEntity> GetList()
         {
             Configuration.Parse();
 
@@ -169,7 +170,7 @@ namespace ToSic.Eav.DataSources
                 }
             }
             Log.Add($"found:{entityList.Count}");
-            return entityList;
+            return entityList.ToImmutableList();
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Documentation;
@@ -37,10 +38,10 @@ namespace ToSic.Eav.Data
 		/// <inheritdoc />
 		public IEnumerable<IEntity> AllChildren => ChildRelationships().Select(r => r.Child);
 
-	    private List<EntityRelationship> ChildRelationships()
+	    private IImmutableList<EntityRelationship> ChildRelationships()
         {
             if (_childRelationships != null) return _childRelationships.List;
-            Func<List<EntityRelationship>> getChildren = () => AllRelationships.Where(r => r.Parent == _entity).ToList();
+            Func<IImmutableList<EntityRelationship>> getChildren = () => AllRelationships.Where(r => r.Parent == _entity).ToImmutableList(); //.ToList();
             if (App == null) return getChildren.Invoke(); // AllRelationships.Where(r => r.Parent == _entity);
             _childRelationships = new SynchronizedList<EntityRelationship>(App, getChildren);
             return _childRelationships.List;
@@ -54,10 +55,10 @@ namespace ToSic.Eav.Data
         public IEnumerable<IEntity> AllParents 
             => ParentRelationships().Select(r => r.Parent);
         // note: don't cache the result, as it's already cache-chained
-	    private List<EntityRelationship> ParentRelationships()
+	    private IImmutableList<EntityRelationship> ParentRelationships()
         {
             if (_parentRelationships != null) return _parentRelationships.List;
-            Func<List<EntityRelationship>> getParents = () => AllRelationships.Where(r => r.Child == _entity).ToList();
+            Func<IImmutableList<EntityRelationship>> getParents = () => AllRelationships.Where(r => r.Child == _entity).ToImmutableList();// .ToList();
             if (App == null) return getParents.Invoke(); // return AllRelationships.Where(r => r.Child == _entity);
             _parentRelationships = new SynchronizedList<EntityRelationship>(App, getParents);
             return _parentRelationships.List;

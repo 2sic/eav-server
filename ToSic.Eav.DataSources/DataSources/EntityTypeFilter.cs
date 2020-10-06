@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
@@ -48,11 +48,7 @@ namespace ToSic.Eav.DataSources
 		    ConfigMask(TypeNameKey, "[Settings:TypeName]");
         }
 
-		// 2020-03-02 2dm disabled this, not necessary any more
-        //// special alternately named stream for use in the App data-source
-        //internal void AddNamedStream(string otherName) => Out.Add(otherName, new DataStream(this, otherName, GetList));
-
-	    private List<IEntity> GetList()
+	    private ImmutableList<IEntity> GetList()
 	    {
             Configuration.Parse();
             Log.Add($"get list with type:{TypeName}");
@@ -62,19 +58,17 @@ namespace ToSic.Eav.DataSources
                 var appState = Apps.State.Get(this);
 	            var foundType = appState?.GetContentType(TypeName);
 	            if (foundType != null) // maybe it doesn't find it!
-	                return (from e in In[Constants.DefaultStreamName].List
-	                    where e.Type == foundType
-	                    select e)
-                        .ToList();
+	                return In[Constants.DefaultStreamName].List
+                        .Where(e => e.Type == foundType)
+                        .ToImmutableList();
 	        }
 	        catch { /* ignore */ }
 
             // This is the fallback, probably slower. In this case, it tries to match the name instead of the real type
             // Reason is that many dynamically created content-types won't be known to the cache, so they cannot be found the previous way
-	        return (from e in In[Constants.DefaultStreamName].List
-	            where e.Type.Name == TypeName
-	            select e)
-                .ToList();
+	        return In[Constants.DefaultStreamName].List
+                .Where(e => e.Type.Name == TypeName)
+                .ToImmutableList();
 	    }
 
 	}

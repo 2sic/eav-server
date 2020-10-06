@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.DataSources.Exceptions;
 using ToSic.Eav.DataSources.Queries;
@@ -95,7 +96,7 @@ namespace ToSic.Eav.DataSources
 		    ConfigMask(LangKey, "Default");
         }
 
-        private List<IEntity> GetEntitiesOrFallback()
+        private IImmutableList<IEntity> GetEntitiesOrFallback()
         {
             var res = GetEntities();
             // ReSharper disable PossibleMultipleEnumeration
@@ -104,7 +105,7 @@ namespace ToSic.Eav.DataSources
                 In[Constants.FallbackStreamName].List.Any())
             {
                 Log.Add("will return fallback stream");
-                res = In[Constants.FallbackStreamName].List.ToList();
+                res = In[Constants.FallbackStreamName].List; //.ToList();
             }
 
             return res;
@@ -112,7 +113,7 @@ namespace ToSic.Eav.DataSources
         }
 
 
-        private List<IEntity> GetEntities()
+        private IImmutableList<IEntity> GetEntities()
         {
             var wrapLog = Log.Call();
             // todo: maybe do something about languages?
@@ -132,7 +133,7 @@ namespace ToSic.Eav.DataSources
 		    _initializedLangs = new[] { lang };
             #endregion
 
-            var originals = In[Constants.DefaultStreamName].List.ToList();
+            var originals = In[Constants.DefaultStreamName].List;//.ToList();
 
             #region stop if the list is empty
             if (!originals.Any()) 
@@ -155,7 +156,7 @@ namespace ToSic.Eav.DataSources
 
                 // if I can't find any, return empty list
                 if (firstEntity == null)
-                    return new List<IEntity>();
+                    return new ImmutableArray<IEntity>(); //new List<IEntity>();
 
                 // New mechanism because the filter ignores internal properties like Modified, EntityId etc.
                 var firstAtt = firstEntity.GetBestValue(_initializedAttrName);  // this should get everything, incl. modified, EntityId, EntityGuid etc.
@@ -441,7 +442,7 @@ namespace ToSic.Eav.DataSources
 	    private string[] _initializedLangs;
 	    private string _initializedAttrName;
 
-	    private List<IEntity> GetFilteredWithLinq(IEnumerable<IEntity> originals, Func<IEntity, bool> compare)
+	    private IImmutableList<IEntity> GetFilteredWithLinq(IEnumerable<IEntity> originals, Func<IEntity, bool> compare)
         {
             try
             {
@@ -456,14 +457,12 @@ namespace ToSic.Eav.DataSources
                         results = new List<IEntity>();
                         break;
                     default:
-                        results = (from e in originals
-                            where compare(e)
-                            select e);
+                        results = originals.Where(compare);
                         break;
                 }
                 if (int.TryParse(Take, out var tk))
 	                results = results.Take(tk);
-	            return results.ToList();
+	            return results.ToImmutableList();//.ToList();
 	        }
 	        catch (Exception ex)
 	        {

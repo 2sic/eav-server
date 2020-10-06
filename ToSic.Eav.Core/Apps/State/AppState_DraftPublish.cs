@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
@@ -12,20 +12,20 @@ namespace ToSic.Eav.Apps
         /// Get all Published Entities in this App (excluding Drafts)
         /// </summary>
         [PrivateApi("this is an optimization feature which shouldn't be used by others")]
-        public IEnumerable<IEntity> ListPublished
+        public SynchronizedList<IEntity> ListPublished
             => _listPublished ?? (_listPublished = new SynchronizedList<IEntity>(this,
-                   () => List.Where(e => e.IsPublished).ToList()));
-        private IEnumerable<IEntity> _listPublished;
+                   () => List.Where(e => e.IsPublished).ToImmutableList())); //.ToList()));
+        private SynchronizedList<IEntity> _listPublished;
 
         /// <summary>
         /// Get all Entities not having a Draft (Entities that are Published (not having a draft) or draft itself)
         /// </summary>
         [PrivateApi("this is an optimization feature which shouldn't be used by others")]
-        public IEnumerable<IEntity> ListNotHavingDrafts
+        public SynchronizedList<IEntity> ListNotHavingDrafts
             => _listNotHavingDrafts ?? (_listNotHavingDrafts =
                    new SynchronizedList<IEntity>(this,
-                       () => List.Where(e => e.GetDraft() == null).ToList()));
-        private IEnumerable<IEntity> _listNotHavingDrafts;
+                       () => List.Where(e => e.GetDraft() == null).ToImmutableList())); //.ToList()));
+        private SynchronizedList<IEntity> _listNotHavingDrafts;
 
 
         /// <summary>

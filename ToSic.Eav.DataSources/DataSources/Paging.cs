@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources.Queries;
@@ -79,7 +80,7 @@ namespace ToSic.Eav.DataSources
 		}
 
 
-	    private List<IEntity> GetList()
+	    private IImmutableList<IEntity> GetList()
 	    {
             Configuration.Parse();
             var itemsToSkip = (PageNumber - 1)*PageSize;
@@ -87,17 +88,18 @@ namespace ToSic.Eav.DataSources
 	        var result = In[Constants.DefaultStreamName].List
                 .Skip(itemsToSkip)
                 .Take(PageSize)
-                .ToList();
+                .ToImmutableList();
+                //.ToList();
 	        Log.Add($"get page:{PageNumber} with size{PageSize} found:{result.Count}");
             return result;
 	    }
 
-        private IEnumerable<IEntity> GetPaging()
+        private IImmutableList<IEntity> GetPaging()
         {
             Configuration.Parse();
 
             // Calculate any additional stuff
-            var itemCount = In[Constants.DefaultStreamName].List.Count();
+            var itemCount = In[Constants.DefaultStreamName].List.Count;
             var pageCount = Math.Ceiling((decimal) itemCount / PageSize);
 
             // Assemble the entity
@@ -114,7 +116,7 @@ namespace ToSic.Eav.DataSources
 
             // Assemble list of this for the stream
             var list = new List<IEntity> {entity};
-            return list;
+            return list.ToImmutableList();
         }
 
 	}

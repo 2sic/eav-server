@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
@@ -62,18 +62,19 @@ namespace ToSic.Eav.DataSources
         [PrivateApi]
 		public StreamPick()
 		{
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
+            Provide(GetList);
+			//Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
             ConfigMask(StreamNameKey, "[Settings:StreamName||Default]");
             ConfigMask(SearchInParentKey, "[Settings:UseParent||False]");
 		}
 
-		private List<IEntity> GetList()
+		private IImmutableList<IEntity> GetList()
         {
             var wrapLog = Log.Call();
             Configuration.Parse();
             var name = StreamName;
             Log.Add($"StreamName to Look for: '{name}'");
-			if(string.IsNullOrWhiteSpace(StreamName)) return new List<IEntity>();
+			if(string.IsNullOrWhiteSpace(StreamName)) return new ImmutableArray<IEntity>();// new ImmutableArray<IEntity>();
             name = name.ToLowerInvariant();
             var foundStream = In.FirstOrDefault(pair => pair.Key.ToLowerInvariant() == name);
             if (foundStream.Key == string.Empty)
@@ -85,7 +86,7 @@ namespace ToSic.Eav.DataSources
             }
 
             wrapLog("ok");
-            return foundStream.Value.List.ToList();
+            return foundStream.Value.List.ToImmutableList(); //.ToList();
         }
 
 	}

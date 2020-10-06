@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
@@ -70,7 +70,7 @@ namespace ToSic.Eav.DataSources
 		    ConfigMask(LangKey, "Default");
         }
 
-		private List<IEntity> GetList()
+		private IImmutableList<IEntity> GetList()
 		{
             // todo: maybe do something about languages?
             // todo: test datetime & decimal types
@@ -97,19 +97,17 @@ namespace ToSic.Eav.DataSources
 
             // check if no list parameters specified
 		    if (attr.Length == 1 && string.IsNullOrWhiteSpace(attr[0]))
-		        return list.ToList();
+		        return list;//.ToList();
 
             // only get the entities, that have these attributes (but don't test for id/title, as all have these)
             var valueAttrs = attr.Where(v => !Constants.InternalOnlyIsSpecialEntityProperty(v)).ToArray();
 		    var results = valueAttrs.Length == 0
 		        ? list
-		        : (from e in list
-		            where e.Attributes.Keys.Where(valueAttrs.Contains).Count() == valueAttrs.Length
-		            select e);
+		        : list.Where(e => e.Attributes.Keys.Where(valueAttrs.Contains).Count() == valueAttrs.Length).ToImmutableList();
 
 			// if list is blank, stop here and return blank list
-			if (!results.Any())
-				return results.ToList();
+            if (!results.Any())
+                return new ImmutableArray<IEntity>(); //results.ToList();
 
             IOrderedEnumerable<IEntity> ordered = null;
 
@@ -142,7 +140,7 @@ namespace ToSic.Eav.DataSources
 				}
 			}
 
-			return ordered.ToList();
+			return ordered.ToImmutableList();//.ToList();
 		}
 
 		private object getObjToSort(IEntity e, string a, char special)

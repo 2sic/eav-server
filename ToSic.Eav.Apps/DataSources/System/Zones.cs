@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Apps.DataSources.Types;
 using ToSic.Eav.Data;
@@ -53,7 +54,7 @@ namespace ToSic.Eav.DataSources.System
             Provide(GetList);
 		}
 
-	    private List<IEntity> GetList()
+	    private IImmutableList<IEntity> GetList()
 	    {
             // Get cache, which manages a list of zones
             var zones = Eav.Apps.State.Zones;
@@ -82,7 +83,7 @@ namespace ToSic.Eav.DataSources.System
                     typeName: ZoneContentTypeName);
             });
 
-            return list.ToList();
+            return list.ToImmutableList();//.ToList();
         }
 
 	}

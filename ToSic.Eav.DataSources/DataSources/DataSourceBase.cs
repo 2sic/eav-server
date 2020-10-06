@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using ToSic.Eav.Caching;
 using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.DataSources.Configuration;
@@ -85,12 +86,9 @@ namespace ToSic.Eav.DataSources
         public IDataStream this[string outName] => Out[outName];
 
         /// <inheritdoc />
-        public IEnumerable<IEntity> List => Out[Constants.DefaultStreamName].List;
+        public IImmutableList<IEntity> List => Out[Constants.DefaultStreamName].List;
 
-        //[PrivateApi]
-        //[Obsolete("deprecated since 2sxc 9.8 / eav 4.5 - use List")]
-        //public IEnumerable<IEntity> LightList => List;
-
+        /// <inheritdoc />
         public DataSourceConfiguration Configuration => _config ?? (_config = new DataSourceConfiguration(this));
         private DataSourceConfiguration _config;
 
@@ -128,11 +126,21 @@ namespace ToSic.Eav.DataSources
         #region Various provide-out commands - all PrivateApi
 
         [PrivateApi]
+        [Obsolete]
         public void Provide(GetIEnumerableDelegate getList) 
             => Provide(Constants.DefaultStreamName, getList);
 
         [PrivateApi]
+        [Obsolete]
         public void Provide(string name, GetIEnumerableDelegate getList) 
+            => Out.Add(name, new DataStream(this, name, getList));
+
+        [PrivateApi]
+        public void Provide(GetImmutableListDelegate getList) 
+            => Provide(Constants.DefaultStreamName, getList);
+
+        [PrivateApi]
+        public void Provide(string name, GetImmutableListDelegate getList) 
             => Out.Add(name, new DataStream(this, name, getList));
 
         #endregion

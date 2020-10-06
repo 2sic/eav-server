@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
@@ -149,7 +149,7 @@ namespace ToSic.Eav.DataSources
 		    ConfigMask(ChildOrParentKey, $"[Settings:{Settings.Direction}||{DefaultDirection}]");
         }
 
-        private IEnumerable<IEntity> GetEntitiesOrFallback()
+        private IImmutableList<IEntity> GetEntitiesOrFallback()
         {
             var res = GetEntities();
             // ReSharper disable PossibleMultipleEnumeration
@@ -157,11 +157,11 @@ namespace ToSic.Eav.DataSources
                 if (In.ContainsKey(Constants.FallbackStreamName) && In[Constants.FallbackStreamName] != null && In[Constants.FallbackStreamName].List.Any())
                     res = In[Constants.FallbackStreamName].List;
 
-            return res.ToList();
+            return res;//.ToImmutableList();//.ToList();
             // ReSharper restore PossibleMultipleEnumeration
         }
 
-        private IEnumerable<IEntity> GetEntities()
+        private IImmutableList<IEntity> GetEntities()
 		{
             // todo: maybe do something about languages?
 
@@ -223,7 +223,7 @@ namespace ToSic.Eav.DataSources
 		    if (ChildOrParent != "child")
 		        throw new NotImplementedException("using 'parent' not supported yet, use 'child' to filter'");
 
-		    var results = originals.Where(finalCompare).ToList();
+		    var results = originals.Where(finalCompare).ToImmutableList();//.ToList();
 
 		    Log.Add($"found in relationship-filter {results.Count}");
 			return results;

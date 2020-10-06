@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
@@ -58,7 +58,7 @@ namespace ToSic.Eav.DataSources
         }
 
 
-        private List<IEntity> GetList()
+        private IImmutableList<IEntity> GetList()
 	    {
             Configuration.Parse();
 
@@ -69,18 +69,15 @@ namespace ToSic.Eav.DataSources
         #region Experiment based on http://stackoverflow.com/questions/375351/most-efficient-way-to-randomly-sort-shuffle-a-list-of-integers-in-c-sharp/375446#375446
         static readonly Random Generator = new Random();
 
-        private static List<T> ShuffleInternal<T>(IEnumerable<T> sequence, int take, ILog log)
+        private static IImmutableList<T> ShuffleInternal<T>(IImmutableList<T> sequence, int take, ILog log)
         {
-            var wrapLog = log.Call();
-            var retArray = sequence.ToArray();
+            var wrapLog = log.Call<IImmutableList<T>>();
             
             // check if there is actually any data
-            if (!retArray.Any())
-            {
-                wrapLog("0 items found to shuffle");
-                return retArray.ToList();
-            }
+            if (!sequence.Any())
+                return wrapLog("0 items found to shuffle", sequence);
 
+            var retArray = sequence.ToArray();
             var maxIndex = retArray.Length; // not Length -1, as the random-generator will always be below this
             var maxTake = maxIndex;// retArray.Length;
 
@@ -101,10 +98,10 @@ namespace ToSic.Eav.DataSources
                 retArray[swapIndex] = temp;             // place temp-item to swap-slot
             }
 
-            wrapLog((maxTake).ToString());
-            return retArray
+            var result = retArray
                 .Take(maxTake)
-                .ToList();
+                .ToImmutableList(); // .ToList();
+            return wrapLog(maxTake.ToString(), result);
         }
         #endregion
 

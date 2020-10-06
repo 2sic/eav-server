@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Immutable;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -47,14 +46,14 @@ namespace ToSic.Eav.DataSources
        }
 
 
-	    private List<IEntity> GetList()
+	    private IImmutableList<IEntity> GetList()
 	    {
             Configuration.Parse();
             Log.Add($"get incl. draft:{ShowDrafts}");
 	        var outStreamName = ShowDrafts 
                 ? Constants.DraftsStreamName 
                 : Constants.PublishedStreamName;
-	        return In[outStreamName].List.ToList();
+	        return In[outStreamName].List;//.ToList();
 	    }
 
 	}

@@ -26,11 +26,12 @@ namespace ToSic.Eav.Apps
             var cache = new List<EntityRelationship>();
 
             foreach (var entity in appState.List)
-            foreach (var attrib in entity.Attributes.Select(a => a.Value)
-                .Where(a => a is IAttribute<IEnumerable<IEntity>>)
-                .Cast<IAttribute<IEnumerable<IEntity>>>())
-            foreach (var val in ((LazyEntities)attrib.Typed[0].TypedContents).EntityIds.Where(e => e != null))
-                Add(appState, cache, entity.EntityId, val);
+                foreach (var attribute in entity.Attributes.Select(a => a.Value)
+                    .Where(a => a is IAttribute<IEnumerable<IEntity>>)
+                    .Cast<IAttribute<IEnumerable<IEntity>>>()
+                )
+                foreach (var val in ((LazyEntities) attribute.Typed[0].TypedContents).EntityIds.Where(e => e != null))
+                    Add(appState, cache, entity.EntityId, val);
 
             return cache;
         }

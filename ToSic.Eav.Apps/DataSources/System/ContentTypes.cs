@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.DataSources.Types;
@@ -82,7 +83,7 @@ namespace ToSic.Eav.DataSources.System
 		    ConfigMask(ScopeKey, $"[Settings:{ScopeField}||Default]");
 		}
 
-	    private List<IEntity> GetList()
+	    private IImmutableList<IEntity> GetList()
 	    {
             Configuration.Parse();
 
@@ -115,7 +116,7 @@ namespace ToSic.Eav.DataSources.System
                     guid: guid);
 	        });
 
-	        return list.ToList();
+	        return list.ToImmutableList();// .ToList();
 	    }
 
 	    private static Dictionary<string, object> BuildDictionary(IContentType t) => new Dictionary<string, object>

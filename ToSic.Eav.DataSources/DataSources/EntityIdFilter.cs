@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text.RegularExpressions;
 using ToSic.Eav.Data;
@@ -58,7 +59,7 @@ namespace ToSic.Eav.DataSources
 		    ConfigMask(EntityIdKey, "[Settings:EntityIds]");
 		}
 
-		private List<IEntity> GetList()
+		private ImmutableList<IEntity> GetList()
 		{
             CustomConfigurationParse();
 
@@ -66,10 +67,9 @@ namespace ToSic.Eav.DataSources
 
 		    var originals = In[Constants.DefaultStreamName].List;
 
-			//var result = entityIds.Where(originals.ContainsKey).ToDictionary(id => id, id => originals[id]);
-		    var result = entityIds.Select(originals.One).Where(e => e != null).ToList();
+		    var result = entityIds.Select(originals.One).Where(e => e != null).ToImmutableList();
 
-		    Log.Add(() => $"get ids:[{string.Join(",",_cleanedIds)}] found:{result.Count()}");
+		    Log.Add(() => $"get ids:[{string.Join(",",_cleanedIds)}] found:{result.Count}");
 		    return result;
 		}
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 
@@ -18,9 +19,8 @@ namespace ToSic.Eav.Caching
         /// </summary>
         protected readonly ICacheExpiring Upstream;
 
-        private List<T> _cache;
-        private readonly Func<List<T>> _rebuild;
-
+        private IImmutableList<T> _immutableCache;
+        private readonly Func<IImmutableList<T>> _rebuildImmutable;
 
         /// <summary>
         /// Initialized a new list which depends on another source
@@ -30,7 +30,17 @@ namespace ToSic.Eav.Caching
         public SynchronizedList(ICacheExpiring upstream, Func<List<T>> rebuild)
         {
             Upstream = upstream;
-            _rebuild = rebuild;
+            _rebuildImmutable = () => rebuild().ToImmutableList();
+        }
+        /// <summary>
+        /// Initialized a new list which depends on another source
+        /// </summary>
+        /// <param name="upstream">the upstream cache which can tell us if a refresh is necessary</param>
+        /// <param name="rebuild">the method which rebuilds the list</param>
+        public SynchronizedList(ICacheExpiring upstream, Func<IImmutableList<T>> rebuild)
+        {
+            Upstream = upstream;
+            _rebuildImmutable = rebuild;
         }
 
 
@@ -38,16 +48,17 @@ namespace ToSic.Eav.Caching
         /// Retrieves the list - either the cache one, or if timestamp has changed, rebuild and return that
         /// </summary>
         [PrivateApi("Experimental, trying to lower memory footprint")]
-        public List<T> List
+        public IImmutableList<T> List
         {
             get
             {
-                if (_cache != null && !CacheChanged()) return _cache;
+                if (_immutableCache != null && !CacheChanged()) return _immutableCache;// _cache;
 
-                _cache = _rebuild.Invoke();
+                _immutableCache = _rebuildImmutable(); //.Invoke();
+                //_immutableCache = _cache.ToImmutableList();
                 CacheTimestamp = Upstream.CacheTimestamp;
 
-                return _cache;
+                return _immutableCache;// _cache;
             }
         }
 

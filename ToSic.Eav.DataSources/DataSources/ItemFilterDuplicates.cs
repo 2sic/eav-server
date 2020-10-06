@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
@@ -35,8 +35,10 @@ namespace ToSic.Eav.DataSources
         [PrivateApi]
 		public ItemFilterDuplicates()
 		{
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetUnique));
-			Out.Add(DuplicatesStreamName, new DataStream(this, Constants.DefaultStreamName, GetDuplicates));
+            Provide(GetUnique);
+            Provide(DuplicatesStreamName, GetDuplicates);
+			//Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetUnique));
+			//Out.Add(DuplicatesStreamName, new DataStream(this, Constants.DefaultStreamName, GetDuplicates));
 
 		}
 
@@ -44,16 +46,17 @@ namespace ToSic.Eav.DataSources
         /// Find and return the unique items in the list
         /// </summary>
         /// <returns></returns>
-        private IEnumerable<IEntity> GetUnique()
+        private IImmutableList<IEntity> GetUnique()
         {
             if(!In.ContainsKey(Constants.DefaultStreamName) || In[Constants.DefaultStreamName].List == null)
-                return new List<IEntity>();
+                return new ImmutableArray<IEntity>(); // new List<IEntity>().ToImmutableList();
 
             var list = In[Constants.DefaultStreamName].List;
 
             return list
                 .Distinct()
-                .ToList();
+                .ToImmutableList();
+                //.ToList();
         }
 
 
@@ -61,10 +64,10 @@ namespace ToSic.Eav.DataSources
         /// Find and return only the duplicate items in the list
         /// </summary>
         /// <returns></returns>
-	    private IEnumerable<IEntity> GetDuplicates()
+	    private IImmutableList<IEntity> GetDuplicates()
 	    {
 	        if (!In.ContainsKey(Constants.DefaultStreamName) || In[Constants.DefaultStreamName].List == null)
-	            return new List<IEntity>();
+	            return new ImmutableArray<IEntity>(); // new List<IEntity>().ToImmutableList();
 
 	        var list = In[Constants.DefaultStreamName].List;
 
@@ -72,7 +75,8 @@ namespace ToSic.Eav.DataSources
                 .GroupBy(s => s)
                 .Where(g => g.Count() > 1)
                 .Select(g => g.Key)
-                .ToList();
+                .ToImmutableList();
+                //.ToList();
 	    }
     }
 }
