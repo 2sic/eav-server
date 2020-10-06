@@ -34,19 +34,25 @@ namespace ToSic.Eav.Caching
         }
 
 
-        private List<T> GetCache()
+        /// <summary>
+        /// Retrieves the list - either the cache one, or if timestamp has changed, rebuild and return that
+        /// </summary>
+        [PrivateApi("Experimental, trying to lower memory footprint")]
+        public List<T> List
         {
-             if (_cache != null && !CacheChanged()) return _cache;
+            get
+            {
+                if (_cache != null && !CacheChanged()) return _cache;
 
-            _cache = _rebuild.Invoke();
-            CacheTimestamp = Upstream.CacheTimestamp;
+                _cache = _rebuild.Invoke();
+                CacheTimestamp = Upstream.CacheTimestamp;
 
-            return _cache;
+                return _cache;
+            }
         }
 
         /// <inheritdoc />
-        public IEnumerator<T> GetEnumerator() 
-            => GetCache().GetEnumerator();
+        public IEnumerator<T> GetEnumerator() => List.GetEnumerator();
 
         /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
