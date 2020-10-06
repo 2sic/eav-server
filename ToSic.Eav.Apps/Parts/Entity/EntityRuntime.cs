@@ -29,7 +29,7 @@ namespace ToSic.Eav.Apps.Parts
         /// It's not clear if this is actually intended.
         /// </summary>
         public IEnumerable<IEntity> OnlyContent =>
-            AppRT.Data.List.Where(e => AppConstants.ScopesContent.Contains(e.Type.Scope));
+            AppRT.Data.Immutable.Where(e => AppConstants.ScopesContent.Contains(e.Type.Scope));
 
         /// <summary>
         /// Get this item or return null if not found
@@ -47,7 +47,7 @@ namespace ToSic.Eav.Apps.Parts
         {
             var typeFilter = new DataSource(Log).GetDataSource<EntityTypeFilter>(AppRT.Data); // need to go to cache, to include published & unpublished
             typeFilter.TypeName = contentTypeName;
-            return typeFilter.List;
+            return typeFilter.Immutable;
         }
 
         #endregion

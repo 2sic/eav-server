@@ -61,7 +61,7 @@ namespace ToSic.Eav.DataSources
             var attributeNames = AttributeNames.Split(',');
 		    attributeNames = (from a in attributeNames select a.Trim()).ToArray();
 
-		    var result = In[Constants.DefaultStreamName].List
+		    var result = In[Constants.DefaultStreamName].Immutable
                 .Select(entity => EntityBuilder.FullClone(entity, 
                     entity.Attributes.Where(a => attributeNames.Contains(a.Key)).ToDictionary(k => k.Key, v => v.Value),
                     entity.Relationships.AllRelationships)).Cast<IEntity>()

@@ -48,10 +48,10 @@ namespace ToSic.Eav.DataSources
         /// <returns></returns>
         private IImmutableList<IEntity> GetUnique()
         {
-            if(!In.ContainsKey(Constants.DefaultStreamName) || In[Constants.DefaultStreamName].List == null)
+            if(!In.HasStreamWithItems(Constants.DefaultStreamName))//In.ContainsKey(Constants.DefaultStreamName) || In[Constants.DefaultStreamName].List == null)
                 return new ImmutableArray<IEntity>(); // new List<IEntity>().ToImmutableList();
 
-            var list = In[Constants.DefaultStreamName].List;
+            var list = In[Constants.DefaultStreamName].Immutable;
 
             return list
                 .Distinct()
@@ -66,10 +66,10 @@ namespace ToSic.Eav.DataSources
         /// <returns></returns>
 	    private IImmutableList<IEntity> GetDuplicates()
 	    {
-	        if (!In.ContainsKey(Constants.DefaultStreamName) || In[Constants.DefaultStreamName].List == null)
+	        if (!In.HasStreamWithItems(Constants.DefaultStreamName)) //In.ContainsKey(Constants.DefaultStreamName) || In[Constants.DefaultStreamName].List == null)
 	            return new ImmutableArray<IEntity>(); // new List<IEntity>().ToImmutableList();
 
-	        var list = In[Constants.DefaultStreamName].List;
+	        var list = In[Constants.DefaultStreamName].Immutable;
 
 	        return list
                 .GroupBy(s => s)

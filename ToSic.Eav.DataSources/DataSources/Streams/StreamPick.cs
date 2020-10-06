@@ -86,7 +86,7 @@ namespace ToSic.Eav.DataSources
             }
 
             wrapLog("ok");
-            return foundStream.Value.List.ToImmutableList(); //.ToList();
+            return foundStream.Value.Immutable;//.ToImmutableList(); //.ToList();
         }
 
 	}

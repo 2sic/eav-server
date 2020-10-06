@@ -46,7 +46,7 @@ namespace ToSic.Eav.Apps
             // Out must now be rebuilt, because otherwise it will still have old data in the streams
             FlushDataSnapshot();
             // try to find it again
-            var created = List.One(id);
+            var created = Immutable.One(id);
             return wrapLog(null, created);
         }
 
@@ -59,7 +59,7 @@ namespace ToSic.Eav.Apps
             var ids = DataController().Create(contentTypeName, multiValues);
             // Out must now be rebuilt, because otherwise it will still have old data in the streams
             FlushDataSnapshot();
-            var created = List.Where(e => ids.Contains(e.EntityId)).ToList();
+            var created = Immutable.Where(e => ids.Contains(e.EntityId)).ToList();
             return wrapLog(null, created);
         }
 

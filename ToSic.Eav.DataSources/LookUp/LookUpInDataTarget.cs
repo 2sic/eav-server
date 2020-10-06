@@ -56,14 +56,14 @@ namespace ToSic.Eav.LookUp
 
             // check if any entities exist in this specific in-stream
             var entityStream = _dataTarget.In[subTokens.Source];
-            if (!entityStream.List.Any())
+            if (!entityStream.Immutable.Any())
 		    {
                 notFound = true;
                 return string.Empty;
             }
 
             // Create an LookUpInEntity based on the first item, return its Get
-		    var first = entityStream.List.First();
+		    var first = entityStream.Immutable.First();
 		    return new LookUpInEntity(first).Get(subTokens.Rest, format, ref notFound);
 
 		}

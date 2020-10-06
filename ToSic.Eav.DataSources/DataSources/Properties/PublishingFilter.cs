@@ -53,7 +53,7 @@ namespace ToSic.Eav.DataSources
 	        var outStreamName = ShowDrafts 
                 ? Constants.DraftsStreamName 
                 : Constants.PublishedStreamName;
-	        return In[outStreamName].List;//.ToList();
+	        return In[outStreamName].Immutable;//.ToList();
 	    }
 
 	}

@@ -14,7 +14,7 @@ namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
         internal RelationshipFilter Api;
         internal RelationshipFilter Config;
 
-        internal IEnumerable<IEntity> All => Api.In[Constants.DefaultStreamName].List;
+        internal IEnumerable<IEntity> All => Api.In[Constants.DefaultStreamName].Immutable;
         internal int CountAll => All.Count();
 
         internal int CountApi => Api.List.Count();

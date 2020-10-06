@@ -13,7 +13,7 @@ namespace ToSic.Eav.DataSourceTests.EntityFilters
         {
             var vf = CreateEntityTypeFilterForTesting(1000);
             vf.TypeName = "Person";
-            Assert.AreEqual(1000, vf.List.Count(), "Should find all");
+            Assert.AreEqual(1000, vf.Immutable.Count(), "Should find all");
         }
 
         [TestMethod]
@@ -21,7 +21,7 @@ namespace ToSic.Eav.DataSourceTests.EntityFilters
         {
             var vf = CreateEntityTypeFilterForTesting(1000);
             vf.TypeName = "Category";
-            Assert.AreEqual(0, vf.List.Count(), "Should find all");
+            Assert.AreEqual(0, vf.Immutable.Count(), "Should find all");
         }
 
 

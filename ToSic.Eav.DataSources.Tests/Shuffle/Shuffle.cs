@@ -61,7 +61,7 @@ namespace ToSic.Eav.DataSourceTests.Shuffle
             // now the IDs shouldn't be incrementing one after another
             var seqConsistent = true;
             var lastId = 0;
-            foreach (var itm in sf.List)
+            foreach (var itm in sf.Immutable)
             {
                 var newId = itm.EntityId;
                 if (newId < lastId)

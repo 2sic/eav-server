@@ -24,7 +24,7 @@ namespace ToSic.Eav.DataSourceTests.Attributes
         public void DefaultWithoutMap()
         {
             var attRenCompare = AttributeRenameTester.CreateRenamer(10);
-            var item = attRenCompare.List.First();
+            var item = attRenCompare.Immutable.First();
             AssertHasFields(item, DataTableTst.Fields);
             Assert.AreEqual(DataTableTst.ContentTypeName, item.Type.Name, "Typename should not change");
         }
@@ -33,7 +33,7 @@ namespace ToSic.Eav.DataSourceTests.Attributes
         public void NoChanges()
         {
             var attRen = AttributeRenameTester.CreateRenamer(10);
-            var result = attRen.List.ToList();
+            var result = attRen.Immutable.ToList();
             Assert.AreEqual(10, result.Count);
             var item = result.First();
             Assert.AreEqual(DataTableTst.ValueColumns, item.Attributes.Count);

@@ -30,7 +30,7 @@ namespace ToSic.Eav.DataSourceTests.Caches
             Assert.IsFalse(listCache.Has(cacher.Out[Constants.DefaultStreamName]),
                 "Should not be in yet");
 
-            var y = cacher.List; // not it should get in
+            var y = cacher.Immutable; // not it should get in
 
             // check again, should be in
             Assert.IsTrue(listCache.Has(cacher.Out[Constants.DefaultStreamName]),
@@ -49,7 +49,7 @@ namespace ToSic.Eav.DataSourceTests.Caches
             Assert.IsTrue(listCache.Has(cacher.Out[Constants.DefaultStreamName]),
                 "Should be in because the previous test already added it - will fail if run by itself");
 
-            var y = cacher.List; // not it should get in
+            var y = cacher.Immutable; // not it should get in
 
             Assert.AreEqual(1, y.Count(), "still has correct amount of items");
             Assert.AreEqual(1067, y.First().EntityId, "check correct entity id");
@@ -109,7 +109,7 @@ namespace ToSic.Eav.DataSourceTests.Caches
                 "Should not be in because the previous test added a shorter key");
 
             // Get first list from direct query and from cache - compare. Should be same
-            var results1 = query[Constants.DefaultStreamName].List;
+            var results1 = query[Constants.DefaultStreamName].Immutable;
             var results2 = listCache.Get(query.Out[Constants.DefaultStreamName]).List; Assert.AreEqual(results2, results1, "Should be same list - right now");
 
             // Now wait 100 milliseconds, then repeat the process. Since the new source has another date-time, it should rebuild the cache
@@ -117,8 +117,8 @@ namespace ToSic.Eav.DataSourceTests.Caches
 
             var laterTimeIdenticalData = CreateFilterForTesting(100, uniqueIdsForThisTest, false);
             var cache2 = CreateCacheDS(laterTimeIdenticalData);
-            var listFromCache2 = cache2[Constants.DefaultStreamName].List;
-            Assert.AreNotEqual(listFromCache2, results1, "Second list sohuldn't be same because 100ms time difference in source");
+            var listFromCache2 = cache2[Constants.DefaultStreamName].Immutable;
+            Assert.AreNotEqual(listFromCache2, results1, "Second list shouldn't be same because 100ms time difference in source");
         }
 
         [TestMethod]
@@ -130,7 +130,7 @@ namespace ToSic.Eav.DataSourceTests.Caches
             var listCache = new ListCache(null);
 
             // Get first list from direct query and from cache - compare. Should be same
-            var results1 = query[Constants.DefaultStreamName].List;
+            var results1 = query[Constants.DefaultStreamName].Immutable;
 
             var cacheItem = listCache.Get(query.Out[Constants.DefaultStreamName]);
             Assert.IsNotNull(cacheItem, "should be not null, expected it to be in the cache");
@@ -146,7 +146,7 @@ namespace ToSic.Eav.DataSourceTests.Caches
             // special: tell cache2 to ignore time etc.
             cache2.RefreshOnSourceRefresh = false;
 
-            var listFromCache2 = cache2[Constants.DefaultStreamName].List;
+            var listFromCache2 = cache2[Constants.DefaultStreamName].Immutable;
             Assert.AreEqual(listFromCache2, results1, "Second list sohuldn't STILL be same because we ignore time difference in source");
         }
 
@@ -161,7 +161,7 @@ namespace ToSic.Eav.DataSourceTests.Caches
             var listCache = new ListCache(null);
 
             // Get first list from direct query and from cache - compare. Should be same
-            var originalList = cacher[Constants.DefaultStreamName].List;
+            var originalList = cacher[Constants.DefaultStreamName].Immutable;
             var listFromCache1 = listCache.Get(cacher.Out[Constants.DefaultStreamName]).List;
             Assert.AreEqual(listFromCache1, originalList, "Should be same list - right now");
 
@@ -173,7 +173,7 @@ namespace ToSic.Eav.DataSourceTests.Caches
             var newCacher = CreateCacheDS(filtered);
             newCacher.CacheDurationInSeconds = 1;
             newCacher.RefreshOnSourceRefresh = false; // don't enforce this, otherwise it will automatically be a new cache anyhow
-            var listFromCacheAfter1Second = newCacher[Constants.DefaultStreamName].List;
+            var listFromCacheAfter1Second = newCacher[Constants.DefaultStreamName].Immutable;
             Assert.AreNotEqual(listFromCacheAfter1Second, originalList, "Second list MUST be Different because 1 second passed");
         }
 

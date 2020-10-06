@@ -100,7 +100,7 @@ namespace ToSic.Eav.DataSources.System
             if(StreamName != Constants.DefaultStreamName)
                 attribInfo.Attach(Constants.DefaultStreamName, _query[StreamName]);
 
-	        return attribInfo.List;
+	        return attribInfo.Immutable;
         }
 
 	    private void CustomConfigurationParse()
@@ -118,7 +118,7 @@ namespace ToSic.Eav.DataSources.System
             // important, use "Name" and not get-best-title, as some queries may not be correctly typed, so missing title-info
             var found = QueryName.StartsWith(GlobalQueries.GlobalEavQueryPrefix)
                 ? GlobalQueries.FindQuery(QueryName)
-                : QueryManager.AllQueryItems(/*AppId*/this, Log)
+                : QueryManager.AllQueryItems(this, Log)
                     .FirstOrDefault(q => string.Equals(q.GetBestValue("Name").ToString(), QueryName,
                         StringComparison.InvariantCultureIgnoreCase));
 

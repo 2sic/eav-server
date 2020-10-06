@@ -27,8 +27,8 @@ namespace ToSic.Eav.DataSources.Tests
         public void ValueSort_Unused()
         {
             var vf = _testDataGeneratedOutsideTimer;// CreateValueSortForTesting(testVolume);
-            var listOut = vf.List.ToList();
-            var listIn = vf.In[Constants.DefaultStreamName].List.ToList();
+            var listOut = vf.Immutable.ToList();
+            var listIn = vf.In[Constants.DefaultStreamName].Immutable.ToList();
             CollectionAssert.AreEqual(listOut, listIn, "Lists should be the same if no criteria applied");
         }
 

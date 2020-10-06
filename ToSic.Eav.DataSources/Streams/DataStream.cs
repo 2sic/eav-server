@@ -97,8 +97,10 @@ namespace ToSic.Eav.DataSources
         /// A temporary result list - must be a List, because otherwise
         /// there's a high risk of IEnumerable signatures with functions being stored inside
         /// </summary>
-	    private IImmutableList<IEntity> _list; 
-        public IImmutableList<IEntity> List
+	    private IImmutableList<IEntity> _list;
+
+        public IEnumerable<IEntity> List => Immutable;
+        public IImmutableList<IEntity> Immutable
 	    {
             get
             {
@@ -183,9 +185,9 @@ namespace ToSic.Eav.DataSources
 
         #region Support for IEnumerable<IEntity>
 
-        public IEnumerator<IEntity> GetEnumerator() => List.GetEnumerator();
+        public IEnumerator<IEntity> GetEnumerator() => Immutable.GetEnumerator();
 
-	    IEnumerator IEnumerable.GetEnumerator() => List.GetEnumerator();
+	    IEnumerator IEnumerable.GetEnumerator() => Immutable.GetEnumerator();
         #endregion Support for IEnumerable<IEntity>
     }
 }

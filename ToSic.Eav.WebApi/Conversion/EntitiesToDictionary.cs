@@ -41,7 +41,7 @@ namespace ToSic.Eav.Conversion
             }
 
             var y = streams.Where(k => source.Out.ContainsKey(k))
-                .ToDictionary(k => k, s => source.Out[s].List.Select(GetDictionaryFromEntity)
+                .ToDictionary(k => k, s => source.Out[s].Immutable.Select(GetDictionaryFromEntity)
             );
 
             wrapLog("ok");
@@ -54,7 +54,7 @@ namespace ToSic.Eav.Conversion
 
         /// <inheritdoc />
         public IEnumerable<Dictionary<string, object>> Convert(IDataStream stream)
-            => Convert(stream.List);
+            => Convert(stream.Immutable);
         
         
         #endregion

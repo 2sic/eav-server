@@ -18,9 +18,12 @@ namespace ToSic.Eav.DataSources
         /// The list of items in this stream.
         /// </summary>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="IEntity"/> items.</returns>
-        IImmutableList<IEntity> List { get; }
+        IEnumerable<IEntity> List { get; }
 
-        /// <summary>
+        [PrivateApi]
+        IImmutableList<IEntity> Immutable { get; }
+
+		/// <summary>
 		/// Underlying <see cref="IDataSource"/> providing the <see cref="IEntity"/> of this stream
 		/// </summary>
 		/// <returns>The underlying <see cref="IDataSource"/></returns>

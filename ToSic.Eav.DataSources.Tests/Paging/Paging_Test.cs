@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSourceTests.Paging
         public void Paging_BasicPagingPg1On1000Items()
         {
             var ds = CreatePagingForTesting(1000);
-            var pgstream = ds["Paging"].List.First();
+            var pgstream = ds["Paging"].Immutable.First();
             Assert.AreEqual(1.ToDecimal(), pgstream.GetBestValue("PageNumber"));
             Assert.AreEqual(10.ToDecimal(), pgstream.GetBestValue("PageSize"));
             Assert.AreEqual(100.ToDecimal(), pgstream.GetBestValue("PageCount"));
@@ -33,7 +33,7 @@ namespace ToSic.Eav.DataSourceTests.Paging
         {
             var ds = CreatePagingForTesting(1001);
             ds.PageNumber = 7;
-            var pgstream = ds["Paging"].List.First();
+            var pgstream = ds["Paging"].Immutable.First();
             Assert.AreEqual(7.ToDecimal(), pgstream.GetBestValue("PageNumber"));
             Assert.AreEqual(10.ToDecimal(), pgstream.GetBestValue("PageSize"));
             Assert.AreEqual(101.ToDecimal(), pgstream.GetBestValue("PageCount"));
@@ -50,7 +50,7 @@ namespace ToSic.Eav.DataSourceTests.Paging
             var ds = CreatePagingForTesting(223);
             ds.PageSize = 50;
             ds.PageNumber = 5;
-            var pgstream = ds["Paging"].List.First();
+            var pgstream = ds["Paging"].Immutable.First();
             Assert.AreEqual(5.ToDecimal(), pgstream.GetBestValue("PageNumber"));
             Assert.AreEqual(50.ToDecimal(), pgstream.GetBestValue("PageSize"));
             Assert.AreEqual(5.ToDecimal(), pgstream.GetBestValue("PageCount"));

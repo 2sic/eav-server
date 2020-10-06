@@ -93,7 +93,7 @@ namespace ToSic.Eav.DataSources
 				throw new NotImplementedException("language 'any' not implemented yet");
 			#endregion
 
-            var list = In[Constants.DefaultStreamName].List;
+            var list = In[Constants.DefaultStreamName].Immutable;
 
             // check if no list parameters specified
 		    if (attr.Length == 1 && string.IsNullOrWhiteSpace(attr[0]))

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
@@ -56,13 +57,13 @@ namespace ToSic.Eav.DataSources.Queries
 	        return dict;
 	    }
 
-	    internal static IEnumerable<IEntity> AllQueryItems(IAppIdentity app, ILog parentLog)
+	    internal static IImmutableList<IEntity> AllQueryItems(IAppIdentity app, ILog parentLog)
 	    {
             var dsFact = new DataSource(parentLog);
 	        var source = dsFact.GetPublishing(app);
 	        var typeFilter = dsFact.GetDataSource<EntityTypeFilter>(source);
 	        typeFilter.TypeName = Constants.QueryTypeName;
-	        var list = typeFilter.List;
+	        var list = typeFilter.Immutable;
 	        return list;
 	    }
 	}

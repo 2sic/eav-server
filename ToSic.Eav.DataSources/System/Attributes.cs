@@ -66,7 +66,7 @@ namespace ToSic.Eav.DataSources.System
 
 	        var useStream = TryToUseInStream == ContentTypeName && In.ContainsKey(Constants.DefaultStreamName);
 	        var optionalList = useStream
-	            ? In[Constants.DefaultStreamName]?.List //.ToList()
+	            ? In[Constants.DefaultStreamName]?.Immutable //.ToList()
 	            : null;
 
 	        type = useStream 

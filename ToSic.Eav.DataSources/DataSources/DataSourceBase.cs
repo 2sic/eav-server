@@ -86,7 +86,10 @@ namespace ToSic.Eav.DataSources
         public IDataStream this[string outName] => Out[outName];
 
         /// <inheritdoc />
-        public IImmutableList<IEntity> List => Out[Constants.DefaultStreamName].List;
+        public IEnumerable<IEntity> List => Out[Constants.DefaultStreamName].Immutable;
+
+        [PrivateApi]
+        public IImmutableList<IEntity> Immutable => Out[Constants.DefaultStreamName].Immutable;
 
         /// <inheritdoc />
         public DataSourceConfiguration Configuration => _config ?? (_config = new DataSourceConfiguration(this));

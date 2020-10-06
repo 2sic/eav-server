@@ -65,7 +65,7 @@ namespace ToSic.Eav.DataSources
 
             var entityIds = _cleanedIds;
 
-		    var originals = In[Constants.DefaultStreamName].List;
+		    var originals = In[Constants.DefaultStreamName].Immutable;
 
 		    var result = entityIds.Select(originals.One).Where(e => e != null).ToImmutableList();
 

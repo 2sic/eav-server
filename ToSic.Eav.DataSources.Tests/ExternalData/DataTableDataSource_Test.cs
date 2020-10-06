@@ -57,7 +57,7 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
             const int itemsToGenerate = 499;
             var ds = GeneratePersonSourceWithDemoData(itemsToGenerate);
             Assert.IsTrue(ds.In.Count == 0, "In count should be 0");
-            Assert.IsTrue(ds.Out.Count == 1, "Out cound should be 1");
+            Assert.IsTrue(ds.Out.Count == 1, "Out count should be 1");
             var defaultOut = ds[Constants.DefaultStreamName];
             Assert.IsTrue(defaultOut != null);
             try
@@ -67,7 +67,7 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
                 Assert.Fail("Access to another out should fail");
             }
             catch { }
-            Assert.IsTrue(defaultOut.List.Count() == itemsToGenerate);
+            Assert.IsTrue(defaultOut.Immutable.Count == itemsToGenerate);
         }
 
         [TestMethod]
@@ -90,8 +90,8 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
             const int itemsToGenerate = 25;
             var ds = GenerateTrivial(itemsToGenerate);
 
-            Assert.AreEqual(25, ds.List.Count());
-            var first = ds.List.FirstOrDefault();
+            Assert.AreEqual(25, ds.Immutable.Count());
+            var first = ds.Immutable.FirstOrDefault();
             Assert.AreEqual("Daniel Mettler", first.GetBestTitle());
         }
 
@@ -122,7 +122,7 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
 
             // now enumerate all, to be sure that the time counted for DS creation isn't part of the tracked test-time
             // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-            source.List.LastOrDefault();
+            source.Immutable.LastOrDefault();
 
             if (useCacheForSpeed)
                 _cachedDs.Add(itemsToGenerate, source);
@@ -189,7 +189,7 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
 
             // now enumerate all, to be sure that the time counted for DS creation isn't part of the tracked test-time
             // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-            source.List.LastOrDefault();
+            source.Immutable.LastOrDefault();
 
             if (useCacheForSpeed)
                 _cachedDs.Add(itemsToGenerate, source);

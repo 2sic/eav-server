@@ -44,7 +44,10 @@ namespace ToSic.Eav.DataSources
         /// The items in the data-source - to be exact, the ones in the Default stream.
         /// </summary>
         /// <returns>A list of <see cref="IEntity"/> items in the Default stream.</returns>
-        IImmutableList<IEntity> List { get; }
+        IEnumerable<IEntity> List { get; }
+
+        [PrivateApi]
+        IImmutableList<IEntity> Immutable { get; }
 
         [PrivateApi("wip")]
         DataSourceConfiguration Configuration { get; }

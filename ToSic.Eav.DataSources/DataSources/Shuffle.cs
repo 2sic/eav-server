@@ -63,7 +63,7 @@ namespace ToSic.Eav.DataSources
             Configuration.Parse();
 
             Log.Add($"will shuffle and take:{Take}");
-            return ShuffleInternal(In[Constants.DefaultStreamName].List, Take, Log);
+            return ShuffleInternal(In[Constants.DefaultStreamName].Immutable, Take, Log);
 	    }
 
         #region Experiment based on http://stackoverflow.com/questions/375351/most-efficient-way-to-randomly-sort-shuffle-a-list-of-integers-in-c-sharp/375446#375446
