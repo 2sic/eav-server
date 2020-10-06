@@ -111,7 +111,7 @@ namespace ToSic.Eav.DataSources
             ConfigMask(TitleColumnNameKey, "[Settings:TitleColumnName]", cacheRelevant: false);
         }
 
-        private ImmutableList<IEntity> GetList()
+        private IImmutableList<IEntity> GetList()
         {
             Configuration.Parse();
 
@@ -170,7 +170,7 @@ namespace ToSic.Eav.DataSources
                 }
             }
             Log.Add($"found:{entityList.Count}");
-            return entityList.ToImmutableList();
+            return entityList.ToImmutableArray();
         }
     }
 }

@@ -54,7 +54,7 @@ namespace ToSic.Eav.DataSources
             Log.Add($"get for identity:{Identity}");
             if (string.IsNullOrWhiteSpace(Identity)) return new ImmutableArray<IEntity>()  ;// new List<IEntity>();
 
-            return In[Constants.DefaultStreamName].Immutable.Where(e => e.Owner == Identity).ToImmutableList();//.ToList();
+            return In[Constants.DefaultStreamName].Immutable.Where(e => e.Owner == Identity).ToImmutableArray();//.ToList();
         }
 
 	}

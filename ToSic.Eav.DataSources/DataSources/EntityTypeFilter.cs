@@ -48,7 +48,7 @@ namespace ToSic.Eav.DataSources
 		    ConfigMask(TypeNameKey, "[Settings:TypeName]");
         }
 
-	    private ImmutableList<IEntity> GetList()
+	    private IImmutableList<IEntity> GetList()
 	    {
             Configuration.Parse();
             Log.Add($"get list with type:{TypeName}");
@@ -60,7 +60,7 @@ namespace ToSic.Eav.DataSources
 	            if (foundType != null) // maybe it doesn't find it!
 	                return In[Constants.DefaultStreamName].Immutable
                         .Where(e => e.Type == foundType)
-                        .ToImmutableList();
+                        .ToImmutableArray();
 	        }
 	        catch { /* ignore */ }
 
@@ -68,7 +68,7 @@ namespace ToSic.Eav.DataSources
             // Reason is that many dynamically created content-types won't be known to the cache, so they cannot be found the previous way
 	        return In[Constants.DefaultStreamName].Immutable
                 .Where(e => e.Type.Name == TypeName)
-                .ToImmutableList();
+                .ToImmutableArray();
 	    }
 
 	}

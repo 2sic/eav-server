@@ -93,8 +93,8 @@ namespace ToSic.Eav.DataSources.System
                        Build.Entity(attribData,
                            titleField: AttributeType.Name.ToString(),
                            typeName: AttribContentTypeName)
-                   ).ToImmutableList() // .ToList()
-                   ?? new List<IEntity>().ToImmutableList();
+                   ).ToImmutableArray() // .ToList()
+                   ?? new ImmutableArray<IEntity>(); // new List<IEntity>().ToImmutableList();
         }
 
 

@@ -143,7 +143,15 @@ namespace ToSic.Eav.DataSources
             => Provide(Constants.DefaultStreamName, getList);
 
         [PrivateApi]
+        public void Provide(GetArrayDelegate getList) 
+            => Provide(Constants.DefaultStreamName, getList);
+
+        [PrivateApi]
         public void Provide(string name, GetImmutableListDelegate getList) 
+            => Out.Add(name, new DataStream(this, name, getList));
+
+        [PrivateApi]
+        public void Provide(string name, GetArrayDelegate getList) 
             => Out.Add(name, new DataStream(this, name, getList));
 
         #endregion

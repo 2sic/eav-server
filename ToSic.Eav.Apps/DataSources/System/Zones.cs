@@ -83,7 +83,7 @@ namespace ToSic.Eav.DataSources.System
                     typeName: ZoneContentTypeName);
             });
 
-            return list.ToImmutableList();//.ToList();
+            return list.ToImmutableArray();//.ToList();
         }
 
 	}

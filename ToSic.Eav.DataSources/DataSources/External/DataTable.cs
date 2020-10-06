@@ -116,7 +116,7 @@ namespace ToSic.Eav.DataSources
 		    ModifiedField = modifiedField ?? "";
 		}
 
-		private ImmutableList<IEntity> GetEntities()
+		private IImmutableList<IEntity> GetEntities()
 		{
             Configuration.Parse();
 
@@ -128,7 +128,7 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// Convert a DataTable to a Dictionary of EntityModels
 		/// </summary>
-		private ImmutableList<IEntity> ConvertToEntityDictionary(global::System.Data.DataTable source, string contentType, string entityIdField, string titleField, string modifiedField = null)
+		private IImmutableList<IEntity> ConvertToEntityDictionary(global::System.Data.DataTable source, string contentType, string entityIdField, string titleField, string modifiedField = null)
 		{
 			// Validate Columns
 			if (!source.Columns.Contains(entityIdField))
@@ -152,7 +152,7 @@ namespace ToSic.Eav.DataSources
                     appId: Constants.TransientAppId);
 				result.Add(entity);
 			}
-			return result.ToImmutableList();
+			return result.ToImmutableArray();
 		}
 	}
 }

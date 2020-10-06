@@ -27,10 +27,11 @@ namespace ToSic.Eav.Caching
         /// </summary>
         /// <param name="upstream">the upstream cache which can tell us if a refresh is necessary</param>
         /// <param name="rebuild">the method which rebuilds the list</param>
+        [Obsolete("You should prefer the Func<Immutable> signature")]
         public SynchronizedList(ICacheExpiring upstream, Func<List<T>> rebuild)
         {
             Upstream = upstream;
-            _rebuildImmutable = () => rebuild().ToImmutableList();
+            _rebuildImmutable = () => rebuild().ToImmutableArray();
         }
         /// <summary>
         /// Initialized a new list which depends on another source

@@ -110,7 +110,7 @@ namespace ToSic.Eav.DataSources.System
                 return result;
             });
 
-            return list.ToImmutableList();// .ToList();
+            return list.ToImmutableArray();// .ToList();
         }
 
 	}

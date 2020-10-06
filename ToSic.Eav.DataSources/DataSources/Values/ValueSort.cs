@@ -103,7 +103,7 @@ namespace ToSic.Eav.DataSources
             var valueAttrs = attr.Where(v => !Constants.InternalOnlyIsSpecialEntityProperty(v)).ToArray();
 		    var results = valueAttrs.Length == 0
 		        ? list
-		        : list.Where(e => e.Attributes.Keys.Where(valueAttrs.Contains).Count() == valueAttrs.Length).ToImmutableList();
+		        : list.Where(e => e.Attributes.Keys.Where(valueAttrs.Contains).Count() == valueAttrs.Length).ToImmutableArray();
 
 			// if list is blank, stop here and return blank list
             if (!results.Any())
@@ -140,7 +140,7 @@ namespace ToSic.Eav.DataSources
 				}
 			}
 
-			return ordered.ToImmutableList();//.ToList();
+			return ordered.ToImmutableArray();//.ToList();
 		}
 
 		private object getObjToSort(IEntity e, string a, char special)

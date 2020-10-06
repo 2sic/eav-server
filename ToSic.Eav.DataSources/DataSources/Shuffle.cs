@@ -100,7 +100,7 @@ namespace ToSic.Eav.DataSources
 
             var result = retArray
                 .Take(maxTake)
-                .ToImmutableList(); // .ToList();
+                .ToImmutableArray(); // .ToList();
             return wrapLog(maxTake.ToString(), result);
         }
         #endregion

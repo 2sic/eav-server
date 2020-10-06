@@ -69,19 +69,19 @@ namespace ToSic.Eav.DataSources.System
 		    ConfigMask(StreamKey, $"[Settings:{StreamField}||{Constants.DefaultStreamName}]");
 		}
 
-	    private IImmutableList<IEntity> GetStreams()
+	    private ImmutableArray<IEntity> GetStreams()
 	    {
             CustomConfigurationParse();
 
             return _query?.Out.OrderBy(stream => stream.Key).Select(stream
-                       => Build.Entity(new Dictionary<string, object>
-                           {
-                               {StreamsType.Name.ToString(), stream.Key}
-                           },
-                           titleField: StreamsType.Name.ToString(),
-                           typeName: QueryStreamsContentType))
-                    .ToImmutableList()
-                   ?? new List<IEntity>().ToImmutableList();
+                           => Build.Entity(new Dictionary<string, object>
+                               {
+                                   {StreamsType.Name.ToString(), stream.Key}
+                               },
+                               titleField: StreamsType.Name.ToString(),
+                               typeName: QueryStreamsContentType))
+                       .ToImmutableArray()
+                   ?? new ImmutableArray<IEntity>();// new List<IEntity>().ToImmutableList();
         }
 
 	    private IImmutableList<IEntity> GetAttributes()

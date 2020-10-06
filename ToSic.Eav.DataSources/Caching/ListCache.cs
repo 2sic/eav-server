@@ -129,11 +129,11 @@ namespace ToSic.Eav.DataSources.Caching
 
         /// <inheritdoc />
         public void Set(IDataStream dataStream, int durationInSeconds = 0, bool slidingExpiration = true)
-            => Set(CacheKey(dataStream), dataStream.Immutable, //.ToImmutableList(),
+            => Set(CacheKey(dataStream), dataStream.Immutable,
                 dataStream.Caching.CacheTimestamp, durationInSeconds, slidingExpiration);
 
         public void Set(string key, IEnumerable<IEntity> list, long sourceTimestamp, int durationInSeconds = 0, bool slidingExpiration = true) 
-            => Set(key, list.ToImmutableList(), sourceTimestamp, durationInSeconds, slidingExpiration);
+            => Set(key, list.ToImmutableArray(), sourceTimestamp, durationInSeconds, slidingExpiration);
 
         #endregion
 

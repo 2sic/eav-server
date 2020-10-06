@@ -59,7 +59,7 @@ namespace ToSic.Eav.DataSources
 		    ConfigMask(EntityIdKey, "[Settings:EntityIds]");
 		}
 
-		private ImmutableList<IEntity> GetList()
+		private IImmutableList<IEntity> GetList()
 		{
             CustomConfigurationParse();
 
@@ -67,9 +67,9 @@ namespace ToSic.Eav.DataSources
 
 		    var originals = In[Constants.DefaultStreamName].Immutable;
 
-		    var result = entityIds.Select(originals.One).Where(e => e != null).ToImmutableList();
+		    var result = entityIds.Select(originals.One).Where(e => e != null).ToImmutableArray();
 
-		    Log.Add(() => $"get ids:[{string.Join(",",_cleanedIds)}] found:{result.Count}");
+		    Log.Add(() => $"get ids:[{string.Join(",",_cleanedIds)}] found:{result.Length}");
 		    return result;
 		}
 

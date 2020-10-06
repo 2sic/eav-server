@@ -16,7 +16,7 @@ namespace ToSic.Eav.DataSources
 	[PrivateApi]
 	public class DataStream : IDataStream
 	{
-	    private readonly GetImmutableListDelegate _listDelegate;
+	    private readonly GetArrayDelegate _listDelegate;
 
 
         #region Self-Caching and Results-Persistence Properties / Features
@@ -57,24 +57,34 @@ namespace ToSic.Eav.DataSources
         /// <param name="listDelegate">Function which gets Entities</param>
         /// <param name="enableAutoCaching"></param>
         public DataStream(IDataSource source, string name, GetIEnumerableDelegate listDelegate = null, bool enableAutoCaching = false)
-		{
-			Source = source;
-			Name = name;
-            _listDelegate = ConvertDelegate(listDelegate);
-		    AutoCaching = enableAutoCaching;
-		}
+            : this(source, name, ConvertDelegate(listDelegate), enableAutoCaching) { }
 
-        private static GetImmutableListDelegate ConvertDelegate(GetIEnumerableDelegate original)
+        private static GetArrayDelegate ConvertDelegate(GetIEnumerableDelegate original)
         {
             if (original == null) return null;
             return () =>
             {
                 var initialResult = original();
-                return initialResult is IImmutableList<IEntity> alreadyImmutable
+                return initialResult is ImmutableArray<IEntity> alreadyImmutable
                     ? alreadyImmutable
-                    : initialResult.ToImmutableList();
+                    : initialResult.ToImmutableArray();
             };
         }
+
+        private static GetArrayDelegate ConvertDelegate(GetImmutableListDelegate original)
+        {
+            if (original == null) return null;
+            return () =>
+            {
+                var initialResult = original();
+                return initialResult is ImmutableArray<IEntity> alreadyImmutable
+                    ? alreadyImmutable
+                    : initialResult.ToImmutableArray();
+            };
+        }
+
+        public DataStream(IDataSource source, string name, GetImmutableListDelegate listDelegate = null, bool enableAutoCaching = false)
+            : this(source, name, ConvertDelegate(listDelegate), enableAutoCaching) { }
 
         /// <summary>
         /// Constructs a new DataStream
@@ -83,7 +93,7 @@ namespace ToSic.Eav.DataSources
         /// <param name="name">Name of this Stream</param>
         /// <param name="listDelegate">Function which gets Entities</param>
         /// <param name="enableAutoCaching"></param>
-        public DataStream(IDataSource source, string name, GetImmutableListDelegate listDelegate = null, bool enableAutoCaching = false)
+        public DataStream(IDataSource source, string name, GetArrayDelegate listDelegate = null, bool enableAutoCaching = false)
 		{
 			Source = source;
 			Name = name;

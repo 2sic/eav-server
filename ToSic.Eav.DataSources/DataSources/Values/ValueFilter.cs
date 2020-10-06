@@ -463,7 +463,7 @@ namespace ToSic.Eav.DataSources
                 }
                 if (int.TryParse(Take, out var tk))
 	                results = results.Take(tk);
-	            return results.ToImmutableList();//.ToList();
+	            return results.ToImmutableArray();//.ToList();
 	        }
 	        catch (Exception ex)
 	        {

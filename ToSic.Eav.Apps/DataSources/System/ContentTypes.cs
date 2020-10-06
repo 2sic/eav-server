@@ -116,7 +116,7 @@ namespace ToSic.Eav.DataSources.System
                     guid: guid);
 	        });
 
-	        return list.ToImmutableList();// .ToList();
+	        return list.ToImmutableArray();// .ToList();
 	    }
 
 	    private static Dictionary<string, object> BuildDictionary(IContentType t) => new Dictionary<string, object>

@@ -223,9 +223,9 @@ namespace ToSic.Eav.DataSources
 		    if (ChildOrParent != "child")
 		        throw new NotImplementedException("using 'parent' not supported yet, use 'child' to filter'");
 
-		    var results = originals.Where(finalCompare).ToImmutableList();//.ToList();
+		    var results = originals.Where(finalCompare).ToImmutableArray();//.ToList();
 
-		    Log.Add($"found in relationship-filter {results.Count}");
+		    Log.Add($"found in relationship-filter {results.Length}");
 			return results;
 		}
 

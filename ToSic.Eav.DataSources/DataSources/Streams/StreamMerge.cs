@@ -47,7 +47,7 @@ namespace ToSic.Eav.DataSources
 
             return streams
                 .Aggregate(new List<IEntity>() as IEnumerable<IEntity>, (current, stream) => current.Concat(stream))
-                .ToImmutableList();
+                .ToImmutableArray();
                 //.ToList();
         }
 	}

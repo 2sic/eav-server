@@ -65,10 +65,10 @@ namespace ToSic.Eav.DataSources
                 .Select(entity => EntityBuilder.FullClone(entity, 
                     entity.Attributes.Where(a => attributeNames.Contains(a.Key)).ToDictionary(k => k.Key, v => v.Value),
                     entity.Relationships.AllRelationships)).Cast<IEntity>()
-                .ToImmutableList();
+                .ToImmutableArray();
                 //.ToList();
 
-		    Log.Add($"attrib filter names:[{string.Join(",", attributeNames)}] found:{result.Count}");
+		    Log.Add($"attrib filter names:[{string.Join(",", attributeNames)}] found:{result.Length}");
 		    return result;
 		}
 

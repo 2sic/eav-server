@@ -65,19 +65,19 @@ namespace ToSic.Eav.Apps
             wrapLog("ok");
         }
 
-	    private static ImmutableList<IContentType> RemoveAliasesForGlobalTypes(IList<IContentType> allTypes)
+	    private static ImmutableArray<IContentType> RemoveAliasesForGlobalTypes(IList<IContentType> allTypes)
 	    {
 	        var globTypeNames = Global.AllContentTypes().Keys;
 	        return allTypes.Where(t =>
 	                !((ContentType) t).AlwaysShareConfiguration // keep all locally defined types
 	                || !globTypeNames.Contains(t.StaticName)    // for non-local: keep all which globally are not overwritten
 	            )
-	            .ToImmutableList();
+	            .ToImmutableArray();
 	    }
 
 
 	    private IDictionary<string, IContentType> _appTypesByName;
-	    private ImmutableList<IContentType> _appTypesFromRepository;
+	    private ImmutableArray<IContentType> _appTypesFromRepository;
 	    private ImmutableDictionary<int, string> _appTypeMap;
 
         /// <summary>

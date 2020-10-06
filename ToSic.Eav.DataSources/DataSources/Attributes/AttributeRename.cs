@@ -143,9 +143,9 @@ namespace ToSic.Eav.DataSources
                     newType
                     ))
                 .Cast<IEntity>()
-                .ToImmutableList();
+                .ToImmutableArray();
 
-		    Log.Add($"attrib filter names:[{string.Join(",", attributeNames)}] found:{result.Count}");
+		    Log.Add($"attrib filter names:[{string.Join(",", attributeNames)}] found:{result.Length}");
 		    return result;
 		}
 
