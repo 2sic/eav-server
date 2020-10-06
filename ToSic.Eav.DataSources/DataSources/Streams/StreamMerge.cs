@@ -38,7 +38,7 @@ namespace ToSic.Eav.DataSources
 			//Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
 		}
 
-        private IImmutableList<IEntity> GetList()
+        private ImmutableArray<IEntity> GetList()
         {
             var streams = In
                 .OrderBy(pair => pair.Key)

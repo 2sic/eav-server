@@ -96,7 +96,7 @@ namespace ToSic.Eav.DataSources
 		    ConfigMask(LangKey, "Default");
         }
 
-        private IImmutableList<IEntity> GetEntitiesOrFallback()
+        private ImmutableArray<IEntity> GetEntitiesOrFallback()
         {
             var res = GetEntities();
             // ReSharper disable PossibleMultipleEnumeration
@@ -114,7 +114,7 @@ namespace ToSic.Eav.DataSources
         }
 
 
-        private IImmutableList<IEntity> GetEntities()
+        private ImmutableArray<IEntity> GetEntities()
         {
             var wrapLog = Log.Call();
             // todo: maybe do something about languages?
@@ -443,7 +443,7 @@ namespace ToSic.Eav.DataSources
 	    private string[] _initializedLangs;
 	    private string _initializedAttrName;
 
-	    private IImmutableList<IEntity> GetFilteredWithLinq(IEnumerable<IEntity> originals, Func<IEntity, bool> compare)
+	    private ImmutableArray<IEntity> GetFilteredWithLinq(IEnumerable<IEntity> originals, Func<IEntity, bool> compare)
         {
             try
             {

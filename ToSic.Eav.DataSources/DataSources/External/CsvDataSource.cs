@@ -111,7 +111,7 @@ namespace ToSic.Eav.DataSources
             ConfigMask(TitleColumnNameKey, "[Settings:TitleColumnName]", cacheRelevant: false);
         }
 
-        private IImmutableList<IEntity> GetList()
+        private ImmutableArray<IEntity> GetList()
         {
             Configuration.Parse();
 

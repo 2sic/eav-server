@@ -42,11 +42,11 @@ namespace ToSic.Eav.DataSources
 			//Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
 		}
 
-        private IImmutableList<IEntity> GetList()
+        private ImmutableArray<IEntity> GetList()
         {
             var foundStream = FindIdealFallbackStream();
 
-            return foundStream != null ? foundStream.Immutable /*.ToList()*/ : new ImmutableArray<IEntity>(); // new List<IEntity>().ToImmutableList();
+            return foundStream?.Immutable ?? new ImmutableArray<IEntity>(); // new List<IEntity>().ToImmutableList();
         }
 
 	    private IDataStream FindIdealFallbackStream()

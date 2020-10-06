@@ -83,7 +83,7 @@ namespace ToSic.Eav.DataSources.System
 		    ConfigMask(ScopeKey, $"[Settings:{ScopeField}||Default]");
 		}
 
-	    private IImmutableList<IEntity> GetList()
+	    private ImmutableArray<IEntity> GetList()
 	    {
             Configuration.Parse();
 

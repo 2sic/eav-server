@@ -149,7 +149,7 @@ namespace ToSic.Eav.DataSources
 		    ConfigMask(ChildOrParentKey, $"[Settings:{Settings.Direction}||{DefaultDirection}]");
         }
 
-        private IImmutableList<IEntity> GetEntitiesOrFallback()
+        private ImmutableArray<IEntity> GetEntitiesOrFallback()
         {
             var res = GetEntities();
             // ReSharper disable PossibleMultipleEnumeration
@@ -161,7 +161,7 @@ namespace ToSic.Eav.DataSources
             // ReSharper restore PossibleMultipleEnumeration
         }
 
-        private IImmutableList<IEntity> GetEntities()
+        private ImmutableArray<IEntity> GetEntities()
 		{
             // todo: maybe do something about languages?
 

@@ -21,7 +21,7 @@ namespace ToSic.Eav.DataSources
         IEnumerable<IEntity> List { get; }
 
         [PrivateApi]
-        IImmutableList<IEntity> Immutable { get; }
+        ImmutableArray<IEntity> Immutable { get; }
 
 		/// <summary>
 		/// Underlying <see cref="IDataSource"/> providing the <see cref="IEntity"/> of this stream

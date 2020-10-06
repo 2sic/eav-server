@@ -99,7 +99,7 @@ namespace ToSic.Eav.DataSources
             Configuration.Parse();
 
             // Calculate any additional stuff
-            var itemCount = In[Constants.DefaultStreamName].Immutable.Count;
+            var itemCount = In[Constants.DefaultStreamName].Immutable.Length;
             var pageCount = Math.Ceiling((decimal) itemCount / PageSize);
 
             // Assemble the entity

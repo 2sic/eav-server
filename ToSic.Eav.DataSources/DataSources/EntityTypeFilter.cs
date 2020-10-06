@@ -48,7 +48,7 @@ namespace ToSic.Eav.DataSources
 		    ConfigMask(TypeNameKey, "[Settings:TypeName]");
         }
 
-	    private IImmutableList<IEntity> GetList()
+	    private ImmutableArray<IEntity> GetList()
 	    {
             Configuration.Parse();
             Log.Add($"get list with type:{TypeName}");

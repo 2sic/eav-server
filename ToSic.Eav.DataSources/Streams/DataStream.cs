@@ -107,27 +107,31 @@ namespace ToSic.Eav.DataSources
         /// A temporary result list - must be a List, because otherwise
         /// there's a high risk of IEnumerable signatures with functions being stored inside
         /// </summary>
-	    private IImmutableList<IEntity> _list;
+	    private ImmutableArray<IEntity> _list;
+
+        private bool _listLoaded;
 
         public IEnumerable<IEntity> List => Immutable;
-        public IImmutableList<IEntity> Immutable
+        public ImmutableArray<IEntity> Immutable
 	    {
             get
             {
-                var wrapLog = Source.Log.Call<IImmutableList<IEntity>>($"{nameof(Name)}:{Name}");
+                var wrapLog = Source.Log.Call<ImmutableArray<IEntity>>($"{nameof(Name)}:{Name}");
                 // If already retrieved return last result to be faster
-                if (_list != null) return wrapLog("reuse previous", _list);
+                if (/*_list != null && */_listLoaded) return wrapLog("reuse previous", _list);
 
                 // Check if it's in the cache - and if yes, if it's still valid and should be re-used --> return if found
                 if (AutoCaching)
                 {
                     Source.Log.Add($"{nameof(AutoCaching)}:{AutoCaching}");
                     var cacheItem = new ListCache(Source.Log).GetOrBuild(this, ReadUnderlyingList, CacheDurationInSeconds);
+                    _listLoaded = true;
                     return _list = wrapLog("ok", cacheItem.List);
                 }
 
                 var result = ReadUnderlyingList();
                 _list = result;
+                _listLoaded = true;
                 return wrapLog("ok", result);
             }
 	    }
@@ -137,9 +141,9 @@ namespace ToSic.Eav.DataSources
         /// Assemble the list - from the initially configured ListDelegate
         /// </summary>
         /// <returns></returns>
-        IImmutableList<IEntity> ReadUnderlyingList()
+        ImmutableArray<IEntity> ReadUnderlyingList()
         {
-            var wrapLog = Source.Log.Call<IImmutableList<IEntity>>();
+            var wrapLog = Source.Log.Call<ImmutableArray<IEntity>>();
             // try to use the built-in Entities-Delegate, but if not defined, use other delegate; just make sure we test both, to prevent infinite loops
             if (_listDelegate == null)
                 throw new Exception(Source.Log.Add("can't load stream - no delegate found to supply it"));
@@ -156,13 +160,13 @@ namespace ToSic.Eav.DataSources
             }
             catch (InvalidOperationException) // this is a special exception - for example when using SQL. Pass it on to enable proper testing
             {
-                wrapLog("error", null);
+                wrapLog("error", new ImmutableArray<IEntity>());
                 throw;
             }
             catch (Exception ex)
             {
                 var msg = $"Error getting List of Stream.\nStream Name: {Name}\nDataSource Name: {Source.Name}";
-                wrapLog(msg, null);
+                wrapLog(msg, new ImmutableArray<IEntity>());
                 throw new Exception(msg, ex);
             }
         }
@@ -173,7 +177,9 @@ namespace ToSic.Eav.DataSources
         public void PurgeList(bool cascade = false)
         {
             // kill the very local temp cache
-            _list = null;
+            //_list = null;
+            _list = new ImmutableArray<IEntity>();
+            _listLoaded = false;
             // kill in list-cache
             new ListCache(Source.Log).Remove(this);
             // tell upstream to flush as well
@@ -195,9 +201,9 @@ namespace ToSic.Eav.DataSources
 
         #region Support for IEnumerable<IEntity>
 
-        public IEnumerator<IEntity> GetEnumerator() => Immutable.GetEnumerator();
+        public IEnumerator<IEntity> GetEnumerator() => List.GetEnumerator();
 
-	    IEnumerator IEnumerable.GetEnumerator() => Immutable.GetEnumerator();
+	    IEnumerator IEnumerable.GetEnumerator() => List.GetEnumerator();
         #endregion Support for IEnumerable<IEntity>
     }
 }

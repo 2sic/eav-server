@@ -58,7 +58,7 @@ namespace ToSic.Eav.DataSources
         }
 
 
-        private IImmutableList<IEntity> GetList()
+        private ImmutableArray<IEntity> GetList()
 	    {
             Configuration.Parse();
 
@@ -69,9 +69,9 @@ namespace ToSic.Eav.DataSources
         #region Experiment based on http://stackoverflow.com/questions/375351/most-efficient-way-to-randomly-sort-shuffle-a-list-of-integers-in-c-sharp/375446#375446
         static readonly Random Generator = new Random();
 
-        private static IImmutableList<T> ShuffleInternal<T>(IImmutableList<T> sequence, int take, ILog log)
+        private static ImmutableArray<T> ShuffleInternal<T>(ImmutableArray<T> sequence, int take, ILog log)
         {
-            var wrapLog = log.Call<IImmutableList<T>>();
+            var wrapLog = log.Call<ImmutableArray<T>>();
             
             // check if there is actually any data
             if (!sequence.Any())

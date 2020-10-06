@@ -83,7 +83,7 @@ namespace ToSic.Eav.DataSources
         /// Get the list of all items with reduced attributes-list
         /// </summary>
         /// <returns></returns>
-		private IImmutableList<IEntity> GetList()
+		private ImmutableArray<IEntity> GetList()
 		{
             Configuration.Parse();
 

@@ -70,7 +70,7 @@ namespace ToSic.Eav.DataSources
 		    ConfigMask(LangKey, "Default");
         }
 
-		private IImmutableList<IEntity> GetList()
+		private ImmutableArray<IEntity> GetList()
 		{
             // todo: maybe do something about languages?
             // todo: test datetime & decimal types

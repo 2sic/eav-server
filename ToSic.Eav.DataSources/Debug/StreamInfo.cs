@@ -8,7 +8,7 @@ namespace ToSic.Eav.DataSources.Debug
         public Guid Source;
         public string SourceOut;
         public string TargetIn;
-        public int Count => Stream.Immutable.Count;
+        public int Count => Stream.Immutable.Length;
         public bool Error = false;
 
         protected readonly IDataStream Stream;

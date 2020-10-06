@@ -116,7 +116,7 @@ namespace ToSic.Eav.DataSources
 		    ModifiedField = modifiedField ?? "";
 		}
 
-		private IImmutableList<IEntity> GetEntities()
+		private ImmutableArray<IEntity> GetEntities()
 		{
             Configuration.Parse();
 
@@ -128,7 +128,7 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// Convert a DataTable to a Dictionary of EntityModels
 		/// </summary>
-		private IImmutableList<IEntity> ConvertToEntityDictionary(global::System.Data.DataTable source, string contentType, string entityIdField, string titleField, string modifiedField = null)
+		private ImmutableArray<IEntity> ConvertToEntityDictionary(global::System.Data.DataTable source, string contentType, string entityIdField, string titleField, string modifiedField = null)
 		{
 			// Validate Columns
 			if (!source.Columns.Contains(entityIdField))

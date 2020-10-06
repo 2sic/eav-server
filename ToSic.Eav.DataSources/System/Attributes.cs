@@ -56,7 +56,7 @@ namespace ToSic.Eav.DataSources.System
 		    ConfigMask(ContentTypeKey, $"[Settings:{ContentTypeField}||{TryToUseInStream}]");
 		}
 
-	    private IImmutableList<IEntity> GetList()
+	    private ImmutableArray<IEntity> GetList()
 	    {
             Configuration.Parse();
 

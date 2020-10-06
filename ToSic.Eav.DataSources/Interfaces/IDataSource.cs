@@ -47,7 +47,7 @@ namespace ToSic.Eav.DataSources
         IEnumerable<IEntity> List { get; }
 
         [PrivateApi]
-        IImmutableList<IEntity> Immutable { get; }
+        ImmutableArray<IEntity> Immutable { get; }
 
         [PrivateApi("wip")]
         DataSourceConfiguration Configuration { get; }

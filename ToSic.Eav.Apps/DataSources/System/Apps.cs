@@ -69,7 +69,7 @@ namespace ToSic.Eav.DataSources.System
 		}
 
 
-	    private IImmutableList<IEntity> GetList()
+	    private ImmutableArray<IEntity> GetList()
 	    {
             Configuration.Parse();
 

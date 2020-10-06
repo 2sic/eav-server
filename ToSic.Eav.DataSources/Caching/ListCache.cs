@@ -73,7 +73,7 @@ namespace ToSic.Eav.DataSources.Caching
         }
 
         /// <inheritdoc />
-        public ListCacheItem GetOrBuild(IDataStream stream, Func<IImmutableList<IEntity>> builderFunc,
+        public ListCacheItem GetOrBuild(IDataStream stream, Func<ImmutableArray<IEntity>> builderFunc,
             int durationInSeconds = 0)
         {
             var wrapLog = Log.Call<ListCacheItem>();
@@ -113,7 +113,7 @@ namespace ToSic.Eav.DataSources.Caching
         #region set/add list
 
         /// <inheritdoc />
-        public void Set(string key, IImmutableList<IEntity> list, long sourceTimestamp, int durationInSeconds = 0,
+        public void Set(string key, ImmutableArray<IEntity> list, long sourceTimestamp, int durationInSeconds = 0,
             bool slidingExpiration = true)
         {
             var duration = durationInSeconds > 0 ? durationInSeconds : DefaultDuration;
@@ -129,11 +129,12 @@ namespace ToSic.Eav.DataSources.Caching
 
         /// <inheritdoc />
         public void Set(IDataStream dataStream, int durationInSeconds = 0, bool slidingExpiration = true)
-            => Set(CacheKey(dataStream), dataStream.Immutable,
+            // todo: drop toimmutablearray again
+            => Set(CacheKey(dataStream), dataStream.Immutable.ToImmutableArray(),
                 dataStream.Caching.CacheTimestamp, durationInSeconds, slidingExpiration);
 
-        public void Set(string key, IEnumerable<IEntity> list, long sourceTimestamp, int durationInSeconds = 0, bool slidingExpiration = true) 
-            => Set(key, list.ToImmutableArray(), sourceTimestamp, durationInSeconds, slidingExpiration);
+        //public void Set(string key, IEnumerable<IEntity> list, long sourceTimestamp, int durationInSeconds = 0, bool slidingExpiration = true) 
+        //    => Set(key, list.ToImmutableArray(), sourceTimestamp, durationInSeconds, slidingExpiration);
 
         #endregion
 

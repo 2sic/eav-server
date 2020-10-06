@@ -46,7 +46,7 @@ namespace ToSic.Eav.DataSources
        }
 
 
-	    private IImmutableList<IEntity> GetList()
+	    private ImmutableArray<IEntity> GetList()
 	    {
             Configuration.Parse();
             Log.Add($"get incl. draft:{ShowDrafts}");

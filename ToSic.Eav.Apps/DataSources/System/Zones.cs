@@ -54,7 +54,7 @@ namespace ToSic.Eav.DataSources.System
             Provide(GetList);
 		}
 
-	    private IImmutableList<IEntity> GetList()
+	    private ImmutableArray<IEntity> GetList()
 	    {
             // Get cache, which manages a list of zones
             var zones = Eav.Apps.State.Zones;

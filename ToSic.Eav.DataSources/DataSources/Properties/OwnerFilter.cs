@@ -47,7 +47,7 @@ namespace ToSic.Eav.DataSources
 		    ConfigMask(IdentityCode, "[Settings:" + IdentityCode + "]"); 
         }
 
-        private IImmutableList<IEntity> GetList()
+        private ImmutableArray<IEntity> GetList()
         {
             Configuration.Parse();
 
