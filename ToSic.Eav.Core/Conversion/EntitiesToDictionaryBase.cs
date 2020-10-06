@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Conversion
 {
@@ -11,8 +12,13 @@ namespace ToSic.Eav.Conversion
     /// A helper to serialize various combinations of entities, lists of entities etc
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
-    public abstract class EntitiesToDictionaryBase : IEntitiesTo<Dictionary<string, object>>
+    public abstract class EntitiesToDictionaryBase : HasLog<EntitiesToDictionaryBase>, IEntitiesTo<Dictionary<string, object>>
     {
+        #region Constructor / DI
+        protected EntitiesToDictionaryBase(string logName) : base(logName) { }
+
+        #endregion
+
         #region Configuration
         /// <inheritdoc/>
         public bool WithGuid { get; set; }
@@ -50,13 +56,22 @@ namespace ToSic.Eav.Conversion
         #region Many variations of the Prepare-Statement expecting various kinds of input
 
         /// <inheritdoc/>
-        public IEnumerable<Dictionary<string, object>> Convert(IEnumerable<IEntity> entities) 
-            => entities.Select(GetDictionaryFromEntity);
+        public IEnumerable<Dictionary<string, object>> Convert(IEnumerable<IEntity> entities)
+        {
+            var wrapLog = Log.Call(useTimer: true);
+            var result = entities.Select(GetDictionaryFromEntity).ToList();
+            wrapLog("ok");
+            return result;
+        }
 
         /// <inheritdoc/>
-        public Dictionary<string, object> Convert(IEntity entity) 
-            => entity == null ? null : GetDictionaryFromEntity(entity);
-        
+        public Dictionary<string, object> Convert(IEntity entity)
+        {
+            var wrapLog = Log.Call(useTimer: true);
+            var result = entity == null ? null : GetDictionaryFromEntity(entity);
+            wrapLog("ok");
+            return result;
+        }
 
         #endregion
 
@@ -148,5 +163,7 @@ namespace ToSic.Eav.Conversion
 
             return entityValues;
         }
+
+
     }
 }

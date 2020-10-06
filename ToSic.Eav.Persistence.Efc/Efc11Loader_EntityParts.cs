@@ -130,9 +130,15 @@ namespace ToSic.Eav.Persistence.Efc
             return wrapLog("ok", relationships);
         }
 
-        private static Dictionary<int, IEnumerable<TempRelationshipList>> ConvertRelationships(List<ToSicEavEntityRelationships> relationships)
+        private Dictionary<int, IEnumerable<TempRelationshipList>> GroupUniqueRelationships(IReadOnlyCollection<ToSicEavEntityRelationships> relationships)
         {
-            var relatedEntities = relationships
+            var callLog = Log.Call($"items: {relationships.Count}", useTimer: true);
+
+            Log.Add("experiment!");
+            var unique = relationships.Distinct(new RelationshipComparer()).ToList();
+            Log.Add("Distinct relationships: " + unique.Count);
+
+            var relatedEntities = unique // relationships
                 .GroupBy(g => g.ParentEntityId)
                 .ToDictionary(
                     g => g.Key,
@@ -145,7 +151,27 @@ namespace ToSic.Eav.Persistence.Efc
                                 .Select(c => c.ChildEntityId)
                                 .ToList()
                         }));
+            callLog("ok");
             return relatedEntities;
         }
+
+
+    }
+
+    internal class RelationshipComparer : IEqualityComparer<ToSicEavEntityRelationships>
+    {
+        public bool Equals(ToSicEavEntityRelationships x, ToSicEavEntityRelationships y)
+        {
+            if (x == null && y == null) return true;
+            if (x == null) return false;
+            if (y == null) return false;
+            return x.AttributeId == y.AttributeId 
+                   && x.SortOrder == y.SortOrder 
+                   && x.ParentEntityId == y.ParentEntityId 
+                   && x.ChildEntityId == y.ChildEntityId;
+        }
+
+        public int GetHashCode(ToSicEavEntityRelationships obj) 
+            => obj.GetHashCode();
     }
 }
