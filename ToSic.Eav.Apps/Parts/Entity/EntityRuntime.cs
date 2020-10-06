@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
@@ -20,7 +21,7 @@ namespace ToSic.Eav.Apps.Parts
         /// <summary>
         /// All entities in the app - this also includes system entities like data-source configuration etc.
         /// </summary>
-        public IEnumerable<IEntity> All => AppRT.AppState.List;
+        public IImmutableList<IEntity> All => AppRT.AppState.List;
 
         /// <summary>
         /// All content-entities. It does not include system-entity items.
