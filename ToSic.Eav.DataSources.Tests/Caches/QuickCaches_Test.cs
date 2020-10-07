@@ -25,14 +25,14 @@ namespace ToSic.Eav.DataSourceTests.Caches
 
             // manually add to cache
             listCache.Set(ds[Constants.DefaultStreamName]);
-            Assert.IsTrue(listCache.Has(ds.CacheFullKey + "|Default"), "Should have it in cache now");
+            Assert.IsTrue(listCache.Has(ds.CacheFullKey + "&Stream=Default"), "Should have it in cache now");
             Assert.IsTrue(listCache.Has(ds[Constants.DefaultStreamName]), "Should also have the DS default");
             
             Assert.IsTrue(listCache.Has(ds[Constants.DefaultStreamName]), "should have it by stream as well");
             
 
             // Try to auto-retrieve 
-            var cached = listCache.Get(ds.CacheFullKey + "|Default").List;
+            var cached = listCache.Get(ds.CacheFullKey + "&Stream=Default").List;
 
             Assert.AreEqual(1, cached.Count());
 
@@ -43,7 +43,7 @@ namespace ToSic.Eav.DataSourceTests.Caches
             Assert.AreEqual(null, lci, "Cached should be null because the name isn't correct");
 
             lci = listCache.Get(ds[Constants.DefaultStreamName]);
-            Assert.AreNotEqual(null, lci, "Cached should be found because usin stream instead of name");
+            Assert.AreNotEqual(null, lci, "Cached should be found because using stream instead of name");
 
             cached = listCache.Get(ds[Constants.DefaultStreamName]).List;
             Assert.AreEqual(1, cached.Count());

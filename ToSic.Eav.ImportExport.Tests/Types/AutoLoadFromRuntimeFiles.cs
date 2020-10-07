@@ -7,7 +7,7 @@ namespace ToSic.Eav.ImportExport.Tests.Types
     [TestClass]
     public class AutoLoadFromRuntimeFiles
     {
-        public Tuple<int, int> TypesInFilesRuntime = Tuple.Create(40, 50); // use range
+        public Tuple<int, int> TypesInFilesRuntime = Tuple.Create(50, 65); // use range
 
         [TestMethod]
         public void ScanForTypesFileBased()
