@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.DataSourceTests.RelationshipFilterTests;
 
 namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
 {
@@ -56,7 +57,7 @@ namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
         private static RelationshipTest BuildContainsAll(bool useThree = false, bool repeat2 = false)
             => new RelationshipTest("basic-cat-contains-all", Company, CompCat,
                 $"{CatMny1}{DefSeparator}{CatMny2}"
-                + (repeat2 ? $"{DefSeparator}{CatMny2}" : "") // optionally repeate the second value (shouldn't affect result)
+                + (repeat2 ? $"{DefSeparator}{CatMny2}" : "") // optionally repeat the second value (shouldn't affect result)
                 + (useThree ? $"{DefSeparator}{CatMny3}" : ""), // optionally add a third category (for other tests)
                 separator: DefSeparator,
                 compareMode: RelationshipFilter.CompareModes.contains.ToString());

@@ -2,11 +2,11 @@
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Data;
-using ToSic.Eav.Interfaces;
+using ToSic.Eav.DataSources;
+using ToSic.Eav.DataSources.Tests.RelationshipFilterTests;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
+namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
 {
     internal class RelationshipTest : RelationshipTestBase
     {

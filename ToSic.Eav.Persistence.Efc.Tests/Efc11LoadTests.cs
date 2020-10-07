@@ -38,7 +38,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
             }
         }
 
-        private const int ExpectedContentTypesOnApp2 = 65;
+        private const int ExpectedContentTypesOnApp2 = 44;
 
         [TestMethod]
         public void LoadContentTypesOf2Once()
@@ -79,6 +79,11 @@ namespace ToSic.Eav.Persistence.Efc.Tests
             Assert.IsTrue(types[Constants.NotMetadata] == "Default");
         }
 
+        private const int MinZones = 2;
+        private const int MaxZones = 5;
+        private const int AppCountInTestZone = 3;
+        private const int ZonesWithML = 1;
+
         [TestMethod]
         public void TestZonesLoader_WithLanguageDef()
         {
@@ -87,18 +92,18 @@ namespace ToSic.Eav.Persistence.Efc.Tests
             var apps = zones[2].Apps;
 
             Assert.AreEqual(1, defapp, "def app on first zone");
-            Assert.IsTrue(zones.Count > 120 && zones.Count < 150, $"zone count - often changes, as new test-portals are made. Found: {zones.Count}");
-            Assert.AreEqual(26, apps.Count, "app count on second zone");
+            Assert.IsTrue(zones.Count > MinZones && zones.Count < MaxZones, $"zone count - often changes, as new test-portals are made. Found: {zones.Count}");
+            Assert.AreEqual(AppCountInTestZone, apps.Count, "app count on second zone");
 
             // ML Checks
             var mlZones = zones.Values.Where(z => z.Languages.Count > 1).ToList();
-            Assert.AreEqual(9, mlZones.Count, "should have 9 ml zones");
+            Assert.AreEqual(ZonesWithML, mlZones.Count, "should have 9 ml zones");
             var firstMl = mlZones.First();
-            Assert.AreEqual(2, firstMl.Languages.Count, "think that first zone with ML should have 2 languages");
-            Assert.AreEqual(2, firstMl.Languages.Count(l => l.Active = true), "two are active");
+            Assert.AreEqual(3, firstMl.Languages.Count, "think that first zone with ML should have 2 languages");
+            Assert.AreEqual(2, firstMl.Languages.Count(l => l.Active), "two are active");
 
             var mlWithInactive = mlZones.Where(z => z.Languages.Any(l => !l.Active)).ToList();
-            Assert.AreEqual(0, mlWithInactive.Count, "expect 2 to have inactive languages");
+            Assert.AreEqual(1, mlWithInactive.Count, "expect 2 to have inactive languages");
 
 
         }

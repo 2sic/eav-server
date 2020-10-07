@@ -4,13 +4,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSourceTests;
+using ToSic.Eav.DataSources;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.LookUp;
 
-
-namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
+namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
 {
     public class RelationshipTestBase
     {
@@ -93,13 +92,16 @@ namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
 
         protected RelationshipFilter BuildRelationshipFilter(int zone, int app, string primaryType, ILookUpEngine config = null)
         {
-            var baseDs = new DataSource(Log).GetPublishing(new AppIdentity(zone,app), configProvider: config);
+            var baseDs = new DataSource(Log).GetPublishing(new AppIdentity(zone, app), configProvider: config);
             var appDs = new DataSource(Log).GetDataSource<App>(baseDs);
 
             // micro tests to ensure we have the right app etc.
             Assert.IsTrue(appDs.List.Count() > 20, "appDs.List.Count() > 20");
 
-            Assert.IsTrue(appDs.List.FindRepoId(731)?.GetBestTitle() == "2sic", "expecting item 731");
+            var item731 = appDs.List.FindRepoId(731);
+            Assert.IsNotNull(item731, "expecting item 731");
+            var title = item731.GetBestTitle();
+            Assert.AreEqual(title, "2sic", "item 731 should have title '2sic'");
 
             Assert.IsTrue(appDs.Out.ContainsKey(primaryType), $"app should contain stream of {primaryType}");
 

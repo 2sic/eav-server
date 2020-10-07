@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSourceTests;
+using ToSic.Eav.DataSourceTests.RelationshipFilterTests;
 using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests

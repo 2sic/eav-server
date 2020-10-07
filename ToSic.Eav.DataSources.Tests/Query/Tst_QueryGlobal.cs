@@ -1,11 +1,10 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources.Queries;
-using ToSic.Eav.DataSourceTests;
 using ToSic.Eav.ImportExport.Tests.Persistence.File;
 using ToSic.Eav.Logging;
 
-namespace ToSic.Eav.DataSources.Tests.Query
+namespace ToSic.Eav.DataSourceTests.Query
 {
     [TestClass]
     [DeploymentItem("..\\..\\" + TestConfig.GlobalQueriesData, TestConfig.TestingPath)]
@@ -51,7 +50,7 @@ namespace ToSic.Eav.DataSources.Tests.Query
             var query = fac.GetDataSourceForTesting(qDef, false);
 
             var list = query.List;
-            Assert.IsTrue(list.Count() > 25, "should find a few portals");
+            Assert.IsTrue(list.Count() > 1, "should find a few portals in the eav-testing-DB");
         }
 
 
