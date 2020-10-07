@@ -160,13 +160,13 @@ namespace ToSic.Eav.DataSources
             }
             catch (InvalidOperationException) // this is a special exception - for example when using SQL. Pass it on to enable proper testing
             {
-                wrapLog("error", new ImmutableArray<IEntity>());
+                wrapLog("error", ImmutableArray<IEntity>.Empty);
                 throw;
             }
             catch (Exception ex)
             {
                 var msg = $"Error getting List of Stream.\nStream Name: {Name}\nDataSource Name: {Source.Name}";
-                wrapLog(msg, new ImmutableArray<IEntity>());
+                wrapLog(msg, ImmutableArray<IEntity>.Empty);
                 throw new Exception(msg, ex);
             }
         }
@@ -178,7 +178,7 @@ namespace ToSic.Eav.DataSources
         {
             // kill the very local temp cache
             //_list = null;
-            _list = new ImmutableArray<IEntity>();
+            _list = ImmutableArray<IEntity>.Empty;
             _listLoaded = false;
             // kill in list-cache
             new ListCache(Source.Log).Remove(this);

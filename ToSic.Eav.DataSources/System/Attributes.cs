@@ -62,7 +62,7 @@ namespace ToSic.Eav.DataSources.System
 
             IContentType type;
             // try to load the content-type - if it fails, return empty list
-            if (string.IsNullOrWhiteSpace(ContentTypeName)) return new ImmutableArray<IEntity>();// new List<IEntity>();
+            if (string.IsNullOrWhiteSpace(ContentTypeName)) return ImmutableArray<IEntity>.Empty;// new List<IEntity>();
 
 	        var useStream = TryToUseInStream == ContentTypeName && In.ContainsKey(Constants.DefaultStreamName);
 	        var optionalList = useStream
@@ -94,7 +94,7 @@ namespace ToSic.Eav.DataSources.System
                            titleField: AttributeType.Name.ToString(),
                            typeName: AttribContentTypeName)
                    ).ToImmutableArray() // .ToList()
-                   ?? new ImmutableArray<IEntity>(); // new List<IEntity>().ToImmutableList();
+                   ?? ImmutableArray<IEntity>.Empty; // new List<IEntity>().ToImmutableList();
         }
 
 

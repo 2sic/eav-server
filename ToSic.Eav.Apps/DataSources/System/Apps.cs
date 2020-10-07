@@ -75,7 +75,7 @@ namespace ToSic.Eav.DataSources.System
 
             // try to load the content-type - if it fails, return empty list
             var zones = State.Zones;
-            if (!zones.ContainsKey(OfZoneId)) return new ImmutableArray<IEntity>(); // new List<IEntity>();
+            if (!zones.ContainsKey(OfZoneId)) return ImmutableArray<IEntity>.Empty; // new List<IEntity>();
 	        var zone = zones[OfZoneId];
 
 	        var list = zone.Apps.OrderBy(a => a.Key).Select(app =>

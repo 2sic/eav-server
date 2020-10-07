@@ -16,7 +16,7 @@ namespace ToSic.Eav.Core.Tests.Data
 
             Assert.AreEqual(1, entDaniel.EntityId);
             Assert.AreEqual(Guid.Empty, entDaniel.EntityGuid);
-            Assert.AreEqual("Daniel", entDaniel.Children("Title").FirstOrDefault().ToString());// .Title[0].ToString());
+            Assert.AreEqual("Daniel", entDaniel.Attributes["FirstName"].Values.FirstOrDefault()?.ObjectContents.ToString());// .Title[0].ToString());
             Assert.AreEqual("Daniel", entDaniel.GetBestTitle());
             Assert.AreEqual("Daniel", entDaniel.GetBestValue("FirstName"));
             Assert.AreEqual("Mettler", entDaniel.GetBestValue("LastName", new[] {"EN"}));

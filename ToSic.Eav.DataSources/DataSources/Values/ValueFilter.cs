@@ -157,7 +157,7 @@ namespace ToSic.Eav.DataSources
 
                 // if I can't find any, return empty list
                 if (firstEntity == null)
-                    return new ImmutableArray<IEntity>(); //new List<IEntity>();
+                    return ImmutableArray<IEntity>.Empty; //new List<IEntity>();
 
                 // New mechanism because the filter ignores internal properties like Modified, EntityId etc.
                 var firstAtt = firstEntity.GetBestValue(_initializedAttrName);  // this should get everything, incl. modified, EntityId, EntityGuid etc.

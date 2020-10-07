@@ -105,9 +105,11 @@ namespace ToSic.Eav.DataSources
 		        ? list
 		        : list.Where(e => e.Attributes.Keys.Where(valueAttrs.Contains).Count() == valueAttrs.Length).ToImmutableArray();
 
-			// if list is blank, stop here and return blank list
-            if (!results.Any())
-                return new ImmutableArray<IEntity>(); //results.ToList();
+			// if list is blank, then it didn't find the attribute to sort by - so just return unsorted
+			// note 2020-10-07 this may have been a bug previously, returning an empty list instead
+            if (!results.Any()) return list;// ImmutableArray<IEntity>.Empty; //results.ToList();
+
+            var unsortable = list.Where(e => !results.Contains(e)).ToImmutableArray();
 
             IOrderedEnumerable<IEntity> ordered = null;
 
@@ -140,7 +142,9 @@ namespace ToSic.Eav.DataSources
 				}
 			}
 
-			return ordered.ToImmutableArray();//.ToList();
+            var final = ordered?.ToImmutableArray() ?? ImmutableArray<IEntity>.Empty;
+            // final = final.AddRange(unsortable);
+			return final.AddRange(unsortable).ToImmutableArray();//.ToList();
 		}
 
 		private object getObjToSort(IEntity e, string a, char special)

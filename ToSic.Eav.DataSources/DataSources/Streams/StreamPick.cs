@@ -74,7 +74,7 @@ namespace ToSic.Eav.DataSources
             Configuration.Parse();
             var name = StreamName;
             Log.Add($"StreamName to Look for: '{name}'");
-			if(string.IsNullOrWhiteSpace(StreamName)) return new ImmutableArray<IEntity>();// new ImmutableArray<IEntity>();
+			if(string.IsNullOrWhiteSpace(StreamName)) return ImmutableArray<IEntity>.Empty;
             name = name.ToLowerInvariant();
             var foundStream = In.FirstOrDefault(pair => pair.Key.ToLowerInvariant() == name);
             if (foundStream.Key == string.Empty)

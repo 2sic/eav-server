@@ -51,7 +51,7 @@ namespace ToSic.Eav.DataSources.Tests.Query
             var query = fac.GetDataSourceForTesting(qDef, false);
 
             var list = query.List;
-            Assert.IsTrue(list.Count() > 1, "should find a few portals");
+            Assert.IsTrue(list.Count() > 25, "should find a few portals");
         }
 
 

@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
 {
     [TestClass]
     // ReSharper disable once InconsistentNaming
-    public class CsvDsTst
+    public class CsvDsTst_RerunIfFailed
     {
         private const int TestFileRowCount = 40;
 
