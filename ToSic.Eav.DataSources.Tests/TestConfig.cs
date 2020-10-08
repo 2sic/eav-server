@@ -7,7 +7,7 @@
         public static int AppForRelationshipTests = 3;
         public static int AppForQueryTests = 4;
 
-        public const string GlobalQueriesData = "Query\\.data\\";
+        public const string GlobalQueriesData = "..\\..\\..\\2sxc\\Src\\Data\\.data\\queries\\";//"Query\\.data\\";
         public const string TestingPath = "testdata";
 
     }

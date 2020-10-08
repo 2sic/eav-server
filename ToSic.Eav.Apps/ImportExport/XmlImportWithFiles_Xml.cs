@@ -71,7 +71,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
 
 			var import = new Import(ZoneId, AppId, leaveExistingValuesUntouched, parentLog: Log);
-			import.ImportIntoDb(importAttributeSets, importEntities.Cast<Entity>());
+			import.ImportIntoDb(importAttributeSets, importEntities.Cast<Entity>().ToList());
 
             Log.Add($"Purging {ZoneId}/{AppId}");
             SystemManager.Purge(ZoneId, AppId, log: Log);

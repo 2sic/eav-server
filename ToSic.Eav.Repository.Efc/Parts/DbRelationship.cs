@@ -17,16 +17,23 @@ namespace ToSic.Eav.Repository.Efc.Parts
             var randomId = Guid.NewGuid().ToString().Substring(0, 4);
             var wrapLog = Log.Call($"relationship queue:{randomId} start");
 
-            var willPurgeQueue = _outermostQueueCall;
-            _outermostQueueCall = false;
+            // 1. check if it's the outermost call, in which case afterwards we import
+            var willPurgeQueue = _isOutermostCall;
+            // 2. make sure any follow-up calls are not regarded as outermost
+            _isOutermostCall = false;
+            // 3. now run the inner code
             action.Invoke();
-            wrapLog("completed");
-
+            // 4. now check if we were the outermost call, in if yes, save the data
             if (willPurgeQueue)
+            {
                 ImportRelationshipQueueAndSave();
+                _isOutermostCall = true; // reactivate, in case this is called again
+            }
+
+            wrapLog("completed");
         }
 
-        private bool _outermostQueueCall = true;
+        private bool _isOutermostCall = true;
 
         private readonly List<RelationshipToSave> _saveQueue = new List<RelationshipToSave>();
 
@@ -35,31 +42,36 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Update Relationships of an Entity
         /// </summary>
-        private void UpdateEntityRelationshipsAndSave(int attributeId, IEnumerable<int?> newValue, ToSicEavEntities currentEntity)
+        private void UpdateEntityRelationshipsAndSave(List<RelationshipUpdatePackage> packages)
         {
-            var wrapLog = Log.Call(() => $"i:{currentEntity.EntityId}, attrib:{attributeId}, vals:[{string.Join(",", newValue)}]");
+            var wrapLog = Log.Call(useTimer: true);
+            packages.ForEach(p => Log.Add(() => $"i:{p.Entity.EntityId}, a:{p.AttributeId}, keys:[{string.Join(",", p.Targets)}]"));
             // remove existing Relationships that are not in new list
-            var newEntityIds = newValue.ToList();
-            var existingRelationships = currentEntity.RelationshipsWithThisAsParent
-                .Where(e => e.AttributeId == attributeId).ToList();
+            var existingRelationships = packages.SelectMany(p => p.Entity.RelationshipsWithThisAsParent
+                .Where(e => e.AttributeId == p.AttributeId))
+                .ToList();
 
             // Delete all existing relationships (important, because the order, which is part of the key, is important afterwards)
-            Log.Add($"found existing rels⋮{existingRelationships.Count}");
-            foreach (var relationToDelete in existingRelationships)
-                DbContext.SqlDb.ToSicEavEntityRelationships.Remove(relationToDelete);
-            DbContext.SqlDb.SaveChanges();  // this is necessary after remove, because otherwise EF state tracking gets messed up
-
-            // Create new relationships which didn't exist before
-            for (var i = 0; i < newEntityIds.Count; i++)
+            if (existingRelationships.Count > 0)
             {
-                var newEntityId = newEntityIds[i];
-                currentEntity.RelationshipsWithThisAsParent.Add(new ToSicEavEntityRelationships
-                {
-                    AttributeId = attributeId,
-                    ChildEntityId = newEntityId,
-                    SortOrder = i
-                });
+                Log.Add($"found existing rels⋮{existingRelationships.Count}");
+                foreach (var relationToDelete in existingRelationships)
+                    DbContext.SqlDb.ToSicEavEntityRelationships.Remove(relationToDelete);
+                DbContext.SqlDb.SaveChanges(); // this is necessary after remove, because otherwise EF state tracking gets messed up
             }
+
+            packages.ForEach(p =>
+            {
+                var newEntityIds = p.Targets.ToList();
+                // Create new relationships which didn't exist before
+                for (var i = 0; i < newEntityIds.Count; i++)
+                    p.Entity.RelationshipsWithThisAsParent.Add(new ToSicEavEntityRelationships
+                    {
+                        AttributeId = p.AttributeId,
+                        ChildEntityId = newEntityIds[i],
+                        SortOrder = i
+                    });
+            });
 
             DbContext.SqlDb.SaveChanges(); // now save the changed relationships
             wrapLog("ok");
@@ -98,9 +110,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Import Entity Relationships Queue (Populated by UpdateEntityRelationships) and Clear Queue afterward.
         /// </summary>
-        internal void ImportRelationshipQueueAndSave()
+        private void ImportRelationshipQueueAndSave()
         {
-            var wrapLog = Log.Call("");
+            var wrapLog = Log.Call("", useTimer: true);
             // if SaveOptions determines it, clear all existing relationships first
             var fullFlush = _saveQueue
                 .Where(r => r.FlushAllEntityRelationships)
@@ -114,25 +126,44 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     FlushChildrenRelationships(fullFlush);
 
                     Log.Add($"will add relationships⋮{_saveQueue.Count}");
+
+                    var parentIds = _saveQueue.Select(rel => rel.ParentEntityId).ToArray();
+                    if (parentIds.Any(p => p <= 0)) throw new Exception("some parent has no id provided, can't update relationships");
+                    var parents = DbContext.Entities.GetDbEntities(parentIds);
+                    Log.Add("Found parents to map:" + parents.Length);
+
+                    var allTargets = _saveQueue
+                        .Where(rel => rel.ChildEntityGuids != null)
+                        .SelectMany(rel => rel.ChildEntityGuids.Where(g => g.HasValue).Select(g => g.Value))
+                        .Distinct()
+                        .ToArray();
+                    Log.Add("Total target IDs: " + allTargets.Length);
+                    var dbTargetIds = DbContext.Entities.GetMostCurrentDbEntities(allTargets);
+                    Log.Add("Total target entities (should match): " + dbTargetIds.Count);
+
+                    var updates = new List<RelationshipUpdatePackage>();
                     foreach (var relationship in _saveQueue)
                     {
-                        var entity = relationship.ParentEntityId > 0
-                            ? DbContext.Entities.GetDbEntity(relationship.ParentEntityId)
-                            : null;
-
-                        if (entity == null)
-                            throw new Exception("no id provided, can't update relationships");
+                        var entity = parents.Single(e => e.EntityId == relationship.ParentEntityId);
+                        // old
+                        //var entity = relationship.ParentEntityId > 0
+                        //    ? DbContext.Entities.GetDbEntity(relationship.ParentEntityId)
+                        //    : throw new Exception("no id provided, can't update relationships");
 
                         // start with the ID list - or if it doesn't exist, a new list
                         var childEntityIds = relationship.ChildEntityIds ?? new List<int?>();
 
                         // if additional / alternative guids were specified, use those
                         if (childEntityIds.Count == 0 && relationship.ChildEntityGuids != null)
+                        {
+                            var dbIds = dbTargetIds;
+                                //DbContext.Entities.GetMostCurrentDbEntities(relationship.ChildEntityGuids
+                                //    .Where(g => g.HasValue).Select(g => g.Value).ToArray());
                             foreach (var childGuid in relationship.ChildEntityGuids)
                                 try
                                 {
                                     childEntityIds.Add(childGuid.HasValue
-                                        ? DbContext.Entities.GetMostCurrentDbEntity(childGuid.Value).EntityId
+                                        ? dbIds.ContainsKey(childGuid.Value) ? dbIds[childGuid.Value] : new int?()
                                         : new int?());
                                 }
                                 catch (InvalidOperationException)
@@ -140,9 +171,24 @@ namespace ToSic.Eav.Repository.Efc.Parts
                                     // ignore, may occur if the child entity doesn't exist / wasn't created successfully
                                 }
 
-                        UpdateEntityRelationshipsAndSave(relationship.AttributeId, childEntityIds, entity);
-                    }
+                            // old;
+                            //foreach (var childGuid in relationship.ChildEntityGuids)
+                            //    try
+                            //    {
+                            //        childEntityIds.Add(childGuid.HasValue
+                            //            ? DbContext.Entities.GetMostCurrentDbEntity(childGuid.Value).EntityId
+                            //            : new int?());
+                            //    }
+                            //    catch (InvalidOperationException)
+                            //    {
+                            //        // ignore, may occur if the child entity doesn't exist / wasn't created successfully
+                            //    }
 
+                        }
+                        updates.Add(new RelationshipUpdatePackage(entity, relationship.AttributeId, childEntityIds));
+                        //UpdateEntityRelationshipsAndSave(new List<RelationshipUpdatePackage>{ new RelationshipUpdatePackage(entity, relationship.AttributeId, childEntityIds)});
+                    }
+                    UpdateEntityRelationshipsAndSave(updates);
                 }
             );
 
@@ -150,9 +196,23 @@ namespace ToSic.Eav.Repository.Efc.Parts
             _saveQueue.Clear();
         }
 
+        private class RelationshipUpdatePackage
+        {
+            public int AttributeId;
+            public List<int?> Targets;
+            public ToSicEavEntities Entity;
+
+            public RelationshipUpdatePackage(ToSicEavEntities entity, int attributeId, List<int?> relationships)
+            {
+                Entity = entity;
+                AttributeId = attributeId;
+                Targets = relationships;
+            }
+        }
+
         internal void FlushChildrenRelationships(List<int> parentIds)
         {
-            var wrapLog = Log.Call($"{parentIds?.Count} items", message: "will do full-flush");
+            var wrapLog = Log.Call($"{parentIds?.Count} items", message: "will do full-flush", useTimer: true);
             
             // Delete all existing relationships - but not the target, just the relationship
             // note: can't use .Clear(), as that will try to actually delete the children
@@ -190,9 +250,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         #endregion
 
-        internal void SaveRelationships(IEntity eToSave, ToSicEavEntities dbEntity, List<ToSicEavAttributes> attributeDefs, SaveOptions so)
+        internal void ChangeRelationships(IEntity eToSave, ToSicEavEntities dbEntity, List<ToSicEavAttributes> attributeDefs, SaveOptions so)
         {
-            var wrapLog = Log.Call("");
+            var wrapLog = Log.Call(useTimer: true);
 
             // some initial error checking
             if(dbEntity.EntityId <= 0)
@@ -231,14 +291,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
                                        ((List<Guid?>) list).Select(p => p);
                         AddToQueue(attribDef.AttributeId, guidList.ToList(), dbEntity.EntityId, !so.PreserveUntouchedAttributes);
                     }
-
-
-                    if (list is List<int> || list is List<int?>)
+                    else if (list is List<int> || list is List<int?>)
                     {
                         var entityIds = list as List<int?> ?? ((List<int>) list).Select(v => (int?) v).ToList();
                         AddToQueue(attribDef.AttributeId, entityIds, dbEntity.EntityId, !so.PreserveUntouchedAttributes);
                     }
-
                 }
             });
             wrapLog(null);

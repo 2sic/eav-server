@@ -40,14 +40,13 @@ namespace ToSic.Eav.Apps.Parts
             saveOptions.PreserveUnknownLanguages = true;
 
             var tempEnt = new Entity(AppManager.AppId, 0, orig.Type, values);
-            var saveEnt = new EntitySaver(Log)
-                .CreateMergedForSaving(orig, tempEnt, saveOptions);
+            var saveEnt = new EntitySaver(Log).CreateMergedForSaving(orig, tempEnt, saveOptions);
 
             // if changes should be draft, ensure it works
             if (draft.HasValue && draft.Value)
             {
-                ((Entity)saveEnt).PlaceDraftInBranch = true;
-                ((Entity)saveEnt).IsPublished = false;
+                saveEnt.PlaceDraftInBranch = true;
+                saveEnt.IsPublished = false;
             }
 
             Save(saveEnt, saveOptions);

@@ -40,8 +40,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         public void DoAndSaveHistoryQueue(Action action)
         {
+            var callLog = Log.Call(useTimer: true);
             action.Invoke();
             Save();
+            callLog(null);
         }
 
         /// <summary>
@@ -65,9 +67,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         private void Save()
         {
+            var callLog = Log.Call(useTimer: true);
             DbContext.SqlDb.ToSicEavDataTimeline.AddRange(_queue);
             DbContext.SqlDb.SaveChanges();
             _queue.Clear();
+            callLog(null);
         }
 
         private readonly List<ToSicEavDataTimeline> _queue = new List<ToSicEavDataTimeline>();

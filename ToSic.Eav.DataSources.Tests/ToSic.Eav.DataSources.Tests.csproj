@@ -108,6 +108,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="AppStateTests\AccessItemsInAppState.cs" />
     <Compile Include="Attributes\AttributeRenameTester.cs" />
     <Compile Include="Attributes\AttributeRenameTests_TitleField.cs" />
     <Compile Include="Attributes\AttributeRenameTests_Type.cs" />
@@ -128,9 +129,9 @@
     <Compile Include="LookUps\LookUpsTest.cs" />
     <Compile Include="Paging\Paging_Test.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Query\Tst_QueryBasic.cs" />
-    <Compile Include="Query\Tst_QueryGlobal.cs" />
-    <Compile Include="Query\ParamsTests.cs" />
+    <Compile Include="x-probably-old-Query\Tst_QueryBasic.cs" />
+    <Compile Include="x-probably-old-Query\Tst_QueryGlobal.cs" />
+    <Compile Include="x-probably-old-Query\ParamsTests.cs" />
     <Compile Include="RelationshipFilterTests\RelationshipTest.cs" />
     <Compile Include="RelationshipFilterTests\RelationshipTestBase.cs" />
     <Compile Include="RelationshipFilterTests\Tst_RelationshipFilterDS_Modes.cs" />
@@ -206,8 +207,8 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
-    <None Include="Query\.data\queries\Query.Eav.Queries.Global.Apps.json" />
-    <None Include="Query\.data\queries\Query.Eav.Queries.Global.Zones.json" />
+    <None Include="x-probably-old-Query\.data\queries\Query.Eav.Queries.Global.Apps.json" />
+    <None Include="x-probably-old-Query\.data\queries\Query.Eav.Queries.Global.Zones.json" />
   </ItemGroup>
   <ItemGroup />
   <Choose>

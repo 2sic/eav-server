@@ -20,18 +20,18 @@ namespace ToSic.Eav.Persistence
         /// <param name="update"></param>
         /// <param name="saveOptions"></param>
         /// <returns></returns>
-        public IEntity CreateMergedForSaving(IEntity original, IEntity update, SaveOptions saveOptions)
+        public Entity CreateMergedForSaving(IEntity original, IEntity update, SaveOptions saveOptions, bool logDetails = true)
         {
-            Log.Add($"merge upgrade entity#{original?.EntityId} update#{update?.EntityId} with options:{saveOptions != null}" );
+            var callLog = logDetails 
+                ? Log.Call<Entity>($"entity#{original?.EntityId} update#{update?.EntityId} options:{saveOptions != null}" )
+                : null;
             if (saveOptions == null) throw new ArgumentNullException(nameof(saveOptions));
-            Log.Add(() => "opts " + saveOptions?.LogInfo);
+            Log.Add(() => "opts " + saveOptions.LogInfo);
             #region Step 0: initial error checks
-            if(update == null) // 2017-10-06 2rm removed condition  || update.Attributes?.Count == 0
-                throw new Exception("can't prepare entities for saving, no new item with attributes provided");
+            if(update == null) throw new Exception("can't prepare entities for saving, no new item with attributes provided");
 
             var ct = (original ?? update).Type;
-            if(ct==null)
-                throw new Exception("unknown content-type");
+            if(ct==null) throw new Exception("unknown content-type");
 
             #endregion
 
@@ -94,7 +94,7 @@ namespace ToSic.Eav.Persistence
             #endregion
 
             // now merge into new target
-            var mergedAttribs = origAttribs ?? newAttribs; // 2018-03-09 2dm fixed, was previously:  hasOriginal ? origAttribs : newAttribs; // will become 
+            var mergedAttribs = origAttribs ?? newAttribs;
             if(original != null)
                 foreach (var newAttrib in newAttribs)
                     mergedAttribs[newAttrib.Key] = saveOptions.PreserveExistingLanguages && mergedAttribs.ContainsKey(newAttrib.Key)
@@ -102,8 +102,8 @@ namespace ToSic.Eav.Persistence
                         : newAttrib.Value;
 
             var result = EntityBuilder.FullClone(idProvidingEntity, mergedAttribs, null);
-            ImportKnownProperties(result);
-            return result;
+            CorrectPublishedAndGuidImports(result, logDetails);
+            return callLog?.Invoke("ok", result) ?? result;
         }
 
         /// <summary>
@@ -166,7 +166,7 @@ namespace ToSic.Eav.Persistence
         /// <returns></returns>
         private IAttribute MergeAttribute(IAttribute original, IAttribute update, SaveOptions saveOptions)
         {
-            Log.Add("merge attribs");
+            var callLog = Log.Call<IAttribute>();
             // everything in the update will be kept, and optionally some stuff in the original may be preserved
             var result = update;
             foreach (var orgVal in ValuesOrderedForProcessing(original, saveOptions))
@@ -191,43 +191,49 @@ namespace ToSic.Eav.Persistence
                 val.Languages = remainingLanguages.Select(l => ((Language)l).Copy() as ILanguage).ToList();
                 result.Values.Add(val);
             }
-            return result;
+
+            return callLog("ok", result);
         }
 
         private Dictionary<string, IAttribute> KeepOnlyKnownKeys(Dictionary<string, IAttribute> orig, List<string> keys)
         {
-            Log.Add("keep only known keys");
+            var callLog = Log.Call("keep only known keys");
             var lowerKeys = keys.Select(k => k.ToLowerInvariant()).ToList();
-            return orig.Where(a => lowerKeys.Contains(a.Key.ToLowerInvariant()))
+            var result = orig
+                .Where(a => lowerKeys.Contains(a.Key.ToLowerInvariant()))
                 .ToDictionary(a => a.Key, a => a.Value);
+            callLog($"{result.Count}");
+            return result;
         }
 
-        private void ImportKnownProperties(Entity newE)
+        private bool CorrectPublishedAndGuidImports(Entity newE, bool logDetails)
         {
-            Log.Add("import know props");
-            // check isPublished
+            var callLog = logDetails ? Log.Call() : null;
+            // check IsPublished
             var isPublished = newE.GetBestValue(Constants.EntityFieldIsPublished);
             if (isPublished != null)
             {
+                Log.Add("Found property for published, will move");
                 newE.Attributes.Remove(Constants.EntityFieldIsPublished);
 
                 if(isPublished is bool b)
                     newE.IsPublished = b;
-                else if (isPublished is string && bool.TryParse(isPublished as string, out var boolPublished))
+                else if (isPublished is string sPublished && bool.TryParse(sPublished, out var boolPublished))
                     newE.IsPublished = boolPublished;
             }
 
-            // check isPublished
+            // check EntityGuid
             var probablyGuid = newE.GetBestValue(Constants.EntityFieldGuid);
-
             if (probablyGuid != null)
             {
+                Log.Add("Found property for published, will move");
                 newE.Attributes.Remove(Constants.EntityFieldGuid);
-
-                if (Guid.TryParse(probablyGuid.ToString(), out Guid eGuid))
+                if (Guid.TryParse(probablyGuid.ToString(), out var eGuid))
                     newE.SetGuid(eGuid);
             }
 
+            callLog?.Invoke("ok");
+            return true;
         }
 
     }

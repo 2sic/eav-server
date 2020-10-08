@@ -218,9 +218,9 @@ namespace ToSic.Eav.Repository.Efc
 
         #region Shorthand for do & save
 
-        internal void DoAndSave(Action action)
+        internal void DoAndSave(Action action, string message = null)
         {
-            var wrapLog = Log.Call();
+            var wrapLog = Log.Call(message: message, useTimer: true);
             action.Invoke();
             SqlDb.SaveChanges();
             wrapLog("completed");
@@ -231,7 +231,7 @@ namespace ToSic.Eav.Repository.Efc
         {
             var randomId = Guid.NewGuid().ToString().Substring(0, 4);
             var ownTransaction = SqlDb.Database.CurrentTransaction == null ? SqlDb.Database.BeginTransaction() : null;
-            var wrapLog = Log.Call($"id:{randomId} - create new trans:{ownTransaction != null}");
+            var wrapLog = Log.Call($"id:{randomId} - create new trans:{ownTransaction != null}", useTimer: true);
             try
             {
                 action.Invoke();
@@ -257,31 +257,34 @@ namespace ToSic.Eav.Repository.Efc
 
         public void DoButSkipAppCachePurge(Action action)
         {
+            var callLog = Log.Call(useTimer: true);
             var before = _purgeAppCacheOnSave;
             _purgeAppCacheOnSave = false;
             action.Invoke();
             _purgeAppCacheOnSave = before;
+            callLog(null);
         }
 
         public void DoWithDelayedCacheInvalidation(Action action)
         {
-            Log.Add("DB do with delayed cache invalidation - start");
+            var wrapLog = Log.Call(useTimer: true);
             _purgeAppCacheOnSave = false;
             action.Invoke();
 
             _purgeAppCacheOnSave = true;
             PurgeAppCacheIfReady();
-            Log.Add("DB do with delayed cache invalidation - completed");
+            wrapLog("ok");
         }
 
         public IRepositoryLoader Loader => new Efc11Loader(SqlDb);
         public void DoWhileQueuingVersioning(Action action) => Versioning.DoAndSaveHistoryQueue(action);
-        public void DoWhileQueueingRelationships(Action action) => Relationships.DoWhileQueueingRelationships(action);
+        //public void DoWhileQueueingRelationships(Action action) => Relationships.DoWhileQueueingRelationships(action);
 
         public List<int> Save(List<IEntity> entities, SaveOptions saveOptions)
         {
+            var callLog = Log.Call<List<int>>(useTimer: true);
             History.Add("save-data", Log);
-            return Entities.SaveEntity(entities, saveOptions);
+            return callLog("ok", Entities.SaveEntity(entities, saveOptions));
         }
 
         public void Save(List<IContentType> contentTypes, SaveOptions saveOptions)

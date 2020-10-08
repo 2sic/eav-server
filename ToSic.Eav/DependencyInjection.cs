@@ -43,7 +43,7 @@ namespace ToSic.Eav
 	        services.TryAddTransient<IRemoteMetadata, RemoteMetadata>();
 	        services.TryAddTransient<ITargetTypes, EfcMetadataTargetTypes>();
 
-            services.TryAddTransient<IRepositoryImporter, RepositoryImporter>();
+            //services.TryAddTransient<IRepositoryImporter, RepositoryImporter>();
 
             services.TryAddTransient<ISystemConfiguration, Repository.Efc.Implementations.Configuration>();
 

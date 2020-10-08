@@ -13,6 +13,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
         private bool RunDocumentValidityChecks()
         {
+            var wrapLog = Log.Call<bool>(useTimer: true);
             // #1 Assure that each element has a GUID and language child element
             foreach (var element in DocumentElements)
             {
@@ -33,23 +34,24 @@ namespace ToSic.Eav.Apps.ImportExport
             // count languages
             var documentElementLanguagesCount = documentElementLanguagesAll.Select(item => item.Count);
 
-            if (documentElementLanguagesCount.All(count => count == 1)) return true;
+            if (documentElementLanguagesCount.All(count => count == 1)) return wrapLog("ok", true);
 
-            if (!documentElementLanguagesAll.Any(lang => _languages.Except(lang).Any())) return true;
+            if (!documentElementLanguagesAll.Any(lang => _languages.Except(lang).Any())) return wrapLog("ok", true);
 
-            ErrorLog.AppendError(ImportErrorCode.MissingElementLanguage,
+            ErrorLog.Add(ImportErrorCode.MissingElementLanguage,
                 "Langs=" + string.Join(", ", _languages));
-            return false;
+            return wrapLog("error", false);
         }
 
         private bool LoadStreamIntoDocumentElement(Stream dataStream)
         {
+            var wrapLog = Log.Call<bool>(useTimer: true);
             Document = XDocument.Load(dataStream);
             dataStream.Position = 0;
             if (Document == null)
             {
-                ErrorLog.AppendError(ImportErrorCode.InvalidDocument);
-                return false;
+                ErrorLog.Add(ImportErrorCode.InvalidDocument);
+                return wrapLog($"error {ImportErrorCode.InvalidDocument}", false);
             }
 
             // #1 Check that document-root is the expected value
@@ -57,14 +59,14 @@ namespace ToSic.Eav.Apps.ImportExport
                 ?? Document.Element(XmlConstants.Root97);
 
             if (documentRoot == null)
-                throw new Exception("can't import - document doesn't have a root element");
+                throw new Exception(Log.Add("can't import - document doesn't have a root element"));
 
             // #2 make sure it has elements to import
             DocumentElements = documentRoot.Elements(XmlConstants.Entity).ToList();
             if (!DocumentElements.Any())
             {
-                ErrorLog.AppendError(ImportErrorCode.InvalidDocument);
-                return false;
+                ErrorLog.Add(ImportErrorCode.InvalidDocument);
+                return wrapLog($"error {ImportErrorCode.InvalidDocument}", false);
             }
 
             // #3 Check the content type of the document (it can be found on each element in the Type attribute)
@@ -72,11 +74,11 @@ namespace ToSic.Eav.Apps.ImportExport
             if (documentTypeAttribute?.Value == null ||
                 documentTypeAttribute.Value != ContentType.Name.RemoveSpecialCharacters())
             {
-                ErrorLog.AppendError(ImportErrorCode.InvalidRoot);
-                return false;
+                ErrorLog.Add(ImportErrorCode.InvalidRoot);
+                return wrapLog($"error: {ImportErrorCode.InvalidRoot}", false);
             }
 
-            return true;
+            return wrapLog("ok", true);
         }
 
 

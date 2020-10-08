@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
@@ -108,6 +109,24 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 .SingleOrDefault();
             Log.Add($"GetDraftBranchEntityId({entityId}) found {draftId}");
             return draftId;
+        }
+
+        /// <summary>
+        /// Get Draft EntityId of a Published EntityId. Returns null if there's none.
+        /// </summary>
+        /// <param name="entityIds">EntityId of the Published Entity</param>
+        internal Dictionary<int, int?> GetDraftBranchMap(List<int> entityIds)
+        {
+            var wrapLog = Log.Call($"items: {entityIds.Count}", useTimer: true);
+            var nullList = entityIds.Cast<int?>().ToList();
+            var ids = DbContext.SqlDb.ToSicEavEntities
+                .Where(e => nullList.Contains(e.PublishedEntityId) && !e.ChangeLogDeleted.HasValue)
+                .Select(e => new {e.EntityId, e.PublishedEntityId })
+                .ToList();
+            // note: distinct is necessary, because new entities all have 0 as the id
+            var dic = entityIds.Distinct().ToDictionary(e => e, e => ids.FirstOrDefault(i => i.PublishedEntityId == e)?.EntityId);
+            wrapLog($"found {ids.Count}");
+            return dic;
         }
     }
     

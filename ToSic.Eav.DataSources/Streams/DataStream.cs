@@ -150,11 +150,6 @@ namespace ToSic.Eav.DataSources
 
             try
             {
-                //var initialResult = _listDelegate();
-                //var resultList = initialResult is IImmutableList<IEntity> alreadyImmutable
-                //    ? alreadyImmutable
-                //    : initialResult.ToImmutableList();
-                //var resultList = new GetIEnumerableDelegate(_listDelegate)().ToImmutableList();
                 var resultList = _listDelegate();
                 return wrapLog("ok", resultList);
             }
@@ -177,8 +172,7 @@ namespace ToSic.Eav.DataSources
         public void PurgeList(bool cascade = false)
         {
             // kill the very local temp cache
-            //_list = null;
-            _list = ImmutableArray<IEntity>.Empty;
+            _list = new ImmutableArray<IEntity>();
             _listLoaded = false;
             // kill in list-cache
             new ListCache(Source.Log).Remove(this);

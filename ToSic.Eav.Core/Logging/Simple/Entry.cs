@@ -13,6 +13,7 @@ namespace ToSic.Eav.Logging.Simple
 
         public bool WrapOpen;
         public bool WrapClose;
+        public bool WrapOpenWasClosed;
 
         private readonly ILog _log;
 
@@ -28,7 +29,11 @@ namespace ToSic.Eav.Logging.Simple
             Code = code;
         }
 
-        public void AppendResult(string message) => Result = message;
+        public void AppendResult(string message)
+        {
+            Result = message;
+            WrapOpenWasClosed = true;
+        }
 
         #region Stack Information
 

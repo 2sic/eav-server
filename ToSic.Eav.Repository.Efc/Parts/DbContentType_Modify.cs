@@ -88,9 +88,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
 
         internal void ExtendSaveContentTypes(List<IContentType> contentTypes, SaveOptions saveOptions)
-            => DbContext.DoWhileQueueingRelationships(() => contentTypes.Cast<ContentType>()
-                .ToList()
-                .ForEach(ct => ExtendSaveContentTypes(ct, saveOptions))
+            => DbContext.Relationships.DoWhileQueueingRelationships(()
+                => contentTypes.Cast<ContentType>()
+                    .ToList()
+                    .ForEach(ct => ExtendSaveContentTypes(ct, saveOptions))
             );
 
         /// <summary>

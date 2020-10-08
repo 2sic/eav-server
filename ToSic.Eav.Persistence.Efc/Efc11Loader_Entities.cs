@@ -28,7 +28,7 @@ namespace ToSic.Eav.Persistence.Efc
         }
 
         public const int IdChunkSize = 5000;
-        public const int MaxLogDetailsCount = 1000;
+        public const int MaxLogDetailsCount = 250;
 
         internal int AddLogCount;
 

@@ -9,7 +9,7 @@ namespace ToSic.Eav.DataSources
     {
         Dictionary<TIndex, IEntity> FastIndex { get; }
 
-        IEnumerable<IEntity> List { get; }
+        //IEnumerable<IEntity> List { get; }
     }
 
     public static class HasListAndIndexExtensions

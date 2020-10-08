@@ -15,6 +15,8 @@ namespace ToSic.Eav.Apps
                                             ?? (_list = new SynchronizedList<IEntity>(this, () => Index.Values.ToImmutableArray())).List;
         private SynchronizedList<IEntity> _list;
 
+        public LazyFastAccess LFA => new LazyFastAccess(_list);
+
         IEnumerable<IEntity> IEntitiesSource.List => List;
 
         internal Dictionary<int, IEntity> Index { get; }

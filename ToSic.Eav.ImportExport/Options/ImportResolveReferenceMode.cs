@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.ImportExport.Options
 {
-    public enum ImportResourceReferenceMode
+    public enum ImportResolveReferenceMode
     {
         Keep,
         Resolve

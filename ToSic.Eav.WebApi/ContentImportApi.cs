@@ -25,7 +25,7 @@ namespace ToSic.Eav.WebApi
 
 
         [HttpPost]
-        public ContentImportResultDto EvaluateContent(ContentImportArgsDto args)
+        public ContentImportResultDto XmlPreview(ContentImportArgsDto args)
         {
             Log.Add("eval content - start" + args.DebugInfo);
 
@@ -46,17 +46,19 @@ namespace ToSic.Eav.WebApi
         }
 
         [HttpPost]
-        public ContentImportResultDto ImportContent(ContentImportArgsDto args)
+        public ContentImportResultDto XmlImport(ContentImportArgsDto args)
         {
-            Log.Add("import content" + args.DebugInfo);
+            var wrapLog = Log.Call(args.DebugInfo);
 
             var import = GetXmlImport(args);
             if (!import.ErrorLog.HasErrors)
             {
-                var db = DbDataController.Instance(null, args.AppId, Log);
-                import.PersistImportToRepository(db.UserName);
+                //var db = DbDataController.Instance(null, args.AppId, Log);
+                import.PersistImportToRepository(/*db.UserName*/);
                 SystemManager.Purge(args.AppId, Log);
             }
+
+            wrapLog("done, errors: " + import.ErrorLog.HasErrors);
             return new ContentImportResultDto(!import.ErrorLog.HasErrors, null);
         }
 
