@@ -191,8 +191,6 @@ namespace ToSic.Eav.Repository.Efc
             if (_appId == Constants.AppIdEmpty)
                 throw new Exception("SaveChanges with AppId 0 not allowed.");
 
-            // enure changelog exists and is set to SQL CONTEXT_INFO variable
-            //if (Versioning.MainChangeLogId == 0)
             Versioning.GetChangeLogId();
 
             var modifiedCount = baseEvent(acceptAllChangesOnSuccess);
@@ -206,13 +204,9 @@ namespace ToSic.Eav.Repository.Efc
 
         private void PurgeAppCacheIfReady()
         {
-            if(_purgeAppCacheOnSave)
-                /*Factory.GetAppsCache*/
-                Eav.Apps.State.Cache.Purge(this);
+            Log.Call($"{_purgeAppCacheOnSave}")(null);
+            if(_purgeAppCacheOnSave) State.Cache.Purge(this);
         }
-
-        //public IAppsCache Cache => _cache ?? (_cache = Factory.Resolve<IAppsCache>());
-        //private IAppsCache _cache;
 
         #endregion
 

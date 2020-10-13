@@ -12,6 +12,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         internal bool DeleteEntity(int repositoryId, bool autoSave = true, bool removeFromParents = false)
         {
+            // 2020-10-09 Switched to batch-delete processing for performance reasons
             return DeleteEntity(new[] {repositoryId}, autoSave, removeFromParents);
             //Log.Add($"DeleteEntity(rep-id:{repositoryId}, remove-from-parents:{removeFromParents}, auto-save:{autoSave})");
             //if (repositoryId == 0)

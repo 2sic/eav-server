@@ -85,8 +85,10 @@ namespace ToSic.Eav
         public const string ContentTypeTypeName = "ContentType";
 
 
-        ///// <summary>Zone metadata</summary>
-        //public static readonly int MetadataForZone = 6;
+        /// <summary>Zone metadata</summary>
+        /// <remarks>Used externally, for example in azing</remarks>
+        // ReSharper disable once UnusedMember.Global
+        public static readonly int MetadataForZone = 6;
 
         //[Obsolete("Use MetadataForCmsObject instead")] 
         //public static readonly int AssignmentObjectTypeCmsObject = 10;
