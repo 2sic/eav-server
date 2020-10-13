@@ -12,9 +12,6 @@ namespace ToSic.Eav.Metadata
     [PublicApi_Stable_ForUseInYourCode]
     public interface IMetadataOf: IEnumerable<IEntity>, IHasPermissions
     {
-        // 2019-10-27 2dm - I think this is a leftover of old times, I believe it's not needed any more
-        //void Add(IEntity additionalItem);
-
         /// <summary>
         /// Internal API to override metadata providing, for example when creating new entities before saving.
         /// </summary>

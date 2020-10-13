@@ -6,6 +6,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Generics;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
@@ -152,35 +153,60 @@ namespace ToSic.Eav.Apps.ImportExport
         {
             var callLog = Log.Call<bool>();
             var existing = appState.GetContentType(contentType.StaticName);
-            if (existing == null) return callLog("existing not found, won't merge", true);
+
+            Log.Add("New CT, must reset attributes");
+            // must ensure that attribute Metadata is officially seen as new
+            // but the import data could have an Id, so we must reset it here.
+            foreach (var attribute in contentType.Attributes)
+            {
+                foreach (var attributeMd in attribute.Metadata)
+                    attributeMd.ResetEntityId();
+                foreach (var permission in attribute.Metadata.Permissions)
+                    permission.Entity.ResetEntityId();
+            }
+
+            if (existing == null)
+                return callLog("existing not found, won't merge", true);
 
             Log.Add("found existing, will merge");
-            foreach (var newAttrib in contentType.Attributes)
+            foreach (var newAttribute in contentType.Attributes)
             {
-                var existAttrib = existing.Attributes.FirstOrDefault(a => a.Name == newAttrib.Name);
-                if (existAttrib == null)
+                var oldAttr = existing.Attributes.FirstOrDefault(a => a.Name == newAttribute.Name);
+                if (oldAttr == null)
                 {
-                    Log.Add($"New attr {newAttrib.Name} not found on original, merge not needed");
+                    Log.Add($"New attr {newAttribute.Name} not found on original, merge not needed");
                     continue;
                 }
 
-                var impMeta = /*((ContentTypeAttribute)*/ newAttrib/*)*/.Metadata;
-                var newMetaList = new List<IEntity>();
-                foreach (var newMd in impMeta)
-                {
-                    var existingMetadata = appState
-                        .Get(Constants.MetadataForAttribute, existAttrib.AttributeId, newMd.Type.StaticName)
-                        .FirstOrDefault();
-                    if (existingMetadata == null)
-                        newMetaList.Add(newMd);
-                    else
-                        newMetaList.Add(new EntitySaver(Log).CreateMergedForSaving(existingMetadata, newMd, SaveOptions));
-                }
-                /*((ContentTypeAttribute)*/ newAttrib/*)*/.Metadata.Use(newMetaList);
+                var newMetaList = newAttribute.Metadata
+                    .Select(impMd => MergeOneMd(appState, Constants.MetadataForAttribute, oldAttr.AttributeId, impMd))
+                    .ToList();
+
+                if(newAttribute.Metadata.Permissions.Any())
+                    newMetaList.AddRange(newAttribute.Metadata.Permissions.Select(p => p.Entity));
+
+                newAttribute.Metadata.Use(newMetaList);
             }
+
+            // check if the content-type has metadata, which needs merging
+            var merged = contentType.Metadata
+                .Select(impMd => MergeOneMd(appState, Constants.MetadataForContentType, contentType.StaticName, impMd))
+                .ToList();
+            merged.AddRange(contentType.Metadata.Permissions.Select(p => p.Entity));
+            contentType.Metadata.Use(merged);
 
             return callLog("done", true);
         }
+
+        private IEntity MergeOneMd<T>(IMetadataSource appState, int mdType, T key, IEntity newMd)
+        {
+            var existingMetadata = appState.Get(mdType, key, newMd.Type.StaticName).FirstOrDefault();
+            var metadataToUse = existingMetadata == null
+                ? newMd
+                : new EntitySaver(Log).CreateMergedForSaving(existingMetadata, newMd, SaveOptions);
+            return metadataToUse;
+        }
+
 
         /// <summary>
         /// Import an Entity with all values

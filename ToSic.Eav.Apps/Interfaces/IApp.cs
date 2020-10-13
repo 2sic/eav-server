@@ -11,7 +11,7 @@ namespace ToSic.Eav.Apps
     /// An App in memory - for quickly getting things done with the app data, queries etc.
     /// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-    public interface IApp : IAppIdentityWithPublishingState
+    public interface IApp : IAppIdentityWithPublishingState, IHasMetadata
     {
         /// <summary>
         /// App Name
@@ -53,7 +53,7 @@ namespace ToSic.Eav.Apps
         /// The app metadata - like settings, resources etc.
         /// </summary>
         /// <returns>A metadata provider for the app</returns>
-        IMetadataOf Metadata { get; }
+        new IMetadataOf Metadata { get; }
 
 
         #region Experimental / new
