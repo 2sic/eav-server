@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Caching;
 using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Data
@@ -14,8 +15,10 @@ namespace ToSic.Eav.Data
         /// <param name="entities"></param>
         /// <param name="id"></param>
         /// <returns></returns>
-        public static IEntity One(this IEnumerable<IEntity> entities, int id) 
-            => entities.FirstOrDefault(e => e.EntityId == id);
+        public static IEntity One(this IEnumerable<IEntity> entities, int id) =>
+            entities is ImmutableSmartList fastList
+                ? fastList.One(id)
+                : entities.FirstOrDefault(e => e.EntityId == id);
 
         /// <summary>
         /// get an entity based on the guid
@@ -24,7 +27,9 @@ namespace ToSic.Eav.Data
         /// <param name="guid"></param>
         /// <returns></returns>
         public static IEntity One(this IEnumerable<IEntity> entities, Guid guid) 
-            => entities.FirstOrDefault(e => e.EntityGuid == guid);
+            => entities is ImmutableSmartList fastList
+                ? fastList.One(guid)
+                : entities.FirstOrDefault(e => e.EntityGuid == guid);
 
 
         /// <summary>

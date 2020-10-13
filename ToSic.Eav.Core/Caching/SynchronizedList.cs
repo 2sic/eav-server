@@ -49,17 +49,15 @@ namespace ToSic.Eav.Caching
         /// Retrieves the list - either the cache one, or if timestamp has changed, rebuild and return that
         /// </summary>
         [PrivateApi("Experimental, trying to lower memory footprint")]
-        public IImmutableList<T> List
+        public virtual IImmutableList<T> List
         {
             get
             {
-                if (_immutableCache != null && !CacheChanged()) return _immutableCache;// _cache;
+                if (_immutableCache != null && !CacheChanged()) return _immutableCache;
 
-                _immutableCache = _rebuildImmutable(); //.Invoke();
-                //_immutableCache = _cache.ToImmutableList();
+                _immutableCache = _rebuildImmutable();
                 CacheTimestamp = Upstream.CacheTimestamp;
-
-                return _immutableCache;// _cache;
+                return _immutableCache;
             }
         }
 

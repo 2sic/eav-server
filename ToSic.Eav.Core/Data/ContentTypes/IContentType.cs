@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Metadata;
 using ToSic.Eav.Repositories;
 
 namespace ToSic.Eav.Data
@@ -9,7 +10,7 @@ namespace ToSic.Eav.Data
 	/// Represents a Content Type information (the schema) used for <see cref="IEntity"/> objects.
 	/// </summary>
 	[PublicApi_Stable_ForUseInYourCode]
-	public interface IContentType: IAppIdentityLight
+	public interface IContentType: IAppIdentityLight, IHasMetadata
 	{
 
         /// <summary>
@@ -71,7 +72,7 @@ namespace ToSic.Eav.Data
         /// <remarks>
         /// The metadata is either already prepared, from the same app, or from a remote app
         /// </remarks>
-        ContentTypeMetadata Metadata { get; }
+        new ContentTypeMetadata Metadata { get; }
 
         /// <summary>
         /// Check if this type is the same as a name given.

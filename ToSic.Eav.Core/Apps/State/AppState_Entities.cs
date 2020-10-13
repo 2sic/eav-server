@@ -11,11 +11,9 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// The simple list of <em>all</em> entities, used everywhere
         /// </summary>
-        public IImmutableList<IEntity> List => _list?.List
-                                            ?? (_list = new SynchronizedList<IEntity>(this, () => Index.Values.ToImmutableArray())).List;
-        private SynchronizedList<IEntity> _list;
-
-        public LazyFastAccess LFA => new LazyFastAccess(_list);
+        public IImmutableList<IEntity> List
+            => _list?.List ?? (_list = new SynchronizedEntityList(this, () => Index.Values.ToImmutableArray())).List;
+        private SynchronizedEntityList _list;
 
         IEnumerable<IEntity> IEntitiesSource.List => List;
 
