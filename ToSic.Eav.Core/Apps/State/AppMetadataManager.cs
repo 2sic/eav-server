@@ -102,7 +102,7 @@ namespace ToSic.Eav.Apps
 
             // in case it was already in this index, remove first
             var list = indexOfType[mdValue];
-            var found = list.FirstOrDefault(e => e.EntityId == newEntity.EntityId);
+            var found = list.One(newEntity.EntityId); // .FirstOrDefault(e => e.EntityId == newEntity.EntityId);
             if (found != null)
                 list.Remove(found);
 
