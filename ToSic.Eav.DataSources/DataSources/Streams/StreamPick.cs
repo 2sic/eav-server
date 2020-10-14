@@ -62,31 +62,29 @@ namespace ToSic.Eav.DataSources
         [PrivateApi]
 		public StreamPick()
 		{
-            Provide(GetList);
-			//Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
+            Provide(StreamPickList);
             ConfigMask(StreamNameKey, "[Settings:StreamName||Default]");
             ConfigMask(SearchInParentKey, "[Settings:UseParent||False]");
 		}
 
-		private ImmutableArray<IEntity> GetList()
+		private IImmutableList<IEntity> StreamPickList()
         {
-            var wrapLog = Log.Call();
+            var wrapLog = Log.Call<IImmutableList<IEntity>>();
             Configuration.Parse();
             var name = StreamName;
             Log.Add($"StreamName to Look for: '{name}'");
-			if(string.IsNullOrWhiteSpace(StreamName)) return ImmutableArray<IEntity>.Empty;
+			if(string.IsNullOrWhiteSpace(StreamName)) return wrapLog("no name", ImmutableArray<IEntity>.Empty);
             name = name.ToLowerInvariant();
             var foundStream = In.FirstOrDefault(pair => pair.Key.ToLowerInvariant() == name);
             if (foundStream.Key == string.Empty)
             {
                 var msg = $"StreamPick can't find stream by the name '{StreamName}'";
                 Log.Add(msg);
-                wrapLog("error");
+                wrapLog("error", ImmutableArray<IEntity>.Empty);
                 throw new Exception(msg);
             }
 
-            wrapLog("ok");
-            return foundStream.Value.Immutable;//.ToImmutableList(); //.ToList();
+            return wrapLog("ok", foundStream.Value.Immutable);
         }
 
 	}

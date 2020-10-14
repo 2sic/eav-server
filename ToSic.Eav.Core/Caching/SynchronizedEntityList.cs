@@ -5,6 +5,10 @@ using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Caching
 {
+    /// <summary>
+    /// Specialized form of SynchronizedList which only offers entities, but these
+    /// in a signature that have ultra-fast lookups. 
+    /// </summary>
     public class SynchronizedEntityList: SynchronizedList<IEntity>
     {
         public SynchronizedEntityList(ICacheExpiring upstream, Func<IImmutableList<IEntity>> rebuild) 
@@ -19,7 +23,7 @@ namespace ToSic.Eav.Caching
             get
             {
                 if (_entityList != null && !CacheChanged()) return _entityList;
-                _entityList = new ImmutableSmartList(base.List);
+                _entityList = ImmutableSmartList.Wrap(base.List);
                 return _entityList;
             }
         }

@@ -31,10 +31,10 @@ namespace ToSic.Eav.DataSourceTests.EntityFilters
             const string ItemToFilter = "";
             var filtered = CreateFilterForTesting(100, ItemToFilter);
             //var dicList = filtered.List;
-            var ll = filtered.Immutable; //.ToList();
+            var ll = filtered.Immutable;
 
             //Assert.AreEqual(0, dicList.Count, "Should return 0 items");
-            Assert.AreEqual(0, ll.Length, "Should return 0 items");
+            Assert.AreEqual(0, ll.Count, "Should return 0 items");
         }
 
         [TestMethod]
@@ -50,7 +50,7 @@ namespace ToSic.Eav.DataSourceTests.EntityFilters
 
             var ll = filtered.Immutable;//.ToList();
             Assert.AreEqual("1011", ll.First().EntityId.ToString(), "Test Light that sorting IS affeted");
-            Assert.AreEqual(4, ll.Length, "Count after filtering");
+            Assert.AreEqual(4, ll.Count, "Count after filtering");
         }
 
         [TestMethod]
@@ -65,7 +65,7 @@ namespace ToSic.Eav.DataSourceTests.EntityFilters
 
             var ll = filtered.Immutable;//.ToList();
             Assert.AreEqual("1011", ll.First().EntityId.ToString(), "Test Light that sorting IS affeted");
-            Assert.AreEqual(4, ll.Length, "Count after filtering");
+            Assert.AreEqual(4, ll.Count, "Count after filtering");
         }
 
         [TestMethod]

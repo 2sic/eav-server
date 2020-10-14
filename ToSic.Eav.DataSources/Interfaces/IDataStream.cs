@@ -20,8 +20,12 @@ namespace ToSic.Eav.DataSources
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="IEntity"/> items.</returns>
         IEnumerable<IEntity> List { get; }
 
+		/// <summary>
+		/// This is the real internal list, but the public one above "List" must be IEnumerable
+		/// because otherwise Razor files would need to access the Immutable NuGets which is absurd
+		/// </summary>
         [PrivateApi]
-        ImmutableArray<IEntity> Immutable { get; }
+        IImmutableList<IEntity> Immutable { get; }
 
 		/// <summary>
 		/// Underlying <see cref="IDataSource"/> providing the <see cref="IEntity"/> of this stream

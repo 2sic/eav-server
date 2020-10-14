@@ -64,13 +64,13 @@ namespace ToSic.Eav.DataSources
 		[PrivateApi]
 		public ValueSort()
 		{
-			Provide(GetList);
+			Provide(GetValueSort);
 		    ConfigMask(AttrKey, "[Settings:Attributes]");
 		    ConfigMask(DirectionKey, "[Settings:Directions]");
 		    ConfigMask(LangKey, "Default");
         }
 
-		private ImmutableArray<IEntity> GetList()
+		private IImmutableList<IEntity> GetValueSort()
 		{
             // todo: maybe do something about languages?
             // todo: test datetime & decimal types
@@ -144,7 +144,7 @@ namespace ToSic.Eav.DataSources
 
             var final = ordered?.ToImmutableArray() ?? ImmutableArray<IEntity>.Empty;
             // final = final.AddRange(unsortable);
-			return final.AddRange(unsortable).ToImmutableArray();//.ToList();
+			return final.AddRange(unsortable).ToImmutableArray();
 		}
 
 		private object getObjToSort(IEntity e, string a, char special)

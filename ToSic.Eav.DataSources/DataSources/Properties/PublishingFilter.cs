@@ -41,19 +41,19 @@ namespace ToSic.Eav.DataSources
 		[PrivateApi]
 		public PublishingFilter()
 		{
-            Provide(GetList);
+            Provide(PublishingFilterList);
 		    ConfigMask(QueryConstants.ParamsShowDraftKey, "[Settings:ShowDrafts||false]");
        }
 
 
-	    private ImmutableArray<IEntity> GetList()
+	    private IImmutableList<IEntity> PublishingFilterList()
 	    {
             Configuration.Parse();
             Log.Add($"get incl. draft:{ShowDrafts}");
 	        var outStreamName = ShowDrafts 
                 ? Constants.DraftsStreamName 
                 : Constants.PublishedStreamName;
-	        return In[outStreamName].Immutable;//.ToList();
+	        return In[outStreamName].Immutable;
 	    }
 
 	}

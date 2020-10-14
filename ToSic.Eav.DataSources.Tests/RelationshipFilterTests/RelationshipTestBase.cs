@@ -107,7 +107,7 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
 
             var stream = appDs[primaryType];
 
-            Assert.IsTrue(stream.Immutable.Length > 0, "stream.List.Count() > 0");
+            Assert.IsTrue(stream.Immutable.Count > 0, "stream.List.Count() > 0");
 
             var relFilt = new DataSource(Log).GetDataSource<RelationshipFilter>(new AppIdentity(0, 0), null, 
                 appDs.Configuration.LookUps/*, parentLog: Log*/);

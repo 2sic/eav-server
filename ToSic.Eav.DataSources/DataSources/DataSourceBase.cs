@@ -89,7 +89,7 @@ namespace ToSic.Eav.DataSources
         public IEnumerable<IEntity> List => Out[Constants.DefaultStreamName].Immutable;
 
         [PrivateApi]
-        public ImmutableArray<IEntity> Immutable => Out[Constants.DefaultStreamName].Immutable;
+        public IImmutableList<IEntity> Immutable => Out[Constants.DefaultStreamName].Immutable;
 
         /// <inheritdoc />
         public DataSourceConfiguration Configuration => _config ?? (_config = new DataSourceConfiguration(this));
@@ -134,7 +134,7 @@ namespace ToSic.Eav.DataSources
             => Provide(Constants.DefaultStreamName, getList);
 
         [PrivateApi]
-        [Obsolete]
+        [Obsolete("Should never be deleted, but avoid using this - prefer the ImmutableList/Array")]
         public void Provide(string name, GetIEnumerableDelegate getList) 
             => Out.Add(name, new DataStream(this, name, getList));
 
@@ -143,7 +143,7 @@ namespace ToSic.Eav.DataSources
             => Provide(Constants.DefaultStreamName, getList);
 
         [PrivateApi]
-        public void Provide(GetArrayDelegate getList) 
+        public void Provide(GetImmutableArrayDelegate getList) 
             => Provide(Constants.DefaultStreamName, getList);
 
         [PrivateApi]
@@ -151,7 +151,7 @@ namespace ToSic.Eav.DataSources
             => Out.Add(name, new DataStream(this, name, getList));
 
         [PrivateApi]
-        public void Provide(string name, GetArrayDelegate getList) 
+        public void Provide(string name, GetImmutableArrayDelegate getList) 
             => Out.Add(name, new DataStream(this, name, getList));
 
         #endregion

@@ -37,9 +37,6 @@ namespace ToSic.Eav.DataSources
 		{
             Provide(GetUnique);
             Provide(DuplicatesStreamName, GetDuplicates);
-			//Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetUnique));
-			//Out.Add(DuplicatesStreamName, new DataStream(this, Constants.DefaultStreamName, GetDuplicates));
-
 		}
 
         /// <summary>
@@ -48,15 +45,13 @@ namespace ToSic.Eav.DataSources
         /// <returns></returns>
         private ImmutableArray<IEntity> GetUnique()
         {
-            if(!In.HasStreamWithItems(Constants.DefaultStreamName))//In.ContainsKey(Constants.DefaultStreamName) || In[Constants.DefaultStreamName].List == null)
-                return ImmutableArray<IEntity>.Empty; // new List<IEntity>().ToImmutableList();
+            if(!In.HasStreamWithItems(Constants.DefaultStreamName)) return ImmutableArray<IEntity>.Empty;
 
             var list = In[Constants.DefaultStreamName].Immutable;
 
             return list
                 .Distinct()
                 .ToImmutableArray();
-                //.ToList();
         }
 
 
@@ -66,17 +61,15 @@ namespace ToSic.Eav.DataSources
         /// <returns></returns>
 	    private ImmutableArray<IEntity> GetDuplicates()
 	    {
-	        if (!In.HasStreamWithItems(Constants.DefaultStreamName)) //In.ContainsKey(Constants.DefaultStreamName) || In[Constants.DefaultStreamName].List == null)
-	            return ImmutableArray<IEntity>.Empty; // new List<IEntity>().ToImmutableList();
+	        if (!In.HasStreamWithItems(Constants.DefaultStreamName)) return ImmutableArray<IEntity>.Empty;
 
-	        var list = In[Constants.DefaultStreamName].Immutable;
+            var list = In[Constants.DefaultStreamName].Immutable;
 
 	        return list
                 .GroupBy(s => s)
                 .Where(g => g.Count() > 1)
                 .Select(g => g.Key)
                 .ToImmutableArray();
-                //.ToList();
 	    }
     }
 }

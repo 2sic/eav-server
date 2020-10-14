@@ -38,15 +38,13 @@ namespace ToSic.Eav.DataSources
         [PrivateApi]
 		public StreamFallback()
 		{
-			Provide(GetList);
-			//Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
+			Provide(GetStreamFallback);
 		}
 
-        private ImmutableArray<IEntity> GetList()
+        private IImmutableList<IEntity> GetStreamFallback()
         {
             var foundStream = FindIdealFallbackStream();
-
-            return foundStream?.Immutable ?? ImmutableArray<IEntity>.Empty; // // new List<IEntity>().ToImmutableList();
+            return foundStream?.Immutable ?? ImmutableArray<IEntity>.Empty;
         }
 
 	    private IDataStream FindIdealFallbackStream()
@@ -54,8 +52,8 @@ namespace ToSic.Eav.DataSources
             Configuration.Parse();
 
             // Check if there is a default-stream in with content - if yes, try to return that
-            if (In.HasStreamWithItems(Constants.DefaultStreamName)) //.ContainsKey(Constants.DefaultStreamName) && In[Constants.DefaultStreamName].List.Any())
-	        {
+            if (In.HasStreamWithItems(Constants.DefaultStreamName))
+            {
 	            Log.Add("found default, will return that");
 	            return In[Constants.DefaultStreamName];
 	        }

@@ -9,6 +9,6 @@ namespace ToSic.Eav.DataSources
             => In.ContainsKey(streamName) && In[streamName] != null;
 
         public static bool HasStreamWithItems(this IDictionary<string, IDataStream> In, string streamName)
-            => In.HasRealStream(streamName) && !In[streamName].Immutable.IsDefault && In[streamName].Immutable.Any();
+            => In.HasRealStream(streamName) && In[streamName].Immutable.Any();
     }
 }

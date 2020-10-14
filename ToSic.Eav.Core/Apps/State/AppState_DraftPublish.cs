@@ -13,9 +13,10 @@ namespace ToSic.Eav.Apps
         /// </summary>
         [PrivateApi("this is an optimization feature which shouldn't be used by others")]
         public SynchronizedList<IEntity> ListPublished
-            => _listPublished ?? (_listPublished = new SynchronizedList<IEntity>(this,
-                   () => List.Where(e => e.IsPublished).ToImmutableArray())); //.ToList()));
-        private SynchronizedList<IEntity> _listPublished;
+            => _listPublished ?? (_listPublished = new SynchronizedEntityList(this,
+                   () => List.Where(e => e.IsPublished).ToImmutableArray()));
+
+        private SynchronizedEntityList _listPublished;
 
         /// <summary>
         /// Get all Entities not having a Draft (Entities that are Published (not having a draft) or draft itself)
@@ -23,9 +24,10 @@ namespace ToSic.Eav.Apps
         [PrivateApi("this is an optimization feature which shouldn't be used by others")]
         public SynchronizedList<IEntity> ListNotHavingDrafts
             => _listNotHavingDrafts ?? (_listNotHavingDrafts =
-                   new SynchronizedList<IEntity>(this,
-                       () => List.Where(e => e.GetDraft() == null).ToImmutableArray())); //.ToList()));
-        private SynchronizedList<IEntity> _listNotHavingDrafts;
+                   new SynchronizedEntityList(this,
+                       () => List.Where(e => e.GetDraft() == null).ToImmutableArray()));
+
+        private SynchronizedEntityList _listNotHavingDrafts;
 
 
         /// <summary>

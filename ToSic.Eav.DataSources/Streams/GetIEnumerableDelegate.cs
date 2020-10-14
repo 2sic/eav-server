@@ -12,5 +12,5 @@ namespace ToSic.Eav.DataSources
 
     public delegate IImmutableList<IEntity> GetImmutableListDelegate();
 
-    public delegate ImmutableArray<IEntity> GetArrayDelegate();
+    public delegate ImmutableArray<IEntity> GetImmutableArrayDelegate();
 }

@@ -22,7 +22,7 @@ namespace ToSic.Eav.DataSources.Tests.ItemFilterDuplicates
             var found = sf.List.Count();
             Assert.AreEqual(desiredFinds, found, "Should find exactly this amount people");
 
-            var dupls = sf[DataSources.ItemFilterDuplicates.DuplicatesStreamName].Immutable.Length;
+            var dupls = sf[DataSources.ItemFilterDuplicates.DuplicatesStreamName].Immutable.Count;
             Assert.AreEqual(desiredFinds, dupls, "Should find exactly this amount people");
         }
 
@@ -35,7 +35,7 @@ namespace ToSic.Eav.DataSources.Tests.ItemFilterDuplicates
             var found = sf.List.Count();
             Assert.AreEqual(desiredFinds, found, "Should find exactly this amount people");
 
-            var dupls = sf[DataSources.ItemFilterDuplicates.DuplicatesStreamName].Immutable.Length;
+            var dupls = sf[DataSources.ItemFilterDuplicates.DuplicatesStreamName].Immutable.Count;
             Assert.AreEqual(desiredDupls, dupls, "Should find exactly this amount people");
         }
 
@@ -51,7 +51,7 @@ namespace ToSic.Eav.DataSources.Tests.ItemFilterDuplicates
             var found = sf.List.Count();
             Assert.AreEqual(desiredFinds, found, "Should find exactly this amount people");
 
-            var dupls = sf[DataSources.ItemFilterDuplicates.DuplicatesStreamName].Immutable.Length;
+            var dupls = sf[DataSources.ItemFilterDuplicates.DuplicatesStreamName].Immutable.Count;
             Assert.AreEqual(desiredDupls, dupls, "Should find exactly this amount people");
         }
 
@@ -67,7 +67,7 @@ namespace ToSic.Eav.DataSources.Tests.ItemFilterDuplicates
             var found = sf.List.Count();
             Assert.AreEqual(desiredFinds, found, "Should find exactly this amount people");
 
-            var dupls = sf[DataSources.ItemFilterDuplicates.DuplicatesStreamName].Immutable.Length;
+            var dupls = sf[DataSources.ItemFilterDuplicates.DuplicatesStreamName].Immutable.Count;
             Assert.AreEqual(desiredDupls, dupls, "Should find exactly this amount people");
         }
 

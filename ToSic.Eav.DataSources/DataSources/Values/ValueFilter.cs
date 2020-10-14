@@ -88,7 +88,7 @@ namespace ToSic.Eav.DataSources
 		[PrivateApi]
 		public ValueFilter()
 		{
-			Provide(GetEntitiesOrFallback);
+			Provide(GetValueFilterOrFallback);
 		    ConfigMask(AttrKey, "[Settings:Attribute]");
 		    ConfigMask(FilterKey, "[Settings:Value]");
 		    ConfigMask(OperatorKey, "[Settings:Operator||==]");
@@ -96,17 +96,15 @@ namespace ToSic.Eav.DataSources
 		    ConfigMask(LangKey, "Default");
         }
 
-        private ImmutableArray<IEntity> GetEntitiesOrFallback()
+        private IImmutableList<IEntity> GetValueFilterOrFallback()
         {
-            var res = GetEntities();
+            var res = GetValueFilter();
             // ReSharper disable PossibleMultipleEnumeration
             if (res.Any()) return res;
             if (In.HasStreamWithItems(Constants.FallbackStreamName))
-                //    .ContainsKey(Constants.FallbackStreamName) && In[Constants.FallbackStreamName] != null &&
-                //In[Constants.FallbackStreamName].Immutable.Any())
             {
                 Log.Add("will return fallback stream");
-                res = In[Constants.FallbackStreamName].Immutable; //.ToList();
+                res = In[Constants.FallbackStreamName].Immutable;
             }
 
             return res;
@@ -114,7 +112,7 @@ namespace ToSic.Eav.DataSources
         }
 
 
-        private ImmutableArray<IEntity> GetEntities()
+        private IImmutableList<IEntity> GetValueFilter()
         {
             var wrapLog = Log.Call();
             // todo: maybe do something about languages?
@@ -134,11 +132,15 @@ namespace ToSic.Eav.DataSources
 		    _initializedLangs = new[] { lang };
             #endregion
 
-            var originals = In[Constants.DefaultStreamName].Immutable;//.ToList();
+            var originals = In[Constants.DefaultStreamName].Immutable;
 
             #region stop if the list is empty
-            if (!originals.Any()) 
-		        return originals;
+
+            if (!originals.Any())
+            {
+                wrapLog("empty");
+                return originals;
+            }
             #endregion; 
 
  		    Func<IEntity, bool> compare; // the real comparison method which will be used

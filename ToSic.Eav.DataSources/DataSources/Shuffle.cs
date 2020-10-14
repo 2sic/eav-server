@@ -53,25 +53,24 @@ namespace ToSic.Eav.DataSources
         [PrivateApi]
         public Shuffle()
 		{
-            Provide(GetList);
+            Provide(GetShuffle);
 		    ConfigMask(TakeKey, "[Settings:Take||0]");
         }
 
 
-        private ImmutableArray<IEntity> GetList()
+        private IImmutableList<IEntity> GetShuffle()
 	    {
             Configuration.Parse();
-
             Log.Add($"will shuffle and take:{Take}");
             return ShuffleInternal(In[Constants.DefaultStreamName].Immutable, Take, Log);
 	    }
 
-        #region Experiment based on http://stackoverflow.com/questions/375351/most-efficient-way-to-randomly-sort-shuffle-a-list-of-integers-in-c-sharp/375446#375446
+        #region Shuffle based on http://stackoverflow.com/questions/375351/most-efficient-way-to-randomly-sort-shuffle-a-list-of-integers-in-c-sharp/375446#375446
         static readonly Random Generator = new Random();
 
-        private static ImmutableArray<T> ShuffleInternal<T>(ImmutableArray<T> sequence, int take, ILog log)
+        private static IImmutableList<T> ShuffleInternal<T>(IImmutableList<T> sequence, int take, ILog log)
         {
-            var wrapLog = log.Call<ImmutableArray<T>>();
+            var wrapLog = log.Call<IImmutableList<T>>();
             
             // check if there is actually any data
             if (!sequence.Any())

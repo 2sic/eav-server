@@ -89,8 +89,7 @@ namespace ToSic.Eav.DataSources
                 .Skip(itemsToSkip)
                 .Take(PageSize)
                 .ToImmutableArray();
-                //.ToList();
-	        Log.Add($"get page:{PageNumber} with size{PageSize} found:{result.Length}");
+            Log.Add($"get page:{PageNumber} with size{PageSize} found:{result.Length}");
             return result;
 	    }
 
@@ -99,7 +98,7 @@ namespace ToSic.Eav.DataSources
             Configuration.Parse();
 
             // Calculate any additional stuff
-            var itemCount = In[Constants.DefaultStreamName].Immutable.Length;
+            var itemCount = In[Constants.DefaultStreamName].Immutable.Count;
             var pageCount = Math.Ceiling((decimal) itemCount / PageSize);
 
             // Assemble the entity

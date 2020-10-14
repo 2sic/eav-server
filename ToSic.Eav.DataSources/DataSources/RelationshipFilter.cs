@@ -140,7 +140,7 @@ namespace ToSic.Eav.DataSources
         [PrivateApi]
         public RelationshipFilter()
 		{
-            Provide(GetEntitiesOrFallback);
+            Provide(GetRelationshipsOrFallback);
 		    ConfigMask(RelationshipKey, $"[Settings:{Settings.Relationship}]");
 		    ConfigMask(FilterKey, $"[Settings:{Settings.Filter}]");
 		    ConfigMask(CompareAttributeKey, $"[Settings:{Settings.AttributeOnRelationship}||{Constants.EntityFieldTitle}]");
@@ -149,19 +149,18 @@ namespace ToSic.Eav.DataSources
 		    ConfigMask(ChildOrParentKey, $"[Settings:{Settings.Direction}||{DefaultDirection}]");
         }
 
-        private ImmutableArray<IEntity> GetEntitiesOrFallback()
+        private IImmutableList<IEntity> GetRelationshipsOrFallback()
         {
             var res = GetEntities();
             // ReSharper disable PossibleMultipleEnumeration
-            if (!res.Any())
-                if (In.ContainsKey(Constants.FallbackStreamName) && In[Constants.FallbackStreamName] != null && In[Constants.FallbackStreamName].Immutable.Any())
-                    res = In[Constants.FallbackStreamName].Immutable;
+            if (!res.Any() && In.HasStreamWithItems(Constants.FallbackStreamName))
+                return In[Constants.FallbackStreamName].Immutable;
 
-            return res;//.ToImmutableList();//.ToList();
+            return res;
             // ReSharper restore PossibleMultipleEnumeration
         }
 
-        private ImmutableArray<IEntity> GetEntities()
+        private IImmutableList<IEntity> GetEntities()
 		{
             // todo: maybe do something about languages?
 

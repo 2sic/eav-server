@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Runtime.Caching;
 using ToSic.Eav.Documentation;
@@ -47,7 +46,7 @@ namespace ToSic.Eav.DataSources.Caching
         /// </summary>
         /// <param name="dataStream"></param>
         /// <returns></returns>
-        private string CacheKey(IDataStream dataStream) => dataStream.Caching.CacheFullKey /*+ "&Stream=" + dataStream.Name + dataStream.CacheSuffix*/;
+        private string CacheKey(IDataStream dataStream) => dataStream.Caching.CacheFullKey;
 
         #region Get List
 
@@ -73,7 +72,7 @@ namespace ToSic.Eav.DataSources.Caching
         }
 
         /// <inheritdoc />
-        public ListCacheItem GetOrBuild(IDataStream stream, Func<ImmutableArray<IEntity>> builderFunc,
+        public ListCacheItem GetOrBuild(IDataStream stream, Func<IImmutableList<IEntity>> builderFunc,
             int durationInSeconds = 0)
         {
             var wrapLog = Log.Call<ListCacheItem>();
@@ -83,7 +82,11 @@ namespace ToSic.Eav.DataSources.Caching
             if (cacheItem != null)
                 return wrapLog("found, use cache", cacheItem);
 
-            // If reloading is required, set a lock first (to prevent parallel loading of the same data)
+            // If reloading is required, set a lock first
+            // This is super important to prevent parallel loading of the same data
+            // Otherwise slow loading data - like SharePoint lists from a remote server
+            // would trigger multiple load attempts on page reloads and overload the system
+            // trying to reload while still building the initial cache
             var lockKey = LoadLocks.GetOrAdd(key, new object());
             lock (lockKey)
             {
@@ -113,7 +116,7 @@ namespace ToSic.Eav.DataSources.Caching
         #region set/add list
 
         /// <inheritdoc />
-        public void Set(string key, ImmutableArray<IEntity> list, long sourceTimestamp, int durationInSeconds = 0,
+        public void Set(string key, IImmutableList<IEntity> list, long sourceTimestamp, int durationInSeconds = 0,
             bool slidingExpiration = true)
         {
             var duration = durationInSeconds > 0 ? durationInSeconds : DefaultDuration;
