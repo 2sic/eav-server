@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using ToSic.Eav.Caching;
 using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.DataSources.Configuration;
@@ -166,10 +167,13 @@ namespace ToSic.Eav.DataSources
         #endregion
 
         /// <inheritdoc />
-        public void PurgeList(bool cascade = false)
+        public virtual void PurgeList(bool cascade = false)
         {
+            var callLog = Log.Call($"{cascade}", $"on {GetType().Name}");
             foreach (var stream in In)
                 stream.Value.PurgeList(cascade);
+            if (!In.Any()) Log.Add("No streams found to clear");
+            callLog("ok");
         }
 
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
@@ -137,6 +138,28 @@ namespace ToSic.Eav.DataSources.Queries
             Log.Add("Reset query");
             Definition.Reset();
             _requiresRebuildOfOut = true;
+        }
+
+        /// <summary>
+        /// Override PurgeList, because we don't really have In streams, unless we use parameters. 
+        /// </summary>
+        /// <param name="cascade"></param>
+        public override void PurgeList(bool cascade = false)
+        {
+            var callLog = Log.Call($"{cascade}", $"on {GetType().Name}");
+            // PurgeList on all In, as would usually happen
+            // This will only purge query-in used for parameter
+            base.PurgeList(cascade);
+
+            Log.Add("Now purge the lists which the Query has on the Out");
+            foreach (var stream in Source.Out)
+                stream.Value.PurgeList(cascade);
+            if (!Source.Out.Any()) Log.Add("No streams on Source.Out found to clear");
+
+            Log.Add("Update RequiresRebuildOfOut");
+            _requiresRebuildOfOut = true;
+            callLog("ok");
+
         }
     }
 
