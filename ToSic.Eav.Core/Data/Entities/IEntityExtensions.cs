@@ -9,10 +9,17 @@ namespace ToSic.Eav.Data
     // ReSharper disable once InconsistentNaming
     public static class IEntityExtensions
     {
-        //private static int countOneId;
-        //private static int countOneGuid;
-        //private static int countOneHas;
-        //private static int countOneRepo;
+#if DEBUG
+        private static int countOneId;
+        private static int countOneGuid;
+        private static int countOneHas;
+        private static int countOneRepo;
+
+        internal static int CountOneIdOpt;
+        internal static int CountOneRepoOpt;
+        internal static int CountOneHasOpt;
+        internal static int CountOneGuidOpt;
+#endif
         /// <summary>
         /// Get an entity with an entity-id
         /// </summary>
@@ -21,7 +28,9 @@ namespace ToSic.Eav.Data
         /// <returns></returns>
         public static IEntity One(this IEnumerable<IEntity> entities, int id)
         {
-            //countOneId++;
+#if DEBUG
+            countOneId++;
+#endif
             return entities is ImmutableSmartList fastList
                 ? fastList.Fast.Get(id)
                 : entities.FirstOrDefault(e => e.EntityId == id);
@@ -35,7 +44,9 @@ namespace ToSic.Eav.Data
         /// <returns></returns>
         public static IEntity One(this IEnumerable<IEntity> entities, Guid guid)
         {
-            //countOneGuid++;
+#if DEBUG
+            countOneGuid++;
+#endif
             return entities is ImmutableSmartList fastList
                 ? fastList.Fast.Get(guid)
                 : entities.FirstOrDefault(e => e.EntityGuid == guid);
@@ -50,7 +61,9 @@ namespace ToSic.Eav.Data
         /// <returns></returns>
         public static IEntity FindRepoId(this IEnumerable<IEntity> entities, int id)
         {
-            //countOneRepo++;
+#if DEBUG
+            countOneRepo++;
+#endif
             return entities is ImmutableSmartList fastList
                 ? fastList.Fast.GetRepo(id)
                 : entities.FirstOrDefault(e => e.RepositoryId == id);
@@ -65,7 +78,9 @@ namespace ToSic.Eav.Data
         /// <returns></returns>
         public static bool Has(this IEnumerable<IEntity> entities, int id)
         {
-            //countOneHas++;
+#if DEBUG
+            countOneHas++;
+#endif
             return entities is ImmutableSmartList fastList
                 ? fastList.Fast.Has(id)
                 : entities.Any(e => e.EntityId == id || e.RepositoryId == id);

@@ -10,6 +10,9 @@ namespace ToSic.Eav.Data
 
         public IEntity Get(int id)
         {
+#if DEBUG
+            IEntityExtensions.CountOneIdOpt++;
+#endif
             if (_byInt.TryGetValue(id, out var result)) return result;
             result = _list.FirstOrDefault(e => e.EntityId == id);
             _byInt.Add(id, result);
@@ -17,6 +20,9 @@ namespace ToSic.Eav.Data
         }
         public IEntity GetRepo(int id)
         {
+#if DEBUG
+            IEntityExtensions.CountOneRepoOpt++;
+#endif
             if (_byRepoId.TryGetValue(id, out var result)) return result;
             result = _list.FirstOrDefault(e => e.RepositoryId == id);
             _byRepoId.Add(id, result);
@@ -25,6 +31,9 @@ namespace ToSic.Eav.Data
 
         public bool Has(int id)
         {
+#if DEBUG
+            IEntityExtensions.CountOneHasOpt++;
+#endif
             if (_has.TryGetValue(id, out var result)) return result;
             var found = Get(id) ?? GetRepo(id);
             var status = found != null;
@@ -34,6 +43,9 @@ namespace ToSic.Eav.Data
 
         public IEntity Get(Guid id)
         {
+#if DEBUG
+            IEntityExtensions.CountOneGuidOpt++;
+#endif
             if (_byGuid.TryGetValue(id, out var result)) return result;
             result = _list.FirstOrDefault(e => e.EntityGuid == id);
             _byGuid.Add(id, result);
