@@ -80,6 +80,9 @@ namespace ToSic.Eav.Persistence.Efc
                 .ThenInclude(d => d.Dimension)
                 .Where(r => entityIdsFound.Contains(r.EntityId))
                 .Where(v => !v.ChangeLogDeleted.HasValue)
+                // ToList is necessary because groupby actually runs on dotnet (not SQL).
+                // Efcore 1 did this implicitly, efcore 3.x need to do it explicitly.
+                .ToList()
                 .GroupBy(e => e.EntityId)
                 .ToDictionary(e => e.Key, e => e.GroupBy(v => v.AttributeId)
                     .Select(vg => new TempAttributeWithValues
@@ -114,7 +117,7 @@ namespace ToSic.Eav.Persistence.Efc
         /// Get a chunk of relationships.
         /// Note that since it must check child/parents then multiple chunks could return the identical relationship.
         /// See https://github.com/2sic/2sxc/issues/2127
-        /// This is why the conversion to dictionary etc. must happen later, when all chunks are merged. 
+        /// This is why the conversion to dictionary etc. must happen later, when all chunks are merged.
         /// </summary>
         /// <returns></returns>
         private List<ToSicEavEntityRelationships> GetRelationshipChunk(int appId, ICollection<int> entityIdsFound)
@@ -165,13 +168,13 @@ namespace ToSic.Eav.Persistence.Efc
             if (x == null && y == null) return true;
             if (x == null) return false;
             if (y == null) return false;
-            return x.AttributeId == y.AttributeId 
-                   && x.SortOrder == y.SortOrder 
-                   && x.ParentEntityId == y.ParentEntityId 
+            return x.AttributeId == y.AttributeId
+                   && x.SortOrder == y.SortOrder
+                   && x.ParentEntityId == y.ParentEntityId
                    && x.ChildEntityId == y.ChildEntityId;
         }
 
-        public int GetHashCode(ToSicEavEntityRelationships obj) 
+        public int GetHashCode(ToSicEavEntityRelationships obj)
             => obj.GetHashCode();
     }
 }

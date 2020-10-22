@@ -24,18 +24,22 @@ namespace ToSic.Eav.Repository.Efc.Parts
             var userName = DbContext.UserName;
             if (_mainChangeLogId != 0) return _mainChangeLogId;
 
-            var con = DbContext.SqlDb.Database.GetDbConnection(); 
+            var con = DbContext.SqlDb.Database.GetDbConnection();
             if (con.State != ConnectionState.Open)
-                con.Open();	// make sure same connection is used later
-
+                con.Open(); // make sure same connection is used later
+#if NET451
             _mainChangeLogId = DbContext.SqlDb.ToSicEavChangeLog
-                .FromSql("ToSIC_EAV_ChangeLogAdd @p0", userName)
+                .FromSql("ToSIC_EAV_ChangeLogAdd @p1", userName)
                 .Single().ChangeId;
-
+#else
+            _mainChangeLogId = DbContext.SqlDb.ToSicEavChangeLog
+                .FromSqlInterpolated($"exec ToSIC_EAV_ChangeLogAdd {userName}")
+                .Single().ChangeId;
+#endif
             return _mainChangeLogId;
         }
 
-        #endregion
+#endregion
 
 
         public void DoAndSaveHistoryQueue(Action action)
