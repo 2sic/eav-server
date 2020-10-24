@@ -12,6 +12,8 @@ namespace ToSic.Eav.Apps
     [PublicApi_Stable_ForUseInYourCode]
     public partial class App: AppBase, IApp
     {
+        private readonly IServerPaths _serverPaths;
+
         [PrivateApi]
         public const int AutoLookupZone = -1;
 
@@ -34,8 +36,9 @@ namespace ToSic.Eav.Apps
         protected const string IconFile = "/" + AppConstants.AppIconFile;
 
 
-        public App(IAppEnvironment environment, ITenant tenant)
+        public App(IAppEnvironment environment, IServerPaths serverPaths, ITenant tenant)
         {
+            _serverPaths = serverPaths;
             // just keep pointers for now, don't init/verify yet
             // as in some cases (like search) they will be replaced after the constructor
             Env = environment;

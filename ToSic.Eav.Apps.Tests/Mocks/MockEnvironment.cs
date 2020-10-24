@@ -21,7 +21,7 @@ namespace ToSic.Eav.Apps.Tests.Mocks
 
         public IPagePublishing PagePublishing => null;
 
-        public string MapPath(string virtualPath) => "MockMapped";
+        //public string MapPath(string virtualPath) => "MockMapped";
 
 
         public string DefaultLanguage => "en-US";

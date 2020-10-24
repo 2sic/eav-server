@@ -20,12 +20,12 @@ namespace ToSic.Eav.Run
         /// </summary>
         IUser User { get; }
 
-        // New 2020-08-10 Move MapPath to here
-        /// <summary>
-        /// Get a full path like C:\...
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        string MapPath(string path);
+        //// New 2020-08-10 Move MapPath to here
+        ///// <summary>
+        ///// Get a full path like C:\...
+        ///// </summary>
+        ///// <param name="path"></param>
+        ///// <returns></returns>
+        //string MapPath(string path);
     }
 }

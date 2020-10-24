@@ -33,12 +33,12 @@ namespace ToSic.Eav.Apps.ImportExport
         protected ILog Log;
 
         #region Constructors and DI
-        public ZipExport(IEnvironment environment)
+        public ZipExport(IServerPaths serverPaths)
         {
-            _environment = environment;
+            _serverPaths = serverPaths;
         }
 
-        private readonly IEnvironment _environment;
+        private readonly IServerPaths _serverPaths;
 
         public ZipExport Init(int zoneId, int appId, string appFolder, string physicalAppPath, ILog parentLog)
         {
@@ -75,7 +75,7 @@ namespace ToSic.Eav.Apps.ImportExport
             var messages = new List<Message>();
             var randomShortFolderName = Guid.NewGuid().ToString().Substring(0, 4);
 
-            var temporaryDirectoryPath = _environment.MapPath(Path.Combine(Settings.TemporaryDirectory, randomShortFolderName));
+            var temporaryDirectoryPath = _serverPaths.FullSystemPath(Path.Combine(Settings.TemporaryDirectory, randomShortFolderName));
 
             if (!Directory.Exists(temporaryDirectoryPath))
                 Directory.CreateDirectory(temporaryDirectoryPath);
@@ -178,7 +178,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="targetPath"></param>
         private void AddInstructionsToPackageFolder(string targetPath)
         {
-            var srcPath = _environment.MapPath(Path.Combine(Settings.ModuleDirectory, InstructionsFolder));
+            var srcPath = _serverPaths.FullSystemPath(Path.Combine(Settings.ModuleDirectory, InstructionsFolder));
 
             foreach (var file in Directory.GetFiles(srcPath))
                 File.Copy(file, Path.Combine(targetPath, Path.GetFileName(file)));
