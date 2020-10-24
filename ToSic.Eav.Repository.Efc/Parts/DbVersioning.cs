@@ -32,9 +32,17 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 .FromSql("ToSIC_EAV_ChangeLogAdd @p1", userName)
                 .Single().ChangeId;
 #else
-            _mainChangeLogId = DbContext.SqlDb.ToSicEavChangeLog
-                .FromSqlInterpolated($"exec ToSIC_EAV_ChangeLogAdd {userName}")
-                .Single().ChangeId;
+            // In ef31 FromSqlInterpolated requires SELECT statement in sql string or we get error
+            // 'FromSqlRaw or FromSqlInterpolated was called with non-composable SQL and with a query composing over it. Consider calling `AsEnumerable` after the FromSqlRaw or FromSqlInterpolated method to perform the composition on the client side.'.
+            // https://github.com/dotnet/efcore/issues/22558#issuecomment-693363140
+            // The less worse of all solutions was to copy content from sproc ToSIC_EAV_ChangeLogAdd to sql.
+            // FormattableString sql = $"exec ToSIC_EAV_ChangeLogAdd {userName}";
+            FormattableString sql = $@"INSERT INTO [dbo].[ToSIC_EAV_ChangeLog] ([Timestamp] ,[User]) VALUES (GetDate(), {userName})
+            	DECLARE @ChangeID int
+	            SET @ChangeID = scope_identity()
+	            EXEC ToSIC_EAV_ChangeLogSet @ChangeID
+            	SELECT * FROM [dbo].[ToSIC_EAV_ChangeLog] WHERE [ChangeID] = @ChangeID";
+            _mainChangeLogId = DbContext.SqlDb.ToSicEavChangeLog.FromSqlInterpolated(sql).AsEnumerable().Single().ChangeId;
 #endif
             return _mainChangeLogId;
         }
