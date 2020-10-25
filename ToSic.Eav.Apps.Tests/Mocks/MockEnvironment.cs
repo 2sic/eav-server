@@ -13,6 +13,11 @@ namespace ToSic.Eav.Apps.Tests.Mocks
             Log.LinkTo(parent);
             return this;
         }
+
+        public string MapPath(string path)
+        {
+            throw new System.NotImplementedException();
+        }
         #endregion
 
         public IZoneMapper ZoneMapper => new MockZoneMapper();
