@@ -29,7 +29,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 con.Open(); // make sure same connection is used later
 #if NET451
             _mainChangeLogId = DbContext.SqlDb.ToSicEavChangeLog
-                .FromSql("ToSIC_EAV_ChangeLogAdd @p1", userName)
+                .FromSql("ToSIC_EAV_ChangeLogAdd @p0", userName)
                 .Single().ChangeId;
 #else
             // In ef31 FromSqlInterpolated requires SELECT statement in sql string or we get error
