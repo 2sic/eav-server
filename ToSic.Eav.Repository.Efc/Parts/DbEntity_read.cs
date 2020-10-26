@@ -85,8 +85,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
         {
             var callLog = Log.Call(useTimer: true);
             var result = GetEntitiesByGuid(entityGuid)
+                .ToList() // necessary for EF 3 - before GroupBy
                 .GroupBy(e => e.EntityGuid)
-                .ToDictionary(g => g.Key, g => g.Single(e => !e.PublishedEntityId.HasValue).EntityId);
+                .ToDictionary(
+                    g => g.Key, 
+                    g => g.Single(e => !e.PublishedEntityId.HasValue).EntityId);
             callLog(result.Count.ToString());
             return result;
         }
