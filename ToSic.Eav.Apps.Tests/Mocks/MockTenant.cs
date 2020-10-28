@@ -16,7 +16,8 @@ namespace ToSic.Eav.Apps.Tests.Mocks
         public string Name => "MockTenant";
         public string Url => "Mock.org/root";
 
-        public string AppsRoot => "Mock";
+        public string AppsRootPhysical => "Mock";
+        public string AppsRootLink => "Mock/Mock/Mock";
 
         public bool RefactorUserIsAdmin => false;
 

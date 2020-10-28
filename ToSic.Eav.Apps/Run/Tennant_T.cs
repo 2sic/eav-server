@@ -31,8 +31,11 @@ namespace ToSic.Eav.Run
         public abstract string Url { get; }
 
         /// <inheritdoc />
-        [PrivateApi]
-        public abstract string AppsRoot { get; }
+        [PrivateApi] public abstract string AppsRootPhysical { get; }
+
+        [PrivateApi] public abstract string AppsRootPhysicalFull { get; }
+
+        [PrivateApi] public virtual string AppsRootLink => AppsRootPhysical;
 
         [PrivateApi]
         public abstract bool RefactorUserIsAdmin { get; }

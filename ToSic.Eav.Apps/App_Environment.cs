@@ -15,11 +15,11 @@ namespace ToSic.Eav.Apps
 
         #region Paths
 
-        [PrivateApi]
-        protected string GetRootPath() => Path.Combine(Tenant.AppsRoot, Folder);
+        //[PrivateApi]
+        //protected string GetRootPath() => Path.Combine(Tenant.AppsRootPhysical, Folder);
 
         [PrivateApi]
-        public string PhysicalPath => _serverPaths.FullAppPath(GetRootPath());
+        public string PhysicalPath => /*_serverPaths.FullAppPath(*/Path.Combine(Tenant.AppsRootPhysicalFull, Folder)/*)*/;
 
         #endregion
 

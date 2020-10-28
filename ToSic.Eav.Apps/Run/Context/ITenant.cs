@@ -8,7 +8,7 @@ namespace ToSic.Eav.Run
     /// <summary>
     /// Describes a tenant - this is what the Environment calls a tenant (like a portal in DNN)
     /// </summary>
-    [PublicApi_Stable_ForUseInYourCode]
+    [WorkInProgressApi("Will be renamed to ISite soon")]
     public interface ITenant: IWebResource, IZoneIdentity
     {
         #region Constructor Helper
@@ -33,10 +33,13 @@ namespace ToSic.Eav.Run
         string Name { get; }
 
         /// <summary>
-        /// The root path of the tenant
+        /// The root path of the tenant for accessing files using server code
         /// </summary>
-        [PrivateApi]
-        string AppsRoot { get; }
+        [PrivateApi] string AppsRootPhysical { get; }
+
+        [PrivateApi] string AppsRootPhysicalFull { get; }
+
+        [PrivateApi] string AppsRootLink { get; }
 
         [PrivateApi]
         bool RefactorUserIsAdmin { get; }
