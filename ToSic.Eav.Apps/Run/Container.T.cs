@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using ToSic.Eav.Apps.Run;
+﻿using ToSic.Eav.Apps.Run;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
@@ -12,18 +11,18 @@ namespace ToSic.Eav.Run
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
-    public abstract class Container<T>: IContainer, IWrapper<T> where T: class
+    public abstract class Container<T>: HasLog, IContainer, IWrapper<T> where T: class
     {
         #region Constructors and DI
 
         /// <inheritdoc />
         public T UnwrappedContents { get; private set; }
 
+        protected Container(string logName) : base(logName) { }
 
-        protected Container(T item = null) => Init(item);
-
-        public IContainer Init(T item)
+        public IContainer Init(T item, ILog parentLog)
         {
+            Log.LinkTo(parentLog);
             UnwrappedContents = item;
             return this;
         }
@@ -32,10 +31,10 @@ namespace ToSic.Eav.Run
         #endregion
 
         /// <inheritdoc />
-        public abstract int Id { get; }
+        public abstract int Id { get; /*protected set;*/ }
 
         /// <inheritdoc />
-        public abstract bool IsPrimary { get; }
+        public abstract bool IsPrimary { get; /*protected set;*/ }
 
         /// <inheritdoc />
         public abstract IBlockIdentifier BlockIdentifier { get; }

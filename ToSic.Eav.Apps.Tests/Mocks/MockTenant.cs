@@ -17,6 +17,7 @@ namespace ToSic.Eav.Apps.Tests.Mocks
         public string Url => "Mock.org/root";
 
         public string AppsRootPhysical => "Mock";
+        public string AppsRootPhysicalFull => "mock full";
         public string AppsRootLink => "Mock/Mock/Mock";
 
         public bool RefactorUserIsAdmin => false;
