@@ -1,9 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Efc.Models;
-using ToSic.Eav.Repository.Efc.Implementations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Apps.ImportExport;
@@ -11,6 +10,7 @@ using ToSic.Eav.Caching;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.ImportExport.Persistence.File;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Run;
 using ToSic.Eav.Run.Basic;
@@ -67,6 +67,11 @@ namespace ToSic.Eav
             // register some Default Constructors
             services.TryAddTransient<Sql>();
             services.TryAddTransient<DataTable>();
+
+
+            // 2020-10-29 New enhancement - lazy loading depenedncy injection
+            services.AddTransient(typeof(Lazy<>), typeof(LazyDependencyInjection<>));
+
 
             return services;
         }
