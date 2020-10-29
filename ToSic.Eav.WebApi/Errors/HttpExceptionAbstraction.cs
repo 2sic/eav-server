@@ -7,7 +7,7 @@ using BaseType = System.Exception;
 #endif
 namespace ToSic.Eav.WebApi.Errors
 {
-    internal class HttpExceptionAbstraction: BaseType
+    public class HttpExceptionAbstraction: BaseType
     {
         public HttpExceptionAbstraction(HttpStatusCode statusCode, string message, string title = null)
 #if NETFRAMEWORK
