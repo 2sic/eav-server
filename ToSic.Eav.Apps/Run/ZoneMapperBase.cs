@@ -27,22 +27,22 @@ namespace ToSic.Eav.Apps.Run
         public abstract int GetZoneId(int tenantId);
 
         /// <inheritdoc />
-        public int GetZoneId(ITenant tenant) => GetZoneId(tenant.Id);
+        public int GetZoneId(ISite site) => GetZoneId(site.Id);
 
         /// <inheritdoc />
-        public IAppIdentity IdentityFromTenant(int tenantId, int appId)
+        public IAppIdentity IdentityFromSite(int tenantId, int appId)
             => new AppIdentity(GetZoneId(tenantId), appId);
 
         /// <inheritdoc />
-        public abstract ITenant TenantOfZone(int zoneId);
+        public abstract ISite SiteOfZone(int zoneId);
 
         /// <inheritdoc />
-        public ITenant TenantOfApp(int appId)
+        public ISite TenantOfApp(int appId)
         {
-            var wrapLog = Log.Call<ITenant>($"{appId}");
+            var wrapLog = Log.Call<ISite>($"{appId}");
             Log.Add("TenantId not found. Must be in search mode, will try to find correct portalsettings");
             var appIdentifier = State.Identity(null, appId);
-            var tenant = TenantOfZone(appIdentifier.ZoneId);
+            var tenant = SiteOfZone(appIdentifier.ZoneId);
             return wrapLog(null, tenant);
         }
 

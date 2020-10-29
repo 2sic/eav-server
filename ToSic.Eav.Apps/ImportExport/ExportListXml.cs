@@ -216,7 +216,7 @@ namespace ToSic.Eav.Apps.ImportExport
             if (value == string.Empty)
                 return XmlConstants.Empty;
             if (resolveLinks)
-                return ResolveHyperlinksFromTenant(appId, itemGuid, value, attrType, resolver);
+                return ResolveHyperlinksFromSite(appId, itemGuid, value, attrType, resolver);
             return value;
         }
 
@@ -225,7 +225,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// File:4711 to Content/file4711.jpg. If the reference cannot be resolved, 
         /// the original value will be returned. 
         /// </summary>
-        internal static string ResolveHyperlinksFromTenant(int appId, Guid itemGuid, string value, string attrType,
+        internal static string ResolveHyperlinksFromSite(int appId, Guid itemGuid, string value, string attrType,
             IValueConverter resolver)
             => attrType != Constants.DataTypeHyperlink
                 ? value

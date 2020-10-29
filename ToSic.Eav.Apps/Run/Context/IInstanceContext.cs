@@ -4,7 +4,7 @@ namespace ToSic.Eav.Apps.Run
 {
     public interface IInstanceContext
     {
-        ITenant Tenant { get; }
+        ISite Tenant { get; }
 
         IPage Page { get; }
 
@@ -12,6 +12,6 @@ namespace ToSic.Eav.Apps.Run
 
         IUser User { get; }
 
-        IInstanceContext Clone(ITenant tenant = null, IPage page = null, IContainer container = null, IUser user = null);
+        IInstanceContext Clone(ISite site = null, IPage page = null, IContainer container = null, IUser user = null);
     }
 }

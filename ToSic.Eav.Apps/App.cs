@@ -34,12 +34,12 @@ namespace ToSic.Eav.Apps
         protected const string IconFile = "/" + AppConstants.AppIconFile;
 
 
-        public App(IAppEnvironment environment, ITenant tenant)
+        public App(IAppEnvironment environment, ISite site)
         {
             // just keep pointers for now, don't init/verify yet
             // as in some cases (like search) they will be replaced after the constructor
             Env = environment;
-            Tenant = tenant;
+            Site = site;
         }
 
         protected internal App Init(
@@ -55,16 +55,16 @@ namespace ToSic.Eav.Apps
             // Env / Tenant must be re-checked here
             Env = Env ?? throw new Exception("no environment received");
             Env.Init(parentLog);
-            Tenant = Tenant ?? throw new Exception("no tenant (portal settings) received");
+            Site = Site ?? throw new Exception("no tenant (portal settings) received");
             
             // in case the DI gave a bad tenant, try to look up
-            if (Tenant.Id == Constants.NullId && appIdentity.AppId != Constants.NullId &&
+            if (Site.Id == Constants.NullId && appIdentity.AppId != Constants.NullId &&
                 appIdentity.AppId != AppConstants.AppIdNotFound)
-                Tenant = Env.ZoneMapper.TenantOfApp(appIdentity.AppId);
+                Site = Env.ZoneMapper.TenantOfApp(appIdentity.AppId);
 
             // if zone is missing, try to find it; if still missing, throw error
             if (appIdentity.ZoneId == AutoLookupZone)
-                appIdentity = Env.ZoneMapper.IdentityFromTenant(Tenant.Id, appIdentity.AppId);
+                appIdentity = Env.ZoneMapper.IdentityFromSite(Site.Id, appIdentity.AppId);
 
             Init(appIdentity, new CodeRef(), parentLog, logKey ?? "Eav.App",
                 $"prep App z#{appIdentity.ZoneId}, a#{appIdentity.AppId}, allowSE:{allowSideEffects}, hasDataConfig:{buildConfiguration != null}, {logMsg}");

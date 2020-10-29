@@ -28,7 +28,7 @@ namespace ToSic.Eav.Repository.Efc.Tests.Mocks
         public string BasePath { get; set; }= @"C:\Projects\eav-server\ToSic.Eav.Repository.Efc.Tests\";
 
 
-        public virtual List<Message> TransferFilesToTenant(string sourceFolder, string destinationFolder)
+        public virtual List<Message> TransferFilesToSite(string sourceFolder, string destinationFolder)
         {
             return new List<Message>();
         }

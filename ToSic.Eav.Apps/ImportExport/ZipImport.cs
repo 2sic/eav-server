@@ -222,7 +222,7 @@ namespace ToSic.Eav.Apps.ImportExport
             var portalTempRoot = Path.Combine(appDirectory, XmlConstants.PortalFiles);
             if (Directory.Exists(portalTempRoot))
             {
-                var messages = Env.TransferFilesToTenant(portalTempRoot, string.Empty);
+                var messages = Env.TransferFilesToSite(portalTempRoot, string.Empty);
                 Messages.AddRange(messages);
             }
             wrapLog(null);

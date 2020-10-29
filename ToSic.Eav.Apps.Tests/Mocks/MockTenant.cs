@@ -2,11 +2,11 @@
 
 namespace ToSic.Eav.Apps.Tests.Mocks
 {
-    public class MockTenant: ITenant
+    public class MockTenant: ISite
     {
         public int Id => -999;
 
-        public ITenant Init(int tenantId)
+        public ISite Init(int tenantId)
         {
             return this;
         }

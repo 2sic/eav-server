@@ -19,7 +19,7 @@ namespace ToSic.Eav.WebApi.Security
 
         internal IInstanceContext Context { get; private set; }
 
-        protected ITenant TenantForSecurityCheck { get; private set; }
+        protected ISite SiteForSecurityCheck { get; private set; }
 
         protected bool SamePortal { get; private set; }
 
@@ -36,8 +36,8 @@ namespace ToSic.Eav.WebApi.Security
             App = app;
 
             SamePortal = Context.Tenant.ZoneId == App.ZoneId;
-            TenantForSecurityCheck = SamePortal ? Context.Tenant : Factory.Resolve<IZoneMapper>().Init(Log).TenantOfZone(App.ZoneId);
-            return wrapLog($"ready for z/a:{app.ZoneId}/{app.AppId} t/z:{App.Tenant.Id}/{Context.Tenant.ZoneId} same:{SamePortal}", this);
+            SiteForSecurityCheck = SamePortal ? Context.Tenant : Factory.Resolve<IZoneMapper>().Init(Log).SiteOfZone(App.ZoneId);
+            return wrapLog($"ready for z/a:{app.ZoneId}/{app.AppId} t/z:{App.Site.Id}/{Context.Tenant.ZoneId} same:{SamePortal}", this);
         }
 
         #endregion
@@ -73,7 +73,7 @@ namespace ToSic.Eav.WebApi.Security
 
             // user has edit permissions on this app, and it's the same app as the user is coming from
             return Factory.Resolve<AppPermissionCheck>()
-                .ForParts(Context.Clone(TenantForSecurityCheck), App, type, item, Log);
+                .ForParts(Context.Clone(SiteForSecurityCheck), App, type, item, Log);
         }
 
     }

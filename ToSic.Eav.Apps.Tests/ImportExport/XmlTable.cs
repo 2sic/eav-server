@@ -46,21 +46,21 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
 
             // test the Resolve Hyperlink
             string link = "";
-            link = ExportListXml.ResolveHyperlinksFromTenant(AppId, ItemGuid, link2sic, Constants.DataTypeHyperlink, resolver);
+            link = ExportListXml.ResolveHyperlinksFromSite(AppId, ItemGuid, link2sic, Constants.DataTypeHyperlink, resolver);
             Assert.AreEqual(link, link2sic, "real link should stay the same");
 
-            link = ExportListXml.ResolveHyperlinksFromTenant(AppId, ItemGuid, linkFile, Constants.DataTypeHyperlink, resolver);
+            link = ExportListXml.ResolveHyperlinksFromSite(AppId, ItemGuid, linkFile, Constants.DataTypeHyperlink, resolver);
             Assert.AreNotEqual(link, linkFile, "file link should change");
 
-            link = ExportListXml.ResolveHyperlinksFromTenant(AppId, ItemGuid, linkPage, Constants.DataTypeHyperlink, resolver);
+            link = ExportListXml.ResolveHyperlinksFromSite(AppId, ItemGuid, linkPage, Constants.DataTypeHyperlink, resolver);
             Assert.AreNotEqual(link, linkPage, "page link should change");
 
-            link = ExportListXml.ResolveHyperlinksFromTenant(AppId, ItemGuid, "http://www.2sic.com/", NonLinkType, resolver);
+            link = ExportListXml.ResolveHyperlinksFromSite(AppId, ItemGuid, "http://www.2sic.com/", NonLinkType, resolver);
             Assert.AreEqual(link, link2sic, "non-link shouldn't resolve");
 
-            link = ExportListXml.ResolveHyperlinksFromTenant(AppId, ItemGuid, linkPage, NonLinkType, resolver);
+            link = ExportListXml.ResolveHyperlinksFromSite(AppId, ItemGuid, linkPage, NonLinkType, resolver);
             Assert.AreEqual(link, linkPage, "non-link shouldn't resolve");
-            link = ExportListXml.ResolveHyperlinksFromTenant(AppId, ItemGuid, linkFile, NonLinkType, resolver);
+            link = ExportListXml.ResolveHyperlinksFromSite(AppId, ItemGuid, linkFile, NonLinkType, resolver);
             Assert.AreEqual(link, linkFile, "non-link shouldn't resolve");
         }
 

@@ -9,7 +9,7 @@ namespace ToSic.Eav.Run
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
-    public abstract class Tenant<T> :ITenant, IWrapper<T>
+    public abstract class Site<T> :ISite, IWrapper<T>
     {
         /// <summary>
         /// The tenant settings - usually the DNN PortalSettings
@@ -17,7 +17,7 @@ namespace ToSic.Eav.Run
         public virtual T UnwrappedContents { get; protected set; }
 
         /// <inheritdoc />
-        public abstract ITenant Init(int tenantId);
+        public abstract ISite Init(int tenantId);
 
         /// <inheritdoc />
         public abstract string DefaultLanguage { get; }
@@ -44,7 +44,7 @@ namespace ToSic.Eav.Run
         public abstract string ContentPath { get; }
 
 
-        protected Tenant(T settings) => UnwrappedContents = settings;
+        protected Site(T settings) => UnwrappedContents = settings;
 
         public abstract int ZoneId { get; }
     }

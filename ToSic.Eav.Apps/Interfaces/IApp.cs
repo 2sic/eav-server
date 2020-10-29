@@ -63,7 +63,7 @@ namespace ToSic.Eav.Apps
         /// The tenant this app belongs to - for example, a DNN portal
         /// </summary>
         [PrivateApi]
-        ITenant Tenant { get; }
+        ISite Site { get; }
 
         [PrivateApi]
         ILookUpEngine ConfigurationProvider { get; }

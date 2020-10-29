@@ -8,8 +8,8 @@ namespace ToSic.Eav.Run
     /// <summary>
     /// Describes a tenant - this is what the Environment calls a tenant (like a portal in DNN)
     /// </summary>
-    [WorkInProgressApi("Will be renamed to ISite soon")]
-    public interface ITenant: IWebResource, IZoneIdentity
+    [InternalApi_DoNotUse_MayChangeWithoutNotice]
+    public interface ISite: IWebResource, IZoneIdentity
     {
         #region Constructor Helper
 
@@ -17,7 +17,7 @@ namespace ToSic.Eav.Run
         /// This is a special constructor where the tenant object is re-initialized with a specific tenant id
         /// </summary>
         /// <returns></returns>
-        ITenant Init(int tenantId);
+        ISite Init(int tenantId);
 
         #endregion
 

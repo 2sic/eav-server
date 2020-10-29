@@ -62,7 +62,7 @@ namespace ToSic.Eav.DataSources.System
 
 	        var list = zones.Values.OrderBy(z => z.ZoneId).Select(zone =>
 	        {
-	            var tenant = env.ZoneMapper.TenantOfZone(zone.ZoneId);
+	            var tenant = env.ZoneMapper.SiteOfZone(zone.ZoneId);
 
 	            // Assemble the entities
 	            var znData = new Dictionary<string, object>
