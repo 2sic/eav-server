@@ -28,7 +28,7 @@ namespace ToSic.Eav
 	    }
 
 #if !NETFRAMEWORK
-        private static IServiceProvider GetServiceProvider() => _serviceCollection.BuildServiceProvider();
+        public static IServiceProvider GetServiceProvider() => _serviceCollection.BuildServiceProvider();
 #endif
 
 

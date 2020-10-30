@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
+using ToSic.Eav.Documentation;
 #if NETFRAMEWORK
 using System.Web;
 #endif
@@ -15,7 +16,8 @@ namespace ToSic.Eav
         private const string ServiceProviderKey = "eav-scoped-serviceprovider";
         private static IServiceProvider _sp;
 
-        private static IServiceProvider GetServiceProvider()
+        [PrivateApi("This is just a temporary solution - shouldn't be used long term")]
+        public static IServiceProvider GetServiceProvider()
         {
             // Because 2sxc runs inside DNN as a webforms project and not asp.net core mvc, we have
             // to make sure the service-provider object is disposed correctly. If we don't do this,
