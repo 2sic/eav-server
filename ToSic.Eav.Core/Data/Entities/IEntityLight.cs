@@ -78,31 +78,37 @@ namespace ToSic.Eav.Data
 	    /// An object OR a null - for example when retrieving the title and no title exists
 		/// the object is string, int or even a EntityRelationship
 		/// </returns>
-		object GetBestValue(string attributeName, bool resolveHyperlinks = false);
+		object GetBestValue(string attributeName, bool resolveHyperlinks/* = false*/);
 
+        [PrivateApi("Testing / wip #IValueConverter")]
+        object GetBestValue(string attributeName);
 
-        /// <summary>
-        /// Retrieves the best possible value for an attribute or virtual attribute (like EntityTitle)
-        /// Automatically resolves the language-variations as well based on the list of preferred languages.
-        /// Will cast/convert to the expected type, or return null / default value for that type if not possible.
-        /// </summary>
-        /// <param name="name">Name of the attribute or virtual attribute</param>
-        /// <param name="resolveHyperlinks">If true, will try to resolve links in the value. Default is false.</param>
-        /// <returns>
-        /// An object OR a null - for example when retrieving the title and no title exists
-        /// the object is string, int or even a EntityRelationship
-        /// </returns>
-	    TVal GetBestValue<TVal>(string name, bool resolveHyperlinks = false);
+		/// <summary>
+		/// Retrieves the best possible value for an attribute or virtual attribute (like EntityTitle)
+		/// Automatically resolves the language-variations as well based on the list of preferred languages.
+		/// Will cast/convert to the expected type, or return null / default value for that type if not possible.
+		/// </summary>
+		/// <param name="name">Name of the attribute or virtual attribute</param>
+		/// <param name="resolveHyperlinks">If true, will try to resolve links in the value. Default is false.</param>
+		/// <returns>
+		/// An object OR a null - for example when retrieving the title and no title exists
+		/// the object is string, int or even a EntityRelationship
+		/// </returns>
+        // 2020-10-30 trying to drop uses with ResolveHyperlinks
+		//TVal GetBestValue<TVal>(string name, bool resolveHyperlinks/* = false*/);
 
-        /// <summary>
-        /// Best way to get the current entities title.
-        /// The field used is determined in the <see cref="IContentType"/>.
-        /// If you need the attribute-object, use the <see cref="Title"/> instead.
-        /// </summary>
-        /// <returns>
-        /// The entity title as a string.
-        /// </returns>
-        string GetBestTitle();
+		[PrivateApi("Testing / wip #IValueConverter")]
+        TVal GetBestValue<TVal>(string name);
+
+		/// <summary>
+		/// Best way to get the current entities title.
+		/// The field used is determined in the <see cref="IContentType"/>.
+		/// If you need the attribute-object, use the <see cref="Title"/> instead.
+		/// </summary>
+		/// <returns>
+		/// The entity title as a string.
+		/// </returns>
+		string GetBestTitle();
 
         /// <summary>
         /// Owner of this entity

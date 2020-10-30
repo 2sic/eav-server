@@ -123,10 +123,12 @@ namespace ToSic.Eav.Data
         public Entity(int appId, Guid entityGuid, IContentType contentType, Dictionary<string, object> values) 
             : this(appId, 0, contentType, values, entityGuid: entityGuid)
         {}
-        
+
+        [PrivateApi("Testing / wip #IValueConverter")]
+        public new object GetBestValue(string attributeName) => GetBestValue(attributeName, false);
 
         /// <inheritdoc />
-        public new object GetBestValue(string attributeName, bool resolveHyperlinks = false)
+        public new object GetBestValue(string attributeName, bool resolveHyperlinks/* = false*/)
             => GetBestValue(attributeName, new string[0], resolveHyperlinks);
 
 
@@ -164,9 +166,14 @@ namespace ToSic.Eav.Data
             return result;
         }
 
-        /// <inheritdoc />
-        public new TVal GetBestValue<TVal>(string name, bool resolveHyperlinks = false)
-            => ChangeTypeOrDefault<TVal>(GetBestValue(name, resolveHyperlinks));
+        // 2020-10-30 trying to drop uses with ResolveHyperlinks
+        ///// <inheritdoc />
+        //public new TVal GetBestValue<TVal>(string name, bool resolveHyperlinks/* = false*/)
+        //    => ChangeTypeOrDefault<TVal>(GetBestValue(name, resolveHyperlinks));
+
+        [PrivateApi("Testing / wip #IValueConverter")]
+        public new TVal GetBestValue<TVal>(string name)
+            => ChangeTypeOrDefault<TVal>(GetBestValue(name));
 
         /// <inheritdoc />
         public TVal GetBestValue<TVal>(string name, string[] languages, bool resolveHyperlinks = false)

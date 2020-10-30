@@ -73,8 +73,11 @@ namespace ToSic.Eav.Data
         public string Owner => Entity.Owner;
 
 
+        [PrivateApi("Testing / wip #IValueConverter")]
+        public object GetBestValue(string attributeName) => Entity.GetBestValue(attributeName);
+
         /// <inheritdoc />
-        public object GetBestValue(string attributeName, bool resolveHyperlinks = false)
+        public object GetBestValue(string attributeName, bool resolveHyperlinks/* = false*/)
             => Entity.GetBestValue(attributeName, resolveHyperlinks);
 
 
@@ -94,9 +97,13 @@ namespace ToSic.Eav.Data
         public T PrimaryValue<T>(string attributeName, bool resolveHyperlinks = false) 
             => Entity.PrimaryValue<T>(attributeName, resolveHyperlinks);
 
-        /// <inheritdoc />
-        public TVal GetBestValue<TVal>(string name, bool resolveHyperlinks = false)
-            => Entity.GetBestValue<TVal>(name, resolveHyperlinks);
+        // 2020-10-30 trying to drop uses with ResolveHyperlinks
+        ///// <inheritdoc />
+        //public TVal GetBestValue<TVal>(string name, bool resolveHyperlinks = false)
+        //    => Entity.GetBestValue<TVal>(name, resolveHyperlinks);
+
+        public TVal GetBestValue<TVal>(string name)
+            => Entity.GetBestValue<TVal>(name);
 
         /// <inheritdoc />
         public string GetBestTitle() => Entity.GetBestTitle();

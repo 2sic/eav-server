@@ -100,9 +100,11 @@ namespace ToSic.Eav.Data
 
         #region GetBestValue and GetTitle
 
+        [PrivateApi("Testing / wip #IValueConverter")]
+        public object GetBestValue(string attributeName) => GetBestValue(attributeName, false);
 
         /// <inheritdoc />
-        public object GetBestValue(string attributeName, bool resolveHyperlinks = false)
+        public object GetBestValue(string attributeName, bool resolveHyperlinks /*= false*/)
         {
             object result;
 
@@ -135,9 +137,12 @@ namespace ToSic.Eav.Data
             return result;
         }
 
-         /// <inheritdoc />
-       public TVal GetBestValue<TVal>(string name, bool resolveHyperlinks = false) 
+        /// <inheritdoc />
+        public TVal GetBestValue<TVal>(string name, bool resolveHyperlinks/* = false*/) 
             => ChangeTypeOrDefault<TVal>(GetBestValue(name, resolveHyperlinks));
+
+        [PrivateApi("Testing / wip #IValueConverter")]
+        public TVal GetBestValue<TVal>(string name) => ChangeTypeOrDefault<TVal>(GetBestValue(name));
 
         /// <summary>
         /// Will try to convert an object to a type, or if not valid
