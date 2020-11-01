@@ -11,7 +11,6 @@ namespace ToSic.Eav.Apps.Parts
         public bool ShowDrafts { get; }
 
         protected AppRuntimeBase(IAppIdentity app, bool showDrafts, ILog parentLog)
-            // : base(app, new CodeRef(), parentLog, LogId)
         {
             Init(app, new CodeRef(), parentLog, "App.Base");
             ShowDrafts = showDrafts;

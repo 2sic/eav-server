@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Api.Api01;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Apps
@@ -17,11 +17,23 @@ namespace ToSic.Eav.Apps
     [PublicApi_Stable_ForUseInYourCode]
     public sealed class AppData: Eav.DataSources.App, IAppData
     {
+
+        #region Constructor stuff
+
         [PrivateApi]
-        public AppData(ILog parentLog = null)
+        public override string LogId => "Ds.EavApp";
+
+        //[PrivateApi]
+        //public AppData(ILog parentLog = null)
+        //{
+        //    InitLog("DS.EavApp", parentLog);
+        //}
+
+        public AppData(Lazy<SimpleDataController> dataController)
         {
-            InitLog("DS.EavApp", parentLog);
+            _lazyDataController = dataController;
         }
+        #endregion
 
         [PrivateApi]
         internal string DefaultLanguage { get; set; }
@@ -32,7 +44,10 @@ namespace ToSic.Eav.Apps
         /// Get a correctly instantiated instance of the simple data controller.
         /// </summary>
         /// <returns>An data controller to create, update and delete entities</returns>
-        private SimpleDataController DataController() => new SimpleDataController(ZoneId, AppId, DefaultLanguage, Log);
+        private SimpleDataController DataController() =>
+            _dataController ?? (_dataController = _lazyDataController.Value.Init(ZoneId, AppId, DefaultLanguage, Log)); // new SimpleDataController(ZoneId, AppId, DefaultLanguage, Log);
+        private SimpleDataController _dataController;
+        private readonly Lazy<SimpleDataController> _lazyDataController;
 
         /// <inheritdoc />
         public IEntity Create(string contentTypeName,

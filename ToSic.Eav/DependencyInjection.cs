@@ -1,20 +1,16 @@
 ﻿using System;
-using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.Persistence.Efc;
-using ToSic.Eav.Persistence.Efc.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Eav.Apps.ImportExport;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
+using ToSic.Eav.ImportExport;
 using ToSic.Eav.Metadata;
-using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.ImportExport.Persistence.File;
 using ToSic.Eav.Plumbing;
-using ToSic.Eav.Repositories;
+using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Run;
 using ToSic.Eav.Run.Basic;
-using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav
 {
@@ -29,6 +25,9 @@ namespace ToSic.Eav
 	    /// <param name="services"></param>
 	    public static IServiceCollection AddEav(this IServiceCollection services)
 	    {
+            // 2020-10-29 New enhancement - lazy loading dependency injection
+            services.AddTransient(typeof(Lazy<>), typeof(LazyDependencyInjection<>));
+
             // very basic stuff - normally overriden by the platform
             services.TryAddTransient<IFingerprint, BasicFingerprint>();
             services.TryAddTransient<IUser, BasicUser>();
@@ -39,38 +38,41 @@ namespace ToSic.Eav
 
             services.TryAddSingleton<IAppsCache, AppsCache>();
 
-            services.TryAddTransient<IAppRoot, AppRoot>();
+            //services.TryAddTransient<IAppRoot, AppRoot>();
 	        services.TryAddTransient<IRemoteMetadata, RemoteMetadata>();
-	        services.TryAddTransient<ITargetTypes, EfcMetadataTargetTypes>();
+	        //services.TryAddTransient<ITargetTypes, EfcMetadataTargetTypes>();
 
             //services.TryAddTransient<IRepositoryImporter, RepositoryImporter>();
 
             services.TryAddTransient<ISystemConfiguration, Repository.Efc.Implementations.Configuration>();
 
-            services.TryAddTransient<IRepositoryLoader, Efc11Loader>();
+            //services.TryAddTransient<IRepositoryLoader, Efc11Loader>();
 
-	        services.TryAddTransient<IDataSerializer, JsonSerializer>();
-	        services.TryAddTransient<IDataDeserializer, JsonSerializer>();
-            services.TryAddTransient<ZipExport, ZipExport>();
-            services.TryAddTransient<ZipImport, ZipImport>();
-            services.TryAddTransient<ZipFromUrlImport, ZipFromUrlImport>();
+	        //services.TryAddTransient<IDataSerializer, JsonSerializer>();
+	        //services.TryAddTransient<IDataDeserializer, JsonSerializer>();
+            //services.TryAddTransient<ZipExport>();
+            //services.TryAddTransient<ZipImport>();
+            //services.TryAddTransient<ZipFromUrlImport>();
 
-            var conStr = new Repository.Efc.Implementations.Configuration().DbConnectionString;
-            if (!conStr.ToLower().Contains("multipleactiveresultsets")) // this is needed to allow querying data while preparing new data on the same DbContext
-                conStr += ";MultipleActiveResultSets=True";
+            var connectionString = new Repository.Efc.Implementations.Configuration().DbConnectionString;
+            //if (!conStr.ToLower().Contains("multipleactiveresultsets")) // this is needed to allow querying data while preparing new data on the same DbContext
+            //    conStr += ";MultipleActiveResultSets=True";
 
-            // transient lifetime is important, otherwise 2-3x slower!
-            // note: https://docs.microsoft.com/en-us/ef/core/miscellaneous/configuring-dbcontext says we should use transient
-            services.AddDbContext<EavDbContext>(options => options.UseSqlServer(conStr), 
-                ServiceLifetime.Transient); 
+            //// transient lifetime is important, otherwise 2-3x slower!
+            //// note: https://docs.microsoft.com/en-us/ef/core/miscellaneous/configuring-dbcontext says we should use transient
+            //services.AddDbContext<EavDbContext>(options => options.UseSqlServer(conStr),
+            //    ServiceLifetime.Transient);
 
             // register some Default Constructors
-            services.TryAddTransient<Sql>();
-            services.TryAddTransient<DataTable>();
+            //services.TryAddTransient<Sql>();
+            //services.TryAddTransient<DataTable>();
 
-
-            // 2020-10-29 New enhancement - lazy loading depenedncy injection
-            services.AddTransient(typeof(Lazy<>), typeof(LazyDependencyInjection<>));
+            // todo: wip moving DataSource stuff into that DLL
+            services
+                .AddApps()
+                .AddImportExport()
+                .AddRepositoryAndEfc(connectionString)
+                .AddDataSources();
 
 
             return services;

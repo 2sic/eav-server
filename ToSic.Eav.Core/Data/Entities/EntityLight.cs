@@ -4,6 +4,7 @@ using System.Linq;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Run;
+using ToSic.Eav.Run.Basic;
 
 namespace ToSic.Eav.Data
 {
@@ -196,8 +197,11 @@ namespace ToSic.Eav.Data
         }
 
         [PrivateApi]
-        protected static string TryToResolveLink(Guid itemGuid, string result) 
-            => Factory.Resolve<IValueConverter>().ToValue(result, itemGuid);
+        protected static string TryToResolveLink(Guid itemGuid, string result)
+        {
+            if (!BasicValueConverter.CouldBeReference(result)) return result;
+            return Factory.Resolve<IValueConverter>().ToValue(result, itemGuid);
+        }
 
         /// <inheritdoc />
 	    public string GetBestTitle() => GetBestTitle(0);

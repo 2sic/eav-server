@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
@@ -52,19 +53,19 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// The entity-management subsystem
         /// </summary>
-        public EntitiesManager Entities => _entities ?? (_entities = new EntitiesManager(this, Log));
+        public EntitiesManager Entities => _entities ?? (_entities = new EntitiesManager(/* todo */ Factory.Resolve<Lazy<ImportListXml>>()).Init(this, Log));
         private EntitiesManager _entities;
 
         /// <summary>
         /// Queries Management Subsystem
         /// </summary>
-        public QueryManager Queries => _queries ?? (_queries = new QueryManager(this, Log));
+        public QueryManager Queries => _queries ?? (_queries = new QueryManager().Init(this, Log));
         private QueryManager _queries;
 
         /// <summary>
         /// Content-Types Manager Subsystem
         /// </summary>
-        public ContentTypeManager ContentTypes => _contentTypes ?? (_contentTypes = new ContentTypeManager(this, Log));
+        public ContentTypeManager ContentTypes => _contentTypes ?? (_contentTypes = new ContentTypeManager().Init(this, Log));
         private ContentTypeManager  _contentTypes;
 
 
@@ -72,7 +73,6 @@ namespace ToSic.Eav.Apps
         private void MetadataEnsureTypeAndSingleEntity(string scope, string setName, string label, int appAssignment, Dictionary<string, object> values, bool inAppType)
         {
             var wrapLog = Log.Call($"{scope}/{setName} and {label} for app {AppId} MetadataAssignment: {appAssignment} - inApp: {inAppType}");
-            //Log.Add($"check / create for {scope}/{setName} and {label} for app {appAssignment} - inApp: {inAppType}");
 
             // if it's an in-app type, it should check the app, otherwise it should check the global type
             // this is important, because there are rare cases where historic data accidentally
@@ -203,13 +203,6 @@ namespace ToSic.Eav.Apps
             wrapLog("ok");
         }
 
-        //private IEntity AppSettingsDummy() => AppMetaDummy(AppConstants.TypeAppSettings, new Dictionary<string, object>());
-
-        //private IEntity AppMetaDummy(string typeName, Dictionary<string, object> values)
-        //{
-        //    var ct = Read.ContentTypes.Get(typeName);
-        //    return new Entity(AppId, Guid.NewGuid(), ct, values);
-        //}
 
         private static string RemoveIllegalCharsFromPath(string path)
         {

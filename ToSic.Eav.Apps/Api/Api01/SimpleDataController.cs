@@ -23,30 +23,41 @@ namespace ToSic.Eav.Api.Api01
     /// </summary>
     public class SimpleDataController: HasLog
     {
-        private readonly DbDataController _context;
+        public Lazy<AttributeBuilder> LazyAttributeBuilder { get; }
+        private DbDataController _context;
 
-        private readonly AppManager _appManager;
+        private AppManager _appManager;
 
-        private readonly string _defaultLanguageCode;
+        private string _defaultLanguageCode;
 
-        private readonly int _appId;
+        private int _appId;
+
+        #region Constructor / DI
 
         /// <summary>
         /// Create a simple data controller to create, update and delete entities.
+        /// Used for DI - must always call Init afterwards
         /// </summary>
+        public SimpleDataController(Lazy<AttributeBuilder> lazyAttributeBuilder): base("Dta.Simple")
+        {
+            LazyAttributeBuilder = lazyAttributeBuilder;
+        }
+
         /// <param name="zoneId">Zone ID</param>
         /// <param name="appId">App ID</param>
         /// <param name="defaultLanguageCode">Default language of system</param>
         /// <param name="parentLog"></param>
-        public SimpleDataController(int zoneId, int appId, string defaultLanguageCode, ILog parentLog): base("Dta.Simple", parentLog)
+        internal SimpleDataController Init(int zoneId, int appId, string defaultLanguageCode, ILog parentLog)
         {
-            //_zoneId = zoneId;
+            Log.LinkTo(parentLog);
             _appId = appId;
             _defaultLanguageCode = defaultLanguageCode;
             _context = DbDataController.Instance(zoneId, appId, Log);
             _appManager = new AppManager(new AppIdentity(zoneId, appId), Log);
+            return this;
         }
 
+        #endregion
 
         /// <summary>
         /// Create a new entity of the content-type specified.
@@ -177,7 +188,8 @@ namespace ToSic.Eav.Api.Api01
                 // Handle content-type attributes
                 var attribute = attributeSet[value.Key];
                 if (attribute != null)
-                    entity.Attributes.AddValue(attribute.Name, value.Value.ToString(), attribute.Type, valuesLanguage, valuesReadOnly, resolveHyperlink);
+                    LazyAttributeBuilder.Value.AddValue(entity.Attributes, 
+                    /*entity.Attributes.AddValue(*/attribute.Name, value.Value.ToString(), attribute.Type, valuesLanguage, valuesReadOnly, resolveHyperlink);
             }
         }
     }

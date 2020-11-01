@@ -8,7 +8,7 @@ namespace ToSic.Eav.Apps.Parts
     public partial class EntitiesManager
     {
         public ExportListXml Exporter(string contentType)
-            => new ExportListXml(AppManager.AppState, AppManager.Read.ContentTypes.Get(contentType), Log);
+            => new ExportListXml(Parent.AppState, Parent.Read.ContentTypes.Get(contentType), Log);
 
         public ImportListXml Importer(
             string contentTypeName,
@@ -18,8 +18,8 @@ namespace ToSic.Eav.Apps.Parts
             ImportDeleteUnmentionedItems deleteSetting,
             ImportResolveReferenceMode resolveReferenceMode)
         {
-            var ct = AppManager.Read.ContentTypes.Get(contentTypeName);
-            return new ImportListXml(AppManager, ct,
+            var ct = Parent.Read.ContentTypes.Get(contentTypeName);
+            return /*new ImportListXml*/ _lazyImportListXml.Value.Init(Parent, ct,
                 dataStream, languages, documentLanguageFallback,
                 deleteSetting, resolveReferenceMode, Log);
         }

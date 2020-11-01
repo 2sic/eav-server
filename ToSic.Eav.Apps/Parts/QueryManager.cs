@@ -5,7 +5,6 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.ImportExport.Json;
-using ToSic.Eav.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps.Parts
@@ -14,11 +13,11 @@ namespace ToSic.Eav.Apps.Parts
     /// <summary>
     /// query manager to work with queries
     /// </summary>
-    public class QueryManager: ManagerBase
+    public class QueryManager: PartOf<AppManager, QueryManager>
     {
-        public QueryManager(AppManager app, ILog parentLog) : base(app, parentLog, "App.QryMng") {}
+        public QueryManager() : base("App.QryMng") {}
 
-        public void SaveCopy(int id) => SaveCopy(AppManager.Read.Queries.Get(id));
+        public void SaveCopy(int id) => SaveCopy(Parent.Read.Queries.Get(id));
 
         public void SaveCopy(QueryDefinition query)
         {
@@ -43,7 +42,7 @@ namespace ToSic.Eav.Apps.Parts
 
             var saveList = newParts.Select(p => p.Value).Concat(newMetadata).Cast<IEntity>().ToList();
             saveList.Add(newQuery);
-            AppManager.Entities.Save(saveList);
+            Parent.Entities.Save(saveList);
         }
 
         private static string RemapWiringToCopy(IList<Connection> origWiring, Dictionary<string, string> keyMap)
@@ -77,20 +76,20 @@ namespace ToSic.Eav.Apps.Parts
         }
 
         private JsonSerializer Serializer 
-            => _serializer ?? (_serializer = new JsonSerializer(AppManager.AppState, Log));
+            => _serializer ?? (_serializer = new JsonSerializer(Parent.AppState, Log));
         private JsonSerializer _serializer;
 
         public bool Delete(int id)
         {
-            Log.Add($"delete a#{AppManager.AppId}, id:{id}");
-            var canDeleteResult = AppManager.Entities.CanDelete(id);
+            Log.Add($"delete a#{Parent.AppId}, id:{id}");
+            var canDeleteResult = Parent.Entities.CanDelete(id);
             if (!canDeleteResult.Item1)
                 throw new Exception(canDeleteResult.Item2);
 
 
             // Get the Entity describing the Query and Query Parts (DataSources)
-            var queryEntity = Eav.DataSources.Queries.QueryManager.GetQueryEntity(id, AppManager./*Cache*/AppState);
-            var qDef = new QueryDefinition(queryEntity, AppManager.AppId, Log);
+            var queryEntity = Eav.DataSources.Queries.QueryManager.GetQueryEntity(id, Parent./*Cache*/AppState);
+            var qDef = new QueryDefinition(queryEntity, Parent.AppId, Log);
 
             var mdItems = qDef.Parts// parts
                 .Select(ds => ds.Entity.Metadata.FirstOrDefault())
@@ -99,12 +98,12 @@ namespace ToSic.Eav.Apps.Parts
                 .ToList();
 
             // delete in the right order - first the outermost-dependents, then a layer in, and finally the top node
-            AppManager.Entities.Delete(mdItems);
-            AppManager.Entities.Delete(qDef.Parts.Select(p => p.Id).ToList());
-            AppManager.Entities.Delete(id);
+            Parent.Entities.Delete(mdItems);
+            Parent.Entities.Delete(qDef.Parts.Select(p => p.Id).ToList());
+            Parent.Entities.Delete(id);
 
             // flush cache
-            SystemManager.Purge(AppManager.AppId, Log);
+            SystemManager.Purge(Parent.AppId, Log);
 
             return true;
 
@@ -122,7 +121,7 @@ namespace ToSic.Eav.Apps.Parts
         public void Update(int queryId, List<Dictionary<string, object>> partDefs, List<Guid> newDsGuids, Dictionary<string, object> headerValues, List<Connection> wirings)
         {
             // Get/Save Query EntityGuid. Its required to assign Query Parts to it.
-            var qdef = AppManager.Read.Queries.Get(queryId);
+            var qdef = Parent.Read.Queries.Get(queryId);
 
             // todo: maybe create a GetBestValue<typed> ? 
             if (((IAttribute<bool?>)qdef.Entity["AllowEdit"]).TypedContents == false)
@@ -142,7 +141,7 @@ namespace ToSic.Eav.Apps.Parts
         /// Save QueryParts (DataSources) to EAV
         /// </summary>
         /// <param name="partsDefinitions"></param>
-        /// <param name="queryEntityGuid">EngityGuid of the Pipeline-Entity</param>
+        /// <param name="queryEntityGuid">EntityGuid of the Pipeline-Entity</param>
         private Dictionary<string, Guid> SavePartsAndGenerateRenameMap(List<Dictionary<string, object>> partsDefinitions,
             Guid queryEntityGuid)
         {
@@ -167,11 +166,11 @@ namespace ToSic.Eav.Apps.Parts
                     dataSource[QueryConstants.VisualDesignerData] = dataSource[QueryConstants.VisualDesignerData].ToString(); // serialize this JSON into string
 
                 if (entityId != null)
-                    AppManager.Entities.UpdateParts(Convert.ToInt32(entityId), dataSource);
+                    Parent.Entities.UpdateParts(Convert.ToInt32(entityId), dataSource);
                 // Add new DataSource
                 else
                 {
-                    Tuple<int, Guid> entity = AppManager.Entities.Create(Constants.QueryPartTypeName, dataSource,
+                    Tuple<int, Guid> entity = Parent.Entities.Create(Constants.QueryPartTypeName, dataSource,
                         new Metadata.Target { TargetType = Constants.MetadataForEntity, KeyGuid = queryEntityGuid });
                     newDataSources.Add(originalIdentity, entity.Item2);
                 }
@@ -199,7 +198,7 @@ namespace ToSic.Eav.Apps.Parts
             IEnumerable<Guid> newDataSources, 
             QueryDefinition qDef)
         {
-            Log.Add($"delete part a#{AppManager.AppId}, pipe:{qDef.Entity.EntityGuid}");
+            Log.Add($"delete part a#{Parent.AppId}, pipe:{qDef.Entity.EntityGuid}");
             // Get EntityGuids currently stored in EAV
             var existingEntityGuids = qDef.Parts.Select(e => e.Guid);
 
@@ -208,7 +207,7 @@ namespace ToSic.Eav.Apps.Parts
 
             foreach (var entityToDelete in existingEntityGuids
                 .Where(existingGuid => !newEntityGuids.Contains(existingGuid)))
-                AppManager.Entities.Delete(entityToDelete);
+                Parent.Entities.Delete(entityToDelete);
         }
 
 
@@ -222,7 +221,7 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="renamedDataSources">Array with new DataSources and the unsavedName and final EntityGuid</param>
         private void SaveHeader(int id, Dictionary<string, object> values, List<Connection> wirings, IDictionary<string, Guid> renamedDataSources)
         {
-            Log.Add($"save pipe a#{AppManager.AppId}, pipe:{id}");
+            Log.Add($"save pipe a#{Parent.AppId}, pipe:{id}");
             wirings = RenameWiring(wirings, renamedDataSources);
 
             // Validate Stream Wirings, as we should never save bad wirings
@@ -232,7 +231,7 @@ namespace ToSic.Eav.Apps.Parts
 
             // add to new object...then send to save/update
             values[Constants.QueryStreamWiringAttributeName] = Connections.Serialize(wirings);
-            AppManager.Entities.UpdateParts(id, values);
+            Parent.Entities.UpdateParts(id, values);
         }
 
         /// <summary>

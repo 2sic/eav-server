@@ -29,15 +29,15 @@ namespace ToSic.Eav.Apps.Parts
             var oks = BatchCheckCanDelete(ids, force, skipIfCant);
 
             // var ok = ids.Aggregate(true, (current, entityId) => AppManager.DataController.Entities.DeleteEntity(entityId, false, true));
-            var ok = AppManager.DataController.Entities.DeleteEntity(ids, true, true);
+            var ok = Parent.DataController.Entities.DeleteEntity(ids, true, true);
             //AppManager.DataController.SqlDb.SaveChanges();
-            SystemManager.Purge(AppManager.AppId, Log);
+            SystemManager.Purge(Parent.AppId, Log);
             return callLog(ok.ToString(), ok);
         }
 
         private Dictionary<int, Tuple<bool, string>> BatchCheckCanDelete(int[] ids, bool force, bool skipIfCant)
         {
-            var canDeleteList = AppManager.DataController.Entities.CanDeleteEntity(ids);
+            var canDeleteList = Parent.DataController.Entities.CanDeleteEntity(ids);
             foreach (var canDelete in canDeleteList)
                 if (!canDelete.Value.Item1 && !force && !skipIfCant)
                     throw new InvalidOperationException(
@@ -49,19 +49,19 @@ namespace ToSic.Eav.Apps.Parts
         {
             foreach (var id in ids)
             {
-                var found = AppManager.Read.Entities.Get(id);
+                var found = Parent.Read.Entities.Get(id);
                 if (contentType != null && found.Type.Name != contentType && found.Type.StaticName != contentType)
                     throw new KeyNotFoundException("Can't find " + id + "of type '" + contentType + "', will not delete.");
             }
         }
 
-        internal Tuple<bool, string> CanDelete(int entityId) => AppManager.DataController.Entities.CanDeleteEntity(new[] {entityId}).First().Value;
+        internal Tuple<bool, string> CanDelete(int entityId) => Parent.DataController.Entities.CanDeleteEntity(new[] {entityId}).First().Value;
 
         public bool Delete(Guid guid)
         {
             Log.Add($"delete guid:{guid}");
             // todo: check if GetMostCurrentDbEntity... can't be in the app-layer
-            return Delete(AppManager.DataController.Entities.GetMostCurrentDbEntity(guid).EntityId);
+            return Delete(Parent.DataController.Entities.GetMostCurrentDbEntity(guid).EntityId);
         }
 
         public bool Delete(List<int> ids)

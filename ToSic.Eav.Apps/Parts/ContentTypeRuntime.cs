@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.Logging;
 using ToSic.Eav.Run;
 using ToSic.Eav.Types;
 
@@ -11,18 +10,17 @@ namespace ToSic.Eav.Apps.Parts
     /// <summary>
     /// Manager for entities in an app
     /// </summary>
-    // ReSharper disable once InheritdocConsiderUsage
-    public class ContentTypeRuntime : RuntimeBase
+    public class ContentTypeRuntime : PartOf<AppRuntime, ContentTypeRuntime>
     {
-        public ContentTypeRuntime(AppRuntime appRt, ILog parentLog) : base(appRt, parentLog){}
+        public ContentTypeRuntime() : base("RT.ConTyp"){}
 
-        public IEnumerable<IContentType> All => AppRT.AppState.ContentTypes;
+        public IEnumerable<IContentType> All => Parent.AppState.ContentTypes;
 
         /// <summary>
         /// Gets a ContentType by Name
         /// </summary>
         /// <returns>a content-type or null if not found</returns>
-        public IContentType Get(string name) => AppRT.AppState.GetContentType(name);
+        public IContentType Get(string name) => Parent.AppState.GetContentType(name);
 
         public IEnumerable<string> GetScopes()
         {
@@ -123,7 +121,7 @@ namespace ToSic.Eav.Apps.Parts
         /// </summary>
         /// <returns></returns>
         private List<InputTypeInfo> GetAppRegisteredInputTypes()
-            => AppRT.Entities.Get(Constants.TypeForInputTypeDefinition)
+            => Parent.Entities.Get(Constants.TypeForInputTypeDefinition)
                 .Select(e => new InputTypeInfo(
                     e.GetBestValue<string>(Constants.InputTypeType),
                     e.GetBestValue<string>(Constants.InputTypeLabel),
@@ -144,7 +142,7 @@ namespace ToSic.Eav.Apps.Parts
             var wrapLog = Log.Call<List<InputTypeInfo>>();
             try
             {
-                var appState = State.Get(AppRT);
+                var appState = State.Get(Parent);
                 var appLoader = Factory.Resolve<IAppFileSystemLoader>().Init(appState.AppId, appState.Path, Log);
                 var inputTypes = appLoader.InputTypes();
                 return wrapLog(null, inputTypes);

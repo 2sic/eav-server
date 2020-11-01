@@ -26,7 +26,7 @@ namespace ToSic.Eav.Apps.ImportExport
         public long TimeForDbImport;
         #endregion
 
-        private readonly int _appId;
+        private int _appId;
 
         /// <summary>
         /// The xml document to imported.
@@ -38,13 +38,13 @@ namespace ToSic.Eav.Apps.ImportExport
         /// </summary>
         public IEnumerable<XElement> DocumentElements { get; private set; }
 
-        private readonly string _docLangPrimary;
+        private string _docLangPrimary;
 
-        private readonly IList<string> _languages;
+        private IList<string> _languages;
 
-        protected readonly bool ResolveLinks;
+        protected bool ResolveLinks;
 
-        private readonly ImportDeleteUnmentionedItems _deleteSetting;
+        private ImportDeleteUnmentionedItems _deleteSetting;
 
 
 
@@ -52,7 +52,8 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <summary>
         /// The entities created from the document. They will be saved to the repository.
         /// </summary>
-        public List<Entity> ImportEntities { get; }
+        public List<Entity> ImportEntities { get; set; }
+
         private Entity GetImportEntity(Guid entityGuid)
         {
             var result = ImportEntities.FirstOrDefault(entity => entity.EntityGuid == entityGuid);
@@ -76,8 +77,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <summary>
         /// Errors found while importing the document to memory.
         /// </summary>
-        public ImportErrorLog ErrorLog { get; }
-
+        public ImportErrorLog ErrorLog { get; set; }
 
 
         private List<Guid> GetCreatedEntityGuids()

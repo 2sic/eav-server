@@ -19,11 +19,18 @@ namespace ToSic.Eav.Apps.ImportExport
     /// </summary>
     public partial class ImportListXml: HasLog 
     {
-        private IContentType ContentType { get; }
-        private List<IEntity> ExistingEntities { get; }
+        private readonly Lazy<AttributeBuilder> _lazyAttributeBuilder;
+        private AttributeBuilder AttributeBuilder => _lazyAttributeBuilder.Value;
+        private IContentType ContentType { get; set; }
+        private List<IEntity> ExistingEntities { get; set; }
 
-        private AppState App { get; }
-        private AppManager AppMan { get; }
+        private AppState App { get; set; }
+        private AppManager AppMan { get; set; }
+
+        public ImportListXml(Lazy<AttributeBuilder> lazyAttributeBuilder): base("App.ImpVtT")
+        {
+            _lazyAttributeBuilder = lazyAttributeBuilder;
+        }
 
         /// <summary>
         /// Create a xml import. The data stream passed will be imported to memory, and checked 
@@ -37,15 +44,16 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="deleteSetting">How to handle entities already in the repository</param>
         /// <param name="resolveLinkMode">How value references to files and pages are handled</param>
         /// <param name="parentLog"></param>
-        public ImportListXml(AppManager appMan,
+        public ImportListXml Init(AppManager appMan,
             IContentType contentType,
             Stream dataStream, 
             IEnumerable<string> languages, 
             string documentLanguageFallback, 
             ImportDeleteUnmentionedItems deleteSetting, 
             ImportResolveReferenceMode resolveLinkMode, 
-            ILog parentLog): base("App.ImpVT", parentLog, "building xml vtable import")
+            ILog parentLog) // : base("App.ImpVT", parentLog, "building xml vtable import")
         {
+            Log.LinkTo(parentLog);
             ImportEntities = new List<Entity>();
             ErrorLog = new ImportErrorLog(Log);
 
@@ -58,7 +66,7 @@ namespace ToSic.Eav.Apps.ImportExport
             if (ContentType == null)
             {
                 ErrorLog.Add(ImportErrorCode.InvalidContentType);
-                return;
+                return this;
             }
             Log.Add("Content type ok:" + contentType.Name);
 
@@ -78,8 +86,8 @@ namespace ToSic.Eav.Apps.ImportExport
             Timer.Start();
             try
             {
-                if (!LoadStreamIntoDocumentElement(dataStream)) return;
-                if (!RunDocumentValidityChecks()) return;
+                if (!LoadStreamIntoDocumentElement(dataStream)) return this;
+                if (!RunDocumentValidityChecks()) return this;
                 ValidateAndImportToMemory();
             }
             catch (Exception exception)
@@ -89,6 +97,8 @@ namespace ToSic.Eav.Apps.ImportExport
             Timer.Stop();
             Log.Add($"Prep time: {Timer.ElapsedMilliseconds}ms");
             TimeForMemorySetup = Timer.ElapsedMilliseconds;
+            
+            return this;
         }
 
         /// <summary>
@@ -127,7 +137,8 @@ namespace ToSic.Eav.Apps.ImportExport
                     if (value == XmlConstants.Empty)
                     {
                         // It is an empty string
-                        entity.Attributes.AddValue(valName, "", attribute.Type, nodeLang, false, ResolveLinks);
+                        AttributeBuilder.AddValue(entity.Attributes, 
+                        /*entity.Attributes.AddValue(*/valName, "", attribute.Type, nodeLang, false, ResolveLinks);
                         continue;
                     }
 
@@ -136,7 +147,8 @@ namespace ToSic.Eav.Apps.ImportExport
                     {
                         try
                         {
-                            entity.Attributes.AddValue(valName, value, valType, nodeLang, false, ResolveLinks);
+                            AttributeBuilder.AddValue(entity.Attributes, 
+                            /*entity.Attributes.AddValue(*/valName, value, valType, nodeLang, false, ResolveLinks);
                         }
                         catch (FormatException)
                         {
@@ -178,7 +190,7 @@ namespace ToSic.Eav.Apps.ImportExport
                         continue;
                     }
 
-                    var val = entity.Attributes.AddValue(valName,
+                    var val = AttributeBuilder.AddValue(entity.Attributes, /*entity.Attributes.AddValue(*/valName,
                             valExisting,
                             valType,
                             valueReferenceLanguage,

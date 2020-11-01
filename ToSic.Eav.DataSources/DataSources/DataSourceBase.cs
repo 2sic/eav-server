@@ -157,7 +157,7 @@ namespace ToSic.Eav.DataSources
 
         #endregion
 
-        #region Internals (Ready)
+        #region OutIsDynamic
 
 
         /// <inheritdoc />

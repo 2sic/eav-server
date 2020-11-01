@@ -16,7 +16,7 @@ namespace ToSic.Eav.Apps.Parts
         public void UpdateParts(int id, UpdateList values, bool? draft = null)
         {
             var wrapLog = Log.Call($"id:{id}");
-            UpdateParts(AppManager.AppState.List.FindRepoId(id), values, draft);
+            UpdateParts(Parent.AppState.List.FindRepoId(id), values, draft);
             wrapLog("ok");
         }
 
@@ -35,11 +35,11 @@ namespace ToSic.Eav.Apps.Parts
                 return;
             }
 
-            var saveOptions = SaveOptions.Build(AppManager.ZoneId);
+            var saveOptions = SaveOptions.Build(Parent.ZoneId);
             saveOptions.PreserveUntouchedAttributes = true;
             saveOptions.PreserveUnknownLanguages = true;
 
-            var tempEnt = new Entity(AppManager.AppId, 0, orig.Type, values);
+            var tempEnt = new Entity(Parent.AppId, 0, orig.Type, values);
             var saveEnt = new EntitySaver(Log).CreateMergedForSaving(orig, tempEnt, saveOptions);
 
             // if changes should be draft, ensure it works

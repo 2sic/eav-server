@@ -33,25 +33,25 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// Entities Runtime to get entities in this app
         /// </summary>
-        public EntityRuntime Entities => _entities ?? (_entities = new EntityRuntime(this, Log));
+        public EntityRuntime Entities => _entities ?? (_entities = new EntityRuntime().Init(this, Log));
         private EntityRuntime _entities;
 
         /// <summary>
         /// Metadata runtime to get metadata from this app
         /// </summary>
-        public MetadataRuntime Metadata => _metadata ?? (_metadata = new MetadataRuntime(this, Log));
+        public MetadataRuntime Metadata => _metadata ?? (_metadata = new MetadataRuntime().Init(this, Log));
         private MetadataRuntime _metadata;
 
         /// <summary>
         /// ContentTypes runtime to get content types from this app
         /// </summary>
-        public ContentTypeRuntime ContentTypes => _contentTypes ?? (_contentTypes = new ContentTypeRuntime(this, Log));
+        public ContentTypeRuntime ContentTypes => _contentTypes ?? (_contentTypes = new ContentTypeRuntime().Init(this, Log));
         private ContentTypeRuntime _contentTypes; 
 
         /// <summary>
         /// Queries runtime to get queries of this app
         /// </summary>
-        public QueryRuntime Queries => _queries ?? (_queries = new QueryRuntime(this, Log));
+        public QueryRuntime Queries => _queries ?? (_queries = new QueryRuntime().Init(this, Log));
         private QueryRuntime _queries;
 
         /// <summary>
