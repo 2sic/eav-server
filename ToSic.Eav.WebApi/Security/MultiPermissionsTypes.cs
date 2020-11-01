@@ -53,7 +53,7 @@ namespace ToSic.Eav.WebApi.Security
             return typeNames;
         }
 
-        protected AppRuntime AppRuntime => _appRuntime ?? (_appRuntime = new AppRuntime(App, true, Log));
+        protected AppRuntime AppRuntime => _appRuntime ?? (_appRuntime = new AppRuntime().Init(App, true, Log));
         private AppRuntime _appRuntime;
         
 

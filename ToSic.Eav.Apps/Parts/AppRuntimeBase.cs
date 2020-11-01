@@ -6,21 +6,35 @@ namespace ToSic.Eav.Apps.Parts
     /// <summary>
     /// Root class for app runtime objects
     /// </summary>
-    public abstract class AppRuntimeBase: AppBase
+    public abstract class AppRuntimeBase<T>: AppBase where T: AppRuntimeBase<T>
     {
-        public bool ShowDrafts { get; }
+        public bool ShowDrafts { get; private set; }
 
-        protected AppRuntimeBase(IAppIdentity app, bool showDrafts, ILog parentLog)
+        #region Constructor / DI
+
+        protected AppRuntimeBase(string logName): base(logName ?? "RT.AppRTB", new CodeRef())
         {
-            Init(app, new CodeRef(), parentLog, "App.Base");
+        }
+
+        public T Init(IAppIdentity app, bool showDrafts, ILog parentLog)
+        {
+            Init(app, new CodeRef(), parentLog);
+            // re-use data of parent if it's constructed from an app-manager
+            if (app is AppManager parentIsAppManager)
+                _data = parentIsAppManager.Data;
+            //if (app is IDataSource dataSource)
+            //    _data = dataSource;
             ShowDrafts = showDrafts;
+            return this as T;
         }
 
-        protected AppRuntimeBase(IDataSource data, bool showDrafts, ILog parentLog) 
-            : this(data as IAppIdentity, showDrafts, parentLog)
-        {
-            _data = data;
-        }
+        //protected AppRuntimeBase(IDataSource data, bool showDrafts, ILog parentLog) : this()
+        //{
+        //    Init(data as IAppIdentity, showDrafts, parentLog);
+        //    _data = data;
+        //}
+
+        #endregion
 
 
         #region Data & Cache

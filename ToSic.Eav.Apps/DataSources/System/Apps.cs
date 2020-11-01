@@ -75,8 +75,8 @@ namespace ToSic.Eav.DataSources.System
 
             // try to load the content-type - if it fails, return empty list
             var zones = State.Zones;
-            if (!zones.ContainsKey(OfZoneId)) return ImmutableArray<IEntity>.Empty; // new List<IEntity>();
-	        var zone = zones[OfZoneId];
+            if (!zones.ContainsKey(OfZoneId)) return ImmutableArray<IEntity>.Empty;
+            var zone = zones[OfZoneId];
 
 	        var list = zone.Apps.OrderBy(a => a.Key).Select(app =>
 	        {
@@ -85,7 +85,7 @@ namespace ToSic.Eav.DataSources.System
 	            try
 	            {
 	                appObj = Factory.Resolve<Eav.Apps.App>()
-                        .Init(new AppIdentity(zone.ZoneId, app.Key), false, null, null, Log, "for apps DS");
+                        .Init(new AppIdentity(zone.ZoneId, app.Key), false, null, Log);
                     // this will get the guid, if the identity is not "default"
 	                if(Guid.TryParse(appObj.AppGuid, out var g)) guid = g;
 	            }

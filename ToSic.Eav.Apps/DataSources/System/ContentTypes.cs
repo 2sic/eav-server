@@ -89,7 +89,7 @@ namespace ToSic.Eav.DataSources.System
 
             var appId = OfAppId;
 
-            var read = new AppRuntime(appId, false, Log);
+            var read = new AppRuntime().Init(State.Identity(null, appId), false, Log);
 	        var scp = OfScope;
 	        if (string.IsNullOrWhiteSpace(scp) || string.Equals(scp, "Default", StringComparison.InvariantCultureIgnoreCase))
 	            scp = AppConstants.ScopeContentOld;

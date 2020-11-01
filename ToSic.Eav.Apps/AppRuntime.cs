@@ -1,6 +1,4 @@
 ﻿using ToSic.Eav.Apps.Parts;
-using ToSic.Eav.DataSources;
-using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps
 {
@@ -8,20 +6,28 @@ namespace ToSic.Eav.Apps
     /// <summary>
     /// Basic App-Reading System to access app data and read it
     /// </summary>
-    public class AppRuntime : AppRuntimeBase
+    public class AppRuntime : AppRuntimeBase<AppRuntime>
     {
 
         #region constructors
 
-        public AppRuntime(IAppIdentity app, bool showDrafts, ILog parentLog) : base(app, showDrafts, parentLog) { }
+        public AppRuntime(string logName = null) : base(logName ?? "Eav.AppRt") {}
 
-        /// <summary>
-        ///  Special constructor, should be used with care as there is no Zone!
-        /// </summary>
-        public AppRuntime(int appId, bool showDrafts, ILog parentLog) 
-            :this (State.Identity(null, appId), showDrafts, parentLog) { }
+        //public AppRuntime(IAppIdentity app, bool showDrafts, ILog parentLog) : this()
+        //{
+        //    Init(app, showDrafts, parentLog);
+        //}
 
-        internal AppRuntime(IDataSource data, bool showDrafts, ILog parentLog): base(data, showDrafts, parentLog) { }
+        ///// <summary>
+        /////  Special constructor, should be used with care as there is no Zone!
+        ///// </summary>
+        //public AppRuntime(int appId, bool showDrafts, ILog parentLog) 
+        //    :this (State.Identity(null, appId), showDrafts, parentLog) { }
+
+        //internal AppRuntime(IDataSource data, bool showDrafts, ILog parentLog) : this()
+        //{
+        //    Init(data, showDrafts, parentLog);
+        //}
         #endregion
 
         #region DataSourceFactory

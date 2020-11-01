@@ -22,7 +22,7 @@ namespace ToSic.Eav.WebApi
 
         public EntityApi(int appId, bool showDrafts, ILog parentLog): base("Api.EntPrc", parentLog)
         {
-            AppRead = new AppRuntime(appId, showDrafts, Log);
+            AppRead = new AppRuntime().Init(State.Identity(null, appId), showDrafts, Log);
         }
 
         public static EntityApi GetOrThrowBasedOnGrants(IInstanceContext context, IApp app, string contentType, List<Eav.Security.Grants> requiredGrants, ILog parentLog)

@@ -94,7 +94,7 @@ namespace ToSic.Eav.Apps.Parts
             Log.Add($"combined {inputTypes.Count}");
 
             // Merge input types registered in global metadata-app
-            var systemAppRt = new AppRuntime(Constants.MetaDataAppId, true, Log);
+            var systemAppRt = new AppRuntime().Init(State.Identity(null, Constants.MetaDataAppId), true, Log);
             var systemAppInputTypes = systemAppRt.ContentTypes.GetAppRegisteredInputTypes();
             Log.Add($"in system {systemAppInputTypes.Count}");
             AddMissingTypes(inputTypes, systemAppInputTypes);

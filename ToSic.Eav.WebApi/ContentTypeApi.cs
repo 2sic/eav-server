@@ -141,7 +141,7 @@ namespace ToSic.Eav.WebApi
             var fields = type.Attributes.OrderBy(a => a.SortOrder);
 
 
-            var appInputTypes = new AppRuntime(appId, true, Log).ContentTypes.GetInputTypes();
+            var appInputTypes = new AppRuntime().Init(State.Identity(null, appId), true, Log).ContentTypes.GetInputTypes();
 
             var ser = new EntitiesToDictionary();
             return fields.Select(a =>

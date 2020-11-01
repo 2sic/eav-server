@@ -138,7 +138,7 @@ namespace ToSic.Eav.Apps.ImportExport
             // Get Export XML
             // 2020-01-17 2dm: added new parameter showDrafts and using true here, but not sure if this is actually good
             // will have to wait and see
-            var runtime = new AppRuntime(new AppIdentity(_zoneId, _appId), true, Log);
+            var runtime = new AppRuntime().Init(new AppIdentity(_zoneId, _appId), true, Log);
             var attributeSets = runtime.ContentTypes.FromScope(includeAttributeTypes: true);
             attributeSets = attributeSets.Where(a => !((a as IContentTypeShared)?.AlwaysShareConfiguration ?? false));
 

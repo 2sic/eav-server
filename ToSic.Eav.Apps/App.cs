@@ -34,7 +34,7 @@ namespace ToSic.Eav.Apps
         protected const string IconFile = "/" + AppConstants.AppIconFile;
 
 
-        public App(IAppEnvironment environment, ISite site)
+        public App(IAppEnvironment environment, ISite site, string logName): base(logName ?? "Eav.App", new CodeRef())
         {
             // just keep pointers for now, don't init/verify yet
             // as in some cases (like search) they will be replaced after the constructor
@@ -42,20 +42,12 @@ namespace ToSic.Eav.Apps
             Site = site;
         }
 
-        protected internal App Init(
-            IAppIdentity appIdentity,
-            bool allowSideEffects,
-            Func<App, IAppDataConfiguration> buildConfiguration,
-            string logKey,
-            ILog parentLog, 
-            string logMsg)
-            // first, initialize the AppIdentity and log it's use
-            // : base(new AppIdentity(zoneId, appId), new CodeRef(),  parentLog, "App.2sxcAp", $"prep App z#{zoneId}, a#{appId}, allowSE:{allowSideEffects}, hasDataConfig:{buildConfiguration != null}, {logMsg}")
+        protected internal App Init(IAppIdentity appIdentity, bool allowSideEffects, Func<App, IAppDataConfiguration> buildConfiguration, ILog parentLog)
         {
             // Env / Tenant must be re-checked here
             Env = Env ?? throw new Exception("no environment received");
             Env.Init(parentLog);
-            Site = Site ?? throw new Exception("no tenant (portal settings) received");
+            if (Site == null) throw new Exception("no site/portal received");
             
             // in case the DI gave a bad tenant, try to look up
             if (Site.Id == Constants.NullId && appIdentity.AppId != Constants.NullId &&
@@ -66,8 +58,8 @@ namespace ToSic.Eav.Apps
             if (appIdentity.ZoneId == AutoLookupZone)
                 appIdentity = Env.ZoneMapper.IdentityFromSite(Site.Id, appIdentity.AppId);
 
-            Init(appIdentity, new CodeRef(), parentLog, logKey ?? "Eav.App",
-                $"prep App z#{appIdentity.ZoneId}, a#{appIdentity.AppId}, allowSE:{allowSideEffects}, hasDataConfig:{buildConfiguration != null}, {logMsg}");
+            Init(appIdentity, new CodeRef(), parentLog);
+            Log.Add($"prep App #{appIdentity.ZoneId}/{appIdentity.AppId}, allowSE:{allowSideEffects}, hasDataConfig:{buildConfiguration != null}");
 
             // Look up name in cache
             var cache = State.Cache;

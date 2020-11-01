@@ -18,10 +18,16 @@ namespace ToSic.Eav.Apps
     /// The app management system - it's meant for modifying the app, not for reading the configuration. 
     /// Use other mechanisms if you only want to read content-types etc.
     /// </summary>
-    public class AppManager: AppRuntimeBase
+    public class AppManager: AppRuntimeBase<AppManager>
     {
         #region Constructors
-        public AppManager(IAppIdentity app, ILog parentLog) : base(app, true, parentLog) { RenameLog();}
+
+        public AppManager(IAppIdentity app, ILog parentLog) : base("Eav.AppMan")
+        {
+            Init(app, true, parentLog);
+            RenameLog();
+
+        }
 
         public AppManager(int appId, ILog parentLog) 
             : this(State.Identity(null, appId:appId), parentLog) { RenameLog();}
@@ -34,7 +40,7 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// Read / Runtime system of the AppManager, to read data
         /// </summary>
-        public AppRuntime Read => _runtime ?? (_runtime = new AppRuntime(Data, ShowDrafts, Log));
+        public AppRuntime Read => _runtime ?? (_runtime = new AppRuntime().Init(this, ShowDrafts, Log));
         private AppRuntime _runtime;
         #endregion
 

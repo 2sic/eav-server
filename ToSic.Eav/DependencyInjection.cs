@@ -38,34 +38,11 @@ namespace ToSic.Eav
 
             services.TryAddSingleton<IAppsCache, AppsCache>();
 
-            //services.TryAddTransient<IAppRoot, AppRoot>();
 	        services.TryAddTransient<IRemoteMetadata, RemoteMetadata>();
-	        //services.TryAddTransient<ITargetTypes, EfcMetadataTargetTypes>();
-
-            //services.TryAddTransient<IRepositoryImporter, RepositoryImporter>();
 
             services.TryAddTransient<ISystemConfiguration, Repository.Efc.Implementations.Configuration>();
 
-            //services.TryAddTransient<IRepositoryLoader, Efc11Loader>();
-
-	        //services.TryAddTransient<IDataSerializer, JsonSerializer>();
-	        //services.TryAddTransient<IDataDeserializer, JsonSerializer>();
-            //services.TryAddTransient<ZipExport>();
-            //services.TryAddTransient<ZipImport>();
-            //services.TryAddTransient<ZipFromUrlImport>();
-
             var connectionString = new Repository.Efc.Implementations.Configuration().DbConnectionString;
-            //if (!conStr.ToLower().Contains("multipleactiveresultsets")) // this is needed to allow querying data while preparing new data on the same DbContext
-            //    conStr += ";MultipleActiveResultSets=True";
-
-            //// transient lifetime is important, otherwise 2-3x slower!
-            //// note: https://docs.microsoft.com/en-us/ef/core/miscellaneous/configuring-dbcontext says we should use transient
-            //services.AddDbContext<EavDbContext>(options => options.UseSqlServer(conStr),
-            //    ServiceLifetime.Transient);
-
-            // register some Default Constructors
-            //services.TryAddTransient<Sql>();
-            //services.TryAddTransient<DataTable>();
 
             // todo: wip moving DataSource stuff into that DLL
             services

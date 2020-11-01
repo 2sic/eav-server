@@ -18,7 +18,7 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// DI Constructor - always run Init afterwards
         /// </summary>
-        protected AppBase(): base("App.Base") { }
+        protected AppBase(string logName, CodeRef codeRef): base(logName ?? "App.Base", codeRef) { }
 
         /// <summary>
         /// App identity containing zone/app combination
@@ -26,11 +26,10 @@ namespace ToSic.Eav.Apps
         /// <param name="app">the identity</param>
         /// <param name="parentLog">the current log - could be null if necessary</param>
         /// <param name="code">code-ref, must be created first</param>
-        /// <param name="logKey">a log key because most inheriting objects will want their own key in the log</param>
-        /// <param name="initialMessage"></param>
-        protected AppBase Init(IAppIdentity app, CodeRef code, ILog parentLog, string logKey = null, string initialMessage = null)
+        /// <param name="logName">a log key because most inheriting objects will want their own key in the log</param>
+        protected AppBase Init(IAppIdentity app, CodeRef code, ILog parentLog, string logName = null)
         {
-            InitLog(logKey, parentLog, initialMessage, code);
+            InitLog(logName, parentLog, null, code);
             ZoneId = app.ZoneId;
             AppId = app.AppId;
             return this;
