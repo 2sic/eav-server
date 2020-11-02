@@ -20,13 +20,16 @@ namespace ToSic.Eav.WebApi
 	/// <summary>
 	/// Web API Controller for ContentTypes
 	/// </summary>
-	public class ContentTypeApi : HasLog
+	public class ContentTypeApi : HasLog<ContentTypeApi>
     {
-        public ContentTypeApi(ILog parentLog = null) : base("Api.EavCTC", parentLog, "get EavCTC")
+        private readonly Lazy<AppRuntime> _lazyAppRuntime;
+        public ContentTypeApi(Lazy<AppRuntime> lazyAppRuntime) : base("Api.EavCTC")
         {
+            _lazyAppRuntime = lazyAppRuntime;
         }
 
-#region Content-Type Get, Delete, Save
+        #region Content-Type Get, Delete, Save
+
 	    public IEnumerable<ContentTypeDto> Get(int appId, string scope = null, bool withStatistics = false)
         {
             var wrapLog = Log.Call($"a#{appId}, scope:{scope}, stats:{withStatistics}");
@@ -42,7 +45,7 @@ namespace ToSic.Eav.WebApi
             }
 
             // get all types
-            var allTypes = appMan.Read.ContentTypes.FromScope(scope, true);
+            var allTypes = appMan.Read.ContentTypes.All.OfScope(scope, true);
 
             var filteredType = allTypes.Where(t => t.Scope == scope)
                 .OrderBy(t => t.Name)
@@ -118,7 +121,7 @@ namespace ToSic.Eav.WebApi
                 null, false);
 	        return true;
 	    }
-#endregion
+        #endregion
 
 	    public bool CreateGhost(int appId, string sourceStaticName)
 	    {
@@ -127,7 +130,7 @@ namespace ToSic.Eav.WebApi
             return true;
 	    }
 
-#region Fields - Get, Reorder, Data-Types (for dropdown), etc.
+        #region Fields - Get, Reorder, Data-Types (for dropdown), etc.
 
         /// <summary>
         /// Returns the configuration for a content type
@@ -141,7 +144,7 @@ namespace ToSic.Eav.WebApi
             var fields = type.Attributes.OrderBy(a => a.SortOrder);
 
 
-            var appInputTypes = new AppRuntime().Init(State.Identity(null, appId), true, Log).ContentTypes.GetInputTypes();
+            var appInputTypes = _lazyAppRuntime.Value.Init(State.Identity(null, appId), true, Log).ContentTypes.GetInputTypes();
 
             var ser = new EntitiesToDictionary();
             return fields.Select(a =>
@@ -244,7 +247,7 @@ namespace ToSic.Eav.WebApi
             return true;
         }
 
-#endregion
+        #endregion
 
         private DbDataController GetDb(int appId) => DbDataController.Instance(null, appId, Log);
     }

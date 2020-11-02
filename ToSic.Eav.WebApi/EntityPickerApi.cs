@@ -10,10 +10,13 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.WebApi
 {
-    public class EntityPickerApi : HasLog
+    public class EntityPickerApi : HasLog<EntityPickerApi>
     {
-        public EntityPickerApi(ILog parentLog) : base("Api.EntPck", parentLog)
+        public AppRuntime AppRuntime { get; }
+
+        public EntityPickerApi(AppRuntime appRuntime) : base("Api.EntPck")
         {
+            AppRuntime = appRuntime;
         }
 
         /// <summary>
@@ -24,12 +27,11 @@ namespace ToSic.Eav.WebApi
             Log.Add($"Get entities for a#{appId}, itms⋮{items?.Length}, type:{contentTypeName}, lang#{dimensionId}");
             var dimensionIds = dimensionId ?? 0;
 
-            var appRead = new AppRuntime().Init(State.Identity(null, appId), withDrafts, Log);
-
+            AppRuntime.Init(State.Identity(null, appId), withDrafts, Log);
             IContentType contentType = null;
             if (!IsNullOrEmpty(contentTypeName))
             {
-                contentType = appRead.ContentTypes.Get(contentTypeName);
+                contentType = AppRuntime.AppState.GetContentType(contentTypeName);
                 Log.Add($"tried to get '{contentTypeName}' - found: {contentType != null}");
             }
 
@@ -39,11 +41,11 @@ namespace ToSic.Eav.WebApi
             if (contentType != null)
             {
                 Log.Add($"filter by type:{contentType.Name}");
-                temp = appRead.Entities.Get(contentTypeName);
+                temp = AppRuntime.Entities.Get(contentTypeName);
             }
             else
             {
-                temp = appRead.Entities.OnlyContent;
+                temp = AppRuntime.Entities.OnlyContent;
                 Log.Add("won't filter by type because it's null");
             }
 

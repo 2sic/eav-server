@@ -40,7 +40,7 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// Read / Runtime system of the AppManager, to read data
         /// </summary>
-        public AppRuntime Read => _runtime ?? (_runtime = new AppRuntime().Init(this, ShowDrafts, Log));
+        public AppRuntime Read => _runtime ?? (_runtime = Factory.Resolve<AppRuntime>().Init(this, ShowDrafts, Log));
         private AppRuntime _runtime;
         #endregion
 

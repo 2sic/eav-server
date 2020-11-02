@@ -1,5 +1,5 @@
 ﻿using System.Collections.Immutable;
-using System.Linq;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -59,7 +59,8 @@ namespace ToSic.Eav.DataSources
 	            var foundType = appState?.GetContentType(TypeName);
 	            if (foundType != null) // maybe it doesn't find it!
 	                return In[Constants.DefaultStreamName].Immutable
-                        .Where(e => e.Type == foundType)
+                        .OfType(foundType)
+                        //.Where(e => e.Type == foundType)
                         .ToImmutableArray();
 	        }
 	        catch { /* ignore */ }
@@ -67,7 +68,8 @@ namespace ToSic.Eav.DataSources
             // This is the fallback, probably slower. In this case, it tries to match the name instead of the real type
             // Reason is that many dynamically created content-types won't be known to the cache, so they cannot be found the previous way
 	        return In[Constants.DefaultStreamName].Immutable
-                .Where(e => e.Type.Name == TypeName)
+                .OfType(TypeName)
+                //.Where(e => e.Type.Name == TypeName)
                 .ToImmutableArray();
 	    }
 

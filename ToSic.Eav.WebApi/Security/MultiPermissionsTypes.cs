@@ -2,6 +2,7 @@
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Run;
+using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Security;
 using ToSic.Eav.WebApi.Formats;
@@ -44,18 +45,21 @@ namespace ToSic.Eav.WebApi.Security
 
         private IEnumerable<string> ExtractTypeNamesFromItems(IEnumerable<ItemIdentifier> items)
         {
+            var appData = AppState.List;
             // build list of type names
             var typeNames = items.Select(item =>
                 !string.IsNullOrEmpty(item.ContentTypeName) || item.EntityId == 0
                     ? item.ContentTypeName
-                    : AppRuntime.Entities.Get(item.EntityId).Type.StaticName);
+                    : appData.FindRepoId(item.EntityId).Type.StaticName);
 
             return typeNames;
         }
 
-        protected AppRuntime AppRuntime => _appRuntime ?? (_appRuntime = new AppRuntime().Init(App, true, Log));
-        private AppRuntime _appRuntime;
-        
+        //protected AppRuntime AppRuntime => _appRuntime ?? (_appRuntime = new AppRuntime().Init(App, true, Log));
+        //private AppRuntime _appRuntime;
+
+        protected AppState AppState => _appState ?? (_appState = State.Get(App));
+        private AppState _appState;
 
         /// <summary>
         /// Creates a permission checker for an type in this app
@@ -66,7 +70,7 @@ namespace ToSic.Eav.WebApi.Security
         {
             Log.Add($"BuildTypePermissionChecker({typeName})");
             // now do relevant security checks
-            return BuildPermissionChecker(AppRuntime.ContentTypes.Get(typeName));
+            return BuildPermissionChecker(AppState.GetContentType(typeName));
         }
     }
 }

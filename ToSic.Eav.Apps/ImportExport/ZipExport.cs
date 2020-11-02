@@ -33,12 +33,14 @@ namespace ToSic.Eav.Apps.ImportExport
         protected ILog Log;
 
         #region Constructors and DI
-        public ZipExport(IServerPaths serverPaths)
+        public ZipExport(IServerPaths serverPaths, AppRuntime appRuntime)
         {
             _serverPaths = serverPaths;
+            AppRuntime = appRuntime;
         }
 
         private readonly IServerPaths _serverPaths;
+        private AppRuntime AppRuntime { get; }
 
         public ZipExport Init(int zoneId, int appId, string appFolder, string physicalAppPath, ILog parentLog)
         {
@@ -48,6 +50,7 @@ namespace ToSic.Eav.Apps.ImportExport
             _physicalAppPath = physicalAppPath;
             Log = new Log("Zip.Exp", parentLog);
             FileManager = new FileManager(_physicalAppPath);
+            AppRuntime.Init(new AppIdentity(_zoneId, _appId), true, Log);
             return this;
         }
         #endregion
@@ -136,10 +139,8 @@ namespace ToSic.Eav.Apps.ImportExport
         private XmlExporter GenerateExportXml(bool includeContentGroups, bool resetAppGuid)
         {
             // Get Export XML
-            // 2020-01-17 2dm: added new parameter showDrafts and using true here, but not sure if this is actually good
-            // will have to wait and see
-            var runtime = new AppRuntime().Init(new AppIdentity(_zoneId, _appId), true, Log);
-            var attributeSets = runtime.ContentTypes.FromScope(includeAttributeTypes: true);
+            var runtime = AppRuntime.Init(new AppIdentity(_zoneId, _appId), true, Log);
+            var attributeSets = runtime.ContentTypes.All.OfScope(includeAttributeTypes: true);
             attributeSets = attributeSets.Where(a => !((a as IContentTypeShared)?.AlwaysShareConfiguration ?? false));
 
             var contentTypeNames = attributeSets.Select(p => p.StaticName).ToArray();

@@ -59,7 +59,7 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// ContentTypes runtime to get content types from this app
         /// </summary>
-        public ContentTypeRuntime ContentTypes => _contentTypes ?? (_contentTypes = new ContentTypeRuntime().Init(this, Log));
+        public ContentTypeRuntime ContentTypes => _contentTypes ?? (_contentTypes = Factory.Resolve<ContentTypeRuntime>().Init(this, Log));
         private ContentTypeRuntime _contentTypes; 
 
         /// <summary>

@@ -16,21 +16,29 @@ namespace ToSic.Eav.WebApi
 {
     public class EntityApi: HasLog
     {
+        private readonly AppRuntime _appRuntime;
         public AppRuntime AppRead;
 
         #region Constructors
 
-        public EntityApi(int appId, bool showDrafts, ILog parentLog): base("Api.EntPrc", parentLog)
+        public EntityApi(AppRuntime appRuntime): base("Api.Entity")
         {
-            AppRead = new AppRuntime().Init(State.Identity(null, appId), showDrafts, Log);
+            _appRuntime = appRuntime;
         }
 
-        public static EntityApi GetOrThrowBasedOnGrants(IInstanceContext context, IApp app, string contentType, List<Eav.Security.Grants> requiredGrants, ILog parentLog)
+        public EntityApi Init(int appId, bool showDrafts, ILog parentLog)
+        {
+            Log.LinkTo(parentLog);
+            AppRead = _appRuntime.Init(State.Identity(null, appId), showDrafts, Log);
+            return this;
+        }
+
+        public EntityApi InitOrThrowBasedOnGrants(IInstanceContext context, IApp app, string contentType, List<Eav.Security.Grants> requiredGrants, ILog parentLog)
         {
             var permCheck = new MultiPermissionsTypes().Init(context, app, contentType, parentLog);
             if (!permCheck.EnsureAll(requiredGrants, out var error))
                 throw HttpException.PermissionDenied(error);
-            return new EntityApi(app.AppId, true, parentLog);
+            return Init(app.AppId, true, parentLog);
         }
 
         #endregion
@@ -52,18 +60,20 @@ namespace ToSic.Eav.WebApi
         }
         private EntitiesToDictionary _entitiesToDictionary;
 
-        public IEntity GetOrThrow(string contentType, int id)
-            => ReturnOrThrowIfInvalid(contentType, id, AppRead.Entities.Get(id));
+        //public IEntity GetOrThrow(string contentType, int id)
+        //    => AppRead.Entities.Get(id).KeepOrThrowIfInvalid(contentType, id);
+            //=> ReturnOrThrowIfInvalid(contentType, id, AppRead.Entities.Get(id));
 
-        public IEntity GetOrThrow(string contentType, Guid guid)
-            => ReturnOrThrowIfInvalid(contentType, guid, AppRead.Entities.Get(guid));
+        //public IEntity GetOrThrow(string contentType, Guid guid)
+        //    => AppRead.Entities.Get(guid).KeepOrThrowIfInvalid(contentType, guid);
+            //=> ReturnOrThrowIfInvalid(contentType, guid, AppRead.Entities.Get(guid));
 
-        private static IEntity ReturnOrThrowIfInvalid(string contentType, object identifier, IEntity itm)
-        {
-            if (itm == null || contentType != null && !itm.Type.Is(contentType))
-                throw new KeyNotFoundException("Can't find " + identifier + "of type '" + contentType + "'");
-            return itm;
-        }
+        //private static IEntity ReturnOrThrowIfInvalid(string contentType, object identifier, IEntity itm)
+        //{
+        //    if (itm == null || contentType != null && !itm.Type.Is(contentType))
+        //        throw new KeyNotFoundException("Can't find " + identifier + "of type '" + contentType + "'");
+        //    return itm;
+        //}
 
         /// <summary>
         /// Get all Entities of specified Type
@@ -108,7 +118,7 @@ namespace ToSic.Eav.WebApi
 
         private IEntity GetEditableEditionAndMaybeCloneIt(ItemIdentifier p)
         {
-            var found = GetOrThrow(p.ContentTypeName, p.DuplicateEntity ?? p.EntityId);
+            var found = AppRead.AppState.List.GetOrThrow(p.ContentTypeName, p.DuplicateEntity ?? p.EntityId);
             // if there is a draft, only allow editing that
             found = found.GetDraft() ?? found;
 

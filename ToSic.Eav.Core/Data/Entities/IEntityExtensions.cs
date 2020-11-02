@@ -94,5 +94,13 @@ namespace ToSic.Eav.Data
             attributes.Add("EntityGuid", entity.EntityGuid);
             return attributes;
         }
+
+        public static IEntity KeepOrThrowIfInvalid(this IEntity item, string contentType, object identifier)
+        {
+            if (item == null || contentType != null && !item.Type.Is(contentType))
+                throw new KeyNotFoundException("Can't find " + identifier + "of type '" + contentType + "'");
+            return item;
+        }
+
     }
 }

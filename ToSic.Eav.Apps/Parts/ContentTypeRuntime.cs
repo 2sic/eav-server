@@ -12,7 +12,11 @@ namespace ToSic.Eav.Apps.Parts
     /// </summary>
     public class ContentTypeRuntime : PartOf<AppRuntime, ContentTypeRuntime>
     {
-        public ContentTypeRuntime() : base("RT.ConTyp"){}
+        private readonly Lazy<AppRuntime> _lazyMetadataAppRuntime;
+        public ContentTypeRuntime(Lazy<AppRuntime> lazyMetadataAppRuntime) : base("RT.ConTyp")
+        {
+            _lazyMetadataAppRuntime = lazyMetadataAppRuntime;
+        }
 
         public IEnumerable<IContentType> All => Parent.AppState.ContentTypes;
 
@@ -21,51 +25,7 @@ namespace ToSic.Eav.Apps.Parts
         /// </summary>
         /// <returns>a content-type or null if not found</returns>
         public IContentType Get(string name) => Parent.AppState.GetContentType(name);
-
-        public IEnumerable<string> GetScopes()
-        {
-            var scopes = All.Select(ct => ct.Scope).Distinct().ToList();
-
-            // Make sure the "Default" scope is always included, otherwise it's missing on new apps
-            if (!scopes.Contains(AppConstants.ScopeContentOld))
-                scopes.Add(AppConstants.ScopeContentOld);
-
-            return scopes.OrderBy(s => s);
-        }
-
-        /// <summary>
-        /// Get the scopes with labels / sorted by label
-        /// </summary>
-        /// <returns></returns>
-        public IDictionary<string, string> ScopesWithLabels()
-        {
-            var scopes = GetScopes().ToList();
-
-            var lookup = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
-            {
-                {AppConstants.ScopeContentOld, "Default"},
-                {AppConstants.ScopeContentSystem, "System: CMS"},
-                {AppConstants.ScopeApp, "System: App"},
-                {Constants.ScopeSystem, "System: System"},
-                {"System.DataSources", "System: DataSources"},
-                {"System.Fields", "System: Fields"}
-            };
-
-            var dic = scopes
-                .Select(s => new { value = s, name = lookup.TryGetValue(s, out var label) ? label : s })
-                .OrderBy(s => s.name)
-                .ToDictionary(s => s.value, s => s.name);
-            return dic;
-        }
-
-        public IEnumerable<IContentType> FromScope(string scope = null, bool includeAttributeTypes = false)
-        {
-            var set = All.Where(c => includeAttributeTypes || !c.Name.StartsWith("@"));
-            if (scope != null)
-                set = set.Where(p => p.Scope == scope);
-            return set.OrderBy(c => c.Name);
-        }
-
+        
         /// <summary>
         /// Retrieve a list of all input types known to the current system
         /// </summary>
@@ -94,7 +54,7 @@ namespace ToSic.Eav.Apps.Parts
             Log.Add($"combined {inputTypes.Count}");
 
             // Merge input types registered in global metadata-app
-            var systemAppRt = new AppRuntime().Init(State.Identity(null, Constants.MetaDataAppId), true, Log);
+            var systemAppRt = _lazyMetadataAppRuntime.Value.Init(State.Identity(null, Constants.MetaDataAppId), true, Log);
             var systemAppInputTypes = systemAppRt.ContentTypes.GetAppRegisteredInputTypes();
             Log.Add($"in system {systemAppInputTypes.Count}");
             AddMissingTypes(inputTypes, systemAppInputTypes);
