@@ -4,10 +4,13 @@ using ToSic.Eav.Apps.ImportExport;
 
 namespace ToSic.Eav.Apps
 {
-    public static class AppsStartup
+    public static class StartupApps
     {
-        public static IServiceCollection AddApps(this IServiceCollection services)
+        public static IServiceCollection AddEavApps(this IServiceCollection services)
         {
+            services.TryAddTransient<AppRuntime>();
+            services.TryAddTransient<AppManager>();
+
             services.TryAddTransient<ZipExport>();
             services.TryAddTransient<ZipImport>();
             services.TryAddTransient<ZipFromUrlImport>();

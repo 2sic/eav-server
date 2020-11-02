@@ -12,9 +12,7 @@ namespace ToSic.Eav.Apps.Parts
 
         #region Constructor / DI
 
-        protected AppRuntimeBase(string logName): base(logName ?? "RT.AppRTB", new CodeRef())
-        {
-        }
+        protected AppRuntimeBase(string logName): base(logName, new CodeRef()) { }
 
         public T Init(IAppIdentity app, bool showDrafts, ILog parentLog)
         {

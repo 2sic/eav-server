@@ -10,7 +10,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.WebApi.Security
 {
-    internal class MultiPermissionsApp: MultiPermissionsBase
+    public class MultiPermissionsApp: MultiPermissionsBase
     {
         /// <summary>
         /// The current app which will be used and can be re-used externally

@@ -30,7 +30,7 @@ namespace ToSic.Eav.Apps
         }
 
         public AppManager(int appId, ILog parentLog) 
-            : this(State.Identity(null, appId:appId), parentLog) { RenameLog();}
+            : this(State.Identity(null, appId), parentLog) { }
 
         private void RenameLog() => Log.Rename("AppMan");
 

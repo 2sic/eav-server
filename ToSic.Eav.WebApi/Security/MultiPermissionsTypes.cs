@@ -8,7 +8,7 @@ using ToSic.Eav.WebApi.Formats;
 
 namespace ToSic.Eav.WebApi.Security
 {
-    internal class MultiPermissionsTypes: MultiPermissionsApp
+    public class MultiPermissionsTypes: MultiPermissionsApp
     {
         private const string _logName = "Sec.MPTyps";
         protected IEnumerable<string> ContentTypes;

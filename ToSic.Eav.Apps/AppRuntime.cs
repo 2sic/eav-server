@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps.Parts;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps
 {
@@ -10,8 +11,15 @@ namespace ToSic.Eav.Apps
     {
 
         #region constructors
+        public AppRuntime() : base("Eav.AppRt") {}
 
-        public AppRuntime(string logName = null) : base(logName ?? "Eav.AppRt") {}
+        public AppRuntime(string logName) : base(logName) {}
+
+        /// <summary>
+        /// Simple Override - to track if the init is being called everywhere
+        /// </summary>
+        public new AppRuntime Init(IAppIdentity app, bool showDrafts, ILog parentLog) 
+            => base.Init(app, showDrafts, parentLog);
 
         //public AppRuntime(IAppIdentity app, bool showDrafts, ILog parentLog) : this()
         //{
