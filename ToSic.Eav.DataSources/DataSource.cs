@@ -139,15 +139,6 @@ namespace ToSic.Eav
             wrapLog("ok");
             return publishingFilter;
 		}
-
-
-        // 2020-04-06 2dm - doesn't seem used any more
-        ///// <summary>
-        ///// Get a new ICache DataSource
-        ///// </summary>
-        ///// <returns>A new IRootCache</returns>
-        //public IAppRoot GetRootDs(IAppIdentity appIdentity) 
-        //    => (IAppRoot)GetDataSource(RootDataSource, appIdentity);
     }
 
 }

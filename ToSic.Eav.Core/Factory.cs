@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav
 {
@@ -40,13 +41,7 @@ namespace ToSic.Eav
         {
             if (Debug) LogResolve(typeof(T), true);
 
-            var spToUse = GetServiceProvider();
-            var found = spToUse.GetService<T>();
-            // ReSharper disable once ConvertIfStatementToReturnStatement
-            if (found != null) return found;
-
-            // If it's an unregistered type, try to find in DLLs etc.
-            return ActivatorUtilities.CreateInstance<T>(spToUse);
+            return GetServiceProvider().Build<T>();
         }
 
         /// <summary>
@@ -57,14 +52,7 @@ namespace ToSic.Eav
         public static object Resolve(Type T)
         {
             if (Debug) LogResolve(T, false);
-
-            var spToUse = GetServiceProvider();
-            var found = spToUse.GetService(T);
-            // ReSharper disable once ConvertIfStatementToReturnStatement
-            if (found != null) return found;
-
-            // If it's an unregistered type, try to find in DLLs etc.
-            return ActivatorUtilities.CreateInstance(spToUse, T);
+            return GetServiceProvider().Build<object>(T);
         }
     }
 }

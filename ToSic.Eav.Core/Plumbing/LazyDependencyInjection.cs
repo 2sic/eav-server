@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace ToSic.Eav.Plumbing
 {
@@ -12,7 +11,7 @@ namespace ToSic.Eav.Plumbing
     /// <typeparam name="T"></typeparam>
     public class LazyDependencyInjection<T> : Lazy<T>
     {
-        public LazyDependencyInjection(IServiceProvider sp) : base(() => sp.GetRequiredService<T>())
+        public LazyDependencyInjection(IServiceProvider sp) : base(sp.Build<T>)
         {
         }
 
