@@ -53,6 +53,6 @@ namespace ToSic.Eav.Repository.Efc.Tests.Mocks
         {
         }
        
-        public SaveOptions SaveOptions(int zoneId) => new SaveOptions(DefaultLanguage, new ZoneRuntime(zoneId, Log).Languages(true));
+        public SaveOptions SaveOptions(int zoneId) => new SaveOptions(DefaultLanguage, new ZoneRuntime().Init(zoneId, Log).Languages(true));
     }
 }

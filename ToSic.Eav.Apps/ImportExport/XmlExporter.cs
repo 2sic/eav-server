@@ -119,7 +119,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             #region Header
 
-            var dimensions = new ZoneRuntime(ZoneId, Log).Languages();
+            var dimensions = new ZoneRuntime().Init(ZoneId, Log).Languages();
             var header = new XElement(XmlConstants.Header,
                 _isAppExport && _appStaticName != XmlConstants.AppContentGuid 
                     ? new XElement(XmlConstants.App, new XAttribute(XmlConstants.Guid, _appStaticName))

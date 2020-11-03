@@ -10,6 +10,7 @@ namespace ToSic.Eav.Apps
         {
             services.TryAddTransient<AppRuntime>();
             services.TryAddTransient<AppManager>();
+            services.TryAddTransient<ZoneRuntime>();
 
             services.TryAddTransient<ZipExport>();
             services.TryAddTransient<ZipImport>();

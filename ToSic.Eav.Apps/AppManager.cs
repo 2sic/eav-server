@@ -129,7 +129,7 @@ namespace ToSic.Eav.Apps
             if (appName == Constants.ContentAppName || appName == Constants.DefaultAppName || string.IsNullOrEmpty(appName) || !Regex.IsMatch(appName, "^[0-9A-Za-z -_]+$"))
                 throw new ArgumentOutOfRangeException("appName '" + appName + "' not allowed");
 
-            var appId = new ZoneManager(zoneId, parentLog).CreateApp();
+            var appId = new ZoneManager().Init(zoneId, parentLog).CreateApp();
             new AppManager(new AppIdentity(zoneId, appId), parentLog)
                 .EnsureAppIsConfigured(appName);
         }
@@ -156,7 +156,7 @@ namespace ToSic.Eav.Apps
             }
 
             // Get appName from cache - stop if it's a "Default" app
-            var eavAppName = new ZoneRuntime(ZoneId, Log).GetName(AppId);
+            var eavAppName = new ZoneRuntime().Init(ZoneId, Log).GetName(AppId);
 
             // v10.25 from now on the DefaultApp can also have settings and resources
             //if (eavAppName == Constants.DefaultAppName)

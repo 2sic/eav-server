@@ -21,21 +21,6 @@ namespace ToSic.Eav.Apps
         public new AppRuntime Init(IAppIdentity app, bool showDrafts, ILog parentLog) 
             => base.Init(app, showDrafts, parentLog);
 
-        //public AppRuntime(IAppIdentity app, bool showDrafts, ILog parentLog) : this()
-        //{
-        //    Init(app, showDrafts, parentLog);
-        //}
-
-        ///// <summary>
-        /////  Special constructor, should be used with care as there is no Zone!
-        ///// </summary>
-        //public AppRuntime(int appId, bool showDrafts, ILog parentLog) 
-        //    :this (State.Identity(null, appId), showDrafts, parentLog) { }
-
-        //internal AppRuntime(IDataSource data, bool showDrafts, ILog parentLog) : this()
-        //{
-        //    Init(data, showDrafts, parentLog);
-        //}
         #endregion
 
         #region DataSourceFactory
@@ -71,7 +56,7 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// Zone runtime to get the zone of this app
         /// </summary>
-        public ZoneRuntime Zone => _zone ?? (_zone = new ZoneRuntime(ZoneId, Log));
+        public ZoneRuntime Zone => _zone ?? (_zone = new ZoneRuntime().Init(ZoneId, Log));
         private ZoneRuntime _zone;
 
     }

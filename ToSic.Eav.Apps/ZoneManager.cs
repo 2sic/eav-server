@@ -6,11 +6,12 @@ using ToSic.Eav.Repository.Efc;
 
 namespace ToSic.Eav.Apps
 {
-    public class ZoneManager : ZoneBase
+    public class ZoneManager : ZoneBase<ZoneManager>
     {
         #region Constructor and simple properties
 
-        public ZoneManager(int zoneId, ILog parentLog) : base(zoneId, parentLog, "App.Zone") {}
+        public ZoneManager() : base("App.Zone") {}
+
 
         internal DbDataController DataController => _eavContext ?? (_eavContext = DbDataController.Instance(ZoneId, null, Log));
         private DbDataController _eavContext;

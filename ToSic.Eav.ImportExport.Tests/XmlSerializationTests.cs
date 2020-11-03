@@ -33,7 +33,7 @@ namespace ToSic.Eav.ImportExport.Tests
 
             var loader = new Efc11Loader(dbc.SqlDb);
             var app = loader.AppState(test.AppId);
-            var zone = new ZoneRuntime(test.ZoneId, Log);
+            var zone = new ZoneRuntime().Init(test.ZoneId, Log);
             var languageMap = zone.Languages().ToDictionary(l => l.EnvironmentKey.ToLower(), l => l.DimensionId);
             var exBuilder = new XmlSerializer(languageMap);
             exBuilder.Initialize(app, Log);
@@ -52,7 +52,7 @@ namespace ToSic.Eav.ImportExport.Tests
             var dbc = DbDataController.Instance(null, appId, Log);
             var loader = new Efc11Loader(dbc.SqlDb);
             var app = loader.AppState(appId);
-            var zone = new ZoneRuntime(test.ZoneId, Log);
+            var zone = new ZoneRuntime().Init(test.ZoneId, Log);
             var languageMap = zone.Languages().ToDictionary(l => l.EnvironmentKey.ToLower(), l => l.DimensionId);
             var exBuilder = new XmlSerializer(languageMap);
             exBuilder.Initialize(app, Log);
