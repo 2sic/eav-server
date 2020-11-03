@@ -31,10 +31,6 @@
     </PackageReference>
   </ItemGroup>
 
-
-  <ItemGroup>
-  </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj" />
   </ItemGroup>

@@ -8,7 +8,7 @@ using ToSic.Eav.Repositories;
 
 namespace ToSic.Eav.Repository.Efc
 {
-    public static class RepositoryStartup
+    public static class StartupRepositoryEfc
     {
         public static IServiceCollection AddRepositoryAndEfc(this IServiceCollection services, string connectionString)
         {
@@ -24,6 +24,8 @@ namespace ToSic.Eav.Repository.Efc
                 ServiceLifetime.Transient);
 
             services.TryAddTransient<IRepositoryLoader, Efc11Loader>();
+
+            services.TryAddTransient<DbDataController>();
 
             return services;
         }

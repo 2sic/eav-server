@@ -21,17 +21,28 @@ namespace ToSic.Eav.Repository.Efc
     {
         #region Extracted, now externalized objects with actions and private fields
 
-        public DbVersioning Versioning { get; private set; }
-        public DbEntity Entities { get; private set; }
-        public DbValue Values { get; private set; }
-        public DbAttribute Attributes { get; private set; }
-        public DbRelationship Relationships { get; private set; }
-        public DbAttributeSet AttribSet { get; private set; }
-        internal DbPublishing Publishing { get; private set; }
-        public DbDimensions Dimensions { get; private set; }
-        public DbZone Zone { get; private set; }
-        public DbApp App { get; private set; }
-        public DbContentType ContentType { get; private set; }
+        public DbVersioning Versioning => _versioning ?? (_versioning = new DbVersioning(this));
+        private DbVersioning _versioning;
+        public DbEntity Entities => _entities ?? (_entities = new DbEntity(this));
+        private DbEntity _entities;
+        public DbValue Values => _values ?? (_values = new DbValue(this));
+        private DbValue _values;
+        public DbAttribute Attributes => _attributes ?? (_attributes = new DbAttribute(this));
+        private DbAttribute _attributes;
+        public DbRelationship Relationships => _relationships ?? (_relationships = new DbRelationship(this));
+        private DbRelationship _relationships;
+        public DbAttributeSet AttribSet => _attributeSet ?? (_attributeSet = new DbAttributeSet(this));
+        private DbAttributeSet _attributeSet;
+        internal DbPublishing Publishing => _publishing ?? (_publishing = new DbPublishing(this));
+        private DbPublishing _publishing;
+        public DbDimensions Dimensions => _dimensions ?? (_dimensions = new DbDimensions(this));
+        private DbDimensions _dimensions;
+        public DbZone Zone => _dbZone ?? (_dbZone = new DbZone(this));
+        private DbZone _dbZone;
+        public DbApp App => _dbApp ?? (_dbApp = new DbApp(this));
+        private DbApp _dbApp;
+        public DbContentType ContentType => _contentType ?? (_contentType = new DbContentType(this));
+        private DbContentType _contentType;
 
         private int _appId;
         private int _zoneId;
@@ -62,8 +73,6 @@ namespace ToSic.Eav.Repository.Efc
                     // try to get using dependency injection
                     var usr = Factory.Resolve<IUser>();
                     _userName = usr.IdentityToken;
-                    //var uinfo = Factory.Resolve<IEavUserInformation>();
-                    //_userName = uinfo.IdentityForLog;
                 }
                 catch
                 {
@@ -71,7 +80,6 @@ namespace ToSic.Eav.Repository.Efc
                 }
                 return _userName;
             }
-            //set => _userName = value;
         }
 
         #endregion
@@ -87,8 +95,10 @@ namespace ToSic.Eav.Repository.Efc
 
         public EavDbContext SqlDb { get; private set; }
 
-        private DbDataController(): base("Db.Data")
+        public DbDataController(EavDbContext dbContext) : base("Db.Data")
         {
+            SqlDb = dbContext;
+            SqlDb.AlternateSaveHandler += SaveChanges;
         }
 
 
@@ -98,55 +108,17 @@ namespace ToSic.Eav.Repository.Efc
         #region Constructor and Init
 
         /// <summary>
-        /// Returns a new instance of the Eav Context. InitZoneApp must be called afterward.
-        /// </summary>
-        private static DbDataController Instance()
-        {
-            var context = Factory.Resolve<EavDbContext>();
-            var dc = new DbDataController
-            {
-                SqlDb = context,
-            };
-            dc.Versioning = new DbVersioning(dc);
-            dc.Entities = new DbEntity(dc);
-            dc.Values = new DbValue(dc);
-            dc.Attributes = new DbAttribute(dc);
-            dc.Relationships = new DbRelationship(dc);
-            dc.AttribSet = new DbAttributeSet(dc);
-            dc.Publishing = new DbPublishing(dc);
-            dc.Dimensions = new DbDimensions(dc);
-            dc.Zone = new DbZone(dc);
-            dc.App = new DbApp(dc);
-            dc.ContentType = new DbContentType(dc);
-
-            dc.SqlDb.AlternateSaveHandler += dc.SaveChanges;
-
-            return dc;
-        }
-
-        /// <summary>
-        /// Returns a new instance of the Eav Context on specified ZoneId and/or AppId
-        /// </summary>
-        // ReSharper disable once MethodOverloadWithOptionalParameter
-        public static DbDataController Instance(int? zoneId, int? appId, ILog parentLog)
-        {
-            var context = Instance();
-            context.InitZoneApp(zoneId, appId);
-            context.Log.LinkTo(parentLog);
-            return context;
-        }
-
-        /// <summary>
         /// Set ZoneId and AppId on current context.
         /// </summary>
-        private void InitZoneApp(int? zoneId = null, int? appId = null)
+        public DbDataController Init(int? zoneId, int? appId, ILog parentLog)
         {
+            Log.LinkTo(parentLog);
             // If nothing is supplied, use defaults
             if (!zoneId.HasValue && !appId.HasValue)
             {
                 _zoneId = Constants.DefaultZoneId;
                 _appId = Constants.MetaDataAppId;
-                return;
+                return this;
             }
 
             // If only AppId is supplied, look up it's zone and use that
@@ -157,7 +129,7 @@ namespace ToSic.Eav.Repository.Efc
                     throw new ArgumentException("App with id " + appId.Value + " doesn't exist.", nameof(appId));
                 _appId = appId.Value;
                 _zoneId = zoneIdOfApp.Value;
-                return;
+                return this;
             }
 
             // if only ZoneId was supplied, use that...
@@ -173,6 +145,7 @@ namespace ToSic.Eav.Repository.Efc
             else
                 _appId = SqlDb.ToSicEavApps.First(a => a.Name == Constants.DefaultAppName).AppId;
 
+            return this;
         }
 
         #endregion

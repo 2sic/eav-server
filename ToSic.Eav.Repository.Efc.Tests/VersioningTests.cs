@@ -43,7 +43,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var id = DevPc2dmItemOnHome;
             var version = 2;
             var appMan = new AppManager(td, null);
-            var dc = DbDataController.Instance(td.ZoneId, td.AppId, Log);
+            var dc = Factory.Resolve<DbDataController>().Init(td.ZoneId, td.AppId, Log);
             var all = appMan.Entities.VersionHistory(id);  dc.Versioning.GetHistoryList(id, false);
             var vId = all.First(x => x.VersionNumber == version).ChangeSetId;
 
@@ -65,9 +65,9 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             var id = TestItemWithCa20Changes;
             var version = 6;
-            var all = DbDataController.Instance(ZoneId, null, Log).Versioning.GetHistoryList(id, false);
+            var all = Factory.Resolve<DbDataController>().Init(ZoneId, null, Log).Versioning.GetHistoryList(id, false);
             var vId = all.First(x => x.VersionNumber == version).ChangeSetId;
-            var vItem = DbDataController.Instance(ZoneId, null, Log).Versioning.GetItem(id, vId);
+            var vItem = Factory.Resolve<DbDataController>().Init(ZoneId, null, Log).Versioning.GetItem(id, vId);
             Console.Write(vItem.Json);
         }
 
@@ -76,7 +76,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         private List<ItemHistory> GetHistoryTest(int entityId, int expectedCount)
         {
-            var history = DbDataController.Instance(ZoneId, null, Log).Versioning.GetHistoryList(entityId, true);
+            var history = Factory.Resolve<DbDataController>().Init(ZoneId, null, Log).Versioning.GetHistoryList(entityId, true);
             Assert.AreEqual(expectedCount, history.Count, $"should have {expectedCount} items in history for this one");
             return history;
         }

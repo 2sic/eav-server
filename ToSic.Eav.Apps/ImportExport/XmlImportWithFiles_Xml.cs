@@ -20,7 +20,7 @@ namespace ToSic.Eav.Apps.ImportExport
 		public bool ImportXml(int zoneId, int appId, XDocument doc, bool leaveExistingValuesUntouched = true)
         {
             var wrapLog = Log.Call<bool>($"z#{zoneId}, a#{appId}, leaveExisting:{leaveExistingValuesUntouched}");
-		    _eavContext = DbDataController.Instance(zoneId, appId, Log);
+		    _eavContext = _dbDataForAppImport.Value.Init(zoneId, appId, Log);
             
 			AppId = appId;
 			ZoneId = zoneId;

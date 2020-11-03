@@ -19,7 +19,7 @@ namespace ToSic.Eav.Persistence.File.Tests
         public void TypeExp_AllSharedFromInstallation()
         {
             var test = new TestValuesOnPc2Dm();
-            var dbc = DbDataController.Instance(null, test.AppId, Log);
+            var dbc = Factory.Resolve<DbDataController>().Init(null, test.AppId, Log);
 
 
             var loader = new Efc11Loader(dbc.SqlDb);

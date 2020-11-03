@@ -30,11 +30,18 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <summary>
         /// Empty constructor for DI
         /// </summary>
-        public XmlImportWithFiles(Lazy<Import> importerLazy, string logName = null) : base(logName ?? "Xml.ImpFil")
+        public XmlImportWithFiles(Lazy<Import> importerLazy, 
+            Lazy<DbDataController> dbDataForNewApp,
+            Lazy<DbDataController> dbDataForAppImport,
+            string logName = null) : base(logName ?? "Xml.ImpFil")
         {
             _importerLazy = importerLazy;
+            _dbDataForNewApp = dbDataForNewApp;
+            _dbDataForAppImport = dbDataForAppImport;
         }
         private readonly Lazy<Import> _importerLazy;
+        private readonly Lazy<DbDataController> _dbDataForNewApp;
+        private readonly Lazy<DbDataController> _dbDataForAppImport;
 
         /// <summary>
 	    /// Create a new xmlImport instance

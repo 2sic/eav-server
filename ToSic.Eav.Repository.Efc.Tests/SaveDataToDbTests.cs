@@ -30,7 +30,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             var test = new TestValuesOnPc2Dm();
             var so = SaveOptions.Build(test.ZoneId);
-            var dbi = DbDataController.Instance(test.ZoneId, test.AppId, Log);
+            var dbi = Factory.Resolve<DbDataController>().Init(test.ZoneId, test.AppId, Log);
             var trans = dbi.SqlDb.Database.BeginTransaction();
 
             // load an entity
@@ -61,7 +61,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             so.PreserveUntouchedAttributes = true;
             so.PreserveUnknownLanguages = true;
 
-            var dbi = DbDataController.Instance(test.ZoneId, test.AppId, Log);
+            var dbi = Factory.Resolve<DbDataController>().Init(test.ZoneId, test.AppId, Log);
             var trans = dbi.SqlDb.Database.BeginTransaction();
 
             // todo: load a simple, 1 language entity
@@ -102,7 +102,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             so.PreserveUntouchedAttributes = true;
             so.PreserveUnknownLanguages = true;
 
-            var dbi = DbDataController.Instance(test.ZoneId, test.AppId, Log);
+            var dbi = Factory.Resolve<DbDataController>().Init(test.ZoneId, test.AppId, Log);
             var trans = dbi.SqlDb.Database.BeginTransaction();
 
             // load content type to start creating an item...

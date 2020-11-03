@@ -1,19 +1,22 @@
 ﻿using System;
 using ToSic.Eav.Apps.Parts;
-using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Repository.Efc;
 
 namespace ToSic.Eav.Apps
 {
     public class ZoneManager : ZoneBase<ZoneManager>
     {
+        private readonly Lazy<DbDataController> _dbLazy;
+
         #region Constructor and simple properties
 
-        public ZoneManager() : base("App.Zone") {}
+        public ZoneManager(Lazy<DbDataController> dbLazy) : base("App.Zone")
+        {
+            _dbLazy = dbLazy;
+        }
 
 
-        internal DbDataController DataController => _eavContext ?? (_eavContext = DbDataController.Instance(ZoneId, null, Log));
+        internal DbDataController DataController => _eavContext ?? (_eavContext = _dbLazy.Value.Init(ZoneId, null, Log));
         private DbDataController _eavContext;
 
         #endregion
@@ -38,12 +41,12 @@ namespace ToSic.Eav.Apps
 
         #region Zone Management
 
-        public static int CreateZone(string name, ILog parentLog)
+        public int CreateZone(string name)
         {
-            var log = new Log("App.ZoneMg", parentLog, $"create zone:{name}");
-            var zoneId = DbDataController.Instance(null, null, parentLog).Zone.AddZone(name);
-            SystemManager.PurgeZoneList(parentLog);
-            return zoneId;
+            var wrapCall = Log.Call<int>($"create zone:{name}");
+            var zoneId = _dbLazy.Value.Init(null, null, Log).Zone.AddZone(name);
+            SystemManager.PurgeZoneList(Log);
+            return wrapCall($"created zone {zoneId}", zoneId);
         }
 
         #endregion

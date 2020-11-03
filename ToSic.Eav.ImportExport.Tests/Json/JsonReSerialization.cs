@@ -57,7 +57,7 @@ namespace ToSic.Eav.ImportExport.Tests.json
 
         private void Test_DoubleExportAllOfAnApp(int appId)
         {
-            var dbc = DbDataController.Instance(null, appId, Log);
+            var dbc = Factory.Resolve<DbDataController>().Init(null, appId, Log);
 
             var loader = new Efc11Loader(dbc.SqlDb);
             var app = loader.AppState(appId);

@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-#if NET451
-using System.Web.Http;
-#else
-using Microsoft.AspNetCore.Mvc;
-#endif
 using ToSic.Eav.Apps;
 using ToSic.Eav.Conversion;
 using ToSic.Eav.Data;
@@ -27,22 +22,27 @@ namespace ToSic.Eav.WebApi
 
         private readonly Lazy<AppRuntime> _appRuntimeLazy;
         private readonly Lazy<AppManager> _appManagerLazy;
+        private readonly Lazy<DbDataController> _dbLazy;
 
         private AppManager AppManager { get; set; }
 
-        public ContentTypeApi(Lazy<AppRuntime> appRuntimeLazy, Lazy<AppManager> appManagerLazy) : base("Api.EavCTC")
+        public ContentTypeApi(Lazy<AppRuntime> appRuntimeLazy, Lazy<AppManager> appManagerLazy, Lazy<DbDataController> dbLazy) : base("Api.EavCTC")
         {
             _appRuntimeLazy = appRuntimeLazy;
             _appManagerLazy = appManagerLazy;
+            _dbLazy = dbLazy;
         }
 
         public ContentTypeApi Init(int appId, ILog parentLog)
         {
             Log.LinkTo(parentLog);
             Log.Add($"Will use app {appId}");
+            _appId = appId;
             AppManager = _appManagerLazy.Value.Init(appId, Log);
             return this;
         }
+
+        private int _appId;
 
         #endregion
 
@@ -102,36 +102,33 @@ namespace ToSic.Eav.WebApi
 	        return jsonReady;
 	    }
 
-        [HttpGet]
-	    public ContentTypeDto GetSingle(int appId, string contentTypeStaticName, string scope = null)
+	    public ContentTypeDto GetSingle(string contentTypeStaticName, string scope = null)
 	    {
-	        var wrapLog = Log.Call($"a#{appId}, type:{contentTypeStaticName}, scope:{scope}");
-            var appState = State.Get(appId);
+	        var wrapLog = Log.Call($"a#{_appId}, type:{contentTypeStaticName}, scope:{scope}");
+            var appState = State.Get(_appId);
 
             var ct = appState.GetContentType(contentTypeStaticName);
             wrapLog(null);
             return ContentTypeForJson(ct as ContentType);
 	    }
 
-        [HttpGet]
-	    [HttpDelete]
-	    public bool Delete(int appId, string staticName)
+	    public bool Delete(string staticName)
 	    {
-	        Log.Add($"delete a#{appId}, name:{staticName}");
-            GetDb(appId).ContentType.Delete(staticName);
+	        Log.Add($"delete a#{_appId}, name:{staticName}");
+            GetDb().ContentType.Delete(staticName);
 	        return true;
 	    }
 
-	    public bool Save(int appId, Dictionary<string, string> item)
+	    public bool Save(Dictionary<string, string> item)
 	    {
-	        Log.Add($"save a#{appId}, item count:{item?.Count}");
+	        Log.Add($"save a#{_appId}, item count:{item?.Count}");
 	        if (item == null)
 	        {
 	            Log.Add("item was null, will cancel");
 	            return false;
 	        }
 
-	        GetDb(appId).ContentType.AddOrUpdate(
+	        GetDb().ContentType.AddOrUpdate(
                 item["StaticName"], 
                 item["Scope"], 
                 item["Name"], 
@@ -141,10 +138,10 @@ namespace ToSic.Eav.WebApi
 	    }
         #endregion
 
-	    public bool CreateGhost(int appId, string sourceStaticName)
+	    public bool CreateGhost(string sourceStaticName)
 	    {
-	        Log.Add($"create ghost a#{appId}, type:{sourceStaticName}");
-	        GetDb(appId).ContentType.CreateGhost(sourceStaticName);
+	        Log.Add($"create ghost a#{_appId}, type:{sourceStaticName}");
+	        GetDb().ContentType.CreateGhost(sourceStaticName);
             return true;
 	    }
 
@@ -153,16 +150,16 @@ namespace ToSic.Eav.WebApi
         /// <summary>
         /// Returns the configuration for a content type
         /// </summary>
-        public IEnumerable<ContentTypeFieldDto> GetFields(int appId, string staticName)
+        public IEnumerable<ContentTypeFieldDto> GetFields(string staticName)
         {
-            Log.Add($"get fields a#{appId}, type:{staticName}");
-            var appState = State.Get(appId);
+            Log.Add($"get fields a#{_appId}, type:{staticName}");
+            var appState = State.Get(_appId);
             if (!(appState.GetContentType(staticName) is ContentType type))
                 throw new Exception("type should be a ContentType - something broke");
             var fields = type.Attributes.OrderBy(a => a.SortOrder);
 
 
-            var appInputTypes = _appRuntimeLazy.Value.Init(State.Identity(null, appId), true, Log).ContentTypes.GetInputTypes();
+            var appInputTypes = _appRuntimeLazy.Value.Init(State.Identity(null, _appId), true, Log).ContentTypes.GetInputTypes();
 
             var ser = new EntitiesToDictionary();
             return fields.Select(a =>
@@ -214,19 +211,19 @@ namespace ToSic.Eav.WebApi
 
 
 
-        public bool Reorder(int appId, int contentTypeId, string newSortOrder)
+        public bool Reorder(int contentTypeId, string newSortOrder)
         {
-            Log.Add($"reorder a#{appId}, type#{contentTypeId}, order:{newSortOrder}");
+            Log.Add($"reorder type#{contentTypeId}, order:{newSortOrder}");
 
             var sortOrderList = newSortOrder.Trim('[', ']').Split(',').Select(int.Parse).ToList();
-            GetDb(appId).ContentType.SortAttributes(contentTypeId, sortOrderList);
+            GetDb().ContentType.SortAttributes(contentTypeId, sortOrderList);
             return true;
         }
 
-	    public string[] DataTypes(int appId)
+	    public string[] DataTypes()
 	    {
-	        Log.Add($"get data types a#{appId}");
-            return GetDb(appId).Attributes.DataTypeNames();
+	        Log.Add($"get data types");
+            return GetDb().Attributes.DataTypeNames();
 	    }
 
 
@@ -243,28 +240,29 @@ namespace ToSic.Eav.WebApi
             return AppManager.ContentTypes.UpdateInputType(attributeId, inputType);
         }
 
-	    public bool DeleteField(int appId, int contentTypeId, int attributeId)
+	    public bool DeleteField(int contentTypeId, int attributeId)
 	    {
-	        Log.Add($"delete field a#{appId}, type#{contentTypeId}, attrib:{attributeId}");
-            return GetDb(appId).Attributes.RemoveAttributeAndAllValuesAndSave(attributeId);
+	        Log.Add($"delete field type#{contentTypeId}, attrib:{attributeId}");
+            return GetDb().Attributes.RemoveAttributeAndAllValuesAndSave(attributeId);
 	    }
 
-	    public void SetTitle(int appId, int contentTypeId, int attributeId)
+	    public void SetTitle(int contentTypeId, int attributeId)
 	    {
-	        Log.Add($"set title a#{appId}, type#{contentTypeId}, attrib:{attributeId}");
-	        GetDb(appId).Attributes.SetTitleAttribute(attributeId, contentTypeId);
+	        Log.Add($"set title type#{contentTypeId}, attrib:{attributeId}");
+	        GetDb().Attributes.SetTitleAttribute(attributeId, contentTypeId);
 	    }
 
-        public bool Rename(int appId, int contentTypeId, int attributeId, string newName)
+        public bool Rename(int contentTypeId, int attributeId, string newName)
         {
-            Log.Add($"rename attribute a#{appId}, type#{contentTypeId}, attrib:{attributeId}, name:{newName}");
-            GetDb(appId).Attributes.RenameAttribute(attributeId, contentTypeId, newName);
+            Log.Add($"rename attribute type#{contentTypeId}, attrib:{attributeId}, name:{newName}");
+            GetDb().Attributes.RenameAttribute(attributeId, contentTypeId, newName);
             return true;
         }
 
         #endregion
 
-        private DbDataController GetDb(int appId) => DbDataController.Instance(null, appId, Log);
+        private DbDataController GetDb() => _db ?? (_db = _dbLazy.Value.Init(null, _appId, Log));
+        private DbDataController _db;
     }
 
 

@@ -2,7 +2,6 @@
 using System.Xml.Linq;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.Persistence.Logging;
-using ToSic.Eav.Repository.Efc;
 
 // 2dm: must disable NullRef warnings, because there a lot of warnings when processing XML, 
 // ...and these are real errors which should blow
@@ -47,7 +46,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     appGuid = Guid.NewGuid().ToString();
 
                 // Adding app to EAV
-                var eavDc = DbDataController.Instance(zoneId, null, Log);
+                var eavDc = _dbDataForNewApp.Value.Init(zoneId, null, Log);
                 var app = eavDc.App.AddApp(null, appGuid);
                 eavDc.SqlDb.SaveChanges();
 
