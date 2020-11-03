@@ -20,6 +20,7 @@ namespace ToSic.Eav.Apps.ImportExport
     public partial class ImportListXml: HasLog 
     {
         private readonly Lazy<AttributeBuilder> _lazyAttributeBuilder;
+        private readonly Lazy<Import> _importerLazy;
         private AttributeBuilder AttributeBuilder => _lazyAttributeBuilder.Value;
         private IContentType ContentType { get; set; }
         private List<IEntity> ExistingEntities { get; set; }
@@ -27,9 +28,10 @@ namespace ToSic.Eav.Apps.ImportExport
         private AppState App { get; set; }
         private AppManager AppMan { get; set; }
 
-        public ImportListXml(Lazy<AttributeBuilder> lazyAttributeBuilder): base("App.ImpVtT")
+        public ImportListXml(Lazy<AttributeBuilder> lazyAttributeBuilder, Lazy<Import> importerLazy): base("App.ImpVtT")
         {
             _lazyAttributeBuilder = lazyAttributeBuilder;
+            _importerLazy = importerLazy;
         }
 
         /// <summary>
@@ -223,7 +225,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 AppMan.Entities.Delete(idsToDelete);
             }
 
-            var import = new Import(null, _appId, false, parentLog: Log);
+            var import = _importerLazy.Value.Init(null, _appId, false, true, Log);
             import.ImportIntoDb(null, ImportEntities);
             // important note: don't purge cache here, but the caller MUST do this!
 

@@ -12,7 +12,7 @@ namespace ToSic.Eav.Apps.ImportExport
     {
         private readonly IServerPaths _serverPaths;
 
-        public ZipFromUrlImport(IImportExportEnvironment environment, IServerPaths serverPaths) : base(environment)
+        public ZipFromUrlImport(IImportExportEnvironment environment, IServerPaths serverPaths, Lazy<XmlImportWithFiles> xmlImpExpFilesLazy) : base(environment, xmlImpExpFilesLazy)
         {
             _serverPaths = serverPaths;
         }

@@ -22,40 +22,59 @@ namespace ToSic.Eav.Apps.ImportExport
     {
         private const int ChunkSize = 500;
 
-        #region Private Fields
-        //private readonly DbDataController _dbDeepAccess;
-        //private AppState _entireApp;
-        
+        #region Constructor / DI
+
+        private readonly Lazy<AppManager> _appManagerLazy;
+        private readonly IImportExportEnvironment _importExportEnvironment;
         internal AppManager AppManager;
-        internal IStorage Storage;
-        public SaveOptions SaveOptions;
 
-        private readonly int AppId;
-        private readonly int ZoneId;
-
-        #endregion
-
-        /// <summary>
-        /// Initializes a new instance of the Import class.
-        /// </summary>
-        public Import(int? zoneId, int appId, bool skipExistingAttributes = true, bool preserveUntouchedAttributes = true, ILog parentLog = null): base("Eav.Import", parentLog, "constructor")
+        public Import(Lazy<AppManager> appManagerLazy, IImportExportEnvironment importExportEnvironment) : base("Eav.Import")
         {
-            AppManager = zoneId.HasValue
-                ? new AppManager(new AppIdentity(zoneId.Value, appId), Log)
-                : new AppManager(appId, Log);
-            Storage = AppManager.Storage;
+            _appManagerLazy = appManagerLazy;
+            _importExportEnvironment = importExportEnvironment;
+        }
 
-            // now save the resolved zone/app IDs
+        public Import Init(int? zoneId, int appId, bool skipExistingAttributes, bool preserveUntouchedAttributes, ILog parentLog)
+        {
+            Log.LinkTo(parentLog);
+            AppManager = zoneId.HasValue
+                ? _appManagerLazy.Value.Init(new AppIdentity(zoneId.Value, appId), Log)
+                : _appManagerLazy.Value.Init(appId, Log);
+            Storage = AppManager.Storage;
             AppId = appId;
             ZoneId = AppManager.ZoneId;
-            var iex = Factory.Resolve<IImportExportEnvironment>();
-            iex.LinkLog(Log);
-            SaveOptions = iex.SaveOptions(ZoneId);
+
+            _importExportEnvironment.LinkLog(Log);
+            SaveOptions = _importExportEnvironment.SaveOptions(ZoneId);
 
             SaveOptions.SkipExistingAttributes = skipExistingAttributes;
 
             SaveOptions.PreserveUntouchedAttributes = preserveUntouchedAttributes;
+
+            return this;
         }
+
+        #endregion
+
+        #region Private Fields
+        //private readonly DbDataController _dbDeepAccess;
+        //private AppState _entireApp;
+
+        internal IStorage Storage;
+        public SaveOptions SaveOptions;
+
+        private int AppId;
+        private int ZoneId;
+
+        #endregion
+
+        ///// <summary>
+        ///// Initializes a new instance of the Import class.
+        ///// </summary>
+        //public Import(bool skipExistingAttributes = true, bool preserveUntouchedAttributes = true, ILog parentLog = null): base("Eav.Import", parentLog, "constructor")
+        //{
+        //    // now save the resolved zone/app IDs
+        //}
 
         /// <summary>
         /// Import AttributeSets and Entities

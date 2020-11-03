@@ -15,12 +15,21 @@ namespace ToSic.Eav.Apps.Parts
     /// </summary>
     public partial class EntitiesManager: PartOf<AppManager, EntitiesManager>
     {
-        private readonly Lazy<ImportListXml> _lazyImportListXml;
+        #region Constructor / DI
 
-        public EntitiesManager(Lazy<ImportListXml> lazyImportListXml) : base("App.EntMan")
+        private readonly Lazy<ImportListXml> _lazyImportListXml;
+        private readonly Lazy<Import> _importLazy;
+
+        private Import DbImporter => _import ?? (_import = _importLazy.Value.Init(Parent.ZoneId, Parent.AppId, false, false, Log));
+        private Import _import;
+        public EntitiesManager(Lazy<ImportListXml> lazyImportListXml, Lazy<Import> importLazy) : base("App.EntMan")
         {
             _lazyImportListXml = lazyImportListXml;
+            _importLazy = importLazy;
         }
+        
+        #endregion
+
 
         public void Import(List<IEntity> newEntities)
         {

@@ -11,7 +11,6 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.WebApi.Dto;
 
 namespace ToSic.Eav.WebApi
@@ -19,8 +18,20 @@ namespace ToSic.Eav.WebApi
     /// <inheritdoc />
     public class ContentImportApi : HasLog
     {
-        public ContentImportApi(ILog parentLog = null) : base("Api.EaCtIm", parentLog)
+        private readonly Lazy<AppManager> _appManagerLazy;
+        private AppManager _appManager;
+
+        public ContentImportApi(Lazy<AppManager> appManagerLazy) : base("Api.EaCtIm")
         {
+            _appManagerLazy = appManagerLazy;
+        }
+
+        public ContentImportApi Init(int appId, ILog parentLog)
+        {
+            Log.LinkTo(parentLog);
+            _appManager = _appManagerLazy.Value.Init(appId, Log);
+            Log.Add($"For app: {appId}");
+            return this;
         }
 
 
@@ -64,12 +75,11 @@ namespace ToSic.Eav.WebApi
         private ImportListXml GetXmlImport(ContentImportArgsDto args)
         {
             Log.Add("get xml import " + args.DebugInfo);
-            var appManager = new AppManager(args.AppId, Log);
-            var contextLanguages = appManager.Read.Zone.Languages().Select(l => l.EnvironmentKey).ToArray();
+            var contextLanguages = _appManager.Read.Zone.Languages().Select(l => l.EnvironmentKey).ToArray();
 
             using (var contentSteam = new MemoryStream(Convert.FromBase64String(args.ContentBase64)))
             {
-                return appManager.Entities.Importer(args.ContentType, contentSteam,
+                return _appManager.Entities.Importer(args.ContentType, contentSteam,
                     contextLanguages, args.DefaultLanguage,
                     args.ClearEntities, args.ImportResourcesReferences);
             }
@@ -81,13 +91,12 @@ namespace ToSic.Eav.WebApi
             try
             {
                 var callLog = Log.Call<bool>(null, "import json item" + args.DebugInfo);
-                var appManager = new AppManager(args.AppId, Log);
-                var deserializer = new ImportExport.Json.JsonSerializer(appManager.AppState, Log)
+                var deserializer = new ImportExport.Json.JsonSerializer(_appManager.AppState, Log)
                 {
                     PreferLocalAppTypes = true, // Since we're importing directly into this app, we prefer local content-types
                 };
 
-                appManager.Entities.Import(new List<IEntity> {deserializer.Deserialize(args.GetContentString()) });
+                _appManager.Entities.Import(new List<IEntity> {deserializer.Deserialize(args.GetContentString()) });
                 return callLog("ok", true);
             }
             catch (ArgumentException)

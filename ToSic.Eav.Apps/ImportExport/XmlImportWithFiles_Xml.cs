@@ -70,7 +70,7 @@ namespace ToSic.Eav.Apps.ImportExport
 		    var importEntities = BuildEntities(entNodes, Constants.NotMetadata);
 
 
-			var import = new Import(ZoneId, AppId, leaveExistingValuesUntouched, parentLog: Log);
+			var import = _importerLazy.Value.Init(ZoneId, AppId, leaveExistingValuesUntouched, true, Log);
 			import.ImportIntoDb(importAttributeSets, importEntities.Cast<Entity>().ToList());
 
             Log.Add($"Purging {ZoneId}/{AppId}");

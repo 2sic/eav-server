@@ -30,7 +30,11 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <summary>
         /// Empty constructor for DI
         /// </summary>
-        public XmlImportWithFiles() : base("Xml.ImpFil") { }
+        public XmlImportWithFiles(Lazy<Import> importerLazy, string logName = null) : base(logName ?? "Xml.ImpFil")
+        {
+            _importerLazy = importerLazy;
+        }
+        private readonly Lazy<Import> _importerLazy;
 
         /// <summary>
 	    /// Create a new xmlImport instance
@@ -38,11 +42,11 @@ namespace ToSic.Eav.Apps.ImportExport
 	    /// <param name="parentLog"></param>
 	    /// <param name="defaultLanguage">The portals default language / culture - example: de-DE</param>
 	    /// <param name="allowUpdateOnSharedTypes">Specify if the import should be able to change system-wide things like shared attributesets</param>
-	    public XmlImportWithFiles(ILog parentLog, string defaultLanguage = null, bool allowUpdateOnSharedTypes = false)
-            : this() 
-            => Init(defaultLanguage, allowUpdateOnSharedTypes, parentLog);
+	    //public XmlImportWithFiles init(ILog parentLog, string defaultLanguage = null, bool allowUpdateOnSharedTypes = false)
+     //       : this() 
+     //       => Init(defaultLanguage, allowUpdateOnSharedTypes, parentLog);
 
-        private void Init(string defaultLanguage, bool allowUpdateOnSharedTypes, ILog parentLog)
+        public XmlImportWithFiles Init(string defaultLanguage, bool allowUpdateOnSharedTypes, ILog parentLog)
         {
             Log.LinkTo(parentLog);
             _environment = Factory.Resolve<IImportExportEnvironment>();
@@ -51,6 +55,7 @@ namespace ToSic.Eav.Apps.ImportExport
             Messages = new List<Message>();
             DefaultLanguage = (defaultLanguage ?? _environment.DefaultLanguage).ToLowerInvariant();
             AllowUpdateOnSharedTypes = allowUpdateOnSharedTypes;
+            return this;
         }
 
 
@@ -61,9 +66,6 @@ namespace ToSic.Eav.Apps.ImportExport
 
         protected int GetLatestRepositoryId(Guid entityGuid)
             => _eavContext.Entities.GetMostCurrentDbEntity(entityGuid).EntityId;
-
-        protected AppManager GetCurrentAppManager()
-            => new AppManager(_eavContext, Log);
 
         #endregion
     }

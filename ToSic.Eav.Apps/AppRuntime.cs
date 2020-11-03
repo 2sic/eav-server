@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Apps.Parts;
+﻿using System;
+using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps
@@ -11,9 +12,8 @@ namespace ToSic.Eav.Apps
     {
 
         #region constructors
-        public AppRuntime() : base("Eav.AppRt") {}
 
-        public AppRuntime(string logName) : base(logName) {}
+        public AppRuntime(IServiceProvider serviceProvider, string logName = null) : base(logName ?? "Eav.AppRt") {}
 
         /// <summary>
         /// Simple Override - to track if the init is being called everywhere

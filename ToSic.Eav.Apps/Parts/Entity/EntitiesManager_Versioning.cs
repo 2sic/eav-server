@@ -22,8 +22,7 @@ namespace ToSic.Eav.Apps.Parts
             var newVersion = PrepareRestoreEntity(entityId, changeId);
 
             // Restore Entity
-            var import = new Import(Parent.ZoneId, Parent.AppId, false, false);
-            import.ImportIntoDb(null, new List<Entity> { newVersion as Entity });
+            DbImporter.ImportIntoDb(null, new List<Entity> { newVersion as Entity });
 
             // Delete Draft (if any)
             var entityDraft = Parent.DataController.Publishing.GetDraftBranchEntityId(entityId);

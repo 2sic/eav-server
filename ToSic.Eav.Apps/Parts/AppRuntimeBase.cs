@@ -18,19 +18,10 @@ namespace ToSic.Eav.Apps.Parts
         {
             Init(app, new CodeRef(), parentLog);
             // re-use data of parent if it's constructed from an app-manager
-            if (app is AppManager parentIsAppManager)
-                _data = parentIsAppManager.Data;
-            //if (app is IDataSource dataSource)
-            //    _data = dataSource;
+            if (app is AppManager parentIsAppManager) _data = parentIsAppManager.Data;
             ShowDrafts = showDrafts;
             return this as T;
         }
-
-        //protected AppRuntimeBase(IDataSource data, bool showDrafts, ILog parentLog) : this()
-        //{
-        //    Init(data as IAppIdentity, showDrafts, parentLog);
-        //    _data = data;
-        //}
 
         #endregion
 

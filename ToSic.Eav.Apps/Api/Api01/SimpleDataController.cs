@@ -23,6 +23,7 @@ namespace ToSic.Eav.Api.Api01
     /// </summary>
     public class SimpleDataController: HasLog
     {
+        private readonly Lazy<AppManager> _appManagerLazy;
         public Lazy<AttributeBuilder> LazyAttributeBuilder { get; }
         private DbDataController _context;
 
@@ -38,8 +39,9 @@ namespace ToSic.Eav.Api.Api01
         /// Create a simple data controller to create, update and delete entities.
         /// Used for DI - must always call Init afterwards
         /// </summary>
-        public SimpleDataController(Lazy<AttributeBuilder> lazyAttributeBuilder): base("Dta.Simple")
+        public SimpleDataController(Lazy<AttributeBuilder> lazyAttributeBuilder, Lazy<AppManager> appManagerLazy): base("Dta.Simple")
         {
+            _appManagerLazy = appManagerLazy;
             LazyAttributeBuilder = lazyAttributeBuilder;
         }
 
@@ -53,7 +55,7 @@ namespace ToSic.Eav.Api.Api01
             _appId = appId;
             _defaultLanguageCode = defaultLanguageCode;
             _context = DbDataController.Instance(zoneId, appId, Log);
-            _appManager = new AppManager(new AppIdentity(zoneId, appId), Log);
+            _appManager = _appManagerLazy.Value.Init(new AppIdentity(zoneId, appId), Log);
             return this;
         }
 

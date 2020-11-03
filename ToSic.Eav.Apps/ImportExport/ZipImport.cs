@@ -12,6 +12,7 @@ namespace ToSic.Eav.Apps.ImportExport
 {
     public class ZipImport: HasLog
     {
+        private readonly Lazy<XmlImportWithFiles> _xmlImpExpFilesLazy;
         private int? _initialAppId;
         private int _zoneId;
         public readonly IImportExportEnvironment Env;
@@ -20,8 +21,9 @@ namespace ToSic.Eav.Apps.ImportExport
 
         public bool AllowCodeImport;
 
-        public ZipImport(IImportExportEnvironment environment) :base("Zip.Imp")
+        public ZipImport(IImportExportEnvironment environment, Lazy<XmlImportWithFiles> xmlImpExpFilesLazy) :base("Zip.Imp")
         {
+            _xmlImpExpFilesLazy = xmlImpExpFilesLazy;
             Env = environment.Init(Log);
             Messages = new List<Message>();
         }
@@ -144,7 +146,7 @@ namespace ToSic.Eav.Apps.ImportExport
             var wrapLog = Log.Call($"{nameof(rename)}:'{rename}' {nameof(appDirectory)}:'{appDirectory}', ...");
             
             int appId;
-            var importer = new XmlImportWithFiles(Log);
+            var importer = _xmlImpExpFilesLazy.Value.Init(null, false, Log); // new XmlImportWithFiles(Log);
             var imp = new ImportXmlReader(Path.Combine(appDirectory, xmlFileName), importer, Log);
 
             if (imp.IsAppImport)

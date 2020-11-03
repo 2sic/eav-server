@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
@@ -22,17 +21,16 @@ namespace ToSic.Eav.Apps
     {
         #region Constructors
 
-        public AppManager(IAppIdentity app, ILog parentLog) : base("Eav.AppMan")
+        public AppManager() : base("Eav.AppMan") { }
+        protected AppManager(string logName) : base(logName) { }
+
+        public AppManager Init(IAppIdentity app, ILog parentLog)
         {
             Init(app, true, parentLog);
-            RenameLog();
-
+            return this;
         }
 
-        public AppManager(int appId, ILog parentLog) 
-            : this(State.Identity(null, appId), parentLog) { }
-
-        private void RenameLog() => Log.Rename("AppMan");
+        public AppManager Init(int appId, ILog parentLog) => Init(State.Identity(null, appId), true, parentLog);
 
         #endregion
 
@@ -59,7 +57,7 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// The entity-management subsystem
         /// </summary>
-        public EntitiesManager Entities => _entities ?? (_entities = new EntitiesManager(/* todo */ Factory.Resolve<Lazy<ImportListXml>>()).Init(this, Log));
+        public EntitiesManager Entities => _entities ?? (_entities = Factory.Resolve<EntitiesManager>().Init(this, Log));
         private EntitiesManager _entities;
 
         /// <summary>
@@ -130,7 +128,7 @@ namespace ToSic.Eav.Apps
                 throw new ArgumentOutOfRangeException("appName '" + appName + "' not allowed");
 
             var appId = new ZoneManager().Init(zoneId, parentLog).CreateApp();
-            new AppManager(new AppIdentity(zoneId, appId), parentLog)
+            new AppManager().Init(new AppIdentity(zoneId, appId), parentLog)
                 .EnsureAppIsConfigured(appName);
         }
 

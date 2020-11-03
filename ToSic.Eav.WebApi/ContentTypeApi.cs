@@ -22,20 +22,38 @@ namespace ToSic.Eav.WebApi
 	/// </summary>
 	public class ContentTypeApi : HasLog<ContentTypeApi>
     {
-        private readonly Lazy<AppRuntime> _lazyAppRuntime;
-        public ContentTypeApi(Lazy<AppRuntime> lazyAppRuntime) : base("Api.EavCTC")
+
+        #region Constructor / DI
+
+        private readonly Lazy<AppRuntime> _appRuntimeLazy;
+        private readonly Lazy<AppManager> _appManagerLazy;
+
+        private AppManager AppManager { get; set; }
+
+        public ContentTypeApi(Lazy<AppRuntime> appRuntimeLazy, Lazy<AppManager> appManagerLazy) : base("Api.EavCTC")
         {
-            _lazyAppRuntime = lazyAppRuntime;
+            _appRuntimeLazy = appRuntimeLazy;
+            _appManagerLazy = appManagerLazy;
         }
+
+        public ContentTypeApi Init(int appId, ILog parentLog)
+        {
+            Log.LinkTo(parentLog);
+            Log.Add($"Will use app {appId}");
+            AppManager = _appManagerLazy.Value.Init(appId, Log);
+            return this;
+        }
+
+        #endregion
 
         #region Content-Type Get, Delete, Save
 
-	    public IEnumerable<ContentTypeDto> Get(int appId, string scope = null, bool withStatistics = false)
+        public IEnumerable<ContentTypeDto> Get(string scope = null, bool withStatistics = false)
         {
-            var wrapLog = Log.Call($"a#{appId}, scope:{scope}, stats:{withStatistics}");
+            var wrapLog = Log.Call($"scope:{scope}, stats:{withStatistics}");
 
             // should use app-manager and return each type 1x only
-            var appMan = new AppManager(appId, Log);
+            var appMan = AppManager;
 
             // 2020-01-15 2sxc 10.27.00 Special side-effect, pre-generate the resources, settings etc. if they didn't exist yet
             if (scope == AppConstants.ScopeApp)
@@ -144,7 +162,7 @@ namespace ToSic.Eav.WebApi
             var fields = type.Attributes.OrderBy(a => a.SortOrder);
 
 
-            var appInputTypes = _lazyAppRuntime.Value.Init(State.Identity(null, appId), true, Log).ContentTypes.GetInputTypes();
+            var appInputTypes = _appRuntimeLazy.Value.Init(State.Identity(null, appId), true, Log).ContentTypes.GetInputTypes();
 
             var ser = new EntitiesToDictionary();
             return fields.Select(a =>
@@ -212,20 +230,17 @@ namespace ToSic.Eav.WebApi
 	    }
 
 
-        public int AddField(int appId, int contentTypeId, string staticName, string type, string inputType, int sortOrder)
+        public int AddField(int contentTypeId, string staticName, string type, string inputType, int sortOrder)
 	    {
-	        Log.Add($"add field a#{appId}, type#{contentTypeId}, name:{staticName}, type:{type}, input:{inputType}, order:{sortOrder}");
-            var attDef = new ContentTypeAttribute(appId, staticName, type, false, 0, sortOrder);
-	        var appManager = new AppManager(appId, Log);
-
-            return appManager.ContentTypes.CreateAttributeAndInitializeAndSave(contentTypeId, attDef, inputType);
+	        Log.Add($"add field type#{contentTypeId}, name:{staticName}, type:{type}, input:{inputType}, order:{sortOrder}");
+            var attDef = new ContentTypeAttribute(AppManager.AppId, staticName, type, false, 0, sortOrder);
+            return AppManager.ContentTypes.CreateAttributeAndInitializeAndSave(contentTypeId, attDef, inputType);
 	    }
 
-        public bool SetInputType(int appId, int attributeId, string inputType)
+        public bool SetInputType(int attributeId, string inputType)
         {
-            Log.Add($"update input type a#{appId}, attrib:{attributeId}, input:{inputType}");
-            var appManager = new AppManager(appId, Log);
-            return appManager.ContentTypes.UpdateInputType(attributeId, inputType);
+            Log.Add($"update input type attrib:{attributeId}, input:{inputType}");
+            return AppManager.ContentTypes.UpdateInputType(attributeId, inputType);
         }
 
 	    public bool DeleteField(int appId, int contentTypeId, int attributeId)

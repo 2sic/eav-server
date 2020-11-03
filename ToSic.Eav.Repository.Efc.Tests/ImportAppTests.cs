@@ -75,7 +75,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
             using (FileStream fsSource = new FileStream(testFileName, FileMode.Open, FileAccess.Read))
             {
-                var zipImport = new ZipImport(helper).Init(ZoneId, null, true, null);
+                var zipImport = Eav.Factory.Resolve<ZipImport>().Init(ZoneId, null, true, null);
                 succeeded = zipImport.ImportZip(fsSource, baseTestPath + @"Temp\");
             }
             Assert.IsTrue(succeeded, "should succeed!");

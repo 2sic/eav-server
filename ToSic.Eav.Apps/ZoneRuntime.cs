@@ -2,19 +2,14 @@
 using System.Linq;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
-using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps
 {
     public class ZoneRuntime: ZoneBase<ZoneRuntime>
     {
-        #region Constructor and simple properties
+        #region Constructor / DI
 
         public ZoneRuntime(string logName = null): base(logName ?? "App.Zone") { }
-
-        public ZoneRuntime(int zoneId, ILog parentLog) : base("App.Zone") {}
-
-
 
         #endregion
 

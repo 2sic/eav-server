@@ -21,11 +21,22 @@ namespace ToSic.Eav.WebApi
 {
     public class ContentExportApi : HasLog
     {
-        public ContentExportApi(ILog parentLog = null) : base("Api.EaCtEx", parentLog)
+        private readonly Lazy<AppManager> _appManagerLazy;
+        private AppManager _appManager;
+        public ContentExportApi(Lazy<AppManager> appManagerLazy) : base("Api.EaCtEx")
         {
+            _appManagerLazy = appManagerLazy;
         }
 
-        public HttpResponseMessage ExportContent(IUser user, int appId, string language, 
+        public ContentExportApi Init(int appId, ILog parentLog)
+        {
+            Log.LinkTo(parentLog);
+            _appManager = _appManagerLazy.Value.Init(appId, Log);
+            Log.Add($"For app: {appId}");
+            return this;
+        }
+
+        public HttpResponseMessage ExportContent(IUser user, string language, 
             string defaultLanguage, 
             string contentType,
             ExportSelection exportSelection, 
@@ -33,11 +44,11 @@ namespace ToSic.Eav.WebApi
             ExportLanguageResolution exportLanguageReferences, 
             string selectedIds)
         {
-            Log.Add($"export content a#{appId}, lang:{language}, deflang:{defaultLanguage}, ct:{contentType}, ids:{selectedIds}");
+            Log.Add($"export content lang:{language}, deflang:{defaultLanguage}, ct:{contentType}, ids:{selectedIds}");
             SecurityHelpers.ThrowIfNotAdmin(user);
 
-            var appManager = new AppManager(appId, Log);
-            var contextLanguages = appManager.Read.Zone.Languages().Select(l => l.EnvironmentKey).ToArray();
+            //var appManager = new AppManager(appId, Log);
+            var contextLanguages = _appManager.Read.Zone.Languages().Select(l => l.EnvironmentKey).ToArray();
 
             // check if we have an array of ids
             int[] ids = null;
@@ -51,7 +62,7 @@ namespace ToSic.Eav.WebApi
                 throw new Exception("trouble finding selected IDs to export", e);
             }
 
-            var tableExporter = appManager.Entities.Exporter(contentType);
+            var tableExporter = _appManager.Entities.Exporter(contentType);
             var fileContent = exportSelection == ExportSelection.Blank
                 ? tableExporter.EmptyListTemplate()
                 : tableExporter.GenerateXml(language ?? "", defaultLanguage, contextLanguages, exportLanguageReferences,
@@ -70,13 +81,12 @@ namespace ToSic.Eav.WebApi
         }
 
         [HttpGet]
-        public HttpResponseMessage DownloadTypeAsJson(IUser user, int appId, string name)
+        public HttpResponseMessage DownloadTypeAsJson(IUser user, string name)
         {
-            Log.Add($"get fields a#{appId}, type:{name}");
+            Log.Add($"get fields type:{name}");
             SecurityHelpers.ThrowIfNotAdmin(user);
-            var appManager = new AppManager(appId, Log);
-            var type = appManager.Read.ContentTypes.Get(name);
-            var serializer = new JsonSerializer(appManager.AppState, Log);
+            var type = _appManager.Read.ContentTypes.Get(name);
+            var serializer = new JsonSerializer(_appManager.AppState, Log);
 
             return Download.BuildDownload(serializer.Serialize(type),
                 (type.Scope + "." + type.StaticName + ImpExpConstants.Extension(ImpExpConstants.Files.json))
@@ -84,13 +94,12 @@ namespace ToSic.Eav.WebApi
         }
 
         [HttpGet]
-        public HttpResponseMessage DownloadEntityAsJson(IUser user, int appId, int id, string prefix, bool withMetadata)
+        public HttpResponseMessage DownloadEntityAsJson(IUser user, int id, string prefix, bool withMetadata)
         {
-            Log.Add($"get fields a#{appId}, id:{id}");
+            Log.Add($"get fields id:{id}");
             SecurityHelpers.ThrowIfNotAdmin(user);
-            var appManager = new AppManager(appId, Log);
-            var entity = appManager.Read.Entities.Get(id);
-            var serializer = new JsonSerializer(appManager.AppState, Log);
+            var entity = _appManager.Read.Entities.Get(id);
+            var serializer = new JsonSerializer(_appManager.AppState, Log);
 
             return Download.BuildDownload(
                 serializer.Serialize(entity, withMetadata ? FileSystemLoader.QueryMetadataDepth : 0),
