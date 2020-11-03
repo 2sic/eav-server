@@ -8,7 +8,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.WebApi.Security
 {
-    internal class MultiPermissionsItems: MultiPermissionsApp
+    public class MultiPermissionsItems: MultiPermissionsApp
     {
         protected List<IEntity> Items;
 
