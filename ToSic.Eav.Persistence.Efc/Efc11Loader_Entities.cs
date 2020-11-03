@@ -6,7 +6,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Generics;
 using ToSic.Eav.Persistence.Efc.Intermediate;
-using ToSic.Eav.Run;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.Serialization;
 using AppState = ToSic.Eav.Apps.AppState;
 
@@ -19,8 +19,7 @@ namespace ToSic.Eav.Persistence.Efc
         {
             get {
                 if (_primaryLanguage != null) return _primaryLanguage;
-                var env = Factory.Resolve<IEnvironment>();
-                _primaryLanguage = env.DefaultLanguage.ToLowerInvariant();
+                _primaryLanguage = _environmentLazy.Value.DefaultLanguage.ToLowerInvariant();
                 Log.Add($"Primary language from environment (for attribute sorting): {_primaryLanguage}");
                 return _primaryLanguage;
             }
@@ -122,7 +121,7 @@ namespace ToSic.Eav.Persistence.Efc
 
             #region Build EntityModels
 
-            var serializer = Factory.Resolve<IDataDeserializer>();
+            var serializer = ServiceProvider.Build<IDataDeserializer>();
             serializer.Initialize(app, Log);
 
             var entityTimer = Stopwatch.StartNew();

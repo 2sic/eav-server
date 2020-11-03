@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿using System;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Efc.Models;
@@ -7,6 +8,9 @@ namespace ToSic.Eav.Persistence.Efc
 {
     public class EfcMetadataTargetTypes : ITargetTypes
     {
+        private readonly Lazy<EavDbContext> _dbLazy;
+
+        public EfcMetadataTargetTypes(Lazy<EavDbContext> dbLazy) => _dbLazy = dbLazy;
 
         public int GetId(string typeName) => TargetTypes.First(mt => mt.Value == typeName).Key;
 
@@ -21,9 +25,7 @@ namespace ToSic.Eav.Persistence.Efc
         /// <returns></returns>
         protected virtual ImmutableDictionary<int, string> GetTargetTypes()
         {
-            var dbContext = Factory.Resolve<EavDbContext>();
-
-            return dbContext.ToSicEavAssignmentObjectTypes
+            return _dbLazy.Value.ToSicEavAssignmentObjectTypes
                 .ToImmutableDictionary(a => a.AssignmentObjectTypeId, a => a.Name);
         }
 

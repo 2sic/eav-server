@@ -34,7 +34,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var trans = dbi.SqlDb.Database.BeginTransaction();
 
             // load an entity
-            var loader1 = new Efc11Loader(dbi.SqlDb);
+            var loader1 = Factory.Resolve<Efc11Loader>().UseExistingDb(dbi.SqlDb);
             var app1 = loader1.AppState(test.AppId);
             var itm1 = IEntityExtensions.One(app1.List, test.ItemOnHomeId);
 
@@ -42,7 +42,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             dbi.Save(new List<IEntity> {itm1}, so);
 
             // re-load it
-            var loader2 = new Efc11Loader(dbi.SqlDb); // use existing db context because the transaction is still open
+            var loader2 = Factory.Resolve<Efc11Loader>().UseExistingDb(dbi.SqlDb); // use existing db context because the transaction is still open
             var app2 = loader2.AppState(test.AppId);
             var itm2 = IEntityExtensions.One(app2.List, test.ItemOnHomeId);
 
@@ -65,7 +65,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var trans = dbi.SqlDb.Database.BeginTransaction();
 
             // todo: load a simple, 1 language entity
-            var loader1 = new Efc11Loader(dbi.SqlDb);
+            var loader1 = Factory.Resolve<Efc11Loader>().UseExistingDb(dbi.SqlDb);
             var app1 = loader1.AppState(test.AppId);
             var itm1 = IEntityExtensions.One(app1.List, test.ItemOnHomeId);
 
@@ -80,7 +80,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             dbi.Save(new List<IEntity> {saveEntity}, so);
 
             // reload it
-            var loader2 = new Efc11Loader(dbi.SqlDb); // use existing db context because the transaction is still open
+            var loader2 = Factory.Resolve<Efc11Loader>().UseExistingDb(dbi.SqlDb); // use existing db context because the transaction is still open
             var app2 = loader2.AppState(test.AppId);
             var itm2 = IEntityExtensions.One(app2.List, test.ItemOnHomeId);
 
@@ -106,7 +106,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var trans = dbi.SqlDb.Database.BeginTransaction();
 
             // load content type to start creating an item...
-            var loader1 = new Efc11Loader(dbi.SqlDb);
+            var loader1 = Factory.Resolve<Efc11Loader>();.Init(dbi.SqlDb);
             var app1 = loader1.AppState(test.AppId);
             var ct1 = app1.GetContentType(ctName);
 
@@ -121,7 +121,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var newId = dbi.Save(new List<IEntity> {saveEntity}, so);
 
             // reload it
-            var loader2 = new Efc11Loader(dbi.SqlDb); // use existing db context because the transaction is still open
+            var loader2 = Factory.Resolve<Efc11Loader>().UseExistingDb(dbi.SqlDb); // use existing db context because the transaction is still open
             var app2 = loader2.AppState(test.AppId);
             var itm2 = IEntityExtensions.One(app2.List, newId.First());
 

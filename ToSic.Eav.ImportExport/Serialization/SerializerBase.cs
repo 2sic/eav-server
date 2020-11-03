@@ -21,8 +21,8 @@ namespace ToSic.Eav.Serialization
         /// <summary>
         /// Normal constructor
         /// </summary>
-        /// <param name="name"></param>
-        protected SerializerBase(string name): base(name) { }
+        /// <param name="logName"></param>
+        protected SerializerBase(string logName): base(logName) { }
 
 
         public AppState App

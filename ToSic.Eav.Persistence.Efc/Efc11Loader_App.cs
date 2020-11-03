@@ -6,7 +6,9 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc.Models;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
+using ToSic.Eav.Run;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.Types;
 using AppState = ToSic.Eav.Apps.AppState;
@@ -18,17 +20,26 @@ namespace ToSic.Eav.Persistence.Efc
     /// </summary>
     public partial class Efc11Loader: IRepositoryLoader
     {
+
         #region constructor and private vars
-        public Efc11Loader(EavDbContext dbContext)
+
+        public Efc11Loader(EavDbContext dbContext, Lazy<IEnvironment> environmentLazy, IServiceProvider serviceProvider)
         {
+            ServiceProvider = serviceProvider;
             _dbContext = dbContext;
-        }
-        public Efc11Loader(EavDbContext dbContext, ILog testLog): this(dbContext)
-        {
-            Log = testLog;
+            _environmentLazy = environmentLazy;
         }
 
-        private readonly EavDbContext _dbContext;
+        public Efc11Loader UseExistingDb(EavDbContext dbContext)
+        {
+            _dbContext = dbContext;
+            return this;
+        }
+
+        private IServiceProvider ServiceProvider { get; }
+        private EavDbContext _dbContext;
+        private readonly Lazy<IEnvironment> _environmentLazy;
+        private readonly Lazy<IAppRepositoryLoader> _fileSystemLoaderLazy;
 
         #endregion
 
@@ -61,7 +72,7 @@ namespace ToSic.Eav.Persistence.Efc
                 {
                     _sqlTotalTime = _sqlTotalTime.Add(InitMetadataLists(app, _dbContext));
                     // New in V11.01
-                    app.Path = PreloadAppPath(app.AppId);
+                    app.Path = PreLoadAppPath(app.AppId);
                 }
                 else
                     Log.Add("skipping metadata load");
@@ -99,7 +110,7 @@ namespace ToSic.Eav.Persistence.Efc
         /// </summary>
         /// <param name="appId"></param>
         /// <returns></returns>
-        private string PreloadAppPath(int appId)
+        private string PreLoadAppPath(int appId)
         {
             var wrapLog = Log.Call<string>();
             try
@@ -110,7 +121,7 @@ namespace ToSic.Eav.Persistence.Efc
                 if (string.IsNullOrEmpty(json)) return wrapLog("no json", null);
 
                 Log.Add("app Entity found - this json: " + json);
-                var serializer = Factory.Resolve<IDataDeserializer>();
+                var serializer = ServiceProvider.Build<IDataDeserializer>();
                 serializer.Initialize(0, ReflectionTypes.FakeCache.Values, null, Log);
                 if (!(serializer.Deserialize(json, true, true) is Entity appEntity))
                     return wrapLog("can't deserialize", null);

@@ -23,7 +23,7 @@ namespace ToSic.Eav.ImportExport.Tests
         public void Xml_SerializeItemOnHome()
         {
             var test = new TestValuesOnPc2Dm();
-            var dbc = Factory.Resolve<DbDataController>().Init(null, test.AppId, Log);
+            //var dbc = Factory.Resolve<DbDataController>().Init(null, test.AppId, Log);
             //var xmlbuilder = new DbXmlBuilder(dbc);
 
             //var xml = xmlbuilder.XmlEntity(test.ItemOnHomeId);
@@ -31,7 +31,7 @@ namespace ToSic.Eav.ImportExport.Tests
             //var xmlstring = xml.ToString();
             //Assert.IsTrue(xmlstring.Length > 200, "should get a long xml string");
 
-            var loader = new Efc11Loader(dbc.SqlDb);
+            var loader = Factory.Resolve<Efc11Loader>();//.Init(dbc.SqlDb);
             var app = loader.AppState(test.AppId);
             var zone = new ZoneRuntime().Init(test.ZoneId, Log);
             var languageMap = zone.Languages().ToDictionary(l => l.EnvironmentKey.ToLower(), l => l.DimensionId);
@@ -49,8 +49,8 @@ namespace ToSic.Eav.ImportExport.Tests
         {
             var test = new TestValuesOnPc2Dm();
             var appId = test.BlogAppId;
-            var dbc = Factory.Resolve<DbDataController>().Init(null, appId, Log);
-            var loader = new Efc11Loader(dbc.SqlDb);
+            //var dbc = Factory.Resolve<DbDataController>().Init(null, appId, Log);
+            var loader = Factory.Resolve<Efc11Loader>();//.Init(dbc.SqlDb);
             var app = loader.AppState(appId);
             var zone = new ZoneRuntime().Init(test.ZoneId, Log);
             var languageMap = zone.Languages().ToDictionary(l => l.EnvironmentKey.ToLower(), l => l.DimensionId);

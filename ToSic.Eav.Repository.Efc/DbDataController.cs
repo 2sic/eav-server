@@ -19,6 +19,9 @@ namespace ToSic.Eav.Repository.Efc
 
     public class DbDataController : HasLog, IStorage, IAppIdentity
     {
+        private readonly Lazy<Efc11Loader> _efcLoaderLazy;
+        private readonly Lazy<IUser> _userLazy;
+
         #region Extracted, now externalized objects with actions and private fields
 
         public DbVersioning Versioning => _versioning ?? (_versioning = new DbVersioning(this));
@@ -60,6 +63,7 @@ namespace ToSic.Eav.Repository.Efc
         /// </summary>
         public int ZoneId => _zoneId == 0 ? Constants.DefaultZoneId : _zoneId;
 
+        private const string UserNameUnknown = "unresolved(eav)";
         private string _userName;
         /// <summary>
         /// Current UserName. Used for ChangeLog
@@ -71,12 +75,11 @@ namespace ToSic.Eav.Repository.Efc
                 try
                 {
                     // try to get using dependency injection
-                    var usr = Factory.Resolve<IUser>();
-                    _userName = usr.IdentityToken;
+                    _userName = _userLazy.Value?.IdentityToken ?? UserNameUnknown;
                 }
                 catch
                 {
-                    _userName = "unresolved(eav)";
+                    _userName = UserNameUnknown;
                 }
                 return _userName;
             }
@@ -93,10 +96,12 @@ namespace ToSic.Eav.Repository.Efc
 
         #region new stuff
 
-        public EavDbContext SqlDb { get; private set; }
+        public EavDbContext SqlDb { get; }
 
-        public DbDataController(EavDbContext dbContext) : base("Db.Data")
+        public DbDataController(EavDbContext dbContext, Lazy<Efc11Loader> efcLoaderLazy, Lazy<IUser> userLazy) : base("Db.Data")
         {
+            _efcLoaderLazy = efcLoaderLazy;
+            _userLazy = userLazy;
             SqlDb = dbContext;
             SqlDb.AlternateSaveHandler += SaveChanges;
         }
@@ -243,9 +248,14 @@ namespace ToSic.Eav.Repository.Efc
             wrapLog("ok");
         }
 
-        public IRepositoryLoader Loader => new Efc11Loader(SqlDb);
+        /// <summary>
+        /// The loader must use the same connection, to ensure it runs in existing transactions.
+        /// Otherwise the loader would be blocked from getting intermediate data while we're running changes. 
+        /// </summary>
+        public IRepositoryLoader Loader => _loader ?? (_loader = _efcLoaderLazy.Value.UseExistingDb(SqlDb));
+        private IRepositoryLoader _loader;
+
         public void DoWhileQueuingVersioning(Action action) => Versioning.DoAndSaveHistoryQueue(action);
-        //public void DoWhileQueueingRelationships(Action action) => Relationships.DoWhileQueueingRelationships(action);
 
         public List<int> Save(List<IEntity> entities, SaveOptions saveOptions)
         {

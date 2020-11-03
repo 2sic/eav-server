@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
 
 namespace ToSic.Eav.Persistence.Efc
@@ -52,10 +53,16 @@ namespace ToSic.Eav.Persistence.Efc
             }
         }
 
+        /// <summary>
+        /// Will load file based app content-types.
+        /// </summary>
+        /// <param name="app"></param>
+        /// <returns></returns>
         private IList<IContentType> InitFileSystemContentTypes(AppState app)
         {
             var wrapLog = Log.Call<IList<IContentType>>();
-            var loader = Factory.Resolve<IAppRepositoryLoader>().Init(app.AppId, app.Path, Log);
+            // must create a new loader for each app
+            var loader = ServiceProvider.Build<IAppRepositoryLoader>().Init(app.AppId, app.Path, Log);
             var types = loader.ContentTypes(app);
             return wrapLog("ok", types);
         }

@@ -49,9 +49,9 @@ namespace ToSic.Eav.ImportExport.Tests.json
 
         private void Test_ExportAllOfAnApp(int appId)
         {
-            var dbc = Factory.Resolve<DbDataController>().Init(null, appId, Log);
+            //var dbc = Factory.Resolve<DbDataController>().Init(null, appId, Log);
 
-            var loader = new Efc11Loader(dbc.SqlDb);
+            var loader = Factory.Resolve<Efc11Loader>();//.Init(dbc.SqlDb);
             var app = loader.AppState(appId);
             var exBuilder = new JsonSerializer(app, Log);
 

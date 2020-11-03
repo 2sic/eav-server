@@ -100,8 +100,8 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
 
         private ExportListXml BuildExporter(int appId, string ctName)
         {
-            var dbc = Eav.Factory.Resolve<DbDataController>().Init(null, appId, Log);
-            var loader = new Efc11Loader(dbc.SqlDb);
+            //var dbc = Eav.Factory.Resolve<DbDataController>().Init(null, appId, Log);
+            var loader = Factory.Resolve<Efc11Loader>();//.Init(dbc.SqlDb);
             var appPackage = loader.AppState(appId);
             var type = appPackage.ContentTypes.First(ct => ct.Name == ctName);
             return new ExportListXml(appPackage, type, Log);
