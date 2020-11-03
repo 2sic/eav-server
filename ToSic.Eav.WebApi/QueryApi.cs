@@ -19,11 +19,14 @@ namespace ToSic.Eav.WebApi
 	/// </summary>
 	public class QueryApi : HasLog
     {
+        public QueryBuilder QueryBuilder { get; }
         private readonly Lazy<AppManager> _appManagerLazy;
         private AppManager _appManager;
 
-        public QueryApi(Lazy<AppManager> appManagerLazy): base("Api.EavQry")
+        public QueryApi(Lazy<AppManager> appManagerLazy, QueryBuilder queryBuilder): base("Api.EavQry")
         {
+            QueryBuilder = queryBuilder;
+            QueryBuilder.Init(Log);
             _appManagerLazy = appManagerLazy;
         }
 
@@ -94,9 +97,9 @@ namespace ToSic.Eav.WebApi
             var wrapLog = Log.Call($"a#{appId}, {nameof(id)}:{id}, {nameof(instanceId)}: {instanceId}");
 
             // Get the query, run it and track how much time this took
-		    var queryFactory = new QueryBuilder(Log);
-		    var qDef = queryFactory.GetQueryDefinition(appId, id);
-			var outStreams = queryFactory.GetDataSourceForTesting(qDef, true, config);
+		    //var queryFactory = new QueryBuilder(Log);
+		    var qDef = QueryBuilder.GetQueryDefinition(appId, id);
+			var outStreams = QueryBuilder.GetDataSourceForTesting(qDef, true, config);
             
             
             var serializeWrap = Log.Call("Serialize", useTimer: true);

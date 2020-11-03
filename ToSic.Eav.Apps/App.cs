@@ -1,4 +1,5 @@
 ﻿using System;
+using ToSic.Eav.DataSources;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Run;
@@ -12,6 +13,22 @@ namespace ToSic.Eav.Apps
     [PublicApi_Stable_ForUseInYourCode]
     public partial class App: AppBase, IApp
     {
+        #region Constructor / DI
+
+        protected DataSourceFactory DataSourceFactory { get; }
+
+        public App(IAppEnvironment environment, ISite site, DataSourceFactory dataSourceFactory, string logName): base(logName ?? "Eav.App", new CodeRef())
+        {
+            DataSourceFactory = dataSourceFactory;
+            // just keep pointers for now, don't init/verify yet
+            // as in some cases (like search) they will be replaced after the constructor
+            Env = environment;
+            Site = site;
+        }
+
+        #endregion
+
+
         [PrivateApi]
         public const int AutoLookupZone = -1;
 
@@ -34,13 +51,7 @@ namespace ToSic.Eav.Apps
         protected const string IconFile = "/" + AppConstants.AppIconFile;
 
 
-        public App(IAppEnvironment environment, ISite site, string logName): base(logName ?? "Eav.App", new CodeRef())
-        {
-            // just keep pointers for now, don't init/verify yet
-            // as in some cases (like search) they will be replaced after the constructor
-            Env = environment;
-            Site = site;
-        }
+
 
         protected internal App Init(IAppIdentity appIdentity, bool allowSideEffects, Func<App, IAppDataConfiguration> buildConfiguration, ILog parentLog)
         {

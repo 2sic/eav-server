@@ -60,7 +60,7 @@ namespace ToSic.Eav.DataSources
             // now provide all data streams for all data types; only need the cache for the content-types list, don't use it as the source...
             // because the "real" source already applies filters like published
             var listOfTypes = Apps.State.Get(this).ContentTypes;
-            var dataSourceFactory = new DataSource(Log);
+            // var dataSourceFactory = new DataSource(Log);
             var showDrafts = GetShowDraftStatus();
             var typeList = "";
             foreach (var contentType in listOfTypes)
@@ -74,7 +74,7 @@ namespace ToSic.Eav.DataSources
                     () => new CacheInfoAppAndMore("AppTypeStream" + AppRootCacheKey.AppCacheKey(this), Apps.State.Get(this), $"Name={typeName}&Drafts={showDrafts}"),
                     this,
                     typeName,
-                    () => BuildTypeStream(dataSourceFactory, upstreamDataSource, typeName)[Constants.DefaultStreamName].Immutable,
+                    () => BuildTypeStream(/*DataSourceFactory,*/ upstreamDataSource, typeName)[Constants.DefaultStreamName].Immutable,
                     true);
                 _out.Add(typeName, deferredStream);
             }
@@ -104,10 +104,10 @@ namespace ToSic.Eav.DataSources
         /// <summary>
 		/// Build an EntityTypeFilter for this content-type to provide as a stream
 		/// </summary>
-        private EntityTypeFilter BuildTypeStream(DataSource dataSourceFactory, IDataSource upstreamDataSource, string typeName)
+        private EntityTypeFilter BuildTypeStream(/*DataSource dataSourceFactory,*/ IDataSource upstreamDataSource, string typeName)
         {
             var wrapLog = Log.Call<EntityTypeFilter>($"..., ..., {typeName}");
-            var ds = dataSourceFactory.GetDataSource<EntityTypeFilter>(this, upstreamDataSource,
+            var ds = DataSourceFactory.GetDataSource<EntityTypeFilter>(this, upstreamDataSource,
                 Configuration.LookUps);
             ds.TypeName = typeName;
             ds.Guid = Guid; // tell the inner source that it has the same ID as this one, as we're pretending it's the same source

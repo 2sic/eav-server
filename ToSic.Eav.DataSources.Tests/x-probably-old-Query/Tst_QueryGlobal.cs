@@ -46,7 +46,7 @@ namespace ToSic.Eav.DataSourceTests.Query
 
             var qDef = new QueryDefinition(queryEnt, TestConfig.AppForQueryTests, null);
 
-            var fac = new QueryBuilder(Log);
+            var fac = Factory.Resolve<QueryBuilder>().Init(Log); //new QueryBuilder(Log);
             var query = fac.GetDataSourceForTesting(qDef, false);
 
             var list = query.List;

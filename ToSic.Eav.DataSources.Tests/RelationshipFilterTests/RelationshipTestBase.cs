@@ -92,8 +92,8 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
 
         protected RelationshipFilter BuildRelationshipFilter(int zone, int app, string primaryType, ILookUpEngine config = null)
         {
-            var baseDs = new DataSource(Log).GetPublishing(new AppIdentity(zone, app), configProvider: config);
-            var appDs = new DataSource(Log).GetDataSource<App>(baseDs);
+            var baseDs = Factory.Resolve<DataSourceFactory>().GetPublishing(new AppIdentity(zone, app), configProvider: config);
+            var appDs = Factory.Resolve<DataSourceFactory>().GetDataSource<App>(baseDs);
 
             // micro tests to ensure we have the right app etc.
             Assert.IsTrue(appDs.List.Count() > 20, "appDs.List.Count() > 20");
@@ -109,7 +109,7 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
 
             Assert.IsTrue(stream.Immutable.Count > 0, "stream.List.Count() > 0");
 
-            var relFilt = new DataSource(Log).GetDataSource<RelationshipFilter>(new AppIdentity(0, 0), null, 
+            var relFilt = Factory.Resolve<DataSourceFactory>().GetDataSource<RelationshipFilter>(new AppIdentity(0, 0), null, 
                 appDs.Configuration.LookUps/*, parentLog: Log*/);
             relFilt.Attach(Constants.DefaultStreamName, stream);
             return relFilt;

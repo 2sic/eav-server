@@ -28,9 +28,9 @@ namespace ToSic.Eav.DataSources.Tests.Query
 
         private QueryDefinition LoadQueryDef(int appId, int queryId)
         {
-            var appState = Eav.Apps.State.Get(appId); //Factory.GetAppState(appId);
-            var source = new DataSource(null).GetPublishing(appState, false);
-            var pipelineEntity = QueryManager.GetQueryEntity(queryId, appState);
+            var appState = Apps.State.Get(appId);
+            var source = Factory.Resolve<DataSourceFactory>().GetPublishing(appState, false);
+            var pipelineEntity = Factory.Resolve<QueryManager>().Init(null).GetQueryEntity(queryId, appState);
             return new QueryDefinition(pipelineEntity, appId, null);
         }
 
@@ -85,7 +85,7 @@ namespace ToSic.Eav.DataSources.Tests.Query
         public void Query_Run_And_Run_Materialized()
         {
             var qdef = LoadQueryDef(TestConfig.AppForQueryTests, basicId);
-            var query = new QueryBuilder(null).GetDataSourceForTesting(qdef, false);
+            var query = Factory.Resolve<QueryBuilder>().GetDataSourceForTesting(qdef, false);
             var countDef = query.List.Count();
             Assert.IsTrue(countDef > 0, "result > 0");
             Assert.AreEqual(basicCount, countDef);
@@ -95,7 +95,7 @@ namespace ToSic.Eav.DataSources.Tests.Query
             var eDef2 = ser.Deserialize(strQuery, true);
 
             var qdef2 = new QueryDefinition(eDef2, 0, null);
-            var query2 = new QueryBuilder(null).GetDataSourceForTesting(qdef2, false);
+            var query2 = Factory.Resolve<QueryBuilder>().GetDataSourceForTesting(qdef2, false);
             var countDef2 = query2.List.Count();
             Assert.AreEqual(countDef2, countDef, "countdefs should be same");
         }

@@ -101,7 +101,7 @@ namespace ToSic.Eav.DataSources
             Log.Add($"Found query '{queryDef.GetBestTitle()}' ({queryDef.EntityId}), will continue");
 
             // create the query & set params
-            var query = new Query(ZoneId, AppId, queryDef, LookUpWithoutParams(), false, null, Log);
+            var query = new Query(DataSourceFactory).Init(ZoneId, AppId, queryDef, LookUpWithoutParams(), false, null, Log);
             query.Params(ResolveParams(configEntity));
             return wrapLog("ok", query);
 

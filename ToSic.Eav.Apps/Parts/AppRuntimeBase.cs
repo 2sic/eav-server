@@ -8,15 +8,20 @@ namespace ToSic.Eav.Apps.Parts
     /// </summary>
     public abstract class AppRuntimeBase<T>: AppBase where T: AppRuntimeBase<T>
     {
-        public bool ShowDrafts { get; private set; }
-
         #region Constructor / DI
 
-        protected AppRuntimeBase(string logName): base(logName, new CodeRef()) { }
+        public DataSourceFactory DataSourceFactory { get; }
+        public bool ShowDrafts { get; private set; }
+
+        protected AppRuntimeBase(DataSourceFactory dataSourceFactory, string logName): base(logName, new CodeRef())
+        {
+            DataSourceFactory = dataSourceFactory;
+        }
 
         public T Init(IAppIdentity app, bool showDrafts, ILog parentLog)
         {
             Init(app, new CodeRef(), parentLog);
+            DataSourceFactory.Init(Log);
             // re-use data of parent if it's constructed from an app-manager
             if (app is AppManager parentIsAppManager) _data = parentIsAppManager.Data;
             ShowDrafts = showDrafts;
@@ -26,9 +31,10 @@ namespace ToSic.Eav.Apps.Parts
         #endregion
 
 
+
         #region Data & Cache
 
-        public IDataSource Data => _data ?? (_data = new DataSource(Log).GetPublishing(this, showDrafts: ShowDrafts));
+        public IDataSource Data => _data ?? (_data = DataSourceFactory.GetPublishing(this, showDrafts: ShowDrafts));
         private IDataSource _data;
 
         /// <summary>

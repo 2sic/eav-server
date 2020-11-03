@@ -6,11 +6,15 @@ namespace ToSic.Eav.Plumbing
     // ReSharper disable once InconsistentNaming
     public static class IServiceProviderExtensions
     {
-        public static T Build<T>(this IServiceProvider serviceProvider) where T: class
+        public static T Build<T>(this IServiceProvider serviceProvider)
         {
             var found = serviceProvider.GetService<T>();
-            // If it's an unregistered type, try to find in DLLs etc.
-            return found ?? ActivatorUtilities.CreateInstance<T>(serviceProvider);
+
+            return found != null 
+                ? found
+                // If it's an unregistered type, try to find in DLLs etc.
+                : ActivatorUtilities.CreateInstance<T>(serviceProvider);
+
         }
 
 

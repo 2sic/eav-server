@@ -8,6 +8,8 @@ namespace ToSic.Eav.DataSources
     {
         public static IServiceCollection AddDataSources(this IServiceCollection services)
         {
+            services.TryAddTransient<DataSourceFactory>();
+
             services.TryAddTransient<IAppRoot, AppRoot>();
 
             services.TryAddTransient<AttributeBuilder>();

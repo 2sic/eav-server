@@ -176,5 +176,12 @@ namespace ToSic.Eav.DataSources
             callLog("ok");
         }
 
+        #region Special Region so that each data sources has a factory if needed
+
+        [PrivateApi]
+        protected internal DataSourceFactory DataSourceFactory { get; set; }
+
+        #endregion
+
     }
 }

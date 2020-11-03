@@ -11,9 +11,14 @@ namespace ToSic.Eav.DataSources.Queries
 	/// <summary>
 	/// Factory to create a Data Query
 	/// </summary>
-	public class QueryBuilder: HasLog
+	public class QueryBuilder: HasLog<QueryBuilder>
 	{
-	    public QueryBuilder(ILog parentLog) : base("DS.PipeFt", parentLog) {}
+        public DataSourceFactory DataSourceFactory { get; }
+        public QueryBuilder(DataSourceFactory dataSourceFactory) : base("DS.PipeFt")
+        {
+            DataSourceFactory = dataSourceFactory;
+            DataSourceFactory.Init(Log);
+        }
 
 		/// <summary>
         /// Build a query-definition object based on the entity-ID defining the query
@@ -26,7 +31,7 @@ namespace ToSic.Eav.DataSources.Queries
 	        try
             {
                 var app = Apps.State.Identity(null, appId);
-                var source = new DataSource(Log).GetPublishing(app);
+                var source = DataSourceFactory.GetPublishing(app);
 	            var appEntities = source[Constants.DefaultStreamName].Immutable;
 
 	            // use findRepo, as it uses the cache, which gives the list of all items // [queryEntityId];
@@ -111,7 +116,7 @@ namespace ToSic.Eav.DataSources.Queries
                 var assemblyAndType = dataQueryPart.DataSourceType;
 
                 var appIdentity = Apps.State.Identity(null, queryDef.AppId);
-                var dataSource = new DataSource(Log).GetDataSource(assemblyAndType, appIdentity, configLookUp: partConfig);
+                var dataSource = DataSourceFactory.GetDataSource(assemblyAndType, appIdentity, lookUps: partConfig);
 	            dataSource.Guid = dataQueryPart.Guid;
 
 	            Log.Add($"add '{assemblyAndType}' as " +

@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.DataSources;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Repository.Efc;
@@ -19,10 +20,18 @@ namespace ToSic.Eav.Apps
     /// </summary>
     public class AppManager: AppRuntimeBase<AppManager>
     {
+        public IServiceProvider ServiceProvider { get; }
+
         #region Constructors
 
-        public AppManager() : base("Eav.AppMan") { }
-        protected AppManager(string logName) : base(logName) { }
+        public AppManager(IServiceProvider serviceProvider, DataSourceFactory dataSourceFactory) : base(dataSourceFactory, "Eav.AppMan")
+        {
+            ServiceProvider = serviceProvider;
+        }
+        protected AppManager(IServiceProvider serviceProvider, DataSourceFactory dataSourceFactory, string logName) : base(dataSourceFactory, logName)
+        {
+            ServiceProvider = serviceProvider;
+        }
 
         public AppManager Init(IAppIdentity app, ILog parentLog)
         {
@@ -128,7 +137,8 @@ namespace ToSic.Eav.Apps
                 throw new ArgumentOutOfRangeException("appName '" + appName + "' not allowed");
 
             var appId = new ZoneManager().Init(zoneId, parentLog).CreateApp();
-            new AppManager().Init(new AppIdentity(zoneId, appId), parentLog)
+            // TODO: #DI
+            Factory.Resolve<AppManager>().Init(new AppIdentity(zoneId, appId), parentLog)
                 .EnsureAppIsConfigured(appName);
         }
 

@@ -5,6 +5,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.ImportExport.Json;
+using ToSic.Eav.Plumbing;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps.Parts
@@ -88,7 +89,7 @@ namespace ToSic.Eav.Apps.Parts
 
 
             // Get the Entity describing the Query and Query Parts (DataSources)
-            var queryEntity = Eav.DataSources.Queries.QueryManager.GetQueryEntity(id, Parent./*Cache*/AppState);
+            var queryEntity = Parent.ServiceProvider.Build<Eav.DataSources.Queries.QueryManager>().GetQueryEntity(id, Parent.AppState);
             var qDef = new QueryDefinition(queryEntity, Parent.AppId, Log);
 
             var mdItems = qDef.Parts// parts

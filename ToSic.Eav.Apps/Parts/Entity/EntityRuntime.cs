@@ -44,7 +44,7 @@ namespace ToSic.Eav.Apps.Parts
 
         public IEnumerable<IEntity> Get(string contentTypeName)
         {
-            var typeFilter = new DataSource(Log).GetDataSource<EntityTypeFilter>(Parent.Data); // need to go to cache, to include published & unpublished
+            var typeFilter = Parent.DataSourceFactory.GetDataSource<EntityTypeFilter>(Parent.Data); // need to go to cache, to include published & unpublished
             typeFilter.TypeName = contentTypeName;
             return typeFilter.Immutable;
         }

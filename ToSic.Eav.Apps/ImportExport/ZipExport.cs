@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Xml.XPath;
 using ToSic.Eav.Data;
+using ToSic.Eav.DataSources;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Zip;
 using ToSic.Eav.Logging;
@@ -33,14 +34,16 @@ namespace ToSic.Eav.Apps.ImportExport
         protected ILog Log;
 
         #region Constructors and DI
-        public ZipExport(IServerPaths serverPaths, AppRuntime appRuntime)
+        public ZipExport(IServerPaths serverPaths, AppRuntime appRuntime, DataSourceFactory dataSourceFactory)
         {
             _serverPaths = serverPaths;
             AppRuntime = appRuntime;
+            DataSourceFactory = dataSourceFactory;
         }
 
         private readonly IServerPaths _serverPaths;
         private AppRuntime AppRuntime { get; }
+        public DataSourceFactory DataSourceFactory { get; }
 
         public ZipExport Init(int zoneId, int appId, string appFolder, string physicalAppPath, ILog parentLog)
         {
@@ -146,7 +149,7 @@ namespace ToSic.Eav.Apps.ImportExport
             var contentTypeNames = attributeSets.Select(p => p.StaticName).ToArray();
             var templateTypeId = SystemRuntime.MetadataType(Settings.TemplateContentType);
             var entities =
-                new DataSource(Log).GetPublishing(runtime, false).Out[Constants.DefaultStreamName].Immutable.Where(
+                DataSourceFactory.GetPublishing(runtime, false).Out[Constants.DefaultStreamName].Immutable.Where(
                     e => e.MetadataFor.TargetType != templateTypeId
                          && e.MetadataFor.TargetType != Constants.MetadataForAttribute).ToList();
 

@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
+using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSourceTests.ExternalData;
 using ToSic.Eav.LookUp;
@@ -44,8 +45,8 @@ namespace ToSic.Eav.DataSourceTests.Streams
             var ds1 = DataTableTst.GeneratePersonSourceWithDemoData(DefaultStreamSize, 1000);
             var ds2 = DataTableTst.GeneratePersonSourceWithDemoData(MoreStreamSize, 2700);
             var ds3 = DataTableTst.GeneratePersonSourceWithDemoData(53, 5300);
-            var dsBuild = new DataSource(null);
-            var streamPick = dsBuild.GetDataSource<DataSources.StreamPick>(new AppIdentity(1, 1), null, ds1.Configuration.LookUps);
+            var dsBuild = Factory.Resolve<DataSourceFactory>();
+            var streamPick = dsBuild.GetDataSource<StreamPick>(new AppIdentity(1, 1), null, ds1.Configuration.LookUps);
             streamPick.Attach(Constants.DefaultStreamName, ds1);
             streamPick.Attach(MoreStream, ds2);
             streamPick.Attach("Lots", ds3);

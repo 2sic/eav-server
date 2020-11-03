@@ -16,14 +16,14 @@ namespace ToSic.Eav.DataSources.Queries
 	{
         #region Configuration-properties
         [PrivateApi]
-	    public override string LogId => "DS.Query";
+	    public override string LogId => $"{DataSourceConstants.LogPrefix}.Query";
 
         /// <inheritdoc />
-        public QueryDefinition Definition { get; }
+        public QueryDefinition Definition { get; private set; }
 
 		private StreamDictionary _out = new StreamDictionary();
 		private bool _requiresRebuildOfOut = true;
-        private readonly bool _showDrafts;
+        private bool _showDrafts;
 
         /// <summary>
         /// Standard out. Note that the Out is not prepared until accessed the first time,
@@ -60,7 +60,17 @@ namespace ToSic.Eav.DataSources.Queries
 
         /// <inheritdoc />
         [PrivateApi]
-		public Query(int zoneId, int appId, IEntity queryDef, ILookUpEngine config, bool showDrafts, IDataTarget source, ILog parentLog)
+        public Query(DataSourceFactory dataSourceFactory)
+        {
+            DataSourceFactory = dataSourceFactory;
+        }
+
+        /// <summary>
+        /// Initialize a full query object. This is necessary for it to work
+        /// </summary>
+        /// <returns></returns>
+        [PrivateApi]
+		public Query Init(int zoneId, int appId, IEntity queryDef, ILookUpEngine config, bool showDrafts, IDataTarget source, ILog parentLog)
 		{
 		    ZoneId = zoneId;
 		    AppId = appId;
@@ -70,10 +80,11 @@ namespace ToSic.Eav.DataSources.Queries
             _showDrafts = showDrafts;
 
             // hook up in, just in case we get parameters from an In
-            if (source == null) return;
+            if (source == null) return this;
 
             Log.Add("found target for Query, will attach");
             In = source.In;
+            return this;
         }
 
 		/// <summary>
@@ -95,7 +106,7 @@ namespace ToSic.Eav.DataSources.Queries
             wrapLog("ok");
         }
 
-        private QueryBuilder QueryBuilder => _queryBuilder ?? (_queryBuilder = new QueryBuilder(Log));
+        private QueryBuilder QueryBuilder => _queryBuilder ?? (_queryBuilder = new QueryBuilder(DataSourceFactory).Init(Log));
         private QueryBuilder _queryBuilder;
 
 

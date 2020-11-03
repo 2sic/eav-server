@@ -1,5 +1,6 @@
 ﻿using System;
 using ToSic.Eav.Apps.Parts;
+using ToSic.Eav.DataSources;
 using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps
@@ -13,7 +14,7 @@ namespace ToSic.Eav.Apps
 
         #region constructors
 
-        public AppRuntime(IServiceProvider serviceProvider, string logName = null) : base(logName ?? "Eav.AppRt") {}
+        public AppRuntime(DataSourceFactory dataSourceFactory, string logName = null) : base(dataSourceFactory, logName ?? "Eav.AppRt") {}
 
         /// <summary>
         /// Simple Override - to track if the init is being called everywhere
@@ -22,12 +23,6 @@ namespace ToSic.Eav.Apps
             => base.Init(app, showDrafts, parentLog);
 
         #endregion
-
-        #region DataSourceFactory
-        public DataSource DataSourceFactory => _dsFactory ?? (_dsFactory = new DataSource(Log));
-        private DataSource _dsFactory;
-
-        #endregion 
 
         /// <summary>
         /// Entities Runtime to get entities in this app

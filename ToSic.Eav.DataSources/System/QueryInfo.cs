@@ -26,6 +26,11 @@ namespace ToSic.Eav.DataSources.System
 
     public sealed class QueryInfo: DataSourceBase
 	{
+        public QueryBuilder QueryBuilder { get; }
+        private readonly Lazy<QueryManager> _queryManagerLazy;
+        private QueryManager QueryManager => _queryManager ?? (_queryManager = _queryManagerLazy.Value.Init(Log));
+        private QueryManager _queryManager;
+
         #region Configuration-properties (no config)
 	    public override string LogId => "DS.EavQIn";
 
@@ -61,9 +66,11 @@ namespace ToSic.Eav.DataSources.System
         /// <summary>
         /// Constructs a new Attributes DS
         /// </summary>
-		public QueryInfo()
+		public QueryInfo(Lazy<QueryManager> queryManagerLazy, QueryBuilder queryBuilder)
 		{
-			Provide(GetStreams);
+            QueryBuilder = queryBuilder.Init(Log);
+            _queryManagerLazy = queryManagerLazy;
+            Provide(GetStreams);
 			Provide("Attributes", GetAttributes);
 		    ConfigMask(QueryKey, $"[Settings:{QueryNameField}||{DefQuery}]");
 		    ConfigMask(StreamKey, $"[Settings:{StreamField}||{Constants.DefaultStreamName}]");
@@ -96,7 +103,7 @@ namespace ToSic.Eav.DataSources.System
             if (!_query.Out.ContainsKey(StreamName))
                 return ImmutableArray<IEntity>.Empty; //new List<IEntity>();
 
-	        var attribInfo = new DataSource(Log).GetDataSource<Attributes>(_query);
+	        var attribInfo = DataSourceFactory.GetDataSource<Attributes>(_query);
             if(StreamName != Constants.DefaultStreamName)
                 attribInfo.Attach(Constants.DefaultStreamName, _query[StreamName]);
 
@@ -118,13 +125,13 @@ namespace ToSic.Eav.DataSources.System
             // important, use "Name" and not get-best-title, as some queries may not be correctly typed, so missing title-info
             var found = QueryName.StartsWith(GlobalQueries.GlobalEavQueryPrefix)
                 ? GlobalQueries.FindQuery(QueryName)
-                : QueryManager.AllQueryItems(this, Log)
+                : this.QueryManager.AllQueryItems(this)
                     .FirstOrDefault(q => string.Equals(q.GetBestValue("Name").ToString(), QueryName,
                         StringComparison.InvariantCultureIgnoreCase));
 
             if (found == null) throw new Exception($"Can't build information about query - couldn't find query '{QueryName}'");
 
-            _query = new QueryBuilder(Log).GetDataSourceForTesting(new QueryDefinition(found, AppId, Log), 
+            _query = QueryBuilder.GetDataSourceForTesting(new QueryDefinition(found, AppId, Log), 
                 false, Configuration.LookUps);
         }
 

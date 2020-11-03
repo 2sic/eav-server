@@ -24,12 +24,11 @@ namespace ToSic.Eav.Apps
         /// App identity containing zone/app combination
         /// </summary>
         /// <param name="app">the identity</param>
-        /// <param name="parentLog">the current log - could be null if necessary</param>
         /// <param name="code">code-ref, must be created first</param>
-        /// <param name="logName">a log key because most inheriting objects will want their own key in the log</param>
-        protected AppBase Init(IAppIdentity app, CodeRef code, ILog parentLog, string logName = null)
+        /// <param name="parentLog">the current log - could be null if necessary</param>
+        protected AppBase Init(IAppIdentity app, CodeRef code, ILog parentLog)
         {
-            InitLog(logName, parentLog, null, code);
+            InitLog(null, parentLog, null, code);
             ZoneId = app.ZoneId;
             AppId = app.AppId;
             return this;

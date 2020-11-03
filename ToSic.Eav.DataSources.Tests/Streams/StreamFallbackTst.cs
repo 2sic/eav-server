@@ -67,7 +67,7 @@ namespace ToSic.Eav.DataSourceTests.Streams
         public StreamFallback AssembleTestFallbackStream()
         {
             var emptyDs = DataTableTst.GeneratePersonSourceWithDemoData(0, 1001);
-            var streams = new DataSource(null).GetDataSource<StreamFallback>(emptyDs);
+            var streams = Factory.Resolve<DataSourceFactory>().GetDataSource<StreamFallback>(emptyDs);
 
             var dsWith1 = DataTableTst.GeneratePersonSourceWithDemoData(1, 2000);
             var dsWithmany = DataTableTst.GeneratePersonSourceWithDemoData(45, 4000);

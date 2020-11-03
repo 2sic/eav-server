@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSources.Tests
         public static ValueSort GeneratePersonSourceWithDemoData(int itemsToGenerate = 10, int firstId = 1001, bool useCacheForSpeed = true)
         {
             var ds = DataTableTst.GeneratePersonSourceWithDemoData(itemsToGenerate, firstId);
-            var filtered = new DataSource(null).GetDataSource<ValueSort>(ds, ds);
+            var filtered = Factory.Resolve<DataSourceFactory>().GetDataSource<ValueSort>(ds, ds);
             return filtered;
         }
 
