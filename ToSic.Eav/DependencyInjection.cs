@@ -17,7 +17,7 @@ namespace ToSic.Eav
 	/// <summary>
 	/// Global Eav Configuration
 	/// </summary>
-	public static class DependencyInjection
+	public static class StartupEav
 	{
 	    /// <summary>
 	    /// Use this to setup the new DI container
@@ -49,7 +49,8 @@ namespace ToSic.Eav
                 .AddEavApps()
                 .AddImportExport()
                 .AddRepositoryAndEfc(connectionString)
-                .AddDataSources();
+                .AddDataSources()
+                .AddEavCore();
 
 
             return services;

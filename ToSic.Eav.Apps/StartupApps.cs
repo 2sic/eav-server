@@ -27,6 +27,9 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<ZipImport>();
             services.TryAddTransient<ZipFromUrlImport>();
 
+            // App Dependencies
+            services.TryAddTransient<App.AppDependencies>();
+
             return services;
         }
 

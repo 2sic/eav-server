@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Apps
 {
@@ -19,7 +20,7 @@ namespace ToSic.Eav.Apps
             {
                 if (_appsCacheSingleton != null) return _appsCacheSingleton;
 
-                var appsCache = Factory.Resolve<IAppsCache>();
+                var appsCache = Factory.GetServiceProvider().Build<IAppsCache>();
                 if (appsCache.EnforceSingleton)
                     _appsCacheSingleton = appsCache;
                 return appsCache;

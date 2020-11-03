@@ -23,7 +23,7 @@ namespace ToSic.Eav.DataSourceTests.Query
         [TestMethod]
         public void FindGlobalQueries()
         {
-            var queries = GlobalQueries.AllQueries();
+            var queries = Eav.Factory.Resolve<GlobalQueries>().AllQueries();
             Assert.AreEqual(testQueryCount, queries.Count, $"should find {testQueryCount} query definitions");
         }
 
@@ -32,7 +32,7 @@ namespace ToSic.Eav.DataSourceTests.Query
         public void ReviewGlobalZonesQuery()
         {
             var queryName = "Eav.Queries.Global.Zones";
-            var queryEnt = GlobalQueries.FindQuery(queryName);
+            var queryEnt = Eav.Factory.Resolve<GlobalQueries>().FindQuery(queryName);
             Assert.AreEqual(queryName, queryEnt.GetBestValue("Name").ToString(), "should find zones");
 
             var qdef = new QueryDefinition(queryEnt, queryEnt.AppId, null);
@@ -42,7 +42,7 @@ namespace ToSic.Eav.DataSourceTests.Query
         [TestMethod]
         public void UseGlobalZonesQuery()
         {
-            var queryEnt = GlobalQueries.FindQuery("Eav.Queries.Global.Zones");
+            var queryEnt = Factory.Resolve<GlobalQueries>().FindQuery("Eav.Queries.Global.Zones");
 
             var qDef = new QueryDefinition(queryEnt, TestConfig.AppForQueryTests, null);
 

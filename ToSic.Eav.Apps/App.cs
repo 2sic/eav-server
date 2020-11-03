@@ -1,5 +1,6 @@
 ﻿using System;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Run;
@@ -13,17 +14,47 @@ namespace ToSic.Eav.Apps
     [PublicApi_Stable_ForUseInYourCode]
     public partial class App: AppBase, IApp
     {
+        private readonly AppDependencies _appDependencies;
+
         #region Constructor / DI
 
         protected DataSourceFactory DataSourceFactory { get; }
 
-        public App(IAppEnvironment environment, ISite site, DataSourceFactory dataSourceFactory, string logName): base(logName ?? "Eav.App", new CodeRef())
+        /// <summary>
+        /// Helper class, so inheriting stuff doesn't need to update the constructor all the time
+        /// </summary>
+        public class AppDependencies
         {
-            DataSourceFactory = dataSourceFactory;
+            internal readonly Lazy<AppManager> AppManagerLazy;
+            internal readonly IAppEnvironment Environment;
+            internal readonly ISite Site;
+            internal readonly DataSourceFactory DataSourceFactory;
+            internal readonly Lazy<GlobalQueries> GlobalQueriesLazy;
+
+            public AppDependencies(
+                IAppEnvironment environment,
+                ISite site,
+                DataSourceFactory dataSourceFactory,
+                Lazy<GlobalQueries> globalQueriesLazy,
+                Lazy<AppManager> appManagerLazy
+                )
+            {
+                AppManagerLazy = appManagerLazy;
+                Environment = environment;
+                Site = site;
+                DataSourceFactory = dataSourceFactory;
+                GlobalQueriesLazy = globalQueriesLazy;
+            }
+        }
+
+        public App(AppDependencies appDependencies, string logName): base(logName ?? "Eav.App", new CodeRef())
+        {
+            _appDependencies = appDependencies;
+            DataSourceFactory = appDependencies.DataSourceFactory;
             // just keep pointers for now, don't init/verify yet
             // as in some cases (like search) they will be replaced after the constructor
-            Env = environment;
-            Site = site;
+            Env = appDependencies.Environment;
+            Site = appDependencies.Site;
         }
 
         #endregion
@@ -87,7 +118,7 @@ namespace ToSic.Eav.Apps
                 Log.Add($"create app resources? allowSE:{allowSideEffects}");
 
                 if (allowSideEffects)
-                    Factory.Resolve<AppManager>().Init(this, Log).EnsureAppIsConfigured(); // make sure additional settings etc. exist
+                    _appDependencies.AppManagerLazy.Value.Init(this, Log).EnsureAppIsConfigured(); // make sure additional settings etc. exist
             }
 
             InitializeResourcesSettingsAndMetadata();

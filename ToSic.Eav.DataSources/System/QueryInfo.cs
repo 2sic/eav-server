@@ -28,6 +28,7 @@ namespace ToSic.Eav.DataSources.System
 	{
         public QueryBuilder QueryBuilder { get; }
         private readonly Lazy<QueryManager> _queryManagerLazy;
+        private readonly Lazy<GlobalQueries> _globalQueriesLazy;
         private QueryManager QueryManager => _queryManager ?? (_queryManager = _queryManagerLazy.Value.Init(Log));
         private QueryManager _queryManager;
 
@@ -66,10 +67,11 @@ namespace ToSic.Eav.DataSources.System
         /// <summary>
         /// Constructs a new Attributes DS
         /// </summary>
-		public QueryInfo(Lazy<QueryManager> queryManagerLazy, QueryBuilder queryBuilder)
+		public QueryInfo(Lazy<QueryManager> queryManagerLazy, QueryBuilder queryBuilder, Lazy<GlobalQueries> globalQueriesLazy)
 		{
             QueryBuilder = queryBuilder.Init(Log);
             _queryManagerLazy = queryManagerLazy;
+            _globalQueriesLazy = globalQueriesLazy;
             Provide(GetStreams);
 			Provide("Attributes", GetAttributes);
 		    ConfigMask(QueryKey, $"[Settings:{QueryNameField}||{DefQuery}]");
@@ -124,7 +126,7 @@ namespace ToSic.Eav.DataSources.System
 
             // important, use "Name" and not get-best-title, as some queries may not be correctly typed, so missing title-info
             var found = QueryName.StartsWith(GlobalQueries.GlobalEavQueryPrefix)
-                ? GlobalQueries.FindQuery(QueryName)
+                ? _globalQueriesLazy.Value.FindQuery(QueryName)
                 : this.QueryManager.AllQueryItems(this)
                     .FirstOrDefault(q => string.Equals(q.GetBestValue("Name").ToString(), QueryName,
                         StringComparison.InvariantCultureIgnoreCase));

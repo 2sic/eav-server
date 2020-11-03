@@ -6,6 +6,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Plumbing;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 // ReSharper disable once CheckNamespace
@@ -33,6 +34,8 @@ namespace ToSic.Eav.DataSources.System
     // ReSharper disable once UnusedMember.Global
     public sealed class Apps: DataSourceBase
 	{
+        private readonly IServiceProvider _serviceProvider;
+
         #region Configuration-properties (no config)
 	    public override string LogId => "DS.EavAps";
 
@@ -62,8 +65,9 @@ namespace ToSic.Eav.DataSources.System
         /// Constructs a new Apps DS
         /// </summary>
         [PrivateApi]
-        public Apps()
+        public Apps(IServiceProvider serviceProvider)
 		{
+            _serviceProvider = serviceProvider;
             Provide(GetList);
             ConfigMask(ZoneKey, $"[Settings:{ZoneIdField}]");
 		}
@@ -84,7 +88,7 @@ namespace ToSic.Eav.DataSources.System
 	            Guid? guid = null;
 	            try
 	            {
-	                appObj = Factory.Resolve<Eav.Apps.App>()
+	                appObj = _serviceProvider.Build<Eav.Apps.App>()
                         .Init(new AppIdentity(zone.ZoneId, app.Key), false, null, Log);
                     // this will get the guid, if the identity is not "default"
 	                if(Guid.TryParse(appObj.AppGuid, out var g)) guid = g;

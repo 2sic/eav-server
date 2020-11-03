@@ -53,7 +53,7 @@ namespace ToSic.Eav.Apps
 
         private Query GetGlobalQuery(string name)
         {
-            var qent = GlobalQueries.FindQuery(name) 
+            var qent = _appDependencies.GlobalQueriesLazy.Value.FindQuery(name) 
                 ?? throw new Exception($"can't find global query {name}");
             return new Query(DataSourceFactory).Init(ZoneId, AppId, qent, ConfigurationProvider, ShowDrafts, null, Log);
         }

@@ -106,7 +106,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var trans = dbi.SqlDb.Database.BeginTransaction();
 
             // load content type to start creating an item...
-            var loader1 = Factory.Resolve<Efc11Loader>();.Init(dbi.SqlDb);
+            var loader1 = Factory.Resolve<Efc11Loader>().UseExistingDb(dbi.SqlDb);
             var app1 = loader1.AppState(test.AppId);
             var ct1 = app1.GetContentType(ctName);
 

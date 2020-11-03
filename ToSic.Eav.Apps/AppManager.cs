@@ -137,8 +137,8 @@ namespace ToSic.Eav.Apps
             if (appName == Constants.ContentAppName || appName == Constants.DefaultAppName || string.IsNullOrEmpty(appName) || !Regex.IsMatch(appName, "^[0-9A-Za-z -_]+$"))
                 throw new ArgumentOutOfRangeException("appName '" + appName + "' not allowed");
 
-            var appId = Factory.Resolve<ZoneManager>().Init(zoneId, parentLog).CreateApp();
             // TODO: #DI
+            var appId = Factory.Resolve<ZoneManager>().Init(zoneId, parentLog).CreateApp();
             Factory.Resolve<AppManager>().Init(new AppIdentity(zoneId, appId), parentLog)
                 .EnsureAppIsConfigured(appName);
         }

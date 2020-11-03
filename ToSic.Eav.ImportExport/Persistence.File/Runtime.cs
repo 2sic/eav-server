@@ -14,6 +14,9 @@ namespace ToSic.Eav.ImportExport.Persistence.File
 {
     public class Runtime : HasLog, IRuntime
     {
+        public const string GroupQuery = "query";
+        public const string GroupConfiguration = "configuration";
+
         #region Constructor and DI
 
         private readonly IServiceProvider _serviceProvider;
@@ -85,10 +88,10 @@ namespace ToSic.Eav.ImportExport.Persistence.File
         {
             Log.Add($"loading items for {groupIdentifier}");
 
-            if(groupIdentifier != "query" && groupIdentifier != "configuration")
+            if(groupIdentifier != GroupQuery && groupIdentifier != GroupConfiguration)
                 throw new ArgumentOutOfRangeException(nameof(groupIdentifier), "atm we can only load items of type 'query'/'configuration'");
 
-            var doQuery = groupIdentifier == "query";
+            var doQuery = groupIdentifier == GroupQuery;
 
             // 3 - return content types
             var entities = new List<IEntity>();
