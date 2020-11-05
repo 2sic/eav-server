@@ -16,7 +16,6 @@ namespace ToSic.Eav.Apps.ImportExport
 		public int AppId { get; private set; }
 		public int ZoneId { get; private set; }
 
-        private IImportExportEnvironment _environment;
 
 	    private XmlToEntity _xmlBuilder;
 
@@ -27,21 +26,28 @@ namespace ToSic.Eav.Apps.ImportExport
 
         private bool AllowUpdateOnSharedTypes { get; set; }
 
+        #region Constructor / DI
         /// <summary>
         /// Empty constructor for DI
         /// </summary>
         public XmlImportWithFiles(Lazy<Import> importerLazy, 
             Lazy<DbDataController> dbDataForNewApp,
             Lazy<DbDataController> dbDataForAppImport,
+            IImportExportEnvironment importExportEnvironment,
             string logName = null) : base(logName ?? "Xml.ImpFil")
         {
             _importerLazy = importerLazy;
             _dbDataForNewApp = dbDataForNewApp;
             _dbDataForAppImport = dbDataForAppImport;
+            _environment = importExportEnvironment;
+            _environment.LinkLog(Log);
         }
         private readonly Lazy<Import> _importerLazy;
         private readonly Lazy<DbDataController> _dbDataForNewApp;
         private readonly Lazy<DbDataController> _dbDataForAppImport;
+        private readonly IImportExportEnvironment _environment;
+
+
 
         /// <summary>
 	    /// Create a new xmlImport instance
@@ -49,21 +55,16 @@ namespace ToSic.Eav.Apps.ImportExport
 	    /// <param name="parentLog"></param>
 	    /// <param name="defaultLanguage">The portals default language / culture - example: de-DE</param>
 	    /// <param name="allowUpdateOnSharedTypes">Specify if the import should be able to change system-wide things like shared attributesets</param>
-	    //public XmlImportWithFiles init(ILog parentLog, string defaultLanguage = null, bool allowUpdateOnSharedTypes = false)
-     //       : this() 
-     //       => Init(defaultLanguage, allowUpdateOnSharedTypes, parentLog);
-
         public XmlImportWithFiles Init(string defaultLanguage, bool allowUpdateOnSharedTypes, ILog parentLog)
         {
             Log.LinkTo(parentLog);
-            _environment = Factory.Resolve<IImportExportEnvironment>();
-            _environment.LinkLog(Log);
             // Prepare
             Messages = new List<Message>();
             DefaultLanguage = (defaultLanguage ?? _environment.DefaultLanguage).ToLowerInvariant();
             AllowUpdateOnSharedTypes = allowUpdateOnSharedTypes;
             return this;
         }
+        #endregion
 
 
         #region Helpers to keep architecture clean for now  - special for template-save in 2sxc

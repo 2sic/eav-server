@@ -3,6 +3,7 @@ using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Run;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Run;
 using ToSic.Eav.Security;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -13,6 +14,8 @@ namespace ToSic.Eav.WebApi.Security
         protected List<IEntity> Items;
 
         #region Constructors and DI / Init
+
+        public MultiPermissionsItems(IZoneMapper zoneMapper): base(zoneMapper) { }
 
         public MultiPermissionsItems Init(IInstanceContext context, IApp app, IEntity item, ILog parentLog) 
         {

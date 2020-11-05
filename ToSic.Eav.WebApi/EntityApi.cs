@@ -7,6 +7,7 @@ using ToSic.Eav.Conversion;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.WebApi.Errors;
 using ToSic.Eav.WebApi.Formats;
 using ToSic.Eav.WebApi.Security;
@@ -18,14 +19,16 @@ namespace ToSic.Eav.WebApi
     {
         private readonly AppRuntime _appRuntime;
         private readonly Lazy<AppManager> _appManagerLazy;
+        private readonly Lazy<EntitiesToDictionary> _entitesToDicLazy;
         public AppRuntime AppRead;
 
-        #region Constructors
+        #region Constructors / DI
 
-        public EntityApi(AppRuntime appRuntime, Lazy<AppManager> appManagerLazy): base("Api.Entity")
+        public EntityApi(AppRuntime appRuntime, Lazy<AppManager> appManagerLazy, Lazy<EntitiesToDictionary> entitesToDicLazy): base("Api.Entity")
         {
             _appRuntime = appRuntime;
             _appManagerLazy = appManagerLazy;
+            _entitesToDicLazy = entitesToDicLazy;
         }
 
         public EntityApi Init(int appId, bool showDrafts, ILog parentLog)
@@ -37,7 +40,7 @@ namespace ToSic.Eav.WebApi
 
         public EntityApi InitOrThrowBasedOnGrants(IInstanceContext context, IApp app, string contentType, List<Eav.Security.Grants> requiredGrants, ILog parentLog)
         {
-            var permCheck = new MultiPermissionsTypes().Init(context, app, contentType, parentLog);
+            var permCheck = _appManagerLazy.Value.ServiceProvider.Build<MultiPermissionsTypes>().Init(context, app, contentType, parentLog);
             if (!permCheck.EnsureAll(requiredGrants, out var error))
                 throw HttpException.PermissionDenied(error);
             return Init(app.AppId, true, parentLog);
@@ -54,28 +57,13 @@ namespace ToSic.Eav.WebApi
             get
             {
                 if (_entitiesToDictionary != null) return _entitiesToDictionary;
-                _entitiesToDictionary = Factory.Resolve<EntitiesToDictionary>();
+                _entitiesToDictionary = _entitesToDicLazy.Value;
                 _entitiesToDictionary.WithGuid = true;
                 _entitiesToDictionary.Init(Log);
                 return _entitiesToDictionary;
             }
         }
         private EntitiesToDictionary _entitiesToDictionary;
-
-        //public IEntity GetOrThrow(string contentType, int id)
-        //    => AppRead.Entities.Get(id).KeepOrThrowIfInvalid(contentType, id);
-            //=> ReturnOrThrowIfInvalid(contentType, id, AppRead.Entities.Get(id));
-
-        //public IEntity GetOrThrow(string contentType, Guid guid)
-        //    => AppRead.Entities.Get(guid).KeepOrThrowIfInvalid(contentType, guid);
-            //=> ReturnOrThrowIfInvalid(contentType, guid, AppRead.Entities.Get(guid));
-
-        //private static IEntity ReturnOrThrowIfInvalid(string contentType, object identifier, IEntity itm)
-        //{
-        //    if (itm == null || contentType != null && !itm.Type.Is(contentType))
-        //        throw new KeyNotFoundException("Can't find " + identifier + "of type '" + contentType + "'");
-        //    return itm;
-        //}
 
         /// <summary>
         /// Get all Entities of specified Type

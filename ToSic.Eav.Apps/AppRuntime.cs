@@ -2,6 +2,7 @@
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Apps
 {
@@ -39,7 +40,7 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// ContentTypes runtime to get content types from this app
         /// </summary>
-        public ContentTypeRuntime ContentTypes => _contentTypes ?? (_contentTypes = Factory.Resolve<ContentTypeRuntime>().Init(this, Log));
+        public ContentTypeRuntime ContentTypes => _contentTypes ?? (_contentTypes = DataSourceFactory.ServiceProvider.Build<ContentTypeRuntime>().Init(this, Log));
         private ContentTypeRuntime _contentTypes; 
 
         /// <summary>

@@ -13,9 +13,12 @@ namespace ToSic.Eav.Apps.Parts
     public class ContentTypeRuntime : PartOf<AppRuntime, ContentTypeRuntime>
     {
         private readonly Lazy<AppRuntime> _lazyMetadataAppRuntime;
-        public ContentTypeRuntime(Lazy<AppRuntime> lazyMetadataAppRuntime) : base("RT.ConTyp")
+        private readonly Lazy<IAppFileSystemLoader> _appFileSystemLoaderLazy;
+
+        public ContentTypeRuntime(Lazy<AppRuntime> lazyMetadataAppRuntime, Lazy<IAppFileSystemLoader> appFileSystemLoaderLazy) : base("RT.ConTyp")
         {
             _lazyMetadataAppRuntime = lazyMetadataAppRuntime;
+            _appFileSystemLoaderLazy = appFileSystemLoaderLazy;
         }
 
         public IEnumerable<IContentType> All => Parent.AppState.ContentTypes;
@@ -103,7 +106,7 @@ namespace ToSic.Eav.Apps.Parts
             try
             {
                 var appState = State.Get(Parent);
-                var appLoader = Factory.Resolve<IAppFileSystemLoader>().Init(appState.AppId, appState.Path, Log);
+                var appLoader = _appFileSystemLoaderLazy.Value.Init(appState.AppId, appState.Path, Log);
                 var inputTypes = appLoader.InputTypes();
                 return wrapLog(null, inputTypes);
             }

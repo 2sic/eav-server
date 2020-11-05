@@ -4,6 +4,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Run;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Run;
 using ToSic.Eav.Security;
 using ToSic.Eav.WebApi.Formats;
 
@@ -14,7 +15,7 @@ namespace ToSic.Eav.WebApi.Security
         private const string _logName = "Sec.MPTyps";
         protected IEnumerable<string> ContentTypes;
 
-        public MultiPermissionsTypes(): base() { }
+        public MultiPermissionsTypes(IZoneMapper zoneMapper): base(zoneMapper) { }
 
         public MultiPermissionsTypes Init(IInstanceContext context, IApp app, string contentType, ILog parentLog)
         {

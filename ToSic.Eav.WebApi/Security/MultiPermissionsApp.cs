@@ -12,6 +12,8 @@ namespace ToSic.Eav.WebApi.Security
 {
     public class MultiPermissionsApp: MultiPermissionsBase
     {
+        private readonly IZoneMapper _zoneMapper;
+
         /// <summary>
         /// The current app which will be used and can be re-used externally
         /// </summary>
@@ -25,10 +27,15 @@ namespace ToSic.Eav.WebApi.Security
 
         #region Constructors and DI
 
-        public MultiPermissionsApp() : base("Api.Perms") { }
+        public MultiPermissionsApp(IZoneMapper zoneMapper) : this(zoneMapper, "Api.Perms") { }
+
+        protected MultiPermissionsApp(IZoneMapper zoneMapper, string logName) : base(logName ?? "Api.Perms")
+        {
+            _zoneMapper = zoneMapper;
+            _zoneMapper.Init(Log);
+        }
 
         public MultiPermissionsApp Init(IInstanceContext context, IApp app, ILog parentLog, string logName = null)
-            // : base("Api.Perms", parentLog)
         {
             Init(parentLog, logName ?? "Api.PermApp");
             var wrapLog = Log.Call<MultiPermissionsApp>($"..., appId: {app.AppId}, ...");
@@ -36,7 +43,7 @@ namespace ToSic.Eav.WebApi.Security
             App = app;
 
             SamePortal = Context.Tenant.ZoneId == App.ZoneId;
-            SiteForSecurityCheck = SamePortal ? Context.Tenant : Factory.Resolve<IZoneMapper>().Init(Log).SiteOfZone(App.ZoneId);
+            SiteForSecurityCheck = SamePortal ? Context.Tenant : _zoneMapper.SiteOfZone(App.ZoneId);
             return wrapLog($"ready for z/a:{app.ZoneId}/{app.AppId} t/z:{App.Site.Id}/{Context.Tenant.ZoneId} same:{SamePortal}", this);
         }
 

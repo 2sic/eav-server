@@ -34,14 +34,17 @@ namespace ToSic.Eav.Apps.ImportExport
         protected ILog Log;
 
         #region Constructors and DI
-        public ZipExport(IServerPaths serverPaths, AppRuntime appRuntime, DataSourceFactory dataSourceFactory)
+
+        public ZipExport(IServerPaths serverPaths, AppRuntime appRuntime, DataSourceFactory dataSourceFactory, XmlExporter xmlExporter)
         {
             _serverPaths = serverPaths;
+            _xmlExporter = xmlExporter;
             AppRuntime = appRuntime;
             DataSourceFactory = dataSourceFactory;
         }
 
         private readonly IServerPaths _serverPaths;
+        private readonly XmlExporter _xmlExporter;
         private AppRuntime AppRuntime { get; }
         public DataSourceFactory DataSourceFactory { get; }
 
@@ -160,8 +163,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 .Select(e => e.EntityId.ToString()).ToArray();
 
 
-            var xmlExport = Factory.Resolve<XmlExporter>()
-                .Init(_zoneId, _appId, runtime, true, contentTypeNames, entityIds, Log);
+            var xmlExport = _xmlExporter.Init(_zoneId, _appId, runtime, true, contentTypeNames, entityIds, Log);
 
             #region reset App Guid if necessary
 

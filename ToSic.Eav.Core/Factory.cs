@@ -45,6 +45,15 @@ namespace ToSic.Eav
         }
 
         /// <summary>
+        /// This is a special internal resolver for static objects
+        /// Should only be used with extreme caution, as downstream objects
+        /// May need more scope-specific stuff, why may be missing
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static T StaticBuild<T>() => GetServiceProvider().Build<T>();
+
+        /// <summary>
         /// Dependency Injection resolver with a known type as a parameter.
         /// </summary>
         /// <param name="T">The type or interface we need</param>
