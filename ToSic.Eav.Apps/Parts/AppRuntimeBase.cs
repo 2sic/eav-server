@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.DataSources;
+﻿using System;
+using ToSic.Eav.DataSources;
 using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps.Parts
@@ -12,6 +13,8 @@ namespace ToSic.Eav.Apps.Parts
 
         public DataSourceFactory DataSourceFactory { get; }
         public bool ShowDrafts { get; private set; }
+
+        public IServiceProvider ServiceProvider => DataSourceFactory.ServiceProvider;
 
         protected AppRuntimeBase(DataSourceFactory dataSourceFactory, string logName): base(logName, new CodeRef())
         {

@@ -2,13 +2,14 @@
 using System.IO;
 using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.ImportExport.Options;
+using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Apps.Parts
 {
     public partial class EntitiesManager
     {
         public ExportListXml Exporter(string contentType)
-            => new ExportListXml(Parent.AppState, Parent.Read.ContentTypes.Get(contentType), Log);
+            => Parent.ServiceProvider.Build<ExportListXml>().Init(Parent.AppState, Parent.Read.ContentTypes.Get(contentType), Log);
 
         public ImportListXml Importer(
             string contentTypeName,

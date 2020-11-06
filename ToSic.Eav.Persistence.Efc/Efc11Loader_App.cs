@@ -39,7 +39,6 @@ namespace ToSic.Eav.Persistence.Efc
         private IServiceProvider ServiceProvider { get; }
         private EavDbContext _dbContext;
         private readonly Lazy<IEnvironment> _environmentLazy;
-        private readonly Lazy<IAppRepositoryLoader> _fileSystemLoaderLazy;
 
         #endregion
 

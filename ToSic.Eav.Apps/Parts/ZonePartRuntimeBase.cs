@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Logging;
+﻿using System;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -9,9 +10,13 @@ namespace ToSic.Eav.Apps.Parts
         where TRuntime: ZoneRuntime 
         where T : ZonePartRuntimeBase<TRuntime, T>
     {
+        public IServiceProvider ServiceProvider { get; }
         protected TRuntime ZoneRuntime { get; private set; }
 
-        protected ZonePartRuntimeBase(string logName): base(logName) { }
+        protected ZonePartRuntimeBase(IServiceProvider serviceProvider, string logName): base(logName)
+        {
+            ServiceProvider = serviceProvider;
+        }
 
         //protected ZonePartRuntimeBase(TRuntime zoneRuntime, ILog parentLog, string logName = null): base(logName ?? "App.RunTB", parentLog)
         //{

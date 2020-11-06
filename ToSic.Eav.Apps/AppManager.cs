@@ -131,15 +131,15 @@ namespace ToSic.Eav.Apps
         /// app-definition
         /// </summary>
         /// <returns></returns>
-        public static void AddBrandNewApp(int zoneId, string appName, ILog parentLog)
+        public void AddBrandNewApp(int zoneId, string appName)
         {
             // check if invalid app-name
             if (appName == Constants.ContentAppName || appName == Constants.DefaultAppName || string.IsNullOrEmpty(appName) || !Regex.IsMatch(appName, "^[0-9A-Za-z -_]+$"))
                 throw new ArgumentOutOfRangeException("appName '" + appName + "' not allowed");
 
             // TODO: #DI
-            var appId = Factory.Resolve<ZoneManager>().Init(zoneId, parentLog).CreateApp();
-            Factory.Resolve<AppManager>().Init(new AppIdentity(zoneId, appId), parentLog)
+            var appId = ServiceProvider.Build<ZoneManager>().Init(zoneId, Log).CreateApp();
+            ServiceProvider.Build<AppManager>().Init(new AppIdentity(zoneId, appId), Log)
                 .EnsureAppIsConfigured(appName);
         }
 

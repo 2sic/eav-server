@@ -2,12 +2,10 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps.ImportExport;
-using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc;
-using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Apps.Tests.ImportExport
@@ -104,7 +102,7 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
             var loader = Factory.Resolve<Efc11Loader>();//.Init(dbc.SqlDb);
             var appPackage = loader.AppState(appId);
             var type = appPackage.ContentTypes.First(ct => ct.Name == ctName);
-            return new ExportListXml(appPackage, type, Log);
+            return Eav.Factory.Resolve<ExportListXml>().Init(appPackage, type, Log);
         }
     }
 }

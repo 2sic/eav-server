@@ -19,13 +19,20 @@ namespace ToSic.Eav.Apps.ImportExport
     {
         private readonly XmlBuilder _xBuilder = new XmlBuilder();
 
-        private AppState App { get; }
-        public IContentType ContentType { get; }
+        private AppState App { get; set; }
+        public IContentType ContentType { get; set; }
 
-        public ExportListXml(AppState app, IContentType contentType, ILog parentLog): base("App.LstExp", parentLog)
+        protected ExportListXml() : base("App.LstExp")
         {
+
+        }
+
+        public ExportListXml Init(AppState app, IContentType contentType, ILog parentLog)
+        {
+            Log.LinkTo(parentLog);
             App = app;
             ContentType = contentType;
+            return this;
         }
 
 
