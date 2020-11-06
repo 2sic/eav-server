@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Data;
 using ToSic.Eav.Persistence.Versions;
+using ToSic.Eav.Plumbing;
 using IEntity = ToSic.Eav.Data.IEntity;
 using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
 
@@ -41,7 +41,7 @@ namespace ToSic.Eav.Apps.Parts
         ///// <param name="defaultCultureDimension">Default Language</param>
         private IEntity PrepareRestoreEntity(int entityId, int changeId)
         {
-            var deserializer = new JsonSerializer(Parent.AppState, Log);
+            var deserializer = Parent.ServiceProvider.Build<JsonSerializer>().Init(Parent.AppState, Log);
 
             var str = GetFromTimelime(entityId, changeId);
             return deserializer.Deserialize(str);

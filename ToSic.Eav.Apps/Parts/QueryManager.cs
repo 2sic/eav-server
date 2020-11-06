@@ -77,7 +77,7 @@ namespace ToSic.Eav.Apps.Parts
         }
 
         private JsonSerializer Serializer 
-            => _serializer ?? (_serializer = new JsonSerializer(Parent.AppState, Log));
+            => _serializer ?? (_serializer = Parent.ServiceProvider.Build<JsonSerializer>().Init(Parent.AppState, Log));
         private JsonSerializer _serializer;
 
         public bool Delete(int id)

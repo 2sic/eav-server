@@ -1,6 +1,5 @@
 ﻿using ToSic.Eav.Serialization;
-using ToSic.Eav.Logging;
-using AppState = ToSic.Eav.Apps.AppState;
+using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.ImportExport.Json
 {
@@ -12,15 +11,15 @@ namespace ToSic.Eav.ImportExport.Json
         /// <summary>
         /// Initialize with the correct logger name
         /// </summary>
-        public JsonSerializer(): base("Jsn.Serlzr") {}
+        public JsonSerializer(ITargetTypes metadataTargets) : this(metadataTargets, "Jsn.Serlzr") {}
 
-        protected JsonSerializer(string logName): base(logName) { }
+        protected JsonSerializer(ITargetTypes metadataTargets, string logName): base(metadataTargets, logName) { }
 
-        // todo: replace with call to Init(...)
-        public JsonSerializer(AppState package, ILog parentLog): this()
-        {
-            Initialize(package, parentLog);
-        }
+        //// todo: replace with call to Init(...)
+        //public JsonSerializer(AppState package, ILog parentLog): this()
+        //{
+        //    Initialize(package, parentLog);
+        //}
     }
 
     internal static class StringHelpers

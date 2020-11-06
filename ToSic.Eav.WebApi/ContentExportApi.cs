@@ -13,6 +13,7 @@ using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.ImportExport.Validation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.File;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.Run;
 using ToSic.Eav.WebApi.Helpers;
 using ToSic.Eav.WebApi.Security;
@@ -86,7 +87,7 @@ namespace ToSic.Eav.WebApi
             Log.Add($"get fields type:{name}");
             SecurityHelpers.ThrowIfNotAdmin(user);
             var type = _appManager.Read.ContentTypes.Get(name);
-            var serializer = new JsonSerializer(_appManager.AppState, Log);
+            var serializer = _appManager.ServiceProvider.Build<JsonSerializer>().Init(_appManager.AppState, Log);
 
             return Download.BuildDownload(serializer.Serialize(type),
                 (type.Scope + "." + type.StaticName + ImpExpConstants.Extension(ImpExpConstants.Files.json))
@@ -99,7 +100,7 @@ namespace ToSic.Eav.WebApi
             Log.Add($"get fields id:{id}");
             SecurityHelpers.ThrowIfNotAdmin(user);
             var entity = _appManager.Read.Entities.Get(id);
-            var serializer = new JsonSerializer(_appManager.AppState, Log);
+            var serializer = _appManager.ServiceProvider.Build<JsonSerializer>().Init(_appManager.AppState, Log);
 
             return Download.BuildDownload(
                 serializer.Serialize(entity, withMetadata ? FileSystemLoader.QueryMetadataDepth : 0),

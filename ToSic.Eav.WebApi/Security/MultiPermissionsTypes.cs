@@ -67,7 +67,7 @@ namespace ToSic.Eav.WebApi.Security
         /// </summary>
         /// <param name="typeName"></param>
         /// <returns></returns>
-        protected IPermissionCheck BuildTypePermissionChecker(string typeName)
+        private IPermissionCheck BuildTypePermissionChecker(string typeName)
         {
             Log.Add($"BuildTypePermissionChecker({typeName})");
             // now do relevant security checks

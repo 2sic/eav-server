@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Apps.Run
@@ -12,19 +14,30 @@ namespace ToSic.Eav.Apps.Run
             Page = page;
             Container = container;
             User = user;
-            _serviceProvider = serviceProvider;
+            ServiceProvider = serviceProvider ?? throw new Exception("Context didn't receive service provider, but this is absolutely necessary.");
         }
 
-        public IInstanceContext Clone(ISite site = null, IPage page = null, IContainer container = null, IUser user = null) 
-            => new InstanceContext(site ?? Tenant, page ?? Page, container ?? Container, user ?? User, ServiceProvider);
-
-        [PrivateApi("TempTempCulture/wip")]
-        public IServiceProvider ServiceProvider => _serviceProvider ?? (_serviceProvider = Eav.Factory.GetServiceProvider());
-        private IServiceProvider _serviceProvider;
 
         public ISite Tenant { get; }
         public IPage Page { get; protected set; }
         public IContainer Container { get; }
         public IUser User { get; }
+        public IServiceProvider ServiceProvider { get; }
+
+        public IInstanceContext Clone(ISite site = null, IPage page = null, IContainer container = null, IUser user = null) 
+            => new InstanceContext(site ?? Tenant, page ?? Page, container ?? Container, user ?? User, ServiceProvider);
+
+        #region Parameters / URL Parameters
+
+        //public List<KeyValuePair<string, string>> Parameters
+        //{
+        //    get => _parameters ?? (_parameters = GetQueryStringKvp());
+        //    set => _parameters = value;
+        //}
+        //private List<KeyValuePair<string, string>> _parameters;
+
+        //protected abstract List<KeyValuePair<string, string>> GetQueryStringKvp();
+
+        #endregion
     }
 }

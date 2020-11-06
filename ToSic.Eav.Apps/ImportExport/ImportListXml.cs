@@ -28,7 +28,7 @@ namespace ToSic.Eav.Apps.ImportExport
         private AppState App { get; set; }
         private AppManager AppMan { get; set; }
 
-        public ImportListXml(Lazy<AttributeBuilder> lazyAttributeBuilder, Lazy<Import> importerLazy): base("App.ImpVtT")
+        public ImportListXml(Lazy<AttributeBuilder> lazyAttributeBuilder, Lazy<Import> importerLazy) : base("App.ImpVtT")
         {
             _lazyAttributeBuilder = lazyAttributeBuilder;
             _importerLazy = importerLazy;
@@ -185,7 +185,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     }
 
                     var valExisting =
-                        ExportListXml.GetExactAssignedValue(existingEnt[attribute.Name], valueReferenceLanguage, null);
+                        ExportImportValueConversion.GetExactAssignedValue(existingEnt[attribute.Name], valueReferenceLanguage, null);
                     if (valExisting == null)
                     {
                         ErrorLog.Add(ImportErrorCode.InvalidValueReference, value, nodesCount);

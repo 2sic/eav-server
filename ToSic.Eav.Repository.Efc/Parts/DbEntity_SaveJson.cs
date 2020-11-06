@@ -15,13 +15,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
             if (logDetails) Log.Add($"will serialize-json id:{newEnt.EntityId}");
             try
             {
-                jsonExport = _serializer.Serialize(newEnt);
+                jsonExport = Serializer.Serialize(newEnt);
             }
             catch
             {
                 if (logDetails) Log.Add("Error serializing - will repeat with detailed with logging");
-                _serializer.LinkLog(Log);
-                jsonExport = _serializer.Serialize(newEnt);
+                Serializer.LinkLog(Log);
+                jsonExport = Serializer.Serialize(newEnt);
             }
 
             return jsonExport;

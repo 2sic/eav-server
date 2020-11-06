@@ -33,11 +33,11 @@ namespace ToSic.Eav.WebApi.Security
         /// Creates a permission checker for an type in this app
         /// </summary>
         /// <returns></returns>
-        protected IPermissionCheck BuildItemPermissionChecker(IEntity item)
+        private IPermissionCheck BuildItemPermissionChecker(IEntity item)
         {
-            Log.Call($"{item.EntityId}");
+            var wrap = Log.Call< IPermissionCheck>($"{item.EntityId}");
             // now do relevant security checks
-            return BuildPermissionChecker(item.Type, item);
+            return wrap("ok", BuildPermissionChecker(item.Type, item));
         }
     }
 }

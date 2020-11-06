@@ -5,6 +5,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Persistence.Efc.Models;
+using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
@@ -56,7 +57,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     Log.Add($"Must convert back to entity, to then modify the EntityId. The json: {json}");
                     // update the content-id
                     draftToPublishForJson.ResetEntityId(publishedId);
-                    var serializer = new JsonSerializer();
+                    var serializer = DbContext.ServiceProvider.Build<JsonSerializer>();
                     json = serializer.Serialize(draftToPublishForJson);
 
                     Log.Add($"changed - final json: {json}");

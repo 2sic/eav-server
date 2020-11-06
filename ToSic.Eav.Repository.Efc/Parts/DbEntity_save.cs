@@ -17,7 +17,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         private List<DimensionDefinition> _zoneLangs;
 
-        private readonly JsonSerializer _serializer = new JsonSerializer();
+
 
         private int SaveEntity(IEntity newEnt, SaveOptions so, bool logDetails)
         {
@@ -145,7 +145,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     (newEnt as Entity)?.SetVersion(dbEnt.Version);
 
                     // prepare export for save json OR versioning later on
-                    jsonExport = _serializer.Serialize(newEnt);
+                    jsonExport = Serializer.Serialize(newEnt);
 
                     if (saveJson)
                     {

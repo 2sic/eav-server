@@ -30,6 +30,9 @@ namespace ToSic.Eav.Apps
             // App Dependencies
             services.TryAddTransient<App.AppDependencies>();
 
+            // export import stuff
+            services.TryAddTransient<ExportImportValueConversion>();
+
             return services;
         }
 

@@ -3,6 +3,7 @@ using ToSic.Eav.Apps.Run;
 using ToSic.Eav.Apps.Security;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security;
 using IApp = ToSic.Eav.Apps.IApp;
@@ -50,9 +51,6 @@ namespace ToSic.Eav.WebApi.Security
         #endregion
 
         protected override Dictionary<string, IPermissionCheck> InitializePermissionChecks()
-            => InitPermissionChecksForApp();
-
-        protected Dictionary<string, IPermissionCheck> InitPermissionChecksForApp()
             => new Dictionary<string, IPermissionCheck>
             {
                 {"App", BuildPermissionChecker()}
@@ -79,7 +77,7 @@ namespace ToSic.Eav.WebApi.Security
             Log.Add($"BuildPermissionChecker(type:{type?.Name}, item:{item?.EntityId})");
 
             // user has edit permissions on this app, and it's the same app as the user is coming from
-            return Factory.Resolve<AppPermissionCheck>()
+            return Context.ServiceProvider.Build<AppPermissionCheck>()
                 .ForParts(Context.Clone(SiteForSecurityCheck), App, type, item, Log);
         }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Apps.Run
@@ -15,7 +16,8 @@ namespace ToSic.Eav.Apps.Run
 
         IInstanceContext Clone(ISite site = null, IPage page = null, IContainer container = null, IUser user = null);
 
-        // wip testing
         IServiceProvider ServiceProvider { get; }
+
+        //List<KeyValuePair<string, string>> PageParameters { get; }
     }
 }

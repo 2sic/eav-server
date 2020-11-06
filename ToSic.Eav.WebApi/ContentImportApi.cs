@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Data;
+using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Logging;
 using ToSic.Eav.WebApi.Dto;
 
@@ -19,11 +20,13 @@ namespace ToSic.Eav.WebApi
     public class ContentImportApi : HasLog
     {
         private readonly Lazy<AppManager> _appManagerLazy;
+        private readonly Lazy<JsonSerializer> _jsonSerializerLazy;
         private AppManager _appManager;
 
-        public ContentImportApi(Lazy<AppManager> appManagerLazy) : base("Api.EaCtIm")
+        public ContentImportApi(Lazy<AppManager> appManagerLazy, Lazy<JsonSerializer> jsonSerializerLazy) : base("Api.EaCtIm")
         {
             _appManagerLazy = appManagerLazy;
+            _jsonSerializerLazy = jsonSerializerLazy;
         }
 
         public ContentImportApi Init(int appId, ILog parentLog)
@@ -91,10 +94,9 @@ namespace ToSic.Eav.WebApi
             try
             {
                 var callLog = Log.Call<bool>(null, "import json item" + args.DebugInfo);
-                var deserializer = new ImportExport.Json.JsonSerializer(_appManager.AppState, Log)
-                {
-                    PreferLocalAppTypes = true, // Since we're importing directly into this app, we prefer local content-types
-                };
+                var deserializer = _jsonSerializerLazy.Value.Init(_appManager.AppState, Log);
+                // Since we're importing directly into this app, we prefer local content-types
+                deserializer.PreferLocalAppTypes = true; 
 
                 _appManager.Entities.Import(new List<IEntity> {deserializer.Deserialize(args.GetContentString()) });
                 return callLog("ok", true);

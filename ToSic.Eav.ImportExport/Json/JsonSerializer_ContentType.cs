@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Json.V1;
+using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.ImportExport.Json
 {
@@ -23,7 +24,7 @@ namespace ToSic.Eav.ImportExport.Json
             var sharableCt = contentType as IContentTypeShared;
             JsonContentTypeShareable jctShare = null;
 
-            var jsonSerializer = new JsonSerializer();
+            var jsonSerializer = new JsonSerializer(null /* todo: DI */);
 
             var attribs = contentType.Attributes
                 .OrderBy(a => a.SortOrder)

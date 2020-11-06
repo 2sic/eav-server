@@ -4,10 +4,12 @@ using System.Diagnostics;
 using System.Linq;
 using Newtonsoft.Json;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Conversion;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.WebApi.Dto;
 using ToSic.Eav.WebApi.Helpers;
 
@@ -21,13 +23,15 @@ namespace ToSic.Eav.WebApi
     {
         public QueryBuilder QueryBuilder { get; }
         private readonly Lazy<AppManager> _appManagerLazy;
+        private readonly Lazy<EntitiesToDictionary> _entToDicLazy;
         private AppManager _appManager;
 
-        public QueryApi(Lazy<AppManager> appManagerLazy, QueryBuilder queryBuilder): base("Api.EavQry")
+        public QueryApi(Lazy<AppManager> appManagerLazy, QueryBuilder queryBuilder, Lazy<EntitiesToDictionary> entToDicLazy): base("Api.EavQry")
         {
             QueryBuilder = queryBuilder;
             QueryBuilder.Init(Log);
             _appManagerLazy = appManagerLazy;
+            _entToDicLazy = entToDicLazy;
         }
 
         public QueryApi Init(int appId, ILog parentLog)
@@ -105,7 +109,7 @@ namespace ToSic.Eav.WebApi
             var serializeWrap = Log.Call("Serialize", useTimer: true);
             var timer = new Stopwatch();
             timer.Start();
-		    var query = Helpers.Serializers.GetSerializerWithGuidEnabled().Convert(outStreams);
+		    var query = _entToDicLazy.Value.EnableGuids().Convert(outStreams);
             timer.Stop();
             serializeWrap("ok");
 
@@ -145,7 +149,7 @@ namespace ToSic.Eav.WebApi
             {
                 Log.Add("import content" + args.DebugInfo);
 
-                var deser = new Eav.ImportExport.Json.JsonSerializer(_appManager.AppState, Log);
+                var deser = _appManager.ServiceProvider.Build<ImportExport.Json.JsonSerializer>().Init(_appManager.AppState, Log);
                 var ents = deser.Deserialize(args.GetContentString());
                 var qdef = new QueryDefinition(ents, args.AppId, Log);
                 _appManager.Queries.SaveCopy(qdef);

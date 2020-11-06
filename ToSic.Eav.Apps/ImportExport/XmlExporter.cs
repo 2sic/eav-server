@@ -11,7 +11,6 @@ using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Environment;
 using ToSic.Eav.ImportExport.Xml;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Persistence.Xml;
 
@@ -20,8 +19,9 @@ namespace ToSic.Eav.Apps.ImportExport
     // this has a minimal risk of being different!
     // should all get it from cache only!
 
-    public abstract class XmlExporter: IHasLog
+    public abstract class XmlExporter: HasLog
     {
+
         #region simple properties
         protected readonly List<int> ReferencedFileIds = new List<int>();
         protected readonly List<int> ReferencedFolderIds = new List<int>();
@@ -33,24 +33,28 @@ namespace ToSic.Eav.Apps.ImportExport
         public List<Message> Messages = new List<Message>();
 
         public AppState AppState { get; private set; }
-        public XmlSerializer Serializer { get; private set; }
 
         public int ZoneId { get; private set; }
 
         private string _appStaticName = "";
         #endregion
 
-        public ILog Log { get; private set; } = new Log("Xml.Exp");
+        #region Constructor & DI
 
-        #region Constructor stuff
+        protected XmlExporter(XmlSerializer xmlSerializer) : base("Xml.Exp")
+        {
+            Serializer = xmlSerializer;
+        }
+        public XmlSerializer Serializer { get; private set; }
 
         protected void Constructor(int zoneId, AppRuntime app, string appStaticName, bool appExport, string[] typeNamesOrIds, string[] entityIds, ILog parentLog)
         {
             ZoneId = zoneId;
-            Log = new Log("Xml.Exp", parentLog, "start XML exporter using app-package");
+            Log.LinkTo(parentLog);
+            Log.Add("start XML exporter using app-package");
             AppState = app.AppState;
-            Serializer = new XmlSerializer(app.Zone.Languages().ToDictionary(l => l.EnvironmentKey.ToLower(), l => l.DimensionId));
-            Serializer.Initialize(AppState, Log);
+            Serializer.Init(app.Zone.Languages().ToDictionary(l => l.EnvironmentKey.ToLower(), l => l.DimensionId),
+                AppState, Log);
 
             _appStaticName = appStaticName;
             _isAppExport = appExport;

@@ -97,12 +97,14 @@ namespace ToSic.Eav.Repository.Efc
         #region new stuff
 
         public EavDbContext SqlDb { get; }
+        internal IServiceProvider ServiceProvider { get; }
 
-        public DbDataController(EavDbContext dbContext, Lazy<Efc11Loader> efcLoaderLazy, Lazy<IUser> userLazy) : base("Db.Data")
+        public DbDataController(EavDbContext dbContext, Lazy<Efc11Loader> efcLoaderLazy, Lazy<IUser> userLazy, IServiceProvider serviceProvider) : base("Db.Data")
         {
             _efcLoaderLazy = efcLoaderLazy;
             _userLazy = userLazy;
             SqlDb = dbContext;
+            ServiceProvider = serviceProvider;
             SqlDb.AlternateSaveHandler += SaveChanges;
         }
 

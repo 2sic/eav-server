@@ -40,25 +40,25 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
         [TestMethod]
         public void XmlTable_ResolveHyperlink()
         {
-            var resolver = Factory.Resolve<IValueConverter>();
+            var exportListXml = Factory.Resolve<ExportImportValueConversion>();
 
             // test the Resolve Hyperlink
             string link = "";
-            link = ExportListXml.ResolveHyperlinksFromSite(AppId, ItemGuid, link2sic, Constants.DataTypeHyperlink, resolver);
+            link = exportListXml.ResolveHyperlinksFromSite(AppId, ItemGuid, link2sic, Constants.DataTypeHyperlink);
             Assert.AreEqual(link, link2sic, "real link should stay the same");
 
-            link = ExportListXml.ResolveHyperlinksFromSite(AppId, ItemGuid, linkFile, Constants.DataTypeHyperlink, resolver);
+            link = exportListXml.ResolveHyperlinksFromSite(AppId, ItemGuid, linkFile, Constants.DataTypeHyperlink);
             Assert.AreNotEqual(link, linkFile, "file link should change");
 
-            link = ExportListXml.ResolveHyperlinksFromSite(AppId, ItemGuid, linkPage, Constants.DataTypeHyperlink, resolver);
+            link = exportListXml.ResolveHyperlinksFromSite(AppId, ItemGuid, linkPage, Constants.DataTypeHyperlink);
             Assert.AreNotEqual(link, linkPage, "page link should change");
 
-            link = ExportListXml.ResolveHyperlinksFromSite(AppId, ItemGuid, "http://www.2sic.com/", NonLinkType, resolver);
+            link = exportListXml.ResolveHyperlinksFromSite(AppId, ItemGuid, "http://www.2sic.com/", NonLinkType);
             Assert.AreEqual(link, link2sic, "non-link shouldn't resolve");
 
-            link = ExportListXml.ResolveHyperlinksFromSite(AppId, ItemGuid, linkPage, NonLinkType, resolver);
+            link = exportListXml.ResolveHyperlinksFromSite(AppId, ItemGuid, linkPage, NonLinkType);
             Assert.AreEqual(link, linkPage, "non-link shouldn't resolve");
-            link = ExportListXml.ResolveHyperlinksFromSite(AppId, ItemGuid, linkFile, NonLinkType, resolver);
+            link = exportListXml.ResolveHyperlinksFromSite(AppId, ItemGuid, linkFile, NonLinkType);
             Assert.AreEqual(link, linkFile, "non-link shouldn't resolve");
         }
 
@@ -71,26 +71,27 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
             TestResolvesWithNonLinkType(Constants.DataTypeHyperlink, false);
 
             var attrType = Constants.DataTypeHyperlink;
-            var resolver = Factory.Resolve<IValueConverter>();
+            var ExportListXml = Factory.Resolve<ExportImportValueConversion>();
+
             // test resolves on any value, just certainly not a link, with "no-resolve"
-            Assert.AreEqual(XmlConstants.Null, ExportListXml.ResolveValue(AppId, ItemGuid, attrType, null, true, resolver), "test null resolve");
-            Assert.AreEqual(XmlConstants.Empty, ExportListXml.ResolveValue(AppId, ItemGuid, attrType, "", true, resolver), "test empty resolve");
-            Assert.AreEqual(unchanged, ExportListXml.ResolveValue(AppId, ItemGuid, attrType, unchanged, true, resolver), "test text resolve");
-            Assert.AreEqual(link2sic, ExportListXml.ResolveValue(AppId, ItemGuid, attrType, link2sic, true, resolver), "test http: resolve");
-            Assert.AreNotEqual(linkFile, ExportListXml.ResolveValue(AppId, ItemGuid, attrType, linkFile, true, resolver), "test file: resolve");
-            Assert.AreNotEqual(linkPage, ExportListXml.ResolveValue(AppId, ItemGuid, attrType, linkPage, true, resolver), "test page: resolve");
+            Assert.AreEqual(XmlConstants.Null, ExportListXml.ResolveValue(AppId, ItemGuid, attrType, null, true), "test null resolve");
+            Assert.AreEqual(XmlConstants.Empty, ExportListXml.ResolveValue(AppId, ItemGuid, attrType, "", true), "test empty resolve");
+            Assert.AreEqual(unchanged, ExportListXml.ResolveValue(AppId, ItemGuid, attrType, unchanged, true), "test text resolve");
+            Assert.AreEqual(link2sic, ExportListXml.ResolveValue(AppId, ItemGuid, attrType, link2sic, true), "test http: resolve");
+            Assert.AreNotEqual(linkFile, ExportListXml.ResolveValue(AppId, ItemGuid, attrType, linkFile, true), "test file: resolve");
+            Assert.AreNotEqual(linkPage, ExportListXml.ResolveValue(AppId, ItemGuid, attrType, linkPage, true), "test page: resolve");
         }
 
         private void TestResolvesWithNonLinkType(string attrType, bool tryResolve)
         {
-            var resolver = Factory.Resolve<IValueConverter>();
+            var ExportListXml = Factory.Resolve<ExportImportValueConversion>();
 
-            Assert.AreEqual(XmlConstants.Null, ExportListXml.ResolveValue(AppId, ItemGuid, attrType, null, tryResolve, resolver), "test null resolve");
-            Assert.AreEqual(XmlConstants.Empty, ExportListXml.ResolveValue(AppId, ItemGuid, attrType, "", tryResolve, resolver), "test empty resolve");
-            Assert.AreEqual(unchanged, ExportListXml.ResolveValue(AppId, ItemGuid, attrType, unchanged, tryResolve, resolver), "test text resolve");
-            Assert.AreEqual(link2sic, ExportListXml.ResolveValue(AppId, ItemGuid, attrType, link2sic, tryResolve, resolver), "test http: resolve");
-            Assert.AreEqual(linkFile, ExportListXml.ResolveValue(AppId, ItemGuid, attrType, linkFile, tryResolve, resolver), "test file: resolve");
-            Assert.AreEqual(linkPage, ExportListXml.ResolveValue(AppId, ItemGuid, attrType, linkPage, tryResolve, resolver), "test page: resolve");
+            Assert.AreEqual(XmlConstants.Null, ExportListXml.ResolveValue(AppId, ItemGuid, attrType, null, tryResolve), "test null resolve");
+            Assert.AreEqual(XmlConstants.Empty, ExportListXml.ResolveValue(AppId, ItemGuid, attrType, "", tryResolve), "test empty resolve");
+            Assert.AreEqual(unchanged, ExportListXml.ResolveValue(AppId, ItemGuid, attrType, unchanged, tryResolve), "test text resolve");
+            Assert.AreEqual(link2sic, ExportListXml.ResolveValue(AppId, ItemGuid, attrType, link2sic, tryResolve), "test http: resolve");
+            Assert.AreEqual(linkFile, ExportListXml.ResolveValue(AppId, ItemGuid, attrType, linkFile, tryResolve), "test file: resolve");
+            Assert.AreEqual(linkPage, ExportListXml.ResolveValue(AppId, ItemGuid, attrType, linkPage, tryResolve), "test page: resolve");
         }
 
         #endregion

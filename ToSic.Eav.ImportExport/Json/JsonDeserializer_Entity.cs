@@ -57,7 +57,7 @@ namespace ToSic.Eav.ImportExport.Json
             {
                 var md = jEnt.For;
                 Log.Add($"this is metadata; will construct 'For' object. Type: {md.Target}");
-                ismeta.TargetType = GetMetadataNumber(md.Target);
+                ismeta.TargetType = MetadataTargets.GetId(md.Target);
                 ismeta.KeyGuid = md.Guid;
                 ismeta.KeyNumber = md.Number;
                 ismeta.KeyString = md.String;
