@@ -31,12 +31,12 @@ namespace ToSic.Eav.LookUp
 		}
 
         /// <inheritdoc/>
-        public override string Get(string key, string format, ref bool notFound)
+        public override string Get(string key, string format/*, ref bool notFound*/)
 		{
             // first try a safe check
             if (!Properties.ContainsKey(key))
             {
-                notFound = true;
+                //notFound = true;
                 return null;
             }
 
@@ -47,7 +47,7 @@ namespace ToSic.Eav.LookUp
 			}
 			catch (KeyNotFoundException)
 			{
-				notFound = true;
+				//notFound = true;
 				return null;
 			}
 		}

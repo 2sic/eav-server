@@ -67,12 +67,10 @@ namespace ToSic.Eav.LookUp
 
 
         /// <inheritdoc/>
-        public override string Get(string key, string format, ref bool notFound)
+        public override string Get(string key, string format)
         {
-            //if (!_initialized) 
             Initialize();
-
-            return base.Get(key, format, ref notFound);
+            return base.Get(key, format);
         }
 	}
 }

@@ -43,22 +43,11 @@ namespace ToSic.Eav.LookUp
         
         
         /// <inheritdoc/>
-        public override string Get(string key, string format, ref bool notFound)
+        public override string Get(string key, string format)
         {
-            var usedSource = Providers.FirstOrDefault(p => !string.IsNullOrEmpty(p.Get(key)));// .Find(p => p.Has(key));
-            // Implementation before 2020-11-07, cannot have worked reliably
-            // var usedSource = Providers.Find(p => p.Has(key));
-            if (usedSource == null)
-            {
-                notFound = true;
-                return null;
-            }
-            return usedSource.Get(key, format, ref notFound);
+            var usedSource = Providers.FirstOrDefault(p => !string.IsNullOrEmpty(p.Get(key)));
+            return usedSource == null ? string.Empty : usedSource.Get(key, format);
         }
-
-        ///// <inheritdoc/>
-        //public bool Has(string key)
-        //    => Providers.Any(prov => prov.Has(key));
 
     }
 }
