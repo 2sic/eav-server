@@ -21,24 +21,13 @@ namespace ToSic.Eav.Apps
     /// </summary>
     public class AppManager: AppRuntimeBase<AppManager>
     {
-        public IServiceProvider ServiceProvider { get; }
-
         #region Constructors
 
-        public AppManager(IServiceProvider serviceProvider, DataSourceFactory dataSourceFactory) : base(dataSourceFactory, "Eav.AppMan")
-        {
-            ServiceProvider = serviceProvider;
-        }
-        protected AppManager(IServiceProvider serviceProvider, DataSourceFactory dataSourceFactory, string logName) : base(dataSourceFactory, logName)
-        {
-            ServiceProvider = serviceProvider;
-        }
+        public AppManager(DataSourceFactory dataSourceFactory) : base(dataSourceFactory, "Eav.AppMan") { }
 
-        public AppManager Init(IAppIdentity app, ILog parentLog)
-        {
-            Init(app, true, parentLog);
-            return this;
-        }
+        protected AppManager(DataSourceFactory dataSourceFactory, string logName) : base(dataSourceFactory, logName) { }
+
+        public AppManager Init(IAppIdentity app, ILog parentLog) => Init(app, true, parentLog);
 
         public AppManager Init(int appId, ILog parentLog) => Init(State.Identity(null, appId), true, parentLog);
 

@@ -42,7 +42,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             var id = DevPc2dmItemOnHome;
             var version = 2;
-            var appMan = new AppManager(td, null);
+            var appMan = new AppManager(null);
             var dc = Factory.Resolve<DbDataController>().Init(td.ZoneId, td.AppId, Log);
             var all = appMan.Entities.VersionHistory(id);  dc.Versioning.GetHistoryList(id, false);
             var vId = all.First(x => x.VersionNumber == version).ChangeSetId;

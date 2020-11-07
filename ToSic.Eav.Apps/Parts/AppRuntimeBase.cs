@@ -12,6 +12,7 @@ namespace ToSic.Eav.Apps.Parts
         #region Constructor / DI
 
         public DataSourceFactory DataSourceFactory { get; }
+
         public bool ShowDrafts { get; private set; }
 
         public IServiceProvider ServiceProvider => DataSourceFactory.ServiceProvider;
