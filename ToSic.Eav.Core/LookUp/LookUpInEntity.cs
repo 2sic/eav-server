@@ -117,15 +117,17 @@ namespace ToSic.Eav.LookUp
         public override string Get(string key, string format, ref bool notFound)
 	        => Get(key, format, System.Threading.Thread.CurrentThread.CurrentCulture, ref notFound);
 
-        /// <inheritdoc/>
-        public override bool Has(string key)
-	    {
-	        var notFound = !Data?.Attributes.ContainsKey(key) ?? false; // always false if no entity attached
-            // if it's not a standard attribute, check for dynamically provided values like EntityId
-            if (notFound)
-	            Get(key, "", ref notFound);
-	        return !notFound;
+        // 2020-11-07 removed/disabled, is never used as a public feature
 
-	    }
+        //   /// <inheritdoc/>
+        //   public bool Has(string key)
+        //{
+        //    var notFound = !Data?.Attributes.ContainsKey(key) ?? false; // always false if no entity attached
+        //       // if it's not a standard attribute, check for dynamically provided values like EntityId
+        //       if (notFound)
+        //        Get(key, "", ref notFound);
+        //    return !notFound;
+
+        //}
     }
 }

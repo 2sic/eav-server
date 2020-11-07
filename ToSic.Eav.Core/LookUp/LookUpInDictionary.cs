@@ -51,8 +51,5 @@ namespace ToSic.Eav.LookUp
 				return null;
 			}
 		}
-
-        /// <inheritdoc/>
-        public override bool Has(string key) => Properties.ContainsKey(key);
     }
 }

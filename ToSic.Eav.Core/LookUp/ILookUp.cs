@@ -26,17 +26,18 @@ namespace ToSic.Eav.LookUp
         string Get(string key, string format, ref bool notFound);
 
         /// <summary>
-        /// Shorthand version, will simply return the string or a null-value
+        /// Shorthand version, will simply return the string or a null-value.
         /// </summary>
         /// <param name="key"></param>
         /// <returns>The resolved value, or an empty string if not found. Note that it could also resolve to an empty string if found - use Has to check for that case.</returns>
 	    string Get(string key);
 
-        /// <summary>
-        /// Checks if this value provider has a key.
-        /// </summary>
-        /// <param name="key">The key to check</param>
-        /// <returns>true if found, false if not</returns>
-	    bool Has(string key);
+        // 2020-11-07 removed/disabled, is never used as a public feature
+     //   /// <summary>
+     //   /// Checks if this value provider has a key.
+     //   /// </summary>
+     //   /// <param name="key">The key to check</param>
+     //   /// <returns>true if found, false if not</returns>
+	    //bool Has(string key);
 	}
 }

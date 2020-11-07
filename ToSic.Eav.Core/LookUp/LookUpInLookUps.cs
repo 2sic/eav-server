@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.LookUp
@@ -44,7 +45,9 @@ namespace ToSic.Eav.LookUp
         /// <inheritdoc/>
         public override string Get(string key, string format, ref bool notFound)
         {
-            var usedSource = Providers.Find(p => p.Has(key));
+            var usedSource = Providers.FirstOrDefault(p => !string.IsNullOrEmpty(p.Get(key)));// .Find(p => p.Has(key));
+            // Implementation before 2020-11-07, cannot have worked reliably
+            // var usedSource = Providers.Find(p => p.Has(key));
             if (usedSource == null)
             {
                 notFound = true;
@@ -53,9 +56,9 @@ namespace ToSic.Eav.LookUp
             return usedSource.Get(key, format, ref notFound);
         }
 
-        /// <inheritdoc/>
-        public override bool Has(string key)
-            => Providers.Any(prov => prov.Has(key));
+        ///// <inheritdoc/>
+        //public bool Has(string key)
+        //    => Providers.Any(prov => prov.Has(key));
 
     }
 }

@@ -67,11 +67,5 @@ namespace ToSic.Eav.LookUp
 		    return new LookUpInEntity(first).Get(subTokens.Rest, format, ref notFound);
 
 		}
-
-        [PrivateApi("not implemented")]
-	    public override bool Has(string key)
-	    {
-	        throw new System.NotImplementedException();
-	    }
-	}
+    }
 }

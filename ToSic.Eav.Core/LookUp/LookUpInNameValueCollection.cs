@@ -22,8 +22,5 @@ namespace ToSic.Eav.LookUp
             => _nameValueCollection == null 
             ? string.Empty 
             : FormatString(_nameValueCollection[key], format);
-
-        /// <inheritdoc/>
-        public override bool Has(string key) => throw new System.NotImplementedException();
     }
 }

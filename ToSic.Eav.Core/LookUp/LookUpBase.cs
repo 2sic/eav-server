@@ -56,8 +56,6 @@ namespace ToSic.Eav.LookUp
 	        return Get(key, "", ref temp);
 	    }
 
-        /// <inheritdoc/>
-	    public abstract bool Has(string key);
         #endregion
 
         #region Helper functions
