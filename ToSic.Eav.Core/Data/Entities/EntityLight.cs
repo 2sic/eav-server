@@ -10,7 +10,7 @@ namespace ToSic.Eav.Data
 {
     /// <inheritdoc />
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi, always use IEntity")]
-	public class EntityLight : IEntityLight
+	public partial class EntityLight : IEntityLight
     {
         #region Basic properties EntityId, EntityGuid, Title, Attributes, Type, Modified, etc.
         /// <inheritdoc />
@@ -101,11 +101,8 @@ namespace ToSic.Eav.Data
 
         #region GetBestValue and GetTitle
 
-        [PrivateApi("Testing / wip #IValueConverter")]
-        public object GetBestValue(string attributeName) => GetBestValue(attributeName, false);
-
         /// <inheritdoc />
-        public object GetBestValue(string attributeName, bool resolveHyperlinks /*= false*/)
+        public object GetBestValue(string attributeName) 
         {
             object result;
 
@@ -119,9 +116,6 @@ namespace ToSic.Eav.Data
                 default:
                     return GetInternalPropertyByName(attributeName);
             }
-
-            if (resolveHyperlinks && result is string strResult)
-                result = TryToResolveLink(EntityGuid, strResult);
 
             // map any kind of number to the one format used in other code-checks: decimal
             if (result is short
@@ -138,9 +132,7 @@ namespace ToSic.Eav.Data
             return result;
         }
 
-        /// <inheritdoc />
-        public TVal GetBestValue<TVal>(string name, bool resolveHyperlinks/* = false*/) 
-            => ChangeTypeOrDefault<TVal>(GetBestValue(name, resolveHyperlinks));
+
 
         [PrivateApi("Testing / wip #IValueConverter")]
         public TVal GetBestValue<TVal>(string name) => ChangeTypeOrDefault<TVal>(GetBestValue(name));
@@ -158,8 +150,7 @@ namespace ToSic.Eav.Data
         [PrivateApi]
         protected static TVal ChangeTypeOrDefault<TVal>(object found)
         {
-            if (found == null)
-                return default(TVal);
+            if (found == null) return default;
 
             try
             {
@@ -167,7 +158,7 @@ namespace ToSic.Eav.Data
             }
             catch
             {
-                return default(TVal);
+                return default;
             }
         }
 
@@ -196,12 +187,6 @@ namespace ToSic.Eav.Data
             }
         }
 
-        [PrivateApi]
-        protected static string TryToResolveLink(Guid itemGuid, string result)
-        {
-            if (!BasicValueConverter.CouldBeReference(result)) return result;
-            return Factory.Resolve<IValueConverter>().ToValue(result, itemGuid);
-        }
 
         /// <inheritdoc />
 	    public string GetBestTitle() => GetBestTitle(0);

@@ -77,25 +77,21 @@ namespace ToSic.Eav.Data
         public object GetBestValue(string attributeName) => Entity.GetBestValue(attributeName);
 
         /// <inheritdoc />
-        public object GetBestValue(string attributeName, bool resolveHyperlinks/* = false*/)
-            => Entity.GetBestValue(attributeName, resolveHyperlinks);
-
-
-        /// <inheritdoc />
-        public object GetBestValue(string attributeName, string[] languages, bool resolveHyperlinks = false)
-            => Entity.GetBestValue(attributeName, languages, resolveHyperlinks);
+        public object GetBestValue(string attributeName, string[] languages)
+            => Entity.GetBestValue(attributeName, languages);
 
         /// <inheritdoc />
-        public T GetBestValue<T>(string attributeName, string[] languages, bool resolveHyperlinks = false) 
-            => Entity.GetBestValue<T>(attributeName, languages, resolveHyperlinks);
+        public T GetBestValue<T>(string attributeName, string[] languages) 
+            => Entity.GetBestValue<T>(attributeName, languages);
 
-        [PrivateApi]
-        public object PrimaryValue(string attributeName, bool resolveHyperlinks = false) 
-            => Entity.PrimaryValue(attributeName, resolveHyperlinks);
 
-        [PrivateApi]
-        public T PrimaryValue<T>(string attributeName, bool resolveHyperlinks = false) 
-            => Entity.PrimaryValue<T>(attributeName, resolveHyperlinks);
+        [PrivateApi("WIP new")]
+        public object PrimaryValue(string attributeName) 
+            => Entity.PrimaryValue(attributeName);
+
+        [PrivateApi("wip new")]
+        public T PrimaryValue<T>(string attributeName) 
+            => Entity.PrimaryValue<T>(attributeName);
 
         // 2020-10-30 trying to drop uses with ResolveHyperlinks
         ///// <inheritdoc />
@@ -129,6 +125,7 @@ namespace ToSic.Eav.Data
 
         #endregion
 
+        #region support for LINQ enhancements
 
         /// <inheritdoc />
         public List<IEntity> Children(string field = null, string type = null) => Entity.Children(field, type);
@@ -137,13 +134,11 @@ namespace ToSic.Eav.Data
         public List<IEntity> Parents(string type = null, string field = null) => Entity.Parents(type, field);
 
 
-        #region support for LINQ enhancements
+        [PrivateApi]
+        public object Value(string field/*, bool resolve = true*/) => Entity.Value(field/*, resolve*/);
 
         [PrivateApi]
-        public object Value(string field, bool resolve = true) => Entity.Value(field, resolve);
-
-        [PrivateApi]
-        public T Value<T>(string field, bool resolve = true) => Entity.Value<T>(field, resolve);
+        public T Value<T>(string field/*, bool resolve = true*/) => Entity.Value<T>(field/*, resolve*/);
 
         #endregion
 

@@ -4,6 +4,7 @@ using System.Web.Http;
 using Newtonsoft.Json;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Run;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Conversion
@@ -15,7 +16,7 @@ namespace ToSic.Eav.Conversion
     public class EntitiesToDictionary: EntitiesToDictionaryBase, IStreamsTo<Dictionary<string, object>>
     {
         // TODO: has an important side effect, this isn't clear from outside!
-        public EntitiesToDictionary(): base("Cnv.Ent2Dc")
+        public EntitiesToDictionary(): base(Factory.Resolve<IValueConverter>(), "Cnv.Ent2Dc")
         {
             // Ensure that date-times are sent in the Zulu-time format (UTC) and not with offsets which causes many problems during round-trips
 #if NET451

@@ -171,6 +171,11 @@ namespace ToSic.Eav
         public const string EntityFieldIsPublished = "ispublished";
         public const string EntityFieldModified = "modified";
 
+        /// <summary>
+        /// Virtual fields are not real fields, but information properties like title, etc.
+        /// </summary>
+        public const string EntityFieldIsVirtual = "virtual";
+
         public static bool InternalOnlyIsSpecialEntityProperty(string name)
         {
             switch (name.ToLower())

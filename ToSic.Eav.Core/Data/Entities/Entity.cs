@@ -14,7 +14,7 @@ namespace ToSic.Eav.Data
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi, always use IEntity")]
 
-    public class Entity: EntityLight, IEntity
+    public partial class Entity: EntityLight, IEntity
     {
 
         #region Basic properties like EntityId, Guid, IsPublished etc.
@@ -125,46 +125,45 @@ namespace ToSic.Eav.Data
         {}
 
         [PrivateApi("Testing / wip #IValueConverter")]
-        public new object GetBestValue(string attributeName) => GetBestValue(attributeName, false);
+        public new object GetBestValue(string attributeName) => GetBestValue(attributeName, new string[0]);
 
-        /// <inheritdoc />
-        public new object GetBestValue(string attributeName, bool resolveHyperlinks/* = false*/)
-            => GetBestValue(attributeName, new string[0], resolveHyperlinks);
 
 
         /// <inheritdoc />
-        public object GetBestValue(string attributeName, string[] languages, bool resolveHyperlinks = false)
+        public object GetBestValue(string attributeName, string[] languages)
         {
-            if (_useLightModel)
-                return base.GetBestValue(attributeName, resolveHyperlinks);
+            return _useLightModel ? base.GetBestValue(attributeName) : GetBestValueAndType(attributeName, languages, out _);
+        }
 
+        private object GetBestValueAndType(string attributeName, string[] languages, out string attributeType)
+        {
             object result;
-            IAttribute attribute;
 
+            attributeName = attributeName.ToLower();
             if (Attributes.ContainsKey(attributeName))
             {
-                attribute = Attributes[attributeName];
+                var attribute = Attributes[attributeName];
                 result = attribute[languages];
+                attributeType = attribute.Type;
             }
-            else switch (attributeName.ToLower())
+            else if (attributeName == Constants.EntityFieldTitle)
             {
-                case Constants.EntityFieldTitle:
-                    result = Title?[languages];
-                    attribute = Title;
-                    break;
-                case Constants.EntityFieldIsPublished:
-                    // directly return internal properties, don't allow further Link resolution
-                    return IsPublished;
-                default:
-                    // directly return internal properties, don't allow further Link resolution
-                    return GetInternalPropertyByName(attributeName);
+                result = Title?[languages];
+                var attribute = Title;
+                attributeType = attribute?.Type;
             }
-
-            if (resolveHyperlinks && attribute?.Type == Constants.DataTypeHyperlink && result is string strResult)
-                result = TryToResolveLink(EntityGuid, strResult);
+            else
+            {
+                attributeType = Constants.EntityFieldIsVirtual;
+                // directly return internal properties, don't allow further Link resolution
+                result = attributeName == Constants.EntityFieldIsPublished
+                    ? IsPublished
+                    : GetInternalPropertyByName(attributeName);
+            }
 
             return result;
         }
+
 
         // 2020-10-30 trying to drop uses with ResolveHyperlinks
         ///// <inheritdoc />
@@ -176,18 +175,20 @@ namespace ToSic.Eav.Data
             => ChangeTypeOrDefault<TVal>(GetBestValue(name));
 
         /// <inheritdoc />
-        public TVal GetBestValue<TVal>(string name, string[] languages, bool resolveHyperlinks = false)
-            => ChangeTypeOrDefault<TVal>(GetBestValue(name, resolveHyperlinks));
+        public TVal GetBestValue<TVal>(string name, string[] languages)
+            => ChangeTypeOrDefault<TVal>(GetBestValue(name, languages));
+
+
 
         /// <inheritdoc />
-        [PrivateApi("not sure yet if this is final")]
-        public object PrimaryValue(string attributeName, bool resolveHyperlinks = false)
-            => GetBestValue(attributeName, new string[0], resolveHyperlinks);
+        [PrivateApi("not sure yet if this is final - NEW")]
+        public object PrimaryValue(string attributeName)
+            => GetBestValue(attributeName, new string[0]);
 
         /// <inheritdoc />
-        [PrivateApi("not sure yet if this is final")]
-        public TVal PrimaryValue<TVal>(string attributeName, bool resolveHyperlinks = false)
-            => GetBestValue<TVal>(attributeName, new string[0], resolveHyperlinks);
+        [PrivateApi("not sure yet if this is final - NEW")]
+        public TVal PrimaryValue<TVal>(string attributeName)
+            => GetBestValue<TVal>(attributeName, new string[0]);
 
         /// <inheritdoc />
         public new string GetBestTitle() => GetBestTitle(null, 0);
@@ -233,13 +234,13 @@ namespace ToSic.Eav.Data
 
         /// <inheritdoc />
         [PrivateApi("don't publish yet, not really final")]
-        public object Value(string field, bool resolve = true)
-            => GetBestValue(field, new[] { Thread.CurrentThread.CurrentCulture.Name }, resolve);
+        public object Value(string field)
+            => GetBestValue(field, new[] { Thread.CurrentThread.CurrentCulture.Name });
 
         /// <inheritdoc />
         [PrivateApi("don't publish yet, not really final")]
-        public T Value<T>(string field, bool resolve = true)
-            => GetBestValue<T>(field, new[] { Thread.CurrentThread.CurrentCulture.Name }, resolve);
+        public T Value<T>(string field)
+            => ChangeTypeOrDefault<T>(GetBestValue(field, new[] { Thread.CurrentThread.CurrentCulture.Name }));
 
 
         #region IEntity Queryable / Quick

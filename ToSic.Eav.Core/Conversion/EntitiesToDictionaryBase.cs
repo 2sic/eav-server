@@ -5,6 +5,8 @@ using System.Threading;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Run;
+using ToSic.Eav.Run.Basic;
 
 namespace ToSic.Eav.Conversion
 {
@@ -14,8 +16,14 @@ namespace ToSic.Eav.Conversion
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
     public abstract class EntitiesToDictionaryBase : HasLog<EntitiesToDictionaryBase>, IEntitiesTo<Dictionary<string, object>>
     {
+        protected IValueConverter ValueConverter { get; }
+
         #region Constructor / DI
-        protected EntitiesToDictionaryBase(string logName) : base(logName) { }
+
+        protected EntitiesToDictionaryBase(IValueConverter valueConverter, string logName) : base(logName)
+        {
+            ValueConverter = valueConverter;
+        }
 
         #endregion
 
@@ -88,14 +96,17 @@ namespace ToSic.Eav.Conversion
             // If the value is a relationship, then give those too, but only Title and Id
             var entityValues = (from d in entity.Attributes select d.Value).ToDictionary(k => k.Name, v =>
             {
-				var value = entity.GetBestValue(v.Name, Languages, true);
-                if (v.Type == "Entity" && value is IEnumerable<IEntity> entities)
+				var value = entity.GetBestValue(v.Name, Languages);
+                if (v.Type == Constants.DataTypeHyperlink && value is string stringValue && BasicValueConverter.CouldBeReference(stringValue))
+                    return ValueConverter.ToValue(stringValue, entity.EntityGuid);
+
+                if (v.Type == Constants.DataTypeEntity && value is IEnumerable<IEntity> entities)
                     return entities.Select(p => new RelationshipReference
                     {
                         Id = p?.EntityId,
                         Title = p?.GetBestTitle(Languages)
                     }).ToList();
-				return value;
+                return value;
 				
             }, StringComparer.OrdinalIgnoreCase);
 
