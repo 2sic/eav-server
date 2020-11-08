@@ -89,7 +89,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
 
         private const int MinZones = 2;
         private const int MaxZones = 5;
-        private const int AppCountInTestZone = 4;
+        private const int AppCountInTestZone = 6;
         private const int ZonesWithML = 2;
         private const int LanguagesInZ1 = 2;
         private const int ActiveLangsInZ1 = 1;

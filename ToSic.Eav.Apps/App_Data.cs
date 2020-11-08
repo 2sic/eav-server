@@ -81,7 +81,7 @@ namespace ToSic.Eav.Apps
         [PrivateApi]
         protected void GetLanguageAndUser(AppData data)
         {
-            var languagesActive = Env.ZoneMapper.CulturesWithState(Site.Id, ZoneId)
+            var languagesActive = _dependencies.ZoneMapper.CulturesWithState(Site.Id, ZoneId)
                 .Any(c => c.Active);
             data.DefaultLanguage = languagesActive
                 ? Site.DefaultLanguage

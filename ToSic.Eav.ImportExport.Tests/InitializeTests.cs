@@ -24,10 +24,9 @@ namespace ToSic.Eav.ImportExport.Tests
 
         public static void ConfigureEfcDi(Factory.ServiceConfigurator configure, string optionalConnection = null)
         {
-            Eav.Repository.Efc.Tests.StartupTestingRepository.ConfigureEfcDi(sc =>
+            Repository.Efc.Tests.StartupTestingRepository.ConfigureEfcDi(sc =>
             {
                 sc.AddTransient<IRuntime, Runtime>();
-                sc.AddTransient<IAppEnvironment, MockEnvironment>();
                 sc.AddTransient<IEnvironment, MockEnvironment>();
                 //sc.TryAddTransient<ExportImportValueConversion>();
                 sc.TryAddTransient<IValueConverter, MockValueConverter>();

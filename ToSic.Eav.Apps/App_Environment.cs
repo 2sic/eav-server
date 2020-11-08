@@ -7,7 +7,7 @@ namespace ToSic.Eav.Apps
     public partial class App
     {
         [PrivateApi]
-        protected IAppEnvironment Env;
+        protected IEnvironment Env;
         
         /// <inheritdoc />
         public ISite Site { get; protected set; }

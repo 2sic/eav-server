@@ -32,7 +32,7 @@ namespace ToSic.Eav.DataSources.System
     // ReSharper disable once UnusedMember.Global
     public sealed class Zones: DataSourceBase
 	{
-        private readonly IAppEnvironment _appEnvironment;
+        private readonly IZoneMapper _zoneMapper;
 
         #region Configuration-properties (no config)
 	    public override string LogId => "DS.EavZns";
@@ -51,9 +51,9 @@ namespace ToSic.Eav.DataSources.System
         /// Constructs a new Zones DS
         /// </summary>
         [PrivateApi]
-		public Zones(IAppEnvironment appEnvironment)
+		public Zones(IZoneMapper zoneMapper)
         {
-            _appEnvironment = appEnvironment;
+            _zoneMapper = zoneMapper;
             Provide(GetList);
         }
 
@@ -61,11 +61,10 @@ namespace ToSic.Eav.DataSources.System
 	    {
             // Get cache, which manages a list of zones
             var zones = Eav.Apps.State.Zones;
-            var env = _appEnvironment;
 
             var list = zones.Values.OrderBy(z => z.ZoneId).Select(zone =>
 	        {
-	            var tenant = env.ZoneMapper.SiteOfZone(zone.ZoneId);
+	            var tenant = _zoneMapper.SiteOfZone(zone.ZoneId);
 
 	            // Assemble the entities
 	            var znData = new Dictionary<string, object>

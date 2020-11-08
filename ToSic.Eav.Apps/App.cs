@@ -14,7 +14,7 @@ namespace ToSic.Eav.Apps
     [PublicApi_Stable_ForUseInYourCode]
     public partial class App: AppBase, IApp
     {
-        private readonly AppDependencies _appDependencies;
+        private readonly AppDependencies _dependencies;
 
         #region Constructor / DI
 
@@ -25,20 +25,23 @@ namespace ToSic.Eav.Apps
         /// </summary>
         public class AppDependencies
         {
+            internal readonly IZoneMapper ZoneMapper;
             internal readonly Lazy<AppManager> AppManagerLazy;
-            internal readonly IAppEnvironment Environment;
+            internal readonly IEnvironment Environment;
             internal readonly ISite Site;
             internal readonly DataSourceFactory DataSourceFactory;
             internal readonly Lazy<GlobalQueries> GlobalQueriesLazy;
 
             public AppDependencies(
-                IAppEnvironment environment,
+                IEnvironment environment,
+                IZoneMapper zoneMapper,
                 ISite site,
                 DataSourceFactory dataSourceFactory,
                 Lazy<GlobalQueries> globalQueriesLazy,
                 Lazy<AppManager> appManagerLazy
                 )
             {
+                ZoneMapper = zoneMapper;
                 AppManagerLazy = appManagerLazy;
                 Environment = environment;
                 Site = site;
@@ -47,14 +50,16 @@ namespace ToSic.Eav.Apps
             }
         }
 
-        public App(AppDependencies appDependencies, string logName): base(logName ?? "Eav.App", new CodeRef())
+        public App(AppDependencies dependencies, string logName): base(logName ?? "Eav.App", new CodeRef())
         {
-            _appDependencies = appDependencies;
-            DataSourceFactory = appDependencies.DataSourceFactory;
+            _dependencies = dependencies;
+            dependencies.ZoneMapper.Init(Log);
+            DataSourceFactory = dependencies.DataSourceFactory;
             // just keep pointers for now, don't init/verify yet
             // as in some cases (like search) they will be replaced after the constructor
-            Env = appDependencies.Environment;
-            Site = appDependencies.Site;
+            Env = dependencies.Environment;
+            Env.Init(Log);
+            Site = dependencies.Site;
         }
 
         #endregion
@@ -87,18 +92,16 @@ namespace ToSic.Eav.Apps
         protected internal App Init(IAppIdentity appIdentity, bool allowSideEffects, Func<App, IAppDataConfiguration> buildConfiguration, ILog parentLog)
         {
             // Env / Tenant must be re-checked here
-            Env = Env ?? throw new Exception("no environment received");
-            Env.Init(parentLog);
             if (Site == null) throw new Exception("no site/portal received");
             
             // in case the DI gave a bad tenant, try to look up
             if (Site.Id == Constants.NullId && appIdentity.AppId != Constants.NullId &&
                 appIdentity.AppId != AppConstants.AppIdNotFound)
-                Site = Env.ZoneMapper.TenantOfApp(appIdentity.AppId);
+                Site = _dependencies.ZoneMapper.TenantOfApp(appIdentity.AppId);
 
             // if zone is missing, try to find it; if still missing, throw error
             if (appIdentity.ZoneId == AutoLookupZone)
-                appIdentity = Env.ZoneMapper.IdentityFromSite(Site.Id, appIdentity.AppId);
+                appIdentity = _dependencies.ZoneMapper.IdentityFromSite(Site.Id, appIdentity.AppId);
 
             Init(appIdentity, new CodeRef(), parentLog);
             Log.Add($"prep App #{appIdentity.ZoneId}/{appIdentity.AppId}, allowSE:{allowSideEffects}, hasDataConfig:{buildConfiguration != null}");
@@ -118,7 +121,7 @@ namespace ToSic.Eav.Apps
                 Log.Add($"create app resources? allowSE:{allowSideEffects}");
 
                 if (allowSideEffects)
-                    _appDependencies.AppManagerLazy.Value.Init(this, Log).EnsureAppIsConfigured(); // make sure additional settings etc. exist
+                    _dependencies.AppManagerLazy.Value.Init(this, Log).EnsureAppIsConfigured(); // make sure additional settings etc. exist
             }
 
             InitializeResourcesSettingsAndMetadata();
