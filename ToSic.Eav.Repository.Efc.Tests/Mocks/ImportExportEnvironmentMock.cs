@@ -25,7 +25,7 @@ namespace ToSic.Eav.Repository.Efc.Tests.Mocks
 
         #endregion
 
-        public string BasePath { get; set; }= @"C:\Projects\eav-server\ToSic.Eav.Repository.Efc.Tests\";
+        public string BasePath { get; set; }= @"C:\Projects\2sxc\eav-server\ToSic.Eav.Repository.Efc.Tests\";
 
 
         public virtual List<Message> TransferFilesToSite(string sourceFolder, string destinationFolder)

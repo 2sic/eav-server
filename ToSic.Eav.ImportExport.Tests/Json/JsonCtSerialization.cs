@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
 using ToSic.Eav.Interfaces;
@@ -10,6 +11,7 @@ namespace ToSic.Eav.ImportExport.Tests.json
     [TestClass]
     public class JsonCtSerialization: Eav.Persistence.Efc.Tests.Efc11TestBase
     {
+        public JsonCtSerialization() : base() { }
 
         [TestMethod]
         public void Json_ExportCTOfItemOnHome()

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav;
+using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Repository.Efc.Implementations;
 using ToSic.Eav.Run;
 using ToSic.Eav.Run.Basic;
@@ -30,7 +31,6 @@ namespace ToSic.Testing.Shared
                 //sc.TryAddTransient<IEavUserInformation, NeutralEavUserInformation>();
                 sc.TryAddTransient<IUser, BasicUser>();
                 sc.TryAddTransient<IRuntime, BasicRuntime>();
-
                 configure.Invoke(sc);
 
                 sc.AddEav();

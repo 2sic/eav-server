@@ -18,12 +18,12 @@ namespace ToSic.Eav.Persistence.Efc
     /// <summary>
     /// Will load all DB data into the memory data model using Entity Framework Core 1.1
     /// </summary>
-    public partial class Efc11Loader: IRepositoryLoader
+    public partial class Efc11Loader: HasLog, IRepositoryLoader
     {
 
         #region constructor and private vars
 
-        public Efc11Loader(EavDbContext dbContext, Lazy<IEnvironment> environmentLazy, IServiceProvider serviceProvider)
+        public Efc11Loader(EavDbContext dbContext, Lazy<IEnvironment> environmentLazy, IServiceProvider serviceProvider): base("Db.Efc11")
         {
             ServiceProvider = serviceProvider;
             _dbContext = dbContext;
@@ -61,7 +61,8 @@ namespace ToSic.Eav.Persistence.Efc
         {
             app.Load(parentLog, () =>
             {
-                Log = new Log("DB.EFLoad", app.Log, $"get app data package for a#{app.AppId}, " +
+                Log.LinkTo(app.Log);
+                Log.Add($"get app data package for a#{app.AppId}, " +
                                                     $"startAt: {startAt}, " +
                                                     $"ids only:{entityIds != null}");
                 var wrapLog = Log.Call(useTimer: true);

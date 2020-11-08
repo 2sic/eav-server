@@ -7,6 +7,6 @@ namespace ToSic.Eav.Persistence.Efc
     {
         private TimeSpan _sqlTotalTime = new TimeSpan(0);
 
-        public ILog Log { get; private set; }
+        //public ILog Log { get; private set; }
     }
 }

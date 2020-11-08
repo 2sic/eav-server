@@ -16,28 +16,25 @@ namespace ToSic.Eav.Core.Tests.LookUp
             sv.Properties.Add("Bravo", "found it too");
             sv.Properties.Add("Child:Grandchild", "found");
 
-            var found = false;
-
-            Assert.IsTrue(sv.Has("Alpha"));
-            Assert.IsTrue(sv.Has("alpha")); // true now that caps don't matter
-            Assert.IsTrue(sv.Has("Bravo"));
-            Assert.IsFalse(sv.Has("Charlie"));
-            Assert.IsTrue(sv.Get("Alpha", "", ref found) == "found");
-            Assert.IsTrue(sv.Get("Bravo", "", ref found) == "found it too");
-            Assert.IsTrue(sv.Get("Child:Grandchild", "", ref found) == "found");
-            Assert.IsTrue(sv.Get("Child", "", ref found) == null);
+            Assert.AreNotEqual(string.Empty, sv.Get("Alpha"));
+            Assert.AreNotEqual(string.Empty, sv.Get("alpha")); // true now that caps don't matter
+            Assert.AreNotEqual(string.Empty, sv.Get("Bravo"));
+            Assert.AreEqual(string.Empty,sv.Get("Charlie"));
+            Assert.IsTrue(sv.Get("Alpha", "") == "found");
+            Assert.IsTrue(sv.Get("Bravo", "") == "found it too");
+            Assert.IsTrue(sv.Get("Child:Grandchild", "") == "found");
+            Assert.IsTrue(sv.Get("Child", "") == string.Empty);
         }
 
         [TestMethod]
         public void ValueProvider_EntityValueProvider()
         {
             ILookUp valProv = new LookUpInEntity(SampleData.TestEntityDaniel());
-            var found = false;
 
-            Assert.IsTrue(valProv.Has("FirstName"), "Has first name");
-            Assert.IsTrue(valProv.Has("EntityId"), "Has entity id");
-            Assert.IsTrue(valProv.Has(Constants.EntityFieldTitle), "Has entity title");
-            Assert.AreEqual("Mettler", valProv.Get("LastName", "", ref found));
+            Assert.AreNotEqual(string.Empty, valProv.Get("FirstName"), "Has first name");
+            Assert.AreNotEqual(string.Empty, valProv.Get("EntityId"), "Has entity id");
+            Assert.AreNotEqual(string.Empty, valProv.Get(Constants.EntityFieldTitle), "Has entity title");
+            Assert.AreEqual("Mettler", valProv.Get("LastName", ""));
             Assert.AreEqual("Mettler", valProv.Get("LastName"));
             Assert.AreEqual(1.ToString(), valProv.Get("EntityId"));
             Assert.AreEqual("Daniel", valProv.Get(Constants.EntityFieldTitle));

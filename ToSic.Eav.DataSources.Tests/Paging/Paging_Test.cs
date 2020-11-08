@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Core.Tests;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.ExternalData;
 
@@ -10,7 +11,7 @@ namespace ToSic.Eav.DataSourceTests.Paging
     // Create tests with language-parameters as well, as these tests ignore the language and always use default
 
     [TestClass]
-    public class Paging_Test
+    public class Paging_Test: EavTestBase
     {
         private readonly int seedId = 1001;
 
@@ -80,7 +81,7 @@ namespace ToSic.Eav.DataSourceTests.Paging
         public DataSources.Paging CreatePagingForTesting(int testItemsInRootSource)
         {
             var ds = DataTableTst.GeneratePersonSourceWithDemoData(testItemsInRootSource, seedId);
-            return Factory.Resolve<DataSourceFactory>().GetDataSource<DataSources.Paging>(ds);
+            return Resolve<DataSourceFactory>().GetDataSource<DataSources.Paging>(ds);
             //return filtered;
         }
 

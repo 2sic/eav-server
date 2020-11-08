@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Core.Tests;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSourceTests;
@@ -10,8 +11,19 @@ using ToSic.Eav.ImportExport.Json;
 namespace ToSic.Eav.DataSources.Tests.Query
 {
     [TestClass]
-    public class Tst_QueryBasic
+    public class Tst_QueryBasic: EavTestBase
     {
+        private readonly JsonSerializer _jsonSerializer;
+        private readonly QueryManager _queryManager;
+        private readonly QueryBuilder _queryBuilder;
+
+        public Tst_QueryBasic()
+        {
+            _jsonSerializer = Resolve<JsonSerializer>();
+            _queryManager = Resolve<QueryManager>();
+            _queryBuilder = Resolve<QueryBuilder>();
+        }
+
         private const int basicId = 765;
         private const int basicCount = 8;
 
@@ -29,8 +41,7 @@ namespace ToSic.Eav.DataSources.Tests.Query
         private QueryDefinition LoadQueryDef(int appId, int queryId)
         {
             var appState = Apps.State.Get(appId);
-            var source = Factory.Resolve<DataSourceFactory>().GetPublishing(appState, false);
-            var pipelineEntity = Factory.Resolve<QueryManager>().Init(null).GetQueryEntity(queryId, appState);
+            var pipelineEntity = _queryManager.Init(null).GetQueryEntity(queryId, appState);
             return new QueryDefinition(pipelineEntity, appId, null);
         }
 
@@ -40,7 +51,7 @@ namespace ToSic.Eav.DataSources.Tests.Query
         public void Query_To_Json()
         {
             var qdef = LoadQueryDef(TestConfig.AppForQueryTests, basicId);
-            var ser = new JsonSerializer();
+            var ser = _jsonSerializer;
             var justHeader = ser.Serialize(qdef.Entity, 0);
             var full = ser.Serialize(qdef.Entity, 10);
             Assert.IsTrue(full.Length > justHeader.Length *2, "full serialized should be much longer");
@@ -74,9 +85,9 @@ namespace ToSic.Eav.DataSources.Tests.Query
 
         }
 
-        private static JsonSerializer Serializer()
+        private JsonSerializer Serializer()
         {
-            var ser = new JsonSerializer();
+            var ser = _jsonSerializer;
             ser.Initialize(TestConfig.AppForQueryTests, new List<IContentType>(), null, null);
             return ser;
         }
@@ -85,7 +96,7 @@ namespace ToSic.Eav.DataSources.Tests.Query
         public void Query_Run_And_Run_Materialized()
         {
             var qdef = LoadQueryDef(TestConfig.AppForQueryTests, basicId);
-            var query = Factory.Resolve<QueryBuilder>().GetDataSourceForTesting(qdef, false);
+            var query = _queryBuilder.GetDataSourceForTesting(qdef, false);
             var countDef = query.List.Count();
             Assert.IsTrue(countDef > 0, "result > 0");
             Assert.AreEqual(basicCount, countDef);
@@ -95,7 +106,7 @@ namespace ToSic.Eav.DataSources.Tests.Query
             var eDef2 = ser.Deserialize(strQuery, true);
 
             var qdef2 = new QueryDefinition(eDef2, 0, null);
-            var query2 = Factory.Resolve<QueryBuilder>().GetDataSourceForTesting(qdef2, false);
+            var query2 = _queryBuilder.GetDataSourceForTesting(qdef2, false);
             var countDef2 = query2.List.Count();
             Assert.AreEqual(countDef2, countDef, "countdefs should be same");
         }

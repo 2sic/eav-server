@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Core.Tests;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.ExternalData;
 using ToSic.Eav.Logging;
@@ -9,14 +10,14 @@ using ToSic.Eav.LookUp;
 namespace ToSic.Eav.DataSourceTests.Streams
 {
     [TestClass]
-    public class StreamMergeTst
+    public class StreamMergeTst: EavTestBase
     {
 
         [TestMethod]
         public void StreamMerge_In0()
         {
             var desiredFinds = 0;
-            var sf = Factory.Resolve<DataSourceFactory>().GetDataSource<DataSources.StreamMerge>(
+            var sf = Resolve<DataSourceFactory>().GetDataSource<DataSources.StreamMerge>(
                 new AppIdentity(0, 0), null, 
                 new LookUpEngine(null as ILog));
             var found = sf.List.Count();
@@ -63,7 +64,7 @@ namespace ToSic.Eav.DataSourceTests.Streams
         private static DataSources.StreamMerge GenerateMergeDs(int desiredFinds)
         {
             var ds = DataTableTst.GeneratePersonSourceWithDemoData(desiredFinds, 1001, true);
-            var sf = Factory.Resolve<DataSourceFactory>().GetDataSource<StreamMerge>(new AppIdentity(0, 0), ds);
+            var sf = Resolve<DataSourceFactory>().GetDataSource<StreamMerge>(new AppIdentity(0, 0), ds);
             return sf;
         }
     }

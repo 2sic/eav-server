@@ -6,14 +6,18 @@ using ToSic.Testing.Performance.json;
 
 namespace ToSic.Testing.Performance
 {
-    class Program: Efc11TestBase
+    class Program // : Efc11TestBase
     {
+        //public Program(IServiceProvider serviceProvider) : base(serviceProvider)
+        //{
+        //}
+
         static void Main(string[] args)
         {
             // initialize everything
             Shared.InitializeTests.ConfigureEfcDi();
 
-            var tester = new GenerateJsonForApps();
+            var tester = Eav.Factory.Resolve<GenerateJsonForApps>();
             tester.Init();
 
             // time initial sql

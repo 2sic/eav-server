@@ -14,7 +14,7 @@ namespace ToSic.Eav.Apps.ImportExport
     public class ExportImportValueConversion : HasLog
     {
         public IValueConverter ValueConverter { get; }
-        protected ExportImportValueConversion(IValueConverter valueConverter) : base("App.EXValC")
+        public ExportImportValueConversion(IValueConverter valueConverter) : base("App.EXValC")
         {
             ValueConverter = valueConverter;
         }

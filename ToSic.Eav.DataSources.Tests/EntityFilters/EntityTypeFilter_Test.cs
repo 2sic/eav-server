@@ -1,12 +1,13 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Core.Tests;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.ExternalData;
 
 namespace ToSic.Eav.DataSourceTests.EntityFilters
 {
     [TestClass]
-    public class EntityTypeFilter_Test
+    public class EntityTypeFilter_Test: EavTestBase
     {
         [TestMethod]
         public void EntityTypeFilter_FindAllIfAllApply()
@@ -30,7 +31,7 @@ namespace ToSic.Eav.DataSourceTests.EntityFilters
         public static EntityTypeFilter CreateEntityTypeFilterForTesting(int testItemsInRootSource)
         {
             var ds = DataTableTst.GeneratePersonSourceWithDemoData(testItemsInRootSource, 1001);
-            var filtered = Factory.Resolve<DataSourceFactory>().GetDataSource<EntityTypeFilter>(ds);
+            var filtered = Resolve<DataSourceFactory>().GetDataSource<EntityTypeFilter>(ds);
             return filtered;
         }
     }

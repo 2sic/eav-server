@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Core.Tests;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Tests.Persistence.File;
 using ToSic.Eav.Persistence.Efc;
@@ -19,10 +20,8 @@ namespace ToSic.Eav.Persistence.File.Tests
         public void TypeExp_AllSharedFromInstallation()
         {
             var test = new TestValuesOnPc2Dm();
-            //var dbc = Factory.Resolve<DbDataController>().Init(null, test.AppId, Log);
 
-
-            var loader = Factory.Resolve<Efc11Loader>();//.Init(dbc.SqlDb);
+            var loader = EavTestBase.Resolve<Efc11Loader>();
             var app = loader.AppState(test.RootAppId);
 
 

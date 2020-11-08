@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Core.Tests;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.ImportExport.Tests.Persistence.File;
 using ToSic.Eav.Logging;
@@ -10,9 +11,16 @@ namespace ToSic.Eav.DataSourceTests.Query
     [DeploymentItem("..\\..\\" + TestConfig.GlobalQueriesData, TestConfig.TestingPath)]
     public class Tst_QueryGlobal: HasLog
     {
-        private const int testQueryCount = 8;
+        private readonly GlobalQueries _globalQueries;
+        private readonly QueryBuilder _queryBuilder;
 
-        public Tst_QueryGlobal() : base("Tst.QryGlb") { }
+        public Tst_QueryGlobal(): base("Tst.QryGlb")
+        {
+            _globalQueries = EavTestBase.Resolve<GlobalQueries>();
+            _queryBuilder = EavTestBase.Resolve<QueryBuilder>();
+        }
+
+        private const int testQueryCount = 6;
 
         [ClassInitialize]
         public static void Config(TestContext context)
@@ -23,7 +31,7 @@ namespace ToSic.Eav.DataSourceTests.Query
         [TestMethod]
         public void FindGlobalQueries()
         {
-            var queries = Eav.Factory.Resolve<GlobalQueries>().AllQueries();
+            var queries = _globalQueries.AllQueries();
             Assert.AreEqual(testQueryCount, queries.Count, $"should find {testQueryCount} query definitions");
         }
 
@@ -32,7 +40,7 @@ namespace ToSic.Eav.DataSourceTests.Query
         public void ReviewGlobalZonesQuery()
         {
             var queryName = "Eav.Queries.Global.Zones";
-            var queryEnt = Eav.Factory.Resolve<GlobalQueries>().FindQuery(queryName);
+            var queryEnt = _globalQueries.FindQuery(queryName);
             Assert.AreEqual(queryName, queryEnt.GetBestValue("Name").ToString(), "should find zones");
 
             var qdef = new QueryDefinition(queryEnt, queryEnt.AppId, null);
@@ -42,11 +50,11 @@ namespace ToSic.Eav.DataSourceTests.Query
         [TestMethod]
         public void UseGlobalZonesQuery()
         {
-            var queryEnt = Factory.Resolve<GlobalQueries>().FindQuery("Eav.Queries.Global.Zones");
+            var queryEnt = _globalQueries.FindQuery("Eav.Queries.Global.Zones");
 
             var qDef = new QueryDefinition(queryEnt, TestConfig.AppForQueryTests, null);
 
-            var fac = Factory.Resolve<QueryBuilder>().Init(Log); //new QueryBuilder(Log);
+            var fac = _queryBuilder.Init(Log); //new QueryBuilder(Log);
             var query = fac.GetDataSourceForTesting(qDef, false);
 
             var list = query.List;

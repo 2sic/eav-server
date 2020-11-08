@@ -129,6 +129,7 @@
     <Compile Include="LookUps\LookUpsTest.cs" />
     <Compile Include="Paging\Paging_Test.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ValueFilter\ValueFilterMaker.cs" />
     <Compile Include="x-probably-old-Query\Tst_QueryBasic.cs" />
     <Compile Include="x-probably-old-Query\Tst_QueryGlobal.cs" />
     <Compile Include="x-probably-old-Query\ParamsTests.cs" />

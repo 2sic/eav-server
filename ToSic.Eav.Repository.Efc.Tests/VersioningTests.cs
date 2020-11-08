@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Core.Tests;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Interfaces;
@@ -12,8 +13,9 @@ using ToSic.Eav.Repository.Efc.Tests.Mocks;
 namespace ToSic.Eav.Repository.Efc.Tests
 {
     [TestClass]
-    public class VersioningTests
+    public class VersioningTests: EavTestBase
     {
+
         public static ILog Log = new Log("TstVer");
 
         #region Test Data
@@ -42,12 +44,12 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             var id = DevPc2dmItemOnHome;
             var version = 2;
-            var appMan = new AppManager(null);
-            var dc = Factory.Resolve<DbDataController>().Init(td.ZoneId, td.AppId, Log);
-            var all = appMan.Entities.VersionHistory(id);  dc.Versioning.GetHistoryList(id, false);
+            var _appManager = Resolve<AppManager>().Init(td.TestApp, Log);
+            var dc = Resolve<DbDataController>().Init(td.ZoneId, td.AppId, Log);
+            var all = _appManager.Entities.VersionHistory(id);  dc.Versioning.GetHistoryList(id, false);
             var vId = all.First(x => x.VersionNumber == version).ChangeSetId;
 
-            appMan.Entities.VersionRestore(DevPc2dmItemOnHome, vId);
+            _appManager.Entities.VersionRestore(DevPc2dmItemOnHome, vId);
 
         }
 
@@ -65,9 +67,10 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             var id = TestItemWithCa20Changes;
             var version = 6;
-            var all = Factory.Resolve<DbDataController>().Init(ZoneId, null, Log).Versioning.GetHistoryList(id, false);
+            var _dbData = Resolve<DbDataController>().Init(ZoneId, null, Log);
+            var all = _dbData.Versioning.GetHistoryList(id, false);
             var vId = all.First(x => x.VersionNumber == version).ChangeSetId;
-            var vItem = Factory.Resolve<DbDataController>().Init(ZoneId, null, Log).Versioning.GetItem(id, vId);
+            var vItem = _dbData.Versioning.GetItem(id, vId);
             Console.Write(vItem.Json);
         }
 
@@ -76,7 +79,8 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         private List<ItemHistory> GetHistoryTest(int entityId, int expectedCount)
         {
-            var history = Factory.Resolve<DbDataController>().Init(ZoneId, null, Log).Versioning.GetHistoryList(entityId, true);
+            var _dbData = Resolve<DbDataController>().Init(ZoneId, null, Log);
+            var history = _dbData.Versioning.GetHistoryList(entityId, true);
             Assert.AreEqual(expectedCount, history.Count, $"should have {expectedCount} items in history for this one");
             return history;
         }

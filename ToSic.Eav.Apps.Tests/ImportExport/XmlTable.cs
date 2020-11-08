@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps.ImportExport;
+using ToSic.Eav.Core.Tests;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
@@ -11,7 +12,7 @@ using ToSic.Eav.Run;
 namespace ToSic.Eav.Apps.Tests.ImportExport
 {
     [TestClass]
-    public class XmlTable
+    public class XmlTable: EavTestBase
     {
 
         public static ILog Log = new Log("TstXml");
@@ -40,7 +41,7 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
         [TestMethod]
         public void XmlTable_ResolveHyperlink()
         {
-            var exportListXml = Factory.Resolve<ExportImportValueConversion>();
+            var exportListXml = Resolve<ExportImportValueConversion>();
 
             // test the Resolve Hyperlink
             string link = "";
@@ -71,7 +72,7 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
             TestResolvesWithNonLinkType(Constants.DataTypeHyperlink, false);
 
             var attrType = Constants.DataTypeHyperlink;
-            var ExportListXml = Factory.Resolve<ExportImportValueConversion>();
+            var ExportListXml = Resolve<ExportImportValueConversion>();
 
             // test resolves on any value, just certainly not a link, with "no-resolve"
             Assert.AreEqual(XmlConstants.Null, ExportListXml.ResolveValue(AppId, ItemGuid, attrType, null, true), "test null resolve");
@@ -84,7 +85,7 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
 
         private void TestResolvesWithNonLinkType(string attrType, bool tryResolve)
         {
-            var ExportListXml = Factory.Resolve<ExportImportValueConversion>();
+            var ExportListXml = Resolve<ExportImportValueConversion>();
 
             Assert.AreEqual(XmlConstants.Null, ExportListXml.ResolveValue(AppId, ItemGuid, attrType, null, tryResolve), "test null resolve");
             Assert.AreEqual(XmlConstants.Empty, ExportListXml.ResolveValue(AppId, ItemGuid, attrType, "", tryResolve), "test empty resolve");
@@ -100,10 +101,10 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
         private ExportListXml BuildExporter(int appId, string ctName)
         {
             //var dbc = Eav.Factory.Resolve<DbDataController>().Init(null, appId, Log);
-            var loader = Factory.Resolve<Efc11Loader>();//.Init(dbc.SqlDb);
+            var loader = Resolve<Efc11Loader>();//.Init(dbc.SqlDb);
             var appPackage = loader.AppState(appId);
             var type = appPackage.ContentTypes.First(ct => ct.Name == ctName);
-            return Eav.Factory.Resolve<ExportListXml>().Init(appPackage, type, Log);
+            return Resolve<ExportListXml>().Init(appPackage, type, Log);
         }
     }
 }

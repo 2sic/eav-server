@@ -14,12 +14,6 @@ namespace ToSic.Eav.ImportExport.Json
         public JsonSerializer(ITargetTypes metadataTargets) : this(metadataTargets, "Jsn.Serlzr") {}
 
         protected JsonSerializer(ITargetTypes metadataTargets, string logName): base(metadataTargets, logName) { }
-
-        //// todo: replace with call to Init(...)
-        //public JsonSerializer(AppState package, ILog parentLog): this()
-        //{
-        //    Initialize(package, parentLog);
-        //}
     }
 
     internal static class StringHelpers

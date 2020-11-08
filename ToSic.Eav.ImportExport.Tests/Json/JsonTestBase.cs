@@ -1,9 +1,11 @@
-﻿using ToSic.Eav.ImportExport.Json;
+﻿using System;
+using ToSic.Eav.ImportExport.Json;
 
 namespace ToSic.Eav.ImportExport.Tests.Json
 {
     public class JsonTestBase : Eav.Persistence.Efc.Tests.Efc11TestBase
     {
+        public JsonTestBase() : base() { }
 
         protected string GetJsonOfEntity(int appId, int eId, JsonSerializer ser = null)
         {

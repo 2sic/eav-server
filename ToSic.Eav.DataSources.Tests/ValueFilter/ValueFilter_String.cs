@@ -1,7 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Core.Tests;
 using ToSic.Eav.DataSourceTests.ExternalData;
+using ToSic.Eav.DataSourceTests.ValueFilter;
 
 namespace ToSic.Eav.DataSources.Tests
 {
@@ -9,13 +11,15 @@ namespace ToSic.Eav.DataSources.Tests
     // Create tests with language-parameters as well, as these tests ignore the language and always use default
 
     [TestClass]
-    public class ValueFilterString
+    public class ValueFilterString: EavTestBase
     {
         private const int TestVolume = 10000;
         private readonly ValueFilter _testDataGeneratedOutsideTimer;
+
         public ValueFilterString()
         {
-            _testDataGeneratedOutsideTimer = CreateValueFilterForTesting(TestVolume);
+            var valueFilterMaker = Resolve<ValueFilterMaker>();
+            _testDataGeneratedOutsideTimer = valueFilterMaker.CreateValueFilterForTesting(TestVolume);
         }
 
         [TestMethod]
@@ -237,11 +241,5 @@ namespace ToSic.Eav.DataSources.Tests
         }
         #endregion
 
-        public static  ValueFilter CreateValueFilterForTesting(int testItemsInRootSource)
-        {
-            var ds = DataTableTst.GeneratePersonSourceWithDemoData(testItemsInRootSource, 1001);
-            var filtered = Factory.Resolve<DataSourceFactory>().GetDataSource<ValueFilter>(new AppIdentity(1, 1), ds);
-            return filtered;
-        }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
+using ToSic.Eav.Core.Tests;
 using ToSic.Eav.DataSourceTests.ExternalData;
+using ToSic.Eav.DataSourceTests.ValueFilter;
 
 namespace ToSic.Eav.DataSources.Tests
 {
@@ -8,13 +10,16 @@ namespace ToSic.Eav.DataSources.Tests
     // Create tests with language-parameters as well, as these tests ignore the language and always use default
 
     [TestClass]
-    public class ValueFilterNumbers
+    public class ValueFilterNumbers: EavTestBase
     {
+        private readonly ValueFilterMaker _valueFilterMaker;
+
         private const int TestVolume = 10000;
         private readonly ValueFilter _testDataGeneratedOutsideTimer;
         public ValueFilterNumbers()
         {
-            _testDataGeneratedOutsideTimer = ValueFilterString.CreateValueFilterForTesting(TestVolume);
+            _valueFilterMaker = Resolve<ValueFilterMaker>();
+            _testDataGeneratedOutsideTimer = _valueFilterMaker.CreateValueFilterForTesting(TestVolume);
         }
 
 

@@ -1,12 +1,13 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Core.Tests;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.ExternalData;
 
 namespace ToSic.Eav.DataSourceTests.Streams
 {
     [TestClass]
-    public class StreamFallbackTst
+    public class StreamFallbackTst: EavTestBase
     {
         [TestMethod]
         public void StreamWhereDefaultIsReturned()
@@ -67,7 +68,7 @@ namespace ToSic.Eav.DataSourceTests.Streams
         public StreamFallback AssembleTestFallbackStream()
         {
             var emptyDs = DataTableTst.GeneratePersonSourceWithDemoData(0, 1001);
-            var streams = Factory.Resolve<DataSourceFactory>().GetDataSource<StreamFallback>(emptyDs);
+            var streams = Resolve<DataSourceFactory>().GetDataSource<StreamFallback>(emptyDs);
 
             var dsWith1 = DataTableTst.GeneratePersonSourceWithDemoData(1, 2000);
             var dsWithmany = DataTableTst.GeneratePersonSourceWithDemoData(45, 4000);

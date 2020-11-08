@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Core.Tests;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSourceTests.ExternalData;
@@ -10,7 +11,7 @@ using ToSic.Eav.LookUp;
 namespace ToSic.Eav.DataSourceTests.Streams
 {
     [TestClass]
-    public class StreamPickTst
+    public class StreamPickTst: EavTestBase
     {
         private const int DefaultStreamSize = 10;
         private const int MoreStreamSize = 27;
@@ -45,7 +46,7 @@ namespace ToSic.Eav.DataSourceTests.Streams
             var ds1 = DataTableTst.GeneratePersonSourceWithDemoData(DefaultStreamSize, 1000);
             var ds2 = DataTableTst.GeneratePersonSourceWithDemoData(MoreStreamSize, 2700);
             var ds3 = DataTableTst.GeneratePersonSourceWithDemoData(53, 5300);
-            var dsBuild = Factory.Resolve<DataSourceFactory>();
+            var dsBuild = Resolve<DataSourceFactory>();
             var streamPick = dsBuild.GetDataSource<StreamPick>(new AppIdentity(1, 1), null, ds1.Configuration.LookUps);
             streamPick.Attach(Constants.DefaultStreamName, ds1);
             streamPick.Attach(MoreStream, ds2);

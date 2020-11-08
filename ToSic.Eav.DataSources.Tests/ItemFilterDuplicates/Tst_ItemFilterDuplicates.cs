@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Core.Tests;
 using ToSic.Eav.DataSourceTests.ExternalData;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
@@ -10,13 +11,13 @@ using ToSic.Eav.LookUp;
 namespace ToSic.Eav.DataSources.Tests.ItemFilterDuplicates
 {
     [TestClass]
-    public class Tst_ItemFilterDuplicates
+    public class Tst_ItemFilterDuplicates: EavTestBase
     {
         [TestMethod]
         public void ItemFilterDuplicates_In0()
         {
             var desiredFinds = 0;
-            var sf = Factory.Resolve<DataSourceFactory>().GetDataSource<DataSources.ItemFilterDuplicates>(
+            var sf = Resolve<DataSourceFactory>().GetDataSource<DataSources.ItemFilterDuplicates>(
                 new AppIdentity(0,0), null, 
                 new LookUpEngine(null as ILog));
             var found = sf.List.Count();
@@ -77,12 +78,12 @@ namespace ToSic.Eav.DataSources.Tests.ItemFilterDuplicates
         {
             if(attach < 1) throw new Exception("attach must be at least 1");
             var ds = DataTableTst.GeneratePersonSourceWithDemoData(desiredFinds, 1001, true);
-            var sf = Factory.Resolve<DataSourceFactory>().GetDataSource<StreamMerge>(new AppIdentity(0, 0), ds);
+            var sf = Resolve<DataSourceFactory>().GetDataSource<StreamMerge>(new AppIdentity(0, 0), ds);
 
             for (int i = 1; i < attach; i++)
                 sf.In.Add("another" + i, ds.Out.First().Value);
 
-            var unique = Factory.Resolve<DataSourceFactory>().GetDataSource<DataSources.ItemFilterDuplicates>(new AppIdentity(0, 0), sf);
+            var unique = Resolve<DataSourceFactory>().GetDataSource<DataSources.ItemFilterDuplicates>(new AppIdentity(0, 0), sf);
             return unique;
         }
     }

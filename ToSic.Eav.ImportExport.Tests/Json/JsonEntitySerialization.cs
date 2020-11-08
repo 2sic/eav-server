@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Core.Tests;
 using ToSic.Eav.ImportExport.Tests.Json;
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Repository.Efc;
@@ -12,6 +13,15 @@ namespace ToSic.Eav.ImportExport.Tests.json
     [TestClass]
     public class JsonEntitySerialization: JsonTestBase
     {
+        private readonly JsonSerializer _jsonSerializer;
+        private readonly Efc11Loader _loader;
+
+        public JsonEntitySerialization(): base()
+        {
+            _jsonSerializer = EavTestBase.Resolve<JsonSerializer>();
+            _loader = EavTestBase.Resolve<Efc11Loader>();
+        }
+
         [TestMethod]
         public void Json_ExportItemOnHome()
         {
@@ -51,9 +61,9 @@ namespace ToSic.Eav.ImportExport.Tests.json
         {
             //var dbc = Factory.Resolve<DbDataController>().Init(null, appId, Log);
 
-            var loader = Factory.Resolve<Efc11Loader>();//.Init(dbc.SqlDb);
+            var loader = _loader; // Factory.Resolve<Efc11Loader>();//.Init(dbc.SqlDb);
             var app = loader.AppState(appId);
-            var exBuilder = new JsonSerializer(app, Log);
+            var exBuilder = _jsonSerializer.Init(app, Log);
 
             var maxCount = 1000;
             var skip = 0;

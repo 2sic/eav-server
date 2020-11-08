@@ -8,6 +8,8 @@ namespace ToSic.Eav.ImportExport.Tests.json
     [TestClass]
     public class JsonDynamic : JsonTestBase
     {
+        public JsonDynamic():base(){}
+
         [TestMethod]
         [ExpectedException(typeof(FormatException))]
         public void DeserializeDynamicByDefaultMustFail()
