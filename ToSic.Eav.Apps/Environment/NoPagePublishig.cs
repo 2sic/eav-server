@@ -10,13 +10,13 @@ namespace ToSic.Eav.Apps.Environment
     /// NOTE: It is currently not in use, and that's ok. 
     /// </summary>
     // ReSharper disable once UnusedMember.Global
-    public class NoPagePublishing : HasLog, IPagePublishing
+    public class NoPagePublishing : HasLog<IPagePublishing>, IPagePublishing, IPagePublishingResolver
     {
         #region Constructors
 
         public NoPagePublishing() : base("Eav.NoPubl") { }
 
-        public IPagePublishing Init(ILog parent)
+        IPagePublishingResolver IHasLog<IPagePublishingResolver>.Init(ILog parent)
         {
             Log.LinkTo(parent);
             return this;
@@ -37,15 +37,15 @@ namespace ToSic.Eav.Apps.Environment
             action.Invoke(info);
         }
 
-        public void DoInsidePublishLatestVersion(int instanceId, Action<VersioningActionInfo> action)
-        {
-            // NOTE: Do nothing!
-        }
+        //public void DoInsidePublishLatestVersion(int instanceId, Action<VersioningActionInfo> action)
+        //{
+        //    // NOTE: Do nothing!
+        //}
 
-        public void DoInsideDeleteLatestVersion(int instanceId, Action<VersioningActionInfo> action)
-        {
-            // NOTE: Do nothing!
-        }
+        //public void DoInsideDeleteLatestVersion(int instanceId, Action<VersioningActionInfo> action)
+        //{
+        //    // NOTE: Do nothing!
+        //}
 
         public int GetLatestVersion(int instanceId)
         {

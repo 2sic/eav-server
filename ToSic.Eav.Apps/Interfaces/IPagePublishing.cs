@@ -11,21 +11,19 @@ namespace ToSic.Eav.Apps
     [PrivateApi]
     public interface IPagePublishing: IHasLog<IPagePublishing>
     {
-        bool Supported { get; }
+        //bool Supported { get; }
 
-        /// <summary>
-        /// Get the current versioning requirements. - to determine if it's required, optional etc.
-        /// </summary>
-        /// <param name="instanceId"></param>
-        /// <returns></returns>
-        PublishingMode Requirements(int instanceId);
+        ///// <summary>
+        ///// Get the current versioning requirements. - to determine if it's required, optional etc.
+        ///// </summary>
+        ///// <param name="instanceId"></param>
+        ///// <returns></returns>
+        //PublishingMode Requirements(int instanceId);
 
         /// <summary>
         /// Wraps an action and performs pre/post processing related to versioning of the environment.
         /// </summary>
         /// <param name="context"></param>
-        /// <param name="moduleId"></param>
-        /// <param name="userId"></param>
         /// <param name="action"></param>
         void DoInsidePublishing(IInstanceContext context, Action<VersioningActionInfo> action);
 
@@ -49,6 +47,6 @@ namespace ToSic.Eav.Apps
 
         void Publish(int instanceId, int version);
 
-        bool IsEnabled(int instanceId);
+        //bool IsEnabled(int instanceId);
     }
 }
