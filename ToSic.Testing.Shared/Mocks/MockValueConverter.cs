@@ -1,8 +1,8 @@
 ﻿using System;
-using ToSic.Eav.Data;
 using ToSic.Eav.Run;
+using ToSic.Eav.Run.Basic;
 
-namespace ToSic.Eav.Core.Tests.Mocks
+namespace ToSic.Testing.Shared.Mocks
 {
     /// <summary>
     /// Will pretend to convert links beginning with "page:" or "link:"
@@ -17,7 +17,9 @@ namespace ToSic.Eav.Core.Tests.Mocks
 
         public string ToValue(string reference, Guid itemGuid)
         {
-            return reference.ToLowerInvariant().StartsWith("page:") || reference.ToLowerInvariant().StartsWith("file:")
+            var refLower = reference.ToLowerInvariant();
+            return refLower.StartsWith(BasicValueConverter.PrefixPage + BasicValueConverter.Separator ) 
+                   || refLower.StartsWith(BasicValueConverter.PrefixFile + BasicValueConverter.Separator)
                 ? "http://mock.converted/" + reference
                 : reference;
         }

@@ -9,6 +9,7 @@ using ToSic.Eav.Core.Tests;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Repository.Efc.Tests.Mocks;
+using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.Repository.Efc.Tests
 {
@@ -45,7 +46,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         };
 
         // just a note: this is Portal 54 or something on Daniels test server, change it to your system if you want to run these tests!
-        public const int ZoneId = 56;
+        public const int ZoneId = 2;
 
         #endregion
         [TestMethod]

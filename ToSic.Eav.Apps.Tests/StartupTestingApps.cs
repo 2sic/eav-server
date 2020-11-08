@@ -3,12 +3,12 @@
 namespace ToSic.Eav.Apps.Tests
 {
     [TestClass]
-    public class InitializeTests
+    public class StartupTestingApps
     {
         [AssemblyInitialize]
         public static void AssemblyInit(TestContext context)
         {
-            Testing.Shared.InitializeTests.ConfigureEfcDi();
+            Testing.Shared.StartupTestingShared.ConfigureEfcDi();
         }
         
     }

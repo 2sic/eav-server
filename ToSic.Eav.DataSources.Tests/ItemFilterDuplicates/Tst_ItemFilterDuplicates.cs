@@ -6,6 +6,7 @@ using ToSic.Eav.Core.Tests;
 using ToSic.Eav.DataSourceTests.ExternalData;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
+using ToSic.Testing.Shared;
 
 
 namespace ToSic.Eav.DataSources.Tests.ItemFilterDuplicates

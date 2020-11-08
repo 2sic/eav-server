@@ -9,6 +9,7 @@ using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Xml;
 using ToSic.Eav.Repository.Efc.Tests;
+using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.ImportExport.Tests
 {

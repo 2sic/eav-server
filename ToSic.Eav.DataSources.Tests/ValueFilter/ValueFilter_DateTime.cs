@@ -2,6 +2,7 @@
 using System.Linq;
 using ToSic.Eav.Core.Tests;
 using ToSic.Eav.DataSourceTests.ValueFilter;
+using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSources.Tests
 {

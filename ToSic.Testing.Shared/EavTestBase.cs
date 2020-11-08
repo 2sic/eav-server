@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ToSic.Eav;
 
-namespace ToSic.Eav.Core.Tests
+namespace ToSic.Testing.Shared
 {
     public abstract class EavTestBase
     {

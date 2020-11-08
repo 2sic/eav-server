@@ -1,9 +1,7 @@
 ﻿using System;
-using ToSic.Eav.Configuration;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Run;
 
-namespace ToSic.Eav.Core.Tests.Mocks
+namespace ToSic.Testing.Shared.Mocks
 {
     public class FingerprintProvider: IFingerprint
     {

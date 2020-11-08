@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Core.Tests;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Persistence.Efc.Tests;
+using ToSic.Testing.Shared;
 using AppState = ToSic.Eav.Apps.AppState;
 
 //using Microsoft.VisualStudio.TestTools.UnitTesting;

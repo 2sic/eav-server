@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav;
-using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Repository.Efc.Implementations;
 using ToSic.Eav.Run;
 using ToSic.Eav.Run.Basic;
@@ -9,7 +8,7 @@ using ToSic.Eav.Run.Basic;
 namespace ToSic.Testing.Shared
 {
     [TestClass]
-    public class InitializeTests
+    public class StartupTestingShared
     {
         [AssemblyInitialize]
         public static void AssemblyInit(TestContext context)

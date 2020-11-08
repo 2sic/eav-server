@@ -15,7 +15,7 @@ namespace ToSic.Testing.Performance
         static void Main(string[] args)
         {
             // initialize everything
-            Shared.InitializeTests.ConfigureEfcDi();
+            Shared.StartupTestingShared.ConfigureEfcDi();
 
             var tester = Eav.Factory.Resolve<GenerateJsonForApps>();
             tester.Init();

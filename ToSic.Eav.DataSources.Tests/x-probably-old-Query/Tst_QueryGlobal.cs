@@ -4,6 +4,7 @@ using ToSic.Eav.Core.Tests;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.ImportExport.Tests.Persistence.File;
 using ToSic.Eav.Logging;
+using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests.Query
 {

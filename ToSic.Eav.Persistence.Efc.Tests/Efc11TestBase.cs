@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Core.Tests;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Plumbing;
+using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.Persistence.Efc.Tests
 {
