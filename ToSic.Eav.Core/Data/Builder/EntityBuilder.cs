@@ -63,7 +63,7 @@ namespace ToSic.Eav.Data.Builder
                 RepositoryId = repositoryId,
                 Modified = modified,
                 Owner = owner,
-                Attributes = attribs ?? new Dictionary<string, IAttribute>(StringComparer.OrdinalIgnoreCase)
+                Attributes = attribs
             };
 
         /// <summary>

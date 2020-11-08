@@ -13,15 +13,15 @@ namespace ToSic.Eav.Data.Builder
         /// <summary>
         /// Convert a NameValueCollection-Like List to a Dictionary of IAttributes
         /// </summary>
-        public static Dictionary<string, IAttribute> ConvertToAttributes(this IDictionary<string, object> objAttributes)
+        public static Dictionary<string, IAttribute> ConvertToInvariantDic(this IDictionary<string, object> objAttributes)
         {
-            var result = new Dictionary<string, IAttribute>(StringComparer.OrdinalIgnoreCase);
+            var result = new Dictionary<string, IAttribute>(StringComparer.InvariantCultureIgnoreCase);
 
             foreach (var oAttrib in objAttributes)
             {
                 // in case the object is already an IAttribute, use that, don't rebuild it
-                if (oAttrib.Value is IAttribute)
-                    result[oAttrib.Key] = (IAttribute)oAttrib.Value;
+                if (oAttrib.Value is IAttribute typedValue)
+                    result[oAttrib.Key] = typedValue;
                 else
                 {
                     var attributeType = GetAttributeTypeName(oAttrib.Value);

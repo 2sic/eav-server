@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Generics;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Security;
 
@@ -27,8 +28,8 @@ namespace ToSic.Eav.Data
 
         /// <inheritdoc />
         public Dictionary<string, IAttribute> Attributes {
-            get => _attributes ?? (_attributes = LightAttributesForInternalUseOnlyForNow.ConvertToAttributes());
-            set => _attributes = value;
+            get => _attributes ?? (_attributes = LightAttributesForInternalUseOnlyForNow.ConvertToInvariantDic());
+            set => _attributes = (value ?? new Dictionary<string, IAttribute>()).ToInvariant();
         }
 
         private Dictionary<string, IAttribute> _attributes;
@@ -109,7 +110,8 @@ namespace ToSic.Eav.Data
         private void MapAttributesInConstructor(Dictionary<string, object> values)
         {
             if (values.All(x => x.Value is IAttribute))
-                Attributes = values.ToDictionary(x => x.Key, x => x.Value as IAttribute);
+                Attributes = values
+                    .ToDictionary(x => x.Key, x => x.Value as IAttribute);
             else
                 _useLightModel = true;
         }
