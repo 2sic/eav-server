@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace ToSic.Eav.Persistence.Efc.Models
 {
@@ -19,8 +18,7 @@ namespace ToSic.Eav.Persistence.Efc.Models
         public virtual DbSet<ToSicEavEntities> ToSicEavEntities { get; set; }
         public virtual DbSet<ToSicEavEntityRelationships> ToSicEavEntityRelationships { get; set; }
         public virtual DbSet<ToSicEavValues> ToSicEavValues { get; set; }
-        // 2020-07-31 2dm - never used
-        //public virtual DbSet<ToSicEavValuesDimensions> ToSicEavValuesDimensions { get; set; }
+        public virtual DbSet<ToSicEavValuesDimensions> ToSicEavValuesDimensions { get; set; }
         public virtual DbSet<ToSicEavZones> ToSicEavZones { get; set; }
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
