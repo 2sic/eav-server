@@ -19,7 +19,7 @@ namespace ToSic.Eav.Apps
                 if (_dataConfigurationBuilder != null)
                 {
                     var config = _dataConfigurationBuilder.Invoke(this);
-                    InitData(config.ShowDrafts, config.PublishingEnabled, config.Configuration);
+                    InitData(config.ShowDrafts, config.Configuration);
                 }
                 _configurationProviderBuilt = true;
                 return _configurationProvider;
@@ -39,14 +39,12 @@ namespace ToSic.Eav.Apps
         /// todo: later this should be moved to initialization of this object
         /// </summary>
         /// <param name="showDrafts"></param>
-        /// <param name="versioningEnabled"></param>
         /// <param name="configurationValues">this is needed for providing parameters to the data-query-system</param>
-        private void InitData(bool showDrafts, bool versioningEnabled, ILookUpEngine configurationValues)
+        private void InitData(bool showDrafts, ILookUpEngine configurationValues)
         {
-            Log.Add($"init data drafts:{showDrafts}, vers:{versioningEnabled}, hasConf:{configurationValues != null}");
+            Log.Add($"init data drafts:{showDrafts}, hasConf:{configurationValues != null}");
             _configurationProvider = configurationValues;
             ShowDrafts = showDrafts;
-            EnablePublishing = versioningEnabled;
         }
 
         /// <inheritdoc />

@@ -6,8 +6,8 @@ namespace ToSic.Eav.Apps
     {
         [PrivateApi]
         bool ShowDrafts { get; }
-        [PrivateApi]
-        bool EnablePublishing { get; }
+        //[PrivateApi]
+        //bool ForceDraft { get; }
 
     }
 }

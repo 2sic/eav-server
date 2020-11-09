@@ -18,6 +18,8 @@ namespace ToSic.Eav.Apps.Run
 
         IServiceProvider ServiceProvider { get; }
 
+        InstancePublishingState Publishing { get; }
+
         //List<KeyValuePair<string, string>> PageParameters { get; }
     }
 }

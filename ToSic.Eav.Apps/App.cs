@@ -80,8 +80,6 @@ namespace ToSic.Eav.Apps
 
         /// <inheritdoc />
         public bool ShowDrafts { get; private set; }
-        /// <inheritdoc />
-        public bool EnablePublishing { get; private set; }
 
         [PrivateApi]
         protected const string IconFile = "/" + AppConstants.AppIconFile;
