@@ -100,7 +100,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             var applist = _dbData.Init(ZoneId, null, Log).SqlDb.ToSicEavApps.Where(a => a.ZoneId == ZoneId).ToList();
             var appId = applist.FirstOrDefault(a => a.Name == appGuid)?.AppId ?? 0;
-            if (appId > 0) _zoneManager.Init(ZoneId, Log).DeleteApp(appId);
+            if (appId > 0) _zoneManager.Init(ZoneId, Log).DeleteApp(appId, true);
 
         }
     }

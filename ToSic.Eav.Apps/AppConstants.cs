@@ -1,4 +1,5 @@
-﻿namespace ToSic.Eav.Apps
+﻿using ToSic.Eav.ImportExport;
+namespace ToSic.Eav.Apps
 {
     public static class AppConstants
     {
@@ -7,7 +8,7 @@
         #region List / Content / Presentation capabilities
 
         // Known App Content Types
-        public const string TypeAppConfig = "2SexyContent-App";
+        public const string TypeAppConfig = ImpExpConstants.TypeAppConfig; // "2SexyContent-App";
         public const string TypeAppResources = "App-Resources";
         public const string TypeAppSettings = "App-Settings";
 

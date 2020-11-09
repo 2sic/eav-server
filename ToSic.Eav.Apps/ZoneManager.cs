@@ -23,8 +23,8 @@ namespace ToSic.Eav.Apps
 
         #region App management
 
-        public void DeleteApp(int appId)
-            => SystemManager.DoAndPurge(ZoneId, appId, () => DataController.App.DeleteApp(appId), true, Log);
+        public void DeleteApp(int appId, bool fullDelete)
+            => SystemManager.DoAndPurge(ZoneId, appId, () => DataController.App.DeleteApp(appId, fullDelete), true, Log);
 
         public int CreateApp()
         {

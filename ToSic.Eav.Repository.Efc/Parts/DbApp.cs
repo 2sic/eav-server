@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using ToSic.Eav.ImportExport;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
@@ -30,7 +31,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// Delete an existing App with any Values and Attributes
         /// </summary>
         /// <param name="appId">AppId to delete</param>
-        internal void DeleteApp(int appId)
+        /// <param name="fullDelete">If true, the entire App is removed. Otherwise just all the contents is cleared</param>
+        internal void DeleteApp(int appId, bool fullDelete)
         {
             DbContext.Versioning.GetChangeLogId();
 
@@ -52,20 +54,18 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     // 1. remove all relationships to/from these json entities
                     // note that actually there can only be relationships TO json entities, as all from will be in the json, 
                     // but just to be sure (maybe there's historic data that's off) we'll do both
-                    DbContext.DoAndSave(() =>
-                        DbContext.SqlDb.RemoveRange(
-                            DbContext.SqlDb.ToSicEavEntityRelationships.Where(r =>
-                                jsonEntitiesInApp.Any(e =>
-                                    e.EntityId == r.ChildEntityId || e.EntityId == r.ParentEntityId)
-                            ))
-                    );
+
+                    var allJsonItemsToDelete = DbContext.SqlDb.ToSicEavEntityRelationships
+                        .Where(r => 
+                            jsonEntitiesInApp.Any(e => e.EntityId == r.ChildEntityId || e.EntityId == r.ParentEntityId));
+                    DbContext.DoAndSave(() => DbContext.SqlDb.RemoveRange(allJsonItemsToDelete));
 
                     // 2. remove all json entities, which won't be handled by the SP
                     DbContext.DoAndSave(() => DbContext.SqlDb.RemoveRange(jsonEntitiesInApp));
 
                     // Now let the Stored Procedure do the remaining clean-up
                     //DeleteAppWithStoredProcedure(appId);
-                    DbContext.DoAndSave(() => DeleteAppWithoutStoredProcedure(appId, true));
+                    DbContext.DoAndSave(() => DeleteAppWithoutStoredProcedure(appId, fullDelete));
                 }
             );
         }
@@ -92,6 +92,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
             var appContentTypes = db.ToSicEavAttributeSets.Where(a => a.AppId == appId).ToList();
             var contentTypeIds = appContentTypes.Select(ct => ct.AttributeSetId).ToArray();
             var appEntities = db.ToSicEavEntities.Where(e => appContentTypes.Contains(e.AttributeSet));
+            appEntities = alsoDeleteAppEntry
+                ? appEntities
+                : appEntities.Where(entity => entity.ContentType != ImpExpConstants.TypeAppConfig);
             var entityIds = appEntities.Select(e => e.EntityId).ToArray();
 
 	        //-- Delete Value-Dimensions
