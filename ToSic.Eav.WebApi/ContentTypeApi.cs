@@ -61,7 +61,7 @@ namespace ToSic.Eav.WebApi
             {
                 Log.Add($"is scope {scope}, will do extra processing");
                 // todo: must place elsewhere!!!
-                _appInitializedChecker.QuickEnsureAppIsConfigured(AppManager, null, Log); // make sure additional settings etc. exist
+                _appInitializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(AppManager, null, Log); // make sure additional settings etc. exist
             }
             // should use app-manager and return each type 1x only
             var appMan = AppManager;

@@ -30,16 +30,17 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="appName"></param>
         /// <param name="parentLog"></param>
         /// <returns></returns>
-        public bool QuickEnsureAppIsConfigured(IAppIdentity appIdentity, string appName, ILog parentLog)
+        public bool EnsureAppConfiguredAndInformIfRefreshNeeded(IAppIdentity appIdentity, string appName, ILog parentLog)
         {
             var log = new Log("Eav.AppChk", parentLog);
             var callLog = log.Call<bool>($"..., {appName}");
             if (CheckIfAllPartsExist(appIdentity, out _, out _, out _, log))
-                return callLog("ok", true);
+                return callLog("ok", false);
 
             // something is missing, so we must build them
-            var appInit = new AppInitializer(ServiceProvider).Init(appIdentity, log);
-            appInit.InitializeApp(appName);
+            new AppInitializer(ServiceProvider)
+                .Init(appIdentity, log)
+                .InitializeApp(appName);
             return callLog(null, true);
         }
 

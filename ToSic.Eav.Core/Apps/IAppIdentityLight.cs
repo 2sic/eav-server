@@ -14,4 +14,10 @@ namespace ToSic.Eav.Apps
         /// <returns>The App ID this thing belongs to</returns>
         int AppId { get; }
     }
+
+    // ReSharper disable once InconsistentNaming
+    public static class IAppIdentityExtensions
+    {
+        public static string Show(this IAppIdentity appId) => $"{appId.ZoneId}/{appId.AppId}";
+    }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Run;
 using ToSic.Eav.Apps.Security;
 using ToSic.Eav.Data;
@@ -45,7 +46,7 @@ namespace ToSic.Eav.WebApi.Security
 
             SamePortal = Context.Tenant.ZoneId == App.ZoneId;
             SiteForSecurityCheck = SamePortal ? Context.Tenant : _zoneMapper.SiteOfZone(App.ZoneId);
-            return wrapLog($"ready for z/a:{app.ZoneId}/{app.AppId} t/z:{App.Site.Id}/{Context.Tenant.ZoneId} same:{SamePortal}", this);
+            return wrapLog($"ready for z/a:{app.Show()} t/z:{App.Site.Id}/{Context.Tenant.ZoneId} same:{SamePortal}", this);
         }
 
         #endregion

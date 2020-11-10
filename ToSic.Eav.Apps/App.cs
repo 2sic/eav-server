@@ -106,10 +106,7 @@ namespace ToSic.Eav.Apps
             Log.Add($"prep App #{appIdentity.ZoneId}/{appIdentity.AppId}, allowSE:{allowSideEffects}, hasDataConfig:{buildConfiguration != null}");
 
             // Look up name in cache
-            var cache = State.Cache;
-            AppState = cache.Get(this); // for metadata
-
-            AppGuid = cache.Zones[ZoneId].Apps[AppId];
+            AppGuid = State.Cache.Zones[ZoneId].Apps[AppId];
 
             // v10.25 from now on the DefaultApp can also have settings and resources
             // v10.26.0x reactivated this protection, because it causes side-effects. On content-app, let's only do this if people start editing the resources...?
@@ -120,7 +117,7 @@ namespace ToSic.Eav.Apps
                 Log.Add($"create app resources? allowSE:{allowSideEffects}");
 
                 if (allowSideEffects)
-                    _dependencies.InitializedChecker.QuickEnsureAppIsConfigured(this, null, Log); // .Init(this, Log).EnsureAppIsConfigured(); // make sure additional settings etc. exist
+                    _dependencies.InitializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(this, null, Log);
             }
 
             InitializeResourcesSettingsAndMetadata();

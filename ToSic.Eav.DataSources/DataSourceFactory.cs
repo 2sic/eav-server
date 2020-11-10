@@ -99,7 +99,7 @@ namespace ToSic.Eav.DataSources
             bool showDrafts = false,
             ILookUpEngine configProvider = null)
         {
-            var wrapLog = Log.Call(parameters: $"#{app.ZoneId}/{app.AppId}, draft:{showDrafts}, config:{configProvider != null}");
+            var wrapLog = Log.Call(parameters: $"#{app.Show()}, draft:{showDrafts}, config:{configProvider != null}");
 
             configProvider = configProvider ?? new LookUpEngine(Log);
 

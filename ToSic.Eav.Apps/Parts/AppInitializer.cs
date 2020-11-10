@@ -36,6 +36,10 @@ namespace ToSic.Eav.Apps.Parts
 
         private IAppIdentity _appIdentity;
 
+        /// <summary>
+        /// The App Manager must be re-created during initialization
+        /// So we don't inject into into this class, but instead create it on demand
+        /// </summary>
         private AppManager AppManager =>
             _appManager ?? (_appManager = _serviceProvider.Build<AppManager>().Init(_appIdentity, Log));
         private AppManager _appManager;
@@ -101,11 +105,8 @@ namespace ToSic.Eav.Apps.Parts
             // Reset App-State to ensure it's reloaded with the added configuration
             SystemManager.Purge(_appIdentity, log: Log);
 
-            return wrapLog("ok", true);
+            return wrapLog("ok", false);
         }
-
-
-
 
 
 
