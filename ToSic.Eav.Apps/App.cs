@@ -103,7 +103,7 @@ namespace ToSic.Eav.Apps
                 appIdentity = _dependencies.ZoneMapper.IdentityFromSite(Site.Id, appIdentity.AppId);
 
             Init(appIdentity, new CodeRef(), parentLog);
-            Log.Add($"prep App #{appIdentity.ZoneId}/{appIdentity.AppId}, allowSE:{allowSideEffects}, hasDataConfig:{buildConfiguration != null}");
+            Log.Add($"prep App #{appIdentity.Show()}, allowSE:{allowSideEffects}, hasDataConfig:{buildConfiguration != null}");
 
             // Look up name in cache
             AppGuid = State.Cache.Zones[ZoneId].Apps[AppId];

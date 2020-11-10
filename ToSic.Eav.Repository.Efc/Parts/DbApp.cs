@@ -50,6 +50,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     var jsonEntitiesInApp = DbContext.SqlDb.ToSicEavEntities
                         .Where(e => e.AttributeSetId == DbEntity.RepoIdForJsonEntities
                                     && e.AppId == appId);
+                    
+                    // If we plan to rebuild the app from the App.xml, then the config item shouldn't be deleted
+                    if (!fullDelete)
+                        jsonEntitiesInApp =
+                            jsonEntitiesInApp.Where(entity => entity.ContentType != ImpExpConstants.TypeAppConfig);
 
                     // 1. remove all relationships to/from these json entities
                     // note that actually there can only be relationships TO json entities, as all from will be in the json, 
@@ -92,9 +97,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
             var appContentTypes = db.ToSicEavAttributeSets.Where(a => a.AppId == appId).ToList();
             var contentTypeIds = appContentTypes.Select(ct => ct.AttributeSetId).ToArray();
             var appEntities = db.ToSicEavEntities.Where(e => appContentTypes.Contains(e.AttributeSet));
-            appEntities = alsoDeleteAppEntry
-                ? appEntities
-                : appEntities.Where(entity => entity.ContentType != ImpExpConstants.TypeAppConfig);
+            //appEntities = alsoDeleteAppEntry
+            //    ? appEntities
+            //    : appEntities.Where(entity => entity.ContentType != ImpExpConstants.TypeAppConfig);
             var entityIds = appEntities.Select(e => e.EntityId).ToArray();
 
 	        //-- Delete Value-Dimensions

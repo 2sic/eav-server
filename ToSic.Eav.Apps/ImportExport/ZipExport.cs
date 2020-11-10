@@ -20,7 +20,7 @@ namespace ToSic.Eav.Apps.ImportExport
         private int _zoneId;
         private const string SexyContentContentGroupName = "2SexyContent-ContentGroup";
         private const string SourceControlDataFolder = Constants.FolderData;
-        private const string SourceControlDataFile = "app.xml"; // lower case
+        private const string SourceControlDataFile = Constants.AppDataFile;// "app.xml"; // lower case
         private readonly string _blankGuid = Guid.Empty.ToString();
         private const string ZipFolderForPortalFiles = "PortalFiles";
         private const string ZipFolderForAppStuff = "2sexy";

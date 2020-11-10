@@ -10,7 +10,7 @@ namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
     /// <summary>
     /// Read an xml file, check for headers and verify all the parts to better process the import
     /// </summary>
-    internal class ImportXmlReader: HasLog
+    public class ImportXmlReader: HasLog
     {
         public ImportXmlReader(string xmlPath, XmlImportWithFiles importer, ILog parentLog) : base("Imp.XmlPrt", parentLog, nameof(ImportXmlReader))
         {
@@ -38,7 +38,7 @@ namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
 
         internal string FileContents { get; }
 
-        internal XDocument XmlDoc;
+        public XDocument XmlDoc;
 
         internal XElement Root;
 

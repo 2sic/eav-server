@@ -40,7 +40,7 @@ namespace ToSic.Eav.Apps
         /// <param name="log">log which will then log that it purged this</param>
         public static void Purge(IAppIdentity appIdentity, bool global = false, ILog log = null)
         {
-            var wrapLog = log?.Call($"{appIdentity.ZoneId}/{appIdentity.AppId}, {global}");
+            var wrapLog = log?.Call($"{appIdentity.Show()}, {global}");
             if (global)
                 State.Cache.PurgeZones();
             else
