@@ -30,6 +30,11 @@ namespace ToSic.Eav.Apps
             // App Dependencies
             services.TryAddTransient<App.AppDependencies>();
 
+            // Helpers to build stuff
+            services.TryAddTransient<AppCreator>();
+            services.TryAddTransient<ZoneCreator>();
+            services.TryAddTransient<AppInitializedChecker>();
+
             // export import stuff
             services.TryAddTransient<ExportImportValueConversion>();
 

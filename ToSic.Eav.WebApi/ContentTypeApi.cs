@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Conversion;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
@@ -23,14 +24,16 @@ namespace ToSic.Eav.WebApi
         private readonly Lazy<AppRuntime> _appRuntimeLazy;
         private readonly Lazy<AppManager> _appManagerLazy;
         private readonly Lazy<DbDataController> _dbLazy;
+        private readonly AppInitializedChecker _appInitializedChecker;
 
         private AppManager AppManager { get; set; }
 
-        public ContentTypeApi(Lazy<AppRuntime> appRuntimeLazy, Lazy<AppManager> appManagerLazy, Lazy<DbDataController> dbLazy) : base("Api.EavCTC")
+        public ContentTypeApi(Lazy<AppRuntime> appRuntimeLazy, Lazy<AppManager> appManagerLazy, Lazy<DbDataController> dbLazy, AppInitializedChecker appInitializedChecker) : base("Api.EavCTC")
         {
             _appRuntimeLazy = appRuntimeLazy;
             _appManagerLazy = appManagerLazy;
             _dbLazy = dbLazy;
+            _appInitializedChecker = appInitializedChecker;
         }
 
         public ContentTypeApi Init(int appId, ILog parentLog)
@@ -52,15 +55,16 @@ namespace ToSic.Eav.WebApi
         {
             var wrapLog = Log.Call($"scope:{scope}, stats:{withStatistics}");
 
-            // should use app-manager and return each type 1x only
-            var appMan = AppManager;
 
             // 2020-01-15 2sxc 10.27.00 Special side-effect, pre-generate the resources, settings etc. if they didn't exist yet
             if (scope == AppConstants.ScopeApp)
             {
                 Log.Add($"is scope {scope}, will do extra processing");
-                appMan.EnsureAppIsConfigured(); // make sure additional settings etc. exist
+                // todo: must place elsewhere!!!
+                _appInitializedChecker.QuickEnsureAppIsConfigured(AppManager, null, Log); // make sure additional settings etc. exist
             }
+            // should use app-manager and return each type 1x only
+            var appMan = AppManager;
 
             // get all types
             var allTypes = appMan.Read.ContentTypes.All.OfScope(scope, true);

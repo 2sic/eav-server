@@ -1,4 +1,5 @@
 ﻿using System;
+using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
@@ -25,8 +26,8 @@ namespace ToSic.Eav.Apps
         /// </summary>
         public class AppDependencies
         {
+            internal AppInitializedChecker InitializedChecker { get; }
             internal readonly IZoneMapper ZoneMapper;
-            internal readonly Lazy<AppManager> AppManagerLazy;
             internal readonly IEnvironment Environment;
             internal readonly ISite Site;
             internal readonly DataSourceFactory DataSourceFactory;
@@ -38,11 +39,11 @@ namespace ToSic.Eav.Apps
                 ISite site,
                 DataSourceFactory dataSourceFactory,
                 Lazy<GlobalQueries> globalQueriesLazy,
-                Lazy<AppManager> appManagerLazy
+                AppInitializedChecker initializedChecker
                 )
             {
+                InitializedChecker = initializedChecker;
                 ZoneMapper = zoneMapper;
-                AppManagerLazy = appManagerLazy;
                 Environment = environment;
                 Site = site;
                 DataSourceFactory = dataSourceFactory;
@@ -119,7 +120,7 @@ namespace ToSic.Eav.Apps
                 Log.Add($"create app resources? allowSE:{allowSideEffects}");
 
                 if (allowSideEffects)
-                    _dependencies.AppManagerLazy.Value.Init(this, Log).EnsureAppIsConfigured(); // make sure additional settings etc. exist
+                    _dependencies.InitializedChecker.QuickEnsureAppIsConfigured(this, null, Log); // .Init(this, Log).EnsureAppIsConfigured(); // make sure additional settings etc. exist
             }
 
             InitializeResourcesSettingsAndMetadata();

@@ -41,7 +41,7 @@ namespace ToSic.Eav.Apps
 	        _appTypesFromRepository = RemoveAliasesForGlobalTypes(contentTypes);
 	        // build types by name
 	        BuildCacheForTypesByName(_appTypesFromRepository);
-	        ContentTypesShouldBeReloaded = false;
+	        //ContentTypesShouldBeReloaded = false;
             wrapLog("ok");
         }
 
@@ -105,7 +105,7 @@ namespace ToSic.Eav.Apps
 	    }
 
         
-        [PrivateApi]
-	    public bool ContentTypesShouldBeReloaded = true;
+     //   [PrivateApi]
+	    //public bool ContentTypesShouldBeReloaded = true;
 	}
 }
