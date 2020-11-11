@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+#if NET451
 using System.Web.Http;
 using Newtonsoft.Json;
+#endif
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Run;
@@ -30,7 +32,7 @@ namespace ToSic.Eav.Conversion
 
 
 
-        #region Many variations of the Prepare-Statement expecting various kinds of input
+#region Many variations of the Prepare-Statement expecting various kinds of input
         /// <inheritdoc />
         public Dictionary<string, IEnumerable<Dictionary<string, object>>> Convert(IDataSource source, IEnumerable<string> streams = null)
         {
@@ -58,7 +60,7 @@ namespace ToSic.Eav.Conversion
             => Convert(stream.Immutable);
         
         
-        #endregion
+#endregion
 
         
     }

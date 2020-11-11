@@ -2,7 +2,6 @@
 using Newtonsoft.Json;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Json.V1;
-using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.ImportExport.Json
 {

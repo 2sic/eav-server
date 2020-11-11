@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+#if NET451
 using Microsoft.EntityFrameworkCore.Metadata;
-
+#endif
 namespace ToSic.Eav.Persistence.Efc.Models
 {
     public partial class EavDbContext : DbContext

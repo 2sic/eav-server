@@ -5,6 +5,7 @@ using ToSic.Eav.Conversion;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.WebApi.Helpers;
 using IEntity = ToSic.Eav.Data.IEntity;
+using ToSic;
 
 namespace ToSic.Eav.WebApi
 {

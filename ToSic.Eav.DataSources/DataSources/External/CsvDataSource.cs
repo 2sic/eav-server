@@ -4,7 +4,9 @@ using System.Collections.Immutable;
 using System.Linq;
 using CsvHelper;
 using System.IO;
+#if !NETSTANDARD
 using System.Web;
+#endif
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using ContentTypeBuilder = ToSic.Eav.Data.Builder.ContentTypeBuilder;
