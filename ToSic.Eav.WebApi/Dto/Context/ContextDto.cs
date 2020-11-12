@@ -27,7 +27,7 @@ namespace ToSic.Eav.WebApi.Dto
         public string Name;
         public string Identifier;
         public string GettingStartedUrl;
-        public string Path;
+        public string Folder;
         public HasPermissionsDto Permissions;
     }
 

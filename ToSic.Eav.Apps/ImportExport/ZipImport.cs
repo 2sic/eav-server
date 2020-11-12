@@ -63,9 +63,12 @@ namespace ToSic.Eav.Apps.ImportExport
                 {
                     Log.Add($"folder:{directoryPath}");
                     if (Path.GetFileName(directoryPath) != "Apps") continue;
-                    var appDir = Path.Combine(temporaryDirectory, "Apps");
+                    var packageDir = Path.Combine(temporaryDirectory, "Apps");
                     // Loop through each app directory
-                    ImportApps(rename, appDir, messages);
+                    foreach (var appDirectory in Directory.GetDirectories(packageDir))
+                        ImportApp(rename, appDirectory, messages);
+
+                    //ImportApps(rename, packageDir, messages);
                 }
             }
             catch (IOException e)
@@ -114,11 +117,11 @@ namespace ToSic.Eav.Apps.ImportExport
             }
         }
 
-        private void ImportApps(string rename, string tempDir, List<Message> importMessages)
-        {
-            foreach (var appDirectory in Directory.GetDirectories(tempDir))
-                ImportApp(rename, appDirectory, importMessages);
-        }
+        //private void ImportApps(string rename, string tempDir, List<Message> importMessages)
+        //{
+        //    foreach (var appDirectory in Directory.GetDirectories(tempDir))
+        //        ImportApp(rename, appDirectory, importMessages);
+        //}
 
         /// <summary>
         /// Import an app from temporary

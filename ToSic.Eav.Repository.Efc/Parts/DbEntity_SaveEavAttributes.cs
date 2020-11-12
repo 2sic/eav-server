@@ -16,20 +16,20 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// Important when updating json-entities, to ensure we don't keep trash around
         /// </summary>
         /// <param name="entityId"></param>
-        private void ClearAttributesInDbModel(int entityId)
+        private bool ClearAttributesInDbModel(int entityId)
         {
-            var callLog = Log.Call(useTimer: true);
+            var callLog = Log.Call<bool>(useTimer: true);
             var val = DbContext.SqlDb.ToSicEavValues
                 .Include(v => v.ToSicEavValuesDimensions)
                 .Where(v => v.EntityId == entityId)
                 .ToList();
 
-            if (val.Count == 0) return;
+            if (val.Count == 0) return callLog("no changes", false);
 
             var dims = val.SelectMany(v => v.ToSicEavValuesDimensions);
             DbContext.DoAndSave(() => DbContext.SqlDb.RemoveRange(dims));
             DbContext.DoAndSave(() => DbContext.SqlDb.RemoveRange(val));
-            callLog(null);
+            return callLog("ok", true);
         }
 
         private void SaveAttributesAsEav(IEntity newEnt,

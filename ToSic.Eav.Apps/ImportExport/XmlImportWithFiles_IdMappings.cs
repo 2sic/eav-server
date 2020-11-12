@@ -17,6 +17,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
         private void PrepareFileIdCorrectionList(XElement sexyContentNode)
 		{
+            var callLog = Log.Call();
 			if (!sexyContentNode.Elements(XmlConstants.PortalFiles).Any())
 				return;
 
@@ -27,12 +28,13 @@ namespace ToSic.Eav.Apps.ImportExport
 		        v => v.Attribute(XmlConstants.FolderNodePath).Value
 		    );
             _environment.MapExistingFilesToImportSet(filesAndPaths, _fileIdCorrectionList);
-
-		}
+            callLog("ok");
+        }
 
 
 	    private void PrepareFolderIdCorrectionListAndCreateMissingFolders(XElement sexyContentNode)
         {
+            var callLog = Log.Call();
             if (!sexyContentNode.Elements(XmlConstants.FolderGroup).Any()) 
                 return;
 
@@ -44,6 +46,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 v => v.Attribute(XmlConstants.FolderNodePath).Value
             );
             _environment.CreateFoldersAndMapToImportIds(foldersAndPath, _folderIdCorrectionList, Messages);
+            callLog("ok");
         }
 
 
