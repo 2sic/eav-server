@@ -34,20 +34,35 @@ namespace ToSic.Eav.Apps
         public AppRelationshipManager Relationships { get; }
 
         /// <summary>
-        /// WIP - the app-path, which is pre-initialized very early on
-        /// WIP 2020-05 for v11.x
+        /// The app-folder, which is pre-initialized very early on.
+        /// Needed to pre-load file based content-types
         /// </summary>
-        public string Path
+        public string Folder
         {
-            get => _path;
+            get => _folder;
             set
             {
                 if (!Loading)
-                    throw new Exception("Can't set AppState.Path when not in loading state");
-                _path = value;
+                    throw new Exception("Can't set AppState.Folder when not in loading state");
+                _folder = value;
             }
         }
+        private string _folder;
 
-        private string _path;
+
+        /// <summary>
+        /// The app-folder, which is pre-initialized very early on.
+        /// Needed to pre-load file based content-types
+        /// </summary>
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                if (!Loading) throw new Exception("Can't set AppState.Name when not in loading state");
+                _name = value;
+            }
+        }
+        private string _name;
     }
 }

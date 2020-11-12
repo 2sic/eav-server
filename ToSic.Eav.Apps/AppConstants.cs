@@ -25,7 +25,8 @@ namespace ToSic.Eav.Apps
         #region App Configuration Fields
 
         public const string
-            FieldFolder = "Folder";
+            FieldName = AppLoadConstants.FieldName,
+            FieldFolder = AppLoadConstants.FieldName;
 
         #endregion
 

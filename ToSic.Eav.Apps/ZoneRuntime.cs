@@ -54,22 +54,25 @@ namespace ToSic.Eav.Apps
         /// <returns></returns>
         private int AppIdFromFolderName(string folderName)
         {
+            var wrapLog = Log.Call<int>(folderName);
             var nameLower = folderName.ToLower();
 
+            var idOfAppWithMatchingName = -1;
             foreach (var p in State.Zones[ZoneId].Apps)
             {
-                var mds = State.Get(new AppIdentity(ZoneId, p.Key));
-                var appMetaData = mds
-                    .Get(SystemRuntime.MetadataType(Constants.AppAssignmentName), p.Key,
-                        AppConstants.TypeAppConfig)
-                    .FirstOrDefault();
-                var folder = appMetaData?.GetBestValue(AppConstants.FieldFolder).ToString();
-                if (!string.IsNullOrEmpty(folder) && folder.ToLower() == nameLower)
-                    return p.Key;
+                var appState = State.Get(new AppIdentity(ZoneId, p.Key));
+                if (!string.IsNullOrEmpty(appState.Folder) && appState.Folder.ToLower() == nameLower)
+                    return wrapLog("folder matched", p.Key);
+                if (!string.IsNullOrEmpty(appState.Name) && appState.Name.ToLower() == nameLower)
+                    idOfAppWithMatchingName = p.Key;
             }
+            
+            // Folder not found - let's check if there was an app with this name
+            if (idOfAppWithMatchingName != -1)
+                return wrapLog("name matched", idOfAppWithMatchingName);
 
             // not found
-            return AppConstants.AppIdNotFound;
+            return wrapLog("not found", AppConstants.AppIdNotFound);
         }
 
     }

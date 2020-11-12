@@ -72,7 +72,9 @@ namespace ToSic.Eav.Persistence.Efc
                 {
                     _sqlTotalTime = _sqlTotalTime.Add(InitMetadataLists(app, _dbContext));
                     // New in V11.01
-                    app.Path = PreLoadAppPath(app.AppId);
+                    var nameAndFolder = PreLoadAppPath(app.AppId);
+                    app.Name = nameAndFolder?.Item1;
+                    app.Folder = nameAndFolder?.Item2;
                 }
                 else
                     Log.Add("skipping metadata load");
@@ -110,25 +112,28 @@ namespace ToSic.Eav.Persistence.Efc
         /// </summary>
         /// <param name="appId"></param>
         /// <returns></returns>
-        private string PreLoadAppPath(int appId)
+        private Tuple<string, string> PreLoadAppPath(int appId)
         {
-            var wrapLog = Log.Call<string>();
+            var wrapLog = Log.Call<Tuple<string, string>>();
+            var nullTuple = new Tuple<string, string>(null, null);
             try
             {
                 var dbEntity = GetRawEntities(new int[0], appId, false, "2SexyContent-App");
-                if (!dbEntity.Any()) return wrapLog("not in db", null);
+                if (!dbEntity.Any()) return wrapLog("not in db", nullTuple);
                 var json = dbEntity.FirstOrDefault()?.Json;
-                if (string.IsNullOrEmpty(json)) return wrapLog("no json", null);
+                if (string.IsNullOrEmpty(json)) return wrapLog("no json", nullTuple);
 
                 Log.Add("app Entity found - this json: " + json);
                 var serializer = ServiceProvider.Build<IDataDeserializer>();
                 serializer.Initialize(0, ReflectionTypes.FakeCache.Values, null, Log);
                 if (!(serializer.Deserialize(json, true, true) is Entity appEntity))
-                    return wrapLog("can't deserialize", null);
-                var path = appEntity.GetBestValue<string>("Folder");
+                    return wrapLog("can't deserialize", nullTuple);
+                var path = appEntity.GetBestValue<string>(AppLoadConstants.FieldFolder);
+                var name = appEntity.GetBestValue<string>(AppLoadConstants.FieldName);
+
                 return string.IsNullOrWhiteSpace(path) 
-                    ? wrapLog("no folder", null) 
-                    : wrapLog(path, path);
+                    ? wrapLog("no folder", new Tuple<string, string>(name, path)) 
+                    : wrapLog(path, new Tuple<string, string>(name, path));
             }
             catch (Exception ex)
             {
@@ -136,7 +141,7 @@ namespace ToSic.Eav.Persistence.Efc
                 Log.Add("error " + ex.Message);
             }
 
-            return wrapLog("error", null);
+            return wrapLog("error", nullTuple);
         }
 
         #endregion
