@@ -129,7 +129,7 @@ namespace ToSic.Eav.Persistence.Efc
             {
                 if (AddLogCount++ == MaxLogDetailsCount) Log.Add($"Will stop logging each item now, as we've already logged {AddLogCount} items");
 
-                var newEntity = BuildNewEntity(app, e, serializer, relatedEntities, attributes);
+                var newEntity = BuildNewEntity(app, e, serializer, relatedEntities, attributes, PrimaryLanguage);
 
                 // If entity is a draft, also include references to Published Entity
                 app.Add(newEntity, e.PublishedEntityId, AddLogCount <= MaxLogDetailsCount);
@@ -151,7 +151,8 @@ namespace ToSic.Eav.Persistence.Efc
         private static Entity BuildNewEntity(AppState app, TempEntity e, 
             IDataDeserializer serializer,
             Dictionary<int, IEnumerable<TempRelationshipList>> relatedEntities,
-            Dictionary<int, IEnumerable<TempAttributeWithValues>> attributes)
+            Dictionary<int, IEnumerable<TempAttributeWithValues>> attributes,
+            string primaryLanguage)
         {
             Entity newEntity;
 
@@ -199,7 +200,7 @@ namespace ToSic.Eav.Persistence.Efc
                     .ToList();
 
                 // fix faulty data dimensions in case old storage mechanims messed up
-                attrib.FixIncorrectLanguageDefinitions();
+                attrib.FixIncorrectLanguageDefinitions(primaryLanguage);
             }
 
             #endregion

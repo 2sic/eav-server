@@ -73,6 +73,9 @@ namespace ToSic.Eav.Persistence.Efc
         {
             var wrapLog = Log.Call<Dictionary<int, IEnumerable<TempAttributeWithValues>>>(
                 $"ids: {entityIdsFound.Count}");
+            
+            // just get once, we'll need it in a deep loop
+            var primaryLanguage = PrimaryLanguage;
 
             var attributes = _dbContext.ToSicEavValues
                 .Include(v => v.Attribute)
@@ -96,7 +99,7 @@ namespace ToSic.Eav.Persistence.Efc
                             // any dimensions, then values with primary language
                             .OrderByDescending(v2 => !v2.ToSicEavValuesDimensions.Any())
                             .ThenByDescending(v2 => v2.ToSicEavValuesDimensions.Any(l =>
-                                string.Equals(l.Dimension.EnvironmentKey, PrimaryLanguage,
+                                string.Equals(l.Dimension.EnvironmentKey, primaryLanguage,
                                     StringComparison.InvariantCultureIgnoreCase)))
                             .ThenBy(v2 => v2.ChangeLogCreated)
                             .Select(v2 => new TempValueWithLanguage
