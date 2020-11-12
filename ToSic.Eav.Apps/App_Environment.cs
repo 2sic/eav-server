@@ -10,16 +10,14 @@ namespace ToSic.Eav.Apps
         protected IEnvironment Env;
         
         /// <inheritdoc />
+        [PrivateApi]
         public ISite Site { get; protected set; }
 
 
         #region Paths
 
-        //[PrivateApi]
-        //protected string GetRootPath() => Path.Combine(Tenant.AppsRootPhysical, Folder);
-
         [PrivateApi]
-        public string PhysicalPath => /*_serverPaths.FullAppPath(*/Path.Combine(Site.AppsRootPhysicalFull, Folder)/*)*/;
+        public string PhysicalPath => Path.Combine(Site.AppsRootPhysicalFull, Folder);
 
         #endregion
 

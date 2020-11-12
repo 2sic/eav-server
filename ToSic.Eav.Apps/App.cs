@@ -15,15 +15,16 @@ namespace ToSic.Eav.Apps
     [PublicApi_Stable_ForUseInYourCode]
     public partial class App: AppBase, IApp
     {
-        private readonly AppDependencies _dependencies;
 
         #region Constructor / DI
 
+        [PrivateApi]
         protected DataSourceFactory DataSourceFactory { get; }
 
         /// <summary>
         /// Helper class, so inheriting stuff doesn't need to update the constructor all the time
         /// </summary>
+        [PrivateApi]
         public class AppDependencies
         {
             internal AppInitializedChecker InitializedChecker { get; }
@@ -50,6 +51,8 @@ namespace ToSic.Eav.Apps
                 GlobalQueriesLazy = globalQueriesLazy;
             }
         }
+        [PrivateApi]
+        private readonly AppDependencies _dependencies;
 
         public App(AppDependencies dependencies, string logName): base(logName ?? "Eav.App", new CodeRef())
         {
