@@ -9,7 +9,7 @@ namespace ToSic.Eav.Apps.Parts
     /// <summary>
     /// Lightweight tool to check if an app has everything. If not, it will generate all objects needed to then create what's missing.
     /// </summary>
-    public class AppInitializedChecker : HasLog
+    public class AppInitializedChecker : HasLog, IAppInitializedChecker
     {
         #region Constructor / DI
 
@@ -22,14 +22,7 @@ namespace ToSic.Eav.Apps.Parts
 
         #endregion
 
-        /// <summary>
-        /// Will quickly check if the app is initialized. It uses the App-State to do this.
-        /// If it's not configured yet, it will trigger automatic
-        /// </summary>
-        /// <param name="appIdentity"></param>
-        /// <param name="appName"></param>
-        /// <param name="parentLog"></param>
-        /// <returns></returns>
+        /// <inheritdoc />
         public bool EnsureAppConfiguredAndInformIfRefreshNeeded(IAppIdentity appIdentity, string appName, ILog parentLog)
         {
             var log = new Log("Eav.AppChk", parentLog);
@@ -65,9 +58,9 @@ namespace ToSic.Eav.Apps.Parts
         {
             var mds = State.Get(appIdentity);
             var callLogFindParts = log.Call<bool>();
-            appConfig = mds.Get(Constants.MetadataForApp, appIdentity.AppId, AppConstants.TypeAppConfig).FirstOrDefault();
-            appResources = mds.Get(Constants.MetadataForApp, appIdentity.AppId, AppConstants.TypeAppResources).FirstOrDefault();
-            appSettings = mds.Get(Constants.MetadataForApp, appIdentity.AppId, AppConstants.TypeAppSettings).FirstOrDefault();
+            appConfig = mds.Get(Constants.MetadataForApp, appIdentity.AppId, AppLoadConstants.TypeAppConfig).FirstOrDefault();
+            appResources = mds.Get(Constants.MetadataForApp, appIdentity.AppId, AppLoadConstants.TypeAppResources).FirstOrDefault();
+            appSettings = mds.Get(Constants.MetadataForApp, appIdentity.AppId, AppLoadConstants.TypeAppSettings).FirstOrDefault();
 
 
             // if nothing must be done, return now

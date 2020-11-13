@@ -70,7 +70,7 @@ namespace ToSic.Eav.Apps.Parts
 
             var addList = new List<AddItemTask>();
             if (appConfig == null)
-                addList.Add(new AddItemTask(AppConstants.TypeAppConfig,
+                addList.Add(new AddItemTask(AppLoadConstants.TypeAppConfig,
                     "App Metadata",
                     new Dictionary<string, object>
                     {
@@ -86,12 +86,12 @@ namespace ToSic.Eav.Apps.Parts
 
             // Add new (empty) ContentType for Settings
             if (appSettings == null)
-                addList.Add(new AddItemTask(AppConstants.TypeAppSettings,
+                addList.Add(new AddItemTask(AppLoadConstants.TypeAppSettings,
                     "Stores settings for an app"));
 
             // add new (empty) ContentType for Resources
             if (appResources == null)
-                addList.Add(new AddItemTask(AppConstants.TypeAppResources,
+                addList.Add(new AddItemTask(AppLoadConstants.TypeAppResources,
                     "Stores resources like translations for an app"));
 
             if (CreateAllMissingContentTypes(addList))

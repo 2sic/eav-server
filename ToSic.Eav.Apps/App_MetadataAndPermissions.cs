@@ -36,9 +36,9 @@ namespace ToSic.Eav.Apps
             Metadata = new MetadataOf<int>(Constants.MetadataForApp, AppId, appState);
 
             // Get the content-items describing various aspects of this app
-            AppResources = Metadata.FirstOrDefault(md => md.Type.StaticName == AppConstants.TypeAppResources);
-            AppSettings = Metadata.FirstOrDefault(md => md.Type.StaticName == AppConstants.TypeAppSettings);
-            AppConfiguration = Metadata.FirstOrDefault(md => md.Type.StaticName == AppConstants.TypeAppConfig);
+            AppResources = Metadata.FirstOrDefault(md => md.Type.StaticName == AppLoadConstants.TypeAppResources);
+            AppSettings = Metadata.FirstOrDefault(md => md.Type.StaticName == AppLoadConstants.TypeAppSettings);
+            AppConfiguration = Metadata.FirstOrDefault(md => md.Type.StaticName == AppLoadConstants.TypeAppConfig);
             // in some cases these things may be null, if the app was created not allowing side-effects
             // This can usually happen when new apps are being created
             Log.Add($"HasResources: {AppResources != null}, HasSettings: {AppSettings != null}, HasConfiguration: {AppConfiguration != null}");

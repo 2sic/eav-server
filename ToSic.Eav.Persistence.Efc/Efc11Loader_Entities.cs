@@ -72,38 +72,7 @@ namespace ToSic.Eav.Persistence.Efc
                 .SelectMany(chunk => chunk)
                 .ToList();
             // in some strange cases we get duplicate keys - this should try to report what's happening
-            //Dictionary<int, IEnumerable<TempRelationshipList>> relatedEntities;
-            //try
-            //{
-            var relatedEntities = GroupUniqueRelationships(allChunks); // .ToDictionary(i => i.Key, i => i.Value);
-            //}
-            //catch (Exception ex)
-            //{
-            //    Log.Add("Ran into big problem merging relationship chunks. Will attempt to add more information");
-            //    try
-            //    {
-            //        Log.Add($"These are the entity ID chunks in bundles of {IdChunkSize}");
-            //        entityIdChunks.ForEach(eid => Log.Add("Chunk: " + string.Join(",", eid)));
-            //    }
-            //    catch { /* ignored */ }
-
-            //    // do more detailed error reporting - but only if we didn't cause more errors
-            //    try
-            //    {
-            //        Log.Add("These are the duplicates we think cause the problems");
-            //        var duplicates = allChunks.GroupBy(c => c.Key)
-            //            .Where(g => g.Count() > 1)
-            //            .Select(g => g.Key)
-            //            .ToList();
-            //        Log.Add($"Found {duplicates.Count} duplicates.");
-            //        Log.Add($"The duplicate IDs are probably: {string.Join(",", duplicates)}");
-            //        throw new Exception("Ran into problems merging relationship chunks. Check the insights logs.", ex);
-            //    }
-            //    catch
-            //    {
-            //        throw new Exception("Ran into problems merging relationship chunks, and detailed analysis failed. Check Insights logs.", ex);
-            //    }
-            //}
+            var relatedEntities = GroupUniqueRelationships(allChunks);
 
             Log.Add($"Found {relatedEntities.Count} entity relationships in {sqlTime.ElapsedMilliseconds}ms");
 
@@ -125,14 +94,14 @@ namespace ToSic.Eav.Persistence.Efc
             serializer.Initialize(app, Log);
 
             var entityTimer = Stopwatch.StartNew();
-            foreach (var e in rawEntities)
+            foreach (var rawEntity in rawEntities)
             {
                 if (AddLogCount++ == MaxLogDetailsCount) Log.Add($"Will stop logging each item now, as we've already logged {AddLogCount} items");
 
-                var newEntity = BuildNewEntity(app, e, serializer, relatedEntities, attributes, PrimaryLanguage);
+                var newEntity = BuildNewEntity(app, rawEntity, serializer, relatedEntities, attributes, PrimaryLanguage);
 
                 // If entity is a draft, also include references to Published Entity
-                app.Add(newEntity, e.PublishedEntityId, AddLogCount <= MaxLogDetailsCount);
+                app.Add(newEntity, rawEntity.PublishedEntityId, AddLogCount <= MaxLogDetailsCount);
 
             }
 

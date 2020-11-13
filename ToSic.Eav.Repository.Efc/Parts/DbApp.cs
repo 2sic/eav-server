@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using ToSic.Eav.Apps;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.Persistence.Efc.Models;
 
@@ -54,7 +55,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     // If we plan to rebuild the app from the App.xml, then the config item shouldn't be deleted
                     if (!fullDelete)
                         jsonEntitiesInApp =
-                            jsonEntitiesInApp.Where(entity => entity.ContentType != ImpExpConstants.TypeAppConfig);
+                            jsonEntitiesInApp.Where(entity => entity.ContentType != AppLoadConstants.TypeAppConfig);
 
                     // 1. remove all relationships to/from these json entities
                     // note that actually there can only be relationships TO json entities, as all from will be in the json, 

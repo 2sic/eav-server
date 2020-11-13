@@ -57,7 +57,7 @@ namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
             var appConfig = Root
                 .Element(XmlConstants.Entities)?
                 .Elements(XmlConstants.Entity)
-                .Single(e => e.Attribute(XmlConstants.AttSetStatic)?.Value == AppConstants.TypeAppConfig);
+                .Single(e => e.Attribute(XmlConstants.AttSetStatic)?.Value == AppLoadConstants.TypeAppConfig);
 
             if (appConfig == null)
                 throw new NullReferenceException("app config node not found in xml, cannot continue");

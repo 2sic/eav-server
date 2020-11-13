@@ -30,8 +30,9 @@ namespace ToSic.Eav.Persistence.Efc
                 Log.Call<List<TempEntity>>($"app: {appId}, ids: {entityIds.Length}, filter: {filterByEntityIds}");
             var query = _dbContext.ToSicEavEntities
                 .Include(e => e.AttributeSet)
-                .Include(e => e.ToSicEavValues)
-                .ThenInclude(v => v.ToSicEavValuesDimensions)
+                // 2020-11-13 2dm - believe we're loading data here that is never used, as it's not in the returned data
+                //.Include(e => e.ToSicEavValues)
+                //.ThenInclude(v => v.ToSicEavValuesDimensions)
                 .Where(e => !e.ChangeLogDeleted.HasValue &&
                             e.AppId == appId &&
                             e.AttributeSet.ChangeLogDeleted == null &&

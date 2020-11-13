@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps
@@ -31,6 +32,23 @@ namespace ToSic.Eav.Apps
             Log.Add("app loading start");
             loader.Invoke();
             CacheResetTimestamp();
+
+            // If the loader wasn't able to fill name/folder, then the data was not a json
+            // so we must try to fix this now
+            if (Name == null && Folder == null)
+            {
+                var guidName = State.Cache.Zones[ZoneId].Apps[AppId];
+                // check if it's the default app
+                if (guidName == Constants.DefaultAppName)
+                    Name = Folder = Constants.ContentAppName;
+                else
+                {
+                    var config = List.FirstOrDefault(md => md.Type.StaticName == AppLoadConstants.TypeAppConfig);
+                    Name = config?.GetBestValue<string>(AppLoadConstants.FieldName);
+                    Folder = config?.GetBestValue<string>(AppLoadConstants.FieldFolder);
+                }
+            }
+
             Loading = false;
             FirstLoadCompleted = true;
             Log.Add($"app loading done - dynamic load count: {DynamicUpdatesCount}");

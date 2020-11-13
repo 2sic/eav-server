@@ -4,7 +4,6 @@ using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
@@ -54,7 +53,9 @@ namespace ToSic.Eav.Persistence.Efc
         public AppState AppState(int appId, int[] entityIds = null, ILog parentLog = null)
         {
             var appIdentity = State.Identity(null, appId);
-            return Update(new AppState(appIdentity, parentLog), AppStateLoadSequence.Start, entityIds, parentLog);
+            var appState = Update(new AppState(appIdentity, parentLog), AppStateLoadSequence.Start, entityIds, parentLog);
+
+            return appState;
         }
 
         public AppState Update(AppState app, AppStateLoadSequence startAt, int[] entityIds = null, ILog parentLog = null)
