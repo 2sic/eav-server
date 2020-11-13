@@ -166,7 +166,7 @@ namespace ToSic.Eav.DataSources
                 var netTypeName = firstAtt?.GetType().Name ?? "Null";
                 switch (netTypeName)
                 {
-                    case "Boolean": // todo: find some constant for this
+                    case Constants.DataTypeBoolean:
                         Log.Add("Will apply Boolean comparison");
                         compare = GetBoolComparison(Value);
                         break;
@@ -174,15 +174,15 @@ namespace ToSic.Eav.DataSources
                         Log.Add("Will apply Decimal comparison");
                         compare = GetNumberComparison(Value);
                         break;
-                    case "DateTime":
+                    case Constants.DataTypeDateTime:
                         Log.Add("Will apply DateTime comparison");
                         compare = GetDateTimeComparison(Value);
                         break;
-                    case "Entity":
+                    case Constants.DataTypeEntity:
                         Log.Add("Would apply entity comparison, but this doesn't work");
                         throw new Exception("can't compare values which are related entities - use the RelationshipFilter instead");
                     // ReSharper disable once RedundantCaseLabel
-                    case "String":
+                    case Constants.DataTypeString:
                     // ReSharper disable once RedundantCaseLabel
                     case "Null":
                     default:

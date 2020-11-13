@@ -49,16 +49,16 @@ namespace ToSic.Eav.Data.Builder
         public static string GetAttributeTypeName(object value)
         {
             if (value is DateTime)
-                return "DateTime";
+                return Constants.DataTypeDateTime;
             if (value is decimal || value is int || value is double)
-                return "Number";
+                return Constants.DataTypeNumber;
             if (value is bool)
-                return "Boolean";
+                return Constants.DataTypeBoolean;
             if (value is Guid || value is List<Guid> || value is List<Guid?> || value is List<int> || value is List<int?>)
-                return "Entity";
+                return Constants.DataTypeEntity;
             if (value is int[] || value is int?[])
                 throw new Exception("Trying to provide an attribute with a value which is an int-array. This is not allowed - ask the iJungleboy.");
-            return "String";
+            return Constants.DataTypeString;
         }
         #endregion
 
