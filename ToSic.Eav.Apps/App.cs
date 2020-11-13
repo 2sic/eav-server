@@ -84,10 +84,8 @@ namespace ToSic.Eav.Apps
         [PrivateApi]
         protected const string IconFile = "/" + AppConstants.AppIconFile;
 
-
-
-
-        protected internal App Init(IAppIdentity appIdentity, bool allowSideEffects, Func<App, IAppDataConfiguration> buildConfiguration, ILog parentLog)
+        
+        protected internal App Init(IAppIdentity appIdentity, Func<App, IAppDataConfiguration> buildConfiguration, ILog parentLog)
         {
             // Env / Tenant must be re-checked here
             if (Site == null) throw new Exception("no site/portal received");
@@ -102,9 +100,10 @@ namespace ToSic.Eav.Apps
                 appIdentity = _dependencies.ZoneMapper.IdentityFromSite(Site.Id, appIdentity.AppId);
 
             Init(appIdentity, new CodeRef(), parentLog);
-            Log.Add($"prep App #{appIdentity.Show()}, allowSE:{allowSideEffects}, hasDataConfig:{buildConfiguration != null}");
+            Log.Add($"prep App #{appIdentity.Show()}, hasDataConfig:{buildConfiguration != null}");
 
             // Look up name in cache
+            // todo: someday after nov 2020 replace this with State.Get(this).AppGuidName
             AppGuid = State.Cache.Zones[ZoneId].Apps[AppId];
 
             InitializeResourcesSettingsAndMetadata();
