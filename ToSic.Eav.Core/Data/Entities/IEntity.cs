@@ -40,10 +40,10 @@ namespace ToSic.Eav.Data
         new T GetBestValue<T>(string attributeName, string[] languages);
 
         [WorkInProgressApi("Still wip")]
-        new object PrimaryValue(string attributeName);
+        object PrimaryValue(string attributeName);
 
         [WorkInProgressApi("Still wip")]
-        new T PrimaryValue<T>(string attributeName);
+        T PrimaryValue<T>(string attributeName);
 
         /// <summary>
         /// Best way to get the current entities title
