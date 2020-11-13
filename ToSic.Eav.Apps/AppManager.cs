@@ -23,13 +23,24 @@ namespace ToSic.Eav.Apps
 
         public AppManager Init(int appId, ILog parentLog) => Init(State.Identity(null, appId), true, parentLog);
 
+        /// <summary>
+        /// This is a very special overload to inject an app state without reloading.
+        /// It's important because the app-manager must be able to help initialize an app, when it's not yet in the cache
+        /// </summary>
+        /// <returns></returns>
+        public AppManager InitWithState(AppState appState, bool showDrafts, ILog parentLog)
+        {
+            AppState = appState;
+            return Init(appState, showDrafts, parentLog);
+        }
+
         #endregion
 
         #region Access the Runtime
         /// <summary>
         /// Read / Runtime system of the AppManager, to read data
         /// </summary>
-        public AppRuntime Read => _read ?? (_read = ServiceProvider.Build<AppRuntime>().Init(this, ShowDrafts, Log));
+        public AppRuntime Read => _read ?? (_read = ServiceProvider.Build<AppRuntime>().InitWithState(AppState, ShowDrafts, Log));
         private AppRuntime _read;
         #endregion
 

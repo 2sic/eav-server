@@ -6,6 +6,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Plumbing;
+using ToSic.Eav.Repositories;
 using ToSic.Eav.Types;
 
 namespace ToSic.Eav.Apps.Parts
@@ -27,21 +28,21 @@ namespace ToSic.Eav.Apps.Parts
             _serviceProvider = serviceProvider;
         }
 
-        public AppInitializer Init(IAppIdentity appIdentity, ILog parentLog)
+        public AppInitializer Init(AppState appState, ILog parentLog)
         {
             Log.LinkTo(parentLog);
-            _appIdentity = appIdentity;
+            AppState = appState;
             return this;
         }
 
-        private IAppIdentity _appIdentity;
+        private AppState AppState { get; set; }
 
         /// <summary>
         /// The App Manager must be re-created during initialization
         /// So we don't inject into into this class, but instead create it on demand
         /// </summary>
         private AppManager AppManager =>
-            _appManager ?? (_appManager = _serviceProvider.Build<AppManager>().Init(_appIdentity, Log));
+            _appManager ?? (_appManager = _serviceProvider.Build<AppManager>().InitWithState(AppState, true, Log));
         private AppManager _appManager;
 
 
@@ -55,11 +56,11 @@ namespace ToSic.Eav.Apps.Parts
         {
             var wrapLog = Log.Call<bool>($"{nameof(newAppName)}: {newAppName}");
 
-            if (AppInitializedChecker.CheckIfAllPartsExist(_appIdentity, out var appConfig, out var appResources, out var appSettings, Log))
+            if (AppInitializedChecker.CheckIfAllPartsExist(AppState, out var appConfig, out var appResources, out var appSettings, Log))
                 return wrapLog("ok", true);
 
             // Get appName from cache - stop if it's a "Default" app
-            var eavAppName = new ZoneRuntime().Init(_appIdentity.ZoneId, Log).GetName(_appIdentity.AppId);
+            var eavAppName = AppState.AppGuidName; // new ZoneRuntime().Init(_appState.ZoneId, Log).GetName(_appState.AppId);
 
             // v10.25 from now on the DefaultApp can also have settings and resources
             var folder = eavAppName == Constants.DefaultAppName
@@ -78,7 +79,7 @@ namespace ToSic.Eav.Apps.Parts
                         {"Folder", folder},
                         {"AllowTokenTemplates", "True"},
                         {"AllowRazorTemplates", "True"},
-                        {"Version", "00.00.01"},
+                        {"Version", "00.00.11"}, // note: update this to the latest 2sxc version just so it's easy to spot when it was auto-created
                         {"OriginalId", ""}
                     },
                     false));
@@ -96,14 +97,17 @@ namespace ToSic.Eav.Apps.Parts
 
             if (CreateAllMissingContentTypes(addList))
             {
-                SystemManager.Purge(_appIdentity, log: Log);
+                SystemManager.Purge(AppState, log: Log);
+                // todo: get the latest app-state
+                var repoLoader = _serviceProvider.Build<IRepositoryLoader>();
+                AppState = repoLoader.AppState(AppState.AppId, false, Log);
                 _appManager = null; // reset, because afterwards we need a clean AppManager
             }
 
             addList.ForEach(MetadataEnsureTypeAndSingleEntity);
 
             // Reset App-State to ensure it's reloaded with the added configuration
-            SystemManager.Purge(_appIdentity, log: Log);
+            SystemManager.Purge(AppState, log: Log);
 
             return wrapLog("ok", false);
         }
@@ -130,7 +134,7 @@ namespace ToSic.Eav.Apps.Parts
 
         private void MetadataEnsureTypeAndSingleEntity(AddItemTask item)
         {
-            var wrapLog = Log.Call($"{item.SetName} and {item.Label} for app {_appIdentity.AppId} - inApp: {item.InAppType}");
+            var wrapLog = Log.Call($"{item.SetName} and {item.Label} for app {AppState.AppId} - inApp: {item.InAppType}");
 
             var ct = FindContentType(item.SetName, item.InAppType);
 
@@ -144,8 +148,8 @@ namespace ToSic.Eav.Apps.Parts
 
             var values = item.Values ?? new Dictionary<string, object>();
 
-            var newEnt = new Entity(_appIdentity.AppId, Guid.NewGuid(), ct, values);
-            newEnt.SetMetadata(new Metadata.Target { KeyNumber = _appIdentity.AppId, TargetType = Constants.MetadataForApp });
+            var newEnt = new Entity(AppState.AppId, Guid.NewGuid(), ct, values);
+            newEnt.SetMetadata(new Metadata.Target { KeyNumber = AppState.AppId, TargetType = Constants.MetadataForApp });
             AppManager.Entities.Save(newEnt);
 
             wrapLog(null);
@@ -183,10 +187,10 @@ namespace ToSic.Eav.Apps.Parts
 
             public AddItemTask(string setName, string label, Dictionary<string, object> values = null, bool inAppType = true)
             {
-                this.SetName = setName;
-                this.Label = label;
-                this.Values = values;
-                this.InAppType = inAppType;
+                SetName = setName;
+                Label = label;
+                Values = values;
+                InAppType = inAppType;
             }
         }
     }

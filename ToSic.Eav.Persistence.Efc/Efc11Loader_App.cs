@@ -22,11 +22,15 @@ namespace ToSic.Eav.Persistence.Efc
 
         #region constructor and private vars
 
-        public Efc11Loader(EavDbContext dbContext, Lazy<IEnvironment> environmentLazy, IServiceProvider serviceProvider): base("Db.Efc11")
+        public Efc11Loader(EavDbContext dbContext, 
+            Lazy<IEnvironment> environmentLazy, 
+            IServiceProvider serviceProvider,
+            IAppInitializedChecker initializedChecker) : base("Db.Efc11")
         {
             ServiceProvider = serviceProvider;
             _dbContext = dbContext;
             _environmentLazy = environmentLazy;
+            _initializedChecker = initializedChecker;
         }
 
         public Efc11Loader UseExistingDb(EavDbContext dbContext)
@@ -38,6 +42,7 @@ namespace ToSic.Eav.Persistence.Efc
         private IServiceProvider ServiceProvider { get; }
         private EavDbContext _dbContext;
         private readonly Lazy<IEnvironment> _environmentLazy;
+        private readonly IAppInitializedChecker _initializedChecker;
 
         #endregion
 
@@ -45,17 +50,30 @@ namespace ToSic.Eav.Persistence.Efc
         #region AppPackage
 
         /// <inheritdoc />
-        /// <summary>Get Data to populate ICache</summary>
-        /// <param name="appId">AppId (can be different than the appId on current context (e.g. if something is needed from the default appId, like MetaData)</param>
-        /// <param name="entityIds">null or a List of EntityIds</param>
-        /// <param name="parentLog"></param>
-        /// <returns>app package with initialized app</returns>
-        public AppState AppState(int appId, int[] entityIds = null, ILog parentLog = null)
+        public AppState AppState(int appId, /*int[] entityIds = null,*/ ILog parentLog = null)
         {
             var appIdentity = State.Identity(null, appId);
-            var appState = Update(new AppState(appIdentity, parentLog), AppStateLoadSequence.Start, entityIds, parentLog);
+            var appGuidName = State.Cache.Zones[appIdentity.ZoneId].Apps[appIdentity.AppId];
+            var appState = Update(new AppState(appIdentity, appGuidName, parentLog), AppStateLoadSequence.Start, /*entityIds*/null, parentLog);
 
             return appState;
+        }
+
+        public AppState AppState(int appId, bool ensureInitialized, ILog parentLog = null)
+        {
+            var appState = AppState(appId, parentLog);
+            if (!ensureInitialized) return appState;
+
+            // Note: Ignore ensureInitialized on the content app
+            // The reason is that this app - even when empty - is needed in the cache before data is imported
+            // So if we initialize it, then things will result in duplicate settings/resources/configuration
+            // Note that to ensure the Content app works, we must perform the same check again in the 
+            // API Endpoint which will edit this data
+            if (appState.AppGuidName == Constants.DefaultAppName) return appState;
+
+            return _initializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(appState, null, Log)
+                ? AppState(appId, parentLog)
+                : appState;
         }
 
         public AppState Update(AppState app, AppStateLoadSequence startAt, int[] entityIds = null, ILog parentLog = null)

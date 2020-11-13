@@ -32,7 +32,7 @@ namespace ToSic.Testing.Performance.json
 
         public void LoadApp()
         {
-            Package = Loader.AppState(TestAppId, parentLog: Log);   
+            Package = Loader.AppState(TestAppId, Log);   
         }
 
         internal AppState Package;

@@ -105,7 +105,7 @@ namespace ToSic.Eav.Apps.Parts
             var wrapLog = Log.Call<List<InputTypeInfo>>();
             try
             {
-                var appState = State.Get(Parent);
+                var appState = Parent.AppState; // State.Get(Parent);
                 var appLoader = _appFileSystemLoaderLazy.Value.Init(appState.AppId, appState.Folder, Log);
                 var inputTypes = appLoader.InputTypes();
                 return wrapLog(null, inputTypes);

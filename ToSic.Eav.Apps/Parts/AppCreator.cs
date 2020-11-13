@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Repositories;
 using ToSic.Eav.Repository.Efc;
 
 namespace ToSic.Eav.Apps.Parts
@@ -15,12 +16,14 @@ namespace ToSic.Eav.Apps.Parts
 
         private readonly DbDataController _db;
         private readonly AppManager _appManager;
+        private readonly IRepositoryLoader _repositoryLoader;
         private int _zoneId;
 
-        public AppCreator(DbDataController db, AppManager appManager) : base("Eav.AppBld")
+        public AppCreator(DbDataController db, AppManager appManager, IRepositoryLoader repositoryLoader) : base("Eav.AppBld")
         {
             _db = db;
             _appManager = appManager;
+            _repositoryLoader = repositoryLoader;
         }
 
         public AppCreator Init(int zoneId, ILog parentLog)
@@ -44,8 +47,12 @@ namespace ToSic.Eav.Apps.Parts
                 throw new ArgumentOutOfRangeException("appName '" + appName + "' not allowed");
 
             var appId = CreateInDb();
+
+            // must get app from DB directly, not from cache, so no State.Get(...)
+            var appState = _repositoryLoader.AppState(appId, false, Log);
+
             new AppInitializer(_appManager.ServiceProvider)
-                .Init(new AppIdentity(_zoneId, appId), Log)
+                .Init(appState, Log)
                 .InitializeApp(appName);
         }
 

@@ -17,9 +17,10 @@ namespace ToSic.Eav.Apps
     {
 
         [PrivateApi("constructor, internal use only")]
-        internal AppState(IAppIdentity app, ILog parentLog): base($"App.St-{app.AppId}", new CodeRef())
+        internal AppState(IAppIdentity app, string appGuidName, ILog parentLog): base($"App.St-{app.AppId}", new CodeRef())
         {
             Init(app, new CodeRef(), parentLog);
+            AppGuidName = appGuidName;
             CacheResetTimestamp();  // do this very early, as this number is needed elsewhere
 
 	        Index = new Dictionary<int, IEntity>();
@@ -32,6 +33,9 @@ namespace ToSic.Eav.Apps
         /// Manages all relationships between Entities
         /// </summary>
         public AppRelationshipManager Relationships { get; }
+
+        [PrivateApi]
+        public string AppGuidName { get; }
 
         /// <summary>
         /// The app-folder, which is pre-initialized very early on.

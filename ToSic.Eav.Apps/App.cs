@@ -1,5 +1,4 @@
 ﻿using System;
-using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
@@ -27,7 +26,7 @@ namespace ToSic.Eav.Apps
         [PrivateApi]
         public class AppDependencies
         {
-            internal AppInitializedChecker InitializedChecker { get; }
+            //internal AppInitializedChecker InitializedChecker { get; }
             internal readonly IZoneMapper ZoneMapper;
             internal readonly IEnvironment Environment;
             internal readonly ISite Site;
@@ -39,11 +38,8 @@ namespace ToSic.Eav.Apps
                 IZoneMapper zoneMapper,
                 ISite site,
                 DataSourceFactory dataSourceFactory,
-                Lazy<GlobalQueries> globalQueriesLazy,
-                AppInitializedChecker initializedChecker
-                )
+                Lazy<GlobalQueries> globalQueriesLazy)
             {
-                InitializedChecker = initializedChecker;
                 ZoneMapper = zoneMapper;
                 Environment = environment;
                 Site = site;
@@ -110,18 +106,6 @@ namespace ToSic.Eav.Apps
 
             // Look up name in cache
             AppGuid = State.Cache.Zones[ZoneId].Apps[AppId];
-
-            // v10.25 from now on the DefaultApp can also have settings and resources
-            // v10.26.0x reactivated this protection, because it causes side-effects. On content-app, let's only do this if people start editing the resources...?
-            // note that on imported apps, this would automatically work, as those would already have these things
-            if (AppGuid != Constants.DefaultAppName)
-            {
-                // if it's a real App (not content/default), do more
-                Log.Add($"create app resources? allowSE:{allowSideEffects}");
-
-                if (allowSideEffects)
-                    _dependencies.InitializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(this, null, Log);
-            }
 
             InitializeResourcesSettingsAndMetadata();
 

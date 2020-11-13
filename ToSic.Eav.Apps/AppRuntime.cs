@@ -22,6 +22,18 @@ namespace ToSic.Eav.Apps
         public new AppRuntime Init(IAppIdentity app, bool showDrafts, ILog parentLog) 
             => base.Init(app, showDrafts, parentLog);
 
+        /// <summary>
+        /// This is a very special overload to inject an app state without reloading.
+        /// It's important because the app-manager must be able to help initialize an app, when it's not yet in the cache
+        /// </summary>
+        /// <returns></returns>
+        protected internal AppRuntime InitWithState(AppState appState, bool showDrafts, ILog parentLog)
+        {
+            AppState = appState;
+            return base.Init(appState, showDrafts, parentLog);
+        }
+
+
         #endregion
 
         /// <summary>

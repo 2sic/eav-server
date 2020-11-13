@@ -33,6 +33,7 @@ namespace ToSic.Eav.Apps
             // Helpers to build stuff
             services.TryAddTransient<AppCreator>();
             services.TryAddTransient<ZoneCreator>();
+            services.TryAddTransient<IAppInitializedChecker, AppInitializedChecker>();
             services.TryAddTransient<AppInitializedChecker>();
 
             // export import stuff

@@ -37,9 +37,9 @@ namespace ToSic.Eav.Apps
             // so we must try to fix this now
             if (Name == null && Folder == null)
             {
-                var guidName = State.Cache.Zones[ZoneId].Apps[AppId];
+                //var guidName = State.Cache.Zones[ZoneId].Apps[AppId];
                 // check if it's the default app
-                if (guidName == Constants.DefaultAppName)
+                if (AppGuidName == Constants.DefaultAppName)
                     Name = Folder = Constants.ContentAppName;
                 else
                 {

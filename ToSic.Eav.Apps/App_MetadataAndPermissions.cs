@@ -32,7 +32,7 @@ namespace ToSic.Eav.Apps
         {
             var wrapLog = Log.Call();
 
-            var appState = State.Cache.Get(this);
+            var appState = State.Get(this);
             Metadata = new MetadataOf<int>(Constants.MetadataForApp, AppId, appState);
 
             // Get the content-items describing various aspects of this app

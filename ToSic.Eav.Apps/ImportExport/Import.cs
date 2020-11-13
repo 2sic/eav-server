@@ -96,9 +96,9 @@ namespace ToSic.Eav.Apps.ImportExport
                         Storage.DoWhileQueuingVersioning(() =>
                         {
                             var logImpTypes = Log.Call(message: "Import Types in Sys-Scope", useTimer: true);
-                            var appStateTemp =
-                                Storage.Loader.AppState(AppId,
-                                    parentLog: Log); // load everything, as content-type metadata is normal entities
+                            // load everything, as content-type metadata is normal entities
+                            // but disable initialized, as this could cause initialize stuff we're about to import
+                            var appStateTemp = Storage.Loader.AppState(AppId, false, Log); 
                             var newSetsList = newTypes.ToList();
                             // first: import the attribute sets in the system scope, as they may be needed by others...
                             // ...and would need a cache-refresh before 
@@ -114,7 +114,7 @@ namespace ToSic.Eav.Apps.ImportExport
                             logImpTypes = Log.Call(message: "Import Types in non-Sys scopes", useTimer: true);
                             // now reload the app state as it has new content-types
                             // and it may need these to load the remaining attributes of the content-types
-                            appStateTemp = Storage.Loader.AppState(AppId, parentLog: Log);
+                            appStateTemp = Storage.Loader.AppState(AppId, false, Log);
 
                             // now the remaining attributeSets
                             var nonSysAttribSets = newSetsList.Where(a => !sysAttributeSets.Contains(a)).ToList();
@@ -133,7 +133,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 else
                 {
                     var logImpEnts = Log.Call(message: "Pre-Import Entities merge", useTimer: true);
-                    var appStateTemp = Storage.Loader.AppState(AppId, parentLog: Log); // load all entities
+                    var appStateTemp = Storage.Loader.AppState(AppId, false, Log); // load all entities
                     newEntities = newEntities
                         .Select(entity => CreateMergedForSaving(entity, appStateTemp, SaveOptions))
                         .Where(e => e != null).ToList();

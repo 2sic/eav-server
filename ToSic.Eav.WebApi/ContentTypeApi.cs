@@ -57,11 +57,15 @@ namespace ToSic.Eav.WebApi
 
 
             // 2020-01-15 2sxc 10.27.00 Special side-effect, pre-generate the resources, settings etc. if they didn't exist yet
+            // this is important on "Content" apps, because these don't auto-initialize when loading from the DB
+            // so for these, we must pre-ensure that the app is initialized as needed, if they 
+            // are editing the resources etc. 
             if (scope == AppConstants.ScopeApp)
             {
                 Log.Add($"is scope {scope}, will do extra processing");
-                // todo: must place elsewhere!!!
-                _appInitializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(AppManager, null, Log); // make sure additional settings etc. exist
+                var appState = State.Get(AppManager);
+                // make sure additional settings etc. exist
+                _appInitializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(appState, null, Log); 
             }
             // should use app-manager and return each type 1x only
             var appMan = AppManager;

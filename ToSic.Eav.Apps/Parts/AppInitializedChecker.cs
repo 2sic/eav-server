@@ -23,9 +23,10 @@ namespace ToSic.Eav.Apps.Parts
         #endregion
 
         /// <inheritdoc />
-        public bool EnsureAppConfiguredAndInformIfRefreshNeeded(IAppIdentity appIdentity, string appName, ILog parentLog)
+        public bool EnsureAppConfiguredAndInformIfRefreshNeeded(AppState appIdentity, string appName, ILog parentLog)
         {
             var log = new Log("Eav.AppChk", parentLog);
+
             var callLog = log.Call<bool>($"..., {appName}");
             if (CheckIfAllPartsExist(appIdentity, out _, out _, out _, log))
                 return callLog("ok", false);
@@ -50,17 +51,16 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="log"></param>
         /// <returns></returns>
         internal static bool CheckIfAllPartsExist(
-            IAppIdentity appIdentity,
+            AppState appIdentity,
             out IEntity appConfig,
             out IEntity appResources,
             out IEntity appSettings,
             ILog log)
         {
-            var mds = State.Get(appIdentity);
             var callLogFindParts = log.Call<bool>();
-            appConfig = mds.Get(Constants.MetadataForApp, appIdentity.AppId, AppLoadConstants.TypeAppConfig).FirstOrDefault();
-            appResources = mds.Get(Constants.MetadataForApp, appIdentity.AppId, AppLoadConstants.TypeAppResources).FirstOrDefault();
-            appSettings = mds.Get(Constants.MetadataForApp, appIdentity.AppId, AppLoadConstants.TypeAppSettings).FirstOrDefault();
+            appConfig = appIdentity.Get(Constants.MetadataForApp, appIdentity.AppId, AppLoadConstants.TypeAppConfig).FirstOrDefault();
+            appResources = appIdentity.Get(Constants.MetadataForApp, appIdentity.AppId, AppLoadConstants.TypeAppResources).FirstOrDefault();
+            appSettings = appIdentity.Get(Constants.MetadataForApp, appIdentity.AppId, AppLoadConstants.TypeAppSettings).FirstOrDefault();
 
 
             // if nothing must be done, return now

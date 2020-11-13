@@ -108,8 +108,7 @@ namespace ToSic.Eav.Caching
                 // Init EavSqlStore once
                 var loader = GetNewRepoLoader();
                 if (primaryLanguage != null) loader.PrimaryLanguage = primaryLanguage;
-                var appState = loader.AppState(appIdentity.AppId);
-
+                var appState = loader.AppState(appIdentity.AppId, true);
                 Set(cacheKey, appState);
             }
 

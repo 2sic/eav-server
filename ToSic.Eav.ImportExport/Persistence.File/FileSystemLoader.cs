@@ -198,7 +198,10 @@ namespace ToSic.Eav.Persistence.File
 
 
         #region not implemented stuff
-        public AppState AppState(int appId, int[] entityIds = null, ILog parentLog = null) 
+        public AppState AppState(int appId, /*int[] entityIds = null,*/ ILog parentLog = null) 
+            => throw new NotImplementedException();
+
+        public AppState AppState(int appId, bool ensureInitialized, ILog parentLog = null) 
             => throw new NotImplementedException();
 
         public AppState Update(AppState app, AppStateLoadSequence startAt, int[] entityIds = null,
