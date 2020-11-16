@@ -9,10 +9,12 @@ namespace ToSic.Eav.Data.Builder
 
 
         #region Helper to assemble an entity from a dictionary of properties
+
         /// <summary>
         /// Convert a NameValueCollection-Like List to a Dictionary of IAttributes
         /// </summary>
-        public static Dictionary<string, IAttribute> ConvertToInvariantDic(this IDictionary<string, object> objAttributes)
+        public static Dictionary<string, IAttribute> ConvertToInvariantDic(
+            this IDictionary<string, object> objAttributes)
         {
             var result = new Dictionary<string, IAttribute>(StringComparer.InvariantCultureIgnoreCase);
 
@@ -54,12 +56,15 @@ namespace ToSic.Eav.Data.Builder
                 return Constants.DataTypeNumber;
             if (value is bool)
                 return Constants.DataTypeBoolean;
-            if (value is Guid || value is List<Guid> || value is List<Guid?> || value is List<int> || value is List<int?>)
+            if (value is Guid || value is List<Guid> || value is List<Guid?> || value is List<int> ||
+                value is List<int?>)
                 return Constants.DataTypeEntity;
             if (value is int[] || value is int?[])
-                throw new Exception("Trying to provide an attribute with a value which is an int-array. This is not allowed - ask the iJungleboy.");
+                throw new Exception(
+                    "Trying to provide an attribute with a value which is an int-array. This is not allowed - ask the iJungleboy.");
             return Constants.DataTypeString;
         }
+
         #endregion
 
 
@@ -72,9 +77,24 @@ namespace ToSic.Eav.Data.Builder
         }
 
 
-        public static Dictionary<string, IAttribute> Copy(this IDictionary<string, IAttribute> attributes) 
+        public static Dictionary<string, IAttribute> Copy(this IDictionary<string, IAttribute> attributes)
             => attributes.ToDictionary(x => x.Key, x => x.Value.Copy());
 
+#if NET451
+        /// <summary>
+        /// Add a value to the attribute specified. To do so, set the name, type and string of the value, as 
+        /// well as some language properties.
+        /// </summary>
+        [Obsolete("You should now get the AttributeBuilder with Dependency Injection and AddValue there")]
+        public static IValue AddValue(this Dictionary<string, IAttribute> target, string attributeName,
+            object value, string valueType, string language = null, bool languageReadOnly = false,
+            bool resolveHyperlink = false, IEntitiesSource allEntitiesForRelationships = null)
+        {
+            var builder = Factory.Resolve<AttributeBuilder>();
+            return builder.AddValue(target, attributeName, value, valueType, language, languageReadOnly,
+                resolveHyperlink, allEntitiesForRelationships);
+        }
+#endif
 
         ////#region Helper to add a value with languages to an existing list of Attributes
         /////// <summary>
