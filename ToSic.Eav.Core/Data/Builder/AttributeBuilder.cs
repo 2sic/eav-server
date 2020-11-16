@@ -10,7 +10,7 @@ namespace ToSic.Eav.Data.Builder
         private readonly Lazy<IValueConverter> _lazyValueConverter;
         private IValueConverter ValueConverter => _lazyValueConverter.Value;
 
-        internal AttributeBuilder(Lazy<IValueConverter> lazyValueConverter)
+        public AttributeBuilder(Lazy<IValueConverter> lazyValueConverter)
         {
             _lazyValueConverter = lazyValueConverter;
         }
@@ -27,7 +27,7 @@ namespace ToSic.Eav.Data.Builder
             // pre-convert links if necessary...
             if (resolveHyperlink && valueType == ValueTypes.Hyperlink.ToString())
             {
-                var valueConverter = ValueConverter; // Factory.Resolve<IValueConverter>();
+                var valueConverter = ValueConverter;
                 value = valueConverter.ToReference(valueType);
             }
 

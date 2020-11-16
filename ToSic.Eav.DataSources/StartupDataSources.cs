@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources.Queries;
 
 namespace ToSic.Eav.DataSources
@@ -13,7 +12,6 @@ namespace ToSic.Eav.DataSources
 
             services.TryAddTransient<IAppRoot, AppRoot>();
 
-            services.TryAddTransient<AttributeBuilder>();
             services.TryAddTransient<Sql>();
             services.TryAddTransient<DataTable>();
 

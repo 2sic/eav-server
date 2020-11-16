@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Eav.Data.Builder;
 
 namespace ToSic.Eav
 {
@@ -7,6 +9,7 @@ namespace ToSic.Eav
         public static IServiceCollection AddEavCore(this IServiceCollection services)
         {
             // todo
+            services.TryAddTransient<AttributeBuilder>();
 
             return services;
         }
