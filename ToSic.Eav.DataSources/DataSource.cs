@@ -1,10 +1,12 @@
-﻿using System;
+﻿// completely obsolete
+// should never be used outside of DNN DLLs
+#if !NETSTANDARD
+using System;
 using ToSic.Eav.Apps;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Plumbing;
-using ToSic;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav
@@ -12,6 +14,7 @@ namespace ToSic.Eav
 	/// <summary>
 	/// System to prepare data sources according to our needs.
 	/// </summary>
+	[Obsolete]
 	public class DataSource: HasLog
 	{
         private readonly DataSourceFactory _dsFactory;
@@ -47,3 +50,4 @@ namespace ToSic.Eav
     }
 
 }
+#endif

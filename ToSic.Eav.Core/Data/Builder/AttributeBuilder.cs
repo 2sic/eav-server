@@ -26,10 +26,7 @@ namespace ToSic.Eav.Data.Builder
         {
             // pre-convert links if necessary...
             if (resolveHyperlink && valueType == ValueTypes.Hyperlink.ToString())
-            {
-                var valueConverter = ValueConverter;
-                value = valueConverter.ToReference(valueType);
-            }
+                value = ValueConverter.ToReference(valueType);
 
             // sometimes language is passed in as an empty string - this would have side effects, so it must be neutralized
             if (string.IsNullOrWhiteSpace(language)) language = null;
