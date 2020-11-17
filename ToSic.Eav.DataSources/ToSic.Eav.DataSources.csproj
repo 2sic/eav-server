@@ -4,9 +4,7 @@
     <TargetFrameworks>net451;netstandard2.0</TargetFrameworks>
     <AssemblyName>ToSic.Eav.DataSources</AssemblyName>
     <RootNamespace>ToSic.Eav.DataSources</RootNamespace>
-    <AssemblyVersion>11.08.00.0</AssemblyVersion>
-    <FileVersion>11.08.00.0</FileVersion>
-    <Version>11.08.00</Version>
+    <Version>11.10.00</Version>
   </PropertyGroup>
 
   <ItemGroup>
