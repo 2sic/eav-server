@@ -2,7 +2,7 @@
 using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Configuration;
-using ToSic.Eav.DataSourceTests.ExternalData;
+using ToSic.Eav.DataSourceTests.TestData;
 
 namespace ToSic.Eav.DataSourceTests.LookUps
 {
@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSourceTests.LookUps
             // Assemble a simple source-stream with demo data
             const int ItemsToGenerate = 499;
             const string ItemToFilter = "1023";
-            var ds = DataTableTst.GeneratePersonSourceWithDemoData(ItemsToGenerate, 1001);
+            var ds = DataTablePerson.Generate(ItemsToGenerate, 1001);
             var myConfDs = new EntityIdFilter()
                 .Init(ds.Configuration.LookUps);
             //myConfDs.ConfigurationProvider = ds.ConfigurationProvider;

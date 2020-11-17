@@ -1,7 +1,8 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.DataSources;
 
-namespace ToSic.Eav.DataSources.Tests
+namespace ToSic.Eav.DataSourceTests
 {
     [TestClass]
     public class DataSourceTests

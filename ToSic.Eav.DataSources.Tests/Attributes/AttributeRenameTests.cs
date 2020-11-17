@@ -2,9 +2,9 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSourceTests.ExternalData;
+using ToSic.Eav.DataSourceTests.TestData;
 
-namespace ToSic.Eav.DataSourceTests.Attributes
+namespace ToSic.Eav.DataSourceTests
 {
     [TestClass]
     public partial class AttributeRenameTests
@@ -22,7 +22,7 @@ namespace ToSic.Eav.DataSourceTests.Attributes
 
         private static List<string> ChangeFieldList(string[] removeFields, string[] addFields)
         {
-            var changedFields = DataTableTst.Fields.ToList();
+            var changedFields = PersonSpecs.Fields.ToList();
 
             foreach (var r in removeFields) changedFields.Remove(r);
             foreach (var a in addFields) changedFields.Add(a);

@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.DataSourceTests.ExternalData;
+using ToSic.Eav.DataSources;
+using ToSic.Eav.DataSourceTests.TestData;
 
-namespace ToSic.Eav.DataSources.Tests
+namespace ToSic.Eav.DataSourceTests
 {
     internal class ValueSortShared
     {
@@ -9,7 +10,7 @@ namespace ToSic.Eav.DataSources.Tests
 
         public static ValueSort GeneratePersonSourceWithDemoData(int itemsToGenerate = 10, int firstId = 1001, bool useCacheForSpeed = true)
         {
-            var ds = DataTableTst.GeneratePersonSourceWithDemoData(itemsToGenerate, firstId);
+            var ds = DataTablePerson.Generate(itemsToGenerate, firstId);
             var filtered = Factory.Resolve<DataSourceFactory>().GetDataSource<ValueSort>(ds, ds);
             return filtered;
         }

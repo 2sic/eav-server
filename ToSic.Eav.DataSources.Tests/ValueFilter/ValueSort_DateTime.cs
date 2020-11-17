@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSourceTests.ExternalData;
+using ToSic.Eav.DataSources;
+using ToSic.Eav.DataSources.Tests;
+using ToSic.Eav.DataSourceTests.TestData;
 
-namespace ToSic.Eav.DataSources.Tests
+namespace ToSic.Eav.DataSourceTests
 {
     // Todo
     // Create tests with language-parameters as well, as these tests ignore the language and always use default
@@ -17,8 +19,8 @@ namespace ToSic.Eav.DataSources.Tests
     public class ValueSort_DateTime
     {
         private const int TestVolume = 30;
-        private const string Birthdate = DataTableTst.FieldBirthday;
-        private const string BirthdateMaybeNull = DataTableTst.FieldBirthdayNull;
+        private const string Birthdate = PersonSpecs.FieldBirthday;
+        private const string BirthdateMaybeNull = PersonSpecs.FieldBirthdayNull;
         private const string ModifiedTest = "InternalModified";
         private const string ModifiedReal = "Modified";
         private readonly ValueSort _testDataGeneratedOutsideTimer;

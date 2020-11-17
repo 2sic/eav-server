@@ -1,8 +1,10 @@
 ﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSourceTests.ExternalData;
+using ToSic.Eav.DataSourceTests.TestData;
+using ToSic.Eav.DataSources.Configuration;
 
-namespace ToSic.Eav.DataSourceTests.ValueFilter
+namespace ToSic.Eav.DataSourceTests
 {
     public class ValueFilterMaker
     {
@@ -12,10 +14,12 @@ namespace ToSic.Eav.DataSourceTests.ValueFilter
             _dataSourceFactory = dataSourceFactory;
         }
 
-        public DataSources.ValueFilter CreateValueFilterForTesting(int testItemsInRootSource)
+        public ValueFilter CreateValueFilterForTesting(int testItemsInRootSource, bool useDataTable = true)
         {
-            var ds = DataTableTst.GeneratePersonSourceWithDemoData(testItemsInRootSource, 1001);
-            var filtered = _dataSourceFactory.GetDataSource<DataSources.ValueFilter>(new AppIdentity(1, 1), ds);
+            var ds = useDataTable
+                ? DataTablePerson.Generate(testItemsInRootSource, 1001) as IDataSource
+                : new PersonsDataSource().Init(testItemsInRootSource).Init(LookUpTestData.AppSetAndRes());
+            var filtered = _dataSourceFactory.GetDataSource<ValueFilter>(new AppIdentity(1, 1), ds);
             return filtered;
         }
 

@@ -2,13 +2,12 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Core.Tests;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSourceTests.ExternalData;
+using ToSic.Eav.DataSourceTests.TestData;
 using ToSic.Testing.Shared;
 
-namespace ToSic.Eav.DataSourceTests.Attributes
+namespace ToSic.Eav.DataSourceTests
 {
     internal class AttributeRenameTester: EavTestBase
     {
@@ -45,7 +44,7 @@ namespace ToSic.Eav.DataSourceTests.Attributes
 
         public static AttributeRename CreateRenamer(int testItemsInRootSource)
         {
-            var ds = DataTableTst.GeneratePersonSourceWithDemoData(testItemsInRootSource, 1001);
+            var ds = DataTablePerson.Generate(testItemsInRootSource, 1001);
             var filtered = Resolve<DataSourceFactory>().GetDataSource<AttributeRename>(new AppIdentity(1, 1), ds);
             return filtered;
         }

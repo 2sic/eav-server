@@ -2,10 +2,9 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Core.Tests;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Queries;
-using ToSic.Eav.DataSourceTests.ExternalData;
+using ToSic.Eav.DataSourceTests.TestData;
 using ToSic.Eav.LookUp;
 using ToSic.Testing.Shared;
 
@@ -36,7 +35,7 @@ namespace ToSic.Eav.DataSourceTests.Streams
         }
 
 
-        private DataSources.StreamPick BuildStructure()
+        private StreamPick BuildStructure()
         {
             // todo: create a test using params...
             var paramsOverride = new LookUpInDictionary(QueryConstants.ParamsLookup, new Dictionary<string, string>
@@ -44,9 +43,9 @@ namespace ToSic.Eav.DataSourceTests.Streams
                 {"StreamParam", "Lots"}
             });
 
-            var ds1 = DataTableTst.GeneratePersonSourceWithDemoData(DefaultStreamSize, 1000);
-            var ds2 = DataTableTst.GeneratePersonSourceWithDemoData(MoreStreamSize, 2700);
-            var ds3 = DataTableTst.GeneratePersonSourceWithDemoData(53, 5300);
+            var ds1 = DataTablePerson.Generate(DefaultStreamSize, 1000);
+            var ds2 = DataTablePerson.Generate(MoreStreamSize, 2700);
+            var ds3 = DataTablePerson.Generate(53, 5300);
             var dsBuild = Resolve<DataSourceFactory>();
             var streamPick = dsBuild.GetDataSource<StreamPick>(new AppIdentity(1, 1), null, ds1.Configuration.LookUps);
             streamPick.Attach(Constants.DefaultStreamName, ds1);

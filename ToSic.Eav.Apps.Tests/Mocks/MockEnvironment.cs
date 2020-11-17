@@ -14,19 +14,9 @@ namespace ToSic.Eav.Apps.Tests.Mocks
             return this;
         }
 
-        public string MapPath(string path)
-        {
-            throw new System.NotImplementedException();
-        }
         #endregion
 
-        public IZoneMapper ZoneMapper => new MockZoneMapper();
-
         public IUser User => null;
-
-        public IPagePublishing PagePublishing => null;
-
-        //public string MapPath(string virtualPath) => "MockMapped";
 
 
         public string DefaultLanguage => "en-US";

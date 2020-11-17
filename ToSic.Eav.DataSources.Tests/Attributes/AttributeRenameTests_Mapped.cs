@@ -1,8 +1,7 @@
-﻿using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.DataSourceTests.ExternalData;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.DataSourceTests.TestData;
 
-namespace ToSic.Eav.DataSourceTests.Attributes
+namespace ToSic.Eav.DataSourceTests
 {
     public partial class AttributeRenameTests
     {
@@ -19,12 +18,12 @@ Last=LastName";
         {
             var test = new AttributeRenameTester(MapBasic1);
             Assert.AreEqual(10, test.CList.Count);
-            Assert.AreEqual(DataTableTst.ValueColumns, test.CItem.Attributes.Count, "expected the same amount of columns");
+            Assert.AreEqual(PersonSpecs.ValueColumns, test.CItem.Attributes.Count, "expected the same amount of columns");
 
-            AssertFieldsChanged(test.CItem, new []{DataTableTst.FieldFullName}, new []{ShortName});
+            AssertFieldsChanged(test.CItem, new []{ PersonSpecs.FieldFullName}, new []{ShortName});
 
-            test.AssertValues(DataTableTst.FieldFullName, ShortName);
-            test.AssertValues(DataTableTst.FieldFirstName);
+            test.AssertValues(PersonSpecs.FieldFullName, ShortName);
+            test.AssertValues(PersonSpecs.FieldFirstName);
         }
 
         [TestMethod]
@@ -32,12 +31,12 @@ Last=LastName";
         {
             var test = new AttributeRenameTester(MapBasic1, false);
             Assert.AreEqual(10, test.CList.Count);
-            Assert.AreNotEqual(DataTableTst.ValueColumns, test.CItem.Attributes.Count, "expected a different amount of columns");
+            Assert.AreNotEqual(PersonSpecs.ValueColumns, test.CItem.Attributes.Count, "expected a different amount of columns");
             Assert.AreEqual(1, test.CItem.Attributes.Count, "expect only 1 field now");
 
-            AssertFieldsChanged(test.CItem, DataTableTst.Fields, new[] { ShortName });
+            AssertFieldsChanged(test.CItem, PersonSpecs.Fields, new[] { ShortName });
 
-            test.AssertValues(DataTableTst.FieldFullName, ShortName);
+            test.AssertValues(PersonSpecs.FieldFullName, ShortName);
         }
 
         [TestMethod]
@@ -53,15 +52,15 @@ Last=LastName";
         {
             var test = new AttributeRenameTester(map);
             Assert.AreEqual(10, test.CList.Count);
-            Assert.AreEqual(DataTableTst.ValueColumns, test.CItem.Attributes.Count, "expected the same amount of columns");
+            Assert.AreEqual(PersonSpecs.ValueColumns, test.CItem.Attributes.Count, "expected the same amount of columns");
 
             AssertFieldsChanged(test.CItem,
-                new[] { DataTableTst.FieldFullName, DataTableTst.FieldFirstName, DataTableTst.FieldLastName },
+                new[] { PersonSpecs.FieldFullName, PersonSpecs.FieldFirstName, PersonSpecs.FieldLastName },
                 new[] { ShortName, ShortFirst, ShortLast });
 
-            test.AssertValues(DataTableTst.FieldFullName, ShortName);
-            test.AssertValues(DataTableTst.FieldFirstName, ShortFirst);
-            test.AssertValues(DataTableTst.FieldLastName, ShortLast);
+            test.AssertValues(PersonSpecs.FieldFullName, ShortName);
+            test.AssertValues(PersonSpecs.FieldFirstName, ShortFirst);
+            test.AssertValues(PersonSpecs.FieldLastName, ShortLast);
         }
 
         [TestMethod]
@@ -72,12 +71,12 @@ Last=LastName";
             Assert.AreEqual(3, test.CItem.Attributes.Count, "expected the same amount of columns");
 
             AssertFieldsChanged(test.CItem, 
-                DataTableTst.Fields,
+                PersonSpecs.Fields,
                 new[] {ShortName, ShortFirst, ShortLast});
 
-            test.AssertValues(DataTableTst.FieldFullName, ShortName);
-            test.AssertValues(DataTableTst.FieldFirstName, ShortFirst);
-            test.AssertValues(DataTableTst.FieldLastName, ShortLast);
+            test.AssertValues(PersonSpecs.FieldFullName, ShortName);
+            test.AssertValues(PersonSpecs.FieldFirstName, ShortFirst);
+            test.AssertValues(PersonSpecs.FieldLastName, ShortLast);
         }
 
 

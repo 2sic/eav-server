@@ -1,12 +1,11 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Core.Tests;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSourceTests.ExternalData;
+using ToSic.Eav.DataSourceTests.TestData;
 using ToSic.Testing.Shared;
 
-namespace ToSic.Eav.DataSourceTests.Shuffle
+namespace ToSic.Eav.DataSourceTests
 {
     // Todo
     // Create tests with language-parameters as well, as these tests ignore the language and always use default
@@ -27,7 +26,7 @@ namespace ToSic.Eav.DataSourceTests.Shuffle
 
         private static DataSources.Shuffle GenerateShuffleDS(int desiredFinds)
         {
-            var ds = DataTableTst.GeneratePersonSourceWithDemoData(desiredFinds, 1001, true);
+            var ds = DataTablePerson.Generate(desiredFinds, 1001, true);
             var sf = Resolve<DataSourceFactory>().GetDataSource<DataSources.Shuffle>(new AppIdentity(0, 0), ds);
             return sf;
         }

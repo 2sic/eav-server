@@ -1,12 +1,10 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Linq;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Core.Tests;
-using ToSic.Eav.DataSourceTests.ExternalData;
-using ToSic.Eav.DataSourceTests.ValueFilter;
+﻿using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.DataSources;
+using ToSic.Eav.DataSourceTests.TestData;
 using ToSic.Testing.Shared;
 
-namespace ToSic.Eav.DataSources.Tests
+namespace ToSic.Eav.DataSourceTests
 {
     // Todo
     // Create tests with language-parameters as well, as these tests ignore the language and always use default
@@ -28,7 +26,7 @@ namespace ToSic.Eav.DataSources.Tests
         {
             var vf = _testDataGeneratedOutsideTimer;
             vf.Attribute = "City";
-            vf.Value = DataTableTst.TestCities[0]; // test for the first value
+            vf.Value = PersonSpecs.TestCities[0]; // test for the first value
             Assert.AreEqual(2500, vf.List.Count(), "Should find exactly 2500 people with this city");
         }
         [TestMethod]
@@ -36,7 +34,7 @@ namespace ToSic.Eav.DataSources.Tests
         {
             var vf = _testDataGeneratedOutsideTimer;
             vf.Attribute = "City";
-            vf.Value = DataTableTst.TestCities[0].ToLower(); // test for the first value
+            vf.Value = PersonSpecs.TestCities[0].ToLower(); // test for the first value
             Assert.AreEqual(2500, vf.List.Count(), "Should find exactly 2500 people with this city");
         }
 
@@ -47,7 +45,7 @@ namespace ToSic.Eav.DataSources.Tests
             var vf = _testDataGeneratedOutsideTimer;
             vf.Attribute = "City";
             vf.Operator = "===";
-            vf.Value = DataTableTst.TestCities[0]; // test for the first value
+            vf.Value = PersonSpecs.TestCities[0]; // test for the first value
             Assert.AreEqual(2500, vf.List.Count(), "Should find exactly 2500 people with this city");
         }       
 
@@ -57,7 +55,7 @@ namespace ToSic.Eav.DataSources.Tests
             var vf = _testDataGeneratedOutsideTimer;
             vf.Attribute = "City";
             vf.Operator = "===";
-            vf.Value = DataTableTst.TestCities[0].ToLower(); // test for the first value
+            vf.Value = PersonSpecs.TestCities[0].ToLower(); // test for the first value
             Assert.AreEqual(0, vf.List.Count(), "Should find exactly 0 people with this city");
         }
 
@@ -212,7 +210,7 @@ namespace ToSic.Eav.DataSources.Tests
         {
             var vf = _testDataGeneratedOutsideTimer;
             vf.Attribute = "CityMaybeNull";
-            vf.Value = DataTableTst.TestCities[1]; // test for the second value
+            vf.Value = PersonSpecs.TestCities[1]; // test for the second value
             Assert.AreEqual(2500, vf.List.Count(), "Should find exactly 250 people with this city");
         }
 

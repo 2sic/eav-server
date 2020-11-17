@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Core.Tests;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.ImportExport.Tests.Persistence.File;
 using ToSic.Eav.Logging;

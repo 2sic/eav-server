@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.DataSourceTests.ExternalData;
+using ToSic.Eav.DataSourceTests.TestData;
 
-namespace ToSic.Eav.DataSourceTests.Attributes
+namespace ToSic.Eav.DataSourceTests
 {
     public partial class AttributeRenameTests
     {
@@ -17,8 +17,8 @@ namespace ToSic.Eav.DataSourceTests.Attributes
             var item = result.First();
             Assert.AreEqual("MyNiceTypeName", item.Type.Name, "Typename should have changed");
 
-            Assert.AreEqual(DataTableTst.ValueColumns, item.Attributes.Count);
-            Assert.IsTrue(item.Attributes.ContainsKey(DataTableTst.FieldFullName));
+            Assert.AreEqual(PersonSpecs.ValueColumns, item.Attributes.Count);
+            Assert.IsTrue(item.Attributes.ContainsKey(PersonSpecs.FieldFullName));
             Assert.IsFalse(item.Attributes.ContainsKey(ShortName));
 
         }

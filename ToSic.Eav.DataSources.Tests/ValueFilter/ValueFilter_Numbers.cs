@@ -1,11 +1,10 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Linq;
-using ToSic.Eav.Core.Tests;
-using ToSic.Eav.DataSourceTests.ExternalData;
-using ToSic.Eav.DataSourceTests.ValueFilter;
+﻿using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.DataSources;
+using ToSic.Eav.DataSourceTests.TestData;
 using ToSic.Testing.Shared;
 
-namespace ToSic.Eav.DataSources.Tests
+namespace ToSic.Eav.DataSourceTests
 {
     // Todo
     // Create tests with language-parameters as well, as these tests ignore the language and always use default
@@ -29,7 +28,7 @@ namespace ToSic.Eav.DataSources.Tests
 
         [TestMethod]
         public void ValueFilter_FilterNumber()
-         =>NumberFilter("Height", (DataTableTst.MinHeight + 7).ToString(), 181);
+         =>NumberFilter("Height", (PersonSpecs.MinHeight + 7).ToString(), 181);
         
 
         [TestMethod]

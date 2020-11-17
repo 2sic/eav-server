@@ -30,6 +30,7 @@ namespace ToSic.Eav.ImportExport.Tests
                 sc.AddTransient<IEnvironment, MockEnvironment>();
                 //sc.TryAddTransient<ExportImportValueConversion>();
                 sc.TryAddTransient<IValueConverter, MockValueConverter>();
+                sc.TryAddTransient<IZoneMapper, MockZoneMapper>();
                 configure.Invoke(sc);
 
             }, optionalConnection);

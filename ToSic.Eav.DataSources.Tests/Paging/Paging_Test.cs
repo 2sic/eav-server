@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Core.Tests;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSourceTests.ExternalData;
+using ToSic.Eav.DataSourceTests.TestData;
 using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests.Paging
@@ -81,7 +80,7 @@ namespace ToSic.Eav.DataSourceTests.Paging
         
         public DataSources.Paging CreatePagingForTesting(int testItemsInRootSource)
         {
-            var ds = DataTableTst.GeneratePersonSourceWithDemoData(testItemsInRootSource, seedId);
+            var ds = DataTablePerson.Generate(testItemsInRootSource, seedId);
             return Resolve<DataSourceFactory>().GetDataSource<DataSources.Paging>(ds);
             //return filtered;
         }

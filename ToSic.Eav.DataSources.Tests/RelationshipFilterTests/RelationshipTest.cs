@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSources.Tests.RelationshipFilterTests;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests

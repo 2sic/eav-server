@@ -1,14 +1,13 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Core.Tests;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSourceTests.ExternalData;
+using ToSic.Eav.DataSourceTests.TestData;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Testing.Shared;
 
-namespace ToSic.Eav.DataSourceTests.Attributes
+namespace ToSic.Eav.DataSourceTests
 {
     public partial class AttributeRenameTests: EavTestBase
     {
@@ -27,8 +26,8 @@ namespace ToSic.Eav.DataSourceTests.Attributes
         {
             var attRenCompare = AttributeRenameTester.CreateRenamer(10);
             var item = attRenCompare.Immutable.First();
-            AssertHasFields(item, DataTableTst.Fields);
-            Assert.AreEqual(DataTableTst.ContentTypeName, item.Type.Name, "Typename should not change");
+            AssertHasFields(item, PersonSpecs.Fields);
+            Assert.AreEqual(PersonSpecs.PersonTypeName, item.Type.Name, "Typename should not change");
         }
 
         [TestMethod]
@@ -38,8 +37,8 @@ namespace ToSic.Eav.DataSourceTests.Attributes
             var result = attRen.Immutable.ToList();
             Assert.AreEqual(10, result.Count);
             var item = result.First();
-            Assert.AreEqual(DataTableTst.ValueColumns, item.Attributes.Count);
-            Assert.IsTrue(item.Attributes.ContainsKey(DataTableTst.FieldFullName));
+            Assert.AreEqual(PersonSpecs.ValueColumns, item.Attributes.Count);
+            Assert.IsTrue(item.Attributes.ContainsKey(PersonSpecs.FieldFullName));
             Assert.IsFalse(item.Attributes.ContainsKey(ShortName));
         }
 
