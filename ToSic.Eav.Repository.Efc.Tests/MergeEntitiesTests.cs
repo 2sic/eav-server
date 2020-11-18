@@ -4,7 +4,6 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -133,15 +132,15 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         private readonly Entity _prodEn = ((Func<Entity>)(() =>
         {
-            var title = AttributeBase.CreateTypedAttribute("Title", "String", new List<IValue>
+            var title = AttributeBuilder.CreateTyped("Title", "String", new List<IValue>
             {
                 ValueBuilder.Build(ValueTypes.String, "TitleEn, language En", new List<ILanguage> {langEn.Copy()}),
             });
-            var teaser = AttributeBase.CreateTypedAttribute("Teaser", "String", new List<IValue>
+            var teaser = AttributeBuilder.CreateTyped("Teaser", "String", new List<IValue>
             {
                 ValueBuilder.Build(ValueTypes.String, "Teaser EN, lang en", new List<ILanguage> {langEn.Copy()}),
             });
-            var file = AttributeBase.CreateTypedAttribute("File", "String", new List<IValue>
+            var file = AttributeBuilder.CreateTyped("File", "String", new List<IValue>
             {
                 ValueBuilder.Build(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> {langEn.Copy() }),
             });
@@ -156,7 +155,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         private readonly Entity _prodMl  = ((Func<Entity>)(() =>
         {
-            var title = AttributeBase.CreateTypedAttribute("Title", "String", new List<IValue>
+            var title = AttributeBuilder.CreateTyped("Title", "String", new List<IValue>
             {
                 ValueBuilder.Build(ValueTypes.String, "TitleEn, language En", new List<ILanguage> {langEn.Copy()}),
                 ValueBuilder.Build(ValueTypes.String, "Title DE",
@@ -164,7 +163,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
                 ValueBuilder.Build(ValueTypes.String, "titre FR", new List<ILanguage> {langFr.Copy()})
             });
 
-            var teaser = AttributeBase.CreateTypedAttribute("Teaser", "String", new List<IValue>
+            var teaser = AttributeBuilder.CreateTyped("Teaser", "String", new List<IValue>
             {
                 ValueBuilder.Build(ValueTypes.String, "teaser de de",
                     new List<ILanguage> {langDeDe.Copy() }),
@@ -174,7 +173,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
                 // special test: leave EN (primary) at end of list, as this could happen in real life
                 ValueBuilder.Build(ValueTypes.String, "Teaser EN, lang en", new List<ILanguage> {langEn.Copy()}),
             });
-            var file = AttributeBase.CreateTypedAttribute("File", "String", new List<IValue>
+            var file = AttributeBuilder.CreateTyped("File", "String", new List<IValue>
             {
                 ValueBuilder.Build(ValueTypes.String, "Filen EN, lang en + ch RW", new List<ILanguage> {langEn.Copy(), langDeCh.Copy()}),
                 ValueBuilder.Build(ValueTypes.String, "File de de",

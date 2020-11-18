@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Data.Builder
@@ -39,7 +40,7 @@ namespace ToSic.Eav.Data.Builder
             var attrExists = target.Where(item => item.Key == attributeName).Select(item => item.Value).FirstOrDefault();
             if (attrExists == null)
             {
-                var newAttr = AttributeBase.CreateTypedAttribute(attributeName, valueType, new List<IValue> { valueWithLanguages });
+                var newAttr = CreateTyped(attributeName, valueType, new List<IValue> { valueWithLanguages });
                 target.Add(attributeName, newAttr);
             }
             else
@@ -54,5 +55,48 @@ namespace ToSic.Eav.Data.Builder
             return valueWithLanguages;
         }
         #endregion
+
+
+        /// <summary>
+        /// Get Attribute for specified Typ
+        /// </summary>
+        /// <returns><see cref="Attribute{ValueType}"/></returns>
+        [PrivateApi("probably move to some attribute-builder or something")]
+        public static IAttribute CreateTyped(string name, ValueTypes type, List<IValue> values = null)
+        {
+            var typeName = type.ToString();
+            var result = ((Func<IAttribute>)(() => {
+                switch (type)
+                {
+                    case ValueTypes.Boolean:
+                        return new Attribute<bool?>(name, typeName);
+                    case ValueTypes.DateTime:
+                        return new Attribute<DateTime?>(name, typeName);
+                    case ValueTypes.Number:
+                        return new Attribute<decimal?>(name, typeName);
+                    case ValueTypes.Entity:
+                        return new Attribute<IEnumerable<IEntity>>(name, typeName) { Values = new List<IValue> { ValueBuilder.NullRelationship } };
+                    // ReSharper disable RedundantCaseLabel
+                    case ValueTypes.String:
+                    case ValueTypes.Hyperlink:
+                    case ValueTypes.Custom:
+                    case ValueTypes.Undefined:
+                    case ValueTypes.Empty:
+                    // ReSharper restore RedundantCaseLabel
+                    default:
+                        return new Attribute<string>(name, typeName);
+                }
+            }))();
+            if (values != null)
+                result.Values = values;
+
+            return result;
+        }
+
+        [PrivateApi]
+        public static IAttribute CreateTyped(string name, string type, List<IValue> values = null)
+            => CreateTyped(name, ValueTypeHelpers.Get(type), values);
+
+
     }
 }

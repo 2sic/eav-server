@@ -6,8 +6,6 @@ namespace ToSic.Eav.DataSourceTests.TestData
 {
     public class PersonsDataSource: DataSourceBase
     {
-        private int _itemsToGenerate;
-        private int _firstId;
         public override string LogId => "TST.Person";
 
         public PersonsDataSource()
@@ -15,17 +13,21 @@ namespace ToSic.Eav.DataSourceTests.TestData
             Provide(GetPersons);
         }        
 
-        public PersonsDataSource Init(int itemsToGenerate = 10, int firstId = 1001)
+        public PersonsDataSource Init(int itemsToGenerate = 10, int firstId = 1001, bool multiLanguage = false)
         {
             _itemsToGenerate = itemsToGenerate;
             _firstId = firstId;
+            _multiLanguage = multiLanguage;
             return this;
         }
+        private int _itemsToGenerate;
+        private int _firstId;
+        private bool _multiLanguage;
 
         private IImmutableList<IEntity> GetPersons()
         {
             var persons = Person.GetSemiRandomList(_itemsToGenerate, _firstId);
-            var list = Person.Person2Entity(persons);
+            var list = Person.Person2Entity(persons, _multiLanguage);
             return list.ToImmutableArray();
         }
     }

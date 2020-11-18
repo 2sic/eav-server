@@ -14,14 +14,25 @@ namespace ToSic.Eav.DataSourceTests
             _dataSourceFactory = dataSourceFactory;
         }
 
-        public ValueFilter CreateValueFilterForTesting(int testItemsInRootSource, bool useDataTable = true)
+        public ValueFilter CreateValueFilterForTesting(int itemsToGenerate, bool useDataTable, bool multiLanguage = false)
         {
             var ds = useDataTable
-                ? DataTablePerson.Generate(testItemsInRootSource, 1001) as IDataSource
-                : new PersonsDataSource().Init(testItemsInRootSource).Init(LookUpTestData.AppSetAndRes());
+                ? DataTablePerson.Generate(itemsToGenerate) as IDataSource
+                : new PersonsDataSource().Init(itemsToGenerate, multiLanguage: multiLanguage).Init(LookUpTestData.AppSetAndRes());
             var filtered = _dataSourceFactory.GetDataSource<ValueFilter>(new AppIdentity(1, 1), ds);
             return filtered;
         }
+
+
+        public ValueSort GeneratePersonSourceWithDemoData(int itemsToGenerate, bool useDataTable = true, bool multiLanguage = false)
+        {
+            var ds = useDataTable
+                ? DataTablePerson.Generate(itemsToGenerate) as IDataSource
+                : new PersonsDataSource().Init(itemsToGenerate, multiLanguage: multiLanguage).Init(LookUpTestData.AppSetAndRes());
+            var filtered = _dataSourceFactory.GetDataSource<ValueSort>(ds, ds);
+            return filtered;
+        }
+
 
     }
 }

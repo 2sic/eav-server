@@ -6,6 +6,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Tests;
 using ToSic.Eav.DataSourceTests.TestData;
+using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests
 {
@@ -16,7 +17,7 @@ namespace ToSic.Eav.DataSourceTests
     // Create tests with Modified!
 
     [TestClass]
-    public class ValueSort_DateTime
+    public class ValueSort_DateTime: EavTestBase
     {
         private const int TestVolume = 30;
         private const string Birthdate = PersonSpecs.FieldBirthday;
@@ -24,9 +25,13 @@ namespace ToSic.Eav.DataSourceTests
         private const string ModifiedTest = "InternalModified";
         private const string ModifiedReal = "Modified";
         private readonly ValueSort _testDataGeneratedOutsideTimer;
+        private readonly ValueFilterMaker _valueFilterMaker;
+
         public ValueSort_DateTime()
         {
-            _testDataGeneratedOutsideTimer = ValueSortShared.GeneratePersonSourceWithDemoData(TestVolume);
+            _valueFilterMaker = Resolve<ValueFilterMaker>();
+
+            _testDataGeneratedOutsideTimer = _valueFilterMaker.GeneratePersonSourceWithDemoData(TestVolume);
         }
 
 

@@ -26,7 +26,7 @@ namespace ToSic.Eav.Data.Builder
                 else
                 {
                     var attributeType = GetAttributeTypeName(oAttrib.Value);
-                    var attributeModel = AttributeBase.CreateTypedAttribute(oAttrib.Key, attributeType);
+                    var attributeModel = AttributeBuilder.CreateTyped(oAttrib.Key, attributeType);
                     var valuesModelList = new List<IValue>();
                     if (oAttrib.Value != null)
                     {
@@ -71,7 +71,7 @@ namespace ToSic.Eav.Data.Builder
         public static IAttribute CloneAttributeAndRename(IAttribute original, string newName)
         {
             var attributeType = GetAttributeTypeName(original);
-            var newAttrib = AttributeBase.CreateTypedAttribute(newName, attributeType);
+            var newAttrib = AttributeBuilder.CreateTyped(newName, attributeType);
             newAttrib.Values = original.Values;
             return newAttrib;
         }

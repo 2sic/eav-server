@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
@@ -27,7 +26,7 @@ namespace ToSic.Eav.DataSources
 
         private const string AttrKey = "Attributes";
 		private const string DirectionKey = "Value";
-		private const string LangKey = "Language";
+		//private const string LangKey = "Language";
         
 		/// <summary>
 		/// The attribute whose value will be sorted by.
@@ -52,8 +51,8 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public string Languages
 		{
-			get => Configuration[LangKey];
-		    set => Configuration[LangKey] = value;
+			get => Configuration[ValueLanguages.LangKey];
+		    set => Configuration[ValueLanguages.LangKey] = value;
 		}
 		#endregion
 
@@ -67,13 +66,20 @@ namespace ToSic.Eav.DataSources
 			Provide(GetValueSort);
 		    ConfigMask(AttrKey, "[Settings:Attributes]");
 		    ConfigMask(DirectionKey, "[Settings:Directions]");
-		    ConfigMask(LangKey, "Default");
+		    ConfigMask(ValueLanguages.LangKey, ValueLanguages.LanguageSettingsPlaceholder);
         }
+
+        /// <summary>
+        /// The internal language list used to lookup values.
+        /// It's internal, to allow testing/debugging from the outside
+        /// </summary>
+        [PrivateApi] internal string[] LanguageList { get; private set; }
+
 
 		private IImmutableList<IEntity> GetValueSort()
 		{
             // todo: maybe do something about languages?
-            // todo: test datetime & decimal types
+            // todo: test decimal / number types
 
             Configuration.Parse();
 
@@ -83,14 +89,16 @@ namespace ToSic.Eav.DataSources
 			var descendingCodes = new[] { "desc","d","0",">" };
 
 			#region Languages check - not fully implemented yet, only supports "default"
-			var lang = Languages.ToLower();
-			if (lang != "default")
-				throw new Exception("Can't filter for languages other than 'default'");
 
-			if (lang == "default") lang = ""; // no language is automatically the default language
+            LanguageList = ValueLanguages.PrepareLanguageList(Languages, Log);
+   //             = Languages.ToLower();
+			//if (lang != "default")
+			//	throw new Exception("Can't filter for languages other than 'default'");
 
-			if (lang == "any")
-				throw new NotImplementedException("language 'any' not implemented yet");
+			//if (lang == "default") lang = ""; // no language is automatically the default language
+
+			//if (lang == "any")
+			//	throw new NotImplementedException("language 'any' not implemented yet");
 			#endregion
 
             var list = In[Constants.DefaultStreamName].Immutable;
@@ -130,15 +138,15 @@ namespace ToSic.Eav.DataSources
 				{
 					// First sort...
 					ordered = isAscending
-						? results.OrderBy(e => getObjToSort(e, a, specAttr))
-						: results.OrderByDescending(e => getObjToSort(e, a, specAttr));
+						? results.OrderBy(e => GetPropertyToSort(e, a, specAttr))
+						: results.OrderByDescending(e => GetPropertyToSort(e, a, specAttr));
 				}
 				else
 				{
 					// following sorts...
 					ordered = isAscending
-						? ordered.ThenBy(e => getObjToSort(e, a, specAttr))
-						: ordered.ThenByDescending(e => getObjToSort(e, a, specAttr));
+						? ordered.ThenBy(e => GetPropertyToSort(e, a, specAttr))
+						: ordered.ThenByDescending(e => GetPropertyToSort(e, a, specAttr));
 				}
 			}
 
@@ -147,12 +155,16 @@ namespace ToSic.Eav.DataSources
 			return final.AddRange(unsortable).ToImmutableArray();
 		}
 
-		private object getObjToSort(IEntity e, string a, char special)
+		private object GetPropertyToSort(IEntity e, string a, char special)
 		{
 			// get either the special id or title, if title or normal field, then use language [0] = default
 			return special == 'i' ? e.EntityId 
                 : special == 'm' ? e.Modified
-                : (special == 't' ? e.Title : e[a])[0];
+                    : special == 't' 
+                    ? e.GetBestTitle(LanguageList) 
+                    : e.GetBestValue(a, LanguageList);
+            // note 2020-11-17 changed it from the line below to the above, to support languages    
+            //: (special == 't' ? e.Title : e[a])[0];
 		}
 	}
 }

@@ -111,7 +111,7 @@ namespace ToSic.Eav.ImportExport.Json
 
             foreach (var attrib in list)
             {
-                var newAtt = AttributeBase.CreateTypedAttribute(attrib.Key, type, attrib.Value
+                var newAtt = AttributeBuilder.CreateTyped(attrib.Key, type, attrib.Value
                     .Select(v => ValueBuilder.Build(type, v.Value, RecreateLanguageList(v.Key))).ToList());
                 newEntity.Attributes.Add(newAtt.Name, newAtt);
             }

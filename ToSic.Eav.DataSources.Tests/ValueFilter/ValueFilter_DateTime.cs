@@ -16,7 +16,7 @@ namespace ToSic.Eav.DataSourceTests
         public ValueFilterDateTime()
         {
             var valueFilterMaker = Resolve<ValueFilterMaker>();
-            _testDataGeneratedOutsideTimer = valueFilterMaker.CreateValueFilterForTesting(TestVolume);
+            _testDataGeneratedOutsideTimer = valueFilterMaker.CreateValueFilterForTesting(TestVolume, true);
         }
 
 

@@ -19,7 +19,7 @@ namespace ToSic.Eav.DataSourceTests
         public ValueFilterNumbers()
         {
             _valueFilterMaker = Resolve<ValueFilterMaker>();
-            _testDataGeneratedOutsideTimer = _valueFilterMaker.CreateValueFilterForTesting(TestVolume);
+            _testDataGeneratedOutsideTimer = _valueFilterMaker.CreateValueFilterForTesting(TestVolume, true);
         }
 
 
