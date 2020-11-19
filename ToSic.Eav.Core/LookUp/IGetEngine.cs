@@ -10,16 +10,15 @@ namespace ToSic.Eav.LookUp
     /// can provide different initial engines. <br/>
     /// Read more about this in @Specs.LookUp.Intro
     /// </summary>
-    [PublicApi_Stable_ForUseInYourCode]
-    public interface IGetEngine
+    [InternalApi_DoNotUse_MayChangeWithoutNotice]
+    public interface IGetEngine: IHasLog<IGetEngine>
     {
         /// <summary>
         /// Get the engine for the current execution instance.
         /// </summary>
         /// <param name="instanceId">The instance ID</param>
-        /// <param name="parentLog">parent logger</param>
-        /// <returns>a <see cref="ILookUpEngine"/> for the current context</returns>
-        ILookUpEngine GetEngine(int instanceId, ILog parentLog);
+        ///// <returns>a <see cref="ILookUpEngine"/> for the current context</returns>
+        ILookUpEngine GetEngine(int instanceId/*, ILog parentLog*/);
 
     }
 }
