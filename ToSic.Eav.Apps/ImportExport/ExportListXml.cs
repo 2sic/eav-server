@@ -14,16 +14,14 @@ namespace ToSic.Eav.Apps.ImportExport
     /// </summary>
     public class ExportListXml: HasLog
     {
-        protected ExportImportValueConversion ValueConverter { get; }
-        private readonly XmlBuilder _xBuilder = new XmlBuilder();
+        #region Dependency Injection and Init
 
-        private AppState App { get; set; }
-        public IContentType ContentType { get; set; }
-
-        protected ExportListXml(ExportImportValueConversion valueConverter) : base("App.LstExp")
+        public ExportListXml(ExportImportValueConversion valueConverter) : base("App.LstExp")
         {
             ValueConverter = valueConverter;
         }
+
+        protected ExportImportValueConversion ValueConverter { get; }
 
         public ExportListXml Init(AppState app, IContentType contentType, ILog parentLog)
         {
@@ -32,6 +30,14 @@ namespace ToSic.Eav.Apps.ImportExport
             ContentType = contentType;
             return this;
         }
+
+        private readonly XmlBuilder _xBuilder = new XmlBuilder();
+        private AppState App { get; set; }
+        public IContentType ContentType { get; set; }
+
+        #endregion
+
+
 
 
         /// <summary>

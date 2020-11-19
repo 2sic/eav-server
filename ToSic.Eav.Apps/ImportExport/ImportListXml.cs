@@ -19,20 +19,29 @@ namespace ToSic.Eav.Apps.ImportExport
     /// </summary>
     public partial class ImportListXml: HasLog 
     {
-        private readonly Lazy<AttributeBuilder> _lazyAttributeBuilder;
-        private readonly Lazy<Import> _importerLazy;
-        private AttributeBuilder AttributeBuilder => _lazyAttributeBuilder.Value;
-        private IContentType ContentType { get; set; }
-        private List<IEntity> ExistingEntities { get; set; }
+        #region Dependency Injection
 
-        private AppState App { get; set; }
-        private AppManager AppMan { get; set; }
+        private AttributeBuilder AttributeBuilder => _lazyAttributeBuilder.Value;
+        private readonly Lazy<AttributeBuilder> _lazyAttributeBuilder;
+
+        private readonly Lazy<Import> _importerLazy;
 
         public ImportListXml(Lazy<AttributeBuilder> lazyAttributeBuilder, Lazy<Import> importerLazy) : base("App.ImpVtT")
         {
             _lazyAttributeBuilder = lazyAttributeBuilder;
             _importerLazy = importerLazy;
         }
+
+        #endregion
+
+        #region Init
+
+        private IContentType ContentType { get; set; }
+        private List<IEntity> ExistingEntities { get; set; }
+
+        private AppState App { get; set; }
+        private AppManager AppMan { get; set; }
+
 
         /// <summary>
         /// Create a xml import. The data stream passed will be imported to memory, and checked 
@@ -53,7 +62,7 @@ namespace ToSic.Eav.Apps.ImportExport
             string documentLanguageFallback, 
             ImportDeleteUnmentionedItems deleteSetting, 
             ImportResolveReferenceMode resolveLinkMode, 
-            ILog parentLog) // : base("App.ImpVT", parentLog, "building xml vtable import")
+            ILog parentLog)
         {
             Log.LinkTo(parentLog);
             ImportEntities = new List<Entity>();
@@ -102,6 +111,8 @@ namespace ToSic.Eav.Apps.ImportExport
             
             return this;
         }
+
+        #endregion
 
         /// <summary>
         /// Deserialize data xml stream to the memory. The data will also be checked for 

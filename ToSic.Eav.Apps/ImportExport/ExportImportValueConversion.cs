@@ -13,11 +13,16 @@ namespace ToSic.Eav.Apps.ImportExport
     /// </summary>
     public class ExportImportValueConversion : HasLog
     {
-        public IValueConverter ValueConverter { get; }
+        #region Dependency Injection
+
         public ExportImportValueConversion(IValueConverter valueConverter) : base("App.EXValC")
         {
             ValueConverter = valueConverter;
         }
+        public IValueConverter ValueConverter { get; }
+
+        #endregion
+
 
 
         #region Helpers to assemble the xml

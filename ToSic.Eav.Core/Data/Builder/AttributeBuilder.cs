@@ -8,13 +8,17 @@ namespace ToSic.Eav.Data.Builder
 {
     public class AttributeBuilder
     {
-        private readonly Lazy<IValueConverter> _lazyValueConverter;
-        private IValueConverter ValueConverter => _lazyValueConverter.Value;
+        #region Dependency Injection
 
         public AttributeBuilder(Lazy<IValueConverter> lazyValueConverter)
         {
             _lazyValueConverter = lazyValueConverter;
         }
+
+        private IValueConverter ValueConverter => _lazyValueConverter.Value;
+        private readonly Lazy<IValueConverter> _lazyValueConverter;
+        
+        #endregion
 
         #region Helper to add a value with languages to an existing list of Attributes
         /// <summary>

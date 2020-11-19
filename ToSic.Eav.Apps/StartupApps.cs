@@ -37,6 +37,8 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<AppInitializedChecker>();
 
             // export import stuff
+            services.TryAddScoped<ExportListXml>();
+            services.TryAddScoped<ImportListXml>();
             services.TryAddTransient<ExportImportValueConversion>();
 
             return services;
