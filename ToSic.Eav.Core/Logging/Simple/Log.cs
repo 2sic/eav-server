@@ -102,15 +102,24 @@ namespace ToSic.Eav.Logging.Simple
         /// <param name="name">optional new name</param>
         public void LinkTo(ILog parent, string name = null)
         {
-            if(parent == this) throw new Exception("Logging error - attaching same item as parent can't work");
+            if(parent == this) throw new Exception("LOGGER ERROR - attaching same item as parent can't work");
             // only attach new parent if it didn't already have an old one
             // this is critical because we cannot guarantee that sometimes a LinkTo is called more than once on something
-            if (parent != null && _parent == null)
+            if (parent != null ) 
             {
-                _parent = parent;
-                Depth = parent.Depth + 1;
-                if(Depth > MaxParentDepth)
-                    throw new Exception($"Adding parent to logger but exceeded max depth of {MaxParentDepth}");
+                if(_parent == null)
+                {
+                    _parent = parent;
+                    Depth = parent.Depth + 1;
+                    if(Depth > MaxParentDepth)
+                        throw new Exception($"LOGGER ERROR - Adding parent to logger but exceeded max depth of {MaxParentDepth}");
+                }
+                else
+                {
+                    Add("LOGGER WARNING - this logger already has a parent, but trying to attach to new parent. " +
+                        $"Existing parent: {_parent.FullIdentifier}. " +
+                        $"New Parent (ignored): {parent.FullIdentifier}");
+                }
             }
             if (name != null)
                 Rename(name);

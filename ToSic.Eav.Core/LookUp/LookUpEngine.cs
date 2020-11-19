@@ -72,68 +72,10 @@ namespace ToSic.Eav.LookUp
         public bool HasSource(string name) => FindSource(name) != null;
 
         public void Link(ILookUpEngine downstream) => Downstream = downstream;
-
-	    // 2020-03-12 original
-	  //  public IDictionary<string, string> LookUp(IDictionary<string, string> values,
-   //         IDictionary<string, ILookUp> overrides = null,
-   //         int depth = 4)
-   //     {
-   //         var wrapLog = Log.Call($"values: {values.Count}, overrides: {overrides?.Count}, depth: {depth}");
-   //         // start by creating a copy of the dictionary
-   //         values = new Dictionary<string, string>(values, StringComparer.OrdinalIgnoreCase);
-
-   //         if (values.Count == 0)
-   //         {
-   //             wrapLog("no values");
-   //             return values;
-   //         }
-
-   //         #region if there are instance-specific additional Property-Access objects, add them to the sources-list
-   //         // note: it's important to create a one-time use list of sources if instance-specific sources are needed, to never modify the "global" list.
-   //         var useAdditionalPa = overrides != null; // not null, so it has instance specific stuff
-		 //   if (useAdditionalPa)
-   //         {
-   //             var added = "";
-   //             var skipped = "";
-   //             foreach (var pa in Sources)
-   //                 if (!overrides.ContainsKey(pa.Key))
-   //                 {
-   //                     if (LogDetailed) added += pa.Key + ",";
-   //                     overrides.Add(pa.Key.ToLower(), pa.Value);
-   //                 }
-   //                 else if (LogDetailed) skipped += pa.Key + ",";
-
-   //             if (LogDetailed)
-   //                 Log.Add($"skipped original [{skipped}] " +
-   //                         $"and added originals [{added}]");
-   //         }
-
-   //         var instanceTokenReplace = useAdditionalPa ? new TokenReplace(this, overrides) : _reusableTokenReplace;
-   //         #endregion
-
-   //         #region Loop through all config-items and token-replace them
-   //         foreach (var o in values.ToList())
-			//{
-   //             // check if the string contains a token or not
-   //             if (!TokenReplace.ContainsTokens(o.Value))
-   //             {
-   //                 if (LogDetailed) Log.Add($"token '{o.Key}={o.Value}' has no sub-tokens");
-   //                 continue;
-   //             }
-
-   //             var result = instanceTokenReplace.ReplaceTokens(o.Value, depth); // with 2 further recurrences
-   //             if (LogDetailed) Log.Add($"token '{o.Key}={o.Value}' is now '{result}'");
-   //             values[o.Key] = result;
-   //         }
-   //         #endregion
-
-   //         wrapLog("ok");
-   //         return values;
-   //     }
-
+        
         public DicString LookUp(DicString values, int depth = 4)
         {
-            var wrapLog = Log.Call<IDictionary<string, string>>($"values: {values.Count}, depth: {depth}");
+            var wrapLog = Log.Call<DicString>($"values: {values.Count}, depth: {depth}");
             // start by creating a copy of the dictionary
             values = new Dictionary<string, string>(values, StringComparer.OrdinalIgnoreCase);
 
@@ -161,7 +103,7 @@ namespace ToSic.Eav.LookUp
             return wrapLog("ok", values);
         }
 
-        public IDictionary<string, string> LookUp(DicString values, IDictionary<string, ILookUp> overrides, int depth = 4)
+        public DicString LookUp(DicString values, IDictionary<string, ILookUp> overrides, int depth = 4)
         {
             var wrapLog = Log.Call<DicString>($"values: {values.Count}, overrides: {overrides?.Count}, depth: {depth}");
 
@@ -179,9 +121,6 @@ namespace ToSic.Eav.LookUp
                 innerLookup.Sources.Add(pa.Key, pa.Value);
             return wrapLog("ok", innerLookup.LookUp(values, depth));
         }
-
-        // 2019-11-07 2dm doesn't seem used
-        //public string Replace(string sourceText) => _reusableTokenReplace.ReplaceTokens(sourceText);
 
 
         /// <inheritdoc />

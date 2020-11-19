@@ -13,12 +13,25 @@ namespace ToSic.Eav.DataSources.Queries
 	/// </summary>
 	public class QueryBuilder: HasLog<QueryBuilder>
 	{
-        public DataSourceFactory DataSourceFactory { get; }
+        #region Dependency Injection
+
+		public DataSourceFactory DataSourceFactory { get; }
+
+		/// <summary>
+		/// DI Constructor
+		/// </summary>
+		/// <remarks>
+		/// Never call this constructor from your code, as it re-configures the DataSourceFactory it gets
+		/// </remarks>
+		/// <param name="dataSourceFactory"></param>
         public QueryBuilder(DataSourceFactory dataSourceFactory) : base("DS.PipeFt")
         {
             DataSourceFactory = dataSourceFactory;
             DataSourceFactory.Init(Log);
         }
+        
+
+        #endregion
 
 		/// <summary>
         /// Build a query-definition object based on the entity-ID defining the query

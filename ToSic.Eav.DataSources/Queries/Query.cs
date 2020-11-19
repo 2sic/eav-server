@@ -4,6 +4,7 @@ using System.Linq;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
+using ToSic.Eav.Plumbing;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.Queries
@@ -106,7 +107,7 @@ namespace ToSic.Eav.DataSources.Queries
             wrapLog("ok");
         }
 
-        private QueryBuilder QueryBuilder => _queryBuilder ?? (_queryBuilder = new QueryBuilder(DataSourceFactory).Init(Log));
+        private QueryBuilder QueryBuilder => _queryBuilder ?? (_queryBuilder = DataSourceFactory.ServiceProvider.Build<QueryBuilder>().Init(Log));
         private QueryBuilder _queryBuilder;
 
 
