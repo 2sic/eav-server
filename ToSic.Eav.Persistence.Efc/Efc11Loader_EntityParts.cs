@@ -30,8 +30,9 @@ namespace ToSic.Eav.Persistence.Efc
                 Log.Call<List<TempEntity>>($"app: {appId}, ids: {entityIds.Length}, filter: {filterByEntityIds}");
             var query = _dbContext.ToSicEavEntities
                 .Include(e => e.AttributeSet)
-                .Include(e => e.ToSicEavValues)
-                .ThenInclude(v => v.ToSicEavValuesDimensions)
+                // 2020-11-13 2dm - believe we're loading data here that is never used, as it's not in the returned data
+                //.Include(e => e.ToSicEavValues)
+                //.ThenInclude(v => v.ToSicEavValuesDimensions)
                 .Where(e => !e.ChangeLogDeleted.HasValue &&
                             e.AppId == appId &&
                             e.AttributeSet.ChangeLogDeleted == null &&
@@ -73,6 +74,9 @@ namespace ToSic.Eav.Persistence.Efc
         {
             var wrapLog = Log.Call<Dictionary<int, IEnumerable<TempAttributeWithValues>>>(
                 $"ids: {entityIdsFound.Count}");
+            
+            // just get once, we'll need it in a deep loop
+            var primaryLanguage = PrimaryLanguage;
 
             var attributes = _dbContext.ToSicEavValues
                 .Include(v => v.Attribute)
@@ -80,6 +84,9 @@ namespace ToSic.Eav.Persistence.Efc
                 .ThenInclude(d => d.Dimension)
                 .Where(r => entityIdsFound.Contains(r.EntityId))
                 .Where(v => !v.ChangeLogDeleted.HasValue)
+                // ToList is necessary because groupby actually runs on dotnet (not SQL).
+                // Efcore 1 did this implicitly, efcore 3.x need to do it explicitly.
+                .ToList()
                 .GroupBy(e => e.EntityId)
                 .ToDictionary(e => e.Key, e => e.GroupBy(v => v.AttributeId)
                     .Select(vg => new TempAttributeWithValues
@@ -93,7 +100,7 @@ namespace ToSic.Eav.Persistence.Efc
                             // any dimensions, then values with primary language
                             .OrderByDescending(v2 => !v2.ToSicEavValuesDimensions.Any())
                             .ThenByDescending(v2 => v2.ToSicEavValuesDimensions.Any(l =>
-                                string.Equals(l.Dimension.EnvironmentKey, PrimaryLanguage,
+                                string.Equals(l.Dimension.EnvironmentKey, primaryLanguage,
                                     StringComparison.InvariantCultureIgnoreCase)))
                             .ThenBy(v2 => v2.ChangeLogCreated)
                             .Select(v2 => new TempValueWithLanguage
@@ -114,7 +121,7 @@ namespace ToSic.Eav.Persistence.Efc
         /// Get a chunk of relationships.
         /// Note that since it must check child/parents then multiple chunks could return the identical relationship.
         /// See https://github.com/2sic/2sxc/issues/2127
-        /// This is why the conversion to dictionary etc. must happen later, when all chunks are merged. 
+        /// This is why the conversion to dictionary etc. must happen later, when all chunks are merged.
         /// </summary>
         /// <returns></returns>
         private List<ToSicEavEntityRelationships> GetRelationshipChunk(int appId, ICollection<int> entityIdsFound)
@@ -130,9 +137,15 @@ namespace ToSic.Eav.Persistence.Efc
             return wrapLog("ok", relationships);
         }
 
-        private static Dictionary<int, IEnumerable<TempRelationshipList>> ConvertRelationships(List<ToSicEavEntityRelationships> relationships)
+        private Dictionary<int, IEnumerable<TempRelationshipList>> GroupUniqueRelationships(IReadOnlyCollection<ToSicEavEntityRelationships> relationships)
         {
-            var relatedEntities = relationships
+            var callLog = Log.Call($"items: {relationships.Count}", useTimer: true);
+
+            Log.Add("experiment!");
+            var unique = relationships.Distinct(new RelationshipComparer()).ToList();
+            Log.Add("Distinct relationships: " + unique.Count);
+
+            var relatedEntities = unique // relationships
                 .GroupBy(g => g.ParentEntityId)
                 .ToDictionary(
                     g => g.Key,
@@ -145,7 +158,27 @@ namespace ToSic.Eav.Persistence.Efc
                                 .Select(c => c.ChildEntityId)
                                 .ToList()
                         }));
+            callLog("ok");
             return relatedEntities;
         }
+
+
+    }
+
+    internal class RelationshipComparer : IEqualityComparer<ToSicEavEntityRelationships>
+    {
+        public bool Equals(ToSicEavEntityRelationships x, ToSicEavEntityRelationships y)
+        {
+            if (x == null && y == null) return true;
+            if (x == null) return false;
+            if (y == null) return false;
+            return x.AttributeId == y.AttributeId
+                   && x.SortOrder == y.SortOrder
+                   && x.ParentEntityId == y.ParentEntityId
+                   && x.ChildEntityId == y.ChildEntityId;
+        }
+
+        public int GetHashCode(ToSicEavEntityRelationships obj)
+            => obj.GetHashCode();
     }
 }

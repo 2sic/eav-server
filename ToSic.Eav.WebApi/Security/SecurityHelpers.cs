@@ -3,6 +3,7 @@ using System.Security.Authentication;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Run;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security.Permissions;
 using ToSic.Eav.WebApi.Errors;
@@ -14,7 +15,7 @@ namespace ToSic.Eav.WebApi.Security
     {
         internal static void ThrowIfNotEditorOrIsPublicForm(IInstanceContext context, IApp app, string contentTypeStaticName, ILog log)
         {
-            var permCheck = new MultiPermissionsTypes().Init(context, app, contentTypeStaticName, log);
+            var permCheck = context.ServiceProvider.Build<MultiPermissionsTypes>().Init(context, app, contentTypeStaticName, log);
             if (!permCheck.EnsureAll(GrantSets.WriteSomething, out var error))
                 throw HttpException.PermissionDenied(error);
 

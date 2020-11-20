@@ -7,7 +7,7 @@
             Log.Add($"PublishWithoutPurge({entityId})");
 
             // 1. make sure we're publishing the draft, because the entityId might be the published one...
-            var contEntity = AppManager.Read.Entities.Get(entityId);
+            var contEntity = Parent.Read.Entities.Get(entityId);
             if (contEntity == null)
                 Log.Add($"Will skip, couldn't find the entity {entityId}");
             else
@@ -25,7 +25,7 @@
                         $"will publish: {repoId} if published false (it's: {maybeDraft.IsPublished})");
 
                 if (!maybeDraft.IsPublished)
-                    AppManager.DataController.Publishing.PublishDraftInDbEntity(repoId, maybeDraft);
+                    Parent.DataController.Publishing.PublishDraftInDbEntity(repoId, maybeDraft);
             }
 
             Log.Add($"/PublishWithoutPurge({entityId})");
@@ -44,7 +44,7 @@
                 }
                 catch (Repository.Efc.Parts.EntityAlreadyPublishedException) { /* ignore */ }
             // for now, do a full purge as it's the safest. in the future, maybe do a partial cache-update
-            SystemManager.Purge(AppManager.AppId, Log);
+            SystemManager.Purge(Parent.AppId, Log);
             Log.Add("/Publish(...)");
         }
 

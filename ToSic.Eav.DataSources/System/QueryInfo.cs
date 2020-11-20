@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
@@ -25,6 +26,12 @@ namespace ToSic.Eav.DataSources.System
 
     public sealed class QueryInfo: DataSourceBase
 	{
+        public QueryBuilder QueryBuilder { get; }
+        private readonly Lazy<QueryManager> _queryManagerLazy;
+        private readonly Lazy<GlobalQueries> _globalQueriesLazy;
+        private QueryManager QueryManager => _queryManager ?? (_queryManager = _queryManagerLazy.Value.Init(Log));
+        private QueryManager _queryManager;
+
         #region Configuration-properties (no config)
 	    public override string LogId => "DS.EavQIn";
 
@@ -60,52 +67,49 @@ namespace ToSic.Eav.DataSources.System
         /// <summary>
         /// Constructs a new Attributes DS
         /// </summary>
-		public QueryInfo()
+		public QueryInfo(Lazy<QueryManager> queryManagerLazy, QueryBuilder queryBuilder, Lazy<GlobalQueries> globalQueriesLazy)
 		{
-			Provide(GetStreams);
+            QueryBuilder = queryBuilder.Init(Log);
+            _queryManagerLazy = queryManagerLazy;
+            _globalQueriesLazy = globalQueriesLazy;
+            Provide(GetStreams);
 			Provide("Attributes", GetAttributes);
 		    ConfigMask(QueryKey, $"[Settings:{QueryNameField}||{DefQuery}]");
 		    ConfigMask(StreamKey, $"[Settings:{StreamField}||{Constants.DefaultStreamName}]");
 		}
 
-	    private IEnumerable<IEntity> GetStreams()
+	    private ImmutableArray<IEntity> GetStreams()
 	    {
             CustomConfigurationParse();
 
             return _query?.Out.OrderBy(stream => stream.Key).Select(stream
-                => Build.Entity(new Dictionary<string, object>
-                           {
-                               {StreamsType.Name.ToString(), stream.Key}
-                           }, 
-                    titleField: StreamsType.Name.ToString(), 
-                    typeName:QueryStreamsContentType)
-                       //=> new Data.Entity(AppId, 0, QueryStreamsContentType,
-                       //    new Dictionary<string, object>
-                       //    {
-                       //        {StreamsType.Name.ToString(), stream.Key}
-                       //    },
-                       //    StreamsType.Name.ToString())
-                       )
-	               ?? new List<IEntity>();
-	    }
+                           => Build.Entity(new Dictionary<string, object>
+                               {
+                                   {StreamsType.Name.ToString(), stream.Key}
+                               },
+                               titleField: StreamsType.Name.ToString(),
+                               typeName: QueryStreamsContentType))
+                       .ToImmutableArray()
+                   ?? ImmutableArray<IEntity>.Empty;// new List<IEntity>().ToImmutableList();
+        }
 
-	    private IEnumerable<IEntity> GetAttributes()
+	    private IImmutableList<IEntity> GetAttributes()
 	    {
             CustomConfigurationParse();
 
             // no query can happen if the name was blank
             if (_query == null)
-                return new List<IEntity>();
+                return ImmutableArray<IEntity>.Empty;//  new List<IEntity>();
 
             // check that _query has the stream name
-            if(!_query.Out.ContainsKey(StreamName))
-                return new List<IEntity>();
+            if (!_query.Out.ContainsKey(StreamName))
+                return ImmutableArray<IEntity>.Empty; //new List<IEntity>();
 
-	        var attribInfo = new DataSource(Log).GetDataSource<Attributes>(_query);
+	        var attribInfo = DataSourceFactory.GetDataSource<Attributes>(_query);
             if(StreamName != Constants.DefaultStreamName)
                 attribInfo.Attach(Constants.DefaultStreamName, _query[StreamName]);
 
-	        return attribInfo.List;
+	        return attribInfo.Immutable;
         }
 
 	    private void CustomConfigurationParse()
@@ -122,14 +126,14 @@ namespace ToSic.Eav.DataSources.System
 
             // important, use "Name" and not get-best-title, as some queries may not be correctly typed, so missing title-info
             var found = QueryName.StartsWith(GlobalQueries.GlobalEavQueryPrefix)
-                ? GlobalQueries.FindQuery(QueryName)
-                : QueryManager.AllQueryItems(/*AppId*/this, Log)
+                ? _globalQueriesLazy.Value.FindQuery(QueryName)
+                : this.QueryManager.AllQueryItems(this)
                     .FirstOrDefault(q => string.Equals(q.GetBestValue("Name").ToString(), QueryName,
                         StringComparison.InvariantCultureIgnoreCase));
 
             if (found == null) throw new Exception($"Can't build information about query - couldn't find query '{QueryName}'");
 
-            _query = new QueryBuilder(Log).GetDataSourceForTesting(new QueryDefinition(found, AppId, Log), 
+            _query = QueryBuilder.GetDataSourceForTesting(new QueryDefinition(found, AppId, Log), 
                 false, Configuration.LookUps);
         }
 

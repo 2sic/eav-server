@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Apps.DataSources.Types;
 using ToSic.Eav.Data;
@@ -31,6 +32,8 @@ namespace ToSic.Eav.DataSources.System
     // ReSharper disable once UnusedMember.Global
     public sealed class Zones: DataSourceBase
 	{
+        private readonly IZoneMapper _zoneMapper;
+
         #region Configuration-properties (no config)
 	    public override string LogId => "DS.EavZns";
 
@@ -48,20 +51,20 @@ namespace ToSic.Eav.DataSources.System
         /// Constructs a new Zones DS
         /// </summary>
         [PrivateApi]
-		public Zones()
-		{
+		public Zones(IZoneMapper zoneMapper)
+        {
+            _zoneMapper = zoneMapper;
             Provide(GetList);
-		}
+        }
 
-	    private List<IEntity> GetList()
+	    private ImmutableArray<IEntity> GetList()
 	    {
             // Get cache, which manages a list of zones
             var zones = Eav.Apps.State.Zones;
-	        var env = Factory.Resolve<IAppEnvironment>();
 
-	        var list = zones.Values.OrderBy(z => z.ZoneId).Select(zone =>
+            var list = zones.Values.OrderBy(z => z.ZoneId).Select(zone =>
 	        {
-	            var tenant = env.ZoneMapper.TenantOfZone(zone.ZoneId);
+	            var tenant = _zoneMapper.SiteOfZone(zone.ZoneId);
 
 	            // Assemble the entities
 	            var znData = new Dictionary<string, object>
@@ -82,7 +85,7 @@ namespace ToSic.Eav.DataSources.System
                     typeName: ZoneContentTypeName);
             });
 
-            return list.ToList();
+            return list.ToImmutableArray();//.ToList();
         }
 
 	}

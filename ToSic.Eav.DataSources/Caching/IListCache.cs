@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
@@ -51,15 +50,15 @@ namespace ToSic.Eav.DataSources.Caching
         /// <param name="slidingExpiration"></param>
         void Set(string key, IImmutableList<IEntity> list, long sourceTimestamp, int durationInSeconds = 0, bool slidingExpiration = true);
 
-        /// <summary>
-        /// Add an item to the list-cache
-        /// </summary>
-        /// <param name="key">cache key</param>
-        /// <param name="list">items to put into the cache for this cache key</param>
-        /// <param name="sourceTimestamp"></param>
-        /// <param name="durationInSeconds">The cache validity duration in seconds. If 0 or omitted, default value will be used. </param>
-        /// <param name="slidingExpiration"></param>
-        void Set(string key, IEnumerable<IEntity> list, long sourceTimestamp, int durationInSeconds = 0, bool slidingExpiration = true);
+        ///// <summary>
+        ///// Add an item to the list-cache
+        ///// </summary>
+        ///// <param name="key">cache key</param>
+        ///// <param name="list">items to put into the cache for this cache key</param>
+        ///// <param name="sourceTimestamp"></param>
+        ///// <param name="durationInSeconds">The cache validity duration in seconds. If 0 or omitted, default value will be used. </param>
+        ///// <param name="slidingExpiration"></param>
+        //void Set(string key, IEnumerable<IEntity> list, long sourceTimestamp, int durationInSeconds = 0, bool slidingExpiration = true);
 
 
 

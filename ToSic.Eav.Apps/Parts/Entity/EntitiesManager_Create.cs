@@ -12,10 +12,10 @@ namespace ToSic.Eav.Apps.Parts
         public Tuple<int, Guid> Create(string typeName, Dictionary<string, object> values, ITarget metadataFor = null)
         {
             var wrapLog = Log.Call($"type:{typeName}, val-count:{values.Count}, meta:{metadataFor}");
-            var newEnt = new Entity(AppManager.AppId, Guid.NewGuid(), AppManager.Read.ContentTypes.Get(typeName), values);
+            var newEnt = new Entity(Parent.AppId, Guid.NewGuid(), Parent.Read.ContentTypes.Get(typeName), values);
             if (metadataFor != null) newEnt.SetMetadata(metadataFor as Metadata.Target);
             var eid = Save(newEnt);
-            var guid = AppManager.DataController.Entities.TempLastSaveGuid;
+            var guid = Parent.DataController.Entities.TempLastSaveGuid;
             wrapLog($"id:{eid}, guid:{guid}");
             return new Tuple<int, Guid>(eid, guid);
         }
@@ -32,17 +32,17 @@ namespace ToSic.Eav.Apps.Parts
         public int GetOrCreate(Guid newGuid, string typeName, Dictionary<string, object> values)
         {
             Log.Add($"get or create guid:{newGuid}, type:{typeName}, val-count:{values.Count}");
-            if (AppManager.DataController.Entities.EntityExists(newGuid))
+            if (Parent.DataController.Entities.EntityExists(newGuid))
             {
                 // check if it's deleted - if yes, resurrect
-                var existingEnt = AppManager.DataController.Entities.GetEntitiesByGuid(newGuid).First();
+                var existingEnt = Parent.DataController.Entities.GetEntitiesByGuid(newGuid).First();
                 if (existingEnt.ChangeLogDeleted != null)
                     existingEnt.ChangeLogDeleted = null;
 
                 return existingEnt.EntityId;
             }
 
-            var newE = new Entity(AppManager.AppId, newGuid, AppManager.Read.ContentTypes.Get(typeName), values);
+            var newE = new Entity(Parent.AppId, newGuid, Parent.Read.ContentTypes.Get(typeName), values);
             return Save(newE);
         }
     }

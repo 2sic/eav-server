@@ -9,7 +9,7 @@ namespace ToSic.Eav.Apps.Parts
 {
     public partial class EntitiesManager
     {
-
+        // todo: should be in metadata manager?
         public void SaveMetadata(Target target, string typeName, Dictionary<string, object> values)
         {
             var wrapLog = Log.Call("target:" + target.KeyNumber + "/" + target.KeyGuid + ", values count:" + values.Count);
@@ -18,13 +18,13 @@ namespace ToSic.Eav.Apps.Parts
                 throw new NotImplementedException("atm this command only creates metadata for entities with id-keys");
 
             // see if a metadata already exists which we would update
-            var existingEntity = AppManager./*Cache*/AppState.List
+            var existingEntity = Parent.AppState.List
                 .FirstOrDefault(e => e.MetadataFor?.TargetType == target.TargetType && e.MetadataFor?.KeyNumber == target.KeyNumber);
             if (existingEntity != null)
                 UpdateParts(existingEntity.EntityId, values);
             else
             {
-                var saveEnt = new Entity(AppManager.AppId, Guid.NewGuid(), AppManager.Read.ContentTypes.Get(typeName), values);
+                var saveEnt = new Entity(Parent.AppId, Guid.NewGuid(), Parent.Read.ContentTypes.Get(typeName), values);
                 saveEnt.SetMetadata(target);
                 Save(saveEnt);
             }

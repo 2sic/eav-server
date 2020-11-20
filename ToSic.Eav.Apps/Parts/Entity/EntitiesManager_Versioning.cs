@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Data;
 using ToSic.Eav.Persistence.Versions;
+using ToSic.Eav.Plumbing;
 using IEntity = ToSic.Eav.Data.IEntity;
 using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
 
@@ -11,7 +11,7 @@ namespace ToSic.Eav.Apps.Parts
     public partial class EntitiesManager
     {
 
-        public List<ItemHistory> VersionHistory(int id, bool includeData = true) => AppManager.DataController.Versioning.GetHistoryList(id, includeData);
+        public List<ItemHistory> VersionHistory(int id, bool includeData = true) => Parent.DataController.Versioning.GetHistoryList(id, includeData);
 
         /// <summary>
         /// Restore an Entity to the specified Version by creating a new Version using the Import
@@ -22,15 +22,14 @@ namespace ToSic.Eav.Apps.Parts
             var newVersion = PrepareRestoreEntity(entityId, changeId);
 
             // Restore Entity
-            var import = new Import(AppManager.ZoneId, AppManager.AppId, false, false);
-            import.ImportIntoDb(null, new List<Entity> { newVersion as Entity });
+            DbImporter.ImportIntoDb(null, new List<Entity> { newVersion as Entity });
 
             // Delete Draft (if any)
-            var entityDraft = AppManager.DataController.Publishing.GetDraftBranchEntityId(entityId);
+            var entityDraft = Parent.DataController.Publishing.GetDraftBranchEntityId(entityId);
             if (entityDraft.HasValue)
-                AppManager.DataController.Entities.DeleteEntity(entityDraft.Value);
+                Parent.DataController.Entities.DeleteEntity(entityDraft.Value);
 
-            SystemManager.Purge(AppManager.ZoneId, AppManager.AppId, log: Log); 
+            SystemManager.Purge(Parent, log: Log); 
         }
 
 
@@ -42,7 +41,7 @@ namespace ToSic.Eav.Apps.Parts
         ///// <param name="defaultCultureDimension">Default Language</param>
         private IEntity PrepareRestoreEntity(int entityId, int changeId)
         {
-            var deserializer = new JsonSerializer(AppManager.AppState, Log);
+            var deserializer = Parent.ServiceProvider.Build<JsonSerializer>().Init(Parent.AppState, Log);
 
             var str = GetFromTimelime(entityId, changeId);
             return deserializer.Deserialize(str);
@@ -53,7 +52,7 @@ namespace ToSic.Eav.Apps.Parts
         {
             try
             {
-                var timelineItem = AppManager.DataController.Versioning.GetItem(entityId, changeId).Json;
+                var timelineItem = Parent.DataController.Versioning.GetItem(entityId, changeId).Json;
                 if (timelineItem != null) return timelineItem;
                 throw new InvalidOperationException(
                     $"EntityId {entityId} with ChangeId {changeId} not found in DataTimeline.");

@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\2sxc\Src\packages\MSTest.TestAdapter.1.3.2\build\net45\MSTest.TestAdapter.props" Condition="Exists('..\..\2sxc\Src\packages\MSTest.TestAdapter.1.3.2\build\net45\MSTest.TestAdapter.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -76,10 +77,10 @@
       <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.1.1.0\lib\netstandard1.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.VisualStudio.TestPlatform.14.0.0.1\lib\net20\Microsoft.VisualStudio.TestPlatform.TestFramework.dll</HintPath>
+      <HintPath>..\..\2sxc\Src\packages\MSTest.TestFramework.2.0.0\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.VisualStudio.TestPlatform.14.0.0.1\lib\net20\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll</HintPath>
+      <HintPath>..\..\2sxc\Src\packages\MSTest.TestFramework.2.0.0\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Collections.Immutable, Version=1.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -108,6 +109,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="AppStateTests\AccessItemsInAppState.cs" />
     <Compile Include="Attributes\AttributeRenameTester.cs" />
     <Compile Include="Attributes\AttributeRenameTests_TitleField.cs" />
     <Compile Include="Attributes\AttributeRenameTests_Type.cs" />
@@ -128,9 +130,16 @@
     <Compile Include="LookUps\LookUpsTest.cs" />
     <Compile Include="Paging\Paging_Test.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Query\Tst_QueryBasic.cs" />
-    <Compile Include="Query\Tst_QueryGlobal.cs" />
-    <Compile Include="Query\ParamsTests.cs" />
+    <Compile Include="TestData\DataTableTrivial.cs" />
+    <Compile Include="TestData\DataTablePerson.cs" />
+    <Compile Include="TestData\Person.cs" />
+    <Compile Include="TestData\PersonsDataSource.cs" />
+    <Compile Include="TestData\PersonSpecs.cs" />
+    <Compile Include="TestData\RandomData.cs" />
+    <Compile Include="ValueFilter\ValueFilterMaker.cs" />
+    <Compile Include="x-probably-old-Query\Tst_QueryBasic.cs" />
+    <Compile Include="x-probably-old-Query\Tst_QueryGlobal.cs" />
+    <Compile Include="x-probably-old-Query\ParamsTests.cs" />
     <Compile Include="RelationshipFilterTests\RelationshipTest.cs" />
     <Compile Include="RelationshipFilterTests\RelationshipTestBase.cs" />
     <Compile Include="RelationshipFilterTests\Tst_RelationshipFilterDS_Modes.cs" />
@@ -206,8 +215,8 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
-    <None Include="Query\.data\queries\Query.Eav.Queries.Global.Apps.json" />
-    <None Include="Query\.data\queries\Query.Eav.Queries.Global.Zones.json" />
+    <None Include="x-probably-old-Query\.data\queries\Query.Eav.Queries.Global.Apps.json" />
+    <None Include="x-probably-old-Query\.data\queries\Query.Eav.Queries.Global.Zones.json" />
   </ItemGroup>
   <ItemGroup />
   <Choose>
@@ -230,6 +239,14 @@
   </Choose>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\2sxc\Src\packages\MSTest.TestAdapter.1.3.2\build\net45\MSTest.TestAdapter.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\2sxc\Src\packages\MSTest.TestAdapter.1.3.2\build\net45\MSTest.TestAdapter.props'))" />
+    <Error Condition="!Exists('..\..\2sxc\Src\packages\MSTest.TestAdapter.1.3.2\build\net45\MSTest.TestAdapter.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\2sxc\Src\packages\MSTest.TestAdapter.1.3.2\build\net45\MSTest.TestAdapter.targets'))" />
+  </Target>
+  <Import Project="..\..\2sxc\Src\packages\MSTest.TestAdapter.1.3.2\build\net45\MSTest.TestAdapter.targets" Condition="Exists('..\..\2sxc\Src\packages\MSTest.TestAdapter.1.3.2\build\net45\MSTest.TestAdapter.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

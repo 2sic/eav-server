@@ -28,7 +28,8 @@ namespace ToSic.Eav.Apps
 
                 if (ConfigurationProvider == null)
                     throw new Exception("Can't use app-queries, because the necessary configuration provider hasn't been initialized. Call InitData first.");
-                Queries = QueryManager.AllQueries(this, ConfigurationProvider, Log, ShowDrafts);
+                var queryMan = new QueryManager(DataSourceFactory).Init(Log);
+                Queries = queryMan.AllQueries(this, ConfigurationProvider, ShowDrafts);
                 return Queries;
             }
         }
@@ -52,9 +53,9 @@ namespace ToSic.Eav.Apps
 
         private Query GetGlobalQuery(string name)
         {
-            var qent = GlobalQueries.FindQuery(name) 
+            var qent = _dependencies.GlobalQueriesLazy.Value.FindQuery(name) 
                 ?? throw new Exception($"can't find global query {name}");
-            return new Query(ZoneId, AppId, qent, ConfigurationProvider, ShowDrafts, null, Log);
+            return new Query(DataSourceFactory).Init(ZoneId, AppId, qent, ConfigurationProvider, ShowDrafts, null, Log);
         }
     }
 }

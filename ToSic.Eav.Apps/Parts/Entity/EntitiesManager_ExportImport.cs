@@ -2,16 +2,14 @@
 using System.IO;
 using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.ImportExport.Options;
+using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Apps.Parts
 {
     public partial class EntitiesManager
     {
-        // 2020-07-31 2dm - never used
-        //public ExportListXml Exporter(IContentType contentType)
-        //    => new ExportListXml(AppManager.AppState, contentType, Log);
         public ExportListXml Exporter(string contentType)
-            => new ExportListXml(AppManager.AppState, AppManager.Read.ContentTypes.Get(contentType), Log);
+            => Parent.ServiceProvider.Build<ExportListXml>().Init(Parent.AppState, Parent.Read.ContentTypes.Get(contentType), Log);
 
         public ImportListXml Importer(
             string contentTypeName,
@@ -19,10 +17,10 @@ namespace ToSic.Eav.Apps.Parts
             IEnumerable<string> languages,
             string documentLanguageFallback,
             ImportDeleteUnmentionedItems deleteSetting,
-            ImportResourceReferenceMode resolveReferenceMode)
+            ImportResolveReferenceMode resolveReferenceMode)
         {
-            var ct = AppManager.Read.ContentTypes.Get(contentTypeName);
-            return new ImportListXml(AppManager, ct,
+            var ct = Parent.Read.ContentTypes.Get(contentTypeName);
+            return /*new ImportListXml*/ _lazyImportListXml.Value.Init(Parent, ct,
                 dataStream, languages, documentLanguageFallback,
                 deleteSetting, resolveReferenceMode, Log);
         }

@@ -18,12 +18,9 @@ namespace ToSic.Eav.LookUp
         }
         
         /// <inheritdoc />
-        public override string Get(string key, string format, ref bool notFound) 
+        public override string Get(string key, string format) 
             => _nameValueCollection == null 
             ? string.Empty 
             : FormatString(_nameValueCollection[key], format);
-
-        /// <inheritdoc/>
-        public override bool Has(string key) => throw new System.NotImplementedException();
     }
 }

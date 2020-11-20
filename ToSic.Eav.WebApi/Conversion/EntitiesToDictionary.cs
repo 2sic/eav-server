@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+#if NET451
 using System.Web.Http;
 using Newtonsoft.Json;
+#endif
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Run;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Conversion
@@ -15,7 +18,7 @@ namespace ToSic.Eav.Conversion
     public class EntitiesToDictionary: EntitiesToDictionaryBase, IStreamsTo<Dictionary<string, object>>
     {
         // TODO: has an important side effect, this isn't clear from outside!
-        public EntitiesToDictionary()
+        public EntitiesToDictionary(): base(Factory.Resolve<IValueConverter>(), "Cnv.Ent2Dc")
         {
             // Ensure that date-times are sent in the Zulu-time format (UTC) and not with offsets which causes many problems during round-trips
 #if NET451
@@ -27,17 +30,24 @@ namespace ToSic.Eav.Conversion
         }
 
 
-        #region Many variations of the Prepare-Statement expecting various kinds of input
+
+
+#region Many variations of the Prepare-Statement expecting various kinds of input
         /// <inheritdoc />
         public Dictionary<string, IEnumerable<Dictionary<string, object>>> Convert(IDataSource source, IEnumerable<string> streams = null)
         {
+            var wrapLog = Log.Call(useTimer: true);
             if (streams == null)
+            {
+                Log.Add("Found some stream names to filter for");
                 streams = source.Out.Select(p => p.Key);
+            }
 
             var y = streams.Where(k => source.Out.ContainsKey(k))
-                .ToDictionary(k => k, s => source.Out[s].List.Select(GetDictionaryFromEntity)
+                .ToDictionary(k => k, s => source.Out[s].Immutable.Select(GetDictionaryFromEntity)
             );
 
+            wrapLog("ok");
             return y;
         }
 
@@ -47,10 +57,10 @@ namespace ToSic.Eav.Conversion
 
         /// <inheritdoc />
         public IEnumerable<Dictionary<string, object>> Convert(IDataStream stream)
-            => Convert(stream.List);
+            => Convert(stream.Immutable);
         
         
-        #endregion
+#endregion
 
         
     }

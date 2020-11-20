@@ -2,13 +2,12 @@
 using System.Linq;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Queries;
-using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps.Parts
 {
-    public class QueryRuntime: RuntimeBase
+    public class QueryRuntime: PartOf<AppRuntime, QueryRuntime>
     {
-        internal QueryRuntime(AppRuntime appRt, ILog parentLog) : base(appRt, parentLog) { }
+        internal QueryRuntime() : base("RT.Query") { }
 
         /// <summary>
         /// Get all installed data sources - usually for the UI
@@ -53,8 +52,12 @@ namespace ToSic.Eav.Apps.Parts
         /// </summary>
         /// <param name="queryId"></param>
         /// <returns></returns>
-        public QueryDefinition Get(int queryId) =>
-            new QueryDefinition(Eav.DataSources.Queries.QueryManager.GetQueryEntity(queryId, AppRT.AppState), AppRT.AppId, Log);
+        public QueryDefinition Get(int queryId)
+        {
+            var queryMan = new Eav.DataSources.Queries.QueryManager(Parent.DataSourceFactory).Init(Log);
+            return new QueryDefinition(queryMan.GetQueryEntity(queryId, Parent.AppState),
+                Parent.AppId, Log);
+        }
 
         public class DataSourceInfo
         {

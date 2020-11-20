@@ -10,7 +10,7 @@ namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
     /// <summary>
     /// Read an xml file, check for headers and verify all the parts to better process the import
     /// </summary>
-    internal class ImportXmlReader: HasLog
+    public class ImportXmlReader: HasLog
     {
         public ImportXmlReader(string xmlPath, XmlImportWithFiles importer, ILog parentLog) : base("Imp.XmlPrt", parentLog, nameof(ImportXmlReader))
         {
@@ -38,7 +38,7 @@ namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
 
         internal string FileContents { get; }
 
-        internal XDocument XmlDoc;
+        public XDocument XmlDoc;
 
         internal XElement Root;
 
@@ -57,7 +57,7 @@ namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
             var appConfig = Root
                 .Element(XmlConstants.Entities)?
                 .Elements(XmlConstants.Entity)
-                .Single(e => e.Attribute(XmlConstants.AttSetStatic)?.Value == AppConstants.TypeAppConfig);
+                .Single(e => e.Attribute(XmlConstants.AttSetStatic)?.Value == AppLoadConstants.TypeAppConfig);
 
             if (appConfig == null)
                 throw new NullReferenceException("app config node not found in xml, cannot continue");

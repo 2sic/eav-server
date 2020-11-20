@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Data;
 using System.Linq;
 using ToSic.Eav.Data;
@@ -115,7 +116,7 @@ namespace ToSic.Eav.DataSources
 		    ModifiedField = modifiedField ?? "";
 		}
 
-		private IEnumerable<IEntity> GetEntities()
+		private ImmutableArray<IEntity> GetEntities()
 		{
             Configuration.Parse();
 
@@ -127,7 +128,7 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// Convert a DataTable to a Dictionary of EntityModels
 		/// </summary>
-		private IEnumerable<IEntity> ConvertToEntityDictionary(global::System.Data.DataTable source, string contentType, string entityIdField, string titleField, string modifiedField = null)
+		private ImmutableArray<IEntity> ConvertToEntityDictionary(global::System.Data.DataTable source, string contentType, string entityIdField, string titleField, string modifiedField = null)
 		{
 			// Validate Columns
 			if (!source.Columns.Contains(entityIdField))
@@ -149,10 +150,9 @@ namespace ToSic.Eav.DataSources
                     id: entityId,
                     modified: mod,
                     appId: Constants.TransientAppId);
-			    //var entity = AsEntity(values, titleField, contentType, entityId, modified: mod, appId: Constants.TransientAppId);
 				result.Add(entity);
 			}
-			return result;
+			return result.ToImmutableArray();
 		}
 	}
 }

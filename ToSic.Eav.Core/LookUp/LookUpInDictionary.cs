@@ -31,28 +31,20 @@ namespace ToSic.Eav.LookUp
 		}
 
         /// <inheritdoc/>
-        public override string Get(string key, string format, ref bool notFound)
+        public override string Get(string key, string format)
 		{
             // first try a safe check
-            if (!Properties.ContainsKey(key))
-            {
-                notFound = true;
-                return null;
-            }
+            if (!Properties.ContainsKey(key)) return string.Empty;
 
             // then attempt the try/catch way
 			try
 			{
-				return Properties[key];
+				return Properties[key] ?? string.Empty;
 			}
 			catch (KeyNotFoundException)
 			{
-				notFound = true;
-				return null;
+				return string.Empty;
 			}
 		}
-
-        /// <inheritdoc/>
-        public override bool Has(string key) => Properties.ContainsKey(key);
     }
 }

@@ -3,16 +3,19 @@ using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Run;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Run;
 using ToSic.Eav.Security;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.WebApi.Security
 {
-    internal class MultiPermissionsItems: MultiPermissionsApp
+    public class MultiPermissionsItems: MultiPermissionsApp
     {
         protected List<IEntity> Items;
 
         #region Constructors and DI / Init
+
+        public MultiPermissionsItems(IZoneMapper zoneMapper): base(zoneMapper) { }
 
         public MultiPermissionsItems Init(IInstanceContext context, IApp app, IEntity item, ILog parentLog) 
         {
@@ -30,11 +33,11 @@ namespace ToSic.Eav.WebApi.Security
         /// Creates a permission checker for an type in this app
         /// </summary>
         /// <returns></returns>
-        protected IPermissionCheck BuildItemPermissionChecker(IEntity item)
+        private IPermissionCheck BuildItemPermissionChecker(IEntity item)
         {
-            Log.Call($"{item.EntityId}");
+            var wrap = Log.Call< IPermissionCheck>($"{item.EntityId}");
             // now do relevant security checks
-            return BuildPermissionChecker(item.Type, item);
+            return wrap("ok", BuildPermissionChecker(item.Type, item));
         }
     }
 }

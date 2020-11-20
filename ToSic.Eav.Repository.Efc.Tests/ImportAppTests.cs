@@ -5,15 +5,28 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.ImportExport;
+using ToSic.Eav.Core.Tests;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Repository.Efc.Tests.Mocks;
+using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.Repository.Efc.Tests
 {
     [TestClass]
-    public class ImportAppTests
+    public class ImportAppTests: EavTestBase
     {
+        private readonly ZipImport _zipImport;
+        private readonly DbDataController _dbData;
+        private readonly ZoneManager _zoneManager;
+
+        public ImportAppTests()
+        {
+            _zipImport = Resolve<ZipImport>();
+            _dbData = Resolve<DbDataController>();
+            _zoneManager = Resolve<ZoneManager>();
+        }
+
         public static ILog Log = new Log("TstImA");
 
         //public const string BaseTestPath = @"C:\Projects\eav-server\ToSic.Eav.Repository.Efc.Tests\";
@@ -33,7 +46,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         };
 
         // just a note: this is Portal 54 or something on Daniels test server, change it to your system if you want to run these tests!
-        public const int ZoneId = 56;
+        public const int ZoneId = 2;
 
         #endregion
         [TestMethod]
@@ -75,8 +88,8 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
             using (FileStream fsSource = new FileStream(testFileName, FileMode.Open, FileAccess.Read))
             {
-                var zipImport = new ZipImport(helper).Init(ZoneId, null, true, null);
-                succeeded = zipImport.ImportZip(fsSource, baseTestPath + @"Temp\");
+                _zipImport.Init(ZoneId, null, true, null);
+                succeeded = _zipImport.ImportZip(fsSource, baseTestPath + @"Temp\");
             }
             Assert.IsTrue(succeeded, "should succeed!");
         }
@@ -85,10 +98,9 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         public void DeleteAnApp(string appGuid)
         {
-            var applist = DbDataController.Instance(ZoneId, null, Log).SqlDb.ToSicEavApps.Where(a => a.ZoneId == ZoneId).ToList();
+            var applist = _dbData.Init(ZoneId, null, Log).SqlDb.ToSicEavApps.Where(a => a.ZoneId == ZoneId).ToList();
             var appId = applist.FirstOrDefault(a => a.Name == appGuid)?.AppId ?? 0;
-            if (appId > 0)
-                new ZoneManager(ZoneId, Log).DeleteApp(appId);
+            if (appId > 0) _zoneManager.Init(ZoneId, Log).DeleteApp(appId, true);
 
         }
     }

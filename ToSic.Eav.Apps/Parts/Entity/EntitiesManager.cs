@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
-using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -13,17 +13,30 @@ namespace ToSic.Eav.Apps.Parts
     /// <summary>
     /// Manager for entities in an app
     /// </summary>
-    public partial class EntitiesManager: ManagerBase
+    public partial class EntitiesManager: PartOf<AppManager, EntitiesManager>
     {
-        public EntitiesManager(AppManager app, ILog parentLog = null) 
-            : base(app, parentLog, "App.EntMan") { }
+        #region Constructor / DI
+
+        private readonly Lazy<ImportListXml> _lazyImportListXml;
+        private readonly Lazy<Import> _importLazy;
+
+        private Import DbImporter => _import ?? (_import = _importLazy.Value.Init(Parent.ZoneId, Parent.AppId, false, false, Log));
+        private Import _import;
+        public EntitiesManager(Lazy<ImportListXml> lazyImportListXml, Lazy<Import> importLazy) : base("App.EntMan")
+        {
+            _lazyImportListXml = lazyImportListXml;
+            _importLazy = importLazy;
+        }
+        
+        #endregion
+
 
         public void Import(List<IEntity> newEntities)
         {
             newEntities.ForEach(e =>
             {
                 e.ResetEntityId();
-                if (AppManager.Read.Entities.Get(e.EntityGuid) != null)
+                if (Parent.Read.Entities.Get(e.EntityGuid) != null)
                     throw new ArgumentException("Can't import this item - an item with the same guid already exists");
             });
             Save(newEntities);
@@ -35,7 +48,7 @@ namespace ToSic.Eav.Apps.Parts
         public List<int> Save(List<IEntity> entities, SaveOptions saveOptions = null)
         {
             var wrapLog = Log.Call("", message: "save count:" + entities.Count + ", with Options:" + (saveOptions != null));
-            saveOptions = saveOptions ?? SaveOptions.Build(AppManager.ZoneId);
+            saveOptions = saveOptions ?? SaveOptions.Build(Parent.ZoneId);
 
             // ensure the type-definitions are real, not just placeholders
             foreach (var entity in entities)
@@ -43,21 +56,22 @@ namespace ToSic.Eav.Apps.Parts
                     && !e2.Type.IsDynamic // it's not dynamic
                     && e2.Type.Attributes == null) // it doesn't have attributes, so it must have been in-memory
                 {
-                    var newType = AppManager.Read.ContentTypes.Get(entity.Type.Name);
+                    var newType = Parent.Read.ContentTypes.Get(entity.Type.Name);
                     if(newType != null) e2.UpdateType(newType); // try to update, but leave if not found
                 }
 
             // attach relationship resolver - important when saving data which doesn't yet have the guid
-            entities.ForEach(AppManager.AppState.Relationships.AttachRelationshipResolver);
+            entities.ForEach(Parent.AppState.Relationships.AttachRelationshipResolver);
 
             List<int> ids = null;
-            var dc = AppManager.DataController;
+            var dc = Parent.DataController;
             dc.DoButSkipAppCachePurge(
-                () => dc.DoWhileQueueingRelationships(
-                    () => ids = dc.Save(entities, saveOptions)));
+                // () => dc.Relationships.DoWhileQueueingRelationships(
+                    () => ids = dc.Save(entities, saveOptions));
+            //);
 
             // Tell the cache to do a partial update
-            State.Cache.Update(AppManager, ids, Log);
+            State.Cache.Update(Parent, ids, Log);
 
             wrapLog($"ids:{ids.Count}");
             return ids;

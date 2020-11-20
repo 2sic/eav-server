@@ -3,18 +3,25 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Core.Tests;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Xml;
-using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Repository.Efc.Tests;
+using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.ImportExport.Tests
 {
     [TestClass]
-    public class XmlSerializationTests
+    public class XmlSerializationTests: EavTestBase
     {
+        private readonly XmlSerializer _xmlSerializer;
+        public XmlSerializationTests()
+        {
+            _xmlSerializer = Resolve<XmlSerializer>();
+        }
+
         public static ILog Log = new Log("TstXml");
         //private int AppId = 2;
         //private int TestItemId = 0;
@@ -23,7 +30,7 @@ namespace ToSic.Eav.ImportExport.Tests
         public void Xml_SerializeItemOnHome()
         {
             var test = new TestValuesOnPc2Dm();
-            var dbc = DbDataController.Instance(null, test.AppId, Log);
+            //var dbc = Factory.Resolve<DbDataController>().Init(null, test.AppId, Log);
             //var xmlbuilder = new DbXmlBuilder(dbc);
 
             //var xml = xmlbuilder.XmlEntity(test.ItemOnHomeId);
@@ -31,12 +38,10 @@ namespace ToSic.Eav.ImportExport.Tests
             //var xmlstring = xml.ToString();
             //Assert.IsTrue(xmlstring.Length > 200, "should get a long xml string");
 
-            var loader = new Efc11Loader(dbc.SqlDb);
-            var app = loader.AppState(test.AppId);
-            var zone = new ZoneRuntime(test.ZoneId, Log);
+            var app = Resolve<Efc11Loader>().AppState(test.AppId);
+            var zone = new ZoneRuntime().Init(test.ZoneId, Log);
             var languageMap = zone.Languages().ToDictionary(l => l.EnvironmentKey.ToLower(), l => l.DimensionId);
-            var exBuilder = new XmlSerializer(languageMap);
-            exBuilder.Initialize(app, Log);
+            var exBuilder = _xmlSerializer.Init(languageMap, app, Log);
             var xmlEnt = exBuilder.Serialize(test.ItemOnHomeId);
             Assert.IsTrue(xmlEnt.Length > 200, "should get a long xml string");
             Trace.Write(xmlEnt);
@@ -49,13 +54,10 @@ namespace ToSic.Eav.ImportExport.Tests
         {
             var test = new TestValuesOnPc2Dm();
             var appId = test.BlogAppId;
-            var dbc = DbDataController.Instance(null, appId, Log);
-            var loader = new Efc11Loader(dbc.SqlDb);
-            var app = loader.AppState(appId);
-            var zone = new ZoneRuntime(test.ZoneId, Log);
+            var app = Resolve<Efc11Loader>().AppState(appId);
+            var zone = new ZoneRuntime().Init(test.ZoneId, Log);
             var languageMap = zone.Languages().ToDictionary(l => l.EnvironmentKey.ToLower(), l => l.DimensionId);
-            var exBuilder = new XmlSerializer(languageMap);
-            exBuilder.Initialize(app, Log);
+            var exBuilder = _xmlSerializer.Init(languageMap, app, Log);
 
             var maxCount = 500;
             var skip = 0;

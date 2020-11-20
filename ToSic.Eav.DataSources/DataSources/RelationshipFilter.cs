@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
@@ -140,7 +140,7 @@ namespace ToSic.Eav.DataSources
         [PrivateApi]
         public RelationshipFilter()
 		{
-            Provide(GetEntitiesOrFallback);
+            Provide(GetRelationshipsOrFallback);
 		    ConfigMask(RelationshipKey, $"[Settings:{Settings.Relationship}]");
 		    ConfigMask(FilterKey, $"[Settings:{Settings.Filter}]");
 		    ConfigMask(CompareAttributeKey, $"[Settings:{Settings.AttributeOnRelationship}||{Constants.EntityFieldTitle}]");
@@ -149,19 +149,18 @@ namespace ToSic.Eav.DataSources
 		    ConfigMask(ChildOrParentKey, $"[Settings:{Settings.Direction}||{DefaultDirection}]");
         }
 
-        private IEnumerable<IEntity> GetEntitiesOrFallback()
+        private IImmutableList<IEntity> GetRelationshipsOrFallback()
         {
             var res = GetEntities();
             // ReSharper disable PossibleMultipleEnumeration
-            if (!res.Any())
-                if (In.ContainsKey(Constants.FallbackStreamName) && In[Constants.FallbackStreamName] != null && In[Constants.FallbackStreamName].List.Any())
-                    res = In[Constants.FallbackStreamName].List;
+            if (!res.Any() && In.HasStreamWithItems(Constants.FallbackStreamName))
+                return In[Constants.FallbackStreamName].Immutable;
 
-            return res.ToList();
+            return res;
             // ReSharper restore PossibleMultipleEnumeration
         }
 
-        private IEnumerable<IEntity> GetEntities()
+        private IImmutableList<IEntity> GetEntities()
 		{
             // todo: maybe do something about languages?
 
@@ -189,7 +188,7 @@ namespace ToSic.Eav.DataSources
 		    var lowAttribName = compAttr.ToLower();
 		    Log.Add($"get related on relationship:'{relationship}', filter:'{filter}', rel-field:'{compAttr}' mode:'{mode}', child/parent:'{childParent}'");
 
-			var originals = In[Constants.DefaultStreamName].List;
+			var originals = In[Constants.DefaultStreamName].Immutable;
 
 		    var compType = lowAttribName == Constants.EntityFieldAutoSelect
 		        ? CompareType.Auto
@@ -223,9 +222,9 @@ namespace ToSic.Eav.DataSources
 		    if (ChildOrParent != "child")
 		        throw new NotImplementedException("using 'parent' not supported yet, use 'child' to filter'");
 
-		    var results = originals.Where(finalCompare).ToList();
+		    var results = originals.Where(finalCompare).ToImmutableArray();//.ToList();
 
-		    Log.Add($"found in relationship-filter {results.Count}");
+		    Log.Add($"found in relationship-filter {results.Length}");
 			return results;
 		}
 

@@ -1,10 +1,11 @@
-﻿using System.Linq;
+﻿using System.Collections.Immutable;
+using System.Linq;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.DataSources.Configuration;
-using ToSic.Eav.DataSourceTests.ExternalData;
+using ToSic.Eav.DataSourceTests.TestData;
 
 namespace ToSic.Eav.DataSourceTests.Caches
 {
@@ -24,14 +25,14 @@ namespace ToSic.Eav.DataSourceTests.Caches
 
             // manually add to cache
             listCache.Set(ds[Constants.DefaultStreamName]);
-            Assert.IsTrue(listCache.Has(ds.CacheFullKey + "|Default"), "Should have it in cache now");
+            Assert.IsTrue(listCache.Has(ds.CacheFullKey + "&Stream=Default"), "Should have it in cache now");
             Assert.IsTrue(listCache.Has(ds[Constants.DefaultStreamName]), "Should also have the DS default");
             
             Assert.IsTrue(listCache.Has(ds[Constants.DefaultStreamName]), "should have it by stream as well");
             
 
             // Try to auto-retrieve 
-            var cached = listCache.Get(ds.CacheFullKey + "|Default").List;
+            var cached = listCache.Get(ds.CacheFullKey + "&Stream=Default").List;
 
             Assert.AreEqual(1, cached.Count());
 
@@ -42,7 +43,7 @@ namespace ToSic.Eav.DataSourceTests.Caches
             Assert.AreEqual(null, lci, "Cached should be null because the name isn't correct");
 
             lci = listCache.Get(ds[Constants.DefaultStreamName]);
-            Assert.AreNotEqual(null, lci, "Cached should be found because usin stream instead of name");
+            Assert.AreNotEqual(null, lci, "Cached should be found because using stream instead of name");
 
             cached = listCache.Get(ds[Constants.DefaultStreamName]).List;
             Assert.AreEqual(1, cached.Count());
@@ -59,7 +60,7 @@ namespace ToSic.Eav.DataSourceTests.Caches
             (listCache as ListCache).DefaultDuration = 1;
             Assert.IsFalse(listCache.Has(ds.CacheFullKey), "Should not have it in cache yet");
 
-            listCache.Set(ds.CacheFullKey, ds.List, ds.CacheTimestamp);
+            listCache.Set(ds.CacheFullKey, ds.Immutable.ToImmutableArray(), ds.CacheTimestamp);
             Assert.IsTrue(listCache.Has(ds.CacheFullKey), "Should have it in cache now");
 
             Thread.Sleep(400);
@@ -74,7 +75,7 @@ namespace ToSic.Eav.DataSourceTests.Caches
 
         public static EntityIdFilter CreateFilterForTesting(int testItemsInRootSource, string entityIdsValue)
         {
-            var ds = DataTableTst.GeneratePersonSourceWithDemoData(testItemsInRootSource, 1001);
+            var ds = DataTablePerson.Generate(testItemsInRootSource, 1001);
             var filtered = new EntityIdFilter()
                 .Init(ds.Configuration.LookUps);
             //filtered.ConfigurationProvider = ds.ConfigurationProvider;

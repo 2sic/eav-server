@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Plumbing;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 // ReSharper disable once CheckNamespace
@@ -32,6 +34,8 @@ namespace ToSic.Eav.DataSources.System
     // ReSharper disable once UnusedMember.Global
     public sealed class Apps: DataSourceBase
 	{
+        private readonly IServiceProvider _serviceProvider;
+
         #region Configuration-properties (no config)
 	    public override string LogId => "DS.EavAps";
 
@@ -61,21 +65,22 @@ namespace ToSic.Eav.DataSources.System
         /// Constructs a new Apps DS
         /// </summary>
         [PrivateApi]
-        public Apps()
+        public Apps(IServiceProvider serviceProvider)
 		{
+            _serviceProvider = serviceProvider;
             Provide(GetList);
             ConfigMask(ZoneKey, $"[Settings:{ZoneIdField}]");
 		}
 
 
-	    private List<IEntity> GetList()
+	    private ImmutableArray<IEntity> GetList()
 	    {
             Configuration.Parse();
 
             // try to load the content-type - if it fails, return empty list
             var zones = State.Zones;
-	        if (!zones.ContainsKey(OfZoneId)) return new List<IEntity>();
-	        var zone = zones[OfZoneId];
+            if (!zones.ContainsKey(OfZoneId)) return ImmutableArray<IEntity>.Empty;
+            var zone = zones[OfZoneId];
 
 	        var list = zone.Apps.OrderBy(a => a.Key).Select(app =>
 	        {
@@ -83,8 +88,8 @@ namespace ToSic.Eav.DataSources.System
 	            Guid? guid = null;
 	            try
 	            {
-	                appObj = Factory.Resolve<Eav.Apps.App>()
-                        .Init(new AppIdentity(zone.ZoneId, app.Key), false, null, null, Log, "for apps DS");
+	                appObj = _serviceProvider.Build<Eav.Apps.App>()
+                        .Init(new AppIdentity(zone.ZoneId, app.Key), null, Log);
                     // this will get the guid, if the identity is not "default"
 	                if(Guid.TryParse(appObj.AppGuid, out var g)) guid = g;
 	            }
@@ -109,7 +114,7 @@ namespace ToSic.Eav.DataSources.System
                 return result;
             });
 
-            return list.ToList();
+            return list.ToImmutableArray();// .ToList();
         }
 
 	}

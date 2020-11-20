@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Documentation;
@@ -17,27 +19,35 @@ namespace ToSic.Eav.Data
         private readonly IEntityLight _entity;
 	    public IEnumerable<EntityRelationship> AllRelationships { get; }
 
+        private AppState App;
+
 		/// <summary>
 		/// Initializes a new instance of the RelationshipManager class.
 		/// </summary>
 		public RelationshipManager(IEntityLight entity, AppState app, IEnumerable<EntityRelationship> allRelationships)
         {
 			_entity = entity;
+            App = app;
 		    if (app != null)
 		        AllRelationships = new SynchronizedList<EntityRelationship>(app,
-		            () => app.Relationships.ToList());
-		    else
+		            () => app.Relationships.List);
+            else
 		        AllRelationships = allRelationships ?? new List<EntityRelationship>();
 		}
 
 		/// <inheritdoc />
-		// note: don't cache the result, as it's already cache-chained
-		public IEnumerable<IEntity> AllChildren 
-            => ChildRelationships().Select(r => r.Child);
+		public IEnumerable<IEntity> AllChildren => ChildRelationships().Select(r => r.Child);
 
-        // note: don't cache the result, as it's already cache-chained
-	    private IEnumerable<EntityRelationship> ChildRelationships() 
-            => AllRelationships.Where(r => r.Parent == _entity);
+	    private IImmutableList<EntityRelationship> ChildRelationships()
+        {
+            if (_childRelationships != null) return _childRelationships.List;
+            Func<IImmutableList<EntityRelationship>> getChildren = () => AllRelationships.Where(r => r.Parent == _entity).ToImmutableArray(); //.ToList();
+            if (App == null) return getChildren.Invoke(); // AllRelationships.Where(r => r.Parent == _entity);
+            _childRelationships = new SynchronizedList<EntityRelationship>(App, getChildren);
+            return _childRelationships.List;
+        }
+
+        private SynchronizedList<EntityRelationship> _childRelationships;
 
 
         /// <inheritdoc />
@@ -45,8 +55,15 @@ namespace ToSic.Eav.Data
         public IEnumerable<IEntity> AllParents 
             => ParentRelationships().Select(r => r.Parent);
         // note: don't cache the result, as it's already cache-chained
-	    private IEnumerable<EntityRelationship> ParentRelationships() 
-            => AllRelationships.Where(r => r.Child == _entity);
+	    private IImmutableList<EntityRelationship> ParentRelationships()
+        {
+            if (_parentRelationships != null) return _parentRelationships.List;
+            Func<IImmutableList<EntityRelationship>> getParents = () => AllRelationships.Where(r => r.Child == _entity).ToImmutableArray();// .ToList();
+            if (App == null) return getParents.Invoke(); // return AllRelationships.Where(r => r.Child == _entity);
+            _parentRelationships = new SynchronizedList<EntityRelationship>(App, getParents);
+            return _parentRelationships.List;
+        }
+        private SynchronizedList<EntityRelationship> _parentRelationships;
 
         /// <inheritdoc />
         [PrivateApi]
@@ -59,7 +76,7 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
 	    public List<IEntity> FindChildren(string field = null, string type = null, ILog log = null)
 	    {
-            var wrap = log?.Call(parameters: $"field:{field}; type:{type}");
+            var wrap = log?.Call($"field:{field}; type:{type}");
 	        List<IEntity> rels;
 	        if (string.IsNullOrEmpty(field))
 	            rels = ChildRelationships().Select(r => r.Child).ToList();
@@ -90,8 +107,8 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         public List<IEntity> FindParents(string type = null, string field = null, ILog log = null)
 	    {
-	        var wrap = log?.Call(parameters: $"type:{type}; field:{field}");
-            var list = ParentRelationships();
+	        var wrap = log?.Call($"type:{type}; field:{field}");
+            var list = ParentRelationships() as IEnumerable<EntityRelationship>;
 	        if (!string.IsNullOrEmpty(type))
 	            list = list.Where(r => r.Parent.Type.Is(type));
 

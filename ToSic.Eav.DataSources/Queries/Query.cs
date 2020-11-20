@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
+using ToSic.Eav.Plumbing;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.Queries
@@ -15,14 +17,14 @@ namespace ToSic.Eav.DataSources.Queries
 	{
         #region Configuration-properties
         [PrivateApi]
-	    public override string LogId => "DS.Query";
+	    public override string LogId => $"{DataSourceConstants.LogPrefix}.Query";
 
         /// <inheritdoc />
-        public QueryDefinition Definition { get; }
+        public QueryDefinition Definition { get; private set; }
 
 		private StreamDictionary _out = new StreamDictionary();
 		private bool _requiresRebuildOfOut = true;
-        private readonly bool _showDrafts;
+        private bool _showDrafts;
 
         /// <summary>
         /// Standard out. Note that the Out is not prepared until accessed the first time,
@@ -40,7 +42,7 @@ namespace ToSic.Eav.DataSources.Queries
 		}
         #endregion
 
-        #region Internal Source - mainly for debugging
+        #region Internal Source - mainly for debugging or advanced uses of a query
 
         [PrivateApi]
         public IDataSource Source
@@ -59,7 +61,17 @@ namespace ToSic.Eav.DataSources.Queries
 
         /// <inheritdoc />
         [PrivateApi]
-		public Query(int zoneId, int appId, IEntity queryDef, ILookUpEngine config, bool showDrafts, IDataTarget source, ILog parentLog)
+        public Query(DataSourceFactory dataSourceFactory)
+        {
+            DataSourceFactory = dataSourceFactory;
+        }
+
+        /// <summary>
+        /// Initialize a full query object. This is necessary for it to work
+        /// </summary>
+        /// <returns></returns>
+        [PrivateApi]
+		public Query Init(int zoneId, int appId, IEntity queryDef, ILookUpEngine config, bool showDrafts, IDataTarget source, ILog parentLog)
 		{
 		    ZoneId = zoneId;
 		    AppId = appId;
@@ -69,10 +81,11 @@ namespace ToSic.Eav.DataSources.Queries
             _showDrafts = showDrafts;
 
             // hook up in, just in case we get parameters from an In
-            if (source == null) return;
+            if (source == null) return this;
 
             Log.Add("found target for Query, will attach");
             In = source.In;
+            return this;
         }
 
 		/// <summary>
@@ -94,7 +107,7 @@ namespace ToSic.Eav.DataSources.Queries
             wrapLog("ok");
         }
 
-        private QueryBuilder QueryBuilder => _queryBuilder ?? (_queryBuilder = new QueryBuilder(Log));
+        private QueryBuilder QueryBuilder => _queryBuilder ?? (_queryBuilder = DataSourceFactory.ServiceProvider.Build<QueryBuilder>().Init(Log));
         private QueryBuilder _queryBuilder;
 
 
@@ -137,6 +150,28 @@ namespace ToSic.Eav.DataSources.Queries
             Log.Add("Reset query");
             Definition.Reset();
             _requiresRebuildOfOut = true;
+        }
+
+        /// <summary>
+        /// Override PurgeList, because we don't really have In streams, unless we use parameters. 
+        /// </summary>
+        /// <param name="cascade"></param>
+        public override void PurgeList(bool cascade = false)
+        {
+            var callLog = Log.Call($"{cascade}", $"on {GetType().Name}");
+            // PurgeList on all In, as would usually happen
+            // This will only purge query-in used for parameter
+            base.PurgeList(cascade);
+
+            Log.Add("Now purge the lists which the Query has on the Out");
+            foreach (var stream in Source.Out)
+                stream.Value.PurgeList(cascade);
+            if (!Source.Out.Any()) Log.Add("No streams on Source.Out found to clear");
+
+            Log.Add("Update RequiresRebuildOfOut");
+            _requiresRebuildOfOut = true;
+            callLog("ok");
+
         }
     }
 

@@ -31,7 +31,7 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("11.07.01")]
+[assembly: AssemblyVersion("11.10.01")]
 
 
 [assembly: InternalsVisibleTo("ToSic.Eav.Repository.EF4")]

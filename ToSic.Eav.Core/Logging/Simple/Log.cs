@@ -19,6 +19,8 @@ namespace ToSic.Eav.Logging.Simple
         public int WrapDepth;
         public  List<Entry> Entries { get; } = new List<Entry>();
         private ILog _parent;
+        public int Depth { get; set; } = 0;
+        private const int MaxParentDepth = 100;
 
         public string Identifier => $"{Scope}{Name}[{Id}]";
 
@@ -100,7 +102,25 @@ namespace ToSic.Eav.Logging.Simple
         /// <param name="name">optional new name</param>
         public void LinkTo(ILog parent, string name = null)
         {
-            _parent = parent ?? _parent;
+            if(parent == this) throw new Exception("LOGGER ERROR - attaching same item as parent can't work");
+            // only attach new parent if it didn't already have an old one
+            // this is critical because we cannot guarantee that sometimes a LinkTo is called more than once on something
+            if (parent != null ) 
+            {
+                if(_parent == null)
+                {
+                    _parent = parent;
+                    Depth = parent.Depth + 1;
+                    if(Depth > MaxParentDepth)
+                        throw new Exception($"LOGGER ERROR - Adding parent to logger but exceeded max depth of {MaxParentDepth}");
+                }
+                else
+                {
+                    Add("LOGGER WARNING - this logger already has a parent, but trying to attach to new parent. " +
+                        $"Existing parent: {_parent.FullIdentifier}. " +
+                        $"New Parent (ignored): {parent.FullIdentifier}");
+                }
+            }
             if (name != null)
                 Rename(name);
         }

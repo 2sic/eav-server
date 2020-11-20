@@ -7,6 +7,7 @@ using ToSic.Eav.Conversion;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.WebApi.Errors;
 using ToSic.Eav.WebApi.Formats;
 using ToSic.Eav.WebApi.Security;
@@ -16,21 +17,33 @@ namespace ToSic.Eav.WebApi
 {
     public class EntityApi: HasLog
     {
+        private readonly AppRuntime _appRuntime;
+        private readonly Lazy<AppManager> _appManagerLazy;
+        private readonly Lazy<EntitiesToDictionary> _entitesToDicLazy;
         public AppRuntime AppRead;
 
-        #region Constructors
+        #region Constructors / DI
 
-        public EntityApi(int appId, bool showDrafts, ILog parentLog): base("Api.EntPrc", parentLog)
+        public EntityApi(AppRuntime appRuntime, Lazy<AppManager> appManagerLazy, Lazy<EntitiesToDictionary> entitesToDicLazy): base("Api.Entity")
         {
-            AppRead = new AppRuntime(appId, showDrafts, Log);
+            _appRuntime = appRuntime;
+            _appManagerLazy = appManagerLazy;
+            _entitesToDicLazy = entitesToDicLazy;
         }
 
-        public static EntityApi GetOrThrowBasedOnGrants(IInstanceContext context, IApp app, string contentType, List<Eav.Security.Grants> requiredGrants, ILog parentLog)
+        public EntityApi Init(int appId, bool showDrafts, ILog parentLog)
         {
-            var permCheck = new MultiPermissionsTypes().Init(context, app, contentType, parentLog);
+            Log.LinkTo(parentLog);
+            AppRead = _appRuntime.Init(State.Identity(null, appId), showDrafts, Log);
+            return this;
+        }
+
+        public EntityApi InitOrThrowBasedOnGrants(IInstanceContext context, IApp app, string contentType, List<Eav.Security.Grants> requiredGrants, ILog parentLog)
+        {
+            var permCheck = _appManagerLazy.Value.ServiceProvider.Build<MultiPermissionsTypes>().Init(context, app, contentType, parentLog);
             if (!permCheck.EnsureAll(requiredGrants, out var error))
                 throw HttpException.PermissionDenied(error);
-            return new EntityApi(app.AppId, true, parentLog);
+            return Init(app.AppId, true, parentLog);
         }
 
         #endregion
@@ -39,36 +52,24 @@ namespace ToSic.Eav.WebApi
         /// <summary>
         /// The serializer, so it can be configured from outside if necessary
         /// </summary>
-        private EntitiesToDictionary Serializer
+        private EntitiesToDictionary EntityToDic
         {
             get
             {
                 if (_entitiesToDictionary != null) return _entitiesToDictionary;
-                _entitiesToDictionary = Factory.Resolve<EntitiesToDictionary>();
+                _entitiesToDictionary = _entitesToDicLazy.Value;
                 _entitiesToDictionary.WithGuid = true;
+                _entitiesToDictionary.Init(Log);
                 return _entitiesToDictionary;
             }
         }
         private EntitiesToDictionary _entitiesToDictionary;
 
-        public IEntity GetOrThrow(string contentType, int id)
-            => ReturnOrThrowIfInvalid(contentType, id, AppRead.Entities.Get(id));
-
-        public IEntity GetOrThrow(string contentType, Guid guid)
-            => ReturnOrThrowIfInvalid(contentType, guid, AppRead.Entities.Get(guid));
-
-        private static IEntity ReturnOrThrowIfInvalid(string contentType, object identifier, IEntity itm)
-        {
-            if (itm == null || contentType != null && !itm.Type.Is(contentType))
-                throw new KeyNotFoundException("Can't find " + identifier + "of type '" + contentType + "'");
-            return itm;
-        }
-
         /// <summary>
         /// Get all Entities of specified Type
         /// </summary>
         public IEnumerable<Dictionary<string, object>> GetEntities(string contentType) 
-            => Serializer.Convert(AppRead.Entities.Get(contentType));
+            => EntityToDic.Convert(AppRead.Entities.Get(contentType));
 
         public List<BundleIEntity> GetEntitiesForEditing(List<ItemIdentifier> items)
         {
@@ -107,7 +108,7 @@ namespace ToSic.Eav.WebApi
 
         private IEntity GetEditableEditionAndMaybeCloneIt(ItemIdentifier p)
         {
-            var found = GetOrThrow(p.ContentTypeName, p.DuplicateEntity ?? p.EntityId);
+            var found = AppRead.AppState.List.GetOrThrow(p.ContentTypeName, p.DuplicateEntity ?? p.EntityId);
             // if there is a draft, only allow editing that
             found = found.GetDraft() ?? found;
 
@@ -128,7 +129,7 @@ namespace ToSic.Eav.WebApi
         /// <exception cref="ArgumentNullException">Entity does not exist</exception>
         /// <exception cref="InvalidOperationException">Entity cannot be deleted for example when it is referenced by another object</exception>
         public void Delete(string contentType, int id, bool force = false) 
-            => new AppManager(AppRead, AppRead.Log).Entities.Delete(id, contentType, force);
+            => _appManagerLazy.Value.Init(AppRead, AppRead.Log).Entities.Delete(id, contentType, force);
 
         /// <summary>
         /// Delete the entity specified by GUID.
@@ -143,12 +144,19 @@ namespace ToSic.Eav.WebApi
 
         public IEnumerable<Dictionary<string, object>> GetEntitiesForAdmin(string contentType)
         {
-            Serializer.ConfigureForAdminUse();
-            var list = Serializer.Convert(AppRead.Entities.Get(contentType));
+            var wrapLog = Log.Call(useTimer: true);
+            EntityToDic.ConfigureForAdminUse();
+            var originals = AppRead.Entities.Get(contentType).ToList();
+            var list = EntityToDic.Convert(originals).ToList();
 
-            return list
+            var timer = Log.Call(null, "truncate dictionary", useTimer: true);
+            var result = list
                 .Select(li => li.ToDictionary(x1 => x1.Key, x2 => Truncate(x2.Value, 50)))
                 .ToList();
+            timer("ok");
+
+            wrapLog(result.Count.ToString());
+            return result;
         }
 
 

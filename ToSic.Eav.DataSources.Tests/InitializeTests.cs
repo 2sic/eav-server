@@ -11,7 +11,7 @@ namespace ToSic.Eav.DataSourceTests
 
         [AssemblyInitialize]
         public static void AssemblyInit(TestContext context) =>
-            Eav.ImportExport.Tests.InitializeTests.AssemblyInit(context, connectionForTests);
+            ImportExport.Tests.InitializeTests.AssemblyInit(context, connectionForTests);
 
         // 2020-03-02 2dm - this was in the other test project ToSic.Eav.UnitTests, but probably doesn't affect our tests
         //[AssemblyInitialize]

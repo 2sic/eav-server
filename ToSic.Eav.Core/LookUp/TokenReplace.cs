@@ -150,14 +150,7 @@ namespace ToSic.Eav.LookUp
         /// <param name="key"></param>
         /// <param name="format"></param>
         /// <returns></returns>
-        protected string RetrieveTokenValue(string sourceName, string key, string format)
-        {
-            //var result = string.Empty;
-            var propertyNotFound = false;
-            return FindSource(sourceName)?.Get(key, format, ref propertyNotFound) ?? string.Empty;
-            //return ValueSources.ContainsKey(sourceName.ToLower()) 
-            //    ? ValueSources[sourceName.ToLower()].Get(key, format, ref propertyNotFound) 
-            //    : result;
-        }
+        protected string RetrieveTokenValue(string sourceName, string key, string format) 
+            => FindSource(sourceName)?.Get(key, format) ?? string.Empty;
     }
 }

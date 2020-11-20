@@ -38,6 +38,8 @@ namespace ToSic.Eav.Logging
         /// </summary>
         bool Preserve { get; set; }
 
+        int Depth { get; set; }
+
         /// <summary>
         /// Intercept the result of an inner method, log it, then pass result on
         /// </summary>

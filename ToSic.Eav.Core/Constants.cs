@@ -85,8 +85,10 @@ namespace ToSic.Eav
         public const string ContentTypeTypeName = "ContentType";
 
 
-        ///// <summary>Zone metadata</summary>
-        //public static readonly int MetadataForZone = 6;
+        /// <summary>Zone metadata</summary>
+        /// <remarks>Used externally, for example in azing</remarks>
+        // ReSharper disable once UnusedMember.Global
+        public static readonly int MetadataForZone = 6;
 
         //[Obsolete("Use MetadataForCmsObject instead")] 
         //public static readonly int AssignmentObjectTypeCmsObject = 10;
@@ -169,6 +171,11 @@ namespace ToSic.Eav
         public const string EntityFieldIsPublished = "ispublished";
         public const string EntityFieldModified = "modified";
 
+        /// <summary>
+        /// Virtual fields are not real fields, but information properties like title, etc.
+        /// </summary>
+        public const string EntityFieldIsVirtual = "virtual";
+
         public static bool InternalOnlyIsSpecialEntityProperty(string name)
         {
             switch (name.ToLower())
@@ -189,6 +196,9 @@ namespace ToSic.Eav
 
         #region Special Field Types
 
+        public const string DataTypeBoolean = "Boolean";
+        public const string DataTypeNumber = "Number";
+        public const string DataTypeDateTime = "DateTime";
         public const string DataTypeEntity = "Entity"; // todo: update all references with this as a constant
         public const string DataTypeHyperlink = "Hyperlink"; // todo: rename to DataType
         public const string DataTypeString = "String";

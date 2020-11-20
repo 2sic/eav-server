@@ -29,13 +29,22 @@ namespace ToSic.Eav.Apps
         /// <param name="appId"></param>
         /// <param name="global">if true, will flush everything</param>
         /// <param name="log">log which will then log that it purged this</param>
-        public static void Purge(int zoneId, int appId, bool global = false, ILog log = null)
+        public static void Purge(int zoneId, int appId, bool global = false, ILog log = null) 
+            => Purge(new AppIdentity(zoneId, appId), global, log);
+
+        /// <summary>
+        /// Clear the cache of a specific app/zone, or of everything
+        /// </summary>
+        /// <param name="appIdentity"></param>
+        /// <param name="global">if true, will flush everything</param>
+        /// <param name="log">log which will then log that it purged this</param>
+        public static void Purge(IAppIdentity appIdentity, bool global = false, ILog log = null)
         {
-            var wrapLog = log?.Call($"{zoneId}, {appId}, {global}");
+            var wrapLog = log?.Call($"{appIdentity.Show()}, {global}");
             if (global)
                 State.Cache.PurgeZones();
             else
-                State.Cache.Purge(new AppIdentity(zoneId, appId));
+                State.Cache.Purge(appIdentity);
             wrapLog?.Invoke("ok");
         }
 

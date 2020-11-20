@@ -2,14 +2,16 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
+using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Queries;
-using ToSic.Eav.DataSourceTests.ExternalData;
+using ToSic.Eav.DataSourceTests.TestData;
 using ToSic.Eav.LookUp;
+using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests.Streams
 {
     [TestClass]
-    public class StreamPickTst
+    public class StreamPickTst: EavTestBase
     {
         private const int DefaultStreamSize = 10;
         private const int MoreStreamSize = 27;
@@ -33,7 +35,7 @@ namespace ToSic.Eav.DataSourceTests.Streams
         }
 
 
-        private DataSources.StreamPick BuildStructure()
+        private StreamPick BuildStructure()
         {
             // todo: create a test using params...
             var paramsOverride = new LookUpInDictionary(QueryConstants.ParamsLookup, new Dictionary<string, string>
@@ -41,11 +43,11 @@ namespace ToSic.Eav.DataSourceTests.Streams
                 {"StreamParam", "Lots"}
             });
 
-            var ds1 = DataTableTst.GeneratePersonSourceWithDemoData(DefaultStreamSize, 1000);
-            var ds2 = DataTableTst.GeneratePersonSourceWithDemoData(MoreStreamSize, 2700);
-            var ds3 = DataTableTst.GeneratePersonSourceWithDemoData(53, 5300);
-            var dsBuild = new DataSource(null);
-            var streamPick = dsBuild.GetDataSource<DataSources.StreamPick>(new AppIdentity(1, 1), null, ds1.Configuration.LookUps);
+            var ds1 = DataTablePerson.Generate(DefaultStreamSize, 1000);
+            var ds2 = DataTablePerson.Generate(MoreStreamSize, 2700);
+            var ds3 = DataTablePerson.Generate(53, 5300);
+            var dsBuild = Resolve<DataSourceFactory>();
+            var streamPick = dsBuild.GetDataSource<StreamPick>(new AppIdentity(1, 1), null, ds1.Configuration.LookUps);
             streamPick.Attach(Constants.DefaultStreamName, ds1);
             streamPick.Attach(MoreStream, ds2);
             streamPick.Attach("Lots", ds3);

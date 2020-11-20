@@ -6,7 +6,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Generics;
 using ToSic.Eav.Persistence.Efc.Intermediate;
-using ToSic.Eav.Run;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.Serialization;
 using AppState = ToSic.Eav.Apps.AppState;
 
@@ -19,8 +19,7 @@ namespace ToSic.Eav.Persistence.Efc
         {
             get {
                 if (_primaryLanguage != null) return _primaryLanguage;
-                var env = Factory.Resolve<IEnvironment>();
-                _primaryLanguage = env.DefaultLanguage.ToLowerInvariant();
+                _primaryLanguage = _environmentLazy.Value.DefaultLanguage.ToLowerInvariant();
                 Log.Add($"Primary language from environment (for attribute sorting): {_primaryLanguage}");
                 return _primaryLanguage;
             }
@@ -28,7 +27,7 @@ namespace ToSic.Eav.Persistence.Efc
         }
 
         public const int IdChunkSize = 5000;
-        public const int MaxLogDetailsCount = 1000;
+        public const int MaxLogDetailsCount = 250;
 
         internal int AddLogCount;
 
@@ -73,38 +72,7 @@ namespace ToSic.Eav.Persistence.Efc
                 .SelectMany(chunk => chunk)
                 .ToList();
             // in some strange cases we get duplicate keys - this should try to report what's happening
-            //Dictionary<int, IEnumerable<TempRelationshipList>> relatedEntities;
-            //try
-            //{
-            var relatedEntities = ConvertRelationships(allChunks); // .ToDictionary(i => i.Key, i => i.Value);
-            //}
-            //catch (Exception ex)
-            //{
-            //    Log.Add("Ran into big problem merging relationship chunks. Will attempt to add more information");
-            //    try
-            //    {
-            //        Log.Add($"These are the entity ID chunks in bundles of {IdChunkSize}");
-            //        entityIdChunks.ForEach(eid => Log.Add("Chunk: " + string.Join(",", eid)));
-            //    }
-            //    catch { /* ignored */ }
-
-            //    // do more detailed error reporting - but only if we didn't cause more errors
-            //    try
-            //    {
-            //        Log.Add("These are the duplicates we think cause the problems");
-            //        var duplicates = allChunks.GroupBy(c => c.Key)
-            //            .Where(g => g.Count() > 1)
-            //            .Select(g => g.Key)
-            //            .ToList();
-            //        Log.Add($"Found {duplicates.Count} duplicates.");
-            //        Log.Add($"The duplicate IDs are probably: {string.Join(",", duplicates)}");
-            //        throw new Exception("Ran into problems merging relationship chunks. Check the insights logs.", ex);
-            //    }
-            //    catch
-            //    {
-            //        throw new Exception("Ran into problems merging relationship chunks, and detailed analysis failed. Check Insights logs.", ex);
-            //    }
-            //}
+            var relatedEntities = GroupUniqueRelationships(allChunks);
 
             Log.Add($"Found {relatedEntities.Count} entity relationships in {sqlTime.ElapsedMilliseconds}ms");
 
@@ -122,18 +90,18 @@ namespace ToSic.Eav.Persistence.Efc
 
             #region Build EntityModels
 
-            var serializer = Factory.Resolve<IDataDeserializer>();
+            var serializer = ServiceProvider.Build<IDataDeserializer>();
             serializer.Initialize(app, Log);
 
             var entityTimer = Stopwatch.StartNew();
-            foreach (var e in rawEntities)
+            foreach (var rawEntity in rawEntities)
             {
                 if (AddLogCount++ == MaxLogDetailsCount) Log.Add($"Will stop logging each item now, as we've already logged {AddLogCount} items");
 
-                var newEntity = BuildNewEntity(app, e, serializer, relatedEntities, attributes);
+                var newEntity = BuildNewEntity(app, rawEntity, serializer, relatedEntities, attributes, PrimaryLanguage);
 
                 // If entity is a draft, also include references to Published Entity
-                app.Add(newEntity, e.PublishedEntityId, AddLogCount <= MaxLogDetailsCount);
+                app.Add(newEntity, rawEntity.PublishedEntityId, AddLogCount <= MaxLogDetailsCount);
 
             }
 
@@ -152,7 +120,8 @@ namespace ToSic.Eav.Persistence.Efc
         private static Entity BuildNewEntity(AppState app, TempEntity e, 
             IDataDeserializer serializer,
             Dictionary<int, IEnumerable<TempRelationshipList>> relatedEntities,
-            Dictionary<int, IEnumerable<TempAttributeWithValues>> attributes)
+            Dictionary<int, IEnumerable<TempAttributeWithValues>> attributes,
+            string primaryLanguage)
         {
             Entity newEntity;
 
@@ -200,7 +169,7 @@ namespace ToSic.Eav.Persistence.Efc
                     .ToList();
 
                 // fix faulty data dimensions in case old storage mechanims messed up
-                attrib.FixIncorrectLanguageDefinitions();
+                attrib.FixIncorrectLanguageDefinitions(primaryLanguage);
             }
 
             #endregion

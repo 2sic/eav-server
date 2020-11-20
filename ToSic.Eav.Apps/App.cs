@@ -1,4 +1,6 @@
 ﻿using System;
+using ToSic.Eav.DataSources;
+using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Run;
@@ -12,6 +14,57 @@ namespace ToSic.Eav.Apps
     [PublicApi_Stable_ForUseInYourCode]
     public partial class App: AppBase, IApp
     {
+
+        #region Constructor / DI
+
+        [PrivateApi]
+        protected DataSourceFactory DataSourceFactory { get; }
+
+        /// <summary>
+        /// Helper class, so inheriting stuff doesn't need to update the constructor all the time
+        /// </summary>
+        [PrivateApi]
+        public class AppDependencies
+        {
+            //internal AppInitializedChecker InitializedChecker { get; }
+            internal readonly IZoneMapper ZoneMapper;
+            internal readonly IEnvironment Environment;
+            internal readonly ISite Site;
+            internal readonly DataSourceFactory DataSourceFactory;
+            internal readonly Lazy<GlobalQueries> GlobalQueriesLazy;
+
+            public AppDependencies(
+                IEnvironment environment,
+                IZoneMapper zoneMapper,
+                ISite site,
+                DataSourceFactory dataSourceFactory,
+                Lazy<GlobalQueries> globalQueriesLazy)
+            {
+                ZoneMapper = zoneMapper;
+                Environment = environment;
+                Site = site;
+                DataSourceFactory = dataSourceFactory;
+                GlobalQueriesLazy = globalQueriesLazy;
+            }
+        }
+        [PrivateApi]
+        private readonly AppDependencies _dependencies;
+
+        public App(AppDependencies dependencies, string logName): base(logName ?? "Eav.App", new CodeRef())
+        {
+            _dependencies = dependencies;
+            dependencies.ZoneMapper.Init(Log);
+            DataSourceFactory = dependencies.DataSourceFactory;
+            // just keep pointers for now, don't init/verify yet
+            // as in some cases (like search) they will be replaced after the constructor
+            Env = dependencies.Environment;
+            Env.Init(Log);
+            Site = dependencies.Site;
+        }
+
+        #endregion
+
+
         [PrivateApi]
         public const int AutoLookupZone = -1;
 
@@ -27,65 +80,31 @@ namespace ToSic.Eav.Apps
 
         /// <inheritdoc />
         public bool ShowDrafts { get; private set; }
-        /// <inheritdoc />
-        public bool EnablePublishing { get; private set; }
 
         [PrivateApi]
         protected const string IconFile = "/" + AppConstants.AppIconFile;
 
-
-        public App(IAppEnvironment environment, ITenant tenant)
-        {
-            // just keep pointers for now, don't init/verify yet
-            // as in some cases (like search) they will be replaced after the constructor
-            Env = environment;
-            Tenant = tenant;
-        }
-
-        protected internal App Init(
-            IAppIdentity appIdentity,
-            bool allowSideEffects,
-            Func<App, IAppDataConfiguration> buildConfiguration,
-            string logKey,
-            ILog parentLog, 
-            string logMsg)
-            // first, initialize the AppIdentity and log it's use
-            // : base(new AppIdentity(zoneId, appId), new CodeRef(),  parentLog, "App.2sxcAp", $"prep App z#{zoneId}, a#{appId}, allowSE:{allowSideEffects}, hasDataConfig:{buildConfiguration != null}, {logMsg}")
+        
+        protected internal App Init(IAppIdentity appIdentity, Func<App, IAppDataConfiguration> buildConfiguration, ILog parentLog)
         {
             // Env / Tenant must be re-checked here
-            Env = Env ?? throw new Exception("no environment received");
-            Env.Init(parentLog);
-            Tenant = Tenant ?? throw new Exception("no tenant (portal settings) received");
+            if (Site == null) throw new Exception("no site/portal received");
             
             // in case the DI gave a bad tenant, try to look up
-            if (Tenant.Id == Constants.NullId && appIdentity.AppId != Constants.NullId &&
+            if (Site.Id == Constants.NullId && appIdentity.AppId != Constants.NullId &&
                 appIdentity.AppId != AppConstants.AppIdNotFound)
-                Tenant = Env.ZoneMapper.TenantOfApp(appIdentity.AppId);
+                Site = _dependencies.ZoneMapper.TenantOfApp(appIdentity.AppId);
 
             // if zone is missing, try to find it; if still missing, throw error
             if (appIdentity.ZoneId == AutoLookupZone)
-                appIdentity = Env.ZoneMapper.IdentityFromTenant(Tenant.Id, appIdentity.AppId);
+                appIdentity = _dependencies.ZoneMapper.IdentityFromSite(Site.Id, appIdentity.AppId);
 
-            Init(appIdentity, new CodeRef(), parentLog, logKey ?? "Eav.App",
-                $"prep App z#{appIdentity.ZoneId}, a#{appIdentity.AppId}, allowSE:{allowSideEffects}, hasDataConfig:{buildConfiguration != null}, {logMsg}");
+            Init(appIdentity, new CodeRef(), parentLog);
+            Log.Add($"prep App #{appIdentity.Show()}, hasDataConfig:{buildConfiguration != null}");
 
             // Look up name in cache
-            var cache = State.Cache;
-            AppState = cache.Get(this); // for metadata
-
-            AppGuid = cache.Zones[ZoneId].Apps[AppId];
-
-            // v10.25 from now on the DefaultApp can also have settings and resources
-            // v10.26.0x reactivated this protection, because it causes side-effects. On content-app, let's only do this if people start editing the resources...?
-            // note that on imported apps, this would automatically work, as those would already have these things
-            if (AppGuid != Constants.DefaultAppName)
-            {
-                // if it's a real App (not content/default), do more
-                Log.Add($"create app resources? allowSE:{allowSideEffects}");
-
-                if (allowSideEffects)
-                    new AppManager(this, Log).EnsureAppIsConfigured(); // make sure additional settings etc. exist
-            }
+            // todo: someday after nov 2020 replace this with State.Get(this).AppGuidName
+            AppGuid = State.Cache.Zones[ZoneId].Apps[AppId];
 
             InitializeResourcesSettingsAndMetadata();
 

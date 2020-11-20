@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Repositories;
@@ -13,10 +15,15 @@ namespace ToSic.Eav.Persistence.Xml
 {
     public class XmlSerializer: SerializerBase
     {
-        private readonly Dictionary<string, int> _dimensions;
-        public XmlSerializer(Dictionary<string, int> dimensionMapping)
+        private Dictionary<string, int> _dimensions;
+
+        public XmlSerializer(ITargetTypes targetTypes): base(targetTypes, "IEx.XmlSer") { }
+
+        public XmlSerializer Init(Dictionary<string, int> dimensionMapping, AppState appState, ILog parentLog)
         {
+            base.Initialize(appState, parentLog);
             _dimensions = dimensionMapping;
+            return this;
         }
 
         public XElement ToXml(int entityId) => ToXml(Lookup(entityId));
@@ -28,13 +35,13 @@ namespace ToSic.Eav.Persistence.Xml
         public XElement ToXml(IEntity entity)
         {
             var valuesXElement = entity.Attributes.Values
-                .Where(a => a.Type != "Entity" || ((a.Values.FirstOrDefault() as IValue<IEnumerable<IEntity>>)?.TypedContents?.Any() ?? false))
+                .Where(a => a.Type != Constants.DataTypeEntity || ((a.Values.FirstOrDefault() as IValue<IEnumerable<IEntity>>)?.TypedContents?.Any() ?? false))
                 .OrderBy(a => a.Name)
                 .SelectMany(a => a.Values.Select(v => XmlValue(a, v)));
 
             // create Entity-XElement
             var entityXElement = new XElement(XmlConstants.Entity,
-                new XAttribute(XmlConstants.KeyTargetType, Factory.Resolve<ITargetTypes>().GetName(entity.MetadataFor.TargetType)),
+                new XAttribute(XmlConstants.KeyTargetType, MetadataTargets.GetName(entity.MetadataFor.TargetType)),
                 new XAttribute(XmlConstants.AttSetStatic, entity.Type.StaticName),
                 new XAttribute(XmlConstants.AttSetNiceName, entity.Type.Name),
                 new XAttribute(XmlConstants.GuidNode, entity.EntityGuid),

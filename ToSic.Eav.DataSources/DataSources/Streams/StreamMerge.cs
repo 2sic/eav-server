@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
@@ -33,19 +34,21 @@ namespace ToSic.Eav.DataSources
         [PrivateApi]
 		public StreamMerge()
 		{
-			Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
+            Provide(GetList);
+			//Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
 		}
 
-        private List<IEntity> GetList()
+        private ImmutableArray<IEntity> GetList()
         {
             var streams = In
                 .OrderBy(pair => pair.Key)
-                .Where(v => v.Value?.List != null)
-                .Select(v => v.Value.List);
+                .Where(v => v.Value?.Immutable != null)
+                .Select(v => v.Value.Immutable);
 
             return streams
-                .Aggregate(new List<IEntity>() as IEnumerable<IEntity>, (current, strm) => current.Concat(strm))
-                .ToList();
+                .Aggregate(new List<IEntity>() as IEnumerable<IEntity>, (current, stream) => current.Concat(stream))
+                .ToImmutableArray();
+                //.ToList();
         }
 	}
 }

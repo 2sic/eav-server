@@ -47,17 +47,11 @@ namespace ToSic.Eav.LookUp
 
 
         /// <inheritdoc/>
-	    public abstract string Get(string key, string format, ref bool notFound);
+	    public abstract string Get(string key, string format);
 
         /// <inheritdoc/>
-	    public virtual string Get(string key)
-	    {
-	        var temp = false;
-	        return Get(key, "", ref temp);
-	    }
+	    public virtual string Get(string key) => Get(key, "");
 
-        /// <inheritdoc/>
-	    public abstract bool Has(string key);
         #endregion
 
         #region Helper functions

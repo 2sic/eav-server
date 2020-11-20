@@ -1,8 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Apps.Tests.Mocks;
 using ToSic.Eav.ImportExport.Persistence.File;
 using ToSic.Eav.Run;
+using ToSic.Testing.Shared.Mocks;
 
 namespace ToSic.Eav.ImportExport.Tests
 {
@@ -21,11 +24,13 @@ namespace ToSic.Eav.ImportExport.Tests
 
         public static void ConfigureEfcDi(Factory.ServiceConfigurator configure, string optionalConnection = null)
         {
-            Eav.Repository.Efc.Tests.InitializeTests.ConfigureEfcDi(sc =>
+            Repository.Efc.Tests.StartupTestingRepository.ConfigureEfcDi(sc =>
             {
                 sc.AddTransient<IRuntime, Runtime>();
-                sc.AddTransient<IAppEnvironment, MockEnvironment>();
                 sc.AddTransient<IEnvironment, MockEnvironment>();
+                //sc.TryAddTransient<ExportImportValueConversion>();
+                sc.TryAddTransient<IValueConverter, MockValueConverter>();
+                sc.TryAddTransient<IZoneMapper, MockZoneMapper>();
                 configure.Invoke(sc);
 
             }, optionalConnection);

@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using CsvHelper;
 using System.IO;
+#if !NETSTANDARD
 using System.Web;
+#endif
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using ContentTypeBuilder = ToSic.Eav.Data.Builder.ContentTypeBuilder;
@@ -110,7 +113,7 @@ namespace ToSic.Eav.DataSources
             ConfigMask(TitleColumnNameKey, "[Settings:TitleColumnName]", cacheRelevant: false);
         }
 
-        private List<IEntity> GetList()
+        private ImmutableArray<IEntity> GetList()
         {
             Configuration.Parse();
 
@@ -169,7 +172,7 @@ namespace ToSic.Eav.DataSources
                 }
             }
             Log.Add($"found:{entityList.Count}");
-            return entityList;
+            return entityList.ToImmutableArray();
         }
     }
 }

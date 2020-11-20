@@ -1,8 +1,7 @@
-﻿using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.DataSourceTests.ExternalData;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.DataSourceTests.TestData;
 
-namespace ToSic.Eav.DataSourceTests.Attributes
+namespace ToSic.Eav.DataSourceTests
 {
     public partial class AttributeRenameTests
     {
@@ -16,9 +15,9 @@ namespace ToSic.Eav.DataSourceTests.Attributes
             Assert.AreEqual(10, test.CList.Count);
             Assert.AreEqual(1, test.CItem.Attributes.Count, "expected the same amount of columns");
 
-            AssertFieldsChanged(test.CItem, DataTableTst.Fields, new[] { ShortFirst });
+            AssertFieldsChanged(test.CItem, PersonSpecs.Fields, new[] { ShortFirst });
 
-            test.AssertValues(DataTableTst.FieldFirstName, ShortFirst);
+            test.AssertValues(PersonSpecs.FieldFirstName, ShortFirst);
 
             Assert.AreEqual(null, test.CItem.GetBestTitle(), "should get null title?");
             Assert.AreEqual(null, test.CItem.Title, "title attribute will be null");

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net451;netstandard2.0;</TargetFrameworks>
-    <Version>11.07.01.00</Version>
+    <Version>11.10.01</Version>
     <Company>2sic Internet Solutions GmbH</Company>
     <Authors>2sic Internet Solutions GmbH</Authors>
     <Copyright>Copyright AGPL 2sic 2020</Copyright>

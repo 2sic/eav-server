@@ -1,21 +1,24 @@
 ﻿using ToSic.Eav.Caching;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Apps.Parts
 {
-    public class ZoneBase: IZoneIdentity
+    public class ZoneBase<T>: HasLog, IZoneIdentity where T: ZoneBase<T>
     {
         #region Constructor and simple properties
-        public int ZoneId { get; }
+        public int ZoneId { get; private set; }
 
-        protected ILog Log;
+        public ZoneBase(string logName): base(logName) { }
 
-        public ZoneBase(int zoneId, ILog parentLog, string logName)
+        public T Init(int zoneId, ILog parentLog)
         {
+            Log.LinkTo(parentLog);
             ZoneId = zoneId;
-            Log = new Log(logName, parentLog, $"zone base for z#{zoneId}");
+            Log.Add($"zone base for z#{zoneId}");
+            return this as T;
         }
+
+
 
         internal IAppsCache Cache => _cache ?? (_cache = State.Cache);
         private IAppsCache _cache;

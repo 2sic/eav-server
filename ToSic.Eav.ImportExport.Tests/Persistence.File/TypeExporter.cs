@@ -1,12 +1,14 @@
 ﻿using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Core.Tests;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Tests.Persistence.File;
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Repository.Efc.Tests;
+using ToSic.Testing.Shared;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Persistence.File.Tests
@@ -19,10 +21,8 @@ namespace ToSic.Eav.Persistence.File.Tests
         public void TypeExp_AllSharedFromInstallation()
         {
             var test = new TestValuesOnPc2Dm();
-            var dbc = DbDataController.Instance(null, test.AppId, Log);
 
-
-            var loader = new Efc11Loader(dbc.SqlDb);
+            var loader = EavTestBase.Resolve<Efc11Loader>();
             var app = loader.AppState(test.RootAppId);
 
 

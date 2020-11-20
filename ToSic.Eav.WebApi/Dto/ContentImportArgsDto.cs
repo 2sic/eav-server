@@ -8,7 +8,7 @@ namespace ToSic.Eav.WebApi.Dto
 
         public string DefaultLanguage;
 
-        public ImportResourceReferenceMode ImportResourcesReferences;
+        public ImportResolveReferenceMode ImportResourcesReferences;
 
         public ImportDeleteUnmentionedItems ClearEntities;
 
@@ -17,6 +17,6 @@ namespace ToSic.Eav.WebApi.Dto
         public string ContentBase64;
 
         public string DebugInfo =>
-            $"app:{AppId} + deflang:{DefaultLanguage}, + ct:{ContentType} + base:{ContentBase64}, impRes:{ImportResourcesReferences}, clear:{ClearEntities}";
+            $"app:{AppId} + deflang:{DefaultLanguage}, + ct:{ContentType} + base64:(not shown), impRes:{ImportResourcesReferences}, clear:{ClearEntities}";
     }
 }

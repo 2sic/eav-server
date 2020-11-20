@@ -17,23 +17,23 @@ namespace ToSic.Eav.Run
         /// <summary>
         /// Get the zoneId which belongs to the tenant of this environment
         /// </summary>
-        int GetZoneId(ITenant tenant);
+        int GetZoneId(ISite site);
 
         /// <summary>
         /// Get the App Identity when we know the tenant and app-id
         /// </summary>
-        IAppIdentity IdentityFromTenant(int tenantId, int appId);
+        IAppIdentity IdentityFromSite(int tenantId, int appId);
 
 
         /// <summary>
         /// Find the tenant of a Zone
         /// </summary>
-        ITenant TenantOfZone(int zoneId);
+        ISite SiteOfZone(int zoneId);
 
         /// <summary>
         /// Find the tenant of an App
         /// </summary>
-        ITenant TenantOfApp(int appId);
+        ISite TenantOfApp(int appId);
 
         /// <summary>
         /// The cultures available on this tenant/zone combination

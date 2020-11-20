@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
 using ToSic.Eav.DataSources.Caching;
@@ -45,10 +46,8 @@ namespace ToSic.Eav.DataSources
         /// <returns>A list of <see cref="IEntity"/> items in the Default stream.</returns>
         IEnumerable<IEntity> List { get; }
 
-        //[PrivateApi]
-        //[Obsolete("deprecated since 2sxc 9.8 / eav 4.5 - use List instead")]
-        //IEnumerable<IEntity> LightList { get; }
-
+        [PrivateApi]
+        IImmutableList<IEntity> Immutable { get; }
 
         [PrivateApi("wip")]
         DataSourceConfiguration Configuration { get; }

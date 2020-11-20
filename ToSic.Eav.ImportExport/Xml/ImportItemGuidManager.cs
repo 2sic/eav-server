@@ -3,6 +3,12 @@ using System.Xml.Linq;
 
 namespace ToSic.Eav.ImportExport.Xml
 {
+    /// <summary>
+    /// Helper to find the current guid OR generate a new one
+    /// If it generated a new one, it will try to give the same GUID again for the next
+    /// imported line which appears to be the same item.
+    /// Only when another line of the primary language is parsed, will it regenerate a fresh guid.
+    /// </summary>
     public class ImportItemGuidManager
     {
         private Guid _entityGuidLast = Guid.Empty;
@@ -19,20 +25,13 @@ namespace ToSic.Eav.ImportExport.Xml
             if (string.IsNullOrEmpty(elementGuid))
             {
                 var elementLanguage = element.Element(XmlConstants.EntityLanguage)?.Value;
-                if (elementLanguage == languageFallback || string.IsNullOrEmpty(elementLanguage)) 
-                {   // If the element does not have a GUID and the element has data for the default 
-                    // language, create a new GUID
-                    entityGuid = Guid.NewGuid();
-                }
-                else
-                {
-                    entityGuid = _entityGuidLast;
-                }
+                // If the element does not have a GUID and the element has data for the default
+                entityGuid = elementLanguage == languageFallback || string.IsNullOrEmpty(elementLanguage)
+                    ? Guid.NewGuid()
+                    : _entityGuidLast;
             }
             else
-            {
                 entityGuid = Guid.Parse(elementGuid);
-            }
 
             _entityGuidLast = entityGuid;
             return entityGuid;

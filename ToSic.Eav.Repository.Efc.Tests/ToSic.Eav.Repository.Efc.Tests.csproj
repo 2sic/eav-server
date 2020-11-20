@@ -128,7 +128,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="InitializeTests.cs" />
+    <Compile Include="StartupTestingRepository.cs" />
     <Compile Include="MergeEntitiesTests.cs" />
     <Compile Include="RepositoryInfoEavAndUi.cs" />
     <Compile Include="SaveDataToDbTests.cs" />
@@ -144,6 +144,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\2sxc\Src\Dnn\ToSic.Sxc.Dnn\2sxc Dnn.csproj">
+      <Project>{A94DE6D7-D1E6-4BE2-B5B5-DC4A6A61CD80}</Project>
+      <Name>2sxc Dnn</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ToSic.Eav.Apps\ToSic.Eav.Apps.csproj">
       <Project>{FA1B4495-6B85-400F-A5E3-0E292CCBFAE2}</Project>
       <Name>ToSic.Eav.Apps</Name>

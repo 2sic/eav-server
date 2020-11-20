@@ -131,9 +131,6 @@ namespace ToSic.Eav.Metadata
         private bool _alreadyTriedToGetProvider;
         private IMetadataSource _metadataSource;
 
-        // 2019-10-27 2dm - I think this is a leftover of old times, I believe it's not needed any more
-        //public void Add(IEntity additionalItem) => AllWithHidden.Add(additionalItem);
-
         [PrivateApi]
         public void Use(List<IEntity> items)
         {

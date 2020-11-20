@@ -1,8 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Security;
+
+// This is old stuff / compatibility necessary for DNN
+// It should not bleed into Oqtane or newer implementations
+#if NET451
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Interfaces
@@ -23,12 +28,38 @@ namespace ToSic.Eav.Interfaces
         /// </summary>
         /// <param name="attributeName">Name of the attribute or virtual attribute</param>
         /// <param name="languages">list of languages to search in</param>
+        /// <returns>
+        /// An object OR a null - for example when retrieving the title and no title exists
+        /// the object is string, int or even a EntityRelationship
+        /// </returns>
+        object GetBestValue(string attributeName, string[] languages);
+
+        /// <summary>
+        /// Retrieves the best possible value for an attribute or virtual attribute (like EntityTitle)
+        /// Automatically resolves the language-variations as well based on the list of preferred languages
+        /// </summary>
+        /// <param name="attributeName">Name of the attribute or virtual attribute</param>
+        /// <param name="languages">list of languages to search in</param>
         /// <param name="resolveHyperlinks">If true, will try to resolve links in the value. Default is false.</param>
         /// <returns>
         /// An object OR a null - for example when retrieving the title and no title exists
         /// the object is string, int or even a EntityRelationship
         /// </returns>
-        object GetBestValue(string attributeName, string[] languages, bool resolveHyperlinks = false);
+        [Obsolete]
+        object GetBestValue(string attributeName, string[] languages, bool resolveHyperlinks);
+
+        /// <summary>
+        /// Retrieves the best possible value for an attribute or virtual attribute (like EntityTitle)
+        /// Automatically resolves the language-variations as well based on the list of preferred languages.
+        /// Will cast/convert to the expected type, or return null / default value for that type if not possible.
+        /// </summary>
+        /// <param name="attributeName">Name of the attribute or virtual attribute</param>
+        /// <param name="languages">list of languages to search in</param>
+        /// <returns>
+        /// An object OR a null - for example when retrieving the title and no title exists
+        /// the object is string, int or even a EntityRelationship
+        /// </returns>
+        T GetBestValue<T>(string attributeName, string[] languages);
 
         /// <summary>
         /// Retrieves the best possible value for an attribute or virtual attribute (like EntityTitle)
@@ -42,12 +73,16 @@ namespace ToSic.Eav.Interfaces
         /// An object OR a null - for example when retrieving the title and no title exists
         /// the object is string, int or even a EntityRelationship
         /// </returns>
-        T GetBestValue<T>(string attributeName, string[] languages, bool resolveHyperlinks = false);
+        [Obsolete]
+        T GetBestValue<T>(string attributeName, string[] languages, bool resolveHyperlinks);
 
-        [PrivateApi]
-        object PrimaryValue(string attributeName, bool resolveHyperlinks = false);
-        [PrivateApi]
-        T PrimaryValue<T>(string attributeName, bool resolveHyperlinks = false);
+
+        // 2020-11-08 disabled for now, don't think it was ever used in old code which referenced the Interfaces.IEntity
+        //[WorkInProgressApi("Still wip")]
+        //object PrimaryValue(string attributeName);
+
+        //[WorkInProgressApi("Still wip")]
+        //T PrimaryValue<T>(string attributeName);
 
         /// <summary>
         /// Best way to get the current entities title
@@ -94,7 +129,7 @@ namespace ToSic.Eav.Interfaces
         /// <returns>A typed Metadata provider for this Entity</returns>
         IMetadataOf Metadata { get; }
 
-        #region experimental IEntity Queryable / Quick
+        #region Children & Parents
         [PrivateApi]
         List<Data.IEntity> Children(string field = null, string type = null);
         [PrivateApi]
@@ -105,6 +140,7 @@ namespace ToSic.Eav.Interfaces
         [PrivateApi]
         T Value<T>(string field, bool resolve = true);
 
-        #endregion experimental
+        #endregion
     }
 }
+#endif

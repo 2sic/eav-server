@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
+using ToSic.Eav.DataSources;
+using ToSic.Testing.Shared;
+using static ToSic.Eav.DataSourceTests.TestData.PersonSpecs;
 
-namespace ToSic.Eav.DataSources.Tests
+namespace ToSic.Eav.DataSourceTests
 {
     // Todo
     // 1. Tests with standard fields like EntityTitle
@@ -13,22 +16,26 @@ namespace ToSic.Eav.DataSources.Tests
     
 
     [TestClass]
-    public class ValueSort_String
+    public class ValueSort_String: EavTestBase
     {
-        private const int TestVolume = 30, InitialId = 1001;
-        private const string City = "City";
+        private const int TestVolume = 30;
         private readonly ValueSort _testDataGeneratedOutsideTimer;
+        private readonly ValueFilterMaker _valueFilterMaker;
+
         public ValueSort_String()
         {
-            _testDataGeneratedOutsideTimer = ValueSortShared.GeneratePersonSourceWithDemoData(TestVolume, InitialId);
+            _valueFilterMaker = Resolve<ValueFilterMaker>();
+
+            _testDataGeneratedOutsideTimer =
+                _valueFilterMaker.GeneratePersonSourceWithDemoData(TestVolume);
         }
 
         [TestMethod]
         public void ValueSort_Unused()
         {
             var vf = _testDataGeneratedOutsideTimer;// CreateValueSortForTesting(testVolume);
-            var listOut = vf.List.ToList();
-            var listIn = vf.In[Constants.DefaultStreamName].List.ToList();
+            var listOut = vf.Immutable.ToList();
+            var listIn = vf.In[Constants.DefaultStreamName].Immutable.ToList();
             CollectionAssert.AreEqual(listOut, listIn, "Lists should be the same if no criteria applied");
         }
 
@@ -36,21 +43,41 @@ namespace ToSic.Eav.DataSources.Tests
         public void ValueSort_SortFieldOnly_City()
         {
             var vf = _testDataGeneratedOutsideTimer;
-            vf.Attributes = City;
+            vf.Attributes = FieldCity;
             var result = vf.List.ToList();
             // check that each following city is same or larger...
-            ValidateFieldIsSorted(result, City, true);
+            ValidateFieldIsSorted(result, FieldCity, true);
         }
 
-        [TestMethod]
-        public void ValueSort_SortFieldAndAsc_City()
-        {
-            TestSortFieldAndDirection(City, "asc", true);
-        }
+        // Initial control test using table, not entities which could be ML
+        [DataRow(FieldCity, UseDataTable, false, "asc", true, "")]
 
-        private void TestSortFieldAndDirection(string field, string direction, bool testAscending)
+        // Basic tests single language
+        [DataRow(FieldCity, UseEntitiesL, false, "",     true, "No direction should = asc.")]
+        [DataRow(FieldCity, UseEntitiesL, false, "a",    true, "Sort city")]
+        [DataRow(FieldCity, UseEntitiesL, false, "1",    true, "sort city")]
+        [DataRow(FieldCity, UseEntitiesL, false, "<",    true, "")]
+        [DataRow(FieldCity, UseEntitiesL, false, "desc", false, "")]
+        [DataRow(FieldCity, UseEntitiesL, false, "d",    false, "")]
+        [DataRow(FieldCity, UseEntitiesL, false, "D",    false, "")]
+        [DataRow(FieldCity, UseEntitiesL, false, "0",    false, "")]
+        [DataRow(FieldCity, UseEntitiesL, false, ">",    false, "")]
+
+        // same tests now ML, results should be the same
+        [DataRow(FieldCity, UseEntitiesL, true, "",     true, "No direction should = asc.")]
+        [DataRow(FieldCity, UseEntitiesL, true, "a",    true, "Sort city")]
+        [DataRow(FieldCity, UseEntitiesL, true, "1",    true, "sort city")]
+        [DataRow(FieldCity, UseEntitiesL, true, "<",    true, "")]
+        [DataRow(FieldCity, UseEntitiesL, true, "desc", false, "")]
+        [DataRow(FieldCity, UseEntitiesL, true, "d",    false, "")]
+        [DataRow(FieldCity, UseEntitiesL, true, "D",    false, "")]
+        [DataRow(FieldCity, UseEntitiesL, true, "0",    false, "")]
+        [DataRow(FieldCity, UseEntitiesL, true, ">",    false, "")]
+
+        [DataTestMethod]
+        public void ValueSort_SortField_Basic_Ca10x(string field, bool useTable, bool multiLanguage, string direction, bool testAscending,  string notes)
         {
-            var vf = _testDataGeneratedOutsideTimer;
+            var vf = _valueFilterMaker.GeneratePersonSourceWithDemoData(TestVolume, useTable, multiLanguage);
             vf.Attributes = field;
             vf.Directions = direction;
             var result = vf.List.ToList();
@@ -58,44 +85,25 @@ namespace ToSic.Eav.DataSources.Tests
             ValidateFieldIsSorted(result, field, testAscending);
         }
 
-        [TestMethod]
-        public void ValueSort_SortFieldAndA_City()
+        // Now data that really changes direction based on language
+        [DataRow(EnUs, "asc", MlSortWomanFirst, "First ML test")]
+        [DataRow(FrFr, "asc", MlSortWomanFirst, "FR isn't defied, so it should use EN where she is first")]
+        [DataRow(DeDe, "asc", MlSortMalesFirst, "German should result in him first")]
+        [DataTestMethod]
+        public void ValueSort_SortField_RealMl_Ca10x(string language, string direction, string expectedResults,  string notes)
         {
-            TestSortFieldAndDirection(City, "a", true);
+            var vf = _valueFilterMaker.GeneratePersonSourceWithDemoData(TestVolume, false, true);
+            vf.Attributes = FieldBioForMlSortTest;
+            vf.Directions = direction;
+            vf.Languages = language;
+            var result = vf.List.ToList();
+            // check that each following city is same or larger...
+            ValidateFieldIsSorted(result, FieldIsMale,
+                // the expected result is reversed, because string "True" is after string "False"
+                expectedResults != MlSortMalesFirst
+                );
         }
-        [TestMethod]
-        public void ValueSort_SortFieldAndDir1_City()
-        {
-            TestSortFieldAndDirection(City, "1", true);
-        }
-        public void ValueSort_SortFieldAndGt_City()
-        {
-            TestSortFieldAndDirection(City, "<", true);
-        }
-        [TestMethod]
-        public void ValueSort_SortFieldAndDesc_City()
-        {
-            TestSortFieldAndDirection(City, "desc", false);
-        }
-        [TestMethod]
-        public void ValueSort_SortFieldAndD_City()
-        {
-            TestSortFieldAndDirection(City, "d", false);
-        }
-        public void ValueSort_SortFieldAndDCase_City()
-        {
-            TestSortFieldAndDirection(City, "D", false);
-        }
-        [TestMethod]
-        public void ValueSort_SortFieldAnd0_City()
-        {
-            TestSortFieldAndDirection(City, "0", false);
-        }
-        [TestMethod]
-        public void ValueSort_SortFieldAndLt_City()
-        {
-            TestSortFieldAndDirection(City, ">", false);
-        }
+
 
         private void ValidateFieldIsSorted(List<IEntity> list, string field, bool asc)
         {
@@ -112,190 +120,6 @@ namespace ToSic.Eav.DataSources.Tests
             }            
         }
 
-        //[TestMethod]
-        //public void ValueSort_SimpleTextFilterCIDefault()
-        //{
-        //    var vf = _testDataGeneratedOutsideTimer;// CreateValueSortForTesting(testVolume);
-        //    vf.Attribute = "City";
-        //    vf.Value = DataTableDataSourceTest.TestCities[0].ToLower(); // test for the first value
-        //    Assert.AreEqual(2500, vf.LightList.Count(), "Should find exactly 2500 people with this city");
-        //}
 
-       // #region String Case Sensitive
-       // [TestMethod]
-       // public void ValueSort_SimpleTextFilterCSWithResults()
-       // {
-       //     var vf = _testDataGeneratedOutsideTimer;// CreateValueSortForTesting(testVolume);
-       //     vf.Attribute = "City";
-       //     vf.Operator = "===";
-       //     vf.Value = DataTableDataSourceTest.TestCities[0]; // test for the first value
-       //     Assert.AreEqual(2500, vf.LightList.Count(), "Should find exactly 2500 people with this city");
-       // }       
-
-       // [TestMethod]
-       // public void ValueSort_SimpleTextFilterCSWithoutResults()
-       // {
-       //     var vf = _testDataGeneratedOutsideTimer;// CreateValueSortForTesting(testVolume);
-       //     vf.Attribute = "City";
-       //     vf.Operator = "===";
-       //     vf.Value = DataTableDataSourceTest.TestCities[0].ToLower(); // test for the first value
-       //     Assert.AreEqual(0, vf.LightList.Count(), "Should find exactly 0 people with this city");
-       // }
-
-       // [TestMethod]
-       // public void ValueSort_SimpleTextFilterCSWithSomeNulls()
-       // {
-       //     var vf = _testDataGeneratedOutsideTimer;// CreateValueSortForTesting(testVolume);
-       //     vf.Attribute = "CityMaybeNull";
-       //     vf.Operator = "===";
-       //     vf.Value = "Grabs"; // test for the first value
-       //     Assert.AreEqual(2500, vf.LightList.Count(), "Should find exactly 0 people with this city");
-       // }
-
-       // #endregion
-
-       // #region "all"
-       // [TestMethod]
-       // public void ValueSort_All()
-       // {
-       //     var vf = _testDataGeneratedOutsideTimer;
-       //     vf.Attribute = "City";
-       //     vf.Operator = "all";
-       //     vf.Value = "uCHs";
-       //     Assert.AreEqual(10000, vf.LightList.Count(), "Should find exactly 10000 people with this city");
-       // }
-       // #endregion
-
-       // #region String contains
-
-       // [TestMethod]
-       // public void ValueSort_TextContainsWithResults()
-       // {
-       //     var vf = _testDataGeneratedOutsideTimer;// CreateValueSortForTesting(testVolume);
-       //     vf.Attribute = "City";
-       //     vf.Operator = "contains";
-       //     vf.Value = "uCHs";
-       //     Assert.AreEqual(2500, vf.LightList.Count(), "Should find exactly 2500 people with this city");
-       // }
-
-       // #endregion
-
-       // #region Take-tests and "all"
-
-       // [TestMethod]
-       //public void ValueSort_TextContainsOneOnly()
-       // {
-       //     var vf = _testDataGeneratedOutsideTimer;// CreateValueSortForTesting(testVolume);
-       //     vf.Attribute = "City";
-       //     vf.Operator = "contains";
-       //     vf.Value = "uCHs";
-       //     vf.Take = "5";
-       //     Assert.AreEqual(5, vf.LightList.Count(), "Should find exactly 5 people with this city");
-       // }
-       // [TestMethod]
-       //public void ValueSort_TakeContainsCH1000()
-       // {
-       //     var vf = _testDataGeneratedOutsideTimer;// CreateValueSortForTesting(testVolume);
-       //     vf.Attribute = "City";
-       //     vf.Operator = "contains";
-       //     vf.Value = "CH";
-       //     vf.Take = "1000";
-       //     Assert.AreEqual(1000, vf.LightList.Count(), "Should find exactly 5 people with this city");
-       // }
-       // [TestMethod]
-       //public void ValueSort_TakeAll10000()
-       // {
-       //     var vf = _testDataGeneratedOutsideTimer;// CreateValueSortForTesting(testVolume);
-       //     vf.Attribute = "City";
-       //     vf.Operator = "all";
-       //     vf.Value = "uCHs";
-       //     vf.Take = "10000";
-       //     Assert.AreEqual(10000, vf.LightList.Count(), "Should find exactly 5 people with this city");
-       // }        
-
-       // [TestMethod]
-       //public void ValueSort_TakeAll90000()
-       // {
-       //     var vf = _testDataGeneratedOutsideTimer;// CreateValueSortForTesting(testVolume);
-       //     vf.Attribute = "City";
-       //     vf.Operator = "all";
-       //     vf.Value = "uCHs";
-       //     vf.Take = "90000";
-       //     Assert.AreEqual(10000, vf.LightList.Count(), "Should find exactly 5 people with this city");
-       // }        
-       // #endregion
-
-       // #region String begins
-
-       // [TestMethod]
-       // public void ValueSort_SimpleTextFilterBegins()
-       // {
-       //     var vf = _testDataGeneratedOutsideTimer;
-       //     vf.Attribute = "City";
-       //     vf.Operator = "begins";
-       //     vf.Value = "bu";
-       //     Assert.AreEqual(2500, vf.LightList.Count(), "Should find exactly 2500 people with this city");
-       // }
-       //  [TestMethod]
-       //public void ValueSort_SimpleTextFilterBeginsNone()
-       // {
-       //     var vf = _testDataGeneratedOutsideTimer;
-       //     vf.Attribute = "CityMaybeNull";
-       //     vf.Operator = "begins";
-       //     vf.Value = "St.";
-       //     Assert.AreEqual(0, vf.LightList.Count(), "Should find exactly 0 people with this city");
-       // }
-       // #endregion
-
-       // #region String Contains / Not Contains
-       // [TestMethod]
-       // public void ValueSort_SimpleTextFilterContainsWithoutResults()
-       // {
-       //     var vf = _testDataGeneratedOutsideTimer;// CreateValueSortForTesting(testVolume);
-       //     vf.Attribute = "City";
-       //     vf.Operator = "contains";
-       //     vf.Value = "Buchs SG";
-       //     Assert.AreEqual(0, vf.LightList.Count(), "Should find exactly 0 people with this city");
-       // }
-
-       // [TestMethod]
-       // public void ValueSort_SimpleTextFilterNotContains()
-       // {
-       //     var vf = _testDataGeneratedOutsideTimer;// CreateValueSortForTesting(testVolume);
-       //     vf.Attribute = "City";
-       //     vf.Operator = "!contains";
-       //     vf.Value = "ch";
-       //     Assert.AreEqual(5000, vf.LightList.Count(), "Should find exactly 5000 people with this city");
-       // }
-       // #endregion
-
-
-        //[TestMethod]
-        //public void ValueSort_SimpleTextFilterWithoutResults()
-        //{
-        //    var vf = _testDataGeneratedOutsideTimer;// CreateValueSortForTesting(testVolume);
-        //    vf.Attribute = "City";
-        //    vf.Value = "Daniel";
-        //    Assert.AreEqual(0, vf.LightList.Count(), "Should find exactly 0 people with this city");
-        //}
-        
-        //[TestMethod]
-        //public void ValueSort_FilterOnUnexistingProperty()
-        //{
-        //    var vf = _testDataGeneratedOutsideTimer;// CreateValueSortForTesting(testVolume);
-        //    vf.Attribute = "ZIPCodeOrSomeOtherNotExistingField";
-        //    vf.Value = "9470"; // test for the first value
-        //    Assert.AreEqual(0, vf.LightList.Count(), "Should find exactly 0 people with this city");
-        //}
-
-        //[TestMethod]
-        //public void ValueSort_FilterFieldSometimesNull()
-        //{
-        //    var vf = _testDataGeneratedOutsideTimer;// CreateValueSortForTesting(testVolume);
-        //    vf.Attribute = "CityMaybeNull";
-        //    vf.Value = DataTableDataSourceTest.TestCities[1]; // test for the second value
-        //    Assert.AreEqual(2500, vf.LightList.Count(), "Should find exactly 250 people with this city");
-        //}
-        
     }
 }

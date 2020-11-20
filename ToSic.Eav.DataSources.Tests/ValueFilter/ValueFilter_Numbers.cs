@@ -1,20 +1,25 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Linq;
-using ToSic.Eav.DataSourceTests.ExternalData;
+﻿using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.DataSources;
+using ToSic.Eav.DataSourceTests.TestData;
+using ToSic.Testing.Shared;
 
-namespace ToSic.Eav.DataSources.Tests
+namespace ToSic.Eav.DataSourceTests
 {
     // Todo
     // Create tests with language-parameters as well, as these tests ignore the language and always use default
 
     [TestClass]
-    public class ValueFilterNumbers
+    public class ValueFilterNumbers: EavTestBase
     {
+        private readonly ValueFilterMaker _valueFilterMaker;
+
         private const int TestVolume = 10000;
         private readonly ValueFilter _testDataGeneratedOutsideTimer;
         public ValueFilterNumbers()
         {
-            _testDataGeneratedOutsideTimer = ValueFilterString.CreateValueFilterForTesting(TestVolume);
+            _valueFilterMaker = Resolve<ValueFilterMaker>();
+            _testDataGeneratedOutsideTimer = _valueFilterMaker.CreateValueFilterForTesting(TestVolume, true);
         }
 
 
@@ -23,7 +28,7 @@ namespace ToSic.Eav.DataSources.Tests
 
         [TestMethod]
         public void ValueFilter_FilterNumber()
-         =>NumberFilter("Height", (DataTableTst.MinHeight + 7).ToString(), 181);
+         =>NumberFilter("Height", (PersonSpecs.MinHeight + 7).ToString(), 181);
         
 
         [TestMethod]

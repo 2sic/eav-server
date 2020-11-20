@@ -138,6 +138,8 @@ namespace ToSic.Eav.Data
         private ContentTypeMetadata _metadata;
         private readonly IHasMetadataSource _metaOfThisApp;
 
+        IMetadataOf IHasMetadata.Metadata => Metadata;
         #endregion
+
     }
 }

@@ -19,11 +19,29 @@ namespace ToSic.Eav.Apps.ImportExport
     /// </summary>
     public partial class ImportListXml: HasLog 
     {
-        private IContentType ContentType { get; }
-        private List<IEntity> ExistingEntities { get; }
+        #region Dependency Injection
 
-        private AppState App { get; }
-        private AppManager AppMan { get; }
+        private AttributeBuilder AttributeBuilder => _lazyAttributeBuilder.Value;
+        private readonly Lazy<AttributeBuilder> _lazyAttributeBuilder;
+
+        private readonly Lazy<Import> _importerLazy;
+
+        public ImportListXml(Lazy<AttributeBuilder> lazyAttributeBuilder, Lazy<Import> importerLazy) : base("App.ImpVtT")
+        {
+            _lazyAttributeBuilder = lazyAttributeBuilder;
+            _importerLazy = importerLazy;
+        }
+
+        #endregion
+
+        #region Init
+
+        private IContentType ContentType { get; set; }
+        private List<IEntity> ExistingEntities { get; set; }
+
+        private AppState App { get; set; }
+        private AppManager AppMan { get; set; }
+
 
         /// <summary>
         /// Create a xml import. The data stream passed will be imported to memory, and checked 
@@ -35,15 +53,20 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="languages">Languages that can be imported (2SexyContent languages enabled)</param>
         /// <param name="documentLanguageFallback">Fallback document language</param>
         /// <param name="deleteSetting">How to handle entities already in the repository</param>
-        /// <param name="resolveReferenceMode">How value references to files and pages are handled</param>
+        /// <param name="resolveLinkMode">How value references to files and pages are handled</param>
         /// <param name="parentLog"></param>
-        public ImportListXml(AppManager appMan, IContentType contentType, Stream dataStream, IEnumerable<string> languages, string documentLanguageFallback, 
+        public ImportListXml Init(AppManager appMan,
+            IContentType contentType,
+            Stream dataStream, 
+            IEnumerable<string> languages, 
+            string documentLanguageFallback, 
             ImportDeleteUnmentionedItems deleteSetting, 
-            ImportResourceReferenceMode resolveReferenceMode, 
-            ILog parentLog): base("App.ImpVT", parentLog, "building xml vtable import")
+            ImportResolveReferenceMode resolveLinkMode, 
+            ILog parentLog)
         {
+            Log.LinkTo(parentLog);
             ImportEntities = new List<Entity>();
-            ErrorLog = new ImportErrorLog();
+            ErrorLog = new ImportErrorLog(Log);
 
             AppMan = appMan;
             App = appMan.AppState;
@@ -53,75 +76,82 @@ namespace ToSic.Eav.Apps.ImportExport
             ContentType = contentType;
             if (ContentType == null)
             {
-                ErrorLog.AppendError(ImportErrorCode.InvalidContentType);
-                return;
+                ErrorLog.Add(ImportErrorCode.InvalidContentType);
+                return this;
             }
+            Log.Add("Content type ok:" + contentType.Name);
 
             ExistingEntities = App.List.Where(e => e.Type == contentType).ToList();
+            Log.Add($"Existing entities: {ExistingEntities.Count}");
 
-            _languages = languages;
+            _languages = languages?.ToList();
             if (_languages == null || !_languages.Any())
                 _languages = new[] { string.Empty };
 
-            _languages = _languages.Select(l => l.ToLowerInvariant());
-
-            _documentLanguageFallback = documentLanguageFallback.ToLowerInvariant();
+            _languages = _languages.Select(l => l.ToLowerInvariant()).ToList();
+            _docLangPrimary = documentLanguageFallback.ToLowerInvariant();
+            Log.Add($"Languages: {languages.Count()}, fallback: {_docLangPrimary}");
             _deleteSetting = deleteSetting;
-            _resolveReferenceMode = resolveReferenceMode;
+            ResolveLinks = resolveLinkMode == ImportResolveReferenceMode.Resolve;
 
             Timer.Start();
             try
             {
-                if (!LoadStreamIntoDocumentElement(dataStream)) return;
-                if (!RunDocumentValidityChecks()) return;
+                if (!LoadStreamIntoDocumentElement(dataStream)) return this;
+                if (!RunDocumentValidityChecks()) return this;
                 ValidateAndImportToMemory();
             }
             catch (Exception exception)
             {
-                ErrorLog.AppendError(ImportErrorCode.Unknown, exception.ToString());
+                ErrorLog.Add(ImportErrorCode.Unknown, exception.ToString());
             }
             Timer.Stop();
+            Log.Add($"Prep time: {Timer.ElapsedMilliseconds}ms");
             TimeForMemorySetup = Timer.ElapsedMilliseconds;
+            
+            return this;
         }
+
+        #endregion
 
         /// <summary>
         /// Deserialize data xml stream to the memory. The data will also be checked for 
         /// errors.
         /// </summary>
-        private void ValidateAndImportToMemory()
+        private bool ValidateAndImportToMemory()
         {
+            var callLog = Log.Call<bool>(useTimer: true);
             var nodesCount = 0;
             var entityGuidManager = new ImportItemGuidManager();
 
-            foreach (var documentElement in DocumentElements)
+            foreach (var xEntity in DocumentElements)
             {
                 nodesCount++;
 
-                var nodeLang = documentElement.Element(XmlConstants.EntityLanguage)?.Value.ToLowerInvariant();
+                var nodeLang = xEntity.Element(XmlConstants.EntityLanguage)?.Value.ToLowerInvariant();
                 if (_languages.All(language => language != nodeLang))
                 {
                     // problem when DNN does not support the language
-                    ErrorLog.AppendError(ImportErrorCode.InvalidLanguage, "Lang=" + nodeLang,
-                        nodesCount);
+                    ErrorLog.Add(ImportErrorCode.InvalidLanguage, $"Lang={nodeLang}", nodesCount);
                     continue;
                 }
 
-                var entityGuid = entityGuidManager.GetGuid(documentElement, _documentLanguageFallback);
+                var entityGuid = entityGuidManager.GetGuid(xEntity, _docLangPrimary);
                 var entity = GetImportEntity(entityGuid) ?? AppendEntity(entityGuid);
 
                 foreach (var attribute in ContentType.Attributes)
                 {
-                    var valueType = attribute.Type;
-                    var valueName = attribute.Name;
-                    var value = documentElement.Element(valueName)?.Value;
+                    var valType = attribute.Type;
+                    var valName = attribute.Name;
+                    var value = xEntity.Element(valName)?.Value;
                     if (value == null || value == XmlConstants.Null)
                         continue;
 
                     if (value == XmlConstants.Empty)
                     {
                         // It is an empty string
-                        entity.Attributes.AddValue(valueName, "", attribute.Type, nodeLang, false,
-                            _resolveReferenceMode == ImportResourceReferenceMode.Resolve);
+                        AttributeBuilder.AddValue(entity.Attributes, 
+                        /*entity.Attributes.AddValue(*/valName, "", attribute.Type, nodeLang, false, ResolveLinks);
                         continue;
                     }
 
@@ -130,13 +160,12 @@ namespace ToSic.Eav.Apps.ImportExport
                     {
                         try
                         {
-                            entity.Attributes.AddValue(valueName, value, valueType, nodeLang, false,
-                                _resolveReferenceMode == ImportResourceReferenceMode.Resolve);
+                            AttributeBuilder.AddValue(entity.Attributes, 
+                            /*entity.Attributes.AddValue(*/valName, value, valType, nodeLang, false, ResolveLinks);
                         }
                         catch (FormatException)
                         {
-                            ErrorLog.AppendError(ImportErrorCode.InvalidValueFormat,
-                                valueName + ":" + valueType + "=" + value, nodesCount);
+                            ErrorLog.Add(ImportErrorCode.InvalidValueFormat, $"{valName}:{valType}={value}", nodesCount);
                         }
                         continue;
                     }
@@ -144,15 +173,14 @@ namespace ToSic.Eav.Apps.ImportExport
                     var valueReferenceProtection = value.GetValueReferenceProtection();
                     if (valueReferenceProtection != XmlConstants.ReadWrite && valueReferenceProtection != XmlConstants.ReadOnly)
                     {
-                        ErrorLog.AppendError(ImportErrorCode.InvalidValueReferenceProtection, value,
-                            nodesCount);
+                        ErrorLog.Add(ImportErrorCode.InvalidValueReferenceProtection, value, nodesCount);
                         continue;
                     }
                     var valueReadOnly = valueReferenceProtection == XmlConstants.ReadOnly;
 
                     // if this value is just a placeholder/reference to another value,
                     // then find the master record, and add this language to it's users
-                    var entityValue = entity.Attributes.FindItemOfLanguage(valueName, valueReferenceLanguage);
+                    var entityValue = entity.Attributes.FindItemOfLanguage(valName, valueReferenceLanguage);
                     if (entityValue != null)
                     {
                         entityValue.Languages.Add(new Language { Key = nodeLang, ReadOnly = valueReadOnly });
@@ -163,53 +191,58 @@ namespace ToSic.Eav.Apps.ImportExport
                     var existingEnt = FindInExisting(entityGuid);
                     if (existingEnt == null)
                     {
-                        ErrorLog.AppendError(ImportErrorCode.InvalidValueReference, value, nodesCount);
+                        ErrorLog.Add(ImportErrorCode.InvalidValueReference, value, nodesCount);
                         continue;
                     }
 
-                    //var valExisting = existingEnt[attribute.Name].GetValueOfExactLanguage(attribute, valueReferenceLanguage);
                     var valExisting =
-                        ExportListXml.GetExactAssignedValue(existingEnt[attribute.Name], valueReferenceLanguage, null);
+                        ExportImportValueConversion.GetExactAssignedValue(existingEnt[attribute.Name], valueReferenceLanguage, null);
                     if (valExisting == null)
                     {
-                        ErrorLog.AppendError(ImportErrorCode.InvalidValueReference, value, nodesCount);
+                        ErrorLog.Add(ImportErrorCode.InvalidValueReference, value, nodesCount);
                         continue;
                     }
 
-                    entity.Attributes.AddValue(valueName, valExisting, valueType, valueReferenceLanguage,
-                            //valExisting.IsLanguageReadOnly(valueReferenceLanguage),
+                    var val = AttributeBuilder.AddValue(entity.Attributes, /*entity.Attributes.AddValue(*/valName,
+                            valExisting,
+                            valType,
+                            valueReferenceLanguage,
                             valExisting.Languages.FirstOrDefault(l => l.Key == valueReferenceLanguage)?.ReadOnly ?? false,
-                            _resolveReferenceMode == ImportResourceReferenceMode.Resolve)
-                        //.AddLanguageReference(documentElementLanguage, valueReadOnly);
-                        .Languages.Add(new Language { Key = nodeLang, ReadOnly = valueReadOnly });
+                            ResolveLinks);
+                    val.Languages.Add(new Language {Key = nodeLang, ReadOnly = valueReadOnly});
+
+                    Log.Add($"Nr. {nodesCount} ok");
                 }
             }
 
+            Log.Add($"Prepared {ImportEntities.Count} entities for import");
+            return callLog("done", true);
         }
 
 
         /// <summary>
         /// Save the data in memory to the repository.
         /// </summary>
-        /// <param name="userId">ID of the user doing the import</param>
         /// <returns>True if succeeded</returns>
-        public bool PersistImportToRepository(string userId)
+        public bool PersistImportToRepository()
         {
-            if (ErrorLog.HasErrors)
-                return false;
+            var callLog = Log.Call<bool>(useTimer: true);
+            if (ErrorLog.HasErrors) return false;
 
             Timer.Start();
             if (_deleteSetting == ImportDeleteUnmentionedItems.All)
-                AppMan.Entities.Delete(GetEntityDeleteGuids()
-                    .Select(g => FindInExisting(g).EntityId).ToList());
+            {
+                var idsToDelete = GetEntityDeleteGuids().Select(g => FindInExisting(g).EntityId).ToList();
+                AppMan.Entities.Delete(idsToDelete);
+            }
 
-            var import = new Import(null, _appId, false);
+            var import = _importerLazy.Value.Init(null, _appId, false, true, Log);
             import.ImportIntoDb(null, ImportEntities);
             // important note: don't purge cache here, but the caller MUST do this!
 
             Timer.Stop();
             TimeForDbImport = Timer.ElapsedMilliseconds;
-            return true;
+            return callLog("ok", true);
         }
         
     }

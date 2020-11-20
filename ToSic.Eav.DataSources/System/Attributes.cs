@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
@@ -55,17 +56,17 @@ namespace ToSic.Eav.DataSources.System
 		    ConfigMask(ContentTypeKey, $"[Settings:{ContentTypeField}||{TryToUseInStream}]");
 		}
 
-	    private List<IEntity> GetList()
+	    private ImmutableArray<IEntity> GetList()
 	    {
             Configuration.Parse();
 
             IContentType type;
             // try to load the content-type - if it fails, return empty list
-	        if (string.IsNullOrWhiteSpace(ContentTypeName)) return new List<IEntity>();
+            if (string.IsNullOrWhiteSpace(ContentTypeName)) return ImmutableArray<IEntity>.Empty;// new List<IEntity>();
 
 	        var useStream = TryToUseInStream == ContentTypeName && In.ContainsKey(Constants.DefaultStreamName);
 	        var optionalList = useStream
-	            ? In[Constants.DefaultStreamName]?.List?.ToList()
+	            ? In[Constants.DefaultStreamName]?.Immutable //.ToList()
 	            : null;
 
 	        type = useStream 
@@ -89,11 +90,11 @@ namespace ToSic.Eav.DataSources.System
             // if it didn't work yet, maybe try from stream items
 
             return list?.Select(attribData =>
-                           Build.Entity(attribData,
-                               titleField: AttributeType.Name.ToString(),
-                               typeName: AttribContentTypeName)
-                   ).ToList()
-                   ?? new List<IEntity>();
+                       Build.Entity(attribData,
+                           titleField: AttributeType.Name.ToString(),
+                           typeName: AttribContentTypeName)
+                   ).ToImmutableArray() // .ToList()
+                   ?? ImmutableArray<IEntity>.Empty; // new List<IEntity>().ToImmutableList();
         }
 
 

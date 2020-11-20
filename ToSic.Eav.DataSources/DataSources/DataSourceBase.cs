@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 using ToSic.Eav.Caching;
 using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.DataSources.Configuration;
@@ -85,12 +87,12 @@ namespace ToSic.Eav.DataSources
         public IDataStream this[string outName] => Out[outName];
 
         /// <inheritdoc />
-        public IEnumerable<IEntity> List => Out[Constants.DefaultStreamName].List;
+        public IEnumerable<IEntity> List => Out[Constants.DefaultStreamName].Immutable;
 
-        //[PrivateApi]
-        //[Obsolete("deprecated since 2sxc 9.8 / eav 4.5 - use List")]
-        //public IEnumerable<IEntity> LightList => List;
+        [PrivateApi]
+        public IImmutableList<IEntity> Immutable => Out[Constants.DefaultStreamName].Immutable;
 
+        /// <inheritdoc />
         public DataSourceConfiguration Configuration => _config ?? (_config = new DataSourceConfiguration(this));
         private DataSourceConfiguration _config;
 
@@ -128,16 +130,34 @@ namespace ToSic.Eav.DataSources
         #region Various provide-out commands - all PrivateApi
 
         [PrivateApi]
+        [Obsolete]
         public void Provide(GetIEnumerableDelegate getList) 
             => Provide(Constants.DefaultStreamName, getList);
 
         [PrivateApi]
+        [Obsolete("Should never be deleted, but avoid using this - prefer the ImmutableList/Array")]
         public void Provide(string name, GetIEnumerableDelegate getList) 
+            => Out.Add(name, new DataStream(this, name, getList));
+
+        [PrivateApi]
+        public void Provide(GetImmutableListDelegate getList) 
+            => Provide(Constants.DefaultStreamName, getList);
+
+        [PrivateApi]
+        public void Provide(GetImmutableArrayDelegate getList) 
+            => Provide(Constants.DefaultStreamName, getList);
+
+        [PrivateApi]
+        public void Provide(string name, GetImmutableListDelegate getList) 
+            => Out.Add(name, new DataStream(this, name, getList));
+
+        [PrivateApi]
+        public void Provide(string name, GetImmutableArrayDelegate getList) 
             => Out.Add(name, new DataStream(this, name, getList));
 
         #endregion
 
-        #region Internals (Ready)
+        #region OutIsDynamic
 
 
         /// <inheritdoc />
@@ -147,11 +167,21 @@ namespace ToSic.Eav.DataSources
         #endregion
 
         /// <inheritdoc />
-        public void PurgeList(bool cascade = false)
+        public virtual void PurgeList(bool cascade = false)
         {
+            var callLog = Log.Call($"{cascade}", $"on {GetType().Name}");
             foreach (var stream in In)
                 stream.Value.PurgeList(cascade);
+            if (!In.Any()) Log.Add("No streams found to clear");
+            callLog("ok");
         }
+
+        #region Special Region so that each data sources has a factory if needed
+
+        [PrivateApi]
+        protected internal DataSourceFactory DataSourceFactory { get; set; }
+
+        #endregion
 
     }
 }

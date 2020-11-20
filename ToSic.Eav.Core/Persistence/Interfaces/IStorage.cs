@@ -58,7 +58,7 @@ namespace ToSic.Eav.Persistence.Interfaces
 
         #region Relationship Import / Queue
 
-        void DoWhileQueueingRelationships(Action action);
+        //void DoWhileQueueingRelationships(Action action);
 
         #endregion
 

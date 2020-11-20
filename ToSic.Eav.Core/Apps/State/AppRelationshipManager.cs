@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
@@ -10,14 +11,14 @@ namespace ToSic.Eav.Apps
     [PrivateApi("don't publish this - too internal, special, complicated")]
     public class AppRelationshipManager: SynchronizedList<EntityRelationship>
     {
-        AppState App;
+        readonly AppState _upstreamApp;
         public AppRelationshipManager(AppState upstream) : base(upstream, () => Rebuild(upstream))
         {
-            App = upstream;
+            _upstreamApp = upstream;
         }
 
 
-        private static List<EntityRelationship> Rebuild(AppState appState)
+        private static ImmutableArray<EntityRelationship> Rebuild(AppState appState)
         {
             // todo: could be optimized (minor)
             // atm guid-relationships (like in json-objects) 
@@ -26,13 +27,14 @@ namespace ToSic.Eav.Apps
             var cache = new List<EntityRelationship>();
 
             foreach (var entity in appState.List)
-            foreach (var attrib in entity.Attributes.Select(a => a.Value)
-                .Where(a => a is IAttribute<IEnumerable<IEntity>>)
-                .Cast<IAttribute<IEnumerable<IEntity>>>())
-            foreach (var val in ((LazyEntities)attrib.Typed[0].TypedContents).EntityIds.Where(e => e != null))
-                Add(appState, cache, entity.EntityId, val);
+                foreach (var attribute in entity.Attributes.Select(a => a.Value)
+                    .Where(a => a is IAttribute<IEnumerable<IEntity>>)
+                    .Cast<IAttribute<IEnumerable<IEntity>>>()
+                )
+                foreach (var val in ((LazyEntities) attribute.Typed[0].TypedContents).EntityIds.Where(e => e != null))
+                    Add(appState, cache, entity.EntityId, val);
 
-            return cache;
+            return cache.ToImmutableArray();
         }
 
         [PrivateApi]
@@ -42,7 +44,7 @@ namespace ToSic.Eav.Apps
                 .Where(a => a is IAttribute<IEnumerable<IEntity>>)
                 .Cast<IAttribute<IEnumerable<IEntity>>>()
             )
-                (attrib.TypedContents as LazyEntities).AttachLookupList(App);
+                (attrib.TypedContents as LazyEntities).AttachLookupList(_upstreamApp);
         }
 
         private static void Add(AppState appState, List<EntityRelationship> list, int parent, int? child)

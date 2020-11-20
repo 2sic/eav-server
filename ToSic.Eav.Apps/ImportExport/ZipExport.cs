@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Xml.XPath;
 using ToSic.Eav.Data;
+using ToSic.Eav.DataSources;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Zip;
 using ToSic.Eav.Logging;
@@ -19,7 +20,7 @@ namespace ToSic.Eav.Apps.ImportExport
         private int _zoneId;
         private const string SexyContentContentGroupName = "2SexyContent-ContentGroup";
         private const string SourceControlDataFolder = Constants.FolderData;
-        private const string SourceControlDataFile = "app.xml"; // lower case
+        private const string SourceControlDataFile = Constants.AppDataFile;// "app.xml"; // lower case
         private readonly string _blankGuid = Guid.Empty.ToString();
         private const string ZipFolderForPortalFiles = "PortalFiles";
         private const string ZipFolderForAppStuff = "2sexy";
@@ -33,12 +34,19 @@ namespace ToSic.Eav.Apps.ImportExport
         protected ILog Log;
 
         #region Constructors and DI
-        public ZipExport(IEnvironment environment)
+
+        public ZipExport(IServerPaths serverPaths, AppRuntime appRuntime, DataSourceFactory dataSourceFactory, XmlExporter xmlExporter)
         {
-            _environment = environment;
+            _serverPaths = serverPaths;
+            _xmlExporter = xmlExporter;
+            AppRuntime = appRuntime;
+            DataSourceFactory = dataSourceFactory;
         }
 
-        private readonly IEnvironment _environment;
+        private readonly IServerPaths _serverPaths;
+        private readonly XmlExporter _xmlExporter;
+        private AppRuntime AppRuntime { get; }
+        public DataSourceFactory DataSourceFactory { get; }
 
         public ZipExport Init(int zoneId, int appId, string appFolder, string physicalAppPath, ILog parentLog)
         {
@@ -48,6 +56,7 @@ namespace ToSic.Eav.Apps.ImportExport
             _physicalAppPath = physicalAppPath;
             Log = new Log("Zip.Exp", parentLog);
             FileManager = new FileManager(_physicalAppPath);
+            AppRuntime.Init(new AppIdentity(_zoneId, _appId), true, Log);
             return this;
         }
         #endregion
@@ -75,7 +84,7 @@ namespace ToSic.Eav.Apps.ImportExport
             var messages = new List<Message>();
             var randomShortFolderName = Guid.NewGuid().ToString().Substring(0, 4);
 
-            var temporaryDirectoryPath = _environment.MapPath(Path.Combine(Settings.TemporaryDirectory, randomShortFolderName));
+            var temporaryDirectoryPath = _serverPaths.FullSystemPath(Path.Combine(Settings.TemporaryDirectory, randomShortFolderName));
 
             if (!Directory.Exists(temporaryDirectoryPath))
                 Directory.CreateDirectory(temporaryDirectoryPath);
@@ -136,16 +145,14 @@ namespace ToSic.Eav.Apps.ImportExport
         private XmlExporter GenerateExportXml(bool includeContentGroups, bool resetAppGuid)
         {
             // Get Export XML
-            // 2020-01-17 2dm: added new parameter showDrafts and using true here, but not sure if this is actually good
-            // will have to wait and see
-            var runtime = new AppRuntime(new AppIdentity(_zoneId, _appId), true, Log);
-            var attributeSets = runtime.ContentTypes.FromScope(includeAttributeTypes: true);
+            var runtime = AppRuntime.Init(new AppIdentity(_zoneId, _appId), true, Log);
+            var attributeSets = runtime.ContentTypes.All.OfScope(includeAttributeTypes: true);
             attributeSets = attributeSets.Where(a => !((a as IContentTypeShared)?.AlwaysShareConfiguration ?? false));
 
             var contentTypeNames = attributeSets.Select(p => p.StaticName).ToArray();
             var templateTypeId = SystemRuntime.MetadataType(Settings.TemplateContentType);
             var entities =
-                new DataSource(Log).GetPublishing(runtime, false).Out[Constants.DefaultStreamName].List.Where(
+                DataSourceFactory.GetPublishing(runtime, false).Out[Constants.DefaultStreamName].Immutable.Where(
                     e => e.MetadataFor.TargetType != templateTypeId
                          && e.MetadataFor.TargetType != Constants.MetadataForAttribute).ToList();
 
@@ -156,8 +163,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 .Select(e => e.EntityId.ToString()).ToArray();
 
 
-            var xmlExport = Factory.Resolve<XmlExporter>()
-                .Init(_zoneId, _appId, runtime, true, contentTypeNames, entityIds, Log);
+            var xmlExport = _xmlExporter.Init(_zoneId, _appId, runtime, true, contentTypeNames, entityIds, Log);
 
             #region reset App Guid if necessary
 
@@ -178,7 +184,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="targetPath"></param>
         private void AddInstructionsToPackageFolder(string targetPath)
         {
-            var srcPath = _environment.MapPath(Path.Combine(Settings.ModuleDirectory, InstructionsFolder));
+            var srcPath = _serverPaths.FullSystemPath(Path.Combine(Settings.ModuleDirectory, InstructionsFolder));
 
             foreach (var file in Directory.GetFiles(srcPath))
                 File.Copy(file, Path.Combine(targetPath, Path.GetFileName(file)));

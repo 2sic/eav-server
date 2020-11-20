@@ -26,10 +26,7 @@ namespace ToSic.Eav.Apps.ImportExport
         public long TimeForDbImport;
         #endregion
 
-        private readonly int _appId;
-        //private readonly int _zoneId;
-
-
+        private int _appId;
 
         /// <summary>
         /// The xml document to imported.
@@ -41,13 +38,13 @@ namespace ToSic.Eav.Apps.ImportExport
         /// </summary>
         public IEnumerable<XElement> DocumentElements { get; private set; }
 
-        private readonly string _documentLanguageFallback;
+        private string _docLangPrimary;
 
-        private readonly IEnumerable<string> _languages;
+        private IList<string> _languages;
 
-        private readonly ImportResourceReferenceMode _resolveReferenceMode;
+        protected bool ResolveLinks;
 
-        private readonly ImportDeleteUnmentionedItems _deleteSetting;
+        private ImportDeleteUnmentionedItems _deleteSetting;
 
 
 
@@ -55,13 +52,23 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <summary>
         /// The entities created from the document. They will be saved to the repository.
         /// </summary>
-        public List<Entity> ImportEntities { get; }
-        private Entity GetImportEntity(Guid entityGuid) => ImportEntities
-            .FirstOrDefault(entity => entity.EntityGuid == entityGuid);
+        public List<Entity> ImportEntities { get; set; }
+
+        private Entity GetImportEntity(Guid entityGuid)
+        {
+            var result = ImportEntities.FirstOrDefault(entity => entity.EntityGuid == entityGuid);
+            if (result != null) Log.Add($"Will modify entity from existing import list {entityGuid}");
+            return result;
+        }
 
 
+        private int _appendEntityCount = 0;
         private Entity AppendEntity(Guid entityGuid)
         {
+            if(_appendEntityCount++ < 100)
+                Log.Add($"Add entity to import list {entityGuid}");
+            if (_appendEntityCount == 100) Log.Add("Add entity: will stop listing each one...");
+            if (_appendEntityCount % 100 == 0) Log.Add("Add entity: Current count:" + _appendEntityCount);
             var entity = new Entity(_appId, entityGuid, ContentType, new Dictionary<string, object>());
             ImportEntities.Add(entity);
             return entity;
@@ -70,12 +77,9 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <summary>
         /// Errors found while importing the document to memory.
         /// </summary>
-        public ImportErrorLog ErrorLog { get; }
+        public ImportErrorLog ErrorLog { get; set; }
 
 
-
-
-        // todo: warning: 2017-06-12 2dm - I changed this a bit, must check for side-effects
         private List<Guid> GetCreatedEntityGuids()
             => ImportEntities.Select(entity => entity.EntityGuid != Guid.Empty ? entity.EntityGuid : Guid.NewGuid()).ToList();
 

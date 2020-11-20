@@ -7,6 +7,7 @@ namespace ToSic.Eav.Persistence.Efc.Diagnostics
     // this class helps debug in advanced scenarios
     // hasn't been used since ca. 2017, but keep in case we ever do deep work on the DB again
     // ReSharper disable once UnusedMember.Global
+#if net451
     public class EfCoreLoggerProvider : ILoggerProvider
     {
         public ILogger CreateLogger(string categoryName)
@@ -36,4 +37,5 @@ namespace ToSic.Eav.Persistence.Efc.Diagnostics
             }
         }
     }
+#endif
 }

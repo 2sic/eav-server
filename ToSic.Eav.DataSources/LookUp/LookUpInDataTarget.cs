@@ -36,42 +36,23 @@ namespace ToSic.Eav.LookUp
         /// Will check if any streams in In matches the requested next key-part and will retrieve the first entity in that stream
         /// to deliver the required sub-key (or even sub-sub-key)
         /// </summary>
-		public override string Get(string key, string format, ref bool notFound)
+		public override string Get(string key, string format)
 		{
             // Check if it has sub-keys to see if it's trying to match a inbound stream
             var subTokens = CheckAndGetSubToken(key);
-            // var propertyMatch = SubProperties.Match(key);
-		    if (!subTokens.HasSubtoken)
-		    {
-		        notFound = true;
-		        return string.Empty;
-		    }
+		    if (!subTokens.HasSubtoken) return string.Empty;
 
             // check if this stream exists
-		    if (!_dataTarget.In.ContainsKey(subTokens.Source))
-		    {
-                notFound = true;
-                return string.Empty;
-            }
+		    if (!_dataTarget.In.ContainsKey(subTokens.Source)) return string.Empty;
 
             // check if any entities exist in this specific in-stream
             var entityStream = _dataTarget.In[subTokens.Source];
-            if (!entityStream.List.Any())
-		    {
-                notFound = true;
-                return string.Empty;
-            }
+            if (!entityStream.Immutable.Any()) return string.Empty;
 
             // Create an LookUpInEntity based on the first item, return its Get
-		    var first = entityStream.List.First();
-		    return new LookUpInEntity(first).Get(subTokens.Rest, format, ref notFound);
+		    var first = entityStream.Immutable.First();
+		    return new LookUpInEntity(first).Get(subTokens.Rest, format);
 
 		}
-
-        [PrivateApi("not implemented")]
-	    public override bool Has(string key)
-	    {
-	        throw new System.NotImplementedException();
-	    }
-	}
+    }
 }

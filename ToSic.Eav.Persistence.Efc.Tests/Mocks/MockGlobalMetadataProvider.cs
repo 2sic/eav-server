@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using ToSic.Eav.Persistence.Efc;
+using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.ImportExport.Tests.Mocks
 {
@@ -21,6 +23,10 @@ namespace ToSic.Eav.ImportExport.Tests.Mocks
                 {9, "Reserved" },
                 {10, "CmsObject" },
             }).ToImmutableDictionary();
+        }
+
+        public MockGlobalMetadataProvider(Lazy<EavDbContext> dbLazy) : base(dbLazy)
+        {
         }
     }
 }

@@ -4,6 +4,9 @@ using System.Linq;
 using System.Threading;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
+using ToSic.Eav.Run;
+using ToSic.Eav.Run.Basic;
 
 namespace ToSic.Eav.Conversion
 {
@@ -11,8 +14,19 @@ namespace ToSic.Eav.Conversion
     /// A helper to serialize various combinations of entities, lists of entities etc
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
-    public abstract class EntitiesToDictionaryBase : IEntitiesTo<Dictionary<string, object>>
+    public abstract class EntitiesToDictionaryBase : HasLog<EntitiesToDictionaryBase>, IEntitiesTo<Dictionary<string, object>>
     {
+        protected IValueConverter ValueConverter { get; }
+
+        #region Constructor / DI
+
+        protected EntitiesToDictionaryBase(IValueConverter valueConverter, string logName) : base(logName)
+        {
+            ValueConverter = valueConverter;
+        }
+
+        #endregion
+
         #region Configuration
         /// <inheritdoc/>
         public bool WithGuid { get; set; }
@@ -50,13 +64,22 @@ namespace ToSic.Eav.Conversion
         #region Many variations of the Prepare-Statement expecting various kinds of input
 
         /// <inheritdoc/>
-        public IEnumerable<Dictionary<string, object>> Convert(IEnumerable<IEntity> entities) 
-            => entities.Select(GetDictionaryFromEntity);
+        public IEnumerable<Dictionary<string, object>> Convert(IEnumerable<IEntity> entities)
+        {
+            var wrapLog = Log.Call(useTimer: true);
+            var result = entities.Select(GetDictionaryFromEntity).ToList();
+            wrapLog("ok");
+            return result;
+        }
 
         /// <inheritdoc/>
-        public Dictionary<string, object> Convert(IEntity entity) 
-            => entity == null ? null : GetDictionaryFromEntity(entity);
-        
+        public Dictionary<string, object> Convert(IEntity entity)
+        {
+            var wrapLog = Log.Call(useTimer: true);
+            var result = entity == null ? null : GetDictionaryFromEntity(entity);
+            wrapLog("ok");
+            return result;
+        }
 
         #endregion
 
@@ -73,14 +96,17 @@ namespace ToSic.Eav.Conversion
             // If the value is a relationship, then give those too, but only Title and Id
             var entityValues = (from d in entity.Attributes select d.Value).ToDictionary(k => k.Name, v =>
             {
-				var value = entity.GetBestValue(v.Name, Languages, true);
-                if (v.Type == "Entity" && value is IEnumerable<IEntity> entities)
+				var value = entity.GetBestValue(v.Name, Languages);
+                if (v.Type == Constants.DataTypeHyperlink && value is string stringValue && BasicValueConverter.CouldBeReference(stringValue))
+                    return ValueConverter.ToValue(stringValue, entity.EntityGuid);
+
+                if (v.Type == Constants.DataTypeEntity && value is IEnumerable<IEntity> entities)
                     return entities.Select(p => new RelationshipReference
                     {
                         Id = p?.EntityId,
                         Title = p?.GetBestTitle(Languages)
                     }).ToList();
-				return value;
+                return value;
 				
             }, StringComparer.OrdinalIgnoreCase);
 
@@ -148,5 +174,7 @@ namespace ToSic.Eav.Conversion
 
             return entityValues;
         }
+
+
     }
 }

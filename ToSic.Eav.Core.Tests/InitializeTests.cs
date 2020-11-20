@@ -1,11 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Configuration;
-using ToSic.Eav.Core.Tests.Mocks;
-using ToSic.Eav.Data;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Run;
 using ToSic.Eav.Run.Basic;
+using ToSic.Testing.Shared.Mocks;
 
 namespace ToSic.Eav.Core.Tests
 {

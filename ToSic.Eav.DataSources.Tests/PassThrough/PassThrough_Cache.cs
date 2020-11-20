@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.LookUp;
 
-namespace ToSic.Eav.DataSources.Tests
+namespace ToSic.Eav.DataSourceTests
 {
     // Todo
     // Create tests with language-parameters as well, as these tests ignore the language and always use default
@@ -16,7 +16,7 @@ namespace ToSic.Eav.DataSources.Tests
         [TestMethod]
         public void PassThrough_CacheKey()
         {
-            var outSource = new PassThrough();
+            var outSource = new DataSources.PassThrough();
             outSource.Configuration.LookUps = new LookUpEngine(null);
             var partialKey = outSource.CachePartialKey;
             var fullKey = outSource.CacheFullKey;

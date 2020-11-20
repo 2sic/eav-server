@@ -10,8 +10,11 @@ namespace ToSic.Eav.Apps.ImportExport
 {
     public class ZipFromUrlImport: ZipImport
     {
-        public ZipFromUrlImport(IImportExportEnvironment environment) : base(environment)
+        private readonly IServerPaths _serverPaths;
+
+        public ZipFromUrlImport(IImportExportEnvironment environment, IServerPaths serverPaths, Lazy<XmlImportWithFiles> xmlImpExpFilesLazy) : base(environment, xmlImpExpFilesLazy)
         {
+            _serverPaths = serverPaths;
         }
 
         public new ZipFromUrlImport Init(int zoneId, int? appId, bool allowCode, ILog parentLog)
@@ -23,7 +26,7 @@ namespace ToSic.Eav.Apps.ImportExport
         public bool ImportUrl(string packageUrl, bool isAppImport)
         {
             Log.Add($"import zip from url:{packageUrl}, isApp:{isAppImport}");
-            var path = Factory.Resolve<IEnvironment>().MapPath(Settings.TemporaryDirectory);
+            var path = _serverPaths.FullSystemPath(Settings.TemporaryDirectory);
             if (path == null)
                 throw new NullReferenceException("path for temporary is null - this won't work");
 
@@ -58,7 +61,7 @@ namespace ToSic.Eav.Apps.ImportExport
             bool success;
 
 
-            var temporaryDirectory = Factory.Resolve<IEnvironment>().MapPath(Path.Combine(Settings.TemporaryDirectory, Guid.NewGuid().ToString()));
+            var temporaryDirectory = _serverPaths.FullSystemPath(Path.Combine(Settings.TemporaryDirectory, Guid.NewGuid().ToString()));
 
             using (var file = File.OpenRead(destinationPath))
                 success = ImportZip(file, temporaryDirectory);

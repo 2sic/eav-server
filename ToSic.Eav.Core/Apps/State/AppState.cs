@@ -17,9 +17,10 @@ namespace ToSic.Eav.Apps
     {
 
         [PrivateApi("constructor, internal use only")]
-        internal AppState(IAppIdentity app, ILog parentLog)
+        internal AppState(IAppIdentity app, string appGuidName, ILog parentLog): base($"App.St-{app.AppId}", new CodeRef())
         {
-            Init(app, new CodeRef(), parentLog, $"App.St-{app.AppId}", $"start build {nameof(AppState)} {app.AppId}");
+            Init(app, new CodeRef(), parentLog);
+            AppGuidName = appGuidName;
             CacheResetTimestamp();  // do this very early, as this number is needed elsewhere
 
 	        Index = new Dictionary<int, IEntity>();
@@ -33,21 +34,39 @@ namespace ToSic.Eav.Apps
         /// </summary>
         public AppRelationshipManager Relationships { get; }
 
+        [PrivateApi]
+        public string AppGuidName { get; }
+
         /// <summary>
-        /// WIP - the app-path, which is pre-initialized very early on
-        /// WIP 2020-05 for v11.x
+        /// The app-folder, which is pre-initialized very early on.
+        /// Needed to pre-load file based content-types
         /// </summary>
-        public string Path
+        public string Folder
         {
-            get => _path;
+            get => _folder;
             set
             {
                 if (!Loading)
-                    throw new Exception("Can't set AppState.Path when not in loading state");
-                _path = value;
+                    throw new Exception("Can't set AppState.Folder when not in loading state");
+                _folder = value;
             }
         }
+        private string _folder;
 
-        private string _path;
+
+        /// <summary>
+        /// The app-folder, which is pre-initialized very early on.
+        /// Needed to pre-load file based content-types
+        /// </summary>
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                if (!Loading) throw new Exception("Can't set AppState.Name when not in loading state");
+                _name = value;
+            }
+        }
+        private string _name;
     }
 }

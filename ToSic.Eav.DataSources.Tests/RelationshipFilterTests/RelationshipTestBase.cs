@@ -4,15 +4,15 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSourceTests;
+using ToSic.Eav.DataSources;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.LookUp;
+using ToSic.Testing.Shared;
 
-
-namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
+namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
 {
-    public class RelationshipTestBase
+    public class RelationshipTestBase: EavTestBase
     {
         #region Const Values for testing
 
@@ -93,21 +93,24 @@ namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
 
         protected RelationshipFilter BuildRelationshipFilter(int zone, int app, string primaryType, ILookUpEngine config = null)
         {
-            var baseDs = new DataSource(Log).GetPublishing(new AppIdentity(zone,app), configProvider: config);
-            var appDs = new DataSource(Log).GetDataSource<App>(baseDs);
+            var baseDs = Resolve<DataSourceFactory>().GetPublishing(new AppIdentity(zone, app), configProvider: config);
+            var appDs = Resolve<DataSourceFactory>().GetDataSource<App>(baseDs);
 
             // micro tests to ensure we have the right app etc.
             Assert.IsTrue(appDs.List.Count() > 20, "appDs.List.Count() > 20");
 
-            Assert.IsTrue(appDs.List.FindRepoId(731)?.GetBestTitle() == "2sic", "expecting item 731");
+            var item731 = appDs.List.FindRepoId(731);
+            Assert.IsNotNull(item731, "expecting item 731");
+            var title = item731.GetBestTitle();
+            Assert.AreEqual(title, "2sic", "item 731 should have title '2sic'");
 
             Assert.IsTrue(appDs.Out.ContainsKey(primaryType), $"app should contain stream of {primaryType}");
 
             var stream = appDs[primaryType];
 
-            Assert.IsTrue(stream.List.Count() > 0, "stream.List.Count() > 0");
+            Assert.IsTrue(stream.Immutable.Count > 0, "stream.List.Count() > 0");
 
-            var relFilt = new DataSource(Log).GetDataSource<RelationshipFilter>(new AppIdentity(0, 0), null, 
+            var relFilt = Resolve<DataSourceFactory>().GetDataSource<RelationshipFilter>(new AppIdentity(0, 0), null, 
                 appDs.Configuration.LookUps/*, parentLog: Log*/);
             relFilt.Attach(Constants.DefaultStreamName, stream);
             return relFilt;

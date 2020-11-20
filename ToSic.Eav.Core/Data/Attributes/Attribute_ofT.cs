@@ -73,15 +73,16 @@ namespace ToSic.Eav.Data
                 if (languageIds != null && languageIds.Length > 0 && Values != null)
                 {
                     // try match all specified Dimensions
+                    // note that as of now, the dimensions are always just 1 language, not more
+                    // so the dimensions are _not_ a list of languages, but would contain other dimensions
+                    // that is why we match ALL - but in truth it's a "feature" that's never been used
                     var valueHavingSpecifiedLanguages = Values.FirstOrDefault(va => languageIds.All(di => va.Languages.Select(d => d.DimensionId).Contains(di)));
                     if (valueHavingSpecifiedLanguages != null)
                         try
                         {
                             return ((IValue<T>) valueHavingSpecifiedLanguages).TypedContents;
                         }
-                        catch (InvalidCastException)
-                        {
-                        } // may occour for nullable types
+                        catch (InvalidCastException) { /* ignore, may occur for nullable types */ }
                 }
                 // use Default
                 return TypedContents == null ? default : TypedContents;
@@ -99,16 +100,20 @@ namespace ToSic.Eav.Data
                 // Value with Dimensions specified
                 if (languageKeys != null && languageKeys.Length > 0 && Values != null)
                 {
+                    // ensure language Keys in lookup-list are lowered
+                    var langsLower = languageKeys.Select(l => l.ToLower()).ToArray();
                     // try match all specified Dimensions
-                    var valueHavingSpecifiedLanguages = Values.FirstOrDefault(va => languageKeys.All(vk => va.Languages.Select(d => d.Key).Contains(vk.ToLower())));
+                    // note that as of now, the dimensions are always just 1 language, not more
+                    // so the dimensions are _not_ a list of languages, but would contain other dimensions
+                    // that is why we match ALL - but in truth it's a "feature" that's never been used
+                    var valueHavingSpecifiedLanguages = Values
+                        .FirstOrDefault(va => langsLower.All(lng => va.Languages.Select(d => d.Key).Contains(lng)));
                     if (valueHavingSpecifiedLanguages != null)
                         try
                         {
                             return ((IValue<T>) valueHavingSpecifiedLanguages).TypedContents;
                         }
-                        catch (InvalidCastException)
-                        {
-                        } // may occur for nullable types
+                        catch (InvalidCastException) { /* ignore, may occur for nullable types */ } 
                 }
                 // use Default
                 return TypedContents == null ? default(T) : TypedContents;

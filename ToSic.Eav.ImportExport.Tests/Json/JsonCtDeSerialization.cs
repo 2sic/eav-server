@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -12,6 +13,8 @@ namespace ToSic.Eav.ImportExport.Tests.json
     [TestClass]
     public class JsonCtDeSerialization: Eav.Persistence.Efc.Tests.Efc11TestBase
     {
+        public JsonCtDeSerialization(): base() {}
+
         public TestContext TestContext { get; set; }
 
         private const string typesPath = "\\Json\\ContentTypes\\";

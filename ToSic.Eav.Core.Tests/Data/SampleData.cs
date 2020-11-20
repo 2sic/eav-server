@@ -14,11 +14,11 @@ namespace ToSic.Eav.Core.Tests.Data
         {
             Attributes = new List<IContentTypeAttribute>
             {
-                new ContentTypeAttribute(AppId, "FirstName", "String", true, 0, 0),
-                new ContentTypeAttribute(AppId, "LastName", "String", false, 0, 0),
-                new ContentTypeAttribute(AppId, "Phone", "String", false, 0, 0),
-                new ContentTypeAttribute(AppId, "Age", "Number", false, 0,0),
-                 new ContentTypeAttribute(AppId, "AnyDate", "DateTime", false, 0,0)
+                new ContentTypeAttribute(AppId, "FirstName", Constants.DataTypeString, true, 0, 0),
+                new ContentTypeAttribute(AppId, "LastName", Constants.DataTypeString, false, 0, 0),
+                new ContentTypeAttribute(AppId, "Phone", Constants.DataTypeString, false, 0, 0),
+                new ContentTypeAttribute(AppId, "Age", Constants.DataTypeNumber, false, 0,0),
+                 new ContentTypeAttribute(AppId, "AnyDate", Constants.DataTypeDateTime, false, 0,0)
             }
         };
 
@@ -27,11 +27,11 @@ namespace ToSic.Eav.Core.Tests.Data
         {
             Attributes = new List<IContentTypeAttribute>
             {
-                new ContentTypeAttribute(AppId, "FirstName", "String", true, 0, 0),
-                new ContentTypeAttribute(AppId, "LastName", "String", false, 0, 0),
+                new ContentTypeAttribute(AppId, "FirstName", Constants.DataTypeString, true, 0, 0),
+                new ContentTypeAttribute(AppId, "LastName", Constants.DataTypeString, false, 0, 0),
                 //new AttributeDefinition(AppId, "Birthday", "DateTime", true, 0, 0),
-                new ContentTypeAttribute(AppId, "Phone", "String", false, 0, 0),
-                new ContentTypeAttribute(AppId, "Age", "Number", false, 0,0)
+                new ContentTypeAttribute(AppId, "Phone", Constants.DataTypeString, false, 0, 0),
+                new ContentTypeAttribute(AppId, "Age", Constants.DataTypeNumber, false, 0,0)
             }
         };
 

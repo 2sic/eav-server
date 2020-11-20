@@ -35,7 +35,7 @@ namespace ToSic.Eav.ImportExport.Json
             if (entity.MetadataFor.IsMetadata)
                 mddic = new JsonMetadataFor
                 {
-                    Target = GetMetadataName(entity.MetadataFor.TargetType),
+                    Target = MetadataTargets.GetName(entity.MetadataFor.TargetType),
                     Guid = entity.MetadataFor.KeyGuid,
                     Number = entity.MetadataFor.KeyNumber,
                     String = entity.MetadataFor.KeyString

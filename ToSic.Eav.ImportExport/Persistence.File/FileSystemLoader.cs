@@ -47,7 +47,7 @@ namespace ToSic.Eav.Persistence.File
             get
             {
                 if (_ser != null) return _ser;
-                _ser = new JsonSerializer();
+                _ser = new JsonSerializer(null /* todo: DI */);
                 _ser.Initialize(0, ReflectionTypes.FakeCache.Values, EntitiesSource, Log);
                 _ser.AssumeUnknownTypesAreDynamic = true;
                 return _ser;
@@ -198,7 +198,10 @@ namespace ToSic.Eav.Persistence.File
 
 
         #region not implemented stuff
-        public AppState AppState(int appId, int[] entityIds = null, ILog parentLog = null) 
+        public AppState AppState(int appId, /*int[] entityIds = null,*/ ILog parentLog = null) 
+            => throw new NotImplementedException();
+
+        public AppState AppState(int appId, bool ensureInitialized, ILog parentLog = null) 
             => throw new NotImplementedException();
 
         public AppState Update(AppState app, AppStateLoadSequence startAt, int[] entityIds = null,

@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Persistence.Efc.Models;
+using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
@@ -55,7 +57,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     Log.Add($"Must convert back to entity, to then modify the EntityId. The json: {json}");
                     // update the content-id
                     draftToPublishForJson.ResetEntityId(publishedId);
-                    var serializer = new JsonSerializer();
+                    var serializer = DbContext.ServiceProvider.Build<JsonSerializer>();
                     json = serializer.Serialize(draftToPublishForJson);
 
                     Log.Add($"changed - final json: {json}");
@@ -108,6 +110,24 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 .SingleOrDefault();
             Log.Add($"GetDraftBranchEntityId({entityId}) found {draftId}");
             return draftId;
+        }
+
+        /// <summary>
+        /// Get Draft EntityId of a Published EntityId. Returns null if there's none.
+        /// </summary>
+        /// <param name="entityIds">EntityId of the Published Entity</param>
+        internal Dictionary<int, int?> GetDraftBranchMap(List<int> entityIds)
+        {
+            var wrapLog = Log.Call($"items: {entityIds.Count}", useTimer: true);
+            var nullList = entityIds.Cast<int?>().ToList();
+            var ids = DbContext.SqlDb.ToSicEavEntities
+                .Where(e => nullList.Contains(e.PublishedEntityId) && !e.ChangeLogDeleted.HasValue)
+                .Select(e => new {e.EntityId, e.PublishedEntityId })
+                .ToList();
+            // note: distinct is necessary, because new entities all have 0 as the id
+            var dic = entityIds.Distinct().ToDictionary(e => e, e => ids.FirstOrDefault(i => i.PublishedEntityId == e)?.EntityId);
+            wrapLog($"found {ids.Count}");
+            return dic;
         }
     }
     

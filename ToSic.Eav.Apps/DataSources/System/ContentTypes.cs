@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.DataSources.Types;
@@ -82,18 +83,17 @@ namespace ToSic.Eav.DataSources.System
 		    ConfigMask(ScopeKey, $"[Settings:{ScopeField}||Default]");
 		}
 
-	    private List<IEntity> GetList()
+	    private ImmutableArray<IEntity> GetList()
 	    {
             Configuration.Parse();
 
             var appId = OfAppId;
 
-            var read = new AppRuntime(appId, false, Log);
 	        var scp = OfScope;
 	        if (string.IsNullOrWhiteSpace(scp) || string.Equals(scp, "Default", StringComparison.InvariantCultureIgnoreCase))
 	            scp = AppConstants.ScopeContentOld;
 
-	        var types = read.ContentTypes.FromScope(scp);
+	        var types = State.Get(appId).ContentTypes.OfScope(scp);
 
 	        var list = types.OrderBy(t => t.Name).Select(t =>
 	        {
@@ -115,7 +115,7 @@ namespace ToSic.Eav.DataSources.System
                     guid: guid);
 	        });
 
-	        return list.ToList();
+	        return list.ToImmutableArray();// .ToList();
 	    }
 
 	    private static Dictionary<string, object> BuildDictionary(IContentType t) => new Dictionary<string, object>

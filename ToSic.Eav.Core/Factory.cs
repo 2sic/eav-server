@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav
 {
@@ -28,7 +29,7 @@ namespace ToSic.Eav
 	    }
 
 #if !NETFRAMEWORK
-        private static IServiceProvider GetServiceProvider() => _serviceCollection.BuildServiceProvider();
+        public static IServiceProvider GetServiceProvider() => _serviceCollection.BuildServiceProvider();
 #endif
 
 
@@ -40,14 +41,17 @@ namespace ToSic.Eav
         {
             if (Debug) LogResolve(typeof(T), true);
 
-            var spToUse = GetServiceProvider();
-            var found = spToUse.GetService<T>();
-            // ReSharper disable once ConvertIfStatementToReturnStatement
-            if (found != null) return found;
-
-            // If it's an unregistered type, try to find in DLLs etc.
-            return ActivatorUtilities.CreateInstance<T>(spToUse);
+            return GetServiceProvider().Build<T>();
         }
+
+        /// <summary>
+        /// This is a special internal resolver for static objects
+        /// Should only be used with extreme caution, as downstream objects
+        /// May need more scope-specific stuff, why may be missing
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static T StaticBuild<T>() => GetServiceProvider().Build<T>();
 
         /// <summary>
         /// Dependency Injection resolver with a known type as a parameter.
@@ -57,14 +61,7 @@ namespace ToSic.Eav
         public static object Resolve(Type T)
         {
             if (Debug) LogResolve(T, false);
-
-            var spToUse = GetServiceProvider();
-            var found = spToUse.GetService(T);
-            // ReSharper disable once ConvertIfStatementToReturnStatement
-            if (found != null) return found;
-
-            // If it's an unregistered type, try to find in DLLs etc.
-            return ActivatorUtilities.CreateInstance(spToUse, T);
+            return GetServiceProvider().Build<object>(T);
         }
     }
 }

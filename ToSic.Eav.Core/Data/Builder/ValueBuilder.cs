@@ -125,8 +125,8 @@ namespace ToSic.Eav.Data.Builder
         /// ...and then it must be a new object every time, 
         /// because the object could be changed at runtime, and if it were shared, then it would be changed in many places
         /// </summary>
-        internal static Value</*LazyEntities*/IEnumerable<IEntity>> NullRelationship 
-            => new Value</*LazyEntities*/IEnumerable<IEntity>>(new LazyEntities(null, identifiers: null))
+        internal static Value<IEnumerable<IEntity>> NullRelationship 
+            => new Value<IEnumerable<IEntity>>(new LazyEntities(null, identifiers: null))
         {
             Languages = new List<ILanguage>()
         };

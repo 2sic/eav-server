@@ -24,10 +24,10 @@ namespace ToSic.Eav.DataSources
             if (streams == null) return;
 
             foreach (var stream in streams)
-                Add(stream.Key, new DataStream(source, stream.Key, () => stream.Value.List));
+                Add(stream.Key, new DataStream(source, stream.Key, () => stream.Value.Immutable));
         }
 
         public new void Add(string name, IDataStream stream) => 
-            base.Add(name, Source == null ? stream : new DataStream(Source, name, () => stream.List));
+            base.Add(name, Source == null ? stream : new DataStream(Source, name, () => stream.Immutable));
     }
 }

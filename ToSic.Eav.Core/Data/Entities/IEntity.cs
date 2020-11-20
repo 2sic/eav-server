@@ -12,8 +12,7 @@ namespace ToSic.Eav.Data
     /// > We recommend you read about the @Specs.Data.Intro
     /// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-    public interface IEntity: ToSic.Eav.Interfaces.IEntity, // compatibility
-        IEntityLight, IPublish<IEntity>, IHasPermissions
+    public partial interface IEntity: IEntityLight, IPublish<IEntity>, IHasPermissions
     {
         /// <summary>
         /// Retrieves the best possible value for an attribute or virtual attribute (like EntityTitle)
@@ -21,12 +20,14 @@ namespace ToSic.Eav.Data
         /// </summary>
         /// <param name="attributeName">Name of the attribute or virtual attribute</param>
         /// <param name="languages">list of languages to search in</param>
-        /// <param name="resolveHyperlinks">If true, will try to resolve links in the value. Default is false.</param>
         /// <returns>
         /// An object OR a null - for example when retrieving the title and no title exists
         /// the object is string, int or even a EntityRelationship
         /// </returns>
-        new object GetBestValue(string attributeName, string[] languages, bool resolveHyperlinks = false);
+#if NET451
+        new 
+#endif
+            object GetBestValue(string attributeName, string[] languages);
 
         /// <summary>
         /// Retrieves the best possible value for an attribute or virtual attribute (like EntityTitle)
@@ -35,29 +36,38 @@ namespace ToSic.Eav.Data
         /// </summary>
         /// <param name="attributeName">Name of the attribute or virtual attribute</param>
         /// <param name="languages">list of languages to search in</param>
-        /// <param name="resolveHyperlinks">If true, will try to resolve links in the value. Default is false.</param>
         /// <returns>
         /// An object OR a null - for example when retrieving the title and no title exists
         /// the object is string, int or even a EntityRelationship
         /// </returns>
-        new T GetBestValue<T>(string attributeName, string[] languages, bool resolveHyperlinks = false);
+#if NET451
+        new
+#endif
+            T GetBestValue<T>(string attributeName, string[] languages);
 
-        [PrivateApi]
-        new object PrimaryValue(string attributeName, bool resolveHyperlinks = false);
-        [PrivateApi]
-        new T PrimaryValue<T>(string attributeName, bool resolveHyperlinks = false);
+        [WorkInProgressApi("Still wip")]
+        object PrimaryValue(string attributeName);
+
+        [WorkInProgressApi("Still wip")]
+        T PrimaryValue<T>(string attributeName);
 
         /// <summary>
         /// Best way to get the current entities title
         /// </summary>
         /// <param name="dimensions">Array of dimensions/languages to use in the lookup</param>
         /// <returns>The entity title as a string</returns>
-        new string GetBestTitle(string[] dimensions);
+#if NET451
+        new
+#endif
+            string GetBestTitle(string[] dimensions);
 
         /// <summary>
         /// All the attributes of the current Entity.
         /// </summary>
-        new Dictionary<string, IAttribute> Attributes { get; }
+#if NET451
+        new
+#endif
+            Dictionary<string, IAttribute> Attributes { get; }
 
         /// <summary>
         /// Gets the "official" Title-Attribute <see cref="IAttribute{T}"/>
@@ -80,7 +90,10 @@ namespace ToSic.Eav.Data
         /// version of this entity in the repository
         /// </summary>
         /// <returns>The version number.</returns>
-        new int Version { get; }
+#if NET451
+        new
+#endif
+            int Version { get; }
 
 
         /// <summary>
@@ -90,16 +103,23 @@ namespace ToSic.Eav.Data
         /// The metadata is either already prepared, from the same app, or from a remote app
         /// </remarks>
         /// <returns>A typed Metadata provider for this Entity</returns>
-        new IMetadataOf Metadata { get; }
+#if NET451
+        new
+#endif
+            IMetadataOf Metadata { get; }
 
-        #region experimental IEntity Queryable / Quick
+        #region Children & Parents
+
         /// <summary>
         /// Get all the children <see cref="IEntity"/> items - optionally only of a specific field and/or type
         /// </summary>
         /// <param name="field">Optional field name to access</param>
         /// <param name="type">Optional type to filter for</param>
         /// <returns>List of children, or empty list if not found</returns>
-        new List<IEntity> Children(string field = null, string type = null);
+#if NET451
+        new
+#endif
+            List<IEntity> Children(string field = null, string type = null);
 
         /// <summary>
         /// Get all the parent <see cref="IEntity"/> items - optionally only of a specific type and/or referenced in a specific field
@@ -107,13 +127,16 @@ namespace ToSic.Eav.Data
         /// <param name="type">The type name to filter for</param>
         /// <param name="field">The field name where a parent references this item</param>
         /// <returns>List of children, or empty list if not found</returns>
-        new List<IEntity> Parents(string type = null, string field = null);
+#if NET451
+        new
+#endif
+            List<IEntity> Parents(string type = null, string field = null);
 
         [PrivateApi]
-        new object Value(string field, bool resolve = true);
+        object Value(string field);
         [PrivateApi]
-        new T Value<T>(string field, bool resolve = true);
+        T Value<T>(string field);
 
-        #endregion experimental
+        #endregion
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Runtime.Caching;
 using ToSic.Eav.Documentation;
@@ -47,7 +46,7 @@ namespace ToSic.Eav.DataSources.Caching
         /// </summary>
         /// <param name="dataStream"></param>
         /// <returns></returns>
-        private string CacheKey(IDataStream dataStream) => dataStream.Caching.CacheFullKey /*+ "&Stream=" + dataStream.Name + dataStream.CacheSuffix*/;
+        private string CacheKey(IDataStream dataStream) => dataStream.Caching.CacheFullKey;
 
         #region Get List
 
@@ -83,7 +82,11 @@ namespace ToSic.Eav.DataSources.Caching
             if (cacheItem != null)
                 return wrapLog("found, use cache", cacheItem);
 
-            // If reloading is required, set a lock first (to prevent parallel loading of the same data)
+            // If reloading is required, set a lock first
+            // This is super important to prevent parallel loading of the same data
+            // Otherwise slow loading data - like SharePoint lists from a remote server
+            // would trigger multiple load attempts on page reloads and overload the system
+            // trying to reload while still building the initial cache
             var lockKey = LoadLocks.GetOrAdd(key, new object());
             lock (lockKey)
             {
@@ -116,6 +119,7 @@ namespace ToSic.Eav.DataSources.Caching
         public void Set(string key, IImmutableList<IEntity> list, long sourceTimestamp, int durationInSeconds = 0,
             bool slidingExpiration = true)
         {
+            var callLog = Log.Call($"key: {key}; sourceTime: {sourceTimestamp}; duration:{durationInSeconds}; sliding: {slidingExpiration}");
             var duration = durationInSeconds > 0 ? durationInSeconds : DefaultDuration;
             var expiration = new TimeSpan(0, 0, duration);
             var policy = slidingExpiration
@@ -124,22 +128,29 @@ namespace ToSic.Eav.DataSources.Caching
 
             var cache = MemoryCache.Default;
             cache.Set(key, new ListCacheItem(list, sourceTimestamp), policy);
+            callLog("ok");
         }
 
 
         /// <inheritdoc />
         public void Set(IDataStream dataStream, int durationInSeconds = 0, bool slidingExpiration = true)
-            => Set(CacheKey(dataStream), dataStream.List.ToImmutableList(),
+            // todo: drop toimmutablearray again
+            => Set(CacheKey(dataStream), dataStream.Immutable.ToImmutableArray(),
                 dataStream.Caching.CacheTimestamp, durationInSeconds, slidingExpiration);
 
-        public void Set(string key, IEnumerable<IEntity> list, long sourceTimestamp, int durationInSeconds = 0, bool slidingExpiration = true) 
-            => Set(key, list.ToImmutableList(), sourceTimestamp, durationInSeconds, slidingExpiration);
+        //public void Set(string key, IEnumerable<IEntity> list, long sourceTimestamp, int durationInSeconds = 0, bool slidingExpiration = true) 
+        //    => Set(key, list.ToImmutableArray(), sourceTimestamp, durationInSeconds, slidingExpiration);
 
         #endregion
 
         #region Remove List
         /// <inheritdoc />
-        public void Remove(string key) => MemoryCache.Default.Remove(key);
+        public void Remove(string key)
+        {
+            var callLog = Log.Call(key);
+            MemoryCache.Default.Remove(key);
+            callLog("ok");
+        }
 
         /// <inheritdoc />
         public void Remove(IDataStream dataStream) => Remove(CacheKey(dataStream));

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
@@ -47,14 +47,14 @@ namespace ToSic.Eav.DataSources
 		    ConfigMask(IdentityCode, "[Settings:" + IdentityCode + "]"); 
         }
 
-        private List<IEntity> GetList()
+        private ImmutableArray<IEntity> GetList()
         {
             Configuration.Parse();
 
             Log.Add($"get for identity:{Identity}");
-            if (string.IsNullOrWhiteSpace(Identity)) return new List<IEntity>();
+            if (string.IsNullOrWhiteSpace(Identity)) return ImmutableArray<IEntity>.Empty;// new List<IEntity>();
 
-            return In[Constants.DefaultStreamName].List.Where(e => e.Owner == Identity).ToList();
+            return In[Constants.DefaultStreamName].Immutable.Where(e => e.Owner == Identity).ToImmutableArray();//.ToList();
         }
 
 	}

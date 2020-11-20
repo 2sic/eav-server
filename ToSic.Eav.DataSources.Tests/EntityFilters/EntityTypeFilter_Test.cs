@@ -1,19 +1,20 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSourceTests.ExternalData;
+using ToSic.Eav.DataSourceTests.TestData;
+using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests.EntityFilters
 {
     [TestClass]
-    public class EntityTypeFilter_Test
+    public class EntityTypeFilter_Test: EavTestBase
     {
         [TestMethod]
         public void EntityTypeFilter_FindAllIfAllApply()
         {
             var vf = CreateEntityTypeFilterForTesting(1000);
             vf.TypeName = "Person";
-            Assert.AreEqual(1000, vf.List.Count(), "Should find all");
+            Assert.AreEqual(1000, vf.Immutable.Count(), "Should find all");
         }
 
         [TestMethod]
@@ -21,7 +22,7 @@ namespace ToSic.Eav.DataSourceTests.EntityFilters
         {
             var vf = CreateEntityTypeFilterForTesting(1000);
             vf.TypeName = "Category";
-            Assert.AreEqual(0, vf.List.Count(), "Should find all");
+            Assert.AreEqual(0, vf.Immutable.Count(), "Should find all");
         }
 
 
@@ -29,8 +30,8 @@ namespace ToSic.Eav.DataSourceTests.EntityFilters
 
         public static EntityTypeFilter CreateEntityTypeFilterForTesting(int testItemsInRootSource)
         {
-            var ds = DataTableTst.GeneratePersonSourceWithDemoData(testItemsInRootSource, 1001);
-            var filtered = new DataSource(null).GetDataSource<EntityTypeFilter>(ds);
+            var ds = DataTablePerson.Generate(testItemsInRootSource, 1001);
+            var filtered = Resolve<DataSourceFactory>().GetDataSource<EntityTypeFilter>(ds);
             return filtered;
         }
     }

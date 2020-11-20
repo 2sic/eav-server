@@ -4,10 +4,12 @@ using System.Diagnostics;
 using System.Linq;
 using Newtonsoft.Json;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Conversion;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.WebApi.Dto;
 using ToSic.Eav.WebApi.Helpers;
 
@@ -19,7 +21,27 @@ namespace ToSic.Eav.WebApi
 	/// </summary>
 	public class QueryApi : HasLog
     {
-        public QueryApi(ILog parentLog): base("Api.EavQry", parentLog) {}
+        public QueryBuilder QueryBuilder { get; }
+        private readonly Lazy<AppManager> _appManagerLazy;
+        private readonly Lazy<EntitiesToDictionary> _entToDicLazy;
+        private AppManager _appManager;
+
+        public QueryApi(Lazy<AppManager> appManagerLazy, QueryBuilder queryBuilder, Lazy<EntitiesToDictionary> entToDicLazy): base("Api.EavQry")
+        {
+            QueryBuilder = queryBuilder;
+            QueryBuilder.Init(Log);
+            _appManagerLazy = appManagerLazy;
+            _entToDicLazy = entToDicLazy;
+        }
+
+        public QueryApi Init(int appId, ILog parentLog)
+        {
+            Log.LinkTo(parentLog);
+            _appManager = _appManagerLazy.Value.Init(appId, Log);
+            return this;
+        }
+
+
 
         /// <summary>
         /// Get a Pipeline with DataSources
@@ -28,11 +50,10 @@ namespace ToSic.Eav.WebApi
         {
             Log.Add($"get pipe a#{appId}, id:{id}");
             var query = new QueryDefinitionDto();
-            var appManager = new AppManager(appId, Log);
 
             if (!id.HasValue) return query;
 
-            var qDef = appManager.Read.Queries.Get(id.Value);
+            var qDef = _appManager.Read.Queries.Get(id.Value);
 
             #region Deserialize some Entity-Values
 
@@ -66,7 +87,7 @@ namespace ToSic.Eav.WebApi
             // Update Pipeline Entity with new Wirings etc.
 		    var wirings = JsonConvert.DeserializeObject<List<Connection>>(data.Pipeline[Constants.QueryStreamWiringAttributeName].ToString());
 
-            new AppManager(appId, Log).Queries.Update(id, data.DataSources, newDsGuids, data.Pipeline, wirings);
+            _appManager.Queries.Update(id, data.DataSources, newDsGuids, data.Pipeline, wirings);
 
 		    return Definition(appId, id);
 		}
@@ -75,22 +96,20 @@ namespace ToSic.Eav.WebApi
 		/// <summary>
 		/// Query the Result of a Pipeline using Test-Parameters
 		/// </summary>
-		public QueryRunDto Run(int appId, int id, int instanceId)
+		public QueryRunDto Run(int appId, int id, int instanceId, LookUpEngine config)
 		{
             var wrapLog = Log.Call($"a#{appId}, {nameof(id)}:{id}, {nameof(instanceId)}: {instanceId}");
 
-            var config = Factory.Resolve<IGetEngine>().GetEngine(instanceId, Log);
-
             // Get the query, run it and track how much time this took
-		    var queryFactory = new QueryBuilder(Log);
-		    var qDef = queryFactory.GetQueryDefinition(appId, id);
-			var outStreams = queryFactory.GetDataSourceForTesting(qDef, true, config);
+		    //var queryFactory = new QueryBuilder(Log);
+		    var qDef = QueryBuilder.GetQueryDefinition(appId, id);
+			var outStreams = QueryBuilder.GetDataSourceForTesting(qDef, true, config);
             
             
             var serializeWrap = Log.Call("Serialize", useTimer: true);
             var timer = new Stopwatch();
             timer.Start();
-		    var query = Helpers.Serializers.GetSerializerWithGuidEnabled().Convert(outStreams);
+		    var query = _entToDicLazy.Value.EnableGuids().Convert(outStreams);
             timer.Stop();
             serializeWrap("ok");
 
@@ -115,13 +134,13 @@ namespace ToSic.Eav.WebApi
         /// <summary>
         /// Clone a Pipeline with all DataSources and their configurations
         /// </summary>
-        public void Clone(int appId, int id) => new AppManager(appId, Log).Queries.SaveCopy(id);
+        public void Clone(int appId, int id) => _appManager.Queries.SaveCopy(id);
 		
 
 		/// <summary>
 		/// Delete a Pipeline with the Pipeline Entity, Pipeline Parts and their Configurations. Stops if the if the Pipeline Entity has relationships to other Entities.
 		/// </summary>
-		public bool Delete(int appId, int id) => new AppManager(appId, Log).Queries.Delete(id);
+		public bool Delete(int appId, int id) => _appManager.Queries.Delete(id);
 
 
         public bool Import(EntityImportDto args)
@@ -129,12 +148,11 @@ namespace ToSic.Eav.WebApi
             try
             {
                 Log.Add("import content" + args.DebugInfo);
-                var appManager = new AppManager(args.AppId, Log);
 
-                var deser = new Eav.ImportExport.Json.JsonSerializer(appManager.AppState, Log);
+                var deser = _appManager.ServiceProvider.Build<ImportExport.Json.JsonSerializer>().Init(_appManager.AppState, Log);
                 var ents = deser.Deserialize(args.GetContentString());
                 var qdef = new QueryDefinition(ents, args.AppId, Log);
-                appManager.Queries.SaveCopy(qdef);
+                _appManager.Queries.SaveCopy(qdef);
 
                 return true;
             }

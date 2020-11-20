@@ -1,69 +1,106 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Globalization;
 using System.Linq;
-using ToSic.Eav.Apps;
-using ToSic.Eav.DataSourceTests.ExternalData;
+using System.Threading;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.DataSources;
+using ToSic.Testing.Shared;
+using static ToSic.Eav.DataSourceTests.TestData.PersonSpecs;
+using static ToSic.Eav.DataSourceTests.ValueSortShared;
 
-namespace ToSic.Eav.DataSources.Tests
+namespace ToSic.Eav.DataSourceTests
 {
     // Todo
     // Create tests with language-parameters as well, as these tests ignore the language and always use default
 
     [TestClass]
-    public class ValueFilterString
+    public class ValueFilterString: EavTestBase
     {
         private const int TestVolume = 10000;
         private readonly ValueFilter _testDataGeneratedOutsideTimer;
+        private readonly ValueFilterMaker _valueFilterMaker;
+
         public ValueFilterString()
         {
-            _testDataGeneratedOutsideTimer = CreateValueFilterForTesting(TestVolume);
+            _valueFilterMaker = Resolve<ValueFilterMaker>();
+            _testDataGeneratedOutsideTimer = _valueFilterMaker.CreateValueFilterForTesting(TestVolume, true);
+
+            // Set the thread culture, as some comparisons need the current culture to be en-US
+            Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo(EnUs);
+        }
+
+        private ValueFilter GetFilter(bool table, bool ml, string field, string compare = null, string value = null)
+        {
+            var filter = _valueFilterMaker.CreateValueFilterForTesting(SmallVolume, table, ml);
+            filter.Attribute = field;
+            if (compare != null) filter.Operator = compare;
+            if (value != null) filter.Value = value;
+            return filter;
+        }
+
+        [DataRow(true, false, City1, Quarter, null, "use table for first test because that always worked")]
+        [DataRow(false, false, City1, Quarter, null, "use entities, but not ML yet")]
+        [DataRow(false, true, City1, None, null, "simple ML case, won't find")]
+        [DataRow(false, true, PriPrefix + City1, Quarter, null, "find primary language because no lang specified")]
+        [DataRow(false, true, EnPrefix + City1, None, null, "look for no lang, so shouldn't find the EN entries")]
+        [DataRow(false, true, PriPrefix + City1, Quarter, null, "no lang, should find Pri")]
+        [DataRow(false, true, EnPrefix + City1, None, null, "no lang, shouldn't find EN")]
+        [DataRow(false, true, EnPrefix + City1, Quarter, EnUs, "Look for en, should find")]
+        [DataRow(false, true, PriPrefix + City1, Quarter, ValueLanguages.LanguageDefault, "Look for pri, should find")]
+        [DataRow(false, true, EnPrefix + City1, None, ValueLanguages.LanguageDefault, "Pri - shouldn't find en")]
+        [DataRow(false, true, PriPrefix + City1, Quarter, "", "none - should find pri")]
+        [DataRow(false, true, EnPrefix + City1, None, "", "none, shouldn't find en")]
+        [DataRow(false, true, PriPrefix + City1, None, ValueLanguages.LanguageCurrent, "current, shouldn't find pri")]
+        [DataRow(false, true, EnPrefix + City1, Quarter, ValueLanguages.LanguageCurrent, "current = en should find EN")]
+        [DataRow(false, true, PriPrefix + City1, Quarter, En, "'en' will find the primary ")]
+        [DataRow(false, true, EnPrefix + City1, None, En, "Just 'en' can't find any")]
+        [DataRow(false, true, EnPrefix + City1, None, FrFr, "fr shouldn't find EN")]
+        [DataRow(false, true, FrPrefix + City1, None, null, "none shouldn't find FR")]
+        [DataRow(false, true, FrPrefix + City1, None, EnUs, "EN shouldn't find FR")]
+        [DataRow(false, true, FrPrefix + City1, Quarter, FrFr, "FR should find fr")]
+        [DataRow(false, true, FrPrefix + City1, None, Fr, "just 'fr' shouldn't find anything")]
+        [DataRow(false, true, PriPrefix + City1, Quarter, "xx", "unknown should find default/pri")]
+        [DataRow(false, true, EnPrefix + City1, None, "xx", "unknown shouldn't find en")]
+        [DataTestMethod]
+        public void ValueFilter_SimpleText_MultiLang_Ca25x(bool table, bool ml, string city, int expected, string lang, string notes)
+        {
+            var vf = GetFilter(table, ml, FieldCity, value: city);
+            if (lang != null) vf.Languages = lang;
+            Assert.AreEqual(expected, vf.List.Count(), $"Should find exactly {expected} people with this city");
         }
 
         [TestMethod]
-        public void ValueFilter_SimpleTextFilter()
-        {
-            var vf = _testDataGeneratedOutsideTimer;
-            vf.Attribute = "City";
-            vf.Value = DataTableTst.TestCities[0]; // test for the first value
-            Assert.AreEqual(2500, vf.List.Count(), "Should find exactly 2500 people with this city");
-        }
-        [TestMethod]
         public void ValueFilter_SimpleTextFilterCIDefault()
         {
-            var vf = _testDataGeneratedOutsideTimer;
-            vf.Attribute = "City";
-            vf.Value = DataTableTst.TestCities[0].ToLower(); // test for the first value
-            Assert.AreEqual(2500, vf.List.Count(), "Should find exactly 2500 people with this city");
+            var vf = GetFilter(true, false, FieldCity);
+            vf.Value = City1.ToLower(); // test for the first value
+            Assert.AreEqual(Quarter, vf.List.Count(), "Should find exactly 2500 people with this city");
         }
 
         #region String Case Sensitive
         [TestMethod]
         public void ValueFilter_SimpleTextFilterCSWithResults()
         {
-            var vf = _testDataGeneratedOutsideTimer;
-            vf.Attribute = "City";
-            vf.Operator = "===";
-            vf.Value = DataTableTst.TestCities[0]; // test for the first value
-            Assert.AreEqual(2500, vf.List.Count(), "Should find exactly 2500 people with this city");
+            var vf = GetFilter(true, false, FieldCity, "===", City1);
+            Assert.AreEqual(Quarter, vf.List.Count(), "Should find exactly 2500 people with this city");
         }       
 
         [TestMethod]
         public void ValueFilter_SimpleTextFilterCSWithoutResults()
         {
-            var vf = _testDataGeneratedOutsideTimer;
-            vf.Attribute = "City";
-            vf.Operator = "===";
-            vf.Value = DataTableTst.TestCities[0].ToLower(); // test for the first value
+            var vf = GetFilter(true, false, FieldCity, "===");
+            //vf.Operator = "===";
+            vf.Value = City1.ToLower(); // test for the first value
             Assert.AreEqual(0, vf.List.Count(), "Should find exactly 0 people with this city");
         }
 
         [TestMethod]
         public void ValueFilter_SimpleTextFilterCSWithSomeNulls()
         {
-            var vf = _testDataGeneratedOutsideTimer;
-            vf.Attribute = "CityMaybeNull";
-            vf.Operator = "===";
+            var vf = GetFilter(true, false, FieldCityMaybeNull, "===");
+            //vf.Attribute = "CityMaybeNull";
+            //vf.Operator = "===";
             vf.Value = "Grabs"; // test for the first value
-            Assert.AreEqual(2500, vf.List.Count(), "Should find exactly 0 people with this city");
+            Assert.AreEqual(Quarter, vf.List.Count(), "Should find exactly 0 people with this city");
         }
 
         #endregion
@@ -207,7 +244,7 @@ namespace ToSic.Eav.DataSources.Tests
         {
             var vf = _testDataGeneratedOutsideTimer;
             vf.Attribute = "CityMaybeNull";
-            vf.Value = DataTableTst.TestCities[1]; // test for the second value
+            vf.Value = TestCities[1]; // test for the second value
             Assert.AreEqual(2500, vf.List.Count(), "Should find exactly 250 people with this city");
         }
 
@@ -237,11 +274,5 @@ namespace ToSic.Eav.DataSources.Tests
         }
         #endregion
 
-        public static  ValueFilter CreateValueFilterForTesting(int testItemsInRootSource)
-        {
-            var ds = DataTableTst.GeneratePersonSourceWithDemoData(testItemsInRootSource, 1001);
-            var filtered = new DataSource(null).GetDataSource<ValueFilter>(new AppIdentity(1, 1), ds);
-            return filtered;
-        }
     }
 }

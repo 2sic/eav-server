@@ -13,7 +13,7 @@ namespace ToSic.Eav.Apps.Parts
         {
             var lists = new CoupledIdLists(fields.ToDictionary(f => f, f => FieldListIdsWithNulls(target.Children(f))), Log);
             var values = callback.Invoke(lists);
-            AppManager.Entities.UpdateParts(target, values, asDraft);
+            Parent.Entities.UpdateParts(target, values, asDraft);
         }
 
         public void FieldListAdd(IEntity target, string[] fields, int index, int?[] values, bool asDraft)

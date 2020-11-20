@@ -31,14 +31,7 @@ namespace ToSic.Eav.ImportExport.Zip
                 ZipFolder(rootFolder, folder, zStream);
 
             var relativePath = currentFolder.Substring(rootFolder.Length) + "\\";
-
-            // 2018-04-06 2dm disabled, seems completely unused
-            //if (relativePath.Length > 1)
-            //{
-            //    var dirEntry = new ZipEntry(relativePath);
-            //    dirEntry.DateTime = DateTime.Now;
-            //}
-
+            
             foreach (var file in Directory.GetFiles(currentFolder))
                 AddFileToZip(zStream, relativePath, file);
         }

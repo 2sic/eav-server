@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Conversion;
+using ToSic.Eav.Plumbing;
+using ToSic.Eav.WebApi.Helpers;
 using IEntity = ToSic.Eav.Data.IEntity;
+using ToSic;
 
 namespace ToSic.Eav.WebApi
 {
@@ -14,7 +18,7 @@ namespace ToSic.Eav.WebApi
         /// <summary>
         /// Get Entities with specified AssignmentObjectTypeId and Key
         /// </summary>
-        public static IEnumerable<Dictionary<string, object>> Get(int appId, int targetType, string keyType, string key, string contentType = null)
+        public static IEnumerable<Dictionary<string, object>> Get(IServiceProvider serviceProvider, int appId, int targetType, string keyType, string key, string contentType = null)
         {
             IEnumerable<IEntity> entityList = null;
 
@@ -40,7 +44,7 @@ namespace ToSic.Eav.WebApi
             if(entityList == null)
                 throw new Exception($"was not able to convert '{key}' to key-type {keyType}, must cancel");
 
-            return Helpers.Serializers.GetSerializerWithGuidEnabled().Convert(entityList);
+            return serviceProvider.Build<EntitiesToDictionary>().EnableGuids().Convert(entityList);
         }
 
     }

@@ -1,20 +1,31 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Run;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.Queries
 {
-    public static class GlobalQueries
+    public class GlobalQueries
     {
+        private readonly Lazy<IRuntime> _runtimeLazy;
         public const string GlobalEavQueryPrefix = "Eav.Queries.Global.";
         public const string GlobalQueryPrefix = "Global.";
+
+        #region Constructor / DI
+
+        public GlobalQueries(Lazy<IRuntime> runtimeLazy)
+        {
+            _runtimeLazy = runtimeLazy;
+        }
+
+        #endregion
 
         /// <summary>
         /// List of global queries, caches after first scan
         /// </summary>
         /// <returns></returns>
-        public static List<IEntity> AllQueries()
+        public List<IEntity> AllQueries()
         {
             if (_globalQueriesCache != null) return _globalQueriesCache;
 
@@ -32,11 +43,11 @@ namespace ToSic.Eav.DataSources.Queries
         /// All content-types available in Reflection; will cache after first scan
         /// </summary>
         /// <returns></returns>
-        private static IEnumerable<IEntity> QueriesInRuntime()
+        private IEnumerable<IEntity> QueriesInRuntime()
         {
             if (_runtimeCache != null) return _runtimeCache;
 
-            var runtime = Factory.Resolve<IRuntime>().Init(null);
+            var runtime = _runtimeLazy.Value.Init(null);
             _runtimeCache = runtime?.LoadGlobalItems("query") ?? new List<IEntity>();
             return _runtimeCache;
         }
@@ -44,7 +55,7 @@ namespace ToSic.Eav.DataSources.Queries
         private static IEnumerable<IEntity> _runtimeCache;
 
 
-        public static IEntity FindQuery(string name)
+        public IEntity FindQuery(string name)
         {
             // Note: must use GetBestValue("Name") as GetTitle() will fail, since the type is often not known
             var types = _globalQueriesCache ?? AllQueries();

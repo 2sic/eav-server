@@ -8,12 +8,12 @@ namespace ToSic.Eav.Apps.Tests.Mocks
     {
         public int GetZoneId(int tenantId) => -1;
 
-        public int GetZoneId(ITenant tenant) => -999;
-        public IAppIdentity IdentityFromTenant(int tenantId, int appId) 
+        public int GetZoneId(ISite site) => -999;
+        public IAppIdentity IdentityFromSite(int tenantId, int appId) 
             => new AppIdentity(-1, appId);
 
-        public ITenant TenantOfZone(int zoneId) => new MockTenant();
-        public ITenant TenantOfApp(int appId) => new MockTenant();
+        public ISite SiteOfZone(int zoneId) => new MockTenant();
+        public ISite TenantOfApp(int appId) => new MockTenant();
 
         public List<TempTempCulture> CulturesWithState(int tenantId, int zoneId) => new List<TempTempCulture>();
 

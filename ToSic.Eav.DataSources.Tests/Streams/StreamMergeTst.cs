@@ -1,23 +1,25 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
-using ToSic.Eav.DataSourceTests.ExternalData;
+using ToSic.Eav.DataSources;
+using ToSic.Eav.DataSourceTests.TestData;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
+using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests.Streams
 {
     [TestClass]
-    public class StreamMergeTst
+    public class StreamMergeTst: EavTestBase
     {
 
         [TestMethod]
         public void StreamMerge_In0()
         {
             var desiredFinds = 0;
-            var sf = new DataSource(null).GetDataSource<DataSources.StreamMerge>(
+            var sf = Resolve<DataSourceFactory>().GetDataSource<StreamMerge>(
                 new AppIdentity(0, 0), null, 
-                configLookUp: new LookUpEngine(null as ILog));
+                new LookUpEngine(null as ILog));
             var found = sf.List.Count();
             Assert.AreEqual(desiredFinds, found, "Should find exactly this amount people");
         }
@@ -59,10 +61,10 @@ namespace ToSic.Eav.DataSourceTests.Streams
 
         }
 
-        private static DataSources.StreamMerge GenerateMergeDs(int desiredFinds)
+        private static StreamMerge GenerateMergeDs(int desiredFinds)
         {
-            var ds = DataTableTst.GeneratePersonSourceWithDemoData(desiredFinds, 1001, true);
-            var sf = new DataSource(null).GetDataSource<DataSources.StreamMerge>(new AppIdentity(0, 0), ds);
+            var ds = DataTablePerson.Generate(desiredFinds, 1001, true);
+            var sf = Resolve<DataSourceFactory>().GetDataSource<StreamMerge>(new AppIdentity(0, 0), ds);
             return sf;
         }
     }

@@ -7,13 +7,11 @@ namespace ToSic.Eav.Persistence.EFC11.Tests
     [TestClass]
     public class ZoneTests
     {
-        private EavDbContext _db;
 
         [TestInitialize]
         public void Init()
         {
             Trace.Write("initializing DB & loader");
-            _db = Factory.Resolve<EavDbContext>();
         }
 
         [TestMethod]

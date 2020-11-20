@@ -1,22 +1,16 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Data;
-using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps.Parts
 {
-    public class ContentTypeManager : ManagerBase
+    public class ContentTypeManager : PartOf<AppManager, ContentTypeManager>
     {
-        public ContentTypeManager(AppManager app, ILog parentLog) : base(app, parentLog, "App.TypMng")
-        {
-        }
+        public ContentTypeManager() : base("App.TypMng") { }
 
         public void Create(string name, string staticName, string description, string scope)
         {
-            AppManager.DataController.DoAndSave(() =>
-                AppManager.DataController.AttribSet.PrepareDbAttribSet(name, description, name, scope, false, AppManager.AppId));
-
-            // ensure app-package loads this type - this is a simple thing, as no data uses this type till now
-            AppManager.AppState.ContentTypesShouldBeReloaded = true;
+            Parent.DataController.DoAndSave(() =>
+                Parent.DataController.AttribSet.PrepareDbAttribSet(name, description, name, scope, false, Parent.AppId));
         }
 
         /// <summary>
@@ -26,7 +20,7 @@ namespace ToSic.Eav.Apps.Parts
         public int CreateAttributeAndInitializeAndSave(int attributeSetId, ContentTypeAttribute attDef, string inputType)
         {
             Log.Add($"create attrib+init+save type:{attributeSetId}, input:{inputType}");
-            var newAttribute = AppManager.DataController.Attributes.AddAttributeAndSave(attributeSetId, attDef);
+            var newAttribute = Parent.DataController.Attributes.AddAttributeAndSave(attributeSetId, attDef);
 
             // set the nice name and input type, important for newly created attributes
             InitializeNameAndInputType(attDef.Name, inputType, newAttribute);
@@ -49,7 +43,7 @@ namespace ToSic.Eav.Apps.Parts
                 TargetType = Constants.MetadataForAttribute,
                 KeyNumber = attributeId
             };
-            AppManager.Entities.SaveMetadata(meta, Constants.MetadataFieldTypeAll, newValues);
+            Parent.Entities.SaveMetadata(meta, Constants.MetadataFieldTypeAll, newValues);
         }
 
         public bool UpdateInputType(int attributeId, string inputType)
@@ -62,7 +56,7 @@ namespace ToSic.Eav.Apps.Parts
                 TargetType = Constants.MetadataForAttribute,
                 KeyNumber = attributeId
             };
-            AppManager.Entities.SaveMetadata(meta, Constants.MetadataFieldTypeAll, newValues);
+            Parent.Entities.SaveMetadata(meta, Constants.MetadataFieldTypeAll, newValues);
             return true;
         }
 

@@ -165,7 +165,7 @@ namespace ToSic.Eav.ImportExport.Xml
 			        .ToList();
 
                 // construct the attribute with these value elements
-			    var newAttr = AttributeBase.CreateTypedAttribute(sourceAttrib.StaticName, 
+			    var newAttr = AttributeBuilder.CreateTyped(sourceAttrib.StaticName, 
                     tempTargetValues.First().XmlValue.Attribute(XmlConstants.EntityTypeAttribute)?.Value,
 			        currentAttributesImportValues);
 

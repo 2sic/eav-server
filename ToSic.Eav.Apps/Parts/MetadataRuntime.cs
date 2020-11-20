@@ -1,14 +1,13 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps.Parts
 {
-    public class MetadataRuntime: RuntimeBase
+    public class MetadataRuntime: PartOf<AppRuntime, MetadataRuntime>
     {
-        internal MetadataRuntime(AppRuntime appRt, ILog parentLog) : base(appRt, parentLog) { }
+        internal MetadataRuntime() : base("RT.Metadt") { }
 
         public IEnumerable<IEntity> Get<T>(int targetType, T key, string contentTypeName = null)
-            => AppRT.AppState.Get(targetType, key, contentTypeName);
+            => Parent.AppState.Get(targetType, key, contentTypeName);
     }
 }

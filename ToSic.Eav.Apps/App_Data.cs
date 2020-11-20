@@ -19,7 +19,7 @@ namespace ToSic.Eav.Apps
                 if (_dataConfigurationBuilder != null)
                 {
                     var config = _dataConfigurationBuilder.Invoke(this);
-                    InitData(config.ShowDrafts, config.PublishingEnabled, config.Configuration);
+                    InitData(config.ShowDrafts, config.Configuration);
                 }
                 _configurationProviderBuilt = true;
                 return _configurationProvider;
@@ -39,14 +39,12 @@ namespace ToSic.Eav.Apps
         /// todo: later this should be moved to initialization of this object
         /// </summary>
         /// <param name="showDrafts"></param>
-        /// <param name="versioningEnabled"></param>
         /// <param name="configurationValues">this is needed for providing parameters to the data-query-system</param>
-        private void InitData(bool showDrafts, bool versioningEnabled, ILookUpEngine configurationValues)
+        private void InitData(bool showDrafts, ILookUpEngine configurationValues)
         {
-            Log.Add($"init data drafts:{showDrafts}, vers:{versioningEnabled}, hasConf:{configurationValues != null}");
+            Log.Add($"init data drafts:{showDrafts}, hasConf:{configurationValues != null}");
             _configurationProvider = configurationValues;
             ShowDrafts = showDrafts;
-            EnablePublishing = versioningEnabled;
         }
 
         /// <inheritdoc />
@@ -62,11 +60,11 @@ namespace ToSic.Eav.Apps
                                     "Please call InitData first to provide this data.");
 
             // ModulePermissionController does not work when indexing, return false for search
-            var dsFactory = new DataSource(Log);
-            var initialSource = dsFactory.GetPublishing(this, ShowDrafts,
+            // var dsFactory = new DataSource(Log);
+            var initialSource = DataSourceFactory.GetPublishing(this, ShowDrafts,
                 ConfigurationProvider as LookUpEngine);
 
-            var xData = dsFactory.GetDataSource<AppData>(initialSource);
+            var xData = DataSourceFactory.GetDataSource<AppData>(initialSource);
 
             Log.Add("configure on demand completed");
 
@@ -81,10 +79,10 @@ namespace ToSic.Eav.Apps
         [PrivateApi]
         protected void GetLanguageAndUser(AppData data)
         {
-            var languagesActive = Env.ZoneMapper.CulturesWithState(Tenant.Id, ZoneId)
+            var languagesActive = _dependencies.ZoneMapper.CulturesWithState(Site.Id, ZoneId)
                 .Any(c => c.Active);
             data.DefaultLanguage = languagesActive
-                ? Tenant.DefaultLanguage
+                ? Site.DefaultLanguage
                 : "";
             data.CurrentUserName = Env.User.IdentityToken;
         }

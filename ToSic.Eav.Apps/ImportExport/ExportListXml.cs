@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using ToSic.Eav.Data;
@@ -7,8 +6,6 @@ using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.ImportExport.Xml;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Run;
-using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps.ImportExport
 {
@@ -17,16 +14,30 @@ namespace ToSic.Eav.Apps.ImportExport
     /// </summary>
     public class ExportListXml: HasLog
     {
-        private readonly XmlBuilder _xBuilder = new XmlBuilder();
+        #region Dependency Injection and Init
 
-        private AppState App { get; }
-        public IContentType ContentType { get; }
-
-        public ExportListXml(AppState app, IContentType contentType, ILog parentLog): base("App.LstExp", parentLog)
+        public ExportListXml(ExportImportValueConversion valueConverter) : base("App.LstExp")
         {
+            ValueConverter = valueConverter;
+        }
+
+        protected ExportImportValueConversion ValueConverter { get; }
+
+        public ExportListXml Init(AppState app, IContentType contentType, ILog parentLog)
+        {
+            Log.LinkTo(parentLog);
             App = app;
             ContentType = contentType;
+            return this;
         }
+
+        private readonly XmlBuilder _xBuilder = new XmlBuilder();
+        private AppState App { get; set; }
+        public IContentType ContentType { get; set; }
+
+        #endregion
+
+
 
 
         /// <summary>
@@ -89,7 +100,7 @@ namespace ToSic.Eav.Apps.ImportExport
             var documentRoot = _xBuilder.BuildDocumentWithRoot();
 
             // Query all entities, or just the ones with specified IDs
-            var entities = App.ListPublished.Where(e => e.Type == ContentType);
+            var entities = App.ListPublished.List.Where(e => e.Type == ContentType);
             if (selectedIds != null && selectedIds.Length > 0)
                 entities = entities.Where(e => selectedIds.Contains(e.EntityId));
             var entList = entities.ToList();
@@ -97,8 +108,6 @@ namespace ToSic.Eav.Apps.ImportExport
             // Get the attribute definitions
             var attribsOfType = ContentType.Attributes;
             Log.Add($"will export {entList.Count} entities X {attribsOfType.Count} attribs");
-
-            var resolver = Factory.Resolve<IValueConverter>();
 
             foreach (var entity in entList)
                 foreach (var language in languages)
@@ -114,9 +123,9 @@ namespace ToSic.Eav.Apps.ImportExport
                             value = entity.Attributes[attribute.Name].Values.FirstOrDefault()?.Serialized;
                         else
                             value = exportLanguageReference == ExportLanguageResolution.Resolve
-                                ? ValueWithFullFallback(entity, attribute, langLow, languageFallback, resolveLinks, resolver)
-                                : ValueOrLookupCode(entity, attribute, langLow, languageFallback,
-                                    sysLanguages, languages.Count > 1, resolveLinks, resolver);
+                                ? ValueConverter.ValueWithFullFallback(entity, attribute, langLow, languageFallback, resolveLinks)
+                                : ValueConverter.ValueOrLookupCode(entity, attribute, langLow, languageFallback,
+                                    sysLanguages, languages.Count > 1, resolveLinks);
 
                         xmlEntity.Append(attribute.Name, value);
                     }
@@ -126,110 +135,6 @@ namespace ToSic.Eav.Apps.ImportExport
         }
 
         #region Helpers to assemble the xml
-
-        /// <summary>
-        /// Append an element to this. If the attribute is named xxx and the value is 4711 in the language specified, 
-        /// the element appended will be <xxx>4711</xxx>. File and page references can be resolved optionally.
-        /// </summary>
-        private static string ValueWithFullFallback(IEntity entity, IContentTypeAttribute attribute, string language, string languageFallback, bool resolveLinks, IValueConverter resolver)
-        {
-            var value = entity.GetBestValue(attribute.Name, new []{ language, languageFallback } ).ToString();
-            return ResolveValue(entity, attribute.Type, value, resolveLinks, resolver);
-        }
-
-        /// <summary>
-        /// Append an element to this. The element will get the name of the attribute, and if possible the value will 
-        /// be referenced to another language (for example [ref(en-US,ro)].
-        /// </summary>
-        private static string ValueOrLookupCode(IEntity entity, IContentTypeAttribute attribute, string language, string languageFallback, string[] sysLanguages, bool useRefToParentLanguage, bool resolveLinks, IValueConverter resolver)
-        {
-            var attrib = entity.Attributes[attribute.Name];
-
-            // Option 1: nothing (no value found at all)
-            // create a special "null" entry, so the re-import will also null this
-            if (attrib == null || attrib.Values.Count == 0)
-                return XmlConstants.Null;
-
-            // now try to find the exact value-item for this language
-            var valueItem = GetExactAssignedValue(attrib, language, languageFallback);
-
-            if (valueItem == null)
-                return XmlConstants.Null;
-
-            // Option 2: Exact match (non-shared) on no other languages
-            if (valueItem.Languages.Count == 0 || valueItem.Languages.Count == 1)
-                return ResolveValue(entity, attribute.Type, valueItem.Serialized, resolveLinks, resolver);
-
-            // Option 4 - language is assigned - either shared or Read-only
-            var sharedParentLanguages = valueItem.Languages
-                .Where(reference => !reference.ReadOnly)
-                .Where(reference => reference.Key != language)
-                .Select(reference => reference.Key)
-                .OrderBy(lang => lang != languageFallback)  // order so first is the fallback, if it's included in this set
-                .ThenBy(lan => lan)
-                .ToList(); // then a-z
-
-            // Option 4a - no other parent languages assigned
-            if (!sharedParentLanguages.Any()) 
-                return ResolveValue(entity, attribute.Type, valueItem.Serialized, resolveLinks, resolver);
-
-            var langsOfValue = valueItem.Languages;
-            string primaryLanguageRef = null;
-
-            var valueLanguageReadOnly = langsOfValue.First(l => l.Key == language).ReadOnly;
-            if (useRefToParentLanguage)
-                primaryLanguageRef = sharedParentLanguages
-                    .FirstOrDefault(lang => sysLanguages.IndexOf(lang) < sysLanguages.IndexOf(language));
-            else if (valueLanguageReadOnly)
-                primaryLanguageRef = sharedParentLanguages.First();// If one language is serialized, do not serialize read-write values as references
-
-            return primaryLanguageRef != null 
-                ? $"[ref({primaryLanguageRef},{(valueLanguageReadOnly ? XmlConstants.ReadOnly : XmlConstants.ReadWrite)})]" 
-                : ResolveValue(entity, attribute.Type, valueItem.Serialized, resolveLinks, resolver);
-        }
-
-        internal static IValue GetExactAssignedValue(IAttribute attrib, string language, string languageFallback)
-        {
-            var valueItem = string.IsNullOrEmpty(language)
-                ? attrib.Values.FirstOrDefault(v => v.Languages.Any(l => l.Key == languageFallback)) // use default (fallback)
-                  ?? attrib.Values.FirstOrDefault(v => !v.Languages.Any()) // or the node without any languages
-                : attrib.Values.FirstOrDefault(v => v.Languages.Any(l => l.Key == language)); // otherwise really exact match
-            return valueItem;
-        }
-
-        /// <summary>
-        /// Append an element to this. The element will have the value of the EavValue. File and page references 
-        /// can optionally be resolved.
-        /// </summary>
-        internal static string ResolveValue(IEntity entity, string attrType, string value, bool resolveLinks, IValueConverter resolver) 
-            => ResolveValue(entity.AppId, entity.EntityGuid, attrType, value, resolveLinks, resolver);
-
-
-        /// <summary>
-        /// Append an element to this. The element will have the value of the EavValue. File and page references 
-        /// can optionally be resolved.
-        /// </summary>
-        internal static string ResolveValue(int appId, Guid itemGuid, string attrType, string value, bool resolveLinks, IValueConverter resolver)
-        {
-            if (value == null)
-                return XmlConstants.Null;
-            if (value == string.Empty)
-                return XmlConstants.Empty;
-            if (resolveLinks)
-                return ResolveHyperlinksFromTenant(appId, itemGuid, value, attrType, resolver);
-            return value;
-        }
-
-        /// <summary>
-        /// If the value is a file or page reference, resolve it for example from 
-        /// File:4711 to Content/file4711.jpg. If the reference cannot be resolved, 
-        /// the original value will be returned. 
-        /// </summary>
-        internal static string ResolveHyperlinksFromTenant(int appId, Guid itemGuid, string value, string attrType,
-            IValueConverter resolver)
-            => attrType != Constants.DataTypeHyperlink
-                ? value
-                : resolver.ToValue(value, itemGuid);
 
         #endregion
 

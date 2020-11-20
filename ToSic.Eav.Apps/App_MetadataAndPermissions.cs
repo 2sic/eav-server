@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Documentation;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Security;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -12,14 +11,7 @@ namespace ToSic.Eav.Apps
         #region Metadata and Permission Accessors
 
         /// <inheritdoc />
-        public IMetadataOf Metadata
-            => _metadata ?? (_metadata = new MetadataOf<int>(Constants.MetadataForApp, AppId,
-                   AppState));
-
-        private IMetadataOf _metadata;
-
-        [PrivateApi]
-        protected IHasMetadataSource AppState;
+        public IMetadataOf Metadata { get; private set; }
 
         /// <summary>
         /// Permissions of this app
@@ -40,15 +32,20 @@ namespace ToSic.Eav.Apps
         {
             var wrapLog = Log.Call();
 
+            var appState = State.Get(this);
+            Metadata = new MetadataOf<int>(Constants.MetadataForApp, AppId, appState);
+
             // Get the content-items describing various aspects of this app
-            AppResources = Metadata.FirstOrDefault(md => md.Type.StaticName == AppConstants.TypeAppResources);
-            AppSettings = Metadata.FirstOrDefault(md => md.Type.StaticName == AppConstants.TypeAppSettings);
-            AppConfiguration = Metadata.FirstOrDefault(md => md.Type.StaticName == AppConstants.TypeAppConfig);
+            AppResources = Metadata.FirstOrDefault(md => md.Type.StaticName == AppLoadConstants.TypeAppResources);
+            AppSettings = Metadata.FirstOrDefault(md => md.Type.StaticName == AppLoadConstants.TypeAppSettings);
+            AppConfiguration = Metadata.FirstOrDefault(md => md.Type.StaticName == AppLoadConstants.TypeAppConfig);
+            // in some cases these things may be null, if the app was created not allowing side-effects
+            // This can usually happen when new apps are being created
             Log.Add($"HasResources: {AppResources != null}, HasSettings: {AppSettings != null}, HasConfiguration: {AppConfiguration != null}");
 
             // resolve some values for easier access
-            Name = AppConfiguration?.GetBestValue("DisplayName")?.ToString() ?? "Error";
-            Folder = AppConfiguration?.GetBestValue("Folder")?.ToString() ?? "Error";
+            Name = appState.Name ?? "Error";
+            Folder = appState.Folder ?? "Error";
             if (bool.TryParse(AppConfiguration?.GetBestValue("Hidden")?.ToString(), out var hidden))
                 Hidden = hidden;
             Log.Add($"Name: {Name}, Folder: {Folder}, Hidden: {Hidden}");

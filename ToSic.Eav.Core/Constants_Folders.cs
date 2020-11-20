@@ -12,6 +12,8 @@
         /// </summary>
         public const string FolderData = ".data";
 
+        public const string AppDataFile = "app.xml";
+
         /// <summary>
         /// the .databeta (this is for testing only, will never be in the distribution)
         /// </summary>

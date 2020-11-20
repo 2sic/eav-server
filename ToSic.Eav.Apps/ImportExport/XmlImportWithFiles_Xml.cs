@@ -4,7 +4,6 @@ using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Xml;
 using ToSic.Eav.Persistence.Logging;
-using ToSic.Eav.Repository.Efc;
 
 // 2dm: must disable NullRef warnings, because there a lot of warnings when processing XML, 
 // ...and these are real errors which should blow
@@ -20,7 +19,7 @@ namespace ToSic.Eav.Apps.ImportExport
 		public bool ImportXml(int zoneId, int appId, XDocument doc, bool leaveExistingValuesUntouched = true)
         {
             var wrapLog = Log.Call<bool>($"z#{zoneId}, a#{appId}, leaveExisting:{leaveExistingValuesUntouched}");
-		    _eavContext = DbDataController.Instance(zoneId, appId, Log);
+		    _eavContext = _dbDataForAppImport.Value.Init(zoneId, appId, Log);
             
 			AppId = appId;
 			ZoneId = zoneId;
@@ -58,7 +57,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
 		    Log.Add($"source def dim:{sourceDefaultDimensionId}");
 
-            _targetDimensions = new ZoneRuntime(zoneId, Log).Languages(true);
+            _targetDimensions = new ZoneRuntime().Init(zoneId, Log).Languages(true);
 
             _xmlBuilder = new XmlToEntity(AppId, sourceDimensions, sourceDefaultDimensionId, _targetDimensions, DefaultLanguage, Log);
             #endregion
@@ -70,8 +69,8 @@ namespace ToSic.Eav.Apps.ImportExport
 		    var importEntities = BuildEntities(entNodes, Constants.NotMetadata);
 
 
-			var import = new Import(ZoneId, AppId, leaveExistingValuesUntouched, parentLog: Log);
-			import.ImportIntoDb(importAttributeSets, importEntities.Cast<Entity>());
+			var import = _importerLazy.Value.Init(ZoneId, AppId, leaveExistingValuesUntouched, true, Log);
+			import.ImportIntoDb(importAttributeSets, importEntities.Cast<Entity>().ToList());
 
             Log.Add($"Purging {ZoneId}/{AppId}");
             SystemManager.Purge(ZoneId, AppId, log: Log);

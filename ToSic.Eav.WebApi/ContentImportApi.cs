@@ -10,8 +10,8 @@ using Microsoft.AspNetCore.Mvc;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Data;
+using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.WebApi.Dto;
 
 namespace ToSic.Eav.WebApi
@@ -19,13 +19,27 @@ namespace ToSic.Eav.WebApi
     /// <inheritdoc />
     public class ContentImportApi : HasLog
     {
-        public ContentImportApi(ILog parentLog = null) : base("Api.EaCtIm", parentLog)
+        private readonly Lazy<AppManager> _appManagerLazy;
+        private readonly Lazy<JsonSerializer> _jsonSerializerLazy;
+        private AppManager _appManager;
+
+        public ContentImportApi(Lazy<AppManager> appManagerLazy, Lazy<JsonSerializer> jsonSerializerLazy) : base("Api.EaCtIm")
         {
+            _appManagerLazy = appManagerLazy;
+            _jsonSerializerLazy = jsonSerializerLazy;
+        }
+
+        public ContentImportApi Init(int appId, ILog parentLog)
+        {
+            Log.LinkTo(parentLog);
+            _appManager = _appManagerLazy.Value.Init(appId, Log);
+            Log.Add($"For app: {appId}");
+            return this;
         }
 
 
         [HttpPost]
-        public ContentImportResultDto EvaluateContent(ContentImportArgsDto args)
+        public ContentImportResultDto XmlPreview(ContentImportArgsDto args)
         {
             Log.Add("eval content - start" + args.DebugInfo);
 
@@ -46,29 +60,29 @@ namespace ToSic.Eav.WebApi
         }
 
         [HttpPost]
-        public ContentImportResultDto ImportContent(ContentImportArgsDto args)
+        public ContentImportResultDto XmlImport(ContentImportArgsDto args)
         {
-            Log.Add("import content" + args.DebugInfo);
+            var wrapLog = Log.Call(args.DebugInfo);
 
             var import = GetXmlImport(args);
             if (!import.ErrorLog.HasErrors)
             {
-                var db = DbDataController.Instance(null, args.AppId, Log);
-                import.PersistImportToRepository(db.UserName);
+                import.PersistImportToRepository();
                 SystemManager.Purge(args.AppId, Log);
             }
+
+            wrapLog("done, errors: " + import.ErrorLog.HasErrors);
             return new ContentImportResultDto(!import.ErrorLog.HasErrors, null);
         }
 
         private ImportListXml GetXmlImport(ContentImportArgsDto args)
         {
             Log.Add("get xml import " + args.DebugInfo);
-            var appManager = new AppManager(args.AppId, Log);
-            var contextLanguages = appManager.Read.Zone.Languages().Select(l => l.EnvironmentKey).ToArray();
+            var contextLanguages = _appManager.Read.Zone.Languages().Select(l => l.EnvironmentKey).ToArray();
 
             using (var contentSteam = new MemoryStream(Convert.FromBase64String(args.ContentBase64)))
             {
-                return appManager.Entities.Importer(args.ContentType, contentSteam,
+                return _appManager.Entities.Importer(args.ContentType, contentSteam,
                     contextLanguages, args.DefaultLanguage,
                     args.ClearEntities, args.ImportResourcesReferences);
             }
@@ -80,13 +94,11 @@ namespace ToSic.Eav.WebApi
             try
             {
                 var callLog = Log.Call<bool>(null, "import json item" + args.DebugInfo);
-                var appManager = new AppManager(args.AppId, Log);
-                var deserializer = new ImportExport.Json.JsonSerializer(appManager.AppState, Log)
-                {
-                    PreferLocalAppTypes = true, // Since we're importing directly into this app, we prefer local content-types
-                };
+                var deserializer = _jsonSerializerLazy.Value.Init(_appManager.AppState, Log);
+                // Since we're importing directly into this app, we prefer local content-types
+                deserializer.PreferLocalAppTypes = true; 
 
-                appManager.Entities.Import(new List<IEntity> {deserializer.Deserialize(args.GetContentString()) });
+                _appManager.Entities.Import(new List<IEntity> {deserializer.Deserialize(args.GetContentString()) });
                 return callLog("ok", true);
             }
             catch (ArgumentException)

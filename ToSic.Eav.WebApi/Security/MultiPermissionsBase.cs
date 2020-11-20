@@ -9,7 +9,7 @@ namespace ToSic.Eav.WebApi.Security
     /// A permission checker which is initialized with various items which must be checked
     /// Calling Ensure or similar will verify that all permission checks succeed
     /// </summary>
-    internal abstract class MultiPermissionsBase: HasLog<MultiPermissionsBase>, IMultiPermissionCheck
+    public abstract class MultiPermissionsBase: HasLog<MultiPermissionsBase>, IMultiPermissionCheck
     {
         /// <summary>
         /// All the permission checks that will be used

@@ -24,7 +24,7 @@ namespace ToSic.Eav.Caching
         /// <summary>
         /// The repository loader. Must generate a new one on every access, to be sure that it doesn't stay in memory for long. 
         /// </summary>
-        private IRepositoryLoader GetNewRepoLoader() => Factory.Resolve<IRepositoryLoader>();
+        private IRepositoryLoader GetNewRepoLoader() => Factory.StaticBuild<IRepositoryLoader>();
 
 	    /// <inheritdoc />
 	    public abstract IReadOnlyDictionary<int, Zone> Zones { get; }
@@ -108,8 +108,7 @@ namespace ToSic.Eav.Caching
                 // Init EavSqlStore once
                 var loader = GetNewRepoLoader();
                 if (primaryLanguage != null) loader.PrimaryLanguage = primaryLanguage;
-                var appState = loader.AppState(appIdentity.AppId);
-
+                var appState = loader.AppState(appIdentity.AppId, true);
                 Set(cacheKey, appState);
             }
 

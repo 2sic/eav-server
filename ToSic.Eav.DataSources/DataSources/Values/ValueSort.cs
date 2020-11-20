@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
@@ -27,7 +26,7 @@ namespace ToSic.Eav.DataSources
 
         private const string AttrKey = "Attributes";
 		private const string DirectionKey = "Value";
-		private const string LangKey = "Language";
+		//private const string LangKey = "Language";
         
 		/// <summary>
 		/// The attribute whose value will be sorted by.
@@ -52,8 +51,8 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public string Languages
 		{
-			get => Configuration[LangKey];
-		    set => Configuration[LangKey] = value;
+			get => Configuration[ValueLanguages.LangKey];
+		    set => Configuration[ValueLanguages.LangKey] = value;
 		}
 		#endregion
 
@@ -64,16 +63,23 @@ namespace ToSic.Eav.DataSources
 		[PrivateApi]
 		public ValueSort()
 		{
-			Provide(GetList);
+			Provide(GetValueSort);
 		    ConfigMask(AttrKey, "[Settings:Attributes]");
 		    ConfigMask(DirectionKey, "[Settings:Directions]");
-		    ConfigMask(LangKey, "Default");
+		    ConfigMask(ValueLanguages.LangKey, ValueLanguages.LanguageSettingsPlaceholder);
         }
 
-		private List<IEntity> GetList()
+        /// <summary>
+        /// The internal language list used to lookup values.
+        /// It's internal, to allow testing/debugging from the outside
+        /// </summary>
+        [PrivateApi] internal string[] LanguageList { get; private set; }
+
+
+		private IImmutableList<IEntity> GetValueSort()
 		{
             // todo: maybe do something about languages?
-            // todo: test datetime & decimal types
+            // todo: test decimal / number types
 
             Configuration.Parse();
 
@@ -83,33 +89,35 @@ namespace ToSic.Eav.DataSources
 			var descendingCodes = new[] { "desc","d","0",">" };
 
 			#region Languages check - not fully implemented yet, only supports "default"
-			var lang = Languages.ToLower();
-			if (lang != "default")
-				throw new Exception("Can't filter for languages other than 'default'");
 
-			if (lang == "default") lang = ""; // no language is automatically the default language
+            LanguageList = ValueLanguages.PrepareLanguageList(Languages, Log);
+   //             = Languages.ToLower();
+			//if (lang != "default")
+			//	throw new Exception("Can't filter for languages other than 'default'");
 
-			if (lang == "any")
-				throw new NotImplementedException("language 'any' not implemented yet");
+			//if (lang == "default") lang = ""; // no language is automatically the default language
+
+			//if (lang == "any")
+			//	throw new NotImplementedException("language 'any' not implemented yet");
 			#endregion
 
-            var list = In[Constants.DefaultStreamName].List;
+            var list = In[Constants.DefaultStreamName].Immutable;
 
             // check if no list parameters specified
 		    if (attr.Length == 1 && string.IsNullOrWhiteSpace(attr[0]))
-		        return list.ToList();
+		        return list;//.ToList();
 
             // only get the entities, that have these attributes (but don't test for id/title, as all have these)
             var valueAttrs = attr.Where(v => !Constants.InternalOnlyIsSpecialEntityProperty(v)).ToArray();
 		    var results = valueAttrs.Length == 0
 		        ? list
-		        : (from e in list
-		            where e.Attributes.Keys.Where(valueAttrs.Contains).Count() == valueAttrs.Length
-		            select e);
+		        : list.Where(e => e.Attributes.Keys.Where(valueAttrs.Contains).Count() == valueAttrs.Length).ToImmutableArray();
 
-			// if list is blank, stop here and return blank list
-			if (!results.Any())
-				return results.ToList();
+			// if list is blank, then it didn't find the attribute to sort by - so just return unsorted
+			// note 2020-10-07 this may have been a bug previously, returning an empty list instead
+            if (!results.Any()) return list;// ImmutableArray<IEntity>.Empty; //results.ToList();
+
+            var unsortable = list.Where(e => !results.Contains(e)).ToImmutableArray();
 
             IOrderedEnumerable<IEntity> ordered = null;
 
@@ -130,27 +138,33 @@ namespace ToSic.Eav.DataSources
 				{
 					// First sort...
 					ordered = isAscending
-						? results.OrderBy(e => getObjToSort(e, a, specAttr))
-						: results.OrderByDescending(e => getObjToSort(e, a, specAttr));
+						? results.OrderBy(e => GetPropertyToSort(e, a, specAttr))
+						: results.OrderByDescending(e => GetPropertyToSort(e, a, specAttr));
 				}
 				else
 				{
 					// following sorts...
 					ordered = isAscending
-						? ordered.ThenBy(e => getObjToSort(e, a, specAttr))
-						: ordered.ThenByDescending(e => getObjToSort(e, a, specAttr));
+						? ordered.ThenBy(e => GetPropertyToSort(e, a, specAttr))
+						: ordered.ThenByDescending(e => GetPropertyToSort(e, a, specAttr));
 				}
 			}
 
-			return ordered.ToList();
+            var final = ordered?.ToImmutableArray() ?? ImmutableArray<IEntity>.Empty;
+            // final = final.AddRange(unsortable);
+			return final.AddRange(unsortable).ToImmutableArray();
 		}
 
-		private object getObjToSort(IEntity e, string a, char special)
+		private object GetPropertyToSort(IEntity e, string a, char special)
 		{
 			// get either the special id or title, if title or normal field, then use language [0] = default
 			return special == 'i' ? e.EntityId 
                 : special == 'm' ? e.Modified
-                : (special == 't' ? e.Title : e[a])[0];
+                    : special == 't' 
+                    ? e.GetBestTitle(LanguageList) 
+                    : e.GetBestValue(a, LanguageList);
+            // note 2020-11-17 changed it from the line below to the above, to support languages    
+            //: (special == 't' ? e.Title : e[a])[0];
 		}
 	}
 }

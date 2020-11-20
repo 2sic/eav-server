@@ -2,16 +2,24 @@
 using System.Linq;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Core.Tests;
 using ToSic.Eav.Core.Tests.Types;
 using ToSic.Eav.ImportExport.Persistence.File;
 using ToSic.Eav.Run;
 using ToSic.Eav.Types;
+using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.ImportExport.Tests.Persistence.File
 {
     [TestClass]
     public class RuntimeLoaderTest:PersistenceTestsBase
     {
+        private readonly IRuntime _runtime;
+        public RuntimeLoaderTest()
+        {
+            _runtime = EavTestBase.Resolve<IRuntime>();
+        }
+
         private int expectedTypesSysAndJson = 5;
         [Ignore("currently work in progress - as sys/json types keep changing and testing isn't updated yet")]
         [TestMethod]
@@ -46,7 +54,7 @@ namespace ToSic.Eav.ImportExport.Tests.Persistence.File
             var count = Global.AllContentTypes().Count;
             time.Stop();
             
-            Assert.IsTrue(count >= 40 && count <= 60, $"expected between 40 and 60, actually is {count}");
+            Assert.IsTrue(count >= 60 && count <= 70, $"expected between 40 and 60, actually is {count}");
             Trace.WriteLine("time used: " + time.Elapsed);
         }
 
@@ -74,7 +82,7 @@ namespace ToSic.Eav.ImportExport.Tests.Persistence.File
         {
             // set loader root path, based on test environment
             RepositoryInfoOfTestSystem.PathToUse = TestingPath40;
-            var loader = (Runtime)Factory.Resolve<IRuntime>().Init(null);
+            var loader = (Runtime)_runtime.Init(null);
             var time = Stopwatch.StartNew();
             for (var i = 0; i < 10; i++)
             {

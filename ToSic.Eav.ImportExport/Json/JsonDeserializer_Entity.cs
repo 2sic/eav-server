@@ -57,7 +57,7 @@ namespace ToSic.Eav.ImportExport.Json
             {
                 var md = jEnt.For;
                 Log.Add($"this is metadata; will construct 'For' object. Type: {md.Target}");
-                ismeta.TargetType = GetMetadataNumber(md.Target);
+                ismeta.TargetType = MetadataTargets.GetId(md.Target);
                 ismeta.KeyGuid = md.Guid;
                 ismeta.KeyNumber = md.Number;
                 ismeta.KeyString = md.String;
@@ -111,7 +111,7 @@ namespace ToSic.Eav.ImportExport.Json
 
             foreach (var attrib in list)
             {
-                var newAtt = AttributeBase.CreateTypedAttribute(attrib.Key, type, attrib.Value
+                var newAtt = AttributeBuilder.CreateTyped(attrib.Key, type, attrib.Value
                     .Select(v => ValueBuilder.Build(type, v.Value, RecreateLanguageList(v.Key))).ToList());
                 newEntity.Attributes.Add(newAtt.Name, newAtt);
             }

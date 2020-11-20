@@ -2,11 +2,11 @@
 
 namespace ToSic.Eav.Apps.Tests.Mocks
 {
-    public class MockTenant: ITenant
+    public class MockTenant: ISite
     {
         public int Id => -999;
 
-        public ITenant Init(int tenantId)
+        public ISite Init(int tenantId)
         {
             return this;
         }
@@ -16,7 +16,9 @@ namespace ToSic.Eav.Apps.Tests.Mocks
         public string Name => "MockTenant";
         public string Url => "Mock.org/root";
 
-        public string AppsRoot => "Mock";
+        public string AppsRootPhysical => "Mock";
+        public string AppsRootPhysicalFull => "mock full";
+        public string AppsRootLink => "Mock/Mock/Mock";
 
         public bool RefactorUserIsAdmin => false;
 

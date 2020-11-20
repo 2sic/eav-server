@@ -93,16 +93,15 @@ namespace ToSic.Eav.Apps
         }
 
         
-        private static void AddToMetaDic<T>(Dictionary<int, Dictionary<T, List<IEntity>>> metadataIndex, int mdTargetType, T mdValue, Entity newEntity)
+        private static void AddToMetaDic<T>(IReadOnlyDictionary<int, Dictionary<T, List<IEntity>>> metadataIndex, int mdTargetType, T mdValue, IEntity newEntity)
         {
+            // get the index of the target type (like 4 = Entity target)
             var indexOfType = metadataIndex[mdTargetType];
-            // Ensure that the assignment type (like 4) the target guid (like a350320-3502-afg0-...) has an empty list of items
-            if (!indexOfType.ContainsKey(mdValue)) // ensure target list exists
-                indexOfType[mdValue] = new List<IEntity>();
+            // Ensure that the assignment type (like 4) the target guid (like a350320-3502-afg0-...) exists, otherwise create empty list
+            var list = indexOfType.ContainsKey(mdValue) ? indexOfType[mdValue] : indexOfType[mdValue] = new List<IEntity>();
 
             // in case it was already in this index, remove first
-            var list = indexOfType[mdValue];
-            var found = list.FirstOrDefault(e => e.EntityId == newEntity.EntityId);
+            var found = list.One(newEntity.EntityId);
             if (found != null)
                 list.Remove(found);
 

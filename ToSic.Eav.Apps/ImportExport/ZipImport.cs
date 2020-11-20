@@ -12,6 +12,7 @@ namespace ToSic.Eav.Apps.ImportExport
 {
     public class ZipImport: HasLog
     {
+        private readonly Lazy<XmlImportWithFiles> _xmlImpExpFilesLazy;
         private int? _initialAppId;
         private int _zoneId;
         public readonly IImportExportEnvironment Env;
@@ -20,8 +21,9 @@ namespace ToSic.Eav.Apps.ImportExport
 
         public bool AllowCodeImport;
 
-        public ZipImport(IImportExportEnvironment environment) :base("Zip.Imp")
+        public ZipImport(IImportExportEnvironment environment, Lazy<XmlImportWithFiles> xmlImpExpFilesLazy) :base("Zip.Imp")
         {
+            _xmlImpExpFilesLazy = xmlImpExpFilesLazy;
             Env = environment.Init(Log);
             Messages = new List<Message>();
         }
@@ -61,9 +63,12 @@ namespace ToSic.Eav.Apps.ImportExport
                 {
                     Log.Add($"folder:{directoryPath}");
                     if (Path.GetFileName(directoryPath) != "Apps") continue;
-                    var appDir = Path.Combine(temporaryDirectory, "Apps");
+                    var packageDir = Path.Combine(temporaryDirectory, "Apps");
                     // Loop through each app directory
-                    ImportApps(rename, appDir, messages);
+                    foreach (var appDirectory in Directory.GetDirectories(packageDir))
+                        ImportApp(rename, appDirectory, messages);
+
+                    //ImportApps(rename, packageDir, messages);
                 }
             }
             catch (IOException e)
@@ -112,11 +117,11 @@ namespace ToSic.Eav.Apps.ImportExport
             }
         }
 
-        private void ImportApps(string rename, string tempDir, List<Message> importMessages)
-        {
-            foreach (var appDirectory in Directory.GetDirectories(tempDir))
-                ImportApp(rename, appDirectory, importMessages);
-        }
+        //private void ImportApps(string rename, string tempDir, List<Message> importMessages)
+        //{
+        //    foreach (var appDirectory in Directory.GetDirectories(tempDir))
+        //        ImportApp(rename, appDirectory, importMessages);
+        //}
 
         /// <summary>
         /// Import an app from temporary
@@ -144,7 +149,7 @@ namespace ToSic.Eav.Apps.ImportExport
             var wrapLog = Log.Call($"{nameof(rename)}:'{rename}' {nameof(appDirectory)}:'{appDirectory}', ...");
             
             int appId;
-            var importer = new XmlImportWithFiles(Log);
+            var importer = _xmlImpExpFilesLazy.Value.Init(null, false, Log); // new XmlImportWithFiles(Log);
             var imp = new ImportXmlReader(Path.Combine(appDirectory, xmlFileName), importer, Log);
 
             if (imp.IsAppImport)
@@ -179,7 +184,7 @@ namespace ToSic.Eav.Apps.ImportExport
             else
             {
                 Log.Add("will do content import");
-                appId = _initialAppId ?? new ZoneRuntime(_zoneId, Log).DefaultAppId;
+                appId = _initialAppId ?? new ZoneRuntime().Init(_zoneId, Log).DefaultAppId;
 
                 if (importer.IsCompatible(imp.XmlDoc))
                     HandlePortalFilesFolder(appDirectory);
@@ -222,7 +227,7 @@ namespace ToSic.Eav.Apps.ImportExport
             var portalTempRoot = Path.Combine(appDirectory, XmlConstants.PortalFiles);
             if (Directory.Exists(portalTempRoot))
             {
-                var messages = Env.TransferFilesToTenant(portalTempRoot, string.Empty);
+                var messages = Env.TransferFilesToSite(portalTempRoot, string.Empty);
                 Messages.AddRange(messages);
             }
             wrapLog(null);

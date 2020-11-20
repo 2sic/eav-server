@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.DataSources.Exceptions;
 using ToSic.Eav.DataSources.Queries;
@@ -29,7 +30,6 @@ namespace ToSic.Eav.DataSources
 
         private const string AttrKey = "Attribute";
         private const string FilterKey = "Value";
-        private const string LangKey = "Language";
         private const string OperatorKey = "Operator";
         private const string TakeKey = "Take";
 
@@ -56,8 +56,8 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public string Languages
 		{
-			get => Configuration[LangKey];
-		    set => Configuration[LangKey] = value;
+			get => Configuration[ValueLanguages.LangKey];
+		    set => Configuration[ValueLanguages.LangKey] = value;
 		}
 
         /// <summary>
@@ -87,24 +87,23 @@ namespace ToSic.Eav.DataSources
 		[PrivateApi]
 		public ValueFilter()
 		{
-			Provide(GetEntitiesOrFallback);
+			Provide(GetValueFilterOrFallback);
 		    ConfigMask(AttrKey, "[Settings:Attribute]");
 		    ConfigMask(FilterKey, "[Settings:Value]");
 		    ConfigMask(OperatorKey, "[Settings:Operator||==]");
 		    ConfigMask(TakeKey, "[Settings:Take]");
-		    ConfigMask(LangKey, "Default");
+		    ConfigMask(ValueLanguages.LangKey, ValueLanguages.LanguageSettingsPlaceholder);
         }
 
-        private List<IEntity> GetEntitiesOrFallback()
+        private IImmutableList<IEntity> GetValueFilterOrFallback()
         {
-            var res = GetEntities();
+            var res = GetValueFilter();
             // ReSharper disable PossibleMultipleEnumeration
             if (res.Any()) return res;
-            if (In.ContainsKey(Constants.FallbackStreamName) && In[Constants.FallbackStreamName] != null &&
-                In[Constants.FallbackStreamName].List.Any())
+            if (In.HasStreamWithItems(Constants.FallbackStreamName))
             {
                 Log.Add("will return fallback stream");
-                res = In[Constants.FallbackStreamName].List.ToList();
+                res = In[Constants.FallbackStreamName].Immutable;
             }
 
             return res;
@@ -112,7 +111,7 @@ namespace ToSic.Eav.DataSources
         }
 
 
-        private List<IEntity> GetEntities()
+        private IImmutableList<IEntity> GetValueFilter()
         {
             var wrapLog = Log.Call();
             // todo: maybe do something about languages?
@@ -121,22 +120,17 @@ namespace ToSic.Eav.DataSources
             Log.Add("applying value filter...");
 			_initializedAttrName = Attribute;
 
-            #region do language checks and finish initialization
-			var lang = Languages.ToLower();
-            if(lang != "default")
-				throw  new Exception("Can't filter for languages other than 'default'");
-            if (lang == "default") lang = ""; // no language is automatically the default language
+            LanguageList = ValueLanguages.PrepareLanguageList(Languages, Log);
 
-			if (lang == "any")
-				throw new NotImplementedException("language 'any' not implemented yet");
-		    _initializedLangs = new[] { lang };
-            #endregion
-
-            var originals = In[Constants.DefaultStreamName].List.ToList();
+            var originals = In[Constants.DefaultStreamName].Immutable;
 
             #region stop if the list is empty
-            if (!originals.Any()) 
-		        return originals;
+
+            if (!originals.Any())
+            {
+                wrapLog("empty");
+                return originals;
+            }
             #endregion; 
 
  		    Func<IEntity, bool> compare; // the real comparison method which will be used
@@ -155,14 +149,14 @@ namespace ToSic.Eav.DataSources
 
                 // if I can't find any, return empty list
                 if (firstEntity == null)
-                    return new List<IEntity>();
+                    return ImmutableArray<IEntity>.Empty;
 
                 // New mechanism because the filter ignores internal properties like Modified, EntityId etc.
                 var firstAtt = firstEntity.GetBestValue(_initializedAttrName);  // this should get everything, incl. modified, EntityId, EntityGuid etc.
                 var netTypeName = firstAtt?.GetType().Name ?? "Null";
                 switch (netTypeName)
                 {
-                    case "Boolean": // todo: find some constant for this
+                    case Constants.DataTypeBoolean:
                         Log.Add("Will apply Boolean comparison");
                         compare = GetBoolComparison(Value);
                         break;
@@ -170,15 +164,15 @@ namespace ToSic.Eav.DataSources
                         Log.Add("Will apply Decimal comparison");
                         compare = GetNumberComparison(Value);
                         break;
-                    case "DateTime":
+                    case Constants.DataTypeDateTime:
                         Log.Add("Will apply DateTime comparison");
                         compare = GetDateTimeComparison(Value);
                         break;
-                    case "Entity":
+                    case Constants.DataTypeEntity:
                         Log.Add("Would apply entity comparison, but this doesn't work");
                         throw new Exception("can't compare values which are related entities - use the RelationshipFilter instead");
                     // ReSharper disable once RedundantCaseLabel
-                    case "String":
+                    case Constants.DataTypeString:
                     // ReSharper disable once RedundantCaseLabel
                     case "Null":
                     default:
@@ -186,8 +180,6 @@ namespace ToSic.Eav.DataSources
                         compare = GetStringComparison(Value);
                         break;
                 }
-
-
             }
             #endregion
 
@@ -197,6 +189,9 @@ namespace ToSic.Eav.DataSources
             // Note that the code might not be 100% identical, but it should help find issues
 		    //_results = GetFilteredWithLoop(originals, compare);
 		}
+
+
+
 
         /// <summary>
         /// Provide all entity-compare functionality as a prepared function
@@ -215,13 +210,13 @@ namespace ToSic.Eav.DataSources
                 case "===":
                     return e =>
                     {
-                        var value = e.GetBestValue(_initializedAttrName, _initializedLangs);
+                        var value = e.GetBestValue(_initializedAttrName, LanguageList);
                         return value as bool? == boolFilter;
                     };
                 case "!=":
                     return e =>
                     {
-                        var value = e.GetBestValue(_initializedAttrName, _initializedLangs);
+                        var value = e.GetBestValue(_initializedAttrName, LanguageList);
                         return value as bool? != boolFilter;
                     };
             }
@@ -240,7 +235,7 @@ namespace ToSic.Eav.DataSources
         {
             var operation = Operator.ToLower();
 
-            var stringComparison = new Dictionary<string, Func<object, bool>>()
+            var stringComparison = new Dictionary<string, Func<object, bool>>
             {
                 {"==", value => value != null && string.Equals(value.ToString(), original, StringComparison.InvariantCultureIgnoreCase)        },
                 { "===", value => value != null && value.ToString() == original}, // case sensitive, full equal
@@ -256,7 +251,7 @@ namespace ToSic.Eav.DataSources
 
             var stringCompare = stringComparison[operation];
             return e 
-                => stringCompare(e.GetBestValue(_initializedAttrName, _initializedLangs)); 
+                => stringCompare(e.GetBestValue(_initializedAttrName, LanguageList)); 
 
         }
 
@@ -276,13 +271,13 @@ namespace ToSic.Eav.DataSources
                 case "===":
                     return e =>
                     {
-                        var value = e.GetBestValue(_initializedAttrName, _initializedLangs);
+                        var value = e.GetBestValue(_initializedAttrName, LanguageList);
                         return value as bool? == boolFilter;
                     };
                 case "!=":
                     return e =>
                     {
-                        var value = e.GetBestValue(_initializedAttrName, _initializedLangs);
+                        var value = e.GetBestValue(_initializedAttrName, LanguageList);
                         return value as bool? != boolFilter;
                     };
             }
@@ -356,7 +351,7 @@ namespace ToSic.Eav.DataSources
             var dateTimeCompare = dateComparisons[operation];
 
             return e => {
-                var value = e.GetBestValue(_initializedAttrName, _initializedLangs);
+                var value = e.GetBestValue(_initializedAttrName, LanguageList);
                 try
                 {
                     // treat null as DateTime.MinValue - because that's also how the null-parameter is parsed when creating the filter
@@ -421,7 +416,7 @@ namespace ToSic.Eav.DataSources
             var numberCompare = numComparisons[operation];
             return e =>
             {
-                var value = e.GetBestValue(_initializedAttrName, _initializedLangs);
+                var value = e.GetBestValue(_initializedAttrName, LanguageList);
                 if (value == null)
                     return false;
                 try
@@ -437,11 +432,14 @@ namespace ToSic.Eav.DataSources
 
         }
 
+        /// <summary>
+        /// The internal language list used to lookup values.
+        /// It's internal, to allow testing/debugging from the outside
+        /// </summary>
+        [PrivateApi] internal string[] LanguageList { get; private set; }
+	    [PrivateApi] private string _initializedAttrName;
 
-	    private string[] _initializedLangs;
-	    private string _initializedAttrName;
-
-	    private List<IEntity> GetFilteredWithLinq(IEnumerable<IEntity> originals, Func<IEntity, bool> compare)
+	    private ImmutableArray<IEntity> GetFilteredWithLinq(IEnumerable<IEntity> originals, Func<IEntity, bool> compare)
         {
             try
             {
@@ -456,14 +454,12 @@ namespace ToSic.Eav.DataSources
                         results = new List<IEntity>();
                         break;
                     default:
-                        results = (from e in originals
-                            where compare(e)
-                            select e);
+                        results = originals.Where(compare);
                         break;
                 }
                 if (int.TryParse(Take, out var tk))
 	                results = results.Take(tk);
-	            return results.ToList();
+	            return results.ToImmutableArray();//.ToList();
 	        }
 	        catch (Exception ex)
 	        {

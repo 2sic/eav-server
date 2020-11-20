@@ -16,12 +16,6 @@ namespace ToSic.Eav.DataSources.Caching
         /// </summary>
         public IImmutableList<IEntity> List { get; set; }
 
-        ///// <summary>
-        ///// The key as the item is stored in the cache. More for internal use.
-        ///// </summary>
-        //[PrivateApi]
-        //public string CacheKey { get; set; }
-
 
         /// <summary>
         /// The age of the data - to see if it needs refreshing if the new source has a newer date
@@ -37,7 +31,7 @@ namespace ToSic.Eav.DataSources.Caching
         /// <param name="list">The list of items to put into the cache.</param>
         /// <param name="cacheTimestamp">The timestamp of the source at the moment of cache-buildup, to later detect changes in the source.</param>
         ///// <param name="cacheKey">The cache key as it is stored in the cache</param>
-        public ListCacheItem(/*string cacheKey,*/ IImmutableList<IEntity> list, long cacheTimestamp)
+        public ListCacheItem(IImmutableList<IEntity> list, long cacheTimestamp)
         {
             //CacheKey = cacheKey;
             List = list;

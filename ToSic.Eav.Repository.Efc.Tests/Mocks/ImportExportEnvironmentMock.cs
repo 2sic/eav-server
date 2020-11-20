@@ -25,10 +25,10 @@ namespace ToSic.Eav.Repository.Efc.Tests.Mocks
 
         #endregion
 
-        public string BasePath { get; set; }= @"C:\Projects\eav-server\ToSic.Eav.Repository.Efc.Tests\";
+        public string BasePath { get; set; }= @"C:\Projects\2sxc\eav-server\ToSic.Eav.Repository.Efc.Tests\";
 
 
-        public virtual List<Message> TransferFilesToTenant(string sourceFolder, string destinationFolder)
+        public virtual List<Message> TransferFilesToSite(string sourceFolder, string destinationFolder)
         {
             return new List<Message>();
         }
@@ -53,6 +53,6 @@ namespace ToSic.Eav.Repository.Efc.Tests.Mocks
         {
         }
        
-        public SaveOptions SaveOptions(int zoneId) => new SaveOptions(DefaultLanguage, new ZoneRuntime(zoneId, Log).Languages(true));
+        public SaveOptions SaveOptions(int zoneId) => new SaveOptions(DefaultLanguage, new ZoneRuntime().Init(zoneId, Log).Languages(true));
     }
 }

@@ -13,16 +13,39 @@ namespace ToSic.Eav.Serialization
 {
     public abstract class SerializerBase: HasLog, IDataSerializer
     {
-        /// <summary>
-        /// Empty constructor for DI
-        /// </summary>
-        protected SerializerBase() : this("Srl.Default") { }
+
+        #region Constructor / DI
 
         /// <summary>
-        /// Normal constructor
+        /// Constructor for inheriting classes
         /// </summary>
-        /// <param name="name"></param>
-        protected SerializerBase(string name): base(name) { }
+        protected SerializerBase(ITargetTypes metadataTargets, string logName): base(logName)
+        {
+            _mdProvider = metadataTargets;
+        }
+        public ITargetTypes MetadataTargets => _mdProvider ?? (_mdProvider = Factory.Resolve<ITargetTypes>());
+        private ITargetTypes _mdProvider;
+
+
+        public void Initialize(AppState appState, ILog parentLog)
+        {
+            Log.LinkTo(parentLog);
+            App = appState;
+            AppId = appState.AppId;
+        }
+
+        protected int AppId;
+        private IEnumerable<IContentType> _types;
+        public void Initialize(int appId, IEnumerable<IContentType> types, IEntitiesSource allEntities, ILog parentLog)
+        {
+            AppId = appId;
+            _types = types;
+            _relList = allEntities;
+            Log.LinkTo(parentLog);
+        }
+
+        #endregion
+
 
 
         public AppState App
@@ -51,22 +74,6 @@ namespace ToSic.Eav.Serialization
                            : App.GetContentType(staticName));
         }
 
-        public void Initialize(AppState appState, ILog parentLog)
-        {
-            Log.LinkTo(parentLog);
-            App = appState;
-            AppId = appState.AppId;
-        }
-
-        protected int AppId;
-        private IEnumerable<IContentType> _types;
-        public void Initialize(int appId, IEnumerable<IContentType> types, IEntitiesSource allEntities, ILog parentLog)
-        {
-            AppId = appId;
-            _types = types;
-            _relList = allEntities;
-            Log.LinkTo(parentLog);
-        }
 
         protected IEntity Lookup(int entityId) => App.List.FindRepoId(entityId); // should use repo, as we're often serializing unpublished entities, and then the ID is the Repo-ID
 
@@ -81,12 +88,5 @@ namespace ToSic.Eav.Serialization
         protected IEntitiesSource LazyRelationshipLookupList => _relList ?? (_relList = App);
         private IEntitiesSource _relList;
 
-        protected int GetMetadataNumber(string name) => MetadataProvider.GetId(name);
-
-        protected string GetMetadataName(int id) => MetadataProvider.GetName(id);
-
-        public ITargetTypes MetadataProvider =>
-            _mdProvider ?? (_mdProvider = Factory.Resolve<ITargetTypes>());
-        private ITargetTypes _mdProvider;
     }
 }

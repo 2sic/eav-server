@@ -4,11 +4,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSourceTests.ExternalData;
+using ToSic.Eav.DataSourceTests.TestData;
+using ToSic.Testing.Shared;
 
-namespace ToSic.Eav.DataSourceTests.Attributes
+namespace ToSic.Eav.DataSourceTests
 {
-    internal class AttributeRenameTester
+    internal class AttributeRenameTester: EavTestBase
     {
         public readonly AttributeRename Original;
         public readonly AttributeRename Changed;
@@ -24,9 +25,9 @@ namespace ToSic.Eav.DataSourceTests.Attributes
                 Changed.AttributeMap = map;
             Changed.KeepOtherAttributes = preserve;
 
-            CList = Changed.List.ToList();
+            CList = Changed.Immutable.ToList();
             CItem = CList.First();
-            OItem = Original.List.First();
+            OItem = Original.Immutable.First();
         }
 
         internal void AssertValues(string fieldOriginal, string fieldNew = null)
@@ -43,8 +44,8 @@ namespace ToSic.Eav.DataSourceTests.Attributes
 
         public static AttributeRename CreateRenamer(int testItemsInRootSource)
         {
-            var ds = DataTableTst.GeneratePersonSourceWithDemoData(testItemsInRootSource, 1001);
-            var filtered = new DataSource(null).GetDataSource<AttributeRename>(new AppIdentity(1, 1), ds);
+            var ds = DataTablePerson.Generate(testItemsInRootSource, 1001);
+            var filtered = Resolve<DataSourceFactory>().GetDataSource<AttributeRename>(new AppIdentity(1, 1), ds);
             return filtered;
         }
     }

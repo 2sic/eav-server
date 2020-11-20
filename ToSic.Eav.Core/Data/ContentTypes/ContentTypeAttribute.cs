@@ -63,7 +63,7 @@ namespace ToSic.Eav.Data
         /// </summary>
         /// <returns><see cref="Attribute{ValueType}"/></returns>
         [PrivateApi]
-        public IAttribute CreateAttribute() => CreateTypedAttribute(Name, Type);
+        public IAttribute CreateAttribute() => AttributeBuilder.CreateTyped(Name, Type);
 
 
         #region Metadata and Permissions

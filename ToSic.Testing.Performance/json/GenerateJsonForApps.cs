@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Persistence.Efc.Tests;
+using ToSic.Testing.Shared;
 using AppState = ToSic.Eav.Apps.AppState;
 
 //using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -10,6 +12,7 @@ namespace ToSic.Testing.Performance.json
 {
     public class GenerateJsonForApps: Efc11TestBase
     {
+
         public int TestAppId = 261;
         public void GenerateJsonForApp261()
         {
@@ -29,18 +32,16 @@ namespace ToSic.Testing.Performance.json
 
         public void LoadApp()
         {
-            Package = Loader.AppState(TestAppId, parentLog: Log);   
+            Package = Loader.AppState(TestAppId, Log);   
         }
 
         internal AppState Package;
         internal List<string> EntitiesAsJson;
 
-        internal JsonSerializer GetSerializer() => new JsonSerializer(Package, Log);
-
         public int SerializeAll(int repeat)
         {
             var count = 0;
-            var ser = GetSerializer();
+            var ser = EavTestBase.Resolve<JsonSerializer>().Init(Package, Log);
             for (var i = 0; i < repeat; i++)
             {
                 var ents = ser.Deserialize(EntitiesAsJson);
@@ -58,7 +59,7 @@ namespace ToSic.Testing.Performance.json
         private void GenerateJsonForAllEntitiesOfApp(int appid)
         {
             var package = Loader.AppState(appid);
-            var ser = new JsonSerializer(package, Log);
+            var ser = EavTestBase.Resolve<JsonSerializer>().Init(package, Log);
             var upd = package.List.ToDictionary(e => e.EntityId, e => ser.Serialize(e));
 
             var dbEnts = Db.ToSicEavEntities.Where(e => e.AttributeSet.AppId == appid).ToList();
