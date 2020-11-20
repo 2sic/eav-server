@@ -4,7 +4,7 @@
     <!--<TargetFrameworks>net451</TargetFrameworks>-->
     <Configurations>Debug;Release;efc and WebApi;debug eav only;Dbg Testing</Configurations>
     <RootNamespace>ToSic.Eav</RootNamespace>
-    <Version>11.10.01</Version>
+    <Version>11.10.02</Version>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
