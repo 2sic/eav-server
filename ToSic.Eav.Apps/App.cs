@@ -27,21 +27,17 @@ namespace ToSic.Eav.Apps
         public class AppDependencies
         {
             internal readonly IZoneMapper ZoneMapper;
-            private readonly Lazy<IUser> _user;
-            internal IUser User => _user.Value;
             internal readonly ISite Site;
             internal readonly DataSourceFactory DataSourceFactory;
             internal readonly Lazy<GlobalQueries> GlobalQueriesLazy;
 
             public AppDependencies(
-                Lazy<IUser> user,
                 IZoneMapper zoneMapper,
                 ISite site,
                 DataSourceFactory dataSourceFactory,
                 Lazy<GlobalQueries> globalQueriesLazy)
             {
                 ZoneMapper = zoneMapper;
-                _user = user;
                 Site = site;
                 DataSourceFactory = dataSourceFactory;
                 GlobalQueriesLazy = globalQueriesLazy;

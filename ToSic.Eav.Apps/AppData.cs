@@ -5,6 +5,7 @@ using ToSic.Eav.Api.Api01;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Apps
 {
@@ -23,31 +24,46 @@ namespace ToSic.Eav.Apps
         [PrivateApi]
         public override string LogId => "Ds.EavApp";
 
-        //[PrivateApi]
-        //public AppData(ILog parentLog = null)
-        //{
-        //    InitLog("DS.EavApp", parentLog);
-        //}
-
-        public AppData(Lazy<SimpleDataController> dataController)
+        public AppData(Lazy<SimpleDataController> dataController, Lazy<IUser> userLazy)
         {
             _lazyDataController = dataController;
+            _userLazy = userLazy;
         }
+
+        public AppData Init(IZoneMapper zoneMapper, ISite site)
+        {
+            _zoneMapper = zoneMapper;
+            _site = site;
+            return this;
+        }
+
+        private IZoneMapper _zoneMapper;
+        private ISite _site;
+
         #endregion
 
-        [PrivateApi]
-        internal string DefaultLanguage { get; set; }
-        [PrivateApi]
-        internal string CurrentUserName { get; set; }
+        // todo: this functionality should be moved into the SimpleDataController
+        private string GetDefaultLanguage()
+        {
+            var usesLanguages = _zoneMapper.CulturesWithState(_site.Id, ZoneId)
+                .Any(c => c.Active);
+            return usesLanguages
+                ? _site.DefaultLanguage
+                : "";
+        }
+
+        [PrivateApi] internal string CurrentUserName => _userLazy.Value.IdentityToken;
 
         /// <summary>
         /// Get a correctly instantiated instance of the simple data controller.
         /// </summary>
         /// <returns>An data controller to create, update and delete entities</returns>
         private SimpleDataController DataController() =>
-            _dataController ?? (_dataController = _lazyDataController.Value.Init(ZoneId, AppId, DefaultLanguage, Log)); // new SimpleDataController(ZoneId, AppId, DefaultLanguage, Log);
+            _dataController ?? (_dataController = _lazyDataController.Value.Init(ZoneId, AppId, GetDefaultLanguage(), Log));
+
         private SimpleDataController _dataController;
         private readonly Lazy<SimpleDataController> _lazyDataController;
+        private readonly Lazy<IUser> _userLazy;
 
         /// <inheritdoc />
         public IEntity Create(string contentTypeName,
