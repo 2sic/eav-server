@@ -20,8 +20,6 @@ namespace ToSic.Eav.Apps.Tests.Mocks
         public string AppsRootPhysicalFull => "mock full";
         public string AppsRootLink => "Mock/Mock/Mock";
 
-        public bool RefactorUserIsAdmin => false;
-
         public string ContentPath => "MockPath";
         public int ZoneId => -999;
     }

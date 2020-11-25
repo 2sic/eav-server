@@ -11,7 +11,7 @@ namespace ToSic.Eav.Apps.Security
     public abstract class AppPermissionCheck: PermissionCheckBase
     {
         #region Constructor & DI
-        protected AppPermissionCheck(string logName) : base(logName ?? "App.PrmChk") { }
+        protected AppPermissionCheck(string logPrefix) : base($"{logPrefix}.PrmChk") { }
 
         public AppPermissionCheck ForItem(IInstanceContext ctx, IAppIdentity appIdentity, IEntity targetItem, ILog parentLog)
         {

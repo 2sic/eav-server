@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.LookUp;
+using ToSic.Eav.Run;
 
 namespace ToSic.Eav
 {
@@ -27,6 +28,7 @@ namespace ToSic.Eav
         public static IServiceCollection AddEavCoreFallbackServices(this IServiceCollection services)
         {
             services.TryAddTransient<IGetEngine, BasicGetLookupEngine>();
+            services.TryAddTransient<IUser, UnknownUser>();
             return services;
         }
 

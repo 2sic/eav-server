@@ -39,9 +39,6 @@ namespace ToSic.Eav.Run
         [PrivateApi] public virtual string AppsRootLink => AppsRootPhysical;
 
         [PrivateApi]
-        public abstract bool RefactorUserIsAdmin { get; }
-
-        [PrivateApi]
         public abstract string ContentPath { get; }
 
 

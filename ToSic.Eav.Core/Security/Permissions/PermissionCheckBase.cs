@@ -67,7 +67,6 @@ namespace ToSic.Eav.Security
             IEnumerable<Permission> permissions1 = null,
             IEnumerable<Permission> permissions2 = null
             ) 
-            //: base("App.PermCk")
         {
             Log.LinkTo(parentLog);
             var permList2 = permissions2 as IList<Permission> ?? permissions2?.ToList();

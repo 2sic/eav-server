@@ -3,6 +3,9 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Apps.Environment;
 using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Apps.Parts;
+using ToSic.Eav.Apps.Run;
+using ToSic.Eav.Apps.Security;
+using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Apps
 {
@@ -58,6 +61,9 @@ namespace ToSic.Eav.Apps
         {
             services.TryAddTransient<IEnvironmentLogger, BasicEnvironmentLogger>();
             services.TryAddTransient<XmlExporter, BasicXmlExporter>();
+            services.TryAddTransient<ISite, UnknownSite>();
+            services.TryAddTransient<IZoneMapper, UnknownZoneMapper>();
+            services.TryAddTransient<AppPermissionCheck, BasicAppPermissionCheck>();
 
             return services;
         }
