@@ -17,7 +17,7 @@ namespace ToSic.Eav.Run
         /// This is a special constructor where the tenant object is re-initialized with a specific tenant id
         /// </summary>
         /// <returns></returns>
-        ISite Init(int tenantId);
+        ISite Init(int siteId);
 
         #endregion
 
