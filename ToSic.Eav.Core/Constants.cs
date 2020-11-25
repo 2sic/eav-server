@@ -49,24 +49,6 @@ namespace ToSic.Eav
         /// </summary>
         public static readonly int MetaDataAppId = 1;
 
-
-        ///// <summary>
-        ///// Default Entity AssignmentObjectTypeId
-        ///// </summary>
-        //[Obsolete("Use NotMetadata instead")] public const int AssignmentObjectTypeId = 1;
-
-
-        ///// <summary>
-        ///// AssignmentObjectTypeId for FieldProperties (Field MetaData)
-        ///// </summary>
-        //[Obsolete("Use MetadataForField instead")] public static readonly int AssignmentObjectTypeIdFieldProperties = 2;
-
-
-        ///// <summary>
-        ///// AssignmentObjectTypeId for DataQueries
-        ///// </summary>
-        //[Obsolete("Use MetadataForEntity instead")] public static readonly int AssignmentObjectTypeEntity = 4;
-
         /// <summary>Things that are not used as Metadata</summary>
         public const int NotMetadata = 1;
 

@@ -47,10 +47,12 @@ namespace ToSic.Eav
             // todo: wip moving DataSource stuff into that DLL
             services
                 .AddEavApps()
+                .AddFallbackAppServices()
                 .AddImportExport()
                 .AddRepositoryAndEfc(connectionString)
                 .AddDataSources()
-                .AddEavCore();
+                .AddEavCore()
+                .AddEavCoreFallbackServices();
 
 
             return services;

@@ -18,7 +18,7 @@ namespace ToSic.Eav.LookUp
         /// </summary>
         /// <param name="instanceId">The instance ID</param>
         ///// <returns>a <see cref="ILookUpEngine"/> for the current context</returns>
-        ILookUpEngine GetEngine(int instanceId/*, ILog parentLog*/);
+        ILookUpEngine GetEngine(int instanceId);
 
     }
 }
