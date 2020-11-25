@@ -29,6 +29,7 @@ namespace ToSic.Eav
         {
             services.TryAddTransient<IGetEngine, BasicGetLookupEngine>();
             services.TryAddTransient<IUser, UnknownUser>();
+            services.TryAddTransient<IGetDefaultLanguage, BasicGetDefaultLanguage>();
             return services;
         }
 
