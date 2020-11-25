@@ -61,8 +61,7 @@ namespace ToSic.Eav.Apps
 
             // ModulePermissionController does not work when indexing, return false for search
             // var dsFactory = new DataSource(Log);
-            var initialSource = DataSourceFactory.GetPublishing(this, ShowDrafts,
-                ConfigurationProvider as LookUpEngine);
+            var initialSource = DataSourceFactory.GetPublishing(this, ShowDrafts, ConfigurationProvider);
 
             var xData = DataSourceFactory.GetDataSource<AppData>(initialSource);
 

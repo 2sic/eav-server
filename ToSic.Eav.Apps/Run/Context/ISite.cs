@@ -9,7 +9,7 @@ namespace ToSic.Eav.Run
     /// Describes a tenant - this is what the Environment calls a tenant (like a portal in DNN)
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
-    public interface ISite: IWebResource, IZoneIdentity
+    public interface ISite: IWebResource, IZoneIdentity, IGetDefaultLanguage
     {
         #region Constructor Helper
 
@@ -21,10 +21,10 @@ namespace ToSic.Eav.Run
 
         #endregion
 
-        /// <summary>
-        /// The default language code - like "en-US"
-        /// </summary>
-        string DefaultLanguage { get; }
+        ///// <summary>
+        ///// The default language code - like "en-US"
+        ///// </summary>
+        //string DefaultLanguage { get; }
 
         /// <summary>
         /// The tenant name for human readability (UIs)

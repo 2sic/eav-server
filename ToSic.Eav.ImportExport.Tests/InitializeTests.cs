@@ -28,6 +28,7 @@ namespace ToSic.Eav.ImportExport.Tests
             {
                 sc.AddTransient<IRuntime, Runtime>();
                 sc.AddTransient<IEnvironment, MockEnvironment>();
+                sc.AddTransient<IGetDefaultLanguage, MockGetLanguage>();
                 //sc.TryAddTransient<ExportImportValueConversion>();
                 sc.TryAddTransient<IValueConverter, MockValueConverter>();
                 sc.TryAddTransient<IZoneMapper, MockZoneMapper>();

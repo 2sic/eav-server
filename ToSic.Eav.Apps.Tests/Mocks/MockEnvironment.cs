@@ -19,6 +19,11 @@ namespace ToSic.Eav.Apps.Tests.Mocks
         public IUser User => null;
 
 
+
+    }
+
+    public class MockGetLanguage : IGetDefaultLanguage
+    {
         public string DefaultLanguage => "en-US";
 
     }
