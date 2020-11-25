@@ -40,14 +40,14 @@ namespace ToSic.Eav.ImportExport.Persistence.File
 
                 _paths = new List<string>();
                 // find all RepositoryInfoOfFolder and let them tell us what paths to use
-                var types = AssemblyHandling.FindInherited(typeof(RepositoryInfoOfFolder), Log).ToList();
+                var types = AssemblyHandling.FindInherited(typeof(FolderBasedRepository), Log).ToList();
                 Log.Add($"found {types.Count} Path providers");
 
                 foreach (var typ in types)
                     try
                     {
                         Log.Add($"adding {typ.FullName}");
-                        var instance = (RepositoryInfoOfFolder) ActivatorUtilities.CreateInstance(_serviceProvider, typ, new object[0]);
+                        var instance = (FolderBasedRepository) ActivatorUtilities.CreateInstance(_serviceProvider, typ, new object[0]);
                         var paths = instance.RootPaths;
                         if (paths != null)
                             _paths.AddRange(paths);

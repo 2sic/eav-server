@@ -2,9 +2,9 @@
 
 namespace ToSic.Eav.Repositories
 {
-    public class RepositoryInfo: HasLog
+    public abstract class RepositoryBase: HasLog
     {
-        public RepositoryInfo(bool global, bool readOnly, RepositoryTypes type, ILog parentLog) : base("RP.Info", parentLog)
+        protected RepositoryBase(bool global, bool readOnly, RepositoryTypes type, ILog parentLog) : base("RP.Info", parentLog)
         {
             Global = global;
             ReadOnly = readOnly;

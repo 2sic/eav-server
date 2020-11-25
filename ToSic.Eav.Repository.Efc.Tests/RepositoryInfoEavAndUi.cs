@@ -10,7 +10,7 @@ namespace ToSic.Eav.Core.Tests
     /// <remarks>
     /// Is used by reflection, so you won't see any direct references to this anywhere
     /// </remarks>
-    public class RepositoryInfoEavAndUi: RepositoryInfoOfFolder
+    public class TestGlobalFolderRepository: FolderBasedRepository
     {
         public string TestRootPath = @"C:\Projects\2sxc-dnn742\Website\DesktopModules\ToSIC_SexyContent\";
 

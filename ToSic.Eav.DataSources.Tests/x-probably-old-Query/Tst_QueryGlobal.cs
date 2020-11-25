@@ -25,7 +25,7 @@ namespace ToSic.Eav.DataSourceTests.Query
         [ClassInitialize]
         public static void Config(TestContext context)
         {
-            RepositoryInfoOfTestSystem.PathToUse = TestConfig.TestingPath;
+            TestGlobalFolderRepository.PathToUse = TestConfig.TestingPath;
         }
 
         [TestMethod]

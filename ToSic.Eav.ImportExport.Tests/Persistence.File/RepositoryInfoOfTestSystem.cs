@@ -3,7 +3,7 @@ using ToSic.Eav.Repositories;
 
 namespace ToSic.Eav.ImportExport.Tests.Persistence.File
 {
-    public class RepositoryInfoOfTestSystem: RepositoryInfoOfFolder
+    public class TestGlobalFolderRepository: FolderBasedRepository
     {
         //public RepositoryInfoOfTestSystem() : base(true, true, null)
         //{
