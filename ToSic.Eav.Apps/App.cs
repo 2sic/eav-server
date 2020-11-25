@@ -26,22 +26,22 @@ namespace ToSic.Eav.Apps
         [PrivateApi]
         public class AppDependencies
         {
-            //internal AppInitializedChecker InitializedChecker { get; }
             internal readonly IZoneMapper ZoneMapper;
-            internal readonly IEnvironment Environment;
+            private readonly Lazy<IUser> _user;
+            internal IUser User => _user.Value;
             internal readonly ISite Site;
             internal readonly DataSourceFactory DataSourceFactory;
             internal readonly Lazy<GlobalQueries> GlobalQueriesLazy;
 
             public AppDependencies(
-                IEnvironment environment,
+                Lazy<IUser> user,
                 IZoneMapper zoneMapper,
                 ISite site,
                 DataSourceFactory dataSourceFactory,
                 Lazy<GlobalQueries> globalQueriesLazy)
             {
                 ZoneMapper = zoneMapper;
-                Environment = environment;
+                _user = user;
                 Site = site;
                 DataSourceFactory = dataSourceFactory;
                 GlobalQueriesLazy = globalQueriesLazy;
@@ -55,10 +55,6 @@ namespace ToSic.Eav.Apps
             _dependencies = dependencies;
             dependencies.ZoneMapper.Init(Log);
             DataSourceFactory = dependencies.DataSourceFactory;
-            // just keep pointers for now, don't init/verify yet
-            // as in some cases (like search) they will be replaced after the constructor
-            Env = dependencies.Environment;
-            Env.Init(Log);
             Site = dependencies.Site;
         }
 

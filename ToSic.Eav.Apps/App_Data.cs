@@ -83,7 +83,7 @@ namespace ToSic.Eav.Apps
             data.DefaultLanguage = languagesActive
                 ? Site.DefaultLanguage
                 : "";
-            data.CurrentUserName = Env.User.IdentityToken;
+            data.CurrentUserName = _dependencies.User.IdentityToken;
         }
 
         #endregion

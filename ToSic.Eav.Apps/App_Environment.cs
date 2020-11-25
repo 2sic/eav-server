@@ -6,9 +6,6 @@ namespace ToSic.Eav.Apps
 {
     public partial class App
     {
-        [PrivateApi]
-        protected IEnvironment Env;
-        
         /// <inheritdoc />
         [PrivateApi]
         public ISite Site { get; protected set; }

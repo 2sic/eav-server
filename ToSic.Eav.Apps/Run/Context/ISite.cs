@@ -21,11 +21,6 @@ namespace ToSic.Eav.Run
 
         #endregion
 
-        ///// <summary>
-        ///// The default language code - like "en-US"
-        ///// </summary>
-        //string DefaultLanguage { get; }
-
         /// <summary>
         /// The tenant name for human readability (UIs)
         /// Usually the DNN PortalName

@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Documentation;
-using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Run
 {

@@ -11,8 +11,6 @@ namespace ToSic.Eav.Run
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public abstract class Site<T> :ISite, IWrapper<T>
     {
-        //protected Site(T settings) => UnwrappedContents = settings;
-
         /// <inheritdoc />
         public abstract ISite Init(int siteId);
 
