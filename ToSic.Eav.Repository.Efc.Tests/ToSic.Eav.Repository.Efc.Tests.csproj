@@ -130,7 +130,7 @@
   <ItemGroup>
     <Compile Include="StartupTestingRepository.cs" />
     <Compile Include="MergeEntitiesTests.cs" />
-    <Compile Include="RepositoryInfoEavAndUi.cs" />
+    <Compile Include="TestGlobalFolderRepository.cs" />
     <Compile Include="SaveDataToDbTests.cs" />
     <Compile Include="TestValuesOnPc2dm.cs" />
     <Compile Include="VersioningTests.cs" />

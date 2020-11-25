@@ -88,7 +88,7 @@
     <Compile Include="Persistence.File\Tst_FileLoader_Query.cs" />
     <Compile Include="Persistence.File\Tst_FileLoader_Ct.cs" />
     <Compile Include="Persistence.File\PersistenceTestsBase.cs" />
-    <Compile Include="Persistence.File\RepositoryInfoOfTestSystem.cs" />
+    <Compile Include="Persistence.File\TestGlobalFolderRepository.cs" />
     <Compile Include="Persistence.File\RuntimeLoaderTest.cs" />
     <Compile Include="Persistence.File\TypeExporter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
