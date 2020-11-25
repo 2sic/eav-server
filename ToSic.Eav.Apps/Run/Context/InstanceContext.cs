@@ -8,7 +8,7 @@ namespace ToSic.Eav.Apps.Run
         public InstanceContext(ISite site, IPage page, IContainer container, IUser user, IServiceProvider serviceProvider,
             InstancePublishingState publishing)
         {
-            Tenant = site;
+            Site = site;
             Page = page;
             Container = container;
             User = user;
@@ -17,7 +17,7 @@ namespace ToSic.Eav.Apps.Run
         }
 
 
-        public ISite Tenant { get; }
+        public ISite Site { get; }
         public IPage Page { get; protected set; }
         public IContainer Container { get; }
         public IUser User { get; }
@@ -25,7 +25,7 @@ namespace ToSic.Eav.Apps.Run
         public InstancePublishingState Publishing { get; }
 
         public IInstanceContext Clone(ISite site = null, IPage page = null, IContainer container = null, IUser user = null) 
-            => new InstanceContext(site ?? Tenant, page ?? Page, container ?? Container, user ?? User, ServiceProvider, Publishing);
+            => new InstanceContext(site ?? Site, page ?? Page, container ?? Container, user ?? User, ServiceProvider, Publishing);
 
     }
 }

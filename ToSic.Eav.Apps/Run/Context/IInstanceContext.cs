@@ -5,7 +5,7 @@ namespace ToSic.Eav.Apps.Run
 {
     public interface IInstanceContext
     {
-        ISite Tenant { get; }
+        ISite Site { get; }
 
         IPage Page { get; }
 

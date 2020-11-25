@@ -44,9 +44,9 @@ namespace ToSic.Eav.WebApi.Security
             Context = context;
             App = app;
 
-            SamePortal = Context.Tenant.ZoneId == App.ZoneId;
-            SiteForSecurityCheck = SamePortal ? Context.Tenant : _zoneMapper.SiteOfZone(App.ZoneId);
-            return wrapLog($"ready for z/a:{app.Show()} t/z:{App.Site.Id}/{Context.Tenant.ZoneId} same:{SamePortal}", this);
+            SamePortal = Context.Site.ZoneId == App.ZoneId;
+            SiteForSecurityCheck = SamePortal ? Context.Site : _zoneMapper.SiteOfZone(App.ZoneId);
+            return wrapLog($"ready for z/a:{app.Show()} t/z:{App.Site.Id}/{Context.Site.ZoneId} same:{SamePortal}", this);
         }
 
         #endregion
