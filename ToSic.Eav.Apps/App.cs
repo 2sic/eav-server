@@ -103,8 +103,9 @@ namespace ToSic.Eav.Apps
             Log.Add($"prep App #{appIdentity.Show()}, hasDataConfig:{buildConfiguration != null}");
 
             // Look up name in cache
-            // todo: someday after nov 2020 replace this with State.Get(this).AppGuidName
-            AppGuid = State.Cache.Zones[ZoneId].Apps[AppId];
+            // 2020-11-25 changed to use State.Get. before it was this...
+            //AppGuid = State.Cache.Zones[ZoneId].Apps[AppId];
+            AppGuid = State.Get(this).AppGuidName;
 
             InitializeResourcesSettingsAndMetadata();
 
