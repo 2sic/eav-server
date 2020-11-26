@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Apps.Run
 {
-    public class InstancePublishingState
+    public class BlockPublishingState
     {
         public bool ForceDraft = false;
 

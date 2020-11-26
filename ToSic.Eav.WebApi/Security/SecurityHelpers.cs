@@ -13,7 +13,7 @@ namespace ToSic.Eav.WebApi.Security
 {
     public static class SecurityHelpers
     {
-        internal static void ThrowIfNotEditorOrIsPublicForm(IInstanceContext context, IApp app, string contentTypeStaticName, ILog log)
+        internal static void ThrowIfNotEditorOrIsPublicForm(IContextOfBlock context, IApp app, string contentTypeStaticName, ILog log)
         {
             var permCheck = context.ServiceProvider.Build<MultiPermissionsTypes>().Init(context, app, contentTypeStaticName, log);
             if (!permCheck.EnsureAll(GrantSets.WriteSomething, out var error))

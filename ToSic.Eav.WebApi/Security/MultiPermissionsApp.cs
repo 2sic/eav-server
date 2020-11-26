@@ -21,7 +21,7 @@ namespace ToSic.Eav.WebApi.Security
         /// </summary>
         public IApp App { get; private set; }
 
-        internal IInstanceContext Context { get; private set; }
+        internal IRunContextCore Context { get; private set; }
 
         protected ISite SiteForSecurityCheck { get; private set; }
 
@@ -37,7 +37,7 @@ namespace ToSic.Eav.WebApi.Security
             _zoneMapper.Init(Log);
         }
 
-        public MultiPermissionsApp Init(IInstanceContext context, IApp app, ILog parentLog, string logName = null)
+        public MultiPermissionsApp Init(IContextOfBlock context, IApp app, ILog parentLog, string logName = null)
         {
             Init(parentLog, logName ?? "Api.PermApp");
             var wrapLog = Log.Call<MultiPermissionsApp>($"..., appId: {app.AppId}, ...");
@@ -78,8 +78,9 @@ namespace ToSic.Eav.WebApi.Security
             Log.Add($"BuildPermissionChecker(type:{type?.Name}, item:{item?.EntityId})");
 
             // user has edit permissions on this app, and it's the same app as the user is coming from
-            return Context.ServiceProvider.Build<AppPermissionCheck>()
-                .ForParts(Context.Clone(SiteForSecurityCheck), App, type, item, Log);
+            var modifiedContext = Context.Clone();
+            modifiedContext.Site = SiteForSecurityCheck;
+            return Context.ServiceProvider.Build<AppPermissionCheck>().ForParts(modifiedContext, App, type, item, Log);
         }
 
     }

@@ -13,19 +13,19 @@ namespace ToSic.Eav.Apps.Security
         #region Constructor & DI
         protected AppPermissionCheck(string logPrefix) : base($"{logPrefix}.PrmChk") { }
 
-        public AppPermissionCheck ForItem(IInstanceContext ctx, IAppIdentity appIdentity, IEntity targetItem, ILog parentLog)
+        public AppPermissionCheck ForItem(IRunContextCore ctx, IAppIdentity appIdentity, IEntity targetItem, ILog parentLog)
         {
             Init(ctx, appIdentity, parentLog, targetItem?.Type, targetItem);
             return Log.Call<AppPermissionCheck>()("ok", this);
         }
 
-        public AppPermissionCheck ForType(IInstanceContext ctx, IAppIdentity appIdentity, IContentType targetType, ILog parentLog)
+        public AppPermissionCheck ForType(IRunContextCore ctx, IAppIdentity appIdentity, IContentType targetType, ILog parentLog)
         {
             Init(ctx, appIdentity, parentLog, targetType);
             return Log.Call<AppPermissionCheck>()("ok", this);
         }
 
-        public AppPermissionCheck ForAttribute(IInstanceContext ctx, IAppIdentity appIdentity, IContentTypeAttribute attribute, ILog parentLog)
+        public AppPermissionCheck ForAttribute(IRunContextCore ctx, IAppIdentity appIdentity, IContentTypeAttribute attribute, ILog parentLog)
         {
             Init(ctx, appIdentity, parentLog, permissions: attribute.Permissions);
             return Log.Call<AppPermissionCheck>()("ok", this);
@@ -38,13 +38,13 @@ namespace ToSic.Eav.Apps.Security
         /// <param name="app">The App - in some cases (if no app exists yet) it's null</param>
         /// <param name="parentLog"></param>
         /// <returns></returns>
-        public AppPermissionCheck ForAppInInstance(IInstanceContext ctx, IApp app, ILog parentLog)
+        public AppPermissionCheck ForAppInInstance(IRunContextCore ctx, IApp app, ILog parentLog)
         {
             Init(ctx, app, parentLog, permissions: app?.Metadata.Permissions);
             return Log.Call<AppPermissionCheck>()("ok", this);
         }
 
-        public AppPermissionCheck ForParts(IInstanceContext ctx, IApp app, IContentType targetType, IEntity targetItem, ILog parentLog)
+        public AppPermissionCheck ForParts(IRunContextCore ctx, IApp app, IContentType targetType, IEntity targetItem, ILog parentLog)
         {
             Init(ctx, app, parentLog, targetType, targetItem, app?.Metadata.Permissions);
             return Log.Call<AppPermissionCheck>()("ok", this);
@@ -56,7 +56,7 @@ namespace ToSic.Eav.Apps.Security
         /// Uses a GUID as identifier because that survives export/import. 
         /// </summary>
         protected AppPermissionCheck Init(
-            IInstanceContext ctx,
+            IRunContextCore ctx,
             IAppIdentity appIdentity,
             ILog parentLog,
             IContentType targetType = null, // optional type to check
@@ -71,7 +71,7 @@ namespace ToSic.Eav.Apps.Security
             return logWrap(null, this);
         }
 
-        protected IInstanceContext Context { get; private set; }
+        protected IRunContextCore Context { get; private set; }
 
 
         protected IAppIdentity AppIdentity;
@@ -97,7 +97,6 @@ namespace ToSic.Eav.Apps.Security
         /// </summary>
         /// <returns></returns>
         public bool UserIsTenantAdmin() => Log.Intercept(nameof(UserIsTenantAdmin), () => Context.User?.IsAdmin ?? false);
-        // Portal?.UserInfo?.IsInRole(Portal?.AdministratorRoleName) ?? false);
 
 
         #endregion
