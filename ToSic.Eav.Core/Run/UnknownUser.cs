@@ -11,5 +11,8 @@ namespace ToSic.Eav.Run
         public bool IsSuperUser => false;
         public bool IsAdmin => false;
         public bool IsDesigner => false;
+
+        public int Id => 0;
+        public bool IsAnonymous => true;
     }
 }

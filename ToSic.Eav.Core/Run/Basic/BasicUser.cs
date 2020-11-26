@@ -18,5 +18,9 @@ namespace ToSic.Eav.Run.Basic
         public bool IsAdmin => false;
 
         public bool IsDesigner => false;
+
+        public int Id => 0;
+
+        public bool IsAnonymous => true;
     }
 }

@@ -19,5 +19,11 @@ namespace ToSic.Eav.Run
         /// Returns true if a user is in the SexyContent Designers group
         /// </summary>
         bool IsDesigner { get; }
+
+        // new in 11.11?
+        int Id { get; }
+
+        bool IsAnonymous {get; }
+
     }
 }
