@@ -3,7 +3,7 @@ using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Apps.Run
 {
-    public interface IRunContextCore
+    public interface IContextOfSite
     {
         /// <summary>
         /// The service provider which must often be handed around, so it's part of the context being passed around
@@ -24,7 +24,7 @@ namespace ToSic.Eav.Apps.Run
         /// Create a clone of the context, usually for then making a slightly different context
         /// </summary>
         /// <returns></returns>
-        IRunContextCore Clone();
+        IContextOfSite Clone();
 
     }
 }

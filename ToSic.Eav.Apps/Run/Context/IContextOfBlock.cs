@@ -3,7 +3,7 @@ using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Apps.Run
 {
-    public interface IContextOfBlock: IRunContextCore
+    public interface IContextOfBlock: IContextOfSite
     {
         IPage Page { get; }
 

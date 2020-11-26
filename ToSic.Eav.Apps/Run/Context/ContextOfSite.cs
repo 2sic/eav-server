@@ -3,9 +3,9 @@ using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Apps.Run
 {
-    public class RunContextCore: IRunContextCore
+    public class ContextOfSite: IContextOfSite
     {
-        public RunContextCore(IServiceProvider serviceProvider, ISite site, IUser user)
+        public ContextOfSite(IServiceProvider serviceProvider, ISite site, IUser user)
         {
             ServiceProvider = serviceProvider ?? throw new Exception("Context didn't receive service provider, but this is absolutely necessary.");
             Site = site;
@@ -22,7 +22,7 @@ namespace ToSic.Eav.Apps.Run
         public IServiceProvider ServiceProvider { get; }
 
         /// <inheritdoc />
-        public IRunContextCore Clone() => new RunContextCore(ServiceProvider, Site, User);
+        public IContextOfSite Clone() => new ContextOfSite(ServiceProvider, Site, User);
 
     }
 }
