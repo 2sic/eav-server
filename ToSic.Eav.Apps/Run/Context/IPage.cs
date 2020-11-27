@@ -8,7 +8,7 @@ namespace ToSic.Eav.Apps.Run
         /// <summary>
         /// These parameters can reconfigure what view is used or change
         /// </summary>
-        [PrivateApi("wip")] List<KeyValuePair<string, string>> Parameters { get; }
+        [PrivateApi("wip")] List<KeyValuePair<string, string>> Parameters { get; set; }
 
     }
 }

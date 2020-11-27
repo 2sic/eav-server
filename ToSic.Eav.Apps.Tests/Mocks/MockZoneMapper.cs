@@ -6,7 +6,7 @@ namespace ToSic.Eav.Apps.Tests.Mocks
 {
     public class MockZoneMapper: HasLog, IZoneMapper
     {
-        public int GetZoneId(int tenantId) => -1;
+        public int GetZoneId(int siteId) => -1;
 
         public int GetZoneId(ISite site) => -999;
         public IAppIdentity IdentityFromSite(int tenantId, int appId) 

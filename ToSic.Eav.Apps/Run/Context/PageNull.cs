@@ -6,6 +6,12 @@ namespace ToSic.Eav.Apps.Run
     {
         public int Id => Constants.NullId;
         public string Url => null;
-        public List<KeyValuePair<string, string>> Parameters => new List<KeyValuePair<string, string>>();
+
+        public List<KeyValuePair<string, string>> Parameters
+        {
+            get => _parameters ?? (_parameters = new List<KeyValuePair<string, string>>());
+            set => _parameters = value;
+        }
+        private List<KeyValuePair<string, string>> _parameters;
     }
 }

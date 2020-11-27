@@ -13,6 +13,8 @@ namespace ToSic.Eav
         public const int AppIdEmpty = 0;
 
         public const int NullId = -2742;
+        public const int IdNotInitialized = -999;
+        public const string UrlNotInitialized = "url-not-initialized";
 
         public const string CultureSystemKey = "Culture";
 

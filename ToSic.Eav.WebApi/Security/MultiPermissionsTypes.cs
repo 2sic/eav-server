@@ -17,20 +17,20 @@ namespace ToSic.Eav.WebApi.Security
 
         public MultiPermissionsTypes(IZoneMapper zoneMapper): base(zoneMapper) { }
 
-        public MultiPermissionsTypes Init(IContextOfBlock context, IApp app, string contentType, ILog parentLog)
+        public MultiPermissionsTypes Init(IContextOfSite context, IApp app, string contentType, ILog parentLog)
         {
             Init(context, app, new[] {contentType}, parentLog);
             return this;
         }
 
-        public MultiPermissionsTypes Init(IContextOfBlock context, IApp app, IEnumerable<string> contentTypes, ILog parentLog)
+        public MultiPermissionsTypes Init(IContextOfSite context, IApp app, IEnumerable<string> contentTypes, ILog parentLog)
         { 
            Init(context, app, parentLog, _logName);
            ContentTypes = contentTypes;
            return this;
         }
 
-        public MultiPermissionsTypes Init(IContextOfBlock context, IApp app, List<ItemIdentifier> items, ILog parentLog)
+        public MultiPermissionsTypes Init(IContextOfSite context, IApp app, List<ItemIdentifier> items, ILog parentLog)
         {
             Init(context, app, parentLog, _logName);
             ContentTypes = ExtractTypeNamesFromItems(items);

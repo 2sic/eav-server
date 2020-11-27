@@ -18,7 +18,7 @@ namespace ToSic.Eav.Apps.Run
         /// <summary>
         /// The user in the current request / context
         /// </summary>
-        IUser User { get; }
+        IUser User { get; set; }
 
         /// <summary>
         /// Create a clone of the context, usually for then making a slightly different context

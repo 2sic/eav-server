@@ -13,6 +13,10 @@ namespace ToSic.Eav.Apps
     {
         public static IServiceCollection AddEavApps(this IServiceCollection services)
         {
+            // Context
+            services.TryAddTransient<IContextOfSite, ContextOfSite>();
+            services.TryAddTransient<ContextOfSite>();
+
             // Runtimes and Managers
             services.TryAddTransient<AppRuntime>();
             services.TryAddTransient<AppManager>();

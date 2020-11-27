@@ -7,7 +7,7 @@ namespace ToSic.Eav.Apps.Run
     {
         public UnknownZoneMapper(string logName) : base(logName)  {  }
 
-        public override int GetZoneId(int tenantId) => tenantId;
+        public override int GetZoneId(int siteId) => siteId;
 
         public override ISite SiteOfZone(int zoneId) => new UnknownSite().Init(zoneId);
 

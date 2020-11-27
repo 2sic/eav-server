@@ -12,7 +12,7 @@ namespace ToSic.Eav.Run
         /// <summary>
         /// Get the zoneId which belongs to the tenant of this environment
         /// </summary>
-        int GetZoneId(int tenantId);
+        int GetZoneId(int siteId);
 
         /// <summary>
         /// Get the zoneId which belongs to the tenant of this environment

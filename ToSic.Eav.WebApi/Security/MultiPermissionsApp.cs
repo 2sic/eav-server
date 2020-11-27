@@ -37,7 +37,7 @@ namespace ToSic.Eav.WebApi.Security
             _zoneMapper.Init(Log);
         }
 
-        public MultiPermissionsApp Init(IContextOfBlock context, IApp app, ILog parentLog, string logName = null)
+        public MultiPermissionsApp Init(IContextOfSite context, IApp app, ILog parentLog, string logName = null)
         {
             Init(parentLog, logName ?? "Api.PermApp");
             var wrapLog = Log.Call<MultiPermissionsApp>($"..., appId: {app.AppId}, ...");

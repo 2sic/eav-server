@@ -17,14 +17,14 @@ namespace ToSic.Eav.Apps.Run
         protected ZoneMapperBase(string logName) : base(logName) { }
 
         /// <inheritdoc />
-        public IZoneMapper Init(ILog parent)
+        public IZoneMapper Init(ILog parentLog)
         {
-            Log.LinkTo(parent);
+            Log.LinkTo(parentLog);
             return this;
         }
 
         /// <inheritdoc />
-        public abstract int GetZoneId(int tenantId);
+        public abstract int GetZoneId(int siteId);
 
         /// <inheritdoc />
         public int GetZoneId(ISite site) => GetZoneId(site.Id);
