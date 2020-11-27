@@ -2,8 +2,7 @@
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Logging;
 
-// ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Run
+namespace ToSic.Eav.Apps.Run
 {
     public interface IAppFileSystemLoader
     {
