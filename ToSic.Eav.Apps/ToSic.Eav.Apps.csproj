@@ -32,4 +32,8 @@
     <Reference Include="System.Web" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Eav.Context\" />
+  </ItemGroup>
+
 </Project>

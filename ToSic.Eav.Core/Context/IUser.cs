@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using ToSic.Eav.Documentation;
 
-namespace ToSic.Eav.Run
+namespace ToSic.Eav.Context
 {
-    public interface IUser
+    [PrivateApi]
+    public interface IUser: IUserLight
     {
         string IdentityToken { get; }
 
@@ -20,10 +22,6 @@ namespace ToSic.Eav.Run
         /// </summary>
         bool IsDesigner { get; }
 
-        // new in 11.11?
-        int Id { get; }
-
-        bool IsAnonymous {get; }
-
+        bool IsAnonymous { get; }
     }
 }
