@@ -33,7 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Eav.Context\" />
+    <Folder Include="Run\Context\" />
   </ItemGroup>
 
 </Project>
