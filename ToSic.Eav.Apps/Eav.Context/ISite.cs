@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Run;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Run;
 
@@ -10,7 +9,7 @@ namespace ToSic.Eav.Context
     /// Describes a tenant - this is what the Environment calls a tenant (like a portal in DNN)
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
-    public interface ISite: IWebResource, IZoneIdentity, IGetDefaultLanguage
+    public interface ISite: ISiteLight, IZoneIdentity, IGetDefaultLanguage
     {
         #region Constructor Helper
 
@@ -39,5 +38,13 @@ namespace ToSic.Eav.Context
 
         [PrivateApi]
         string ContentPath { get; }
+
+
+        // unsure about this
+        /// <summary>
+        /// The resource specific url, like the one to this page or portal
+        /// </summary>
+        string Url { get; }
+
     }
 }

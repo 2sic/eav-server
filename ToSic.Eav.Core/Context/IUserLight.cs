@@ -9,7 +9,7 @@ namespace ToSic.Eav.Context
     public interface IUserLight
     {
         /// <summary>
-        /// User ID
+        /// User Id as int. Works in DNN and Oqtane
         /// </summary>
         int Id { get; }
 
