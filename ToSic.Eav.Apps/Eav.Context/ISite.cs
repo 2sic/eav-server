@@ -9,7 +9,7 @@ namespace ToSic.Eav.Context
     /// Describes a tenant - this is what the Environment calls a tenant (like a portal in DNN)
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
-    public interface ISite: ISiteLight, IZoneIdentity, IGetDefaultLanguage
+    public interface ISite: IZoneIdentity, IGetDefaultLanguage
     {
         #region Constructor Helper
 
@@ -20,6 +20,12 @@ namespace ToSic.Eav.Context
         ISite Init(int siteId);
 
         #endregion
+
+        /// <summary>
+        /// The Id of the site in systems like DNN and Oqtane.
+        /// In DNN this is the same as the PortalId
+        /// </summary>
+        int Id { get; }
 
         /// <summary>
         /// The tenant name for human readability (UIs)

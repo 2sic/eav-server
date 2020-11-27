@@ -5,8 +5,14 @@ using ToSic.Eav.Documentation;
 namespace ToSic.Eav.Context
 {
     [PrivateApi]
-    public interface IUser: IUserLight
+    public interface IUser
     {
+
+        /// <summary>
+        /// User Id as int. Works in DNN and Oqtane
+        /// </summary>
+        int Id { get; }
+
         string IdentityToken { get; }
 
         Guid? Guid { get; }
