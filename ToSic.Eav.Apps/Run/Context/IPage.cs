@@ -10,5 +10,7 @@ namespace ToSic.Eav.Apps.Run
         /// </summary>
         [PrivateApi("wip")] List<KeyValuePair<string, string>> Parameters { get; set; }
 
+        IPage Init(int id);
+
     }
 }
