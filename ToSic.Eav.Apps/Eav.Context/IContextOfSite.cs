@@ -1,8 +1,7 @@
 ﻿using System;
-using ToSic.Eav.Context;
-using ToSic.Eav.Run;
 
-namespace ToSic.Eav.Apps.Run
+// ReSharper disable once CheckNamespace
+namespace ToSic.Eav.Context
 {
     public interface IContextOfSite
     {

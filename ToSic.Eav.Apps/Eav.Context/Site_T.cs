@@ -2,7 +2,7 @@
 using ToSic.Eav.Documentation;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Run
+namespace ToSic.Eav.Context
 {
     /// <summary>
     /// A tenant in the environment with a reference to the original thing.
