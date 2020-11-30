@@ -29,8 +29,10 @@ namespace ToSic.Eav.Apps
             Metadata = _appTypesFromRepository == null
                 ? new AppMetadataManager(this, metadataTypes, Log)
                 : throw new Exception("can't set metadata if content-types are already set");
+
+            AppMetadata = new MetadataOf<int>(Constants.MetadataForApp, AppId, this);
         }
 
-
+        [PrivateApi] public IMetadataOf AppMetadata { get; private set; }
     }
 }
