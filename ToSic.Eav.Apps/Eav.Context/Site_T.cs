@@ -8,7 +8,7 @@ namespace ToSic.Eav.Context
     /// A tenant in the environment with a reference to the original thing.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
+    [PrivateApi]
     public abstract class Site<T> :ISite, IWrapper<T>
     {
         /// <inheritdoc />

@@ -8,7 +8,7 @@ namespace ToSic.Eav.Context
     /// <summary>
     /// Describes a tenant - this is what the Environment calls a tenant (like a portal in DNN)
     /// </summary>
-    [InternalApi_DoNotUse_MayChangeWithoutNotice]
+    [PrivateApi]
     public interface ISite: IZoneIdentity, IGetDefaultLanguage
     {
         #region Constructor Helper
