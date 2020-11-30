@@ -11,14 +11,14 @@ namespace ToSic.Eav.LookUp
     /// Read more about this in @Specs.LookUp.Intro
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
-    public interface IGetEngine: IHasLog<IGetEngine>
+    public interface ILookUpEngineResolver: IHasLog<ILookUpEngineResolver>
     {
         /// <summary>
         /// Get the engine for the current execution instance.
         /// </summary>
         /// <param name="instanceId">The instance ID</param>
         ///// <returns>a <see cref="ILookUpEngine"/> for the current context</returns>
-        ILookUpEngine GetEngine(int instanceId);
+        ILookUpEngine GetLookUpEngine(int instanceId);
 
     }
 }
