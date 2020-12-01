@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Run;
 using ToSic.Eav.Apps.Security;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
@@ -8,7 +7,6 @@ using ToSic.Eav.Logging;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security;
-using IApp = ToSic.Eav.Apps.IApp;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.WebApi.Security
@@ -20,7 +18,7 @@ namespace ToSic.Eav.WebApi.Security
         /// <summary>
         /// The current app which will be used and can be re-used externally
         /// </summary>
-        public IApp App { get; private set; }
+        public IAppIdentity App { get; private set; }
 
         internal IContextOfSite Context { get; private set; }
 
@@ -38,7 +36,7 @@ namespace ToSic.Eav.WebApi.Security
             _zoneMapper.Init(Log);
         }
 
-        public MultiPermissionsApp Init(IContextOfSite context, IApp app, ILog parentLog, string logName = null)
+        public MultiPermissionsApp Init(IContextOfSite context, IAppIdentity app, ILog parentLog, string logName = null)
         {
             Init(parentLog, logName ?? "Api.PermApp");
             var wrapLog = Log.Call<MultiPermissionsApp>($"..., appId: {app.AppId}, ...");
@@ -47,7 +45,7 @@ namespace ToSic.Eav.WebApi.Security
 
             SamePortal = Context.Site.ZoneId == App.ZoneId;
             SiteForSecurityCheck = SamePortal ? Context.Site : _zoneMapper.SiteOfZone(App.ZoneId);
-            return wrapLog($"ready for z/a:{app.Show()} t/z:{App.Site.Id}/{Context.Site.ZoneId} same:{SamePortal}", this);
+            return wrapLog($"ready for z/a:{app.Show()} t/z:{SiteForSecurityCheck.Id}/{Context.Site.ZoneId} same:{SamePortal}", this);
         }
 
         #endregion

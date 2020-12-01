@@ -18,7 +18,7 @@ namespace ToSic.Eav.WebApi.Security
 
         public MultiPermissionsItems(IZoneMapper zoneMapper): base(zoneMapper) { }
 
-        public MultiPermissionsItems Init(IContextOfSite context, IApp app, IEntity item, ILog parentLog) 
+        public MultiPermissionsItems Init(IContextOfSite context, IAppIdentity app, IEntity item, ILog parentLog) 
         {
             Init(context, app, parentLog, "Sec.MpItms");
             Items = new List<IEntity> {item};

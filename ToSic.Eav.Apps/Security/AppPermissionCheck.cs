@@ -43,11 +43,7 @@ namespace ToSic.Eav.Apps.Security
         /// <returns></returns>
         public AppPermissionCheck ForAppInInstance(IContextOfSite ctx, IAppIdentity appIdentity, ILog parentLog)
         {
-            var permissions = appIdentity == null
-                ? null
-                : (appIdentity as IApp)?.Metadata.Permissions.ToList()
-                  ?? (appIdentity as AppState)?.AppMetadata.Permissions.ToList()
-                  ?? State.Get(appIdentity).AppMetadata.Permissions.ToList();
+            var permissions = FindPermissionsOfApp(appIdentity);
             Init(ctx, appIdentity, parentLog, permissions: permissions);
 
             // note: WrapLog shouldn't be created before the init, because otherwise we don't see the results
@@ -56,9 +52,19 @@ namespace ToSic.Eav.Apps.Security
             return wrapLog("ok", this);
         }
 
-        public AppPermissionCheck ForParts(IContextOfSite ctx, IApp app, IContentType targetType, IEntity targetItem, ILog parentLog)
+        private static List<Permission> FindPermissionsOfApp(IAppIdentity appIdentity)
         {
-            Init(ctx, app, parentLog, targetType, targetItem, app?.Metadata.Permissions);
+            var permissions = appIdentity == null
+                ? null
+                : (appIdentity as IApp)?.Metadata.Permissions.ToList()
+                  ?? (appIdentity as AppState)?.AppMetadata.Permissions.ToList()
+                  ?? State.Get(appIdentity).AppMetadata.Permissions.ToList();
+            return permissions;
+        }
+
+        public AppPermissionCheck ForParts(IContextOfSite ctx, IAppIdentity app, IContentType targetType, IEntity targetItem, ILog parentLog)
+        {
+            Init(ctx, app, parentLog, targetType, targetItem, FindPermissionsOfApp(app));
 
             // note: WrapLog shouldn't be created before the init, because otherwise we don't see the results
             return Log.Call<AppPermissionCheck>()("ok", this);
