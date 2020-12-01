@@ -18,7 +18,7 @@ namespace ToSic.Eav.WebApi.Security
         /// <summary>
         /// The current app which will be used and can be re-used externally
         /// </summary>
-        public IAppIdentity App { get; private set; }
+        protected IAppIdentity App { get; private set; }
 
         internal IContextOfSite Context { get; private set; }
 
