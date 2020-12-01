@@ -79,7 +79,7 @@ namespace ToSic.Eav.WebApi.Security
             Log.Add($"BuildPermissionChecker(type:{type?.Name}, item:{item?.EntityId})");
 
             // user has edit permissions on this app, and it's the same app as the user is coming from
-            var modifiedContext = Context.Clone();
+            var modifiedContext = Context.Clone(Log);
             modifiedContext.Site = SiteForSecurityCheck;
             return Context.ServiceProvider.Build<AppPermissionCheck>().ForParts(modifiedContext, App, type, item, Log);
         }

@@ -11,12 +11,23 @@ namespace ToSic.Eav.Context
     /// </summary>
     public class ContextOfSite: HasLog, IContextOfSite
     {
+        #region Constructor / DI
+
         public ContextOfSite(IServiceProvider serviceProvider, ISite site, IUser user): base("Eav.CtxSte")
         {
             ServiceProvider = serviceProvider ?? throw new Exception("Context didn't receive service provider, but this is absolutely necessary.");
             Site = site;
             User = user;
         }
+
+        public IContextOfSite Init(ILog parent)
+        {
+            Log.LinkTo(parent);
+            return this;
+        }
+
+        #endregion
+
 
         /// <inheritdoc />
         public ISite Site { get; set; }
@@ -28,7 +39,6 @@ namespace ToSic.Eav.Context
         public IServiceProvider ServiceProvider { get; }
 
         /// <inheritdoc />
-        public IContextOfSite Clone() => new ContextOfSite(ServiceProvider, Site, User);
-
+        public IContextOfSite Clone(ILog parentLog) => new ContextOfSite(ServiceProvider, Site, User).Init(parentLog);
     }
 }

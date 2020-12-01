@@ -20,10 +20,10 @@ namespace ToSic.Eav.Run
         /// </summary>
         int GetZoneId(ISite site);
 
-        /// <summary>
-        /// Get the App Identity when we know the tenant and app-id
-        /// </summary>
-        IAppIdentity IdentityFromSite(int tenantId, int appId);
+        ///// <summary>
+        ///// Get the App Identity when we know the tenant and app-id
+        ///// </summary>
+        //IAppIdentity IdentityFromSite(int tenantId, int appId);
 
 
         /// <summary>

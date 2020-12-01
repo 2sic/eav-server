@@ -88,9 +88,9 @@ namespace ToSic.Eav.Apps
                 appIdentity.AppId != AppConstants.AppIdNotFound)
                 Site = _dependencies.ZoneMapper.TenantOfApp(appIdentity.AppId);
 
-            // if zone is missing, try to find it; if still missing, throw error
+            // if zone is missing, try to find it - but always assume current context
             if (appIdentity.ZoneId == AutoLookupZone)
-                appIdentity = _dependencies.ZoneMapper.IdentityFromSite(Site.Id, appIdentity.AppId);
+                appIdentity = new AppIdentity(Site.ZoneId, appIdentity.AppId);
 
             Init(appIdentity, new CodeRef(), parentLog);
             Log.Add($"prep App #{appIdentity.Show()}, hasDataConfig:{buildConfiguration != null}");

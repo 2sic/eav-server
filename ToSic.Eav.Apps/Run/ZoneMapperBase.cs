@@ -30,9 +30,9 @@ namespace ToSic.Eav.Apps.Run
         /// <inheritdoc />
         public int GetZoneId(ISite site) => GetZoneId(site.Id);
 
-        /// <inheritdoc />
-        public IAppIdentity IdentityFromSite(int tenantId, int appId)
-            => new AppIdentity(GetZoneId(tenantId), appId);
+        ///// <inheritdoc />
+        //public IAppIdentity IdentityFromSite(int tenantId, int appId)
+        //    => new AppIdentity(GetZoneId(tenantId), appId);
 
         /// <inheritdoc />
         public abstract ISite SiteOfZone(int zoneId);

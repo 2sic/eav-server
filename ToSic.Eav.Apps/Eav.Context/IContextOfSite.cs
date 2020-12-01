@@ -1,9 +1,10 @@
 ﻿using System;
+using ToSic.Eav.Logging;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Context
 {
-    public interface IContextOfSite
+    public interface IContextOfSite: IHasLog<IContextOfSite>
     {
         /// <summary>
         /// The service provider which must often be handed around, so it's part of the context being passed around
@@ -24,7 +25,7 @@ namespace ToSic.Eav.Context
         /// Create a clone of the context, usually for then making a slightly different context
         /// </summary>
         /// <returns></returns>
-        IContextOfSite Clone();
+        IContextOfSite Clone(ILog newParentLog);
 
     }
 }
