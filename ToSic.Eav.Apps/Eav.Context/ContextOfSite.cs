@@ -35,6 +35,16 @@ namespace ToSic.Eav.Context
         /// <inheritdoc />
         public IUser User { get; set; }
 
+        public virtual bool UserMayEdit
+        {
+            get
+            {
+                var u = User;
+                if (u == null) return false;
+                return u.IsSuperUser || u.IsAdmin || u.IsDesigner;
+            }
+        }
+
         /// <inheritdoc />
         public IServiceProvider ServiceProvider { get; }
 
