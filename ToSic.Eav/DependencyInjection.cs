@@ -42,8 +42,6 @@ namespace ToSic.Eav
 
 	        services.TryAddTransient<IRemoteMetadata, RemoteMetadata>();
 
-            services.TryAddTransient<IEavDbConfiguration, Configuration.Static>();
-
             // todo: wip moving DataSource stuff into that DLL
             services
                 .AddEavApps()

@@ -1,20 +1,13 @@
 ﻿using System;
-using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Configuration
 {
 	/// <summary>
 	/// Global Eav Configuration
 	/// </summary>
-	public class Static : IEavDbConfiguration
+	public class DbConfiguration : IDbConfiguration
 	{
 	    private static string _conStr;
-
-	    /// <summary>
-	    /// Set the string itself as needed
-	    /// </summary>
-	    /// <param name="conString"></param>
-	    public static void SetConnectionString(string conString) => _conStr = conString;
 
         #region Internal delivery for depedency injection...
 	    /// <inheritdoc />

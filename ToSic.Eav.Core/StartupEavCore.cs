@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.LookUp;
@@ -11,6 +12,9 @@ namespace ToSic.Eav
     {
         public static IServiceCollection AddEavCore(this IServiceCollection services)
         {
+            services.TryAddTransient<IDbConfiguration, DbConfiguration>();
+            services.TryAddTransient<IFeaturesConfiguration, FeaturesConfiguration>();
+
             // todo
             services.TryAddTransient<AttributeBuilder>();
 

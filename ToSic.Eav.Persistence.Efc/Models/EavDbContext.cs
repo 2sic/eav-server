@@ -7,7 +7,7 @@ namespace ToSic.Eav.Persistence.Efc.Models
 {
     public partial class EavDbContext : DbContext
     {
-        private readonly IEavDbConfiguration _dbConfig;
+        private readonly IDbConfiguration _dbConfig;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -20,7 +20,7 @@ namespace ToSic.Eav.Persistence.Efc.Models
 
         //public bool DebugMode = false;
 
-        public EavDbContext(DbContextOptions<EavDbContext> options, IEavDbConfiguration dbConfig) : base(options)
+        public EavDbContext(DbContextOptions<EavDbContext> options, IDbConfiguration dbConfig) : base(options)
         {
             _dbConfig = dbConfig;
         }

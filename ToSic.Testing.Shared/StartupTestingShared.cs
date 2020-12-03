@@ -23,19 +23,16 @@ namespace ToSic.Testing.Shared
 
         public static void ConfigureEfcDi(Factory.ServiceConfigurator configure, string optionalConnection = null)
         {
-            var con = optionalConnection ?? TestConstants.ConStr;
-            Static.SetConnectionString(con);
-
             Factory.ActivateNetCoreDi(sc =>
             {
-                //sc.TryAddTransient<IEavUserInformation, NeutralEavUserInformation>();
                 sc.TryAddTransient<IUser, BasicUser>();
                 sc.TryAddTransient<IRuntime, BasicRuntime>();
                 configure.Invoke(sc);
 
                 sc.AddEav();
             });
-
+            var con = optionalConnection ?? TestConstants.ConStr;
+            Factory.StaticBuild<IDbConfiguration>().ConnectionString = con;
         }
 
         // this helps debug in advanced scenarios
