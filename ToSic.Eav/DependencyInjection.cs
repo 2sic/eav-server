@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
+using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.Metadata;
@@ -41,16 +42,14 @@ namespace ToSic.Eav
 
 	        services.TryAddTransient<IRemoteMetadata, RemoteMetadata>();
 
-            services.TryAddTransient<ISystemConfiguration, Configuration.Static>();
-
-            var connectionString = new Configuration.Static().DbConnectionString;
+            services.TryAddTransient<IEavDbConfiguration, Configuration.Static>();
 
             // todo: wip moving DataSource stuff into that DLL
             services
                 .AddEavApps()
                 .AddFallbackAppServices()
                 .AddImportExport()
-                .AddRepositoryAndEfc(connectionString)
+                .AddRepositoryAndEfc()
                 .AddDataSources()
                 .AddEavCore()
                 .AddEavCoreFallbackServices();

@@ -6,7 +6,7 @@ namespace ToSic.Eav.Configuration
 	/// <summary>
 	/// Global Eav Configuration
 	/// </summary>
-	public class Static : ISystemConfiguration
+	public class Static : IEavDbConfiguration
 	{
 	    private static string _conStr;
 
@@ -18,9 +18,12 @@ namespace ToSic.Eav.Configuration
 
         #region Internal delivery for depedency injection...
 	    /// <inheritdoc />
-	    public string DbConnectionString =>
-            _conStr ??
-            throw new Exception("Couldn't load Connection String as SetConnectionString must have been forgotten");
+	    public string ConnectionString
+        {
+            get => _conStr 
+                   ?? throw new Exception("Couldn't load Connection String as SetConnectionString must have been forgotten");
+            set => _conStr = value;
+        }
 
         /// <inheritdoc />
 	    public string FeaturesHelpLink => _featuresHelpLink;

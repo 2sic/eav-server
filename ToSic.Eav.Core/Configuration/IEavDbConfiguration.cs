@@ -1,11 +1,11 @@
-﻿namespace ToSic.Eav.Run
+﻿namespace ToSic.Eav.Configuration
 {
-    public interface ISystemConfiguration
+    public interface IEavDbConfiguration
     {
         /// <summary>
         /// Db Connection String used in the Eav-Connector
         /// </summary>
-        string DbConnectionString { get; }
+        string ConnectionString { get; set; }
 
         /// <summary>
         /// A help link to show the user when a feature isn't available and 

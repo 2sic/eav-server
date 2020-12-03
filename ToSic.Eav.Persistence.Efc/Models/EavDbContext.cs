@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ToSic.Eav.Configuration;
 #if NET451
 using Microsoft.EntityFrameworkCore.Metadata;
 #endif
@@ -6,6 +7,24 @@ namespace ToSic.Eav.Persistence.Efc.Models
 {
     public partial class EavDbContext : DbContext
     {
+        private readonly IEavDbConfiguration _dbConfig;
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            var connectionString = _dbConfig.ConnectionString;
+            if (!connectionString.ToLower().Contains("multipleactiveresultsets")) // this is needed to allow querying data while preparing new data on the same DbContext
+                connectionString += ";MultipleActiveResultSets=True";
+
+            optionsBuilder.UseSqlServer(connectionString);
+        }
+
+        //public bool DebugMode = false;
+
+        public EavDbContext(DbContextOptions<EavDbContext> options, IEavDbConfiguration dbConfig) : base(options)
+        {
+            _dbConfig = dbConfig;
+        }
+
         public virtual DbSet<ToSicEavApps> ToSicEavApps { get; set; }
         public virtual DbSet<ToSicEavAssignmentObjectTypes> ToSicEavAssignmentObjectTypes { get; set; }
         // 2020-07-31 2dm - never used
@@ -23,18 +42,6 @@ namespace ToSic.Eav.Persistence.Efc.Models
         public virtual DbSet<ToSicEavValuesDimensions> ToSicEavValuesDimensions { get; set; }
         public virtual DbSet<ToSicEavZones> ToSicEavZones { get; set; }
 
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //{
-        //    #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-        //    optionsBuilder.UseSqlServer(@"Data Source=NBK-DEV-04\SQLEXPRESS;Initial Catalog=""2flex 2Sexy Content"";Integrated Security=True;");
-        //}
-
-        //public bool DebugMode = false;
-
-        public EavDbContext(DbContextOptions<EavDbContext> options) : base(options)
-        {
-            
-        }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
