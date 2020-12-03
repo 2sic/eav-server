@@ -8,7 +8,7 @@ namespace ToSic.Eav.Apps.Security
     {
         public BasicAppPermissionCheck() : base(LogNames.NotImplemented) { }
 
-        protected override bool EnvironmentAllows(List<Grants> grants) => false;
+        protected override bool EnvironmentAllows(List<Grants> grants) => UserIsSuperuser();
 
         protected override bool VerifyConditionOfEnvironment(string condition)
         {

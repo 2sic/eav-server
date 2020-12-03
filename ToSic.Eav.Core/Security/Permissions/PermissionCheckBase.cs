@@ -3,7 +3,6 @@ using System.Linq;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Run;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Security
@@ -101,8 +100,7 @@ namespace ToSic.Eav.Security
         {
             var wrapLog = Log.Call(() => $"[{string.Join(",", grants)}]");
             GrantedBecause = Conditions.Undefined;
-            var result = EnvironmentAllows(grants)
-                   || DoesPermissionsListAllow(grants);
+            var result = EnvironmentAllows(grants) || DoesPermissionsListAllow(grants);
             wrapLog($"{result} ({GrantedBecause})");
             return result;
         }

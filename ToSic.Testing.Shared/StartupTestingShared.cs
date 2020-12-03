@@ -4,7 +4,6 @@ using ToSic.Eav;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
 using ToSic.Eav.Run;
-using ToSic.Eav.Run.Basic;
 using ToSic.Eav.Run.Unknown;
 
 namespace ToSic.Testing.Shared
@@ -26,7 +25,7 @@ namespace ToSic.Testing.Shared
         {
             Factory.ActivateNetCoreDi(sc =>
             {
-                sc.TryAddTransient<IUser, UserBasic>();
+                sc.TryAddTransient<IUser, UserUnknown>();
                 sc.TryAddTransient<IRuntime, RuntimeUnknown>();
                 configure.Invoke(sc);
 
