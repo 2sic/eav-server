@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav;
+using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
-using ToSic.Eav.Repository.Efc.Implementations;
 using ToSic.Eav.Run;
 using ToSic.Eav.Run.Basic;
 
@@ -24,7 +24,7 @@ namespace ToSic.Testing.Shared
         public static void ConfigureEfcDi(Factory.ServiceConfigurator configure, string optionalConnection = null)
         {
             var con = optionalConnection ?? TestConstants.ConStr;
-            Configuration.SetConnectionString(con);
+            Static.SetConnectionString(con);
 
             Factory.ActivateNetCoreDi(sc =>
             {

@@ -1,12 +1,12 @@
 ﻿using System;
 using ToSic.Eav.Run;
 
-namespace ToSic.Eav.Repository.Efc.Implementations
+namespace ToSic.Eav.Configuration
 {
 	/// <summary>
 	/// Global Eav Configuration
 	/// </summary>
-	public class Configuration : ISystemConfiguration
+	public class Static : ISystemConfiguration
 	{
 	    private static string _conStr;
 
@@ -18,17 +18,11 @@ namespace ToSic.Eav.Repository.Efc.Implementations
 
         #region Internal delivery for depedency injection...
 	    /// <inheritdoc />
-	    public string DbConnectionString {
-	        get
-	        {
-	            if (!string.IsNullOrEmpty(_conStr))
-	                return _conStr;
-	            throw new Exception("Couldn't load Connection String as SetConnectionString must have been forgotten");
+	    public string DbConnectionString =>
+            _conStr ??
+            throw new Exception("Couldn't load Connection String as SetConnectionString must have been forgotten");
 
-	        }
-	    }
-
-	    /// <inheritdoc />
+        /// <inheritdoc />
 	    public string FeaturesHelpLink => _featuresHelpLink;
 
 	    /// <inheritdoc />

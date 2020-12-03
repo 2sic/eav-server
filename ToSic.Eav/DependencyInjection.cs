@@ -41,9 +41,9 @@ namespace ToSic.Eav
 
 	        services.TryAddTransient<IRemoteMetadata, RemoteMetadata>();
 
-            services.TryAddTransient<ISystemConfiguration, Repository.Efc.Implementations.Configuration>();
+            services.TryAddTransient<ISystemConfiguration, Configuration.Static>();
 
-            var connectionString = new Repository.Efc.Implementations.Configuration().DbConnectionString;
+            var connectionString = new Configuration.Static().DbConnectionString;
 
             // todo: wip moving DataSource stuff into that DLL
             services
