@@ -1,10 +1,15 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Eav.Caching;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.LookUp;
+using ToSic.Eav.Metadata;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.Run;
+using ToSic.Eav.Run.Basic;
 
 namespace ToSic.Eav
 {
@@ -12,8 +17,20 @@ namespace ToSic.Eav
     {
         public static IServiceCollection AddEavCore(this IServiceCollection services)
         {
+            // 2020-10-29 New enhancement - lazy loading dependency injection
+            services.AddTransient(typeof(Lazy<>), typeof(LazyDependencyInjection<>));
+
+            // Configuration objects
             services.TryAddTransient<IDbConfiguration, DbConfiguration>();
             services.TryAddTransient<IFeaturesConfiguration, FeaturesConfiguration>();
+
+            // App-State and Cache
+            services.TryAddSingleton<IAppsCache, AppsCache>();
+
+            // Metadata providers
+            services.TryAddTransient<IRemoteMetadata, RemoteMetadata>();
+
+
 
             // todo
             services.TryAddTransient<AttributeBuilder>();
@@ -32,6 +49,11 @@ namespace ToSic.Eav
         /// </remarks>
         public static IServiceCollection AddEavCoreFallbackServices(this IServiceCollection services)
         {
+            // very basic stuff - normally overriden by the platform
+            services.TryAddTransient<IFingerprint, BasicFingerprint>();
+            services.TryAddTransient<IUser, BasicUser>();
+            services.TryAddTransient<IValueConverter, BasicValueConverter>();
+
             services.TryAddTransient<ILookUpEngineResolver, UnknownLookUpEngineResolver>();
             services.TryAddTransient<IUser, UnknownUser>();
             services.TryAddTransient<IGetDefaultLanguage, UnknownGetDefaultLanguage>();

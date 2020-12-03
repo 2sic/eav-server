@@ -27,20 +27,9 @@ namespace ToSic.Eav
 	    /// <param name="services"></param>
 	    public static IServiceCollection AddEav(this IServiceCollection services)
 	    {
-            // 2020-10-29 New enhancement - lazy loading dependency injection
-            services.AddTransient(typeof(Lazy<>), typeof(LazyDependencyInjection<>));
-
-            // very basic stuff - normally overriden by the platform
-            services.TryAddTransient<IFingerprint, BasicFingerprint>();
-            services.TryAddTransient<IUser, BasicUser>();
-            services.TryAddTransient<IValueConverter, BasicValueConverter>();
 
             // core things - usually not replaced
             services.TryAddTransient<IRuntime, Runtime>();
-
-            services.TryAddSingleton<IAppsCache, AppsCache>();
-
-	        services.TryAddTransient<IRemoteMetadata, RemoteMetadata>();
 
             // todo: wip moving DataSource stuff into that DLL
             services
