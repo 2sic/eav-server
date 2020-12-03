@@ -1,7 +1,7 @@
-﻿namespace ToSic.Eav.Run.Basic
+﻿namespace ToSic.Eav.Run.Unknown
 {
-    public class UnknownFingerprint: IFingerprint
+    public sealed class UnknownFingerprint: IFingerprint
     {
-        public sealed string GetSystemFingerprint() => "eav-server-fingerprint-unknown";
+        public string GetSystemFingerprint() => "eav-server-fingerprint-unknown";
     }
 }

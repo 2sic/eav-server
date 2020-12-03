@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using ToSic.Eav.Context;
 
-namespace ToSic.Eav.Run
+namespace ToSic.Eav.Run.Unknown
 {
     public sealed class UnknownUser: IUser
     {
