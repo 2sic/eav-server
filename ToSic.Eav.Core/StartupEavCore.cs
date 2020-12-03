@@ -28,9 +28,10 @@ namespace ToSic.Eav
         /// </remarks>
         public static IServiceCollection AddEavCoreFallbackServices(this IServiceCollection services)
         {
-            services.TryAddTransient<ILookUpEngineResolver, BasicGetLookupEngine>();
+            services.TryAddTransient<ILookUpEngineResolver, UnknownLookUpEngineResolver>();
             services.TryAddTransient<IUser, UnknownUser>();
-            services.TryAddTransient<IGetDefaultLanguage, BasicGetDefaultLanguage>();
+            services.TryAddTransient<IGetDefaultLanguage, UnknownGetDefaultLanguage>();
+            services.TryAddTransient<IServerPaths, UnknownServerPaths>();
             return services;
         }
 

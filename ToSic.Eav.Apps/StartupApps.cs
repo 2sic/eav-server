@@ -6,6 +6,7 @@ using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Apps.Run;
 using ToSic.Eav.Apps.Security;
 using ToSic.Eav.Context;
+using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Apps
@@ -70,6 +71,8 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<IZoneMapper, UnknownZoneMapper>();
             services.TryAddTransient<AppPermissionCheck, BasicAppPermissionCheck>();
             services.TryAddTransient<IAppFileSystemLoader, NoAppFileSystemLoader>();
+
+            services.TryAddTransient<IImportExportEnvironment, UnknownImportExportEnvironment>();
 
             return services;
         }

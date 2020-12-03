@@ -6,9 +6,9 @@ namespace ToSic.Eav.LookUp
     /// Fall back implementation - just return an empty lookup engine
     /// This should usually be 
     /// </summary>
-    public class BasicGetLookupEngine: HasLog<ILookUpEngineResolver>, ILookUpEngineResolver
+    public sealed class UnknownLookUpEngineResolver: HasLog<ILookUpEngineResolver>, ILookUpEngineResolver
     {
-        public BasicGetLookupEngine() : base($"{LogNames.NotImplemented}.LookUp")
+        public UnknownLookUpEngineResolver() : base($"{LogNames.NotImplemented}.LookUp")
         {
         }
 
