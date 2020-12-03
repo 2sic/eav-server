@@ -3,11 +3,11 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.Run.Basic
+namespace ToSic.Eav.Run.Unknown
 {
-    public class BasicRuntime: HasLog, IRuntime
+    public class RuntimeUnknown: HasLog, IRuntime
     {
-        public BasicRuntime() : base("Eav.BscRnt") { }
+        public RuntimeUnknown() : base("Eav.BscRnt") { }
 
         public IRuntime Init(ILog parent)
         {

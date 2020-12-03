@@ -49,13 +49,13 @@ namespace ToSic.Eav
         public static IServiceCollection AddEavCoreFallbackServices(this IServiceCollection services)
         {
             // very basic stuff - normally overriden by the platform
-            services.TryAddTransient<IFingerprint, UnknownFingerprint>();
+            services.TryAddTransient<IFingerprint, FingerprintUnknown>();
             services.TryAddTransient<IValueConverter, ValueConverterBase>();
 
             services.TryAddTransient<ILookUpEngineResolver, UnknownLookUpEngineResolver>();
-            services.TryAddTransient<IUser, UnknownUser>();
-            services.TryAddTransient<IGetDefaultLanguage, UnknownGetDefaultLanguage>();
-            services.TryAddTransient<IServerPaths, UnknownServerPaths>();
+            services.TryAddTransient<IUser, UserUnknown>();
+            services.TryAddTransient<IGetDefaultLanguage, GetDefaultLanguageUnknown>();
+            services.TryAddTransient<IServerPaths, ServerPathsUnknown>();
             return services;
         }
 

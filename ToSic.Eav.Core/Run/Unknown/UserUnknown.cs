@@ -4,7 +4,7 @@ using ToSic.Eav.Context;
 
 namespace ToSic.Eav.Run.Unknown
 {
-    public sealed class UnknownUser: IUser
+    public sealed class UserUnknown: IUser
     {
         public string IdentityToken => "unknown(eav):0";
 

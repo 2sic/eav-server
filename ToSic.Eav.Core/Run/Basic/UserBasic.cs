@@ -4,7 +4,7 @@ using ToSic.Eav.Context;
 
 namespace ToSic.Eav.Run.Basic
 {
-    public class BasicUser: IUser
+    public class UserBasic: IUser
     {
         public string IdentityToken => "basic(eav):0";
 
