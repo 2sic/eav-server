@@ -18,8 +18,8 @@ namespace ToSic.Testing.Shared.Mocks
         public string ToValue(string reference, Guid itemGuid)
         {
             var refLower = reference.ToLowerInvariant();
-            return refLower.StartsWith(BasicValueConverter.PrefixPage + BasicValueConverter.Separator ) 
-                   || refLower.StartsWith(BasicValueConverter.PrefixFile + BasicValueConverter.Separator)
+            return refLower.StartsWith(ValueConverterBase.PrefixPage + ValueConverterBase.Separator ) 
+                   || refLower.StartsWith(ValueConverterBase.PrefixFile + ValueConverterBase.Separator)
                 ? "http://mock.converted/" + reference
                 : reference;
         }

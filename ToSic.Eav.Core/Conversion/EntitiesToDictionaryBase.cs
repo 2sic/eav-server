@@ -97,7 +97,7 @@ namespace ToSic.Eav.Conversion
             var entityValues = (from d in entity.Attributes select d.Value).ToDictionary(k => k.Name, v =>
             {
 				var value = entity.GetBestValue(v.Name, Languages);
-                if (v.Type == Constants.DataTypeHyperlink && value is string stringValue && BasicValueConverter.CouldBeReference(stringValue))
+                if (v.Type == Constants.DataTypeHyperlink && value is string stringValue && ValueConverterBase.CouldBeReference(stringValue))
                     return ValueConverter.ToValue(stringValue, entity.EntityGuid);
 
                 if (v.Type == Constants.DataTypeEntity && value is IEnumerable<IEntity> entities)

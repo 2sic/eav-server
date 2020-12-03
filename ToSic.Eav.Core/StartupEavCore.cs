@@ -50,9 +50,8 @@ namespace ToSic.Eav
         public static IServiceCollection AddEavCoreFallbackServices(this IServiceCollection services)
         {
             // very basic stuff - normally overriden by the platform
-            services.TryAddTransient<IFingerprint, BasicFingerprint>();
-            services.TryAddTransient<IUser, BasicUser>();
-            services.TryAddTransient<IValueConverter, BasicValueConverter>();
+            services.TryAddTransient<IFingerprint, UnknownFingerprint>();
+            services.TryAddTransient<IValueConverter, ValueConverterBase>();
 
             services.TryAddTransient<ILookUpEngineResolver, UnknownLookUpEngineResolver>();
             services.TryAddTransient<IUser, UnknownUser>();

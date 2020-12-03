@@ -22,7 +22,7 @@ namespace ToSic.Eav.Data
         [PrivateApi]
         protected static string TryToResolveLink(Guid itemGuid, string result)
         {
-            if (!BasicValueConverter.CouldBeReference(result)) return result;
+            if (!ValueConverterBase.CouldBeReference(result)) return result;
             return Factory.Resolve<IValueConverter>().ToValue(result, itemGuid);
         }
 

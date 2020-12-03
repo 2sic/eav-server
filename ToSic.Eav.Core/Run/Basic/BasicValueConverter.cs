@@ -5,13 +5,14 @@ namespace ToSic.Eav.Run.Basic
     /// <summary>
     /// Trivial value converter - doesn't convert anything.
     /// </summary>
-    public class BasicValueConverter : IValueConverter
+    public class ValueConverterBase : IValueConverter
     {
         public const string PrefixPage = "page";
         public const string PrefixFile = "file";
         public const string Separator = ":";
 
         public string ToReference(string value) => value;
+
         public string ToValue(string reference, Guid itemGuid) => reference;
 
         public static bool CouldBeReference(string reference)

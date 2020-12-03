@@ -6,9 +6,7 @@ namespace ToSic.Eav.Run.Basic
 {
     public class BasicUser: IUser
     {
-        private const string Unknown = "unknown(eav)";
-
-        public string IdentityToken => Unknown;
+        public string IdentityToken => "basic(eav):0";
 
         public Guid? Guid => null;
 
