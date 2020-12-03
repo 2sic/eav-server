@@ -5,9 +5,9 @@ using ToSic.Eav.Persistence.Xml;
 
 namespace ToSic.Eav.Apps.ImportExport
 {
-    public class BasicXmlExporter: XmlExporter
+    public sealed class UnknownXmlExporter: XmlExporter
     {
-        public BasicXmlExporter(XmlSerializer xmlSerializer) : base(xmlSerializer, LogNames.NotImplemented)
+        public UnknownXmlExporter(XmlSerializer xmlSerializer) : base(xmlSerializer, LogNames.NotImplemented)
         {
         }
 

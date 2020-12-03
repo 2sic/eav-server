@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Apps.Environment
 {
-    public class BasicEnvironmentLogger: IEnvironmentLogger
+    public sealed class UnknownEnvironmentLogger: IEnvironmentLogger
     {
         public void LogException(Exception ex)
         {

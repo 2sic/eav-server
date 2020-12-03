@@ -4,7 +4,7 @@ using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps.Run
 {
-    public class NoAppFileSystemLoader: IAppFileSystemLoader
+    public sealed class UnknownFileSystemLoader: IAppFileSystemLoader
     {
         public IAppFileSystemLoader Init(int appId, string path, ILog log)
         {
