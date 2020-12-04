@@ -8,12 +8,14 @@ namespace ToSic.Eav.DataSources
 {
     public class DataSourceFactory: HasLog<DataSourceFactory>
     {
+        private readonly Lazy<ILookUpEngineResolver> _lookupResolveLazy;
         public IServiceProvider ServiceProvider { get; }
 
         #region Constructor / DI
 
-        public DataSourceFactory(IServiceProvider serviceProvider) : base($"{DataSourceConstants.LogPrefix}.Factry")
+        public DataSourceFactory(IServiceProvider serviceProvider, Lazy<ILookUpEngineResolver> lookupResolveLazy) : base($"{DataSourceConstants.LogPrefix}.Factry")
         {
+            _lookupResolveLazy = lookupResolveLazy;
             ServiceProvider = serviceProvider;
         }
 
@@ -101,7 +103,7 @@ namespace ToSic.Eav.DataSources
         {
             var wrapLog = Log.Call(parameters: $"#{app.Show()}, draft:{showDrafts}, config:{configProvider != null}");
 
-            configProvider = configProvider ?? new LookUpEngine(Log);
+            configProvider = configProvider ?? _lookupResolveLazy.Value.GetLookUpEngine(0);
 
             var dataSource = GetDataSource(DataSourceConstants.RootDataSource, app, null, configProvider);
 

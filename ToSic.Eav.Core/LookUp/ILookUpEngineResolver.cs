@@ -16,7 +16,7 @@ namespace ToSic.Eav.LookUp
         /// <summary>
         /// Get the engine for the current execution instance.
         /// </summary>
-        /// <param name="instanceId">The instance ID</param>
+        /// <param name="instanceId">The instance ID - should be 0 if unknown</param>
         ///// <returns>a <see cref="ILookUpEngine"/> for the current context</returns>
         ILookUpEngine GetLookUpEngine(int instanceId);
 
