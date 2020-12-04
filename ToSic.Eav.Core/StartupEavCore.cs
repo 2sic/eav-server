@@ -52,7 +52,7 @@ namespace ToSic.Eav
             services.TryAddTransient<IFingerprint, FingerprintUnknown>();
             services.TryAddTransient<IValueConverter, ValueConverterBase>();
 
-            services.TryAddTransient<ILookUpEngineResolver, UnknownLookUpEngineResolver>();
+            services.TryAddTransient<ILookUpEngineResolver, LookUpEngineResolverUnknown>();
             services.TryAddTransient<IUser, UserUnknown>();
             services.TryAddTransient<IGetDefaultLanguage, GetDefaultLanguageUnknown>();
             services.TryAddTransient<IServerPaths, ServerPathsUnknown>();
