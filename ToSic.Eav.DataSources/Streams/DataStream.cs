@@ -111,9 +111,9 @@ namespace ToSic.Eav.DataSources
 	    {
             get
             {
-                var wrapLog = Source.Log.Call<IImmutableList<IEntity>>($"{nameof(Name)}:{Name}");
+                var wrapLog = Source.Log.Call<IImmutableList<IEntity>>($"{nameof(Name)}:{Name}", useTimer: true);
                 // If already retrieved return last result to be faster
-                if (/*_list != null && */_listLoaded) return wrapLog("reuse previous", _list);
+                if (_listLoaded) return wrapLog("reuse previous", _list);
 
                 // Check if it's in the cache - and if yes, if it's still valid and should be re-used --> return if found
                 if (AutoCaching)
