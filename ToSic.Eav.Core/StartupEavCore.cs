@@ -54,7 +54,7 @@ namespace ToSic.Eav
 
             services.TryAddTransient<ILookUpEngineResolver, LookUpEngineResolverUnknown>();
             services.TryAddTransient<IUser, UserUnknown>();
-            services.TryAddTransient<IGetDefaultLanguage, GetDefaultLanguageUnknown>();
+            services.TryAddTransient<IZoneCultureResolver, ZoneCultureResolverUnknown>();
             services.TryAddTransient<IServerPaths, ServerPathsUnknown>();
             return services;
         }

@@ -26,7 +26,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
                 sc.AddTransient<Apps.ImportExport.XmlExporter, DnnXmlExporter>();
 
                 sc.AddTransient<IRuntime, Runtime>();
-                sc.AddTransient<IGetDefaultLanguage, MockGetLanguage>();
+                sc.AddTransient<IZoneCultureResolver, MockGetLanguage>();
 
                 sc.AddTransient<IImportExportEnvironment, ImportExportEnvironmentMock>();
 

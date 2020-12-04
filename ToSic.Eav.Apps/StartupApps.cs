@@ -65,14 +65,14 @@ namespace ToSic.Eav.Apps
         /// </remarks>
         public static IServiceCollection AddFallbackAppServices(this IServiceCollection services)
         {
-            services.TryAddTransient<IEnvironmentLogger, UnknownEnvironmentLogger>();
-            services.TryAddTransient<XmlExporter, UnknownXmlExporter>();
-            services.TryAddTransient<ISite, UnknownSite>();
-            services.TryAddTransient<IZoneMapper, UnknownZoneMapper>();
-            services.TryAddTransient<AppPermissionCheck, BasicAppPermissionCheck>();
-            services.TryAddTransient<IAppFileSystemLoader, UnknownFileSystemLoader>();
+            services.TryAddTransient<IEnvironmentLogger, EnvironmentLoggerUnknown>();
+            services.TryAddTransient<XmlExporter, XmlExporterUnknown>();
+            services.TryAddTransient<ISite, SiteUnknown>();
+            services.TryAddTransient<IZoneMapper, ZoneMapperUnknown>();
+            services.TryAddTransient<AppPermissionCheck, AppPermissionCheckUnknown>();
+            services.TryAddTransient<IAppFileSystemLoader, FileSystemLoaderUnknown>();
 
-            services.TryAddTransient<IImportExportEnvironment, UnknownImportExportEnvironment>();
+            services.TryAddTransient<IImportExportEnvironment, ImportExportEnvironmentUnknown>();
 
             return services;
         }

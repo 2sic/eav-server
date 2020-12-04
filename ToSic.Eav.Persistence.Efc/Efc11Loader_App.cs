@@ -23,7 +23,7 @@ namespace ToSic.Eav.Persistence.Efc
         #region constructor and private vars
 
         public Efc11Loader(EavDbContext dbContext, 
-            Lazy<IGetDefaultLanguage> environmentLazy, 
+            Lazy<IZoneCultureResolver> environmentLazy, 
             IServiceProvider serviceProvider,
             IAppInitializedChecker initializedChecker) : base("Db.Efc11")
         {
@@ -41,7 +41,7 @@ namespace ToSic.Eav.Persistence.Efc
 
         private IServiceProvider ServiceProvider { get; }
         private EavDbContext _dbContext;
-        private readonly Lazy<IGetDefaultLanguage> _environmentLazy;
+        private readonly Lazy<IZoneCultureResolver> _environmentLazy;
         private readonly IAppInitializedChecker _initializedChecker;
 
         #endregion

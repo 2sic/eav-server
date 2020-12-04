@@ -4,7 +4,7 @@ using ToSic.Eav.Run;
 namespace ToSic.Eav.Apps.Tests.Mocks
 {
 
-    public class MockGetLanguage : IGetDefaultLanguage
+    public class MockGetLanguage : IZoneCultureResolver
     {
         public string DefaultLanguage => "en-US";
 

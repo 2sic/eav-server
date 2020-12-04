@@ -5,9 +5,9 @@ using ToSic.Eav.Persistence.Logging;
 
 namespace ToSic.Eav.Apps.Run
 {
-    public class UnknownImportExportEnvironment: ImportExportEnvironmentBase
+    public class ImportExportEnvironmentUnknown: ImportExportEnvironmentBase
     {
-        public UnknownImportExportEnvironment(ISite site) : base(site, $"{LogNames.NotImplemented}.IExEnv") { }
+        public ImportExportEnvironmentUnknown(ISite site) : base(site, $"{LogNames.NotImplemented}.IExEnv") { }
 
         public override List<Message> TransferFilesToSite(string sourceFolder, string destinationFolder)
         {

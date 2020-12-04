@@ -27,7 +27,7 @@ namespace ToSic.Eav.ImportExport.Tests
             Repository.Efc.Tests.StartupTestingRepository.ConfigureEfcDi(sc =>
             {
                 sc.AddTransient<IRuntime, Runtime>();
-                sc.AddTransient<IGetDefaultLanguage, MockGetLanguage>();
+                sc.AddTransient<IZoneCultureResolver, MockGetLanguage>();
                 sc.TryAddTransient<IValueConverter, MockValueConverter>();
                 sc.TryAddTransient<IZoneMapper, MockZoneMapper>();
                 configure.Invoke(sc);

@@ -6,7 +6,7 @@ namespace ToSic.Eav.Run
     /// Any object implementing this interface can provide the EAV with information about the environment it's running in.
     /// </summary>
     [PrivateApi("this is not yet ready for publishing, as it's unclear what it actually is")]
-    public interface IGetDefaultLanguage
+    public interface IZoneCultureResolver
     {
         /// <summary>
         /// The primary language in the current environment. 

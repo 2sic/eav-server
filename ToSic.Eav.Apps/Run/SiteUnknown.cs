@@ -1,9 +1,8 @@
 ﻿using ToSic.Eav.Context;
-using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Apps.Run
 {
-    public class UnknownSite: ISite
+    public class SiteUnknown: ISite
     {
         private const string Unknown = "unknown - please implement the ISite interface to get real values";
 

@@ -4,9 +4,9 @@ using ToSic.Eav.Security;
 
 namespace ToSic.Eav.Apps.Security
 {
-    public class BasicAppPermissionCheck: AppPermissionCheck
+    public class AppPermissionCheckUnknown: AppPermissionCheck
     {
-        public BasicAppPermissionCheck() : base(LogNames.NotImplemented) { }
+        public AppPermissionCheckUnknown() : base(LogNames.NotImplemented) { }
 
         protected override bool EnvironmentAllows(List<Grants> grants) => UserIsSuperuser();
 

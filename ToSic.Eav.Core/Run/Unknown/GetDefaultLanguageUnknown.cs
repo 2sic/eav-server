@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.Run.Unknown
 {
-    public sealed class GetDefaultLanguageUnknown: IGetDefaultLanguage
+    public sealed class ZoneCultureResolverUnknown: IZoneCultureResolver
     {
         public string DefaultLanguage => "en-us";
     }
