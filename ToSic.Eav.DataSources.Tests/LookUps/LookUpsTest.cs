@@ -19,7 +19,7 @@ namespace ToSic.Eav.DataSourceTests.LookUps
             const string ItemToFilter = "1023";
             var ds = DataTablePerson.Generate(ItemsToGenerate, 1001);
             var myConfDs = new EntityIdFilter()
-                .Init(ds.Configuration.LookUps);
+                .Init(ds.Configuration.LookUpEngine);
             //myConfDs.ConfigurationProvider = ds.ConfigurationProvider;
             myConfDs.Attach(ds);
             myConfDs.EntityIds = ItemToFilter;
@@ -34,7 +34,7 @@ namespace ToSic.Eav.DataSourceTests.LookUps
             testSource.Configuration.Values.Add("TestMyConfFirstName", "[In:MyConf:FirstName]");
             testSource.Attach(ds);
             testSource.Attach("MyConf", myConfDs);
-            testSource.Init(ds.Configuration.LookUps);//.ConfigTemp.ConfigurationProvider = ds.ConfigurationProvider;
+            testSource.Init(ds.Configuration.LookUpEngine);//.ConfigTemp.ConfigurationProvider = ds.ConfigurationProvider;
             var y = testSource.List; // must access something to provoke configuration resolving
 
             Assert.AreEqual("First Name 1001", testSource.Configuration.Values["InTestFirstName"], "Tested in:Default:EntityTitle");

@@ -5,14 +5,15 @@ using ToSic.Eav.LookUp;
 
 namespace ToSic.Eav.DataSources.Configuration
 {
-    public class DataSourceConfiguration
+    public class DataSourceConfiguration : IDataSourceConfiguration
     {
-        public DataSourceBase DataSource;
+        #region Constructor (non DI)
         
-        public DataSourceConfiguration(DataSourceBase ds)
-        {
-            DataSource = ds;
-        }
+        [PrivateApi] public DataSourceConfiguration(DataSourceBase ds) => DataSource = ds;
+
+        [PrivateApi] internal DataSourceBase DataSource;
+
+        #endregion
 
         public string this[string key]
         {
@@ -20,11 +21,18 @@ namespace ToSic.Eav.DataSources.Configuration
             set => Values[key] = value;
         }
 
+        [PrivateApi("just included for compatibility, as previous public examples used Add")]
+        [Obsolete("please use the indexer instead - Configuration[key] = value")]
+        public void Add(string key, string value) => this[key] = value;
+
+        [PrivateApi]
         public IDictionary<string, string> Values { get; internal set; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-        public ILookUpEngine LookUps { get; protected internal set; }
 
-        protected internal bool IsParsed;
+        public ILookUpEngine LookUpEngine { get; protected internal set; }
+
+        [PrivateApi]
+        public bool IsParsed { get; private set; }
 
         /// <summary>
         /// Make sure that configuration-parameters have been parsed (tokens resolved)
@@ -46,27 +54,29 @@ namespace ToSic.Eav.DataSources.Configuration
         public IDictionary<string, string> Parse(IDictionary<string, string> values)
         {
             // Ensure that we have a configuration-provider (not always the case, but required)
-            if (LookUps == null)
+            if (LookUpEngine == null)
                 throw new Exception($"No ConfigurationProvider configured on this data-source. Cannot run {nameof(Parse)}");
 
             // construct a property access for in, use it in the config provider
-            return LookUps.LookUp(values, OverrideLookUps);
+            return LookUpEngine.LookUp(values, OverrideLookUps);
         }
 
+        /// <summary>
+        /// An internally created lookup to give access to the In-streams if there are any
+        /// </summary>
         [PrivateApi]
-        internal IDictionary<string, ILookUp> OverrideLookUps 
+        private IDictionary<string, ILookUp> OverrideLookUps 
             => _overrideLookUps 
                ?? (_overrideLookUps = new Dictionary<string, ILookUp> { { "In".ToLower(), new LookUpInDataTarget(DataSource) } });
         private IDictionary<string, ILookUp> _overrideLookUps;
 
 
         [PrivateApi]
-        public bool ConvertSafely(string value, bool? defaultValue = null)
+        public static bool TryConvertToBool(string value, bool? defaultValue = null)
         {
             var defValue = defaultValue ?? false;
             if (string.IsNullOrWhiteSpace(value)) return defValue;
-            if (bool.TryParse(value, out var result))
-                return result;
+            if (bool.TryParse(value, out var result)) return result;
             return defValue;
         }
     }

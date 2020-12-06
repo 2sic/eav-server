@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSourceTests
         public void PassThrough_CacheKey()
         {
             var outSource = new DataSources.PassThrough();
-            outSource.Configuration.LookUps = new LookUpEngine(null);
+            outSource.Configuration.LookUpEngine = new LookUpEngine(null);
             var partialKey = outSource.CachePartialKey;
             var fullKey = outSource.CacheFullKey;
             Assert.IsNotNull(partialKey);

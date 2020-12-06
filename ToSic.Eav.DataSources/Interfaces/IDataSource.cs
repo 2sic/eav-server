@@ -49,8 +49,12 @@ namespace ToSic.Eav.DataSources
         [PrivateApi]
         IImmutableList<IEntity> Immutable { get; }
 
-        [PrivateApi("wip")]
-        DataSourceConfiguration Configuration { get; }
+        /// <summary>
+        /// The configuration system of this data source.
+        /// Keeps track of all values which the data source will need, and manages the LookUp engine
+        /// which provides these values. 
+        /// </summary>
+        IDataSourceConfiguration Configuration { get; }
 
         #endregion
 

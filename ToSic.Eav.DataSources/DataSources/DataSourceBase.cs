@@ -93,8 +93,8 @@ namespace ToSic.Eav.DataSources
         public IImmutableList<IEntity> Immutable => Out[Constants.DefaultStreamName].Immutable;
 
         /// <inheritdoc />
-        public DataSourceConfiguration Configuration => _config ?? (_config = new DataSourceConfiguration(this));
-        private DataSourceConfiguration _config;
+        public IDataSourceConfiguration Configuration => _config ?? (_config = new DataSourceConfiguration(this));
+        private IDataSourceConfiguration _config;
 
 
 

@@ -66,7 +66,7 @@ namespace ToSic.Eav.DataSources
 
             #region get the configEntity
             // go through the metadata-source to find it, since it's usually only used in LookUps
-            var metadataLookUp = (Configuration.LookUps.FindSource(QueryBuilder.ConfigKeyPartSettings)// .Sources[QueryBuilder.ConfigKeyPartSettings] 
+            var metadataLookUp = (Configuration.LookUpEngine.FindSource(QueryBuilder.ConfigKeyPartSettings)// .Sources[QueryBuilder.ConfigKeyPartSettings] 
                 as LookUpInLookUps)
                 ?.Providers.FirstOrDefault(p => p is LookUpInMetadata) as LookUpInMetadata;
 
@@ -113,7 +113,7 @@ namespace ToSic.Eav.DataSources
         /// <returns></returns>
         private LookUpEngine LookUpWithoutParams()
         {
-            var lookUpsWithoutParams = new LookUpEngine(Configuration.LookUps, Log, true);
+            var lookUpsWithoutParams = new LookUpEngine(Configuration.LookUpEngine, Log, true);
             if (lookUpsWithoutParams.HasSource/*.Sources.ContainsKey*/(QueryConstants.ParamsLookup))
                 lookUpsWithoutParams.Sources.Remove(QueryConstants.ParamsLookup);
             // 1.1 note: can't add Override here because the underlying params don't exist yet - so an override wouldn't keep them

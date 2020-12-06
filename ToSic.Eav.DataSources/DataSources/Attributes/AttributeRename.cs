@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.DataSources.Configuration;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -50,7 +51,7 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         public bool KeepOtherAttributes
         {
-            get => Configuration.ConvertSafely(Configuration[KeepOtherAttributesKey]);
+            get => DataSourceConfiguration.TryConvertToBool(Configuration[KeepOtherAttributesKey]);
             set => Configuration[KeepOtherAttributesKey] = value.ToString();
         }
 

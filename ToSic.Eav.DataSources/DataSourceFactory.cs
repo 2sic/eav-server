@@ -1,5 +1,6 @@
 ﻿using System;
 using ToSic.Eav.Apps;
+using ToSic.Eav.DataSources.Configuration;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Plumbing;
@@ -68,7 +69,7 @@ namespace ToSic.Eav.DataSources
         #region GetDataSource Typed (preferred)
 
         public T GetDataSource<T>(IDataSource upstream) where T : IDataSource
-            => GetDataSource<T>(upstream, upstream, upstream.Configuration.LookUps);
+            => GetDataSource<T>(upstream, upstream, upstream.Configuration.LookUpEngine);
 
 
         public T GetDataSource<T>(IAppIdentity appIdentity, IDataSource upstream, ILookUpEngine lookUps = null) where T : IDataSource
@@ -80,7 +81,7 @@ namespace ToSic.Eav.DataSources
                     "Trying to GetDataSource<T> but cannot do so if both upstream and ConfigurationProvider are null.");
 
             var newDs = ServiceProvider.Build<T>();
-            ConfigureNewDataSource(newDs, appIdentity, upstream, lookUps ?? upstream.Configuration.LookUps);
+            ConfigureNewDataSource(newDs, appIdentity, upstream, lookUps ?? upstream.Configuration.LookUpEngine);
             wrapLog("ok");
             return newDs;
         }
@@ -146,8 +147,8 @@ namespace ToSic.Eav.DataSources
             newDs.AppId = appIdentity.AppId;
             if (upstream != null)
                 ((IDataTarget)newDs).Attach(upstream);
-            if (configLookUp != null)
-                newDs.Configuration.LookUps = configLookUp;
+            if (configLookUp != null) 
+                newDs.Init(configLookUp);
 
             newDs.InitLog(newDs.LogId, Log);
             wrapLog("ok");
