@@ -4,7 +4,7 @@ namespace ToSic.Eav.Data
 {
     public partial class EntityDecorator: IEquatable<IEntityWrapper>
     {
-        public IEntity _EntityForEqualityCheck { get; }
+        public IEntity EntityForEqualityCheck { get; }
 
         public static bool operator ==(EntityDecorator d1, IEntityWrapper d2) => EntityWrapperEquality.IsEqual(d1, d2);
 

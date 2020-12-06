@@ -19,6 +19,7 @@ namespace ToSic.Eav.DataSources
 
     public sealed class ValueSort : DataSourceBase
 	{
+
         #region Configuration-properties
         /// <inheritdoc/>
         [PrivateApi]
@@ -61,13 +62,16 @@ namespace ToSic.Eav.DataSources
 		/// Constructs a new ValueSort
 		/// </summary>
 		[PrivateApi]
-		public ValueSort()
+		public ValueSort(ValueLanguages valLanguages)
 		{
-			Provide(GetValueSort);
+            Provide(GetValueSort);
 		    ConfigMask(AttrKey, "[Settings:Attributes]");
 		    ConfigMask(DirectionKey, "[Settings:Directions]");
 		    ConfigMask(ValueLanguages.LangKey, ValueLanguages.LanguageSettingsPlaceholder);
+
+            _valLanguages = valLanguages.Init(Log);
         }
+        private readonly ValueLanguages _valLanguages;
 
         /// <summary>
         /// The internal language list used to lookup values.
@@ -88,18 +92,8 @@ namespace ToSic.Eav.DataSources
 			var directions = Directions.Split(',').Select(s => s.Trim()).ToArray();
 			var descendingCodes = new[] { "desc","d","0",">" };
 
-			#region Languages check - not fully implemented yet, only supports "default"
-
-            LanguageList = ValueLanguages.PrepareLanguageList(Languages, Log);
-   //             = Languages.ToLower();
-			//if (lang != "default")
-			//	throw new Exception("Can't filter for languages other than 'default'");
-
-			//if (lang == "default") lang = ""; // no language is automatically the default language
-
-			//if (lang == "any")
-			//	throw new NotImplementedException("language 'any' not implemented yet");
-			#endregion
+			// Languages check - not fully implemented yet, only supports "default" / "current"
+            LanguageList = _valLanguages.PrepareLanguageList(Languages, Log);
 
             var list = In[Constants.DefaultStreamName].Immutable;
 

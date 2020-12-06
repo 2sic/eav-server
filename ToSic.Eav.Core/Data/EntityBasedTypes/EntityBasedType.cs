@@ -12,20 +12,28 @@ namespace ToSic.Eav.Data
     public abstract class EntityBasedType : IEntityBasedType
     {
         /// <inheritdoc />
-        public IEntity Entity { get; }
+        public IEntity Entity { get; protected set; }
 
-        public IEntity _EntityForEqualityCheck { get; }
+        [PrivateApi] public IEntity EntityForEqualityCheck => (Entity as IEntityWrapper)?.EntityForEqualityCheck ?? Entity;
 
-         /// <inheritdoc />
+        /// <summary>
+        /// Create a EntityBasedType and wrap the entity provided
+        /// </summary>
+        /// <param name="entity"></param>
         protected EntityBasedType(IEntity entity)
-         {
-             Entity = entity;
-             _EntityForEqualityCheck = (Entity as IEntityWrapper)?._EntityForEqualityCheck ?? Entity;
-         }
+        {
+            Entity = entity;    
+            //EntityForEqualityCheck = (Entity as IEntityWrapper)?.EntityForEqualityCheck ?? Entity;
+        }
+
+        protected EntityBasedType(IEntity entity, string[] languageCodes) : this(entity)
+            => LookupLanguages = languageCodes ?? new string[0];
+
+        protected EntityBasedType(IEntity entity, string languageCode) : this(entity) 
+            => LookupLanguages = languageCode != null ? new[] {languageCode} : new string[0];
 
         /// <inheritdoc />
         public virtual string Title => _title ?? (_title = Entity?.GetBestTitle() ?? "");
-        [PrivateApi]
         private string _title;
 
          /// <inheritdoc />
@@ -33,6 +41,10 @@ namespace ToSic.Eav.Data
 
          /// <inheritdoc />
         public Guid Guid => Entity?.EntityGuid ?? Guid.Empty;
+
+        [PrivateApi]
+        protected string[] LookupLanguages { get; } = new string[0];
+
 
         /// <summary>
         /// Get a value from the underlying entity. 
@@ -42,11 +54,11 @@ namespace ToSic.Eav.Data
         /// <param name="fallback">fallback value</param>
         /// <returns>The value. If the Entity is missing, will return the fallback result. </returns>
         protected T Get<T>(string fieldName, T fallback)
-         {
-             if (Entity == null) return fallback;
-             var result = Entity.GetBestValue<T>(fieldName);
-             if (result == null) return fallback;
-             return result;
-         }
+        {
+            if (Entity == null) return fallback;
+            var result = Entity.GetBestValue<T>(fieldName, LookupLanguages);
+            if (result == null) return fallback;
+            return result;
+        }
     }
 }

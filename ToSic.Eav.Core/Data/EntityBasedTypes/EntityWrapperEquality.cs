@@ -10,7 +10,7 @@
         /// This is used for a fast-compare if objects might be the same.
         /// It's usually just an initial check, followed by Equals checks
         /// </summary>
-        public static int GetHashCode(IEntityWrapper parent) => parent._EntityForEqualityCheck?.GetHashCode() ?? 0;
+        public static int GetHashCode(IEntityWrapper parent) => parent.EntityForEqualityCheck?.GetHashCode() ?? 0;
 
         /// <summary>
         /// Check if two wrappers are holding the same entity
@@ -22,10 +22,10 @@
         {
             // first ensure that neither parent nor the sub-item are null
             // ReSharper disable once ConvertIfStatementToReturnStatement
-            if (parent?._EntityForEqualityCheck is null) return false;
+            if (parent?.EntityForEqualityCheck is null) return false;
 
             // then verify that the underlying entities have the same reference
-            return ReferenceEquals(parent._EntityForEqualityCheck, dynObj?._EntityForEqualityCheck);
+            return ReferenceEquals(parent.EntityForEqualityCheck, dynObj?.EntityForEqualityCheck);
         }
 
         /// <summary>
@@ -55,6 +55,6 @@
         /// <returns></returns>
         public static bool IsEqual(IEntityWrapper d1, IEntityWrapper d2)
             // check most basic case - they are really the same object or both null
-            => !(d1 is null) && (ReferenceEquals(d1, d2) || Equals(d1?._EntityForEqualityCheck, d2?._EntityForEqualityCheck));
+            => !(d1 is null) && (ReferenceEquals(d1, d2) || Equals(d1?.EntityForEqualityCheck, d2?.EntityForEqualityCheck));
     }
 }

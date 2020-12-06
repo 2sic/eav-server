@@ -2,6 +2,7 @@
 {
     public sealed class ZoneCultureResolverUnknown: IZoneCultureResolver
     {
-        public string DefaultLanguage => "en-us";
+        public string DefaultCultureCode => "en-us";
+        public string CurrentCultureCode => "en-us";
     }
 }

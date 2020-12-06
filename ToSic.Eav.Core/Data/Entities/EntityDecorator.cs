@@ -22,7 +22,7 @@ namespace ToSic.Eav.Data
         protected EntityDecorator(IEntity baseEntity)
         {
             Entity = baseEntity;
-            _EntityForEqualityCheck = (Entity as IEntityWrapper)?._EntityForEqualityCheck ?? Entity;
+            EntityForEqualityCheck = (Entity as IEntityWrapper)?.EntityForEqualityCheck ?? Entity;
         }
 
         #region IEntity Implementation

@@ -23,6 +23,8 @@ namespace ToSic.Eav.DataSources
 
     public sealed class ValueFilter : DataSourceBase
     {
+        private readonly ValueLanguages _valLanguages;
+
         #region Configuration-properties Attribute, Value, Language, Operator
         /// <inheritdoc/>
         [PrivateApi]
@@ -85,14 +87,16 @@ namespace ToSic.Eav.DataSources
 		/// Constructs a new ValueFilter
 		/// </summary>
 		[PrivateApi]
-		public ValueFilter()
+		public ValueFilter(ValueLanguages valLanguages)
 		{
-			Provide(GetValueFilterOrFallback);
+            Provide(GetValueFilterOrFallback);
 		    ConfigMask(AttrKey, "[Settings:Attribute]");
 		    ConfigMask(FilterKey, "[Settings:Value]");
 		    ConfigMask(OperatorKey, "[Settings:Operator||==]");
 		    ConfigMask(TakeKey, "[Settings:Take]");
 		    ConfigMask(ValueLanguages.LangKey, ValueLanguages.LanguageSettingsPlaceholder);
+
+            _valLanguages = valLanguages.Init(Log);
         }
 
         private IImmutableList<IEntity> GetValueFilterOrFallback()
@@ -120,7 +124,7 @@ namespace ToSic.Eav.DataSources
             Log.Add("applying value filter...");
 			_initializedAttrName = Attribute;
 
-            LanguageList = ValueLanguages.PrepareLanguageList(Languages, Log);
+            LanguageList = _valLanguages.PrepareLanguageList(Languages, Log);
 
             var originals = In[Constants.DefaultStreamName].Immutable;
 

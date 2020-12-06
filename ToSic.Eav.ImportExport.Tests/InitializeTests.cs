@@ -5,6 +5,7 @@ using ToSic.Eav.Apps.Tests.Mocks;
 using ToSic.Eav.Data.ValueConverter;
 using ToSic.Eav.ImportExport.Persistence.File;
 using ToSic.Eav.Run;
+using ToSic.Eav.Run.Unknown;
 using ToSic.Testing.Shared.Mocks;
 
 namespace ToSic.Eav.ImportExport.Tests
@@ -27,7 +28,7 @@ namespace ToSic.Eav.ImportExport.Tests
             Repository.Efc.Tests.StartupTestingRepository.ConfigureEfcDi(sc =>
             {
                 sc.AddTransient<IRuntime, Runtime>();
-                sc.AddTransient<IZoneCultureResolver, MockGetLanguage>();
+                sc.AddTransient<IZoneCultureResolver, ZoneCultureResolverUnknown>();
                 sc.TryAddTransient<IValueConverter, MockValueConverter>();
                 sc.TryAddTransient<IZoneMapper, MockZoneMapper>();
                 configure.Invoke(sc);

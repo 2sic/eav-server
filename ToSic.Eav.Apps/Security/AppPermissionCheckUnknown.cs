@@ -4,7 +4,7 @@ using ToSic.Eav.Security;
 
 namespace ToSic.Eav.Apps.Security
 {
-    public class AppPermissionCheckUnknown: AppPermissionCheck
+    public sealed class AppPermissionCheckUnknown: AppPermissionCheck
     {
         public AppPermissionCheckUnknown() : base(LogNames.NotImplemented) { }
 

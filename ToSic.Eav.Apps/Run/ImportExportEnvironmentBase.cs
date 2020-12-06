@@ -38,7 +38,7 @@ namespace ToSic.Eav.Apps.Run
 
         public abstract string FallbackContentTypeScope { get; }
 
-        public string DefaultLanguage => Site.DefaultLanguage;
+        public string DefaultLanguage => Site.DefaultCultureCode;
 
         public abstract string TemplatesRoot(int zoneId, int appId);
 

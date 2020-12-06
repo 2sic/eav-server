@@ -19,9 +19,11 @@ namespace ToSic.Eav.Context
         /// </summary>
         public virtual T UnwrappedContents { get; protected set; }
 
+        /// <inheritdoc />
+        public abstract string CurrentCultureCode { get; }
 
         /// <inheritdoc />
-        public abstract string DefaultLanguage { get; }
+        public abstract string DefaultCultureCode { get; }
 
         /// <inheritdoc />
         public abstract int Id { get; }

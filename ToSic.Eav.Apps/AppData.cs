@@ -49,7 +49,7 @@ namespace ToSic.Eav.Apps
             var usesLanguages = _zoneMapper.CulturesWithState(_site.Id, ZoneId)
                 .Any(c => c.Active);
             return usesLanguages
-                ? _site.DefaultLanguage
+                ? _site.DefaultCultureCode
                 : "";
         }
 

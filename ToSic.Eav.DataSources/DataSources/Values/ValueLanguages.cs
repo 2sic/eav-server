@@ -1,11 +1,22 @@
 ﻿using System;
-using System.Threading;
+using ToSic.Eav.Context;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Run;
 
 namespace ToSic.Eav.DataSources
 {
-    internal class ValueLanguages
+    public class ValueLanguages: HasLog<ValueLanguages>
     {
+        #region Constructor / DI
+
+        public ValueLanguages(IZoneCultureResolver cultureResolver): base("Ds.ValLng")
+        {
+            _cultureResolver = cultureResolver;
+        }
+        private readonly IZoneCultureResolver _cultureResolver;
+
+        #endregion
+
         /// <summary>
         /// Key to be used in settings etc.
         /// </summary>
@@ -17,36 +28,18 @@ namespace ToSic.Eav.DataSources
         internal const string LanguageDefault = "default";
         internal const string LanguageCurrent = "current";
 
-        internal static string LanguageSettingsPlaceholder = $"[Settings:Languages||{LanguageDefault}]";
-
+        internal static string LanguageSettingsPlaceholder = $"[Settings:{LangKey}||{LanguageDefault}]";
 
 
         /// <summary>
         /// Prepare language list to use in lookup
         /// </summary>
         /// <returns></returns>
-        internal static string[] PrepareLanguageList(string languages, ILog log)
+        internal string[] PrepareLanguageList(string languages, ILog log)
         {
             var lang = languages.ToLower().Trim();
 
             var wrapLog = log.Call<string[]>(lang);
-
-            // check if multiple
-            // in this case each position must contain a code or something, empty are filtered out
-            // we'll convert each slot, correcting codes like $p etc.
-            // Note: 2020-11-17 the EAV doesn't actually support multiple language steps, only 1 + fallback, so 
-            // this code is not to be used
-            //if (lang.Contains(','))
-            //{
-            //    Log.Add("Multi-language list detected");
-            //    var list = lang.Split(',')
-            //        .Select(l => l.Trim())
-            //        .Where(l => !string.IsNullOrWhiteSpace(l))
-            //        .Select(l => ResolveOneLanguageCode(l, log))
-            //        .Where(l => !string.IsNullOrWhiteSpace(l))
-            //        .ToArray();
-            //    return list;
-            //}
 
             var resolved = ResolveOneLanguageCode(lang, log);
 
@@ -59,18 +52,18 @@ namespace ToSic.Eav.DataSources
 
 
             wrapLog($"Error - can't figure out '{lang}'", null);
-            throw new Exception($"Can't figure out what language to use: '{lang}'. Expected '{ValueLanguages.LanguageDefault}', '{ValueLanguages.LanguageCurrent}' or a 2-character code");
+            throw new Exception($"Can't figure out what language to use: '{lang}'. Expected '{LanguageDefault}', '{LanguageCurrent}' or a 2-character code");
         }
 
-        internal static string ResolveOneLanguageCode(string lang, ILog log)
+        private string ResolveOneLanguageCode(string lang, ILog log)
         {
             var wrapLog = log.Call<string>(lang);
 
-            if (string.IsNullOrWhiteSpace(lang) || lang == ValueLanguages.LanguageDefault)
-                return wrapLog(ValueLanguages.LanguageDefault, string.Empty); // empty string / no language means the default language
+            if (string.IsNullOrWhiteSpace(lang) || lang == LanguageDefault)
+                return wrapLog(LanguageDefault, string.Empty); // empty string / no language means the default language
 
-            if (lang == ValueLanguages.LanguageCurrent)
-                return wrapLog(ValueLanguages.LanguageCurrent, Thread.CurrentThread.CurrentCulture.Name);
+            if (lang == LanguageCurrent)
+                return wrapLog(LanguageCurrent, _cultureResolver.SafeCurrentCultureCode());
 
             if (lang.Length == 2 || (lang.Length == 5 && lang.Contains("-")))
                 return wrapLog("Exact" + lang, lang);

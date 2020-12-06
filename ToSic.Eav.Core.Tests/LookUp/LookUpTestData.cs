@@ -25,7 +25,7 @@ namespace ToSic.Eav.Core.Tests.LookUp
         public static LookUpInEntity BuildLookUpEntity(string name, Dictionary<string, object> values, int appId = AppIdX)
         {
             var ent = new Eav.Data.Entity(appId, 0, ContentTypeBuilder.Fake(name), values, values.FirstOrDefault().Key);
-            return new LookUpInEntity(ent, name);
+            return new LookUpInEntity(name, ent, null);
         }
 
         public static LookUpInEntity AppSettings(int appId)

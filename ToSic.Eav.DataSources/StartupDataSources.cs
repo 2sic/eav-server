@@ -18,6 +18,8 @@ namespace ToSic.Eav.DataSources
             services.TryAddTransient<GlobalQueries>();
             services.TryAddTransient<QueryBuilder>();
 
+            services.TryAddTransient<ValueLanguages>();
+
             return services;
         }
     }

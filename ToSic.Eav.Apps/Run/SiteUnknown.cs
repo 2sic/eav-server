@@ -18,7 +18,9 @@ namespace ToSic.Eav.Apps.Run
         public string Url => Unknown;
         public int ZoneId { get; private set; } = UnknownZoneId;
 
-        public string DefaultLanguage => "";
+        public string CurrentCultureCode => "en-us";
+
+        public string DefaultCultureCode => "en-us";
 
         public ISite Init(int siteId)
         {

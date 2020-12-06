@@ -18,7 +18,6 @@ namespace ToSic.Eav.LookUp
 		private readonly Guid _objectToProvideSettingsTo;
         private readonly IEntity _parent;
 
-
         /// <summary>
         /// Constructs the object with pre-filled parameters. It won't access the entity yet, because 
         /// it's possible that the data-source wouldn't be ready yet. The access to the entity will 
@@ -27,14 +26,11 @@ namespace ToSic.Eav.LookUp
         /// <param name="name">Name of the PropertyAccess, e.g. PipelineSettings</param>
         /// <param name="objectId">EntityGuid of the Entity to get assigned Entities of</param>
         /// <param name="metaDataSource">DataSource that provides MetaData</param>
-        public LookUpInMetadata(string name, Guid objectId, IMetadataSource metaDataSource)
-            :base(null, name)
-        
-		{
-			//Name = name;
-			_objectToProvideSettingsTo = objectId;
-			_metaDataSource = metaDataSource;
-		}
+        public LookUpInMetadata(string name, Guid objectId, IMetadataSource metaDataSource) : base(name, null, null)
+        {
+            _objectToProvideSettingsTo = objectId;
+            _metaDataSource = metaDataSource;
+        }
 
         /// <summary>
         /// Alternate constructor where the entity with attached metadata is already known.
@@ -42,10 +38,9 @@ namespace ToSic.Eav.LookUp
         /// </summary>
         /// <param name="name">Source name</param>
         /// <param name="entityWithMetadata">Entity whose metadata we'll use</param>
-		public LookUpInMetadata(string name, IEntity entityWithMetadata)
-            :base(null, name)
+        /// <param name="dimensions">language / dimension data for lookup</param>
+        public LookUpInMetadata(string name, IEntity entityWithMetadata, string[] dimensions): base(name, null, dimensions)
 		{
-            //Name = name;
             _parent = entityWithMetadata;
         }
 

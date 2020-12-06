@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
+using ToSic.Eav.Context;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Generics;
@@ -237,12 +237,12 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         [PrivateApi("don't publish yet, not really final")]
         public object Value(string field)
-            => GetBestValue(field, new[] { Thread.CurrentThread.CurrentCulture.Name });
+            => GetBestValue(field, new[] { IZoneCultureResolverExtensions.ThreadCultureNameNotGood() });
 
         /// <inheritdoc />
         [PrivateApi("don't publish yet, not really final")]
         public T Value<T>(string field)
-            => ChangeTypeOrDefault<T>(GetBestValue(field, new[] { Thread.CurrentThread.CurrentCulture.Name }));
+            => ChangeTypeOrDefault<T>(GetBestValue(field, new[] { IZoneCultureResolverExtensions.ThreadCultureNameNotGood() }));
 
 
         #region IEntity Queryable / Quick
