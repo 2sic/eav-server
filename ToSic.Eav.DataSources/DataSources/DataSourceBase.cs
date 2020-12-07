@@ -4,7 +4,6 @@ using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Caching;
 using ToSic.Eav.DataSources.Caching;
-using ToSic.Eav.DataSources.Configuration;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -93,8 +92,8 @@ namespace ToSic.Eav.DataSources
         public IImmutableList<IEntity> Immutable => Out[Constants.DefaultStreamName].Immutable;
 
         /// <inheritdoc />
-        public DataSourceConfiguration Configuration => _config ?? (_config = new DataSourceConfiguration(this));
-        private DataSourceConfiguration _config;
+        public IDataSourceConfiguration Configuration => _config ?? (_config = new DataSourceConfiguration(this));
+        private IDataSourceConfiguration _config;
 
 
 

@@ -66,7 +66,7 @@ namespace ToSic.Eav.DataSources
 
             #region get the configEntity
             // go through the metadata-source to find it, since it's usually only used in LookUps
-            var metadataLookUp = (Configuration.LookUps.FindSource(QueryBuilder.ConfigKeyPartSettings)// .Sources[QueryBuilder.ConfigKeyPartSettings] 
+            var metadataLookUp = (Configuration.LookUpEngine.FindSource(QueryBuilder.ConfigKeyPartSettings)// .Sources[QueryBuilder.ConfigKeyPartSettings] 
                 as LookUpInLookUps)
                 ?.Providers.FirstOrDefault(p => p is LookUpInMetadata) as LookUpInMetadata;
 
@@ -104,21 +104,7 @@ namespace ToSic.Eav.DataSources
             var query = new Query(DataSourceFactory).Init(ZoneId, AppId, queryDef, LookUpWithoutParams(), false, null, Log);
             query.Params(ResolveParams(configEntity));
             return wrapLog("ok", query);
-
-            //return wrapLog("ok", new StreamDictionary(this, Query.Out));
         }
-
-        //private StreamDictionary ReStream(IDictionary<string, IDataStream> original)
-        //{
-        //    var result = new StreamDictionary();
-        //    foreach (var stream in original)
-        //    {
-        //        var newStream = new DataStream(this, stream.Key, () => stream.Value.List);
-        //        result.Add(stream.Key, newStream);
-        //    }
-
-        //    return result;
-        //}
 
         /// <summary>
         /// Create a new lookup machine and remove the params which would be in there right now
@@ -127,7 +113,7 @@ namespace ToSic.Eav.DataSources
         /// <returns></returns>
         private LookUpEngine LookUpWithoutParams()
         {
-            var lookUpsWithoutParams = new LookUpEngine(Configuration.LookUps, Log, true);
+            var lookUpsWithoutParams = new LookUpEngine(Configuration.LookUpEngine, Log, true);
             if (lookUpsWithoutParams.HasSource/*.Sources.ContainsKey*/(QueryConstants.ParamsLookup))
                 lookUpsWithoutParams.Sources.Remove(QueryConstants.ParamsLookup);
             // 1.1 note: can't add Override here because the underlying params don't exist yet - so an override wouldn't keep them

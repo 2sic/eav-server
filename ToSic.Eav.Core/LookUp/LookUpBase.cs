@@ -1,4 +1,6 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Globalization;
+using System.Text.RegularExpressions;
 using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.LookUp
@@ -65,19 +67,16 @@ namespace ToSic.Eav.LookUp
         [PrivateApi]
         public static string FormatString(string value, string format)
         {
-            if (string.IsNullOrWhiteSpace(format))// format.Trim() == string.Empty)
-            {
-                return value;
-            }
-            else if (string.IsNullOrEmpty(value))// != string.Empty)
-            {
-                return string.Format(format, value);
-            }
-            else
-            {
-                return string.Empty;
-            }
+            // if no format, don't convert
+            if (string.IsNullOrWhiteSpace(format)) return value;
+            // format if there was a value
+            return string.IsNullOrEmpty(value) ? string.Format(format, value) : string.Empty;
         }
+
+        public static string Format(bool value) => value.ToString().ToLowerInvariant();
+
+        public static string Format(DateTime value) => value.ToUniversalTime()
+            .ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
 
         #endregion
     }
@@ -85,7 +84,7 @@ namespace ToSic.Eav.LookUp
     [PrivateApi]
     public class SubToken
     {
-        public bool HasSubtoken = false;
+        public bool HasSubtoken;
         public string Source;
         public string Rest;
     }

@@ -41,11 +41,11 @@ namespace ToSic.Eav.Apps.ImportExport
 
         #region Constructor & DI
 
-        protected XmlExporter(XmlSerializer xmlSerializer) : base("Xml.Exp")
+        protected XmlExporter(XmlSerializer xmlSerializer, string logPrefix) : base(logPrefix + "XmlExp")
         {
             Serializer = xmlSerializer;
         }
-        public XmlSerializer Serializer { get; private set; }
+        public XmlSerializer Serializer { get; }
 
         protected void Constructor(int zoneId, AppRuntime app, string appStaticName, bool appExport, string[] typeNamesOrIds, string[] entityIds, ILog parentLog)
         {

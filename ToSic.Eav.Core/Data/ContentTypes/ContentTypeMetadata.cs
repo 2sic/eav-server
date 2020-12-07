@@ -56,6 +56,8 @@ namespace ToSic.Eav.Data
             if (!Guid.TryParse(Key, out var ctGuid)) return;
 
             // add the guid metadata on entity if it has a real guid
+            // this is kind of wrong, because it should use the type MetadataForContentType
+            // but this slipped in a long time ago, and we cannot change it any more
             var additional = GetMetadataSource()?.Get(Constants.MetadataForEntity, ctGuid)
                                  .ToList()
                              ?? new List<IEntity>();

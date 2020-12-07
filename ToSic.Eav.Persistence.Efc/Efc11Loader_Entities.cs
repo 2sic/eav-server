@@ -19,7 +19,7 @@ namespace ToSic.Eav.Persistence.Efc
         {
             get {
                 if (_primaryLanguage != null) return _primaryLanguage;
-                _primaryLanguage = _environmentLazy.Value.DefaultLanguage.ToLowerInvariant();
+                _primaryLanguage = _environmentLazy.Value.DefaultCultureCode.ToLowerInvariant();
                 Log.Add($"Primary language from environment (for attribute sorting): {_primaryLanguage}");
                 return _primaryLanguage;
             }

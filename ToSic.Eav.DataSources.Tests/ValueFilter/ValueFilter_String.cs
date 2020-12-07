@@ -25,7 +25,8 @@ namespace ToSic.Eav.DataSourceTests
             _testDataGeneratedOutsideTimer = _valueFilterMaker.CreateValueFilterForTesting(TestVolume, true);
 
             // Set the thread culture, as some comparisons need the current culture to be en-US
-            Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo(EnUs);
+            // 2020-12-06 2dm turn this off, we're not using currentCulture any more
+            //Thread .CurrentThread .CurrentCulture = CultureInfo.GetCultureInfo(EnUs);
         }
 
         private ValueFilter GetFilter(bool table, bool ml, string field, string compare = null, string value = null)

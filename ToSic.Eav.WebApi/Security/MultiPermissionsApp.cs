@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Run;
 using ToSic.Eav.Apps.Security;
+using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security;
-using IApp = ToSic.Eav.Apps.IApp;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.WebApi.Security
@@ -19,9 +18,9 @@ namespace ToSic.Eav.WebApi.Security
         /// <summary>
         /// The current app which will be used and can be re-used externally
         /// </summary>
-        public IApp App { get; private set; }
+        protected IAppIdentity App { get; private set; }
 
-        internal IInstanceContext Context { get; private set; }
+        internal IContextOfSite Context { get; private set; }
 
         protected ISite SiteForSecurityCheck { get; private set; }
 
@@ -37,16 +36,16 @@ namespace ToSic.Eav.WebApi.Security
             _zoneMapper.Init(Log);
         }
 
-        public MultiPermissionsApp Init(IInstanceContext context, IApp app, ILog parentLog, string logName = null)
+        public MultiPermissionsApp Init(IContextOfSite context, IAppIdentity app, ILog parentLog, string logName = null)
         {
             Init(parentLog, logName ?? "Api.PermApp");
             var wrapLog = Log.Call<MultiPermissionsApp>($"..., appId: {app.AppId}, ...");
             Context = context;
             App = app;
 
-            SamePortal = Context.Tenant.ZoneId == App.ZoneId;
-            SiteForSecurityCheck = SamePortal ? Context.Tenant : _zoneMapper.SiteOfZone(App.ZoneId);
-            return wrapLog($"ready for z/a:{app.Show()} t/z:{App.Site.Id}/{Context.Tenant.ZoneId} same:{SamePortal}", this);
+            SamePortal = Context.Site.ZoneId == App.ZoneId;
+            SiteForSecurityCheck = SamePortal ? Context.Site : _zoneMapper.SiteOfZone(App.ZoneId);
+            return wrapLog($"ready for z/a:{app.Show()} t/z:{SiteForSecurityCheck.Id}/{Context.Site.ZoneId} same:{SamePortal}", this);
         }
 
         #endregion
@@ -78,8 +77,9 @@ namespace ToSic.Eav.WebApi.Security
             Log.Add($"BuildPermissionChecker(type:{type?.Name}, item:{item?.EntityId})");
 
             // user has edit permissions on this app, and it's the same app as the user is coming from
-            return Context.ServiceProvider.Build<AppPermissionCheck>()
-                .ForParts(Context.Clone(SiteForSecurityCheck), App, type, item, Log);
+            var modifiedContext = Context.Clone(Log);
+            modifiedContext.Site = SiteForSecurityCheck;
+            return Context.ServiceProvider.Build<AppPermissionCheck>().ForParts(modifiedContext, App, type, item, Log);
         }
 
     }

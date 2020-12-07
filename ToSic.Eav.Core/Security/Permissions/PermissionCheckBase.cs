@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Run;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Security
@@ -67,7 +67,6 @@ namespace ToSic.Eav.Security
             IEnumerable<Permission> permissions1 = null,
             IEnumerable<Permission> permissions2 = null
             ) 
-            //: base("App.PermCk")
         {
             Log.LinkTo(parentLog);
             var permList2 = permissions2 as IList<Permission> ?? permissions2?.ToList();
@@ -101,8 +100,7 @@ namespace ToSic.Eav.Security
         {
             var wrapLog = Log.Call(() => $"[{string.Join(",", grants)}]");
             GrantedBecause = Conditions.Undefined;
-            var result = EnvironmentAllows(grants)
-                   || DoesPermissionsListAllow(grants);
+            var result = EnvironmentAllows(grants) || DoesPermissionsListAllow(grants);
             wrapLog($"{result} ({GrantedBecause})");
             return result;
         }

@@ -4,7 +4,7 @@
     <TargetFrameworks>net451;netstandard2.0</TargetFrameworks>
     <AssemblyName>ToSic.Eav.DataSources</AssemblyName>
     <RootNamespace>ToSic.Eav.DataSources</RootNamespace>
-    <Version>11.10.01</Version>
+    <Version>11.11.00</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -37,6 +37,10 @@
     <PackageReference Include="System.Configuration.ConfigurationManager">
       <Version>4.7.0</Version>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Metadata\" />
   </ItemGroup>
 
 </Project>

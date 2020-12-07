@@ -111,7 +111,7 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
             Assert.IsTrue(stream.Immutable.Count > 0, "stream.List.Count() > 0");
 
             var relFilt = Resolve<DataSourceFactory>().GetDataSource<RelationshipFilter>(new AppIdentity(0, 0), null, 
-                appDs.Configuration.LookUps/*, parentLog: Log*/);
+                appDs.Configuration.LookUpEngine/*, parentLog: Log*/);
             relFilt.Attach(Constants.DefaultStreamName, stream);
             return relFilt;
         }

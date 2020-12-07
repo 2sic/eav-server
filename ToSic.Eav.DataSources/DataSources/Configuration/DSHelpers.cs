@@ -1,12 +1,13 @@
 ﻿using ToSic.Eav.LookUp;
 
-namespace ToSic.Eav.DataSources.Configuration
+namespace ToSic.Eav.DataSources
 {
     public static class DSHelpers
     {
         public static T Init<T>(this T dataSource, ILookUpEngine lookUp) where T : IDataSource
         {
-            dataSource.Configuration.LookUps = lookUp;
+            if (lookUp != null && dataSource.Configuration is DataSourceConfiguration dsConfig)
+                dsConfig.LookUpEngine = lookUp;
             return dataSource;
         }
 

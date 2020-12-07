@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Data
@@ -41,5 +44,24 @@ namespace ToSic.Eav.Data
             Type = type;
 		}
 
+
+
+        #region Obsolete stuff, but still included
+
+        /// <summary>
+        /// Get Attribute for specified Typ
+        /// </summary>
+        /// <returns><see cref="Attribute{ValueType}"/></returns>
+        [PrivateApi("moved to some attribute-builder or something - was always marked as PrivatAPI, so we should be able to kill soon")]
+        [Obsolete("moved to AttributeBuilder.CreateTyped, but will soon be a non-static implementation")]
+        public static IAttribute CreateTypedAttribute(string name, ValueTypes type, List<IValue> values = null) 
+            => AttributeBuilder.CreateTyped(name, type, values);
+
+        [PrivateApi]
+        [Obsolete("moved to AttributeBuilder")]
+        public static IAttribute CreateTypedAttribute(string name, string type, List<IValue> values = null)
+            => CreateTypedAttribute(name, ValueTypeHelpers.Get(type), values);
+
+        #endregion
     }
 }

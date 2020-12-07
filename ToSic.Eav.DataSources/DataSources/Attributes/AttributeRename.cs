@@ -50,7 +50,7 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         public bool KeepOtherAttributes
         {
-            get => Configuration.ConvertSafely(Configuration[KeepOtherAttributesKey]);
+            get => DataSourceConfiguration.TryConvertToBool(Configuration[KeepOtherAttributesKey]);
             set => Configuration[KeepOtherAttributesKey] = value.ToString();
         }
 

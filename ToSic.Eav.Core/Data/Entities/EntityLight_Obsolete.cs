@@ -1,7 +1,5 @@
 ﻿using System;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Run;
-using ToSic.Eav.Run.Basic;
 
 #if NET451
 namespace ToSic.Eav.Data
@@ -22,7 +20,7 @@ namespace ToSic.Eav.Data
         [PrivateApi]
         protected static string TryToResolveLink(Guid itemGuid, string result)
         {
-            if (!BasicValueConverter.CouldBeReference(result)) return result;
+            if (!ValueConverterBase.CouldBeReference(result)) return result;
             return Factory.Resolve<IValueConverter>().ToValue(result, itemGuid);
         }
 

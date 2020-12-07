@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
+using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Run;
-using ToSic.Eav.Run.Basic;
 
 namespace ToSic.Eav.Conversion
 {
@@ -16,14 +15,15 @@ namespace ToSic.Eav.Conversion
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
     public abstract class EntitiesToDictionaryBase : HasLog<EntitiesToDictionaryBase>, IEntitiesTo<Dictionary<string, object>>
     {
-        protected IValueConverter ValueConverter { get; }
-
         #region Constructor / DI
 
-        protected EntitiesToDictionaryBase(IValueConverter valueConverter, string logName) : base(logName)
+        protected EntitiesToDictionaryBase(IValueConverter valueConverter, IZoneCultureResolver cultureResolver, string logName) : base(logName)
         {
+            _cultureResolver = cultureResolver;
             ValueConverter = valueConverter;
         }
+        private readonly IZoneCultureResolver _cultureResolver;
+        protected IValueConverter ValueConverter { get; }
 
         #endregion
 
@@ -52,13 +52,14 @@ namespace ToSic.Eav.Conversion
         #endregion
 
         #region Language
-        private string[] _langs;
 
         public string[] Languages
         {
-            get => _langs ?? (_langs = new[] { Thread.CurrentThread.CurrentCulture.Name });
-            set => _langs = value;
+            get => _languages ?? (_languages = new[] { _cultureResolver.SafeCurrentCultureCode() });
+            set => _languages = value;
         }
+        private string[] _languages;
+
         #endregion
 
         #region Many variations of the Prepare-Statement expecting various kinds of input
@@ -97,7 +98,7 @@ namespace ToSic.Eav.Conversion
             var entityValues = (from d in entity.Attributes select d.Value).ToDictionary(k => k.Name, v =>
             {
 				var value = entity.GetBestValue(v.Name, Languages);
-                if (v.Type == Constants.DataTypeHyperlink && value is string stringValue && BasicValueConverter.CouldBeReference(stringValue))
+                if (v.Type == Constants.DataTypeHyperlink && value is string stringValue && ValueConverterBase.CouldBeReference(stringValue))
                     return ValueConverter.ToValue(stringValue, entity.EntityGuid);
 
                 if (v.Type == Constants.DataTypeEntity && value is IEnumerable<IEntity> entities)
@@ -112,13 +113,15 @@ namespace ToSic.Eav.Conversion
 
             // Add Id and Title
             // ...only if these are not already existing with this name in the entity itself as an internal value
-            if (entityValues.ContainsKey("Id")) entityValues.Remove("Id");
-            entityValues.Add("Id", entity.EntityId);
+            const string IdKey = "Id";
+            const string GuidKey = "Guid";
+            if (entityValues.ContainsKey(IdKey)) entityValues.Remove(IdKey);
+            entityValues.Add(IdKey, entity.EntityId);
 
             if (WithGuid)
             {
-                if (entityValues.ContainsKey("Guid")) entityValues.Remove("Guid");
-                entityValues.Add("Guid", entity.EntityGuid);
+                if (entityValues.ContainsKey(GuidKey)) entityValues.Remove(GuidKey);
+                entityValues.Add(GuidKey, entity.EntityGuid);
             }
 
             if (WithPublishing)

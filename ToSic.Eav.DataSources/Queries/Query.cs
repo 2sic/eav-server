@@ -77,7 +77,8 @@ namespace ToSic.Eav.DataSources.Queries
 		    AppId = appId;
             Log.LinkTo(parentLog, LogId);
             Definition = new QueryDefinition(queryDef, appId, Log);
-            Configuration.LookUps = config;
+            this.Init(config);
+            //Configuration.LookUps = config;
             _showDrafts = showDrafts;
 
             // hook up in, just in case we get parameters from an In
@@ -97,11 +98,11 @@ namespace ToSic.Eav.DataSources.Queries
 
             // Step 1: Resolve the params from outside, where x=[Params:y] should come from the outer Params
             // and the current In
-            var resolvedParams = Configuration.LookUps.LookUp(Definition.Params);
+            var resolvedParams = Configuration.LookUpEngine.LookUp(Definition.Params);
 
             // now provide an override source for this
             var paramsOverride = new LookUpInDictionary(QueryConstants.ParamsLookup, resolvedParams);
-		    _source = QueryBuilder.BuildQuery(Definition, Configuration.LookUps, 
+		    _source = QueryBuilder.BuildQuery(Definition, Configuration.LookUpEngine, 
                 new List<ILookUp> {paramsOverride}, _showDrafts);
             _out = new StreamDictionary(this, _source.Out);
             wrapLog("ok");

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Context;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Run;
 
@@ -17,21 +18,21 @@ namespace ToSic.Eav.Apps.Run
         protected ZoneMapperBase(string logName) : base(logName) { }
 
         /// <inheritdoc />
-        public IZoneMapper Init(ILog parent)
+        public IZoneMapper Init(ILog parentLog)
         {
-            Log.LinkTo(parent);
+            Log.LinkTo(parentLog);
             return this;
         }
 
         /// <inheritdoc />
-        public abstract int GetZoneId(int tenantId);
+        public abstract int GetZoneId(int siteId);
 
         /// <inheritdoc />
         public int GetZoneId(ISite site) => GetZoneId(site.Id);
 
-        /// <inheritdoc />
-        public IAppIdentity IdentityFromSite(int tenantId, int appId)
-            => new AppIdentity(GetZoneId(tenantId), appId);
+        ///// <inheritdoc />
+        //public IAppIdentity IdentityFromSite(int tenantId, int appId)
+        //    => new AppIdentity(GetZoneId(tenantId), appId);
 
         /// <inheritdoc />
         public abstract ISite SiteOfZone(int zoneId);

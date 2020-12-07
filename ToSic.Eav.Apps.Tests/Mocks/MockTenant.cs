@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Run;
+﻿using ToSic.Eav.Context;
+using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Apps.Tests.Mocks
 {
@@ -19,8 +20,6 @@ namespace ToSic.Eav.Apps.Tests.Mocks
         public string AppsRootPhysical => "Mock";
         public string AppsRootPhysicalFull => "mock full";
         public string AppsRootLink => "Mock/Mock/Mock";
-
-        public bool RefactorUserIsAdmin => false;
 
         public string ContentPath => "MockPath";
         public int ZoneId => -999;

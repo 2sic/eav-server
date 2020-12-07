@@ -7,42 +7,42 @@ namespace ToSic.Eav.WebApi.Dto
 {
     public class ContextDto
     {
-        [JsonProperty(NullValueHandling = Ignore)] public AppDto App;
-        [JsonProperty(NullValueHandling = Ignore)] public LanguageDto Language;
-        [JsonProperty(NullValueHandling = Ignore)] public UserDto User;
-        [JsonProperty(NullValueHandling = Ignore)] public WebResourceDto System;
-        [JsonProperty(NullValueHandling = Ignore)] public WebResourceDto Site;
-        [JsonProperty(NullValueHandling = Ignore)] public WebResourceDto Page;
-        [JsonProperty(NullValueHandling = Ignore)] public EnableDto Enable;
+        [JsonProperty(NullValueHandling = Ignore)] public AppDto App { get; set; }
+        [JsonProperty(NullValueHandling = Ignore)] public LanguageDto Language { get; set; }
+        [JsonProperty(NullValueHandling = Ignore)] public UserDto User { get; set; }
+        [JsonProperty(NullValueHandling = Ignore)] public WebResourceDto System { get; set; }
+        [JsonProperty(NullValueHandling = Ignore)] public WebResourceDto Site { get; set; }
+        [JsonProperty(NullValueHandling = Ignore)] public WebResourceDto Page { get; set; }
+        [JsonProperty(NullValueHandling = Ignore)] public EnableDto Enable { get; set; }
     }
 
     public class WebResourceDto
     {
-        [JsonProperty(NullValueHandling = Ignore)] public int? Id;
-        [JsonProperty(NullValueHandling = Ignore)] public string Url;
+        [JsonProperty(NullValueHandling = Ignore)] public int? Id { get; set; }
+        [JsonProperty(NullValueHandling = Ignore)] public string Url { get; set; }
     }
 
     public class AppDto: WebResourceDto
     {
-        public string Name;
-        public string Identifier;
-        public string GettingStartedUrl;
-        public string Folder;
-        public HasPermissionsDto Permissions;
+        public string Name { get; set; }
+        public string Identifier { get; set; }
+        public string GettingStartedUrl { get; set; }
+        public string Folder { get; set; }
+        public HasPermissionsDto Permissions { get; set; }
     }
 
     public class EnableDto
     {
-        public bool AppPermissions;
-        public bool CodeEditor;
-        public bool Query;
+        public bool AppPermissions { get; set; }
+        public bool CodeEditor { get; set; }
+        public bool Query { get; set; }
     }
 
     public class LanguageDto
     {
-        public string Primary;
-        public string Current;
-        public Dictionary<string, string> All;
+        public string Primary { get; set; }
+        public string Current { get; set; }
+        public Dictionary<string, string> All { get; set; }
     }
 
     /// <summary>

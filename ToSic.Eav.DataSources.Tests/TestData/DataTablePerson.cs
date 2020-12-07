@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using ToSic.Eav.Core.Tests.LookUp;
-using ToSic.Eav.DataSources.Configuration;
+using ToSic.Eav.DataSources;
 using DataTable = ToSic.Eav.DataSources.DataTable;
 
 namespace ToSic.Eav.DataSourceTests.TestData

@@ -13,6 +13,8 @@ namespace ToSic.Eav
         public const int AppIdEmpty = 0;
 
         public const int NullId = -2742;
+        public const int IdNotInitialized = -999;
+        public const string UrlNotInitialized = "url-not-initialized";
 
         public const string CultureSystemKey = "Culture";
 
@@ -49,24 +51,6 @@ namespace ToSic.Eav
         /// </summary>
         public static readonly int MetaDataAppId = 1;
 
-
-        ///// <summary>
-        ///// Default Entity AssignmentObjectTypeId
-        ///// </summary>
-        //[Obsolete("Use NotMetadata instead")] public const int AssignmentObjectTypeId = 1;
-
-
-        ///// <summary>
-        ///// AssignmentObjectTypeId for FieldProperties (Field MetaData)
-        ///// </summary>
-        //[Obsolete("Use MetadataForField instead")] public static readonly int AssignmentObjectTypeIdFieldProperties = 2;
-
-
-        ///// <summary>
-        ///// AssignmentObjectTypeId for DataQueries
-        ///// </summary>
-        //[Obsolete("Use MetadataForEntity instead")] public static readonly int AssignmentObjectTypeEntity = 4;
-
         /// <summary>Things that are not used as Metadata</summary>
         public const int NotMetadata = 1;
 
@@ -90,8 +74,6 @@ namespace ToSic.Eav
         // ReSharper disable once UnusedMember.Global
         public static readonly int MetadataForZone = 6;
 
-        //[Obsolete("Use MetadataForCmsObject instead")] 
-        //public static readonly int AssignmentObjectTypeCmsObject = 10;
         public static readonly int MetadataForCmsObject = 10;
 
         #region Metadata-Properties which have system use
@@ -220,7 +202,7 @@ namespace ToSic.Eav
 
         #region Parameter protection
         // Special constant to protect functions which should use named parameters
-        public const string RandomProtectionParameter = "random-y023n";
+        public const string RandomProtectionParameter = "all params must be named, like 'enable: true, language: ''de-ch''";
         // ReSharper disable once UnusedParameter.Local
         public static void ProtectAgainstMissingParameterNames(string criticalParameter, string protectedMethod, string paramNames)
         {

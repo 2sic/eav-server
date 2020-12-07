@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Run;
+using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Run;
@@ -17,20 +17,20 @@ namespace ToSic.Eav.WebApi.Security
 
         public MultiPermissionsTypes(IZoneMapper zoneMapper): base(zoneMapper) { }
 
-        public MultiPermissionsTypes Init(IInstanceContext context, IApp app, string contentType, ILog parentLog)
+        public MultiPermissionsTypes Init(IContextOfSite context, IAppIdentity app, string contentType, ILog parentLog)
         {
             Init(context, app, new[] {contentType}, parentLog);
             return this;
         }
 
-        public MultiPermissionsTypes Init(IInstanceContext context, IApp app, IEnumerable<string> contentTypes, ILog parentLog)
+        public MultiPermissionsTypes Init(IContextOfSite context, IAppIdentity app, IEnumerable<string> contentTypes, ILog parentLog)
         { 
            Init(context, app, parentLog, _logName);
            ContentTypes = contentTypes;
            return this;
         }
 
-        public MultiPermissionsTypes Init(IInstanceContext context, IApp app, List<ItemIdentifier> items, ILog parentLog)
+        public MultiPermissionsTypes Init(IContextOfSite context, IAppIdentity app, List<ItemIdentifier> items, ILog parentLog)
         {
             Init(context, app, parentLog, _logName);
             ContentTypes = ExtractTypeNamesFromItems(items);

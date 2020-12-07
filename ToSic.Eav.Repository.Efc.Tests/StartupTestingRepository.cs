@@ -5,6 +5,7 @@ using ToSic.Eav.ImportExport.Persistence.File;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Repository.Efc.Tests.Mocks;
 using ToSic.Eav.Run;
+using ToSic.Eav.Run.Unknown;
 using ToSic.Sxc.Dnn.ImportExport;
 
 namespace ToSic.Eav.Repository.Efc.Tests
@@ -26,7 +27,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
                 sc.AddTransient<Apps.ImportExport.XmlExporter, DnnXmlExporter>();
 
                 sc.AddTransient<IRuntime, Runtime>();
-                sc.AddTransient<IEnvironment, MockEnvironment>();
+                sc.AddTransient<IZoneCultureResolver, ZoneCultureResolverUnknown>();
 
                 sc.AddTransient<IImportExportEnvironment, ImportExportEnvironmentMock>();
 

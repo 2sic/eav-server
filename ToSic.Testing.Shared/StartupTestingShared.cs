@@ -1,9 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav;
-using ToSic.Eav.Repository.Efc.Implementations;
+using ToSic.Eav.Configuration;
+using ToSic.Eav.Context;
 using ToSic.Eav.Run;
-using ToSic.Eav.Run.Basic;
+using ToSic.Eav.Run.Unknown;
 
 namespace ToSic.Testing.Shared
 {
@@ -22,19 +23,16 @@ namespace ToSic.Testing.Shared
 
         public static void ConfigureEfcDi(Factory.ServiceConfigurator configure, string optionalConnection = null)
         {
-            var con = optionalConnection ?? TestConstants.ConStr;
-            Configuration.SetConnectionString(con);
-
             Factory.ActivateNetCoreDi(sc =>
             {
-                //sc.TryAddTransient<IEavUserInformation, NeutralEavUserInformation>();
-                sc.TryAddTransient<IUser, BasicUser>();
-                sc.TryAddTransient<IRuntime, BasicRuntime>();
+                sc.TryAddTransient<IUser, UserUnknown>();
+                sc.TryAddTransient<IRuntime, RuntimeUnknown>();
                 configure.Invoke(sc);
 
                 sc.AddEav();
             });
-
+            var con = optionalConnection ?? TestConstants.ConStr;
+            Factory.StaticBuild<IDbConfiguration>().ConnectionString = con;
         }
 
         // this helps debug in advanced scenarios

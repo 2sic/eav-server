@@ -8,12 +8,14 @@ namespace ToSic.Eav.DataSources
 {
     public class DataSourceFactory: HasLog<DataSourceFactory>
     {
+        private readonly Lazy<ILookUpEngineResolver> _lookupResolveLazy;
         public IServiceProvider ServiceProvider { get; }
 
         #region Constructor / DI
 
-        public DataSourceFactory(IServiceProvider serviceProvider) : base($"{DataSourceConstants.LogPrefix}.Factry")
+        public DataSourceFactory(IServiceProvider serviceProvider, Lazy<ILookUpEngineResolver> lookupResolveLazy) : base($"{DataSourceConstants.LogPrefix}.Factry")
         {
+            _lookupResolveLazy = lookupResolveLazy;
             ServiceProvider = serviceProvider;
         }
 
@@ -66,7 +68,7 @@ namespace ToSic.Eav.DataSources
         #region GetDataSource Typed (preferred)
 
         public T GetDataSource<T>(IDataSource upstream) where T : IDataSource
-            => GetDataSource<T>(upstream, upstream, upstream.Configuration.LookUps);
+            => GetDataSource<T>(upstream, upstream, upstream.Configuration.LookUpEngine);
 
 
         public T GetDataSource<T>(IAppIdentity appIdentity, IDataSource upstream, ILookUpEngine lookUps = null) where T : IDataSource
@@ -78,7 +80,7 @@ namespace ToSic.Eav.DataSources
                     "Trying to GetDataSource<T> but cannot do so if both upstream and ConfigurationProvider are null.");
 
             var newDs = ServiceProvider.Build<T>();
-            ConfigureNewDataSource(newDs, appIdentity, upstream, lookUps ?? upstream.Configuration.LookUps);
+            ConfigureNewDataSource(newDs, appIdentity, upstream, lookUps ?? upstream.Configuration.LookUpEngine);
             wrapLog("ok");
             return newDs;
         }
@@ -101,7 +103,7 @@ namespace ToSic.Eav.DataSources
         {
             var wrapLog = Log.Call(parameters: $"#{app.Show()}, draft:{showDrafts}, config:{configProvider != null}");
 
-            configProvider = configProvider ?? new LookUpEngine(Log);
+            configProvider = configProvider ?? _lookupResolveLazy.Value.GetLookUpEngine(0);
 
             var dataSource = GetDataSource(DataSourceConstants.RootDataSource, app, null, configProvider);
 
@@ -144,8 +146,8 @@ namespace ToSic.Eav.DataSources
             newDs.AppId = appIdentity.AppId;
             if (upstream != null)
                 ((IDataTarget)newDs).Attach(upstream);
-            if (configLookUp != null)
-                newDs.Configuration.LookUps = configLookUp;
+            if (configLookUp != null) 
+                newDs.Init(configLookUp);
 
             newDs.InitLog(newDs.LogId, Log);
             wrapLog("ok");

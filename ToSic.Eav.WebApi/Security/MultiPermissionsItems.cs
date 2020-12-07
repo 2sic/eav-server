@@ -2,6 +2,7 @@
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Run;
+using ToSic.Eav.Context;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security;
@@ -17,7 +18,7 @@ namespace ToSic.Eav.WebApi.Security
 
         public MultiPermissionsItems(IZoneMapper zoneMapper): base(zoneMapper) { }
 
-        public MultiPermissionsItems Init(IInstanceContext context, IApp app, IEntity item, ILog parentLog) 
+        public MultiPermissionsItems Init(IContextOfSite context, IAppIdentity app, IEntity item, ILog parentLog) 
         {
             Init(context, app, parentLog, "Sec.MpItms");
             Items = new List<IEntity> {item};

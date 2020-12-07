@@ -54,37 +54,17 @@ namespace ToSic.Eav.Apps
         [PrivateApi]
         protected virtual AppData BuildData()
         {
-            Log.Add("configure on demand start");
+            var wrapLog = Log.Call<AppData>();
             if (ConfigurationProvider == null)
                 throw new Exception("Cannot provide Data for the object App as crucial information is missing. " +
                                     "Please call InitData first to provide this data.");
 
             // ModulePermissionController does not work when indexing, return false for search
-            // var dsFactory = new DataSource(Log);
-            var initialSource = DataSourceFactory.GetPublishing(this, ShowDrafts,
-                ConfigurationProvider as LookUpEngine);
+            var initialSource = DataSourceFactory.GetPublishing(this, ShowDrafts, ConfigurationProvider);
 
-            var xData = DataSourceFactory.GetDataSource<AppData>(initialSource);
+            var xData = DataSourceFactory.GetDataSource<AppData>(initialSource).Init(_dependencies.ZoneMapper, _dependencies.Site);
 
-            Log.Add("configure on demand completed");
-
-            GetLanguageAndUser(xData);
-            return xData;
-        }
-
-        /// <summary>
-        /// Override and enhance with environment data like current user, languages, etc.
-        /// </summary>
-        /// <returns></returns>
-        [PrivateApi]
-        protected void GetLanguageAndUser(AppData data)
-        {
-            var languagesActive = _dependencies.ZoneMapper.CulturesWithState(Site.Id, ZoneId)
-                .Any(c => c.Active);
-            data.DefaultLanguage = languagesActive
-                ? Site.DefaultLanguage
-                : "";
-            data.CurrentUserName = Env.User.IdentityToken;
+            return wrapLog("ok", xData);
         }
 
         #endregion

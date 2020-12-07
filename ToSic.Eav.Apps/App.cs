@@ -1,4 +1,5 @@
 ﻿using System;
+using ToSic.Eav.Context;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
@@ -26,22 +27,18 @@ namespace ToSic.Eav.Apps
         [PrivateApi]
         public class AppDependencies
         {
-            //internal AppInitializedChecker InitializedChecker { get; }
             internal readonly IZoneMapper ZoneMapper;
-            internal readonly IEnvironment Environment;
             internal readonly ISite Site;
             internal readonly DataSourceFactory DataSourceFactory;
             internal readonly Lazy<GlobalQueries> GlobalQueriesLazy;
 
             public AppDependencies(
-                IEnvironment environment,
                 IZoneMapper zoneMapper,
                 ISite site,
                 DataSourceFactory dataSourceFactory,
                 Lazy<GlobalQueries> globalQueriesLazy)
             {
                 ZoneMapper = zoneMapper;
-                Environment = environment;
                 Site = site;
                 DataSourceFactory = dataSourceFactory;
                 GlobalQueriesLazy = globalQueriesLazy;
@@ -55,10 +52,6 @@ namespace ToSic.Eav.Apps
             _dependencies = dependencies;
             dependencies.ZoneMapper.Init(Log);
             DataSourceFactory = dependencies.DataSourceFactory;
-            // just keep pointers for now, don't init/verify yet
-            // as in some cases (like search) they will be replaced after the constructor
-            Env = dependencies.Environment;
-            Env.Init(Log);
             Site = dependencies.Site;
         }
 
@@ -95,16 +88,17 @@ namespace ToSic.Eav.Apps
                 appIdentity.AppId != AppConstants.AppIdNotFound)
                 Site = _dependencies.ZoneMapper.TenantOfApp(appIdentity.AppId);
 
-            // if zone is missing, try to find it; if still missing, throw error
+            // if zone is missing, try to find it - but always assume current context
             if (appIdentity.ZoneId == AutoLookupZone)
-                appIdentity = _dependencies.ZoneMapper.IdentityFromSite(Site.Id, appIdentity.AppId);
+                appIdentity = new AppIdentity(Site.ZoneId, appIdentity.AppId);
 
             Init(appIdentity, new CodeRef(), parentLog);
             Log.Add($"prep App #{appIdentity.Show()}, hasDataConfig:{buildConfiguration != null}");
 
             // Look up name in cache
-            // todo: someday after nov 2020 replace this with State.Get(this).AppGuidName
-            AppGuid = State.Cache.Zones[ZoneId].Apps[AppId];
+            // 2020-11-25 changed to use State.Get. before it was this...
+            //AppGuid = State.Cache.Zones[ZoneId].Apps[AppId];
+            AppGuid = State.Get(this).AppGuidName;
 
             InitializeResourcesSettingsAndMetadata();
 

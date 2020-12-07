@@ -1,7 +1,10 @@
 ﻿using System.Linq;
+using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Plumbing;
+using ToSic.Eav.Run;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.LookUp
@@ -22,14 +25,21 @@ namespace ToSic.Eav.LookUp
 
 	    private readonly IDataTarget _dataTarget;
 
-		/// <summary>
+        /// <summary>
 		/// Constructor expecting the data-target, of which it will use the In-Stream
 		/// </summary>
         public LookUpInDataTarget(IDataTarget dataTarget)
 		{
 		    _dataTarget = dataTarget;
-			Name = InStreamName;
+
+            Name = InStreamName;
 		}
+
+        private string[] Dimensions => _dimensions ?? (_dimensions = ((_dataTarget as DataSourceBase)?.DataSourceFactory
+            .ServiceProvider
+            .Build<IZoneCultureResolver>()).SafeCurrentDimensions());
+        private string[] _dimensions;
+
 
         /// <inheritdoc />
         /// <summary>
@@ -51,7 +61,7 @@ namespace ToSic.Eav.LookUp
 
             // Create an LookUpInEntity based on the first item, return its Get
 		    var first = entityStream.Immutable.First();
-		    return new LookUpInEntity(first).Get(subTokens.Rest, format);
+		    return new LookUpInEntity("no-name", first, Dimensions).Get(subTokens.Rest, format);
 
 		}
     }

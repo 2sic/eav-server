@@ -3,7 +3,6 @@ using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caching;
-using ToSic.Eav.DataSources.Configuration;
 using ToSic.Eav.DataSourceTests.TestData;
 
 namespace ToSic.Eav.DataSourceTests.Caches
@@ -72,7 +71,7 @@ namespace ToSic.Eav.DataSourceTests.Caches
         {
             var cacher = new CacheAllStreams();
             cacher.Attach(filtered);
-            cacher.Configuration.LookUps = filtered.Configuration.LookUps;
+            cacher.Configuration.LookUpEngine = filtered.Configuration.LookUpEngine;
             return cacher;
         }
 
@@ -83,7 +82,7 @@ namespace ToSic.Eav.DataSourceTests.Caches
             var secondFilter = new EntityTypeFilter();
             secondFilter.Attach(filtered);
             secondFilter.TypeName = "Person";
-            secondFilter.Configuration.LookUps = filtered.Configuration.LookUps;
+            secondFilter.Configuration.LookUpEngine = filtered.Configuration.LookUpEngine;
 
             var cacher = CreateCacheDS(secondFilter);
             var listCache = new ListCache(null);
@@ -181,7 +180,7 @@ namespace ToSic.Eav.DataSourceTests.Caches
         {
             var ds = DataTablePerson.Generate(testItemsInRootSource, 1001, useCacheForSpeed);
             var filtered = new EntityIdFilter()
-                .Init(ds.Configuration.LookUps); //{ConfigurationProvider = ds.ConfigurationProvider};
+                .Init(ds.Configuration.LookUpEngine); //{ConfigurationProvider = ds.ConfigurationProvider};
             filtered.Attach(ds);
             filtered.EntityIds = entityIdsValue;
             return filtered;

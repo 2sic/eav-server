@@ -7,7 +7,7 @@ namespace ToSic.Eav.Apps.Parts
 {
     public class QueryRuntime: PartOf<AppRuntime, QueryRuntime>
     {
-        internal QueryRuntime() : base("RT.Query") { }
+        public QueryRuntime() : base("RT.Query") { }
 
         /// <summary>
         /// Get all installed data sources - usually for the UI

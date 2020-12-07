@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Context;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSources.Configuration;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
+using ToSic.Eav.Run;
 
 namespace ToSic.Eav.DataSources.Queries
 {
@@ -13,9 +14,11 @@ namespace ToSic.Eav.DataSources.Queries
 	/// </summary>
 	public class QueryBuilder: HasLog<QueryBuilder>
 	{
+
         #region Dependency Injection
 
 		public DataSourceFactory DataSourceFactory { get; }
+        private readonly IZoneCultureResolver _cultureResolver;
 
 		/// <summary>
 		/// DI Constructor
@@ -24,8 +27,9 @@ namespace ToSic.Eav.DataSources.Queries
 		/// Never call this constructor from your code, as it re-configures the DataSourceFactory it gets
 		/// </remarks>
 		/// <param name="dataSourceFactory"></param>
-        public QueryBuilder(DataSourceFactory dataSourceFactory) : base("DS.PipeFt")
+        public QueryBuilder(DataSourceFactory dataSourceFactory, IZoneCultureResolver cultureResolver) : base("DS.PipeFt")
         {
+            _cultureResolver = cultureResolver;
             DataSourceFactory = dataSourceFactory;
             DataSourceFactory.Init(Log);
         }
@@ -78,7 +82,7 @@ namespace ToSic.Eav.DataSources.Queries
                                             $"drafts:{showDrafts}");
 
 	        // the query settings which apply to the whole query
-	        var querySettingsLookUp = new LookUpInMetadata(ConfigKeyPipelineSettings, queryDef.Entity);
+	        var querySettingsLookUp = new LookUpInMetadata(ConfigKeyPipelineSettings, queryDef.Entity, _cultureResolver.SafeCurrentDimensions());
 
             // centralizing building of the primary configuration template for each part
             var templateConfig = new LookUpEngine(lookUpEngineToClone, Log);
@@ -117,7 +121,7 @@ namespace ToSic.Eav.DataSources.Queries
 
 	            var partConfig = new LookUpEngine(templateConfig, Log);
                 // add / set item part configuration
-	            partConfig.Add(new LookUpInMetadata(ConfigKeyPartSettings, dataQueryPart.Entity));
+	            partConfig.Add(new LookUpInMetadata(ConfigKeyPartSettings, dataQueryPart.Entity, _cultureResolver.SafeCurrentDimensions()));
 
 	            // if show-draft in overridden, add that to the settings
 	            partConfig.AddOverride(new LookUpInDictionary(ConfigKeyPartSettings, itemSettingsShowDrafts));

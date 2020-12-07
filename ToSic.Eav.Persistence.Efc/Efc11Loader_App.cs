@@ -23,7 +23,7 @@ namespace ToSic.Eav.Persistence.Efc
         #region constructor and private vars
 
         public Efc11Loader(EavDbContext dbContext, 
-            Lazy<IEnvironment> environmentLazy, 
+            Lazy<IZoneCultureResolver> environmentLazy, 
             IServiceProvider serviceProvider,
             IAppInitializedChecker initializedChecker) : base("Db.Efc11")
         {
@@ -41,7 +41,7 @@ namespace ToSic.Eav.Persistence.Efc
 
         private IServiceProvider ServiceProvider { get; }
         private EavDbContext _dbContext;
-        private readonly Lazy<IEnvironment> _environmentLazy;
+        private readonly Lazy<IZoneCultureResolver> _environmentLazy;
         private readonly IAppInitializedChecker _initializedChecker;
 
         #endregion
@@ -54,7 +54,7 @@ namespace ToSic.Eav.Persistence.Efc
         {
             var appIdentity = State.Identity(null, appId);
             var appGuidName = State.Cache.Zones[appIdentity.ZoneId].Apps[appIdentity.AppId];
-            var appState = Update(new AppState(appIdentity, appGuidName, parentLog), AppStateLoadSequence.Start, /*entityIds*/null, parentLog);
+            var appState = Update(new AppState(appIdentity, appGuidName, parentLog), AppStateLoadSequence.Start, null, parentLog);
 
             return appState;
         }
@@ -98,7 +98,7 @@ namespace ToSic.Eav.Persistence.Efc
                 else
                     Log.Add("skipping metadata load");
 
-                if (startAt <= AppStateLoadSequence.ContentTypeLoad /*&& app.ContentTypesShouldBeReloaded*/)
+                if (startAt <= AppStateLoadSequence.ContentTypeLoad)
                     startAt = AppStateLoadSequence.ContentTypeLoad;
 
                 // prepare content-types

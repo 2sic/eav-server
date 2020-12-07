@@ -126,7 +126,7 @@ namespace ToSic.Eav.Apps.ImportExport
 	    {
             // file
             // todo: these patterns should be stored in a global location, in case we enhance the functionality
-	        var fileRegex = new Regex("^File:(?<Id>[0-9]+)", RegexOptions.IgnoreCase);
+	        var fileRegex = new Regex("^file:(?<Id>[0-9]+)", RegexOptions.IgnoreCase);
 	        var a = fileRegex.Match(sourceValueString);
 
 	        if (a.Success && a.Groups["Id"].Length > 0)

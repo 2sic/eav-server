@@ -21,9 +21,7 @@ namespace ToSic.Eav.Data
         /// to something different
         /// </summary>
         // ReSharper disable once InconsistentNaming
-#pragma warning disable IDE1006 // Naming Styles
         [PrivateApi("used vor very internal stuff")]
-        IEntity _EntityForEqualityCheck { get; }
-#pragma warning restore IDE1006 // Naming Styles
+        IEntity EntityForEqualityCheck { get; }
     }
 }

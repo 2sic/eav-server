@@ -114,12 +114,11 @@ namespace ToSic.Eav.Logging.Simple
                     if(Depth > MaxParentDepth)
                         throw new Exception($"LOGGER ERROR - Adding parent to logger but exceeded max depth of {MaxParentDepth}");
                 }
-                else
-                {
+                // show an error, if it the new parent is different from the old one
+                else if (_parent.FullIdentifier != parent.FullIdentifier)
                     Add("LOGGER WARNING - this logger already has a parent, but trying to attach to new parent. " +
                         $"Existing parent: {_parent.FullIdentifier}. " +
                         $"New Parent (ignored): {parent.FullIdentifier}");
-                }
             }
             if (name != null)
                 Rename(name);

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Context;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 
@@ -12,17 +13,17 @@ namespace ToSic.Eav.Run
         /// <summary>
         /// Get the zoneId which belongs to the tenant of this environment
         /// </summary>
-        int GetZoneId(int tenantId);
+        int GetZoneId(int siteId);
 
         /// <summary>
         /// Get the zoneId which belongs to the tenant of this environment
         /// </summary>
         int GetZoneId(ISite site);
 
-        /// <summary>
-        /// Get the App Identity when we know the tenant and app-id
-        /// </summary>
-        IAppIdentity IdentityFromSite(int tenantId, int appId);
+        ///// <summary>
+        ///// Get the App Identity when we know the tenant and app-id
+        ///// </summary>
+        //IAppIdentity IdentityFromSite(int tenantId, int appId);
 
 
         /// <summary>

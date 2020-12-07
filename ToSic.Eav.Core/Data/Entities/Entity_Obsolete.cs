@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Threading;
+using ToSic.Eav.Context;
 using ToSic.Eav.Documentation;
 
 #if NET451
@@ -39,12 +39,12 @@ namespace ToSic.Eav.Data
         [PrivateApi]
         [Obsolete("Obsolete, was in DNN, shouldn't be supported any more - use overload without resolveHyperlink")]
         public object Value(string field, bool resolve)
-            => GetBestValue(field, new[] { Thread.CurrentThread.CurrentCulture.Name }, resolve);
+            => GetBestValue(field, new[] { IZoneCultureResolverExtensions.ThreadCultureNameNotGood() }, resolve);
 
         [PrivateApi]
         [Obsolete("Obsolete, was in DNN, shouldn't be supported any more - use overload without resolveHyperlink")]
         public T Value<T>(string field, bool resolve)
-            => ChangeTypeOrDefault<T>(GetBestValue(field, new[] { Thread.CurrentThread.CurrentCulture.Name }, resolve));
+            => ChangeTypeOrDefault<T>(GetBestValue(field, new[] { IZoneCultureResolverExtensions.ThreadCultureNameNotGood() }, resolve));
 
     }
 }

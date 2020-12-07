@@ -2,7 +2,6 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSources.Configuration;
 using ToSic.Eav.DataSourceTests.TestData;
 
 namespace ToSic.Eav.DataSourceTests.EntityFilters
@@ -107,7 +106,7 @@ namespace ToSic.Eav.DataSourceTests.EntityFilters
         {
             var ds = DataTablePerson.Generate(testItemsInRootSource, 1001);
             var filtered = new EntityIdFilter()
-                .Init(ds.Configuration.LookUps);
+                .Init(ds.Configuration.LookUpEngine);
             //filtered.ConfigurationProvider = ds.ConfigurationProvider;
             filtered.Attach(ds);
             filtered.EntityIds = entityIdsValue;

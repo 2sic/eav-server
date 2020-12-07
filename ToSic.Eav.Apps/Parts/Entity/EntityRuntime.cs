@@ -13,7 +13,7 @@ namespace ToSic.Eav.Apps.Parts
     // ReSharper disable once InheritdocConsiderUsage
     public class EntityRuntime: PartOf<AppRuntime, EntityRuntime>
     {
-        internal EntityRuntime(): base ("RT.EntRun") { }
+        public EntityRuntime(): base ("RT.EntRun") { }
 
         #region Get
 

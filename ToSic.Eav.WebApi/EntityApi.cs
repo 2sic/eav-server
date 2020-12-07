@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Run;
+using ToSic.Eav.Context;
 using ToSic.Eav.Conversion;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
@@ -38,7 +38,7 @@ namespace ToSic.Eav.WebApi
             return this;
         }
 
-        public EntityApi InitOrThrowBasedOnGrants(IInstanceContext context, IApp app, string contentType, List<Eav.Security.Grants> requiredGrants, ILog parentLog)
+        public EntityApi InitOrThrowBasedOnGrants(IContextOfSite context, IAppIdentity app, string contentType, List<Eav.Security.Grants> requiredGrants, ILog parentLog)
         {
             var permCheck = _appManagerLazy.Value.ServiceProvider.Build<MultiPermissionsTypes>().Init(context, app, contentType, parentLog);
             if (!permCheck.EnsureAll(requiredGrants, out var error))

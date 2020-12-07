@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Data;
 #if NET451
 using System.Web.Http;
 using Newtonsoft.Json;
@@ -18,21 +19,19 @@ namespace ToSic.Eav.Conversion
     public class EntitiesToDictionary: EntitiesToDictionaryBase, IStreamsTo<Dictionary<string, object>>
     {
         // TODO: has an important side effect, this isn't clear from outside!
-        public EntitiesToDictionary(): base(Factory.Resolve<IValueConverter>(), "Cnv.Ent2Dc")
+        public EntitiesToDictionary(): base(Factory.Resolve<IValueConverter>(), Factory.Resolve<IZoneCultureResolver>(), "Cnv.Ent2Dc")
         {
             // Ensure that date-times are sent in the Zulu-time format (UTC) and not with offsets which causes many problems during round-trips
 #if NET451
             GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
 #else
             // #DoneDotNetStandard - there it's handled in the startup.cs
-            
 #endif
         }
 
 
+        #region Many variations of the Prepare-Statement expecting various kinds of input
 
-
-#region Many variations of the Prepare-Statement expecting various kinds of input
         /// <inheritdoc />
         public Dictionary<string, IEnumerable<Dictionary<string, object>>> Convert(IDataSource source, IEnumerable<string> streams = null)
         {
@@ -60,7 +59,7 @@ namespace ToSic.Eav.Conversion
             => Convert(stream.Immutable);
         
         
-#endregion
+        #endregion
 
         
     }

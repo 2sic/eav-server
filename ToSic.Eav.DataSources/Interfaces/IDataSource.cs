@@ -5,7 +5,6 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
 using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.DataSources.Caching.CacheInfo;
-using ToSic.Eav.DataSources.Configuration;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -49,8 +48,12 @@ namespace ToSic.Eav.DataSources
         [PrivateApi]
         IImmutableList<IEntity> Immutable { get; }
 
-        [PrivateApi("wip")]
-        DataSourceConfiguration Configuration { get; }
+        /// <summary>
+        /// The configuration system of this data source.
+        /// Keeps track of all values which the data source will need, and manages the LookUp engine
+        /// which provides these values. 
+        /// </summary>
+        IDataSourceConfiguration Configuration { get; }
 
         #endregion
 
