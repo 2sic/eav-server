@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ToSic.Eav.Data.ValueConverter
+namespace ToSic.Eav.Data
 {
     /// <summary>
     /// Trivial value converter - doesn't convert anything.
