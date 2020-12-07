@@ -1,7 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSources.Configuration;
 using ToSic.Eav.DataSourceTests.TestData;
 
 namespace ToSic.Eav.DataSourceTests.LookUps

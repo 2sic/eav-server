@@ -4,7 +4,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSources.Configuration;
 
 namespace ToSic.Eav.DataSourceTests.ExternalData
 {

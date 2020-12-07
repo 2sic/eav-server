@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.LookUp;
 
-namespace ToSic.Eav.DataSources.Configuration
+namespace ToSic.Eav.DataSources
 {
     public class DataSourceConfiguration : IDataSourceConfiguration
     {

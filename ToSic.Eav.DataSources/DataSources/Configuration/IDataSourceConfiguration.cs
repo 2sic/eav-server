@@ -2,7 +2,7 @@
 using ToSic.Eav.Documentation;
 using ToSic.Eav.LookUp;
 
-namespace ToSic.Eav.DataSources.Configuration
+namespace ToSic.Eav.DataSources
 {
     /// <summary>
     /// This helps a data source get configured.

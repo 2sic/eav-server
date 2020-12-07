@@ -1,7 +1,7 @@
 ﻿using System;
 using ToSic.Eav.Documentation;
 
-namespace ToSic.Eav.DataSources.Configuration
+namespace ToSic.Eav.DataSources
 {
     public partial interface IDataSourceConfiguration
     {
