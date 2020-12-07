@@ -52,5 +52,7 @@ namespace ToSic.Eav.Context
         /// </summary>
         string Url { get; }
 
+        //[PrivateApi] 
+        //bool IsMultiZone { get; }
     }
 }

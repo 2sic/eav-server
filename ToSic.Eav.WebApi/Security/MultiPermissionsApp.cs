@@ -43,9 +43,13 @@ namespace ToSic.Eav.WebApi.Security
             Context = context;
             App = app;
 
-            SamePortal = Context.Site.ZoneId == App.ZoneId;
-            SiteForSecurityCheck = SamePortal ? Context.Site : _zoneMapper.SiteOfZone(App.ZoneId);
-            return wrapLog($"ready for z/a:{app.Show()} t/z:{SiteForSecurityCheck.Id}/{Context.Site.ZoneId} same:{SamePortal}", this);
+            SamePortal = context.Site.ZoneId == App.ZoneId;
+            SiteForSecurityCheck = SamePortal 
+                ? context.Site 
+                // if the app is of another zone check that, but in multi-zone portals this won't find anything, so use current zone
+                // todo: probably enhance with a Site.IsMultiZone check
+                : _zoneMapper.SiteOfZone(App.ZoneId) ?? context.Site;
+            return wrapLog($"ready for z/a:{app.Show()} t/z:{SiteForSecurityCheck.Id}/{context.Site.ZoneId} same:{SamePortal}", this);
         }
 
         #endregion
