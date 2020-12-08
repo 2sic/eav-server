@@ -15,7 +15,9 @@ using AppState = ToSic.Eav.Apps.AppState;
 namespace ToSic.Eav.Persistence.Efc
 {
     /// <summary>
-    /// Will load all DB data into the memory data model using Entity Framework Core 1.1
+    /// Will load all DB data into the memory data model.
+    /// It uses Entity Framework Core 1.1 which we use for .net 451 (DNN)
+    /// It also works with the last Entity Framework 3, which we use for Oqtane etc.
     /// </summary>
     public partial class Efc11Loader: HasLog, IRepositoryLoader
     {
@@ -50,7 +52,7 @@ namespace ToSic.Eav.Persistence.Efc
         #region AppPackage
 
         /// <inheritdoc />
-        public AppState AppState(int appId, /*int[] entityIds = null,*/ ILog parentLog = null)
+        public AppState AppState(int appId, ILog parentLog = null)
         {
             var appIdentity = State.Identity(null, appId);
             var appGuidName = State.Cache.Zones[appIdentity.ZoneId].Apps[appIdentity.AppId];
