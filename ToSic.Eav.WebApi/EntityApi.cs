@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Context;
 using ToSic.Eav.Conversion;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Plumbing;
+using ToSic.Eav.WebApi.Errors;
 using ToSic.Eav.WebApi.Formats;
+using ToSic.Eav.WebApi.Security;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.WebApi
@@ -158,42 +162,42 @@ namespace ToSic.Eav.WebApi
         }
 
         // 2020-12-08 2dm - unused code, disable for now, delete ca. Feb 2021
-        //public EntityApi InitOrThrowBasedOnGrants(IContextOfSite context, IAppIdentity app, string contentType, List<Eav.Security.Grants> requiredGrants, ILog parentLog)
-        //{
-        //    var permCheck = _appManagerLazy.Value.ServiceProvider.Build<MultiPermissionsTypes>().Init(context, app, contentType, parentLog);
-        //    if (!permCheck.EnsureAll(requiredGrants, out var error))
-        //        throw HttpException.PermissionDenied(error);
-        //    return Init(app.AppId, true, parentLog);
-        //}
+        public EntityApi InitOrThrowBasedOnGrants(IContextOfSite context, IAppIdentity app, string contentType, List<Eav.Security.Grants> requiredGrants, ILog parentLog)
+        {
+            var permCheck = _appManagerLazy.Value.ServiceProvider.Build<MultiPermissionsTypes>().Init(context, app, contentType, parentLog);
+            if (!permCheck.EnsureAll(requiredGrants, out var error))
+                throw HttpException.PermissionDenied(error);
+            return Init(app.AppId, true, parentLog);
+        }
 
         // 2020-12-08 2dm - unused code, disable for now, delete ca. Feb 2021
-        //public IEnumerable<Dictionary<string, object>> GetEntitiesForAdmin(string contentType)
-        //{
-        //    var wrapLog = Log.Call(useTimer: true);
-        //    EntityToDic.ConfigureForAdminUse();
-        //    var originals = AppRead.Entities.Get(contentType).ToList();
-        //    var list = EntityToDic.Convert(originals).ToList();
+        public IEnumerable<Dictionary<string, object>> GetEntitiesForAdmin(string contentType)
+        {
+            var wrapLog = Log.Call(useTimer: true);
+            EntityToDic.ConfigureForAdminUse();
+            var originals = AppRead.Entities.Get(contentType).ToList();
+            var list = EntityToDic.Convert(originals).ToList();
 
-        //    var timer = Log.Call(null, "truncate dictionary", useTimer: true);
-        //    var result = list
-        //        .Select(li => li.ToDictionary(x1 => x1.Key, x2 => Truncate(x2.Value, 50)))
-        //        .ToList();
-        //    timer("ok");
+            var timer = Log.Call(null, "truncate dictionary", useTimer: true);
+            var result = list
+                .Select(li => li.ToDictionary(x1 => x1.Key, x2 => Truncate(x2.Value, 50)))
+                .ToList();
+            timer("ok");
 
-        //    wrapLog(result.Count.ToString());
-        //    return result;
-        //}
+            wrapLog(result.Count.ToString());
+            return result;
+        }
 
 
-        // 2020-12-08 2dm - unused code, disable for now, delete ca. Feb 2021
-        //private object Truncate(object value, int length)
-        //{
-        //    if (!(value is string asTxt))
-        //        return value;
+         //2020-12-08 2dm - unused code, disable for now, delete ca.Feb 2021
+        private object Truncate(object value, int length)
+        {
+            if (!(value is string asTxt))
+                return value;
 
-        //    if (asTxt.Length > length)
-        //        asTxt = asTxt.Substring(0, length);
-        //    return asTxt;
-        //}
+            if (asTxt.Length > length)
+                asTxt = asTxt.Substring(0, length);
+            return asTxt;
+        }
     }
 }
