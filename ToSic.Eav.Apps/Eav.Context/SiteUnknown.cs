@@ -1,7 +1,7 @@
-﻿using ToSic.Eav.Context;
-using ToSic.Eav.Run;
+﻿using ToSic.Eav.Run;
 
-namespace ToSic.Eav.Apps.Eav.Context
+// ReSharper disable once CheckNamespace
+namespace ToSic.Eav.Context
 {
     public class SiteUnknown: ISite, IIsUnknown
     {
