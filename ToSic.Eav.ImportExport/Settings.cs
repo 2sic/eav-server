@@ -11,7 +11,6 @@
             "node_modules",
             "bower_components",
             ".vs",
-            //Constants.FolderData
         };
 
         public static string[] ExcludeRootFolders =
@@ -19,8 +18,6 @@
             Constants.FolderData
         };
 
-        public static readonly string ModuleDirectory = "~/desktopmodules/tosic_sexycontent";
-        public static readonly string TemporaryDirectory =  ModuleDirectory + "_";
         public const string TemplateContentType = "2SexyContent-Template";
     }
 }

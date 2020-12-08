@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.XPath;
+using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.ImportExport;
@@ -20,7 +21,7 @@ namespace ToSic.Eav.Apps.ImportExport
         private int _zoneId;
         private const string SexyContentContentGroupName = "2SexyContent-ContentGroup";
         private const string SourceControlDataFolder = Constants.FolderData;
-        private const string SourceControlDataFile = Constants.AppDataFile;// "app.xml"; // lower case
+        private const string SourceControlDataFile = Constants.AppDataFile;
         private readonly string _blankGuid = Guid.Empty.ToString();
         private const string ZipFolderForPortalFiles = "PortalFiles";
         private const string ZipFolderForAppStuff = "2sexy";
@@ -33,18 +34,20 @@ namespace ToSic.Eav.Apps.ImportExport
 
         protected ILog Log;
 
-        #region Constructors and DI
+        #region DI Constructor
 
-        public ZipExport(IServerPaths serverPaths, AppRuntime appRuntime, DataSourceFactory dataSourceFactory, XmlExporter xmlExporter)
+        public ZipExport(IServerPaths serverPaths, AppRuntime appRuntime, DataSourceFactory dataSourceFactory, XmlExporter xmlExporter, IGlobalConfiguration globalConfiguration)
         {
             _serverPaths = serverPaths;
             _xmlExporter = xmlExporter;
+            _globalConfiguration = globalConfiguration;
             AppRuntime = appRuntime;
             DataSourceFactory = dataSourceFactory;
         }
 
         private readonly IServerPaths _serverPaths;
         private readonly XmlExporter _xmlExporter;
+        private readonly IGlobalConfiguration _globalConfiguration;
         private AppRuntime AppRuntime { get; }
         public DataSourceFactory DataSourceFactory { get; }
 
@@ -84,7 +87,7 @@ namespace ToSic.Eav.Apps.ImportExport
             var messages = new List<Message>();
             var randomShortFolderName = Guid.NewGuid().ToString().Substring(0, 4);
 
-            var temporaryDirectoryPath = _serverPaths.FullSystemPath(Path.Combine(Settings.TemporaryDirectory, randomShortFolderName));
+            var temporaryDirectoryPath = Path.Combine(_globalConfiguration.TemporaryFolder, randomShortFolderName);
 
             if (!Directory.Exists(temporaryDirectoryPath))
                 Directory.CreateDirectory(temporaryDirectoryPath);
@@ -184,11 +187,10 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="targetPath"></param>
         private void AddInstructionsToPackageFolder(string targetPath)
         {
-            var srcPath = _serverPaths.FullSystemPath(Path.Combine(Settings.ModuleDirectory, InstructionsFolder));
+            var srcPath = Path.Combine(_globalConfiguration.GlobalFolder, InstructionsFolder);
 
             foreach (var file in Directory.GetFiles(srcPath))
                 File.Copy(file, Path.Combine(targetPath, Path.GetFileName(file)));
         }
-
     }
 }

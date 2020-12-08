@@ -7,5 +7,18 @@
         /// </summary>
         /// <returns>The folder, can be null if it was never set</returns>
         string DataFolder { get; set; }
+
+
+        /// <summary>
+        /// The main folder (absolute) where anything incl. data is stored
+        /// </summary>
+        /// <returns>The folder, can be null if it was never set</returns>
+        string GlobalFolder { get; set; }
+
+
+        /// <summary>
+        /// The root folder for temporary data
+        /// </summary>
+        string TemporaryFolder { get; set; }
     }
 }
