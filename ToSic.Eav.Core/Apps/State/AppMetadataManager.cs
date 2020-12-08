@@ -121,10 +121,14 @@ namespace ToSic.Eav.Apps
         /// <returns></returns>
         public IEnumerable<IEntity> Get<TMetadataKey>(int targetType, TMetadataKey key, string contentTypeName = null)
         {
-            if (typeof(TMetadataKey) == typeof(Guid))
+            if(key == null) return new IEntity[0];
+            var type = typeof(TMetadataKey);
+            type = Nullable.GetUnderlyingType(type) ?? type;
+
+            if (type == typeof(Guid))
                 return Lookup(_guid, targetType, key as Guid? ?? Guid.Empty, contentTypeName);
 
-            switch (Type.GetTypeCode(typeof(TMetadataKey)))
+            switch (Type.GetTypeCode(type))
             {
                 case TypeCode.Int32:
                     return Lookup(_number, targetType, key as int? ?? 0, contentTypeName);
@@ -142,7 +146,7 @@ namespace ToSic.Eav.Apps
                 if (keyDict.TryGetValue(key, out var entities))
                     return contentTypeName == null
                         ? entities
-                        : entities.Where(e => e.Type.StaticName == contentTypeName);
+                        : entities.Where(e => e.Type.Is(contentTypeName));
             return new List<IEntity>();
         }
     }
