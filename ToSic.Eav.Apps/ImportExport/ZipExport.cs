@@ -10,6 +10,7 @@ using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Zip;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Run;
 
@@ -36,11 +37,17 @@ namespace ToSic.Eav.Apps.ImportExport
 
         #region DI Constructor
 
-        public ZipExport(IServerPaths serverPaths, AppRuntime appRuntime, DataSourceFactory dataSourceFactory, XmlExporter xmlExporter, IGlobalConfiguration globalConfiguration)
+        public ZipExport(IServerPaths serverPaths, 
+            AppRuntime appRuntime, 
+            DataSourceFactory dataSourceFactory, 
+            XmlExporter xmlExporter, 
+            IGlobalConfiguration globalConfiguration, 
+            ITargetTypes metaTargetTypes)
         {
             _serverPaths = serverPaths;
             _xmlExporter = xmlExporter;
             _globalConfiguration = globalConfiguration;
+            _metaTargetTypes = metaTargetTypes;
             AppRuntime = appRuntime;
             DataSourceFactory = dataSourceFactory;
         }
@@ -48,6 +55,7 @@ namespace ToSic.Eav.Apps.ImportExport
         private readonly IServerPaths _serverPaths;
         private readonly XmlExporter _xmlExporter;
         private readonly IGlobalConfiguration _globalConfiguration;
+        private readonly ITargetTypes _metaTargetTypes;
         private AppRuntime AppRuntime { get; }
         public DataSourceFactory DataSourceFactory { get; }
 
@@ -153,7 +161,7 @@ namespace ToSic.Eav.Apps.ImportExport
             attributeSets = attributeSets.Where(a => !((a as IContentTypeShared)?.AlwaysShareConfiguration ?? false));
 
             var contentTypeNames = attributeSets.Select(p => p.StaticName).ToArray();
-            var templateTypeId = SystemRuntime.MetadataType(Settings.TemplateContentType);
+            var templateTypeId = _metaTargetTypes.GetId(Settings.TemplateContentType);
             var entities =
                 DataSourceFactory.GetPublishing(runtime, false).Out[Constants.DefaultStreamName].Immutable.Where(
                     e => e.MetadataFor.TargetType != templateTypeId
