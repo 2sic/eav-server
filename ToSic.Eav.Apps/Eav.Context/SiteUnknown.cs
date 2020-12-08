@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Context;
 using ToSic.Eav.Run;
 
-namespace ToSic.Eav.Apps.Run
+namespace ToSic.Eav.Apps.Eav.Context
 {
     public class SiteUnknown: ISite, IIsUnknown
     {
@@ -17,8 +17,6 @@ namespace ToSic.Eav.Apps.Run
         public int Id { get; private set; } = UnknownSiteId;
 
         public string Url => Unknown;
-
-        //public bool IsMultiZone => false;
 
         public int ZoneId { get; private set; } = UnknownZoneId;
 

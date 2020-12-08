@@ -23,5 +23,7 @@ namespace ToSic.Eav.Apps.Tests.Mocks
 
         public string ContentPath => "MockPath";
         public int ZoneId => -999;
+        public string CurrentCultureCode { get; }
+        public string DefaultCultureCode { get; }
     }
 }
