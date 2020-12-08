@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Logging;
+using ToSic.Eav.Run;
 
 namespace ToSic.Eav.LookUp
 {
@@ -6,7 +7,7 @@ namespace ToSic.Eav.LookUp
     /// Fall back implementation - just return an empty lookup engine
     /// This should usually be 
     /// </summary>
-    public sealed class LookUpEngineResolverUnknown: HasLog<ILookUpEngineResolver>, ILookUpEngineResolver
+    public sealed class LookUpEngineResolverUnknown: HasLog<ILookUpEngineResolver>, ILookUpEngineResolver, IIsUnknown
     {
         public LookUpEngineResolverUnknown() : base($"{LogNames.NotImplemented}.LookUp")
         {

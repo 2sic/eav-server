@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.Context;
+using ToSic.Eav.Run;
 
-namespace ToSic.Eav.Run.Unknown
+namespace ToSic.Eav.Context
 {
-    public sealed class UserUnknown: IUser
+    public sealed class UserUnknown: IUser, IIsUnknown
     {
         public string IdentityToken => "unknown(eav):0";
 

@@ -4,7 +4,7 @@ using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Apps.Run
 {
-    public class ZoneMapperUnknown: ZoneMapperBase
+    public class ZoneMapperUnknown: ZoneMapperBase, IIsUnknown
     {
         public ZoneMapperUnknown() : base($"{LogNames.NotImplemented}.ZonMap")  {  }
 

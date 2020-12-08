@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using ToSic.Eav.Context;
 using ToSic.Eav.Persistence.Logging;
+using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Apps.Run
 {
-    public class ImportExportEnvironmentUnknown: ImportExportEnvironmentBase
+    public class ImportExportEnvironmentUnknown: ImportExportEnvironmentBase, IIsUnknown
     {
         public ImportExportEnvironmentUnknown(ISite site) : base(site, $"{LogNames.NotImplemented}.IExEnv") { }
 
