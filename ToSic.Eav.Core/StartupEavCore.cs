@@ -23,6 +23,7 @@ namespace ToSic.Eav
             services.AddTransient(typeof(Lazy<>), typeof(LazyDependencyInjection<>));
 
             // Configuration objects
+            services.TryAddTransient<IGlobalConfiguration, GlobalConfiguration>();
             services.TryAddTransient<IDbConfiguration, DbConfiguration>();
             services.TryAddTransient<IFeaturesConfiguration, FeaturesConfiguration>();
 
