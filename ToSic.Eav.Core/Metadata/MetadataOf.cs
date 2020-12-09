@@ -23,25 +23,25 @@ namespace ToSic.Eav.Metadata
             _appMetadataProvider = metaProvider;
         }
 
-        /// <summary>
-        /// initialize using keys to the metadata-environment, for lazy retrieval
-        /// The remote mode is for internal use only, as it's a left-over of ghost content-types, which we don't want to
-        /// promote any more like this.
-        /// </summary>
-        internal MetadataOf(int itemType, T key, int remoteZoneId, int remoteAppId): this(itemType, key)
-        {
-            _remoteZoneId = remoteZoneId;
-            _remoteAppId = remoteAppId;
-        }
+        ///// <summary>
+        ///// initialize using keys to the metadata-environment, for lazy retrieval
+        ///// The remote mode is for internal use only, as it's a left-over of ghost content-types, which we don't want to
+        ///// promote any more like this.
+        ///// </summary>
+        //internal MetadataOf(int itemType, T key, int remoteZoneId, int remoteAppId) : this(itemType, key)
+        //{
+        //    _remoteZoneId = remoteZoneId;
+        //    _remoteAppId = remoteAppId;
+        //}
 
-        private MetadataOf(int itemType, T key)
+        protected MetadataOf(int itemType, T key)
         {
             _itemType = itemType;
             Key = key;
         }
 
-        private readonly int _remoteAppId;
-        private readonly int _remoteZoneId;
+        //private readonly int _remoteAppId;
+        //private readonly int _remoteZoneId;
 
         private readonly IHasMetadataSource _appMetadataProvider;
         private readonly int _itemType;
@@ -117,16 +117,18 @@ namespace ToSic.Eav.Metadata
         }
 
         [PrivateApi]
-        protected IMetadataSource GetMetadataSource()
+        protected virtual IMetadataSource GetMetadataSource()
         {
             // check if already retrieved
             if (_alreadyTriedToGetProvider) return _metadataSource;
 
-            _metadataSource = _remoteAppId != 0
-                ? (_remoteZoneId != 0
-                    ? Factory.Resolve<IRemoteMetadata>()?.OfZoneAndApp(_remoteZoneId, _remoteAppId)
-                    : Factory.Resolve<IRemoteMetadata>()?.OfApp(_remoteAppId))
-                : _appMetadataProvider?.MetadataSource;
+            _metadataSource = 
+                //_remoteAppId != 0
+                //? (_remoteZoneId != 0
+                //    ? Factory.Resolve<IRemoteMetadata>()?.OfZoneAndApp(_remoteZoneId, _remoteAppId)
+                //    : Factory.Resolve<IRemoteMetadata>()?.OfApp(_remoteAppId))
+                //: 
+                _appMetadataProvider?.MetadataSource;
             _alreadyTriedToGetProvider = true;
             return _metadataSource;
         }
