@@ -8,12 +8,18 @@ using IEntity = ToSic.Eav.Data.IEntity;
 namespace ToSic.Eav.Apps
 {
     public partial class AppState: IMetadataSource
-	{
-        internal AppMetadataManager Metadata { get; set; }
+    {
+        [PrivateApi("probably remove soon, it was only used internally. The public property should be MetadataSource, as Metadata is usually reserved for metadata of this object")]
+        internal IMetadataSource Metadata => _metadataManager;
+        private AppMetadataManager _metadataManager;
 
         /// <inheritdoc />
 	    public IEnumerable<IEntity> Get<TMetadataKey>(int targetType, TMetadataKey key, string contentTypeName = null) 
-            => Metadata.Get(targetType, key, contentTypeName);
+            => _metadataManager.GetMetadata(targetType, key, contentTypeName);
+
+        /// <inheritdoc />
+	    public IEnumerable<IEntity> GetMetadata<TMetadataKey>(int targetType, TMetadataKey key, string contentTypeName = null) 
+            => _metadataManager.GetMetadata(targetType, key, contentTypeName);
 
 
         /// <summary>
@@ -26,7 +32,7 @@ namespace ToSic.Eav.Apps
         {
             if (!Loading)
                 throw new Exception("trying to init metadata, but not in loading state. set that first!");
-            Metadata = _appTypesFromRepository == null
+            _metadataManager = _appTypesFromRepository == null
                 ? new AppMetadataManager(this, metadataTypes, Log)
                 : throw new Exception("can't set metadata if content-types are already set");
 

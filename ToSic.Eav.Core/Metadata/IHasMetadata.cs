@@ -2,6 +2,10 @@
 
 namespace ToSic.Eav.Metadata
 {
+    /// <summary>
+    /// Anything with this interface has a property `Metadata` which can give us more
+    /// information about that object. 
+    /// </summary>
     [PublicApi_Stable_ForUseInYourCode]
     public interface IHasMetadata
     {

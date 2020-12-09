@@ -219,7 +219,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
         private IEntity MergeOneMd<T>(IMetadataSource appState, int mdType, T key, IEntity newMd)
         {
-            var existingMetadata = appState.Get(mdType, key, newMd.Type.StaticName).FirstOrDefault();
+            var existingMetadata = appState.GetMetadata(mdType, key, newMd.Type.StaticName).FirstOrDefault();
             var metadataToUse = existingMetadata == null
                 ? newMd
                 : new EntitySaver(Log).CreateMergedForSaving(existingMetadata, newMd, SaveOptions);

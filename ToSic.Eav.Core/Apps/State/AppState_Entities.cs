@@ -36,7 +36,7 @@ namespace ToSic.Eav.Apps
             RemoveObsoleteDraft(newEntity, log);
             Index[newEntity.RepositoryId] = newEntity; // add like this, it could also be an update
             MapDraftToPublished(newEntity, publishedId, log);
-            Metadata.Register(newEntity);
+            _metadataManager.Register(newEntity);
 
             if (FirstLoadCompleted)
                 DynamicUpdatesCount++;
@@ -54,7 +54,7 @@ namespace ToSic.Eav.Apps
             Log.Add("remove all items");
             Index.Clear();
             //CacheResetTimestamp(); 
-            Metadata.Reset();
+            _metadataManager.Reset();
         }
 
     }

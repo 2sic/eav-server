@@ -8,6 +8,6 @@ namespace ToSic.Eav.Apps.Parts
         public MetadataRuntime() : base("RT.Metadt") { }
 
         public IEnumerable<IEntity> Get<T>(int targetType, T key, string contentTypeName = null)
-            => Parent.AppState.Get(targetType, key, contentTypeName);
+            => Parent.AppState.GetMetadata(targetType, key, contentTypeName);
     }
 }

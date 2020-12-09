@@ -11,7 +11,7 @@ namespace ToSic.Eav.Metadata
     /// even if they do not know about data-sources
     /// which will then be provided through dependency injection.
     /// </summary>
-    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
+    [PrivateApi] // 2020-12-09 v11.11 changed from [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public class RemoteMetadata: IRemoteMetadata
     {
         /// <inheritdoc />

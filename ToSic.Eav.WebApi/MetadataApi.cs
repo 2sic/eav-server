@@ -28,14 +28,14 @@ namespace ToSic.Eav.WebApi
             {
                 case "guid":
                     if(Guid.TryParse(key, out var guidKey))
-                        entityList = appState.Get(targetType, guidKey, contentType);
+                        entityList = appState.GetMetadata(targetType, guidKey, contentType);
                     break;
                 case "string":
-                    entityList = appState.Get(targetType, key, contentType);
+                    entityList = appState.GetMetadata(targetType, key, contentType);
                     break;
                 case "number":
                     if(int.TryParse(key, out var keyInt))
-                        entityList = appState.Get(targetType, keyInt, contentType);
+                        entityList = appState.GetMetadata(targetType, keyInt, contentType);
                     break;
                 default:
                     throw new Exception("key type unknown:" + keyType);

@@ -7,8 +7,11 @@ namespace ToSic.Eav.Metadata
 {
     /// <summary>
     /// A provider for metadata for something.
-    /// So if an <see cref="IEntity"/> or an IApp has metadata, this will provide it. 
+    /// So if an <see cref="IEntity"/> or an App has metadata, this will provide it. 
     /// </summary>
+    /// <remarks>
+    /// You can either loop through this object (since it's an `IEnumerable`) or ask for values of the metadata,
+    /// no matter on what sub-entity the value is stored on.</remarks>
     [PublicApi_Stable_ForUseInYourCode]
     public interface IMetadataOf: IEnumerable<IEntity>, IHasPermissions
     {

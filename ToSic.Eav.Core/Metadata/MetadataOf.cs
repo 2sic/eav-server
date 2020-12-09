@@ -12,7 +12,7 @@ namespace ToSic.Eav.Metadata
     /// It's usually on a <strong>Metadata</strong> property of things that can have metadata.
     /// </summary>
     /// <typeparam name="T">The type this metadata uses as a key - int, string, guid</typeparam>
-    [PublicApi_Stable_ForUseInYourCode]
+    [PrivateApi] // changed 2020-12-09 v11.11 from [PublicApi_Stable_ForUseInYourCode] - as this is a kind of lazy-metadata, we should change it to that
     public class MetadataOf<T> : IMetadataOf, IMetadataInternals
     {
         /// <summary>
@@ -25,8 +25,10 @@ namespace ToSic.Eav.Metadata
 
         /// <summary>
         /// initialize using keys to the metadata-environment, for lazy retrieval
+        /// The remote mode is for internal use only, as it's a left-over of ghost content-types, which we don't want to
+        /// promote any more like this.
         /// </summary>
-        public MetadataOf(int itemType, T key, int remoteZoneId, int remoteAppId): this(itemType, key)
+        internal MetadataOf(int itemType, T key, int remoteZoneId, int remoteAppId): this(itemType, key)
         {
             _remoteZoneId = remoteZoneId;
             _remoteAppId = remoteAppId;
@@ -108,7 +110,7 @@ namespace ToSic.Eav.Metadata
         protected virtual void LoadFromProvider()
         {
             var mdProvider = GetMetadataSource();
-            Use(mdProvider?.Get(_itemType, Key).ToList()
+            Use(mdProvider?.GetMetadata(_itemType, Key).ToList()
                        ?? new List<IEntity>());
             if (mdProvider != null)
                 _cacheTimestamp = mdProvider.CacheTimestamp;

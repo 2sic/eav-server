@@ -58,9 +58,9 @@ namespace ToSic.Eav.Apps.Parts
             ILog log)
         {
             var callLogFindParts = log.Call<bool>();
-            appConfig = appIdentity.Get(Constants.MetadataForApp, appIdentity.AppId, AppLoadConstants.TypeAppConfig).FirstOrDefault();
-            appResources = appIdentity.Get(Constants.MetadataForApp, appIdentity.AppId, AppLoadConstants.TypeAppResources).FirstOrDefault();
-            appSettings = appIdentity.Get(Constants.MetadataForApp, appIdentity.AppId, AppLoadConstants.TypeAppSettings).FirstOrDefault();
+            appConfig = appIdentity.GetMetadata(Constants.MetadataForApp, appIdentity.AppId, AppLoadConstants.TypeAppConfig).FirstOrDefault();
+            appResources = appIdentity.GetMetadata(Constants.MetadataForApp, appIdentity.AppId, AppLoadConstants.TypeAppResources).FirstOrDefault();
+            appSettings = appIdentity.GetMetadata(Constants.MetadataForApp, appIdentity.AppId, AppLoadConstants.TypeAppSettings).FirstOrDefault();
 
 
             // if nothing must be done, return now
