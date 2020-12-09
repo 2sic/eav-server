@@ -11,7 +11,7 @@ namespace ToSic.Eav.Data
     /// in which case the metadata must be retrieved from another "remote" location (where the original is defined). 
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
-    public class ContentTypeMetadata : MetadataOf<string>
+    public class ContentTypeMetadata : RemoteMetadataOf<string>
     {
 
         #region constructors
