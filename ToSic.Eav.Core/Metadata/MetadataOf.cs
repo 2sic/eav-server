@@ -145,17 +145,17 @@ namespace ToSic.Eav.Metadata
         #region GetBestValue
 
         /// <inheritdoc />
-        public TVal GetBestValue<TVal>(string name, string type = null)
+        public TVal GetBestValue<TVal>(string name, string typeName = null)
         {
-            var list = type == null ? this : this.Where(md => md.Type.StaticName == type || md.Type.Name == type);
+            var list = typeName == null ? this : this.Where(md => md.Type.Is(typeName)); //.StaticName == typeName || md.Type.Name == typeName);
             var found = list.FirstOrDefault(md => md.Attributes.ContainsKey(name));
             return found == null ? default : found.GetBestValue<TVal>(name);
         }
 
         /// <inheritdoc />
-        public TVal GetBestValue<TVal>(string name, string[] types)
+        public TVal GetBestValue<TVal>(string name, string[] typeNames)
         {
-            foreach (var type in types)
+            foreach (var type in typeNames)
             {
                 var result = GetBestValue<TVal>(name, type);
                 if (!EqualityComparer<TVal>.Default.Equals(result, default))

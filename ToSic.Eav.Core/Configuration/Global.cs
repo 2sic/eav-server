@@ -18,7 +18,7 @@ namespace ToSic.Eav.Configuration
         /// <param name="typeName"></param>
         /// <returns></returns>
         public static IEntity For(string typeName) =>
-            List.FirstOrDefault(e => e.Type.StaticName == typeName || e.Type.Name == typeName);
+            List.FirstOrDefault(e => e.Type.Is(typeName)); //.StaticName == typeName || e.Type.Name == typeName);
 
         public static object Value(string typeName, string key) => For(typeName)?.GetBestValue(key);
 
