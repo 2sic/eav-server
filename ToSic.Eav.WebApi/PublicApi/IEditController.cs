@@ -31,7 +31,8 @@ namespace ToSic.Eav.WebApi.PublicApi
         Dictionary<Guid, int> Save(EditDto package, int appId, bool partOfPage);
 
         /// <summary>
-        /// Used to be GET Ui/GetAvailableEntities
+        /// Used to be GET or POST Ui/GetAvailableEntities.
+        /// By default it uses GET, but usually the items-array is passed in through a POST.
         /// </summary>
         /// <param name="appId"></param>
         /// <param name="items"></param>
