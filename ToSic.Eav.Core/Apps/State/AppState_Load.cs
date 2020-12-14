@@ -25,15 +25,15 @@ namespace ToSic.Eav.Apps
 
         internal void Load(ILog parentLog, Action loader)
         {
-            // temporarily link logs, to put messages in both logs
-            Log.LinkTo(parentLog);
-            var wrapLog = Log.Call(message: $"zone/app:{ZoneId}/{AppId}", useTimer: true);
+            var wrapLog = parentLog?.Call(message: $"zone/app:{ZoneId}/{AppId}", useTimer: true);
 
             try
             {
                 // first set a lock, to ensure that only one update/load is running at the same time
-                //lock (this)
+                lock (this)
                 {
+                    // temporarily link logs, to put messages in both logs
+                    Log.LinkTo(parentLog);
                     var inLockLog = Log.Call($"loading: {Loading}", "app loading start in lock");
 
                     // only if loading is true will the AppState object accept changes
@@ -42,10 +42,9 @@ namespace ToSic.Eav.Apps
                     CacheResetTimestamp();
                     EnsureNameAndFolderInitialized();
                     if(!FirstLoadCompleted) FirstLoadCompleted = true;
-                    inLockLog("ok");
-                }
 
-                Log.Add($"app loading done - dynamic load count: {DynamicUpdatesCount}");
+                    inLockLog($"done - dynamic load count: {DynamicUpdatesCount}");
+                }
             }
             finally
             {
@@ -53,7 +52,7 @@ namespace ToSic.Eav.Apps
                 Loading = false;
 
                 // detach logs again, to prevent memory leaks because the global/cached app-state shouldn't hold on to temporary log objects
-                wrapLog("ok");
+                wrapLog?.Invoke("ok");
                 Log.Unlink();
             }
         }

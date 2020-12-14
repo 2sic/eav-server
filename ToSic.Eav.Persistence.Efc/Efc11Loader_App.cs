@@ -27,29 +27,33 @@ namespace ToSic.Eav.Persistence.Efc
         /// <returns>An object with everything which an app has, usually for caching</returns>
         public AppState LoadBasicAppState(int appId)
         {
+            var wrapLog = Log.Call<AppState>();
             var appIdentity = State.Identity(null, appId);
             var appGuidName = State.Cache.Zones[appIdentity.ZoneId].Apps[appIdentity.AppId];
-            var appState = Update(new AppState(appIdentity, appGuidName, Log), AppStateLoadSequence.Start, null);
+            var appState = Update(new AppState(appIdentity, appGuidName, Log), AppStateLoadSequence.Start);
 
-            return appState;
+            return wrapLog("ok", appState);
         }
 
         /// <inheritdoc />
         public AppState AppState(int appId, bool ensureInitialized)
         {
+            var wrapLog = Log.Call<AppState>($"{appId}, {ensureInitialized}");
+
             var appState = LoadBasicAppState(appId);
-            if (!ensureInitialized) return appState;
+            if (!ensureInitialized) return wrapLog("won't check initialized", appState);
 
             // Note: Ignore ensureInitialized on the content app
             // The reason is that this app - even when empty - is needed in the cache before data is imported
             // So if we initialize it, then things will result in duplicate settings/resources/configuration
             // Note that to ensure the Content app works, we must perform the same check again in the 
             // API Endpoint which will edit this data
-            if (appState.AppGuidName == Constants.DefaultAppName) return appState;
+            if (appState.AppGuidName == Constants.DefaultAppName) return wrapLog("default app, don't auto-init", appState);
 
-            return _initializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(appState, null, Log)
+            var result = _initializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(appState, null, Log)
                 ? LoadBasicAppState(appId)
                 : appState;
+            return wrapLog("with init check", result);
         }
 
         public AppState Update(AppState app, AppStateLoadSequence startAt, int[] entityIds = null)
