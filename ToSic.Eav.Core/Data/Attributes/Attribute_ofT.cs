@@ -53,7 +53,8 @@ namespace ToSic.Eav.Data
 
         #region IAttribute Implementations
         [PrivateApi]
-        object IAttribute.this[string languageKey] => GetInternal(new [] {languageKey}, FindHavingDimensions); // this[languageKey];
+        object IAttribute.this[string languageKey] => GetInternal(new [] {languageKey}, FindHavingDimensions);
+
         [PrivateApi]
         object IAttribute.this[string[] languageKeys] => GetInternal(languageKeys, FindHavingDimensions);
         [PrivateApi]

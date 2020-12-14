@@ -26,6 +26,7 @@ namespace ToSic.Eav.LookUp
         /// <param name="name">Name of the PropertyAccess, e.g. PipelineSettings</param>
         /// <param name="objectId">EntityGuid of the Entity to get assigned Entities of</param>
         /// <param name="metaDataSource">DataSource that provides MetaData</param>
+        [Obsolete("Should not be used, as it doesn't have dimensions included.")]
         public LookUpInMetadata(string name, Guid objectId, IMetadataSource metaDataSource) : base(name, null, null)
         {
             _objectToProvideSettingsTo = objectId;
