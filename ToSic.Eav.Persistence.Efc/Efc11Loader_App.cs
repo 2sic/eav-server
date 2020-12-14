@@ -34,6 +34,7 @@ namespace ToSic.Eav.Persistence.Efc
             return appState;
         }
 
+        /// <inheritdoc />
         public AppState AppState(int appId, bool ensureInitialized, ILog parentLog = null)
         {
             var appState = AppState(appId, parentLog);
@@ -53,13 +54,14 @@ namespace ToSic.Eav.Persistence.Efc
 
         public AppState Update(AppState app, AppStateLoadSequence startAt, int[] entityIds = null, ILog parentLog = null)
         {
+            if (parentLog == null) parentLog = Log;
+            else Log.LinkTo(parentLog);
+            var outerWrapLog = parentLog.Call<AppState>();
+
             app.Load(parentLog, () =>
             {
-                Log.LinkTo(app.Log);
-                Log.Add($"get app data package for a#{app.AppId}, " +
-                                                    $"startAt: {startAt}, " +
-                                                    $"ids only:{entityIds != null}");
-                var wrapLog = Log.Call(useTimer: true);
+                var msg = $"get app data package for a#{app.AppId}, startAt: {startAt}, ids only:{entityIds != null}";
+                var wrapLog = Log.Call(message: msg, useTimer: true);
 
                 // prepare metadata lists & relationships etc.
                 if (startAt <= AppStateLoadSequence.MetadataInit)
@@ -98,7 +100,8 @@ namespace ToSic.Eav.Persistence.Efc
                 Log.Add($"timers sql:sqlAll:{_sqlTotalTime}");
                 wrapLog("ok");
             });
-            return app;
+
+            return outerWrapLog("ok", app);
         }
 
         /// <summary>

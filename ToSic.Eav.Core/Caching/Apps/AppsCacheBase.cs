@@ -140,7 +140,7 @@ namespace ToSic.Eav.Caching
             // if it's not cached yet, ignore the request as partial update won't be necessary
             if (!Has(app)) return wrapLog("not cached, won't update", null);
             var appState = Get(app);
-            GetNewRepoLoader().Init(log).Update(appState, AppStateLoadSequence.ItemLoad, entities.ToArray(), log);
+            GetNewRepoLoader().Init(log).Update(appState, AppStateLoadSequence.ItemLoad, entities.ToArray());
             return wrapLog("ok", appState);
         }
 
