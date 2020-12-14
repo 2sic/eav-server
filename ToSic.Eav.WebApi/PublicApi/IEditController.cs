@@ -37,11 +37,9 @@ namespace ToSic.Eav.WebApi.PublicApi
         /// <param name="appId"></param>
         /// <param name="items"></param>
         /// <param name="contentTypeName"></param>
-        /// <param name="dimensionId"></param>
         /// <returns></returns>
         // security check happens internally
-        IEnumerable<EntityForPickerDto> EntityPicker(int appId, string[] items,
-            string contentTypeName = null, int? dimensionId = null);
+        IEnumerable<EntityForPickerDto> EntityPicker(int appId, string[] items, string contentTypeName = null);
 
         /// <summary>
         /// This GET-call will resolve links to files and to pages.
