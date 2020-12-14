@@ -37,7 +37,8 @@ namespace ToSic.Eav.LookUp
 
         private string[] Dimensions => _dimensions ?? (_dimensions = ((_dataTarget as DataSourceBase)?.DataSourceFactory
             .ServiceProvider
-            .Build<IZoneCultureResolver>()).SafeCurrentDimensions());
+            .Build<IZoneCultureResolver>()).SafeLanguagePriorityCodes());
+
         private string[] _dimensions;
 
 

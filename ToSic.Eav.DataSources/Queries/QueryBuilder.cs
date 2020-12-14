@@ -82,7 +82,7 @@ namespace ToSic.Eav.DataSources.Queries
                                             $"drafts:{showDrafts}");
 
 	        // the query settings which apply to the whole query
-	        var querySettingsLookUp = new LookUpInMetadata(ConfigKeyPipelineSettings, queryDef.Entity, _cultureResolver.SafeCurrentDimensions());
+	        var querySettingsLookUp = new LookUpInMetadata(ConfigKeyPipelineSettings, queryDef.Entity, _cultureResolver.SafeLanguagePriorityCodes());
 
             // centralizing building of the primary configuration template for each part
             var templateConfig = new LookUpEngine(lookUpEngineToClone, Log);
@@ -121,7 +121,7 @@ namespace ToSic.Eav.DataSources.Queries
 
 	            var partConfig = new LookUpEngine(templateConfig, Log);
                 // add / set item part configuration
-	            partConfig.Add(new LookUpInMetadata(ConfigKeyPartSettings, dataQueryPart.Entity, _cultureResolver.SafeCurrentDimensions()));
+	            partConfig.Add(new LookUpInMetadata(ConfigKeyPartSettings, dataQueryPart.Entity, _cultureResolver.SafeLanguagePriorityCodes()));
 
 	            // if show-draft in overridden, add that to the settings
 	            partConfig.AddOverride(new LookUpInDictionary(ConfigKeyPartSettings, itemSettingsShowDrafts));

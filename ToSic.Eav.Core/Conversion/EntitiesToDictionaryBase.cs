@@ -5,7 +5,6 @@ using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Conversion
 {
@@ -55,7 +54,7 @@ namespace ToSic.Eav.Conversion
 
         public string[] Languages
         {
-            get => _languages ?? (_languages = new[] { _cultureResolver.SafeCurrentCultureCode() });
+            get => _languages ?? (_languages = _cultureResolver.SafeLanguagePriorityCodes());
             set => _languages = value;
         }
         private string[] _languages;

@@ -9,7 +9,7 @@ namespace ToSic.Eav.Context
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [PrivateApi]
-    public abstract class Site<T> :ISite, IWrapper<T>
+    public abstract class Site<T>: ISite, IWrapper<T>
     {
         /// <inheritdoc />
         public abstract ISite Init(int siteId);
