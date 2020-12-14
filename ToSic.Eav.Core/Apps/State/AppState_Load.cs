@@ -34,7 +34,7 @@ namespace ToSic.Eav.Apps
                 // first set a lock, to ensure that only one update/load is running at the same time
                 //lock (this)
                 {
-                    var inLockLog = Log.Call(null, "app loading start in lock");
+                    var inLockLog = Log.Call($"loading: {Loading}", "app loading start in lock");
 
                     // only if loading is true will the AppState object accept changes
                     Loading = true;
@@ -54,7 +54,7 @@ namespace ToSic.Eav.Apps
 
                 // detach logs again, to prevent memory leaks because the global/cached app-state shouldn't hold on to temporary log objects
                 wrapLog("ok");
-                Log.LinkTo(null);
+                Log.Unlink();
             }
         }
 

@@ -186,5 +186,10 @@ namespace ToSic.Eav.Logging
         /// <param name="parent">parent log to attach to</param>
         /// <param name="name">optional new name</param>
         void LinkTo(ILog parent, string name = null);
+
+        /// <summary>
+        /// Unlink a logger from the parent.
+        /// </summary>
+        void Unlink();
     }
 }
