@@ -49,6 +49,12 @@ namespace ToSic.Eav.WebApi.Dto
         /// The UI Context information
         /// </summary>
         public ContextDto Context;
+
+        /// <summary>
+        /// WIP - should contain pre-fetched data to reduce callbacks just to look up data which obviously will be needed
+        /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public EditPrefetchDto Prefetch { get; set; }
     }
 
 }
