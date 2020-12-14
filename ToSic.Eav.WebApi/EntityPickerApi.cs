@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
 using ToSic.Eav.WebApi.Dto;
@@ -12,20 +13,24 @@ namespace ToSic.Eav.WebApi
 {
     public class EntityPickerApi : HasLog<EntityPickerApi>
     {
-        public AppRuntime AppRuntime { get; }
+        #region DI Constructor
 
-        public EntityPickerApi(AppRuntime appRuntime) : base("Api.EntPck")
+        public EntityPickerApi(AppRuntime appRuntime, IZoneCultureResolver cultureResolver) : base("Api.EntPck")
         {
+            _cultureResolver = cultureResolver;
             AppRuntime = appRuntime;
         }
+        public AppRuntime AppRuntime { get; }
+        private readonly IZoneCultureResolver _cultureResolver;
+
+        #endregion
 
         /// <summary>
         /// Returns a list of entities, optionally filtered by contentType.
         /// </summary>
-        public IEnumerable<EntityForPickerDto> GetAvailableEntities(int appId, string[] items, string contentTypeName, bool withDrafts, int? dimensionId)
+        public IEnumerable<EntityForPickerDto> GetAvailableEntities(int appId, string[] items, string contentTypeName, bool withDrafts)
         {
-            Log.Add($"Get entities for a#{appId}, itms⋮{items?.Length}, type:{contentTypeName}, lang#{dimensionId}");
-            var dimensionIds = dimensionId ?? 0;
+            Log.Add($"Get entities for a#{appId}, items⋮{items?.Length}, type:{contentTypeName}");
 
             AppRuntime.Init(State.Identity(null, appId), withDrafts, Log);
             IContentType contentType = null;
@@ -59,11 +64,13 @@ namespace ToSic.Eav.WebApi
             else
                 Log.Add("won't filter by IDs");
 
+            var languagePriorities = _cultureResolver.SafeLanguagePriorityCodes();
+
             var entities = temp.Select(l => new EntityForPickerDto
                 {
                     Id = l.EntityId,
                     Value = l.EntityGuid,
-                    Text = GetTitle(l, dimensionIds)
+                    Text = GetTitle(l, languagePriorities)
                 })
                 .OrderBy(l => l.Text.ToString())
                 .ToList();
@@ -72,24 +79,10 @@ namespace ToSic.Eav.WebApi
             return entities;
         }
 
-        private string GetTitle(IEntity l, int dimensionIds)
+        private static string GetTitle(IEntity l, string[] dimensions)
         {
-            string title;
-
-            // if the title is an entity-picker, try to find the inner-title 
-            // of the chosen title-item
-            if (l.Title != null && l.Title.Type == Constants.DataTypeEntity)
-            {
-                var val = l.GetBestValue(Constants.EntityFieldTitle) as IEnumerable<IEntity>;
-                title = val?.FirstOrDefault()?.GetBestTitle();
-            }
-            else
-                // default: just get the preferred title
-                title = l.Title?[dimensionIds]?.ToString();
-
-            return IsNullOrWhiteSpace(title)
-                ? "(no Title, " + l.EntityId + ")"
-                : title;
+            var title = l.GetBestTitle(dimensions);
+            return IsNullOrWhiteSpace(title) ? "(no Title, " + l.EntityId + ")" : title;
         }
 
     }
