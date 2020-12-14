@@ -22,34 +22,6 @@ namespace ToSic.Eav.Persistence.Efc
     /// </summary>
     public partial class Efc11Loader: HasLog, IRepositoryLoader
     {
-
-        #region constructor and private vars
-
-        public Efc11Loader(EavDbContext dbContext, 
-            Lazy<IZoneCultureResolver> environmentLazy, 
-            IServiceProvider serviceProvider,
-            IAppInitializedChecker initializedChecker) : base("Db.Efc11")
-        {
-            ServiceProvider = serviceProvider;
-            _dbContext = dbContext;
-            _environmentLazy = environmentLazy;
-            _initializedChecker = initializedChecker;
-        }
-
-        public Efc11Loader UseExistingDb(EavDbContext dbContext)
-        {
-            _dbContext = dbContext;
-            return this;
-        }
-
-        private IServiceProvider ServiceProvider { get; }
-        private EavDbContext _dbContext;
-        private readonly Lazy<IZoneCultureResolver> _environmentLazy;
-        private readonly IAppInitializedChecker _initializedChecker;
-
-        #endregion
-
-
         #region AppPackage
 
         /// <inheritdoc />
