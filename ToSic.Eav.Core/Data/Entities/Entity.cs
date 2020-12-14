@@ -22,14 +22,15 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         public new IAttribute Title => TitleFieldName == null
             ? null
-            : (Attributes?.ContainsKey(TitleFieldName) ?? false ? Attributes[TitleFieldName] : null);
+            : Attributes?.ContainsKey(TitleFieldName) ?? false ? Attributes[TitleFieldName] : null;
 
 
 
         /// <inheritdoc />
-        public Dictionary<string, IAttribute> Attributes {
+        public Dictionary<string, IAttribute> Attributes
+        {
             get => _attributes ?? (_attributes = LightAttributesForInternalUseOnlyForNow.ConvertToInvariantDic());
-            set => _attributes = (value ?? new Dictionary<string, IAttribute>()).ToInvariant();
+            set => _attributes = (value?.ToInvariant() ?? new Dictionary<string, IAttribute>()).ToInvariant();
         }
 
         private Dictionary<string, IAttribute> _attributes;
@@ -132,16 +133,32 @@ namespace ToSic.Eav.Data
 
 
         /// <inheritdoc />
-        public object GetBestValue(string attributeName, string[] languages)
+        public object GetBestValue(string attributeName, string[] languages) 
+            => _useLightModel 
+                ? base.GetBestValue(attributeName) 
+                : GetBestValueAndType(attributeName, languages, out _);
+
+        public string[] ExtendDimsWithDefault(string[] dimensions)
         {
-            return _useLightModel ? base.GetBestValue(attributeName) : GetBestValueAndType(attributeName, languages, out _);
+            // empty list - add the default dimension
+            if (dimensions == null || dimensions.Length == 0) return new[] { null as string };
+
+            // list already has a default at the end, don't change
+
+            // we have dimensions but no default, add it
+            if (dimensions.Last() == default) return dimensions;
+            var newDims = dimensions.ToList();
+            newDims.Add(default);
+            return newDims.ToArray();
         }
 
         private object GetBestValueAndType(string attributeName, string[] languages, out string attributeType)
         {
+            languages = ExtendDimsWithDefault(languages);
+
             object result;
 
-            attributeName = attributeName.ToLower();
+            //attributeName = attributeName.ToLowerInvariant();
             if (Attributes.ContainsKey(attributeName))
             {
                 var attribute = Attributes[attributeName];
@@ -173,12 +190,10 @@ namespace ToSic.Eav.Data
         //    => ChangeTypeOrDefault<TVal>(GetBestValue(name, resolveHyperlinks));
 
         [PrivateApi("Testing / wip #IValueConverter")]
-        public new TVal GetBestValue<TVal>(string name)
-            => ChangeTypeOrDefault<TVal>(GetBestValue(name));
+        public new TVal GetBestValue<TVal>(string name) => ChangeTypeOrDefault<TVal>(GetBestValue(name));
 
         /// <inheritdoc />
-        public TVal GetBestValue<TVal>(string name, string[] languages)
-            => ChangeTypeOrDefault<TVal>(GetBestValue(name, languages));
+        public TVal GetBestValue<TVal>(string name, string[] languages) => ChangeTypeOrDefault<TVal>(GetBestValue(name, languages));
 
 
 
@@ -197,7 +212,6 @@ namespace ToSic.Eav.Data
 
         /// <inheritdoc />
         public string GetBestTitle(string[] dimensions) => GetBestTitle(dimensions, 0);
-
 
         /// <inheritdoc />
         internal string GetBestTitle(string[] dimensions, int recursionCount)
