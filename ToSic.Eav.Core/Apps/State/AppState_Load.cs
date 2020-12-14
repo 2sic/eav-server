@@ -32,7 +32,7 @@ namespace ToSic.Eav.Apps
             try
             {
                 // first set a lock, to ensure that only one update/load is running at the same time
-                lock (this)
+                //lock (this)
                 {
                     var inLockLog = Log.Call(null, "app loading start in lock");
 

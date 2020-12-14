@@ -20,7 +20,7 @@ namespace ToSic.Eav.Persistence.Efc
     /// It uses Entity Framework Core 1.1 which we use for .net 451 (DNN)
     /// It also works with the last Entity Framework 3, which we use for Oqtane etc.
     /// </summary>
-    public partial class Efc11Loader: HasLog, IRepositoryLoader
+    public partial class Efc11Loader
     {
         #region AppPackage
 

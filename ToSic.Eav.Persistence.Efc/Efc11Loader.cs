@@ -1,11 +1,13 @@
 ﻿using System;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Context;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.Efc.Models;
+using ToSic.Eav.Repositories;
 
 namespace ToSic.Eav.Persistence.Efc
 {
-    public partial class Efc11Loader
+    public partial class Efc11Loader: HasLog<IRepositoryLoader>, IRepositoryLoader
     {
         #region constructor and private vars
 
