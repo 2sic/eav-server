@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Threading;
 using ToSic.Eav.Context;
 using ToSic.Eav.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -17,16 +16,6 @@ namespace ToSic.Eav.LookUp
 	public class LookUpInEntity : LookUpIn<IEntity>
     {
         private readonly string[] _dimensions;
-
-	 //   /// <summary>
-	 //   /// Constructs a new Entity LookUp
-	 //   /// </summary>
-	 //   /// <param name="source"></param>
-	 //   /// <param name="name">Name of the LookUp, e.g. Settings</param>
-	 //   [Obsolete("You should use the constructor providing language information")]
-	 //   public LookUpInEntity(string name, IEntity source): this(name, source, null)
-  //      {
-		//}
 
         /// <summary>
         /// Constructs a new Entity LookUp

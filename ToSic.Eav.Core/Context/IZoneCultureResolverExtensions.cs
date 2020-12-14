@@ -2,7 +2,6 @@
 using System.Globalization;
 using System.Linq;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Context
 {
@@ -39,29 +38,19 @@ namespace ToSic.Eav.Context
 
         public static string[] SafeLanguagePriorityCodes(this IZoneCultureResolver resolver)
         {
-            // No resolver? just assume fallback only
             if (resolver == null) return new[] {SafeCurrentCultureCode(null), null};
-
-            return GenerateLanguagePriorities(resolver);// resolver.LanguagePriorityCodes;
-        }
-
-        public static string[] GenerateLanguagePriorities(this IZoneCultureResolver resolver)
-        {
-            var wrapLog = (resolver as IHasLog)?.Log.Call();
 
             var priorities = new List<string>();
             // First priority: current culture
-            if (!string.IsNullOrWhiteSpace(resolver?.CurrentCultureCode)) 
+            if (!string.IsNullOrWhiteSpace(resolver.CurrentCultureCode)) 
                 priorities.Add(SafeCurrentCultureCode(resolver));
             // Second priority: Fallback culture
-            if (!string.IsNullOrWhiteSpace(resolver?.DefaultCultureCode))
+            if (!string.IsNullOrWhiteSpace(resolver.DefaultCultureCode))
                 priorities.Add(resolver.DefaultCultureCode.ToLowerInvariant());
             // last priority: the null-entry, meaning that it should just pick anything
             priorities.Add(null);
 
-            var priorityArray = priorities.ToArray();
-            wrapLog?.Invoke(string.Join(",", priorityArray));
-            return priorityArray;
+            return priorities.ToArray();
         }
 
         #endregion

@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-using System.Linq;
-using System.Threading;
+﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources;
 using ToSic.Testing.Shared;
@@ -23,10 +21,6 @@ namespace ToSic.Eav.DataSourceTests
         {
             _valueFilterMaker = Resolve<ValueFilterMaker>();
             _testDataGeneratedOutsideTimer = _valueFilterMaker.CreateValueFilterForTesting(TestVolume, true);
-
-            // Set the thread culture, as some comparisons need the current culture to be en-US
-            // 2020-12-06 2dm turn this off, we're not using currentCulture any more
-            //Thread .CurrentThread .CurrentCulture = CultureInfo.GetCultureInfo(EnUs);
         }
 
         private ValueFilter GetFilter(bool table, bool ml, string field, string compare = null, string value = null)
