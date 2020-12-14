@@ -23,7 +23,7 @@ namespace ToSic.Eav.Apps.Parts
         {
             _db = db;
             _appManager = appManager;
-            _repositoryLoader = repositoryLoader;
+            _repositoryLoader = repositoryLoader.Init(Log);
         }
 
         public AppCreator Init(int zoneId, ILog parentLog)
@@ -49,7 +49,7 @@ namespace ToSic.Eav.Apps.Parts
             var appId = CreateInDb();
 
             // must get app from DB directly, not from cache, so no State.Get(...)
-            var appState = _repositoryLoader.AppState(appId, false, Log);
+            var appState = _repositoryLoader.AppState(appId, false);
 
             new AppInitializer(_appManager.ServiceProvider)
                 .Init(appState, Log)

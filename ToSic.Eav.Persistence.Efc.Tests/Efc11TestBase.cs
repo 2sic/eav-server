@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc.Models;
-using ToSic.Eav.Plumbing;
 using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.Persistence.Efc.Tests
@@ -32,6 +29,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
             Trace.Write("initializing DB & loader");
             Db = EavTestBase.Resolve<EavDbContext>();
             Loader = NewLoader();
+            Loader.Init(Log);
         }
 
         public Efc11Loader NewLoader() => EavTestBase.Resolve<Efc11Loader>().UseExistingDb(Db);
@@ -39,7 +37,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
 
         protected JsonSerializer SerializerOfApp(int appId)
         {
-            var app = Loader.AppState(appId);
+            var app = Loader.AppState(appId, false);
             return EavTestBase.Resolve<JsonSerializer>().Init(app, Log);
         }
 

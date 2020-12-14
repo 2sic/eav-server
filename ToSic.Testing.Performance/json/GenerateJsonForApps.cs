@@ -32,7 +32,7 @@ namespace ToSic.Testing.Performance.json
 
         public void LoadApp()
         {
-            Package = Loader.AppState(TestAppId, Log);   
+            Package = Loader.AppState(TestAppId, false);   
         }
 
         internal AppState Package;
@@ -58,7 +58,7 @@ namespace ToSic.Testing.Performance.json
         /// <param name="appid"></param>
         private void GenerateJsonForAllEntitiesOfApp(int appid)
         {
-            var package = Loader.AppState(appid);
+            var package = Loader.AppState(appid, false);
             var ser = EavTestBase.Resolve<JsonSerializer>().Init(package, Log);
             var upd = package.List.ToDictionary(e => e.EntityId, e => ser.Serialize(e));
 

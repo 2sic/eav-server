@@ -68,7 +68,7 @@ namespace ToSic.Eav.ImportExport.Tests.json
         private void Test_DoubleExportAllOfAnApp(int appId)
         {
             var loader = _loader; 
-            var app = loader.AppState(appId);
+            var app = loader.AppState(appId, false);
             var exBuilder = _jsonSerializer.Init(app, Log);
 
             var maxCount = 1000;

@@ -119,7 +119,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
 
         }
 
-        private AppState TestLoadApp(int appId) => Loader.AppState(appId);
+        private AppState TestLoadApp(int appId) => Loader.AppState(appId, false);
 
         private IList<IContentType> TestLoadCts(int appId) => Loader.ContentTypes(appId, null);
     }

@@ -57,8 +57,6 @@ namespace ToSic.Eav.Apps.ImportExport
         #endregion
 
         #region Private Fields
-        //private readonly DbDataController _dbDeepAccess;
-        //private AppState _entireApp;
 
         internal IStorage Storage;
         public SaveOptions SaveOptions;
@@ -67,14 +65,6 @@ namespace ToSic.Eav.Apps.ImportExport
         private int ZoneId;
 
         #endregion
-
-        ///// <summary>
-        ///// Initializes a new instance of the Import class.
-        ///// </summary>
-        //public Import(bool skipExistingAttributes = true, bool preserveUntouchedAttributes = true, ILog parentLog = null): base("Eav.Import", parentLog, "constructor")
-        //{
-        //    // now save the resolved zone/app IDs
-        //}
 
         /// <summary>
         /// Import AttributeSets and Entities
@@ -98,7 +88,7 @@ namespace ToSic.Eav.Apps.ImportExport
                             var logImpTypes = Log.Call(message: "Import Types in Sys-Scope", useTimer: true);
                             // load everything, as content-type metadata is normal entities
                             // but disable initialized, as this could cause initialize stuff we're about to import
-                            var appStateTemp = Storage.Loader.AppState(AppId, false, Log); 
+                            var appStateTemp = Storage.Loader.AppState(AppId, false); 
                             var newSetsList = newTypes.ToList();
                             // first: import the attribute sets in the system scope, as they may be needed by others...
                             // ...and would need a cache-refresh before 
@@ -114,7 +104,7 @@ namespace ToSic.Eav.Apps.ImportExport
                             logImpTypes = Log.Call(message: "Import Types in non-Sys scopes", useTimer: true);
                             // now reload the app state as it has new content-types
                             // and it may need these to load the remaining attributes of the content-types
-                            appStateTemp = Storage.Loader.AppState(AppId, false, Log);
+                            appStateTemp = Storage.Loader.AppState(AppId, false);
 
                             // now the remaining attributeSets
                             var nonSysAttribSets = newSetsList.Where(a => !sysAttributeSets.Contains(a)).ToList();
@@ -133,7 +123,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 else
                 {
                     var logImpEnts = Log.Call(message: "Pre-Import Entities merge", useTimer: true);
-                    var appStateTemp = Storage.Loader.AppState(AppId, false, Log); // load all entities
+                    var appStateTemp = Storage.Loader.AppState(AppId, false); // load all entities
                     newEntities = newEntities
                         .Select(entity => CreateMergedForSaving(entity, appStateTemp, SaveOptions))
                         .Where(e => e != null).ToList();

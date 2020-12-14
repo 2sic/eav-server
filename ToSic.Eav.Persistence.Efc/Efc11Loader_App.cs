@@ -2,13 +2,8 @@
 using System.Diagnostics;
 using System.Linq;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Context;
 using ToSic.Eav.Data;
-using ToSic.Eav.Logging;
-using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Plumbing;
-using ToSic.Eav.Repositories;
-using ToSic.Eav.Run;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.Types;
 using AppState = ToSic.Eav.Apps.AppState;
@@ -24,20 +19,25 @@ namespace ToSic.Eav.Persistence.Efc
     {
         #region AppPackage
 
-        /// <inheritdoc />
-        public AppState AppState(int appId, ILog parentLog = null)
+        /// <summary>
+        /// Load the full AppState from the backend - in an un-initialized state (without folder / name etc.).
+        /// This is mostly for internal operations where initialization would cause trouble or unexpected side-effects.
+        /// </summary>
+        /// <param name="appId">AppId (can be different than the appId on current context (e.g. if something is needed from the default appId, like MetaData)</param>
+        /// <returns>An object with everything which an app has, usually for caching</returns>
+        public AppState LoadBasicAppState(int appId)
         {
             var appIdentity = State.Identity(null, appId);
             var appGuidName = State.Cache.Zones[appIdentity.ZoneId].Apps[appIdentity.AppId];
-            var appState = Update(new AppState(appIdentity, appGuidName, parentLog), AppStateLoadSequence.Start, null, parentLog);
+            var appState = Update(new AppState(appIdentity, appGuidName, Log), AppStateLoadSequence.Start, null);
 
             return appState;
         }
 
         /// <inheritdoc />
-        public AppState AppState(int appId, bool ensureInitialized, ILog parentLog = null)
+        public AppState AppState(int appId, bool ensureInitialized)
         {
-            var appState = AppState(appId, parentLog);
+            var appState = LoadBasicAppState(appId);
             if (!ensureInitialized) return appState;
 
             // Note: Ignore ensureInitialized on the content app
@@ -48,17 +48,15 @@ namespace ToSic.Eav.Persistence.Efc
             if (appState.AppGuidName == Constants.DefaultAppName) return appState;
 
             return _initializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(appState, null, Log)
-                ? AppState(appId, parentLog)
+                ? LoadBasicAppState(appId)
                 : appState;
         }
 
-        public AppState Update(AppState app, AppStateLoadSequence startAt, int[] entityIds = null, ILog parentLog = null)
+        public AppState Update(AppState app, AppStateLoadSequence startAt, int[] entityIds = null)
         {
-            if (parentLog == null) parentLog = Log;
-            else Log.LinkTo(parentLog);
-            var outerWrapLog = parentLog.Call<AppState>();
+            var outerWrapLog = Log.Call<AppState>();
 
-            app.Load(parentLog, () =>
+            app.Load(Log, () =>
             {
                 var msg = $"get app data package for a#{app.AppId}, startAt: {startAt}, ids only:{entityIds != null}";
                 var wrapLog = Log.Call(message: msg, useTimer: true);

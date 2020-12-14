@@ -12,7 +12,6 @@ using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Repository.Efc.Parts;
-using ToSic.Eav.Run;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Repository.Efc
@@ -255,7 +254,7 @@ namespace ToSic.Eav.Repository.Efc
         /// The loader must use the same connection, to ensure it runs in existing transactions.
         /// Otherwise the loader would be blocked from getting intermediate data while we're running changes. 
         /// </summary>
-        public IRepositoryLoader Loader => _loader ?? (_loader = _efcLoaderLazy.Value.UseExistingDb(SqlDb));
+        public IRepositoryLoader Loader => _loader ?? (_loader = _efcLoaderLazy.Value.UseExistingDb(SqlDb).Init(Log));
         private IRepositoryLoader _loader;
 
         public void DoWhileQueuingVersioning(Action action) => Versioning.DoAndSaveHistoryQueue(action);

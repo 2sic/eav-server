@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Core.Tests;
 using ToSic.Eav.Data;
-using ToSic.Eav.Data.Builder;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence;
@@ -48,7 +45,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
             // load an entity
             var loader1 = _loader1.UseExistingDb(dbi.SqlDb);
-            var app1 = loader1.AppState(test.AppId);
+            var app1 = loader1.AppState(test.AppId, false);
             var itm1 = app1.List.One(test.ItemOnHomeId);
 
             // save it
@@ -56,7 +53,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
             // re-load it
             var loader2 = _loader2.UseExistingDb(dbi.SqlDb); // use existing db context because the transaction is still open
-            var app2 = loader2.AppState(test.AppId);
+            var app2 = loader2.AppState(test.AppId, false);
             var itm2 = app2.List.One(test.ItemOnHomeId);
 
 
@@ -79,7 +76,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
             // todo: load a simple, 1 language entity
             var loader1 = _loader1.UseExistingDb(dbi.SqlDb);
-            var app1 = loader1.AppState(test.AppId);
+            var app1 = loader1.AppState(test.AppId, false);
             var itm1 = app1.List.One(test.ItemOnHomeId);
 
             // todo: make some minor changes
@@ -94,7 +91,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
             // reload it
             var loader2 = _loader2.UseExistingDb(dbi.SqlDb); // use existing db context because the transaction is still open
-            var app2 = loader2.AppState(test.AppId);
+            var app2 = loader2.AppState(test.AppId, false);
             var itm2 = app2.List.One(test.ItemOnHomeId);
 
 
@@ -120,7 +117,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
             // load content type to start creating an item...
             var loader1 = _loader1.UseExistingDb(dbi.SqlDb);
-            var app1 = loader1.AppState(test.AppId);
+            var app1 = loader1.AppState(test.AppId, false);
             var ct1 = app1.GetContentType(ctName);
 
             var newE = new Entity(test.AppId, Guid.NewGuid(), ct1, new Dictionary<string, object>
@@ -135,7 +132,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
             // reload it
             var loader2 = _loader2.UseExistingDb(dbi.SqlDb); // use existing db context because the transaction is still open
-            var app2 = loader2.AppState(test.AppId);
+            var app2 = loader2.AppState(test.AppId, false);
             var itm2 = app2.List.One(newId.First());
 
             Assert.AreEqual(itm2.GetBestTitle(), ctTitle, "title should be loaded as saved" );
