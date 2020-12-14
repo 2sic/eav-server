@@ -99,7 +99,7 @@ namespace ToSic.Eav.Api.Api01
             // ensure it's case insensitive...
             values = new Dictionary<string, object>(values, StringComparer.OrdinalIgnoreCase);
 
-            if (values.All(v => v.Key.ToLower() != Constants.EntityFieldGuid))
+            if (values.All(v => v.Key.ToLowerInvariant() != Constants.EntityFieldGuid))
             {
                 Log.Add("add guid");
                 values.Add(Constants.EntityFieldGuid, Guid.NewGuid());
@@ -175,7 +175,7 @@ namespace ToSic.Eav.Api.Api01
             foreach (var value in values)
             {
                 // Handle special attributes (for example of the system)
-                if (value.Key.ToLower() == Constants.EntityFieldIsPublished)
+                if (value.Key.ToLowerInvariant() == Constants.EntityFieldIsPublished)
                 {
                     entity.IsPublished = value.Value as bool? ?? true;
                     Log.Add($"isPublished: {entity.IsPublished}");
@@ -183,7 +183,7 @@ namespace ToSic.Eav.Api.Api01
                 }
 
                 // Ignore entity guid - it's already set earlier
-                if (value.Key.ToLower() == Constants.EntityFieldGuid)
+                if (value.Key.ToLowerInvariant() == Constants.EntityFieldGuid)
                 {
                     Log.Add("entity-guid, ignore here");
                     continue;

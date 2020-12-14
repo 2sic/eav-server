@@ -105,7 +105,7 @@ namespace ToSic.Eav.DataSources
 		public string CompareMode
 		{
 			get => Configuration[CompareModeKey];
-		    set => Configuration[CompareModeKey] = value.ToLower();
+		    set => Configuration[CompareModeKey] = value.ToLowerInvariant();
 		}
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace ToSic.Eav.DataSources
 		public string Separator
 		{
 			get => Configuration[SeparatorKey];
-		    set => Configuration[SeparatorKey] = value.ToLower();
+		    set => Configuration[SeparatorKey] = value.ToLowerInvariant();
 		}
 
         /// <summary>
@@ -125,8 +125,8 @@ namespace ToSic.Eav.DataSources
 			get => Configuration[ChildOrParentKey];
 		    set
 			{
-				if (_directionPossibleValues.Contains(value.ToLower()))
-					Configuration[ChildOrParentKey] = value.ToLower();
+				if (_directionPossibleValues.Contains(value.ToLowerInvariant()))
+					Configuration[ChildOrParentKey] = value.ToLowerInvariant();
 				else
 					throw new Exception("Value '" + value + "'not allowed for ChildOrParent");
 			}
@@ -168,8 +168,8 @@ namespace ToSic.Eav.DataSources
 
             var relationship = Relationship;
 			var compAttr = CompareAttribute;
-			var filter = Filter.ToLower(); // new: make case insensitive
-			var strMode = CompareMode.ToLower();
+			var filter = Filter.ToLowerInvariant(); // new: make case insensitive
+			var strMode = CompareMode.ToLowerInvariant();
 		    var useNot = strMode.StartsWith(PrefixNot);
 		    if (useNot) strMode = strMode.Substring(PrefixNot.Length);
 
@@ -180,12 +180,12 @@ namespace ToSic.Eav.DataSources
 			var childParent = ChildOrParent;
 			if (!_directionPossibleValues.Contains(childParent)) // != "child")
 				throw new Exception("can only find related children at the moment, must set ChildOrParent to 'child'");
-			//var lang = Languages.ToLower();
+			//var lang = Languages.ToLowerInvariant();
 			//if (lang != "default")
 			//	throw new Exception("Can't filter for languages other than 'default'");
 			//if (lang == "default") lang = ""; // no language is automatically the default language
 
-		    var lowAttribName = compAttr.ToLower();
+			var lowAttribName = compAttr.ToLowerInvariant();
 		    Log.Add($"get related on relationship:'{relationship}', filter:'{filter}', rel-field:'{compAttr}' mode:'{mode}', child/parent:'{childParent}'");
 
 			var originals = In[Constants.DefaultStreamName].Immutable;
@@ -301,7 +301,7 @@ namespace ToSic.Eav.DataSources
 	                {
 	                    try
 	                    {
-	                        return e?[fieldName]?[0]?.ToString().ToLower();
+	                        return e?[fieldName]?[0]?.ToString().ToLowerInvariant();
 	                    }
 	                    catch
 	                    {
@@ -315,7 +315,7 @@ namespace ToSic.Eav.DataSources
 	                return e => e?.EntityId.ToString();
                 case CompareType.Title:
                     Log.Add("will compare no title");
-                    return e => e?.Title?[0]?.ToString().ToLower();
+                    return e => e?.Title?[0]?.ToString().ToLowerInvariant();
 	            // ReSharper disable once RedundantCaseLabel
                 case CompareType.Auto:
 	            default:

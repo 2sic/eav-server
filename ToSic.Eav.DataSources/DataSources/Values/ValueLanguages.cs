@@ -37,7 +37,7 @@ namespace ToSic.Eav.DataSources
         /// <returns></returns>
         internal string[] PrepareLanguageList(string languages, ILog log)
         {
-            var lang = languages.ToLower().Trim();
+            var lang = languages.ToLowerInvariant().Trim();
 
             var wrapLog = log.Call<string[]>(lang);
 

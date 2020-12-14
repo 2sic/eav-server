@@ -73,7 +73,7 @@ namespace ToSic.Eav.DataSourceTests
         public void ValueFilter_SimpleTextFilterCIDefault()
         {
             var vf = GetFilter(true, false, FieldCity);
-            vf.Value = City1.ToLower(); // test for the first value
+            vf.Value = City1.ToLowerInvariant(); // test for the first value
             Assert.AreEqual(Quarter, vf.List.Count(), "Should find exactly 2500 people with this city");
         }
 
@@ -90,7 +90,7 @@ namespace ToSic.Eav.DataSourceTests
         {
             var vf = GetFilter(true, false, FieldCity, "===");
             //vf.Operator = "===";
-            vf.Value = City1.ToLower(); // test for the first value
+            vf.Value = City1.ToLowerInvariant(); // test for the first value
             Assert.AreEqual(0, vf.List.Count(), "Should find exactly 0 people with this city");
         }
 

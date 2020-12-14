@@ -55,15 +55,15 @@ namespace ToSic.Eav.Apps
         private int AppIdFromFolderName(string folderName)
         {
             var wrapLog = Log.Call<int>(folderName);
-            var nameLower = folderName.ToLower();
+            var nameLower = folderName.ToLowerInvariant();
 
             var idOfAppWithMatchingName = -1;
             foreach (var p in State.Zones[ZoneId].Apps)
             {
                 var appState = State.Get(new AppIdentity(ZoneId, p.Key));
-                if (!string.IsNullOrEmpty(appState.Folder) && appState.Folder.ToLower() == nameLower)
+                if (!string.IsNullOrEmpty(appState.Folder) && appState.Folder.ToLowerInvariant() == nameLower)
                     return wrapLog("folder matched", p.Key);
-                if (!string.IsNullOrEmpty(appState.Name) && appState.Name.ToLower() == nameLower)
+                if (!string.IsNullOrEmpty(appState.Name) && appState.Name.ToLowerInvariant() == nameLower)
                     idOfAppWithMatchingName = p.Key;
             }
             

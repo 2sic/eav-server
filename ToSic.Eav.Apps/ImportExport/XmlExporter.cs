@@ -53,7 +53,7 @@ namespace ToSic.Eav.Apps.ImportExport
             Log.LinkTo(parentLog);
             Log.Add("start XML exporter using app-package");
             AppState = app.AppState;
-            Serializer.Init(app.Zone.Languages().ToDictionary(l => l.EnvironmentKey.ToLower(), l => l.DimensionId),
+            Serializer.Init(app.Zone.Languages().ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.DimensionId),
                 AppState, Log);
 
             _appStaticName = appStaticName;

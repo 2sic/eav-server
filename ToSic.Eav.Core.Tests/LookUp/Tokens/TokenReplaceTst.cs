@@ -263,10 +263,10 @@ Now try a token which returns a token: Daniel";
             tok.Properties.Add("key", "What a Token!");
             //var sources = new Dictionary<string, ILookUp>
             //{
-            //    {qs.Name.ToLower(), qs},
-            //    {mod.Name.ToLower(), mod},
-            //    {appS.Name.ToLower(), appS},
-            //    {tok.Name.ToLower(), tok}
+            //    {qs.Name.ToLowerInvariant(), qs},
+            //    {mod.Name.ToLowerInvariant(), mod},
+            //    {appS.Name.ToLowerInvariant(), appS},
+            //    {tok.Name.ToLowerInvariant(), tok}
             //};
             var engine = new LookUpEngine(null);
             engine.Add(qs);

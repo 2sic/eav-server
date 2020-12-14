@@ -40,7 +40,7 @@ namespace ToSic.Eav.ImportExport.Tests
 
             var app = Resolve<Efc11Loader>().AppState(test.AppId);
             var zone = new ZoneRuntime().Init(test.ZoneId, Log);
-            var languageMap = zone.Languages().ToDictionary(l => l.EnvironmentKey.ToLower(), l => l.DimensionId);
+            var languageMap = zone.Languages().ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.DimensionId);
             var exBuilder = _xmlSerializer.Init(languageMap, app, Log);
             var xmlEnt = exBuilder.Serialize(test.ItemOnHomeId);
             Assert.IsTrue(xmlEnt.Length > 200, "should get a long xml string");
@@ -56,7 +56,7 @@ namespace ToSic.Eav.ImportExport.Tests
             var appId = test.BlogAppId;
             var app = Resolve<Efc11Loader>().AppState(appId);
             var zone = new ZoneRuntime().Init(test.ZoneId, Log);
-            var languageMap = zone.Languages().ToDictionary(l => l.EnvironmentKey.ToLower(), l => l.DimensionId);
+            var languageMap = zone.Languages().ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.DimensionId);
             var exBuilder = _xmlSerializer.Init(languageMap, app, Log);
 
             var maxCount = 500;

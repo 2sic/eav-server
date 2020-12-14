@@ -101,7 +101,7 @@
 //        #region General test objects and initializer/constructor
 
 //        private readonly Regex tokenRegEx = TokenReplace.Tokenizer;
-         
+
 
 //        public Tst_TokenReplace()
 //        {
@@ -199,7 +199,7 @@
 
 //                var count = CountSpecificResultTypes(results, "${object}");
 //                Assert.IsTrue(count == 0, "Shouldn't find object - but did: " + testToken);
-                
+
 //            }
 //        }
 //        #endregion
@@ -230,7 +230,7 @@
 //and a [bad token without property] and a [Source::SubkeyWithoutKey]
 //but this should [token:key] again
 //Now try a token which returns a token: [AppSettings:UserNameMaybeFromUrl||Johny]";
-            
+
 //            // Even without recurrence it should process the fallback-token at least once
 //            var expectedNoRecurrance =
 //                @"Select * From Users Where UserId = Daniel or UserId = -1 or UserId = 27
@@ -262,10 +262,10 @@
 //            var tok = new LookUpInDictionary("token");
 //            tok.Properties.Add("key", "What a Token!");
 //            var sources = new Dictionary<string, ILookUp>();
-//            sources.Add(qs.Name.ToLower(),qs);
-//            sources.Add(mod.Name.ToLower(), mod);
-//            sources.Add(appS.Name.ToLower(), appS);
-//            sources.Add(tok.Name.ToLower(), tok);
+//            sources.Add(qs.Name.ToLowerInvariant(),qs);
+//            sources.Add(mod.Name.ToLowerInvariant(), mod);
+//            sources.Add(appS.Name.ToLowerInvariant(), appS);
+//            sources.Add(tok.Name.ToLowerInvariant(), tok);
 
 //            var tr = new TokenReplace(sources);
 //            var resultNoRecurrance = tr.ReplaceTokens(original);

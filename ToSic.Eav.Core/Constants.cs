@@ -160,7 +160,7 @@ namespace ToSic.Eav
 
         public static bool InternalOnlyIsSpecialEntityProperty(string name)
         {
-            switch (name.ToLower())
+            switch (name.ToLowerInvariant())
             {
                 case EntityFieldTitle:
                 case EntityFieldId:
