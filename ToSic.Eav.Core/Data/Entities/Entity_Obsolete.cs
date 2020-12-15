@@ -1,7 +1,7 @@
-﻿using System;
+﻿#if NETFRAMEWORK
+using System;
 using ToSic.Eav.Documentation;
 
-#if NETFRAMEWORK
 namespace ToSic.Eav.Data
 {
     public partial class Entity
@@ -22,6 +22,20 @@ namespace ToSic.Eav.Data
                 ? TryToResolveLink(EntityGuid, strResult)
                 : result;
         }
+
+        [PrivateApi]
+        [Obsolete("Deprecated. Do not use any more, as it cannot reliably know the real language list. Use GetBestValue(name, languageList)")]
+        public new object GetBestValue(string attributeName) => GetBestValue(attributeName, new string[0]);
+
+        // 2020-10-30 trying to drop uses with ResolveHyperlinks
+        ///// <inheritdoc />
+        //public new TVal GetBestValue<TVal>(string name, bool resolveHyperlinks/* = false*/)
+        //    => ChangeTypeOrDefault<TVal>(GetBestValue(name, resolveHyperlinks));
+
+        [PrivateApi]
+        [Obsolete("Deprecated. Do not use any more, as it cannot reliably resolve hyperlinks.")]
+        public new TVal GetBestValue<TVal>(string name) => ChangeTypeOrDefault<TVal>(GetBestValue(name));
+
 
         [PrivateApi]
         [Obsolete("Obsolete, was in DNN, shouldn't be supported any more - use overload without resolveHyperlink")]

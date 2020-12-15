@@ -1,8 +1,8 @@
-﻿using System;
+﻿#if NETFRAMEWORK
+using System;
 using ToSic.Eav.Documentation;
 
 // Old stuff for compatibility with DNN, should not bleed into Oqtane
-#if NETFRAMEWORK
 namespace ToSic.Eav.Data
 {
     public partial class EntityDecorator

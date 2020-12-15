@@ -1,10 +1,10 @@
-﻿using System;
+﻿#if NETFRAMEWORK
+using System;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 
 // This is old stuff / compatibility necessary for DNN
 // It should not bleed into Oqtane or newer implementations
-#if NETFRAMEWORK
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Interfaces

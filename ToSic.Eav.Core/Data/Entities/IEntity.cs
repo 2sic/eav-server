@@ -24,7 +24,7 @@ namespace ToSic.Eav.Data
         /// An object OR a null - for example when retrieving the title and no title exists
         /// the object is string, int or even a EntityRelationship
         /// </returns>
-#if NET451
+#if NETFRAMEWORK
         new 
 #endif
             object GetBestValue(string attributeName, string[] languages);
@@ -40,7 +40,7 @@ namespace ToSic.Eav.Data
         /// An object OR a null - for example when retrieving the title and no title exists
         /// the object is string, int or even a EntityRelationship
         /// </returns>
-#if NET451
+#if NETFRAMEWORK
         new
 #endif
             T GetBestValue<T>(string attributeName, string[] languages);
@@ -57,7 +57,7 @@ namespace ToSic.Eav.Data
         /// </summary>
         /// <param name="dimensions">Array of dimensions/languages to use in the lookup</param>
         /// <returns>The entity title as a string</returns>
-#if NET451
+#if NETFRAMEWORK
         new
 #endif
             string GetBestTitle(string[] dimensions);
@@ -65,7 +65,7 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// All the attributes of the current Entity.
         /// </summary>
-#if NET451
+#if NETFRAMEWORK
         new
 #endif
             Dictionary<string, IAttribute> Attributes { get; }
@@ -91,7 +91,7 @@ namespace ToSic.Eav.Data
         /// version of this entity in the repository
         /// </summary>
         /// <returns>The version number.</returns>
-#if NET451
+#if NETFRAMEWORK
         new
 #endif
             int Version { get; }
@@ -104,7 +104,7 @@ namespace ToSic.Eav.Data
         /// The metadata is either already prepared, from the same app, or from a remote app
         /// </remarks>
         /// <returns>A typed Metadata provider for this Entity</returns>
-#if NET451
+#if NETFRAMEWORK
         new
 #endif
             IMetadataOf Metadata { get; }
@@ -117,7 +117,7 @@ namespace ToSic.Eav.Data
         /// <param name="field">Optional field name to access</param>
         /// <param name="type">Optional type to filter for</param>
         /// <returns>List of children, or empty list if not found</returns>
-#if NET451
+#if NETFRAMEWORK
         new
 #endif
             List<IEntity> Children(string field = null, string type = null);
@@ -128,7 +128,7 @@ namespace ToSic.Eav.Data
         /// <param name="type">The type name to filter for</param>
         /// <param name="field">The field name where a parent references this item</param>
         /// <returns>List of children, or empty list if not found</returns>
-#if NET451
+#if NETFRAMEWORK
         new
 #endif
             List<IEntity> Parents(string type = null, string field = null);

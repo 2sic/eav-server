@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if NETFRAMEWORK
+using System;
 using System.Collections.Generic;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
@@ -7,7 +8,6 @@ using ToSic.Eav.Security;
 
 // This is old stuff / compatibility necessary for DNN
 // It should not bleed into Oqtane or newer implementations
-#if NETFRAMEWORK
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Interfaces
