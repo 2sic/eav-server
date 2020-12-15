@@ -56,7 +56,7 @@ namespace ToSic.Eav.Persistence.File.Tests
             var conMetaStr = conMeta.FirstOrDefault(e => e.Type.Name == "@string-default");
             Assert.IsNotNull(conMetaStr, "should have string metadata");
 
-            var lines = (decimal)conMetaStr.GetBestValue("RowCount");
+            var lines = (decimal)conMetaStr.Value("RowCount");
             Assert.AreEqual(3, lines);
         }
 
@@ -76,16 +76,16 @@ namespace ToSic.Eav.Persistence.File.Tests
             var conMetaAll = meta.FirstOrDefault(e => e.Type.Name == "Basics");
             Assert.IsNotNull(conMetaAll, "should have Basics metadata");
 
-            var niceName = (string)conMetaAll.GetBestValue("NiceName");
+            var niceName = conMetaAll.Value<string>("NiceName");
             Assert.AreEqual("sql content type", niceName);
-            var active = (bool)conMetaAll.GetBestValue("Active");
+            var active = conMetaAll.Value<bool>("Active");
             Assert.IsTrue(active, "should have an active-info");
 
 
             var conMetaStr = meta.FirstOrDefault(e => e.Type.Name == "Enhancements");
             Assert.IsNotNull(conMetaStr, "should have Enhancements metadata");
 
-            var icon = (string)conMetaStr.GetBestValue("Icon");
+            var icon = conMetaStr.Value<string>("Icon");
             Assert.AreEqual("icon.png", icon);
         }
 

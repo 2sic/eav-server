@@ -67,17 +67,6 @@ namespace ToSic.Eav.Data
 		/// <returns>The <see cref="IRelationshipManager"/> in charge of relationships for this Entity.</returns>
         IRelationshipManager Relationships { get; }
 
-	    /// <summary>
-	    /// Retrieves the best possible value for an attribute or virtual attribute (like EntityTitle)
-	    /// Automatically resolves the language-variations as well based on the list of preferred languages
-	    /// </summary>
-	    /// <param name="attributeName">Name of the attribute or virtual attribute</param>
-	    /// <returns>
-	    /// An object OR a null - for example when retrieving the title and no title exists
-		/// the object is string, int or even a EntityRelationship
-		/// </returns>
-        object GetBestValue(string attributeName);
-
 		[PrivateApi("Testing / wip #IValueConverter")]
         TVal GetBestValue<TVal>(string name);
 

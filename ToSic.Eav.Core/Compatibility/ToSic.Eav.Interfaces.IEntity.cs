@@ -135,10 +135,11 @@ namespace ToSic.Eav.Interfaces
         [PrivateApi]
         List<Data.IEntity> Parents(string type = null, string field = null);
 
-        [PrivateApi]
-        object Value(string field, bool resolve = true);
-        [PrivateApi]
-        T Value<T>(string field, bool resolve = true);
+        // 2020-12-15 2dm disabled, don't think it was ever in use
+        //[PrivateApi]
+        //object Value(string field, bool resolve = true);
+        //[PrivateApi]
+        //T Value<T>(string field, bool resolve = true);
 
         #endregion
     }

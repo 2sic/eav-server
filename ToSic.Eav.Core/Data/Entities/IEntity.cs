@@ -45,11 +45,12 @@ namespace ToSic.Eav.Data
 #endif
             T GetBestValue<T>(string attributeName, string[] languages);
 
-        [WorkInProgressApi("Still wip")]
-        object PrimaryValue(string attributeName);
+        // 2020-12-15 disabled - I believe it was never in use
+        //[WorkInProgressApi("Still wip")]
+        //object PrimaryValue(string attributeName);
 
-        [WorkInProgressApi("Still wip")]
-        T PrimaryValue<T>(string attributeName);
+        //[WorkInProgressApi("Still wip")]
+        //T PrimaryValue<T>(string attributeName);
 
         /// <summary>
         /// Best way to get the current entities title
@@ -132,11 +133,34 @@ namespace ToSic.Eav.Data
 #endif
             List<IEntity> Parents(string type = null, string field = null);
 
+        /// <summary>
+        /// Get the value of this field as an object.
+        /// This overload without languages will always return the first value it finds,
+        /// so if the data is multi-lingual, it's not reliable. This is preferred for internal work
+        /// for configuration objects and similar which are not multi-language. 
+        /// </summary>
+        /// <remarks>
+        /// In addition to the fields this Entity has (like FirstName, etc.) you can also use known terms like EntityId, Modified etc.
+        /// </remarks>
+        /// <param name="fieldName"></param>
+        /// <returns>The value or null if not found</returns>
         [PrivateApi]
-        object Value(string field);
+        object Value(string fieldName);
 
+        /// <summary>
+        /// Get the value of this field in a type-safe way.
+        /// This overload without languages will always return the first value it finds,
+        /// so if the data is multi-lingual, it's not reliable. This is preferred for internal work
+        /// for configuration objects and similar which are not multi-language. 
+        /// </summary>
+        /// <remarks>
+        /// In addition to the fields this Entity has (like FirstName, etc.) you can also use known terms like EntityId, Modified etc.
+        /// </remarks>
+        /// <typeparam name="T">The type, usually string, int, bool, etc.</typeparam>
+        /// <param name="fieldName"></param>
+        /// <returns>The typed value or the (default) value - so a null for strings, false for boolean etc.</returns>
         [PrivateApi]
-        T Value<T>(string field);
+        T Value<T>(string fieldName);
 
         #endregion
     }

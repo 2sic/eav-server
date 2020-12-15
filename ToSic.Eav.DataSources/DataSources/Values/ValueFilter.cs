@@ -149,14 +149,15 @@ namespace ToSic.Eav.DataSources
 
                 var firstEntity = Constants.InternalOnlyIsSpecialEntityProperty(_initializedAttrName)
                     ? originals.FirstOrDefault()
-                    : originals.FirstOrDefault(x => x.Attributes.ContainsKey(_initializedAttrName) && x.GetBestValue(_initializedAttrName) != null);
+                    : originals.FirstOrDefault(x => x.Attributes.ContainsKey(_initializedAttrName) 
+                                                    && x.Value(_initializedAttrName) != null);
 
                 // if I can't find any, return empty list
                 if (firstEntity == null)
                     return ImmutableArray<IEntity>.Empty;
 
                 // New mechanism because the filter ignores internal properties like Modified, EntityId etc.
-                var firstAtt = firstEntity.GetBestValue(_initializedAttrName);  // this should get everything, incl. modified, EntityId, EntityGuid etc.
+                var firstAtt = firstEntity.Value(_initializedAttrName);  // this should get everything, incl. modified, EntityId, EntityGuid etc.
                 var netTypeName = firstAtt?.GetType().Name ?? "Null";
                 switch (netTypeName)
                 {

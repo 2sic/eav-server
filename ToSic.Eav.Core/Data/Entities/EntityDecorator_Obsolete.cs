@@ -2,7 +2,7 @@
 using ToSic.Eav.Documentation;
 
 // Old stuff for compatibility with DNN, should not bleed into Oqtane
-#if NET451
+#if NETFRAMEWORK
 namespace ToSic.Eav.Data
 {
     public partial class EntityDecorator
@@ -23,13 +23,14 @@ namespace ToSic.Eav.Data
         public T GetBestValue<T>(string attributeName, string[] languages, bool resolveHyperlinks)
             => Entity.GetBestValue<T>(attributeName, languages, resolveHyperlinks);
 
-        [PrivateApi]
-        [Obsolete("Obsolete, was in DNN, shouldn't be supported any more - use overload without resolveHyperlink")]
-        public object Value(string field, bool resolve) => Entity.Value(field, resolve);
+        // 2020-12-15 2dm disabled, don't think it was ever in use
+        //[PrivateApi]
+        //[Obsolete("Obsolete, was in DNN, shouldn't be supported any more - use overload without resolveHyperlink")]
+        //public object Value(string field, bool resolve) => Entity.Value(field, resolve);
 
-        [PrivateApi]
-        [Obsolete("Obsolete, was in DNN, shouldn't be supported any more - use overload without resolveHyperlink")]
-        public T Value<T>(string field, bool resolve) => Entity.Value<T>(field, resolve);
+        //[PrivateApi]
+        //[Obsolete("Obsolete, was in DNN, shouldn't be supported any more - use overload without resolveHyperlink")]
+        //public T Value<T>(string field, bool resolve) => Entity.Value<T>(field, resolve);
 
     }
 }

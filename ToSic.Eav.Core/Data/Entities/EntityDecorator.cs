@@ -72,9 +72,11 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         public string Owner => Entity.Owner;
 
-
-        [PrivateApi("Testing / wip #IValueConverter")]
+#if NETFRAMEWORK
+        [Obsolete("Deprecated. Do not use any more, as it cannot reliably know the real language list. Use GetBestValue(name, languageList)")]
+        [PrivateApi]
         public object GetBestValue(string attributeName) => Entity.GetBestValue(attributeName);
+#endif
 
         /// <inheritdoc />
         public object GetBestValue(string attributeName, string[] languages)
@@ -84,14 +86,14 @@ namespace ToSic.Eav.Data
         public T GetBestValue<T>(string attributeName, string[] languages) 
             => Entity.GetBestValue<T>(attributeName, languages);
 
+        // 2020-12-15 disabled - I believe it was never in use
+        //[PrivateApi("WIP new")]
+        //public object PrimaryValue(string attributeName) 
+        //    => Entity.PrimaryValue(attributeName);
 
-        [PrivateApi("WIP new")]
-        public object PrimaryValue(string attributeName) 
-            => Entity.PrimaryValue(attributeName);
-
-        [PrivateApi("wip new")]
-        public T PrimaryValue<T>(string attributeName) 
-            => Entity.PrimaryValue<T>(attributeName);
+        //[PrivateApi("wip new")]
+        //public T PrimaryValue<T>(string attributeName) 
+        //    => Entity.PrimaryValue<T>(attributeName);
 
         // 2020-10-30 trying to drop uses with ResolveHyperlinks
         ///// <inheritdoc />

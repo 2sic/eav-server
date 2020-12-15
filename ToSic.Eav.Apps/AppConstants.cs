@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.ImportExport;
-namespace ToSic.Eav.Apps
+﻿namespace ToSic.Eav.Apps
 {
     public static class AppConstants
     {
@@ -26,7 +25,8 @@ namespace ToSic.Eav.Apps
 
         public const string
             FieldName = AppLoadConstants.FieldName,
-            FieldFolder = AppLoadConstants.FieldName;
+            FieldFolder = AppLoadConstants.FieldName,
+            FieldHidden = "Hidden";
 
         #endregion
 

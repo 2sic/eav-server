@@ -250,7 +250,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             // check the titles as expected
             Assert.AreEqual(2, merged["Title"].Values.Count, "should have 2 titles with languages - EN and a shared DE+CH");
             Assert.AreEqual(2, merged["Title"].Values.Single(v => v.Languages.Any(l => l.Key == langDeDe.Key)).Languages.Count, "should have 2 languages on the shared DE+CH");
-            Assert.AreEqual(_prodEn.GetBestValue("Title").ToString(), merged.GetBestValue("Title", new[] { langEn.Key }), "en title should be the en-value");
+            Assert.AreEqual(_prodEn.Value<string>("Title"), merged.GetBestValue<string>("Title", new[] { langEn.Key }), "en title should be the en-value");
             Assert.AreEqual(_prodMl.GetBestValue("Title", new [] {langDeDe.Key}).ToString(), merged.GetBestValue("Title", new[] { langDeDe.Key }), "de title should be the ML-value");
             Assert.AreEqual(_prodMl.GetBestValue("Title", new [] {langDeCh.Key}).ToString(), merged.GetBestValue("Title", new[] { langDeCh.Key }), "ch title should be the ML-value");
             Assert.AreNotEqual(_prodEn.GetBestValue("Title", new [] {langDeCh.Key}).ToString(), merged.GetBestValue("Title", new[] { langDeCh.Key }).ToString(), "ch title should be the ML-value");
@@ -319,7 +319,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             AssertBasicsInMerge(_origENull, GirlMarried, merged, GirlMarried);
             Assert.AreNotSame(GirlMarried.Attributes, merged.Attributes, "attributes new / merged shouldn't be same object in this case");
 
-            Assert.AreEqual(merged.GetBestValue("FullName"), GirlMarried.GetBestValue("FullName"), "full name should be that of married");
+            Assert.AreEqual(merged.Value<string>("FullName"), GirlMarried.Value<string>("FullName"), "full name should be that of married");
         }
 
         [TestMethod]
@@ -330,8 +330,8 @@ namespace ToSic.Eav.Repository.Efc.Tests
             Assert.AreEqual(GirlSingle.Attributes.Count, merged.Attributes.Count, "this test case should keep all values of the first type");
             AssertBasicsInMerge(_origENull, GirlMarried, merged, GirlSingle);
             Assert.AreNotSame(GirlMarried.Attributes, merged.Attributes, "attributes new / merged shouldn't be same");
-            Assert.AreEqual(merged.GetBestValue("FullName"), GirlMarried.GetBestValue("FullName"), "full name should be that of married");
-            Assert.AreNotEqual(merged.GetBestValue("FullName"), GirlSingle.GetBestValue("FullName"), "full name should be that of married");
+            Assert.AreEqual(merged.Value<string>("FullName"), GirlMarried.Value<string>("FullName"), "full name should be that of married");
+            Assert.AreNotEqual(merged.Value<string>("FullName"), GirlSingle.Value<string>("FullName"), "full name should be that of married");
 
             // Merge keeping 
             merged = new EntitySaver(new  Log("Tst.Merge")).CreateMergedForSaving(GirlSingle, GirlMarried, _saveKeepAttribs);
@@ -380,9 +380,9 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var merged = new EntitySaver(new  Log("Tst.Merge")).CreateMergedForSaving(GirlSingle, GirlMarried, _saveSkipExisting);
             // var expectedFields = new List<string> {"FullName", "FirstName", "LastName", "Birthday", "Husband"};
             Assert.IsNotNull(merged, "result should never be null");
-            Assert.AreEqual(GirlSingle.GetBestValue("FullName"), merged.GetBestValue("FullName"), "should keep single name");
-            Assert.AreEqual(GirlSingle.GetBestValue("LastName"), merged.GetBestValue("LastName"), "should keep single name");
-            Assert.AreEqual(GirlMarried.GetBestValue("Husband"), merged.GetBestValue("Husband"), "should keep single name");
+            Assert.AreEqual(GirlSingle.Value<string>("FullName"), merged.Value<string>("FullName"), "should keep single name");
+            Assert.AreEqual(GirlSingle.Value<string>("LastName"), merged.Value<string>("LastName"), "should keep single name");
+            Assert.AreEqual(GirlMarried.Value<string>("Husband"), merged.Value<string>("Husband"), "should keep single name");
         }
 
         [TestMethod]
