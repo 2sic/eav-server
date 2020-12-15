@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -15,7 +16,7 @@ namespace ToSic.Eav.Data
 #endif
             if (_byInt.TryGetValue(id, out var result)) return result;
             result = _list.FirstOrDefault(e => e.EntityId == id);
-            _byInt.Add(id, result);
+            _byInt.TryAdd(id, result);
             return result;
         }
         public IEntity GetRepo(int id)
@@ -25,7 +26,7 @@ namespace ToSic.Eav.Data
 #endif
             if (_byRepoId.TryGetValue(id, out var result)) return result;
             result = _list.FirstOrDefault(e => e.RepositoryId == id);
-            _byRepoId.Add(id, result);
+            _byRepoId.TryAdd(id, result);
             return result;
         }
 
@@ -37,7 +38,7 @@ namespace ToSic.Eav.Data
             if (_has.TryGetValue(id, out var result)) return result;
             var found = Get(id) ?? GetRepo(id);
             var status = found != null;
-            _has.Add(id, status);
+            _has.TryAdd(id, status);
             return status;
         }
 
@@ -48,15 +49,15 @@ namespace ToSic.Eav.Data
 #endif
             if (_byGuid.TryGetValue(id, out var result)) return result;
             result = _list.FirstOrDefault(e => e.EntityGuid == id);
-            _byGuid.Add(id, result);
+            _byGuid.TryAdd(id, result);
             return result;
         }
 
         private readonly IEnumerable<IEntity> _list;
 
-        private readonly Dictionary<int, IEntity> _byInt = new Dictionary<int, IEntity>();
-        private readonly Dictionary<int, IEntity> _byRepoId = new Dictionary<int, IEntity>();
-        private readonly Dictionary<Guid, IEntity> _byGuid = new Dictionary<Guid, IEntity>();
-        private readonly Dictionary<int, bool> _has = new Dictionary<int, bool>();
+        private readonly ConcurrentDictionary<int, IEntity> _byInt = new ConcurrentDictionary<int, IEntity>();
+        private readonly ConcurrentDictionary<int, IEntity> _byRepoId = new ConcurrentDictionary<int, IEntity>();
+        private readonly ConcurrentDictionary<Guid, IEntity> _byGuid = new ConcurrentDictionary<Guid, IEntity>();
+        private readonly ConcurrentDictionary<int, bool> _has = new ConcurrentDictionary<int, bool>();
     }
 }

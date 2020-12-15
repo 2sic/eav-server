@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Documentation;
 
-namespace ToSic.Eav.Run
+namespace ToSic.Eav.Context
 {
     /// <summary>
     /// Any object implementing this interface can provide the EAV with information about the environment it's running in.

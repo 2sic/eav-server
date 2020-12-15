@@ -132,9 +132,8 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         public ContentTypeMetadata Metadata
             => _metadata ?? (_metadata = ParentAppId == AppId
-                   ? new ContentTypeMetadata(StaticName,
-                       _metaOfThisApp)
-                       : new ContentTypeMetadata(StaticName, ParentZoneId, ParentAppId));
+                ? new ContentTypeMetadata(StaticName, _metaOfThisApp)
+                : new ContentTypeMetadata(StaticName, ParentZoneId, ParentAppId));
         private ContentTypeMetadata _metadata;
         private readonly IHasMetadataSource _metaOfThisApp;
 

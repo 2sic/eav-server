@@ -1,6 +1,5 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Run;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Context
@@ -52,5 +51,7 @@ namespace ToSic.Eav.Context
         /// </summary>
         string Url { get; }
 
+        //[PrivateApi] 
+        //bool IsMultiZone { get; }
     }
 }

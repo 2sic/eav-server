@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.XPath;
+using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Zip;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Run;
 
@@ -20,7 +22,7 @@ namespace ToSic.Eav.Apps.ImportExport
         private int _zoneId;
         private const string SexyContentContentGroupName = "2SexyContent-ContentGroup";
         private const string SourceControlDataFolder = Constants.FolderData;
-        private const string SourceControlDataFile = Constants.AppDataFile;// "app.xml"; // lower case
+        private const string SourceControlDataFile = Constants.AppDataFile;
         private readonly string _blankGuid = Guid.Empty.ToString();
         private const string ZipFolderForPortalFiles = "PortalFiles";
         private const string ZipFolderForAppStuff = "2sexy";
@@ -33,18 +35,27 @@ namespace ToSic.Eav.Apps.ImportExport
 
         protected ILog Log;
 
-        #region Constructors and DI
+        #region DI Constructor
 
-        public ZipExport(IServerPaths serverPaths, AppRuntime appRuntime, DataSourceFactory dataSourceFactory, XmlExporter xmlExporter)
+        public ZipExport(IServerPaths serverPaths, 
+            AppRuntime appRuntime, 
+            DataSourceFactory dataSourceFactory, 
+            XmlExporter xmlExporter, 
+            IGlobalConfiguration globalConfiguration, 
+            ITargetTypes metaTargetTypes)
         {
             _serverPaths = serverPaths;
             _xmlExporter = xmlExporter;
+            _globalConfiguration = globalConfiguration;
+            _metaTargetTypes = metaTargetTypes;
             AppRuntime = appRuntime;
             DataSourceFactory = dataSourceFactory;
         }
 
         private readonly IServerPaths _serverPaths;
         private readonly XmlExporter _xmlExporter;
+        private readonly IGlobalConfiguration _globalConfiguration;
+        private readonly ITargetTypes _metaTargetTypes;
         private AppRuntime AppRuntime { get; }
         public DataSourceFactory DataSourceFactory { get; }
 
@@ -84,7 +95,7 @@ namespace ToSic.Eav.Apps.ImportExport
             var messages = new List<Message>();
             var randomShortFolderName = Guid.NewGuid().ToString().Substring(0, 4);
 
-            var temporaryDirectoryPath = _serverPaths.FullSystemPath(Path.Combine(Settings.TemporaryDirectory, randomShortFolderName));
+            var temporaryDirectoryPath = Path.Combine(_globalConfiguration.TemporaryFolder, randomShortFolderName);
 
             if (!Directory.Exists(temporaryDirectoryPath))
                 Directory.CreateDirectory(temporaryDirectoryPath);
@@ -150,7 +161,7 @@ namespace ToSic.Eav.Apps.ImportExport
             attributeSets = attributeSets.Where(a => !((a as IContentTypeShared)?.AlwaysShareConfiguration ?? false));
 
             var contentTypeNames = attributeSets.Select(p => p.StaticName).ToArray();
-            var templateTypeId = SystemRuntime.MetadataType(Settings.TemplateContentType);
+            var templateTypeId = _metaTargetTypes.GetId(Settings.TemplateContentType);
             var entities =
                 DataSourceFactory.GetPublishing(runtime, false).Out[Constants.DefaultStreamName].Immutable.Where(
                     e => e.MetadataFor.TargetType != templateTypeId
@@ -184,11 +195,10 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="targetPath"></param>
         private void AddInstructionsToPackageFolder(string targetPath)
         {
-            var srcPath = _serverPaths.FullSystemPath(Path.Combine(Settings.ModuleDirectory, InstructionsFolder));
+            var srcPath = Path.Combine(_globalConfiguration.GlobalFolder, InstructionsFolder);
 
             foreach (var file in Directory.GetFiles(srcPath))
                 File.Copy(file, Path.Combine(targetPath, Path.GetFileName(file)));
         }
-
     }
 }

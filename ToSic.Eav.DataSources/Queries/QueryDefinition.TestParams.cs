@@ -45,7 +45,7 @@ namespace ToSic.Eav.DataSources.Queries
             var result = new List<ILookUp>();
             foreach (Match testParam in testValueTokens)
             {
-                var token = testParam.Groups[KeyToken].Value.ToLower();
+                var token = testParam.Groups[KeyToken].Value.ToLowerInvariant();
 
                 // Ensure a PropertyAccess exists for this LookUp name
                 if (!(result.FirstOrDefault(i => i.Name == token) is LookUpInDictionary currentLookUp))

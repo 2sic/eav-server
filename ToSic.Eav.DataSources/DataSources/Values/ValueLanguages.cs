@@ -1,7 +1,6 @@
 ﻿using System;
 using ToSic.Eav.Context;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Run;
 
 namespace ToSic.Eav.DataSources
 {
@@ -25,10 +24,10 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Constants for certain resolution modes
         /// </summary>
-        internal const string LanguageDefault = "default";
-        internal const string LanguageCurrent = "current";
+        internal const string LanguageDefaultPlaceholder = "default";
+        internal const string LanguageCurrentPlaceholder = "current";
 
-        internal static string LanguageSettingsPlaceholder = $"[Settings:{LangKey}||{LanguageDefault}]";
+        internal static string LanguageSettingsPlaceholder = $"[Settings:{LangKey}||{LanguageDefaultPlaceholder}]";
 
 
         /// <summary>
@@ -37,7 +36,7 @@ namespace ToSic.Eav.DataSources
         /// <returns></returns>
         internal string[] PrepareLanguageList(string languages, ILog log)
         {
-            var lang = languages.ToLower().Trim();
+            var lang = languages.ToLowerInvariant().Trim();
 
             var wrapLog = log.Call<string[]>(lang);
 
@@ -52,20 +51,20 @@ namespace ToSic.Eav.DataSources
 
 
             wrapLog($"Error - can't figure out '{lang}'", null);
-            throw new Exception($"Can't figure out what language to use: '{lang}'. Expected '{LanguageDefault}', '{LanguageCurrent}' or a 2-character code");
+            throw new Exception($"Can't figure out what language to use: '{lang}'. Expected '{LanguageDefaultPlaceholder}', '{LanguageCurrentPlaceholder}' or a 2-character code");
         }
 
         private string ResolveOneLanguageCode(string lang, ILog log)
         {
             var wrapLog = log.Call<string>(lang);
 
-            if (string.IsNullOrWhiteSpace(lang) || lang == LanguageDefault)
-                return wrapLog(LanguageDefault, string.Empty); // empty string / no language means the default language
+            if (string.IsNullOrWhiteSpace(lang) || lang == LanguageDefaultPlaceholder)
+                return wrapLog(LanguageDefaultPlaceholder, string.Empty); // empty string / no language means the default language
 
-            if (lang == LanguageCurrent)
-                return wrapLog(LanguageCurrent, _cultureResolver.SafeCurrentCultureCode());
+            if (lang == LanguageCurrentPlaceholder)
+                return wrapLog(LanguageCurrentPlaceholder, _cultureResolver.SafeCurrentCultureCode());
 
-            if (lang.Length == 2 || (lang.Length == 5 && lang.Contains("-")))
+            if (lang.Length == 2 || lang.Length == 5 && lang.Contains("-"))
                 return wrapLog("Exact" + lang, lang);
 
             return null;

@@ -56,7 +56,7 @@ namespace ToSic.Eav.DataSources.Queries
 
             foreach (Match testParam in paramMatches)
             {
-                var key = testParam.Groups[KeyProperty].Value.ToLower();
+                var key = testParam.Groups[KeyProperty].Value.ToLowerInvariant();
                 var value = testParam.Groups[KeyValue].Value;
                 log.Add($"Params:{key}={value}");
                 if (!paramsDic.ContainsKey(key))

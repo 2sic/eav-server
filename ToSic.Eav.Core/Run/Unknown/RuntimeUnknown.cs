@@ -5,7 +5,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Run.Unknown
 {
-    public class RuntimeUnknown: HasLog, IRuntime
+    public class RuntimeUnknown: HasLog, IRuntime, IIsUnknown
     {
         public RuntimeUnknown() : base("Eav.BscRnt") { }
 

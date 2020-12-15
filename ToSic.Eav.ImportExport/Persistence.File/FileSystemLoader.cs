@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport;
@@ -11,13 +10,12 @@ using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Types;
-using AppState = ToSic.Eav.Apps.AppState;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Persistence.File
 {
-    public partial class FileSystemLoader: HasLog, IRepositoryLoader
+    public partial class FileSystemLoader: HasLog<IContentTypeLoader>, IContentTypeLoader
     {
         private const string ContentTypeFolder = "contenttypes\\";
         private const string QueryFolder = "queries\\";
@@ -196,27 +194,5 @@ namespace ToSic.Eav.Persistence.File
             return wrapLog("not found", false);
         }
 
-
-        #region not implemented stuff
-        public AppState AppState(int appId, /*int[] entityIds = null,*/ ILog parentLog = null) 
-            => throw new NotImplementedException();
-
-        public AppState AppState(int appId, bool ensureInitialized, ILog parentLog = null) 
-            => throw new NotImplementedException();
-
-        public AppState Update(AppState app, AppStateLoadSequence startAt, int[] entityIds = null,
-            ILog parentLog = null) 
-            => throw new NotImplementedException();
-
-        public IReadOnlyDictionary<int, Zone> Zones() 
-            => throw new NotImplementedException();
-
-        public string PrimaryLanguage
-        {
-            get => throw new Exception("Not implemented");
-            set => throw new Exception("Not implemented");
-        }
-
-        #endregion
     }
 }

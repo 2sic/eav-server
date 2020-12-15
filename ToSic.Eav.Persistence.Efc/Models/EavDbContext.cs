@@ -12,7 +12,7 @@ namespace ToSic.Eav.Persistence.Efc.Models
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             var connectionString = _dbConfig.ConnectionString;
-            if (!connectionString.ToLower().Contains("multipleactiveresultsets")) // this is needed to allow querying data while preparing new data on the same DbContext
+            if (!connectionString.ToLowerInvariant().Contains("multipleactiveresultsets")) // this is needed to allow querying data while preparing new data on the same DbContext
                 connectionString += ";MultipleActiveResultSets=True";
 
             optionsBuilder.UseSqlServer(connectionString);

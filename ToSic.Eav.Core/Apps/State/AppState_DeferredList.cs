@@ -6,6 +6,6 @@ namespace ToSic.Eav.Apps
 	public partial class AppState : IEntitiesSource, IHasMetadataSource
     {
         /// <inheritdoc />
-        IMetadataSource IHasMetadataSource.MetadataSource => Metadata;
+        IMetadataSource IHasMetadataSource.MetadataSource => _metadataManager;
     }
 }

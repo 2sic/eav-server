@@ -53,7 +53,7 @@ namespace ToSic.Eav.Apps.ImportExport
             Log.LinkTo(parentLog);
             Log.Add("start XML exporter using app-package");
             AppState = app.AppState;
-            Serializer.Init(app.Zone.Languages().ToDictionary(l => l.EnvironmentKey.ToLower(), l => l.DimensionId),
+            Serializer.Init(app.Zone.Languages().ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.DimensionId),
                 AppState, Log);
 
             _appStaticName = appStaticName;
@@ -166,7 +166,7 @@ namespace ToSic.Eav.Apps.ImportExport
                         new XAttribute(XmlConstants.Type, x.Type),
                         new XAttribute(XmlConstants.IsTitle, x.IsTitle),
                         // Add Attribute MetaData
-                        from c in AppState.Get(Constants.MetadataForAttribute, x.AttributeId).ToList()
+                        from c in AppState.GetMetadata(Constants.MetadataForAttribute, x.AttributeId).ToList()
                         select GetEntityXElement(c.EntityId, c.Type.StaticName)
                     );
 

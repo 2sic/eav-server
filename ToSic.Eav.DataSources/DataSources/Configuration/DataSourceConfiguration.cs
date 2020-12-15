@@ -67,7 +67,7 @@ namespace ToSic.Eav.DataSources
         [PrivateApi]
         private IDictionary<string, ILookUp> OverrideLookUps 
             => _overrideLookUps 
-               ?? (_overrideLookUps = new Dictionary<string, ILookUp> { { "In".ToLower(), new LookUpInDataTarget(DataSource) } });
+               ?? (_overrideLookUps = new Dictionary<string, ILookUp> { { "In".ToLowerInvariant(), new LookUpInDataTarget(DataSource) } });
         private IDictionary<string, ILookUp> _overrideLookUps;
 
 

@@ -31,7 +31,7 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
         private ExportListXml BuildExporter(int appId, string ctName)
         {
             var loader = Resolve<Efc11Loader>();
-            var appPackage = loader.AppState(appId);
+            var appPackage = loader.AppState(appId, false);
             var type = appPackage.ContentTypes.First(ct => ct.Name == ctName);
             return Resolve<ExportListXml>().Init(appPackage, type, Log);
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Xml;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Repository.Efc;
@@ -34,19 +35,21 @@ namespace ToSic.Eav.Apps.ImportExport
             Lazy<DbDataController> dbDataForNewApp,
             Lazy<DbDataController> dbDataForAppImport,
             IImportExportEnvironment importExportEnvironment,
+            ITargetTypes metaTargetTypes,
             string logName = null) : base(logName ?? "Xml.ImpFil")
         {
             _importerLazy = importerLazy;
             _dbDataForNewApp = dbDataForNewApp;
             _dbDataForAppImport = dbDataForAppImport;
             _environment = importExportEnvironment;
+            _metaTargetTypes = metaTargetTypes;
             _environment.LinkLog(Log);
         }
         private readonly Lazy<Import> _importerLazy;
         private readonly Lazy<DbDataController> _dbDataForNewApp;
         private readonly Lazy<DbDataController> _dbDataForAppImport;
         private readonly IImportExportEnvironment _environment;
-
+        private readonly ITargetTypes _metaTargetTypes;
 
 
         /// <summary>

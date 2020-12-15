@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Apps.Run
 {
-    public sealed class FileSystemLoaderUnknown: IAppFileSystemLoader
+    public sealed class FileSystemLoaderUnknown: IAppFileSystemLoader, IIsUnknown
     {
         public IAppFileSystemLoader Init(int appId, string path, ILog log)
         {

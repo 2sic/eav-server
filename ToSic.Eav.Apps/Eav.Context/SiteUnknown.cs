@@ -1,8 +1,9 @@
-﻿using ToSic.Eav.Context;
+﻿using ToSic.Eav.Run;
 
-namespace ToSic.Eav.Apps.Run
+// ReSharper disable once CheckNamespace
+namespace ToSic.Eav.Context
 {
-    public class SiteUnknown: ISite
+    public class SiteUnknown: ISite, IIsUnknown
     {
         private const string Unknown = "unknown - please implement the ISite interface to get real values";
 
@@ -16,6 +17,7 @@ namespace ToSic.Eav.Apps.Run
         public int Id { get; private set; } = UnknownSiteId;
 
         public string Url => Unknown;
+
         public int ZoneId { get; private set; } = UnknownZoneId;
 
         public string CurrentCultureCode => "en-us";

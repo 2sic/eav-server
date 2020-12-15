@@ -141,7 +141,7 @@ namespace ToSic.Eav.DataSources
 
             #region if it's a real filter - optimize
 
-		    var op = Operator.ToLower();
+		    var op = Operator.ToLowerInvariant();
             if (op == "none" || op == "all")
                 compare = e => true; // dummy comparison
             else
@@ -207,7 +207,7 @@ namespace ToSic.Eav.DataSources
         {
             var boolFilter = bool.Parse(original);
 
-            var operation = Operator.ToLower();
+            var operation = Operator.ToLowerInvariant();
             switch (operation)
             {
                 case "==":
@@ -237,7 +237,7 @@ namespace ToSic.Eav.DataSources
         /// <returns></returns>
         private Func<IEntity, bool> GetStringComparison(string original)
         {
-            var operation = Operator.ToLower();
+            var operation = Operator.ToLowerInvariant();
 
             var stringComparison = new Dictionary<string, Func<object, bool>>
             {
@@ -268,7 +268,7 @@ namespace ToSic.Eav.DataSources
         {
             var boolFilter = bool.Parse(original);
 
-            var operation = Operator.ToLower();
+            var operation = Operator.ToLowerInvariant();
             switch (operation)
             {
                 case "==":
@@ -294,7 +294,7 @@ namespace ToSic.Eav.DataSources
         #region "between" helper
         private Tuple<bool, string, string> BetweenParts(string original)
         {
-            original = original.ToLower();
+            original = original.ToLowerInvariant();
             var hasAnd = original.IndexOf(" and ", StringComparison.Ordinal);
             string low = "", high = "";
             if (hasAnd > -1)
@@ -314,7 +314,7 @@ namespace ToSic.Eav.DataSources
         /// <returns></returns>
         private Func<IEntity, bool> GetDateTimeComparison(string original)
         {
-            var operation = Operator.ToLower();
+            var operation = Operator.ToLowerInvariant();
             DateTime max = DateTime.MaxValue,
                 referenceDateTime = DateTime.MinValue;
             
@@ -378,7 +378,7 @@ namespace ToSic.Eav.DataSources
         /// <returns></returns>
         private Func<IEntity, bool> GetNumberComparison(string original)
         {
-            var operation = Operator.ToLower();
+            var operation = Operator.ToLowerInvariant();
         
             var max = decimal.MaxValue;
             var numberFilter = decimal.MinValue;
@@ -447,7 +447,7 @@ namespace ToSic.Eav.DataSources
         {
             try
             {
-                var op = Operator.ToLower();
+                var op = Operator.ToLowerInvariant();
                 IEnumerable<IEntity> results;
                 switch (op)
                 {

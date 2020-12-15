@@ -119,14 +119,14 @@ namespace ToSic.Eav.DataSources
 			{
 				// get attribute-name and type; set type=id|title for special cases
 				var a = attr[i];
-			    var aLow = a.ToLower();
+			    var aLow = a.ToLowerInvariant();
 				var specAttr = aLow == Constants.EntityFieldId ? 'i' 
                     : aLow == Constants.EntityFieldTitle ? 't' 
                     : aLow == Constants.EntityFieldModified ? 'm'
                     : 'x';
 				var isAscending = true;			// default
 				if (directions.Length - 1 >= i)	// if this value has a direction specified, use that...
-					isAscending = !descendingCodes.Any(directions[i].ToLower().Trim().Contains);
+					isAscending = !descendingCodes.Any(directions[i].ToLowerInvariant().Trim().Contains);
 
 				if (ordered == null)
 				{

@@ -9,7 +9,7 @@ namespace ToSic.Eav.Apps.Run
     /// Base class for other zone mappers.
     /// Has prepared code which should be the same across implementations. 
     /// </summary>
-    public abstract class ZoneMapperBase: HasLog, IZoneMapper
+    public abstract class ZoneMapperBase: HasLog<IZoneMapper>, IZoneMapper
     {
         /// <summary>
         /// Trivial constructor
@@ -18,27 +18,13 @@ namespace ToSic.Eav.Apps.Run
         protected ZoneMapperBase(string logName) : base(logName) { }
 
         /// <inheritdoc />
-        public IZoneMapper Init(ILog parentLog)
-        {
-            Log.LinkTo(parentLog);
-            return this;
-        }
-
-        /// <inheritdoc />
         public abstract int GetZoneId(int siteId);
-
-        /// <inheritdoc />
-        public int GetZoneId(ISite site) => GetZoneId(site.Id);
-
-        ///// <inheritdoc />
-        //public IAppIdentity IdentityFromSite(int tenantId, int appId)
-        //    => new AppIdentity(GetZoneId(tenantId), appId);
 
         /// <inheritdoc />
         public abstract ISite SiteOfZone(int zoneId);
 
         /// <inheritdoc />
-        public ISite TenantOfApp(int appId)
+        public ISite SiteOfApp(int appId)
         {
             var wrapLog = Log.Call<ISite>($"{appId}");
             Log.Add("TenantId not found. Must be in search mode, will try to find correct portalsettings");
@@ -48,6 +34,6 @@ namespace ToSic.Eav.Apps.Run
         }
 
         /// <inheritdoc />
-        public abstract List<TempTempCulture> CulturesWithState(int tenantId, int zoneId);
+        public abstract List<TempTempCulture> CulturesWithState(int siteId, int zoneId);
     }
 }

@@ -2,10 +2,11 @@
 using ToSic.Eav.ImportExport.Environment;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.Xml;
+using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Apps.ImportExport
 {
-    public sealed class XmlExporterUnknown: XmlExporter
+    public sealed class XmlExporterUnknown: XmlExporter, IIsUnknown
     {
         public XmlExporterUnknown(XmlSerializer xmlSerializer) : base(xmlSerializer, LogNames.NotImplemented)
         {

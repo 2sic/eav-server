@@ -105,7 +105,7 @@ namespace ToSic.Eav.Logging.Simple
             if(parent == this) throw new Exception("LOGGER ERROR - attaching same item as parent can't work");
             // only attach new parent if it didn't already have an old one
             // this is critical because we cannot guarantee that sometimes a LinkTo is called more than once on something
-            if (parent != null ) 
+            if (parent != null) 
             {
                 if(_parent == null)
                 {
@@ -124,6 +124,7 @@ namespace ToSic.Eav.Logging.Simple
                 Rename(name);
         }
 
-
+        /// <inheritdoc />
+        public void Unlink() => _parent = null;
     }
 }

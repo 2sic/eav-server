@@ -31,8 +31,7 @@ namespace ToSic.Eav.Data
             get
             {
 				// Prevent Exception if Values is null
-	            if (Values == null)
-		            return default;
+	            if (Values == null) return default;
 
                 try
                 {
@@ -50,74 +49,75 @@ namespace ToSic.Eav.Data
         public IList<IValue<T>> Typed => Values.Cast<IValue<T>>().ToList();
 
         /// <inheritdoc/>
-        public T this[int languageId] => this[new[] { languageId }];
+        public T this[int languageId] => GetInternal(new[] { languageId }, FindHavingDimensions);
 
         #region IAttribute Implementations
         [PrivateApi]
-        //object IAttribute.this[int[] languageIds] => this[languageIds];
+        object IAttribute.this[string languageKey] => GetInternal(new [] {languageKey}, FindHavingDimensions);
 
         [PrivateApi]
-        object IAttribute.this[string languageKey] => this[languageKey];
-        [PrivateApi]
-        object IAttribute.this[string[] languageKeys] => this[languageKeys];
+        object IAttribute.this[string[] languageKeys] => GetInternal(languageKeys, FindHavingDimensions);
         [PrivateApi]
         object IAttribute.this[int languageId] => this[languageId];
         #endregion
 
         /// <inheritdoc/>
-        public T this[int[] languageIds]
+        public T this[int[] languageIds] => GetInternal(languageIds, FindHavingDimensions);
+
+
+        /// <inheritdoc/>
+        public T this[string languageKey] => GetInternal(new[] { languageKey }, FindHavingDimensions);
+
+        /// <inheritdoc/>
+        public T this[string[] languageKeys] => GetInternal(languageKeys, FindHavingDimensions);
+
+        private T GetInternal<TKey>(TKey[] keys, Func<TKey[], IValue> lookupCallback)
         {
-            get
+            // Value with Dimensions specified
+            if (keys != null && keys.Length > 0 && Values != null && Values.Count > 0)
             {
-                // Value with Dimensions specified
-                if (languageIds != null && languageIds.Length > 0 && Values != null)
+                // try match all specified Dimensions
+                // note that as of now, the dimensions are always just 1 language, not more
+                // so the dimensions are _not_ a list of languages, but would contain other dimensions
+                // that is why we match ALL - but in truth it's a "feature" that's never been used
+                IValue valueHavingSpecifiedLanguages = null;
+                foreach (var key in keys)
                 {
-                    // try match all specified Dimensions
-                    // note that as of now, the dimensions are always just 1 language, not more
-                    // so the dimensions are _not_ a list of languages, but would contain other dimensions
-                    // that is why we match ALL - but in truth it's a "feature" that's never been used
-                    var valueHavingSpecifiedLanguages = Values.FirstOrDefault(va => languageIds.All(di => va.Languages.Select(d => d.DimensionId).Contains(di)));
-                    if (valueHavingSpecifiedLanguages != null)
-                        try
-                        {
-                            return ((IValue<T>) valueHavingSpecifiedLanguages).TypedContents;
-                        }
-                        catch (InvalidCastException) { /* ignore, may occur for nullable types */ }
+                    // if it's null or 0, try to just get anything
+                    if (EqualityComparer<TKey>.Default.Equals(key, default))
+                        valueHavingSpecifiedLanguages = Values.FirstOrDefault();
+                    else if (key != null)
+                        valueHavingSpecifiedLanguages = lookupCallback(new[] {key});
+                    
+                    // stop at first hit
+                    if (valueHavingSpecifiedLanguages != null) break;
                 }
-                // use Default
-                return TypedContents == null ? default : TypedContents;
+
+                if (valueHavingSpecifiedLanguages != null)
+                    try
+                    {
+                        return ((IValue<T>)valueHavingSpecifiedLanguages).TypedContents;
+                    }
+                    catch (InvalidCastException) { /* ignore, may occur for nullable types */ }
             }
+            // use Default
+            return TypedContents == null ? default : TypedContents;
+
         }
 
-        /// <inheritdoc/>
-        public T this[string languageKey] => this[new[] { languageKey }];
-
-        /// <inheritdoc/>
-        public T this[string[] languageKeys]
+        private IValue FindHavingDimensions(int[] keys)
         {
-            get
-            {
-                // Value with Dimensions specified
-                if (languageKeys != null && languageKeys.Length > 0 && Values != null)
-                {
-                    // ensure language Keys in lookup-list are lowered
-                    var langsLower = languageKeys.Select(l => l.ToLower()).ToArray();
-                    // try match all specified Dimensions
-                    // note that as of now, the dimensions are always just 1 language, not more
-                    // so the dimensions are _not_ a list of languages, but would contain other dimensions
-                    // that is why we match ALL - but in truth it's a "feature" that's never been used
-                    var valueHavingSpecifiedLanguages = Values
-                        .FirstOrDefault(va => langsLower.All(lng => va.Languages.Select(d => d.Key).Contains(lng)));
-                    if (valueHavingSpecifiedLanguages != null)
-                        try
-                        {
-                            return ((IValue<T>) valueHavingSpecifiedLanguages).TypedContents;
-                        }
-                        catch (InvalidCastException) { /* ignore, may occur for nullable types */ } 
-                }
-                // use Default
-                return TypedContents == null ? default(T) : TypedContents;
-            }
+            var valuesHavingDimensions = Values.FirstOrDefault(va => keys.All(di => va.Languages.Select(d => d.DimensionId).Contains(di)));
+            return valuesHavingDimensions;
+        }
+
+        private IValue FindHavingDimensions(string[] keys)
+        {
+            // ensure language Keys in lookup-list are lowered
+            var langsLower = keys.Select(l => l.ToLowerInvariant()).ToArray();
+            var valuesHavingDimensions = Values
+                .FirstOrDefault(va => langsLower.All(lng => va.Languages.Select(d => d.Key).Contains(lng)));
+            return valuesHavingDimensions;
         }
 
         [PrivateApi]

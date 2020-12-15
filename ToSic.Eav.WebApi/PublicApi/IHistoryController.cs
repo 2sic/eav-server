@@ -7,7 +7,7 @@ namespace ToSic.Eav.WebApi.PublicApi
     public interface IHistoryController
     {
         /// <summary>
-        /// Get the history of an item
+        /// Get the history of an item using POST (because of the object identifier)
         /// </summary>
         List<ItemHistory> Get(int appId, ItemIdentifier item);
 

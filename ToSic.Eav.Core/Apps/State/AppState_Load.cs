@@ -25,14 +25,40 @@ namespace ToSic.Eav.Apps
 
         internal void Load(ILog parentLog, Action loader)
         {
-            var wrapLog = Log.Call(message: $"zone/app:{ZoneId}/{AppId}", useTimer: true);
-            Loading = true;
-            // temporarily link logs, to put messages in both logs
-            Log.LinkTo(parentLog);
-            Log.Add("app loading start");
-            loader.Invoke();
-            CacheResetTimestamp();
+            var wrapLog = parentLog?.Call(message: $"zone/app:{ZoneId}/{AppId}", useTimer: true);
 
+            try
+            {
+                // first set a lock, to ensure that only one update/load is running at the same time
+                lock (this)
+                {
+                    // temporarily link logs, to put messages in both logs
+                    Log.LinkTo(parentLog);
+                    var inLockLog = Log.Call($"loading: {Loading}", "app loading start in lock");
+
+                    // only if loading is true will the AppState object accept changes
+                    Loading = true;
+                    loader.Invoke();
+                    CacheResetTimestamp();
+                    EnsureNameAndFolderInitialized();
+                    if(!FirstLoadCompleted) FirstLoadCompleted = true;
+
+                    inLockLog($"done - dynamic load count: {DynamicUpdatesCount}");
+                }
+            }
+            finally
+            {
+                // set loading to false again, to ensure that AppState won't accept changes
+                Loading = false;
+
+                // detach logs again, to prevent memory leaks because the global/cached app-state shouldn't hold on to temporary log objects
+                wrapLog?.Invoke("ok");
+                Log.Unlink();
+            }
+        }
+
+        private void EnsureNameAndFolderInitialized()
+        {
             // If the loader wasn't able to fill name/folder, then the data was not a json
             // so we must try to fix this now
             if (Name == null && Folder == null)
@@ -48,14 +74,6 @@ namespace ToSic.Eav.Apps
                     Folder = config?.GetBestValue<string>(AppLoadConstants.FieldFolder);
                 }
             }
-
-            Loading = false;
-            FirstLoadCompleted = true;
-            Log.Add($"app loading done - dynamic load count: {DynamicUpdatesCount}");
-            // detach logs again, to prevent memory leaks
-            Log.LinkTo(null);
-            wrapLog("ok");
         }
-
     }
 }

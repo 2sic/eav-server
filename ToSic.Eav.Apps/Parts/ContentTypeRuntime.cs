@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps.Run;
 using ToSic.Eav.Data;
-using ToSic.Eav.Run;
 using ToSic.Eav.Types;
 
 namespace ToSic.Eav.Apps.Parts
@@ -36,14 +35,29 @@ namespace ToSic.Eav.Apps.Parts
         /// <returns></returns>
         public List<InputTypeInfo> GetInputTypes()
         {
-            var wraplog = Log.Call();
+            // Inner helper to log each intermediate state
+            void LogListOfInputTypes(string title, List<InputTypeInfo> inputsToLog)
+            {
+                var wrapLog2 = Log.Call($"{title}, {inputsToLog.Count}");
+                try
+                {
+                    wrapLog2(string.Join(",", inputsToLog.Select(it => it.Type)));
+                }
+                catch (Exception)
+                {
+                    wrapLog2("error");
+                }
+            }
+
+            var wrapLog = Log.Call<List<InputTypeInfo>>();
+
             // Initial list is the global, file-system based types
             var globalDef = GetGlobalInputTypesBasedOnContentTypes();
-            Log.Add($"in global {globalDef.Count}");
+            LogListOfInputTypes("Global", globalDef);
 
             // Merge input types registered in this app
             var appTypes = GetAppRegisteredInputTypes();
-            Log.Add($"in app {appTypes.Count}");
+            LogListOfInputTypes("In App", appTypes);
 
             // Load input types which are stored as app-extension files
             var extensionTypes = GetAppExtensionInputTypes();
@@ -55,17 +69,16 @@ namespace ToSic.Eav.Apps.Parts
                 inputTypes = appTypes;
 
             AddMissingTypes(inputTypes, globalDef);
-            Log.Add($"combined {inputTypes.Count}");
+            LogListOfInputTypes("Combined", inputTypes);
 
             // Merge input types registered in global metadata-app
             var systemAppRt = _lazyMetadataAppRuntime.Value.Init(State.Identity(null, Constants.MetaDataAppId), true, Log);
             var systemAppInputTypes = systemAppRt.ContentTypes.GetAppRegisteredInputTypes();
-            Log.Add($"in system {systemAppInputTypes.Count}");
+            LogListOfInputTypes("System", systemAppInputTypes);
             AddMissingTypes(inputTypes, systemAppInputTypes);
-            Log.Add($"combined {inputTypes.Count}");
+            LogListOfInputTypes("All combined", inputTypes);
 
-            wraplog($"found {inputTypes.Count}");
-            return inputTypes;
+            return wrapLog($"found {inputTypes.Count}", inputTypes);
         }
 
         /// <summary>

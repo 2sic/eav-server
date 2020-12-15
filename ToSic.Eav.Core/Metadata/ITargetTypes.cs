@@ -13,9 +13,9 @@ namespace ToSic.Eav.Metadata
         /// Look up the target Id of a metadata target. These are registered somewhere (DB, file-system, etc.)
         /// Use this if you know the type-name, but need the type ID
         /// </summary>
-        /// <param name="typeName"></param>
+        /// <param name="targetTypeName"></param>
         /// <returns>the id of the target type</returns>
-        int GetId(string typeName);
+        int GetId(string targetTypeName);
 
         /// <summary>
         /// Look up the target name of a metadata target. These are registered somewhere (Db, file-system, etc.)

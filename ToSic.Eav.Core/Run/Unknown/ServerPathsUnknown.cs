@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.Run.Unknown
 {
-    public sealed class ServerPathsUnknown: IServerPaths
+    public sealed class ServerPathsUnknown: IServerPaths, IIsUnknown
     {
         public string FullAppPath(string virtualPath) => "unknown-path, please implement IServerPaths";
 

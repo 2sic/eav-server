@@ -9,6 +9,7 @@ using ToSic.Eav.Data.Builder;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
+using ToSic.Eav.Repositories;
 using ToSic.Eav.Run;
 using ToSic.Eav.Run.Unknown;
 
@@ -22,6 +23,7 @@ namespace ToSic.Eav
             services.AddTransient(typeof(Lazy<>), typeof(LazyDependencyInjection<>));
 
             // Configuration objects
+            services.TryAddTransient<IGlobalConfiguration, GlobalConfiguration>();
             services.TryAddTransient<IDbConfiguration, DbConfiguration>();
             services.TryAddTransient<IFeaturesConfiguration, FeaturesConfiguration>();
 
@@ -56,6 +58,7 @@ namespace ToSic.Eav
             services.TryAddTransient<IUser, UserUnknown>();
             services.TryAddTransient<IZoneCultureResolver, ZoneCultureResolverUnknown>();
             services.TryAddTransient<IServerPaths, ServerPathsUnknown>();
+            services.TryAddTransient<IAppRepositoryLoader, AppRepositoryLoaderUnknown>();
             return services;
         }
 

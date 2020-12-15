@@ -1,7 +1,7 @@
-﻿using System.Globalization;
+﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Context
 {
@@ -10,20 +10,15 @@ namespace ToSic.Eav.Context
     public static class IZoneCultureResolverExtensions
     {
         public static string SafeCurrentCultureCode(this IZoneCultureResolver resolver)
-            => resolver != null
-                ? resolver.CurrentCultureCode.ToLowerInvariant()
-                : ThreadCurrentCultureInfo.Name;
+            => (resolver?.CurrentCultureCode ?? ThreadCurrentCultureInfo.Name).ToLowerInvariant();
 
-        public static string[] SafeCurrentDimensions(this IZoneCultureResolver resolver)
-            => new[] {SafeCurrentCultureCode(resolver)};
-
-        public static CultureInfo SafeCurrentCultureInfo(string[] dimensions)
+        public static CultureInfo SafeCultureInfo(string[] dimensions)
         {
             try
             {
-                var dimension = dimensions?.FirstOrDefault();
-                if (!string.IsNullOrWhiteSpace(dimension))
-                    return CultureInfo.GetCultureInfo(dimension);
+                if (dimensions == null || dimensions.Length == 0) return ThreadCurrentCultureInfo;
+                var d = dimensions.FirstOrDefault();
+                if (!string.IsNullOrWhiteSpace(d)) return CultureInfo.GetCultureInfo(d);
             }
             catch { /* ignore */}
 
@@ -36,6 +31,31 @@ namespace ToSic.Eav.Context
             resolver == null 
                 ? ThreadCurrentCultureInfo 
                 : CultureInfo.GetCultureInfo(resolver.SafeCurrentCultureCode());
+
+
+
+        #region Language Priorities list
+
+        public static string[] SafeLanguagePriorityCodes(this IZoneCultureResolver resolver)
+        {
+            if (resolver == null) return new[] {SafeCurrentCultureCode(null), null};
+
+            var priorities = new List<string>();
+            // First priority: current culture
+            if (!string.IsNullOrWhiteSpace(resolver.CurrentCultureCode)) 
+                priorities.Add(SafeCurrentCultureCode(resolver));
+            // Second priority: Fallback culture
+            if (!string.IsNullOrWhiteSpace(resolver.DefaultCultureCode))
+                priorities.Add(resolver.DefaultCultureCode.ToLowerInvariant());
+            // last priority: the null-entry, meaning that it should just pick anything
+            priorities.Add(null);
+
+            return priorities.ToArray();
+        }
+
+        #endregion
+
+
 
         /// <summary>
         /// This shouldn't be used because it's thread based, but there are some cases on the

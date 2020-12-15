@@ -1,7 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Net;
-using ToSic.Eav.ImportExport;
+using ToSic.Eav.Configuration;
+using ToSic.Eav.Identity;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Run;
@@ -10,12 +11,18 @@ namespace ToSic.Eav.Apps.ImportExport
 {
     public class ZipFromUrlImport: ZipImport
     {
-        private readonly IServerPaths _serverPaths;
+        #region DI Constructor
 
-        public ZipFromUrlImport(IImportExportEnvironment environment, IServerPaths serverPaths, Lazy<XmlImportWithFiles> xmlImpExpFilesLazy) : base(environment, xmlImpExpFilesLazy)
+        public ZipFromUrlImport(IImportExportEnvironment environment, IServerPaths serverPaths, Lazy<XmlImportWithFiles> xmlImpExpFilesLazy, IGlobalConfiguration globalConfiguration)
+            : base(environment, xmlImpExpFilesLazy)
         {
             _serverPaths = serverPaths;
+            _globalConfiguration = globalConfiguration;
         }
+        private readonly IServerPaths _serverPaths;
+        private readonly IGlobalConfiguration _globalConfiguration;
+
+        #endregion
 
         public new ZipFromUrlImport Init(int zoneId, int? appId, bool allowCode, ILog parentLog)
         {
@@ -26,7 +33,7 @@ namespace ToSic.Eav.Apps.ImportExport
         public bool ImportUrl(string packageUrl, bool isAppImport)
         {
             Log.Add($"import zip from url:{packageUrl}, isApp:{isAppImport}");
-            var path = _serverPaths.FullSystemPath(Settings.TemporaryDirectory);
+            var path = _globalConfiguration.TemporaryFolder;
             if (path == null)
                 throw new NullReferenceException("path for temporary is null - this won't work");
 
@@ -61,7 +68,7 @@ namespace ToSic.Eav.Apps.ImportExport
             bool success;
 
 
-            var temporaryDirectory = _serverPaths.FullSystemPath(Path.Combine(Settings.TemporaryDirectory, Guid.NewGuid().ToString()));
+            var temporaryDirectory = Path.Combine(_globalConfiguration.TemporaryFolder, Mapper.GuidCompress(Guid.NewGuid()).Substring(0, 8));
 
             using (var file = File.OpenRead(destinationPath))
                 success = ImportZip(file, temporaryDirectory);

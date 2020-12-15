@@ -60,7 +60,7 @@ namespace ToSic.Eav.Apps.Parts
                 return wrapLog("ok", true);
 
             // Get appName from cache - stop if it's a "Default" app
-            var eavAppName = AppState.AppGuidName; // new ZoneRuntime().Init(_appState.ZoneId, Log).GetName(_appState.AppId);
+            var eavAppName = AppState.AppGuidName;
 
             // v10.25 from now on the DefaultApp can also have settings and resources
             var folder = eavAppName == Constants.DefaultAppName
@@ -98,9 +98,9 @@ namespace ToSic.Eav.Apps.Parts
             if (CreateAllMissingContentTypes(addList))
             {
                 SystemManager.Purge(AppState, log: Log);
-                // todo: get the latest app-state
-                var repoLoader = _serviceProvider.Build<IRepositoryLoader>();
-                AppState = repoLoader.AppState(AppState.AppId, false, Log);
+                // get the latest app-state, but not-initialized so we can make changes
+                var repoLoader = _serviceProvider.Build<IRepositoryLoader>().Init(Log);
+                AppState = repoLoader.AppState(AppState.AppId, false);
                 _appManager = null; // reset, because afterwards we need a clean AppManager
             }
 

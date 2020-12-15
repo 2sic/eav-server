@@ -86,7 +86,7 @@ namespace ToSic.Eav.Apps
             // in case the DI gave a bad tenant, try to look up
             if (Site.Id == Constants.NullId && appIdentity.AppId != Constants.NullId &&
                 appIdentity.AppId != AppConstants.AppIdNotFound)
-                Site = _dependencies.ZoneMapper.TenantOfApp(appIdentity.AppId);
+                Site = _dependencies.ZoneMapper.SiteOfApp(appIdentity.AppId);
 
             // if zone is missing, try to find it - but always assume current context
             if (appIdentity.ZoneId == AutoLookupZone)

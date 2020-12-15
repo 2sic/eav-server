@@ -106,7 +106,7 @@ namespace ToSic.Eav.Data
 
             if (LightAttributesForInternalUseOnlyForNow.ContainsKey(attributeName))
                 result = LightAttributesForInternalUseOnlyForNow[attributeName];
-            else switch (attributeName.ToLower())
+            else switch (attributeName.ToLowerInvariant())
             {
                 case Constants.EntityFieldTitle:
                     result = Title;
@@ -170,7 +170,7 @@ namespace ToSic.Eav.Data
         [PrivateApi]
         protected object GetInternalPropertyByName(string attributeName)
         {
-            switch (attributeName.ToLower())
+            switch (attributeName.ToLowerInvariant())
             {
                 case Constants.EntityFieldId:
                     return EntityId;

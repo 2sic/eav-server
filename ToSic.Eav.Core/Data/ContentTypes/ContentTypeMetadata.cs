@@ -11,7 +11,7 @@ namespace ToSic.Eav.Data
     /// in which case the metadata must be retrieved from another "remote" location (where the original is defined). 
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
-    public class ContentTypeMetadata : MetadataOf<string>
+    public class ContentTypeMetadata : RemoteMetadataOf<string>
     {
 
         #region constructors
@@ -58,7 +58,7 @@ namespace ToSic.Eav.Data
             // add the guid metadata on entity if it has a real guid
             // this is kind of wrong, because it should use the type MetadataForContentType
             // but this slipped in a long time ago, and we cannot change it any more
-            var additional = GetMetadataSource()?.Get(Constants.MetadataForEntity, ctGuid)
+            var additional = GetMetadataSource()?.GetMetadata(Constants.MetadataForEntity, ctGuid)
                                  .ToList()
                              ?? new List<IEntity>();
             Use(AllWithHidden.Concat(additional).ToList());

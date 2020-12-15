@@ -7,6 +7,7 @@ using ToSic.Eav.Conversion;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.WebApi.Errors;
 using ToSic.Eav.WebApi.Formats;
@@ -17,19 +18,18 @@ namespace ToSic.Eav.WebApi
 {
     public class EntityApi: HasLog
     {
-        private readonly AppRuntime _appRuntime;
-        private readonly Lazy<AppManager> _appManagerLazy;
-        private readonly Lazy<EntitiesToDictionary> _entitesToDicLazy;
-        public AppRuntime AppRead;
+        #region DI Constructor & Init
 
-        #region Constructors / DI
-
-        public EntityApi(AppRuntime appRuntime, Lazy<AppManager> appManagerLazy, Lazy<EntitiesToDictionary> entitesToDicLazy): base("Api.Entity")
+        public EntityApi(AppRuntime appRuntime, Lazy<AppManager> appManagerLazy, Lazy<EntitiesToDictionary> entitiesToDicLazy) : base("Api.Entity")
         {
             _appRuntime = appRuntime;
             _appManagerLazy = appManagerLazy;
-            _entitesToDicLazy = entitesToDicLazy;
+            _entitiesToDicLazy = entitiesToDicLazy;
         }
+        private readonly AppRuntime _appRuntime;
+        private readonly Lazy<AppManager> _appManagerLazy;
+        private readonly Lazy<EntitiesToDictionary> _entitiesToDicLazy;
+        public AppRuntime AppRead;
 
         public EntityApi Init(int appId, bool showDrafts, ILog parentLog)
         {
@@ -38,16 +38,9 @@ namespace ToSic.Eav.WebApi
             return this;
         }
 
-        public EntityApi InitOrThrowBasedOnGrants(IContextOfSite context, IAppIdentity app, string contentType, List<Eav.Security.Grants> requiredGrants, ILog parentLog)
-        {
-            var permCheck = _appManagerLazy.Value.ServiceProvider.Build<MultiPermissionsTypes>().Init(context, app, contentType, parentLog);
-            if (!permCheck.EnsureAll(requiredGrants, out var error))
-                throw HttpException.PermissionDenied(error);
-            return Init(app.AppId, true, parentLog);
-        }
-
         #endregion
 
+        #region Lazy Helpers
 
         /// <summary>
         /// The serializer, so it can be configured from outside if necessary
@@ -57,13 +50,15 @@ namespace ToSic.Eav.WebApi
             get
             {
                 if (_entitiesToDictionary != null) return _entitiesToDictionary;
-                _entitiesToDictionary = _entitesToDicLazy.Value;
+                _entitiesToDictionary = _entitiesToDicLazy.Value;
                 _entitiesToDictionary.WithGuid = true;
                 _entitiesToDictionary.Init(Log);
                 return _entitiesToDictionary;
             }
         }
         private EntitiesToDictionary _entitiesToDictionary;
+
+        #endregion
 
         /// <summary>
         /// Get all Entities of specified Type
@@ -103,8 +98,10 @@ namespace ToSic.Eav.WebApi
 
             foreach (var itm in list.Where(i => i.Header.ContentTypeName == null && i.Entity != null))
                 itm.Header.ContentTypeName = itm.Entity.Type.StaticName;
+
             return list;
         }
+
 
         private IEntity GetEditableEditionAndMaybeCloneIt(ItemIdentifier p)
         {
@@ -142,23 +139,6 @@ namespace ToSic.Eav.WebApi
         public void Delete(string contentType, Guid entityGuid, bool force = false) 
             => Delete(contentType, AppRead.Entities.Get(entityGuid).EntityId, force);
 
-        public IEnumerable<Dictionary<string, object>> GetEntitiesForAdmin(string contentType)
-        {
-            var wrapLog = Log.Call(useTimer: true);
-            EntityToDic.ConfigureForAdminUse();
-            var originals = AppRead.Entities.Get(contentType).ToList();
-            var list = EntityToDic.Convert(originals).ToList();
-
-            var timer = Log.Call(null, "truncate dictionary", useTimer: true);
-            var result = list
-                .Select(li => li.ToDictionary(x1 => x1.Key, x2 => Truncate(x2.Value, 50)))
-                .ToList();
-            timer("ok");
-
-            wrapLog(result.Count.ToString());
-            return result;
-        }
-
 
         /// <summary>
         /// clean up content-type names in case it's using the nice-name instead of the static name...
@@ -181,6 +161,35 @@ namespace ToSic.Eav.WebApi
             }
         }
 
+        // 2020-12-08 2dm - unused code, disable for now, delete ca. Feb 2021
+        public EntityApi InitOrThrowBasedOnGrants(IContextOfSite context, IAppIdentity app, string contentType, List<Eav.Security.Grants> requiredGrants, ILog parentLog)
+        {
+            var permCheck = _appManagerLazy.Value.ServiceProvider.Build<MultiPermissionsTypes>().Init(context, app, contentType, parentLog);
+            if (!permCheck.EnsureAll(requiredGrants, out var error))
+                throw HttpException.PermissionDenied(error);
+            return Init(app.AppId, true, parentLog);
+        }
+
+        // 2020-12-08 2dm - unused code, disable for now, delete ca. Feb 2021
+        public IEnumerable<Dictionary<string, object>> GetEntitiesForAdmin(string contentType)
+        {
+            var wrapLog = Log.Call(useTimer: true);
+            EntityToDic.ConfigureForAdminUse();
+            var originals = AppRead.Entities.Get(contentType).ToList();
+            var list = EntityToDic.Convert(originals).ToList();
+
+            var timer = Log.Call(null, "truncate dictionary", useTimer: true);
+            var result = list
+                .Select(li => li.ToDictionary(x1 => x1.Key, x2 => Truncate(x2.Value, 50)))
+                .ToList();
+            timer("ok");
+
+            wrapLog(result.Count.ToString());
+            return result;
+        }
+
+
+         //2020-12-08 2dm - unused code, disable for now, delete ca.Feb 2021
         private object Truncate(object value, int length)
         {
             if (!(value is string asTxt))

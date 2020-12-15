@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>net451;netstandard2.0</TargetFrameworks>
     <Copyright>Copyright AGPL 2sic 2020</Copyright>
-    <Version>11.11.00.00</Version>
+    <Version>11.11.02.00</Version>
     <Configurations>Debug;Release;Dbg Testing</Configurations>
     <RootNamespace>ToSic.Eav.Apps</RootNamespace>
   </PropertyGroup>
@@ -30,10 +30,6 @@
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net451'">
     <Reference Include="System.Web" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Run\Context\" />
   </ItemGroup>
 
 </Project>

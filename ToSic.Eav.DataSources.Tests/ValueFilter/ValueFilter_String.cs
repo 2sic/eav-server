@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-using System.Linq;
-using System.Threading;
+﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources;
 using ToSic.Testing.Shared;
@@ -23,10 +21,6 @@ namespace ToSic.Eav.DataSourceTests
         {
             _valueFilterMaker = Resolve<ValueFilterMaker>();
             _testDataGeneratedOutsideTimer = _valueFilterMaker.CreateValueFilterForTesting(TestVolume, true);
-
-            // Set the thread culture, as some comparisons need the current culture to be en-US
-            // 2020-12-06 2dm turn this off, we're not using currentCulture any more
-            //Thread .CurrentThread .CurrentCulture = CultureInfo.GetCultureInfo(EnUs);
         }
 
         private ValueFilter GetFilter(bool table, bool ml, string field, string compare = null, string value = null)
@@ -46,12 +40,12 @@ namespace ToSic.Eav.DataSourceTests
         [DataRow(false, true, PriPrefix + City1, Quarter, null, "no lang, should find Pri")]
         [DataRow(false, true, EnPrefix + City1, None, null, "no lang, shouldn't find EN")]
         [DataRow(false, true, EnPrefix + City1, Quarter, EnUs, "Look for en, should find")]
-        [DataRow(false, true, PriPrefix + City1, Quarter, ValueLanguages.LanguageDefault, "Look for pri, should find")]
-        [DataRow(false, true, EnPrefix + City1, None, ValueLanguages.LanguageDefault, "Pri - shouldn't find en")]
+        [DataRow(false, true, PriPrefix + City1, Quarter, ValueLanguages.LanguageDefaultPlaceholder, "Look for pri, should find")]
+        [DataRow(false, true, EnPrefix + City1, None, ValueLanguages.LanguageDefaultPlaceholder, "Pri - shouldn't find en")]
         [DataRow(false, true, PriPrefix + City1, Quarter, "", "none - should find pri")]
         [DataRow(false, true, EnPrefix + City1, None, "", "none, shouldn't find en")]
-        [DataRow(false, true, PriPrefix + City1, None, ValueLanguages.LanguageCurrent, "current, shouldn't find pri")]
-        [DataRow(false, true, EnPrefix + City1, Quarter, ValueLanguages.LanguageCurrent, "current = en should find EN")]
+        [DataRow(false, true, PriPrefix + City1, None, ValueLanguages.LanguageCurrentPlaceholder, "current, shouldn't find pri")]
+        [DataRow(false, true, EnPrefix + City1, Quarter, ValueLanguages.LanguageCurrentPlaceholder, "current = en should find EN")]
         [DataRow(false, true, PriPrefix + City1, Quarter, En, "'en' will find the primary ")]
         [DataRow(false, true, EnPrefix + City1, None, En, "Just 'en' can't find any")]
         [DataRow(false, true, EnPrefix + City1, None, FrFr, "fr shouldn't find EN")]
@@ -73,7 +67,7 @@ namespace ToSic.Eav.DataSourceTests
         public void ValueFilter_SimpleTextFilterCIDefault()
         {
             var vf = GetFilter(true, false, FieldCity);
-            vf.Value = City1.ToLower(); // test for the first value
+            vf.Value = City1.ToLowerInvariant(); // test for the first value
             Assert.AreEqual(Quarter, vf.List.Count(), "Should find exactly 2500 people with this city");
         }
 
@@ -90,7 +84,7 @@ namespace ToSic.Eav.DataSourceTests
         {
             var vf = GetFilter(true, false, FieldCity, "===");
             //vf.Operator = "===";
-            vf.Value = City1.ToLower(); // test for the first value
+            vf.Value = City1.ToLowerInvariant(); // test for the first value
             Assert.AreEqual(0, vf.List.Count(), "Should find exactly 0 people with this city");
         }
 

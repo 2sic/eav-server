@@ -52,7 +52,7 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// Reset all indexes
         /// </summary>
-        public void Reset()
+        internal void Reset()
         {
             _guid = new Dictionary<int, Dictionary<Guid, List<IEntity>>>();
             _number = new Dictionary<int, Dictionary<int, List<IEntity>>>();
@@ -78,7 +78,7 @@ namespace ToSic.Eav.Apps
         /// This ensures that any request for metadata would include this entity, if it's metadata
         /// </summary>
         /// <param name="entity"></param>
-        public void Register(Entity entity)
+        internal void Register(Entity entity)
         {
             var md = entity.MetadataFor;
             if (!md.IsMetadata) return;
@@ -110,21 +110,21 @@ namespace ToSic.Eav.Apps
         }
 
 
-
-        /// <summary>
-        /// Get metadata-items of something
-        /// </summary>
-        /// <typeparam name="TMetadataKey">Type - guid, int or string</typeparam>
-        /// <param name="targetType">target-type is a number from 1-4 which says if it's metadata of an entity, of an attribute, etc.</param>
-        /// <param name="key">the (int/guid/string) key we're looking for</param>
-        /// <param name="contentTypeName">an optional type name, if we only want the items of a specific type</param>
-        /// <returns></returns>
+        /// <inheritdoc />
         public IEnumerable<IEntity> Get<TMetadataKey>(int targetType, TMetadataKey key, string contentTypeName = null)
+            => GetMetadata(targetType, key, contentTypeName);
+
+        /// <inheritdoc />
+        public IEnumerable<IEntity> GetMetadata<TMetadataKey>(int targetType, TMetadataKey key, string contentTypeName = null)
         {
-            if (typeof(TMetadataKey) == typeof(Guid))
+            if(key == null) return new IEntity[0];
+            var type = typeof(TMetadataKey);
+            type = Nullable.GetUnderlyingType(type) ?? type;
+
+            if (type == typeof(Guid))
                 return Lookup(_guid, targetType, key as Guid? ?? Guid.Empty, contentTypeName);
 
-            switch (Type.GetTypeCode(typeof(TMetadataKey)))
+            switch (Type.GetTypeCode(type))
             {
                 case TypeCode.Int32:
                     return Lookup(_number, targetType, key as int? ?? 0, contentTypeName);
@@ -142,7 +142,7 @@ namespace ToSic.Eav.Apps
                 if (keyDict.TryGetValue(key, out var entities))
                     return contentTypeName == null
                         ? entities
-                        : entities.Where(e => e.Type.StaticName == contentTypeName);
+                        : entities.Where(e => e.Type.Is(contentTypeName));
             return new List<IEntity>();
         }
     }

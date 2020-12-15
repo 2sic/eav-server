@@ -3,11 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
-using ToSic.Eav.Logging;
-using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Plumbing;
-using ToSic.Eav.Repositories;
-using ToSic.Eav.Run;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.Types;
 using AppState = ToSic.Eav.Apps.AppState;
@@ -15,76 +11,59 @@ using AppState = ToSic.Eav.Apps.AppState;
 namespace ToSic.Eav.Persistence.Efc
 {
     /// <summary>
-    /// Will load all DB data into the memory data model using Entity Framework Core 1.1
+    /// Will load all DB data into the memory data model.
+    /// It uses Entity Framework Core 1.1 which we use for .net 451 (DNN)
+    /// It also works with the last Entity Framework 3, which we use for Oqtane etc.
     /// </summary>
-    public partial class Efc11Loader: HasLog, IRepositoryLoader
+    public partial class Efc11Loader
     {
-
-        #region constructor and private vars
-
-        public Efc11Loader(EavDbContext dbContext, 
-            Lazy<IZoneCultureResolver> environmentLazy, 
-            IServiceProvider serviceProvider,
-            IAppInitializedChecker initializedChecker) : base("Db.Efc11")
-        {
-            ServiceProvider = serviceProvider;
-            _dbContext = dbContext;
-            _environmentLazy = environmentLazy;
-            _initializedChecker = initializedChecker;
-        }
-
-        public Efc11Loader UseExistingDb(EavDbContext dbContext)
-        {
-            _dbContext = dbContext;
-            return this;
-        }
-
-        private IServiceProvider ServiceProvider { get; }
-        private EavDbContext _dbContext;
-        private readonly Lazy<IZoneCultureResolver> _environmentLazy;
-        private readonly IAppInitializedChecker _initializedChecker;
-
-        #endregion
-
-
         #region AppPackage
 
-        /// <inheritdoc />
-        public AppState AppState(int appId, /*int[] entityIds = null,*/ ILog parentLog = null)
+        /// <summary>
+        /// Load the full AppState from the backend - in an un-initialized state (without folder / name etc.).
+        /// This is mostly for internal operations where initialization would cause trouble or unexpected side-effects.
+        /// </summary>
+        /// <param name="appId">AppId (can be different than the appId on current context (e.g. if something is needed from the default appId, like MetaData)</param>
+        /// <returns>An object with everything which an app has, usually for caching</returns>
+        public AppState LoadBasicAppState(int appId)
         {
+            var wrapLog = Log.Call<AppState>();
             var appIdentity = State.Identity(null, appId);
             var appGuidName = State.Cache.Zones[appIdentity.ZoneId].Apps[appIdentity.AppId];
-            var appState = Update(new AppState(appIdentity, appGuidName, parentLog), AppStateLoadSequence.Start, null, parentLog);
+            var appState = Update(new AppState(appIdentity, appGuidName, Log), AppStateLoadSequence.Start);
 
-            return appState;
+            return wrapLog("ok", appState);
         }
 
-        public AppState AppState(int appId, bool ensureInitialized, ILog parentLog = null)
+        /// <inheritdoc />
+        public AppState AppState(int appId, bool ensureInitialized)
         {
-            var appState = AppState(appId, parentLog);
-            if (!ensureInitialized) return appState;
+            var wrapLog = Log.Call<AppState>($"{appId}, {ensureInitialized}");
+
+            var appState = LoadBasicAppState(appId);
+            if (!ensureInitialized) return wrapLog("won't check initialized", appState);
 
             // Note: Ignore ensureInitialized on the content app
             // The reason is that this app - even when empty - is needed in the cache before data is imported
             // So if we initialize it, then things will result in duplicate settings/resources/configuration
             // Note that to ensure the Content app works, we must perform the same check again in the 
             // API Endpoint which will edit this data
-            if (appState.AppGuidName == Constants.DefaultAppName) return appState;
+            if (appState.AppGuidName == Constants.DefaultAppName) return wrapLog("default app, don't auto-init", appState);
 
-            return _initializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(appState, null, Log)
-                ? AppState(appId, parentLog)
+            var result = _initializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(appState, null, Log)
+                ? LoadBasicAppState(appId)
                 : appState;
+            return wrapLog("with init check", result);
         }
 
-        public AppState Update(AppState app, AppStateLoadSequence startAt, int[] entityIds = null, ILog parentLog = null)
+        public AppState Update(AppState app, AppStateLoadSequence startAt, int[] entityIds = null)
         {
-            app.Load(parentLog, () =>
+            var outerWrapLog = Log.Call<AppState>();
+
+            app.Load(Log, () =>
             {
-                Log.LinkTo(app.Log);
-                Log.Add($"get app data package for a#{app.AppId}, " +
-                                                    $"startAt: {startAt}, " +
-                                                    $"ids only:{entityIds != null}");
-                var wrapLog = Log.Call(useTimer: true);
+                var msg = $"get app data package for a#{app.AppId}, startAt: {startAt}, ids only:{entityIds != null}";
+                var wrapLog = Log.Call(message: msg, useTimer: true);
 
                 // prepare metadata lists & relationships etc.
                 if (startAt <= AppStateLoadSequence.MetadataInit)
@@ -123,7 +102,8 @@ namespace ToSic.Eav.Persistence.Efc
                 Log.Add($"timers sql:sqlAll:{_sqlTotalTime}");
                 wrapLog("ok");
             });
-            return app;
+
+            return outerWrapLog("ok", app);
         }
 
         /// <summary>
