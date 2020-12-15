@@ -37,8 +37,8 @@ namespace ToSic.Eav.DataSourceTests
             Assert.AreNotEqual(original, modified, "This test should never receive the same items!");
             fieldNew = fieldNew ?? fieldOriginal;
             Assert.AreEqual(
-                original.GetBestValue<string>(fieldOriginal),
-                modified.GetBestValue<string>(fieldNew), $"Renamed values on field '{fieldOriginal}' should match '{fieldNew}'");
+                original.Value<string>(fieldOriginal),
+                modified.Value<string>(fieldNew), $"Renamed values on field '{fieldOriginal}' should match '{fieldNew}'");
 
         }
 

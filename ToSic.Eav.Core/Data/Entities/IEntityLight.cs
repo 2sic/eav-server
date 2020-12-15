@@ -67,9 +67,6 @@ namespace ToSic.Eav.Data
 		/// <returns>The <see cref="IRelationshipManager"/> in charge of relationships for this Entity.</returns>
         IRelationshipManager Relationships { get; }
 
-		[PrivateApi("Testing / wip #IValueConverter")]
-        TVal GetBestValue<TVal>(string name);
-
 		/// <summary>
 		/// Best way to get the current entities title.
 		/// The field used is determined in the <see cref="IContentType"/>.

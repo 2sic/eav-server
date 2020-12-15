@@ -1,5 +1,4 @@
 ﻿using System;
-using ToSic.Eav.Context;
 using ToSic.Eav.Documentation;
 
 #if NETFRAMEWORK
@@ -35,17 +34,24 @@ namespace ToSic.Eav.Data
         public TVal GetBestValue<TVal>(string name, string[] languages, bool resolveHyperlinks)
             => ChangeTypeOrDefault<TVal>(GetBestValue(name, languages, resolveHyperlinks));
 
+        // 2020-12-15 Deprecated this
+        [PrivateApi]
+        [Obsolete("was probably never in use anywhere, but we'll leave it alive to not break existing code")]
+        public object PrimaryValue(string attributeName) => Value(attributeName);
+
+        // 2020-12-15 Deprecated this
+        [PrivateApi]
+        [Obsolete("was probably never in use anywhere, but we'll leave it alive to not break existing code")]
+        public TVal PrimaryValue<TVal>(string attributeName) => Value<TVal>(attributeName);
 
         // 2020-12-15 2dm disabled, don't think it was ever in use
-        //[PrivateApi]
-        //[Obsolete("Obsolete, was in DNN, shouldn't be supported any more - use overload without resolveHyperlink")]
-        //public object Value(string field, bool resolve)
-        //    => GetBestValue(field, new[] { IZoneCultureResolverExtensions.ThreadCultureNameNotGood() }, resolve);
+        [PrivateApi]
+        [Obsolete("was probably never in use anywhere, but we'll leave it alive to not break existing code")]
+        public object Value(string field, bool resolve) => Value(field);
 
-        //[PrivateApi]
-        //[Obsolete("Obsolete, was in DNN, shouldn't be supported any more - use overload without resolveHyperlink")]
-        //public T Value<T>(string field, bool resolve)
-        //    => ChangeTypeOrDefault<T>(GetBestValue(field, new[] { IZoneCultureResolverExtensions.ThreadCultureNameNotGood() }, resolve));
+        [PrivateApi]
+        [Obsolete("was probably never in use anywhere, but we'll leave it alive to not break existing code")]
+        public T Value<T>(string field, bool resolve) => ChangeTypeOrDefault<T>(Value(field));
 
     }
 }

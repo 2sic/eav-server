@@ -147,9 +147,9 @@ namespace ToSic.Eav.Metadata
         /// <inheritdoc />
         public TVal GetBestValue<TVal>(string name, string typeName = null)
         {
-            var list = typeName == null ? this : this.Where(md => md.Type.Is(typeName)); //.StaticName == typeName || md.Type.Name == typeName);
+            var list = typeName == null ? this : this.Where(md => md.Type.Is(typeName));
             var found = list.FirstOrDefault(md => md.Attributes.ContainsKey(name));
-            return found == null ? default : found.GetBestValue<TVal>(name);
+            return found == null ? default : found.GetBestValue<TVal>(name, null);
         }
 
         /// <inheritdoc />

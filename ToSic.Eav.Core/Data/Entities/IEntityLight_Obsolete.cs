@@ -1,11 +1,14 @@
-﻿using System;
+﻿#if NETFRAMEWORK
+using System;
 using ToSic.Eav.Documentation;
 
-#if NETFRAMEWORK
 namespace ToSic.Eav.Data
 {
     public partial interface IEntityLight
     {
+		[PrivateApi("Testing / wip #IValueConverter")]
+        TVal GetBestValue<TVal>(string name);
+
         /// <summary>
         /// Retrieves the best possible value for an attribute or virtual attribute (like EntityTitle)
         /// Automatically resolves the language-variations as well based on the list of preferred languages

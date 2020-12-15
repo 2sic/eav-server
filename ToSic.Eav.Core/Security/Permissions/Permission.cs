@@ -24,20 +24,20 @@ namespace ToSic.Eav.Security
         /// The condition in this permission - like "this rule applies to admins"
         /// The condition is usually a text-code by the hosting CMS
         /// </summary>
-        public string Condition => _condition ?? (_condition = Entity.GetBestValue<string>(FieldCondition));
+        public string Condition => _condition ?? (_condition = Entity.Value<string>(FieldCondition));
         private string _condition;
 
         /// <summary>
         /// The identity this rule should apply to 
         /// This is usually a user guid or group-id; exact specs vary based on the hosting CMS
         /// </summary>
-        public string Identity => _identity ?? (_identity = Entity.GetBestValue<string>(FieldIdentity));
+        public string Identity => _identity ?? (_identity = Entity.Value<string>(FieldIdentity));
         private string _identity;
 
         /// <summary>
         /// The rights granted by this permission, usually a series of characters like r=read, u=update, etc.
         /// </summary>
-        public string Grant => _grant ?? (_grant = Entity.GetBestValue<string>(FieldGrant));
+        public string Grant => _grant ?? (_grant = Entity.Value<string>(FieldGrant));
         private string _grant;
     }
 }

@@ -1,13 +1,23 @@
-﻿#if NETFRAMEWORK
-using System;
+﻿using System;
+using ToSic.Eav.Data;
+using ToSic.Eav.Documentation;
 
 // This is old stuff / compatibility necessary for DNN
 // It should not bleed into Oqtane or newer implementations
-namespace ToSic.Eav.Data
-{
-    public partial interface IEntity: Interfaces.IEntity // compatibility - only relevant for DNN
+#if NETFRAMEWORK
 
+// ReSharper disable once CheckNamespace
+namespace ToSic.Eav.Interfaces
+{
+    /// <summary>
+    /// The primary data-item in the system, IEntity is a generic data-item for any kind of information.
+    /// Note that it inherits <see cref="IEntityLight"/> which is the basic definition without languages,
+    /// versioning, publishing etc.
+    /// </summary>
+    [PrivateApi]
+    public partial interface IEntity
     {
+
         /// <summary>
         /// Retrieves the best possible value for an attribute or virtual attribute (like EntityTitle)
         /// Automatically resolves the language-variations as well based on the list of preferred languages
@@ -20,7 +30,7 @@ namespace ToSic.Eav.Data
         /// the object is string, int or even a EntityRelationship
         /// </returns>
         [Obsolete]
-        new object GetBestValue(string attributeName, string[] languages, bool resolveHyperlinks);
+        object GetBestValue(string attributeName, string[] languages, bool resolveHyperlinks);
 
         /// <summary>
         /// Retrieves the best possible value for an attribute or virtual attribute (like EntityTitle)
@@ -35,7 +45,28 @@ namespace ToSic.Eav.Data
         /// the object is string, int or even a EntityRelationship
         /// </returns>
         [Obsolete]
-        new T GetBestValue<T>(string attributeName, string[] languages, bool resolveHyperlinks);
+        T GetBestValue<T>(string attributeName, string[] languages, bool resolveHyperlinks);
+
+
+        // 2020-12-15 Deprecated this
+        [PrivateApi]
+        [Obsolete("was probably never in use anywhere, but we'll leave it alive to not break existing code")]
+        object PrimaryValue(string attributeName);
+
+        // 2020-12-15 Deprecated this
+        [PrivateApi]
+        [Obsolete("was probably never in use anywhere, but we'll leave it alive to not break existing code")]
+        T PrimaryValue<T>(string attributeName);
+
+        // 2020-12-15 Deprecated this
+        [PrivateApi]
+        [Obsolete("was probably never in use anywhere, but we'll leave it alive to not break existing code")]
+        object Value(string field, bool resolve = true);
+
+        // 2020-12-15 Deprecated this
+        [PrivateApi]
+        [Obsolete("was probably never in use anywhere, but we'll leave it alive to not break existing code")]
+        T Value<T>(string field, bool resolve = true);
 
     }
 }

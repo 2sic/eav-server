@@ -70,8 +70,8 @@ namespace ToSic.Eav.Apps
                 else
                 {
                     var config = List.FirstOrDefault(md => md.Type.StaticName == AppLoadConstants.TypeAppConfig);
-                    Name = config?.GetBestValue<string>(AppLoadConstants.FieldName);
-                    Folder = config?.GetBestValue<string>(AppLoadConstants.FieldFolder);
+                    Name = config?.Value<string>(AppLoadConstants.FieldName);
+                    Folder = config?.Value<string>(AppLoadConstants.FieldFolder);
                 }
             }
         }

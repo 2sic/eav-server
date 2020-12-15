@@ -144,7 +144,6 @@ namespace ToSic.Eav.Data
         /// </remarks>
         /// <param name="fieldName"></param>
         /// <returns>The value or null if not found</returns>
-        [PrivateApi]
         object Value(string fieldName);
 
         /// <summary>
@@ -159,7 +158,6 @@ namespace ToSic.Eav.Data
         /// <typeparam name="T">The type, usually string, int, bool, etc.</typeparam>
         /// <param name="fieldName"></param>
         /// <returns>The typed value or the (default) value - so a null for strings, false for boolean etc.</returns>
-        [PrivateApi]
         T Value<T>(string fieldName);
 
         #endregion

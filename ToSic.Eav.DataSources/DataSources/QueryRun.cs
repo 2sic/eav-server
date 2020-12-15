@@ -127,7 +127,7 @@ namespace ToSic.Eav.DataSources
         /// <returns></returns>
         private IDictionary<string, string> ResolveParams(IEntity runEntity)
         {
-            var fieldParams = runEntity.GetBestValue<string>(FieldParams);
+            var fieldParams = runEntity.Value<string>(FieldParams);
             var newParamsDic = QueryDefinition.GenerateParamsDic(fieldParams, Log);
             var resultingParams = Configuration.Parse(newParamsDic);
             Log.Add($"Resolved wrapper params - found {resultingParams.Count} ["
