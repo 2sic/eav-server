@@ -15,12 +15,12 @@ namespace ToSic.Eav.WebApi.Dto
         /// Prefetched entities for entity picker
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public List<EntityForPickerDto> Entities { get; set; }
+        public IEnumerable<EntityForPickerDto> Entities { get; set; }
 
         /// <summary>
         /// Dictionary where each field contains a list of ADAM items
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public Dictionary<string, List<AdamItemDto>> Adam { get; set; }
+        public Dictionary<string, IEnumerable<AdamItemDto>> Adam { get; set; }
     }
 }
