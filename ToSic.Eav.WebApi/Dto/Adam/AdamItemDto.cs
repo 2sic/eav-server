@@ -5,9 +5,19 @@ namespace ToSic.Eav.WebApi.Dto
 {
     public class AdamItemDto
     {
+        /// <summary>
+        /// WIP: this should contain the code like "file:2742"
+        /// </summary>
+        public string ReferenceId { get; set; }
+
         public bool IsFolder { get; }
         public bool AllowEdit { get; set; }
         public int Size { get; set; }
+
+        /// <summary>
+        /// TEMP / WIP - should contain the ID of the entity which provides metadata
+        /// of course it would only work with one entity, so it's not a final design choice
+        /// </summary>
         public int MetadataId { get; set; }
 
         public string Path { get; set; }
