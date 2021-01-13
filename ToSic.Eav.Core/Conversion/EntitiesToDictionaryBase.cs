@@ -113,14 +113,13 @@ namespace ToSic.Eav.Conversion
             // Add Id and Title
             // ...only if these are not already existing with this name in the entity itself as an internal value
             const string IdKey = "Id";
-            const string GuidKey = "Guid";
             if (entityValues.ContainsKey(IdKey)) entityValues.Remove(IdKey);
             entityValues.Add(IdKey, entity.EntityId);
 
             if (WithGuid)
             {
-                if (entityValues.ContainsKey(GuidKey)) entityValues.Remove(GuidKey);
-                entityValues.Add(GuidKey, entity.EntityGuid);
+                if (entityValues.ContainsKey(Constants.SysFieldGuid)) entityValues.Remove(Constants.SysFieldGuid);
+                entityValues.Add(Constants.SysFieldGuid, entity.EntityGuid);
             }
 
             if (WithPublishing)

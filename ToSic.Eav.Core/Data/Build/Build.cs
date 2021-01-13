@@ -73,8 +73,8 @@ namespace ToSic.Eav.Data
                 appId,
                 0,
                 ContentTypeBuilder.Fake(""),
-                new Dictionary<string, object> {{"Title", ""}},
-                "Title"
+                new Dictionary<string, object> {{Constants.SysFieldTitle, ""}},
+                Constants.SysFieldTitle
             );
     }
 }

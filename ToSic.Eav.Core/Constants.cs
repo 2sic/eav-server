@@ -151,6 +151,7 @@ namespace ToSic.Eav
         public const string SysFieldTitle = "Title";
         public const string SysFieldModified = "Modified";
         public const string SysFieldCreated = "Created";
+        public const string SysFieldGuid = "Guid";
         
         #endregion
         

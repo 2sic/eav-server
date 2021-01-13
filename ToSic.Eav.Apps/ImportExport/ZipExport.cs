@@ -181,7 +181,7 @@ namespace ToSic.Eav.Apps.ImportExport
             if (resetAppGuid)
             {
                 var root = xmlExport.ExportXDocument; //.Root;
-                var appGuid = root.XPathSelectElement("/SexyContent/Header/App").Attribute("Guid");
+                var appGuid = root.XPathSelectElement("/SexyContent/Header/App").Attribute(XmlConstants.Guid);
                 appGuid.Value = _blankGuid;
             }
             return xmlExport;

@@ -104,14 +104,14 @@ namespace ToSic.Eav.DataSources
             // Assemble the entity
             var paging = new Dictionary<string, object>
             {
-                {"Title", "Paging Information"},
+                {Constants.SysFieldTitle, "Paging Information"},
                 {"PageSize", PageSize},
                 {"PageNumber", PageNumber},
                 {"ItemCount", itemCount},
                 {"PageCount", pageCount}
             };
 
-            var entity = new Data.Entity(Constants.TransientAppId, 0, ContentTypeBuilder.Fake("Paging"), paging, "Title");
+            var entity = new Data.Entity(Constants.TransientAppId, 0, ContentTypeBuilder.Fake("Paging"), paging, Constants.SysFieldTitle);
 
             // Assemble list of this for the stream
             var list = new List<IEntity> {entity};

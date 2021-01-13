@@ -32,13 +32,13 @@ namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
             var originalFolder = appConfig.Elements(XmlConstants.ValueNode).First(v => v.Attribute(XmlConstants.KeyAttr)?.Value == "Folder").Attribute(XmlConstants.ValueAttr)?.Value;
 
             // save original AppId (because soon will be rewritten with empty string)
-            var appGuidNode = xmlDoc.XPathSelectElement("//SexyContent/Header/App")?.Attribute("Guid");
+            var appGuidNode = xmlDoc.XPathSelectElement("//SexyContent/Header/App")?.Attribute(Constants.SysFieldGuid);
             if(appGuidNode == null) throw new Exception("app guid node not found - totally unexpected");
             var originalAppId = appGuidNode.Value;
             Log.Add($"original AppID:{originalAppId}");
 
             // same App is already installed, so we have to change AppId 
-            appGuidNode.Value = string.Empty;//.SetAttributeValue("Guid", string.Empty);
+            appGuidNode.Value = string.Empty;
             Log.Add($"original AppID is now empty");
 
             // change folder to install app
