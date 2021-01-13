@@ -53,6 +53,12 @@ namespace ToSic.Eav.Data
 		/// </summary>
 		/// <returns>A date-time object.</returns>
 		DateTime Modified { get; }
+        
+		/// <summary>
+		/// Gets the Created DateTime
+		/// </summary>
+		/// <returns>A date-time object.</returns>
+		DateTime Created { get; }
 
 		/// <summary>
 		/// Gets an Attribute by its StaticName

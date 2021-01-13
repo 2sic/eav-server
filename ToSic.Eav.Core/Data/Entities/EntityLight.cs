@@ -37,6 +37,9 @@ namespace ToSic.Eav.Data
 		public IContentType Type { get; internal set; }
 
         /// <inheritdoc />
+		public DateTime Created { get; internal set; }
+        
+        /// <inheritdoc />
 		public DateTime Modified { get; internal set; }
 
         /// <inheritdoc />
@@ -76,7 +79,7 @@ namespace ToSic.Eav.Data
             AppId = appId;
             EntityId = entityId;
             if(guid != null) EntityGuid = guid.Value;
-            Type = contentType;// CreateContentType(appId, contentType);
+            Type = contentType;
             LightAttributesForInternalUseOnlyForNow = values;
             try
             {
@@ -178,6 +181,8 @@ namespace ToSic.Eav.Data
                     return EntityGuid;
                 case Constants.EntityFieldType:
                     return Type.Name;
+                case Constants.EntityFieldCreated:
+                    return Created;
                 case Constants.EntityFieldModified:
                     return Modified;
                 default:

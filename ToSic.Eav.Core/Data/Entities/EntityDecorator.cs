@@ -60,7 +60,9 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         public DateTime Modified => Entity.Modified;
 
-         /// <inheritdoc />
+        public DateTime Created => Entity.Created;
+
+        /// <inheritdoc />
        public IAttribute this[string attributeName] => Entity[attributeName];
 
         /// <inheritdoc />

@@ -180,6 +180,7 @@ namespace ToSic.Eav
                 case EntityFieldGuid:
                 case EntityFieldType:
                 case EntityFieldIsPublished:
+                case EntityFieldCreated:
                 case EntityFieldModified:
                     return true;
             }
