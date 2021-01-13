@@ -166,13 +166,14 @@ namespace ToSic.Eav.Conversion
                 catch { /* ignore */ }
 
 
-            // todo: unclear if this is still needed, but it would be risky to remove, without analyzing all scripts
-            if (!entityValues.ContainsKey("Title"))
-                try // there are strange cases where the title is missing, then just ignore this
-                {
-                    entityValues.Add("Title", entity.GetBestTitle(Languages));
-                }
-                catch { /* ignore */ }
+            // Include title field, if there is not already one in the dictionary
+            if (!entityValues.ContainsKey(Constants.SysFieldTitle))
+                entityValues.Add(Constants.SysFieldTitle, entity.GetBestTitle(Languages));
+                
+            // Include modified field, if there is not already one in the dictionary
+            if(!entityValues.ContainsKey(Constants.SysFieldModified))
+                entityValues.Add(Constants.SysFieldModified, entity.Modified);
+            
 
             return entityValues;
         }
