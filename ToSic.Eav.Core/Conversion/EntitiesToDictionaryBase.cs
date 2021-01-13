@@ -174,6 +174,9 @@ namespace ToSic.Eav.Conversion
             if(!entityValues.ContainsKey(Constants.SysFieldModified))
                 entityValues.Add(Constants.SysFieldModified, entity.Modified);
             
+            // Include created field, if there is not already one in the dictionary
+            if(!entityValues.ContainsKey(Constants.SysFieldCreated))
+                entityValues.Add(Constants.SysFieldCreated, entity.Created);
 
             return entityValues;
         }
