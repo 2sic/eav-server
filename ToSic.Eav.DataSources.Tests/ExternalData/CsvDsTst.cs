@@ -114,7 +114,7 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
 
         private static object GetAttributeValue(IEntity entity, string name)
         {
-            return entity.GetBestValue(entity.Attributes[name].Name);
+            return entity.Value(entity.Attributes[name].Name);
         }
 
         public static CsvDataSource CreateDataSource(string filePath, string delimiter = ";", string contentType = "Anonymous", string idColumnName = null, string titleColumnName = null)

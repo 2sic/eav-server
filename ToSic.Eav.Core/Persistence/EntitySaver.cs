@@ -210,7 +210,7 @@ namespace ToSic.Eav.Persistence
         {
             var callLog = logDetails ? Log.Call() : null;
             // check IsPublished
-            var isPublished = newE.GetBestValue(Constants.EntityFieldIsPublished);
+            var isPublished = newE.Value(Constants.EntityFieldIsPublished);
             if (isPublished != null)
             {
                 Log.Add("Found property for published, will move");
@@ -223,7 +223,7 @@ namespace ToSic.Eav.Persistence
             }
 
             // check EntityGuid
-            var probablyGuid = newE.GetBestValue(Constants.EntityFieldGuid);
+            var probablyGuid = newE.Value(Constants.EntityFieldGuid);
             if (probablyGuid != null)
             {
                 Log.Add("Found property for published, will move");

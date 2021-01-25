@@ -37,6 +37,9 @@ namespace ToSic.Eav.Data
 		public IContentType Type { get; internal set; }
 
         /// <inheritdoc />
+		public DateTime Created { get; internal set; }
+        
+        /// <inheritdoc />
 		public DateTime Modified { get; internal set; }
 
         /// <inheritdoc />
@@ -76,7 +79,7 @@ namespace ToSic.Eav.Data
             AppId = appId;
             EntityId = entityId;
             if(guid != null) EntityGuid = guid.Value;
-            Type = contentType;// CreateContentType(appId, contentType);
+            Type = contentType;
             LightAttributesForInternalUseOnlyForNow = values;
             try
             {
@@ -106,13 +109,13 @@ namespace ToSic.Eav.Data
 
             if (LightAttributesForInternalUseOnlyForNow.ContainsKey(attributeName))
                 result = LightAttributesForInternalUseOnlyForNow[attributeName];
-            else switch (attributeName.ToLowerInvariant())
+            else
             {
-                case Constants.EntityFieldTitle:
+                var attributeNameLower = attributeName.ToLowerInvariant();
+                if (attributeNameLower == Constants.EntityFieldTitle)
                     result = Title;
-                    break;
-                default:
-                    return GetInternalPropertyByName(attributeName);
+                else
+                    return GetInternalPropertyByName(attributeNameLower);
             }
 
             // map any kind of number to the one format used in other code-checks: decimal
@@ -165,12 +168,12 @@ namespace ToSic.Eav.Data
         /// Resolves: EntityId, EntityGuid, EntityType, EntityModified
         /// Also ensure that it works in any upper/lower case
         /// </summary>
-        /// <param name="attributeName"></param>
+        /// <param name="attributeNameLowerInvariant"></param>
         /// <returns></returns>
         [PrivateApi]
-        protected object GetInternalPropertyByName(string attributeName)
+        protected virtual object GetInternalPropertyByName(string attributeNameLowerInvariant)
         {
-            switch (attributeName.ToLowerInvariant())
+            switch (attributeNameLowerInvariant.ToLowerInvariant())
             {
                 case Constants.EntityFieldId:
                     return EntityId;
@@ -178,6 +181,8 @@ namespace ToSic.Eav.Data
                     return EntityGuid;
                 case Constants.EntityFieldType:
                     return Type.Name;
+                case Constants.EntityFieldCreated:
+                    return Created;
                 case Constants.EntityFieldModified:
                     return Modified;
                 default:

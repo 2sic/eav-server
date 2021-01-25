@@ -20,7 +20,7 @@ namespace ToSic.Eav.WebApi.Security
         /// </summary>
         protected IAppIdentity App { get; private set; }
 
-        internal IContextOfSite Context { get; private set; }
+        public IContextOfSite Context { get; private set; }
 
         protected ISite SiteForSecurityCheck { get; private set; }
 

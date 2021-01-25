@@ -9,7 +9,7 @@ namespace ToSic.Eav.Context
     /// All these objects should normally be injectable
     /// In rare cases you may want to replace them, which is why Site/User have Set Accessors
     /// </summary>
-    public class ContextOfSite: HasLog, IContextOfSite
+    public class ContextOfSite: HasLog<IContextOfSite>, IContextOfSite
     {
         #region Constructor / DI
 
@@ -18,12 +18,6 @@ namespace ToSic.Eav.Context
             ServiceProvider = serviceProvider ?? throw new Exception("Context didn't receive service provider, but this is absolutely necessary.");
             Site = site;
             User = user;
-        }
-
-        public IContextOfSite Init(ILog parent)
-        {
-            Log.LinkTo(parent);
-            return this;
         }
 
         #endregion

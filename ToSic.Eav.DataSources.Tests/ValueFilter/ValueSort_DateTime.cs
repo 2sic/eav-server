@@ -59,10 +59,10 @@ namespace ToSic.Eav.DataSourceTests
 
         private void ValidateDateFieldIsSorted(List<IEntity> list, string field, bool asc)
         {
-            var previous = list.First().GetBestValue(field) as DateTime?;
+            var previous = list.First().Value<DateTime>(field) as DateTime?;
             foreach (var entity in list)
             {
-                var next = entity.GetBestValue(field) as DateTime?;
+                var next = entity.Value<DateTime>(field) as DateTime?;
                 //if(!(next is DateTime) || !previousValue.HasValue) 
                 //    throw new Exception("try to compare prev/next dates, but one or both are null");
                 double comp;

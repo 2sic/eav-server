@@ -100,13 +100,13 @@ namespace ToSic.Eav.Apps.Parts
         private List<InputTypeInfo> GetAppRegisteredInputTypes()
             => Parent.Entities.Get(Constants.TypeForInputTypeDefinition)
                 .Select(e => new InputTypeInfo(
-                    e.GetBestValue<string>(Constants.InputTypeType),
-                    e.GetBestValue<string>(Constants.InputTypeLabel),
-                    e.GetBestValue<string>(Constants.InputTypeDescription),
-                    e.GetBestValue<string>(Constants.InputTypeAssets),
-                    e.GetBestValue<bool>(Constants.InputTypeDisableI18N),
-                    e.GetBestValue<string>(Constants.InputTypeAngularAssets),
-                    e.GetBestValue<bool>(Constants.InputTypeUseAdam)
+                    e.Value<string>(Constants.InputTypeType),
+                    e.Value<string>(Constants.InputTypeLabel),
+                    e.Value<string>(Constants.InputTypeDescription),
+                    e.Value<string>(Constants.InputTypeAssets),
+                    e.Value<bool>(Constants.InputTypeDisableI18N),
+                    e.Value<string>(Constants.InputTypeAngularAssets),
+                    e.Value<bool>(Constants.InputTypeUseAdam)
                 ))
                 .ToList();
 

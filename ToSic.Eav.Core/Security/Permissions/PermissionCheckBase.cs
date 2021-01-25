@@ -131,17 +131,19 @@ namespace ToSic.Eav.Security
         {
             var wrapLog = Log.Call($"{new string(desiredActionCode)}");
             // Check if it's a grant for the desired action - otherwise stop here
-            var grnt = permissionEntity.Grant;// permissionEntity.GetBestValue(Permission.FieldGrant).ToString();
+            var grant = permissionEntity.Grant;
             // If Grant doesn't contain desired action, stop here
             // otherwise check if it applies
-            var result = grnt.IndexOfAny(desiredActionCode) != -1 
+            var result = grant.IndexOfAny(desiredActionCode) != -1 
                 && VerifyConditionApplies(permissionEntity);
             wrapLog($"{result}");
             return result;
         }
 
         /// <summary>
-        /// This should 
+        /// This should evaluate the grants and decide if the environment approves any of these grants.
+        /// Note that in many cases the implementation will simply check if the environment provides edit permissions, but
+        /// it can really check the grants required and compare each one with the environment.
         /// </summary>
         /// <param name="grants"></param>
         /// <returns></returns>

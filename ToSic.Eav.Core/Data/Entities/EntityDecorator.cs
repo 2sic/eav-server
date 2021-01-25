@@ -10,7 +10,7 @@ namespace ToSic.Eav.Data
     /// This extends an existing <see cref="IEntity"/> with more properties and information. 
     /// Everything in the original is passed through invisibly. <br/>
     /// </summary>
-    [PrivateApi]
+    [PrivateApi("this decorator object is for internal use only, no value in publishing it")]
     public abstract partial class EntityDecorator : IEntity, IEntityWrapper
     {
         public IEntity Entity { get; }
@@ -60,7 +60,9 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         public DateTime Modified => Entity.Modified;
 
-         /// <inheritdoc />
+        public DateTime Created => Entity.Created;
+
+        /// <inheritdoc />
        public IAttribute this[string attributeName] => Entity[attributeName];
 
         /// <inheritdoc />
@@ -72,41 +74,17 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         public string Owner => Entity.Owner;
 
-
-        [PrivateApi("Testing / wip #IValueConverter")]
-        public object GetBestValue(string attributeName) => Entity.GetBestValue(attributeName);
+        /// <inheritdoc />
+        public object GetBestValue(string attributeName, string[] languages) => Entity.GetBestValue(attributeName, languages);
 
         /// <inheritdoc />
-        public object GetBestValue(string attributeName, string[] languages)
-            => Entity.GetBestValue(attributeName, languages);
-
-        /// <inheritdoc />
-        public T GetBestValue<T>(string attributeName, string[] languages) 
-            => Entity.GetBestValue<T>(attributeName, languages);
-
-
-        [PrivateApi("WIP new")]
-        public object PrimaryValue(string attributeName) 
-            => Entity.PrimaryValue(attributeName);
-
-        [PrivateApi("wip new")]
-        public T PrimaryValue<T>(string attributeName) 
-            => Entity.PrimaryValue<T>(attributeName);
-
-        // 2020-10-30 trying to drop uses with ResolveHyperlinks
-        ///// <inheritdoc />
-        //public TVal GetBestValue<TVal>(string name, bool resolveHyperlinks = false)
-        //    => Entity.GetBestValue<TVal>(name, resolveHyperlinks);
-
-        public TVal GetBestValue<TVal>(string name)
-            => Entity.GetBestValue<TVal>(name);
+        public T GetBestValue<T>(string attributeName, string[] languages) => Entity.GetBestValue<T>(attributeName, languages);
 
         /// <inheritdoc />
         public string GetBestTitle() => Entity.GetBestTitle();
 
         /// <inheritdoc />
-        public string GetBestTitle(string[] dimensions)
-            => Entity.GetBestTitle(dimensions);
+        public string GetBestTitle(string[] dimensions) => Entity.GetBestTitle(dimensions);
 
         /// <inheritdoc />
         object IEntityLight.Title => ((IEntityLight) Entity).Title;
@@ -133,14 +111,12 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         public List<IEntity> Parents(string type = null, string field = null) => Entity.Parents(type, field);
 
-
-        [PrivateApi]
-        public object Value(string field/*, bool resolve = true*/) => Entity.Value(field/*, resolve*/);
-
-        [PrivateApi]
-        public T Value<T>(string field/*, bool resolve = true*/) => Entity.Value<T>(field/*, resolve*/);
-
         #endregion
 
+        /// <inheritdoc />
+        public object Value(string field) => Entity.Value(field);
+
+        /// <inheritdoc />
+        public T Value<T>(string field) => Entity.Value<T>(field);
     }
 }

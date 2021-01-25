@@ -131,6 +131,7 @@ namespace ToSic.Eav.Persistence.Efc
                 // add properties which are not in the json
                 // ReSharper disable once PossibleNullReferenceException
                 newEntity.IsPublished = e.IsPublished;
+                newEntity.Created = e.Created;
                 newEntity.Modified = e.Modified;
                 newEntity.Owner = e.Owner;
                 return newEntity;
@@ -141,7 +142,7 @@ namespace ToSic.Eav.Persistence.Efc
                 throw new NullReferenceException("content type is not found for type " + e.AttributeSetId);
 
             newEntity = EntityBuilder.EntityFromRepository(app.AppId, e.EntityGuid, e.EntityId, e.EntityId,
-                e.Metadata, contentType, e.IsPublished, app, e.Modified, e.Owner,
+                e.Metadata, contentType, e.IsPublished, app, e.Created, e.Modified, e.Owner,
                 e.Version);
 
             // Add all Attributes of that Content-Type

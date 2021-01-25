@@ -61,10 +61,9 @@ namespace ToSic.Eav.Persistence.Efc
                     IsPublished = e.IsPublished,
                     PublishedEntityId = e.PublishedEntityId,
                     Owner = e.Owner,
+                    Created = e.ChangeLogCreatedNavigation.Timestamp, // != null ? e.ChangeLogCreatedNavigation.Timestamp : DateTime.MinValue,
                     Modified = e.ChangeLogModifiedNavigation.Timestamp,
                     Json = e.Json,
-                    // 2020-07-31 2dm - never used
-                    //ContentType = e.ContentType
                 })
                 .ToList();
             return wrapLog("ok", rawEntities);

@@ -46,8 +46,8 @@ namespace ToSic.Eav.ImportExport.Tests.json
             ent = serializer.Deserialize(jsonDynamic, true); // should work too
             Assert.AreEqual(6, ent.Attributes.Count, "second dynamic entity should also have 6 attribs");
 
-            Assert.AreEqual("v1", ent.GetBestValue("f1"), "added field f1 should be v1");
-            Assert.AreEqual("File:1075", ent.GetBestValue("Image"), "original fields should still work");
+            Assert.AreEqual("v1", ent.Value("f1"), "added field f1 should be v1");
+            Assert.AreEqual("File:1075", ent.Value("Image"), "original fields should still work");
             Assert.AreEqual(null, ent.GetBestTitle(), "shouldn't have a real title");
         }
 

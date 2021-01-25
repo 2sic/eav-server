@@ -4,7 +4,7 @@ using ToSic.Eav.Security;
 
 namespace ToSic.Eav.WebApi.Errors
 {
-    internal class HttpException
+    public class HttpException
     {
         /// <summary>
         /// Throw a correct HTTP error with the right error-numbr. This is important for the JavaScript which changes behavior & error messages based on http status code
@@ -18,10 +18,10 @@ namespace ToSic.Eav.WebApi.Errors
             return new HttpExceptionAbstraction(httpStatusCode, helpText);
         }
 
-        internal static HttpExceptionAbstraction BadRequest(string message)
+        public static HttpExceptionAbstraction BadRequest(string message)
             => new HttpExceptionAbstraction(HttpStatusCode.BadRequest, message);
 
-        internal static HttpExceptionAbstraction InformativeErrorForTypeAccessDenied(string contentType, List<Grants> grant, bool staticNameIsGuid)
+        public static HttpExceptionAbstraction InformativeErrorForTypeAccessDenied(string contentType, List<Grants> grant, bool staticNameIsGuid)
         {
             var grantCodes = string.Join(",", grant);
 
@@ -36,13 +36,13 @@ namespace ToSic.Eav.WebApi.Errors
                 "permissions");
         }
 
-        internal static HttpExceptionAbstraction NotAllowedFileType(string filename, string message = null) 
+        public static HttpExceptionAbstraction NotAllowedFileType(string filename, string message = null) 
             => new HttpExceptionAbstraction(HttpStatusCode.UnsupportedMediaType, $"file {filename} has an unsupported file type. {message}");
 
-        internal static HttpExceptionAbstraction PermissionDenied(string message = null) 
+        public static HttpExceptionAbstraction PermissionDenied(string message = null) 
             => new HttpExceptionAbstraction(HttpStatusCode.Forbidden, $"Permission denied. {message}");
 
-        internal static HttpExceptionAbstraction MissingParam(string paramName) 
+        public static HttpExceptionAbstraction MissingParam(string paramName) 
             => new HttpExceptionAbstraction(HttpStatusCode.BadRequest, $"Param {paramName} missing.");
     }
 }

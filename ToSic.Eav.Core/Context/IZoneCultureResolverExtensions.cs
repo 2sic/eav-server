@@ -54,15 +54,5 @@ namespace ToSic.Eav.Context
         }
 
         #endregion
-
-
-
-        /// <summary>
-        /// This shouldn't be used because it's thread based, but there are some cases on the
-        /// Entity which will need this. We're setting all calls to this
-        /// so we can keep track of where they are used
-        /// </summary>
-        /// <returns></returns>
-        public static string ThreadCultureNameNotGood() => ThreadCurrentCultureInfo.Name;
     }
 }

@@ -19,10 +19,11 @@ namespace ToSic.Eav.Data.Builder
             int repositoryId, ITarget metadataFor, IContentType type, 
             bool isPublished, 
             AppState source,
+            DateTime created,
             DateTime modified, string owner, int version)
         {
             var e = EntityWithAllIdsAndType(appId, entityGuid, entityId, repositoryId,
-                type, isPublished, modified, owner, version);
+                type, isPublished, created, modified, owner, version);
 
             e.MetadataFor = metadataFor;
 
@@ -33,12 +34,12 @@ namespace ToSic.Eav.Data.Builder
             return e;
         }
 
-        public static Entity EntityWithAttributes(int appId, Guid entityGuid, int entityId,
-            int repositoryId, IContentType type, bool isPublished = true,
-            DateTime? modified = null, string owner = "", int version = 1)
+        public static Entity EntityTemplate(int appId, Guid entityGuid, int entityId,
+            int repositoryId, IContentType type /*, bool isPublished = true,
+            DateTime? modified = null, string owner = "", int version = 1*/)
         {
             var ent = EntityWithAllIdsAndType(appId, entityGuid, entityId, repositoryId, 
-                type, isPublished, modified ?? DateTime.Now, owner, version);
+                type, true, DateTime.MinValue, DateTime.Now, "", 1);
 
             ent.MetadataFor = new Metadata.Target();
 
@@ -50,6 +51,7 @@ namespace ToSic.Eav.Data.Builder
 
         private static Entity EntityWithAllIdsAndType(int appId, Guid entityGuid, int entityId,
             int repositoryId, IContentType type, bool isPublished,
+            DateTime created,
             DateTime modified, string owner, int version, 
             Dictionary<string, IAttribute> attribs = null)
             => new Entity
@@ -61,6 +63,7 @@ namespace ToSic.Eav.Data.Builder
                 Type = type,
                 IsPublished = isPublished,
                 RepositoryId = repositoryId,
+                Created = created,
                 Modified = modified,
                 Owner = owner,
                 Attributes = attribs
@@ -78,7 +81,7 @@ namespace ToSic.Eav.Data.Builder
             var targetType = newType ?? entity.Type;
 
             var e = EntityWithAllIdsAndType(entity.AppId, entity.EntityGuid, entity.EntityId, entity.RepositoryId, targetType, 
-                entity.IsPublished, entity.Modified, entity.Owner, entity.Version, attributes);
+                entity.IsPublished, entity.Created, entity.Modified, entity.Owner, entity.Version, attributes);
             e.TitleFieldName = entity.Title?.Name;
             var lookupApp = (entity as Entity)?.DeferredLookupData as AppState;
             e.Relationships = new RelationshipManager(e, lookupApp, allRelationships);

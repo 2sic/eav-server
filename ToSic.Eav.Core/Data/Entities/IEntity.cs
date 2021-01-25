@@ -24,7 +24,7 @@ namespace ToSic.Eav.Data
         /// An object OR a null - for example when retrieving the title and no title exists
         /// the object is string, int or even a EntityRelationship
         /// </returns>
-#if NET451
+#if NETFRAMEWORK
         new 
 #endif
             object GetBestValue(string attributeName, string[] languages);
@@ -40,23 +40,24 @@ namespace ToSic.Eav.Data
         /// An object OR a null - for example when retrieving the title and no title exists
         /// the object is string, int or even a EntityRelationship
         /// </returns>
-#if NET451
+#if NETFRAMEWORK
         new
 #endif
             T GetBestValue<T>(string attributeName, string[] languages);
 
-        [WorkInProgressApi("Still wip")]
-        object PrimaryValue(string attributeName);
+        // 2020-12-15 disabled - I believe it was never in use
+        //[WorkInProgressApi("Still wip")]
+        //object PrimaryValue(string attributeName);
 
-        [WorkInProgressApi("Still wip")]
-        T PrimaryValue<T>(string attributeName);
+        //[WorkInProgressApi("Still wip")]
+        //T PrimaryValue<T>(string attributeName);
 
         /// <summary>
         /// Best way to get the current entities title
         /// </summary>
         /// <param name="dimensions">Array of dimensions/languages to use in the lookup</param>
         /// <returns>The entity title as a string</returns>
-#if NET451
+#if NETFRAMEWORK
         new
 #endif
             string GetBestTitle(string[] dimensions);
@@ -64,7 +65,7 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// All the attributes of the current Entity.
         /// </summary>
-#if NET451
+#if NETFRAMEWORK
         new
 #endif
             Dictionary<string, IAttribute> Attributes { get; }
@@ -90,7 +91,7 @@ namespace ToSic.Eav.Data
         /// version of this entity in the repository
         /// </summary>
         /// <returns>The version number.</returns>
-#if NET451
+#if NETFRAMEWORK
         new
 #endif
             int Version { get; }
@@ -103,7 +104,7 @@ namespace ToSic.Eav.Data
         /// The metadata is either already prepared, from the same app, or from a remote app
         /// </remarks>
         /// <returns>A typed Metadata provider for this Entity</returns>
-#if NET451
+#if NETFRAMEWORK
         new
 #endif
             IMetadataOf Metadata { get; }
@@ -116,7 +117,7 @@ namespace ToSic.Eav.Data
         /// <param name="field">Optional field name to access</param>
         /// <param name="type">Optional type to filter for</param>
         /// <returns>List of children, or empty list if not found</returns>
-#if NET451
+#if NETFRAMEWORK
         new
 #endif
             List<IEntity> Children(string field = null, string type = null);
@@ -127,16 +128,37 @@ namespace ToSic.Eav.Data
         /// <param name="type">The type name to filter for</param>
         /// <param name="field">The field name where a parent references this item</param>
         /// <returns>List of children, or empty list if not found</returns>
-#if NET451
+#if NETFRAMEWORK
         new
 #endif
             List<IEntity> Parents(string type = null, string field = null);
 
-        [PrivateApi]
-        object Value(string field);
+        /// <summary>
+        /// Get the value of this field as an object.
+        /// This overload without languages will always return the first value it finds,
+        /// so if the data is multi-lingual, it's not reliable. This is preferred for internal work
+        /// for configuration objects and similar which are not multi-language. 
+        /// </summary>
+        /// <remarks>
+        /// In addition to the fields this Entity has (like FirstName, etc.) you can also use known terms like EntityId, Modified etc.
+        /// </remarks>
+        /// <param name="fieldName"></param>
+        /// <returns>The value or null if not found</returns>
+        object Value(string fieldName);
 
-        [PrivateApi]
-        T Value<T>(string field);
+        /// <summary>
+        /// Get the value of this field in a type-safe way.
+        /// This overload without languages will always return the first value it finds,
+        /// so if the data is multi-lingual, it's not reliable. This is preferred for internal work
+        /// for configuration objects and similar which are not multi-language. 
+        /// </summary>
+        /// <remarks>
+        /// In addition to the fields this Entity has (like FirstName, etc.) you can also use known terms like EntityId, Modified etc.
+        /// </remarks>
+        /// <typeparam name="T">The type, usually string, int, bool, etc.</typeparam>
+        /// <param name="fieldName"></param>
+        /// <returns>The typed value or the (default) value - so a null for strings, false for boolean etc.</returns>
+        T Value<T>(string fieldName);
 
         #endregion
     }

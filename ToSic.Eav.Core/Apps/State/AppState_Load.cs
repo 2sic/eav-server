@@ -23,17 +23,15 @@ namespace ToSic.Eav.Apps
 
 
 
-        internal void Load(ILog parentLog, Action loader)
+        internal void Load(Action loader)
         {
-            var wrapLog = parentLog?.Call(message: $"zone/app:{ZoneId}/{AppId}", useTimer: true);
+            var wrapLog = Log.Call(message: $"zone/app:{ZoneId}/{AppId}", useTimer: true);
 
             try
             {
                 // first set a lock, to ensure that only one update/load is running at the same time
                 lock (this)
                 {
-                    // temporarily link logs, to put messages in both logs
-                    Log.LinkTo(parentLog);
                     var inLockLog = Log.Call($"loading: {Loading}", "app loading start in lock");
 
                     // only if loading is true will the AppState object accept changes
@@ -53,27 +51,34 @@ namespace ToSic.Eav.Apps
 
                 // detach logs again, to prevent memory leaks because the global/cached app-state shouldn't hold on to temporary log objects
                 wrapLog?.Invoke("ok");
-                Log.Unlink();
             }
         }
 
         private void EnsureNameAndFolderInitialized()
         {
+            var callLog = Log.Call($"Name: {Name}, Folder: {Folder}, AppGuidName: {AppGuidName}");
             // If the loader wasn't able to fill name/folder, then the data was not a json
             // so we must try to fix this now
-            if (Name == null && Folder == null)
+            if (string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(Folder))
             {
-                //var guidName = State.Cache.Zones[ZoneId].Apps[AppId];
                 // check if it's the default app
                 if (AppGuidName == Constants.DefaultAppName)
                     Name = Folder = Constants.ContentAppName;
                 else
                 {
+                    Log.Add("Trying to load Name/Folder from App package entity");
                     var config = List.FirstOrDefault(md => md.Type.StaticName == AppLoadConstants.TypeAppConfig);
-                    Name = config?.GetBestValue<string>(AppLoadConstants.FieldName);
-                    Folder = config?.GetBestValue<string>(AppLoadConstants.FieldFolder);
+                    Name = config?.Value<string>(AppLoadConstants.FieldName);
+                    Folder = config?.Value<string>(AppLoadConstants.FieldFolder);
                 }
-            }
+            } 
+            
+            // if the folder still isn't know (either no data found, or the Name existed)
+            // try one last time
+            if (string.IsNullOrEmpty(Folder) && AppGuidName == Constants.DefaultAppName)
+                Folder = Constants.ContentAppName;
+
+            callLog($"Name: {Name}, Folder:{Folder}");
         }
     }
 }

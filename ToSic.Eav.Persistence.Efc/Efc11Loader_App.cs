@@ -58,9 +58,9 @@ namespace ToSic.Eav.Persistence.Efc
 
         public AppState Update(AppState app, AppStateLoadSequence startAt, int[] entityIds = null)
         {
-            var outerWrapLog = Log.Call<AppState>();
+            var outerWrapLog = Log.Call<AppState>(message: "What happens inside this is logged in the app-state loading log");
 
-            app.Load(Log, () =>
+            app.Load(() =>
             {
                 var msg = $"get app data package for a#{app.AppId}, startAt: {startAt}, ids only:{entityIds != null}";
                 var wrapLog = Log.Call(message: msg, useTimer: true);
@@ -127,8 +127,8 @@ namespace ToSic.Eav.Persistence.Efc
                 serializer.Initialize(0, ReflectionTypes.FakeCache.Values, null, Log);
                 if (!(serializer.Deserialize(json, true, true) is Entity appEntity))
                     return wrapLog("can't deserialize", nullTuple);
-                var path = appEntity.GetBestValue<string>(AppLoadConstants.FieldFolder);
-                var name = appEntity.GetBestValue<string>(AppLoadConstants.FieldName);
+                var path = appEntity.Value<string>(AppLoadConstants.FieldFolder);
+                var name = appEntity.Value<string>(AppLoadConstants.FieldName);
 
                 return string.IsNullOrWhiteSpace(path) 
                     ? wrapLog("no folder", new Tuple<string, string>(name, path)) 

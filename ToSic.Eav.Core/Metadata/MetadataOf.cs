@@ -23,25 +23,11 @@ namespace ToSic.Eav.Metadata
             _appMetadataProvider = metaProvider;
         }
 
-        ///// <summary>
-        ///// initialize using keys to the metadata-environment, for lazy retrieval
-        ///// The remote mode is for internal use only, as it's a left-over of ghost content-types, which we don't want to
-        ///// promote any more like this.
-        ///// </summary>
-        //internal MetadataOf(int itemType, T key, int remoteZoneId, int remoteAppId) : this(itemType, key)
-        //{
-        //    _remoteZoneId = remoteZoneId;
-        //    _remoteAppId = remoteAppId;
-        //}
-
         protected MetadataOf(int itemType, T key)
         {
             _itemType = itemType;
             Key = key;
         }
-
-        //private readonly int _remoteAppId;
-        //private readonly int _remoteZoneId;
 
         private readonly IHasMetadataSource _appMetadataProvider;
         private readonly int _itemType;
@@ -122,13 +108,7 @@ namespace ToSic.Eav.Metadata
             // check if already retrieved
             if (_alreadyTriedToGetProvider) return _metadataSource;
 
-            _metadataSource = 
-                //_remoteAppId != 0
-                //? (_remoteZoneId != 0
-                //    ? Factory.Resolve<IRemoteMetadata>()?.OfZoneAndApp(_remoteZoneId, _remoteAppId)
-                //    : Factory.Resolve<IRemoteMetadata>()?.OfApp(_remoteAppId))
-                //: 
-                _appMetadataProvider?.MetadataSource;
+            _metadataSource = _appMetadataProvider?.MetadataSource;
             _alreadyTriedToGetProvider = true;
             return _metadataSource;
         }
@@ -147,9 +127,9 @@ namespace ToSic.Eav.Metadata
         /// <inheritdoc />
         public TVal GetBestValue<TVal>(string name, string typeName = null)
         {
-            var list = typeName == null ? this : this.Where(md => md.Type.Is(typeName)); //.StaticName == typeName || md.Type.Name == typeName);
+            var list = typeName == null ? this : this.Where(md => md.Type.Is(typeName));
             var found = list.FirstOrDefault(md => md.Attributes.ContainsKey(name));
-            return found == null ? default : found.GetBestValue<TVal>(name);
+            return found == null ? default : found.GetBestValue<TVal>(name, null);
         }
 
         /// <inheritdoc />

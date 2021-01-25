@@ -143,6 +143,19 @@ namespace ToSic.Eav
 
         #endregion
 
+        #region System field names - how they are shown / used publicly
+
+        /// <summary>
+        /// This is for public values / fields - like when the title is streamed in an API
+        /// </summary>
+        public const string SysFieldTitle = "Title";
+        public const string SysFieldModified = "Modified";
+        public const string SysFieldCreated = "Created";
+        public const string SysFieldGuid = "Guid";
+        
+        #endregion
+        
+
         #region Special Properties of Entities
 
         public const string EntityFieldTitle = "entitytitle";
@@ -152,6 +165,7 @@ namespace ToSic.Eav
         public const string EntityFieldType = "entitytype";
         public const string EntityFieldIsPublished = "ispublished";
         public const string EntityFieldModified = "modified";
+        public const string EntityFieldCreated= "created";
 
         /// <summary>
         /// Virtual fields are not real fields, but information properties like title, etc.
@@ -167,6 +181,7 @@ namespace ToSic.Eav
                 case EntityFieldGuid:
                 case EntityFieldType:
                 case EntityFieldIsPublished:
+                case EntityFieldCreated:
                 case EntityFieldModified:
                     return true;
             }

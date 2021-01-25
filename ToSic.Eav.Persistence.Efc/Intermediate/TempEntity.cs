@@ -14,6 +14,7 @@ namespace ToSic.Eav.Persistence.Efc.Intermediate
         public bool IsPublished;
         public int? PublishedEntityId;
         public string Owner;
+        public DateTime Created;
         public DateTime Modified;
         public string Json;
         //public string ContentType;

@@ -17,10 +17,9 @@ namespace ToSic.Eav.Configuration
         /// </summary>
         /// <param name="typeName"></param>
         /// <returns></returns>
-        public static IEntity For(string typeName) =>
-            List.FirstOrDefault(e => e.Type.Is(typeName)); //.StaticName == typeName || e.Type.Name == typeName);
+        public static IEntity For(string typeName) => List.FirstOrDefault(e => e.Type.Is(typeName));
 
-        public static object Value(string typeName, string key) => For(typeName)?.GetBestValue(key);
+        public static object Value(string typeName, string key) => For(typeName)?.Value(key);
 
         public static string GetOverride(string typeName, string key, string fallback)
         {

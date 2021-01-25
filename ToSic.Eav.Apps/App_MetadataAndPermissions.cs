@@ -33,7 +33,7 @@ namespace ToSic.Eav.Apps
             var wrapLog = Log.Call();
 
             var appState = State.Get(this);
-            Metadata = appState.AppMetadata; // new MetadataOf<int>(Constants.MetadataForApp, AppId, appState);
+            Metadata = appState.AppMetadata;
 
             // Get the content-items describing various aspects of this app
             AppResources = Metadata.FirstOrDefault(md => md.Type.StaticName == AppLoadConstants.TypeAppResources);
@@ -46,8 +46,7 @@ namespace ToSic.Eav.Apps
             // resolve some values for easier access
             Name = appState.Name ?? "Error";
             Folder = appState.Folder ?? "Error";
-            if (bool.TryParse(AppConfiguration?.GetBestValue("Hidden")?.ToString(), out var hidden))
-                Hidden = hidden;
+            Hidden = AppConfiguration?.Value<bool>(AppConstants.FieldHidden) ?? false;
             Log.Add($"Name: {Name}, Folder: {Folder}, Hidden: {Hidden}");
             wrapLog(null);
         }

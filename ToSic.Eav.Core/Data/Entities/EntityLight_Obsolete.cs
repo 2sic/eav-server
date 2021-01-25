@@ -1,12 +1,14 @@
-﻿using System;
+﻿#if NETFRAMEWORK
+using System;
 using ToSic.Eav.Documentation;
 
-#if NET451
 namespace ToSic.Eav.Data
 {
     public partial class EntityLight
     {
         /// <inheritdoc />
+        [PrivateApi]
+        [Obsolete("Deprecated. Do not use any more, as it cannot reliably resolve hyperlinks.")]
         public object GetBestValue(string attributeName, bool resolveHyperlinks)
         {
             var result = GetBestValue(attributeName);
@@ -18,6 +20,7 @@ namespace ToSic.Eav.Data
         }
 
         [PrivateApi]
+        [Obsolete("Deprecated. Do not use any more, as it cannot reliably resolve hyperlinks.")]
         protected static string TryToResolveLink(Guid itemGuid, string result)
         {
             if (!ValueConverterBase.CouldBeReference(result)) return result;

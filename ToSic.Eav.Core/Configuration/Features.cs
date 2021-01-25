@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Run;
 using ToSic.Eav.Security.Encryption;
 
 namespace ToSic.Eav.Configuration
@@ -112,8 +111,8 @@ namespace ToSic.Eav.Configuration
             try
             {
                 var entity = Global.For(TypeName);
-                var featStr = entity?.GetBestValue<string>(FeaturesField);
-                var signature = entity?.GetBestValue<string>(SignatureField);
+                var featStr = entity?.Value<string>(FeaturesField);
+                var signature = entity?.Value<string>(SignatureField);
 
                 // Verify signature from security-system
                 if (!string.IsNullOrWhiteSpace(featStr))

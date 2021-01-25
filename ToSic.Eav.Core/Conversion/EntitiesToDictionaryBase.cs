@@ -113,14 +113,13 @@ namespace ToSic.Eav.Conversion
             // Add Id and Title
             // ...only if these are not already existing with this name in the entity itself as an internal value
             const string IdKey = "Id";
-            const string GuidKey = "Guid";
             if (entityValues.ContainsKey(IdKey)) entityValues.Remove(IdKey);
             entityValues.Add(IdKey, entity.EntityId);
 
             if (WithGuid)
             {
-                if (entityValues.ContainsKey(GuidKey)) entityValues.Remove(GuidKey);
-                entityValues.Add(GuidKey, entity.EntityGuid);
+                if (entityValues.ContainsKey(Constants.SysFieldGuid)) entityValues.Remove(Constants.SysFieldGuid);
+                entityValues.Add(Constants.SysFieldGuid, entity.EntityGuid);
             }
 
             if (WithPublishing)
@@ -166,13 +165,17 @@ namespace ToSic.Eav.Conversion
                 catch { /* ignore */ }
 
 
-            // todo: unclear if this is still needed, but it would be risky to remove, without analyzing all scripts
-            if (!entityValues.ContainsKey("Title"))
-                try // there are strange cases where the title is missing, then just ignore this
-                {
-                    entityValues.Add("Title", entity.GetBestTitle(Languages));
-                }
-                catch { /* ignore */ }
+            // Include title field, if there is not already one in the dictionary
+            if (!entityValues.ContainsKey(Constants.SysFieldTitle))
+                entityValues.Add(Constants.SysFieldTitle, entity.GetBestTitle(Languages));
+                
+            // Include modified field, if there is not already one in the dictionary
+            if(!entityValues.ContainsKey(Constants.SysFieldModified))
+                entityValues.Add(Constants.SysFieldModified, entity.Modified);
+            
+            // Include created field, if there is not already one in the dictionary
+            if(!entityValues.ContainsKey(Constants.SysFieldCreated))
+                entityValues.Add(Constants.SysFieldCreated, entity.Created);
 
             return entityValues;
         }

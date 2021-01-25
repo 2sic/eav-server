@@ -128,7 +128,7 @@ namespace ToSic.Eav.DataSources.System
             var found = QueryName.StartsWith(GlobalQueries.GlobalEavQueryPrefix)
                 ? _globalQueriesLazy.Value.FindQuery(QueryName)
                 : this.QueryManager.AllQueryItems(this)
-                    .FirstOrDefault(q => string.Equals(q.GetBestValue("Name").ToString(), QueryName,
+                    .FirstOrDefault(q => string.Equals(q.Value<string>("Name"), QueryName,
                         StringComparison.InvariantCultureIgnoreCase));
 
             if (found == null) throw new Exception($"Can't build information about query - couldn't find query '{QueryName}'");

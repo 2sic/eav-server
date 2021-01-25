@@ -59,7 +59,7 @@ namespace ToSic.Eav.DataSources.Queries
         {
             // Note: must use GetBestValue("Name") as GetTitle() will fail, since the type is often not known
             var types = _globalQueriesCache ?? AllQueries();
-            return types.FirstOrDefault(e => e.GetBestValue("Name").ToString() == name);
+            return types.FirstOrDefault(e => e.Value<string>("Name") == name);
         }
     }
 }
