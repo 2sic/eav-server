@@ -58,9 +58,9 @@ namespace ToSic.Eav.Persistence.Efc
 
         public AppState Update(AppState app, AppStateLoadSequence startAt, int[] entityIds = null)
         {
-            var outerWrapLog = Log.Call<AppState>();
+            var outerWrapLog = Log.Call<AppState>(message: "What happens inside this is logged in the app-state loading log");
 
-            app.Load(Log, () =>
+            app.Load(() =>
             {
                 var msg = $"get app data package for a#{app.AppId}, startAt: {startAt}, ids only:{entityIds != null}";
                 var wrapLog = Log.Call(message: msg, useTimer: true);

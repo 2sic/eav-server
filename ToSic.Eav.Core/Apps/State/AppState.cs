@@ -19,13 +19,14 @@ namespace ToSic.Eav.Apps
         [PrivateApi("constructor, internal use only")]
         internal AppState(IAppIdentity app, string appGuidName, ILog parentLog): base($"App.St-{app.AppId}", new CodeRef())
         {
+	        History.Add("app-state", Log);
+            Log.Add($"AppState for App {app.AppId}");
             Init(app, new CodeRef(), parentLog);
             AppGuidName = appGuidName;
             CacheResetTimestamp();  // do this very early, as this number is needed elsewhere
 
 	        Index = new Dictionary<int, IEntity>();
             Relationships = new AppRelationshipManager(this);
-	        History.Add("app-state", Log);
         }
 
 
