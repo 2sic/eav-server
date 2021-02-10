@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Data.Builder
 {
-    public class AttributeBuilder
+    public class AttributeBuilder: HasLog<AttributeBuilder>
     {
         #region Dependency Injection
 
-        public AttributeBuilder(Lazy<IValueConverter> lazyValueConverter)
+        public AttributeBuilder(Lazy<IValueConverter> lazyValueConverter): base("Dta.AttBld")
         {
             _lazyValueConverter = lazyValueConverter;
         }
@@ -28,9 +29,14 @@ namespace ToSic.Eav.Data.Builder
             object value, string valueType, string language = null, bool languageReadOnly = false,
             bool resolveHyperlink = false, IEntitiesSource allEntitiesForRelationships = null)
         {
+            var wrapLog = Log.Call<IValue>($"..., {attributeName}, {value} ({valueType}), {language}, ..., {nameof(resolveHyperlink)}: {resolveHyperlink}");
             // pre-convert links if necessary...
-            if (resolveHyperlink && valueType == ValueTypes.Hyperlink.ToString())
-                value = ValueConverter.ToReference(valueType);
+            if (resolveHyperlink && valueType == ValueTypes.Hyperlink.ToString() && value is string stringValue)
+            {
+                Log.Add($"Will resolve hyperlink for '{stringValue}'");
+                value = ValueConverter.ToReference(stringValue);
+                Log.Add($"New value: '{stringValue}'");
+            }
 
             // sometimes language is passed in as an empty string - this would have side effects, so it must be neutralized
             if (string.IsNullOrWhiteSpace(language)) language = null;
@@ -55,7 +61,7 @@ namespace ToSic.Eav.Data.Builder
                 attrib.Values.Add(valueWithLanguages);
             }
 
-            return valueWithLanguages;
+            return wrapLog(null, valueWithLanguages);
         }
         #endregion
 

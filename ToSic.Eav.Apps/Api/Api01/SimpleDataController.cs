@@ -25,7 +25,18 @@ namespace ToSic.Eav.Api.Api01
     {
         private readonly Lazy<AppManager> _appManagerLazy;
         private readonly DbDataController _dbData;
-        public Lazy<AttributeBuilder> LazyAttributeBuilder { get; }
+
+        public AttributeBuilder AttributeBuilder
+        {
+            get
+            {
+                if (_attributeBuilder != null) return _attributeBuilder;
+                return _attributeBuilder = _lazyAttributeBuilder.Value.Init(Log);
+            }
+        }
+
+        private AttributeBuilder _attributeBuilder;
+        private readonly Lazy<AttributeBuilder> _lazyAttributeBuilder;
         private DbDataController _context;
 
         private AppManager _appManager;
@@ -44,7 +55,7 @@ namespace ToSic.Eav.Api.Api01
         {
             _appManagerLazy = appManagerLazy;
             _dbData = dbData;
-            LazyAttributeBuilder = lazyAttributeBuilder;
+            _lazyAttributeBuilder = lazyAttributeBuilder;
         }
 
         /// <param name="zoneId">Zone ID</param>
@@ -202,7 +213,7 @@ namespace ToSic.Eav.Api.Api01
                 if (attribute != null)
                 {
                     var strValue = value.Value.ToString();
-                    LazyAttributeBuilder.Value.AddValue(entity.Attributes, attribute.Name, strValue, attribute.Type, valuesLanguage, valuesReadOnly, resolveHyperlink);
+                    AttributeBuilder.AddValue(entity.Attributes, attribute.Name, strValue, attribute.Type, valuesLanguage, valuesReadOnly, resolveHyperlink);
                     Log.Add($"Attribute '{value.Key}' will become '{strValue}' ({attribute.Type})");
                 }
             }
