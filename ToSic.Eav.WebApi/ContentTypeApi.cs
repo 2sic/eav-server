@@ -51,6 +51,7 @@ namespace ToSic.Eav.WebApi
 
         #region Content-Type Get, Delete, Save
 
+        // todo: rename to "List" to match external name, once feature/oqtane2 branch isn't used any more
         public IEnumerable<ContentTypeDto> Get(string scope = null, bool withStatistics = false)
         {
             var wrapLog = Log.Call($"scope:{scope}, stats:{withStatistics}");
@@ -85,13 +86,12 @@ namespace ToSic.Eav.WebApi
 	        Log.Add($"for json a:{t.AppId}, type:{t.Name}");
 	        var metadata = t.Metadata.Description;
 
-            // todo: check if we shouldn't include languages for the nice name
 	        var nameOverride = metadata?.Value<string>(Constants.ContentTypeMetadataLabel);
 	        if (string.IsNullOrEmpty(nameOverride))
 	            nameOverride = t.Name;
             var ser = new EntitiesToDictionary();
 
-	        var share = (IContentTypeShared) t;
+	        var shareInfo = (IContentTypeShared) t;
 
 	        var jsonReady = new ContentTypeDto
 	        {
@@ -101,8 +101,8 @@ namespace ToSic.Eav.WebApi
 	            StaticName = t.StaticName,
 	            Scope = t.Scope,
 	            Description = t.Description,
-	            UsesSharedDef = share.ParentId != null,
-	            SharedDefId = share.ParentId,
+	            UsesSharedDef = shareInfo.ParentId != null,
+	            SharedDefId = shareInfo.ParentId,
 	            Items = count,
 	            Fields = t.Attributes.Count,
 	            Metadata = ser.Convert(metadata),

@@ -10,7 +10,7 @@ namespace ToSic.Eav.Metadata
         /// The remote mode is for internal use only, as it's a left-over of ghost content-types, which we don't want to
         /// promote any more like this.
         /// </summary>
-        internal RemoteMetadataOf(int itemType, T key, int remoteZoneId, int remoteAppId) : base(itemType, key)
+        internal RemoteMetadataOf(int targetType, T key, int remoteZoneId, int remoteAppId) : base(targetType, key)
         {
             _remoteZoneId = remoteZoneId;
             _remoteAppId = remoteAppId;
@@ -20,7 +20,7 @@ namespace ToSic.Eav.Metadata
         /// Optional overload in cases where it's not remote after all
         /// Needed for ContentTypeMetadata, which may be remote or may not be remote
         /// </summary>
-        internal RemoteMetadataOf(int itemType, T key, IHasMetadataSource metaProvider) : base(itemType, key, metaProvider) { }
+        internal RemoteMetadataOf(int targetType, T key, IHasMetadataSource metaProvider) : base(targetType, key, metaProvider) { }
 
         private readonly int _remoteAppId;
         private readonly int _remoteZoneId;
