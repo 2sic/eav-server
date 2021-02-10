@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>net451;netstandard2.0</TargetFrameworks>
     <AssemblyName>ToSic.Eav.Persistence.Efc</AssemblyName>
-    <Version>11.11.04</Version>
+    <Version>11.11.05</Version>
   </PropertyGroup>
 
   <!-- Entity Framework for net451 (DNN) should be 1.1.1 because of DI, but newer version for MVC-->
