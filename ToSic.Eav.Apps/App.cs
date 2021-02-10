@@ -51,7 +51,8 @@ namespace ToSic.Eav.Apps
         {
             _dependencies = dependencies;
             dependencies.ZoneMapper.Init(Log);
-            DataSourceFactory = dependencies.DataSourceFactory;
+            DataSourceFactory = dependencies.DataSourceFactory.Init(Log);
+            
             Site = dependencies.Site;
         }
 

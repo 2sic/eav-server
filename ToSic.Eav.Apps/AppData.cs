@@ -23,7 +23,7 @@ namespace ToSic.Eav.Apps
         #region Constructor stuff
 
         [PrivateApi]
-        public override string LogId => "Ds.EavApp";
+        public override string LogId => "DS.AppCUD";
 
         public AppData(Lazy<SimpleDataController> dataController, Lazy<IUser> userLazy)
         {

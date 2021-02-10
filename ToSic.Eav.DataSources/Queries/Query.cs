@@ -63,7 +63,7 @@ namespace ToSic.Eav.DataSources.Queries
         [PrivateApi]
         public Query(DataSourceFactory dataSourceFactory)
         {
-            DataSourceFactory = dataSourceFactory;
+            DataSourceFactory = dataSourceFactory.Init(Log);
         }
 
         /// <summary>

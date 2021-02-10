@@ -16,9 +16,7 @@ namespace ToSic.Eav.DataSources
     [PublicApi_Stable_ForUseInYourCode]
     public abstract class DataSourceBase : HasLog, IDataSource, IDataTarget
     {
-        /// <summary>
-        /// The name to be used in logging. It's set in the code, and then used to initialize the logger. 
-        /// </summary>
+        /// <inheritdoc/>
         [PrivateApi]
         public abstract string LogId { get; }
 
