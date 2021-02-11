@@ -4,7 +4,7 @@
     <TargetFrameworks>net451;netstandard2.0</TargetFrameworks>
     <Copyright>Copyright AGPL 2sic 2020</Copyright>
     <Version>11.11.05.00</Version>
-    <Configurations>Debug;Release;Dbg Testing</Configurations>
+    <Configurations>Debug;Release;Dbg Testing;Debug Oqtane;DebugOqtane</Configurations>
     <RootNamespace>ToSic.Eav.Apps</RootNamespace>
   </PropertyGroup>
 

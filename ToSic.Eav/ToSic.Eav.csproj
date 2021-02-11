@@ -6,6 +6,7 @@
     <Company>2sic Internet Solutions GmbH</Company>
     <Authors>2sic Internet Solutions GmbH</Authors>
     <Copyright>Copyright AGPL 2sic 2020</Copyright>
+    <Configurations>Debug;Release;Debug Oqtane;DebugOqtane</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
