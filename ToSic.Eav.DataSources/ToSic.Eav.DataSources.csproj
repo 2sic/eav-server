@@ -5,7 +5,7 @@
     <AssemblyName>ToSic.Eav.DataSources</AssemblyName>
     <RootNamespace>ToSic.Eav.DataSources</RootNamespace>
     <Version>11.11.05</Version>
-    <Configurations>Debug;Release;Debug Oqtane;DebugOqtane</Configurations>
+    <Configurations>Debug;Release;Debug Oqtane;DebugOqtane;DebugDnn</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

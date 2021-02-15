@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>net451;netstandard2.0</TargetFrameworks>
     <Version>11.11.05</Version>
-    <Configurations>Debug;Release;Debug Oqtane;DebugOqtane</Configurations>
+    <Configurations>Debug;Release;Debug Oqtane;DebugOqtane;DebugDnn</Configurations>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net451'">
