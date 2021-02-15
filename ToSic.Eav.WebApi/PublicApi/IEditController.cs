@@ -41,6 +41,10 @@ namespace ToSic.Eav.WebApi.PublicApi
         // security check happens internally
         IEnumerable<EntityForPickerDto> EntityPicker(int appId, string[] items, string contentTypeName = null);
 
+        [Obsolete("Wait till UI only suse the Pro, then drop this")]
+        string LookupLink(string link, int appId, string contentType = default, Guid guid = default, string field = default);
+
+
         /// <summary>
         /// This GET-call will resolve links to files and to pages.
         /// For page-resolving, it only needs Hyperlink and AppId.
@@ -52,6 +56,6 @@ namespace ToSic.Eav.WebApi.PublicApi
         /// <param name="guid">Item GUID (optional). Relevant for checking ADAM links inside an item.</param>
         /// <param name="field">Item field (optional). Relevant for checking ADAM links inside an item.</param>
         /// <returns></returns>
-        string LookupLink(string link, int appId, string contentType = default, Guid guid = default, string field = default);
+        LinkInfoDto LookupLinkPro(string link, int appId, string contentType = default, Guid guid = default, string field = default);
     }
 }
