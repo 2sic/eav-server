@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.LookUp;
 
@@ -59,7 +58,7 @@ namespace ToSic.Eav.Apps
                 throw new Exception("Cannot provide Data for the object App as crucial information is missing. " +
                                     "Please call InitData first to provide this data.");
 
-            // ModulePermissionController does not work when indexing, return false for search
+            // Note: ModulePermissionController does not work when indexing, return false for search
             var initialSource = DataSourceFactory.GetPublishing(this, ShowDrafts, ConfigurationProvider);
 
             var xData = DataSourceFactory.GetDataSource<AppData>(initialSource).Init(_dependencies.ZoneMapper, _dependencies.Site);

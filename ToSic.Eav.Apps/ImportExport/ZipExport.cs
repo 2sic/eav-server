@@ -49,7 +49,7 @@ namespace ToSic.Eav.Apps.ImportExport
             _globalConfiguration = globalConfiguration;
             _metaTargetTypes = metaTargetTypes;
             AppRuntime = appRuntime;
-            DataSourceFactory = dataSourceFactory;
+            DataSourceFactory = dataSourceFactory.Init(Log);
         }
 
         private readonly IServerPaths _serverPaths;

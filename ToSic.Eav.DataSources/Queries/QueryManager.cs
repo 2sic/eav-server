@@ -20,8 +20,7 @@ namespace ToSic.Eav.DataSources.Queries
 
         public QueryManager(DataSourceFactory dataSourceFactory): base($"{DataSourceConstants.LogPrefix}.QryMan")
         {
-            DataSourceFactory = dataSourceFactory;
-            dataSourceFactory.Init(Log);
+            DataSourceFactory = dataSourceFactory.Init(Log);
         }
 
 	    /// <summary>

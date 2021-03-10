@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using System.Runtime.Caching;
+using ToSic.Eav.Caching;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -65,7 +66,7 @@ namespace ToSic.Eav.DataSources.Caching
             var itemInCache = Get(key);
             var found = itemInCache != null;
             var valid = found && (!dataStream.CacheRefreshOnSourceRefresh || !itemInCache.CacheChanged(dataStream.Caching.CacheTimestamp));
-            Log.Add($"ListCache found:{found}; valid:{valid}; timestamp:{dataStream.Caching.CacheTimestamp}");
+            Log.Add($"ListCache found:{found}; valid:{valid}; timestamp:{dataStream.Caching.CacheTimestamp} = {dataStream.Caching.CacheTimestamp.ToReadable()}");
             Log.Add($"ListCache key:'{key}'");
             wrapLog(valid.ToString());
             return valid ? itemInCache : null;

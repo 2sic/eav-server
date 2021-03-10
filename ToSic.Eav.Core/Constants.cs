@@ -197,7 +197,7 @@ namespace ToSic.Eav
         public const string DataTypeNumber = "Number";
         public const string DataTypeDateTime = "DateTime";
         public const string DataTypeEntity = "Entity"; // todo: update all references with this as a constant
-        public const string DataTypeHyperlink = "Hyperlink"; // todo: rename to DataType
+        public const string DataTypeHyperlink = "Hyperlink";
         public const string DataTypeString = "String";
         #endregion
 

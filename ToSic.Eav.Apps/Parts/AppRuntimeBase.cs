@@ -19,13 +19,13 @@ namespace ToSic.Eav.Apps.Parts
 
         protected AppRuntimeBase(DataSourceFactory dataSourceFactory, string logName): base(logName, new CodeRef())
         {
-            DataSourceFactory = dataSourceFactory;
+            DataSourceFactory = dataSourceFactory.Init(Log);
         }
 
         public T Init(IAppIdentity app, bool showDrafts, ILog parentLog)
         {
             Init(app, new CodeRef(), parentLog);
-            DataSourceFactory.Init(Log);
+            // 2020-02-10 DataSourceFactory.Init(Log);
             // re-use data of parent if it's constructed from an app-manager
             if (app is AppManager parentIsAppManager) _data = parentIsAppManager.Data;
             ShowDrafts = showDrafts;

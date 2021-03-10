@@ -29,7 +29,7 @@ namespace ToSic.Eav.DataSources.Queries
         public QueryBuilder(DataSourceFactory dataSourceFactory, IZoneCultureResolver cultureResolver) : base("DS.PipeFt")
         {
             _cultureResolver = cultureResolver;
-            DataSourceFactory = dataSourceFactory;
+            DataSourceFactory = dataSourceFactory.Init(Log);
             DataSourceFactory.Init(Log);
         }
         

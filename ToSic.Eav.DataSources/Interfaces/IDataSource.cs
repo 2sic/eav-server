@@ -73,15 +73,20 @@ namespace ToSic.Eav.DataSources
         ///// </summary>
         //bool AllowVersioningUI { get; }
 
-	    #endregion
+        #endregion
 
-	    #region Internals 
+        #region Internals 
 
-		/// <summary>
-		/// Name of this DataSource - not usually relevant.
-		/// </summary>
-		/// <returns>Name of this source.</returns>
-		string Name { get; }
+        /// <summary>
+        /// The short name to be used in logging. It's set in the code, and then used to initialize the logger. 
+        /// </summary>
+        string LogId { get; }
+
+        /// <summary>
+        /// Name of this DataSource - not usually relevant.
+        /// </summary>
+        /// <returns>Name of this source.</returns>
+        string Name { get; }
 		#endregion
 
         #region Caching Information

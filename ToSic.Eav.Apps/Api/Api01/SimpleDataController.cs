@@ -25,7 +25,18 @@ namespace ToSic.Eav.Api.Api01
     {
         private readonly Lazy<AppManager> _appManagerLazy;
         private readonly DbDataController _dbData;
-        public Lazy<AttributeBuilder> LazyAttributeBuilder { get; }
+
+        public AttributeBuilder AttributeBuilder
+        {
+            get
+            {
+                if (_attributeBuilder != null) return _attributeBuilder;
+                return _attributeBuilder = _lazyAttributeBuilder.Value.Init(Log);
+            }
+        }
+
+        private AttributeBuilder _attributeBuilder;
+        private readonly Lazy<AttributeBuilder> _lazyAttributeBuilder;
         private DbDataController _context;
 
         private AppManager _appManager;
@@ -44,7 +55,7 @@ namespace ToSic.Eav.Api.Api01
         {
             _appManagerLazy = appManagerLazy;
             _dbData = dbData;
-            LazyAttributeBuilder = lazyAttributeBuilder;
+            _lazyAttributeBuilder = lazyAttributeBuilder;
         }
 
         /// <param name="zoneId">Zone ID</param>
@@ -54,11 +65,12 @@ namespace ToSic.Eav.Api.Api01
         internal SimpleDataController Init(int zoneId, int appId, string defaultLanguageCode, ILog parentLog)
         {
             Log.LinkTo(parentLog);
+            var wrapLog = Log.Call<SimpleDataController>($"{zoneId}, {appId}, {defaultLanguageCode}");
             _appId = appId;
             _defaultLanguageCode = defaultLanguageCode;
             _context = _dbData.Init(zoneId, appId, Log);
             _appManager = _appManagerLazy.Value.Init(new AppIdentity(zoneId, appId), Log);
-            return this;
+            return wrapLog(null, this);
         }
 
         #endregion
@@ -76,7 +88,7 @@ namespace ToSic.Eav.Api.Api01
         /// <exception cref="ArgumentException">Content-type does not exist, or an attribute in values</exception>
         public IEnumerable<int> Create(string contentTypeName, IEnumerable<Dictionary<string, object>> multiValues, ITarget target = null)
         {
-            var wrapLog = Log.Call<IEnumerable<int>>(contentTypeName);
+            var wrapLog = Log.Call<IEnumerable<int>>($"{contentTypeName}, items: {multiValues?.Count()}, target: {target != null}");
 
             // ensure the type really exists
             var type = _appManager.Read.ContentTypes.Get(contentTypeName);
@@ -87,6 +99,8 @@ namespace ToSic.Eav.Api.Api01
                 throw new ArgumentException(msg);
             }
 
+            Log.Add($"Type {contentTypeName} found. Will build entities to save...");
+
             var importEntity = multiValues.Select(values => BuildEntity(type, values, target)).ToList();
 
             var ids = _appManager.Entities.Save(importEntity);
@@ -95,13 +109,13 @@ namespace ToSic.Eav.Api.Api01
 
         private IEntity BuildEntity(IContentType type, Dictionary<string, object> values, ITarget target)
         {
-            var wrapLog = Log.Call<IEntity>();
+            var wrapLog = Log.Call<IEntity>($"{type.Name}, {values?.Count}, target: {target != null}");
             // ensure it's case insensitive...
             values = new Dictionary<string, object>(values, StringComparer.OrdinalIgnoreCase);
 
             if (values.All(v => v.Key.ToLowerInvariant() != Constants.EntityFieldGuid))
             {
-                Log.Add("add guid");
+                Log.Add("Add new generated guid, as none was provided.");
                 values.Add(Constants.EntityFieldGuid, Guid.NewGuid());
             }
 
@@ -109,10 +123,10 @@ namespace ToSic.Eav.Api.Api01
             var importEntity = new Entity(_appId, eGuid, type, new Dictionary<string, object>());
             if (target != null)
             {
-                Log.Add("add metadata target");
+                Log.Add("Set metadata target which was provided.");
                 importEntity.SetMetadata(target);
             }
-            AppendAttributeValues(importEntity, type, ConvertEntityRelations(values), _defaultLanguageCode, false,
+            AddValues(importEntity, type, ConvertEntityRelations(values), _defaultLanguageCode, false,
                 true);
             return wrapLog(null, importEntity);
         }
@@ -169,16 +183,21 @@ namespace ToSic.Eav.Api.Api01
             return result;
         }
 
-        private void AppendAttributeValues(Entity entity, IContentType attributeSet, Dictionary<string, object> values, string valuesLanguage, bool valuesReadOnly, bool resolveHyperlink)
+        private void AddValues(Entity entity, IContentType contentType, Dictionary<string, object> values, string valuesLanguage, bool valuesReadOnly, bool resolveHyperlink)
         {
-            Log.Add("append attribute values");
+            var wrapLog = Log.Call($"..., ..., values: {values?.Count}, {valuesLanguage}, read-only: {valuesReadOnly}, {nameof(resolveHyperlink)}: {resolveHyperlink}");
+            if (values == null)
+            {
+                wrapLog("no values");
+                return;
+            }
             foreach (var value in values)
             {
                 // Handle special attributes (for example of the system)
                 if (value.Key.ToLowerInvariant() == Constants.EntityFieldIsPublished)
                 {
                     entity.IsPublished = value.Value as bool? ?? true;
-                    Log.Add($"isPublished: {entity.IsPublished}");
+                    Log.Add($"IsPublished: {entity.IsPublished}");
                     continue;
                 }
 
@@ -190,11 +209,16 @@ namespace ToSic.Eav.Api.Api01
                 }
 
                 // Handle content-type attributes
-                var attribute = attributeSet[value.Key];
+                var attribute = contentType[value.Key];
                 if (attribute != null)
-                    LazyAttributeBuilder.Value.AddValue(entity.Attributes, 
-                    /*entity.Attributes.AddValue(*/attribute.Name, value.Value.ToString(), attribute.Type, valuesLanguage, valuesReadOnly, resolveHyperlink);
+                {
+                    var strValue = value.Value.ToString();
+                    AttributeBuilder.AddValue(entity.Attributes, attribute.Name, strValue, attribute.Type, valuesLanguage, valuesReadOnly, resolveHyperlink);
+                    Log.Add($"Attribute '{value.Key}' will become '{strValue}' ({attribute.Type})");
+                }
             }
+
+            wrapLog("done");
         }
     }
 }

@@ -130,9 +130,9 @@ namespace ToSic.Eav.DataSources
             T newSource,
             IAppIdentity appIdentity,
             IDataSource upstream = null,
-            ILookUpEngine configLookUp = null)
+            ILookUpEngine configLookUp = null) where T : IDataSource
         {
-            var wrapLog = Log.Call();
+            var wrapLog = Log.Call($"DataSource {newSource.Name} ({newSource.LogId})");
             if (!(newSource is DataSourceBase newDs))
             {
                 wrapLog("can't configure, not a base source");
