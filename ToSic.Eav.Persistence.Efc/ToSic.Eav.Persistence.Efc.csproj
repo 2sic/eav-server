@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>net451;netstandard2.0</TargetFrameworks>
     <AssemblyName>ToSic.Eav.Persistence.Efc</AssemblyName>
-    <Version>11.12.00</Version>
+    <Version>11.12.01</Version>
     <Configurations>Debug;Release;Debug Oqtane;DebugOqtane;DebugDnn</Configurations>
   </PropertyGroup>
 
