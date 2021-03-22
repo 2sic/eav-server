@@ -39,11 +39,16 @@ namespace ToSic.Eav.Conversion
             var wrapLog = Log.Call(useTimer: true);
             if (streams == null)
             {
-                Log.Add("Found some stream names to filter for");
+                Log.Add("No streams specified, will create list with all names.");
                 streams = source.Out.Select(p => p.Key);
             }
+            else
+                Log.Add("Will use provided list of streams.");
 
-            var y = streams.Where(k => source.Out.ContainsKey(k))
+            Log.Add("Streams: ", string.Join(",", streams));
+
+            var y = streams
+                .Where(k => source.Out.ContainsKey(k))
                 .ToDictionary(k => k, s => source.Out[s].Immutable.Select(GetDictionaryFromEntity)
             );
 
@@ -53,7 +58,7 @@ namespace ToSic.Eav.Conversion
 
         /// <inheritdoc />
         public Dictionary<string, IEnumerable<Dictionary<string, object>>> Convert(IDataSource source, string streams)
-            => Convert(source, streams.Split(','));
+            => Convert(source, streams?.Split(','));
 
         /// <inheritdoc />
         public IEnumerable<Dictionary<string, object>> Convert(IDataStream stream)
