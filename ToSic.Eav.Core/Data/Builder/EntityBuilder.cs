@@ -8,7 +8,7 @@ namespace ToSic.Eav.Data.Builder
     /// <summary>
     /// This is a helper environment to build entities based on different needs
     /// It's basically different kinds of constructors, just to keep the primary 
-    /// Entity object lean and clear
+    /// Entity object lean and clean
     /// </summary>
     public static class EntityBuilder
     {

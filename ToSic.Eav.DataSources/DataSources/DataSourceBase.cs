@@ -31,9 +31,16 @@ namespace ToSic.Eav.DataSources
         #region Caching stuff
 
         /// <inheritdoc />
+        [InternalApi_DoNotUse_MayChangeWithoutNotice]
         public List<string> CacheRelevantConfigurations { get; set; } = new List<string>();
 
-        [PrivateApi]
+        /// <summary>
+        /// Add a value to the configuration list for later resolving tokens and using in Cache-Keys.
+        /// </summary>
+        /// <param name="key">The internal key to reference this value in the Configuration[Key] dictionary.</param>
+        /// <param name="mask">The string containing [Tokens](xref:Basics.LookUp.Tokens) which will be parsed to find the final value.</param>
+        /// <param name="cacheRelevant">If this key should be part of the cache-key. Default is true. Set to false for parameters which don't affect the result or are confidential (like passwords)</param>
+        [PublicApi]
         protected void ConfigMask(string key, string mask, bool cacheRelevant = true)
         {
             Configuration.Values.Add(key, mask);
