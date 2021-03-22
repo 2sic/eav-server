@@ -6,7 +6,7 @@ namespace ToSic.Eav.LookUp
 {
     /// <summary>
     /// Look Up values from a .net dictionary. Case-Insensitive. <br/>
-    /// Read more about this in @Specs.LookUp.Intro
+    /// Read more about this in [](xref:Basics.LookUp.Index)
     /// </summary>
 	[PublicApi_Stable_ForUseInYourCode]
     public class LookUpInDictionary : LookUpBase

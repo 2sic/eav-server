@@ -9,7 +9,7 @@ namespace ToSic.Eav.Data
     /// Represents an Attribute / Property of an Entity with Values of a Generic Type
     /// </summary>
     /// <remarks>
-    /// > We recommend you read about the @Specs.Data.Intro
+    /// > We recommend you read about the [](xref:Basics.Data.Index)
     /// </remarks>
     /// <typeparam name="T">Type of the Value</typeparam>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi, use interface IAttribute<T>")]

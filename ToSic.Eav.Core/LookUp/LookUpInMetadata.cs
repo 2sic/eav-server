@@ -9,7 +9,7 @@ namespace ToSic.Eav.LookUp
     /// <summary>
     /// LookUp things from metadata. This uses EAV Metadata system and will look up Metadata for something.
     /// As of now it's hardwired to look up Metadata of Entities. <br/>
-    /// Read more about this in @Specs.LookUp.Intro
+    /// Read more about this in [](xref:Basics.LookUp.Index)
     /// </summary>
     [PublicApi_Stable_ForUseInYourCode]
 	public class LookUpInMetadata : LookUpInEntity

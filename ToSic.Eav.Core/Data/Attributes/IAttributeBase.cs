@@ -8,7 +8,7 @@ namespace ToSic.Eav.Data
     /// - attribute with values-list (in the IEntity)
 	/// </summary>
 	/// <remarks>
-    /// > We recommend you read about the @Specs.Data.Intro
+    /// > We recommend you read about the [](xref:Basics.Data.Index)
 	/// </remarks>
     [PublicApi_Stable_ForUseInYourCode]
 	public interface IAttributeBase

@@ -9,7 +9,7 @@ namespace ToSic.Eav.Data
     /// Represents an Attribute Definition. Used in Content-Types and IEntities.
     /// </summary>
     /// <remarks>
-    /// > We recommend you read about the @Specs.Data.Intro
+    /// > We recommend you read about the [](xref:Basics.Data.Index)
     /// </remarks>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi, use Interface IAttributeBase")]
     public class AttributeBase : IAttributeBase
