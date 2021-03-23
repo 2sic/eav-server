@@ -34,12 +34,12 @@ namespace ToSic.Eav.DataSources.Queries
         public string Icon { get; set; }
 
         /// <summary>
-        /// List of in-streams expected by this data-source - will be shown in the UI. Default is empty. 
+        /// List of in-streams expected by this data-source - will be shown in the UI. Default is empty []. 
         /// </summary>
         public string[] In { get; set; } = new string[0];
 
         /// <summary>
-        /// Determine if this data sources can have many out-streams with custom names
+        /// Determine if this data sources can have many out-streams with custom names. Default is false.
         /// </summary>
         /// <returns>True if this data source can also provide other named out-streams, false if it only has the defined list of out-streams.</returns>
         public bool DynamicOut { get; set; } = false;
@@ -78,8 +78,10 @@ namespace ToSic.Eav.DataSources.Queries
 
         /// <summary>
         /// **required** this should be a unique id, ideally a GUID. <br/>
+        /// </summary>
+        /// <remarks>
         /// _important: old code use string names like a.net namespace. This should not be done any more and will be deprecated in future._
-               /// </summary>
+        /// </remarks>
 	    public string GlobalName { get; set; } = "";
 
         /// <summary>
