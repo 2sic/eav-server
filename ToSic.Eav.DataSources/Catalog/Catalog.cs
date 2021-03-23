@@ -8,14 +8,17 @@ namespace ToSic.Eav.DataSources
     {
         internal static string FindName(string name)
         {
+            // New 11.12.x If the type is identified by a GUID, that's what we should return
+            var typeInfo = FindInDsTypeCache(name);
+            if (typeInfo?.GlobalName != null) return typeInfo.GlobalName;
+
+            // Old mechanism which checks real types etc but probably is never needed any more
             var type = FindType(name);
             if (type == null) return name;
             var longName = type.AssemblyQualifiedName;
-            //var segments = longName.Split(',');
-            //var keep = seg
             var first = longName.IndexOf(',');
             var second = longName.IndexOf(',', first + 2);
-            var newName = longName.Substring(0, second);// /*type.Namespace + ", " + */type.FullName;
+            var newName = longName.Substring(0, second);
             return newName;
         }
 
