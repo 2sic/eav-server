@@ -13,7 +13,8 @@ namespace ToSic.Eav.DataSources
 
 	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.PublishingFilter, ToSic.Eav.DataSources",
         Type = DataSourceType.Security, 
-        Icon = "eye", 
+        Icon = "visibility", 
+        In = new []{ Constants.PublishedStreamName, Constants.DefaultStreamName,  Constants.DraftsStreamName },
         DynamicOut = false, 
         HelpLink = "https://r.2sxc.org/DsPublishingFilter")]
 

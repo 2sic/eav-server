@@ -1,5 +1,6 @@
 ﻿using System;
 using ToSic.Eav.Apps;
+using ToSic.Eav.DataSources.Catalog;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Plumbing;
@@ -35,7 +36,7 @@ namespace ToSic.Eav.DataSources
         {
             var wrapLog = Log.Call(parameters: $"name: {sourceName}");
             // try to find with assembly name, or otherwise with GlobalName / previous names
-            var type = Catalog.FindType(sourceName);
+            var type = CatalogHelpers.FindType(sourceName);
 
             // still not found? must show error
             if (type == null)

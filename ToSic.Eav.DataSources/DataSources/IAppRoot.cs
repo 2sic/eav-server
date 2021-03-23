@@ -11,6 +11,7 @@ namespace ToSic.Eav.DataSources
     /// </summary>
     [VisualQuery(GlobalName = "ToSic.Eav.DataSources.IAppRoot, ToSic.Eav.DataSources",
         NiceName = "App Root Cache",
+        Icon = "table_chart",
         UiHint = "(aka ICache)",
         PreviousNames = new []
             {

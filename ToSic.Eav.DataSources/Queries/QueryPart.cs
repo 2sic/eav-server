@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.Data;
+using ToSic.Eav.DataSources.Catalog;
 using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.DataSources.Queries
@@ -46,7 +47,7 @@ namespace ToSic.Eav.DataSources.Queries
                 : assemblyAndType;
 
             // find the new name in the catalog
-            return Catalog.FindName(newName);
+            return CatalogHelpers.FindName(newName);
         }
 
 

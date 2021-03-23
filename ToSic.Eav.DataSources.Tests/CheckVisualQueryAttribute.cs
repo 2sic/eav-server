@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.DataSources.Catalog;
 
 namespace ToSic.Eav.DataSources.Tests
 {
@@ -10,7 +11,7 @@ namespace ToSic.Eav.DataSources.Tests
         [TestMethod]
         public void CheckGlobalNames()
         {
-            var allDS = Catalog.GetAll(true).ToList();
+            var allDS = CatalogHelpers.GetAll(true).ToList();
 
             allDS.ForEach(ds =>
             {

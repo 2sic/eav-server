@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.DataSources.Catalog
 {
-    internal class Catalog
+    internal class CatalogHelpers
     {
         internal static string FindName(string name)
         {
