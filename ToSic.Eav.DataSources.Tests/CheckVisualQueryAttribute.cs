@@ -11,7 +11,7 @@ namespace ToSic.Eav.DataSources.Tests
         [TestMethod]
         public void CheckGlobalNames()
         {
-            var allDS = CatalogHelpers.GetAll(true).ToList();
+            var allDS = new DataSourceCatalog(null).GetAll(true).ToList();
 
             allDS.ForEach(ds =>
             {

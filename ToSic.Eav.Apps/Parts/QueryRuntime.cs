@@ -1,9 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSources.Catalog;
-using ToSic.Eav.DataSources.Queries;
-using DataSourceInfo = ToSic.Eav.DataSources.DataSourceInfo;
+﻿using ToSic.Eav.DataSources.Queries;
 
 namespace ToSic.Eav.Apps.Parts
 {

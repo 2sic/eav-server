@@ -6,7 +6,7 @@ using ToSic.Eav.Logging;
 namespace ToSic.Eav.DataSources.Catalog
 {
     [PrivateApi]
-    public class DataSourceCatalog: HasLog
+    public partial class DataSourceCatalog: HasLog
     {
         public DataSourceCatalog(ILog parentLog = null) : base("DS.DsCat", parentLog)
         {
@@ -19,13 +19,15 @@ namespace ToSic.Eav.DataSources.Catalog
         public IEnumerable<DataSourceDto> QueryDataSources()
         {
             var callLog = Log.Call<IEnumerable<DataSourceDto>>();
-            var installedDataSources = CatalogHelpers.GetAll(true);
+            var installedDataSources = GetAll(true);
 
-            var result = installedDataSources.Select(dataSource => new DataSourceDto(dataSource.Type.Name, dataSource.VisualQuery)
-            {
-                PartAssemblyAndType = dataSource.GlobalName,
-                Out = GetOutStreamNames(dataSource)
-            }).ToList();
+            var result = installedDataSources
+                .Select(ds => new DataSourceDto(ds.Type.Name, ds.VisualQuery)
+                {
+                    PartAssemblyAndType = ds.GlobalName,
+                    Out = GetOutStreamNames(ds)
+                })
+                .ToList();
 
             return callLog(result.Count.ToString(), result);
         }

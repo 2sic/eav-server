@@ -40,29 +40,16 @@ namespace ToSic.Eav.DataSources.Queries
         /// </summary>
         /// <param name="assemblyAndType"></param>
         /// <returns></returns>
-        private static string RewriteOldAssemblyNames(string assemblyAndType)
+        private string RewriteOldAssemblyNames(string assemblyAndType)
         {
             var newName = assemblyAndType.EndsWith(Constants.V3To4DataSourceDllOld)
                 ? assemblyAndType.Replace(Constants.V3To4DataSourceDllOld, Constants.V3To4DataSourceDllNew)
                 : assemblyAndType;
 
             // find the new name in the catalog
-            return CatalogHelpers.FindName(newName);
+            return new DataSourceCatalog(null /* todo log*/).Find(newName);
         }
 
-
-        //[PrivateApi]
-        //public Dictionary<string, object> AsDictionary()
-        //{
-        //    var attributes = Entity.AsDictionary();
-
-        //    attributes[QueryConstants.VisualDesignerData] = JsonConvert.DeserializeObject(VisualDesignerData);
-
-        //    // Replace ToSic.Eav with ToSic.Eav.DataSources because they moved to a different DLL
-        //    attributes[QueryConstants.PartAssemblyAndType] = DataSourceType;
-
-        //    return attributes;
-        //}
 
     }
 }

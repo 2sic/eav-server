@@ -36,7 +36,7 @@ namespace ToSic.Eav.DataSources
         {
             var wrapLog = Log.Call(parameters: $"name: {sourceName}");
             // try to find with assembly name, or otherwise with GlobalName / previous names
-            var type = CatalogHelpers.FindType(sourceName);
+            var type = DataSourceCatalog.FindType(sourceName);
 
             // still not found? must show error
             if (type == null)
