@@ -23,14 +23,21 @@ namespace ToSic.Eav.WebApi
     {
         public QueryBuilder QueryBuilder { get; }
         private readonly Lazy<AppManager> _appManagerLazy;
+        
+        /// <summary>
+        /// The lazy reader should only be used in the Definition - it's important that it's a new object
+        /// when used, to ensure it has the changes previously saved
+        /// </summary>
+        private readonly Lazy<AppRuntime> _appReaderLazy;
         private readonly Lazy<EntitiesToDictionary> _entToDicLazy;
         private AppManager _appManager;
 
-        public QueryApi(Lazy<AppManager> appManagerLazy, QueryBuilder queryBuilder, Lazy<EntitiesToDictionary> entToDicLazy): base("Api.EavQry")
+        public QueryApi(Lazy<AppManager> appManagerLazy, Lazy<AppRuntime> appReaderLazy, QueryBuilder queryBuilder, Lazy<EntitiesToDictionary> entToDicLazy): base("Api.EavQry")
         {
             QueryBuilder = queryBuilder;
             QueryBuilder.Init(Log);
             _appManagerLazy = appManagerLazy;
+            _appReaderLazy = appReaderLazy;
             _entToDicLazy = entToDicLazy;
         }
 
@@ -53,7 +60,8 @@ namespace ToSic.Eav.WebApi
 
             if (!id.HasValue) return query;
 
-            var qDef = _appManager.Read.Queries.Get(id.Value);
+            var reader = _appReaderLazy.Value.Init(State.Identity(null, appId), false, Log);
+            var qDef = reader.Queries.Get(id.Value);
 
             #region Deserialize some Entity-Values
 
