@@ -12,6 +12,8 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
     [PublicApi_Stable_ForUseInYourCode]
 	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.ValueSort, ToSic.Eav.DataSources",
+        NiceName = "Value Sort",
+        Icon = "sort",
         Type = DataSourceType.Sort,
         DynamicOut = false,
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.ValueSort",

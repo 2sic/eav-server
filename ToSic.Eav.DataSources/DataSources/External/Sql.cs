@@ -19,9 +19,10 @@ namespace ToSic.Eav.DataSources
     /// </summary>
     [PublicApi_Stable_ForUseInYourCode]
     [VisualQuery(GlobalName = "ToSic.Eav.DataSources.Sql, ToSic.Eav.DataSources",
+        NiceName = "SQL Data",
         Type = DataSourceType.Source, 
         DynamicOut = false,
-        Icon = "database",
+        Icon = "dynamic_form",
         ExpectsDataOfType = "c76901b5-0345-4866-9fa3-6208de7f8543",
         PreviousNames = new []
             {

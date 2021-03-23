@@ -14,6 +14,8 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
     [PublicApi_Stable_ForUseInYourCode]
 	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.RelationshipFilter, ToSic.Eav.DataSources",
+        NiceName = "Relationship Filter",
+        Icon = "share",
         Type = DataSourceType.Lookup, 
         In = new[] { Constants.DefaultStreamName, Constants.FallbackStreamName }, 
         DynamicOut = false,

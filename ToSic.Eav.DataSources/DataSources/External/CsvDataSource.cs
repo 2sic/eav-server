@@ -19,6 +19,8 @@ namespace ToSic.Eav.DataSources
     /// </summary>
     [PublicApi_Stable_ForUseInYourCode]
     [VisualQuery(GlobalName = "ToSic.Eav.DataSources.CsvDataSource, ToSic.Eav.DataSources",
+        NiceName = "CSV Data",
+        Icon = "description",
         Type = DataSourceType.Source, 
         DynamicOut = false,
         ExpectsDataOfType = "|Config ToSic.Eav.DataSources.CsvDataSource",

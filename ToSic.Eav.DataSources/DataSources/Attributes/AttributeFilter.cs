@@ -14,6 +14,8 @@ namespace ToSic.Eav.DataSources
 	/// <remarks>Uses Configuration "AttributeNames"</remarks>
     [PublicApi_Stable_ForUseInYourCode]
 	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.AttributeFilter, ToSic.Eav.DataSources",
+        NiceName = "Attribute Remover",
+        Icon = "delete_sweep",
         Type = DataSourceType.Modify, 
         DynamicOut = false,
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.AttributeFilter",

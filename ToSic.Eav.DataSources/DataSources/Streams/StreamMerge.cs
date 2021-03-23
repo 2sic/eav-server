@@ -13,6 +13,8 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
     [PublicApi_Stable_ForUseInYourCode]
 	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.StreamMerge, ToSic.Eav.DataSources",
+        NiceName = "Merge Stream",
+        Icon = "merge_type",
         Type = DataSourceType.Logic, 
         DynamicOut = false, 
 	    HelpLink = "https://r.2sxc.org/DsStreamMerge")]

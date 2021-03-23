@@ -12,6 +12,8 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
     [PublicApi_Stable_ForUseInYourCode]
 	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.ItemFilterDuplicates, ToSic.Eav.DataSources",
+        NiceName = "Filter duplicates",
+        Icon = "filter_1",
         Type = DataSourceType.Logic, 
         DynamicOut = false, 
 	    HelpLink = "https://r.2sxc.org/DsFilterDuplicates")]

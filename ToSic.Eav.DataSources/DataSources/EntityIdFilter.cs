@@ -19,6 +19,7 @@ namespace ToSic.Eav.DataSources
         Type = DataSourceType.Filter, 
         DynamicOut = false,
         NiceName = "Item Id Filter",
+        Icon = "fingerprint",
         UiHint = "Find items based on the ID",
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.EntityIdFilter",
         HelpLink = "https://r.2sxc.org/DsIdFilter")]

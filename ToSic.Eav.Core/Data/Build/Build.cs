@@ -18,7 +18,7 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Create an Entity using a dictionary of values
         /// </summary>
-        /// <param name="noParameterOrder"></param>
+        /// <param name="noParameterOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
         /// <param name="appId">optional app id for this item, defaults to the current app</param>
         /// <param name="id">an optional id for this item, defaults to 0</param>
         /// <param name="values">dictionary of values</param>
@@ -48,12 +48,15 @@ namespace ToSic.Eav.Data
         /// otherwise you should use the single-item command.
         /// </summary>
         /// <param name="itemValues">list of value-dictionaries</param>
+        /// <param name="noParameterOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
         /// <param name="titleField">which field should be access if every something wants to know the title of this item</param>
         /// <param name="typeName">an optional type-name - usually not needed, defaults to "unspecified"</param>
         /// <param name="appId">optional app id for this item, defaults to the current app</param>
         /// <returns></returns>
         [PublicApi]
-        public static IEnumerable<IEntity> Entity(int appId, IEnumerable<Dictionary<string, object>> itemValues,
+        public static IEnumerable<IEntity> Entity(IEnumerable<Dictionary<string, object>> itemValues,
+            string noParameterOrder = Constants.RandomProtectionParameter,
+            int appId = 0,
             string titleField = null,
             string typeName = DefaultTypeName)
             => itemValues.Select(values => Entity(values,

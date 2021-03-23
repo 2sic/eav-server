@@ -15,6 +15,8 @@ namespace ToSic.Eav.DataSources
     /// </summary>
     [PublicApi_Stable_ForUseInYourCode]
     [VisualQuery(GlobalName = "ToSic.Eav.DataSources.ValueFilter, ToSic.Eav.DataSources",
+        NiceName = "Value Filter",
+        Icon = "filter_list",
         Type = DataSourceType.Filter, 
         In = new[] { Constants.DefaultStreamName, Constants.FallbackStreamName },
         DynamicOut = false,

@@ -15,6 +15,8 @@ namespace ToSic.Eav.DataSources
 	/// <remarks>Introduced in 10.26</remarks>
     [PublicApi_Stable_ForUseInYourCode]
 	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.StreamPick, ToSic.Eav.DataSources",
+        NiceName = "Pick Stream",
+        Icon = "call_split",
         Type = DataSourceType.Logic,
         ExpectsDataOfType = "67b19864-df6d-400b-9f37-f41f1dd69c4a",
         DynamicOut = false, 

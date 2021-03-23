@@ -10,6 +10,8 @@ namespace ToSic.Eav.DataSources
 	[PublicApi_Stable_ForUseInYourCode]
 
 	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.PassThrough, ToSic.Eav.DataSources",
+        NiceName = "Pass-Through",
+        Icon = "copy-all",
         Type = DataSourceType.Source, DynamicOut = true)]
 
     public class PassThrough : DataSourceBase

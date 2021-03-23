@@ -20,6 +20,7 @@ namespace ToSic.Eav.DataSources
         Type = DataSourceType.Modify,
         DynamicOut = false,
         NiceName = "Attribute-Rename",
+        Icon = "edit_attributes",
         UiHint = "rename the Attribute / Property",
         ExpectsDataOfType = "c5918cb8-d35a-48c7-9380-a437edde66d2",
         HelpLink = "https://r.2sxc.org/DsAttributeRename")]
