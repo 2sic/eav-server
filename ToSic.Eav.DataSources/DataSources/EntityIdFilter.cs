@@ -12,14 +12,15 @@ namespace ToSic.Eav.DataSources
 {
 	/// <inheritdoc />
 	/// <summary>
-	/// A DataSource that filters Entities by Ids
+	/// A DataSource that filters Entities by Ids. Can handle multiple IDs if comma-separated.
 	/// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.EntityIdFilter, ToSic.Eav.DataSources",
-        Type = DataSourceType.Filter, 
-        DynamicOut = false,
+	[VisualQuery(
         NiceName = "Item Id Filter",
         Icon = "fingerprint",
+        Type = DataSourceType.Filter, 
+        GlobalName = "ToSic.Eav.DataSources.EntityIdFilter, ToSic.Eav.DataSources",
+        DynamicOut = false,
         UiHint = "Find items based on the ID",
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.EntityIdFilter",
         HelpLink = "https://r.2sxc.org/DsIdFilter")]
@@ -32,7 +33,6 @@ namespace ToSic.Eav.DataSources
 	    public override string LogId => "DS.EntIdF";
 
         private const string EntityIdKey = "EntityIds";
-		//private const string PassThroughOnEmptyEntityIdsKey = "PassThroughOnEmptyEntityIds";
 
 		/// <summary>
 		/// A string containing one or more entity-ids. like "27" or "27,40,3063,30306"
@@ -100,7 +100,7 @@ namespace ToSic.Eav.DataSources
                             lstEntityIds.Add(entityIdToAdd);
                     }
 
-                    _cleanedIds = lstEntityIds.Distinct();//.ToArray();
+                    _cleanedIds = lstEntityIds.Distinct();
                 }
             }
             catch (Exception ex)

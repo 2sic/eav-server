@@ -12,15 +12,15 @@ namespace ToSic.Eav.DataSources
 {
 	/// <inheritdoc />
 	/// <summary>
-	/// DataSource to only pass through configured AttributeNames - other attributes/properties are removed from the entities.
+	/// DataSource to rename attributes. Will help to change internal field names to something which is more appropriate for your JS or whatever.
 	/// </summary>
-	/// <remarks>Uses Configuration "AttributeNames"</remarks>
     [PublicApi_Stable_ForUseInYourCode]
-    [VisualQuery(GlobalName = "ToSic.Eav.DataSources.AttributeRename, ToSic.Eav.DataSources",
-        Type = DataSourceType.Modify,
-        DynamicOut = false,
+    [VisualQuery(
         NiceName = "Attribute-Rename",
         Icon = "edit_attributes",
+        Type = DataSourceType.Modify,
+        GlobalName = "ToSic.Eav.DataSources.AttributeRename, ToSic.Eav.DataSources",
+        DynamicOut = false,
         UiHint = "rename the Attribute / Property",
         ExpectsDataOfType = "c5918cb8-d35a-48c7-9380-a437edde66d2",
         HelpLink = "https://r.2sxc.org/DsAttributeRename")]

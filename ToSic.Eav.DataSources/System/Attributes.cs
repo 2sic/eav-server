@@ -13,8 +13,11 @@ namespace ToSic.Eav.DataSources.System
     /// A DataSource that returns the attributes of a content-type
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
-    [VisualQuery(GlobalName = "ToSic.Eav.DataSources.System.Attributes, ToSic.Eav.DataSources",
+    [VisualQuery(
+        NiceName = "Attributes of Type",
+        Icon = "dns",
         Type = DataSourceType.Source,
+        GlobalName = "ToSic.Eav.DataSources.System.Attributes, ToSic.Eav.DataSources",
         Difficulty = DifficultyBeta.Advanced,
         DynamicOut = false,
         ExpectsDataOfType = "5461d34d-7dc6-4d38-9250-a0729cc8ead3",

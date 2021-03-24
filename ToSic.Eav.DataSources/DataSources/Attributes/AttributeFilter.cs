@@ -11,12 +11,12 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// DataSource to only pass through configured AttributeNames - other attributes/properties are removed from the entities.
 	/// </summary>
-	/// <remarks>Uses Configuration "AttributeNames"</remarks>
     [PublicApi_Stable_ForUseInYourCode]
-	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.AttributeFilter, ToSic.Eav.DataSources",
+	[VisualQuery(
         NiceName = "Attribute Remover",
         Icon = "delete_sweep",
         Type = DataSourceType.Modify, 
+        GlobalName = "ToSic.Eav.DataSources.AttributeFilter, ToSic.Eav.DataSources",
         DynamicOut = false,
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.AttributeFilter",
         HelpLink = "https://r.2sxc.org/DsAttributeFilter")]

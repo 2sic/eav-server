@@ -9,13 +9,14 @@ namespace ToSic.Eav.DataSources
 {
 	/// <inheritdoc />
 	/// <summary>
-	/// A DataSource that merges two streams
+	/// A DataSource that merges all streams on the `In` into one `Out` stream
 	/// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.StreamMerge, ToSic.Eav.DataSources",
+	[VisualQuery(
         NiceName = "Merge Stream",
         Icon = "merge_type",
         Type = DataSourceType.Logic, 
+        GlobalName = "ToSic.Eav.DataSources.StreamMerge, ToSic.Eav.DataSources",
         DynamicOut = false, 
 	    HelpLink = "https://r.2sxc.org/DsStreamMerge")]
 
@@ -37,7 +38,6 @@ namespace ToSic.Eav.DataSources
 		public StreamMerge()
 		{
             Provide(GetList);
-			//Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
 		}
 
         private ImmutableArray<IEntity> GetList()
@@ -50,7 +50,6 @@ namespace ToSic.Eav.DataSources
             return streams
                 .Aggregate(new List<IEntity>() as IEnumerable<IEntity>, (current, stream) => current.Concat(stream))
                 .ToImmutableArray();
-                //.ToList();
         }
 	}
 }

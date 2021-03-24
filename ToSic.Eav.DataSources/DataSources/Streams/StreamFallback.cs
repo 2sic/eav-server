@@ -11,8 +11,11 @@ namespace ToSic.Eav.DataSources
 	/// A DataSource that returns the first stream which has content
 	/// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.StreamFallback, ToSic.Eav.DataSources",
+	[VisualQuery(
+        NiceName = "Stream Fallback",
+        Icon = "call_merge",
         Type = DataSourceType.Logic, 
+        GlobalName = "ToSic.Eav.DataSources.StreamFallback, ToSic.Eav.DataSources",
         DynamicOut = false, 
 	    HelpLink = "https://r.2sxc.org/DsStreamFallback")]
 

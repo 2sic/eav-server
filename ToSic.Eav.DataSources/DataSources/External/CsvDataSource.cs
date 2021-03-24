@@ -18,10 +18,11 @@ namespace ToSic.Eav.DataSources
     /// DataSource for importing/reading CSV files. 
     /// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-    [VisualQuery(GlobalName = "ToSic.Eav.DataSources.CsvDataSource, ToSic.Eav.DataSources",
+    [VisualQuery(
         NiceName = "CSV Data",
         Icon = "description",
         Type = DataSourceType.Source, 
+        GlobalName = "ToSic.Eav.DataSources.CsvDataSource, ToSic.Eav.DataSources",
         DynamicOut = false,
         ExpectsDataOfType = "|Config ToSic.Eav.DataSources.CsvDataSource",
         HelpLink = "https://r.2sxc.org/DsCsv")]

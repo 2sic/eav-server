@@ -8,13 +8,14 @@ namespace ToSic.Eav.DataSources
 {
 	/// <inheritdoc />
 	/// <summary>
-	/// A DataSource that merges two streams
+	/// A DataSource that removes duplicate items in a Stream. Often used after a StreamMerge.
 	/// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.ItemFilterDuplicates, ToSic.Eav.DataSources",
+	[VisualQuery(
         NiceName = "Filter duplicates",
         Icon = "filter_1",
         Type = DataSourceType.Logic, 
+        GlobalName = "ToSic.Eav.DataSources.ItemFilterDuplicates, ToSic.Eav.DataSources",
         DynamicOut = false, 
 	    HelpLink = "https://r.2sxc.org/DsFilterDuplicates")]
 

@@ -9,13 +9,13 @@ namespace ToSic.Eav.DataSources
 	/// All the data inside an App. <br/>
 	/// For example, it has a variable amount of Out-streams, one for each content-type in the app.
 	/// </summary>
-
     [PublicApi_Stable_ForUseInYourCode]
-	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.App, ToSic.Eav.DataSources",
-        Type = DataSourceType.Source,
-        Icon = "table_chart",
-        DynamicOut = true,
+	[VisualQuery(
 		NiceName = "App",
+        Icon = "table_chart",
+        Type = DataSourceType.Source,
+        GlobalName = "ToSic.Eav.DataSources.App, ToSic.Eav.DataSources",
+        DynamicOut = true,
         In = new []{Constants.DefaultStreamName},
 		UiHint = "with streams for each Content Type",
 		ExpectsDataOfType = "|Config ToSic.Eav.DataSources.App",

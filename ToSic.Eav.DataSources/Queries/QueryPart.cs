@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Catalog;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.DataSources.Queries
 {
@@ -10,10 +10,10 @@ namespace ToSic.Eav.DataSources.Queries
     /// The configuration / definition of a query part. The <see cref="QueryDefinition"/> uses a bunch of these together to build a query. 
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
-    public class QueryPartDefinition: EntityBasedType
+    public class QueryPartDefinition: EntityBasedWithLog
     {
         [PrivateApi]
-        public QueryPartDefinition(IEntity entity) : base(entity)
+        public QueryPartDefinition(IEntity entity, ILog parentLog) : base(entity, parentLog, "DS.QrPart")
         {
 
         }
@@ -28,8 +28,9 @@ namespace ToSic.Eav.DataSources.Queries
         /// The .net type which the data source has for this part. <br/>
         /// Will automatically resolve old names to new names as specified in the DataSources <see cref="VisualQueryAttribute"/>
         /// </summary>
-        public string DataSourceType => RewriteOldAssemblyNames(DataSourceTypeInConfig);
-
+        public string DataSourceType => _dataSourceType ?? (_dataSourceType = RewriteOldAssemblyNames(DataSourceTypeInConfig));
+        private string _dataSourceType;
+        
         private string DataSourceTypeInConfig
             => Get<string>(QueryConstants.PartAssemblyAndType, null)
                ?? throw new Exception("Tried to get DataSource Type of a query part, but didn't find anything");
@@ -47,7 +48,7 @@ namespace ToSic.Eav.DataSources.Queries
                 : assemblyAndType;
 
             // find the new name in the catalog
-            return new DataSourceCatalog(null /* todo log*/).Find(newName);
+            return new DataSourceCatalog(Log).Find(newName);
         }
 
 

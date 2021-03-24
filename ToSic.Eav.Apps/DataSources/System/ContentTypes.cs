@@ -18,8 +18,10 @@ namespace ToSic.Eav.DataSources.System
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
     [VisualQuery(
-        GlobalName = "ToSic.Eav.DataSources.System.ContentTypes, ToSic.Eav.Apps",
+        NiceName = "Content Types",
+        Icon = "dns",
         Type = DataSourceType.Source,
+        GlobalName = "ToSic.Eav.DataSources.System.ContentTypes, ToSic.Eav.Apps",
         Difficulty = DifficultyBeta.Advanced,
         DynamicOut = false,
         ExpectsDataOfType = "37b25044-29bb-4c78-85e4-7b89f0abaa2c",

@@ -9,13 +9,14 @@ using ToSic.Eav.LookUp;
 namespace ToSic.Eav.DataSources
 {
 	/// <summary>
-	/// Run another query and provide the resulting data. The settings will provide the params for the query.
+	/// Run another query and provide the resulting data. The settings will provide the params for the inner query.
 	/// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.QueryRun, ToSic.Eav.DataSources",
-        Type = DataSourceType.Source,
+	[VisualQuery(
         NiceName = "Query Run",
         Icon = "launch",
+        Type = DataSourceType.Source,
+        GlobalName = "ToSic.Eav.DataSources.QueryRun, ToSic.Eav.DataSources",
         DynamicOut = true,
 	    ExpectsDataOfType = "78d25ea6-66cc-44a2-b45d-77749cd9420a",
         HelpLink = "https://r.2sxc.org/QueryRun"

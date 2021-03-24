@@ -17,8 +17,10 @@ namespace ToSic.Eav.DataSources.System
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
     [VisualQuery(
-        GlobalName = "ToSic.Eav.DataSources.System.Zones, ToSic.Eav.Apps",
+        NiceName = "Zones",
+        Icon = "border_outer",
         Type = DataSourceType.Source,
+        GlobalName = "ToSic.Eav.DataSources.System.Zones, ToSic.Eav.Apps",
         Difficulty = DifficultyBeta.Advanced,
         DynamicOut = false,
         PreviousNames = new []

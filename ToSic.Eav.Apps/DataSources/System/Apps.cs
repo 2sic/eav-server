@@ -18,8 +18,10 @@ namespace ToSic.Eav.DataSources.System
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
     [VisualQuery(
-        GlobalName = "ToSic.Eav.DataSources.System.Apps, ToSic.Eav.Apps",
+        NiceName = "Apps",
+        Icon = "apps",
         Type = DataSourceType.Source,
+        GlobalName = "ToSic.Eav.DataSources.System.Apps, ToSic.Eav.Apps",
         DynamicOut = false,
         Difficulty = DifficultyBeta.Advanced,
         ExpectsDataOfType = "fabc849e-b426-42ea-8e1c-c04e69facd9b",

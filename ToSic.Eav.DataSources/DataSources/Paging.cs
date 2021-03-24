@@ -11,13 +11,14 @@ namespace ToSic.Eav.DataSources
 {
 	/// <inheritdoc />
 	/// <summary>
-	/// A DataSource that filters Entities by Ids
+	/// Do Paging to only return a limited amount of results + show how many such pages exist and which Page we are on.
 	/// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.Paging, ToSic.Eav.DataSources",
-        Type = DataSourceType.Logic, 
-        Icon = "auto_stories",
+	[VisualQuery(
         NiceName = "Paging",
+        Icon = "auto_stories",
+        Type = DataSourceType.Logic, 
+        GlobalName = "ToSic.Eav.DataSources.Paging, ToSic.Eav.DataSources",
         DynamicOut = false,
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.Paging",
         HelpLink = "https://r.2sxc.org/DsPaging")]

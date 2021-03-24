@@ -10,15 +10,16 @@ namespace ToSic.Eav.DataSources
 {
 	/// <inheritdoc />
 	/// <summary>
-	/// A DataSource that filters Entities by Ids
+	/// Shuffle / Randomize the order of items in a Stream.
 	/// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-    [VisualQuery(GlobalName = "ToSic.Eav.DataSources.Shuffle, ToSic.Eav.DataSources",
-        Type = DataSourceType.Sort, 
+    [VisualQuery(
         NiceName = "Shuffle",
+        Icon = "shuffle",
+        Type = DataSourceType.Sort, 
+        GlobalName = "ToSic.Eav.DataSources.Shuffle, ToSic.Eav.DataSources",
         DynamicOut = false, 
         ExpectsDataOfType = "38e7822b-1049-4539-bb3f-f99949b1b1d1",
-        Icon = "shuffle",
         HelpLink = "https://r.2sxc.org/DsShuffle")]
 	public sealed class Shuffle: DataSourceBase
 	{

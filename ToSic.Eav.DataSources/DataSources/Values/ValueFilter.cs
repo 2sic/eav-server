@@ -11,13 +11,14 @@ namespace ToSic.Eav.DataSources
 {
     /// <inheritdoc />
     /// <summary>
-    /// Return only Entities having a specific value in an Attribute
+    /// Return only Entities having a specific value in an Attribute/Property
     /// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-    [VisualQuery(GlobalName = "ToSic.Eav.DataSources.ValueFilter, ToSic.Eav.DataSources",
+    [VisualQuery(
         NiceName = "Value Filter",
         Icon = "filter_list",
         Type = DataSourceType.Filter, 
+        GlobalName = "ToSic.Eav.DataSources.ValueFilter, ToSic.Eav.DataSources",
         In = new[] { Constants.DefaultStreamName, Constants.FallbackStreamName },
         DynamicOut = false,
         ExpectsDataOfType = "|Config ToSic.Eav.DataSources.ValueFilter",
@@ -194,7 +195,6 @@ namespace ToSic.Eav.DataSources
             return GetFilteredWithLinq(originals, compare);
             // The following version has more logging, activate in serious cases
             // Note that the code might not be 100% identical, but it should help find issues
-		    //_results = GetFilteredWithLoop(originals, compare);
 		}
 
 

@@ -8,14 +8,15 @@ namespace ToSic.Eav.DataSources
 {
 	/// <inheritdoc />
 	/// <summary>
-	/// Return only entities of a specific content-type
+	/// Keep only entities of a specific content-type
 	/// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.EntityTypeFilter, ToSic.Eav.DataSources",
-        Type = DataSourceType.Filter, 
-        DynamicOut = false,
+	[VisualQuery(
         NiceName = "Type-Filter",
         Icon = "alt_route",
+        Type = DataSourceType.Filter, 
+        GlobalName = "ToSic.Eav.DataSources.EntityTypeFilter, ToSic.Eav.DataSources",
+        DynamicOut = false,
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.EntityTypeFilter",
         HelpLink = "https://r.2sxc.org/DsTypeFilter")]
 

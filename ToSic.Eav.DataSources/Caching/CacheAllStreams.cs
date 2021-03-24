@@ -13,8 +13,11 @@ namespace ToSic.Eav.DataSources.Caching
 	/// So if part of the supplying DataSources would have a changed parameter (like a different filter), it will still run the full query and cache the results again. 
 	/// </summary>
 
-    [VisualQuery(GlobalName = "ToSic.Eav.DataSources.Caching.CacheAllStreams, ToSic.Eav.DataSources",
+    [VisualQuery(
+        NiceName = "Cache Streams",
+        Icon = "history_toggle_off",
         Type = DataSourceType.Cache, 
+        GlobalName = "ToSic.Eav.DataSources.Caching.CacheAllStreams, ToSic.Eav.DataSources",
         DynamicOut = true,
         ExpectsDataOfType = "|Config ToSic.Eav.DataSources.Caches.CacheAllStreams",
         PreviousNames = new []

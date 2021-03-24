@@ -4,7 +4,7 @@ using ToSic.Eav.Documentation;
 namespace ToSic.Eav.DataSources.Queries
 {
     /// <summary>
-    /// Custom Attribute for DataSources and usage in Pipeline Designer.
+    /// Custom Attribute for DataSources and use in the VisualQuery Designer.
     /// Will add information about help, configuration-content-types etc.
     /// Only DataSources which have this attribute will be listed in the designer-tool
     /// </summary>
@@ -29,7 +29,7 @@ namespace ToSic.Eav.DataSources.Queries
 	    public DataSourceType Type { get; set; } = DataSourceType.Source;
 
         /// <summary>
-        /// Optional custom icon, based on the icon-names from the FontAwesome 4 library.
+        /// Optional custom icon, based on the icon-names from the Material Icons library.
         /// </summary>
         public string Icon { get; set; }
 
@@ -51,6 +51,7 @@ namespace ToSic.Eav.DataSources.Queries
 
         /// <summary>
         /// Should configuration be enabled in the VisualQuery designer?
+        /// Is automatically true if ExpectsDataOfType is set.
         /// </summary>
         /// <returns>True if we have a known configuration content-type</returns>
 	    public bool EnableConfig => !string.IsNullOrWhiteSpace(ExpectsDataOfType);
@@ -58,14 +59,16 @@ namespace ToSic.Eav.DataSources.Queries
         /// <summary>
         /// Name of the content-type used to configure this data-source in the visual-query designer. <br/>
         /// The UI will then open an edit-dialog for this content type. 
-        /// _Should be a GUID. Older data sources have a name like "|Config ToSic.Eav.DataSources.App", but that's deprecated._
+        /// _Should be a GUID._
         /// </summary>
+        /// <remarks>
+        /// Older data sources have a name like "|Config ToSic.Eav.DataSources.App", but that's deprecated
+        /// </remarks>
         public string ExpectsDataOfType { get; set; }
 
 
         /// <summary>
-        /// Nice name - usually an override to an internal class-name which shouldn't change any more
-        /// but is not correct from the current wording - like ContentTypeFilter instead of EntityTypeFilter. <br/>
+        /// Nice name shown in the UI <br/>
         /// If not specified, the UI will use the normal name instead. 
         /// </summary>
         public string NiceName { get; set; }

@@ -8,13 +8,14 @@ namespace ToSic.Eav.DataSources
 {
 	/// <inheritdoc />
 	/// <summary>
-	/// Sort Entity by values in specified Attributes
+	/// Sort Entity by values in specified Attributes / Properties
 	/// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.ValueSort, ToSic.Eav.DataSources",
+	[VisualQuery(
         NiceName = "Value Sort",
         Icon = "sort",
         Type = DataSourceType.Sort,
+        GlobalName = "ToSic.Eav.DataSources.ValueSort, ToSic.Eav.DataSources",
         DynamicOut = false,
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.ValueSort",
         HelpLink = "https://r.2sxc.org/DsValueSort")]

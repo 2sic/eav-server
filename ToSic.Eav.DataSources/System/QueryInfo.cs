@@ -17,8 +17,11 @@ namespace ToSic.Eav.DataSources.System
     /// This is used in fields which let you pick a query, stream and field from that stream.
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
-    [VisualQuery(GlobalName = "ToSic.Eav.DataSources.System.QueryInfo, ToSic.Eav.DataSources",
+    [VisualQuery(
+        NiceName = "DataSources",
+        Icon = "present_to_all",
         Type = DataSourceType.Source,
+        GlobalName = "ToSic.Eav.DataSources.System.QueryInfo, ToSic.Eav.DataSources",
         Difficulty = DifficultyBeta.Advanced,
         DynamicOut = false,
         ExpectsDataOfType = "4638668f-d506-4f5c-ae37-aa7fdbbb5540",

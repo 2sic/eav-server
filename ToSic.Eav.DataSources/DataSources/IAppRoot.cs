@@ -9,24 +9,21 @@ namespace ToSic.Eav.DataSources
     /// Interface for the App Root - usually the very first node in any data-delivery or query. <br/>
     /// It's just like a normal <see cref="IDataSource"/> but will internally access the <see cref="AppState"/> from the <see cref="IAppsCache"/>.
     /// </summary>
-    [VisualQuery(GlobalName = "ToSic.Eav.DataSources.IAppRoot, ToSic.Eav.DataSources",
+    [VisualQuery(
         NiceName = "App Root Cache",
         Icon = "table_chart",
+        Type = DataSourceType.Source,
         UiHint = "All App data from the Cache",
+        GlobalName = "ToSic.Eav.DataSources.IAppRoot, ToSic.Eav.DataSources",
         PreviousNames = new []
             {
                 "ToSic.Eav.DataSources.Caches.ICache, ToSic.Eav.DataSources",
                 "ToSic.Eav.DataSources.Caching.IRootCache, ToSic.Eav.DataSources"
             },
-        Type = DataSourceType.Source,
         HelpLink = "https://r.2sxc.org/DsAppRoot")]
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public interface IAppRoot : IDataSource
     {
-        ///// <summary>
-        ///// The AppState of the current app.
-        ///// </summary>
-        //AppState AppState { get; }
 
     }
 }

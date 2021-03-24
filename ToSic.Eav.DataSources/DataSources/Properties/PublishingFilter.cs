@@ -11,10 +11,11 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
 	[PublicApi_Stable_ForUseInYourCode]
 
-	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.PublishingFilter, ToSic.Eav.DataSources",
-        Type = DataSourceType.Security, 
+	[VisualQuery(
         NiceName = "Publishing Filter",
         Icon = "visibility", 
+        Type = DataSourceType.Security, 
+        GlobalName = "ToSic.Eav.DataSources.PublishingFilter, ToSic.Eav.DataSources",
         In = new []{ Constants.PublishedStreamName, Constants.DefaultStreamName,  Constants.DraftsStreamName },
         DynamicOut = false, 
         HelpLink = "https://r.2sxc.org/DsPublishingFilter")]
