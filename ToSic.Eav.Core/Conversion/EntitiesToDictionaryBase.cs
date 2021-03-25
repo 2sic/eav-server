@@ -5,6 +5,7 @@ using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.Conversion
 {
@@ -12,8 +13,12 @@ namespace ToSic.Eav.Conversion
     /// A helper to serialize various combinations of entities, lists of entities etc
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
-    public abstract class EntitiesToDictionaryBase : HasLog<EntitiesToDictionaryBase>, IEntitiesTo<Dictionary<string, object>>
+    public abstract partial class EntitiesToDictionaryBase : HasLog<EntitiesToDictionaryBase>, IEntitiesTo<Dictionary<string, object>>
     {
+        public static string JsonKeyMetadataFor = "For"; // temp, don't know where to put this ATM
+        public static string JsonKeyMetadata = "Metadata";
+        public static string IdField = "Id";
+
         #region Constructor / DI
 
         protected EntitiesToDictionaryBase(IValueConverter valueConverter, IZoneCultureResolver cultureResolver, string logName) : base(logName)
@@ -61,27 +66,6 @@ namespace ToSic.Eav.Conversion
 
         #endregion
 
-        #region Many variations of the Prepare-Statement expecting various kinds of input
-
-        /// <inheritdoc/>
-        public IEnumerable<Dictionary<string, object>> Convert(IEnumerable<IEntity> entities)
-        {
-            var wrapLog = Log.Call(useTimer: true);
-            var result = entities.Select(GetDictionaryFromEntity).ToList();
-            wrapLog("ok");
-            return result;
-        }
-
-        /// <inheritdoc/>
-        public Dictionary<string, object> Convert(IEntity entity)
-        {
-            var wrapLog = Log.Call(useTimer: true);
-            var result = entity == null ? null : GetDictionaryFromEntity(entity);
-            wrapLog("ok");
-            return result;
-        }
-
-        #endregion
 
 
         /// <summary>
@@ -92,93 +76,60 @@ namespace ToSic.Eav.Conversion
         [PrivateApi]
         protected virtual Dictionary<string, object> GetDictionaryFromEntity(IEntity entity)
         {
+            // Get serialization rules if some exist - new in 11.13
+            var rules = entity as IEntitySerialization;
+            var serRels = SubEntitySerialization.Stabilize(rules?.SerializeRelationships, true, true, false, true);
+
             // Convert Entity to dictionary
             // If the value is a relationship, then give those too, but only Title and Id
-            var entityValues = (from d in entity.Attributes select d.Value).ToDictionary(k => k.Name, v =>
-            {
-				var value = entity.GetBestValue(v.Name, Languages);
-                if (v.Type == Constants.DataTypeHyperlink && value is string stringValue && ValueConverterBase.CouldBeReference(stringValue))
-                    return ValueConverter.ToValue(stringValue, entity.EntityGuid);
-
-                if (v.Type == Constants.DataTypeEntity && value is IEnumerable<IEntity> entities)
-                    return entities.Select(p => new RelationshipReference
-                    {
-                        Id = p?.EntityId,
-                        Title = p?.GetBestTitle(Languages)
-                    }).ToList();
-                return value;
-				
-            }, StringComparer.OrdinalIgnoreCase);
-
-            // Add Id and Title
-            // ...only if these are not already existing with this name in the entity itself as an internal value
-            const string IdKey = "Id";
-            if (entityValues.ContainsKey(IdKey)) entityValues.Remove(IdKey);
-            entityValues.Add(IdKey, entity.EntityId);
-
-            if (WithGuid)
-            {
-                if (entityValues.ContainsKey(Constants.SysFieldGuid)) entityValues.Remove(Constants.SysFieldGuid);
-                entityValues.Add(Constants.SysFieldGuid, entity.EntityGuid);
-            }
-
-            if (WithPublishing)
-            {
-                entityValues.Add(Constants.RepoIdInternalField, entity.RepositoryId);
-                entityValues.Add(Constants.IsPublishedField, entity.IsPublished);
-                if (entity.IsPublished && entity.GetDraft() != null)
+            var entityValues = entity.Attributes
+                .Select(d => d.Value)
+                .ToDictionary(k => k.Name, v =>
                 {
-                    // do a check if there was a field called Published, which we must remove for this to work
-                    if (entityValues.ContainsKey(Constants.DraftEntityField))
-                        entityValues.Remove(Constants.DraftEntityField);
-                    entityValues.Add(Constants.DraftEntityField, new
-                    {
-                        entity.GetDraft().RepositoryId,
-                    });
-                }
-                if (!entity.IsPublished & entity.GetPublished() != null)
-                {
-                    // do a check if there was a field called Published, which we must remove for this to work
-                    if (entityValues.ContainsKey(Constants.PublishedEntityField))
-                        entityValues.Remove(Constants.PublishedEntityField);
-                    entityValues.Add(Constants.PublishedEntityField, new
-                    {
-                        entity.GetPublished().RepositoryId,
-                    });
-                }
-            }
+                    var value = entity.GetBestValue(v.Name, Languages);
 
-            if (WithMetadataFor && entity.MetadataFor.IsMetadata)
-                entityValues.Add("Metadata", entity.MetadataFor);
+                    // Special Case 1: Hyperlink Field which must be resolved
+                    if (v.Type == Constants.DataTypeHyperlink && value is string stringValue &&
+                        ValueConverterBase.CouldBeReference(stringValue))
+                        return ValueConverter.ToValue(stringValue, entity.EntityGuid);
 
+                    // Special Case 2: Entity-List
+                    if (v.Type == Constants.DataTypeEntity && value is IEnumerable<IEntity> entities)
+                        return serRels.Serialize == true ? CreateListOfSubEntities(entities, serRels) : null;
+
+                    // Default: Normal Value
+                    return value;
+
+                }, StringComparer.OrdinalIgnoreCase);
+            
+            // todo: verify what happens with null-values on the relationships, maybe we should filter them out again?
+
+
+            AddIdAndGuid(entity, entityValues, rules);
+
+            if (WithPublishing) AddPublishingInformation(entity, entityValues);
+
+            AddMetadataAndFor(entity, entityValues, rules);
+
+            // this internal _Title field is probably not used much any more, so there is no rule for it
             if(WithTitle)
                 try { entityValues.Add("_Title", entity.GetBestTitle(Languages)); }
                 catch { /* ignore */ }
 
-            if(WithStats)
-                try
-                {
-                    entityValues.Add("_Used", entity.Parents().Count);
-                    entityValues.Add("_Uses", entity.Children().Count);
-                    entityValues.Add("_Permissions", new {Count = entity.Metadata.Permissions.Count()});
-                }
-                catch { /* ignore */ }
+            // Stats are only used in special cases, so there is no rule for it
+            if(WithStats) AddStatistics(entity, entityValues);
 
 
             // Include title field, if there is not already one in the dictionary
-            if (!entityValues.ContainsKey(Constants.SysFieldTitle))
-                entityValues.Add(Constants.SysFieldTitle, entity.GetBestTitle(Languages));
+            if(rules?.SerializeTitle ?? true)
+                if (!entityValues.ContainsKey(Constants.SysFieldTitle))
+                    entityValues.Add(Constants.SysFieldTitle, entity.GetBestTitle(Languages));
                 
-            // Include modified field, if there is not already one in the dictionary
-            if(!entityValues.ContainsKey(Constants.SysFieldModified))
-                entityValues.Add(Constants.SysFieldModified, entity.Modified);
-            
-            // Include created field, if there is not already one in the dictionary
-            if(!entityValues.ContainsKey(Constants.SysFieldCreated))
-                entityValues.Add(Constants.SysFieldCreated, entity.Created);
+            AddDateInformation(entity, entityValues, rules);
 
             return entityValues;
         }
+
 
 
     }
