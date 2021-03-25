@@ -24,8 +24,13 @@ namespace ToSic.Eav.DataSources
 
     public class AttributeFilter : DataSourceBase
 	{
-		#region Configuration-properties
-		private const string AttributeNamesKey = "AttributeNames";
+        #region Constants
+
+        public static string KeepAll = "*";
+
+        #endregion
+        #region Configuration-properties
+        private const string AttributeNamesKey = "AttributeNames";
 
         /// <inheritdoc/>
         [PrivateApi]
@@ -59,30 +64,37 @@ namespace ToSic.Eav.DataSources
         /// <returns></returns>
 		private ImmutableArray<IEntity> GetList()
 		{
-            CustomConfigurationParse();
-
-            var attributeNames = AttributeNames.Split(',');
-		    attributeNames = (from a in attributeNames select a.Trim()).ToArray();
-
-		    var result = In[Constants.DefaultStreamName].Immutable
-                .Select(entity => EntityBuilder.FullClone(entity, 
-                    entity.Attributes.Where(a => attributeNames.Contains(a.Key)).ToDictionary(k => k.Key, v => v.Value),
-                    entity.Relationships.AllRelationships)).Cast<IEntity>()
-                .ToImmutableArray();
-                //.ToList();
-
-		    Log.Add($"attrib filter names:[{string.Join(",", attributeNames)}] found:{result.Length}");
-		    return result;
-		}
-
-        /// <inheritdoc />
-        [PrivateApi]
-        private void CustomConfigurationParse()
-	    {
             Configuration.Parse();
 
-            var namesList = (from a in AttributeNames.Split(',') select a.Trim()).ToArray();
-            AttributeNames = string.Join(",", namesList.ToArray());
-	    }
+            var raw = AttributeNames;
+            // note: since 2sxc 11.13 we have lines for attributes
+            // older data still uses commas since it was single-line
+            var attributeNames = raw.Split(raw.Contains("\n") ? '\n' : ',');
+
+
+            attributeNames = attributeNames
+                .Select(a => a.Trim())
+                .Where(s => !string.IsNullOrWhiteSpace(s))
+                .ToArray();
+            
+            // If no attributes were given or just one with *, then don't filter at all
+            var keepAll = attributeNames.Length == 0 || (attributeNames.Length == 1 && attributeNames[0] == KeepAll);
+
+            var result = In[Constants.DefaultStreamName].Immutable
+                .Select(entity =>
+                {
+                    var attributes = entity.Attributes;
+                    if (!keepAll)
+                        attributes = attributes.Where(a => attributeNames.Contains(a.Key))
+                            .ToDictionary(k => k.Key, v => v.Value);
+                    return EntityBuilder.FullClone(entity, attributes, entity.Relationships.AllRelationships);
+                })
+                .Cast<IEntity>()
+                .ToImmutableArray();
+
+            Log.Add($"attrib filter names:[{string.Join(",", attributeNames)}] found:{result.Length}");
+		    return result;
+		}
+        
 	}
 }
