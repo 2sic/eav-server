@@ -18,6 +18,7 @@ namespace ToSic.Eav.DataSources.System
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
     [VisualQuery(
         NiceName = "Zones",
+        UiHint = "Zones of an installation",
         Icon = "border_outer",
         Type = DataSourceType.Source,
         GlobalName = "ToSic.Eav.DataSources.System.Zones, ToSic.Eav.Apps",

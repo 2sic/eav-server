@@ -14,6 +14,7 @@ namespace ToSic.Eav.DataSources
     [PublicApi_Stable_ForUseInYourCode]
 	[VisualQuery(
         NiceName = "Attribute Remover",
+        UiHint = "Remove attributes/properties to limit what is available",
         Icon = "delete_sweep",
         Type = DataSourceType.Modify, 
         GlobalName = "ToSic.Eav.DataSources.AttributeFilter, ToSic.Eav.DataSources",

@@ -13,6 +13,7 @@ namespace ToSic.Eav.DataSources
     [PublicApi_Stable_ForUseInYourCode]
 	[VisualQuery(
         NiceName = "Type-Filter",
+        UiHint = "Only keep items of the specified type",
         Icon = "alt_route",
         Type = DataSourceType.Filter, 
         GlobalName = "ToSic.Eav.DataSources.EntityTypeFilter, ToSic.Eav.DataSources",

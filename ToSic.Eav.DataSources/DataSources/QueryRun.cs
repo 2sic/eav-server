@@ -14,6 +14,7 @@ namespace ToSic.Eav.DataSources
     [PublicApi_Stable_ForUseInYourCode]
 	[VisualQuery(
         NiceName = "Query Run",
+        UiHint = "Get data from another Query",
         Icon = "launch",
         Type = DataSourceType.Source,
         GlobalName = "ToSic.Eav.DataSources.QueryRun, ToSic.Eav.DataSources",

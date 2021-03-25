@@ -15,6 +15,7 @@ namespace ToSic.Eav.DataSources.Caching
 
     [VisualQuery(
         NiceName = "Cache Streams",
+        UiHint = "Cache all streams based on some rules",
         Icon = "history_toggle_off",
         Type = DataSourceType.Cache, 
         GlobalName = "ToSic.Eav.DataSources.Caching.CacheAllStreams, ToSic.Eav.DataSources",

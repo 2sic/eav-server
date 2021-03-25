@@ -13,6 +13,7 @@ namespace ToSic.Eav.DataSources
 
 	[VisualQuery(
         NiceName = "Publishing Filter",
+        UiHint = "Keep data based on user roles (editor sees draft items)",
         Icon = "visibility", 
         Type = DataSourceType.Security, 
         GlobalName = "ToSic.Eav.DataSources.PublishingFilter, ToSic.Eav.DataSources",

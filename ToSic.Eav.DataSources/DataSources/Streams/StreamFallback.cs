@@ -13,6 +13,7 @@ namespace ToSic.Eav.DataSources
     [PublicApi_Stable_ForUseInYourCode]
 	[VisualQuery(
         NiceName = "Stream Fallback",
+        UiHint = "Find the first stream which has data",
         Icon = "call_merge",
         Type = DataSourceType.Logic, 
         GlobalName = "ToSic.Eav.DataSources.StreamFallback, ToSic.Eav.DataSources",

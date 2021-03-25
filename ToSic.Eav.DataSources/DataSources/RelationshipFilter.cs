@@ -15,6 +15,7 @@ namespace ToSic.Eav.DataSources
     [PublicApi_Stable_ForUseInYourCode]
 	[VisualQuery(
         NiceName = "Relationship Filter",
+        UiHint = "Get items which are related to some item",
         Icon = "share",
         Type = DataSourceType.Lookup, 
         GlobalName = "ToSic.Eav.DataSources.RelationshipFilter, ToSic.Eav.DataSources",

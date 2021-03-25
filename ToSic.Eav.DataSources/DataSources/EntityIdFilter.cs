@@ -17,11 +17,11 @@ namespace ToSic.Eav.DataSources
     [PublicApi_Stable_ForUseInYourCode]
 	[VisualQuery(
         NiceName = "Item Id Filter",
+        UiHint = "Find items based on one or more IDs",
         Icon = "fingerprint",
         Type = DataSourceType.Filter, 
         GlobalName = "ToSic.Eav.DataSources.EntityIdFilter, ToSic.Eav.DataSources",
         DynamicOut = false,
-        UiHint = "Find items based on the ID",
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.EntityIdFilter",
         HelpLink = "https://r.2sxc.org/DsIdFilter")]
 

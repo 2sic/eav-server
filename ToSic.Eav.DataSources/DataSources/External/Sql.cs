@@ -20,6 +20,7 @@ namespace ToSic.Eav.DataSources
     [PublicApi_Stable_ForUseInYourCode]
     [VisualQuery(
         NiceName = "SQL Data",
+        UiHint = "Get data from a database using SQL",
         Icon = "dynamic_form",
         Type = DataSourceType.Source, 
         GlobalName = "ToSic.Eav.DataSources.Sql, ToSic.Eav.DataSources",

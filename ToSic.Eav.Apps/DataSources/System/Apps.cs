@@ -19,6 +19,7 @@ namespace ToSic.Eav.DataSources.System
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
     [VisualQuery(
         NiceName = "Apps",
+        UiHint = "Apps of a Zone",
         Icon = "apps",
         Type = DataSourceType.Source,
         GlobalName = "ToSic.Eav.DataSources.System.Apps, ToSic.Eav.Apps",

@@ -16,6 +16,7 @@ namespace ToSic.Eav.DataSources
     [PublicApi_Stable_ForUseInYourCode]
     [VisualQuery(
         NiceName = "Value Filter",
+        UiHint = "Keep items which have a property with the expected value",
         Icon = "filter_list",
         Type = DataSourceType.Filter, 
         GlobalName = "ToSic.Eav.DataSources.ValueFilter, ToSic.Eav.DataSources",

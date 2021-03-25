@@ -12,12 +12,12 @@ namespace ToSic.Eav.DataSources
     [PublicApi_Stable_ForUseInYourCode]
 	[VisualQuery(
 		NiceName = "App",
+		UiHint = "All data in an app with streams for type",
         Icon = "table_chart",
         Type = DataSourceType.Source,
         GlobalName = "ToSic.Eav.DataSources.App, ToSic.Eav.DataSources",
         DynamicOut = true,
         In = new []{Constants.DefaultStreamName},
-		UiHint = "with streams for each Content Type",
 		ExpectsDataOfType = "|Config ToSic.Eav.DataSources.App",
         HelpLink = "https://r.2sxc.org/DsApp")]
     public partial class App : DataSourceBase

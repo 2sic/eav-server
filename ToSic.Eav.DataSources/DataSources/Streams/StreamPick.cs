@@ -16,6 +16,7 @@ namespace ToSic.Eav.DataSources
     [PublicApi_Stable_ForUseInYourCode]
 	[VisualQuery(
         NiceName = "Pick Stream",
+        UiHint = "Choose a stream",
         Icon = "call_split",
         Type = DataSourceType.Logic,
         GlobalName = "ToSic.Eav.DataSources.StreamPick, ToSic.Eav.DataSources",

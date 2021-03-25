@@ -14,6 +14,7 @@ namespace ToSic.Eav.DataSources
     [PublicApi_Stable_ForUseInYourCode]
 	[VisualQuery(
         NiceName = "Merge Stream",
+        UiHint = "Combine multiple streams into one",
         Icon = "merge_type",
         Type = DataSourceType.Logic, 
         GlobalName = "ToSic.Eav.DataSources.StreamMerge, ToSic.Eav.DataSources",

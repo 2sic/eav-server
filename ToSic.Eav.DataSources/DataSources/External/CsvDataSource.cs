@@ -20,6 +20,7 @@ namespace ToSic.Eav.DataSources
     [PublicApi_Stable_ForUseInYourCode]
     [VisualQuery(
         NiceName = "CSV Data",
+        UiHint = "Load data from a CSV file",
         Icon = "description",
         Type = DataSourceType.Source, 
         GlobalName = "ToSic.Eav.DataSources.CsvDataSource, ToSic.Eav.DataSources",

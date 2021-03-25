@@ -15,6 +15,7 @@ namespace ToSic.Eav.DataSources.System
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
     [VisualQuery(
         NiceName = "Attributes of Type",
+        UiHint = "Attributes/fields of a Content-Type",
         Icon = "dns",
         Type = DataSourceType.Source,
         GlobalName = "ToSic.Eav.DataSources.System.Attributes, ToSic.Eav.DataSources",

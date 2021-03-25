@@ -13,6 +13,7 @@ namespace ToSic.Eav.DataSources
     [PublicApi_Stable_ForUseInYourCode]
 	[VisualQuery(
         NiceName = "Value Sort",
+        UiHint = "Sort items by a property",
         Icon = "sort",
         Type = DataSourceType.Sort,
         GlobalName = "ToSic.Eav.DataSources.ValueSort, ToSic.Eav.DataSources",

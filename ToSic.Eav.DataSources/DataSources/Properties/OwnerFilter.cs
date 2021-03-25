@@ -13,6 +13,7 @@ namespace ToSic.Eav.DataSources
     [PublicApi_Stable_ForUseInYourCode]
 	[VisualQuery(
         NiceName = "Owner Filter",
+        UiHint = "Keep only item created by a specified user",
         Icon = "attribution",
         Type = DataSourceType.Security,
         GlobalName = "ToSic.Eav.DataSources.OwnerFilter, ToSic.Eav.DataSources",

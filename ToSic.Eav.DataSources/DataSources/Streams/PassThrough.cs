@@ -11,8 +11,10 @@ namespace ToSic.Eav.DataSources
 
 	[VisualQuery(
         NiceName = "Pass-Through",
+        UiHint = "Technical DataSource, doesn't do anything",
         Icon = "copy-all",
         Type = DataSourceType.Source, 
+        Difficulty = DifficultyBeta.Advanced,
         GlobalName = "ToSic.Eav.DataSources.PassThrough, ToSic.Eav.DataSources",
         DynamicOut = true)]
 

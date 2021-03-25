@@ -19,6 +19,7 @@ namespace ToSic.Eav.DataSources.System
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
     [VisualQuery(
         NiceName = "DataSources",
+        UiHint = "List the DataSources available in the system",
         Icon = "present_to_all",
         Type = DataSourceType.Source,
         GlobalName = "ToSic.Eav.DataSources.System.QueryInfo, ToSic.Eav.DataSources",

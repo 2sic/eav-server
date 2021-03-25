@@ -15,6 +15,7 @@ namespace ToSic.Eav.DataSources
     [PublicApi_Stable_ForUseInYourCode]
     [VisualQuery(
         NiceName = "Shuffle",
+        UiHint = "Mix/randomize the order of items",
         Icon = "shuffle",
         Type = DataSourceType.Sort, 
         GlobalName = "ToSic.Eav.DataSources.Shuffle, ToSic.Eav.DataSources",

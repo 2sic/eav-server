@@ -19,6 +19,7 @@ namespace ToSic.Eav.DataSources.System
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
     [VisualQuery(
         NiceName = "Content Types",
+        UiHint = "Types of an App",
         Icon = "dns",
         Type = DataSourceType.Source,
         GlobalName = "ToSic.Eav.DataSources.System.ContentTypes, ToSic.Eav.Apps",
