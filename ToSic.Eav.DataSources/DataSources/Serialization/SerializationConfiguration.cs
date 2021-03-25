@@ -21,12 +21,12 @@ namespace ToSic.Eav.DataSources
         Icon = "settings_ethernet",
         Type = DataSourceType.Modify, 
         GlobalName = "2952e680-4aaa-4a12-adf7-325cb2854358",
-        DynamicOut = false,
+        DynamicOut = true,
         In = new []{Constants.DefaultStreamName},
 	    ExpectsDataOfType = "5c84cd3f-f853-40b3-81cf-dee6a07dc411",
         HelpLink = "https://r.2sxc.org/DsSerializationConfiguration")]
 
-    public class SerializationConfiguration : DataSourceBase
+    public partial class SerializationConfiguration : DataSourceBase
 	{
         #region Constants
 
@@ -144,6 +144,7 @@ namespace ToSic.Eav.DataSources
 
         #endregion
 
+
         /// <inheritdoc />
         /// <summary>
         /// Constructs a new AttributeFilter DataSource
@@ -151,7 +152,7 @@ namespace ToSic.Eav.DataSources
         [PrivateApi]
 		public SerializationConfiguration()
 		{
-            Provide(GetList);
+            OutIsDynamic = true;
             
             // Basic system properties
             ConfigMask(IncludeIdKey, $"[Settings:{IncludeIdKey}]");
@@ -180,13 +181,12 @@ namespace ToSic.Eav.DataSources
         /// Get the list of all items with reduced attributes-list
         /// </summary>
         /// <returns></returns>
-		private IImmutableList<IEntity> GetList()
+		private IImmutableList<IEntity> GetList(string inStreamName = Constants.DefaultStreamName)
         {
             var wrapLog = Log.Call<IImmutableList<IEntity>>();
             Configuration.Parse();
 
-
-            var result = In[Constants.DefaultStreamName].Immutable;
+            var result = In[inStreamName].Immutable;
 
             result = AddSerializationRules(result);
             
@@ -255,5 +255,6 @@ namespace ToSic.Eav.DataSources
         
         private bool? TryParseIncludeRule(string original)
             => bool.TryParse(original, out var include) ? (bool?)include : null;
+
     }
 }

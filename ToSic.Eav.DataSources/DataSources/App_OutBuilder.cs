@@ -74,7 +74,7 @@ namespace ToSic.Eav.DataSources
                     () => new CacheInfoAppAndMore("AppTypeStream" + AppRootCacheKey.AppCacheKey(this), Apps.State.Get(this), $"Name={typeName}&Drafts={showDrafts}"),
                     this,
                     typeName,
-                    () => BuildTypeStream(/*DataSourceFactory,*/ upstreamDataSource, typeName)[Constants.DefaultStreamName].Immutable,
+                    () => BuildTypeStream(upstreamDataSource, typeName)[Constants.DefaultStreamName].Immutable,
                     true);
                 _out.Add(typeName, deferredStream);
             }
@@ -104,7 +104,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
 		/// Build an EntityTypeFilter for this content-type to provide as a stream
 		/// </summary>
-        private EntityTypeFilter BuildTypeStream(/*DataSource dataSourceFactory,*/ IDataSource upstreamDataSource, string typeName)
+        private EntityTypeFilter BuildTypeStream(IDataSource upstreamDataSource, string typeName)
         {
             var wrapLog = Log.Call<EntityTypeFilter>($"..., ..., {typeName}");
             var ds = DataSourceFactory.GetDataSource<EntityTypeFilter>(this, upstreamDataSource,

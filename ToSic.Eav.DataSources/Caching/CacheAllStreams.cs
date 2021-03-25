@@ -66,7 +66,7 @@ namespace ToSic.Eav.DataSources.Caching
         }
 
 
-		private readonly IDictionary<string, IDataStream> _Out = new Dictionary<string, IDataStream>(StringComparer.OrdinalIgnoreCase);
+		private readonly IDictionary<string, IDataStream> _out = new Dictionary<string, IDataStream>(StringComparer.OrdinalIgnoreCase);
 		private bool _requiresRebuildOfOut = true;
 
         /// <inheritdoc />
@@ -74,13 +74,11 @@ namespace ToSic.Eav.DataSources.Caching
 		{
 			get
 			{
-				if (_requiresRebuildOfOut)
-				{
-					// now create all streams
-					CreateOutWithAllStreams();
-					_requiresRebuildOfOut = false;
-				}
-				return _Out;
+                if (!_requiresRebuildOfOut) return _out;
+                // now create all streams
+                CreateOutWithAllStreams();
+                _requiresRebuildOfOut = false;
+                return _out;
 			}
 		}
 		#endregion
@@ -109,16 +107,11 @@ namespace ToSic.Eav.DataSources.Caching
 		{
             Configuration.Parse();
 
-            //_Out.Clear();
-
             // attach all missing streams, now that Out is used the first time
             // note that some streams were already added because of the DeferredOut
-            foreach (var dataStream in In.Where(s => !_Out.ContainsKey(s.Key)))
-		    {
-		        //var inStream = dataStream.Value as DataStream;
-		        AttachDeferredStreamToOut(dataStream.Key);
-		    }
-		}
+            foreach (var dataStream in In.Where(s => !_out.ContainsKey(s.Key)))
+                AttachDeferredStreamToOut(dataStream.Key);
+        }
 
         /// <summary>
         /// Will get the stream or if missing, try to attach it first
@@ -126,7 +119,7 @@ namespace ToSic.Eav.DataSources.Caching
         /// <param name="name"></param>
         /// <returns></returns>
 	    private IDataStream GetDeferredStream(string name) 
-            => _Out.ContainsKey(name) ? _Out[name] : AttachDeferredStreamToOut(name);
+            => _out.ContainsKey(name) ? _out[name] : AttachDeferredStreamToOut(name);
 
 	    private IDataStream AttachDeferredStreamToOut(string name)
         {
@@ -138,7 +131,7 @@ namespace ToSic.Eav.DataSources.Caching
 	            outStream.CacheDurationInSeconds = CacheDurationInSeconds;
 	        outStream.CacheRefreshOnSourceRefresh = RefreshOnSourceRefresh;
 
-	        _Out.Add(name, outStream);
+	        _out.Add(name, outStream);
 	        return outStream;
 	    }
 
