@@ -22,6 +22,7 @@ namespace ToSic.Eav.DataSources
         Type = DataSourceType.Modify,
         GlobalName = "ToSic.Eav.DataSources.AttributeRename, ToSic.Eav.DataSources",
         DynamicOut = false,
+        In = new[] { Constants.DefaultStreamName },
         ExpectsDataOfType = "c5918cb8-d35a-48c7-9380-a437edde66d2",
         HelpLink = "https://r.2sxc.org/DsAttributeRename")]
 

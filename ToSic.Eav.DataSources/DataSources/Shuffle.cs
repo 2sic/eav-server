@@ -19,7 +19,8 @@ namespace ToSic.Eav.DataSources
         Icon = "shuffle",
         Type = DataSourceType.Sort, 
         GlobalName = "ToSic.Eav.DataSources.Shuffle, ToSic.Eav.DataSources",
-        DynamicOut = false, 
+        DynamicOut = false,
+        In = new[] { Constants.DefaultStreamName },
         ExpectsDataOfType = "38e7822b-1049-4539-bb3f-f99949b1b1d1",
         HelpLink = "https://r.2sxc.org/DsShuffle")]
 	public sealed class Shuffle: DataSourceBase

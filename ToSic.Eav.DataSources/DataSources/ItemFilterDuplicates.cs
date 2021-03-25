@@ -17,7 +17,8 @@ namespace ToSic.Eav.DataSources
         Icon = "filter_1",
         Type = DataSourceType.Logic, 
         GlobalName = "ToSic.Eav.DataSources.ItemFilterDuplicates, ToSic.Eav.DataSources",
-        DynamicOut = false, 
+        DynamicOut = false,
+        In = new[] { Constants.DefaultStreamName },
 	    HelpLink = "https://r.2sxc.org/DsFilterDuplicates")]
 
     public sealed class ItemFilterDuplicates: DataSourceBase

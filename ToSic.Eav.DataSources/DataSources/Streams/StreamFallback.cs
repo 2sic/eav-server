@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSources
         Icon = "call_merge",
         Type = DataSourceType.Logic, 
         GlobalName = "ToSic.Eav.DataSources.StreamFallback, ToSic.Eav.DataSources",
-        DynamicOut = false, 
+        DynamicOut = false,
 	    HelpLink = "https://r.2sxc.org/DsStreamFallback")]
 
     public sealed class StreamFallback : DataSourceBase

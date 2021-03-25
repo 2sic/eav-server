@@ -18,6 +18,7 @@ namespace ToSic.Eav.DataSources
         Type = DataSourceType.Security,
         GlobalName = "ToSic.Eav.DataSources.OwnerFilter, ToSic.Eav.DataSources",
         DynamicOut = false,
+        In = new[] { Constants.DefaultStreamName },
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.OwnerFilter",
         HelpLink = "https://r.2sxc.org/DsOwnerFilter")]
 

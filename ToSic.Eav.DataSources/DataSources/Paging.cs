@@ -21,6 +21,7 @@ namespace ToSic.Eav.DataSources
         Type = DataSourceType.Logic, 
         GlobalName = "ToSic.Eav.DataSources.Paging, ToSic.Eav.DataSources",
         DynamicOut = false,
+        In = new[] { Constants.DefaultStreamName },
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.Paging",
         HelpLink = "https://r.2sxc.org/DsPaging")]
 
