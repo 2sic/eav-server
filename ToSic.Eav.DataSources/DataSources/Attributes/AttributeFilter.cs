@@ -1,5 +1,7 @@
-﻿using System.Collections.Immutable;
+﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
+using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
@@ -26,11 +28,15 @@ namespace ToSic.Eav.DataSources
 	{
         #region Constants
 
-        public static string KeepAll = "*";
+        public static string ModeKeep = "+";
+        public static string ModeRemove = "-";
 
         #endregion
+        
         #region Configuration-properties
+        
         private const string AttributeNamesKey = "AttributeNames";
+        private const string ModeKey = "Mode";
 
         /// <inheritdoc/>
         [PrivateApi]
@@ -44,57 +50,82 @@ namespace ToSic.Eav.DataSources
 		    get => Configuration[AttributeNamesKey];
             set => Configuration[AttributeNamesKey] = value;
         }
+        
+        /// <summary>
+        /// A string containing one or more attribute names. like "FirstName" or "FirstName,LastName,Birthday"
+        /// </summary>
+        public string Mode
+		{
+		    get => Configuration[ModeKey];
+            set => Configuration[ModeKey] = value;
+        }
+      
 
-		#endregion
+        #endregion
 
-		/// <inheritdoc />
-		/// <summary>
-		/// Constructs a new AttributeFilter DataSource
-		/// </summary>
-		[PrivateApi]
+        /// <inheritdoc />
+        /// <summary>
+        /// Constructs a new AttributeFilter DataSource
+        /// </summary>
+        [PrivateApi]
 		public AttributeFilter()
 		{
             Provide(GetList);
-			ConfigMask(AttributeNamesKey, "[Settings:AttributeNames]");
+			ConfigMask(AttributeNamesKey, $"[Settings:{AttributeNamesKey}]");
+            ConfigMask(ModeKey, $"[Settings:{ModeKey}||+]");
         }
 
         /// <summary>
         /// Get the list of all items with reduced attributes-list
         /// </summary>
         /// <returns></returns>
-		private ImmutableArray<IEntity> GetList()
-		{
+		private IImmutableList<IEntity> GetList()
+        {
+            var wrapLog = Log.Call<IImmutableList<IEntity>>();
             Configuration.Parse();
 
             var raw = AttributeNames;
             // note: since 2sxc 11.13 we have lines for attributes
             // older data still uses commas since it was single-line
             var attributeNames = raw.Split(raw.Contains("\n") ? '\n' : ',');
-
-
             attributeNames = attributeNames
                 .Select(a => a.Trim())
                 .Where(s => !string.IsNullOrWhiteSpace(s))
                 .ToArray();
             
+            Log.Add($"attrib filter names:[{string.Join(",", attributeNames)}]");
+            
+            // Determine if we should remove or keep the things in the list
+            var keepNamedAttributes = Mode != ModeRemove;
+            
             // If no attributes were given or just one with *, then don't filter at all
-            var keepAll = attributeNames.Length == 0 || (attributeNames.Length == 1 && attributeNames[0] == KeepAll);
+            var allFields = attributeNames.Length == 0 
+                          || attributeNames.Length == 1 && string.IsNullOrWhiteSpace(attributeNames[0]);
 
-            var result = In[Constants.DefaultStreamName].Immutable
-                .Select(entity =>
+            var sourceList = In[Constants.DefaultStreamName].Immutable;
+            
+            // Case #1 if we don't change anything, short-circuit and return original
+            if (allFields && keepNamedAttributes)
+                return wrapLog($"keep original {sourceList.Count}", sourceList);
+
+            var result = sourceList
+                .Select(e =>
                 {
-                    var attributes = entity.Attributes;
-                    if (!keepAll)
-                        attributes = attributes.Where(a => attributeNames.Contains(a.Key))
-                            .ToDictionary(k => k.Key, v => v.Value);
-                    return EntityBuilder.FullClone(entity, attributes, entity.Relationships.AllRelationships);
+                    // Case 2: Check if we should take none at all
+                    if (allFields && !keepNamedAttributes)
+                        return EntityBuilder.FullClone(e, new Dictionary<string, IAttribute>(), null);
+
+                    // Case 3 - not all fields, keep/drop the ones we don't want
+                    var attributes = e.Attributes
+                        .Where(a => attributeNames.Contains(a.Key) == keepNamedAttributes)
+                        .ToDictionary(k => k.Key, v => v.Value);
+                    return EntityBuilder.FullClone(e, attributes, e.Relationships.AllRelationships);
                 })
                 .Cast<IEntity>()
-                .ToImmutableArray();
+                .ToImmutableList();
 
-            Log.Add($"attrib filter names:[{string.Join(",", attributeNames)}] found:{result.Length}");
-		    return result;
+		    return wrapLog($"modified {result.Count}", result);
 		}
         
-	}
+    }
 }
