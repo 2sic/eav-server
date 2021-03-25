@@ -16,7 +16,7 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
     [PublicApi_Stable_ForUseInYourCode]
     [VisualQuery(
-        NiceName = "Attribute Rename",
+        NiceName = "Rename Attribute/Property",
         UiHint = "Rename some attributes / properties",
         Icon = "edit_attributes",
         Type = DataSourceType.Modify,

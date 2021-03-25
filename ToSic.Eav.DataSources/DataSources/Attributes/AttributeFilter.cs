@@ -15,12 +15,13 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
     [PublicApi_Stable_ForUseInYourCode]
 	[VisualQuery(
-        NiceName = "Attribute Remover",
+        NiceName = "Remove Attribute/Property",
         UiHint = "Remove attributes/properties to limit what is available",
         Icon = "delete_sweep",
         Type = DataSourceType.Modify, 
         GlobalName = "ToSic.Eav.DataSources.AttributeFilter, ToSic.Eav.DataSources",
         DynamicOut = false,
+        In = new []{Constants.DefaultStreamName},
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.AttributeFilter",
         HelpLink = "https://r.2sxc.org/DsAttributeFilter")]
 
@@ -99,20 +100,20 @@ namespace ToSic.Eav.DataSources
             var keepNamedAttributes = Mode != ModeRemove;
             
             // If no attributes were given or just one with *, then don't filter at all
-            var allFields = attributeNames.Length == 0 
+            var noFieldNames = attributeNames.Length == 0 
                           || attributeNames.Length == 1 && string.IsNullOrWhiteSpace(attributeNames[0]);
 
             var sourceList = In[Constants.DefaultStreamName].Immutable;
             
             // Case #1 if we don't change anything, short-circuit and return original
-            if (allFields && keepNamedAttributes)
+            if (noFieldNames && !keepNamedAttributes)
                 return wrapLog($"keep original {sourceList.Count}", sourceList);
 
             var result = sourceList
                 .Select(e =>
                 {
                     // Case 2: Check if we should take none at all
-                    if (allFields && !keepNamedAttributes)
+                    if (noFieldNames && keepNamedAttributes)
                         return EntityBuilder.FullClone(e, new Dictionary<string, IAttribute>(), null);
 
                     // Case 3 - not all fields, keep/drop the ones we don't want
