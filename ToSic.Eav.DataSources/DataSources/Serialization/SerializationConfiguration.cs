@@ -11,6 +11,9 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// DataSource which changes how Streams will be serialized in the end.
 	/// </summary>
+	/// <remarks>
+	/// Added in 2sxc 11.13
+	/// </remarks>
     [PublicApi_Stable_ForUseInYourCode]
 	[VisualQuery(
         NiceName = "Serialization Configuration",

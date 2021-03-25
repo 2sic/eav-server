@@ -20,6 +20,7 @@ namespace ToSic.Eav.DataSources.Caching
         Type = DataSourceType.Cache, 
         GlobalName = "ToSic.Eav.DataSources.Caching.CacheAllStreams, ToSic.Eav.DataSources",
         DynamicOut = true,
+        DynamicIn = true,
         ExpectsDataOfType = "|Config ToSic.Eav.DataSources.Caches.CacheAllStreams",
         PreviousNames = new []
             {

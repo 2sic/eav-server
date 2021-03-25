@@ -12,6 +12,7 @@ namespace ToSic.Eav.DataSources.Catalog
         public string PrimaryType;
         public string Icon;
         public bool DynamicOut;
+        public bool DynamicIn;
         public string HelpLink;
         public bool EnableConfig;
         public string Name;
@@ -28,6 +29,7 @@ namespace ToSic.Eav.DataSources.Catalog
             HelpLink = dsInfo.HelpLink;
             In = dsInfo.In;
             DynamicOut = dsInfo.DynamicOut;
+            DynamicIn = dsInfo.DynamicIn;
             EnableConfig = dsInfo.EnableConfig;
             ContentType = dsInfo.ExpectsDataOfType;
             if (!string.IsNullOrEmpty(dsInfo.NiceName))

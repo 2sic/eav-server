@@ -18,7 +18,8 @@ namespace ToSic.Eav.DataSources
         Icon = "merge_type",
         Type = DataSourceType.Logic, 
         GlobalName = "ToSic.Eav.DataSources.StreamMerge, ToSic.Eav.DataSources",
-        DynamicOut = false, 
+        DynamicOut = false,
+        DynamicIn = true,
 	    HelpLink = "https://r.2sxc.org/DsStreamMerge")]
 
     public sealed class StreamMerge: DataSourceBase

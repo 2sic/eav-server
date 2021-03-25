@@ -44,6 +44,8 @@ namespace ToSic.Eav.DataSources.Queries
         /// <returns>True if this data source can also provide other named out-streams, false if it only has the defined list of out-streams.</returns>
         public bool DynamicOut { get; set; } = false;
 
+        public bool DynamicIn { get; set; } = false;
+        
         /// <summary>
         /// The help-link to get help for this data source. The UI will offer a help-button if provided. 
         /// </summary>

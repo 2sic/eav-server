@@ -16,7 +16,8 @@ namespace ToSic.Eav.DataSources
         Type = DataSourceType.Source, 
         Difficulty = DifficultyBeta.Advanced,
         GlobalName = "ToSic.Eav.DataSources.PassThrough, ToSic.Eav.DataSources",
-        DynamicOut = true)]
+        DynamicOut = true,
+        DynamicIn = true)]
 
     public class PassThrough : DataSourceBase
 	{

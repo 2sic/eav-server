@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 
@@ -15,7 +16,7 @@ namespace ToSic.Eav.Metadata
         /// Determines if the current thing is used as Metadata.
         /// </summary>
         /// <returns>True if it's a metadata item, false if not. </returns>
-        [Newtonsoft.Json.JsonIgnore]
+        [JsonIgnore]
         bool IsMetadata { get; }
 
         /// <summary>
@@ -23,24 +24,28 @@ namespace ToSic.Eav.Metadata
         /// This is an ID telling what kind of thing we're enhancing. 
         /// </summary>
         /// <returns>An ID from the system which registers all the types of things that can be described. See also <see cref="ITargetTypes"/>.</returns>
+        [JsonProperty("Target", NullValueHandling = NullValueHandling.Ignore)]
         int TargetType { get; }
 
         /// <summary>
         /// A string key identifying a target. 
         /// </summary>
         /// <returns>The string key of the target. Null if the identifier is not a string.</returns>
+        [JsonProperty("String", NullValueHandling = NullValueHandling.Ignore)]
         string KeyString { get; }
 
         /// <summary>
         /// A number (int) key identifying a target. 
         /// </summary>
         /// <returns>The number key of the target. Null if the identifier is not a string.</returns>
+        [JsonProperty("Number", NullValueHandling = NullValueHandling.Ignore)]
         int? KeyNumber { get; }
 
         /// <summary>
         /// A GUID key identifying a target. 
         /// </summary>
         /// <returns>The GUID key of the target. Null if the identifier is not a string.</returns>
+        [JsonProperty("Guid", NullValueHandling = NullValueHandling.Ignore)]
         Guid? KeyGuid { get; }
 
     }
