@@ -264,7 +264,7 @@ namespace ToSic.Eav.DataSourceTests
             vf.Value = "inexisting city";
             
             // attach fallback to give all if no match
-            vf.In.Add(Constants.FallbackStreamName, vf.In[Constants.DefaultStreamName]);
+            vf.InForTests().Add(Constants.FallbackStreamName, vf.InForTests()[Constants.DefaultStreamName]);
             Assert.AreEqual(TestVolume, vf.List.Count(), "Should find exactly 0 people with this city");
         }
         #endregion

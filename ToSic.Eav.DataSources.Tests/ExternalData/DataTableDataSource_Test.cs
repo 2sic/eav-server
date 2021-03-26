@@ -14,7 +14,7 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
         {
             const int itemsToGenerate = 499;
             var ds = DataTablePerson.Generate(itemsToGenerate);
-            Assert.IsTrue(ds.In.Count == 0, "In count should be 0");
+            Assert.IsTrue(ds.InForTests().Count == 0, "In count should be 0");
             Assert.IsTrue(ds.Out.Count == 1, "Out count should be 1");
             var defaultOut = ds[Constants.DefaultStreamName];
             Assert.IsTrue(defaultOut != null);

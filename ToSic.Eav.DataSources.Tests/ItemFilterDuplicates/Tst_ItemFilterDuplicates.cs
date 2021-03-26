@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
+using ToSic.Eav.DataSourceTests;
 using ToSic.Eav.DataSourceTests.TestData;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
@@ -81,7 +82,7 @@ namespace ToSic.Eav.DataSources.Tests.ItemFilterDuplicates
             var sf = Resolve<DataSourceFactory>().GetDataSource<StreamMerge>(new AppIdentity(0, 0), ds);
 
             for (int i = 1; i < attach; i++)
-                sf.In.Add("another" + i, ds.Out.First().Value);
+                sf.InForTests().Add("another" + i, ds.Out.First().Value);
 
             var unique = Resolve<DataSourceFactory>().GetDataSource<DataSources.ItemFilterDuplicates>(new AppIdentity(0, 0), sf);
             return unique;

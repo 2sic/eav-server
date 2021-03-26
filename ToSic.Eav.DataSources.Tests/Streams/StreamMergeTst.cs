@@ -40,7 +40,7 @@ namespace ToSic.Eav.DataSourceTests.Streams
             var items = 100;
             var desiredFinds = items * 2;
             var sf = GenerateMergeDs(items);
-            sf.In.Add("another", sf.In.FirstOrDefault().Value);
+            sf.InForTests().Add("another", sf.InForTests().FirstOrDefault().Value);
             var found = sf.List.Count();
             Assert.AreEqual(desiredFinds, found, "Should find exactly this amount people");
 
@@ -53,9 +53,9 @@ namespace ToSic.Eav.DataSourceTests.Streams
             var items = 100;
             var desiredFinds = items * 3;
             var sf = GenerateMergeDs(items);
-            sf.In.Add("another", sf.In.FirstOrDefault().Value);
-            sf.In.Add("middle", null);
-            sf.In.Add("xFinal", sf.In.FirstOrDefault().Value);
+            sf.InForTests().Add("another", sf.InForTests().FirstOrDefault().Value);
+            sf.InForTests().Add("middle", null);
+            sf.InForTests().Add("xFinal", sf.InForTests().FirstOrDefault().Value);
             var found = sf.List.Count();
             Assert.AreEqual(desiredFinds, found, "Should find exactly this amount people");
 

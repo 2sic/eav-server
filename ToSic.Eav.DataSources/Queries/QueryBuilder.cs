@@ -107,7 +107,7 @@ namespace ToSic.Eav.DataSources.Queries
             if (outTarget.Guid == Guid.Empty)
 	            outTarget.Guid = queryDef.Entity.EntityGuid;
 
-	        #endregion
+            #endregion
 
 	        #region init all DataQueryParts
 
@@ -134,6 +134,11 @@ namespace ToSic.Eav.DataSources.Queries
                 var appIdentity = Apps.State.Identity(null, queryDef.AppId);
                 var dataSource = DataSourceFactory.GetDataSource(assemblyAndType, appIdentity, lookUps: partConfig);
 	            dataSource.Guid = dataQueryPart.Guid;
+
+                try
+                {
+                    dataSource.Label = dataQueryPart.Entity.GetBestTitle();
+                } catch { /* ignore */ }
 
 	            Log.Add($"add '{assemblyAndType}' as " +
 	                    $"part#{dataQueryPart.Id}({dataQueryPart.Guid.ToString().Substring(0, 6)}...)");
@@ -194,20 +199,27 @@ namespace ToSic.Eav.DataSources.Queries
 			var wiringsCreated = false;
 
 			foreach (var dataSource in dataSourcesToInit)
-			{
-			    var unassignedConnectionsForThisSource = allWirings.Where(w =>
-			        w.From == dataSource.Key &&
-			        !initializedWirings.Any(i => w.From == i.From && w.Out == i.Out && w.To == i.To && w.In == i.In));
+            {
+                var unassignedConnectionsForThisSource = allWirings
+                    .Where(w =>
+                        w.From == dataSource.Key
+                        && !initializedWirings.Any(i =>
+                            w.From == i.From && w.Out == i.Out && w.To == i.To && w.In == i.In));
+                
                 // loop all wirings from this DataSource (except already initialized)
                 foreach (var wire in unassignedConnectionsForThisSource)
 				{
 				    try
 				    {
 				        var sourceDsrc = allDataSources[wire.From];
-				        var sourceStream = (sourceDsrc as IDeferredDataSource)?.DeferredOut(wire.Out) ?? sourceDsrc.Out[wire.Out]; // if the source provides deferredOut, use that
-				        ((IDataTarget) allDataSources[wire.To]).In[wire.In] = sourceStream;
+						
+                        // if the source provides a DeferredOut we must! use that
+						var sourceStream = (sourceDsrc as IDeferredDataSource)?.DeferredOut(wire.Out) 
+                                           ?? sourceDsrc.Out[wire.Out];
+                        
+				        ((IDataTarget) allDataSources[wire.To]).Attach(wire.In, sourceStream);
 
-				        initializedWirings.Add(wire);
+                        initializedWirings.Add(wire);
 
 				        wiringsCreated = true;
 				    }

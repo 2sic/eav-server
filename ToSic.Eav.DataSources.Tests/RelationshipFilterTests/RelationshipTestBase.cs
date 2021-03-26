@@ -112,7 +112,7 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
 
             var relFilt = Resolve<DataSourceFactory>().GetDataSource<RelationshipFilter>(new AppIdentity(0, 0), null, 
                 appDs.Configuration.LookUpEngine/*, parentLog: Log*/);
-            relFilt.Attach(Constants.DefaultStreamName, stream);
+            relFilt.AttachForTests(Constants.DefaultStreamName, stream);
             return relFilt;
         }
 

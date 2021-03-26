@@ -78,7 +78,7 @@ namespace ToSic.Eav.DataSourceTests.Caches
             var filtered = new EntityIdFilter()
                 .Init(ds.Configuration.LookUpEngine);
             //filtered.ConfigurationProvider = ds.ConfigurationProvider;
-            filtered.Attach(ds);
+            filtered.AttachForTests(ds);
             filtered.EntityIds = entityIdsValue;
             return filtered;
         }

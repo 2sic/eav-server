@@ -78,7 +78,6 @@ namespace ToSic.Eav.DataSources.Queries
             Log.LinkTo(parentLog, LogId);
             Definition = new QueryDefinition(queryDef, appId, Log);
             this.Init(config);
-            //Configuration.LookUps = config;
             _showDrafts = showDrafts;
 
             // hook up in, just in case we get parameters from an In

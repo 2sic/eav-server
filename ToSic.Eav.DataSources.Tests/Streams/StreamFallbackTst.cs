@@ -13,7 +13,7 @@ namespace ToSic.Eav.DataSourceTests.Streams
         public void StreamWhereDefaultIsReturned()
         {
             var stmf = AssembleTestFallbackStream();
-            stmf.In[Constants.DefaultStreamName] = stmf.In["1"];
+            stmf.InForTests()[Constants.DefaultStreamName] = stmf.InForTests()["1"];
 
             Assert.AreEqual(1, stmf.List.Count(), "should have found 1");
         }
@@ -29,12 +29,12 @@ namespace ToSic.Eav.DataSourceTests.Streams
         public void DoManyFoldFallback()
         {
             var stmf = AssembleTestFallbackStream();
-            stmf.In.Remove("1");
-            stmf.In.Add("Fallback1", stmf.In[Constants.DefaultStreamName]);
-            stmf.In.Add("Fallback2", stmf.In[Constants.DefaultStreamName]);
-            stmf.In.Add("Fallback3", stmf.In[Constants.DefaultStreamName]);
-            stmf.In.Add("Fallback4", stmf.In[Constants.DefaultStreamName]);
-            stmf.In.Add("Fallback5", stmf.In[Constants.DefaultStreamName]);
+            stmf.InForTests().Remove("1");
+            stmf.InForTests().Add("Fallback1", stmf.InForTests()[Constants.DefaultStreamName]);
+            stmf.InForTests().Add("Fallback2", stmf.InForTests()[Constants.DefaultStreamName]);
+            stmf.InForTests().Add("Fallback3", stmf.InForTests()[Constants.DefaultStreamName]);
+            stmf.InForTests().Add("Fallback4", stmf.InForTests()[Constants.DefaultStreamName]);
+            stmf.InForTests().Add("Fallback5", stmf.InForTests()[Constants.DefaultStreamName]);
             Assert.AreEqual(45, stmf.List.Count(), "Should have looped through many and found the 45");
             Assert.AreEqual("ZMany", stmf.ReturnedStreamName);
         }
@@ -43,12 +43,12 @@ namespace ToSic.Eav.DataSourceTests.Streams
         public void DoManyFallbacks2()
         {
             var stmf = AssembleTestFallbackStream();
-            stmf.In.Add("ZZZ", stmf.In["1"]); // should be after the "ZMany" so it should not return anything
-            stmf.In.Remove("1");
-            stmf.In.Add("1", stmf.In[Constants.DefaultStreamName]);
-            stmf.In.Add("2", stmf.In[Constants.DefaultStreamName]);
-            stmf.In.Add("3", stmf.In[Constants.DefaultStreamName]);
-            stmf.In.Add("Fallback5", stmf.In[Constants.DefaultStreamName]);
+            stmf.InForTests().Add("ZZZ", stmf.InForTests()["1"]); // should be after the "ZMany" so it should not return anything
+            stmf.InForTests().Remove("1");
+            stmf.InForTests().Add("1", stmf.InForTests()[Constants.DefaultStreamName]);
+            stmf.InForTests().Add("2", stmf.InForTests()[Constants.DefaultStreamName]);
+            stmf.InForTests().Add("3", stmf.InForTests()[Constants.DefaultStreamName]);
+            stmf.InForTests().Add("Fallback5", stmf.InForTests()[Constants.DefaultStreamName]);
             Assert.AreEqual(45, stmf.List.Count(), "Should have looped through many and found the 45");
             Assert.AreEqual("ZMany", stmf.ReturnedStreamName);
         }
@@ -57,11 +57,11 @@ namespace ToSic.Eav.DataSourceTests.Streams
         public void FindNothing()
         {
             var stmf = AssembleTestFallbackStream();
-            stmf.In.Remove("1");
-            stmf.In.Add("1", stmf.In[Constants.DefaultStreamName]);
-            stmf.In.Add("2", stmf.In[Constants.DefaultStreamName]);
-            stmf.In.Add("3", stmf.In[Constants.DefaultStreamName]);
-            stmf.In.Remove("ZMany");
+            stmf.InForTests().Remove("1");
+            stmf.InForTests().Add("1", stmf.InForTests()[Constants.DefaultStreamName]);
+            stmf.InForTests().Add("2", stmf.InForTests()[Constants.DefaultStreamName]);
+            stmf.InForTests().Add("3", stmf.InForTests()[Constants.DefaultStreamName]);
+            stmf.InForTests().Remove("ZMany");
             Assert.AreEqual(0, stmf.List.Count(), "Should find none");
         }
 
@@ -72,8 +72,8 @@ namespace ToSic.Eav.DataSourceTests.Streams
 
             var dsWith1 = DataTablePerson.Generate(1, 2000);
             var dsWithmany = DataTablePerson.Generate(45, 4000);
-            streams.Attach("1", dsWith1);
-            streams.Attach("ZMany", dsWithmany);
+            streams.AttachForTests("1", dsWith1);
+            streams.AttachForTests("ZMany", dsWithmany);
             return streams;
 
         }

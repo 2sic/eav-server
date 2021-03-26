@@ -15,15 +15,9 @@ namespace ToSic.Eav.DataSources
 	/// Public interface for an Eav DataSource. All DataSource objects are based on this. 
 	/// </summary>
 	[PublicApi_Stable_ForUseInYourCode]
-	public interface IDataSource : IAppIdentity, ICacheInfo, ICanPurgeListCache, IHasLog
+	public interface IDataSource: IDataPartShared, IAppIdentity, ICacheInfo, ICanPurgeListCache, IHasLog
 	{
 		#region Data Interfaces
-
-        /// <summary>
-        /// Internal ID usually from persisted configurations IF the configuration was build from an pre-stored query.
-        /// </summary>
-        /// <returns>The guid of this data source which identifies the configuration <see cref="IEntity"/> of the data source.</returns>
-        Guid Guid { get; set; }
 
 		/// <summary>
 		/// Gets the Dictionary of Out-Streams. This is the internal accessor, as usually you'll use this["name"] instead. <br/>
@@ -57,24 +51,6 @@ namespace ToSic.Eav.DataSources
 
         #endregion
 
-        #region UI Interfaces -- not implemented yet
-
-        ///// <summary>
-        ///// if the UI should show editing features for the user
-        ///// </summary>
-        //bool AllowUserEdit { get; }
-        ///// <summary>
-        ///// if the UI should show sorting features for the user
-        ///// </summary>
-        //bool AllowUserSort { get; }
-
-        ///// <summary>
-        ///// if the UI should show versioning features for the user
-        ///// </summary>
-        //bool AllowVersioningUI { get; }
-
-        #endregion
-
         #region Internals 
 
         /// <summary>
@@ -82,11 +58,12 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         string LogId { get; }
 
-        /// <summary>
-        /// Name of this DataSource - not usually relevant.
-        /// </summary>
-        /// <returns>Name of this source.</returns>
-        string Name { get; }
+        ///// <summary>
+        ///// Name of this DataSource - not usually relevant.
+        ///// </summary>
+        ///// <returns>Name of this source.</returns>
+        //string Name { get; }
+        
 		#endregion
 
         #region Caching Information
