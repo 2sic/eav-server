@@ -16,6 +16,12 @@ namespace ToSic.Eav.DataSources
         public string SourceStream { get; }
         [JsonIgnore]    // don't try to serialize, as it's too large of an object
         public string TargetStream { get; }
+        
+        /// <summary>
+        /// Temporary safety net - unsure if usefull
+        /// </summary>
+        [JsonIgnore]
+        public IDataStream DirectlyAttachedStream { get; }
 
         #region Serialization properties just for debugging in QueryInfo
 
@@ -26,6 +32,7 @@ namespace ToSic.Eav.DataSources
 
         public Connection(IDataStream sourceStream, IDataTarget target, string targetStream)
         {
+            DirectlyAttachedStream = sourceStream;
             DataSource = sourceStream.Source;
             SourceStream = sourceStream.Name;
             DataTarget = target;

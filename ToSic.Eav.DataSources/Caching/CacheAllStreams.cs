@@ -28,8 +28,8 @@ namespace ToSic.Eav.DataSources.Caching
             },
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-CacheAllStreams")]
     [PublicApi_Stable_ForUseInYourCode]
-	public class CacheAllStreams : DataSourceBase, IDeferredDataSource
-	{
+	public class CacheAllStreams : DataSourceBase
+    {
         [PrivateApi]
 	    public override string LogId => "DS.CachAl";
 
@@ -110,34 +110,22 @@ namespace ToSic.Eav.DataSources.Caching
             // attach all missing streams, now that Out is used the first time
             // note that some streams were already added because of the DeferredOut
             foreach (var dataStream in In.Where(s => !_out.ContainsKey(s.Key)))
-                AttachDeferredStreamToOut(dataStream.Key);
+                _out.Add(dataStream.Key, StreamWithCaching(dataStream.Key));
         }
 
-        /// <summary>
-        /// Will get the stream or if missing, try to attach it first
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-	    private IDataStream GetDeferredStream(string name) 
-            => _out.ContainsKey(name) ? _out[name] : AttachDeferredStreamToOut(name);
-
-	    private IDataStream AttachDeferredStreamToOut(string name)
+	    private IDataStream StreamWithCaching(string name)
         {
-            Configuration.Parse();
-
             var outStream = new DataStream(this, name,  () => In[name].Immutable, true);
 
-	        if (CacheDurationInSeconds != 0) // only set if a value other than 0 (= default) was given
+            // only set if a value other than 0 (= default) was given
+            if (CacheDurationInSeconds != 0)
 	            outStream.CacheDurationInSeconds = CacheDurationInSeconds;
 	        outStream.CacheRefreshOnSourceRefresh = RefreshOnSourceRefresh;
 
-	        _out.Add(name, outStream);
-	        return outStream;
-	    }
-
-        // already attach an out, ready to consume in when it's there
-        [PrivateApi]
-	    public IDataStream DeferredOut(string name) => GetDeferredStream(name);
+	        //_out.Add(name, outStream);
+            return outStream;
+        }
+        
 	}
 
 }

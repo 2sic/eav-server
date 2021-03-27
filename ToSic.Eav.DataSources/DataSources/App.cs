@@ -91,10 +91,7 @@ namespace ToSic.Eav.DataSources
 				AppId = AppSwitch;
 
 		    var newDs = DataSourceFactory.GetPublishing(this, configProvider: Configuration.LookUpEngine, showDrafts:GetShowDraftStatus());
-		    if (In.ContainsKey(Constants.DefaultStreamName))
-		        In.Remove(Constants.DefaultStreamName);
-            Attach(Constants.DefaultStreamName, newDs[Constants.DefaultStreamName]);
-            //In.Add(Constants.DefaultStreamName, newDs[Constants.DefaultStreamName]);
+            Attach(Constants.DefaultStreamName, newDs);
 		}
 
 

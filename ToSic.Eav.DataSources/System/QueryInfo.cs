@@ -94,7 +94,7 @@ namespace ToSic.Eav.DataSources.System
                                titleField: StreamsType.Name.ToString(),
                                typeName: QueryStreamsContentType))
                        .ToImmutableArray()
-                   ?? ImmutableArray<IEntity>.Empty;// new List<IEntity>().ToImmutableList();
+                   ?? ImmutableArray<IEntity>.Empty;
         }
 
 	    private IImmutableList<IEntity> GetAttributes()
@@ -103,15 +103,15 @@ namespace ToSic.Eav.DataSources.System
 
             // no query can happen if the name was blank
             if (_query == null)
-                return ImmutableArray<IEntity>.Empty;//  new List<IEntity>();
+                return ImmutableArray<IEntity>.Empty;
 
             // check that _query has the stream name
             if (!_query.Out.ContainsKey(StreamName))
-                return ImmutableArray<IEntity>.Empty; //new List<IEntity>();
+                return ImmutableArray<IEntity>.Empty;
 
-	        var attribInfo = DataSourceFactory.GetDataSource<Attributes>(_query);
+            var attribInfo = DataSourceFactory.GetDataSource<Attributes>(_query);
             if(StreamName != Constants.DefaultStreamName)
-                attribInfo.Attach(Constants.DefaultStreamName, _query[StreamName]);
+                attribInfo.Attach(Constants.DefaultStreamName, _query, StreamName);
 
 	        return attribInfo.Immutable;
         }

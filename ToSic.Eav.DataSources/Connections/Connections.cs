@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 using ToSic.Eav.Documentation;
 
@@ -18,8 +19,10 @@ namespace ToSic.Eav.DataSources
 
         public void AddIn(Connection connection)
         {
-            // todo: maybe check if a similar / identical connection was already added?
-            
+            // Check if a connection was already added?
+            var existing = In.FirstOrDefault(item => item.SourceStream == connection.SourceStream);
+            if (existing != null) In.Remove(existing);
+                
             In.Add(connection);
             (connection.DataSource as DataSourceBase)?.Connections.Out.Add(connection);
         }

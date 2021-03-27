@@ -33,15 +33,8 @@ namespace ToSic.Eav.DataSources
         [PublicApi]
         public void Attach(IDataSource dataSource)
         {
-            // ensure list is blank, otherwise we'll have name conflicts when replacing a source
-            Connections.ClearIn();
-
-            foreach (var dataStream in dataSource.Out)
-            {
+            foreach (var dataStream in dataSource.Out) 
                 Attach(dataStream.Key, dataSource, dataStream.Key);
-                //AddReplaceIn(dataStream.Key, dataStream.Value);
-                //Connections.AddIn(new Connection(dataSource, dataStream.Key, this, dataStream.Key));
-            }
         }
 
 
@@ -49,24 +42,24 @@ namespace ToSic.Eav.DataSources
         [PublicApi]
         public void Attach(string streamName, IDataSource dataSource, string sourceName = Constants.DefaultStreamName)
         {
-            AddReplaceIn(streamName, dataSource[sourceName]);
-            
-            Connections.AddIn(new Connection(dataSource, sourceName, this, streamName));
+            var connection = new Connection(dataSource, sourceName, this, streamName);
+            ConnectIn(connection);
         }
 
         /// <inheritdoc />
         [PublicApi]
         public void Attach(string streamName, IDataStream dataStream)
         {
-            AddReplaceIn(streamName, dataStream);
-            
-            Connections.AddIn(new Connection(dataStream, this, streamName));
+            var connection = new Connection(dataStream, this, streamName);
+            ConnectIn(connection);
         }
-
-        private void AddReplaceIn(string streamName, IDataStream dataStream)
+        
+        private void ConnectIn(Connection connection)
         {
-            if (In.ContainsKey(streamName)) In.Remove(streamName);
-            In.Add(streamName, dataStream);
+            var connStream = new ConnectionStream(connection);
+            if (In.ContainsKey(connection.TargetStream)) In.Remove(connection.TargetStream);
+            In.Add(connection.TargetStream, connStream);
+            Connections.AddIn(connection);
         }
         
 

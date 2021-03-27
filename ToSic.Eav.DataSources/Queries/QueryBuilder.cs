@@ -169,16 +169,18 @@ namespace ToSic.Eav.DataSources.Queries
 			ConnectOutStreams(dataSourcesWithNoInStreams, dataSources, wirings, initializedWirings);
 
 			// 2. init DataSources with In-Streams of DataSources which are already wired
-            // note: there is a bug here, because when a DS has "In" from multiple sources, then it won't always be ready to provide out...
+			// note: there is a bug here, because when a DS has "In" from multiple sources, then it won't always be ready to provide out...
 			// repeat until all are connected
-		    while (true)
+			var connectionsWereAdded = true;
+		    while (connectionsWereAdded)
 			{
-				var dataSourcesWithInitializedInStreams = dataSources.Where(d => initializedWirings.Any(w => w.To == d.Key));
+				var dataSourcesWithInitializedInStreams = dataSources
+                    .Where(d => initializedWirings.Any(w => w.To == d.Key));
 
-				var connectionsCreated = ConnectOutStreams(dataSourcesWithInitializedInStreams, dataSources, wirings, initializedWirings);
+				connectionsWereAdded = ConnectOutStreams(dataSourcesWithInitializedInStreams, dataSources, wirings, initializedWirings);
 
-				if (!connectionsCreated)
-				    break;
+				//if (!connectionsCreated)
+				//    break;
 			}
 
 			// 3. Test all Wirings were created
@@ -196,7 +198,7 @@ namespace ToSic.Eav.DataSources.Queries
 		/// </summary>
 		private static bool ConnectOutStreams(IEnumerable<KeyValuePair<string, IDataSource>> dataSourcesToInit, IDictionary<string, IDataSource> allDataSources, IList<Connection> allWirings, List<Connection> initializedWirings)
 		{
-			var wiringsCreated = false;
+			var connectionsWereAdded = false;
 
 			foreach (var dataSource in dataSourcesToInit)
             {
@@ -211,17 +213,12 @@ namespace ToSic.Eav.DataSources.Queries
 				{
 				    try
 				    {
-				        var sourceDsrc = allDataSources[wire.From];
-						
-                        // if the source provides a DeferredOut we must! use that
-						var sourceStream = (sourceDsrc as IDeferredDataSource)?.DeferredOut(wire.Out) 
-                                           ?? sourceDsrc.Out[wire.Out];
-                        
-				        ((IDataTarget) allDataSources[wire.To]).Attach(wire.In, sourceStream);
-
+				        var conSource = allDataSources[wire.From];
+                        ((IDataTarget) allDataSources[wire.To]).Attach(wire.In, conSource, wire.Out);
                         initializedWirings.Add(wire);
 
-				        wiringsCreated = true;
+                        // In the end, inform caller that we did add some connections
+				        connectionsWereAdded = true;
 				    }
 				    catch (Exception ex)
 				    {
@@ -230,7 +227,7 @@ namespace ToSic.Eav.DataSources.Queries
 				}
 			}
 
-			return wiringsCreated;
+			return connectionsWereAdded;
 		}
 
 
