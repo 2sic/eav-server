@@ -18,8 +18,9 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         public Error()
         {
-            Provide(() => DataSourceErrorHandling.CreateErrorList(this, Constants.DefaultStreamName, 
-                "Demo Error", "Demo message of the Error DataSource")); 
+            Provide(() => DataSourceErrorHandling.CreateErrorList(source: this, 
+                title: "Demo Error", 
+                message: "Demo message of the Error DataSource")); 
         }
 
     }
