@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSourceTests.Streams
             var sf = Resolve<DataSourceFactory>().GetDataSource<StreamMerge>(
                 new AppIdentity(0, 0), null, 
                 new LookUpEngine(null as ILog));
-            var found = sf.List.Count();
+            var found = sf.ListForTests().Count();
             Assert.AreEqual(desiredFinds, found, "Should find exactly this amount people");
         }
 
@@ -29,7 +29,7 @@ namespace ToSic.Eav.DataSourceTests.Streams
         {
             var desiredFinds = 100;
             var sf = GenerateMergeDs(desiredFinds);
-            var found = sf.List.Count();
+            var found = sf.ListForTests().Count();
             Assert.AreEqual(desiredFinds, found, "Should find exactly this amount people");
         }
 
@@ -41,7 +41,7 @@ namespace ToSic.Eav.DataSourceTests.Streams
             var desiredFinds = items * 2;
             var sf = GenerateMergeDs(items);
             sf.InForTests().Add("another", sf.InForTests().FirstOrDefault().Value);
-            var found = sf.List.Count();
+            var found = sf.ListForTests().Count();
             Assert.AreEqual(desiredFinds, found, "Should find exactly this amount people");
 
         }
@@ -56,7 +56,7 @@ namespace ToSic.Eav.DataSourceTests.Streams
             sf.InForTests().Add("another", sf.InForTests().FirstOrDefault().Value);
             sf.InForTests().Add("middle", null);
             sf.InForTests().Add("xFinal", sf.InForTests().FirstOrDefault().Value);
-            var found = sf.List.Count();
+            var found = sf.ListForTests().Count();
             Assert.AreEqual(desiredFinds, found, "Should find exactly this amount people");
 
         }

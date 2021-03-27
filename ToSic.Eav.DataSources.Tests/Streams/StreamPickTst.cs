@@ -21,7 +21,7 @@ namespace ToSic.Eav.DataSourceTests.Streams
         public void StreamPickDefault()
         {
             var streamPick = BuildStructure();
-            var list = streamPick.List;
+            var list = streamPick.ListForTests();
             Assert.AreEqual(list.Count(), DefaultStreamSize, "default should have 10");
         }
 
@@ -30,7 +30,7 @@ namespace ToSic.Eav.DataSourceTests.Streams
         {
             var streamPick = BuildStructure();
             streamPick.StreamName = MoreStream;
-            var list = streamPick.List;
+            var list = streamPick.ListForTests();
             Assert.AreEqual(list.Count(), MoreStreamSize, "default should have 27");
         }
 

@@ -60,7 +60,7 @@ namespace ToSic.Eav.DataSourceTests
         {
             var vf = GetFilter(table, ml, FieldCity, value: city);
             if (lang != null) vf.Languages = lang;
-            Assert.AreEqual(expected, vf.List.Count(), $"Should find exactly {expected} people with this city");
+            Assert.AreEqual(expected, vf.ListForTests().Count(), $"Should find exactly {expected} people with this city");
         }
 
         [TestMethod]
@@ -68,7 +68,7 @@ namespace ToSic.Eav.DataSourceTests
         {
             var vf = GetFilter(true, false, FieldCity);
             vf.Value = City1.ToLowerInvariant(); // test for the first value
-            Assert.AreEqual(Quarter, vf.List.Count(), "Should find exactly 2500 people with this city");
+            Assert.AreEqual(Quarter, vf.ListForTests().Count(), "Should find exactly 2500 people with this city");
         }
 
         #region String Case Sensitive
@@ -76,7 +76,7 @@ namespace ToSic.Eav.DataSourceTests
         public void ValueFilter_SimpleTextFilterCSWithResults()
         {
             var vf = GetFilter(true, false, FieldCity, "===", City1);
-            Assert.AreEqual(Quarter, vf.List.Count(), "Should find exactly 2500 people with this city");
+            Assert.AreEqual(Quarter, vf.ListForTests().Count(), "Should find exactly 2500 people with this city");
         }       
 
         [TestMethod]
@@ -85,7 +85,7 @@ namespace ToSic.Eav.DataSourceTests
             var vf = GetFilter(true, false, FieldCity, "===");
             //vf.Operator = "===";
             vf.Value = City1.ToLowerInvariant(); // test for the first value
-            Assert.AreEqual(0, vf.List.Count(), "Should find exactly 0 people with this city");
+            Assert.AreEqual(0, vf.ListForTests().Count(), "Should find exactly 0 people with this city");
         }
 
         [TestMethod]
@@ -95,7 +95,7 @@ namespace ToSic.Eav.DataSourceTests
             //vf.Attribute = "CityMaybeNull";
             //vf.Operator = "===";
             vf.Value = "Grabs"; // test for the first value
-            Assert.AreEqual(Quarter, vf.List.Count(), "Should find exactly 0 people with this city");
+            Assert.AreEqual(Quarter, vf.ListForTests().Count(), "Should find exactly 0 people with this city");
         }
 
         #endregion
@@ -108,7 +108,7 @@ namespace ToSic.Eav.DataSourceTests
             vf.Attribute = "City";
             vf.Operator = "all";
             vf.Value = "uCHs";
-            Assert.AreEqual(10000, vf.List.Count(), "Should find exactly 10000 people with this city");
+            Assert.AreEqual(10000, vf.ListForTests().Count(), "Should find exactly 10000 people with this city");
         }
         #endregion
 
@@ -121,7 +121,7 @@ namespace ToSic.Eav.DataSourceTests
             vf.Attribute = "City";
             vf.Operator = "contains";
             vf.Value = "uCHs";
-            Assert.AreEqual(2500, vf.List.Count(), "Should find exactly 2500 people with this city");
+            Assert.AreEqual(2500, vf.ListForTests().Count(), "Should find exactly 2500 people with this city");
         }
 
         #endregion
@@ -136,7 +136,7 @@ namespace ToSic.Eav.DataSourceTests
             vf.Operator = "contains";
             vf.Value = "uCHs";
             vf.Take = "5";
-            Assert.AreEqual(5, vf.List.Count(), "Should find exactly 5 people with this city");
+            Assert.AreEqual(5, vf.ListForTests().Count(), "Should find exactly 5 people with this city");
         }
         [TestMethod]
        public void ValueFilter_TakeContainsCH1000()
@@ -146,7 +146,7 @@ namespace ToSic.Eav.DataSourceTests
             vf.Operator = "contains";
             vf.Value = "CH";
             vf.Take = "1000";
-            Assert.AreEqual(1000, vf.List.Count(), "Should find exactly 5 people with this city");
+            Assert.AreEqual(1000, vf.ListForTests().Count(), "Should find exactly 5 people with this city");
         }
         [TestMethod]
        public void ValueFilter_TakeAll10000()
@@ -156,7 +156,7 @@ namespace ToSic.Eav.DataSourceTests
             vf.Operator = "all";
             vf.Value = "uCHs";
             vf.Take = "10000";
-            Assert.AreEqual(10000, vf.List.Count(), "Should find exactly 5 people with this city");
+            Assert.AreEqual(10000, vf.ListForTests().Count(), "Should find exactly 5 people with this city");
         }        
 
         [TestMethod]
@@ -167,7 +167,7 @@ namespace ToSic.Eav.DataSourceTests
             vf.Operator = "all";
             vf.Value = "uCHs";
             vf.Take = "90000";
-            Assert.AreEqual(10000, vf.List.Count(), "Should find exactly 5 people with this city");
+            Assert.AreEqual(10000, vf.ListForTests().Count(), "Should find exactly 5 people with this city");
         }        
         #endregion
 
@@ -180,7 +180,7 @@ namespace ToSic.Eav.DataSourceTests
             vf.Attribute = "City";
             vf.Operator = "begins";
             vf.Value = "bu";
-            Assert.AreEqual(2500, vf.List.Count(), "Should find exactly 2500 people with this city");
+            Assert.AreEqual(2500, vf.ListForTests().Count(), "Should find exactly 2500 people with this city");
         }
          [TestMethod]
        public void ValueFilter_SimpleTextFilterBeginsNone()
@@ -189,7 +189,7 @@ namespace ToSic.Eav.DataSourceTests
             vf.Attribute = "CityMaybeNull";
             vf.Operator = "begins";
             vf.Value = "St.";
-            Assert.AreEqual(0, vf.List.Count(), "Should find exactly 0 people with this city");
+            Assert.AreEqual(0, vf.ListForTests().Count(), "Should find exactly 0 people with this city");
         }
         #endregion
 
@@ -201,7 +201,7 @@ namespace ToSic.Eav.DataSourceTests
             vf.Attribute = "City";
             vf.Operator = "contains";
             vf.Value = "Buchs SG";
-            Assert.AreEqual(0, vf.List.Count(), "Should find exactly 0 people with this city");
+            Assert.AreEqual(0, vf.ListForTests().Count(), "Should find exactly 0 people with this city");
         }
 
         [TestMethod]
@@ -211,7 +211,7 @@ namespace ToSic.Eav.DataSourceTests
             vf.Attribute = "City";
             vf.Operator = "!contains";
             vf.Value = "ch";
-            Assert.AreEqual(5000, vf.List.Count(), "Should find exactly 5000 people with this city");
+            Assert.AreEqual(5000, vf.ListForTests().Count(), "Should find exactly 5000 people with this city");
         }
         #endregion
 
@@ -222,7 +222,7 @@ namespace ToSic.Eav.DataSourceTests
             var vf = _testDataGeneratedOutsideTimer;
             vf.Attribute = "City";
             vf.Value = "Daniel";
-            Assert.AreEqual(0, vf.List.Count(), "Should find exactly 0 people with this city");
+            Assert.AreEqual(0, vf.ListForTests().Count(), "Should find exactly 0 people with this city");
         }
         
         [TestMethod]
@@ -231,7 +231,7 @@ namespace ToSic.Eav.DataSourceTests
             var vf = _testDataGeneratedOutsideTimer;
             vf.Attribute = "ZIPCodeOrSomeOtherNotExistingField";
             vf.Value = "9470"; // test for the first value
-            Assert.AreEqual(0, vf.List.Count(), "Should find exactly 0 people with this city");
+            Assert.AreEqual(0, vf.ListForTests().Count(), "Should find exactly 0 people with this city");
         }
 
         [TestMethod]
@@ -240,7 +240,7 @@ namespace ToSic.Eav.DataSourceTests
             var vf = _testDataGeneratedOutsideTimer;
             vf.Attribute = "CityMaybeNull";
             vf.Value = TestCities[1]; // test for the second value
-            Assert.AreEqual(2500, vf.List.Count(), "Should find exactly 250 people with this city");
+            Assert.AreEqual(2500, vf.ListForTests().Count(), "Should find exactly 250 people with this city");
         }
 
 
@@ -252,7 +252,7 @@ namespace ToSic.Eav.DataSourceTests
             vf.Attribute = "City";
             // vf.Operator = "==";
             vf.Value = "inexisting city";
-            Assert.AreEqual(0, vf.List.Count(), "Should find exactly 0 people with this city");
+            Assert.AreEqual(0, vf.ListForTests().Count(), "Should find exactly 0 people with this city");
         }
 
         [TestMethod]
@@ -265,7 +265,7 @@ namespace ToSic.Eav.DataSourceTests
             
             // attach fallback to give all if no match
             vf.InForTests().Add(Constants.FallbackStreamName, vf.InForTests()[Constants.DefaultStreamName]);
-            Assert.AreEqual(TestVolume, vf.List.Count(), "Should find exactly 0 people with this city");
+            Assert.AreEqual(TestVolume, vf.ListForTests().Count(), "Should find exactly 0 people with this city");
         }
         #endregion
 

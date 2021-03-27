@@ -29,7 +29,7 @@ namespace ToSic.Eav.DataSourceTests.Caches
             Assert.IsFalse(listCache.Has(cacher.Out[Constants.DefaultStreamName]),
                 "Should not be in yet");
 
-            var y = cacher.Immutable; // not it should get in
+            var y = cacher.ListForTests(); // not it should get in
 
             // check again, should be in
             Assert.IsTrue(listCache.Has(cacher.Out[Constants.DefaultStreamName]),
@@ -48,7 +48,7 @@ namespace ToSic.Eav.DataSourceTests.Caches
             Assert.IsTrue(listCache.Has(cacher.Out[Constants.DefaultStreamName]),
                 "Should be in because the previous test already added it - will fail if run by itself");
 
-            var y = cacher.Immutable; // not it should get in
+            var y = cacher.ListForTests(); // not it should get in
 
             Assert.AreEqual(1, y.Count(), "still has correct amount of items");
             Assert.AreEqual(1067, y.First().EntityId, "check correct entity id");

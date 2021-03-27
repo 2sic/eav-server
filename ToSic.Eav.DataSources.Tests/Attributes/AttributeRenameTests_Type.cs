@@ -12,7 +12,7 @@ namespace ToSic.Eav.DataSourceTests
         {
             var attRen = AttributeRenameTester.CreateRenamer(10);
             attRen.TypeName = "MyNiceTypeName";
-            var result = attRen.Immutable.ToList();
+            var result = attRen.ListForTests().ToList();
             Assert.AreEqual(10, result.Count);
             var item = result.First();
             Assert.AreEqual("MyNiceTypeName", item.Type.Name, "Typename should have changed");

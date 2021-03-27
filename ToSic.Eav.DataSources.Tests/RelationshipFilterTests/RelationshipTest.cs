@@ -16,8 +16,8 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
         internal IEnumerable<IEntity> All => Api.InForTests()[Constants.DefaultStreamName].Immutable;
         internal int CountAll => All.Count();
 
-        internal int CountApi => Api.List.Count();
-        internal int CountConfig => Config.List.Count();
+        internal int CountApi => Api.ListForTests().Count();
+        internal int CountConfig => Config.ListForTests().Count();
 
 
         public string Type, 
@@ -76,7 +76,7 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
             var x = CountApi + CountConfig; // access the streams to ensure it's logged
             Trace.Write("Log after accessing DSs\n\n" + Log.Dump());
 
-            Api.List.ToList().ForEach(e => Trace.WriteLine($"item ({e.EntityId}):'{e.GetBestTitle()}'"));
+            Api.ListForTests().ToList().ForEach(e => Trace.WriteLine($"item ({e.EntityId}):'{e.GetBestTitle()}'"));
 
             Assert.IsTrue(expectsResults ? CountApi > 0 : CountApi == 0, $"test: {Name} - found-Count:{CountApi} > 0");
             if(exactCount != -1)

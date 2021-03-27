@@ -1,8 +1,12 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 
 namespace ToSic.Eav.DataSourceTests
 {
+    /// <summary>
+    /// These extensions will access the normal List/Stream properties, but by making all tests use this, we have a cleaner use count in the Code.
+    /// </summary>
     public static class ExtensionsForTesting
     {
         /// <summary>
@@ -20,5 +24,7 @@ namespace ToSic.Eav.DataSourceTests
 
         public static void AttachForTests(this IDataTarget target, string streamName, IDataStream dataStream)
             => target.Attach(streamName, dataStream);
+
+        public static IEnumerable<IEntity> ListForTests(this IDataSource source) => source.List;
     }
 }

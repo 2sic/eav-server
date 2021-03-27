@@ -25,7 +25,7 @@ namespace ToSic.Eav.DataSourceTests.Paging
             Assert.AreEqual(100.ToDecimal(), pgstream.Value<int>("PageCount"));
             Assert.AreEqual(1000.ToDecimal(), pgstream.Value<int>("ItemCount"));
 
-            var result = ds.List;
+            var result = ds.ListForTests();
             Assert.AreEqual(10, result.Count());
             Assert.AreEqual(seedId, result.First().EntityId);
         }
@@ -41,7 +41,7 @@ namespace ToSic.Eav.DataSourceTests.Paging
             Assert.AreEqual(101.ToDecimal(), pgstream.Value<int>("PageCount"));
             Assert.AreEqual(1001.ToDecimal(), pgstream.Value<int>("ItemCount"));
 
-            var result = ds.List;
+            var result = ds.ListForTests();
             Assert.AreEqual(10, result.Count());
             Assert.AreEqual(seedId + 60, result.First().EntityId);
         }
@@ -58,7 +58,7 @@ namespace ToSic.Eav.DataSourceTests.Paging
             Assert.AreEqual(5.ToDecimal(), pgstream.Value<int>("PageCount"));
             Assert.AreEqual(223.ToDecimal(), pgstream.Value<int>("ItemCount"));
 
-            var result = ds.List;
+            var result = ds.ListForTests();
             Assert.AreEqual(23, result.Count());
             Assert.AreEqual(seedId + 200, result.First().EntityId);
             Assert.AreEqual(seedId + 223 -1, result.Last().EntityId);

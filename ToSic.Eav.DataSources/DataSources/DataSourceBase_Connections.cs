@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Collections.Immutable;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 
@@ -25,8 +24,6 @@ namespace ToSic.Eav.DataSources
         /// <inheritdoc />
         public IEnumerable<IEntity> List => Out[Constants.DefaultStreamName].Immutable;
 
-        [PrivateApi]
-        public IImmutableList<IEntity> Immutable => Out[Constants.DefaultStreamName].Immutable;
 
         #region various Attach-In commands
         /// <inheritdoc />

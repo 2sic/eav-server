@@ -21,7 +21,7 @@ namespace ToSic.Eav.DataSources.Tests.ItemFilterDuplicates
             var sf = Resolve<DataSourceFactory>().GetDataSource<DataSources.ItemFilterDuplicates>(
                 new AppIdentity(0,0), null, 
                 new LookUpEngine(null as ILog));
-            var found = sf.List.Count();
+            var found = sf.ListForTests().Count();
             Assert.AreEqual(desiredFinds, found, "Should find exactly this amount people");
 
             var dupls = sf[DataSources.ItemFilterDuplicates.DuplicatesStreamName].Immutable.Count;
@@ -34,7 +34,7 @@ namespace ToSic.Eav.DataSources.Tests.ItemFilterDuplicates
             var desiredFinds = 100;
             var desiredDupls = 0;
             var sf = GenerateDuplsDs(desiredFinds, 1);
-            var found = sf.List.Count();
+            var found = sf.ListForTests().Count();
             Assert.AreEqual(desiredFinds, found, "Should find exactly this amount people");
 
             var dupls = sf[DataSources.ItemFilterDuplicates.DuplicatesStreamName].Immutable.Count;
@@ -50,7 +50,7 @@ namespace ToSic.Eav.DataSources.Tests.ItemFilterDuplicates
             var desiredDupls = items;
             var sf = GenerateDuplsDs(items, 2);
 
-            var found = sf.List.Count();
+            var found = sf.ListForTests().Count();
             Assert.AreEqual(desiredFinds, found, "Should find exactly this amount people");
 
             var dupls = sf[DataSources.ItemFilterDuplicates.DuplicatesStreamName].Immutable.Count;
@@ -66,7 +66,7 @@ namespace ToSic.Eav.DataSources.Tests.ItemFilterDuplicates
             var desiredDupls = items;
             var sf = GenerateDuplsDs(items, 3);
 
-            var found = sf.List.Count();
+            var found = sf.ListForTests().Count();
             Assert.AreEqual(desiredFinds, found, "Should find exactly this amount people");
 
             var dupls = sf[DataSources.ItemFilterDuplicates.DuplicatesStreamName].Immutable.Count;

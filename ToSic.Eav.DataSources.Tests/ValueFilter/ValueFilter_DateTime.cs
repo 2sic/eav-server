@@ -46,7 +46,7 @@ namespace ToSic.Eav.DataSourceTests
             vf.Value = value;
             if (operation != null)
                 vf.Operator = operation;
-            Assert.AreEqual(expected, vf.List.Count(), "Should find exactly " + expected + " amount people");
+            Assert.AreEqual(expected, vf.ListForTests().Count(), "Should find exactly " + expected + " amount people");
         }
         
 

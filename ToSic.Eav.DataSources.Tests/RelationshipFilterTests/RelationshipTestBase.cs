@@ -97,9 +97,9 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
             var appDs = Resolve<DataSourceFactory>().GetDataSource<App>(baseDs);
 
             // micro tests to ensure we have the right app etc.
-            Assert.IsTrue(appDs.List.Count() > 20, "appDs.List.Count() > 20");
+            Assert.IsTrue(appDs.ListForTests().Count() > 20, "appDs.List.Count() > 20");
 
-            var item731 = appDs.List.FindRepoId(731);
+            var item731 = appDs.ListForTests().FindRepoId(731);
             Assert.IsNotNull(item731, "expecting item 731");
             var title = item731.GetBestTitle();
             Assert.AreEqual(title, "2sic", "item 731 should have title '2sic'");

@@ -48,8 +48,8 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
             const int itemsToGenerate = 25;
             var ds = DataTableTrivial.Generate(itemsToGenerate);
 
-            Assert.AreEqual(25, ds.Immutable.Count());
-            var first = ds.Immutable.FirstOrDefault();
+            Assert.AreEqual(25, ds.ListForTests().Count());
+            var first = ds.ListForTests().FirstOrDefault();
             Assert.AreEqual("Daniel Mettler", first.GetBestTitle());
         }
 

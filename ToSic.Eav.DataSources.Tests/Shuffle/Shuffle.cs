@@ -37,7 +37,7 @@ namespace ToSic.Eav.DataSourceTests
         {
             var desiredFinds = 100;
             var sf = GenerateShuffleDS(desiredFinds);
-            var found = sf.List.Count();
+            var found = sf.ListForTests().Count();
             Assert.AreEqual(desiredFinds, found, "Should find exactly this amount people");
 
         }

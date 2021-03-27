@@ -15,14 +15,14 @@ namespace ToSic.Eav.DataSourceTests.Streams
             var stmf = AssembleTestFallbackStream();
             stmf.InForTests()[Constants.DefaultStreamName] = stmf.InForTests()["1"];
 
-            Assert.AreEqual(1, stmf.List.Count(), "should have found 1");
+            Assert.AreEqual(1, stmf.ListForTests().Count(), "should have found 1");
         }
 
         [TestMethod]
         public void StreamsWhereFirstFallbackIsReturned()
         {
             var stmf = AssembleTestFallbackStream();
-            Assert.AreEqual(1, stmf.List.Count(), "should be 1 - the fallback");
+            Assert.AreEqual(1, stmf.ListForTests().Count(), "should be 1 - the fallback");
         }
 
         [TestMethod]
@@ -35,7 +35,7 @@ namespace ToSic.Eav.DataSourceTests.Streams
             stmf.InForTests().Add("Fallback3", stmf.InForTests()[Constants.DefaultStreamName]);
             stmf.InForTests().Add("Fallback4", stmf.InForTests()[Constants.DefaultStreamName]);
             stmf.InForTests().Add("Fallback5", stmf.InForTests()[Constants.DefaultStreamName]);
-            Assert.AreEqual(45, stmf.List.Count(), "Should have looped through many and found the 45");
+            Assert.AreEqual(45, stmf.ListForTests().Count(), "Should have looped through many and found the 45");
             Assert.AreEqual("ZMany", stmf.ReturnedStreamName);
         }
 
@@ -49,7 +49,7 @@ namespace ToSic.Eav.DataSourceTests.Streams
             stmf.InForTests().Add("2", stmf.InForTests()[Constants.DefaultStreamName]);
             stmf.InForTests().Add("3", stmf.InForTests()[Constants.DefaultStreamName]);
             stmf.InForTests().Add("Fallback5", stmf.InForTests()[Constants.DefaultStreamName]);
-            Assert.AreEqual(45, stmf.List.Count(), "Should have looped through many and found the 45");
+            Assert.AreEqual(45, stmf.ListForTests().Count(), "Should have looped through many and found the 45");
             Assert.AreEqual("ZMany", stmf.ReturnedStreamName);
         }
 
@@ -62,7 +62,7 @@ namespace ToSic.Eav.DataSourceTests.Streams
             stmf.InForTests().Add("2", stmf.InForTests()[Constants.DefaultStreamName]);
             stmf.InForTests().Add("3", stmf.InForTests()[Constants.DefaultStreamName]);
             stmf.InForTests().Remove("ZMany");
-            Assert.AreEqual(0, stmf.List.Count(), "Should find none");
+            Assert.AreEqual(0, stmf.ListForTests().Count(), "Should find none");
         }
 
         public StreamFallback AssembleTestFallbackStream()

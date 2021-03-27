@@ -39,9 +39,6 @@ namespace ToSic.Eav.DataSources
         /// <returns>A list of <see cref="IEntity"/> items in the Default stream.</returns>
         IEnumerable<IEntity> List { get; }
 
-        [PrivateApi]
-        IImmutableList<IEntity> Immutable { get; }
-
         /// <summary>
         /// The configuration system of this data source.
         /// Keeps track of all values which the data source will need, and manages the LookUp engine

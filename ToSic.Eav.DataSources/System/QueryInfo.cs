@@ -113,7 +113,7 @@ namespace ToSic.Eav.DataSources.System
             if(StreamName != Constants.DefaultStreamName)
                 attribInfo.Attach(Constants.DefaultStreamName, _query, StreamName);
 
-	        return attribInfo.Immutable;
+	        return attribInfo.List.ToImmutableList();
         }
 
 	    private void CustomConfigurationParse()

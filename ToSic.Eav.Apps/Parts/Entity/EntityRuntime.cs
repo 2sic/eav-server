@@ -28,7 +28,7 @@ namespace ToSic.Eav.Apps.Parts
         /// It's not clear if this is actually intended.
         /// </summary>
         public IEnumerable<IEntity> OnlyContent =>
-            Parent.Data.Immutable.Where(e => AppConstants.ScopesContent.Contains(e.Type.Scope));
+            Parent.Data.List.Where(e => AppConstants.ScopesContent.Contains(e.Type.Scope));
 
         /// <summary>
         /// Get this item or return null if not found
@@ -46,7 +46,7 @@ namespace ToSic.Eav.Apps.Parts
         {
             var typeFilter = Parent.DataSourceFactory.GetDataSource<EntityTypeFilter>(Parent.Data); // need to go to cache, to include published & unpublished
             typeFilter.TypeName = contentTypeName;
-            return typeFilter.Immutable;
+            return typeFilter.List;
         }
 
         #endregion
