@@ -25,6 +25,8 @@ namespace ToSic.Eav.DataSources.Debug
                 foreach (var outStm in stream.Source.Out)
                     if (outStm.Value == stream)
                         SourceOut = outStm.Key;
+
+                Error = Stream.List?.FirstOrDefault()?.Type?.Name == DataSourceErrorHandling.ErrorType;
             }
             catch
             {
