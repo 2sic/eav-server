@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace ToSic.Eav.DataSources.Debug
 {
@@ -8,7 +9,7 @@ namespace ToSic.Eav.DataSources.Debug
         public Guid Source;
         public string SourceOut;
         public string TargetIn;
-        public int Count => Stream.Immutable.Count;
+        public int Count => Stream.List.Count();
         public bool Error = false;
 
         protected readonly IDataStream Stream;

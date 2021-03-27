@@ -48,9 +48,9 @@ namespace ToSic.Eav.DataSources.Queries
             {
                 var app = Apps.State.Identity(null, appId);
                 var source = DataSourceFactory.GetPublishing(app);
-	            var appEntities = source[Constants.DefaultStreamName].Immutable;
+	            var appEntities = source[Constants.DefaultStreamName].List;
 
-	            // use findRepo, as it uses the cache, which gives the list of all items // [queryEntityId];
+	            // use findRepo, as it uses the cache, which gives the list of all items
 	            var dataQuery = appEntities.FindRepoId(queryEntityId);
 	            var result = new QueryDefinition(dataQuery, appId, Log);
                 wrapLog(null);

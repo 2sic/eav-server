@@ -89,7 +89,7 @@ namespace ToSic.Eav.DataSources
                 throw new Exception(msg);
             }
 
-            return wrapLog("ok", foundStream.Value.Immutable);
+            return wrapLog("ok", foundStream.Value.List.ToImmutableArray());
         }
 
 	}

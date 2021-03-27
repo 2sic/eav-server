@@ -46,8 +46,8 @@ namespace ToSic.Eav.DataSources
         {
             var streams = In
                 .OrderBy(pair => pair.Key)
-                .Where(v => v.Value?.Immutable != null)
-                .Select(v => v.Value.Immutable);
+                .Where(v => v.Value?.List != null)
+                .Select(v => v.Value.List);
 
             return streams
                 .Aggregate(new List<IEntity>() as IEnumerable<IEntity>, (current, stream) => current.Concat(stream))

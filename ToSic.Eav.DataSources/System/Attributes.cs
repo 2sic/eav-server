@@ -66,11 +66,11 @@ namespace ToSic.Eav.DataSources.System
 
             IContentType type;
             // try to load the content-type - if it fails, return empty list
-            if (string.IsNullOrWhiteSpace(ContentTypeName)) return ImmutableArray<IEntity>.Empty;// new List<IEntity>();
+            if (string.IsNullOrWhiteSpace(ContentTypeName)) return ImmutableArray<IEntity>.Empty;
 
 	        var useStream = TryToUseInStream == ContentTypeName && In.ContainsKey(Constants.DefaultStreamName);
 	        var optionalList = useStream
-	            ? In[Constants.DefaultStreamName]?.Immutable //.ToList()
+	            ? In[Constants.DefaultStreamName]?.List.ToImmutableArray()
 	            : null;
 
 	        type = useStream 

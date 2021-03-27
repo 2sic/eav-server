@@ -115,7 +115,7 @@ namespace ToSic.Eav.DataSources.Caching
 
 	    private IDataStream StreamWithCaching(string name)
         {
-            var outStream = new DataStream(this, name,  () => In[name].Immutable, true);
+            var outStream = new DataStream(this, name,  () => In[name].List, true);
 
             // only set if a value other than 0 (= default) was given
             if (CacheDurationInSeconds != 0)

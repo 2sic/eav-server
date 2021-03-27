@@ -138,7 +138,7 @@ namespace ToSic.Eav.DataSources
             if (!string.IsNullOrEmpty(typeName))
                 newType = ContentTypeBuilder.DynamicContentType(AppId, typeName, typeName);
 
-            var result = In[Constants.DefaultStreamName].Immutable
+            var result = In[Constants.DefaultStreamName].List
                 .Select(entity => EntityBuilder.FullClone(entity,
                     CreateDic(entity),
                     entity.Relationships.AllRelationships,

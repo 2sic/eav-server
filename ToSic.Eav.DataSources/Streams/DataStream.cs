@@ -106,8 +106,7 @@ namespace ToSic.Eav.DataSources
 
         private bool _listLoaded;
 
-        public IEnumerable<IEntity> List => Immutable;
-        public IImmutableList<IEntity> Immutable
+        public IEnumerable<IEntity> List 
 	    {
             get
             {
@@ -196,9 +195,9 @@ namespace ToSic.Eav.DataSources
 
         #region Support for IEnumerable<IEntity>
 
-        public IEnumerator<IEntity> GetEnumerator() => Immutable.GetEnumerator();
+        public IEnumerator<IEntity> GetEnumerator() => List.GetEnumerator();
 
-	    IEnumerator IEnumerable.GetEnumerator() => Immutable.GetEnumerator();
+	    IEnumerator IEnumerable.GetEnumerator() => List.GetEnumerator();
         #endregion Support for IEnumerable<IEntity>
     }
 }

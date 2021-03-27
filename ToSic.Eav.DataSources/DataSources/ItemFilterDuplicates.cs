@@ -52,7 +52,7 @@ namespace ToSic.Eav.DataSources
         {
             if(!In.HasStreamWithItems(Constants.DefaultStreamName)) return ImmutableArray<IEntity>.Empty;
 
-            var list = In[Constants.DefaultStreamName].Immutable;
+            var list = In[Constants.DefaultStreamName].List;
 
             return list
                 .Distinct()
@@ -68,7 +68,7 @@ namespace ToSic.Eav.DataSources
 	    {
 	        if (!In.HasStreamWithItems(Constants.DefaultStreamName)) return ImmutableArray<IEntity>.Empty;
 
-            var list = In[Constants.DefaultStreamName].Immutable;
+            var list = In[Constants.DefaultStreamName].List;
 
 	        return list
                 .GroupBy(s => s)

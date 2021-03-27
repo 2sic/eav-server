@@ -22,7 +22,7 @@ namespace ToSic.Eav.DataSources
         public IDataStream this[string outName] => Out[outName];
 
         /// <inheritdoc />
-        public IEnumerable<IEntity> List => Out[Constants.DefaultStreamName].Immutable;
+        public IEnumerable<IEntity> List => Out[Constants.DefaultStreamName].List;
 
 
         #region various Attach-In commands

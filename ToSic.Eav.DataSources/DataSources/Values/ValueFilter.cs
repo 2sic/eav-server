@@ -111,7 +111,7 @@ namespace ToSic.Eav.DataSources
             if (In.HasStreamWithItems(Constants.FallbackStreamName))
             {
                 Log.Add("will return fallback stream");
-                res = In[Constants.FallbackStreamName].Immutable;
+                res = In[Constants.FallbackStreamName].List.ToImmutableList();
             }
 
             return res;
@@ -130,7 +130,7 @@ namespace ToSic.Eav.DataSources
 
             LanguageList = _valLanguages.PrepareLanguageList(Languages, Log);
 
-            var originals = In[Constants.DefaultStreamName].Immutable;
+            var originals = In[Constants.DefaultStreamName].List.ToImmutableList();
 
             #region stop if the list is empty
 

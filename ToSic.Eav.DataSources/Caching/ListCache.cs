@@ -135,12 +135,8 @@ namespace ToSic.Eav.DataSources.Caching
 
         /// <inheritdoc />
         public void Set(IDataStream dataStream, int durationInSeconds = 0, bool slidingExpiration = true)
-            // todo: drop toimmutablearray again
-            => Set(CacheKey(dataStream), dataStream.Immutable.ToImmutableArray(),
+            => Set(CacheKey(dataStream), dataStream.List.ToImmutableArray(),
                 dataStream.Caching.CacheTimestamp, durationInSeconds, slidingExpiration);
-
-        //public void Set(string key, IEnumerable<IEntity> list, long sourceTimestamp, int durationInSeconds = 0, bool slidingExpiration = true) 
-        //    => Set(key, list.ToImmutableArray(), sourceTimestamp, durationInSeconds, slidingExpiration);
 
         #endregion
 

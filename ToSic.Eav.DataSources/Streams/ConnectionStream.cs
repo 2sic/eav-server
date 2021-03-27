@@ -69,8 +69,6 @@ namespace ToSic.Eav.DataSources
 
         public IEnumerable<IEntity> List => UnwrappedContents.List;
 
-        public IImmutableList<IEntity> Immutable => UnwrappedContents.Immutable;
-
         public IDataSource Source => UnwrappedContents.Source;
 
         public string Name => UnwrappedContents.Name;

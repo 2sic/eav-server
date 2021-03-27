@@ -49,7 +49,7 @@ namespace ToSic.Eav.DataSources
         private IImmutableList<IEntity> GetStreamFallback()
         {
             var foundStream = FindIdealFallbackStream();
-            return foundStream?.Immutable ?? ImmutableArray<IEntity>.Empty;
+            return foundStream?.List.ToImmutableArray() ?? ImmutableArray<IEntity>.Empty;
         }
 
 	    private IDataStream FindIdealFallbackStream()
@@ -66,7 +66,7 @@ namespace ToSic.Eav.DataSources
 	        // Otherwise alphabetically assemble the remaining in-streams, try to return those that have content
 	        var streamList = In.Where(x => x.Key != Constants.DefaultStreamName).OrderBy(x => x.Key);
 	        foreach (var stream in streamList)
-	            if (stream.Value.Immutable.Any())
+	            if (stream.Value.List.Any())
 	            {
 	                ReturnedStreamName = stream.Key;
 	                Log.Add($"will return stream:{ReturnedStreamName}");

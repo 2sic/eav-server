@@ -26,5 +26,7 @@ namespace ToSic.Eav.DataSourceTests
             => target.Attach(streamName, dataStream);
 
         public static IEnumerable<IEntity> ListForTests(this IDataSource source) => source.List;
+
+        public static IEnumerable<IEntity> ListForTests(this IDataStream stream) => stream.List;
     }
 }

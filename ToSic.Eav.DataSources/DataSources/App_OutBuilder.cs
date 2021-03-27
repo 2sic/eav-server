@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.DataSources.Caching.CacheInfo;
 using ToSic.Eav.DataSources.Queries;
@@ -74,7 +75,7 @@ namespace ToSic.Eav.DataSources
                     () => new CacheInfoAppAndMore("AppTypeStream" + AppRootCacheKey.AppCacheKey(this), Apps.State.Get(this), $"Name={typeName}&Drafts={showDrafts}"),
                     this,
                     typeName,
-                    () => BuildTypeStream(upstreamDataSource, typeName)[Constants.DefaultStreamName].Immutable,
+                    () => BuildTypeStream(upstreamDataSource, typeName)[Constants.DefaultStreamName].List.ToImmutableArray(),
                     true);
                 _out.Add(typeName, deferredStream);
             }

@@ -24,7 +24,7 @@ namespace ToSic.Eav.DataSources.Tests.ItemFilterDuplicates
             var found = sf.ListForTests().Count();
             Assert.AreEqual(desiredFinds, found, "Should find exactly this amount people");
 
-            var dupls = sf[DataSources.ItemFilterDuplicates.DuplicatesStreamName].Immutable.Count;
+            var dupls = sf[DataSources.ItemFilterDuplicates.DuplicatesStreamName].ListForTests().Count();
             Assert.AreEqual(desiredFinds, dupls, "Should find exactly this amount people");
         }
 
@@ -37,7 +37,7 @@ namespace ToSic.Eav.DataSources.Tests.ItemFilterDuplicates
             var found = sf.ListForTests().Count();
             Assert.AreEqual(desiredFinds, found, "Should find exactly this amount people");
 
-            var dupls = sf[DataSources.ItemFilterDuplicates.DuplicatesStreamName].Immutable.Count;
+            var dupls = sf[DataSources.ItemFilterDuplicates.DuplicatesStreamName].ListForTests().Count();
             Assert.AreEqual(desiredDupls, dupls, "Should find exactly this amount people");
         }
 
@@ -53,7 +53,7 @@ namespace ToSic.Eav.DataSources.Tests.ItemFilterDuplicates
             var found = sf.ListForTests().Count();
             Assert.AreEqual(desiredFinds, found, "Should find exactly this amount people");
 
-            var dupls = sf[DataSources.ItemFilterDuplicates.DuplicatesStreamName].Immutable.Count;
+            var dupls = sf[DataSources.ItemFilterDuplicates.DuplicatesStreamName].ListForTests().Count();
             Assert.AreEqual(desiredDupls, dupls, "Should find exactly this amount people");
         }
 
@@ -69,7 +69,7 @@ namespace ToSic.Eav.DataSources.Tests.ItemFilterDuplicates
             var found = sf.ListForTests().Count();
             Assert.AreEqual(desiredFinds, found, "Should find exactly this amount people");
 
-            var dupls = sf[DataSources.ItemFilterDuplicates.DuplicatesStreamName].Immutable.Count;
+            var dupls = sf[DataSources.ItemFilterDuplicates.DuplicatesStreamName].ListForTests().Count();
             Assert.AreEqual(desiredDupls, dupls, "Should find exactly this amount people");
         }
 

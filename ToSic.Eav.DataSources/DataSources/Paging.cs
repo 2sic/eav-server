@@ -90,7 +90,7 @@ namespace ToSic.Eav.DataSources
             Configuration.Parse();
             var itemsToSkip = (PageNumber - 1)*PageSize;
 
-	        var result = In[Constants.DefaultStreamName].Immutable
+	        var result = In[Constants.DefaultStreamName].List
                 .Skip(itemsToSkip)
                 .Take(PageSize)
                 .ToImmutableArray();
@@ -103,7 +103,7 @@ namespace ToSic.Eav.DataSources
             Configuration.Parse();
 
             // Calculate any additional stuff
-            var itemCount = In[Constants.DefaultStreamName].Immutable.Count;
+            var itemCount = In[Constants.DefaultStreamName].List.Count();
             var pageCount = Math.Ceiling((decimal) itemCount / PageSize);
 
             // Assemble the entity

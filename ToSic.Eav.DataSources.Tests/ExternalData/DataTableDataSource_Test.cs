@@ -25,7 +25,7 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
                 Assert.Fail("Access to another out should fail");
             }
             catch { }
-            Assert.IsTrue(defaultOut.Immutable.Count == itemsToGenerate);
+            Assert.IsTrue(defaultOut.ListForTests().Count() == itemsToGenerate);
         }
 
         [TestMethod]

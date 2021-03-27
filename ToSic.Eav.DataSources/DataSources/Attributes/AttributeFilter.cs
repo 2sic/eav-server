@@ -103,7 +103,7 @@ namespace ToSic.Eav.DataSources
             var noFieldNames = attributeNames.Length == 0 
                           || attributeNames.Length == 1 && string.IsNullOrWhiteSpace(attributeNames[0]);
 
-            var sourceList = In[Constants.DefaultStreamName].Immutable;
+            var sourceList = In[Constants.DefaultStreamName].List.ToImmutableList();
             
             // Case #1 if we don't change anything, short-circuit and return original
             if (noFieldNames && !keepNamedAttributes)

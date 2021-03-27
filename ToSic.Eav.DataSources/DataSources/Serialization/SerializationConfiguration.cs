@@ -186,11 +186,11 @@ namespace ToSic.Eav.DataSources
             var wrapLog = Log.Call<IImmutableList<IEntity>>();
             Configuration.Parse();
 
-            var result = In[inStreamName].Immutable;
+            var original = In[inStreamName].List.ToImmutableList();
 
-            result = AddSerializationRules(result);
+            var enhanced = AddSerializationRules(original);
             
-		    return wrapLog($"{result.Count}", result);
+		    return wrapLog($"{enhanced.Count}", enhanced);
 		}
 
         private IImmutableList<IEntity> AddSerializationRules(IImmutableList<IEntity> before)

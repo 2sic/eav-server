@@ -100,7 +100,7 @@ namespace ToSic.Eav.DataSources
 			// Languages check - not fully implemented yet, only supports "default" / "current"
             LanguageList = _valLanguages.PrepareLanguageList(Languages, Log);
 
-            var list = In[Constants.DefaultStreamName].Immutable;
+            var list = In[Constants.DefaultStreamName].List.ToImmutableArray();
 
             // check if no list parameters specified
 		    if (attr.Length == 1 && string.IsNullOrWhiteSpace(attr[0]))
