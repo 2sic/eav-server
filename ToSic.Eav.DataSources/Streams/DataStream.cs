@@ -140,23 +140,26 @@ namespace ToSic.Eav.DataSources
             var wrapLog = Source.Log.Call<IImmutableList<IEntity>>();
             // try to use the built-in Entities-Delegate, but if not defined, use other delegate; just make sure we test both, to prevent infinite loops
             if (_listDelegate == null)
-                throw new Exception(Source.Log.Add("can't load stream - no delegate found to supply it"));
+                return wrapLog("error", DataSourceErrorHandling.CreateErrorList(source: Source,
+                    title: "Error loading Stream",
+                    message: "Can't load stream - no delegate found to supply it"));
 
             try
             {
                 var resultList = ImmutableSmartList.Wrap(_listDelegate());
                 return wrapLog("ok", resultList);
             }
-            catch (InvalidOperationException) // this is a special exception - for example when using SQL. Pass it on to enable proper testing
+            catch (InvalidOperationException invEx) // this is a special exception - for example when using SQL. Pass it on to enable proper testing
             {
-                wrapLog("error", ImmutableArray<IEntity>.Empty);
-                throw;
+                return wrapLog("error",
+                    DataSourceErrorHandling.CreateErrorList(source: Source, title: "InvalidOperationException",
+                        message: "See details", exception: invEx));
             }
             catch (Exception ex)
             {
-                var msg = $"Error getting List of Stream.\nStream Name: {Name}\nDataSource Name: {Source.Name}";
-                wrapLog(msg, ImmutableArray<IEntity>.Empty);
-                throw new Exception(msg, ex);
+                return wrapLog("error", DataSourceErrorHandling.CreateErrorList(source: Source, exception: ex,
+                    title: "Error getting Stream / reading underlying list", 
+                    message: $"Error getting List of Stream.\nStream Name: {Name}\nDataSource Name: {Source.Name}"));
             }
         }
         #endregion
