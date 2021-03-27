@@ -152,7 +152,7 @@ namespace ToSic.Eav.DataSources
         [PrivateApi]
 		public SerializationConfiguration()
 		{
-            OutIsDynamic = true;
+            //OutIsDynamic = true;
             
             // Basic system properties
             ConfigMask(IncludeIdKey, $"[Settings:{IncludeIdKey}]");

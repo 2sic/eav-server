@@ -65,9 +65,9 @@ namespace ToSic.Eav.DataSources
         #region OutIsDynamic
 
 
-        /// <inheritdoc />
-        [PrivateApi]
-        public bool OutIsDynamic { get; protected set; } = false;
+        ///// <inheritdoc />
+        //[PrivateApi]
+        //public bool OutIsDynamic { get; protected set; } = false;
 
         #endregion
 

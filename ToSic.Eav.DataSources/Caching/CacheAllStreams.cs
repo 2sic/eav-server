@@ -91,13 +91,12 @@ namespace ToSic.Eav.DataSources.Caching
 		public CacheAllStreams()
 		{
 			// this one is unusual, so don't pre-attach a default data stream
+            //OutIsDynamic = true;
 
 			// Set default switch-keys to 0 = no switch
             Configuration.Values.Add(RefreshOnSourceRefreshKey, "[Settings:" + RefreshOnSourceRefreshKey + "||True]");
 			Configuration.Values.Add(CacheDurationInSecondsKey, "[Settings:" + CacheDurationInSecondsKey + "||0]"); // 0 is default, meaning don't use custom value, use system value of 1 day
 		    Configuration.Values.Add(ReturnCacheWhileRefreshingKey, "False");
-
-            OutIsDynamic = true;
         }
 
 		/// <summary>
@@ -121,8 +120,6 @@ namespace ToSic.Eav.DataSources.Caching
             if (CacheDurationInSeconds != 0)
 	            outStream.CacheDurationInSeconds = CacheDurationInSeconds;
 	        outStream.CacheRefreshOnSourceRefresh = RefreshOnSourceRefresh;
-
-	        //_out.Add(name, outStream);
             return outStream;
         }
         

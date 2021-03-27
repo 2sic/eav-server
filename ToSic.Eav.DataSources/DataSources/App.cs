@@ -75,7 +75,7 @@ namespace ToSic.Eav.DataSources
 			ConfigMask(AppSwitchKey, "[Settings:" + AppSwitchKey + "||0]");
 			ConfigMask(ZoneSwitchKey, "[Settings:" + ZoneSwitchKey + "||0]");
 
-            OutIsDynamic = true;
+            //OutIsDynamic = true;
         }
 
 		/// <summary>

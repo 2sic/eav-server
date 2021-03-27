@@ -74,13 +74,13 @@ namespace ToSic.Eav.DataSources
 
         ICacheKeyManager CacheKey { get; }
 
-        /// <summary>
-        /// Tell the system that out is dynamic and doesn't have a fixed list of streams.
-        /// Used by App-Data sources and similar.
-        /// Important for the global information system, so it doesn't try to query that. 
-        /// </summary>
-        [PrivateApi]
-        bool OutIsDynamic { get; }
+        ///// <summary>
+        ///// Tell the system that out is dynamic and doesn't have a fixed list of streams.
+        ///// Used by App-Data sources and similar.
+        ///// Important for the global information system, so it doesn't try to query that. 
+        ///// </summary>
+        //[PrivateApi]
+        //bool OutIsDynamic { get; }
         #endregion
     }
 

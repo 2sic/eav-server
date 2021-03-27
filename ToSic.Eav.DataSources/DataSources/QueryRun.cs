@@ -40,7 +40,10 @@ namespace ToSic.Eav.DataSources
 		/// Constructs a new QueryRun
 		/// </summary>
 		[PrivateApi]
-		public QueryRun() => OutIsDynamic = true;
+		public QueryRun()
+        {
+            //OutIsDynamic = true;
+        }
 
         #region Out
         /// <inheritdoc/>

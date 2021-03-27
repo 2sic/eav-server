@@ -22,10 +22,10 @@ namespace ToSic.Eav.DataSources.Catalog
             var installedDataSources = GetAll(true);
 
             var result = installedDataSources
-                .Select(ds => new DataSourceDto(ds.Type.Name, ds.VisualQuery)
+                .Select(dsInfo => new DataSourceDto(dsInfo.Type.Name, dsInfo.VisualQuery)
                 {
-                    PartAssemblyAndType = ds.GlobalName,
-                    Out = GetOutStreamNames(ds)
+                    PartAssemblyAndType = dsInfo.GlobalName,
+                    Out = dsInfo.VisualQuery?.DynamicOut == true ? null : GetOutStreamNames(dsInfo)
                 })
                 .ToList();
 
@@ -35,9 +35,9 @@ namespace ToSic.Eav.DataSources.Catalog
         /// <summary>
         /// Create Instance of DataSource to get In- and Out-Streams
         /// </summary>
-        /// <param name="dataSource"></param>
+        /// <param name="dsInfo"></param>
         /// <returns></returns>
-        private ICollection<string> GetOutStreamNames(DataSourceInfo dataSource)
+        private ICollection<string> GetOutStreamNames(DataSourceInfo dsInfo)
         {
             var wrapLog = Log.Call<ICollection<string>>();
             // 2021-03-23 2dm - disabled this, as it prevented interfaces from instantiating
@@ -47,10 +47,10 @@ namespace ToSic.Eav.DataSources.Catalog
             try
             {
                 // Handle Interfaces and real types (currently only on ICache / IAppRoot)
-                var dataSourceInstance = (IDataSource)Factory.Resolve(dataSource.Type);
+                var dataSourceInstance = (IDataSource)Factory.Resolve(dsInfo.Type);
 
                 // skip this if out-connections cannot be queried
-                return dataSourceInstance.OutIsDynamic ? null : dataSourceInstance.Out.Keys;
+                return dataSourceInstance.Out.Keys;
             }
             catch
             {
