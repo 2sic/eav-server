@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
+using ToSic.Eav.Conversion;
 
 namespace ToSic.Eav.DataSources.Debug
 {
@@ -10,11 +13,15 @@ namespace ToSic.Eav.DataSources.Debug
         public string SourceOut;
         public string TargetIn;
         public int Count => Stream.List.Count();
+        
+        
         public bool Error = false;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public Dictionary<string, object> ErrorData;
 
         protected readonly IDataStream Stream;
 
-        public StreamInfo(IDataStream stream, IDataTarget target, string inName)
+        public StreamInfo(IDataStream stream, IDataTarget target, string inName, IEntitiesTo<Dictionary<string, object>> errorConverter)
         {
             try
             {
@@ -26,7 +33,9 @@ namespace ToSic.Eav.DataSources.Debug
                     if (outStm.Value == stream)
                         SourceOut = outStm.Key;
 
-                Error = Stream.List?.FirstOrDefault()?.Type?.Name == DataSourceErrorHandling.ErrorType;
+                var firstItem = Stream.List?.FirstOrDefault();
+                Error = firstItem?.Type?.Name == DataSourceErrorHandling.ErrorType;
+                if (Error) ErrorData = errorConverter.Convert(firstItem);
             }
             catch
             {

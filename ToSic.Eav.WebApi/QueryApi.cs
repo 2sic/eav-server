@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Conversion;
 using ToSic.Eav.Data;
+using ToSic.Eav.DataSources.Debug;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
@@ -30,15 +31,23 @@ namespace ToSic.Eav.WebApi
         /// </summary>
         private readonly Lazy<AppRuntime> _appReaderLazy;
         private readonly Lazy<EntitiesToDictionary> _entToDicLazy;
+        private readonly Lazy<QueryInfo> _queryInfoLazy;
         private AppManager _appManager;
 
-        public QueryApi(Lazy<AppManager> appManagerLazy, Lazy<AppRuntime> appReaderLazy, QueryBuilder queryBuilder, Lazy<EntitiesToDictionary> entToDicLazy): base("Api.EavQry")
+        public QueryApi(
+            Lazy<AppManager> appManagerLazy, 
+            Lazy<AppRuntime> appReaderLazy, 
+            QueryBuilder queryBuilder, 
+            Lazy<EntitiesToDictionary> entToDicLazy,
+            Lazy<QueryInfo> queryInfoLazy
+            ): base("Api.EavQry")
         {
             QueryBuilder = queryBuilder;
             QueryBuilder.Init(Log);
             _appManagerLazy = appManagerLazy;
             _appReaderLazy = appReaderLazy;
             _entToDicLazy = entToDicLazy;
+            _queryInfoLazy = queryInfoLazy;
         }
 
         public QueryApi Init(int appId, ILog parentLog)
@@ -106,10 +115,9 @@ namespace ToSic.Eav.WebApi
 		/// </summary>
 		public QueryRunDto Run(int appId, int id, LookUpEngine config)
 		{
-            var wrapLog = Log.Call($"a#{appId}, {nameof(id)}:{id}"); //, {nameof(instanceId)}: {instanceId}");
+            var wrapLog = Log.Call($"a#{appId}, {nameof(id)}:{id}");
 
             // Get the query, run it and track how much time this took
-		    //var queryFactory = new QueryBuilder(Log);
 		    var qDef = QueryBuilder.GetQueryDefinition(appId, id);
 			var outStreams = QueryBuilder.GetDataSourceForTesting(qDef, true, config);
             
@@ -122,7 +130,7 @@ namespace ToSic.Eav.WebApi
             serializeWrap("ok");
 
             // Now get some more debug info
-            var debugInfo = new DataSources.Debug.QueryInfo(outStreams, Log);
+            var debugInfo = _queryInfoLazy.Value.Init(outStreams, Log); // new DataSources.Debug.QueryInfo(outStreams, Log);
 
             wrapLog(null);
             // ...and return the results
