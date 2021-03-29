@@ -139,7 +139,7 @@ namespace ToSic.Eav.WebApi
                 var passThroughDs = new PassThrough();
                 passThroughDs.Attach(streamName, resultStream);
 
-                return source;
+                return passThroughDs;
             }
 
             return DevRun(appId, id, config, top, GetSubStream);
