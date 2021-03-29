@@ -12,7 +12,8 @@ namespace ToSic.Eav.Conversion
         public IEnumerable<Dictionary<string, object>> Convert(IEnumerable<IEntity> entities)
         {
             var wrapLog = Log.Call(useTimer: true);
-            var result = entities.Select(GetDictionaryFromEntity).ToList();
+            var topEntities = MaxItems == 0 ? entities : entities.Take(MaxItems);
+            var result = topEntities.Select(GetDictionaryFromEntity).ToList();
             wrapLog("ok");
             return result;
         }

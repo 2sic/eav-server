@@ -115,49 +115,17 @@ namespace ToSic.Eav.WebApi
 		/// <summary>
 		/// Query the Result of a Pipeline using Test-Parameters
 		/// </summary>
-		public QueryRunDto Run(int appId, int id, LookUpEngine config)
-        {
-            return DevRun(appId, id, config, builtQuery => builtQuery.Item1);
-
-            //         var wrapLog = Log.Call($"a#{appId}, {nameof(id)}:{id}");
-
-            //         // Get the query, run it and track how much time this took
-            //   var qDef = QueryBuilder.GetQueryDefinition(appId, id);
-            //var outSource = QueryBuilder.GetDataSourceForTesting(qDef, true, config);
-
-
-            //         var serializeWrap = Log.Call("Serialize", useTimer: true);
-            //         var timer = new Stopwatch();
-            //         timer.Start();
-            //   var results = _entToDicLazy.Value.EnableGuids().Convert(outSource);
-            //         timer.Stop();
-            //         serializeWrap("ok");
-
-            //         // Now get some more debug info
-            //         var debugInfo = _queryInfoLazy.Value.Init(outSource, Log);
-
-            //         wrapLog(null);
-            //         // ...and return the results
-            //return new QueryRunDto
-            //{
-            //	Query = results, 
-            //	Streams = debugInfo.Streams,
-            //	Sources = debugInfo.Sources,
-            //             QueryTimer = new QueryTimerDto { 
-            //                 Milliseconds = timer.ElapsedMilliseconds,
-            //                 Ticks = timer.ElapsedTicks
-            //             }
-            //};
-        }
+		public QueryRunDto Run(int appId, int id, int top, LookUpEngine config) 
+            => DevRun(appId, id, config, top, builtQuery => builtQuery.Item1);
 
         /// <summary>
         /// Query the Result of a Pipeline using Test-Parameters
         /// </summary>
-        public QueryRunDto DebugStream(int appId, int id, LookUpEngine config, string from, string streamName, int top = 25)
+        public QueryRunDto DebugStream(int appId, int id, int top, LookUpEngine config, string from, string streamName)
         {
             IDataSource GetSubStream(Tuple<IDataSource, Dictionary<string, IDataSource>> builtQuery)
             {
-                // Find the datasource
+                // Find the DataSource
                 if (!builtQuery.Item2.ContainsKey(from))
                     throw new Exception($"Can't find source with name '{from}'");
 
@@ -167,19 +135,19 @@ namespace ToSic.Eav.WebApi
 
                 var resultStream = source.Out[streamName];
                 
-                // repackage
+                // Repackage as DataSource since that's expected / needed
                 var passThroughDs = new PassThrough();
                 passThroughDs.Attach(streamName, resultStream);
 
                 return source;
             }
 
-            return DevRun(appId, id, config, GetSubStream);
+            return DevRun(appId, id, config, top, GetSubStream);
         }
 
-        public QueryRunDto DevRun(int appId, int id, LookUpEngine config, Func<Tuple<IDataSource, Dictionary<string, IDataSource>>, IDataSource> partLookup)
+        public QueryRunDto DevRun(int appId, int id, LookUpEngine config, int top, Func<Tuple<IDataSource, Dictionary<string, IDataSource>>, IDataSource> partLookup)
 		{
-            var wrapLog = Log.Call($"a#{appId}, {nameof(id)}:{id}");
+            var wrapLog = Log.Call($"a#{appId}, {nameof(id)}:{id}, top: {top}");
 
             // Get the query, run it and track how much time this took
 		    var qDef = QueryBuilder.GetQueryDefinition(appId, id);
@@ -190,7 +158,9 @@ namespace ToSic.Eav.WebApi
             var serializeWrap = Log.Call("Serialize", useTimer: true);
             var timer = new Stopwatch();
             timer.Start();
-		    var results = _entToDicLazy.Value.EnableGuids().Convert(partLookup(builtQuery));
+            var converter = _entToDicLazy.Value.EnableGuids();
+            converter.MaxItems = top;
+		    var results = converter.Convert(partLookup(builtQuery));
             timer.Stop();
             serializeWrap("ok");
 

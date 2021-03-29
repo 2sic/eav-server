@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 #endif
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Documentation;
+using static System.String;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Conversion
@@ -36,20 +37,26 @@ namespace ToSic.Eav.Conversion
         public Dictionary<string, IEnumerable<Dictionary<string, object>>> Convert(IDataSource source, IEnumerable<string> streams = null)
         {
             var wrapLog = Log.Call(useTimer: true);
-            if (streams == null)
+            string[] streamsList;
+            if (streams != null)
             {
-                Log.Add("No streams specified, will create list with all names.");
-                streams = source.Out.Select(p => p.Key);
+                streamsList = streams.ToArray();
+                Log.Add("Will use provided list of streams.");
             }
             else
-                Log.Add("Will use provided list of streams.");
+            {
+                Log.Add("No streams specified, will create list with all names.");
+                streamsList = source.Out.Select(p => p.Key).ToArray();
+            }
 
-            Log.Add("Streams: ", string.Join(",", streams));
+            Log.Add("Streams: ", Join(",", streamsList));
 
-            var y = streams
+            var y = streamsList
                 .Where(k => source.Out.ContainsKey(k))
-                .ToDictionary(k => k, s => source.Out[s].List.Select(GetDictionaryFromEntity)
-            );
+                .ToDictionary(
+                    k => k,
+                    s => Convert(source.Out[s]) // .Select(GetDictionaryFromEntity)
+                );
 
             wrapLog("ok");
             return y;

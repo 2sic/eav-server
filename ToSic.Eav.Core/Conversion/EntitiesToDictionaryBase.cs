@@ -32,6 +32,10 @@ namespace ToSic.Eav.Conversion
         #endregion
 
         #region Configuration
+
+        /// <inheritdoc />
+        public int MaxItems { get; set;  } = 0;
+
         /// <inheritdoc/>
         public bool WithGuid { get; set; }
         /// <inheritdoc/>

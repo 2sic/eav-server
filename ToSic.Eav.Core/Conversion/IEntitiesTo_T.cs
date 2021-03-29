@@ -11,6 +11,15 @@ namespace ToSic.Eav.Conversion
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
     public interface IEntitiesTo<out T>
     {
+
+        /// <summary>
+        /// Maximum items on a stream to return
+        /// </summary>
+        /// <remarks>
+        /// Added v11.13
+        /// </remarks>
+        int MaxItems { get; set; }
+
         /// <summary>
         /// Include the entity Guid in the conversion
         /// </summary>
