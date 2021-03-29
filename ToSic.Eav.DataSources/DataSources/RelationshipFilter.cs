@@ -166,7 +166,9 @@ namespace ToSic.Eav.DataSources
 
         private IImmutableList<IEntity> GetEntities()
 		{
-            // todo: maybe do something about languages?
+            // todo: maybe do something about languages on properties?
+
+            var wrapLog = Log.Call<IImmutableList<IEntity>>();
 
             Configuration.Parse();
 
@@ -178,13 +180,16 @@ namespace ToSic.Eav.DataSources
 		    if (useNot) strMode = strMode.Substring(PrefixNot.Length);
 
 			if (strMode == "default") strMode = "contains"; // 2017-11-18 old default was "default" - this is still in for compatibility
-            if(!Enum.TryParse<CompareModes>(strMode, true, out var mode))
-				throw new Exception("Can't use CompareMode other than 'default'");
+            if (!Enum.TryParse<CompareModes>(strMode, true, out var mode))
+                return wrapLog("error", SetException("CompareMode unknown", $"CompareMode other '{strMode}' is unknown."));
 
-			var childParent = ChildOrParent;
-			if (!_directionPossibleValues.Contains(childParent)) // != "child")
-				throw new Exception("can only find related children at the moment, must set ChildOrParent to 'child'");
-			//var lang = Languages.ToLowerInvariant();
+            var childParent = ChildOrParent;
+            if (!_directionPossibleValues.Contains(childParent, StringComparer.CurrentCultureIgnoreCase))
+                return wrapLog("error",
+                    SetException("Can only compare Children",
+                        $"ATM can only find related children at the moment, must set {nameof(ChildOrParent)} to '{DefaultDirection}'"));
+            
+            //var lang = Languages.ToLowerInvariant();
 			//if (lang != "default")
 			//	throw new Exception("Can't filter for languages other than 'default'");
 			//if (lang == "default") lang = ""; // no language is automatically the default language
@@ -192,7 +197,8 @@ namespace ToSic.Eav.DataSources
 			var lowAttribName = compAttr.ToLowerInvariant();
 		    Log.Add($"get related on relationship:'{relationship}', filter:'{filter}', rel-field:'{compAttr}' mode:'{mode}', child/parent:'{childParent}'");
 
-			var originals = In[Constants.DefaultStreamName].List;
+            if(GetStreamOrPrepareExceptionToThrow(Constants.DefaultStreamName, out var originals)) 
+                return wrapLog("error", originals);
 
 		    var compType = lowAttribName == Constants.EntityFieldAutoSelect
 		        ? CompareType.Auto
@@ -207,6 +213,8 @@ namespace ToSic.Eav.DataSources
 		        ? CompareTwo(GetFieldValue(CompareType.Id, null), GetFieldValue(CompareType.Title, null))
 		        : CompareOne(GetFieldValue(compType, compAttr));
 
+            if (comparisonOnRelatedItem == null)
+                return wrapLog("error", ExceptionStream);
 
 		    var filterList = Separator == DefaultSeparator
 		        ? new[] {filter}
@@ -215,22 +223,27 @@ namespace ToSic.Eav.DataSources
 
 		    Log.Add($"will compare mode:{mode} on:{compType} '{lowAttribName}', values to check ({filterList.Length}):'{filter}'");
 
-            // pick the correct list-comparison - atm 2 options
+            // pick the correct list-comparison - atm ca. 6 options
 		    var modeCompare = PickMode(mode, relationship, comparisonOnRelatedItem, filterList);
+            if (modeCompare == null)
+                return wrapLog("error", ExceptionStream);
 
 		    var finalCompare = useNot
 		        ? e => !modeCompare(e)
 		        : modeCompare;
 
+            try
+            {
+                var results = originals.Where(finalCompare).ToImmutableArray();
 
-		    if (ChildOrParent != "child")
-		        throw new NotImplementedException("using 'parent' not supported yet, use 'child' to filter'");
-
-		    var results = originals.Where(finalCompare).ToImmutableArray();//.ToList();
-
-		    Log.Add($"found in relationship-filter {results.Length}");
-			return results;
-		}
+                return wrapLog($"{results.Length}", results);
+            }
+            catch (Exception ex)
+            {
+                return wrapLog("error",
+                    SetException("Error comparing Relationships", "Unknown error, check details in Insights logs", ex));
+            }
+        }
 
 
         /// <summary>
@@ -282,20 +295,29 @@ namespace ToSic.Eav.DataSources
 	                return entity => false;
 
                 default:
-	                throw new ArgumentOutOfRangeException(nameof(modeToPick), modeToPick, null);
+                    SetException("Mode unknown", $"The mode '{modeToPick}' is invalid");
+                    return null;
 	        }
 	    }
 	    
 
 
-	    private static Func<IEntity, string, bool> CompareTwo(Func<IEntity, string> getId, Func<IEntity, string> getTitle) 
-            => (entity, value) => getId(entity) == value || getTitle(entity) == value;
+	    private static Func<IEntity, string, bool> CompareTwo(Func<IEntity, string> getId, Func<IEntity, string> getTitle)
+        {
+            // in case the inner checks prepared an error, then the functions will be null and we need to forward this
+            if (getId == null || getTitle == null) return null;
+            return (entity, value) => getId(entity) == value || getTitle(entity) == value;
+        }
 
-	    private static Func<IEntity, string, bool> CompareOne(Func<IEntity, string> getValue) 
-            => (entity, value) => getValue(entity) == value;
+        private static Func<IEntity, string, bool> CompareOne(Func<IEntity, string> getValue)
+        {
+			// in case the inner checks prepared an error, then the functions will be null and we need to forward this
+            if (getValue == null) return null;
+            return (entity, value) => getValue(entity) == value;
+        }
 
 
-	    private Func<IEntity, string> GetFieldValue(CompareType type, string fieldName)
+        private Func<IEntity, string> GetFieldValue(CompareType type, string fieldName)
 	    {
 	        switch (type)
 	        {
@@ -308,22 +330,26 @@ namespace ToSic.Eav.DataSources
 	                        return e?[fieldName]?[0]?.ToString().ToLowerInvariant();
 	                    }
 	                    catch
-	                    {
-	                        throw new Exception("Error while trying to filter for related entities. " +
-	                            "Probably comparing an attribute on the related entity that doesn\'t exist. " +
-	                            $"Was trying to compare the attribute \'{fieldName}\'");
-	                    }
-	                };
+                        {
+                            // Note 2021-03-29 I think it's extremely unlikely that this will ever fire
+                            throw new Exception("Error while trying to filter for related entities. " +
+                                                "Probably comparing an attribute on the related entity that doesn't exist. " +
+                                                $"Was trying to compare the attribute '{fieldName}'");
+                        }
+					};
                 case CompareType.Id:
                     Log.Add("will compare on ID");
 	                return e => e?.EntityId.ToString();
                 case CompareType.Title:
-                    Log.Add("will compare no title");
-                    return e => e?.Title?[0]?.ToString().ToLowerInvariant();
-	            // ReSharper disable once RedundantCaseLabel
-                case CompareType.Auto:
+                    Log.Add("will compare on title");
+					return e => e?.GetBestTitle()?.ToLowerInvariant();
+                    // 2021-03-29
+                    //return e => e?.Title?[0]?.ToString().ToLowerInvariant();
+				// ReSharper disable once RedundantCaseLabel
+				case CompareType.Auto:
 	            default:
-	                throw new ArgumentOutOfRangeException(nameof(type), type, null);
+                    SetException("Problem with CompareType", $"The CompareType '{type}' is unexpected.");
+                    return null;
 	        }
 	    }
 
