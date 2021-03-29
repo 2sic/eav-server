@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using ToSic.Eav.DataSources.Exceptions;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -121,7 +120,7 @@ namespace ToSic.Eav.DataSources
 
         private IImmutableList<IEntity> GetValueFilter()
         {
-            var wrapLog = Log.Call();
+            var wrapLog = Log.Call<IImmutableList<IEntity>>();
             // todo: maybe do something about languages?
             Configuration.Parse();
 
@@ -132,14 +131,10 @@ namespace ToSic.Eav.DataSources
 
             var originals = In[Constants.DefaultStreamName].List.ToImmutableList();
 
-            #region stop if the list is empty
-
+            // stop if the list is empty
             if (!originals.Any())
-            {
-                wrapLog("empty");
-                return originals;
-            }
-            #endregion; 
+                return wrapLog("empty", originals);
+
 
  		    Func<IEntity, bool> compare; // the real comparison method which will be used
 
@@ -150,7 +145,7 @@ namespace ToSic.Eav.DataSources
                 compare = e => true; // dummy comparison
             else
             {
-
+                // Find first Entity which has this property being not null
                 var firstEntity = Constants.InternalOnlyIsSpecialEntityProperty(_initializedAttrName)
                     ? originals.FirstOrDefault()
                     : originals.FirstOrDefault(x => x.Attributes.ContainsKey(_initializedAttrName) 
@@ -158,32 +153,42 @@ namespace ToSic.Eav.DataSources
 
                 // if I can't find any, return empty list
                 if (firstEntity == null)
-                    return ImmutableArray<IEntity>.Empty;
+                    return wrapLog("empty", ImmutableArray<IEntity>.Empty);
 
-                // New mechanism because the filter ignores internal properties like Modified, EntityId etc.
-                var firstAtt = firstEntity.Value(_initializedAttrName);  // this should get everything, incl. modified, EntityId, EntityGuid etc.
-                var netTypeName = firstAtt?.GetType().Name ?? "Null";
-                switch (netTypeName)
+                // New mechanism because the filter previously ignored internal properties like Modified, EntityId etc.
+                // Using .Value should get everything, incl. modified, EntityId, EntityGuid etc.
+                var firstAtt = firstEntity.Value(_initializedAttrName);
+                
+                // 2021-03-29 2dm changed from checking the type-name to actually checking the type
+                // this was necessary, because entity-lists were LazyEntities and not "Entity"
+                //var netTypeName = firstAtt?.GetType().Name ?? "Null";
+                // very special case - since we're using the .net type and not the Attribute.Type,
+                // then lazy-entities are marked as LazyEntity or similar, and NOT "Entity"
+                //if (netTypeName.Contains(Constants.DataTypeEntity)) netTypeName = Constants.DataTypeEntity;
+                
+                switch (firstAtt)
                 {
-                    case Constants.DataTypeBoolean:
+                    case bool b:
                         Log.Add("Will apply Boolean comparison");
                         compare = GetBoolComparison(Value);
                         break;
-                    case "Decimal":
+                    case int i:
+                    case float f:
+                    case decimal d:
                         Log.Add("Will apply Decimal comparison");
                         compare = GetNumberComparison(Value);
                         break;
-                    case Constants.DataTypeDateTime:
+                    case DateTime d:
                         Log.Add("Will apply DateTime comparison");
                         compare = GetDateTimeComparison(Value);
                         break;
-                    case Constants.DataTypeEntity:
+                    case IEnumerable<IEntity> ie:
+                    case IEntity e:
                         Log.Add("Would apply entity comparison, but this doesn't work");
-                        throw new Exception("can't compare values which are related entities - use the RelationshipFilter instead");
-                    // ReSharper disable once RedundantCaseLabel
-                    case Constants.DataTypeString:
-                    // ReSharper disable once RedundantCaseLabel
-                    case "Null":
+                        return wrapLog("error", SetException("Can't apply Value comparison to Relationship",
+                            "Can't compare values which contain related entities - use the RelationshipFilter instead."));
+                    case string s:
+                    case null:  // note: null should never happen, because we only look at entities having non-null in this value
                     default:
                         Log.Add("Will apply String comparison");
                         compare = GetStringComparison(Value);
@@ -192,45 +197,13 @@ namespace ToSic.Eav.DataSources
             }
             #endregion
 
-            wrapLog("ok");
-            return GetFilteredWithLinq(originals, compare);
+            if (!ExceptionStream.IsDefaultOrEmpty)
+                return wrapLog("error", ExceptionStream);
+
+            return wrapLog("ok", GetFilteredWithLinq(originals, compare));
             // The following version has more logging, activate in serious cases
             // Note that the code might not be 100% identical, but it should help find issues
 		}
-
-
-
-
-        /// <summary>
-        /// Provide all entity-compare functionality as a prepared function
-        /// </summary>
-        /// <param name="original"></param>
-        /// <returns></returns>
-        // ReSharper disable once UnusedMember.Local
-        private Func<IEntity, bool> GetEntityComparison(string original)
-        {
-            var boolFilter = bool.Parse(original);
-
-            var operation = Operator.ToLowerInvariant();
-            switch (operation)
-            {
-                case "==":
-                case "===":
-                    return e =>
-                    {
-                        var value = e.GetBestValue(_initializedAttrName, LanguageList);
-                        return value as bool? == boolFilter;
-                    };
-                case "!=":
-                    return e =>
-                    {
-                        var value = e.GetBestValue(_initializedAttrName, LanguageList);
-                        return value as bool? != boolFilter;
-                    };
-            }
-
-            throw new Exception("Wrong operator for boolean compare, can't find comparison for '" + operation + "'");
-        }
 
 
 
@@ -241,6 +214,7 @@ namespace ToSic.Eav.DataSources
         /// <returns></returns>
         private Func<IEntity, bool> GetStringComparison(string original)
         {
+            var wrapLog = Log.Call<Func<IEntity, bool>>(original);
             var operation = Operator.ToLowerInvariant();
 
             var stringComparison = new Dictionary<string, Func<object, bool>>
@@ -255,12 +229,13 @@ namespace ToSic.Eav.DataSources
             };
 
             if (!stringComparison.ContainsKey(operation))
-                throw new Exception("Wrong operator for string compare, can't find comparison for '" + operation + "'");
+            {
+                SetException("Invalid Operator", $"Bad operator for string compare, can't find comparison '{operation}'");
+                return wrapLog("error", null);
+            }
 
             var stringCompare = stringComparison[operation];
-            return e 
-                => stringCompare(e.GetBestValue(_initializedAttrName, LanguageList)); 
-
+            return wrapLog("ok", e => stringCompare(e.GetBestValue(_initializedAttrName, LanguageList)));
         }
 
         /// <summary>
@@ -270,6 +245,8 @@ namespace ToSic.Eav.DataSources
         /// <returns></returns>
         private Func<IEntity, bool> GetBoolComparison(string original)
         {
+            var wrapLog = Log.Call(original);
+
             var boolFilter = bool.Parse(original);
 
             var operation = Operator.ToLowerInvariant();
@@ -277,12 +254,14 @@ namespace ToSic.Eav.DataSources
             {
                 case "==":
                 case "===":
+                    wrapLog("ok");
                     return e =>
                     {
                         var value = e.GetBestValue(_initializedAttrName, LanguageList);
                         return value as bool? == boolFilter;
                     };
                 case "!=":
+                    wrapLog("ok");
                     return e =>
                     {
                         var value = e.GetBestValue(_initializedAttrName, LanguageList);
@@ -290,7 +269,9 @@ namespace ToSic.Eav.DataSources
                     };
             }
 
-            throw new Exception("Wrong operator for boolean compare, can't find comparison for '" + operation + "'");
+            SetException("Invalid Operator",message: $"Bad operator for boolean compare, can't find comparison '{operation}'");
+            wrapLog("error");
+            return null;
         }
 
 
@@ -298,14 +279,20 @@ namespace ToSic.Eav.DataSources
         #region "between" helper
         private Tuple<bool, string, string> BetweenParts(string original)
         {
+            var wrapLog = Log.Call(original);
             original = original.ToLowerInvariant();
             var hasAnd = original.IndexOf(" and ", StringComparison.Ordinal);
             string low = "", high = "";
             if (hasAnd > -1)
             {
+                Log.Add("has 'and'");
                 low = original.Substring(0, hasAnd).Trim();
                 high = original.Substring(hasAnd + 4).Trim();
+                Log.Add($"has 'and'. low: {low}, high: {high}");
             }
+            else Log.Add("No 'and' found, low/high will be empty");
+
+            wrapLog("ok");
             return new Tuple<bool, string, string>(hasAnd > -1, low, high);
         }
         #endregion 
@@ -318,6 +305,8 @@ namespace ToSic.Eav.DataSources
         /// <returns></returns>
         private Func<IEntity, bool> GetDateTimeComparison(string original)
         {
+            var wrapLog = Log.Call<Func<IEntity, bool>>(original);
+
             var operation = Operator.ToLowerInvariant();
             DateTime max = DateTime.MaxValue,
                 referenceDateTime = DateTime.MinValue;
@@ -325,6 +314,7 @@ namespace ToSic.Eav.DataSources
             #region handle special case "between" with 2 values
             if (operation == "between" || operation == "!between")
             {
+                Log.Add("Operator is between or !between");
                 var parts = BetweenParts(original);
                 if (parts.Item1)
                 {
@@ -353,11 +343,15 @@ namespace ToSic.Eav.DataSources
                 {"!between", value => !(value >= referenceDateTime && value <= max) },
             };
 
-            if(!dateComparisons.ContainsKey(operation))
-                throw new Exception("Wrong operator for datetime compare, can't find comparison for '" + operation + "'");
+            if (!dateComparisons.ContainsKey(operation))
+            {
+                SetException("Invalid Operator", $"Bad operator for datetime compare, can't find comparison '{operation}'");
+                return wrapLog("error", null);
+            }
 
             var dateTimeCompare = dateComparisons[operation];
 
+            wrapLog("ok", null);
             return e => {
                 var value = e.GetBestValue(_initializedAttrName, LanguageList);
                 try
@@ -382,6 +376,8 @@ namespace ToSic.Eav.DataSources
         /// <returns></returns>
         private Func<IEntity, bool> GetNumberComparison(string original)
         {
+            var wrapLog = Log.Call<Func<IEntity, bool>>(original);
+
             var operation = Operator.ToLowerInvariant();
         
             var max = decimal.MaxValue;
@@ -390,6 +386,7 @@ namespace ToSic.Eav.DataSources
             #region check for special case "between" with two values to compare
             if (operation == "between" || operation == "!between")
             {
+                Log.Add("Operator is between or !between");
                 var parts = BetweenParts(original);
                 if (parts.Item1)
                 {
@@ -418,10 +415,14 @@ namespace ToSic.Eav.DataSources
                 {"!between", value => !(value >= numberFilter && value <= max) },
             };
 
-            if(!numComparisons.ContainsKey(operation))
-                throw new Exception("Wrong operator for number compare, can't find comparison for '" + operation + "'");
+            if (!numComparisons.ContainsKey(operation))
+            {
+                SetException("Invalid Operator", $"Bad operator for number compare, can't find comparison '{operation}'");
+                return wrapLog("error", null);
+            }
 
             var numberCompare = numComparisons[operation];
+            wrapLog("ok", null);
             return e =>
             {
                 var value = e.GetBestValue(_initializedAttrName, LanguageList);
@@ -449,6 +450,7 @@ namespace ToSic.Eav.DataSources
 
 	    private ImmutableArray<IEntity> GetFilteredWithLinq(IEnumerable<IEntity> originals, Func<IEntity, bool> compare)
         {
+            var wrapLog = Log.Call<ImmutableArray<IEntity>>();
             try
             {
                 var op = Operator.ToLowerInvariant();
@@ -467,14 +469,16 @@ namespace ToSic.Eav.DataSources
                 }
                 if (int.TryParse(Take, out var tk))
 	                results = results.Take(tk);
-	            return results.ToImmutableArray();//.ToList();
+	            return wrapLog("ok", results.ToImmutableArray());
 	        }
 	        catch (Exception ex)
-	        {
-	            throw new DataSourceException(
-	                "Experienced error in ValueFilter while executing the filter LINQ. Probably something with type-missmatch or the same field using different types or null.",
-	                ex);
-	        }
+            {
+                return wrapLog("error", SetException("Unexpected Error",
+                    "Experienced error while executing the filter LINQ. " +
+                    "Probably something with type-mismatch or the same field using different types or null. " +
+                    "The exception was logged to Insights.",
+                    ex));
+            }
 	    }
 
 
