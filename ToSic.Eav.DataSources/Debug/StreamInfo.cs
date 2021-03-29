@@ -30,9 +30,11 @@ namespace ToSic.Eav.DataSources.Debug
                 Target = (target as IDataSource)?.Guid ?? Guid.Empty;
                 Source = stream.Source.Guid;
                 TargetIn = inName;
-                foreach (var outStm in stream.Source.Out)
-                    if (outStm.Value == stream)
-                        SourceOut = outStm.Key;
+                if (stream is ConnectionStream conStream1) SourceOut = conStream1.Connection.SourceStream;
+                else
+                    foreach (var outStm in stream.Source.Out)
+                        if (outStm.Value == stream) // || (stream is ConnectionStream conStream && conStream.Connection.SourceStream == outStm.Key))
+                            SourceOut = outStm.Key;
 
                 var firstItem = Stream.List?.FirstOrDefault();
                 Error = firstItem?.Type?.Name == DataSourceErrorHandling.ErrorType;
