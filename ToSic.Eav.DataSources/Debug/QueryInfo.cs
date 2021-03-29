@@ -12,10 +12,9 @@ namespace ToSic.Eav.DataSources.Debug
         public List<StreamInfo> Streams = new List<StreamInfo>();
         public Dictionary<Guid, DataSourceInfo> Sources = new Dictionary<Guid, DataSourceInfo>();
 
-        public QueryInfo(/*IDataSource outStream, ILog parentLog*/ IEntitiesTo<Dictionary<string, object>> errorConverter) : base("Qry.Info"/*, parentLog*/)
+        public QueryInfo(IEntitiesTo<Dictionary<string, object>> errorConverter) : base("Qry.Info")
         {
             _errorConverter = errorConverter;
-            //GetStreamInfosRecursive(outStream as IDataTarget, ref Streams, ref Sources);
         }
         
         public QueryInfo Init(IDataSource outStream, ILog parentLog)

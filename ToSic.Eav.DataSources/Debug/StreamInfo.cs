@@ -18,7 +18,8 @@ namespace ToSic.Eav.DataSources.Debug
         public bool Error = false;
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public Dictionary<string, object> ErrorData;
-
+        
+        [JsonIgnore]
         protected readonly IDataStream Stream;
 
         public StreamInfo(IDataStream stream, IDataTarget target, string inName, IEntitiesTo<Dictionary<string, object>> errorConverter)

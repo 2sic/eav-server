@@ -67,7 +67,7 @@ namespace ToSic.Eav.DataSources.Queries
 	    public const string ConfigKeyPipelineSettings = "pipelinesettings";
 
 
-	    public IDataSource BuildQuery(QueryDefinition queryDef,
+	    public Tuple<IDataSource, Dictionary<string, IDataSource>> BuildQuery(QueryDefinition queryDef,
             ILookUpEngine lookUpEngineToClone,
             IEnumerable<ILookUp> overrideLookUps,
             bool showDrafts)
@@ -75,10 +75,11 @@ namespace ToSic.Eav.DataSources.Queries
 	        #region prepare shared / global value providers
 
 	        overrideLookUps = overrideLookUps?.ToList();
-	        var wrapLog = Log.Call($"{queryDef.Title}({queryDef.Id}), " +
-                                            $"hasLookUp:{lookUpEngineToClone != null}, " +
-                                            $"overrides: {overrideLookUps?.Count()}, " +
-                                            $"drafts:{showDrafts}");
+            var wrapLog = Log.Call<Tuple<IDataSource, Dictionary<string, IDataSource>>>(
+                $"{queryDef.Title}({queryDef.Id}), " +
+                $"hasLookUp:{lookUpEngineToClone != null}, " +
+                $"overrides: {overrideLookUps?.Count()}, " +
+                $"drafts:{showDrafts}");
 
 	        // the query settings which apply to the whole query
 	        var querySettingsLookUp = new LookUpInMetadata(ConfigKeyPipelineSettings, queryDef.Entity, _cultureResolver.SafeLanguagePriorityCodes());
@@ -95,7 +96,7 @@ namespace ToSic.Eav.DataSources.Queries
 
 
             // provide global settings for ShowDrafts, ATM just if showdrafts are to be used
-            var itemSettingsShowDrafts = new Dictionary<string, string>
+            var itemSettingsShowDrafts = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
                 {{QueryConstants.ParamsShowDraftKey, showDrafts.ToString()}};
 
             #endregion
@@ -149,9 +150,8 @@ namespace ToSic.Eav.DataSources.Queries
 	        #endregion
 
 	        InitWirings(queryDef, dataSources);
-
-	        wrapLog($"parts:{queryDef.Parts.Count}");
-	        return outTarget;
+			var result = new Tuple<IDataSource, Dictionary<string, IDataSource>>(outTarget, dataSources);
+			return wrapLog($"parts:{queryDef.Parts.Count}", result);
 	    }
 
 	    /// <summary>
@@ -231,12 +231,12 @@ namespace ToSic.Eav.DataSources.Queries
 		}
 
 
-	    public IDataSource GetDataSourceForTesting(QueryDefinition queryDef, bool showDrafts, ILookUpEngine configuration = null)
+	    public Tuple<IDataSource, Dictionary<string, IDataSource>> GetDataSourceForTesting(QueryDefinition queryDef, bool showDrafts, ILookUpEngine configuration = null)
 	    {
-            var wrapLog = Log.Call<IDataSource>($"a#{queryDef.AppId}, pipe:{queryDef.Entity.EntityGuid} ({queryDef.Entity.EntityId}), drafts:{showDrafts}");
+            var wrapLog = Log.Call<Tuple<IDataSource, Dictionary<string, IDataSource>>>(
+                $"a#{queryDef.AppId}, pipe:{queryDef.Entity.EntityGuid} ({queryDef.Entity.EntityId}), drafts:{showDrafts}");
             var testValueProviders = queryDef.TestParameterLookUps;
-            return wrapLog(null,
-                BuildQuery(queryDef, configuration, testValueProviders, showDrafts));
+            return wrapLog(null, BuildQuery(queryDef, configuration, testValueProviders, showDrafts));
         }
 
 
