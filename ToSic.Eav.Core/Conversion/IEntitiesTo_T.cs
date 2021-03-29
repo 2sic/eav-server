@@ -13,7 +13,8 @@ namespace ToSic.Eav.Conversion
     {
 
         /// <summary>
-        /// Maximum items on a stream to return
+        /// Maximum items on a stream to return.
+        /// This is primarily used when developing visual query, to limit what is actually sent back to the client.
         /// </summary>
         /// <remarks>
         /// Added v11.13

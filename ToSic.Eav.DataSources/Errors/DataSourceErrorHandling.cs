@@ -17,6 +17,7 @@ namespace ToSic.Eav.DataSources
                 {"SourceName", source?.Name},
                 {"SourceLabel", source?.Label },
                 {"SourceGuid", source?.Guid },
+                {"SourceType", source?.GetType().Name },
                 {"SourceStream", stream },
                 {"Message", message },
                 {"DebugNotes", "There should be more details in the insights logs, see https://r.2sxc.org/insights" }
