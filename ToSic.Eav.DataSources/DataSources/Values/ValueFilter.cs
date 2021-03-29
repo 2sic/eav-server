@@ -104,17 +104,14 @@ namespace ToSic.Eav.DataSources
 
         private IImmutableList<IEntity> GetValueFilterOrFallback()
         {
-            var res = GetValueFilter();
-            // ReSharper disable PossibleMultipleEnumeration
-            if (res.Any()) return res;
-            if (In.HasStreamWithItems(Constants.FallbackStreamName))
-            {
-                Log.Add("will return fallback stream");
-                res = In[Constants.FallbackStreamName].List.ToImmutableList();
-            }
+            var wrapLog = Log.Call<IImmutableList<IEntity>>();
 
-            return res;
-            // ReSharper restore PossibleMultipleEnumeration
+            var res = GetValueFilter();
+            if (res.Any()) return wrapLog("found", res);
+            if (In.HasStreamWithItems(Constants.FallbackStreamName))
+                return wrapLog("fallback", In[Constants.FallbackStreamName].List.ToImmutableList());
+
+            return wrapLog("final", res);
         }
 
 

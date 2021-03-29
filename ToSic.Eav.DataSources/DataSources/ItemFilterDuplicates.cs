@@ -48,15 +48,20 @@ namespace ToSic.Eav.DataSources
         /// Find and return the unique items in the list
         /// </summary>
         /// <returns></returns>
-        private ImmutableArray<IEntity> GetUnique()
+        private IImmutableList<IEntity> GetUnique()
         {
-            if(!In.HasStreamWithItems(Constants.DefaultStreamName)) return ImmutableArray<IEntity>.Empty;
+            var wrapLog = Log.Call<IImmutableList<IEntity>>();
 
-            var list = In[Constants.DefaultStreamName].List;
+            if (!In.HasStreamWithItems(Constants.DefaultStreamName)) return ImmutableArray<IEntity>.Empty;
 
-            return list
+            if (GetStreamOrPrepareExceptionToThrow(Constants.DefaultStreamName, out var originals))
+                return wrapLog("error", originals);
+
+            var result = originals
                 .Distinct()
                 .ToImmutableArray();
+            
+            return wrapLog("ok", result);
         }
 
 
@@ -64,17 +69,21 @@ namespace ToSic.Eav.DataSources
         /// Find and return only the duplicate items in the list
         /// </summary>
         /// <returns></returns>
-	    private ImmutableArray<IEntity> GetDuplicates()
+	    private IImmutableList<IEntity> GetDuplicates()
 	    {
+            var wrapLog = Log.Call<IImmutableList<IEntity>>();
 	        if (!In.HasStreamWithItems(Constants.DefaultStreamName)) return ImmutableArray<IEntity>.Empty;
 
-            var list = In[Constants.DefaultStreamName].List;
+            if (GetStreamOrPrepareExceptionToThrow(Constants.DefaultStreamName, out var originals))
+                return wrapLog("error", originals);
 
-	        return list
+            var result = originals
                 .GroupBy(s => s)
                 .Where(g => g.Count() > 1)
                 .Select(g => g.Key)
                 .ToImmutableArray();
-	    }
+            
+            return wrapLog("ok", result);
+        }
     }
 }

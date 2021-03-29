@@ -87,10 +87,12 @@ namespace ToSic.Eav.DataSources
 
 		private IImmutableList<IEntity> GetValueSort()
 		{
-            // todo: maybe do something about languages?
-            // todo: test decimal / number types
+			var wrapLog = Log.Call<IImmutableList<IEntity>>();
 
-            Configuration.Parse();
+			// todo: maybe do something about languages?
+			// todo: test decimal / number types
+
+			Configuration.Parse();
 
             Log.Add("will apply value-sort");
 			var attr = Attributes.Split(',').Select(s => s.Trim()).ToArray();
@@ -100,23 +102,24 @@ namespace ToSic.Eav.DataSources
 			// Languages check - not fully implemented yet, only supports "default" / "current"
             LanguageList = _valLanguages.PrepareLanguageList(Languages, Log);
 
-            var list = In[Constants.DefaultStreamName].List.ToImmutableArray();
+            if (GetStreamOrPrepareExceptionToThrow(Constants.DefaultStreamName, out var originals))
+                return wrapLog("error", originals);
 
             // check if no list parameters specified
 		    if (attr.Length == 1 && string.IsNullOrWhiteSpace(attr[0]))
-		        return list;//.ToList();
+		        return wrapLog("no params", originals);
 
             // only get the entities, that have these attributes (but don't test for id/title, as all have these)
             var valueAttrs = attr.Where(v => !Constants.InternalOnlyIsSpecialEntityProperty(v)).ToArray();
 		    var results = valueAttrs.Length == 0
-		        ? list
-		        : list.Where(e => e.Attributes.Keys.Where(valueAttrs.Contains).Count() == valueAttrs.Length).ToImmutableArray();
+		        ? originals
+		        : originals.Where(e => e.Attributes.Keys.Where(valueAttrs.Contains).Count() == valueAttrs.Length).ToImmutableArray();
 
 			// if list is blank, then it didn't find the attribute to sort by - so just return unsorted
 			// note 2020-10-07 this may have been a bug previously, returning an empty list instead
-            if (!results.Any()) return list;// ImmutableArray<IEntity>.Empty; //results.ToList();
+            if (!results.Any()) return wrapLog("sort-attribute not found", originals);
 
-            var unsortable = list.Where(e => !results.Contains(e)).ToImmutableArray();
+            var unsortable = originals.Where(e => !results.Contains(e)).ToImmutableArray();
 
             IOrderedEnumerable<IEntity> ordered = null;
 
@@ -151,7 +154,7 @@ namespace ToSic.Eav.DataSources
 
             var final = ordered?.ToImmutableArray() ?? ImmutableArray<IEntity>.Empty;
             // final = final.AddRange(unsortable);
-			return final.AddRange(unsortable).ToImmutableArray();
+			return wrapLog("ok", final.AddRange(unsortable).ToImmutableArray());
 		}
 
 		private object GetPropertyToSort(IEntity e, string a, char special)

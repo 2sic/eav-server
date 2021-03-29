@@ -61,17 +61,18 @@ namespace ToSic.Eav.DataSources
 		    ConfigMask(EntityIdKey, "[Settings:EntityIds]");
 		}
 
-		private ImmutableArray<IEntity> GetList()
+		private IImmutableList<IEntity> GetList()
         {
-            var wrapLog = Log.Call<ImmutableArray<IEntity>>();
+            var wrapLog = Log.Call<IImmutableList<IEntity>>();
 
             var entityIds = CustomConfigurationParse();
 
+            // if CustomConfiguration resulted in an error, report now
             if (!ExceptionStream.IsDefaultOrEmpty)
                 return wrapLog("error", ExceptionStream);
 
-
-            var originals = In[Constants.DefaultStreamName].List;
+            if (GetStreamOrPrepareExceptionToThrow(Constants.DefaultStreamName, out var originals))
+                return wrapLog("error", originals);
 
 		    var result = entityIds.Select(eid => originals.One(eid)).Where(e => e != null).ToImmutableArray();
 

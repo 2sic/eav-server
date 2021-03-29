@@ -155,13 +155,12 @@ namespace ToSic.Eav.DataSources
 
         private IImmutableList<IEntity> GetRelationshipsOrFallback()
         {
+            var wrapLog = Log.Call<IImmutableList<IEntity>>();
             var res = GetEntities();
-            // ReSharper disable PossibleMultipleEnumeration
             if (!res.Any() && In.HasStreamWithItems(Constants.FallbackStreamName))
-                return In[Constants.FallbackStreamName].List.ToImmutableList();
+                return wrapLog("fallback", In[Constants.FallbackStreamName].List.ToImmutableList());
 
-            return res;
-            // ReSharper restore PossibleMultipleEnumeration
+            return wrapLog("ok", res);
         }
 
         private IImmutableList<IEntity> GetEntities()

@@ -52,14 +52,20 @@ namespace ToSic.Eav.DataSources
 		    ConfigMask(IdentityCode, "[Settings:" + IdentityCode + "]"); 
         }
 
-        private ImmutableArray<IEntity> GetList()
+        private IImmutableList<IEntity> GetList()
         {
+            var wrapLog = Log.Call<IImmutableList<IEntity>>();
+
             Configuration.Parse();
 
             Log.Add($"get for identity:{Identity}");
-            if (string.IsNullOrWhiteSpace(Identity)) return ImmutableArray<IEntity>.Empty;
+            if (string.IsNullOrWhiteSpace(Identity)) 
+                return wrapLog("no identity", ImmutableArray<IEntity>.Empty);
 
-            return In[Constants.DefaultStreamName].List.Where(e => e.Owner == Identity).ToImmutableArray();
+            if (GetStreamOrPrepareExceptionToThrow(Constants.DefaultStreamName, out var originals))
+                return wrapLog("error", originals);
+            
+            return wrapLog("ok", originals.Where(e => e.Owner == Identity).ToImmutableArray());
         }
 
 	}

@@ -85,8 +85,9 @@ namespace ToSic.Eav.DataSources
         /// Get the list of all items with reduced attributes-list
         /// </summary>
         /// <returns></returns>
-		private ImmutableArray<IEntity> GetList()
-		{
+		private IImmutableList<IEntity> GetList()
+        {
+            var wrapLog = Log.Call<IImmutableList<IEntity>>();
             Configuration.Parse();
 
             var mapRaw = AttributeMap;
@@ -138,17 +139,20 @@ namespace ToSic.Eav.DataSources
             if (!string.IsNullOrEmpty(typeName))
                 newType = ContentTypeBuilder.DynamicContentType(AppId, typeName, typeName);
 
-            var result = In[Constants.DefaultStreamName].List
+            if (GetStreamOrPrepareExceptionToThrow(Constants.DefaultStreamName, out var originals))
+                return wrapLog("error", originals);
+
+            var result = originals
                 .Select(entity => EntityBuilder.FullClone(entity,
                     CreateDic(entity),
                     entity.Relationships.AllRelationships,
                     newType
-                    ))
+                ))
                 .Cast<IEntity>()
                 .ToImmutableArray();
 
 		    Log.Add($"attrib filter names:[{string.Join(",", attributeNames)}] found:{result.Length}");
-		    return result;
+		    return wrapLog("ok", result);
 		}
 
 	}
