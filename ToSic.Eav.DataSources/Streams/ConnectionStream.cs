@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 
@@ -16,7 +15,9 @@ namespace ToSic.Eav.DataSources
 
         private IDataStream LoadStream()
         {
-            if (Connection == null) throw new Exception("Missing connection, can't LoadStream()");
+            if (Connection == null) 
+                return CreateErrorStream("Missing Connection", "ConnectionStream can't LoadStream()");
+            // throw new Exception("Missing connection, can't LoadStream()");
 
             var source = Connection.DataSource;
             var name = Connection.SourceStream;
@@ -27,16 +28,28 @@ namespace ToSic.Eav.DataSources
             {
                 stream = Connection.DirectlyAttachedStream;
                 if (stream == null)
-                    throw new Exception($"LoadStream(): No Stream and name or source were also missing - name: '{name}', source: '{source}'");
+                    return CreateErrorStream("Missing Source or Name", 
+                        $"LoadStream(): No Stream and name or source were also missing - name: '{name}', source: '{source}'");
+                //throw new Exception($"LoadStream(): No Stream and name or source were also missing - name: '{name}', source: '{source}'");
             }
             else
             {
-                if (!source.Out.ContainsKey(name)) throw new Exception($"LoadStream(): Source doesn't have stream '{name}'");
+                if (!source.Out.ContainsKey(name))
+                    return CreateErrorStream("Source doesn't have Stream", $"LoadStream(): Source doesn't have stream '{name}'");
+                    //throw new Exception($"LoadStream(): Source doesn't have stream '{name}'");
                 stream = source.Out[name];
-                if (stream == null) throw new Exception($"Found stream '{name}' but it's null");
+                if (stream == null)
+                    return CreateErrorStream("Source Stream is Null", $"Found stream '{name}' but it's null");
+                    //throw new Exception($"Found stream '{name}' but it's null");
             }
 
             return stream;
+        }
+
+        private IDataStream CreateErrorStream(string title, string message)
+        {
+            var entityList = DataSourceErrorHandling.CreateErrorList(title: title, message: message);
+            return new DataStream(null, "ConnectionStreamError", () => entityList);
         }
 
         public IDataStream UnwrappedContents => _dataStream ?? (_dataStream = LoadStream());

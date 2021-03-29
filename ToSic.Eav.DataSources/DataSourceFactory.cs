@@ -40,7 +40,16 @@ namespace ToSic.Eav.DataSources
 
             // still not found? must show error
             if (type == null)
-                throw new Exception("DataSource not installed on Server: " + sourceName);
+            {
+                // New in 11.13 (2021-03-29)
+                return new Error
+                {
+                    Title = "DataSource not found",
+                    Message = $"DataSource '{sourceName}' is not installed on Server. You should probably install it in the CMS."
+                };
+                // old - delete ca. 2021-05 if nothing unusual pops up
+                //txxxhrow new Exception("DataSource not installed on Server: " + sourceName);
+            }
             var result = GetDataSource(type, app, upstream, lookUps);
             wrapLog("ok");
             return result;
@@ -77,8 +86,7 @@ namespace ToSic.Eav.DataSources
             var wrapLog = Log.Call();
 
             if (upstream == null && lookUps == null)
-                throw new Exception(
-                    "Trying to GetDataSource<T> but cannot do so if both upstream and ConfigurationProvider are null.");
+                throw new Exception("Can't get GetDataSource<T> because both upstream and lookUps are null.");
 
             var newDs = ServiceProvider.Build<T>();
             ConfigureNewDataSource(newDs, appIdentity, upstream, lookUps ?? upstream.Configuration.LookUpEngine);
