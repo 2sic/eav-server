@@ -51,7 +51,8 @@ namespace ToSic.Eav.DataSources
             }
             catch (KeyNotFoundException)
             {
-                throw new Exception("Trouble with the App DataSource - must have a Default In-Stream with name " + Constants.DefaultStreamName + ". It has " + In.Count + " In-Streams.");
+                throw new Exception(
+                    $"Trouble with the App DataSource - must have a Default In-Stream with name {Constants.DefaultStreamName}. It has {In.Count} In-Streams.");
             }
 
             var upstreamDataSource = upstream.Source;

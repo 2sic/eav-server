@@ -15,13 +15,13 @@ namespace ToSic.Eav.Logging.Simple
                 // avoid infinite loops
                 if (recursion >= MaxExceptionRecursion)
                 {
-                    Add("LogException - max depth reached. Will stop");
+                    wrapLog("max-depth reached");
                     return;
                 }
 
                 if (ex == null)
                 {
-                    Add("Exception is null, nothing to log");
+                    wrapLog("Exception is null");
                     return;
                 }
 

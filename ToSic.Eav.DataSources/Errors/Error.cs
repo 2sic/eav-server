@@ -13,14 +13,15 @@ namespace ToSic.Eav.DataSources
     {
         public override string LogId => "DS.Error";
 
+        public string Title { get; set; } = "Demo Error";
+        public string Message { get; set; } = "Demo message of the Error DataSource";
+        
         /// <summary>
         /// Constructor to tell the system what out-streams we have
         /// </summary>
         public Error()
         {
-            Provide(() => DataSourceErrorHandling.CreateErrorList(source: this, 
-                title: "Demo Error", 
-                message: "Demo message of the Error DataSource")); 
+            Provide(() => SetException(Title, Message)); 
         }
 
     }
