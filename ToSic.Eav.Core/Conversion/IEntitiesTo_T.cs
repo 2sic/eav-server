@@ -18,6 +18,7 @@ namespace ToSic.Eav.Conversion
         /// <remarks>
         /// Added v11.13
         /// </remarks>
+        [WorkInProgressApi("Exact name not final yet")]
         int MaxItems { get; set; }
 
         /// <summary>

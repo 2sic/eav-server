@@ -34,6 +34,7 @@ namespace ToSic.Eav.Conversion
         #region Configuration
 
         /// <inheritdoc />
+        [WorkInProgressApi("Exact name not final yet")]
         public int MaxItems { get; set;  } = 0;
 
         /// <inheritdoc/>
