@@ -6,7 +6,9 @@ namespace ToSic.Eav.DataSources.Queries
     /// <summary>
     /// Custom Attribute for DataSources and use in the VisualQuery Designer.
     /// Will add information about help, configuration-content-types etc.
-    /// Only DataSources which have this attribute will be listed in the designer-tool
+    /// Only DataSources which have this attribute will be listed in the designer-tool.
+    ///
+    /// Read more here: [](xref:NetCode.DataSources.Custom.VisualQueryAttribute)
     /// </summary>
     [PublicApi_Stable_ForUseInYourCode]
 
