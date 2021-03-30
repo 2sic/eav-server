@@ -180,12 +180,12 @@ namespace ToSic.Eav.DataSources
 
 			if (strMode == "default") strMode = "contains"; // 2017-11-18 old default was "default" - this is still in for compatibility
             if (!Enum.TryParse<CompareModes>(strMode, true, out var mode))
-                return wrapLog("error", SetException("CompareMode unknown", $"CompareMode other '{strMode}' is unknown."));
+                return wrapLog("error", SetError("CompareMode unknown", $"CompareMode other '{strMode}' is unknown."));
 
             var childParent = ChildOrParent;
             if (!_directionPossibleValues.Contains(childParent, StringComparer.CurrentCultureIgnoreCase))
                 return wrapLog("error",
-                    SetException("Can only compare Children",
+                    SetError("Can only compare Children",
                         $"ATM can only find related children at the moment, must set {nameof(ChildOrParent)} to '{DefaultDirection}'"));
             
             //var lang = Languages.ToLowerInvariant();
@@ -196,7 +196,7 @@ namespace ToSic.Eav.DataSources
 			var lowAttribName = compAttr.ToLowerInvariant();
 		    Log.Add($"get related on relationship:'{relationship}', filter:'{filter}', rel-field:'{compAttr}' mode:'{mode}', child/parent:'{childParent}'");
 
-            if(GetStreamOrPrepareExceptionToThrow(Constants.DefaultStreamName, out var originals)) 
+            if(!GetRequiredInList(out var originals)) 
                 return wrapLog("error", originals);
 
 		    var compType = lowAttribName == Constants.EntityFieldAutoSelect
@@ -213,7 +213,7 @@ namespace ToSic.Eav.DataSources
 		        : CompareOne(GetFieldValue(compType, compAttr));
 
             if (comparisonOnRelatedItem == null)
-                return wrapLog("error", ExceptionStream);
+                return wrapLog("error", ErrorStream);
 
 		    var filterList = Separator == DefaultSeparator
 		        ? new[] {filter}
@@ -225,7 +225,7 @@ namespace ToSic.Eav.DataSources
             // pick the correct list-comparison - atm ca. 6 options
 		    var modeCompare = PickMode(mode, relationship, comparisonOnRelatedItem, filterList);
             if (modeCompare == null)
-                return wrapLog("error", ExceptionStream);
+                return wrapLog("error", ErrorStream);
 
 		    var finalCompare = useNot
 		        ? e => !modeCompare(e)
@@ -240,7 +240,7 @@ namespace ToSic.Eav.DataSources
             catch (Exception ex)
             {
                 return wrapLog("error",
-                    SetException("Error comparing Relationships", "Unknown error, check details in Insights logs", ex));
+                    SetError("Error comparing Relationships", "Unknown error, check details in Insights logs", ex));
             }
         }
 
@@ -294,7 +294,7 @@ namespace ToSic.Eav.DataSources
 	                return entity => false;
 
                 default:
-                    SetException("Mode unknown", $"The mode '{modeToPick}' is invalid");
+                    SetError("Mode unknown", $"The mode '{modeToPick}' is invalid");
                     return null;
 	        }
 	    }
@@ -347,7 +347,7 @@ namespace ToSic.Eav.DataSources
 				// ReSharper disable once RedundantCaseLabel
 				case CompareType.Auto:
 	            default:
-                    SetException("Problem with CompareType", $"The CompareType '{type}' is unexpected.");
+                    SetError("Problem with CompareType", $"The CompareType '{type}' is unexpected.");
                     return null;
 	        }
 	    }

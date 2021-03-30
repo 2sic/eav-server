@@ -62,7 +62,7 @@ namespace ToSic.Eav.DataSources
             if (string.IsNullOrWhiteSpace(Identity)) 
                 return wrapLog("no identity", ImmutableArray<IEntity>.Empty);
 
-            if (GetStreamOrPrepareExceptionToThrow(Constants.DefaultStreamName, out var originals))
+            if (!GetRequiredInList(out var originals))
                 return wrapLog("error", originals);
             
             return wrapLog("ok", originals.Where(e => e.Owner == Identity).ToImmutableArray());

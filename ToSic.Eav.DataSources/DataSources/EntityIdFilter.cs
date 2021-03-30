@@ -68,10 +68,10 @@ namespace ToSic.Eav.DataSources
             var entityIds = CustomConfigurationParse();
 
             // if CustomConfiguration resulted in an error, report now
-            if (!ExceptionStream.IsDefaultOrEmpty)
-                return wrapLog("error", ExceptionStream);
+            if (!ErrorStream.IsDefaultOrEmpty)
+                return wrapLog("error", ErrorStream);
 
-            if (GetStreamOrPrepareExceptionToThrow(Constants.DefaultStreamName, out var originals))
+            if (!GetRequiredInList(out var originals))
                 return wrapLog("error", originals);
 
 		    var result = entityIds.Select(eid => originals.One(eid)).Where(e => e != null).ToImmutableArray();
@@ -105,7 +105,7 @@ namespace ToSic.Eav.DataSources
             }
             catch (Exception ex)
             {
-                SetException("Can't find IDs", "Unable to load EntityIds from Configuration. Unexpected Exception.", ex);
+                SetError("Can't find IDs", "Unable to load EntityIds from Configuration. Unexpected Exception.", ex);
                 return wrapLog("error", null);
             }
             #endregion

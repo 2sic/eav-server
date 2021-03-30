@@ -103,7 +103,7 @@ namespace ToSic.Eav.DataSources
             var noFieldNames = attributeNames.Length == 0 
                           || attributeNames.Length == 1 && string.IsNullOrWhiteSpace(attributeNames[0]);
 
-            if (GetStreamOrPrepareExceptionToThrow(Constants.DefaultStreamName, out var sourceList)) 
+            if (!GetRequiredInList(out var sourceList)) 
                 return wrapLog("error", sourceList);
 
             // Case #1 if we don't change anything, short-circuit and return original

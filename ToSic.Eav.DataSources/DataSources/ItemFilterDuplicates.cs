@@ -54,7 +54,7 @@ namespace ToSic.Eav.DataSources
 
             if (!In.HasStreamWithItems(Constants.DefaultStreamName)) return ImmutableArray<IEntity>.Empty;
 
-            if (GetStreamOrPrepareExceptionToThrow(Constants.DefaultStreamName, out var originals))
+            if (!GetRequiredInList(out var originals))
                 return wrapLog("error", originals);
 
             var result = originals
@@ -74,7 +74,7 @@ namespace ToSic.Eav.DataSources
             var wrapLog = Log.Call<IImmutableList<IEntity>>();
 	        if (!In.HasStreamWithItems(Constants.DefaultStreamName)) return ImmutableArray<IEntity>.Empty;
 
-            if (GetStreamOrPrepareExceptionToThrow(Constants.DefaultStreamName, out var originals))
+            if (!GetRequiredInList(out var originals))
                 return wrapLog("error", originals);
 
             var result = originals

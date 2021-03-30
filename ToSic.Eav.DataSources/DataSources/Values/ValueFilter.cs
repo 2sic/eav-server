@@ -104,14 +104,14 @@ namespace ToSic.Eav.DataSources
 
         private IImmutableList<IEntity> GetValueFilterOrFallback()
         {
-            var wrapLog = Log.Call<IImmutableList<IEntity>>();
+            var callLog = Log.Call<IImmutableList<IEntity>>();
 
             var res = GetValueFilter();
-            if (res.Any()) return wrapLog("found", res);
+            if (res.Any()) return callLog("found", res);
             if (In.HasStreamWithItems(Constants.FallbackStreamName))
-                return wrapLog("fallback", In[Constants.FallbackStreamName].List.ToImmutableList());
+                return callLog("fallback", In[Constants.FallbackStreamName].List.ToImmutableList());
 
-            return wrapLog("final", res);
+            return callLog("final", res);
         }
 
 
@@ -182,7 +182,7 @@ namespace ToSic.Eav.DataSources
                     case IEnumerable<IEntity> ie:
                     case IEntity e:
                         Log.Add("Would apply entity comparison, but this doesn't work");
-                        return wrapLog("error", SetException("Can't apply Value comparison to Relationship",
+                        return wrapLog("error", SetError("Can't apply Value comparison to Relationship",
                             "Can't compare values which contain related entities - use the RelationshipFilter instead."));
                     case string s:
                     case null:  // note: null should never happen, because we only look at entities having non-null in this value
@@ -194,8 +194,8 @@ namespace ToSic.Eav.DataSources
             }
             #endregion
 
-            if (!ExceptionStream.IsDefaultOrEmpty)
-                return wrapLog("error", ExceptionStream);
+            if (!ErrorStream.IsDefaultOrEmpty)
+                return wrapLog("error", ErrorStream);
 
             return wrapLog("ok", GetFilteredWithLinq(originals, compare));
             // The following version has more logging, activate in serious cases
@@ -227,7 +227,7 @@ namespace ToSic.Eav.DataSources
 
             if (!stringComparison.ContainsKey(operation))
             {
-                SetException("Invalid Operator", $"Bad operator for string compare, can't find comparison '{operation}'");
+                SetError("Invalid Operator", $"Bad operator for string compare, can't find comparison '{operation}'");
                 return wrapLog("error", null);
             }
 
@@ -266,7 +266,7 @@ namespace ToSic.Eav.DataSources
                     };
             }
 
-            SetException("Invalid Operator",message: $"Bad operator for boolean compare, can't find comparison '{operation}'");
+            SetError("Invalid Operator",message: $"Bad operator for boolean compare, can't find comparison '{operation}'");
             wrapLog("error");
             return null;
         }
@@ -342,7 +342,7 @@ namespace ToSic.Eav.DataSources
 
             if (!dateComparisons.ContainsKey(operation))
             {
-                SetException("Invalid Operator", $"Bad operator for datetime compare, can't find comparison '{operation}'");
+                SetError("Invalid Operator", $"Bad operator for datetime compare, can't find comparison '{operation}'");
                 return wrapLog("error", null);
             }
 
@@ -414,7 +414,7 @@ namespace ToSic.Eav.DataSources
 
             if (!numComparisons.ContainsKey(operation))
             {
-                SetException("Invalid Operator", $"Bad operator for number compare, can't find comparison '{operation}'");
+                SetError("Invalid Operator", $"Bad operator for number compare, can't find comparison '{operation}'");
                 return wrapLog("error", null);
             }
 
@@ -470,7 +470,7 @@ namespace ToSic.Eav.DataSources
 	        }
 	        catch (Exception ex)
             {
-                return wrapLog("error", SetException("Unexpected Error",
+                return wrapLog("error", SetError("Unexpected Error",
                     "Experienced error while executing the filter LINQ. " +
                     "Probably something with type-mismatch or the same field using different types or null. " +
                     "The exception was logged to Insights.",

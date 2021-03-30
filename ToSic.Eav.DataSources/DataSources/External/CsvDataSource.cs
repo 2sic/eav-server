@@ -132,13 +132,13 @@ namespace ToSic.Eav.DataSources
             Log.Add($"CSV path:'{csvPath}', delimiter:'{Delimiter}'");
 
             if (string.IsNullOrWhiteSpace(csvPath))
-                return wrapLog("error", SetException("No Path Given", "There was no path for loading the CSV file."));
+                return wrapLog("error", SetError("No Path Given", "There was no path for loading the CSV file."));
 
             var pathPart = Path.GetDirectoryName(csvPath);
             if (!Directory.Exists(pathPart))
             {
                 Log.Add($"Didn't find path '{pathPart}'");
-                return wrapLog("error", SetException("Path not found",
+                return wrapLog("error", SetError("Path not found",
                     _user?.IsSuperUser == true
                         ? $"Path for Super User only: '{pathPart}'"
                         : "The path given was not found. For security reasons it's not included in the message. You'll find it in the Insights."));
@@ -146,7 +146,7 @@ namespace ToSic.Eav.DataSources
             
             if(!File.Exists(csvPath))
                 return wrapLog("error",
-                    SetException("CSV File Not Found",
+                    SetError("CSV File Not Found",
                         _user?.IsSuperUser == true
                             ? $"Path for Super User only: '{csvPath}'"
                             : "For security reasons the path isn't mentioned here. You'll find it in the Insights."));
@@ -183,7 +183,7 @@ namespace ToSic.Eav.DataSources
                             if (idColumnIndex == -1) 
                                 idColumnIndex = Array.FindIndex(parser.FieldHeaders, name => name.Equals(IdColumnName, StringComparison.InvariantCultureIgnoreCase));
                             if (idColumnIndex == -1)
-                                return SetException("ID Column not found",
+                                return SetError("ID Column not found",
                                     $"ID column '{IdColumnName}' specified cannot be found in the file. " +
                                     $"The Headers: '{string.Join(",", parser.FieldHeaders)}'. " +
                                     $"{commonErrorsIdTitle}");
@@ -197,7 +197,7 @@ namespace ToSic.Eav.DataSources
                             titleColName = parser.FieldHeaders.FirstOrDefault(colName => colName == TitleColumnName)
                                            ?? parser.FieldHeaders.FirstOrDefault(colName => colName.Equals(TitleColumnName, StringComparison.InvariantCultureIgnoreCase));
                             if (titleColName == null)
-                                return SetException("Title column not found",
+                                return SetError("Title column not found",
                                     $"Title column '{TitleColumnName}' cannot be found in the file. " +
                                     $"The Headers: '{string.Join(",", parser.FieldHeaders)}'. " +
                                     $"{commonErrorsIdTitle}");
@@ -211,7 +211,7 @@ namespace ToSic.Eav.DataSources
                         entityId = parser.Row; 
                     // check if id can be parsed from the current row
                     else if (!int.TryParse(fields[idColumnIndex], out entityId))
-                        return SetException("ID is not a number",
+                        return SetError("ID is not a number",
                             $"Row {parser.Row}: ID field '{fields[idColumnIndex]}' cannot be parsed to int. Value was '{fields[idColumnIndex]}'.");
 
 

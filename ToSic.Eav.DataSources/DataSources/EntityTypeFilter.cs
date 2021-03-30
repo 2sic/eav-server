@@ -65,7 +65,7 @@ namespace ToSic.Eav.DataSources
 	            var foundType = appState?.GetContentType(TypeName);
 	            if (foundType != null) // maybe it doesn't find it!
                 {
-                    if (GetStreamOrPrepareExceptionToThrow(Constants.DefaultStreamName, out var originals))
+                    if (!GetRequiredInList(out var originals))
                         return wrapLog("error", originals);
 
                     return wrapLog("fast", originals.OfType(foundType).ToImmutableArray());
@@ -75,7 +75,7 @@ namespace ToSic.Eav.DataSources
 
             // This is the fallback, probably slower. In this case, it tries to match the name instead of the real type
             // Reason is that many dynamically created content-types won't be known to the cache, so they cannot be found the previous way
-            if (GetStreamOrPrepareExceptionToThrow(Constants.DefaultStreamName, out var originals2))
+            if (!GetRequiredInList(out var originals2))
                 return wrapLog("error", originals2);
             
 	        return wrapLog("slower", originals2.OfType(TypeName).ToImmutableArray());

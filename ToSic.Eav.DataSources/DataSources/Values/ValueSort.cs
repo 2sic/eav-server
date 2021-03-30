@@ -102,7 +102,7 @@ namespace ToSic.Eav.DataSources
 			// Languages check - not fully implemented yet, only supports "default" / "current"
             LanguageList = _valLanguages.PrepareLanguageList(Languages, Log);
 
-            if (GetStreamOrPrepareExceptionToThrow(Constants.DefaultStreamName, out var originals))
+            if (!GetRequiredInList(out var originals))
                 return wrapLog("error", originals);
 
             // check if no list parameters specified

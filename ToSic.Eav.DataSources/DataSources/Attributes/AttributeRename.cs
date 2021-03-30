@@ -139,7 +139,7 @@ namespace ToSic.Eav.DataSources
             if (!string.IsNullOrEmpty(typeName))
                 newType = ContentTypeBuilder.DynamicContentType(AppId, typeName, typeName);
 
-            if (GetStreamOrPrepareExceptionToThrow(Constants.DefaultStreamName, out var originals))
+            if (!GetRequiredInList(out var originals))
                 return wrapLog("error", originals);
 
             var result = originals
