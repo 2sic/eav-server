@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
@@ -17,44 +16,42 @@ namespace ToSic.Eav.DataSources
         {
             if (Connection == null) 
                 return CreateErrorStream("Missing Connection", "ConnectionStream can't LoadStream()");
-            // throw new Exception("Missing connection, can't LoadStream()");
 
-            var source = Connection.DataSource;
+            var ds = Connection.DataSource;
             var name = Connection.SourceStream;
             IDataStream stream;
-            var noSource = source == null;
+            var noSource = ds == null;
             var noName = string.IsNullOrEmpty(name);
             if (noSource || noName)
             {
                 stream = Connection.DirectlyAttachedStream;
                 if (stream == null)
                     return CreateErrorStream("Missing Source or Name", 
-                        $"LoadStream(): No Stream and name or source were also missing - name: '{name}', source: '{source}'");
-                //throw new Exception($"LoadStream(): No Stream and name or source were also missing - name: '{name}', source: '{source}'");
+                        $"LoadStream(): No Stream and name or source were also missing - name: '{name}', source: '{ds}'");
             }
             else
             {
-                if (!source.Out.ContainsKey(name))
-                    return CreateErrorStream("Source doesn't have Stream", $"LoadStream(): Source doesn't have stream '{name}'");
-                    //throw new Exception($"LoadStream(): Source doesn't have stream '{name}'");
-                stream = source.Out[name];
+                if (!ds.Out.ContainsKey(name))
+                    return CreateErrorStream("Source doesn't have Stream", $"LoadStream(): Source '{ds.Label}' doesn't have stream '{name}'", ds);
+                stream = ds.Out[name];
                 if (stream == null)
-                    return CreateErrorStream("Source Stream is Null", $"Found stream '{name}' but it's null");
-                    //throw new Exception($"Found stream '{name}' but it's null");
+                    return CreateErrorStream("Source Stream is Null", $"Source '{ds.Label}' has stream '{name}' but it's null", ds);
             }
 
             return stream;
         }
 
-        private IDataStream CreateErrorStream(string title, string message)
+        private IDataStream CreateErrorStream(string title, string message, IDataSource intendedSource = null)
         {
             var entityList = DataSourceErrorHandling.CreateErrorList(title: title, message: message);
-            return new DataStream(null, "ConnectionStreamError", () => entityList);
+            return new DataStream(intendedSource, "ConnectionStreamError", () => entityList);
         }
 
         public IDataStream UnwrappedContents => _dataStream ?? (_dataStream = LoadStream());
 
         private IDataStream _dataStream;
+
+        #region Simple properties linked to the underlying Stream
 
         public bool AutoCaching
         {
@@ -87,5 +84,7 @@ namespace ToSic.Eav.DataSources
         public string Name => UnwrappedContents.Name;
 
         public DataStreamCacheStatus Caching => UnwrappedContents.Caching;
+
+        #endregion
     }
 }
