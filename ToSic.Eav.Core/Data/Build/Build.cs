@@ -16,7 +16,9 @@ namespace ToSic.Eav.Data
         public const string DefaultTypeName = "unspecified";
 
         /// <summary>
-        /// Create an Entity using a dictionary of values
+        /// Create an Entity using a dictionary of values.
+        ///
+        /// Read more about [](xref:NetCode.DataSources.Custom.BuildEntity)
         /// </summary>
         /// <param name="noParameterOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
         /// <param name="appId">optional app id for this item, defaults to the current app</param>
@@ -46,6 +48,8 @@ namespace ToSic.Eav.Data
         /// Convert a list of value-dictionaries dictionary into a list of entities
         /// this assumes that the entities don't have an own id or guid, 
         /// otherwise you should use the single-item command.
+        ///
+        /// Read more about [](xref:NetCode.DataSources.Custom.BuildEntity)
         /// </summary>
         /// <param name="itemValues">list of value-dictionaries</param>
         /// <param name="noParameterOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
