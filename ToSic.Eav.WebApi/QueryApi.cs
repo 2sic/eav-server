@@ -104,7 +104,9 @@ namespace ToSic.Eav.WebApi
                 .ToList();
 
             // Update Pipeline Entity with new Wirings etc.
-		    var wirings = JsonConvert.DeserializeObject<List<Connection>>(data.Pipeline[Constants.QueryStreamWiringAttributeName].ToString());
+            var wiringString = data.Pipeline[Constants.QueryStreamWiringAttributeName]?.ToString() ?? "";
+            var wirings = JsonConvert.DeserializeObject<List<Connection>>(wiringString)
+                ?? new List<Connection>();
 
             _appManager.Queries.Update(id, data.DataSources, newDsGuids, data.Pipeline, wirings);
 

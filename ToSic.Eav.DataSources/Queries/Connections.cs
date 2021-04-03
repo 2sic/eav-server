@@ -19,7 +19,7 @@ namespace ToSic.Eav.DataSources.Queries
 		/// </summary>
 		internal static IList<Connection> Deserialize(string wiringsSerialized)
 		{
-			if (string.IsNullOrWhiteSpace(wiringsSerialized)) return null;
+			if (string.IsNullOrWhiteSpace(wiringsSerialized)) return new List<Connection>();
 
 			var wirings = wiringsSerialized.Split(new[] { "\r\n" }, StringSplitOptions.None);
 
