@@ -97,6 +97,7 @@ namespace ToSic.Eav
         /// Default In-/Out-Stream Name
         /// </summary>
         public const string DefaultStreamName = "Default";
+        public const string DefaultStreamNameRequired = DefaultStreamName + "*";
 
         public const string FallbackStreamName = "Fallback";
 

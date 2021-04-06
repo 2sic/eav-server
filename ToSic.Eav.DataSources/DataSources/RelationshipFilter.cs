@@ -19,7 +19,7 @@ namespace ToSic.Eav.DataSources
         Icon = "share",
         Type = DataSourceType.Lookup, 
         GlobalName = "ToSic.Eav.DataSources.RelationshipFilter, ToSic.Eav.DataSources",
-        In = new[] { Constants.DefaultStreamName, Constants.FallbackStreamName }, 
+        In = new[] { Constants.DefaultStreamNameRequired, Constants.FallbackStreamName }, 
         DynamicOut = false,
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.RelationshipFilter",
         HelpLink = "https://r.2sxc.org/DsRelationshipFilter")]

@@ -19,7 +19,7 @@ namespace ToSic.Eav.DataSources
         Icon = "filter_list",
         Type = DataSourceType.Filter, 
         GlobalName = "ToSic.Eav.DataSources.ValueFilter, ToSic.Eav.DataSources",
-        In = new[] { Constants.DefaultStreamName, Constants.FallbackStreamName },
+        In = new[] { Constants.DefaultStreamNameRequired, Constants.FallbackStreamName },
         DynamicOut = false,
         ExpectsDataOfType = "|Config ToSic.Eav.DataSources.ValueFilter",
         HelpLink = "https://r.2sxc.org/DsValueFilter")]
@@ -126,7 +126,10 @@ namespace ToSic.Eav.DataSources
 
             LanguageList = _valLanguages.PrepareLanguageList(Languages, Log);
 
-            var originals = In[Constants.DefaultStreamName].List.ToImmutableList();
+            if (!GetRequiredInList(out var originals))
+                return wrapLog("error", originals);
+
+            //var originals = In[Constants.DefaultStreamName].List.ToImmutableList();
 
             // stop if the list is empty
             if (!originals.Any())
