@@ -7,7 +7,7 @@ namespace ToSic.Eav.DataSources
 {
     /// <summary>
     /// Internal DataSource to generate an error on purpose.
-    /// This is to test / verify error handling in VisualQuery. See also [](xref:Basics.Query.VisualQuery.Debugging)
+    /// This is to test / verify error handling in VisualQuery. See also [](xref:Basics.Query.Debug.Index)
     /// </summary>
     /// <remarks>
     /// In advanced programming scenarios you can also use this DataSource instead of another one to provide a stream of errors.
