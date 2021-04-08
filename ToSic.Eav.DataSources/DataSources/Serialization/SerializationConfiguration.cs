@@ -7,13 +7,13 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
 {
-	/// <inheritdoc />
-	/// <summary>
-	/// DataSource which changes how Streams will be serialized in the end.
-	/// </summary>
-	/// <remarks>
-	/// Added in 2sxc 11.13
-	/// </remarks>
+    /// <inheritdoc />
+    /// <summary>
+    /// DataSource which changes how Streams will be serialized in the end.
+    /// </summary>
+    /// <remarks>
+    /// New in v11.20
+    /// </remarks>
     [PublicApi_Stable_ForUseInYourCode]
 	[VisualQuery(
         NiceName = "Serialization Configuration",

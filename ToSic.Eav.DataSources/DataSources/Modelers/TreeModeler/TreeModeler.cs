@@ -11,6 +11,9 @@ namespace ToSic.Eav.DataSources
     /// Use this to take imported data from elsewhere which is a table but would have a tree-like structure (folders, etc.).
     /// Tell it where/how the relationships are mapped, and it will create Entities that have navigable relationships for this.
     /// </summary>
+    /// <remarks>
+    /// New in v11.20
+    /// </remarks>
     [VisualQuery(
         GlobalName = "58cfcbd6-e2ae-40f7-9acf-ac8d758adff9",
         NiceName = "Relationship/Tree Modeler",

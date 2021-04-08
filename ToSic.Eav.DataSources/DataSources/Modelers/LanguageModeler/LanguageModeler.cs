@@ -12,6 +12,9 @@ namespace ToSic.Eav.DataSources
     /// <summary>
     /// Remodels multi-language values in own fields (like NameDe, NameEn) to single multi-language fields like Name
     /// </summary>
+    /// <remarks>
+    /// New in v11.20
+    /// </remarks>
     [VisualQuery(
         GlobalName = "f390e460-46ff-4a6e-883f-f50fdeb363ee",
         NiceName = "Language Modeler",
