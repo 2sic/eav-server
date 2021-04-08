@@ -16,7 +16,8 @@ namespace ToSic.Eav.DataSources.Queries
         Security,
         Sort,
         Source,
-        // ReSharper disable once UnusedMember.Global
-        Target
+        Target,
+        Debug,
+        System
     }
 }
