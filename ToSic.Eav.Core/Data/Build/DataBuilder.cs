@@ -12,7 +12,7 @@ namespace ToSic.Eav.Data
     /// Get it using Dependency Injection
     /// </summary>
     [PrivateApi]
-    public class DataBuilder: HasLog<DataBuilder>, IDataBuilder
+    public partial class DataBuilder: HasLog<DataBuilder>, IDataBuilder
     {
         #region Constructor / DI
 

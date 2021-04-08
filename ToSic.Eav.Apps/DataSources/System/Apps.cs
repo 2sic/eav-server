@@ -38,7 +38,6 @@ namespace ToSic.Eav.DataSources.System
     public sealed class Apps: DataSourceBase
 	{
         private readonly IServiceProvider _serviceProvider;
-        private readonly Lazy<IDataBuilder> _dataBuilderLazy;
 
         #region Configuration-properties (no config)
 	    public override string LogId => "DS.EavAps";
@@ -69,10 +68,9 @@ namespace ToSic.Eav.DataSources.System
         /// Constructs a new Apps DS
         /// </summary>
         [PrivateApi]
-        public Apps(IServiceProvider serviceProvider, Lazy<IDataBuilder> dataBuilderLazy)
+        public Apps(IServiceProvider serviceProvider)
 		{
             _serviceProvider = serviceProvider;
-            _dataBuilderLazy = dataBuilderLazy;
             Provide(GetList);
             ConfigMask(ZoneKey, $"[Settings:{ZoneIdField}]");
 		}
@@ -83,7 +81,7 @@ namespace ToSic.Eav.DataSources.System
             var wrapLog = Log.Call<ImmutableArray<IEntity>>();
             
             Configuration.Parse();
-            var builder = _dataBuilderLazy.Value;
+            var builder = DataBuilder;
 
             // try to load the content-type - if it fails, return empty list
             var zones = State.Zones;

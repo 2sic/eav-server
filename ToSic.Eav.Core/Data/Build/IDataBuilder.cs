@@ -52,7 +52,7 @@ namespace ToSic.Eav.Data
         /// this assumes that the entities don't have an own id or guid, 
         /// otherwise you should use the single-item command.
         ///
-        /// Read more about [](xref:NetCode.DataSources.Custom.BuildEntity)
+        /// Read more about [](xref:NetCode.DataSources.Custom.DataBuilder)
         /// </summary>
         /// <param name="itemValues">list of value-dictionaries</param>
         /// <param name="noParameterOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
@@ -78,6 +78,27 @@ namespace ToSic.Eav.Data
         [PrivateApi]
         IEntity FakeEntity(int appId);
 
+
+
+
+        #region Attributes
+
+        /// <summary>
+        /// Create a new attribute for adding to an Entity.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="noParameterOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
+        /// <param name="typeName">optional type name as string, like "String" or "Entity" - note that type OR typeName must be provided</param>
+        /// <param name="type">optional type code - note that type OR typeName must be provided</param>
+        /// <param name="values">list of values to add to this attribute</param>
+        /// <returns></returns>
+        IAttribute Attribute(string name,
+            string noParameterOrder = Constants.RandomProtectionParameter,
+            string typeName = null,
+            ValueTypes type = ValueTypes.Undefined,
+            IList<IValue> values = null);
+
+        #endregion
 
     }
 }
