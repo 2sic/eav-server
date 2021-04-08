@@ -5,15 +5,12 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.DataSources
 {
-    // Todo notes 2dm 2021-04-07
-    // 1. Attributes should be made with Attribute Builder
-    
-    /// <inheritdoc />
     /// <summary>
-    /// Remodels multi-language values in own fields (like NameDe, NameEn) to single multi-language fields
+    /// Remodels multi-language values in own fields (like NameDe, NameEn) to single multi-language fields like Name
     /// </summary>
     [VisualQuery(
         GlobalName = "f390e460-46ff-4a6e-883f-f50fdeb363ee",
@@ -28,8 +25,8 @@ namespace ToSic.Eav.DataSources
         Type = DataSourceType.Modify,
         ExpectsDataOfType = "7b4fce73-9c29-4517-af14-0a704da5b958",
         In = new[] { Constants.DefaultStreamName + "*" },
-        HelpLink = "")] // ToDo: Helplink
-
+        HelpLink = "https://r.2sxc.org/DsLanguageModeler")]
+    [PublicApi("Brand new in v11.20, WIP, may still change a bit")]
     public sealed class LanguageModeler : DataSourceBase
     {
         private readonly AttributeBuilder _attributeBuilder;
@@ -40,6 +37,9 @@ namespace ToSic.Eav.DataSources
 
         private const string FieldMapConfigKey = "FieldMap";
 
+        /// <summary>
+        /// Contains the field map which configures how fields should be connected.
+        /// </summary>
         public string FieldMap
         {
             get => Configuration[FieldMapConfigKey];
@@ -50,6 +50,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Initializes this data source
         /// </summary>
+        [PrivateApi]
         public LanguageModeler(AttributeBuilder attributeBuilder)
         {
             _attributeBuilder = attributeBuilder;
@@ -117,19 +118,20 @@ namespace ToSic.Eav.DataSources
 
                         foreach (var entry in map.Fields)
                         {
-                            if (!attributes.ContainsKey( /*langSource*/entry.OriginalField))
+                            if (!attributes.ContainsKey(entry.OriginalField))
                             {
                                 // do not create values for fields which do not exist
                                 Log.Add(
-                                    $"Field mapping ignored for entity {entity.EntityId} and language { /*lang*/entry.Language} because source attribute { /*langSource*/entry.OriginalField} does not exist.");
+                                    $"Field mapping ignored for entity {entity.EntityId} and language {entry.Language} because source attribute {entry.OriginalField} does not exist.");
                                 continue;
                             }
 
-                            var value = attributes[ /*langSource*/entry.OriginalField].Values.FirstOrDefault()
+                            var value = attributes[entry.OriginalField].Values.FirstOrDefault()
                                 ?.ObjectContents;
+                            // Remove first, in case the new name replaces an old one
+                            attributes.Remove(entry.OriginalField);
+                            // Now add the resulting new attribute
                             _attributeBuilder.AddValue(attributes, map.Target, value, newAttribute.Type, /*lang*/ entry.Language);
-                            //attributes.AddValue(map.Target, v, newAttribute.Type, /*lang*/ entry.Language);
-                            attributes.Remove( /*langSource*/entry.OriginalField);
                         }
                     }
                     else // simple re-mapping / renaming
@@ -145,8 +147,10 @@ namespace ToSic.Eav.DataSources
                         var sourceAttr = attributes[map.Source];
                         var newAttribute = AttributeBuilder.CreateTyped(map.Target, sourceAttr.Type,
                             (List<IValue>) sourceAttr.Values);
-                        attributes.Add(map.Target, newAttribute);
+                        // Remove first, in case the new name replaces an old one
                         attributes.Remove(map.Source);
+                        // Now add the resulting new attribute
+                        attributes.Add(map.Target, newAttribute);
                     }
 
                 result.Add(modifiedEntity);
