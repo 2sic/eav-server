@@ -21,7 +21,7 @@ namespace ToSic.Eav.DataSources.System
         NiceName = "DataSources",
         UiHint = "List the DataSources available in the system",
         Icon = "present_to_all",
-        Type = DataSourceType.Source,
+        Type = DataSourceType.System,
         GlobalName = "ToSic.Eav.DataSources.System.QueryInfo, ToSic.Eav.DataSources",
         Difficulty = DifficultyBeta.Advanced,
         DynamicOut = false,

@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSources.System
         NiceName = "Attributes of Type",
         UiHint = "Attributes/fields of a Content-Type",
         Icon = "dns",
-        Type = DataSourceType.Source,
+        Type = DataSourceType.System,
         GlobalName = "ToSic.Eav.DataSources.System.Attributes, ToSic.Eav.DataSources",
         Difficulty = DifficultyBeta.Advanced,
         DynamicOut = false,
