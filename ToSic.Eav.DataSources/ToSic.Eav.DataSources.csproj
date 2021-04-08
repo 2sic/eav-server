@@ -41,6 +41,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="DataSources\Modelers\LanguageModeler\" />
+    <Folder Include="DataSources\Modelers\RelationshipModeler\" />
     <Folder Include="Metadata\" />
   </ItemGroup>
 
