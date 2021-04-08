@@ -148,6 +148,7 @@ namespace ToSic.Eav.Apps.ImportExport
         private void MergeAndSaveContentTypes(AppState appState, List<ContentType> contentTypes)
         {
             var callLog = Log.Call(useTimer: true);
+            // Here's the problem! #badmergeofmetadata
             contentTypes.ForEach(type => MergeContentTypeUpdateWithExisting(appState, type));
             var so = SaveOptions.Build(ZoneId);
             so.DiscardattributesNotInType = true;
@@ -210,9 +211,16 @@ namespace ToSic.Eav.Apps.ImportExport
         private IEntity MergeOneMd<T>(IMetadataSource appState, int mdType, T key, IEntity newMd)
         {
             var existingMetadata = appState.GetMetadata(mdType, key, newMd.Type.StaticName).FirstOrDefault();
-            var metadataToUse = existingMetadata == null
-                ? newMd
-                : new EntitySaver(Log).CreateMergedForSaving(existingMetadata, newMd, SaveOptions);
+            IEntity metadataToUse;
+            if (existingMetadata == null)
+            {
+                metadataToUse = newMd;
+                // Important to reset, otherwise the save process assumes it already exists in the DB
+                metadataToUse.ResetEntityId();
+                metadataToUse.SetGuid(Guid.NewGuid());
+            }
+            else
+                metadataToUse = new EntitySaver(Log).CreateMergedForSaving(existingMetadata, newMd, SaveOptions);
             return metadataToUse;
         }
 
