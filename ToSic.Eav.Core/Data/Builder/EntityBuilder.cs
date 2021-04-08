@@ -34,6 +34,7 @@ namespace ToSic.Eav.Data.Builder
             return e;
         }
 
+        [Obsolete("Unclear where this is used or actually needed - will probably remove soon")]
         public static Entity EntityTemplate(int appId, Guid entityGuid, int entityId,
             int repositoryId, IContentType type /*, bool isPublished = true,
             DateTime? modified = null, string owner = "", int version = 1*/)

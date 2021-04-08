@@ -3,7 +3,7 @@
 namespace ToSic.Eav.Data
 {
 	/// <summary>
-	/// Attribute Type Enum
+	/// Value / Attribute Type List
 	/// </summary>
 	[PublicApi_Stable_ForUseInYourCode]
 	public enum ValueTypes
@@ -12,17 +12,17 @@ namespace ToSic.Eav.Data
         Undefined,  // note: must be first! this is important, otherwise certain code will break as the first value is the "default" / null-value
 
 
-		/// <summary>Boolean Attribute Type</summary>
+		/// <summary>Boolean Value Type</summary>
 		Boolean,
-		/// <summary>DateTime Attribute Type</summary>
+		/// <summary>DateTime Value Type</summary>
 		DateTime,
-		/// <summary>Entity Attribute Type</summary>
+		/// <summary>Entity Value Type</summary>
 		Entity,
-		/// <summary>Hyperlink Attribute Type</summary>
+		/// <summary>Hyperlink Value Type</summary>
 		Hyperlink,
-		/// <summary>Number Attribute Type</summary>
+		/// <summary>Number Value Type</summary>
 		Number,
-		/// <summary>String Attribute Type</summary>
+		/// <summary>String Value Type</summary>
 		String,
 
         /// <summary>Empty for titles etc. </summary>
