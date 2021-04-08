@@ -11,6 +11,7 @@ namespace ToSic.Eav.Data
     /// This is a Builder-Object which is used to create any kind of data.
     /// Get it using Dependency Injection
     /// </summary>
+    [PrivateApi]
     public class DataBuilder: HasLog<DataBuilder>, IDataBuilder
     {
         #region Constructor / DI

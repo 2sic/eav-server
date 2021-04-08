@@ -23,7 +23,7 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Create an Entity using a dictionary of values.
         /// 
-        /// Read more about [](xref:NetCode.DataSources.Custom.BuildEntity)
+        /// Read more about [](xref:NetCode.DataSources.Custom.DataBuilder)
         /// </summary>
         /// <param name="noParameterOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
         /// <param name="appId">optional app id for this item, defaults to the current app</param>
