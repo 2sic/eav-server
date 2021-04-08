@@ -11,7 +11,7 @@ namespace ToSic.Eav.Data.Builder
     /// </summary>
     public static class EntityModifier
     {
-        public static void SetGuid(this Entity entity, Guid newGuid) => entity.EntityGuid = newGuid;
+        public static void SetGuid(this IEntity entity, Guid newGuid) => ((EntityLight) entity).EntityGuid = newGuid;
 
         public static void SetTitleField(this Entity entity, string name) => entity.TitleFieldName = name;
 
