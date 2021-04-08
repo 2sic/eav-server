@@ -52,7 +52,7 @@ namespace ToSic.Eav.DataSources
         [WorkInProgressApi("The name of this API is not final")]
         protected ImmutableArray<IEntity> SetError(string title, string message, Exception ex = null)
         {
-            var result = CreateErrorList(source: this, title: title, message: message, exception: ex);
+            var result = ErrorHandler.CreateErrorList(source: this, title: title, message: message, exception: ex);
             ErrorStream = result;
             return result;
         }

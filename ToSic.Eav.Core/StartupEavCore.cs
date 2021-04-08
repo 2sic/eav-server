@@ -22,6 +22,9 @@ namespace ToSic.Eav
             // 2020-10-29 New enhancement - lazy loading dependency injection
             services.AddTransient(typeof(Lazy<>), typeof(LazyDependencyInjection<>));
 
+            // 2021-04-08 2sxc 11.13 Data Builder
+            services.TryAddTransient<IDataBuilder, DataBuilder>();
+            
             // Configuration objects
             services.TryAddTransient<IGlobalConfiguration, GlobalConfiguration>();
             services.TryAddTransient<IDbConfiguration, DbConfiguration>();

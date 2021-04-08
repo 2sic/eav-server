@@ -1,4 +1,5 @@
 ﻿using System;
+using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 
@@ -42,7 +43,16 @@ namespace ToSic.Eav.DataSources
 
 
 
+        #region Properties which the Factory must add
 
+        protected IDataBuilder DataBuilder => _dataBuilderLazy.Value;
+        [PrivateApi]
+        internal Lazy<IDataBuilder> _dataBuilderLazy;
+
+        [PrivateApi] public DataSourceErrorHandling ErrorHandler => _dataSourceErrorHandlingLazy.Value;
+        [PrivateApi] internal Lazy<DataSourceErrorHandling> _dataSourceErrorHandlingLazy;
+
+        #endregion
 
 
         #region Special Region so that each data sources has a factory if needed

@@ -82,6 +82,13 @@ namespace ToSic.Eav.DataSources
         //[PrivateApi]
         //bool OutIsDynamic { get; }
         #endregion
+
+        #region Error Handler
+
+        [PrivateApi] DataSourceErrorHandling ErrorHandler { get; }
+
+
+        #endregion
     }
 
 }

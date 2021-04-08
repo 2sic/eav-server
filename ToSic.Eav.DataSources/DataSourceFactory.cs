@@ -1,5 +1,6 @@
 ﻿using System;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Catalog;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
@@ -10,13 +11,21 @@ namespace ToSic.Eav.DataSources
     public class DataSourceFactory: HasLog<DataSourceFactory>
     {
         private readonly Lazy<ILookUpEngineResolver> _lookupResolveLazy;
+        private readonly Lazy<IDataBuilder> _dataBuilderLazy;
+        private readonly Lazy<DataSourceErrorHandling> _dataSourceErrorsLazy;
         public IServiceProvider ServiceProvider { get; }
 
         #region Constructor / DI
 
-        public DataSourceFactory(IServiceProvider serviceProvider, Lazy<ILookUpEngineResolver> lookupResolveLazy) : base($"{DataSourceConstants.LogPrefix}.Factry")
+        public DataSourceFactory(IServiceProvider serviceProvider, 
+            Lazy<ILookUpEngineResolver> lookupResolveLazy, 
+            Lazy<IDataBuilder> dataBuilderLazy,
+            Lazy<DataSourceErrorHandling> dataSourceErrorsLazy
+            ) : base($"{DataSourceConstants.LogPrefix}.Factry")
         {
             _lookupResolveLazy = lookupResolveLazy;
+            _dataBuilderLazy = dataBuilderLazy;
+            _dataSourceErrorsLazy = dataSourceErrorsLazy;
             ServiceProvider = serviceProvider;
         }
 
@@ -47,8 +56,6 @@ namespace ToSic.Eav.DataSources
                     Title = "DataSource not found",
                     Message = $"DataSource '{sourceName}' is not installed on Server. You should probably install it in the CMS."
                 };
-                // old - delete ca. 2021-05 if nothing unusual pops up
-                //txxxhrow new Exception("DataSource not installed on Server: " + sourceName);
             }
             var result = GetDataSource(type, app, upstream, lookUps);
             wrapLog("ok");
@@ -157,6 +164,10 @@ namespace ToSic.Eav.DataSources
                 ((IDataTarget)newDs).Attach(upstream);
             if (configLookUp != null) 
                 newDs.Init(configLookUp);
+            
+            // Attach new 11.13 properties which are needed
+            newDs._dataBuilderLazy = _dataBuilderLazy;
+            newDs._dataSourceErrorHandlingLazy = _dataSourceErrorsLazy;
 
             newDs.InitLog(newDs.LogId, Log);
             wrapLog("ok");

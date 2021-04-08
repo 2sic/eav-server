@@ -26,6 +26,7 @@ namespace ToSic.Eav.DataSources.System
 
     public sealed class Attributes: DataSourceBase
 	{
+
         #region Configuration-properties (no config)
 	    public override string LogId => "DS.EavAts";
 
@@ -56,7 +57,7 @@ namespace ToSic.Eav.DataSources.System
         /// </summary>
 		public Attributes()
 		{
-			Provide(GetList);
+            Provide(GetList);
 		    ConfigMask(ContentTypeKey, $"[Settings:{ContentTypeField}||{TryToUseInStream}]");
 		}
 
@@ -92,13 +93,13 @@ namespace ToSic.Eav.DataSources.System
 	                : null;
 
             // if it didn't work yet, maybe try from stream items
-
+            var builder = DataBuilder;
             return list?.Select(attribData =>
-                       Build.Entity(attribData,
+                       builder.Entity(attribData,
                            titleField: AttributeType.Name.ToString(),
                            typeName: AttribContentTypeName)
                    ).ToImmutableArray() // .ToList()
-                   ?? ImmutableArray<IEntity>.Empty; // new List<IEntity>().ToImmutableList();
+                   ?? ImmutableArray<IEntity>.Empty;
         }
 
 

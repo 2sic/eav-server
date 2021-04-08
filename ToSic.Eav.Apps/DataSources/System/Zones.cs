@@ -2,7 +2,6 @@
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Apps.DataSources.Types;
-using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Run;
@@ -61,10 +60,12 @@ namespace ToSic.Eav.DataSources.System
         }
 
 	    private ImmutableArray<IEntity> GetList()
-	    {
+        {
+            var wrapLog = Log.Call<ImmutableArray<IEntity>>();
+            
             // Get cache, which manages a list of zones
             var zones = Eav.Apps.State.Zones;
-
+            var builder = DataBuilder;
             var list = zones.Values.OrderBy(z => z.ZoneId).Select(zone =>
 	        {
 	            var tenant = _zoneMapper.SiteOfZone(zone.ZoneId);
@@ -81,14 +82,14 @@ namespace ToSic.Eav.DataSources.System
                     {ZoneType.AppCount.ToString(), zone.Apps.Count }
 	            };
 
-                return Build.Entity(znData,
+                return builder.Entity(znData,
                     appId: 0, 
                     id:zone.ZoneId, 
                     titleField: ZoneType.Name.ToString(), 
                     typeName: ZoneContentTypeName);
             });
-
-            return list.ToImmutableArray();//.ToList();
+            var results = list.ToImmutableArray();
+            return wrapLog($"{results.Length}", results);
         }
 
 	}

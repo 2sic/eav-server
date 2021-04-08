@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSources.System.Types;
 using ToSic.Eav.Documentation;
@@ -84,10 +83,12 @@ namespace ToSic.Eav.DataSources.System
 
 	    private ImmutableArray<IEntity> GetStreams()
 	    {
-            CustomConfigurationParse();
+            var wrapLog = Log.Call<ImmutableArray<IEntity>>();
 
-            return _query?.Out.OrderBy(stream => stream.Key).Select(stream
-                           => Build.Entity(new Dictionary<string, object>
+            CustomConfigurationParse();
+            var builder = DataBuilder;
+            var result = _query?.Out.OrderBy(stream => stream.Key).Select(stream
+                           => builder.Entity(new Dictionary<string, object>
                                {
                                    {StreamsType.Name.ToString(), stream.Key}
                                },
@@ -95,10 +96,13 @@ namespace ToSic.Eav.DataSources.System
                                typeName: QueryStreamsContentType))
                        .ToImmutableArray()
                    ?? ImmutableArray<IEntity>.Empty;
+            return wrapLog($"{result.Length}", result);
         }
 
 	    private IImmutableList<IEntity> GetAttributes()
 	    {
+            var wrapLog = Log.Call<IImmutableList<IEntity>>();
+
             CustomConfigurationParse();
 
             // no query can happen if the name was blank
@@ -113,7 +117,8 @@ namespace ToSic.Eav.DataSources.System
             if(StreamName != Constants.DefaultStreamName)
                 attribInfo.Attach(Constants.DefaultStreamName, _query, StreamName);
 
-	        return attribInfo.List.ToImmutableList();
+            var results = attribInfo.List.ToImmutableList();
+            return wrapLog($"{results.Count}", results);
         }
 
 	    private void CustomConfigurationParse()
@@ -125,6 +130,8 @@ namespace ToSic.Eav.DataSources.System
 
         private void BuildQuery()
         {
+            var wrapLog = Log.Call();
+
             if (string.IsNullOrWhiteSpace(QueryName))
                 return;
 
@@ -140,6 +147,7 @@ namespace ToSic.Eav.DataSources.System
             var builtQuery = QueryBuilder.GetDataSourceForTesting(new QueryDefinition(found, AppId, Log), 
                 false, Configuration.LookUpEngine);
             _query = builtQuery.Item1;
+            wrapLog(null);
         }
 
 	    private IDataSource _query;

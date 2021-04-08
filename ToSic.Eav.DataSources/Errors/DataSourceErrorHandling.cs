@@ -2,14 +2,23 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using ToSic.Eav.Data;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.DataSources
 {
-    internal class DataSourceErrorHandling
+    [PrivateApi]
+    public class DataSourceErrorHandling
     {
+        private readonly Lazy<IDataBuilder> _dataBuilderLazy;
+
+        public DataSourceErrorHandling(Lazy<IDataBuilder> dataBuilderLazy)
+        {
+            _dataBuilderLazy = dataBuilderLazy;
+        }
+        
         public static string ErrorType = "Error";
         public static string ErrorTitle = "Error";
-        public static IEntity CreateErrorEntity(IDataSource source, string stream, string title, string message)
+        public IEntity CreateErrorEntity(IDataSource source, string stream, string title, string message)
         {
             var values = new Dictionary<string, object>
             {
@@ -23,11 +32,11 @@ namespace ToSic.Eav.DataSources
                 {"DebugNotes", "There should be more details in the insights logs, see https://r.2sxc.org/insights" }
             };
 
-            var errorEntity = Build.Entity(values, titleField: ErrorTitle, typeName: ErrorType);
+            var errorEntity = _dataBuilderLazy.Value.Entity(values, titleField: ErrorTitle, typeName: ErrorType);
             return errorEntity;
         }
 
-        public static ImmutableArray<IEntity> CreateErrorList(
+        public ImmutableArray<IEntity> CreateErrorList(
             string noParameterOrder = Constants.RandomProtectionParameter,
             IDataSource source = null, 
             string title = null, 
