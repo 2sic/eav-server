@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
@@ -35,13 +36,17 @@ namespace ToSic.Eav.Conversion
 
         /// <inheritdoc />
         public Dictionary<string, IEnumerable<Dictionary<string, object>>> Convert(IDataSource source, IEnumerable<string> streams = null)
+            => Convert(source, streams, null);
+        
+        [PrivateApi("not public yet, as the signature is not final yet")]
+        public Dictionary<string, IEnumerable<Dictionary<string, object>>> Convert(IDataSource source, IEnumerable<string> streams, string[] guids)
         {
             var wrapLog = Log.Call(useTimer: true);
             string[] streamsList;
             if (streams != null)
             {
-                streamsList = streams.ToArray();
                 Log.Add("Will use provided list of streams.");
+                streamsList = streams.ToArray();
             }
             else
             {
@@ -51,12 +56,27 @@ namespace ToSic.Eav.Conversion
 
             Log.Add("Streams: ", Join(",", streamsList));
 
+            // pre-process the guids list to ensure they are guids
+            var realGuids = new Guid[0];
+            if (guids?.Length > 0)
+                realGuids = guids
+                    .Select(g => Guid.TryParse(g, out var validGuid) ? validGuid as Guid? : null)
+                    .Where(g => g != null)
+                    .Cast<Guid>()
+                    .ToArray();
+
+
             var y = streamsList
                 .Where(k => source.Out.ContainsKey(k))
                 .ToDictionary(
                     k => k,
-                    s => Convert(source.Out[s]) // .Select(GetDictionaryFromEntity)
-                );
+                    s =>
+                    {
+                        var list = source.Out[s].List;
+                        if (realGuids.Length > 0)
+                            list = list.Where(e => realGuids.Contains(e.EntityGuid));
+                        return Convert(list);
+                    });
 
             wrapLog("ok");
             return y;
