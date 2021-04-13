@@ -9,7 +9,7 @@ namespace ToSic.Eav.WebApi.Dto
         /// Prefetched links for hyperlink fields
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public Dictionary<string, string> Links { get; set; }
+        public Dictionary<string, LinkInfoDto> Links { get; set; }
 
         /// <summary>
         /// Prefetched entities for entity picker
