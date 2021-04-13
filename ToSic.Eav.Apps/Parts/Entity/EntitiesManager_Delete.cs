@@ -28,9 +28,7 @@ namespace ToSic.Eav.Apps.Parts
             // check if we can delete, or throw exception
             var oks = BatchCheckCanDelete(ids, force, skipIfCant);
 
-            // var ok = ids.Aggregate(true, (current, entityId) => AppManager.DataController.Entities.DeleteEntity(entityId, false, true));
             var ok = Parent.DataController.Entities.DeleteEntity(ids, true, true);
-            //AppManager.DataController.SqlDb.SaveChanges();
             SystemManager.Purge(Parent.AppId, Log);
             return callLog(ok.ToString(), ok);
         }

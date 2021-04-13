@@ -21,6 +21,6 @@ namespace ToSic.Eav.WebApi.Dto
         /// Dictionary where each field contains a list of ADAM items
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public Dictionary<string, IEnumerable<AdamItemDto>> Adam { get; set; }
+        public Dictionary<string, Dictionary<string, IEnumerable<AdamItemDto>>> Adam { get; set; }
     }
 }
