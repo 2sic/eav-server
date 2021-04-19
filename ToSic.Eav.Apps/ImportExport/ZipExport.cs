@@ -163,7 +163,7 @@ namespace ToSic.Eav.Apps.ImportExport
             var contentTypeNames = attributeSets.Select(p => p.StaticName).ToArray();
             var templateTypeId = _metaTargetTypes.GetId(Settings.TemplateContentType);
             var entities =
-                DataSourceFactory.GetPublishing(runtime, false).Out[Constants.DefaultStreamName].Immutable.Where(
+                DataSourceFactory.GetPublishing(runtime, false).Out[Constants.DefaultStreamName].List.Where(
                     e => e.MetadataFor.TargetType != templateTypeId
                          && e.MetadataFor.TargetType != Constants.MetadataForAttribute).ToList();
 

@@ -13,8 +13,12 @@ namespace ToSic.Eav.DataSources.System
     /// A DataSource that returns the attributes of a content-type
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
-    [VisualQuery(GlobalName = "ToSic.Eav.DataSources.System.Attributes, ToSic.Eav.DataSources",
-        Type = DataSourceType.Source,
+    [VisualQuery(
+        NiceName = "Attributes of Type",
+        UiHint = "Attributes/fields of a Content-Type",
+        Icon = "dns",
+        Type = DataSourceType.System,
+        GlobalName = "ToSic.Eav.DataSources.System.Attributes, ToSic.Eav.DataSources",
         Difficulty = DifficultyBeta.Advanced,
         DynamicOut = false,
         ExpectsDataOfType = "5461d34d-7dc6-4d38-9250-a0729cc8ead3",
@@ -22,6 +26,7 @@ namespace ToSic.Eav.DataSources.System
 
     public sealed class Attributes: DataSourceBase
 	{
+
         #region Configuration-properties (no config)
 	    public override string LogId => "DS.EavAts";
 
@@ -52,7 +57,7 @@ namespace ToSic.Eav.DataSources.System
         /// </summary>
 		public Attributes()
 		{
-			Provide(GetList);
+            Provide(GetList);
 		    ConfigMask(ContentTypeKey, $"[Settings:{ContentTypeField}||{TryToUseInStream}]");
 		}
 
@@ -62,11 +67,11 @@ namespace ToSic.Eav.DataSources.System
 
             IContentType type;
             // try to load the content-type - if it fails, return empty list
-            if (string.IsNullOrWhiteSpace(ContentTypeName)) return ImmutableArray<IEntity>.Empty;// new List<IEntity>();
+            if (string.IsNullOrWhiteSpace(ContentTypeName)) return ImmutableArray<IEntity>.Empty;
 
 	        var useStream = TryToUseInStream == ContentTypeName && In.ContainsKey(Constants.DefaultStreamName);
 	        var optionalList = useStream
-	            ? In[Constants.DefaultStreamName]?.Immutable //.ToList()
+	            ? In[Constants.DefaultStreamName]?.List.ToImmutableArray()
 	            : null;
 
 	        type = useStream 
@@ -88,13 +93,13 @@ namespace ToSic.Eav.DataSources.System
 	                : null;
 
             // if it didn't work yet, maybe try from stream items
-
+            var builder = DataBuilder;
             return list?.Select(attribData =>
-                       Build.Entity(attribData,
+                       builder.Entity(attribData,
                            titleField: AttributeType.Name.ToString(),
                            typeName: AttribContentTypeName)
                    ).ToImmutableArray() // .ToList()
-                   ?? ImmutableArray<IEntity>.Empty; // new List<IEntity>().ToImmutableList();
+                   ?? ImmutableArray<IEntity>.Empty;
         }
 
 

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Data;
 using System.Linq;
-using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -17,7 +16,7 @@ namespace ToSic.Eav.DataSources
 	[PublicApi_Stable_ForUseInYourCode]
 	public class DataTable : ExternalData
 	{
-		// help Link: https://r.2sxc.org/DsDataTable
+        // help Link: https://r.2sxc.org/DsDataTable
 		#region Configuration-properties
 
 		/// <inheritdoc/>
@@ -89,14 +88,13 @@ namespace ToSic.Eav.DataSources
         [PrivateApi]
         public DataTable()
 		{
-			Provide(GetEntities);
+            Provide(GetEntities);
 		    ConfigMask(TitleFieldKey, EntityTitleDefaultColumnName);
 		    ConfigMask(EntityIdFieldKey, EntityIdDefaultColumnName);
 		    ConfigMask(ModifiedFieldKey, "");
 		    ConfigMask(ContentTypeKey, "[Settings:ContentType]");
         }
 
-        /// <inheritdoc />
         /// <summary>
         /// Initializes a new instance of the DataTableDataSource class with all important parameters.
         /// </summary>
@@ -130,6 +128,8 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		private ImmutableArray<IEntity> ConvertToEntityDictionary(global::System.Data.DataTable source, string contentType, string entityIdField, string titleField, string modifiedField = null)
 		{
+			var wrapLog = Log.Call<ImmutableArray<IEntity>>();
+
 			// Validate Columns
 			if (!source.Columns.Contains(entityIdField))
 				throw new Exception($"DataTable doesn't contain an EntityId Column with Name \"{entityIdField}\"");
@@ -138,13 +138,14 @@ namespace ToSic.Eav.DataSources
 
 			// Populate a new Dictionary with EntityModels
 			var result = new List<IEntity>();
+            var builder = DataBuilder;
 			foreach (DataRow row in source.Rows)
 			{
 				var entityId = Convert.ToInt32(row[entityIdField]);
 				var values = row.Table.Columns.Cast<DataColumn>().Where(c => c.ColumnName != entityIdField).ToDictionary(c => c.ColumnName, c => row.Field<object>(c.ColumnName));
                 values = new Dictionary<string, object>(values, StringComparer.OrdinalIgnoreCase); // recast to ensure case-insensitive
 			    var mod = string.IsNullOrEmpty(modifiedField) ? null : values[modifiedField] as DateTime?;
-                var entity = Build.Entity(values,
+                var entity = builder.Entity(values,
                     titleField: titleField,
                     typeName: contentType,
                     id: entityId,
@@ -152,7 +153,9 @@ namespace ToSic.Eav.DataSources
                     appId: Constants.TransientAppId);
 				result.Add(entity);
 			}
-			return result.ToImmutableArray();
+
+            var final = result.ToImmutableArray();
+			return wrapLog($"{final.Length}", final);
 		}
 	}
 }

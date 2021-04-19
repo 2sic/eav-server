@@ -15,7 +15,7 @@ namespace ToSic.Eav.LookUp
 	public class TokenReplace
     {
         #region RegEx - the core formula
-        // 2dm 2015-03-09 new, commented version not capturing non-tokens
+        // Commented Regular Expression which doesn't capture non-tokens
 	    private const string RegExFindAllTokens = @"
 
 # start by defining a group, but don't give it an own capture-name
@@ -49,19 +49,14 @@ namespace ToSic.Eav.LookUp
         #endregion
 
         #region constructor
-        //public IDictionary<string, ILookUp> ValueSources { get; }
 
         private ILookUp FindSource(string key) => LookupEngine.FindSource(key);
 
         public ILookUpEngine LookupEngine { get; }
-	    public TokenReplace(ILookUpEngine lookupEngine/*, IDictionary<string, ILookUp> valueSources = null*/)
+	    public TokenReplace(ILookUpEngine lookupEngine)
 	    {
             LookupEngine = lookupEngine ?? throw new Exception("Can't initialize TokenReplace without engine");
-
-            //if(valueSources == null)
-            //    valueSources = new Dictionary<string, ILookUp>(StringComparer.InvariantCultureIgnoreCase);
-	        //ValueSources = valueSources;
-	    }
+        }
         #endregion
 
 

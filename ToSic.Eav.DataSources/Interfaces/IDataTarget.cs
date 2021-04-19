@@ -10,8 +10,8 @@ namespace ToSic.Eav.DataSources
 	/// This basically means it has an In <see cref="IDataStream"/>
 	/// </summary>
 	[PublicApi_Stable_ForUseInYourCode]
-	public interface IDataTarget
-	{
+	public interface IDataTarget: IDataPartShared
+    {
         /// <summary>
         /// Internal ID usually from persisted configurations IF the configuration was build from an pre-stored query.
         /// </summary>
@@ -34,7 +34,8 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         /// <param name="streamName">In-name of the stream</param>
         /// <param name="dataSource">The data source - will use it's default out</param>
-	    void Attach(string streamName, IDataSource dataSource);
+        /// <param name="sourceName">The stream name on the source, will default to "Default"</param>
+        void Attach(string streamName, IDataSource dataSource, string sourceName = Constants.DefaultStreamName);
 
         /// <summary>
         /// Add a single named stream to the In

@@ -34,7 +34,7 @@ namespace ToSic.Eav.DataSourceTests
             var vf = _valueFilterMaker.CreateValueFilterForTesting(populationRoot * PersonSpecs.IsMaleForEveryX, useTable); // only every 3rd is male in the demo data
             vf.Attribute = "IsMale";
             vf.Value = compareValue;
-            var found = vf.List.Count();
+            var found = vf.ListForTests().Count();
             Assert.AreEqual(desiredFinds, found, "Should find exactly this amount people");
         }
 

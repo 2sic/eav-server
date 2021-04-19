@@ -18,10 +18,13 @@ namespace ToSic.Eav.DataSources
     /// Provide Entities from a SQL Server
     /// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-    [VisualQuery(GlobalName = "ToSic.Eav.DataSources.Sql, ToSic.Eav.DataSources",
+    [VisualQuery(
+        NiceName = "SQL Data",
+        UiHint = "Get data from a database using SQL",
+        Icon = "dynamic_form",
         Type = DataSourceType.Source, 
+        GlobalName = "ToSic.Eav.DataSources.Sql, ToSic.Eav.DataSources",
         DynamicOut = false,
-        Icon = "database",
         ExpectsDataOfType = "c76901b5-0345-4866-9fa3-6208de7f8543",
         PreviousNames = new []
             {
@@ -118,7 +121,6 @@ namespace ToSic.Eav.DataSources
 		[PrivateApi]
 		public Sql()
 		{
-            // ReSharper disable once DoNotCallOverridableMethodsInConstructor
 			Provide(GetList);
 		    ConfigMask(TitleFieldKey, "[Settings:EntityTitleField||" + Constants.EntityFieldTitle + "]");
 		    ConfigMask(EntityIdFieldKey, "[Settings:EntityIdField||" + Constants.EntityFieldId + "]");
@@ -213,27 +215,31 @@ namespace ToSic.Eav.DataSources
             Log.Add($"get from sql:{SelectCommand}");
 
             // Check if SQL contains forbidden terms
-            if(ForbiddenTermsInSelect.IsMatch(SelectCommand))
-                throw new InvalidOperationException($"{GetType().Name} - Found forbidden words in the select-command. Cannot continue.");
+            if (ForbiddenTermsInSelect.IsMatch(SelectCommand))
+                return ErrorHandler.CreateErrorList(source: this, title: "Forbidden SQL words",
+                    message: $"{GetType().Name} - Found forbidden words in the select-command. Cannot continue.");
 
-	        var list = new List<IEntity>();
 
-		    // Load ConnectionString by Name (if specified)
+            // Load ConnectionString by Name (if specified)
 			if (!string.IsNullOrEmpty(ConnectionStringName) && (string.IsNullOrEmpty(ConnectionString) || ConnectionString == ConnectionStringDefault))
 			    try
 			    {
 			        ConnectionString = global::System.Configuration.ConfigurationManager
                         .ConnectionStrings[ConnectionStringName].ConnectionString;
 			    }
-			    catch (Exception ex)
-			    {
-			        throw new Exception("error trying to load exception string", ex);
+			    catch(Exception ex)
+                {
+                    return ErrorHandler.CreateErrorList(source: this, exception: ex,
+                        title: "Can't find Connection String Name",
+                        message: "The specified connection string-name doesn't seem to exist. For security reasons it's not included in this message.");
 			    }
 
             // make sure we have one - often it's empty, if the query hasn't been configured yet
             if (string.IsNullOrWhiteSpace(ConnectionString))
-		        throw new Exception($"{GetType().Name} - The ConnectionString property has not been initialized");
+                return ErrorHandler.CreateErrorList(source: this, title: "Connection Problem", 
+                    message: "The ConnectionString property is empty / has not been initialized");
 
+	        var list = new List<IEntity>();
             using (var connection = new SqlConnection(ConnectionString))
 			{
 				connection.Open();
@@ -246,10 +252,20 @@ namespace ToSic.Eav.DataSources
 				    foreach (var sqlParameter in Configuration.Values.Where(k => k.Key.StartsWith("@"))) 
 					    command.Parameters.AddWithValue(sqlParameter.Key, sqlParameter.Value);
 
-			        var reader = command.ExecuteReader();
+                    SqlDataReader reader;
+                    try
+                    {
+                        reader = command.ExecuteReader();
+                    }
+                    catch(Exception ex)
+                    {
+                        return ErrorHandler.CreateErrorList(source: this, exception: ex,
+                            title: "Can't read from Database",
+                            message: "Something failed trying to read from the Database.");
+                    }
 
 
-			        var casedTitle = TitleField;
+					var casedTitle = TitleField;
 			        var casedEntityId = EntityIdField;
 			        try
 			        {

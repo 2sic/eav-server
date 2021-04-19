@@ -1,18 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Conversion;
 using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.DataSources.Debug
 {
     public class QueryInfo: HasLog
     {
+        private readonly IEntitiesTo<Dictionary<string, object>> _errorConverter;
         public List<StreamInfo> Streams = new List<StreamInfo>();
         public Dictionary<Guid, DataSourceInfo> Sources = new Dictionary<Guid, DataSourceInfo>();
 
-        public QueryInfo(IDataSource outStream, ILog parentLog): base("Qry.Info", parentLog)
+        public QueryInfo(IEntitiesTo<Dictionary<string, object>> errorConverter) : base("Qry.Info")
         {
+            _errorConverter = errorConverter;
+        }
+        
+        public QueryInfo Init(IDataSource outStream, ILog parentLog)
+        {
+            Log.LinkTo(parentLog);
             GetStreamInfosRecursive(outStream as IDataTarget, ref Streams, ref Sources);
+            return this;
         }
 
         /// <summary>
@@ -27,7 +36,7 @@ namespace ToSic.Eav.DataSources.Debug
                 // First get all the streams (do this first so they stay together)
                 try
                 {
-                    var stmInfo = new StreamInfo(stream.Value, target, stream.Key);
+                    var stmInfo = new StreamInfo(stream.Value, target, stream.Key, _errorConverter);
                     if (streams.Any(existing => existing.Equals(stmInfo)))
                         continue;
                     streams.Add(stmInfo);

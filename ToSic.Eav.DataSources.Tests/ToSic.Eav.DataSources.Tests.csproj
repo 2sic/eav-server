@@ -147,6 +147,7 @@
     <Compile Include="Caches\QuickCaches_Test.cs" />
     <Compile Include="EntityFilters\EntityIdFilter_Test.cs" />
     <Compile Include="EntityFilters\EntityTypeFilter_Test.cs" />
+    <Compile Include="ExtensionsForTesting.cs" />
     <Compile Include="ExternalData\CsvDsTst.cs" />
     <Compile Include="ExternalData\DataTableDataSource_Test.cs" />
     <Compile Include="ExternalData\SqlDsTst.cs" />

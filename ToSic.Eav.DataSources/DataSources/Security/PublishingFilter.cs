@@ -11,9 +11,13 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
 	[PublicApi_Stable_ForUseInYourCode]
 
-	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.PublishingFilter, ToSic.Eav.DataSources",
+	[VisualQuery(
+        NiceName = "Publishing Filter",
+        UiHint = "Keep data based on user roles (editor sees draft items)",
+        Icon = "visibility", 
         Type = DataSourceType.Security, 
-        Icon = "eye", 
+        GlobalName = "ToSic.Eav.DataSources.PublishingFilter, ToSic.Eav.DataSources",
+        In = new []{ Constants.PublishedStreamName + "*", Constants.DefaultStreamName + "*",  Constants.DraftsStreamName + "*" },
         DynamicOut = false, 
         HelpLink = "https://r.2sxc.org/DsPublishingFilter")]
 
@@ -53,7 +57,7 @@ namespace ToSic.Eav.DataSources
 	        var outStreamName = ShowDrafts 
                 ? Constants.DraftsStreamName 
                 : Constants.PublishedStreamName;
-	        return In[outStreamName].Immutable;
+	        return In[outStreamName].List.ToImmutableList();
 	    }
 
 	}

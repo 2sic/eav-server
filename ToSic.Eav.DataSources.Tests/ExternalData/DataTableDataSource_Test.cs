@@ -14,7 +14,7 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
         {
             const int itemsToGenerate = 499;
             var ds = DataTablePerson.Generate(itemsToGenerate);
-            Assert.IsTrue(ds.In.Count == 0, "In count should be 0");
+            Assert.IsTrue(ds.InForTests().Count == 0, "In count should be 0");
             Assert.IsTrue(ds.Out.Count == 1, "Out count should be 1");
             var defaultOut = ds[Constants.DefaultStreamName];
             Assert.IsTrue(defaultOut != null);
@@ -25,7 +25,7 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
                 Assert.Fail("Access to another out should fail");
             }
             catch { }
-            Assert.IsTrue(defaultOut.Immutable.Count == itemsToGenerate);
+            Assert.IsTrue(defaultOut.ListForTests().Count() == itemsToGenerate);
         }
 
         [TestMethod]
@@ -48,8 +48,8 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
             const int itemsToGenerate = 25;
             var ds = DataTableTrivial.Generate(itemsToGenerate);
 
-            Assert.AreEqual(25, ds.Immutable.Count());
-            var first = ds.Immutable.FirstOrDefault();
+            Assert.AreEqual(25, ds.ListForTests().Count());
+            var first = ds.ListForTests().FirstOrDefault();
             Assert.AreEqual("Daniel Mettler", first.GetBestTitle());
         }
 

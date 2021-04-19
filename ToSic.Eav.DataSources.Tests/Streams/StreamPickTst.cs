@@ -21,7 +21,7 @@ namespace ToSic.Eav.DataSourceTests.Streams
         public void StreamPickDefault()
         {
             var streamPick = BuildStructure();
-            var list = streamPick.List;
+            var list = streamPick.ListForTests();
             Assert.AreEqual(list.Count(), DefaultStreamSize, "default should have 10");
         }
 
@@ -30,7 +30,7 @@ namespace ToSic.Eav.DataSourceTests.Streams
         {
             var streamPick = BuildStructure();
             streamPick.StreamName = MoreStream;
-            var list = streamPick.List;
+            var list = streamPick.ListForTests();
             Assert.AreEqual(list.Count(), MoreStreamSize, "default should have 27");
         }
 
@@ -48,9 +48,9 @@ namespace ToSic.Eav.DataSourceTests.Streams
             var ds3 = DataTablePerson.Generate(53, 5300);
             var dsBuild = Resolve<DataSourceFactory>();
             var streamPick = dsBuild.GetDataSource<StreamPick>(new AppIdentity(1, 1), null, ds1.Configuration.LookUpEngine);
-            streamPick.Attach(Constants.DefaultStreamName, ds1);
-            streamPick.Attach(MoreStream, ds2);
-            streamPick.Attach("Lots", ds3);
+            streamPick.AttachForTests(Constants.DefaultStreamName, ds1);
+            streamPick.AttachForTests(MoreStream, ds2);
+            streamPick.AttachForTests("Lots", ds3);
             return streamPick;
         }
     }

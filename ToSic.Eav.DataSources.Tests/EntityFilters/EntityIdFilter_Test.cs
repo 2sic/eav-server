@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSourceTests.EntityFilters
 
             // diclist
             //var dicList = filtered.LightList;
-            var ll = filtered.Immutable;
+            var ll = filtered.ListForTests();
 
             //Assert.AreEqual(ItemToFilter, dicList.First().Value.EntityId.ToString());
             Assert.AreEqual(ItemToFilter, ll.First().EntityId.ToString());
@@ -30,7 +30,7 @@ namespace ToSic.Eav.DataSourceTests.EntityFilters
             const string ItemToFilter = "";
             var filtered = CreateFilterForTesting(100, ItemToFilter);
             //var dicList = filtered.List;
-            var ll = filtered.Immutable;
+            var ll = filtered.ListForTests();
 
             //Assert.AreEqual(0, dicList.Count, "Should return 0 items");
             Assert.AreEqual(0, ll.Count, "Should return 0 items");
@@ -43,11 +43,11 @@ namespace ToSic.Eav.DataSourceTests.EntityFilters
             var filtered = CreateFilterForTesting(100, ItemToFilter);
 
             //var dl = filtered.List;
-            //Assert.AreEqual("1011", dl.First().Value.EntityId.ToString(), "Test Dic that sorting IS affeted");
+            //Assert.AreEqual("1011", dl.First().Value.EntityId.ToString(), "Test Dic that sorting IS affected");
             //Assert.AreEqual(4, dl.Count, "Count after filtering");
 
 
-            var ll = filtered.Immutable;//.ToList();
+            var ll = filtered.ListForTests();
             Assert.AreEqual("1011", ll.First().EntityId.ToString(), "Test Light that sorting IS affeted");
             Assert.AreEqual(4, ll.Count, "Count after filtering");
         }
@@ -62,7 +62,7 @@ namespace ToSic.Eav.DataSourceTests.EntityFilters
             //Assert.AreEqual("1011", dl.First().Value.EntityId.ToString(), "Test Dic that sorting IS affeted");
             //Assert.AreEqual(4, dl.Count, "Count after filtering");
 
-            var ll = filtered.Immutable;//.ToList();
+            var ll = filtered.ListForTests();
             Assert.AreEqual("1011", ll.First().EntityId.ToString(), "Test Light that sorting IS affeted");
             Assert.AreEqual(4, ll.Count, "Count after filtering");
         }
@@ -108,7 +108,7 @@ namespace ToSic.Eav.DataSourceTests.EntityFilters
             var filtered = new EntityIdFilter()
                 .Init(ds.Configuration.LookUpEngine);
             //filtered.ConfigurationProvider = ds.ConfigurationProvider;
-            filtered.Attach(ds);
+            filtered.AttachForTests(ds);
             filtered.EntityIds = entityIdsValue;
             return filtered;
         }

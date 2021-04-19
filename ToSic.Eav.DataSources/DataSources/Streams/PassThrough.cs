@@ -5,12 +5,19 @@ namespace ToSic.Eav.DataSources
 {
 	/// <inheritdoc />
 	/// <summary>
-	/// A DataSource that passes through all In Connections. Can be used con consolidate/merge multiple Sources into one.
+	/// A DataSource that forwards all `In` Connections. It's more for internal use.
 	/// </summary>
 	[PublicApi_Stable_ForUseInYourCode]
 
-	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.PassThrough, ToSic.Eav.DataSources",
-        Type = DataSourceType.Source, DynamicOut = true)]
+	[VisualQuery(
+        NiceName = "Pass-Through",
+        UiHint = "Technical DataSource, doesn't do anything",
+        Icon = "copy-all",
+        Type = DataSourceType.Source, 
+        Difficulty = DifficultyBeta.Advanced,
+        GlobalName = "ToSic.Eav.DataSources.PassThrough, ToSic.Eav.DataSources",
+        DynamicOut = true,
+        DynamicIn = true)]
 
     public class PassThrough : DataSourceBase
 	{

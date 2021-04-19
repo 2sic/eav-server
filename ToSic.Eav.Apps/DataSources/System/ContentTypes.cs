@@ -18,8 +18,11 @@ namespace ToSic.Eav.DataSources.System
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
     [VisualQuery(
+        NiceName = "Content Types",
+        UiHint = "Types of an App",
+        Icon = "dns",
+        Type = DataSourceType.System,
         GlobalName = "ToSic.Eav.DataSources.System.ContentTypes, ToSic.Eav.Apps",
-        Type = DataSourceType.Source,
         Difficulty = DifficultyBeta.Advanced,
         DynamicOut = false,
         ExpectsDataOfType = "37b25044-29bb-4c78-85e4-7b89f0abaa2c",
@@ -78,13 +81,15 @@ namespace ToSic.Eav.DataSources.System
         [PrivateApi]
         public ContentTypes()
 		{
-			Provide(GetList);
+            Provide(GetList);
 		    ConfigMask(AppIdKey, $"[Settings:{AppIdField}]");
 		    ConfigMask(ScopeKey, $"[Settings:{ScopeField}||Default]");
 		}
 
 	    private ImmutableArray<IEntity> GetList()
 	    {
+            var wrapLog = Log.Call<ImmutableArray<IEntity>>();
+
             Configuration.Parse();
 
             var appId = OfAppId;
@@ -94,7 +99,8 @@ namespace ToSic.Eav.DataSources.System
 	            scp = AppConstants.ScopeContentOld;
 
 	        var types = State.Get(appId).ContentTypes.OfScope(scp);
-
+            
+            var builder = DataBuilder;
 	        var list = types.OrderBy(t => t.Name).Select(t =>
 	        {
 	            Guid? guid = null;
@@ -107,7 +113,7 @@ namespace ToSic.Eav.DataSources.System
 	                /* ignore */
 	            }
 
-                return Build.Entity(BuildDictionary(t),
+                return builder.Entity(BuildDictionary(t),
                     appId:OfAppId, 
                     id:t.ContentTypeId, 
                     titleField: ContentTypeType.Name.ToString(),
@@ -115,8 +121,9 @@ namespace ToSic.Eav.DataSources.System
                     guid: guid);
 	        });
 
-	        return list.ToImmutableArray();// .ToList();
-	    }
+	        var result = list.ToImmutableArray();
+            return wrapLog($"{result.Length}", result);
+        }
 
 	    private static Dictionary<string, object> BuildDictionary(IContentType t) => new Dictionary<string, object>
 	    {

@@ -11,9 +11,14 @@ namespace ToSic.Eav.DataSources
 	/// A DataSource that returns the first stream which has content
 	/// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.StreamFallback, ToSic.Eav.DataSources",
+	[VisualQuery(
+        NiceName = "Stream Fallback",
+        UiHint = "Find the first stream which has data",
+        Icon = "call_merge",
         Type = DataSourceType.Logic, 
-        DynamicOut = false, 
+        GlobalName = "ToSic.Eav.DataSources.StreamFallback, ToSic.Eav.DataSources",
+        DynamicOut = false,
+        DynamicIn = true,
 	    HelpLink = "https://r.2sxc.org/DsStreamFallback")]
 
     public sealed class StreamFallback : DataSourceBase
@@ -44,32 +49,32 @@ namespace ToSic.Eav.DataSources
         private IImmutableList<IEntity> GetStreamFallback()
         {
             var foundStream = FindIdealFallbackStream();
-            return foundStream?.Immutable ?? ImmutableArray<IEntity>.Empty;
+            return foundStream?.List.ToImmutableArray() ?? ImmutableArray<IEntity>.Empty;
         }
 
 	    private IDataStream FindIdealFallbackStream()
 	    {
+            var wrapLog = Log.Call<IDataStream>();
+
             Configuration.Parse();
 
             // Check if there is a default-stream in with content - if yes, try to return that
             if (In.HasStreamWithItems(Constants.DefaultStreamName))
-            {
-	            Log.Add("found default, will return that");
-	            return In[Constants.DefaultStreamName];
-	        }
+                return wrapLog("found default", In[Constants.DefaultStreamName]);
 
-	        // Otherwise alphabetically assemble the remaining in-streams, try to return those that have content
-	        var streamList = In.Where(x => x.Key != Constants.DefaultStreamName).OrderBy(x => x.Key);
+            // Otherwise alphabetically assemble the remaining in-streams, try to return those that have content
+	        var streamList = In
+                .Where(x => x.Key != Constants.DefaultStreamName)
+                .OrderBy(x => x.Key);
+            
 	        foreach (var stream in streamList)
-	            if (stream.Value.Immutable.Any())
+	            if (stream.Value.List.Any())
 	            {
 	                ReturnedStreamName = stream.Key;
-	                Log.Add($"will return stream:{ReturnedStreamName}");
-	                return stream.Value;
-	            }
+                    return wrapLog($"will return stream:{ReturnedStreamName}", stream.Value);
+                }
 
-	        Log.Add("didn't find any stream, will return empty");
-	        return null;
+	        return wrapLog("didn't find any stream, will return empty", null);
 	    }
 	}
 }

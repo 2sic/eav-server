@@ -37,7 +37,7 @@ namespace ToSic.Eav.DataSourceTests
         {
             var desiredFinds = 100;
             var sf = GenerateShuffleDS(desiredFinds);
-            var found = sf.List.Count();
+            var found = sf.ListForTests().Count();
             Assert.AreEqual(desiredFinds, found, "Should find exactly this amount people");
 
         }
@@ -48,7 +48,7 @@ namespace ToSic.Eav.DataSourceTests
             var items = 5;
             var sf = GenerateShuffleDS(items);
 
-            var origSeqSorted = AreAllItemsSorted(sf.In[Constants.DefaultStreamName]);
+            var origSeqSorted = AreAllItemsSorted(sf.InForTests()[Constants.DefaultStreamName]);
             var seqConsistent = AreAllItemsSorted(sf.Out[Constants.DefaultStreamName]);
 
             // after checking all, it should NOT be consistent
@@ -62,7 +62,7 @@ namespace ToSic.Eav.DataSourceTests
             // now the IDs shouldn't be incrementing one after another
             var seqConsistent = true;
             var lastId = 0;
-            foreach (var itm in sf.Immutable)
+            foreach (var itm in sf.ListForTests())
             {
                 var newId = itm.EntityId;
                 if (newId < lastId)

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSources.System.Types;
 using ToSic.Eav.Documentation;
@@ -17,8 +16,12 @@ namespace ToSic.Eav.DataSources.System
     /// This is used in fields which let you pick a query, stream and field from that stream.
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
-    [VisualQuery(GlobalName = "ToSic.Eav.DataSources.System.QueryInfo, ToSic.Eav.DataSources",
-        Type = DataSourceType.Source,
+    [VisualQuery(
+        NiceName = "DataSources",
+        UiHint = "List the DataSources available in the system",
+        Icon = "present_to_all",
+        Type = DataSourceType.System,
+        GlobalName = "ToSic.Eav.DataSources.System.QueryInfo, ToSic.Eav.DataSources",
         Difficulty = DifficultyBeta.Advanced,
         DynamicOut = false,
         ExpectsDataOfType = "4638668f-d506-4f5c-ae37-aa7fdbbb5540",
@@ -80,36 +83,42 @@ namespace ToSic.Eav.DataSources.System
 
 	    private ImmutableArray<IEntity> GetStreams()
 	    {
-            CustomConfigurationParse();
+            var wrapLog = Log.Call<ImmutableArray<IEntity>>();
 
-            return _query?.Out.OrderBy(stream => stream.Key).Select(stream
-                           => Build.Entity(new Dictionary<string, object>
+            CustomConfigurationParse();
+            var builder = DataBuilder;
+            var result = _query?.Out.OrderBy(stream => stream.Key).Select(stream
+                           => builder.Entity(new Dictionary<string, object>
                                {
                                    {StreamsType.Name.ToString(), stream.Key}
                                },
                                titleField: StreamsType.Name.ToString(),
                                typeName: QueryStreamsContentType))
                        .ToImmutableArray()
-                   ?? ImmutableArray<IEntity>.Empty;// new List<IEntity>().ToImmutableList();
+                   ?? ImmutableArray<IEntity>.Empty;
+            return wrapLog($"{result.Length}", result);
         }
 
 	    private IImmutableList<IEntity> GetAttributes()
 	    {
+            var wrapLog = Log.Call<IImmutableList<IEntity>>();
+
             CustomConfigurationParse();
 
             // no query can happen if the name was blank
             if (_query == null)
-                return ImmutableArray<IEntity>.Empty;//  new List<IEntity>();
+                return ImmutableArray<IEntity>.Empty;
 
             // check that _query has the stream name
             if (!_query.Out.ContainsKey(StreamName))
-                return ImmutableArray<IEntity>.Empty; //new List<IEntity>();
+                return ImmutableArray<IEntity>.Empty;
 
-	        var attribInfo = DataSourceFactory.GetDataSource<Attributes>(_query);
+            var attribInfo = DataSourceFactory.GetDataSource<Attributes>(_query);
             if(StreamName != Constants.DefaultStreamName)
-                attribInfo.Attach(Constants.DefaultStreamName, _query[StreamName]);
+                attribInfo.Attach(Constants.DefaultStreamName, _query, StreamName);
 
-	        return attribInfo.Immutable;
+            var results = attribInfo.List.ToImmutableList();
+            return wrapLog($"{results.Count}", results);
         }
 
 	    private void CustomConfigurationParse()
@@ -121,6 +130,8 @@ namespace ToSic.Eav.DataSources.System
 
         private void BuildQuery()
         {
+            var wrapLog = Log.Call();
+
             if (string.IsNullOrWhiteSpace(QueryName))
                 return;
 
@@ -133,8 +144,10 @@ namespace ToSic.Eav.DataSources.System
 
             if (found == null) throw new Exception($"Can't build information about query - couldn't find query '{QueryName}'");
 
-            _query = QueryBuilder.GetDataSourceForTesting(new QueryDefinition(found, AppId, Log), 
+            var builtQuery = QueryBuilder.GetDataSourceForTesting(new QueryDefinition(found, AppId, Log), 
                 false, Configuration.LookUpEngine);
+            _query = builtQuery.Item1;
+            wrapLog(null);
         }
 
 	    private IDataSource _query;

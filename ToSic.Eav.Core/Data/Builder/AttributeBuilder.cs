@@ -71,7 +71,7 @@ namespace ToSic.Eav.Data.Builder
         /// </summary>
         /// <returns><see cref="Attribute{ValueType}"/></returns>
         [PrivateApi("probably move to some attribute-builder or something")]
-        public static IAttribute CreateTyped(string name, ValueTypes type, List<IValue> values = null)
+        public static IAttribute CreateTyped(string name, ValueTypes type, IList<IValue> values = null)
         {
             var typeName = type.ToString();
             var result = ((Func<IAttribute>)(() => {
@@ -103,7 +103,7 @@ namespace ToSic.Eav.Data.Builder
         }
 
         [PrivateApi]
-        public static IAttribute CreateTyped(string name, string type, List<IValue> values = null)
+        public static IAttribute CreateTyped(string name, string type, IList<IValue> values = null)
             => CreateTyped(name, ValueTypeHelpers.Get(type), values);
 
 

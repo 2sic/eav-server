@@ -35,11 +35,11 @@ namespace ToSic.Eav.DataSources.Queries
         {
             var wrapLog = Log.Call($"{Entity.EntityId}");
             // Parse Test-Parameters in Format [Token:Property]=Value
-            var testParameters = TestParameters;//  ((IAttribute<string>) qdef.Entity[QueryDefinition.FieldTestParams]).TypedContents;
+            var testParameters = TestParameters;
             if (testParameters == null)
                 return null;
             // extract the lines which look like [source:property]=value
-            var testValueTokens = TestParamRegex.Matches(testParameters);// Regex.Matches(testParameters, $@"(?:\[(?<{KeyToken}>\w+):(?<{KeyProperty}>\w+)\])=(?<{KeyValue}>[^\r\n]*)");
+            var testValueTokens = TestParamRegex.Matches(testParameters);
 
             // Create a list of static Property Accessors
             var result = new List<ILookUp>();

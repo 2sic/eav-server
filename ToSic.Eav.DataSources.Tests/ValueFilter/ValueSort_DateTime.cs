@@ -51,7 +51,7 @@ namespace ToSic.Eav.DataSourceTests
             var vf = _testDataGeneratedOutsideTimer;
             vf.Attributes = field;
             vf.Directions = asc ? "a" : "d";
-            var result = vf.List.ToList();
+            var result = vf.ListForTests().ToList();
             // check that each following city is same or larger...
             ValidateDateFieldIsSorted(result, field, asc);
 

@@ -7,7 +7,7 @@ namespace ToSic.Eav.LookUp
     /// <summary>
     /// This Value Provider chains two or more LookUps and tries one after another to deliver a result
     /// It's mainly used to override values which are given, by a special situation. <br/>
-    /// Read more about this in @Specs.LookUp.Intro
+    /// Read more about this in [](xref:Basics.LookUp.Index)
     /// </summary>
     [PublicApi_Stable_ForUseInYourCode]
     public class LookUpInLookUps: LookUpBase

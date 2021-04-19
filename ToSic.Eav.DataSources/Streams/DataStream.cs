@@ -106,28 +106,30 @@ namespace ToSic.Eav.DataSources
 
         private bool _listLoaded;
 
-        public IEnumerable<IEntity> List => Immutable;
-        public IImmutableList<IEntity> Immutable
+        public IEnumerable<IEntity> List 
 	    {
             get
             {
-                var wrapLog = Source.Log.Call<IImmutableList<IEntity>>($"{nameof(Name)}:{Name}", useTimer: true);
+                // Note about Logging
+                // In rare cases the Source is null - and we don't want to cause Errors just because we can't log
+                // These cases usually occur when error-streams are created - in which case they sometimes don't have a source
+                var wrapLog = Source?.Log.Call<IImmutableList<IEntity>>($"{nameof(Name)}:{Name}", useTimer: true);
+                
                 // If already retrieved return last result to be faster
-                if (_listLoaded) return wrapLog("reuse previous", _list);
+                if (_listLoaded) return wrapLog?.Invoke("reuse previous", _list) ?? _list;
 
                 // Check if it's in the cache - and if yes, if it's still valid and should be re-used --> return if found
                 if (AutoCaching)
                 {
-                    Source.Log.Add($"{nameof(AutoCaching)}:{AutoCaching}");
-                    var cacheItem = new ListCache(Source.Log).GetOrBuild(this, ReadUnderlyingList, CacheDurationInSeconds);
-                    _listLoaded = true;
-                    return _list = wrapLog("ok", cacheItem.List);
+                    Source?.Log.Add($"{nameof(AutoCaching)}:{AutoCaching}");
+                    var cacheItem = new ListCache(Source?.Log).GetOrBuild(this, ReadUnderlyingList, CacheDurationInSeconds);
+                    _list = cacheItem.List;
                 }
+                else
+                    _list = ReadUnderlyingList();
 
-                var result = ReadUnderlyingList();
-                _list = result;
                 _listLoaded = true;
-                return wrapLog("ok", result);
+                return wrapLog?.Invoke("ok", _list) ?? _list;
             }
 	    }
 
@@ -141,23 +143,26 @@ namespace ToSic.Eav.DataSources
             var wrapLog = Source.Log.Call<IImmutableList<IEntity>>();
             // try to use the built-in Entities-Delegate, but if not defined, use other delegate; just make sure we test both, to prevent infinite loops
             if (_listDelegate == null)
-                throw new Exception(Source.Log.Add("can't load stream - no delegate found to supply it"));
+                return wrapLog("error", Source.ErrorHandler.CreateErrorList(source: Source,
+                    title: "Error loading Stream",
+                    message: "Can't load stream - no delegate found to supply it"));
 
             try
             {
                 var resultList = ImmutableSmartList.Wrap(_listDelegate());
                 return wrapLog("ok", resultList);
             }
-            catch (InvalidOperationException) // this is a special exception - for example when using SQL. Pass it on to enable proper testing
+            catch (InvalidOperationException invEx) // this is a special exception - for example when using SQL. Pass it on to enable proper testing
             {
-                wrapLog("error", ImmutableArray<IEntity>.Empty);
-                throw;
+                return wrapLog("error",
+                    Source.ErrorHandler.CreateErrorList(source: Source, title: "InvalidOperationException",
+                        message: "See details", exception: invEx));
             }
             catch (Exception ex)
             {
-                var msg = $"Error getting List of Stream.\nStream Name: {Name}\nDataSource Name: {Source.Name}";
-                wrapLog(msg, ImmutableArray<IEntity>.Empty);
-                throw new Exception(msg, ex);
+                return wrapLog("error", Source.ErrorHandler.CreateErrorList(source: Source, exception: ex,
+                    title: "Error getting Stream / reading underlying list", 
+                    message: $"Error getting List of Stream.\nStream Name: {Name}\nDataSource Name: {Source.Name}"));
             }
         }
         #endregion
@@ -196,9 +201,9 @@ namespace ToSic.Eav.DataSources
 
         #region Support for IEnumerable<IEntity>
 
-        public IEnumerator<IEntity> GetEnumerator() => Immutable.GetEnumerator();
+        public IEnumerator<IEntity> GetEnumerator() => List.GetEnumerator();
 
-	    IEnumerator IEnumerable.GetEnumerator() => Immutable.GetEnumerator();
+	    IEnumerator IEnumerable.GetEnumerator() => List.GetEnumerator();
         #endregion Support for IEnumerable<IEntity>
     }
 }

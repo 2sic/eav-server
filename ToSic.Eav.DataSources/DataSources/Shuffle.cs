@@ -10,14 +10,18 @@ namespace ToSic.Eav.DataSources
 {
 	/// <inheritdoc />
 	/// <summary>
-	/// A DataSource that filters Entities by Ids
+	/// Shuffle / Randomize the order of items in a Stream.
 	/// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-    [VisualQuery(GlobalName = "ToSic.Eav.DataSources.Shuffle, ToSic.Eav.DataSources",
-        Type = DataSourceType.Sort, 
-        DynamicOut = false, 
-        ExpectsDataOfType = "38e7822b-1049-4539-bb3f-f99949b1b1d1",
+    [VisualQuery(
+        NiceName = "Shuffle",
+        UiHint = "Mix/randomize the order of items",
         Icon = "shuffle",
+        Type = DataSourceType.Sort, 
+        GlobalName = "ToSic.Eav.DataSources.Shuffle, ToSic.Eav.DataSources",
+        DynamicOut = false,
+        In = new[] { Constants.DefaultStreamNameRequired },
+        ExpectsDataOfType = "38e7822b-1049-4539-bb3f-f99949b1b1d1",
         HelpLink = "https://r.2sxc.org/DsShuffle")]
 	public sealed class Shuffle: DataSourceBase
 	{
@@ -59,10 +63,15 @@ namespace ToSic.Eav.DataSources
 
 
         private IImmutableList<IEntity> GetShuffle()
-	    {
+        {
             Configuration.Parse();
-            Log.Add($"will shuffle and take:{Take}");
-            return ShuffleInternal(In[Constants.DefaultStreamName].Immutable, Take, Log);
+
+            var wrapLog = Log.Call<IImmutableList<IEntity>>($"Take: {Take}");
+            
+            if (!GetRequiredInList(out var originals))
+                return wrapLog("error", originals);
+
+            return wrapLog("ok", ShuffleInternal(originals, Take, Log));
 	    }
 
         #region Shuffle based on http://stackoverflow.com/questions/375351/most-efficient-way-to-randomly-sort-shuffle-a-list-of-integers-in-c-sharp/375446#375446

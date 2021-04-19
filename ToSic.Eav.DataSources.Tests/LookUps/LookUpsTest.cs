@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSourceTests.LookUps
             var myConfDs = new EntityIdFilter()
                 .Init(ds.Configuration.LookUpEngine);
             //myConfDs.ConfigurationProvider = ds.ConfigurationProvider;
-            myConfDs.Attach(ds);
+            myConfDs.AttachForTests(ds);
             myConfDs.EntityIds = ItemToFilter;
 
             testSource.Configuration.Values.Add("SomethingSimple", "Something");
@@ -31,10 +31,10 @@ namespace ToSic.Eav.DataSourceTests.LookUps
             testSource.Configuration.Values.Add("InTestNoKey", "[In:Default]");
             testSource.Configuration.Values.Add("InTestBadKey", "[In:Default:SomeFieldWhichDoesntExist]");
             testSource.Configuration.Values.Add("TestMyConfFirstName", "[In:MyConf:FirstName]");
-            testSource.Attach(ds);
-            testSource.Attach("MyConf", myConfDs);
+            testSource.AttachForTests(ds);
+            testSource.AttachForTests("MyConf", myConfDs);
             testSource.Init(ds.Configuration.LookUpEngine);//.ConfigTemp.ConfigurationProvider = ds.ConfigurationProvider;
-            var y = testSource.List; // must access something to provoke configuration resolving
+            var y = testSource.ListForTests(); // must access something to provoke configuration resolving
 
             Assert.AreEqual("First Name 1001", testSource.Configuration.Values["InTestFirstName"], "Tested in:Default:EntityTitle");
             Assert.AreEqual("", testSource.Configuration.Values["InTestBadStream"], "Testing in-token with invalid stream");

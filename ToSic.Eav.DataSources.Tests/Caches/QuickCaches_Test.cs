@@ -59,7 +59,7 @@ namespace ToSic.Eav.DataSourceTests.Caches
             (listCache as ListCache).DefaultDuration = 1;
             Assert.IsFalse(listCache.Has(ds.CacheFullKey), "Should not have it in cache yet");
 
-            listCache.Set(ds.CacheFullKey, ds.Immutable.ToImmutableArray(), ds.CacheTimestamp);
+            listCache.Set(ds.CacheFullKey, ds.ListForTests().ToImmutableArray(), ds.CacheTimestamp);
             Assert.IsTrue(listCache.Has(ds.CacheFullKey), "Should have it in cache now");
 
             Thread.Sleep(400);
@@ -78,7 +78,7 @@ namespace ToSic.Eav.DataSourceTests.Caches
             var filtered = new EntityIdFilter()
                 .Init(ds.Configuration.LookUpEngine);
             //filtered.ConfigurationProvider = ds.ConfigurationProvider;
-            filtered.Attach(ds);
+            filtered.AttachForTests(ds);
             filtered.EntityIds = entityIdsValue;
             return filtered;
         }

@@ -1,5 +1,7 @@
 ﻿using System;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Data;
+using ToSic.Eav.DataSources.Catalog;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Plumbing;
@@ -9,13 +11,21 @@ namespace ToSic.Eav.DataSources
     public class DataSourceFactory: HasLog<DataSourceFactory>
     {
         private readonly Lazy<ILookUpEngineResolver> _lookupResolveLazy;
+        private readonly Lazy<IDataBuilder> _dataBuilderLazy;
+        private readonly Lazy<DataSourceErrorHandling> _dataSourceErrorsLazy;
         public IServiceProvider ServiceProvider { get; }
 
         #region Constructor / DI
 
-        public DataSourceFactory(IServiceProvider serviceProvider, Lazy<ILookUpEngineResolver> lookupResolveLazy) : base($"{DataSourceConstants.LogPrefix}.Factry")
+        public DataSourceFactory(IServiceProvider serviceProvider, 
+            Lazy<ILookUpEngineResolver> lookupResolveLazy, 
+            Lazy<IDataBuilder> dataBuilderLazy,
+            Lazy<DataSourceErrorHandling> dataSourceErrorsLazy
+            ) : base($"{DataSourceConstants.LogPrefix}.Factry")
         {
             _lookupResolveLazy = lookupResolveLazy;
+            _dataBuilderLazy = dataBuilderLazy;
+            _dataSourceErrorsLazy = dataSourceErrorsLazy;
             ServiceProvider = serviceProvider;
         }
 
@@ -35,11 +45,18 @@ namespace ToSic.Eav.DataSources
         {
             var wrapLog = Log.Call(parameters: $"name: {sourceName}");
             // try to find with assembly name, or otherwise with GlobalName / previous names
-            var type = Catalog.FindType(sourceName);
+            var type = DataSourceCatalog.FindType(sourceName);
 
             // still not found? must show error
             if (type == null)
-                throw new Exception("DataSource not installed on Server: " + sourceName);
+            {
+                // New in 11.13 (2021-03-29)
+                return new Error
+                {
+                    Title = "DataSource not found",
+                    Message = $"DataSource '{sourceName}' is not installed on Server. You should probably install it in the CMS."
+                };
+            }
             var result = GetDataSource(type, app, upstream, lookUps);
             wrapLog("ok");
             return result;
@@ -76,8 +93,7 @@ namespace ToSic.Eav.DataSources
             var wrapLog = Log.Call();
 
             if (upstream == null && lookUps == null)
-                throw new Exception(
-                    "Trying to GetDataSource<T> but cannot do so if both upstream and ConfigurationProvider are null.");
+                throw new Exception("Can't get GetDataSource<T> because both upstream and lookUps are null.");
 
             var newDs = ServiceProvider.Build<T>();
             ConfigureNewDataSource(newDs, appIdentity, upstream, lookUps ?? upstream.Configuration.LookUpEngine);
@@ -148,6 +164,10 @@ namespace ToSic.Eav.DataSources
                 ((IDataTarget)newDs).Attach(upstream);
             if (configLookUp != null) 
                 newDs.Init(configLookUp);
+            
+            // Attach new 11.13 properties which are needed
+            newDs._dataBuilderLazy = _dataBuilderLazy;
+            newDs._dataSourceErrorHandlingLazy = _dataSourceErrorsLazy;
 
             newDs.InitLog(newDs.LogId, Log);
             wrapLog("ok");

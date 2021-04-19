@@ -7,7 +7,7 @@ namespace ToSic.Eav.LookUp
 {
     /// <summary>
     /// Base Class to create your own LookUp Class - used by all Look-Ups. <br/>
-    /// Read more about this in @Specs.LookUp.Intro
+    /// Read more about this in [](xref:Basics.LookUp.Index)
     /// </summary>
     [PublicApi_Stable_ForUseInYourCode]
 	public abstract class LookUpBase : ILookUp

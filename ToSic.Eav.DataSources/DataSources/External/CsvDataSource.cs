@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using CsvHelper;
 using System.IO;
+using ToSic.Eav.Context;
 #if !NETSTANDARD
 using System.Web;
 #endif
@@ -18,13 +19,19 @@ namespace ToSic.Eav.DataSources
     /// DataSource for importing/reading CSV files. 
     /// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-    [VisualQuery(GlobalName = "ToSic.Eav.DataSources.CsvDataSource, ToSic.Eav.DataSources",
+    [VisualQuery(
+        NiceName = "CSV Data",
+        UiHint = "Load data from a CSV file",
+        Icon = "description",
         Type = DataSourceType.Source, 
+        GlobalName = "ToSic.Eav.DataSources.CsvDataSource, ToSic.Eav.DataSources",
         DynamicOut = false,
         ExpectsDataOfType = "|Config ToSic.Eav.DataSources.CsvDataSource",
         HelpLink = "https://r.2sxc.org/DsCsv")]
     public class CsvDataSource : ExternalData
     {
+        private readonly IUser _user;
+
         /// <inheritdoc/>
         [PrivateApi]
         public override string LogId => "DS.CSV";
@@ -102,8 +109,9 @@ namespace ToSic.Eav.DataSources
 
 
         [PrivateApi]
-        public CsvDataSource()
+        public CsvDataSource(IUser user)
         {
+            _user = user;
             Provide(GetList);
 
             ConfigMask(FilePathKey, "[Settings:FilePath]");
@@ -115,11 +123,38 @@ namespace ToSic.Eav.DataSources
 
         private ImmutableArray<IEntity> GetList()
         {
+            var wrapLog = Log.Call<ImmutableArray<IEntity>>();
             Configuration.Parse();
 
             var entityList = new List<IEntity>();
 
-            Log.Add($"load csv:{ServerFilePath}, delimit:'{Delimiter}'");
+            var csvPath = ServerFilePath;
+            Log.Add($"CSV path:'{csvPath}', delimiter:'{Delimiter}'");
+
+            if (string.IsNullOrWhiteSpace(csvPath))
+                return wrapLog("error", SetError("No Path Given", "There was no path for loading the CSV file."));
+
+            var pathPart = Path.GetDirectoryName(csvPath);
+            if (!Directory.Exists(pathPart))
+            {
+                Log.Add($"Didn't find path '{pathPart}'");
+                return wrapLog("error", SetError("Path not found",
+                    _user?.IsSuperUser == true
+                        ? $"Path for Super User only: '{pathPart}'"
+                        : "The path given was not found. For security reasons it's not included in the message. You'll find it in the Insights."));
+            }
+            
+            if(!File.Exists(csvPath))
+                return wrapLog("error",
+                    SetError("CSV File Not Found",
+                        _user?.IsSuperUser == true
+                            ? $"Path for Super User only: '{csvPath}'"
+                            : "For security reasons the path isn't mentioned here. You'll find it in the Insights."));
+
+            const string commonErrorsIdTitle =
+                "A common mistake is to use the wrong delimiter (comma / semi-colon) in which case this may also fail. ";
+
+            var firstRun = true;
             using (var stream = new StreamReader(ServerFilePath))
             using (var parser = new CsvReader(stream))
             {
@@ -128,51 +163,66 @@ namespace ToSic.Eav.DataSources
                 parser.Configuration.TrimHeaders = true;
                 parser.Configuration.TrimFields = true;
 
+                const int idColumnNotDetermined = -999;
+                var idColumnIndex = idColumnNotDetermined;
+                string titleColName = null;
                 // Parse data
                 while (parser.Read())
                 {
                     var fields = parser.CurrentRecord;
 
+                    // Check header - must happen after the first read, but we don't want to repeat this
+                    if (firstRun)
+                    {
+                        // If we should find the Column...
+                        if (!string.IsNullOrEmpty(IdColumnName))
+                        {
+                            // on first round, check the headers fields
+                            // Try to find - first case-sensitive, then insensitive
+                            idColumnIndex = Array.FindIndex(parser.FieldHeaders, name => name == IdColumnName);
+                            if (idColumnIndex == -1) 
+                                idColumnIndex = Array.FindIndex(parser.FieldHeaders, name => name.Equals(IdColumnName, StringComparison.InvariantCultureIgnoreCase));
+                            if (idColumnIndex == -1)
+                                return SetError("ID Column not found",
+                                    $"ID column '{IdColumnName}' specified cannot be found in the file. " +
+                                    $"The Headers: '{string.Join(",", parser.FieldHeaders)}'. " +
+                                    $"{commonErrorsIdTitle}");
+                        }
+
+                        if (string.IsNullOrEmpty(TitleColumnName))
+                            titleColName = parser.FieldHeaders[0];
+                        else
+                        {
+                            // The following is a little bit complicated, but it checks that the title specified exists
+                            titleColName = parser.FieldHeaders.FirstOrDefault(colName => colName == TitleColumnName)
+                                           ?? parser.FieldHeaders.FirstOrDefault(colName => colName.Equals(TitleColumnName, StringComparison.InvariantCultureIgnoreCase));
+                            if (titleColName == null)
+                                return SetError("Title column not found",
+                                    $"Title column '{TitleColumnName}' cannot be found in the file. " +
+                                    $"The Headers: '{string.Join(",", parser.FieldHeaders)}'. " +
+                                    $"{commonErrorsIdTitle}");
+                        }
+                        firstRun = false;
+                    }
+
                     int entityId;
+                    // No ID column specified, so use the row number
                     if (string.IsNullOrEmpty(IdColumnName))
-                    {   // No ID column specified, so use the row number
-                        entityId = parser.Row;
-                    }
-                    else
-                    {
-                        var idColumnIndex = Array.FindIndex(parser.FieldHeaders, columnName => columnName == IdColumnName);
-                        if(idColumnIndex == -1)
-                            // ReSharper disable once NotResolvedInText
-                            throw new ArgumentException("ID column specified cannot be found in the file.", "IdColumnName");
+                        entityId = parser.Row; 
+                    // check if id can be parsed from the current row
+                    else if (!int.TryParse(fields[idColumnIndex], out entityId))
+                        return SetError("ID is not a number",
+                            $"Row {parser.Row}: ID field '{fields[idColumnIndex]}' cannot be parsed to int. Value was '{fields[idColumnIndex]}'.");
 
-                        if (!int.TryParse(fields[idColumnIndex], out entityId))
-                            throw new FormatException("Row " + parser.Row + ": ID field '" + fields[idColumnIndex] + "' cannot be parsed.");
-                    }
 
-                    string entityTitleName;
-                    if (string.IsNullOrEmpty(TitleColumnName))
-                    {
-                        entityTitleName = parser.FieldHeaders[0];
-                    } 
-                    else
-                    {   // The following is a little bit complicated, but it checks that the title specified exists
-                        entityTitleName = parser.FieldHeaders.FirstOrDefault(columnName => columnName == TitleColumnName);
-                        if (entityTitleName == null)
-                            // ReSharper disable once NotResolvedInText
-                            throw new ArgumentException("Title column specified cannot be found in the file.", "TitleColumnName");
-                    }
-                    
                     var entityValues = new Dictionary<string, object>();
                     for (var i = 0; i < parser.FieldHeaders.Length; i++)
-                    {
                         entityValues.Add(parser.FieldHeaders[i], fields[i]);
-                    }
 
-                    entityList.Add(new Data.Entity(Constants.TransientAppId, entityId, ContentTypeBuilder.Fake(ContentType), entityValues, entityTitleName));
+                    entityList.Add(new Data.Entity(Constants.TransientAppId, entityId, ContentTypeBuilder.Fake(ContentType), entityValues, titleColName));
                 }
             }
-            Log.Add($"found:{entityList.Count}");
-            return entityList.ToImmutableArray();
+            return wrapLog($"{entityList.Count}", entityList.ToImmutableArray());
         }
     }
 }

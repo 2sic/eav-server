@@ -105,6 +105,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 return;
             var contentTypeId = foundSet.Value;
 
+            // 2dm 2021-04-08 Metadata wasn't saved before v11.14+
+            if (contentType.Metadata.Any())
+                SaveTypeMetadata(contentType.StaticName, contentType.Metadata, saveOptions);
+
             // append all Attributes
             foreach (var newAtt in contentType.Attributes.Cast<ContentTypeAttribute>())
             {
@@ -129,22 +133,55 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <param name="saveOptions"></param>
         private void SaveAttributeMetadata(int attributeId, IMetadataOf metadata, SaveOptions saveOptions)
         {
+            // Verify AttributeId before we continue
+            if (attributeId == 0 || attributeId < 0) // < 0 is ef-core temp id
+                throw new Exception($"trying to add metadata to attribute {attributeId} but attribute isn't saved yet");
+            
             var entities = new List<IEntity>();
             // if possible, try to get the complete list which is usually hidden in IMetadataOfItem
             var sourceList = (metadata as IMetadataInternals)?.AllWithHidden as IEnumerable<IEntity> 
                              ?? metadata;
             foreach (var entity in sourceList)
             {
+                // it's important that we set the target properties
+                // as the data may simply have been attached and still carry wrong owner-markers
+                // TODO: this should be ensured at the merge-level 
+                // MergeContentTypeUpdateWithExisting(AppState appState, IContentType contentType)
                 var md = (Target)entity.MetadataFor;
-                // Validate Entity
+                // Set type / key
                 md.TargetType = Constants.MetadataForAttribute;
-
-                // Set KeyNumber
-                if (attributeId == 0 || attributeId < 0) // < 0 is ef-core temp id
-                    throw new Exception($"trying to add metadata to attribute {attributeId} but attribute isn't saved yet");
-
                 md.KeyNumber = attributeId;
-
+                entities.Add(entity);
+            }
+            DbContext.Save(entities, saveOptions); // don't use the standard save options, as this is attributes only
+        }
+        
+        /// <summary>
+        /// Save additional entities describing the attribute
+        /// </summary>
+        /// <param name="attributeId"></param>
+        /// <param name="metadata"></param>
+        /// <param name="saveOptions"></param>
+        private void SaveTypeMetadata(string staticName, IMetadataOf metadata, SaveOptions saveOptions)
+        {
+            // Verify AttributeId before we continue
+            if (string.IsNullOrEmpty(staticName)) //  attributeId == 0 || attributeId < 0) // < 0 is ef-core temp id
+                throw new Exception($"trying to add metadata to content-type {staticName} but name is useless");
+            
+            var entities = new List<IEntity>();
+            // if possible, try to get the complete list which is usually hidden in IMetadataOfItem
+            var sourceList = (metadata as IMetadataInternals)?.AllWithHidden as IEnumerable<IEntity> 
+                             ?? metadata;
+            foreach (var entity in sourceList)
+            {
+                // it's important that we set the target properties
+                // as the data may simply have been attached and still carry wrong owner-markers
+                // TODO: this should be ensured at the merge-level 
+                // MergeContentTypeUpdateWithExisting(AppState appState, IContentType contentType)
+                var md = (Target)entity.MetadataFor;
+                // Set type / key
+                md.TargetType = Constants.MetadataForContentType;
+                md.KeyString = staticName;
                 entities.Add(entity);
             }
             DbContext.Save(entities, saveOptions); // don't use the standard save options, as this is attributes only

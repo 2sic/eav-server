@@ -10,12 +10,15 @@ namespace ToSic.Eav.DataSources.Debug
         public IDictionary<string, string> Configuration;
         public bool Error = false;
 
+        public Connections Connections { get; set; }
+
         public DataSourceInfo(IDataSource ds)
         {
             try
             {
                 Guid = ds.Guid;
                 Type = ds.GetType().Name;
+                Connections = (ds as DataSourceBase)?.Connections;
                 Configuration = ds.Configuration.Values;
             }
             catch (Exception)

@@ -19,13 +19,13 @@ namespace ToSic.Eav.DataSourceTests.Paging
         public void Paging_BasicPagingPg1On1000Items()
         {
             var ds = CreatePagingForTesting(1000);
-            var pgstream = ds["Paging"].Immutable.First();
+            var pgstream = ds["Paging"].ListForTests().First();
             Assert.AreEqual(1.ToDecimal(), pgstream.Value<int>("PageNumber"));
             Assert.AreEqual(10.ToDecimal(), pgstream.Value<int>("PageSize"));
             Assert.AreEqual(100.ToDecimal(), pgstream.Value<int>("PageCount"));
             Assert.AreEqual(1000.ToDecimal(), pgstream.Value<int>("ItemCount"));
 
-            var result = ds.List;
+            var result = ds.ListForTests();
             Assert.AreEqual(10, result.Count());
             Assert.AreEqual(seedId, result.First().EntityId);
         }
@@ -35,13 +35,13 @@ namespace ToSic.Eav.DataSourceTests.Paging
         {
             var ds = CreatePagingForTesting(1001);
             ds.PageNumber = 7;
-            var pgstream = ds["Paging"].Immutable.First();
+            var pgstream = ds["Paging"].ListForTests().First();
             Assert.AreEqual(7.ToDecimal(), pgstream.Value<int>("PageNumber"));
             Assert.AreEqual(10.ToDecimal(), pgstream.Value<int>("PageSize"));
             Assert.AreEqual(101.ToDecimal(), pgstream.Value<int>("PageCount"));
             Assert.AreEqual(1001.ToDecimal(), pgstream.Value<int>("ItemCount"));
 
-            var result = ds.List;
+            var result = ds.ListForTests();
             Assert.AreEqual(10, result.Count());
             Assert.AreEqual(seedId + 60, result.First().EntityId);
         }
@@ -52,13 +52,13 @@ namespace ToSic.Eav.DataSourceTests.Paging
             var ds = CreatePagingForTesting(223);
             ds.PageSize = 50;
             ds.PageNumber = 5;
-            var pgstream = ds["Paging"].Immutable.First();
+            var pgstream = ds["Paging"].ListForTests().First();
             Assert.AreEqual(5.ToDecimal(), pgstream.Value<int>("PageNumber"));
             Assert.AreEqual(50.ToDecimal(), pgstream.Value<int>("PageSize"));
             Assert.AreEqual(5.ToDecimal(), pgstream.Value<int>("PageCount"));
             Assert.AreEqual(223.ToDecimal(), pgstream.Value<int>("ItemCount"));
 
-            var result = ds.List;
+            var result = ds.ListForTests();
             Assert.AreEqual(23, result.Count());
             Assert.AreEqual(seedId + 200, result.First().EntityId);
             Assert.AreEqual(seedId + 223 -1, result.Last().EntityId);

@@ -12,14 +12,17 @@ namespace ToSic.Eav.DataSources
 {
 	/// <inheritdoc />
 	/// <summary>
-	/// A DataSource that filters Entities by Ids
+	/// A DataSource that filters Entities by Ids. Can handle multiple IDs if comma-separated.
 	/// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.EntityIdFilter, ToSic.Eav.DataSources",
-        Type = DataSourceType.Filter, 
-        DynamicOut = false,
+	[VisualQuery(
         NiceName = "Item Id Filter",
-        UiHint = "Find items based on the ID",
+        UiHint = "Find items based on one or more IDs",
+        Icon = "fingerprint",
+        Type = DataSourceType.Filter, 
+        GlobalName = "ToSic.Eav.DataSources.EntityIdFilter, ToSic.Eav.DataSources",
+        DynamicOut = false,
+        In = new[] { Constants.DefaultStreamNameRequired },
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.EntityIdFilter",
         HelpLink = "https://r.2sxc.org/DsIdFilter")]
 
@@ -31,7 +34,6 @@ namespace ToSic.Eav.DataSources
 	    public override string LogId => "DS.EntIdF";
 
         private const string EntityIdKey = "EntityIds";
-		//private const string PassThroughOnEmptyEntityIdsKey = "PassThroughOnEmptyEntityIds";
 
 		/// <summary>
 		/// A string containing one or more entity-ids. like "27" or "27,40,3063,30306"
@@ -59,56 +61,54 @@ namespace ToSic.Eav.DataSources
 		    ConfigMask(EntityIdKey, "[Settings:EntityIds]");
 		}
 
-		private ImmutableArray<IEntity> GetList()
-		{
-            CustomConfigurationParse();
+		private IImmutableList<IEntity> GetList()
+        {
+            var wrapLog = Log.Call<IImmutableList<IEntity>>();
 
-            var entityIds = _cleanedIds;
+            var entityIds = CustomConfigurationParse();
 
-		    var originals = In[Constants.DefaultStreamName].Immutable;
+            // if CustomConfiguration resulted in an error, report now
+            if (!ErrorStream.IsDefaultOrEmpty)
+                return wrapLog("error", ErrorStream);
+
+            if (!GetRequiredInList(out var originals))
+                return wrapLog("error", originals);
 
 		    var result = entityIds.Select(eid => originals.One(eid)).Where(e => e != null).ToImmutableArray();
 
-		    Log.Add(() => $"get ids:[{string.Join(",",_cleanedIds)}] found:{result.Length}");
-		    return result;
-		}
+		    Log.Add(() => $"get ids:[{string.Join(",",entityIds)}] found:{result.Length}");
+            return wrapLog("ok", result);
+        }
 
-	    private IEnumerable<int> _cleanedIds;
-
-        /// <inheritdoc/>
         [PrivateApi]
-        private void CustomConfigurationParse()
+        private int[] CustomConfigurationParse()
         {
+            var wrapLog = Log.Call<int[]>();
             Configuration.Parse();
 
             #region clean up list of IDs to remove all white-space etc.
             try
             {
-                var configEntityIds = Configuration["EntityIds"];
+                var configEntityIds = EntityIds;
+                // check if we have anything to work with
                 if (string.IsNullOrWhiteSpace(configEntityIds))
-                    _cleanedIds = new int[0];
-                else
-                {
-                    var lstEntityIds = new List<int>();
-                    foreach (
-                        var strEntityId in
-                            Configuration["EntityIds"].Split(',').Where(strEntityId => !string.IsNullOrWhiteSpace(strEntityId)))
-                    {
-                        int entityIdToAdd;
-                        if (int.TryParse(strEntityId, out entityIdToAdd))
-                            lstEntityIds.Add(entityIdToAdd);
-                    }
-
-                    _cleanedIds = lstEntityIds.Distinct();//.ToArray();
-                }
+                    return wrapLog("empty", new int[0]);
+                
+                var preCleanedIds = configEntityIds
+                    .Split(',')
+                    .Where(strEntityId => !string.IsNullOrWhiteSpace(strEntityId));
+                var lstEntityIds = new List<int>();
+                foreach (var strEntityId in preCleanedIds)
+                    if (int.TryParse(strEntityId, out var entityIdToAdd))
+                        lstEntityIds.Add(entityIdToAdd);
+                return wrapLog(EntityIds, lstEntityIds.Distinct().ToArray());
             }
             catch (Exception ex)
             {
-                throw new Exception("Unable to load EntityIds from Configuration.", ex);
+                SetError("Can't find IDs", "Unable to load EntityIds from Configuration. Unexpected Exception.", ex);
+                return wrapLog("error", null);
             }
             #endregion
-
-            EntityIds = string.Join(",", _cleanedIds.Select(i => i.ToString()).ToArray());
         }
 
 	}

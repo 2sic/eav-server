@@ -11,6 +11,17 @@ namespace ToSic.Eav.Conversion
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
     public interface IEntitiesTo<out T>
     {
+
+        /// <summary>
+        /// Maximum items on a stream to return.
+        /// This is primarily used when developing visual query, to limit what is actually sent back to the client.
+        /// </summary>
+        /// <remarks>
+        /// Added v11.13
+        /// </remarks>
+        [WorkInProgressApi("Exact name not final yet")]
+        int MaxItems { get; set; }
+
         /// <summary>
         /// Include the entity Guid in the conversion
         /// </summary>

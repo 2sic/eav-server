@@ -7,7 +7,7 @@ namespace ToSic.Eav.Data
 	/// Represents an Attribute (Property), but strongly typed
 	/// </summary>
     /// <remarks>
-    /// > We recommend you read about the @Specs.Data.Intro
+    /// > We recommend you read about the [](xref:Basics.Data.Index)
     /// </remarks>
 	/// <typeparam name="T">Type of the Value</typeparam>
 	[PublicApi_Stable_ForUseInYourCode]

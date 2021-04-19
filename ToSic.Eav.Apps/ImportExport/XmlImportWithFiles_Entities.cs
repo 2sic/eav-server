@@ -73,7 +73,8 @@ namespace ToSic.Eav.Apps.ImportExport
 			        assignmentObjectTypeId = Constants.MetadataForContentType;
                     break;
                 case XmlConstants.CmsObject:
-			        assignmentObjectTypeId = Constants.MetadataForContentType;
+                    // 2021-04-08 2dm warning: this line previously said `= Constants.MetadataForContentType` which seems very wrong but was never noticed
+                    assignmentObjectTypeId = Constants.MetadataForCmsObject;
 
                     if(keyString == null)
                         throw new Exception("found cms object, but couldn't find metadata-key of type string, will abort");

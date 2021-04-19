@@ -12,15 +12,17 @@ namespace ToSic.Eav.DataSources
 {
 	/// <inheritdoc />
 	/// <summary>
-	/// DataSource to only pass through configured AttributeNames - other attributes/properties are removed from the entities.
+	/// DataSource to rename attributes. Will help to change internal field names to something which is more appropriate for your JS or whatever.
 	/// </summary>
-	/// <remarks>Uses Configuration "AttributeNames"</remarks>
     [PublicApi_Stable_ForUseInYourCode]
-    [VisualQuery(GlobalName = "ToSic.Eav.DataSources.AttributeRename, ToSic.Eav.DataSources",
+    [VisualQuery(
+        NiceName = "Rename Attribute/Property",
+        UiHint = "Rename some attributes / properties",
+        Icon = "edit_attributes",
         Type = DataSourceType.Modify,
+        GlobalName = "ToSic.Eav.DataSources.AttributeRename, ToSic.Eav.DataSources",
         DynamicOut = false,
-        NiceName = "Attribute-Rename",
-        UiHint = "rename the Attribute / Property",
+        In = new[] { Constants.DefaultStreamNameRequired },
         ExpectsDataOfType = "c5918cb8-d35a-48c7-9380-a437edde66d2",
         HelpLink = "https://r.2sxc.org/DsAttributeRename")]
 
@@ -83,8 +85,9 @@ namespace ToSic.Eav.DataSources
         /// Get the list of all items with reduced attributes-list
         /// </summary>
         /// <returns></returns>
-		private ImmutableArray<IEntity> GetList()
-		{
+		private IImmutableList<IEntity> GetList()
+        {
+            var wrapLog = Log.Call<IImmutableList<IEntity>>();
             Configuration.Parse();
 
             var mapRaw = AttributeMap;
@@ -136,17 +139,20 @@ namespace ToSic.Eav.DataSources
             if (!string.IsNullOrEmpty(typeName))
                 newType = ContentTypeBuilder.DynamicContentType(AppId, typeName, typeName);
 
-            var result = In[Constants.DefaultStreamName].Immutable
+            if (!GetRequiredInList(out var originals))
+                return wrapLog("error", originals);
+
+            var result = originals
                 .Select(entity => EntityBuilder.FullClone(entity,
                     CreateDic(entity),
                     entity.Relationships.AllRelationships,
                     newType
-                    ))
+                ))
                 .Cast<IEntity>()
                 .ToImmutableArray();
 
 		    Log.Add($"attrib filter names:[{string.Join(",", attributeNames)}] found:{result.Length}");
-		    return result;
+		    return wrapLog("ok", result);
 		}
 
 	}

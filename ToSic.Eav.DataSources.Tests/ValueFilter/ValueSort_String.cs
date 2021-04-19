@@ -33,9 +33,9 @@ namespace ToSic.Eav.DataSourceTests
         [TestMethod]
         public void ValueSort_Unused()
         {
-            var vf = _testDataGeneratedOutsideTimer;// CreateValueSortForTesting(testVolume);
-            var listOut = vf.Immutable.ToList();
-            var listIn = vf.In[Constants.DefaultStreamName].Immutable.ToList();
+            var vf = _testDataGeneratedOutsideTimer;
+            var listOut = vf.ListForTests().ToList();
+            var listIn = vf.InForTests()[Constants.DefaultStreamName].ListForTests().ToList();
             CollectionAssert.AreEqual(listOut, listIn, "Lists should be the same if no criteria applied");
         }
 
@@ -44,7 +44,7 @@ namespace ToSic.Eav.DataSourceTests
         {
             var vf = _testDataGeneratedOutsideTimer;
             vf.Attributes = FieldCity;
-            var result = vf.List.ToList();
+            var result = vf.ListForTests().ToList();
             // check that each following city is same or larger...
             ValidateFieldIsSorted(result, FieldCity, true);
         }
@@ -80,7 +80,7 @@ namespace ToSic.Eav.DataSourceTests
             var vf = _valueFilterMaker.GeneratePersonSourceWithDemoData(TestVolume, useTable, multiLanguage);
             vf.Attributes = field;
             vf.Directions = direction;
-            var result = vf.List.ToList();
+            var result = vf.ListForTests().ToList();
             // check that each following city is same or larger...
             ValidateFieldIsSorted(result, field, testAscending);
         }
@@ -96,7 +96,7 @@ namespace ToSic.Eav.DataSourceTests
             vf.Attributes = FieldBioForMlSortTest;
             vf.Directions = direction;
             vf.Languages = language;
-            var result = vf.List.ToList();
+            var result = vf.ListForTests().ToList();
             // check that each following city is same or larger...
             ValidateFieldIsSorted(result, FieldIsMale,
                 // the expected result is reversed, because string "True" is after string "False"

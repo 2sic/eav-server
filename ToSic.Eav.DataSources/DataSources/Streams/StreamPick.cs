@@ -14,10 +14,15 @@ namespace ToSic.Eav.DataSources
     /// </summary>
 	/// <remarks>Introduced in 10.26</remarks>
     [PublicApi_Stable_ForUseInYourCode]
-	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.StreamPick, ToSic.Eav.DataSources",
+	[VisualQuery(
+        NiceName = "Pick Stream",
+        UiHint = "Choose a stream",
+        Icon = "call_merge",
         Type = DataSourceType.Logic,
+        GlobalName = "ToSic.Eav.DataSources.StreamPick, ToSic.Eav.DataSources",
         ExpectsDataOfType = "67b19864-df6d-400b-9f37-f41f1dd69c4a",
         DynamicOut = false, 
+        DynamicIn = true,
 	    HelpLink = "https://r.2sxc.org/DsStreamPick")]
 
     public sealed class StreamPick: DataSourceBase
@@ -73,18 +78,21 @@ namespace ToSic.Eav.DataSources
             Configuration.Parse();
             var name = StreamName;
             Log.Add($"StreamName to Look for: '{name}'");
-			if(string.IsNullOrWhiteSpace(StreamName)) return wrapLog("no name", ImmutableArray<IEntity>.Empty);
+			if(string.IsNullOrWhiteSpace(StreamName)) 
+                return wrapLog("no name", ImmutableArray<IEntity>.Empty);
+            
             name = name.ToLowerInvariant();
             var foundStream = In.FirstOrDefault(pair => pair.Key.ToLowerInvariant() == name);
-            if (foundStream.Key == string.Empty)
-            {
-                var msg = $"StreamPick can't find stream by the name '{StreamName}'";
-                Log.Add(msg);
-                wrapLog("error", ImmutableArray<IEntity>.Empty);
-                throw new Exception(msg);
-            }
+            
+            if (!string.IsNullOrEmpty(foundStream.Key)) 
+                return wrapLog("ok", foundStream.Value.List.ToImmutableArray());
+            
+            // Error not found
+            var msg = $"StreamPick can't find stream by the name '{StreamName}'";
+            Log.Add(msg);
+            return wrapLog("error", ErrorHandler.CreateErrorList(source: this, title: "Can't find Stream",
+                message: $"Trying to pick the stream '{StreamName}' but it doesn't exist on the In."));
 
-            return wrapLog("ok", foundStream.Value.Immutable);
         }
 
 	}

@@ -8,12 +8,17 @@ namespace ToSic.Eav.DataSources
 {
 	/// <inheritdoc />
 	/// <summary>
-	/// Filter entities to show Drafts or only Published Entities
+	/// Filter entities to show only these belonging to a specific user. 
 	/// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.OwnerFilter, ToSic.Eav.DataSources",
+	[VisualQuery(
+        NiceName = "Owner Filter",
+        UiHint = "Keep only item created by a specified user",
+        Icon = "attribution",
         Type = DataSourceType.Security,
+        GlobalName = "ToSic.Eav.DataSources.OwnerFilter, ToSic.Eav.DataSources",
         DynamicOut = false,
+        In = new[] { Constants.DefaultStreamNameRequired },
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.OwnerFilter",
         HelpLink = "https://r.2sxc.org/DsOwnerFilter")]
 
@@ -47,14 +52,20 @@ namespace ToSic.Eav.DataSources
 		    ConfigMask(IdentityCode, "[Settings:" + IdentityCode + "]"); 
         }
 
-        private ImmutableArray<IEntity> GetList()
+        private IImmutableList<IEntity> GetList()
         {
+            var wrapLog = Log.Call<IImmutableList<IEntity>>();
+
             Configuration.Parse();
 
             Log.Add($"get for identity:{Identity}");
-            if (string.IsNullOrWhiteSpace(Identity)) return ImmutableArray<IEntity>.Empty;// new List<IEntity>();
+            if (string.IsNullOrWhiteSpace(Identity)) 
+                return wrapLog("no identity", ImmutableArray<IEntity>.Empty);
 
-            return In[Constants.DefaultStreamName].Immutable.Where(e => e.Owner == Identity).ToImmutableArray();//.ToList();
+            if (!GetRequiredInList(out var originals))
+                return wrapLog("error", originals);
+            
+            return wrapLog("ok", originals.Where(e => e.Owner == Identity).ToImmutableArray());
         }
 
 	}

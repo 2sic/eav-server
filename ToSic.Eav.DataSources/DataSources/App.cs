@@ -9,14 +9,15 @@ namespace ToSic.Eav.DataSources
 	/// All the data inside an App. <br/>
 	/// For example, it has a variable amount of Out-streams, one for each content-type in the app.
 	/// </summary>
-
     [PublicApi_Stable_ForUseInYourCode]
-	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.App, ToSic.Eav.DataSources",
-        Type = DataSourceType.Source, 
-        Icon = "app",
-        DynamicOut = true,
+	[VisualQuery(
 		NiceName = "App",
-		UiHint = "with streams for each Content Type",
+		UiHint = "All data in an app with streams for type",
+        Icon = "table_chart",
+        Type = DataSourceType.Source,
+        GlobalName = "ToSic.Eav.DataSources.App, ToSic.Eav.DataSources",
+        DynamicOut = true,
+        In = new []{Constants.DefaultStreamName},
 		ExpectsDataOfType = "|Config ToSic.Eav.DataSources.App",
         HelpLink = "https://r.2sxc.org/DsApp")]
     public partial class App : DataSourceBase
@@ -74,7 +75,7 @@ namespace ToSic.Eav.DataSources
 			ConfigMask(AppSwitchKey, "[Settings:" + AppSwitchKey + "||0]");
 			ConfigMask(ZoneSwitchKey, "[Settings:" + ZoneSwitchKey + "||0]");
 
-            OutIsDynamic = true;
+            //OutIsDynamic = true;
         }
 
 		/// <summary>
@@ -90,9 +91,7 @@ namespace ToSic.Eav.DataSources
 				AppId = AppSwitch;
 
 		    var newDs = DataSourceFactory.GetPublishing(this, configProvider: Configuration.LookUpEngine, showDrafts:GetShowDraftStatus());
-		    if (In.ContainsKey(Constants.DefaultStreamName))
-		        In.Remove(Constants.DefaultStreamName);
-			In.Add(Constants.DefaultStreamName, newDs[Constants.DefaultStreamName]);
+            Attach(Constants.DefaultStreamName, newDs);
 		}
 
 

@@ -6,12 +6,15 @@ using Newtonsoft.Json;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Conversion;
 using ToSic.Eav.Data;
+using ToSic.Eav.DataSources;
+using ToSic.Eav.DataSources.Debug;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.WebApi.Dto;
 using ToSic.Eav.WebApi.Helpers;
+using Connection = ToSic.Eav.DataSources.Queries.Connection;
 
 namespace ToSic.Eav.WebApi
 {
@@ -23,15 +26,30 @@ namespace ToSic.Eav.WebApi
     {
         public QueryBuilder QueryBuilder { get; }
         private readonly Lazy<AppManager> _appManagerLazy;
+        
+        /// <summary>
+        /// The lazy reader should only be used in the Definition - it's important that it's a new object
+        /// when used, to ensure it has the changes previously saved
+        /// </summary>
+        private readonly Lazy<AppRuntime> _appReaderLazy;
         private readonly Lazy<EntitiesToDictionary> _entToDicLazy;
+        private readonly Lazy<QueryInfo> _queryInfoLazy;
         private AppManager _appManager;
 
-        public QueryApi(Lazy<AppManager> appManagerLazy, QueryBuilder queryBuilder, Lazy<EntitiesToDictionary> entToDicLazy): base("Api.EavQry")
+        public QueryApi(
+            Lazy<AppManager> appManagerLazy, 
+            Lazy<AppRuntime> appReaderLazy, 
+            QueryBuilder queryBuilder, 
+            Lazy<EntitiesToDictionary> entToDicLazy,
+            Lazy<QueryInfo> queryInfoLazy
+            ) : base("Api.EavQry")
         {
             QueryBuilder = queryBuilder;
             QueryBuilder.Init(Log);
             _appManagerLazy = appManagerLazy;
+            _appReaderLazy = appReaderLazy;
             _entToDicLazy = entToDicLazy;
+            _queryInfoLazy = queryInfoLazy;
         }
 
         public QueryApi Init(int appId, ILog parentLog)
@@ -53,7 +71,8 @@ namespace ToSic.Eav.WebApi
 
             if (!id.HasValue) return query;
 
-            var qDef = _appManager.Read.Queries.Get(id.Value);
+            var reader = _appReaderLazy.Value.Init(State.Identity(null, appId), false, Log);
+            var qDef = reader.Queries.Get(id.Value);
 
             #region Deserialize some Entity-Values
 
@@ -85,7 +104,9 @@ namespace ToSic.Eav.WebApi
                 .ToList();
 
             // Update Pipeline Entity with new Wirings etc.
-		    var wirings = JsonConvert.DeserializeObject<List<Connection>>(data.Pipeline[Constants.QueryStreamWiringAttributeName].ToString());
+            var wiringString = data.Pipeline[Constants.QueryStreamWiringAttributeName]?.ToString() ?? "";
+            var wirings = JsonConvert.DeserializeObject<List<Connection>>(wiringString)
+                ?? new List<Connection>();
 
             _appManager.Queries.Update(id, data.DataSources, newDsGuids, data.Pipeline, wirings);
 
@@ -96,31 +117,63 @@ namespace ToSic.Eav.WebApi
 		/// <summary>
 		/// Query the Result of a Pipeline using Test-Parameters
 		/// </summary>
-		public QueryRunDto Run(int appId, int id, LookUpEngine config)
+		public QueryRunDto Run(int appId, int id, int top, LookUpEngine config) 
+            => DevRun(appId, id, config, top, builtQuery => builtQuery.Item1);
+
+        /// <summary>
+        /// Query the Result of a Pipeline using Test-Parameters
+        /// </summary>
+        public QueryRunDto DebugStream(int appId, int id, int top, LookUpEngine config, string from, string streamName)
+        {
+            IDataSource GetSubStream(Tuple<IDataSource, Dictionary<string, IDataSource>> builtQuery)
+            {
+                // Find the DataSource
+                if (!builtQuery.Item2.ContainsKey(from))
+                    throw new Exception($"Can't find source with name '{from}'");
+
+                var source = builtQuery.Item2[from];
+                if (!source.Out.ContainsKey(streamName))
+                    throw new Exception($"Can't find stream '{streamName}' on source '{from}'");
+
+                var resultStream = source.Out[streamName];
+                
+                // Repackage as DataSource since that's expected / needed
+                var passThroughDs = new PassThrough();
+                passThroughDs.Attach(streamName, resultStream);
+
+                return passThroughDs;
+            }
+
+            return DevRun(appId, id, config, top, GetSubStream);
+        }
+
+        public QueryRunDto DevRun(int appId, int id, LookUpEngine config, int top, Func<Tuple<IDataSource, Dictionary<string, IDataSource>>, IDataSource> partLookup)
 		{
-            var wrapLog = Log.Call($"a#{appId}, {nameof(id)}:{id}"); //, {nameof(instanceId)}: {instanceId}");
+            var wrapLog = Log.Call($"a#{appId}, {nameof(id)}:{id}, top: {top}");
 
             // Get the query, run it and track how much time this took
-		    //var queryFactory = new QueryBuilder(Log);
 		    var qDef = QueryBuilder.GetQueryDefinition(appId, id);
-			var outStreams = QueryBuilder.GetDataSourceForTesting(qDef, true, config);
+			var builtQuery = QueryBuilder.GetDataSourceForTesting(qDef, true, config);
+            var outSource = builtQuery.Item1;
             
             
             var serializeWrap = Log.Call("Serialize", useTimer: true);
             var timer = new Stopwatch();
             timer.Start();
-		    var query = _entToDicLazy.Value.EnableGuids().Convert(outStreams);
+            var converter = _entToDicLazy.Value.EnableGuids();
+            converter.MaxItems = top;
+		    var results = converter.Convert(partLookup(builtQuery));
             timer.Stop();
             serializeWrap("ok");
 
             // Now get some more debug info
-            var debugInfo = new DataSources.Debug.QueryInfo(outStreams, Log);
+            var debugInfo = _queryInfoLazy.Value.Init(outSource, Log);
 
             wrapLog(null);
             // ...and return the results
 			return new QueryRunDto
 			{
-				Query = query, 
+				Query = results, 
 				Streams = debugInfo.Streams,
 				Sources = debugInfo.Sources,
                 QueryTimer = new QueryTimerDto { 

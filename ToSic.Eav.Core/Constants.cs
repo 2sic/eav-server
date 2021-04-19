@@ -97,6 +97,7 @@ namespace ToSic.Eav
         /// Default In-/Out-Stream Name
         /// </summary>
         public const string DefaultStreamName = "Default";
+        public const string DefaultStreamNameRequired = DefaultStreamName + "*";
 
         public const string FallbackStreamName = "Fallback";
 
@@ -125,7 +126,6 @@ namespace ToSic.Eav
         public const string InputTypeDisableI18N = "DisableI18n";
         public const string InputTypeAngularAssets = "AngularAssets";
         public const string InputTypeUseAdam = "UseAdam";
-        //public const string InputTypeAngularMode = "AngularMode";
 
         #endregion
 
@@ -217,7 +217,7 @@ namespace ToSic.Eav
 
         #region Parameter protection
         // Special constant to protect functions which should use named parameters
-        public const string RandomProtectionParameter = "all params must be named, like 'enable: true, language: ''de-ch''";
+        public const string RandomProtectionParameter = "all params must be named, like 'enable: true, language: ''de-ch'' - see https://docs.2sxc.org/net-code/conventions/named-parameters.html";
         // ReSharper disable once UnusedParameter.Local
         public static void ProtectAgainstMissingParameterNames(string criticalParameter, string protectedMethod, string paramNames)
         {

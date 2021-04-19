@@ -37,7 +37,7 @@ namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
         {
             var relFilt = BuildRelationshipFilter(TestConfig.Zone, TestConfig.AppForRelationshipTests, Company);
 
-            var result = relFilt.List.ToList();
+            var result = relFilt.ListForTests().ToList();
 
             Trace.Write(Log.Dump());
 
@@ -47,9 +47,9 @@ namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
         public void DS_RelFil_NoConfigFallback()
         {
             var relFilt = BuildRelationshipFilter(TestConfig.Zone, TestConfig.AppForRelationshipTests, Company);
-            relFilt.Attach(Constants.FallbackStreamName, relFilt.In[Constants.DefaultStreamName]);
+            relFilt.AttachForTests(Constants.FallbackStreamName, relFilt.InForTests()[Constants.DefaultStreamName]);
 
-            var result = relFilt.List.ToList();
+            var result = relFilt.ListForTests().ToList();
 
             Trace.Write(Log.Dump());
             Assert.IsTrue(result.Count > 0, "count should be more than 0, as it should use fallback");

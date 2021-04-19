@@ -8,13 +8,17 @@ namespace ToSic.Eav.DataSources
 {
 	/// <inheritdoc />
 	/// <summary>
-	/// Return only entities of a specific content-type
+	/// Keep only entities of a specific content-type
 	/// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.EntityTypeFilter, ToSic.Eav.DataSources",
+	[VisualQuery(
+        NiceName = "Type-Filter",
+        UiHint = "Only keep items of the specified type",
+        Icon = "alt_route",
         Type = DataSourceType.Filter, 
+        GlobalName = "ToSic.Eav.DataSources.EntityTypeFilter, ToSic.Eav.DataSources",
         DynamicOut = false,
-        NiceName = "ContentType-Filter",
+        In = new[] { Constants.DefaultStreamNameRequired },
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.EntityTypeFilter",
         HelpLink = "https://r.2sxc.org/DsTypeFilter")]
 
@@ -48,8 +52,10 @@ namespace ToSic.Eav.DataSources
 		    ConfigMask(TypeNameKey, "[Settings:TypeName]");
         }
 
-	    private ImmutableArray<IEntity> GetList()
+	    private IImmutableList<IEntity> GetList()
 	    {
+            var wrapLog = Log.Call<IImmutableList<IEntity>>();
+
             Configuration.Parse();
             Log.Add($"get list with type:{TypeName}");
 
@@ -58,19 +64,21 @@ namespace ToSic.Eav.DataSources
                 var appState = Apps.State.Get(this);
 	            var foundType = appState?.GetContentType(TypeName);
 	            if (foundType != null) // maybe it doesn't find it!
-	                return In[Constants.DefaultStreamName].Immutable
-                        .OfType(foundType)
-                        //.Where(e => e.Type == foundType)
-                        .ToImmutableArray();
+                {
+                    if (!GetRequiredInList(out var originals))
+                        return wrapLog("error", originals);
+
+                    return wrapLog("fast", originals.OfType(foundType).ToImmutableArray());
+                }
 	        }
 	        catch { /* ignore */ }
 
             // This is the fallback, probably slower. In this case, it tries to match the name instead of the real type
             // Reason is that many dynamically created content-types won't be known to the cache, so they cannot be found the previous way
-	        return In[Constants.DefaultStreamName].Immutable
-                .OfType(TypeName)
-                //.Where(e => e.Type.Name == TypeName)
-                .ToImmutableArray();
+            if (!GetRequiredInList(out var originals2))
+                return wrapLog("error", originals2);
+            
+	        return wrapLog("slower", originals2.OfType(TypeName).ToImmutableArray());
 	    }
 
 	}

@@ -8,7 +8,7 @@ namespace ToSic.Eav.Data.Builder
     /// <summary>
     /// This is a helper environment to build entities based on different needs
     /// It's basically different kinds of constructors, just to keep the primary 
-    /// Entity object lean and clear
+    /// Entity object lean and clean
     /// </summary>
     public static class EntityBuilder
     {
@@ -34,6 +34,7 @@ namespace ToSic.Eav.Data.Builder
             return e;
         }
 
+        [Obsolete("Unclear where this is used or actually needed - will probably remove soon")]
         public static Entity EntityTemplate(int appId, Guid entityGuid, int entityId,
             int repositoryId, IContentType type /*, bool isPublished = true,
             DateTime? modified = null, string owner = "", int version = 1*/)

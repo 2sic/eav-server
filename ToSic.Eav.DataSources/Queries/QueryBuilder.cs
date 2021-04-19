@@ -48,9 +48,9 @@ namespace ToSic.Eav.DataSources.Queries
             {
                 var app = Apps.State.Identity(null, appId);
                 var source = DataSourceFactory.GetPublishing(app);
-	            var appEntities = source[Constants.DefaultStreamName].Immutable;
+	            var appEntities = source[Constants.DefaultStreamName].List;
 
-	            // use findRepo, as it uses the cache, which gives the list of all items // [queryEntityId];
+	            // use findRepo, as it uses the cache, which gives the list of all items
 	            var dataQuery = appEntities.FindRepoId(queryEntityId);
 	            var result = new QueryDefinition(dataQuery, appId, Log);
                 wrapLog(null);
@@ -67,7 +67,7 @@ namespace ToSic.Eav.DataSources.Queries
 	    public const string ConfigKeyPipelineSettings = "pipelinesettings";
 
 
-	    public IDataSource BuildQuery(QueryDefinition queryDef,
+	    public Tuple<IDataSource, Dictionary<string, IDataSource>> BuildQuery(QueryDefinition queryDef,
             ILookUpEngine lookUpEngineToClone,
             IEnumerable<ILookUp> overrideLookUps,
             bool showDrafts)
@@ -75,10 +75,11 @@ namespace ToSic.Eav.DataSources.Queries
 	        #region prepare shared / global value providers
 
 	        overrideLookUps = overrideLookUps?.ToList();
-	        var wrapLog = Log.Call($"{queryDef.Title}({queryDef.Id}), " +
-                                            $"hasLookUp:{lookUpEngineToClone != null}, " +
-                                            $"overrides: {overrideLookUps?.Count()}, " +
-                                            $"drafts:{showDrafts}");
+            var wrapLog = Log.Call<Tuple<IDataSource, Dictionary<string, IDataSource>>>(
+                $"{queryDef.Title}({queryDef.Id}), " +
+                $"hasLookUp:{lookUpEngineToClone != null}, " +
+                $"overrides: {overrideLookUps?.Count()}, " +
+                $"drafts:{showDrafts}");
 
 	        // the query settings which apply to the whole query
 	        var querySettingsLookUp = new LookUpInMetadata(ConfigKeyPipelineSettings, queryDef.Entity, _cultureResolver.SafeLanguagePriorityCodes());
@@ -95,7 +96,7 @@ namespace ToSic.Eav.DataSources.Queries
 
 
             // provide global settings for ShowDrafts, ATM just if showdrafts are to be used
-            var itemSettingsShowDrafts = new Dictionary<string, string>
+            var itemSettingsShowDrafts = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
                 {{QueryConstants.ParamsShowDraftKey, showDrafts.ToString()}};
 
             #endregion
@@ -107,7 +108,7 @@ namespace ToSic.Eav.DataSources.Queries
             if (outTarget.Guid == Guid.Empty)
 	            outTarget.Guid = queryDef.Entity.EntityGuid;
 
-	        #endregion
+            #endregion
 
 	        #region init all DataQueryParts
 
@@ -135,6 +136,11 @@ namespace ToSic.Eav.DataSources.Queries
                 var dataSource = DataSourceFactory.GetDataSource(assemblyAndType, appIdentity, lookUps: partConfig);
 	            dataSource.Guid = dataQueryPart.Guid;
 
+                try
+                {
+                    dataSource.Label = dataQueryPart.Entity.GetBestTitle();
+                } catch { /* ignore */ }
+
 	            Log.Add($"add '{assemblyAndType}' as " +
 	                    $"part#{dataQueryPart.Id}({dataQueryPart.Guid.ToString().Substring(0, 6)}...)");
 	            dataSources.Add(dataQueryPart.Guid.ToString(), dataSource);
@@ -144,9 +150,8 @@ namespace ToSic.Eav.DataSources.Queries
 	        #endregion
 
 	        InitWirings(queryDef, dataSources);
-
-	        wrapLog($"parts:{queryDef.Parts.Count}");
-	        return outTarget;
+			var result = new Tuple<IDataSource, Dictionary<string, IDataSource>>(outTarget, dataSources);
+			return wrapLog($"parts:{queryDef.Parts.Count}", result);
 	    }
 
 	    /// <summary>
@@ -164,16 +169,18 @@ namespace ToSic.Eav.DataSources.Queries
 			ConnectOutStreams(dataSourcesWithNoInStreams, dataSources, wirings, initializedWirings);
 
 			// 2. init DataSources with In-Streams of DataSources which are already wired
-            // note: there is a bug here, because when a DS has "In" from multiple sources, then it won't always be ready to provide out...
+			// note: there is a bug here, because when a DS has "In" from multiple sources, then it won't always be ready to provide out...
 			// repeat until all are connected
-		    while (true)
+			var connectionsWereAdded = true;
+		    while (connectionsWereAdded)
 			{
-				var dataSourcesWithInitializedInStreams = dataSources.Where(d => initializedWirings.Any(w => w.To == d.Key));
+				var dataSourcesWithInitializedInStreams = dataSources
+                    .Where(d => initializedWirings.Any(w => w.To == d.Key));
 
-				var connectionsCreated = ConnectOutStreams(dataSourcesWithInitializedInStreams, dataSources, wirings, initializedWirings);
+				connectionsWereAdded = ConnectOutStreams(dataSourcesWithInitializedInStreams, dataSources, wirings, initializedWirings);
 
-				if (!connectionsCreated)
-				    break;
+				//if (!connectionsCreated)
+				//    break;
 			}
 
 			// 3. Test all Wirings were created
@@ -191,25 +198,27 @@ namespace ToSic.Eav.DataSources.Queries
 		/// </summary>
 		private static bool ConnectOutStreams(IEnumerable<KeyValuePair<string, IDataSource>> dataSourcesToInit, IDictionary<string, IDataSource> allDataSources, IList<Connection> allWirings, List<Connection> initializedWirings)
 		{
-			var wiringsCreated = false;
+			var connectionsWereAdded = false;
 
 			foreach (var dataSource in dataSourcesToInit)
-			{
-			    var unassignedConnectionsForThisSource = allWirings.Where(w =>
-			        w.From == dataSource.Key &&
-			        !initializedWirings.Any(i => w.From == i.From && w.Out == i.Out && w.To == i.To && w.In == i.In));
+            {
+                var unassignedConnectionsForThisSource = allWirings
+                    .Where(w =>
+                        w.From == dataSource.Key
+                        && !initializedWirings.Any(i =>
+                            w.From == i.From && w.Out == i.Out && w.To == i.To && w.In == i.In));
+                
                 // loop all wirings from this DataSource (except already initialized)
                 foreach (var wire in unassignedConnectionsForThisSource)
 				{
 				    try
 				    {
-				        var sourceDsrc = allDataSources[wire.From];
-				        var sourceStream = (sourceDsrc as IDeferredDataSource)?.DeferredOut(wire.Out) ?? sourceDsrc.Out[wire.Out]; // if the source provides deferredOut, use that
-				        ((IDataTarget) allDataSources[wire.To]).In[wire.In] = sourceStream;
+				        var conSource = allDataSources[wire.From];
+                        ((IDataTarget) allDataSources[wire.To]).Attach(wire.In, conSource, wire.Out);
+                        initializedWirings.Add(wire);
 
-				        initializedWirings.Add(wire);
-
-				        wiringsCreated = true;
+                        // In the end, inform caller that we did add some connections
+				        connectionsWereAdded = true;
 				    }
 				    catch (Exception ex)
 				    {
@@ -218,16 +227,16 @@ namespace ToSic.Eav.DataSources.Queries
 				}
 			}
 
-			return wiringsCreated;
+			return connectionsWereAdded;
 		}
 
 
-	    public IDataSource GetDataSourceForTesting(QueryDefinition queryDef, bool showDrafts, ILookUpEngine configuration = null)
+	    public Tuple<IDataSource, Dictionary<string, IDataSource>> GetDataSourceForTesting(QueryDefinition queryDef, bool showDrafts, ILookUpEngine configuration = null)
 	    {
-            var wrapLog = Log.Call<IDataSource>($"a#{queryDef.AppId}, pipe:{queryDef.Entity.EntityGuid} ({queryDef.Entity.EntityId}), drafts:{showDrafts}");
+            var wrapLog = Log.Call<Tuple<IDataSource, Dictionary<string, IDataSource>>>(
+                $"a#{queryDef.AppId}, pipe:{queryDef.Entity.EntityGuid} ({queryDef.Entity.EntityId}), drafts:{showDrafts}");
             var testValueProviders = queryDef.TestParameterLookUps;
-            return wrapLog(null,
-                BuildQuery(queryDef, configuration, testValueProviders, showDrafts));
+            return wrapLog(null, BuildQuery(queryDef, configuration, testValueProviders, showDrafts));
         }
 
 

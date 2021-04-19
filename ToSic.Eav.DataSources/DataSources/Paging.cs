@@ -11,12 +11,17 @@ namespace ToSic.Eav.DataSources
 {
 	/// <inheritdoc />
 	/// <summary>
-	/// A DataSource that filters Entities by Ids
+	/// Do Paging to only return a limited amount of results + show how many such pages exist and which Page we are on.
 	/// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.Paging, ToSic.Eav.DataSources",
+	[VisualQuery(
+        NiceName = "Paging",
+        UiHint = "Split data into pages and forward just one batch",
+        Icon = "auto_stories",
         Type = DataSourceType.Logic, 
+        GlobalName = "ToSic.Eav.DataSources.Paging, ToSic.Eav.DataSources",
         DynamicOut = false,
+        In = new[] { Constants.DefaultStreamNameRequired },
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.Paging",
         HelpLink = "https://r.2sxc.org/DsPaging")]
 
@@ -80,25 +85,34 @@ namespace ToSic.Eav.DataSources
 		}
 
 
-	    private ImmutableArray<IEntity> GetList()
-	    {
+	    private IImmutableList<IEntity> GetList()
+        {
+            var wrapLog = Log.Call<IImmutableList<IEntity>>();
             Configuration.Parse();
             var itemsToSkip = (PageNumber - 1)*PageSize;
 
-	        var result = In[Constants.DefaultStreamName].Immutable
+            if (!GetRequiredInList(out var originals))
+                return wrapLog("error", originals);
+
+
+            var result = originals // [Constants.DefaultStreamName].List
                 .Skip(itemsToSkip)
                 .Take(PageSize)
                 .ToImmutableArray();
             Log.Add($"get page:{PageNumber} with size{PageSize} found:{result.Length}");
-            return result;
+            return wrapLog("ok", result);
 	    }
 
-        private ImmutableArray<IEntity> GetPaging()
+        private IImmutableList<IEntity> GetPaging()
         {
+            var wrapLog = Log.Call<IImmutableList<IEntity>>();
             Configuration.Parse();
 
             // Calculate any additional stuff
-            var itemCount = In[Constants.DefaultStreamName].Immutable.Count;
+            if (!GetRequiredInList(out var originals))
+                return wrapLog("error", originals);
+
+            var itemCount = originals.Count; // In[Constants.DefaultStreamName].List.Count();
             var pageCount = Math.Ceiling((decimal) itemCount / PageSize);
 
             // Assemble the entity
@@ -115,7 +129,7 @@ namespace ToSic.Eav.DataSources
 
             // Assemble list of this for the stream
             var list = new List<IEntity> {entity};
-            return list.ToImmutableArray();
+            return wrapLog("ok", list.ToImmutableArray());
         }
 
 	}

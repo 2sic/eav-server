@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.DataSources.Caching.CacheInfo;
 using ToSic.Eav.DataSources.Queries;
@@ -50,7 +51,8 @@ namespace ToSic.Eav.DataSources
             }
             catch (KeyNotFoundException)
             {
-                throw new Exception("Trouble with the App DataSource - must have a Default In-Stream with name " + Constants.DefaultStreamName + ". It has " + In.Count + " In-Streams.");
+                throw new Exception(
+                    $"Trouble with the App DataSource - must have a Default In-Stream with name {Constants.DefaultStreamName}. It has {In.Count} In-Streams.");
             }
 
             var upstreamDataSource = upstream.Source;
@@ -74,7 +76,7 @@ namespace ToSic.Eav.DataSources
                     () => new CacheInfoAppAndMore("AppTypeStream" + AppRootCacheKey.AppCacheKey(this), Apps.State.Get(this), $"Name={typeName}&Drafts={showDrafts}"),
                     this,
                     typeName,
-                    () => BuildTypeStream(/*DataSourceFactory,*/ upstreamDataSource, typeName)[Constants.DefaultStreamName].Immutable,
+                    () => BuildTypeStream(upstreamDataSource, typeName)[Constants.DefaultStreamName].List.ToImmutableArray(),
                     true);
                 _out.Add(typeName, deferredStream);
             }
@@ -104,7 +106,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
 		/// Build an EntityTypeFilter for this content-type to provide as a stream
 		/// </summary>
-        private EntityTypeFilter BuildTypeStream(/*DataSource dataSourceFactory,*/ IDataSource upstreamDataSource, string typeName)
+        private EntityTypeFilter BuildTypeStream(IDataSource upstreamDataSource, string typeName)
         {
             var wrapLog = Log.Call<EntityTypeFilter>($"..., ..., {typeName}");
             var ds = DataSourceFactory.GetDataSource<EntityTypeFilter>(this, upstreamDataSource,

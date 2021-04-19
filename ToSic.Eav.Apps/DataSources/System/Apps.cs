@@ -18,8 +18,11 @@ namespace ToSic.Eav.DataSources.System
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
     [VisualQuery(
+        NiceName = "Apps",
+        UiHint = "Apps of a Zone",
+        Icon = "apps",
+        Type = DataSourceType.System,
         GlobalName = "ToSic.Eav.DataSources.System.Apps, ToSic.Eav.Apps",
-        Type = DataSourceType.Source,
         DynamicOut = false,
         Difficulty = DifficultyBeta.Advanced,
         ExpectsDataOfType = "fabc849e-b426-42ea-8e1c-c04e69facd9b",
@@ -74,8 +77,11 @@ namespace ToSic.Eav.DataSources.System
 
 
 	    private ImmutableArray<IEntity> GetList()
-	    {
+        {
+            var wrapLog = Log.Call<ImmutableArray<IEntity>>();
+            
             Configuration.Parse();
+            var builder = DataBuilder;
 
             // try to load the content-type - if it fails, return empty list
             var zones = State.Zones;
@@ -86,14 +92,18 @@ namespace ToSic.Eav.DataSources.System
 	        {
 	            Eav.Apps.App appObj = null;
 	            Guid? guid = null;
-	            try
-	            {
-	                appObj = _serviceProvider.Build<Eav.Apps.App>()
-                        .Init(new AppIdentity(zone.ZoneId, app.Key), null, Log);
+                string error = null;
+                try
+                {
+                    appObj = _serviceProvider.Build<Eav.Apps.App>();
+                    appObj.Init(new AppIdentity(zone.ZoneId, app.Key), null, Log);
                     // this will get the guid, if the identity is not "default"
-	                if(Guid.TryParse(appObj.AppGuid, out var g)) guid = g;
-	            }
-	            catch { /* ignore */ }
+                    if (Guid.TryParse(appObj.AppGuid, out var g)) guid = g;
+                }
+                catch(Exception ex)
+                {
+                    error = "Error looking up App: " + ex.Message;
+                }
 
 	            // Assemble the entities
 	            var appEnt = new Dictionary<string, object>
@@ -104,8 +114,10 @@ namespace ToSic.Eav.DataSources.System
                     {AppType.IsHidden.ToString(), appObj?.Hidden ?? false },
 	                {AppType.IsDefault.ToString(), app.Key == zone.DefaultAppId},
 	            };
+                if(error != null)
+                    appEnt["Error"] = error;
 
-                var result = Build.Entity(appEnt,
+                var result = builder.Entity(appEnt,
                     appId: app.Key,
                     id: app.Key,
                     titleField: AppType.Name.ToString(),
@@ -114,7 +126,8 @@ namespace ToSic.Eav.DataSources.System
                 return result;
             });
 
-            return list.ToImmutableArray();// .ToList();
+            var final = list.ToImmutableArray();
+            return wrapLog($"{final.Length}", final); //  list.ToImmutableArray();// .ToList();
         }
 
 	}

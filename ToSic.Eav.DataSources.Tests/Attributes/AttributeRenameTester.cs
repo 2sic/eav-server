@@ -25,9 +25,9 @@ namespace ToSic.Eav.DataSourceTests
                 Changed.AttributeMap = map;
             Changed.KeepOtherAttributes = preserve;
 
-            CList = Changed.Immutable.ToList();
+            CList = Changed.ListForTests().ToList();
             CItem = CList.First();
-            OItem = Original.Immutable.First();
+            OItem = Original.ListForTests().First();
         }
 
         internal void AssertValues(string fieldOriginal, string fieldNew = null)

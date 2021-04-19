@@ -47,7 +47,7 @@ namespace ToSic.Eav.DataSources.Queries
         public List<QueryPartDefinition> Parts
             => _parts ?? (_parts = Entity.Metadata
                    .Where(m => m.Type.Name == Constants.QueryPartTypeName)
-                   .Select(e => new QueryPartDefinition(e))
+                   .Select(e => new QueryPartDefinition(e, Log))
                    .ToList());
         private List<QueryPartDefinition> _parts;
 

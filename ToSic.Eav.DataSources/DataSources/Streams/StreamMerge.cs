@@ -9,12 +9,17 @@ namespace ToSic.Eav.DataSources
 {
 	/// <inheritdoc />
 	/// <summary>
-	/// A DataSource that merges two streams
+	/// A DataSource that merges all streams on the `In` into one `Out` stream
 	/// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.StreamMerge, ToSic.Eav.DataSources",
+	[VisualQuery(
+        NiceName = "Merge Stream",
+        UiHint = "Combine multiple streams into one",
+        Icon = "merge_type",
         Type = DataSourceType.Logic, 
-        DynamicOut = false, 
+        GlobalName = "ToSic.Eav.DataSources.StreamMerge, ToSic.Eav.DataSources",
+        DynamicOut = false,
+        DynamicIn = true,
 	    HelpLink = "https://r.2sxc.org/DsStreamMerge")]
 
     public sealed class StreamMerge: DataSourceBase
@@ -35,20 +40,18 @@ namespace ToSic.Eav.DataSources
 		public StreamMerge()
 		{
             Provide(GetList);
-			//Out.Add(Constants.DefaultStreamName, new DataStream(this, Constants.DefaultStreamName, GetList));
 		}
 
         private ImmutableArray<IEntity> GetList()
         {
             var streams = In
                 .OrderBy(pair => pair.Key)
-                .Where(v => v.Value?.Immutable != null)
-                .Select(v => v.Value.Immutable);
+                .Where(v => v.Value?.List != null)
+                .Select(v => v.Value.List);
 
             return streams
                 .Aggregate(new List<IEntity>() as IEnumerable<IEntity>, (current, stream) => current.Concat(stream))
                 .ToImmutableArray();
-                //.ToList();
         }
 	}
 }

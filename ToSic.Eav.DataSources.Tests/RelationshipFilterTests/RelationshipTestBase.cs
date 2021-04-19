@@ -97,9 +97,9 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
             var appDs = Resolve<DataSourceFactory>().GetDataSource<App>(baseDs);
 
             // micro tests to ensure we have the right app etc.
-            Assert.IsTrue(appDs.List.Count() > 20, "appDs.List.Count() > 20");
+            Assert.IsTrue(appDs.ListForTests().Count() > 20, "appDs.List.Count() > 20");
 
-            var item731 = appDs.List.FindRepoId(731);
+            var item731 = appDs.ListForTests().FindRepoId(731);
             Assert.IsNotNull(item731, "expecting item 731");
             var title = item731.GetBestTitle();
             Assert.AreEqual(title, "2sic", "item 731 should have title '2sic'");
@@ -108,11 +108,11 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
 
             var stream = appDs[primaryType];
 
-            Assert.IsTrue(stream.Immutable.Count > 0, "stream.List.Count() > 0");
+            Assert.IsTrue(stream.ListForTests().Any(), "stream.List.Count() > 0");
 
             var relFilt = Resolve<DataSourceFactory>().GetDataSource<RelationshipFilter>(new AppIdentity(0, 0), null, 
                 appDs.Configuration.LookUpEngine/*, parentLog: Log*/);
-            relFilt.Attach(Constants.DefaultStreamName, stream);
+            relFilt.AttachForTests(Constants.DefaultStreamName, stream);
             return relFilt;
         }
 

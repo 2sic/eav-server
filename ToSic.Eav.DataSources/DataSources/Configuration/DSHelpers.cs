@@ -11,10 +11,11 @@ namespace ToSic.Eav.DataSources
             return dataSource;
         }
 
-        public static T Init<T>(this T dataTarget, IDataSource upstream) where T : IDataTarget
-        {
-            dataTarget.Attach(upstream);
-            return dataTarget;
-        }
+        // 2021-03 2dm seems unused
+        //public static T Init<T>(this T dataTarget, IDataSource upstream) where T : IDataTarget
+        //{
+        //    dataTarget.Attach(upstream);
+        //    return dataTarget;
+        //}
     }
 }

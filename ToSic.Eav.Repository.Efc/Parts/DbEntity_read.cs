@@ -52,8 +52,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
             return callLog(found.Length.ToString(), found);
         }
 
-        private ToSicEavEntities GetDbEntity(int entityId, string includes)
-            => IncludeMultiple(EntityQuery, includes).Single(e => e.EntityId == entityId);
+        //private ToSicEavEntities GetDbEntity(int entityId, string includes)
+        //    => IncludeMultiple(EntityQuery, includes).Single(e => e.EntityId == entityId);
 
         private List<ToSicEavEntities> GetDbEntities(int[] entityIds, string includes)
             => IncludeMultiple(EntityQuery, includes).Where(e => entityIds.Contains(e.EntityId)).ToList();

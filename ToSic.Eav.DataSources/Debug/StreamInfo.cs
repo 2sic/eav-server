@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Newtonsoft.Json;
+using ToSic.Eav.Conversion;
 
 namespace ToSic.Eav.DataSources.Debug
 {
@@ -8,12 +12,17 @@ namespace ToSic.Eav.DataSources.Debug
         public Guid Source;
         public string SourceOut;
         public string TargetIn;
-        public int Count => Stream.Immutable.Count;
+        public int Count => Stream.List.Count();
+        
+        
         public bool Error = false;
-
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public Dictionary<string, object> ErrorData;
+        
+        [JsonIgnore]
         protected readonly IDataStream Stream;
 
-        public StreamInfo(IDataStream stream, IDataTarget target, string inName)
+        public StreamInfo(IDataStream stream, IDataTarget target, string inName, IEntitiesTo<Dictionary<string, object>> errorConverter)
         {
             try
             {
@@ -21,9 +30,15 @@ namespace ToSic.Eav.DataSources.Debug
                 Target = (target as IDataSource)?.Guid ?? Guid.Empty;
                 Source = stream.Source.Guid;
                 TargetIn = inName;
-                foreach (var outStm in stream.Source.Out)
-                    if (outStm.Value == stream)
-                        SourceOut = outStm.Key;
+                if (stream is ConnectionStream conStream1) SourceOut = conStream1.Connection.SourceStream;
+                else
+                    foreach (var outStm in stream.Source.Out)
+                        if (outStm.Value == stream) // || (stream is ConnectionStream conStream && conStream.Connection.SourceStream == outStm.Key))
+                            SourceOut = outStm.Key;
+
+                var firstItem = Stream.List?.FirstOrDefault();
+                Error = firstItem?.Type?.Name == DataSourceErrorHandling.ErrorType;
+                if (Error) ErrorData = errorConverter.Convert(firstItem);
             }
             catch
             {

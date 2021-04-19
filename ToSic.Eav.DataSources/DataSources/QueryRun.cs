@@ -9,13 +9,15 @@ using ToSic.Eav.LookUp;
 namespace ToSic.Eav.DataSources
 {
 	/// <summary>
-	/// Run another query and provide the resulting data. The settings will provide the params for the query.
+	/// Run another query and provide the resulting data. The settings will provide the params for the inner query.
 	/// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-	[VisualQuery(GlobalName = "ToSic.Eav.DataSources.QueryRun, ToSic.Eav.DataSources",
-        Type = DataSourceType.Source,
+	[VisualQuery(
         NiceName = "Query Run",
-        Icon = "filter",
+        UiHint = "Get data from another Query",
+        Icon = "launch",
+        Type = DataSourceType.Source,
+        GlobalName = "ToSic.Eav.DataSources.QueryRun, ToSic.Eav.DataSources",
         DynamicOut = true,
 	    ExpectsDataOfType = "78d25ea6-66cc-44a2-b45d-77749cd9420a",
         HelpLink = "https://r.2sxc.org/QueryRun"
@@ -38,7 +40,10 @@ namespace ToSic.Eav.DataSources
 		/// Constructs a new QueryRun
 		/// </summary>
 		[PrivateApi]
-		public QueryRun() => OutIsDynamic = true;
+		public QueryRun()
+        {
+            //OutIsDynamic = true;
+        }
 
         #region Out
         /// <inheritdoc/>
@@ -114,7 +119,7 @@ namespace ToSic.Eav.DataSources
         private LookUpEngine LookUpWithoutParams()
         {
             var lookUpsWithoutParams = new LookUpEngine(Configuration.LookUpEngine, Log, true);
-            if (lookUpsWithoutParams.HasSource/*.Sources.ContainsKey*/(QueryConstants.ParamsLookup))
+            if (lookUpsWithoutParams.HasSource(QueryConstants.ParamsLookup))
                 lookUpsWithoutParams.Sources.Remove(QueryConstants.ParamsLookup);
             // 1.1 note: can't add Override here because the underlying params don't exist yet - so an override wouldn't keep them
             return lookUpsWithoutParams;

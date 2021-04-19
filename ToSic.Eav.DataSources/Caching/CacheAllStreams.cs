@@ -13,9 +13,14 @@ namespace ToSic.Eav.DataSources.Caching
 	/// So if part of the supplying DataSources would have a changed parameter (like a different filter), it will still run the full query and cache the results again. 
 	/// </summary>
 
-    [VisualQuery(GlobalName = "ToSic.Eav.DataSources.Caching.CacheAllStreams, ToSic.Eav.DataSources",
+    [VisualQuery(
+        NiceName = "Cache Streams",
+        UiHint = "Cache all streams based on some rules",
+        Icon = "history_toggle_off",
         Type = DataSourceType.Cache, 
+        GlobalName = "ToSic.Eav.DataSources.Caching.CacheAllStreams, ToSic.Eav.DataSources",
         DynamicOut = true,
+        DynamicIn = true,
         ExpectsDataOfType = "|Config ToSic.Eav.DataSources.Caches.CacheAllStreams",
         PreviousNames = new []
             {
@@ -23,8 +28,8 @@ namespace ToSic.Eav.DataSources.Caching
             },
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-CacheAllStreams")]
     [PublicApi_Stable_ForUseInYourCode]
-	public class CacheAllStreams : DataSourceBase, IDeferredDataSource
-	{
+	public class CacheAllStreams : DataSourceBase
+    {
         [PrivateApi]
 	    public override string LogId => "DS.CachAl";
 
@@ -61,7 +66,7 @@ namespace ToSic.Eav.DataSources.Caching
         }
 
 
-		private readonly IDictionary<string, IDataStream> _Out = new Dictionary<string, IDataStream>(StringComparer.OrdinalIgnoreCase);
+		private readonly IDictionary<string, IDataStream> _out = new Dictionary<string, IDataStream>(StringComparer.OrdinalIgnoreCase);
 		private bool _requiresRebuildOfOut = true;
 
         /// <inheritdoc />
@@ -69,13 +74,11 @@ namespace ToSic.Eav.DataSources.Caching
 		{
 			get
 			{
-				if (_requiresRebuildOfOut)
-				{
-					// now create all streams
-					CreateOutWithAllStreams();
-					_requiresRebuildOfOut = false;
-				}
-				return _Out;
+                if (!_requiresRebuildOfOut) return _out;
+                // now create all streams
+                CreateOutWithAllStreams();
+                _requiresRebuildOfOut = false;
+                return _out;
 			}
 		}
 		#endregion
@@ -88,13 +91,12 @@ namespace ToSic.Eav.DataSources.Caching
 		public CacheAllStreams()
 		{
 			// this one is unusual, so don't pre-attach a default data stream
+            //OutIsDynamic = true;
 
 			// Set default switch-keys to 0 = no switch
             Configuration.Values.Add(RefreshOnSourceRefreshKey, "[Settings:" + RefreshOnSourceRefreshKey + "||True]");
 			Configuration.Values.Add(CacheDurationInSecondsKey, "[Settings:" + CacheDurationInSecondsKey + "||0]"); // 0 is default, meaning don't use custom value, use system value of 1 day
 		    Configuration.Values.Add(ReturnCacheWhileRefreshingKey, "False");
-
-            OutIsDynamic = true;
         }
 
 		/// <summary>
@@ -104,42 +106,23 @@ namespace ToSic.Eav.DataSources.Caching
 		{
             Configuration.Parse();
 
-            //_Out.Clear();
-
             // attach all missing streams, now that Out is used the first time
             // note that some streams were already added because of the DeferredOut
-            foreach (var dataStream in In.Where(s => !_Out.ContainsKey(s.Key)))
-		    {
-		        //var inStream = dataStream.Value as DataStream;
-		        AttachDeferredStreamToOut(dataStream.Key);
-		    }
-		}
+            foreach (var dataStream in In.Where(s => !_out.ContainsKey(s.Key)))
+                _out.Add(dataStream.Key, StreamWithCaching(dataStream.Key));
+        }
 
-        /// <summary>
-        /// Will get the stream or if missing, try to attach it first
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-	    private IDataStream GetDeferredStream(string name) 
-            => _Out.ContainsKey(name) ? _Out[name] : AttachDeferredStreamToOut(name);
-
-	    private IDataStream AttachDeferredStreamToOut(string name)
+	    private IDataStream StreamWithCaching(string name)
         {
-            Configuration.Parse();
+            var outStream = new DataStream(this, name,  () => In[name].List, true);
 
-            var outStream = new DataStream(this, name,  () => In[name].Immutable, true);
-
-	        if (CacheDurationInSeconds != 0) // only set if a value other than 0 (= default) was given
+            // only set if a value other than 0 (= default) was given
+            if (CacheDurationInSeconds != 0)
 	            outStream.CacheDurationInSeconds = CacheDurationInSeconds;
 	        outStream.CacheRefreshOnSourceRefresh = RefreshOnSourceRefresh;
-
-	        _Out.Add(name, outStream);
-	        return outStream;
-	    }
-
-        // already attach an out, ready to consume in when it's there
-        [PrivateApi]
-	    public IDataStream DeferredOut(string name) => GetDeferredStream(name);
+            return outStream;
+        }
+        
 	}
 
 }

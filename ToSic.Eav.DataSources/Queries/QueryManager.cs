@@ -75,7 +75,7 @@ namespace ToSic.Eav.DataSources.Queries
 	        var source = DataSourceFactory.GetPublishing(app);
 	        var typeFilter = DataSourceFactory.GetDataSource<EntityTypeFilter>(source);
 	        typeFilter.TypeName = Constants.QueryTypeName;
-	        return wrapLog("ok", typeFilter.Immutable);
+	        return wrapLog("ok", typeFilter.List.ToImmutableList());
 	    }
 	}
 }
