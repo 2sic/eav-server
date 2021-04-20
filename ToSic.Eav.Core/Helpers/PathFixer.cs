@@ -28,7 +28,10 @@
             return "/" + original;
         }
 
-        public static string TrimLastSlash(this string original) 
+        public static string TrimLastSlash(this string original)
             => original?.TrimEnd('/').TrimEnd('\\');
+
+        public static string TrimPrefixSlash(this string original)
+            => original?.TrimStart('/').TrimStart('\\');
     }
 }
