@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>net451;netstandard2.0</TargetFrameworks>
     <Copyright>Copyright AGPL 2sic 2021</Copyright>
-    <Version>11.20.00.00</Version>
+    <Version>11.21.00.00</Version>
     <Configurations>Debug;Release;Dbg Testing;Debug Oqtane;DebugOqtane;DebugDnn</Configurations>
     <RootNamespace>ToSic.Eav.Apps</RootNamespace>
   </PropertyGroup>
