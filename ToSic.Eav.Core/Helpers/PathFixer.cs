@@ -28,6 +28,14 @@
             return "/" + original;
         }
 
+        public static string SuffixSlash(this string original)
+        {
+            if (original == null) return "/";
+            if (original.EndsWith("/")) return original;
+            if (original.EndsWith("\\")) original = original.TrimEnd('\\');
+            return original + "/";
+        }
+
         public static string TrimLastSlash(this string original)
             => original?.TrimEnd('/').TrimEnd('\\');
 
