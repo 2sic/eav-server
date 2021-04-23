@@ -128,7 +128,9 @@ namespace ToSic.Eav.Apps.ImportExport
                 _isAppExport && _appStaticName != XmlConstants.AppContentGuid 
                     ? new XElement(XmlConstants.App, new XAttribute(XmlConstants.Guid, _appStaticName))
                     : null,
+                // Default Language of this site
                 new XElement(XmlConstants.Language, new XAttribute(XmlConstants.LangDefault, defaultLanguage)),
+                // All languages of this site/export
                 new XElement(XmlConstants.DimensionDefinition, dimensions.Select(d => new XElement(XmlConstants.DimensionDefElement,
                     new XAttribute(XmlConstants.DimId, d.DimensionId),
                     new XAttribute(XmlConstants.Name, d.Name),
@@ -147,7 +149,6 @@ namespace ToSic.Eav.Apps.ImportExport
             // Go through each AttributeSetID
             foreach (var attributeSetId in AttributeSetNamesOrIds)
             {
-                //var id = int.Parse(attributeSetId);
                 var set = int.TryParse(attributeSetId, out var id)
                     ? (ContentType) AppState.GetContentType(id)
                     : (ContentType) AppState.GetContentType(attributeSetId);  // in case it's the name, not the number
@@ -216,7 +217,7 @@ namespace ToSic.Eav.Apps.ImportExport
             // Create root node "SexyContent" and add ContentTypes, ContentItems and Templates
             doc.Add(new XElement(XmlConstants.RootNode,
                 new XAttribute(XmlConstants.FileVersion, Settings.FileVersion),
-                new XAttribute(XmlConstants.MinEnvVersion, Settings.MinimumRequiredVersion),
+                new XAttribute(XmlConstants.MinEnvVersion, Settings.MinimumRequiredDnnVersion),
                 new XAttribute(XmlConstants.MinModVersion, moduleVersion),
                 new XAttribute(XmlConstants.ExportDate, DateTime.Now),
                 header,
