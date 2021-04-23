@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using ToSic.Eav.Data;
+﻿using System.Collections.Generic;
 using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.DataSources
@@ -12,11 +10,11 @@ namespace ToSic.Eav.DataSources
 	[PublicApi_Stable_ForUseInYourCode]
 	public interface IDataTarget: IDataPartShared
     {
-        /// <summary>
-        /// Internal ID usually from persisted configurations IF the configuration was build from an pre-stored query.
-        /// </summary>
-        /// <returns>The guid of this data source which identifies the configuration <see cref="IEntity"/> of the data source.</returns>
-        Guid Guid { get; set; }
+        ///// <summary>
+        ///// Internal ID usually from persisted configurations IF the configuration was build from an pre-stored query.
+        ///// </summary>
+        ///// <returns>The guid of this data source which identifies the configuration <see cref="IEntity"/> of the data source.</returns>
+        //Guid Guid { get; set; }
 
 		/// <summary>
 		/// List of all In connections
