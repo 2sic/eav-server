@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Helpers
+﻿using System;
+
+namespace ToSic.Eav.Helpers
 {
     public static class PathFixer
     {
@@ -15,7 +17,7 @@
         /// <summary>
         /// Convert all "/" characters to "\" characters
         /// </summary>
-        public static string Forwardslash(this string original)
+        public static string ForwardSlash(this string original)
             => original?.Replace("\\", "/");
             // could break https:// links etc.
             // .Replace("//", "/").Replace("//", "/");
@@ -41,5 +43,17 @@
 
         public static string TrimPrefixSlash(this string original)
             => original?.TrimStart('/').TrimStart('\\');
+
+        public static string FlattenMultipleForwardSlashes(this string path) 
+            => path.Replace("//", "/").Replace("//", "/").Replace("//", "/");
+
+        public static string ToAbsolutePathForwardSlash(this string path)
+        {
+            if (path.Contains(":"))
+                throw new ArgumentException("Path to clean cannot have ':' characters", nameof(path));
+            // remove base character which often has a ~ to mark site root
+            path = path.TrimStart('~');
+            return path.ForwardSlash().PrefixSlash().FlattenMultipleForwardSlashes(); // .SuffixSlash();
+        }
     }
 }

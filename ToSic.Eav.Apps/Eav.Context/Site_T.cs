@@ -40,7 +40,7 @@ namespace ToSic.Eav.Context
 
         [PrivateApi] public abstract string AppsRootPhysicalFull { get; }
 
-        [PrivateApi] public virtual string AppsRootLink => AppsRootPhysical;
+        [PrivateApi] public abstract string AppAssetsLinkTemplate { get; }// => AppsRootPhysical; //  + "/" + LinkPaths.AppFolderPlaceholder;
 
         [PrivateApi]
         public abstract string ContentPath { get; }
