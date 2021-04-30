@@ -24,7 +24,7 @@ namespace ToSic.Eav.DataSources.Catalog
             var result = installedDataSources
                 .Select(dsInfo => new DataSourceDto(dsInfo.Type.Name, dsInfo.VisualQuery)
                 {
-                    PartAssemblyAndType = dsInfo.GlobalName,
+                    PartAssemblyAndType = dsInfo.Name,
                     Out = dsInfo.VisualQuery?.DynamicOut == true ? null : GetOutStreamNames(dsInfo)
                 })
                 .ToList();
