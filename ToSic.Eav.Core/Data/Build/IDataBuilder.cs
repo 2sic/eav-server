@@ -44,6 +44,7 @@ namespace ToSic.Eav.Data
             string typeName = DataBuilder.DefaultTypeName,
             ContentType type = null,
             Guid? guid = null,
+            DateTime? created = null,
             DateTime? modified = null
         );
 
