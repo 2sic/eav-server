@@ -21,6 +21,11 @@ namespace ToSic.Eav.WebApi.Errors
 #endif
 
         {
+            Status = (int)statusCode;
+            Value = message;
         }
+
+        public int Status { get; set; } = 500;
+        public object Value { get; set; }
     }
 }
